@@ -1466,16 +1466,36 @@ function courseplay:createMapHotspot(vehicle)
 		end;
 	end;
 
-	local iconPath = Utils.getFilename('img/hud.png', courseplay.path);
-	local x = vehicle.components[1].lastTranslation[1];
-	local y = vehicle.components[1].lastTranslation[3];
-	local h = 24 / 1080;
-	local w = h / g_screenAspectRatio;
-	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(name, iconPath, x, y, w, h, false, false, CpManager.ingameMapIconShowText, vehicle.rootNode, false, true);
-
-	if vehicle.cp.ingameMapHotSpot and vehicle.cp.ingameMapHotSpot.overlay then
-		courseplay.utils:setOverlayUVsPx(vehicle.cp.ingameMapHotSpot.overlay, courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.baseTextureSize.x, courseplay.hud.baseTextureSize.y);
-	end;
+	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode);
+	local _, textSize = getNormalizedScreenValues(0, 6);
+	local _, textOffsetY = getNormalizedScreenValues(0, 9.5);
+	local width, height = getNormalizedScreenValues(11,11);
+	local colour = Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]);
+	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(
+		"cpHelper",                                 -- mapHotspot Name
+		"CP\n"..name,                               -- Text shown in icon
+		nil,                                        -- Image path cor custome images (If nil, then it will use Giants default image file
+		getNormalizedUVs({768, 768, 256, 256}),     -- UVs location of the icon in the image file
+		colour,                                     -- What colour to show
+		hotspotX,                                   -- x position of the hotspot
+		hotspotZ,                                   -- z position of the hotspot
+		width,                                      -- Image width
+		height,                                     -- Image height
+		false,                                      -- Unknown, but works
+		false,                                      -- Unknown, but works
+		true,                                       -- Unknown, but works
+		vehicle.components[1].node,                 -- Node to what the hotspot is attached to
+		true,                                       -- Unknown, but works
+		MapHotspot.CATEGORY_VEHICLE_STEERABLE,      -- Draw weight
+		textSize,                                   -- Text size
+		textOffsetY,                                -- Text offset horizontal
+		{1, 1, 1, 1},                               -- Text colour (r, g, b, a)
+		nil,                                        -- Unknown, but works
+		getNormalizedUVs({768, 768, 256, 256}),     -- Think this is border shape image
+		Overlay.ALIGN_VERTICAL_MIDDLE,              -- The alignment of the image based on the attached node
+		0.8                                         -- Black Border size (smaller is bigger border)
+		--- There are allot more values that can be set, but I don't know what they are for.
+	);
 end;
 function courseplay:deleteMapHotspot(vehicle)
 	if vehicle.cp.ingameMapHotSpot then

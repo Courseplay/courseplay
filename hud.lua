@@ -379,19 +379,17 @@ function courseplay.hud:setup()
 	self.directionArrowPosY = self.linesPosY[8]; -- self.basePosY + self:pxToNormal(118, 'y');
 
 	-- INGAME MAP ICONS
-	local iconSizePx, minX, minY = 118, 660, 10;
-	self.ingameMapIconsUVs = {};
-	for i=1,courseplay.NUM_MODES do
-		local col = ((i - 1) % 3) + 1;
-		local line = ceil(i / 3);
-
-		local xLeft = minX + (col - 1) * iconSizePx;
-		local xRight = xLeft + iconSizePx;
-		local yBottom = minY + line * iconSizePx;
-		local yTop = yBottom - iconSizePx;
-
-		self.ingameMapIconsUVs[i] = { xLeft,yBottom, xRight,yTop };
-	end;
+	self.ingameMapIconsUVs = {
+		[courseplay.MODE_GRAIN_TRANSPORT] 			= courseplay.utils:rgbToNormal(255, 113,  16, 1),       -- Orange
+		[courseplay.MODE_COMBI] 					= courseplay.utils:rgbToNormal(255, 203,  24, 1),       -- Yellow
+		[courseplay.MODE_OVERLOADER] 				= courseplay.utils:rgbToNormal(129, 204,  52, 1),       -- Green
+		[courseplay.MODE_SEED_FERTILIZE] 			= courseplay.utils:rgbToNormal( 30, 255, 156, 1),       -- Light Green
+		[courseplay.MODE_TRANSPORT] 				= courseplay.utils:rgbToNormal( 21, 198, 255, 1),       -- Blue
+		[courseplay.MODE_FIELDWORK] 				= courseplay.utils:rgbToNormal( 49,  52, 140, 1),       -- Dark Blue
+		[courseplay.MODE_COMBINE_SELF_UNLOADING]	= courseplay.utils:rgbToNormal(159,  29, 250, 1),       -- Purple
+		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] 	= courseplay.utils:rgbToNormal(255,  27, 231, 1),       -- Pink
+		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]		= courseplay.utils:rgbToNormal(231,  19,  19, 1),       -- Red
+	};
 
 	-- SOUND
 	self.clickSound = createSample('clickSound');

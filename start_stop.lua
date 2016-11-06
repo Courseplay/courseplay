@@ -225,9 +225,6 @@ function courseplay:start(self)
 			end;
 			wp.laneNum = curLaneNumber;
 		end;
-
-		-- ingame map course display
-		-- wp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(nil, mapIconPath, wp.cx, wp.cz, mapIconWidth, mapIconHeight);
 	end; -- END for wp in self.Waypoints
 
 
@@ -365,9 +362,9 @@ function courseplay:start(self)
 	courseplay.buttons:setActiveEnabled(self, 'page2');
 
 	-- add ingameMap icon
-	--[[ !!! if CpManager.ingameMapIconActive then
+	if CpManager.ingameMapIconActive then
 		courseplay:createMapHotspot(self);
-	end;]]
+	end;
 
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
