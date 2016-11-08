@@ -28,7 +28,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 	--state 6: leave BGA
 	--state 7: wait for Trailer 10 before EmptyPoint
 
-	if vehicle.cp.tipperCapacity == nil or vehicle.cp.tipperCapacity == 0 then --NOTE: query here instead of getCanUseAiMode() as tipperCapacity doesn't exist until drive() has been run
+	if vehicle.cp.totalCapacity == nil or vehicle.cp.totalCapacity == 0 then --NOTE: query here instead of getCanUseAiMode() as tipperCapacity doesn't exist until drive() has been run
 		courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_NOT_FOUND');
 		return false;
 	end;
@@ -51,9 +51,23 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[2], dt) then
 				courseplay:setShovelState(vehicle, 2);
 			end;
-			if fillLevelPct == 100 then
-				vehicle.cp.shovel:setFillLevel(vehicle.cp.shovel.capacity * 0.99, vehicle.cp.shovel.currentFillType);
+			if fillLevelPct >= 98 then
+				vehicle.cp.shovel:setFillLevel(vehicle.cp.shovel.cp.capacity * 0.97, vehicle.cp.shovel.cp.fillType);
 			end;
+			if vehicle.cp.mode9TargetSilo == nil then
+				--print(string.format("vehicle.cp.mode9TargetSilo = nil call getTargetBunkerSilo"))
+				vehicle.cp.mode9TargetSilo = courseplay:getMode9TargetBunkerSilo(vehicle)
+			end
+			if vehicle.cp.mode9TargetSilo then
+				--[[if vehicle.cp.BunkerSiloMap == nil then
+					print(string.format("vehicle.cp.mode9TargetSilo = %s call createMap",tostring(vehicle.cp.mode9TargetSilo.saveId)))
+					vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, vehicle.cp.mode9TargetSilo)
+				end
+				 --find a way to decide, which side to go next and set
+				vehicle.cp.totalOffsetX = 2.5 
+				vehicle.cp.toolOffsetZ = 0
+				]]
+			end
 		end;
 
 
@@ -70,8 +84,8 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 			end;
 			vehicle.cp.shovelLastFillLevel = fillLevelPct;
 		end;
-
-		if fillLevelPct == 100 or vehicle.cp.isLoaded then
+						--vv TODO checkif its a Giants Bug the Shovel never gets 100%
+		if fillLevelPct >= 99 or vehicle.cp.isLoaded then
 			if not vehicle.cp.isLoaded then
 				for i=vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
 					local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
@@ -101,7 +115,9 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 				courseplay:setShovelState(vehicle, 7);
 			end;
 		end;
-
+		if vehicle.cp.BunkerSiloMap then
+			vehicle.cp.BunkerSiloMap = nil
+		end
 	-- STATE 7: WAIT FOR TRAILER 10m BEFORE EMPTYING POINT
 	elseif vehicle.cp.shovelState == 7 then
 		local p = vehicle.cp.shovelEmptyPoint;
@@ -152,19 +168,21 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 	elseif vehicle.cp.shovelState == 5 then
 		--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		courseplay:handleSpecialTools(vehicle,vehicle,true,nil,nil,nil,nil,nil)
-		local stopUnloading = vehicle.cp.shovel.trailerFound ~= nil and vehicle.cp.shovel.trailerFound.fillLevel >= vehicle.cp.shovel.trailerFound.capacity;
+		if vehicle.cp.shovel.trailerFound then
+			courseplay:setOwnFillLevelsAndCapacities(vehicle.cp.shovel.trailerFound)
+		end
+		local stopUnloading = vehicle.cp.shovel.trailerFound ~= nil and vehicle.cp.shovel.trailerFound.cp.fillLevel >= vehicle.cp.shovel.trailerFound.cp.capacity;
 		if fillLevelPct <= 1 or stopUnloading then
-			if vehicle.cp.isLoaded then
-				for i = vehicle.cp.waypointIndex,vehicle.cp.numWaypoints do
-					if vehicle.Waypoints[i].rev then
-						courseplay:setIsLoaded(vehicle, false);
-						courseplay:setWaypointIndex(vehicle, i);
-						break;
+			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
+				if vehicle.cp.isLoaded then
+					for i = vehicle.cp.waypointIndex,vehicle.cp.numWaypoints do
+						if vehicle.Waypoints[i].rev then
+							courseplay:setIsLoaded(vehicle, false);
+							courseplay:setWaypointIndex(vehicle, i);
+							break;
+						end;
 					end;
 				end;
-			end;
-
-			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
 				if not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 					courseplay:setShovelState(vehicle, 6);
 				end
@@ -268,6 +286,10 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 					courseplay:debug(string.format('%s: movingTool %d: curRot=%.5f, targetRot=%.5f -> newRot=%.5f', nameNum(vehicle), i, curRot, targetRot, newRot), 10);
 					mt.curRot[rotAxis] = newRot;
 					setRotation(mt.node, unpack(mt.curRot));
+					if mt.delayedNode ~= nil then
+						mt.delayedUpdates = 2;
+						Cylindered.setDelayedNodeRotation(vehicle, mt);
+					end
 					changed = true;
 				end;
 			end;
@@ -286,6 +308,10 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 						courseplay:debug(string.format('%s: movingTool %d: curTrans=%.5f, targetTrans=%.5f -> newTrans=%.5f', nameNum(vehicle), i, curTrans, targetTrans, newTrans), 10);
 						mt.curTrans[transAxis] = newTrans;
 						setTranslation(mt.node, unpack(mt.curTrans));
+						if mt.delayedNode ~= nil then
+							mt.delayedUpdates = 2;
+							Cylindered.setDelayedNodeTranslation(vehicle, mt);
+						end
 						changed = true;
 					end;
 				end;
@@ -359,3 +385,27 @@ function courseplay:getMovingTools(vehicle)
 
 	return primaryMovingTools, secondaryMovingTools;
 end;
+
+function courseplay:createBunkerSiloMap(vehicle, Silo)
+	local map = {}
+	return map
+end
+
+function courseplay:getMode9TargetBunkerSilo(vehicle)
+	local pointIndex = vehicle.cp.shovelFillStartPoint+1
+	local x,z = vehicle.Waypoints[pointIndex].cx,vehicle.Waypoints[pointIndex].cz			
+	local tx,tz = x,z + 0.50
+	if g_currentMission.bunkerSilos ~= nil then
+		for _, bunker in pairs(g_currentMission.bunkerSilos) do
+			local x1,z1 = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
+			local x2,z2 = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
+			local x3,z3 = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
+			if Utils.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z) then
+				return bunker
+			end
+		end
+	else
+		return false
+	end
+	return false
+end

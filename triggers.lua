@@ -50,7 +50,8 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			
 			-- is this a traffic vehicle?
 			local cm = getCollisionMask(otherId);
-			if vehicle == nil and (bitAND(cm, 2105410) ~= 0 or getName(otherId) == "piQup") then -- if bit25 is part of the collisionMask then set new vehicle in GCM.NTV
+			if vehicle == nil and bitAND(cm, 2097152) ~= 0 then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
+				courseplay:debug(string.format("%s: 	onEnter, g_currentMission.nodeToVehicle[%s] == nil -> setting %s as aPath vehicle", nameNum(self),otherId,tostring(getName(otherId))), 3);
 				local pathVehicle = {}
 				pathVehicle.rootNode = otherId
 				pathVehicle.isCpPathvehicle = true
@@ -311,7 +312,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 			if trigger ~= nil then
 				if trigger.bunkerSilo ~= nil and trigger.state ~= 0 then 
-					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), trigger.bunkerSilo.state), 1);
+					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), trigger.state), 1);
 					return true
 				end
 				if self.cp.hasShield and trigger.bunkerSilo == nil then

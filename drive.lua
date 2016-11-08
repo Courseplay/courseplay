@@ -394,7 +394,7 @@ function courseplay:drive(self, dt)
 
 	-- MODE 9
 	elseif self.cp.mode == 9 then
-		allowedToDrive = courseplay:handle_mode9(self, self.cp.fillLevelPercent, allowedToDrive, dt);
+		allowedToDrive = courseplay:handle_mode9(self,self.cp.totalFillLevelPercent, allowedToDrive, dt);
 	end;
 	self.cp.inTraffic = false;
 
@@ -977,6 +977,8 @@ function courseplay:getIsVehicleOffsetValid(vehicle)
 			courseplay:changeLaneOffset(vehicle, nil, 0);
 		end;
 		return vehicle.cp.waypointIndex > vehicle.cp.waitPoints[1] - 6 and vehicle.cp.waypointIndex <= vehicle.cp.waitPoints[1] + 3;
+	elseif vehicle.cp.mode == 9 then
+		return vehicle.cp.waypointIndex+2 > vehicle.cp.shovelFillStartPoint and vehicle.cp.waypointIndex <= vehicle.cp.shovelFillEndPoint;
 	end; 
 
 	return false;

@@ -18,7 +18,7 @@ function courseplay:setCpMode(vehicle, modeNum)
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		courseplay.buttons:setActiveEnabled(vehicle, 'all');
 		if modeNum == 1 then
-			courseplay:reset_tools(vehicle);
+			courseplay:resetTools(vehicle);
 		end;
 	end;
 end;

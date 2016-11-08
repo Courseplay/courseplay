@@ -35,7 +35,7 @@ end;
 ]]
 
 
-function courseplay:reset_tools(vehicle)
+function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
@@ -956,10 +956,13 @@ end;
 
 function courseplay:getTipTriggerFreeCapacity(trigger, fillType)
 	local freeCapacity = 0;
-	for _, storage in pairs(trigger.tipTriggerTargets) do
-		freeCapacity = freeCapacity + storage:getFreeCapacity(fillType)
-	end;
-
+	if trigger.tipTriggerTargets ~= nil then
+		for _, storage in pairs(trigger.tipTriggerTargets) do
+			freeCapacity = freeCapacity + storage:getFreeCapacity(fillType)
+		end;
+	else
+		return math.huge;
+	end
 	return freeCapacity;
 end;
 

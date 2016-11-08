@@ -124,7 +124,7 @@ function courseplay:start(self)
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
 	self.cp.turnTimer = 8000
-	courseplay:reset_tools(self)
+	courseplay:resetTools(self)
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
