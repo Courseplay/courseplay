@@ -121,6 +121,9 @@ function courseplay.button:render()
 			if fn == "setCustomFieldEdgePathNumber" then
 				canScrollUp   = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				canScrollDown = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
+			elseif fn == "changeSiloFillType" then
+				canScrollUp   = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
+				canScrollDown = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 			end;
 
 		elseif pg == courseplay.hud.PAGE_MANAGE_COURSES then
@@ -232,6 +235,8 @@ function courseplay.button:render()
 					show = vehicle.cp.isRecording or vehicle.cp.recordingIsPaused;
 				elseif fn == 'clearCurrentLoadedCourse' then
 					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
+				elseif fn == 'changeSiloFillType' then
+					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 				end;
 
 			-- Page 2

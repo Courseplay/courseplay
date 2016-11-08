@@ -402,6 +402,15 @@ end;
 function courseplay.hud:setContent(vehicle)
 	-- self = courseplay.hud
 
+	if vehicle.cp.hud.firstTimeSetContent then
+		--- Reset tools
+		-- This is to show the silo filltype line on first time opening the hud and the mode is Grain Transport.
+		if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
+			courseplay:reset_tools(vehicle);
+		end;
+		vehicle.cp.hud.firstTimeSetContent = false
+	end;
+
 	-- BOTTOM GLOBAL INFO
 	-- mode icon
 	vehicle.cp.hud.content.bottomInfo.showModeIcon = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.NUM_MODES;
@@ -714,7 +723,7 @@ function courseplay.hud:loadPage(vehicle, page)
 					end;
 				end;
 
-				if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.workTools[1] ~= nil and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
+				if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0 then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
 					vehicle.cp.hud.content.pages[1][6][2].text = FillUtil.fillTypeIndexToDesc[vehicle.cp.siloSelectedFillType].nameI18N;
 				end;
@@ -1140,6 +1149,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		currentPage = 1;
 		show = false;
 		openWithMouse = true;
+		firstTimeSetContent = true;
 		content = {
 			bottomInfo = {};
 			pages = {};
@@ -1358,6 +1368,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	for i=1, self.numLines do
 		courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], w, self.lineHeight, i, nil, true);
 	end;
+
+	-- Silo Fill Type Selector
+	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'navLeft' },  'changeSiloFillType', -1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -1, false);
+	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'navRight' }, 'changeSiloFillType',  1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  1, false);
+	courseplay.button:new(vehicle, 1, nil, 'changeSiloFillType', 1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, nil, true, true);
 
 	-- Custom field edge path
 	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'cancel' }, 'clearCustomFieldEdge', nil, self.buttonPosX[2], self.linesButtonPosY[3], wSmall, hSmall, 3, nil, false);

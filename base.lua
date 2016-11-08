@@ -123,6 +123,7 @@ function courseplay:load(savegame)
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
 	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
+	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
 

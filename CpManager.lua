@@ -61,7 +61,7 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- height for mouse text line in game's help menu
-	self.hudHelpMouseLineHeight = 0.0291 --!!!  g_currentMission.hudHelpTextSize + g_currentMission.hudHelpTextLineSpacing*2;
+	self.hudHelpMouseLineHeight = g_currentMission.helpBoxTextSize + g_currentMission.helpBoxTextLineSpacing*2;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- INPUT
@@ -69,7 +69,7 @@ function CpManager:loadMap(name)
 	self.wasPlayerFrozen = false;
 	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
 	if ovl then
-		local h = (2.5 * 0.01225 ) --!!! g_currentMission.hudHelpTextSize);
+		local h = (2.5 * g_currentMission.helpBoxTextSize);
 		local w = h / g_screenAspectRatio;
 		ovl:setDimension(w, h);
 	end;
@@ -540,20 +540,18 @@ function CpManager.drawMouseButtonHelp(self, posY, txt)
 
 	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
 	if ovl then
-		local y = posY - 0.01225 - 0.0084*3 ;--!!! g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*3;
+		local y = posY - g_currentMission.helpBoxTextSize - g_currentMission.helpBoxTextLineSpacing*3;
 		ovl:setPosition(xLeft - ovl.width*0.2, y);
 		ovl:render();
 		xLeft = xLeft + ovl.width*0.6;
 	end;
 
-	posY = posY - 0.01225 - 0.0084*2; --!!! g_currentMission.hudHelpTextSize - g_currentMission.hudHelpTextLineSpacing*2;
+	posY = posY - g_currentMission.helpBoxTextSize - g_currentMission.helpBoxTextLineSpacing*2;
 	setTextAlignment(RenderText.ALIGN_RIGHT);
-	--!!! renderText(xRight, posY, g_currentMission.hudHelpTextSize, txt);
-	renderText(xRight, posY, 0.01225, txt);
+	renderText(xRight, posY, g_currentMission.helpBoxTextSize, txt);
 
 	setTextAlignment(RenderText.ALIGN_LEFT);
-	--!!! renderText(xLeft, posY, g_currentMission.hudHelpTextSize, courseplay.inputBindings.mouse.secondaryTextI18n);
-	renderText(xLeft, posY, 0.01225, courseplay.inputBindings.mouse.secondaryTextI18n);
+	renderText(xLeft, posY, g_currentMission.helpBoxTextSize, courseplay.inputBindings.mouse.secondaryTextI18n);
 end;
 
 function CpManager:severCombineTractorConnection(vehicle, callDelete)

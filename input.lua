@@ -266,8 +266,6 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
-					elseif line == 6 and self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and self.cp.workTools[1] ~= nil and self.cp.workTools[1].allowFillFromAir and self.cp.workTools[1].allowTipDischarge then
-						self.cp.siloSelectedFillType = courseplay:getNextFillableFillType(self);
 					end;
 
 				else -- driving

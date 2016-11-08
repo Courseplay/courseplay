@@ -698,7 +698,7 @@ function courseplay:drive(self, dt)
 			end;
 
 
-			if self.Waypoints[self.cp.waypointIndex].rev then
+			--if self.Waypoints[self.cp.waypointIndex].rev then
 				if math.abs(self.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then
 						self.nextMovingDirection = -1
@@ -708,13 +708,13 @@ function courseplay:drive(self, dt)
 				end;
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 				AIVehicleUtil.driveInDirection(self, dt, steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
-			else
-				local tX,_,tZ = worldToLocal(self.cp.DirectionNode, cx, cty, cz);
-				if courseplay:isWheelloader(self) then
-					tZ = tZ * 0.5; -- wheel loaders need to turn more
-				end;
-				AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
-			end;
+			--else
+			--	local tX,_,tZ = worldToLocal(self.cp.DirectionNode, cx, cty, cz);
+			--	if courseplay:isWheelloader(self) then
+			--		tZ = tZ * 0.5; -- wheel loaders need to turn more
+			--	end;
+			--	AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
+			--end;
 			
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, workArea)

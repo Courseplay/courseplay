@@ -52,28 +52,63 @@ function courseplay:resetTools(vehicle)
 		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
 	end;
 
+	vehicle.cp.easyFillTypeList = courseplay:getEasyFillTypeList(courseplay:getAllAvalibleFillTypes(vehicle));
+	vehicle.cp.siloSelectedEasyFillType = 0;
+	courseplay:changeSiloFillType(vehicle, 1);
+
 	vehicle.cp.currentTrailerToFill = nil;
 	vehicle.cp.trailerFillDistance = nil;
 	vehicle.cp.toolsDirty = false;
 end;
 
-function courseplay:getNextFillableFillType(vehicle)
-	local workTool = vehicle.cp.workTools[1];
-	if vehicle.cp.siloSelectedFillType == FillUtil.FILLTYPE_UNKNOWN or vehicle.cp.siloSelectedFillType == FillUtil.NUM_FILLTYPES then
-		return workTool:getFirstEnabledFillType();
-	end;
-
-    local fillTypes = courseplay:getAvalibleFillTypes(workTool, 1);
-	local nextFillType, enabled = next(fillTypes, vehicle.cp.siloSelectedFillType);
-	if nextFillType and enabled then
-		return nextFillType;
-	end;
-
-	return workTool:getFirstEnabledFillType();
+function courseplay:changeSiloFillType(vehicle, modifyer)
+	local eftl = vehicle.cp.easyFillTypeList;
+	local newVal = vehicle.cp.siloSelectedEasyFillType + modifyer
+	if newVal < 1 then
+		newVal = #eftl;
+	elseif newVal > #eftl then
+		newVal = 1;
+	end
+	vehicle.cp.siloSelectedEasyFillType = newVal;
+	vehicle.cp.siloSelectedFillType = eftl[newVal];
 end;
 
 function courseplay:getAvalibleFillTypes(object, fillUnitIndex)
+	if fillUnitIndex == nil then
+		local fillTypes = {}
+		for _, fillUnit in pairs(object.fillUnits) do
+			for fillType, enabled in pairs(fillUnit.fillTypes) do
+				if fillType ~= FillUtil.FILLTYPE_UNKNOWN and enabled then
+					fillTypes[fillType] = enabled;
+				end;
+			end
+		end
+		return fillTypes;
+	end;
     return object.fillUnits[fillUnitIndex].fillTypes;
+end;
+
+function courseplay:getAllAvalibleFillTypes(vehicle)
+	local fillTypes = {};
+	if #vehicle.cp.workTools > 0 then
+	    for _, workTool in pairs(vehicle.cp.workTools) do
+		    local toolFillTypes = courseplay:getAvalibleFillTypes(workTool);
+			for fillType, enabled in pairs(toolFillTypes) do
+				if fillType ~= FillUtil.FILLTYPE_UNKNOWN and enabled then
+					fillTypes[fillType] = enabled;
+				end;
+			end
+		end;
+	end;
+	return fillTypes;
+end;
+
+function courseplay:getEasyFillTypeList(fillTypes)
+	local easyFillTypeList = {};
+	for fillType, _ in pairs(fillTypes) do
+		table.insert(easyFillTypeList, fillType);
+	end;
+	return easyFillTypeList;
 end;
 
 function courseplay:isAttachedCombine(workTool)
