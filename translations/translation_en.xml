@@ -37,6 +37,11 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Course name:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Folder name:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filter courses:" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Courses: %q" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Load course/merge into loaded course" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Append course at the end" />

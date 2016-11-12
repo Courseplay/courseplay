@@ -42,55 +42,34 @@
 			cursorOffset="4px 0px"
 		/>
 
-		<!-- Cancel button -->
+		<!-- Cancel With ESC -->
 		<GuiElement
-			name="cancelButton" 
-			type="button" 
-			profile="defaultButton"
+				name="titleText"
+				type="text"
+				onCreate="onCreateCancelText"
+				textSize="10px"
+				textBold="false"
+				textAlignment="left"
+				textColor="0.95 0.95 0.95 1"
+				text="$CP_COURSEPLAY_CANCEL_WITH"
 
-			screenAlign="topLeft" positionOrigin="topLeft" position="412px -80px"
-			size="30px 30px"
-
-			onCreate="onCreateCancelButton" 
-			onClick="onCancelClick" 
-			focusId="2" 
-			focusChangeLeft="1" 
-			focusChangeRight="3" 
-			focusChangeTop="1" 
-
-			imageColor="1 1 1 1"
-			imageFocusedColor="0.4549 0 0 1"
-			imageDisabledColor="1 1 1 0.15"
-			fadeInTime="0.2" 
-			fadeOutTime="0.2" 
-
-			MOD_imageDir="img/inputCourseNameGUI/" 
-			MOD_imageFilename="inputCourseName_cancelButton_normal.png" 
+				screenAlign="bottomLeft" positionOrigin="bottomLeft" position="8px+10px 12px"
+				profile="textDefault"
 		/>
 
-		<!-- Save button -->
+		<!-- Save With Return -->
 		<GuiElement
-			name="saveButton" 
-			type="button" 
-			profile="defaultButton"
+				name="titleText"
+				type="text"
+				onCreate="onCreateSaveText"
+				textSize="10px"
+				textBold="false"
+				textAlignment="right"
+				textColor="0.95 0.95 0.95 1"
+				text="$CP_COURSEPLAY_SAVE_COURSE_WITH,$CP_COURSEPLAY_SAVE_FOLDER_NAME_WITH,$CP_COURSEPLAY_FILTER_COURSE_WITH"
 
-			screenAlign="topLeft" positionOrigin="topLeft" position="454px -80px"
-			size="30px 30px"
-			onCreate="onCreateSaveButton" 
-			onClick="onSaveClick" 
-			focusId="3" 
-			focusChangeLeft="2" 
-			focusChangeTop="1" 
-			disabled="true" 
-
-			imageColor="1 1 1 1"
-			imageFocusedColor="0.1686 0.8039 0.0392 1"
-			imageDisabledColor="1 1 1 0.15"
-			fadeInTime="0.2" 
-			fadeOutTime="0.2" 
-
-			MOD_imageDir="img/inputCourseNameGUI/" 
-			MOD_imageFilename="$course:inputCourseName_saveButton_normal.png,$folder:inputCourseName_saveButton_normal.png,$filter:inputCourseName_searchButton_normal.png" 
+				screenAlign="bottomRight" positionOrigin="bottomRight" position="-8px-10px 12px"
+				profile="textDefault"
 		/>
-	</GuiElement>
+</GuiElement>
 </GUI>

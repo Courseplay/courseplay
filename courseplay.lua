@@ -31,19 +31,20 @@ courseplay.buttons = {};
 courseplay.fields = {};
 courseplay.generation = {};
 
-local sonOfaBangSonOfaBoom = {
-	['56bb4a8d3f72d5a31aee0c317302dde5'] = true;
-	['7b7bc2512ee1fedcd76bdc68926d4f7b'] = true;
-	};
-CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
-
-if CpManager.isDeveloper then
-	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
-else
-	print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	courseplay.houstonWeGotAProblem = true;
-	return;
-end;
+-- TODO: Ask Giants about what happened to the global value "g_settingsNickname" in v1.3.0.0 ( CpManager.isDeveloper is temporary setup in CpManager:loadMap with out the disabling code)
+--local sonOfaBangSonOfaBoom = {
+--	['56bb4a8d3f72d5a31aee0c317302dde5'] = true;
+--	['7b7bc2512ee1fedcd76bdc68926d4f7b'] = true;
+--};
+--CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_settingsNickname)];
+--
+--if CpManager.isDeveloper then
+--	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+--else
+--	print('No cookies for you! (please wait until we have some limited form of a working version...)');
+--	courseplay.houstonWeGotAProblem = true;
+--	return;
+--end;
 
 local function initialize()
 	local fileList = {

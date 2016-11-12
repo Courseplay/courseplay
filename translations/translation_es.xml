@@ -37,6 +37,11 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nombre de ruta:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nombre de la carpeta:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrar las rutas:" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Rutas: %q" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Crear nueva carpeta" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Buscar carpetas y rutas" />
@@ -44,7 +49,8 @@
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="ha alcanzado el punto de descarga." />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha alcanzado el punto de espera" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha alcanzado el punto final" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! --> 		<text name="COURSEPLAY_WORK_END" 								 text="ha terminado el trabajo." />
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_WORK_END" 								 text="ha terminado el trabajo." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": equipamiento necesita ser descargado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": el equipamiento necesita ser rellenado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="descargar pacas." />

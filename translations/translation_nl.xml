@@ -37,6 +37,11 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Naam route:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Naam map:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filter routes:" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Route: %q" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Maak map aan" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Zoek routes en mappen" />

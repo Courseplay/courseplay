@@ -1455,9 +1455,8 @@ end;
 
 -- INGAME MAP ICONS
 function courseplay:createMapHotspot(vehicle)
-	local name = 'cpDriver';
+	local name = '';
 	if CpManager.ingameMapIconShowText then
-		name = '';
 		if CpManager.ingameMapIconShowName then
 			name = nameNum(vehicle, true) .. '\n';
 		end;
@@ -1472,30 +1471,31 @@ function courseplay:createMapHotspot(vehicle)
 	local width, height = getNormalizedScreenValues(11,11);
 	local colour = Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]);
 	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(
-		"cpHelper",                                 -- mapHotspot Name
-		"CP\n"..name,                               -- Text shown in icon
-		nil,                                        -- Image path cor custome images (If nil, then it will use Giants default image file
-		getNormalizedUVs({768, 768, 256, 256}),     -- UVs location of the icon in the image file
-		colour,                                     -- What colour to show
-		hotspotX,                                   -- x position of the hotspot
-		hotspotZ,                                   -- z position of the hotspot
-		width,                                      -- Image width
-		height,                                     -- Image height
-		false,                                      -- Unknown, but works
-		false,                                      -- Unknown, but works
-		true,                                       -- Unknown, but works
-		vehicle.components[1].node,                 -- Node to what the hotspot is attached to
-		true,                                       -- Unknown, but works
-		MapHotspot.CATEGORY_VEHICLE_STEERABLE,      -- Draw weight
-		textSize,                                   -- Text size
-		textOffsetY,                                -- Text offset horizontal
-		{1, 1, 1, 1},                               -- Text colour (r, g, b, a)
-		nil,                                        -- Unknown, but works
-		getNormalizedUVs({768, 768, 256, 256}),     -- Think this is border shape image
-		Overlay.ALIGN_VERTICAL_MIDDLE,              -- The alignment of the image based on the attached node
-		0.8                                         -- Black Border size (smaller is bigger border)
-		--- There are allot more values that can be set, but I don't know what they are for.
-	);
+		"cpHelper",                                 -- name: 				mapHotspot Name
+		"CP\n"..name,                               -- fullName: 			Text shown in icon
+		nil,                                        -- imageFilename:		Image path for custome images (If nil, then it will use Giants default image file)
+		getNormalizedUVs({768, 768, 256, 256}),     -- imageUVs:			UVs location of the icon in the image file. Use getNormalizedUVs to get an correct UVs array
+		colour,                                     -- baseColor:			What colour to show
+		hotspotX,                                   -- xMapPos:				x position of the hotspot on the map
+		hotspotZ,                                   -- zMapPos:				z position of the hotspot on the map
+		width,                                      -- width:				Image width
+		height,                                     -- height:				Image height
+		false,                                      -- blinking:			If the hotspot is blinking (Like the icons do, when a great demands is active)
+		false,                                      -- persistent:			Do the icon needs to be shown even when outside map ares (Like Greatdemands are shown at the minimap edge if outside the minimap)
+		true,                                       -- showName:			Should we show the fullName or not.
+		vehicle.components[1].node,                 -- objectId:			objectId to what the hotspot is attached to
+		true,                                       -- renderLast:			Does this need to be renderes as one of the last icons
+		MapHotspot.CATEGORY_VEHICLE_STEERABLE,      -- category:			The MapHotspot category.
+		textSize,                                   -- textSize:			fullName text size. you can use getNormalizedScreenValues(x, y) to get the normalized text size by using the return value of the y.
+		textOffsetY,                                -- textOffsetY:			Text offset horizontal
+		{1, 1, 1, 1},                               -- textColor:			Text colour (r, g, b, a) in 0-1 format
+		nil,                                        -- bgImageFilename:		Image path for custome background images (If nil, then it will use Giants default image file)
+		getNormalizedUVs({768, 768, 256, 256}),     -- bgImageUVs:			UVs location of the background icon in the image file. Use getNormalizedUVs to get an correct UVs array
+		Overlay.ALIGN_VERTICAL_MIDDLE,              -- verticalAlignment:	The alignment of the image based on the attached node
+		0.8                                         -- overlayBgScale:		Background icon scale, like making an border. (smaller is bigger border)
+	)
+	--- Do not delete this. This is for reference to what the arguments are.
+	-- IngameMap:createMapHotspot(name, fullName, imageFilename, imageUVs, baseColor, xMapPos, zMapPos, width, height, blinking, persistent, showName, objectId, renderLast, category, textSize, textOffsetY, textColor, bgImageFilename, bgImageUVs, verticalAlignment, overlayBgScale)
 end;
 function courseplay:deleteMapHotspot(vehicle)
 	if vehicle.cp.ingameMapHotSpot then

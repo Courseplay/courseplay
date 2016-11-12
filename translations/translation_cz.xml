@@ -37,6 +37,11 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Jméno trasy:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Jméno složky:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrovat trasy:" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Trasy: %q" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Nahrát/sloučit trasu do nahrané trasy" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Připojit trasu nakonec" />

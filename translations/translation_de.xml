@@ -37,6 +37,11 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Name des Kurses:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Name des Ordners:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Kurse filtern:" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Kurse: %q" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Kurs laden/mit aktuellem Kurs zusammenfügen" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Kurs anhängen" />

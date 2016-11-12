@@ -1,4 +1,9 @@
-﻿local curFile = 'CpManager.lua';
+﻿local sonOfaBangSonOfaBoom = {
+	['56bb4a8d3f72d5a31aee0c317302dde5'] = true;
+	['9a9f028043394ff9de1cf6c905b515c1'] = true;
+};
+
+local curFile = 'CpManager.lua';
 CpManager = {};
 local CpManager_mt = Class(CpManager);
 addModEventListener(CpManager);
@@ -8,6 +13,11 @@ addModEventListener(CpManager);
 function CpManager:loadMap(name)
 	self.isCourseplayManager = true;
 	self.firstRun = true;
+
+	CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_currentMission.missionInfo.playerName)];
+	if CpManager.isDeveloper then
+		print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+	end;
 
 	-- MULTIPLAYER
 	CpManager.isMP = g_currentMission.missionDynamicInfo.isMultiplayer;

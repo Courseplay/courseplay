@@ -54,21 +54,30 @@ function courseplay:resetTools(vehicle)
 
 	vehicle.cp.easyFillTypeList = courseplay:getEasyFillTypeList(courseplay:getAllAvalibleFillTypes(vehicle));
 	vehicle.cp.siloSelectedEasyFillType = 0;
-	courseplay:changeSiloFillType(vehicle, 1);
+	courseplay:changeSiloFillType(vehicle, 1, vehicle.cp.siloSelectedFillType);
 
 	vehicle.cp.currentTrailerToFill = nil;
 	vehicle.cp.trailerFillDistance = nil;
 	vehicle.cp.toolsDirty = false;
 end;
 
-function courseplay:changeSiloFillType(vehicle, modifyer)
+function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
 	local eftl = vehicle.cp.easyFillTypeList;
-	local newVal = vehicle.cp.siloSelectedEasyFillType + modifyer
-	if newVal < 1 then
-		newVal = #eftl;
-	elseif newVal > #eftl then
-		newVal = 1;
-	end
+	local newVal = 1;
+	if currentSelectedFilltype and currentSelectedFilltype ~= FillUtil.FILLTYPE_UNKNOWN then
+		for index, fillType in ipairs(eftl) do
+			if currentSelectedFilltype == fillType then
+				newVal = index;
+			end;
+		end;
+	else
+		newVal = vehicle.cp.siloSelectedEasyFillType + modifyer
+		if newVal < 1 then
+			newVal = #eftl;
+		elseif newVal > #eftl then
+			newVal = 1;
+		end
+	end;
 	vehicle.cp.siloSelectedEasyFillType = newVal;
 	vehicle.cp.siloSelectedFillType = eftl[newVal];
 end;
@@ -76,13 +85,15 @@ end;
 function courseplay:getAvalibleFillTypes(object, fillUnitIndex)
 	if fillUnitIndex == nil then
 		local fillTypes = {}
-		for _, fillUnit in pairs(object.fillUnits) do
-			for fillType, enabled in pairs(fillUnit.fillTypes) do
-				if fillType ~= FillUtil.FILLTYPE_UNKNOWN and enabled then
-					fillTypes[fillType] = enabled;
+		if object.fillUnits then
+			for _, fillUnit in pairs(object.fillUnits) do
+				for fillType, enabled in pairs(fillUnit.fillTypes) do
+					if fillType ~= FillUtil.FILLTYPE_UNKNOWN and enabled then
+						fillTypes[fillType] = enabled;
+					end;
 				end;
-			end
-		end
+			end;
+		end;
 		return fillTypes;
 	end;
     return object.fillUnits[fillUnitIndex].fillTypes;

@@ -8,7 +8,8 @@
 
 local modDir = g_currentModDirectory;
 
-inputCourseNameDialogue = {}
+inputCourseNameDialogue = {};
+inputCourseNameDialogue.firstTimeRun = true;
 local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue)
 inputCourseNameDialogue.types = { "course", "folder", "filter" };
 
@@ -86,12 +87,12 @@ function inputCourseNameDialogue:onCreateTitleText(element)
 	self.titleTextElement = element;
 end; --END onCreateTitleText()
 
-function inputCourseNameDialogue:onCreateSaveButton(element)
-	self.saveButtonElement = element;
+function inputCourseNameDialogue:onCreateSaveText(element)
+	self.saveTextElement = element;
 end; --END onCreateSaveButton()
 
-function inputCourseNameDialogue:onCreateCancelButton(element)
-	self.cancelButtonElement = element;
+function inputCourseNameDialogue:onCreateCancelText(element)
+	self.cancelTextElement = element;
 end; --END onCreateCancelButton()
 
 function inputCourseNameDialogue:onCreateTextInput(element)
@@ -102,23 +103,43 @@ function inputCourseNameDialogue:onOpen(element)
 	g_currentMission.isPlayerFrozen = true;
 	InputBinding.setShowMouseCursor(true);
 
+	if self.firstTimeRun then
+		--SET GET TITLE TEXT
+		if self.titleTextElement.courseText == nil or self.titleTextElement.folderText == nil or self.titleTextElement.filterText == nil then
+			local cpTitleParts = Utils.splitString(",", self.titleTextElement.text);
+			local courseTitle = string.sub(cpTitleParts[1], 5);
+			local folderTitle = string.sub(cpTitleParts[2], 5);
+			local filterTitle = string.sub(cpTitleParts[3], 5);
+			self.titleTextElement.courseText =  courseplay.locales[courseTitle] or "Course name:";
+			self.titleTextElement.folderText =  courseplay.locales[folderTitle] or "Folder name:";
+			self.titleTextElement.filterText =  courseplay.locales[filterTitle] or "Filter courses:";
+		end;
+
+		--SET CANCLE TEXT
+		local cancelText = string.sub(self.cancelTextElement.text, 5);
+		self.cancelTextElement.text = courseplay.locales[cancelText]:format(courseplay.locales["COURSEPLAY_BUTTON_ESC"]) or "Cancel with Escape";
+
+		if self.saveTextElement.courseText == nil or self.saveTextElement.folderText == nil or self.saveTextElement.filterText == nil then
+			local cpSaveTextParts = Utils.splitString(",", self.saveTextElement.text);
+			local courseSaveText = string.sub(cpSaveTextParts[1], 5);
+			local folderSaveText = string.sub(cpSaveTextParts[2], 5);
+			local filterSaveText = string.sub(cpSaveTextParts[3], 5);
+			local saveButton = g_i18n:getText('button_return');
+			self.saveTextElement.courseSaveText = courseplay.locales[courseSaveText]:format(saveButton) or "Return to Save Course";
+			self.saveTextElement.folderSaveText = courseplay.locales[folderSaveText]:format(saveButton) or "Return to Save Folder";
+			self.saveTextElement.filterSaveText = courseplay.locales[filterSaveText]:format(saveButton) or "Return to Filter Courses";
+		end;
+
+		self.firstTimeRun = false;
+	end;
+
 	local saveWhat = courseplay.vehicleToSaveCourseIn.cp.saveWhat;
 
-	--SET SAVE BUTTON IMAGE
-	self.saveButtonElement.overlay.overlay = self.saveButtonElement.courseplayTypes[saveWhat].overlayId;
-	self.saveButtonElement.overlay.filePath = self.saveButtonElement.courseplayTypes[saveWhat].filePath;
-
 	--SET TITLE TEXT
-	if self.titleTextElement.courseText == nil or self.titleTextElement.folderText == nil or self.titleTextElement.filterText == nil then
-		local cpTitleParts = Utils.splitString(",", self.titleTextElement.text);
-		local courseTitle = string.sub(cpTitleParts[1], 5);
-		local folderTitle = string.sub(cpTitleParts[2], 5);
-		local filterTitle = string.sub(cpTitleParts[3], 5);
-		self.titleTextElement.courseText =  courseplay.locales[courseTitle] or "Course name:";
-		self.titleTextElement.folderText =  courseplay.locales[folderTitle] or "Folder name:";
-		self.titleTextElement.filterText =  courseplay.locales[filterTitle] or "Filter courses:";
-	end;
 	self.titleTextElement.text = self.titleTextElement[saveWhat .. "Text"];
+
+	--SET SAVE TEXT
+	self.saveTextElement.text = self.saveTextElement[saveWhat .. "SaveText"];
 
 	self:validateCourseName();
 
@@ -222,6 +243,7 @@ function inputCourseNameDialogue:onCancelClick()
 	self.textInputElement.visibleTextPart1 = "";
 	self.textInputElement.cursorPosition = 1;
 	self.textInputElement.cursorBlinkTime = 0;
+	self.saveTextElement.text = "";
 
 	g_gui:showGui("");
 	courseplay.vehicleToSaveCourseIn.cp.saveFolderName = nil
@@ -240,9 +262,9 @@ function inputCourseNameDialogue:onEnterPressed()
 end; --END onEnterPressed()
 
 function inputCourseNameDialogue:validateCourseName()
-	self.saveButtonElement.disabled = self.textInputElement.text == nil or self.textInputElement.text:len() < 1;
-	--print("self.saveButtonElement.disabled="..tostring(self.saveButtonElement.disabled));
-	return not self.saveButtonElement.disabled;
+	self.saveTextElement.disabled = self.textInputElement.text == nil or self.textInputElement.text:len() < 1;
+
+	return not self.saveTextElement.disabled;
 end; --END validateCourseName()
 
 function inputCourseNameDialogue:setTextInputFocus(element)

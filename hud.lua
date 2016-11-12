@@ -406,7 +406,7 @@ function courseplay.hud:setContent(vehicle)
 		--- Reset tools
 		-- This is to show the silo filltype line on first time opening the hud and the mode is Grain Transport.
 		if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
-			courseplay:reset_tools(vehicle);
+			courseplay:resetTools(vehicle);
 		end;
 		vehicle.cp.hud.firstTimeSetContent = false
 	end;
