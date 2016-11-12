@@ -124,7 +124,7 @@ function inputCourseNameDialogue:onOpen(element)
 			local courseSaveText = string.sub(cpSaveTextParts[1], 5);
 			local folderSaveText = string.sub(cpSaveTextParts[2], 5);
 			local filterSaveText = string.sub(cpSaveTextParts[3], 5);
-			local saveButton = g_i18n:getText('button_return');
+			local saveButton = courseplay.locales["COURSEPLAY_BUTTON_RETURN"];
 			self.saveTextElement.courseSaveText = courseplay.locales[courseSaveText]:format(saveButton) or "Return to Save Course";
 			self.saveTextElement.folderSaveText = courseplay.locales[folderSaveText]:format(saveButton) or "Return to Save Folder";
 			self.saveTextElement.filterSaveText = courseplay.locales[filterSaveText]:format(saveButton) or "Return to Filter Courses";

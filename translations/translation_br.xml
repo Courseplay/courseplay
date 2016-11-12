@@ -37,6 +37,7 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nome da rota:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome da pasta:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrar rotas:" />
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
 		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
 		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->

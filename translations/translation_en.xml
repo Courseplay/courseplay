@@ -37,6 +37,7 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Course name:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Folder name:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filter courses:" />
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />
 		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />
 		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />
 		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />
