@@ -1362,6 +1362,10 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
 			workTool.cp.seederCapacity = fillUnit.capacity
 			--print(string.format("%s: adding %s to workTool.cp.seederCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+			if g_currentMission.missionInfo.helperBuySeeds then
+				workTool.cp.seederFillLevel = 100
+				workTool.cp.seederCapacity = 100
+			end
 			workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
 		end
 		if workTool.sprayer ~= nil and index == workTool.sprayer.fillUnitIndex then
@@ -1369,9 +1373,20 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			--print(string.format("%s: adding %s to workTool.cp.sprayerFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
 			workTool.cp.sprayerCapacity = fillUnit.capacity
 			--print(string.format("%s: adding %s to workTool.cp.sprayerCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+			
+			if courseplay:isSprayer(workTool) then 
+				if (workTool.cp.isLiquidManureSprayer and g_currentMission.missionInfo.helperSlurrySource == 2)
+					or (workTool.cp.isManureSprayer and g_currentMission.missionInfo.helperManureSource == 2)
+					or (g_currentMission.missionInfo.helperBuyFertilizer and not workTool.cp.isLiquidManureSprayer and not workTool.cp.isManureSprayer) 
+					then
+						workTool.cp.sprayerFillLevel = 100
+						workTool.cp.sprayerCapacity = 100
+				end
+			end
 			workTool.cp.sprayerFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
 		end
 	end 
+
 	workTool.cp.fillLevel = fillLevel
 	workTool.cp.capacity = capacity
 	workTool.cp.fillLevelPercent = fillLevelPercent

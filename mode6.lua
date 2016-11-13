@@ -108,7 +108,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							--print(string.format("if courseplay:isRoundbaler(workTool)(%s) and fillLevelPct(%s) > capacity(%s) * 0.9 and fillLevelPct < capacity and workTool.baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
 							--tostring(courseplay:isRoundbaler(workTool)),tostring(fillLevelPct),tostring(capacity),tostring(workTool.baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
 							if courseplay:isRoundbaler(workTool) and fillLevel > capacity * 0.9 and fillLevel < capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
-								if not workTool.isTurnedOn then
+								if not workTool.turnOnVehicle.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
@@ -122,7 +122,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								if workTool.baler.unloadingState == Baler.UNLOADING_OPEN then
 									workTool:setIsUnloadingBale(false)
 								end
-							elseif fillLevel >= 0 and not workTool.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
+							elseif fillLevel >= 0 and not workTool.turnOnVehicle.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								workTool:setIsTurnedOn(true, false);
 							end
 						end
@@ -135,7 +135,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end
 				end
 
-				if vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork -1 and workTool.isTurnedOn then
+				if vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork -1 and workTool.turnOnVehicle.isTurnedOn then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);
@@ -277,7 +277,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								end;
 
 								--turn on
-								if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+								if workTool.setIsTurnedOn ~= nil and not workTool.turnOnVehicle.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 									courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
 									vehicle.cp.runOnceStartCourse = false
@@ -298,7 +298,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					if not specialTool then
 						if not isFolding then
 							--turn off
-							if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+							if workTool.setIsTurnedOn ~= nil and workTool.turnOnVehicle.isTurnedOn then
 								workTool:setIsTurnedOn(false, false);
 								courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 							end;

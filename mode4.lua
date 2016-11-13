@@ -5,8 +5,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local workArea = (self.cp.waypointIndex > self.cp.startWork) and (self.cp.waypointIndex < self.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
-	local seederFillLevelPct = self.cp.totalSeederFillLevelPercent or 100
-	local sprayerFillLevelPct = self.cp.totalSprayerFillLevelPercent or 100
+	local seederFillLevelPct = self.cp.totalSeederFillLevelPercent   or 100;
+	local sprayerFillLevelPct = self.cp.totalSprayerFillLevelPercent or 100;
+	
 	--print(string.format("seederFillLevelPct:%s; sprayerFillLevelPct:%s",tostring(seederFillLevelPct),tostring(sprayerFillLevelPct)))
 	if self.cp.waypointIndex == self.cp.finishWork and self.cp.abortWork == nil then
 		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
@@ -168,15 +169,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 							end;
 						end;
 						--turn on
-						if workTool.setIsTurnedOn ~= nil and not workTool.isTurnedOn then
+						if workTool.setIsTurnedOn ~= nil and not workTool.turnOnVehicle.isTurnedOn then
 							courseplay:setMarkers(self, workTool);
 							if courseplay:isSowingMachine(workTool) then
-								--do manually instead of :setIsTurnedOn so that workTool.turnOnAnimation and workTool.playAnimation aren't called
-								--!!!workTool.isTurnedOn = true;
 								workTool:setIsTurnedOn(true,false); --!!!
-								--[[if workTool.airBlowerSoundEnabled ~= nil then
-									workTool.airBlowerSoundEnabled = true;
-								end;]]
 							else
 								if workTool.lastTurnedOn then
 									workTool.lastTurnedOn = false
@@ -205,7 +201,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 		elseif workArea and self.cp.abortWork == nil and self.cp.inTraffic then
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self, workTool, true, true, false, allowedToDrive, nil, nil, ridgeMarker);
 			if not specialTool then
-				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+				if workTool.setIsTurnedOn ~= nil and workTool.turnOnVehicle.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
 				end;
 				courseplay:debug(string.format('%s: [TRAFFIC] turn off order', nameNum(workTool)), 17);
@@ -216,7 +212,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			--turn off
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(self,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
-				if workTool.setIsTurnedOn ~= nil and workTool.isTurnedOn then
+				if workTool.setIsTurnedOn ~= nil and workTool.turnOnVehicle.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
 					courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 				end;
