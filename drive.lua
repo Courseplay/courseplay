@@ -22,6 +22,7 @@ function courseplay:drive(self, dt)
 		drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0) 
 	end 
 	
+	local forceTrueSpeed = false
 	local refSpeed = huge
 	local speedDebugLine = "refSpeed"
 	self.cp.speedDebugLine = nil
@@ -202,14 +203,31 @@ function courseplay:drive(self, dt)
 			end;
 		elseif self.cp.mode == 7 then
 			if self.cp.previousWaypointIndex == self.cp.startWork then
-				if self.totalFillLevel > 0 then
-					self:setPipeState(2)
-					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
+				if self.cp.totalFillLevel > 0 then
+					if self.pipeCurrentState ~= 2 then
+						self:setPipeState(2)
+					end
+					if self.cp.mode7makeHeaps then
+						if self:getCanTipToGround() then
+							if not self.dischargeToGround then
+								self.cp.speeds.discharge = courseplay:getDischargeSpeed(self)
+								self:setDischargeToGround(true)
+								courseplay:setVehicleWait(self, false);
+							end
+						else
+							-- TODO show message "not able to discharge"
+						end
+					else
+						CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
+					end
 				else
 					courseplay:setVehicleWait(self, false);
 					self.cp.isUnloaded = true
 				end
 			end
+			if self.cp.previousWaypointIndex == self.cp.stopWork and self.cp.totalFillLevel == 0 then
+				courseplay:setVehicleWait(self, false);
+			end 
 		elseif self.cp.mode == 8 then
 			allowedToDrive, lx, lz = courseplay:handleMode8(self, false, true, allowedToDrive, lx, lz, dt);
 		elseif self.cp.mode == 9 then
@@ -599,6 +617,12 @@ function courseplay:drive(self, dt)
 			self.cp.isReverseBackToPoint = false;
 		end;
 	end
+	if self.cp.mode7makeHeaps and self.cp.waypointIndex > self.cp.startWork + 1	and self.cp.waypointIndex <= self.cp.stopWork and self.cp.totalFillLevel > 0 then
+			refSpeed = self.cp.speeds.discharge
+			speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))	
+			forceTrueSpeed = true
+	end
+	
 	if abs(lx) > 0.5 then
 		refSpeed = min(refSpeed, self.cp.speeds.turn)
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
@@ -606,7 +630,7 @@ function courseplay:drive(self, dt)
 	
 	self.cp.speedDebugLine = speedDebugLine
 	
-	refSpeed = courseplay:setSpeed(self, refSpeed)
+	refSpeed = courseplay:setSpeed(self, refSpeed, forceTrueSpeed)
 
 	-- Four wheel drive
 	if self.cp.hasDriveControl and self.cp.driveControl.hasFourWD then
@@ -851,18 +875,19 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	return allowedToDrive;
 end
 
-function courseplay:setSpeed(vehicle, refSpeed)
+function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	local newSpeed = math.max(refSpeed,3)	
 	if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
 		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
 	end
-
 	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
-	if newSpeed < vehicle.cruiseControl.speed then
-		newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.005, math.min(deltaMinus * 0.0015, 0.035)));
-		--newSpeed = (newSpeed + vehicle.cruiseControl.speed)/2
-	end;
-
+	if not forceTrueSpeed then
+		if newSpeed < vehicle.cruiseControl.speed then
+			newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.005, math.min(deltaMinus * 0.0015, 0.035)));
+			--newSpeed = (newSpeed + vehicle.cruiseControl.speed)/2
+		end;
+	end
+	
 	vehicle:setCruiseControlMaxSpeed(newSpeed) 
 
 	courseplay:handleSlipping(vehicle, refSpeed);

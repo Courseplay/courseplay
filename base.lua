@@ -38,6 +38,7 @@ function courseplay:load(savegame)
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 	if self.cp.isCombine then
 		self.cp.mode7Unloading = false
+		self.cp.mode7makeHeaps = false
 		self.cp.driverPriorityUseFillLevel = false;
 	end
 	self.cp.stopWhenUnloading = false;
@@ -173,6 +174,7 @@ function courseplay:load(savegame)
 		field =  24;
 		street = 50;
 		crawl = 3;
+		discharge = 8;
 		
 		minReverse = 3;
 		minTurn = 3;
@@ -904,6 +906,8 @@ function courseplay:preDelete()
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 	end;
+	-- Delete map hotspot if there is any
+	courseplay:deleteMapHotspot(self);
 end;
 
 function courseplay:delete()
@@ -913,9 +917,6 @@ function courseplay:delete()
 	for i,trigger in pairs(self.cp.trafficCollisionTriggers) do
 		removeTrigger(trigger);
 	end;
-
-	-- Delete map hotspot if there is any
-	courseplay:deleteMapHotspot(self);
 
 	if self.cp ~= nil then
 		if self.cp.headland and self.cp.headland.tg then

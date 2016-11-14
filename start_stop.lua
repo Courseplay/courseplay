@@ -192,14 +192,22 @@ function courseplay:start(self)
 		end;
 
 		-- specific Workzone
-		if self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7 then
+		if self.cp.mode == 4 or self.cp.mode == 6 then
 			if numWaitPoints == 1 and (self.cp.startWork == nil or self.cp.startWork == 0) then
 				self.cp.startWork = i
 			end
 			if numWaitPoints > 1 and (self.cp.stopWork == nil or self.cp.stopWork == 0) then
 				self.cp.stopWork = i
 			end
-
+		elseif self.cp.mode == 7  then--combineUnloadMode
+			if numWaitPoints == 1 and (self.cp.startWork == nil or self.cp.startWork == 0) then
+				self.cp.startWork = i
+				self.cp.mode7makeHeaps = false
+			end
+			if numWaitPoints > 1 and (self.cp.stopWork == nil or self.cp.stopWork == 0) then
+				self.cp.stopWork = i
+				self.cp.mode7makeHeaps = true
+			end
 		--unloading point for transporter
 		elseif self.cp.mode == 8 then
 			--
@@ -398,7 +406,7 @@ function courseplay:getCanUseCpMode(vehicle)
 
 	local minWait, maxWait;
 
-	if mode == 3 or mode == 7 or mode == 8 then
+	if mode == 3 or mode == 8 then
 		minWait, maxWait = 1, 1;
 		if vehicle.cp.numWaitPoints < minWait then
 			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
@@ -421,7 +429,15 @@ function courseplay:getCanUseCpMode(vehicle)
 				return false;
 			end;
 		end;
-
+	elseif mode == 7 then
+		minWait, maxWait = 1, 2;
+		if vehicle.cp.numWaitPoints < minWait then
+			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
+			return false;
+		elseif vehicle.cp.numWaitPoints > maxWait then
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
+			return false;
+		end;	
 	elseif mode == 4 or mode == 6 then
 		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
 			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_WORK_AREA');

@@ -8,12 +8,13 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	end
 	
 	local pipeState = courseplay:getTrailerInPipeRangeState(vehicle);
-	if pipeState > 0 then
-		vehicle:setPipeState(pipeState);
-	elseif not vehicle.isAIThreshing then
-		vehicle:setPipeState(1);
-	end;
-	
+	if not vehicle.cp.mode7makeHeaps then
+		if pipeState > 0 then
+			vehicle:setPipeState(pipeState);
+		elseif not vehicle.aiIsStarted then
+			vehicle:setPipeState(1);
+		end;
+	end
 	if (vehicle.cp.waypointIndex == vehicle.cp.numWaypoints and vehicle.cp.modeState ~= 5) or (vehicle.cp.mode7GoBackBeforeUnloading and vehicle.cp.modeState ~= 5) then 
 		if vehicle.cp.curTarget.x ~= nil then
 			courseplay:setModeState(vehicle, 5);
@@ -29,9 +30,10 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 		isAutoCombine = true;
 	end
 	-- wait untill fillLevel is reached	
-	if vehicle.isAIThreshing then
-		if (vehicle.fillLevel * 100 / vehicle.capacity) >= vehicle.cp.driveOnAtFillLevel then
+	if vehicle.aiIsStarted then
+		if vehicle.cp.totalFillLevelPercent >= vehicle.cp.driveOnAtFillLevel then
 			local cx7, cz7 = vehicle.Waypoints[vehicle.cp.numWaypoints].cx, vehicle.Waypoints[vehicle.cp.numWaypoints].cz;
+			local cty7 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx7,1, cz7)
 			local lx7, lz7 = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, cx7, cty7, cz7);
 			local x7,y7,z7 = localToWorld(vehicle.cp.DirectionNode, 0, 0, -15);
 			vehicle.cp.mode7t = {};
@@ -47,10 +49,12 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 					break;
 				end					
 			end
-			if isField or vehicle.fillLevel >= vehicle.capacity*0.99 then
-				vehicle.lastaiThreshingDirectionX = vehicle.aiThreshingDirectionX;
-				vehicle.lastaiThreshingDirectionZ = vehicle.aiThreshingDirectionZ;
-				vehicle:stopAIThreshing();
+			if isField or vehicle.cp.totalFillLevelPercent > 99 then
+				local dx, _, dz = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1)
+				local length = Utils.vector2Length(dx, dz)
+                vehicle.lastaiThreshingDirectionX = dx / length;
+				vehicle.lastaiThreshingDirectionZ = dz / length;
+				vehicle:stopAIVehicle();
 				if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasManualMotorStart then
 					vehicle.driveControl.manMotorStart.wasHired = false
 				end				
@@ -73,6 +77,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				vehicle.cp.mode7GoBackBeforeUnloading = true;
 				vehicle.cp.mode7SpeedBackup = vehicle.cruiseControl.maxSpeed
 				courseplay:start(vehicle);
+				courseplay:setWaypointIndex(vehicle, 1);
 			else
 				if courseplay.debugChannels[11] then
 					local dbgctx7, dbgcty7, dbgctz7 = getWorldTranslation(vehicle.cp.DirectionNode);
@@ -88,6 +93,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	elseif vehicle.cp.mode7Unloading then
 		refSpeed = vehicle.cp.speeds.field;
 		if vehicle.cp.mode7GoBackBeforeUnloading then
+			refSpeed = vehicle.cp.speeds.turn;
 			local dist = courseplay:distanceToPoint(vehicle, vehicle.cp.mode7t.x,vehicle.cp.mode7t.y,vehicle.cp.mode7t.z);
 			if dist < 1 then
 				vehicle.cp.mode7GoBackBeforeUnloading = false;
@@ -181,7 +187,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 						vehicle.aiThreshingDirectionZ = vehicle.lastaiThreshingDirectionZ;
 						courseplay:debug(nameNum(vehicle) .. ": restored vehicle.aiThreshingDirection", 11);
 					end
-					vehicle:startAIThreshing(true);
+					vehicle:startAIVehicle();
 					vehicle:setCruiseControlMaxSpeed(vehicle.cp.mode7SpeedBackup)
 					continue = false
 					vehicle.cp.mode7Unloading = false;
@@ -195,3 +201,18 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	return continue, cx, cy, cz, refSpeed, allowedToDrive;
 end;
 
+function courseplay:getDischargeSpeed(vehicle)
+	courseplay:debug(nameNum(vehicle) .. ":getDischargeSpeed()", 11);
+	local refSpeed = 0
+	local sx,sz = vehicle.Waypoints[vehicle.cp.startWork].cx, vehicle.Waypoints[vehicle.cp.startWork].cz; 
+	local ex,ez = vehicle.Waypoints[vehicle.cp.stopWork].cx, vehicle.Waypoints[vehicle.cp.stopWork].cz;
+	local length = courseplay:distance(sx,sz, ex,ez) -5  --just to be sure, that we will get all in...
+	local fillDelta = vehicle.cp.totalFillLevel / vehicle.cp.totalCapacity;
+	courseplay:debug(nameNum(vehicle) .. ":  TipRange length: "..tostring(length), 11);
+	local completeTipDuration = (vehicle.cp.totalFillLevel/vehicle.overloading.capacity)+ (vehicle.overloading.delay.time/1000) 
+	courseplay:debug(nameNum(vehicle) .. ":  complete tip duration: "..tostring(completeTipDuration), 11);
+	local meterPrSeconds = length / completeTipDuration;
+	refSpeed =  meterPrSeconds * 3.6 
+	courseplay:debug(nameNum(vehicle) .. ":  refSpeed: "..tostring(refSpeed), 11);
+	return refSpeed
+end
