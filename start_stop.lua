@@ -500,16 +500,10 @@ function courseplay:stop(self)
 	if self.isEntered or self.isControlled then
 		if self.vehicleCharacter ~= nil then
 			----------------------------------
-			-- Fix Missing playerIndex and playerColorIndex that some times happens for unknow reasons
-			----------------------------------
-			local playerIndex = self.playerIndex;
-			local playerColorIndex = self.playerColorIndex;
-			if not playerIndex or not playerColorIndex then
-				playerIndex = g_currentMission.missionInfo.playerIndex;
-				playerColorIndex = g_currentMission.missionInfo.playerColorIndex;
-			end;
-			----------------------------------
-			-- End Fix
+			--- Fix Missing playerIndex and playerColorIndex that some times happens for unknow reasons
+			local playerIndex = Utils.getNoNil(self.playerIndex, g_currentMission.missionInfo.playerIndex);
+			local playerColorIndex = Utils.getNoNil(self.playerColorIndex, g_currentMission.missionInfo.playerColorIndex);
+			--- End Fix
 			----------------------------------
 
 			self.vehicleCharacter:loadCharacter(PlayerUtil.playerIndexToDesc[playerIndex].xmlFilename, playerColorIndex)
