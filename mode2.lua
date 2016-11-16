@@ -27,6 +27,7 @@ function courseplay:handle_mode2(vehicle, dt)
 
 	-- STATE 1 (wait for work at start point)
 	if vehicle.cp.modeState == 1 and vehicle.cp.activeCombine ~= nil then
+		courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 	end
 
@@ -259,6 +260,8 @@ function courseplay:unload_combine(vehicle, dt)
 		vehicle.cp.chopperIsTurning = false
 	end
 	
+	courseplay:setOwnFillLevelsAndCapacities(combine)
+	
 	local fillLevel, capacity = combine.cp.fillLevel, combine.cp.capacity;
 	if capacity > 0 then
 		combineFillLevel = fillLevel * 100 / capacity
@@ -303,9 +306,17 @@ function courseplay:unload_combine(vehicle, dt)
 	elseif combine.turnStage ~= 3 then
 		vehicle.cp.choppersTurnHasEnded = false
 	end
+	local aiTurn = false	
+		
+	for index,strategy in pairs(combine.driveStrategies) do
+		if strategy.activeTurnStrategy ~= nil then
+			combine.cp.turnStrategyIndex = index
+			strategy.activeTurnStrategy.didNotMoveTimer = strategy.activeTurnStrategy.didNotMoveTimeout;
+			aiTurn = true
+		end
+	end	
 	
-	
-	local aiTurn = combine.isAIThreshing and combine.turnStage > 0 and not (combine.turnStage == 3 and vehicle.cp.choppersTurnHasEnded)
+	--local aiTurn = combine.isAIThreshing and combine.turnStage > 0 and not (combine.turnStage == 3 and vehicle.cp.choppersTurnHasEnded)
 	if tractor ~= nil and (aiTurn or tractor.cp.turnStage > 0) then
 		--courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_IS_TURNING");
 		combineIsTurning = true
@@ -677,7 +688,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end	
 	end;
 	---------------------------------------------------------------------
-
+	local stopAICombine = false
 	local cx, cy, cz = getWorldTranslation(combineDirNode)
 	local sx, sy, sz = getWorldTranslation(vehicle.cp.DirectionNode)
 	distance = courseplay:distance(sx, sz, cx, cz)
@@ -686,8 +697,8 @@ function courseplay:unload_combine(vehicle, dt)
 			if combineIsAutoCombine and tractor.acIsCPStopped ~= nil then
 				-- print(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
-			elseif combine.isAIThreshing then    --!!!  isAIThreshinig is nil
-				combine.waitForTurnTime = combine.timer + 100
+			elseif combine.aiIsStarted  then
+				stopAICombine = true
 			elseif tractor:getIsCourseplayDriving() then
 				combine.cp.waitingForTrailerToUnload = true
 			end
@@ -712,8 +723,9 @@ function courseplay:unload_combine(vehicle, dt)
 				if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
 					-- print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
 					tractor.acIsCPStopped = true
-				elseif combine.isAIThreshing then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
-					combine.waitForTurnTime = combine.timer + 100
+				elseif combine.aiIsStarted then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
+					stopAICombine = true
+					--combine.waitForTurnTime = combine.timer + 100
 				elseif tractor:getIsCourseplayDriving() then --and not (combineFillLevel == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
 					combine.cp.waitingForTrailerToUnload = true
 				end
@@ -733,11 +745,17 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 		elseif distance < 100 and vehicle.cp.modeState == 2 then
 			allowedToDrive = false;
-		end
+		end		
 	elseif vehicle.cp.fieldEdgeTimeOutSet then
 		vehicle.cp.fieldEdgeTimeOutSet = false
 		--print("reset vehicle.cp.fieldEdgeTimeOutSet")
+	end	
+	
+	if combine.aiIsStarted and stopAICombine and combine.cruiseControl.speed > 0 then
+		combine.cp.lastCruiseControlSpeed = combine.cruiseControl.speed
+		combine.cruiseControl.speed = 0
 	end
+	
 	if combineIsTurning and distance < 20 then
 		if vehicle.cp.modeState == 3 or vehicle.cp.modeState == 4 then
 			if combine.cp.isChopper then

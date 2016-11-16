@@ -538,6 +538,9 @@ function courseplay:stop(self)
 		self.cp.cruiseControlSpeedBackup = nil;
 	end;
 
+	courseplay:releaseCombineStop(self)
+	
+	
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false

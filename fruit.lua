@@ -194,7 +194,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	-- COMBINE DIRECTION
 	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance - 5);
 	local dirX, dirZ = combine.aiThreshingDirectionX, combine.aiThreshingDirectionZ;
-	if (not (combine.isAIThreshing or combine:getIsCourseplayDriving())) or combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or (combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired) then
+	if (not (combine.aiIsStarted or combine:getIsCourseplayDriving())) or combine.aiThreshingDirectionX == nil or combine.aiThreshingDirectionZ == nil or (combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired) then
 		local node = combine.cp.DirectionNode or combine.rootNode;
 		local dx,_,dz = localDirectionToWorld(node, 0, 0, 2);
 		local length = Utils.vector2Length(dx,dz);
@@ -222,12 +222,13 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local rStartZ = rWidthZ + sideZ * 0.7 * threshWidth;
 	local rHeightX = rStartX + dirX * selfSideWatchDirSize;
 	local rHeightZ = rStartZ + dirZ * selfSideWatchDirSize;
-
+	local fruitType = combine.lastValidInputFruitType
+	
 	-- TODO (Jakob): the last "true" means we're also including preparing fruit. Should this only be done if the combine has indeed a fruit preparer?
-	local leftFruit = Utils.getFruitArea(combine.fillUnits[1].lastValidFillType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true);  --!!! lastValidInputFruitType nil ?
-	local rightFruit = Utils.getFruitArea(combine.fillUnits[1].lastValidFillType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true);
+	local leftFruit = Utils.getFruitArea(fruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true);  --!!! lastValidInputFruitType nil ?
+	local rightFruit = Utils.getFruitArea(fruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true);
 
-	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit: left %f, right %f", nameNum(combine), leftFruit, rightFruit), 4);
+	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit(%s): left %f, right %f", nameNum(combine),tostring(fruitType), leftFruit, rightFruit), 4);
 	
 	-- AUTO COMBINE
 	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired then -- autoCombine
@@ -249,16 +250,10 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 		end
 	
 	-- AI HELPER COMBINE
-	elseif combine.isAIThreshing then 
+	elseif combine.aiIsStarted then 
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is AIThreshing", nameNum(combine)), 4);
-		-- Fruit side switch at end of field line
-		if (not combine.waitingForDischarge and combine.waitForTurnTime > combine.timer) or (combine.turnStage == 1) then
-			local tempFruit = leftFruit;
-			leftFruit = rightFruit;
-			rightFruit = tempFruit;
-		end;
-	
-	-- COURSEPLAY
+		
+		-- COURSEPLAY
 	elseif tractor:getIsCourseplayDriving() then
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is Courseplayer", nameNum(combine)), 4);
 		local ridgeMarker = 0;

@@ -462,7 +462,6 @@ function courseplay:getCombinesPipeSide(combine)
 	end;
 end
 
-
 function courseplay:getTrailerInPipeRangeState(combine)
         local validPipeState = 0;
         for trailer,value in pairs(combine.overloading.trailersInRange) do
@@ -479,3 +478,12 @@ function courseplay:getTrailerInPipeRangeState(combine)
 		return validPipeState 
 end		
 		
+function courseplay:releaseCombineStop(vehicle,combine)
+	if combine == nil and vehicle.cp.activeCombine == nil then 
+		return 
+	end
+	local combineToStart = combine or vehicle.cp.activeCombine
+	if combineToStart.aiIsStarted and combineToStart.cruiseControl.speed == 0 then
+		combineToStart.cruiseControl.speed = combineToStart.cp.lastCruiseControlSpeed
+	end
+end
