@@ -33,21 +33,21 @@
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Carica percorso" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d sec" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />           
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nome del percorso:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome della directory:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtro percorsi:" />
 		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- (This is the name of the Return Button) -->
 		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s per annullare" />			
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s per salvare Percorso" />	
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Directory" />	
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s per filtrare Percorsi" />	
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Percorsi: %q" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="ha raggiunto il punto di scarico." />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha raggiunto il punto d'attesa" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha raggiunto la fine del percorso" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di grano." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di grano." />  
 		<text name="COURSEPLAY_WORK_END" 								 text="ha finito il lavoro." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": attrezzo necessita di essere scaricato." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": attrezzo deve essere rifornito." />
