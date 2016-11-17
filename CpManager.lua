@@ -519,15 +519,11 @@ function CpManager:renderFieldScanInfo()
 	courseplay.utils:setOverlayUVsPx(fsi.progressBarOverlay, newUVs, fsi.fileWidth, fsi.fileHeight);
 	fsi.progressBarOverlay:render();
 
-	courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, true, 'left');
-	renderText(fsi.textPosX, fsi.titlePosY - 0.001, fsi.titleFontSize, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
-	courseplay:setFontSettings('shadow', true);
+	courseplay:setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.titlePosY,         fsi.titleFontSize, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
 	local text = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, g_currentMission.fieldDefinitionBase.numberOfFields);
-	courseplay:setFontSettings({ 0.8, 0.8, 0.8, 1 }, false);
-	renderText(fsi.textPosX, fsi.textPosY - 0.001, fsi.textFontSize, text);
-	courseplay:setFontSettings('shadow', false);
+	courseplay:setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.textPosY,         fsi.textFontSize, text);
 
 	-- reset font settings
