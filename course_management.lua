@@ -2,19 +2,12 @@ local curFile = 'course_management.lua';
 local ceil = math.ceil;
 
 -- saving // loading courses
-function courseplay.courses:setup(doLoading)
-	-- NOTE: setup() is called twice during loadMap(), once before and once after the XML settings have been loaded
-	if self.batchWriteSize == nil then
-		self.batchWriteSize = 4096; -- used in deleteSaveAll() for batch-writing waypoint data. value in KB
-	end;
-
-
-	if not doLoading then return end;
-
+function courseplay.courses:setup()
 	-- LOAD COURSES AND FOLDERS FROM XML
 	if g_currentMission.cp_courses == nil then
 		-- courseplay:debug("cp_courses was nil and initialized", 8);
 		g_currentMission.cp_courses = {};
+		g_currentMission.cp_courseManager = {};
 		g_currentMission.cp_folders = {};
 		g_currentMission.cp_sorted = { item={}, info={} };
 
@@ -397,11 +390,13 @@ function courseplay:deleteSortedItem(vehicle, index) -- fn is in courseplay beca
 	local type = vehicle.cp.hud.courses[index].type
 	
 	if type == 'course' then
+		local slotId = self.courses:getFreeSaveSlot(id);
+		self.courses:removeFromManagerXml(type, slotId);
 		g_currentMission.cp_courses[id] = nil
-		
 	elseif type == 'folder' then
 		-- check for children: delete only if folder has no children
 		if g_currentMission.cp_sorted.info['f'..id].lastChild == 0 then
+			self.courses:removeFromManagerXml(type, id);
 			g_currentMission.cp_folders[id] = nil
 		end
 	else
@@ -409,112 +404,11 @@ function courseplay:deleteSortedItem(vehicle, index) -- fn is in courseplay beca
 	end
 	
 	g_currentMission.cp_sorted = courseplay.courses:sort()
-	courseplay.courses:saveAllToXml()
 	courseplay.settings.setReloadCourseItems()
 	courseplay.signs:updateWaypointSigns(vehicle);
 end
 
--- TODO (Jakob): this function isn't used anywhere
-function courseplay.courses:saveParent(type, id)
-	if id ~= nil and id > 0 then
-		local File = self:openOrCreateXML()
-		local i = 0
-		local node=''
-		local value
-		
-		if type == 'course' then
-			i = courseplay.utils.findXMLNodeByAttr(File, 'XML.courses.course', 'id', id, 'Int')
-			if i >= 0 then
-				node = string.format('XML.courses.course(%d)',i)
-				value = g_currentMission.cp_courses[id].parent
-			end
-		elseif type == 'folder' then
-			i = courseplay.utils.findXMLNodeByAttr(File, 'XML.folders.folder', 'id', id, 'Int')
-			if i >= 0 then
-				node = string.format('XML.folders.folder(%d)',i)
-				value = g_currentMission.cp_folders[id].parent
-			end
-		end
-		
-		if node ~= '' then
-			setXMLInt(File, node .. '#parent', value)
-			saveXMLFile(File)
-		end
-		delete(File)
-	end
-end
-
-function courseplay.courses:saveCourseToXml(course_id, File, append)
--- save course to xml file
---
--- append (bool,integer): append can be a bool or an integer
---		if it's false, the function will check if the id exists in the file. if it exists, it will overwrite it otherwise it will append
---		if append is true, the function will search for the next free position and save there
---		if append is an integer, the function will save at this position (without checking if it is the end or what there was before)
-	local deleteFile = false
-	if append == nil then
-		append = false  -- slow but secure
-	end
-	
-	if File == nil then
-		File = self:openOrCreateXML()
-		deleteFile = true
-	end
-	
-	-- { id = id, type = 'course', name = name, waypoints = tempCourse, parent = parent }
-	local types = { id = 'Int', name = 'String', parent = 'Int'}
-	local i = 0
-	
-	-- find the node position and save the attributes
-	if append ~= false then
-		if append == true then
-			i = courseplay.utils.findFreeXMLNode(File,'XML.courses.course')
-		else
-			i = append
-		end
-	else
-		i = courseplay.utils.findXMLNodeByAttr(File, 'XML.courses.course', 'id', course_id, 'Int')
-		if i < 0 then i = -i end
-	end
-	courseplay.utils.setMultipleXML(File, string.format('XML.courses.course(%d)', i), g_currentMission.cp_courses[course_id], types)
-	
-	-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; turn is a string; turn, speed may be nil!
-	-- from xml: rev=int wait=int crossing=int generated=bool, turn=string!!, turnstart=int turnend=int ridgemarker=int
-	-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2
-	local waypoints = {}
-	-- setXMLFloat seems imprecise...
-	types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
-
-	for k, v in pairs(g_currentMission.cp_courses[course_id].waypoints) do
-		local waypoint = {
-			pos = ('%.2f %.2f'):format(v.cx, v.cz);
-			angle = ('%.2f'):format(v.angle);
-			speed = ('%d'):format(v.speed or 0);
-			rev = courseplay:boolToInt(v.rev);
-			wait = courseplay:boolToInt(v.wait);
-			crossing = courseplay:boolToInt(v.crossing);
-			generated = v.generated;
-			dir = v.laneDir;
-			turn = v.turn;
-			turnstart = courseplay:boolToInt(v.turnStart);
-			turnend = courseplay:boolToInt(v.turnEnd);
-		};
-		if v.ridgeMarker and v.ridgeMarker ~= 0 then
-			waypoint.ridgemarker = v.ridgeMarker;
-		end;
-
-		waypoints[k] = waypoint;
-	end
-	
-	courseplay.utils.setMultipleXMLNodes(File, string.format('XML.courses.course(%d)', i), 'waypoint', waypoints, types, true)
-	
-	saveXMLFile(File)
-	if deleteFile then
-		delete(File)
-	end
-end
-
-function courseplay.courses:saveFolderToXml(folder_id, File, append)
+function courseplay.courses:saveFolderToXml(folder_id, cpCManXml, append)
 -- saves a folder to the courseplay xml file
 --
 -- append (bool,integer): append can be a bool or an integer
@@ -525,224 +419,297 @@ function courseplay.courses:saveFolderToXml(folder_id, File, append)
 	if append == nil then
 		append = false  -- slow but secure
 	end
-	
-	if File == nil then
-		File = self:openOrCreateXML()
+
+	if cpCManXml == nil then
+		cpCManXml = self:getCourseManagerXML()
 		deleteFile = true
 	end
 
 	-- { id = id, type = 'folder', name = name, parent = parent }
 	local types = { id = 'Int', name = 'String', parent = 'Int'}
 	local i = 0
-	
+
 	-- find the node position and save the attributes
 	if append ~= false then
 		if append == true then
-			i = courseplay.utils.findFreeXMLNode(File,'XML.folders.folder')
+			i = courseplay.utils.findFreeXMLNode(cpCManXml,'courseManager.folders.folder')
 		else
 			i = append
 		end
 	else
-		i = courseplay.utils.findXMLNodeByAttr(File, 'XML.folders.folder', 'id', folder_id, 'Int')
+		i = courseplay.utils.findXMLNodeByAttr(cpCManXml, 'courseManager.folders.folder', 'id', folder_id, 'Int')
 		if i < 0 then i = -i end
 	end
-	courseplay.utils.setMultipleXML(File, string.format('XML.folders.folder(%d)', i), g_currentMission.cp_folders[folder_id], types)
-	
-	saveXMLFile(File)
+	courseplay.utils.setMultipleXML(cpCManXml, string.format('courseManager.folders.folder(%d)', i), g_currentMission.cp_folders[folder_id], types)
+
+	saveXMLFile(cpCManXml)
 	if deleteFile then
-		delete(File)
+		delete(cpCManXml)
 	end
 end
 
-function courseplay.courses:saveFoldersToXml(File, append)
+function courseplay.courses:saveFoldersToXml(cpCManXml)
 --	function to save all folders by once
---	append (bool): whether to append to the file (true) or check if the id exists (false)
-	local deleteFile = false
-	if append == nil then
-		append = false
-	end
+	local deleteFile = false;
+
+	if cpCManXml == nil then
+		cpCManXml = self:getCourseManagerXML();
+		deleteFile = true;
+	end;
 	
-	if File == nil then
-		File = self:openOrCreateXML()
-		deleteFile = true
-	end
-	
-	if append then
-		append = courseplay.utils.findFreeXMLNode(File,'XML.folders.folder')
-	end
-	
+	local index = 0;
 	for k,_ in pairs(g_currentMission.cp_folders) do
-		self:saveFolderToXml(k, File, append)
-		if append ~= false then
-			append = append + 1
-		end
-	end
+		self:saveFolderToXml(k, cpCManXml, index);
+		index = index + 1;
+	end;
+
 	if deleteFile then
-		delete(File)
-	end
+		delete(cpCManXml);
+	end;
 end
 
-function courseplay.courses:saveCoursesToXml(File, append)
---	function to save all courses by once
---	append (bool): whether to append to the file (true) or check if the id exists (false)
-	local deleteFile = false
-	if append == nil then
-		append = false
-	end
-	
-	if File == nil then
-		File = self:openOrCreateXML()
-		deleteFile = true
-	end
-	
-	if append then
-		append = courseplay.utils.findFreeXMLNode(File,'XML.courses.course')
-	end
-	
-	for k,_ in pairs(g_currentMission.cp_courses) do
-		self:saveCourseToXml(k, File, append) -- append is either false or an integer here
-		if append ~= false then
-			append = append + 1
-		end
-	end
-	
-	if deleteFile then
-		delete(File)
-	end
-end
+function courseplay.courses:getFreeSaveSlot(course_id)
+	local freeSlot = 1;
+	local isOwnSaveSlot = false;
+	-- Check if there is any saved data already. If not, we returns 1 as the firstSlot
+	if g_currentMission.cp_courseManager and #g_currentMission.cp_courseManager > 0 then
+		local foundFreeSlot = false;
 
-function courseplay.courses:deleteSaveAll()
--- saves courses to xml-file
--- opening the file with io.open will delete its content...
-	if g_server ~= nil then
-		if CpManager.cpXmlFilePath then
-			local file = io.open(CpManager.cpXmlFilePath, "w");
-			if file ~= nil then
-				-- header
-				local header = '';
-				header = header .. '<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n';
-				header = header .. ('\t<courseplayHud posX="%.3f" posY="%.3f" />\n'):format(courseplay.hud.basePosX, courseplay.hud.basePosY);
-				header = header .. ('\t<courseplayFields automaticScan=%q onlyScanOwnedFields=%q debugScannedFields=%q debugCustomLoadedFields=%q scanStep="%d" />\n'):format(tostring(courseplay.fields.automaticScan), tostring(courseplay.fields.onlyScanOwnedFields), tostring(courseplay.fields.debugScannedFields), tostring(courseplay.fields.debugCustomLoadedFields), courseplay.fields.scanStep);
-				header = header .. ('\t<courseplayWages active=%q wagePerHour="%d" />\n'):format(tostring(CpManager.wagesActive), CpManager.wagePerHour);
-				header = header .. ('\t<courseplayIngameMap active=%q showName=%q showCourse=%q />\n'):format(tostring(CpManager.ingameMapIconActive), tostring(CpManager.ingameMapIconShowName),tostring(CpManager.ingameMapIconShowCourse));
-				header = header .. ('\t<courseManagement batchWriteSize="%d" />\n'):format(self.batchWriteSize);
-				header = header .. ('\t<course2D posX="%.3f" posY="%.3f" opacity="%.2f" />\n'):format(CpManager.course2dPlotPosX, CpManager.course2dPlotPosY, CpManager.course2dPdaMapOpacity);
-
-				file:write(header);
-
-				-- folders
-				local foldersTxt = '\t<folders>\n';
-				for i,folder in pairs(g_currentMission.cp_folders) do
-					foldersTxt = foldersTxt .. ('\t\t<folder name=%q id="%d" parent="%d" />\n'):format(folder.name, folder.id, folder.parent);
-				end
-				foldersTxt = foldersTxt .. '\t</folders>\n';
-				file:write(foldersTxt);
-
-				-- courses
-				file:write('\t<courses>\n')
-				for i,course in pairs(g_currentMission.cp_courses) do
-					local numWaypoints = #course.waypoints;
-					file:write(('\t\t<course name=%q id="%d" parent="%d" numWaypoints="%d">\n'):format(course.name, course.id, course.parent, numWaypoints));
-
-					local wpBatchTxt = '';
-					for wpNum,wp in ipairs(course.waypoints) do
-						local wpContent = ('\t\t\t<waypoint%d pos="%.2f %.2f" angle="%.2f" speed="%d"'):format(wpNum, wp.cx, wp.cz, wp.angle, wp.speed or 0);
-
-						if wp.rev then
-							wpContent = wpContent .. ' rev="1"';
-						end;
-						if wp.wait then
-							wpContent = wpContent .. ' wait="1"';
-						end;
-						if wp.crossing then
-							wpContent = wpContent .. ' crossing="1"';
-						end;
-						if wp.generated then
-							wpContent = wpContent .. ' generated="true"';
-						end;
-						if wp.laneDir ~= nil and wp.laneDir ~= '' then
-							wpContent = wpContent .. (' dir=%q'):format(wp.laneDir);
-						end;
-						if wp.turn ~= nil then
-							wpContent = wpContent .. (' turn=%q'):format(tostring(wp.turn));
-						end;
-						if wp.turnStart then
-							wpContent = wpContent .. ' turnstart="1"';
-						end;
-						if wp.turnEnd then
-							wpContent = wpContent .. ' turnend="1"';
-						end;
-						if wp.ridgeMarker ~= nil and wp.ridgeMarker ~= 0 then
-							wpContent = wpContent .. (' ridgemarker="%d"'):format(wp.ridgeMarker);
-						end;
-
-						wpContent = wpContent .. ' />\n';
-
-						wpBatchTxt = wpBatchTxt .. wpContent;
-
-						-- write 4KB (or user adjusted value) at a time
-						local byteLength = wpBatchTxt:len();
-						if byteLength >= self.batchWriteSize or wpNum == numWaypoints then
-							file:write(wpBatchTxt);
-							wpBatchTxt = '';
-						end;
-					end;
-
-					file:write('\t\t</course>\n');
+		-- Check if we already have an saved slot
+		if course_id then
+			for index, v in ipairs(g_currentMission.cp_courseManager) do
+				if v.id == course_id then
+					freeSlot = index;
+					foundFreeSlot = true;
+					isOwnSaveSlot = true;
 				end;
-				file:write('\t</courses>\n</XML>');
-				file:close();
-			else
-				print("COURSEPLAY ERROR: courses could not be saved to " .. tostring(CpManager.cpXmlFilePath)); 
 			end;
 		end;
+
+		-- Check if there is an free slot we can use, in case we don't have one already.
+		if not foundFreeSlot then
+			for index, v in ipairs(g_currentMission.cp_courseManager) do
+				if v.isUsed == false then
+					freeSlot = index;
+					foundFreeSlot = true;
+				end;
+			end;
+		end;
+
+		-- If there were no free slot found, return the end position
+		if not foundFreeSlot then
+			freeSlot = #g_currentMission.cp_courseManager + 1;
+		end;
 	end;
-end;
 
-function courseplay.courses:saveAllToXml(recreateXML)
--- saves all the courses and folders
--- recreateXML (bool): 	if nil or true the xml file will be overwritten. While saving each course/folder it is saved without 
---							checking if the id already exists in the file (it should not as the file was deleted and therefore empty).  This is faster than
---						if false, the xml file will only be created if it doesn't exist. If there exists already a course/folder with the specific id in the xml, it will be overwritten
-	if g_server == nil then
-		return
+	return freeSlot, isOwnSaveSlot;
+end
+
+function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
+	-- save course to xml file
+	local deleteFile = false
+	if cpCManXml == nil then
+		cpCManXml = self:getCourseManagerXML()
+		deleteFile = true
 	end
-	
-	if recreateXML == nil then
-		recreateXML = true
-	end
-	
-	if recreateXML then
-	-- new version (better performance):
-		self:deleteSaveAll();
+
+	local cp_course = g_currentMission.cp_courses[course_id];
+
+	local freeSlot, isOwnSaveSlot = self:getFreeSaveSlot(course_id);
+	-- We can use an unused slot
+	if g_currentMission.cp_courseManager[freeSlot] then
+		g_currentMission.cp_courseManager[freeSlot].isUsed = true;
+		g_currentMission.cp_courseManager[freeSlot].id =	 cp_course.id;
+		g_currentMission.cp_courseManager[freeSlot].name =	 cp_course.name;
+		g_currentMission.cp_courseManager[freeSlot].parent = cp_course.parent;
+
+	-- We are an new slot
 	else
-	-- old version:
-		local f = self:openOrCreateXML(recreateXML)
-		saveXMLFile(f)
+		local info = {
+			index =	   freeSlot - 1;
+			isUsed =   true;
+			fileName = (CpManager.cpCourseStorageXmlFileTemplate):format(freeSlot);
+			id =	   cp_course.id;
+			name =	   cp_course.name;
+			parent =   cp_course.parent;
+		}
+		table.insert(g_currentMission.cp_courseManager, info);
+	end;
+	self:updateCourseManagerSlotsXml(freeSlot, cpCManXml);
 
-		self:saveFoldersToXml(f, recreateXML)			 -- append and don't check for id if recreateXML is true
-		self:saveCoursesToXml(f, recreateXML)
-		delete(f)
+
+	-- Dont save course if we already have a saveSlot.
+	if not isOwnSaveSlot then
+		-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; turn is a string; turn, speed may be nil!
+		-- from xml: rev=int wait=int crossing=int generated=bool, turn=string!!, turnstart=int turnend=int ridgemarker=int
+		-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2
+		local waypoints = {}
+		-- setXMLFloat seems imprecise...
+		local courseXmlFilePath = CpManager.cpCoursesFolderPath .. g_currentMission.cp_courseManager[freeSlot].fileName;
+		local courseXml = createXMLFile("courseXml", courseXmlFilePath, 'course');
+		setXMLString(courseXml, "course#name", g_currentMission.cp_courseManager[freeSlot].name);
+
+		if courseXml and courseXml ~= 0 then
+
+			local types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
+
+			for k, v in pairs(cp_course.waypoints) do
+				local waypoint = {
+					-- Required Values
+					pos =   ('%.2f %.2f'):format(v.cx, v.cz);
+					angle = ('%.2f'):format(v.angle);
+					speed = ('%d'):format(v.speed or 0);
+
+					-- Optional Values
+					rev =		   v.rev and courseplay:boolToInt(v.rev) or nil;
+					wait =		   v.wait and courseplay:boolToInt(v.wait) or nil;
+					crossing =	   v.crossing and courseplay:boolToInt(v.crossing) or nil;
+					generated =	   v.generated and v.generated or nil;
+					dir =		  (v.laneDir and v.laneDir ~= "") and v.laneDir or nil;
+					turn =		  (v.turn and v.turn ~= "") and v.turn or nil;
+					turnstart =    v.turnStart and courseplay:boolToInt(v.turnStart) or nil;
+					turnend =	   v.turnEnd and courseplay:boolToInt(v.turnEnd) or nil;
+					ridgemarker = (v.ridgeMarker and v.ridgeMarker ~= 0) and v.ridgeMarker or nil;
+				};
+
+				waypoints[k] = waypoint;
+			end
+
+			courseplay.utils.setMultipleXMLNodes(courseXml, "course", 'waypoint', waypoints, types, true);
+
+			saveXMLFile(courseXml);
+		else
+			print(("COURSEPLAY ERROR: Could not save course to file: %q"):format(courseXmlFilePath));
+			g_currentMission.cp_courseManager[freeSlot].isUsed = false;
+			self:updateCourseManagerSlotsXml(freeSlot, cpCManXml);
+		end;
+		delete(courseXml);
+	end;
+
+	saveXMLFile(cpCManXml)
+	if deleteFile then
+		delete(cpCManXml)
 	end
 end
 
-function courseplay.courses:openOrCreateXML(forceCreation)
+function courseplay.courses:saveCoursesToXml(cpCManXml)
+--	function to save or update all courses by once
+	local deleteFile = false;
+
+	if cpCManXml == nil then
+		cpCManXml = self:getCourseManagerXML();
+		deleteFile = true;
+	end;
+
+	for k,_ in pairs(g_currentMission.cp_courses) do
+		self:saveCourseToXml(k, cpCManXml)
+	end
+
+	if deleteFile then
+		delete(cpCManXml);
+	end;
+end
+
+function courseplay.courses:saveAllToXml(cpCManXml)
+	-- saves or update all the courses and folders
+	if g_server == nil then
+		return;
+	end;
+
+	local deleteFile = false;
+	if cpCManXml == nil then
+		cpCManXml = self:getCourseManagerXML();
+		deleteFile = true;
+	end;
+
+	self:saveFoldersToXml(cpCManXml);
+	self:saveCoursesToXml(cpCManXml);
+
+	if deleteFile then
+		delete(cpCManXml)
+	end
+end
+
+function courseplay.courses:removeFromManagerXml(type, type_id, cpCManXml)
+	local deleteFile = false;
+	if cpCManXml == nil then
+		cpCManXml = self:getCourseManagerXML();
+		deleteFile = true;
+	end;
+
+	local key = "";
+
+	if type == "course" and type_id and type_id > 0 and type_id <= #g_currentMission.cp_courseManager then
+		key = ("courseManager.saveSlot.slot(%d)"):format(g_currentMission.cp_courseManager[type_id].index);
+		-- Set isUsed to false, so it can be used again later.
+		setXMLBool(cpCManXml, key .. '#isUsed', false);
+		g_currentMission.cp_courseManager[type_id].isUsed = false;
+
+		-- Remove values that's not needed anymore
+		if hasXMLProperty(cpCManXml, key .. "#id") then removeXMLProperty(cpCManXml, key .. "#id"); end;
+		if hasXMLProperty(cpCManXml, key .. "#name") then removeXMLProperty(cpCManXml, key .. "#name"); end;
+		if hasXMLProperty(cpCManXml, key .. "#parent") then removeXMLProperty(cpCManXml, key .. "#parent"); end;
+		g_currentMission.cp_courseManager[type_id].id = nil;
+		g_currentMission.cp_courseManager[type_id].name = nil;
+		g_currentMission.cp_courseManager[type_id].parent = nil;
+
+		-- Clear the courseStorage file for unused data.
+		local courseXmlFilePath = CpManager.cpCoursesFolderPath .. g_currentMission.cp_courseManager[type_id].fileName;
+		if fileExists(courseXmlFilePath) then
+			local courseXml = createXMLFile("courseXml", courseXmlFilePath, 'course');
+			saveXMLFile(courseXml);
+			delete(courseXml);
+		end;
+
+	elseif type == "folder" then
+		key = "courseManager.folders.folder";
+		local id = courseplay.utils.findXMLNodeByAttr(cpCManXml, key, 'id', type_id, 'Int')
+		if id >= 0 then
+			removeXMLProperty(cpCManXml, key .. ("(%d)"):format(id));
+		end;
+	end;
+
+	saveXMLFile(cpCManXml)
+	if deleteFile then
+		delete(cpCManXml)
+	end
+end
+
+function courseplay.courses:updateCourseManagerSlotsXml(slot, cpCManXml)
+	local deleteFile = false;
+	if cpCManXml == nil then
+		cpCManXml = self:getCourseManagerXML();
+		deleteFile = true;
+	end;
+
+	if g_currentMission.cp_courseManager[slot].isUsed then
+		local types = { isUsed = 'Bool', fileName = 'String', id = 'Int', name = 'String', parent = 'Int'}
+		courseplay.utils.setMultipleXML(cpCManXml, string.format('courseManager.saveSlot.slot(%d)', g_currentMission.cp_courseManager[slot].index), g_currentMission.cp_courseManager[slot], types)
+	else
+		self.removeFromManagerXml("course", slot, cpCManXml);
+	end;
+
+	saveXMLFile(cpCManXml)
+	if deleteFile then
+		delete(cpCManXml)
+	end
+end
+
+function courseplay.courses:getCourseManagerXML()
 -- returns the file if success, nil else
-	forceCreation = forceCreation or false
-	
-	local File;
-	local filePath = CpManager.cpXmlFilePath;
+	local cpCManXml;
+	local filePath = CpManager.cpCourseManagerXmlFilePath;
 	if filePath ~= nil then
-		if fileExists(filePath) and (not forceCreation) then
-			File = loadXMLFile("courseFile", filePath)
+		if fileExists(filePath) then
+			cpCManXml = loadXMLFile("courseManagerXml", filePath)
 		else
-			File = createXMLFile("courseFile", filePath, 'XML')
+			cpCManXml = createXMLFile("courseManagerXml", filePath, 'courseManager')
 		end
 	else
 		--this is a problem...
 		-- File stays nil
-	end	
-	return File
+	end
+	return cpCManXml
 end
 
 function courseplay.courses:getMaxCourseID()
@@ -1127,98 +1094,111 @@ function courseplay.courses:reloadVehicleCourses(vehicle)
 	end -- end vehicle ~= nil
 end
 
-
-
 function courseplay.courses:loadCoursesAndFoldersFromXml()
-	print('## Courseplay: loading courses and folders from "courseplay.xml"');
+	print('## Courseplay: loading courses and folders from "courseManager.xml"');
+	local cpCManXml = self:getCourseManagerXML();
+	if cpCManXml and cpCManXml ~= 0 then
+		local save = false;
+		local courses_by_id = {};
+		local folders_by_id = {};
 
-	if CpManager.cpXmlFilePath then
-		local filePath = CpManager.cpXmlFilePath;
+		g_currentMission.cp_courseManager = nil;
+		g_currentMission.cp_courseManager = {};
 
-		if fileExists(filePath) then
-			local cpFile = loadXMLFile('courseFile', filePath);
-			g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
-			g_currentMission.cp_courses = {}
-			local courses_by_id = g_currentMission.cp_courses
-			local courses_without_id = {}
+		local index = 0;
+		while true do
+			-- current course
+			local key = ('courseManager.saveSlot.slot(%d)'):format(index);
+			if not hasXMLProperty(cpCManXml, key) then
+				break;
+			end;
 
-			-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			-- LOAD COURSES
-			local waypoints;
-			local i = 0;
-			while true do
+			local info = {
+				index =	   index;
+				isUsed =   getXMLBool(cpCManXml, key .. '#isUsed');
+				fileName = getXMLString(cpCManXml, key .. '#fileName');
+				id =	   getXMLInt(cpCManXml, key .. '#id');
+				name =	   getXMLString(cpCManXml, key .. '#name');
+				parent =   getXMLInt(cpCManXml, key .. '#parent');
+			};
+			table.insert(g_currentMission.cp_courseManager, info);
+
+			index = index + 1;
+		end;
+
+
+		g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
+		g_currentMission.cp_courses = {}
+		courses_by_id = g_currentMission.cp_courses
+		local courses_without_id = {}
+		-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		-- LOAD COURSES
+		local waypoints;
+		for slotId, slot in ipairs(g_currentMission.cp_courseManager) do
+			if slot.isUsed then
+				local courseXmlFilePath = CpManager.cpCoursesFolderPath .. slot.fileName;
+				local courseXml = loadXMLFile("courseXml", courseXmlFilePath)
+
 				-- current course
-				local courseKey = ('XML.courses.course(%d)'):format(i);
-				if not hasXMLProperty(cpFile, courseKey) then
-					break;
-				end;
+				local courseKey = "course";
 
 				-- course name
-				local courseName = getXMLString(cpFile, courseKey .. '#name');
+				local courseName = slot.name;
 				if courseName == nil then
-					courseName = ('NO_NAME%d'):format(i);
+					courseName = ('NO_NAME%d'):format(slotId);
 				end;
 				local courseNameClean = courseplay:normalizeUTF8(courseName);
 
 				-- course ID
-				local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
-				
+				local id = slot.id or 0;
+
 				-- course parent
-				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
+				local parent = slot.parent or 0;
 
 				--course waypoints
 				waypoints = {};
-
 				local wpNum = 1;
 				while true do
-					local key = courseKey .. '.waypoint' .. wpNum;
-
-					if not hasXMLProperty(cpFile, key .. '#pos') then
+					local key = 'course.waypoint' .. wpNum;
+					if not hasXMLProperty(courseXml, key .. '#pos') then
 						break;
 					end;
-					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
+					local x, z = Utils.getVectorFromString(getXMLString(courseXml, key .. '#pos'));
 					if x == nil or z == nil then
 						break;
 					end;
-
-					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
-					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
+					local angle 	  =  getXMLFloat(courseXml, key .. '#angle') or 0;
+					local speed 	  = getXMLString(courseXml, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
 					speed = tonumber(speed);
 					if ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
 						speed = ceil(speed * 3600);
 					end;
-
 					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
-					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
-					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
-					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
-
-					local generated   =   getXMLBool(cpFile, key .. '#generated');
-					local laneDir	  = getXMLString(cpFile, key .. '#dir');
-					local turn 		  = getXMLString(cpFile, key .. '#turn');
-					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
-					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
-					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
-
+					local wait 		  =    getXMLInt(courseXml, key .. '#wait');
+					local rev 		  =    getXMLInt(courseXml, key .. '#rev');
+					local crossing 	  =    getXMLInt(courseXml, key .. '#crossing');
+					local generated   =   getXMLBool(courseXml, key .. '#generated');
+					local laneDir	  = getXMLString(courseXml, key .. '#dir');
+					local turn 		  = getXMLString(courseXml, key .. '#turn');
+					local turnStart	  =    getXMLInt(courseXml, key .. '#turnstart');
+					local turnEnd 	  =    getXMLInt(courseXml, key .. '#turnend');
+					local ridgeMarker =    getXMLInt(courseXml, key .. '#ridgemarker') or 0;
 					crossing = crossing == 1 or wpNum == 1;
 					wait = wait == 1;
 					rev = rev == 1;
-
 					if turn == 'false' then
 						turn = nil;
 					end;
 					turnStart = turnStart == 1;
 					turnEnd = turnEnd == 1;
-
-					waypoints[wpNum] = { 
-						cx = x, 
-						cz = z, 
-						angle = angle, 
+					waypoints[wpNum] = {
+						cx = x,
+						cz = z,
+						angle = angle,
 						speed = speed,
-
-						rev = rev, 
-						wait = wait, 
-						crossing = crossing, 
+						rev = rev,
+						wait = wait,
+						crossing = crossing,
 						generated = generated,
 						laneDir = laneDir,
 						turn = turn,
@@ -1226,109 +1206,212 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						turnEnd = turnEnd,
 						ridgeMarker = ridgeMarker
 					};
-
 					wpNum = wpNum + 1;
 				end; -- END while true (waypoints)
-				
 				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
 				if id ~= 0 then
 					courses_by_id[id] = course;
 				else
 					table.insert(courses_without_id, course);
 				end;
-
 				waypoints = nil;
-				i = i + 1;
-			end; -- END while true (courses)
 
+				delete(courseXml);
+			end;
+		end; -- END for loop
 
-			-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			-- LOAD FOLDERS
-			local j = 0
-			local currentFolder, FolderName, id, parent, folder
-			finish_all = false
-			g_currentMission.cp_folders = nil
-			g_currentMission.cp_folders = {}
-			local folders_by_id = g_currentMission.cp_folders
-			local folders_without_id = {}
-			repeat
-				-- current folder
-				currentFolder = string.format("XML.folders.folder(%d)", j)
-				if not hasXMLProperty(cpFile, currentFolder) then
-					finish_all = true;
-					break;
-				end;
-				
-				-- folder name
-				FolderName = getXMLString(cpFile, currentFolder .. "#name")
-				if FolderName == nil then
-					FolderName = string.format('NO_NAME%d',j)
-				end
-				local folderNameClean = courseplay:normalizeUTF8(FolderName);
-				
-				-- folder id
-				id = getXMLInt(cpFile, currentFolder .. "#id")
-				if id == nil then
-					id = 0
-				end
-				
-				-- folder parent
-				parent = getXMLInt(cpFile, currentFolder .. "#parent")
-				if parent == nil then
-					parent = 0
-				end
-				
-				-- "save" current folder
-				folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
-				if id ~= 0 then
-					folders_by_id[id] = folder
-				else
-					table.insert(folders_without_id, folder)
-				end
-				j = j + 1
-			until finish_all == true
-
-			local save = false
-			if #courses_without_id > 0 then
-				-- give a new ID and save
-				local maxID = self:getMaxCourseID()
-				for i = 1, #courses_without_id do
-					maxID = maxID + 1
-					courses_without_id[i].id = maxID
-					courses_without_id[i].uid = 'c' .. maxID
-					courses_by_id[maxID] = courses_without_id[i]
-				end
-				save = true
+		if #courses_without_id > 0 then
+			-- give a new ID and save
+			local maxID = self:getMaxCourseID()
+			for i = 1, #courses_without_id do
+				maxID = maxID + 1
+				courses_without_id[i].id = maxID
+				courses_without_id[i].uid = 'c' .. maxID
+				courses_by_id[maxID] = courses_without_id[i]
 			end
-			if #folders_without_id > 0 then
-				-- give a new ID and save
-				local maxID = self:getMaxFolderID()
-				for i = #folders_without_id, 1, -1 do
-					maxID = maxID + 1
-					folders_without_id[i].id = maxID
-					folders_without_id[i].uid = 'f' .. maxID
-					folders_by_id[maxID] = table.remove(folders_without_id)
-				end
-				save = true
-			end		
-			if save then
-				-- this will overwrite the courseplay file and therefore delete the courses without ids and add them again with ids as they are now stored in g_currentMission with an id
-				self:saveAllToXml()
+			save = true
+		end
+
+
+		-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		-- LOAD FOLDERS
+		local j = 0
+		local currentFolder, FolderName, id, parent, folder
+		local finish_all = false
+		g_currentMission.cp_folders = nil
+		g_currentMission.cp_folders = {}
+		folders_by_id = g_currentMission.cp_folders
+		local folders_without_id = {}
+		repeat
+			-- current folder
+			currentFolder = string.format("courseManager.folders.folder(%d)", j)
+			if not hasXMLProperty(cpCManXml, currentFolder) then
+				finish_all = true;
+				break;
+			end;
+
+			-- folder name
+			FolderName = getXMLString(cpCManXml, currentFolder .. "#name")
+			if FolderName == nil then
+				FolderName = string.format('NO_NAME%d',j)
+			end
+			local folderNameClean = courseplay:normalizeUTF8(FolderName);
+
+			-- folder id
+			id = getXMLInt(cpCManXml, currentFolder .. "#id")
+			if id == nil then
+				id = 0
 			end
 
-			g_currentMission.cp_sorted = self:sort(courses_by_id, folders_by_id, 0, 0)
+			-- folder parent
+			parent = getXMLInt(cpCManXml, currentFolder .. "#parent")
+			if parent == nil then
+				parent = 0
+			end
 
-			delete(cpFile);
-		else
-			-- print(('\t"courseplay.xml" missing at %q'):format(tostring(CpManager.cpXmlFilePath);
-		end; --END if fileExists
+			-- "save" current folder
+			folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
+			if id ~= 0 then
+				folders_by_id[id] = folder
+			else
+				table.insert(folders_without_id, folder)
+			end
+			j = j + 1
+		until finish_all == true
+
+		if #folders_without_id > 0 then
+			-- give a new ID and save
+			local maxID = self:getMaxFolderID()
+			for i = #folders_without_id, 1, -1 do
+				maxID = maxID + 1
+				folders_without_id[i].id = maxID
+				folders_without_id[i].uid = 'f' .. maxID
+				folders_by_id[maxID] = table.remove(folders_without_id)
+			end
+			save = true
+		end
+
+		if CpManager.oldCPFileExists then
+			save, courses_by_id, folders_by_id = CpManager:importOldCPFiles(save, courses_by_id, folders_by_id);
+		end;
+
+		if save then
+			-- this will update courseManager file and therefore update the courses and folders without ids.
+			self:saveAllToXml(cpCManXml);
+		end
+		delete(cpCManXml);
+
+		g_currentMission.cp_sorted = self:sort(courses_by_id, folders_by_id, 0, 0)
 
 		courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
 
 		return g_currentMission.cp_courses;
-	else
-		print('COURSEPLAY ERROR: "courseplay.xml" file could not be found');
+	elseif CpManager.cpCourseManagerXmlFilePath then
+		print(("COURSEPLAY ERROR: unable to load or create -> %s"):format(CpManager.cpCourseManagerXmlFilePath));
 	end; --END if savegame ~= nil
 
 	return nil;
-end
+end;
+
+--UTF-8: ALLOWED CHARACTERS and NORMALIZATION
+--src: ASCII Table - Decimal (Base 10) Values @ http://www.parse-o-matic.com/parse/pskb/ASCII-Chart.htm
+--src: http://en.wikipedia.org/wiki/List_of_Unicode_characters
+function courseplay:getAllowedCharacters()
+	local allowedSpan = { from = 32, to = 591 };
+	local prohibitedUnicodes = { [34] = true, [39] = true, [94] = true, [96] = true, [215] = true, [247] = true };
+	for unicode=127,190 do
+		prohibitedUnicodes[unicode] = true;
+	end;
+
+	local result = {};
+	for unicode=allowedSpan.from,allowedSpan.to do
+		prohibitedUnicodes[unicode] = prohibitedUnicodes[unicode] or false;
+		result[unicode] = not prohibitedUnicodes[unicode] and getCanRenderUnicode(unicode);
+		if courseplay.debugChannels and courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
+			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=true)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode])));
+		end;
+	end;
+
+	return result;
+end;
+
+function courseplay:getUtf8normalization()
+	local result = {};
+
+	local normalizationSpans = {
+		a  = { {192,195}, 197, {224,227}, 229, {256,261} },
+		ae = { 196, 198, 228, 230 },
+		c  = { 199, 231, {262,269} },
+		d  = { {270,273} },
+		e  = { {200,203}, {232,235}, {274,283} },
+		g  = { {284,291} },
+		h  = { {292,295} },
+		i  = { {204,207}, {236,239}, {296,307} },
+		j  = { {308,309} },
+		k  = { {310,312} },
+		l  = { {313,322} },
+		n  = { 209, 241, {323,331} },
+		o  = { {210,213}, {242,245}, {332,337} },
+		oe = { 214, 216, 246, 248, 338, 339 },
+		r  = { {340,345} },
+		s  = { {346,353}, 383 },
+		ss = { 223 },
+		t  = { {354,359} },
+		u  = { {217,219}, {249,251}, {360,371} },
+		ue = { 220, 252 },
+		w  = { 372, 373 },
+		y  = { 221, 253, 255, {374,376} },
+		z  = { {377,382} }
+	};
+
+	--[[
+	local test = { 197, 229, 216, 248, 198, 230 };
+	for _,unicode in pairs(test) do
+		print(string.format("%q: getCanRenderUnicode(%d)=%s", unicodeToUtf8(unicode), unicode, tostring(getCanRenderUnicode(unicode))));
+	end;
+	]]
+
+	for normal,unicodes in pairs(normalizationSpans) do
+		for _,data in pairs(unicodes) do
+			if type(data) == "number" then
+				local utf8 = unicodeToUtf8(data);
+				result[utf8] = normal;
+				if false and getCanRenderUnicode(data) then
+					print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
+				end;
+			elseif type(data) == "table" then
+				for unicode=data[1],data[2] do
+					local utf8 = unicodeToUtf8(unicode);
+					result[utf8] = normal;
+					if false and getCanRenderUnicode(unicode) then
+						print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
+					end;
+				end;
+			end;
+		end;
+	end;
+
+	return result;
+end;
+
+function courseplay:normalizeUTF8(str)
+	local len = str:len();
+	local utfLen = utf8Strlen(str);
+	courseplay:debug(string.format("str %q: len=%d, utfLen=%d", str, len, utfLen), 8);
+
+	if len ~= utfLen then --special char in str
+		local result = "";
+		for i=0,utfLen-1 do
+			local char = utf8Substr(str,i,1);
+			courseplay:debug(string.format("\tchar=%q, replaceChar=%q", char, tostring(courseplay.utf8normalization[char])), 8);
+
+			local clean = courseplay.utf8normalization[char] or char:lower();
+			result = result .. clean;
+		end;
+		courseplay:debug(string.format("normalizeUTF8(%q) --> clean=%q", str, result), 8);
+		return result;
+	end;
+
+	return str:lower();
+end;
+

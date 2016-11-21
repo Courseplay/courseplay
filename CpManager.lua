@@ -16,19 +16,26 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- XML PATHS
 	if g_server ~= nil then
-		local savegameDir;
-		if g_currentMission.missionInfo.savegameDirectory then
-			savegameDir = g_currentMission.missionInfo.savegameDirectory;
-		end;
-		if not savegameDir and g_careerScreen.currentSavegame and g_careerScreen.currentSavegame.savegameIndex then -- TODO (Jakob): g_careerScreen.currentSavegame not available on DS. MP maybe as well
-			savegameDir = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.currentSavegame.savegameIndex);
-		end;
-		if not savegameDir and g_currentMission.missionInfo.savegameIndex ~= nil then
-			savegameDir = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.missionInfo.savegameIndex);
-		end;
-		self.savegameFolderPath = savegameDir;
+		-- Settings and custom fields path and files
+		self.savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.selectedIndex); -- This should work for both SP, MP and Dedicated Servers
+		self.cpSettingsXmlFilePath = self.savegameFolderPath .. '/courseplaySettings.xml';
+		self.cpCustomFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayCustomFields.xml';
+		self.cpOldCustomFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayFields.xml';
+
 		self.cpXmlFilePath = self.savegameFolderPath .. '/courseplay.xml';
-		self.cpFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayFields.xml';
+		self.oldCPFileExists = fileExists(self.cpXmlFilePath);
+
+		-- Course save path
+		self.cpCoursesFolderPath = ("%s%s/%s"):format(getUserProfileAppPath(),"CoursePlay_Courses", g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId);
+		self.cpCourseManagerXmlFilePath = self.cpCoursesFolderPath .. "/courseManager.xml";
+		self.cpCourseStorageXmlFileTemplate = "courseStorage%04d.xml";
+
+		-- we need to create CoursePlay_Courses folder before we can create any new folders inside it.
+		createFolder(("%sCoursePlay_Courses"):format(getUserProfileAppPath()));
+		createFolder(self.cpCoursesFolderPath);
+
+		-- Add / at end of path, so we dont save that in the courseManager.xml (Needs to be done after folder creation!)
+		self.cpCoursesFolderPath = self.cpCoursesFolderPath .. "/";
 	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP DEFAULT GLOBAL DATA
@@ -37,20 +44,19 @@ function CpManager:loadMap(name)
 	self.showFieldScanYesNoDialogue = false;
 	self:setupWages();
 	self:setupIngameMap();
-	courseplay.courses:setup(); -- NOTE: this call is only to set up batchWriteSize, without loading anything
 	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- LOAD SETTINGS FROM COURSEPLAY.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
+	-- LOAD SETTINGS FROM COURSEPLAYSETTINGS.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
 	if g_server ~= nil then
-		self:loadOrSetXmlSettings();
+		self:loadXmlSettings();
 	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
-	courseplay.courses:setup(true); -- NOTE: courses:setup is called a second time, now we actually load the courses and folders from the XML
+	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
 	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,7 +86,7 @@ function CpManager:loadMap(name)
 		self:setupFieldScanInfo();
 	end;
 	if g_server ~= nil then
-		courseplay.fields:loadAllCustomFields();
+		courseplay.fields:loadCustomFields(fileExists(self.cpOldCustomFieldsXmlFilePath) and not fileExists(self.cpCustomFieldsXmlFilePath));
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -355,72 +361,53 @@ function CpManager:keyEvent() end;
 
 
 -- ####################################################################################################
-
-
--- Giants - very intelligently - deletes any mod file in the savegame folder when saving. And now we get it back!
-function CpManager.backupCpFiles(self)
+function CpManager.saveXmlSettings(self)
 	if g_server == nil and g_dedicatedServerInfo == nil then return end;
-	-- print('backupCpFiles()');
+	-- Create folder in case there is none
+	createFolder(CpManager.savegameFolderPath);
 
-	if not fileExists(CpManager.cpXmlFilePath) then
-		-- ERROR: CP FILE DOESN'T EXIST
-		return;
-	end;
+	-- createXMLFile will delete settings file if it exists
+	local cpSettingsXml = createXMLFile("cpSettingsXml", CpManager.cpSettingsXmlFilePath, "CPSettings");
 
-	-- backup CP files before saveSavegame() deletes them
-	local savegameIndex = g_currentMission.missionInfo.savegameIndex;
-	CpManager.cpTempSaveFolderPath = getUserProfileAppPath() .. 'courseplayBackupSavegame' .. savegameIndex;
-	createFolder(CpManager.cpTempSaveFolderPath);
-	-- print('    create folder at ' .. CpManager.cpTempSaveFolderPath);
-	CpManager.cpFileBackupPath = CpManager.cpTempSaveFolderPath .. '/courseplay.xml';
-	copyFile(CpManager.cpXmlFilePath, CpManager.cpFileBackupPath, true);
-	-- print(('    copy cp file to backup folder: %q'):format(CpManager.cpFileBackupPath));
+	if cpSettingsXml and cpSettingsXml ~= 0 then
+		local key = '';
+		-- Save Hud Possition
+		key = 'CPSettings.courseplayHud';
+		setXMLFloat(cpSettingsXml, key .. '#posX', courseplay.hud.basePosX);
+		setXMLFloat(cpSettingsXml, key .. '#posY', courseplay.hud.basePosY);
 
-	if fileExists(CpManager.cpFieldsXmlFilePath) then
-		CpManager.cpFieldsFileBackupPath = CpManager.cpTempSaveFolderPath .. '/courseplayFields.xml';
-		copyFile(CpManager.cpFieldsXmlFilePath, CpManager.cpFieldsFileBackupPath, true);
-		-- print(('    copy cp fields file to backup folder: %q'):format(CpManager.cpFieldsFileBackupPath));
+		-- Save Fields Settings
+		key = 'CPSettings.courseplayFields';
+		setXMLBool(cpSettingsXml, key .. '#automaticScan',				courseplay.fields.automaticScan);
+		setXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields',		courseplay.fields.onlyScanOwnedFields);
+		setXMLBool(cpSettingsXml, key .. '#debugScannedFields',		courseplay.fields.debugScannedFields);
+		setXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields',	courseplay.fields.debugCustomLoadedFields);
+		setXMLInt (cpSettingsXml, key .. '#scanStep',					courseplay.fields.scanStep);
+
+		-- Save Wages Settings
+		key = 'CPSettings.courseplayWages';
+		setXMLBool(cpSettingsXml, key .. '#active', 		CpManager.wagesActive);
+		setXMLInt (cpSettingsXml, key .. '#wagePerHour',	CpManager.wagePerHour);
+
+		-- Save Ingame Map Settings
+		key = 'CPSettings.courseplayIngameMap';
+		setXMLBool(cpSettingsXml, key .. '#active', 		CpManager.ingameMapIconActive);
+		setXMLBool(cpSettingsXml, key .. '#showName', 		CpManager.ingameMapIconShowName);
+		setXMLBool(cpSettingsXml, key .. '#showCourse',	CpManager.ingameMapIconShowCourse);
+
+		-- Save 2D Course Settings
+		key = 'CPSettings.course2D';
+		setXMLFloat(cpSettingsXml, key .. '#posX', 	CpManager.course2dPlotPosX);
+		setXMLFloat(cpSettingsXml, key .. '#posY', 	CpManager.course2dPlotPosY);
+		setXMLFloat(cpSettingsXml, key .. '#opacity',	CpManager.course2dPdaMapOpacity);
+
+		saveXMLFile(cpSettingsXml);
+		delete(cpSettingsXml);
+	else
+		print(("COURSEPLAY ERROR: unable to load or create file -> %s"):format(CpManager.cpSettingsXmlFilePath));
 	end;
 end;
-g_careerScreen.saveSavegame = Utils.prependedFunction(g_careerScreen.saveSavegame, CpManager.backupCpFiles);
-
-function CpManager.getThatFuckerBack(self)
-	if g_server == nil and g_dedicatedServerInfo == nil then return end;
-	-- print('getThatFuckerBack()');
-
-	if not CpManager.cpFileBackupPath then return end;
-
-	local savegameIndex = g_currentMission.missionInfo.savegameIndex;
-	local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory or CpManager.savegameFolderPath;
-	if savegameFolderPath == nil then
-		savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), savegameIndex);
-	end;
-
-	if fileExists(savegameFolderPath .. '/careerSavegame.xml') then -- savegame isn't corrupted and has been saved correctly
-		-- print('    orig savegame folder still exists');
-
-		-- copy backed up files back to our savegame directory
-		-- print(('    copy backup cp file to orig savegame folder: %q'):format(CpManager.cpXmlFilePath));
-		copyFile(CpManager.cpFileBackupPath, CpManager.cpXmlFilePath, true);
-		CpManager.cpFileBackupPath = nil;
-		if CpManager.cpFieldsFileBackupPath then
-			-- print(('    copy backup cp fields file to orig savegame folder: %q'):format(CpManager.cpFieldsXmlFilePath));
-			copyFile(CpManager.cpFieldsFileBackupPath, CpManager.cpFieldsXmlFilePath, true);
-			CpManager.cpFieldsFileBackupPath = nil;
-		end;
-
-		--!!! deleteFolder(CpManager.cpTempSaveFolderPath);
-		-- print('    delete backup folder');
-
-	else -- corrupt savegame: display backup info message
-		print(('This savegame has been corrupted. The Courseplay file has been backed up to %q'):format(CpManager.cpTempSaveFolderPath));
-
-		local msgTitle = 'Courseplay';
-		local msgTxt = ('This savegame has been corrupted.\nYour Courseplay %s been backed up to the "courseplayBackupSavegame%d" directory.\n\nFull path: %q'):format(CpManager.cpFieldsFileBackupPath and 'files have' or 'file has', savegameIndex, CpManager.cpTempSaveFolderPath);
-		g_currentMission.inGameMessage:showMessage(msgTitle, msgTxt, 15000, false);
-	end;
-end;
-g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, CpManager.getThatFuckerBack);
+g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, CpManager.saveXmlSettings);
 
 -- adds courseplayer to global table, so that the system knows all of them
 function CpManager:addToTotalCoursePlayers(vehicle)
@@ -625,12 +612,7 @@ end;
 -- FIELD SCAN Y/N DIALOGUE
 function CpManager:fieldScanDialogueCallback(setActive)
 	courseplay.fields.automaticScan = setActive;
-	local file = loadXMLFile('courseplayFile', self.cpXmlFilePath);
-	if file and file ~= 0 then
-		setXMLBool(file, 'XML.courseplayFields#automaticScan', setActive);
-		saveXMLFile(file);
-		delete(file);
-	end;
+
 	g_gui:showGui('');
 end;
 
@@ -647,12 +629,7 @@ end;
 
 function CpManager:wagesDialogueCallback(setActive)
 	self.wagesActive = setActive;
-	local file = loadXMLFile('courseplayFile', self.cpXmlFilePath);
-	if file and file ~= 0 then
-		setXMLBool(file, 'XML.courseplayWages#active', setActive);
-		saveXMLFile(file);
-		delete(file);
-	end;
+
 	g_gui:showGui('');
 end;
 
@@ -885,189 +862,333 @@ function CpManager:setup2dCourseData(createOverlays)
 end;
 
 -- ####################################################################################################
--- LOAD SETTINGS FROM courseplay.xml / SET DEFAULT SETTINGS IF NOT EXISTING
-function CpManager:loadOrSetXmlSettings()
-	if self.savegameFolderPath and self.cpXmlFilePath then
-		createFolder(self.savegameFolderPath);
-		local cpFile;
-		if fileExists(self.cpXmlFilePath) then
-			cpFile = loadXMLFile('cpFile', self.cpXmlFilePath);
-		else
-			self:createXmlSettings();
-			return;
+-- LOAD SETTINGS FROM COURSEPLAYSETTINGS.XML / SET DEFAULT SETTINGS IF NOT EXISTING
+function CpManager:loadXmlSettings()
+	createFolder(self.savegameFolderPath);
+	local cpSettingsXml;
+	if fileExists(self.cpSettingsXmlFilePath) then
+		cpSettingsXml = loadXMLFile('cpSettingsXml', self.cpSettingsXmlFilePath);
+	else
+		print('## Courseplay: loading default settings');
+		if not self.oldCPFileExists then
+			self.showFieldScanYesNoDialogue = true;
+			self.showWagesYesNoDialogue = true;
+		end;
+		return;
+	end;
+
+	if cpSettingsXml and cpSettingsXml ~= 0 then
+		print('## Courseplay: loading settings from "courseplaySettings.xml"');
+
+		-- hud position
+		local key = 'CPSettings.courseplayHud';
+		local posX, posY = getXMLFloat(cpSettingsXml, key .. '#posX'), getXMLFloat(cpSettingsXml, key .. '#posY');
+		if posX then
+			courseplay.hud.basePosX = courseplay.hud:getFullPx(posX, 'x');
+		end;
+		if posY then
+			courseplay.hud.basePosY = courseplay.hud:getFullPx(posY, 'y');
 		end;
 
-		print('## Courseplay: loading settings from "courseplay.xml"');
+		-- fields settings
+		key = 'CPSettings.courseplayFields';
+		local fieldsAutomaticScan = getXMLBool(cpSettingsXml, key .. '#automaticScan');
+		if fieldsAutomaticScan ~= nil then
+			courseplay.fields.automaticScan = fieldsAutomaticScan;
+		elseif not self.oldCPFileExists then
+			self.showFieldScanYesNoDialogue = true;
+		end;
+		courseplay.fields.onlyScanOwnedFields	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields'),	 courseplay.fields.onlyScanOwnedFields);
+		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
+		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
+		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpSettingsXml, key .. '#scanStep'),				 courseplay.fields.scanStep);
+
+		-- wages
+		key = 'CPSettings.courseplayWages';
+		local wagesActive, wagePerHour = getXMLBool(cpSettingsXml, key .. '#active'), getXMLInt(cpSettingsXml, key .. '#wagePerHour');
+		if wagesActive ~= nil then
+			self.wagesActive = wagesActive;
+		elseif not self.oldCPFileExists then
+			self.showWagesYesNoDialogue = true;
+		end;
+		if wagePerHour ~= nil then
+			self.wagePerHour = wagePerHour;
+		elseif not self.oldCPFileExists then
+			self.showWagesYesNoDialogue = true;
+		end;
+		self.wagePer10Secs = self.wagePerHour / 360;
+
+		-- ingame map
+		key = 'CPSettings.courseplayIngameMap';
+		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#active'),		self.ingameMapIconActive);
+		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showName'),	self.ingameMapIconShowName);
+		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showCourse'),	self.ingameMapIconShowCourse);
+		self.ingameMapIconShowText = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
+
+		-- 2D course
+		key = 'CPSettings.course2D';
+		self.course2dPlotPosX		= Utils.getNoNil(getXMLFloat(cpSettingsXml, key .. '#posX'),	 self.course2dPlotPosX);
+		self.course2dPlotPosY		= Utils.getNoNil(getXMLFloat(cpSettingsXml, key .. '#posY'),	 self.course2dPlotPosY);
+		self.course2dPdaMapOpacity	= Utils.getNoNil(getXMLFloat(cpSettingsXml, key .. '#opacity'), self.course2dPdaMapOpacity);
+
+		self.course2dPlotField.x = self.course2dPlotPosX;
+		self.course2dPlotField.y = self.course2dPlotPosY;
+
+		--------------------------------------------------
+		delete(cpSettingsXml);
+	end;
+end;
+
+function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
+	if #g_currentMission.cp_courses == 0 and #g_currentMission.cp_folders == 0 then
+		local cpFile = loadXMLFile("cpFile", self.cpXmlFilePath);
+
+		-------------------------------------------------------------------------
+		-- Import Settings from old file
+		-------------------------------------------------------------------------
+		print('## Courseplay: Importing old settings from "courseplay.xml"');
 
 		-- hud position
 		local key = 'XML.courseplayHud';
 		local posX, posY = getXMLFloat(cpFile, key .. '#posX'), getXMLFloat(cpFile, key .. '#posY');
 		if posX then
 			courseplay.hud.basePosX = courseplay.hud:getFullPx(posX, 'x');
-		else
-			setXMLFloat(cpFile, key .. '#posX', courseplay.hud.basePosX);
 		end;
 		if posY then
 			courseplay.hud.basePosY = courseplay.hud:getFullPx(posY, 'y');
-		else
-			setXMLFloat(cpFile, key .. '#posY', courseplay.hud.basePosY);
 		end;
-
 
 		-- fields settings
 		key = 'XML.courseplayFields';
-		local fieldsAutomaticScan		= getXMLBool(cpFile, key .. '#automaticScan');
-		local fieldsOnlyScanOwnedFields	= getXMLBool(cpFile, key .. '#onlyScanOwnedFields');
-		local fieldsDebugScan			= getXMLBool(cpFile, key .. '#debugScannedFields');
-		local fieldsDebugCustomLoad		= getXMLBool(cpFile, key .. '#debugCustomLoadedFields');
-		local fieldsCustomScanStep		=  getXMLInt(cpFile, key .. '#scanStep');
+		local fieldsAutomaticScan = getXMLBool(cpFile, key .. '#automaticScan');
 		if fieldsAutomaticScan ~= nil then
 			courseplay.fields.automaticScan = fieldsAutomaticScan;
-		else
-			setXMLBool(cpFile, key .. '#automaticScan', courseplay.fields.automaticScan);
-			self.showFieldScanYesNoDialogue = true;
 		end;
-		if fieldsOnlyScanOwnedFields ~= nil then
-			courseplay.fields.onlyScanOwnedFields = fieldsOnlyScanOwnedFields;
-		else
-			setXMLBool(cpFile, key .. '#onlyScanOwnedFields', courseplay.fields.onlyScanOwnedFields);
-		end;
-		if fieldsDebugScan ~= nil then
-			courseplay.fields.debugScannedFields = fieldsDebugScan;
-		else
-			setXMLBool(cpFile, key .. '#debugScannedFields', courseplay.fields.debugScannedFields);
-		end;
-		if fieldsDebugCustomLoad ~= nil then
-			courseplay.fields.debugCustomLoadedFields = fieldsDebugCustomLoad;
-		else
-			setXMLBool(cpFile, key .. '#debugCustomLoadedFields', courseplay.fields.debugCustomLoadedFields);
-		end;
-		if fieldsCustomScanStep ~= nil then
-			courseplay.fields.scanStep = fieldsCustomScanStep;
-		else
-			setXMLInt(cpFile, key .. '#scanStep', courseplay.fields.scanStep);
-		end;
-
+		courseplay.fields.onlyScanOwnedFields	  = Utils.getNoNil(getXMLBool(cpFile, key .. '#onlyScanOwnedFields'),	 courseplay.fields.onlyScanOwnedFields);
+		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpFile, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
+		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpFile, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
+		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpFile, key .. '#scanStep'),				 courseplay.fields.scanStep);
 
 		-- wages
 		key = 'XML.courseplayWages';
 		local wagesActive, wagePerHour = getXMLBool(cpFile, key .. '#active'), getXMLInt(cpFile, key .. '#wagePerHour');
 		if wagesActive ~= nil then
 			self.wagesActive = wagesActive;
-		else
-			setXMLBool(cpFile, key .. '#active', self.wagesActive);
-			self.showWagesYesNoDialogue = true;
 		end;
 		if wagePerHour ~= nil then
 			self.wagePerHour = wagePerHour;
-		else
-			setXMLInt(cpFile, key .. '#wagePerHour', self.wagePerHour);
-			self.showWagesYesNoDialogue = true;
 		end;
 		self.wagePer10Secs = self.wagePerHour / 360;
 
-
 		-- ingame map
 		key = 'XML.courseplayIngameMap';
-		local active, showName, showCourse = getXMLBool(cpFile, key .. '#active'), getXMLBool(cpFile, key .. '#showName'), getXMLBool(cpFile, key .. '#showCourse');
-		if active ~= nil then
-			self.ingameMapIconActive = active;
-		else
-			setXMLBool(cpFile, key .. '#active', self.ingameMapIconActive);
-		end;
-		if showName ~= nil then
-			self.ingameMapIconShowName = showName;
-		else
-			setXMLBool(cpFile, key .. '#showName', self.ingameMapIconShowName);
-		end;
-		if showCourse ~= nil then
-			self.ingameMapIconShowCourse = showCourse;
-		else
-			setXMLBool(cpFile, key .. '#showCourse', self.ingameMapIconShowCourse);
-		end;
+		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#active'),		self.ingameMapIconActive);
+		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#showName'),	self.ingameMapIconShowName);
+		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpFile, key .. '#showCourse'),	self.ingameMapIconShowCourse);
 		self.ingameMapIconShowText = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
-
-
-		-- batch write size (used in deleteSaveAll())
-		key = 'XML.courseManagement';
-		local batchWriteSize = getXMLInt(cpFile, key .. '#batchWriteSize');
-		if batchWriteSize ~= nil then
-			courseplay.courses.batchWriteSize = batchWriteSize;
-		else
-			setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
-		end;
-
 
 		-- 2D course
 		key = 'XML.course2D';
-		local posX, posY, opacity = getXMLFloat(cpFile, key .. '#posX'), getXMLFloat(cpFile, key .. '#posY'), getXMLFloat(cpFile, key .. '#opacity');
-		if posX ~= nil then
-			self.course2dPlotPosX = posX;
-			self.course2dPlotField.x = self.course2dPlotPosX;
-		else
-			setXMLFloat(cpFile, key .. '#posX', self.course2dPlotPosX);
-		end;
-		if posY ~= nil then
-			self.course2dPlotPosY = posY;
-			self.course2dPlotField.y = self.course2dPlotPosY;
-		else
-			setXMLFloat(cpFile, key .. '#posY', self.course2dPlotPosY);
-		end;
-		if opacity ~= nil then
-			self.course2dPdaMapOpacity = opacity;
-		else
-			setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
-		end;
+		self.course2dPlotPosX		= Utils.getNoNil(getXMLFloat(cpFile, key .. '#posX'),	 self.course2dPlotPosX);
+		self.course2dPlotPosY		= Utils.getNoNil(getXMLFloat(cpFile, key .. '#posY'),	 self.course2dPlotPosY);
+		self.course2dPdaMapOpacity	= Utils.getNoNil(getXMLFloat(cpFile, key .. '#opacity'), self.course2dPdaMapOpacity);
 
-		--------------------------------------------------
-		saveXMLFile(cpFile);
+		self.course2dPlotField.x = self.course2dPlotPosX;
+		self.course2dPlotField.y = self.course2dPlotPosY;
+
+		-- Save Imported settings.
+		self:saveXmlSettings();
+
+		-------------------------------------------------------------------------
+		-- Import Courses and Folders from old file
+		-------------------------------------------------------------------------
+		print('## Courseplay: Importing old courses from "courseplay.xml"');
+
+		g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
+		g_currentMission.cp_courses = {}
+		courses_by_id = g_currentMission.cp_courses
+		local courses_without_id = {}
+
+		-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		-- LOAD COURSES
+		local waypoints;
+		local i = 0;
+		while true do
+			-- current course
+			local courseKey = ('XML.courses.course(%d)'):format(i);
+			if not hasXMLProperty(cpFile, courseKey) then
+				break;
+			end;
+
+			-- course name
+			local courseName = getXMLString(cpFile, courseKey .. '#name');
+			if courseName == nil then
+				courseName = ('NO_NAME%d'):format(i);
+			end;
+			local courseNameClean = courseplay:normalizeUTF8(courseName);
+
+			-- course ID
+			local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
+
+			-- course parent
+			local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
+
+			--course waypoints
+			waypoints = {};
+
+			local wpNum = 1;
+			while true do
+				local key = courseKey .. '.waypoint' .. wpNum;
+
+				if not hasXMLProperty(cpFile, key .. '#pos') then
+					break;
+				end;
+				local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
+				if x == nil or z == nil then
+					break;
+				end;
+
+				local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
+				local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
+				speed = tonumber(speed);
+				if math.ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
+					speed = math.ceil(speed * 3600);
+				end;
+
+				-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
+				local wait 		  =    getXMLInt(cpFile, key .. '#wait');
+				local rev 		  =    getXMLInt(cpFile, key .. '#rev');
+				local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
+
+				local generated   =   getXMLBool(cpFile, key .. '#generated');
+				local laneDir	  = getXMLString(cpFile, key .. '#dir');
+				local turn 		  = getXMLString(cpFile, key .. '#turn');
+				local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
+				local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
+				local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
+
+				crossing = crossing == 1 or wpNum == 1;
+				wait = wait == 1;
+				rev = rev == 1;
+
+				if turn == 'false' then
+					turn = nil;
+				end;
+				turnStart = turnStart == 1;
+				turnEnd = turnEnd == 1;
+
+				waypoints[wpNum] = {
+					cx = x,
+					cz = z,
+					angle = angle,
+					speed = speed,
+
+					rev = rev,
+					wait = wait,
+					crossing = crossing,
+					generated = generated,
+					laneDir = laneDir,
+					turn = turn,
+					turnStart = turnStart,
+					turnEnd = turnEnd,
+					ridgeMarker = ridgeMarker
+				};
+
+				wpNum = wpNum + 1;
+			end; -- END while true (waypoints)
+
+			local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
+			if id ~= 0 then
+				courses_by_id[id] = course;
+			else
+				table.insert(courses_without_id, course);
+			end;
+
+			waypoints = nil;
+			i = i + 1;
+		end; -- END while true (courses)
+
+
+		-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		-- LOAD FOLDERS
+		print('## Courseplay: Importing old folders from "courseplay.xml"');
+		local j = 0
+		local currentFolder, FolderName, id, parent, folder
+		local finish_all = false
+		g_currentMission.cp_folders = nil
+		g_currentMission.cp_folders = {}
+		folders_by_id = g_currentMission.cp_folders
+		local folders_without_id = {}
+		repeat
+			-- current folder
+			currentFolder = string.format("XML.folders.folder(%d)", j)
+			if not hasXMLProperty(cpFile, currentFolder) then
+				finish_all = true;
+				break;
+			end;
+
+			-- folder name
+			FolderName = getXMLString(cpFile, currentFolder .. "#name")
+			if FolderName == nil then
+				FolderName = string.format('NO_NAME%d',j)
+			end
+			local folderNameClean = courseplay:normalizeUTF8(FolderName);
+
+			-- folder id
+			id = getXMLInt(cpFile, currentFolder .. "#id")
+			if id == nil then
+				id = 0
+			end
+
+			-- folder parent
+			parent = getXMLInt(cpFile, currentFolder .. "#parent")
+			if parent == nil then
+				parent = 0
+			end
+
+			-- "save" current folder
+			folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
+			if id ~= 0 then
+				folders_by_id[id] = folder
+			else
+				table.insert(folders_without_id, folder)
+			end
+			j = j + 1
+		until finish_all == true
+
+		if #courses_without_id > 0 then
+			-- give a new ID and save
+			local maxID = self:getMaxCourseID()
+			for i = 1, #courses_without_id do
+				maxID = maxID + 1
+				courses_without_id[i].id = maxID
+				courses_without_id[i].uid = 'c' .. maxID
+				courses_by_id[maxID] = courses_without_id[i]
+			end
+		end
+		if #folders_without_id > 0 then
+			-- give a new ID and save
+			local maxID = self:getMaxFolderID()
+			for i = #folders_without_id, 1, -1 do
+				maxID = maxID + 1
+				folders_without_id[i].id = maxID
+				folders_without_id[i].uid = 'f' .. maxID
+				folders_by_id[maxID] = table.remove(folders_without_id)
+			end
+		end
+
 		delete(cpFile);
+		-- Report back that we want to save all courses and folders.
+		save = true;
 	end;
-end;
 
--- CREATE courseplay.xml AND SET DEFAULT SETTINGS
-function CpManager:createXmlSettings()
-	print('## Courseplay: creating "courseplay.xml" with default settings');
+	-------------------------------------------------------------------------
+	-- Delete content of old file
+	-------------------------------------------------------------------------
+	local cpOldFile = createXMLFile("cpOldFile", self.cpXmlFilePath, 'XML');
+	saveXMLFile(cpOldFile);
+	delete(cpOldFile);
 
-	local cpFile = createXMLFile('cpFile', self.cpXmlFilePath, 'XML');
 
-	-- hud position
-	local key = 'XML.courseplayHud';
-	setXMLFloat(cpFile, key .. '#posX', courseplay.hud.basePosX);
-	setXMLFloat(cpFile, key .. '#posY', courseplay.hud.basePosY);
-
-	-- fields settings
-	self.showFieldScanYesNoDialogue = true;
-	key = 'XML.courseplayFields';
-	setXMLBool(cpFile, key .. '#automaticScan',			  courseplay.fields.automaticScan);
-	setXMLBool(cpFile, key .. '#onlyScanOwnedFields',	  courseplay.fields.onlyScanOwnedFields);
-	setXMLBool(cpFile, key .. '#debugScannedFields',	  courseplay.fields.debugScannedFields);
-	setXMLBool(cpFile, key .. '#debugCustomLoadedFields', courseplay.fields.debugCustomLoadedFields);
-	 setXMLInt(cpFile, key .. '#scanStep',				  courseplay.fields.scanStep);
-
-	-- wages
-	self.showWagesYesNoDialogue = true;
-	key = 'XML.courseplayWages';
-	setXMLBool(cpFile, key .. '#active',	  self.wagesActive);
-	 setXMLInt(cpFile, key .. '#wagePerHour', self.wagePerHour);
-
-	-- ingame map
-	key = 'XML.courseplayIngameMap';
-	setXMLBool(cpFile, key .. '#active',	 self.ingameMapIconActive);
-	setXMLBool(cpFile, key .. '#showName',	 self.ingameMapIconShowName);
-	setXMLBool(cpFile, key .. '#showCourse', self.ingameMapIconShowCourse);
-
-	-- batch write size (used in deleteSaveAll())
-	key = 'XML.courseManagement';
-	setXMLInt(cpFile, key .. '#batchWriteSize', courseplay.courses.batchWriteSize);
-
-	-- 2D course
-	key = 'XML.course2D';
-	setXMLFloat(cpFile, key .. '#posX', self.course2dPlotPosX);
-	setXMLFloat(cpFile, key .. '#posY', self.course2dPlotPosY);
-	setXMLFloat(cpFile, key .. '#opacity', self.course2dPdaMapOpacity);
-
-	--------------------------------------------------
-	saveXMLFile(cpFile);
-	delete(cpFile);
+	return save, courses_by_id, folders_by_id;
 end;

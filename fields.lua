@@ -448,111 +448,115 @@ end;
 FieldDefinition.setFieldOwnedByPlayer = Utils.prependedFunction(FieldDefinition.setFieldOwnedByPlayer, courseplay.fields.buyField);
 
 --XML SAVING
-function courseplay.fields:openOrCreateXML(forceCreation)
-	--self = courseplay.fields
-	-- returns the file if success, nil else
-	forceCreation = forceCreation or false;
+function courseplay.fields.saveCustomFields(self)
+	local customFields = courseplay.fields;
 
-	local xmlFile;
-	if CpManager.cpFieldsXmlFilePath ~= nil then
-		local filePath = CpManager.cpFieldsXmlFilePath;
-		if fileExists(filePath) and (not forceCreation) then
-			xmlFile = loadXMLFile('fieldsFile', filePath);
-		else
-			xmlFile = createXMLFile('fieldsFile', filePath, 'XML');
-		end;
-	else
-		--this is a problem... xmlFile stays nil
-	end;
-	return xmlFile;
-end;
-
-function courseplay.fields:saveAllCustomFields()
-	--self = courseplay.fields
-	-- saves fields to xml-file
 	-- opening the file with io.open will delete its content...
-	if g_server ~= nil then
-		if CpManager.cpFieldsXmlFilePath ~= nil and self.numAvailableFields > 0 then
-			local file = io.open(CpManager.cpFieldsXmlFilePath, 'w');
-			if file ~= nil then
-				file:write('<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n<XML>\n');
-
-				file:write('\t<fields>\n')
-				for i,fieldData in pairs(self.fieldData) do
-					if fieldData.isCustom then
-						file:write(string.format('\t\t<field fieldNum="%d" numPoints="%d">\n', fieldData.fieldNum, fieldData.numPoints));
-						for j,point in ipairs(fieldData.points) do
-							file:write(string.format('\t\t\t<point%d pos="%.2f %.2f %.2f" />\n', j, point.cx, point.cy, point.cz));
-						end;
-						file:write('\t\t</field>\n');
+	if g_server ~= nil and CpManager.cpCustomFieldsXmlFilePath ~= nil and customFields.numAvailableFields > 0 then
+		local cpCFXml = createXMLFile("cpCustomFieldsXml", CpManager.cpCustomFieldsXmlFilePath, "CPCustomFields");
+		if cpCFXml and cpCFXml ~= 0 then
+			local fieldIndex = 0;
+			for _,fieldData in pairs(customFields.fieldData) do
+				if fieldData.isCustom then
+					local key = ("CPCustomFields.field(%d)"):format(fieldIndex);
+					setXMLInt(cpCFXml, key .. '#fieldNum',	fieldData.fieldNum);
+					setXMLInt(cpCFXml, key .. '#numPoints',	fieldData.numPoints);
+					for i,point in ipairs(fieldData.points) do
+						setXMLString(cpCFXml, key .. (".point%d#pos"):format(i), ("%.2f %.2f %.2f"):format(point.cx, point.cy, point.cz))
 					end;
+
+					fieldIndex = fieldIndex + 1;
 				end;
-				file:write('\t</fields>\n</XML>');
-				file:close();
-			else
-				print("Error: Courseplay's custom fields could not be saved to " .. CpManager.cpFieldsXmlFilePath);
 			end;
+
+			saveXMLFile(cpCFXml);
+			delete(cpCFXml);
+		else
+			print("Error: Courseplay's custom fields could not be saved to " .. CpManager.cpCustomFieldsXmlFilePath);
 		end;
 	end;
 end;
+g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, courseplay.fields.saveCustomFields);
 
 --XML LOADING
-function courseplay.fields:loadAllCustomFields()
+function courseplay.fields:loadCustomFields(importFromOldFile)
 	--self = courseplay.fields
-	if g_server ~= nil then
-		if CpManager.cpFieldsXmlFilePath ~= nil then
-			if fileExists(CpManager.cpFieldsXmlFilePath) then
-				local xmlFile = loadXMLFile("fieldsFile", CpManager.cpFieldsXmlFilePath);
-				local i = 0;
-				while true do
-					local key = string.format('XML.fields.field(%d)', i);
-					if not hasXMLProperty(xmlFile, key) then
-						break;
-					end;
+	if (CpManager.cpCustomFieldsXmlFilePath ~= nil and fileExists(CpManager.cpCustomFieldsXmlFilePath)) or importFromOldFile then
+		local cpCFXml;
+		if importFromOldFile then
+			print('## Courseplay: Importing old custom fields from "courseplayFields.xml"');
+			cpCFXml = loadXMLFile("cpOldCustomFieldsXml", CpManager.cpOldCustomFieldsXmlFilePath);
+		else
+			cpCFXml = loadXMLFile("cpCustomFieldsXml", CpManager.cpCustomFieldsXmlFilePath);
+		end;
 
-					local fieldNum = getXMLInt(xmlFile, key .. '#fieldNum');
-					local numPoints = getXMLInt(xmlFile, key .. '#numPoints');
-
-					if fieldNum and numPoints and numPoints > 0 then
-						local fieldData = {
-							fieldNum = fieldNum;
-							points = {};
-							areaSqm = 0;
-							areaHa = 0;
-							seedUsage = {};
-							seedPrice = {};
-							numPoints = numPoints;
-							name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), fieldNum, courseplay:loc('COURSEPLAY_USER'));
-							isCustom = true;
-						};
-						for j=1,numPoints do
-							local pointKey = key .. '.point' .. j;
-							if hasXMLProperty(xmlFile, pointKey) then
-								local x,y,z = Utils.getVectorFromString(getXMLString(xmlFile, pointKey .. '#pos'));
-								if x and y and z then
-									table.insert(fieldData.points, { cx = x, cy = y, cz = z });
-								end;
-							end;
-						end;
-						local area, _, dimensions = self:getPolygonData(fieldData.points, nil, nil, true);
-						fieldData.areaSqm = area;
-						fieldData.areaHa = area / 10000;
-						fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('unit_areaShort'));
-						fieldData.dimensions = dimensions;
-
-
-						self.fieldData[fieldNum] = fieldData;
-						if self.debugCustomLoadedFields then
-							self:dbg(tableShow(fieldData, 'fieldData[' .. fieldNum .. ']'), 'customLoad');
-						end;
-
-						self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
-
-						table.insert(self.seedUsageCalculator.fieldsWithoutSeedData, fieldNum);
-					end;
-					i = i + 1;
-				end;
+		local i = 0;
+		while true do
+			local key;
+			if importFromOldFile then
+				key = string.format('XML.fields.field(%d)', i);
+			else
+				key = string.format('CPCustomFields.field(%d)', i);
 			end;
+
+			if not hasXMLProperty(cpCFXml, key) then
+				break;
+			end;
+
+			local fieldNum = getXMLInt(cpCFXml, key .. '#fieldNum');
+			local numPoints = getXMLInt(cpCFXml, key .. '#numPoints');
+
+			if fieldNum and numPoints and numPoints > 0 then
+				local fieldData = {
+					fieldNum = fieldNum;
+					points = {};
+					areaSqm = 0;
+					areaHa = 0;
+					seedUsage = {};
+					seedPrice = {};
+					numPoints = numPoints;
+					name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), fieldNum, courseplay:loc('COURSEPLAY_USER'));
+					isCustom = true;
+				};
+				for j=1,numPoints do
+					local pointKey = key .. '.point' .. j;
+					if hasXMLProperty(cpCFXml, pointKey) then
+						local x,y,z = Utils.getVectorFromString(getXMLString(cpCFXml, pointKey .. '#pos'));
+						if x and y and z then
+							table.insert(fieldData.points, { cx = x, cy = y, cz = z });
+						end;
+					end;
+				end;
+				local area, _, dimensions = self:getPolygonData(fieldData.points, nil, nil, true);
+				fieldData.areaSqm = area;
+				fieldData.areaHa = area / 10000;
+				fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('unit_areaShort'));
+				fieldData.dimensions = dimensions;
+
+
+				self.fieldData[fieldNum] = fieldData;
+				if self.debugCustomLoadedFields then
+					self:dbg(tableShow(fieldData, 'fieldData[' .. fieldNum .. ']'), 'customLoad');
+				end;
+
+				self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
+
+				table.insert(self.seedUsageCalculator.fieldsWithoutSeedData, fieldNum);
+			end;
+			i = i + 1;
+		end;
+
+		delete(cpCFXml);
+
+		if importFromOldFile then
+			self:saveCustomFields(); -- this will prevent importing again if the game was not saved.
+
+			-------------------------------------------------------------------------
+			-- Delete content of old file
+			-------------------------------------------------------------------------
+			local cpOldCFFile = createXMLFile("cpOldCFFile", CpManager.cpOldCustomFieldsXmlFilePath, 'XML');
+			saveXMLFile(cpOldCFFile);
+			delete(cpOldCFFile);
 		end;
 	end;
 end;

@@ -1294,9 +1294,6 @@ function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 
 	--print(string.format("\tfieldNum=%d, name=%s, #points=%d", courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].fieldNum, courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].name, #courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].points));
 
-	--SAVE TO XML
-	courseplay.fields:saveAllCustomFields();
-
 	--RESET
 	courseplay:setCustomFieldEdgePathNumber(vehicle, nil, 0);
 	courseplay:clearCustomFieldEdge(vehicle);

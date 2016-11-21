@@ -631,122 +631,6 @@ function courseplay:getDriveDirection(node, x, y, z)
 	return lx,ly,lz
 end
 
--- TODO (Jakob) (FS15): move all UTF/normalization stuff to courseManagement.lua
---UTF-8: ALLOWED CHARACTERS and NORMALIZATION
---src: ASCII Table - Decimal (Base 10) Values @ http://www.parse-o-matic.com/parse/pskb/ASCII-Chart.htm
---src: http://en.wikipedia.org/wiki/List_of_Unicode_characters
-function courseplay:getAllowedCharacters()
-	local allowedSpan = { from = 32, to = 591 };
-	local prohibitedUnicodes = { [34] = true, [39] = true, [94] = true, [96] = true, [215] = true, [247] = true };
-	for unicode=127,190 do
-		prohibitedUnicodes[unicode] = true;
-	end;
-
-	local result = {};
-	for unicode=allowedSpan.from,allowedSpan.to do
-		prohibitedUnicodes[unicode] = prohibitedUnicodes[unicode] or false;
-		result[unicode] = not prohibitedUnicodes[unicode] and getCanRenderUnicode(unicode);
-		if courseplay.debugChannels and courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
-			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=true)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode])));
-		end;
-	end;
-
-	return result;
-end;
-
-function courseplay:getUtf8normalization()
-	local result = {};
-
-	local normalizationSpans = {
-		a  = { {192,195}, 197, {224,227}, 229, {256,261} },
-		ae = { 196, 198, 228, 230 },
-		c  = { 199, 231, {262,269} },
-		d  = { {270,273} },
-		e  = { {200,203}, {232,235}, {274,283} },
-		g  = { {284,291} },
-		h  = { {292,295} },
-		i  = { {204,207}, {236,239}, {296,307} },
-		j  = { {308,309} },
-		k  = { {310,312} },
-		l  = { {313,322} },
-		n  = { 209, 241, {323,331} },
-		o  = { {210,213}, {242,245}, {332,337} },
-		oe = { 214, 216, 246, 248, 338, 339 },
-		r  = { {340,345} },
-		s  = { {346,353}, 383 },
-		ss = { 223 },
-		t  = { {354,359} },
-		u  = { {217,219}, {249,251}, {360,371} },
-		ue = { 220, 252 },
-		w  = { 372, 373 },
-		y  = { 221, 253, 255, {374,376} },
-		z  = { {377,382} }
-	};
-
-	--[[
-	local test = { 197, 229, 216, 248, 198, 230 };
-	for _,unicode in pairs(test) do
-		print(string.format("%q: getCanRenderUnicode(%d)=%s", unicodeToUtf8(unicode), unicode, tostring(getCanRenderUnicode(unicode))));
-	end;
-	]]
-
-	for normal,unicodes in pairs(normalizationSpans) do
-		for _,data in pairs(unicodes) do
-			if type(data) == "number" then
-				local utf8 = unicodeToUtf8(data);
-				result[utf8] = normal;
-				if false and getCanRenderUnicode(data) then
-					print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
-				end;
-			elseif type(data) == "table" then
-				for unicode=data[1],data[2] do
-					local utf8 = unicodeToUtf8(unicode);
-					result[utf8] = normal;
-					if false and getCanRenderUnicode(unicode) then
-						print(string.format("courseplay.utf8normalization[%q] = %q", utf8, normal));
-					end;
-				end;
-			end;
-		end;
-	end;
-
-	return result;
-end;
-
-
-function courseplay:normalizeUTF8_BAK(str)
-	local normal = str;
-	if str:len() ~= utf8Strlen(str) then --special char in str
-		courseplay:debug(string.format("%q: has special char, normal = %q", str, str:gsub("(..?)", courseplay.utf8normalization)), 8);
-		normal = str:gsub("(..?)", courseplay.utf8normalization);
-	end;
-
-	courseplay:debug(string.format("normalizeUTF8(%q): %q", str, normal), 8);
-	return normal:lower();
-end;
-
-
-function courseplay:normalizeUTF8(str)
-	local len = str:len();
-	local utfLen = utf8Strlen(str);
-	courseplay:debug(string.format("str %q: len=%d, utfLen=%d", str, len, utfLen), 8);
-
-	if len ~= utfLen then --special char in str
-		local result = "";
-		for i=0,utfLen-1 do
-			local char = utf8Substr(str,i,1);
-			courseplay:debug(string.format("\tchar=%q, replaceChar=%q", char, tostring(courseplay.utf8normalization[char])), 8);
-
-			local clean = courseplay.utf8normalization[char] or char:lower();
-			result = result .. clean;
-		end;
-		courseplay:debug(string.format("normalizeUTF8(%q) --> clean=%q", str, result), 8);
-		return result;
-	end;
-
-	return str:lower();
-end;
-
 function courseplay:checkAndPrintChange(vehicle, variable, VariableNameString)
 	if vehicle.cp.checkTable == nil then
 		vehicle.cp.checkTable = {}
@@ -1090,15 +974,6 @@ function courseplay.utils:move2dCoursePlotField(vehicle, mouseX, mouseY)
 
 	-- reset data
 	CpManager.course2dDragDropMouseDown = nil;
-
-	-- save new position data in xml
-	if g_server ~= nil then
-		local cpFile = loadXMLFile('cpFile', CpManager.cpXmlFilePath);
-		setXMLFloat(cpFile, 'XML.course2D#posX', CpManager.course2dPlotPosX);
-		setXMLFloat(cpFile, 'XML.course2D#posY', CpManager.course2dPlotPosY);
-		saveXMLFile(cpFile);
-		delete(cpFile);
-	end;
 end;
 
 function courseplay:setupCourse2dData(vehicle)
@@ -1142,7 +1017,7 @@ function courseplay:setupCourse2dData(vehicle)
 	local epsilon = 2; -- orig: 0.001, also ok: 0.5
 	local reducedWaypoints = courseplay.utils:removeCollinearPoints(vehicle.Waypoints, epsilon);
 	local numReducedPoints = #reducedWaypoints;
-	-- print(('epsilon=%d -> #Waypoints=%d, #reducedWaypoints=%d'):format(epsilon, vehicle.cp.numWaypoints, numReducedPoints)); -- TODO delete print
+
 	local np, startX, startY, endX, endY, dx, dz, dx2D, dy2D, width, rotation, r, g, b;
 	for i,wp in ipairs(reducedWaypoints) do
 		np = i < numReducedPoints and reducedWaypoints[i + 1] or reducedWaypoints[1];
