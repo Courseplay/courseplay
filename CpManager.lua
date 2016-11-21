@@ -366,7 +366,7 @@ function CpManager.saveXmlSettings(self)
 	-- Create folder in case there is none
 	createFolder(CpManager.savegameFolderPath);
 
-	-- createXMLFile will delete settings file if it exists
+	-- createXMLFile will clear settings file if it exists
 	local cpSettingsXml = createXMLFile("cpSettingsXml", CpManager.cpSettingsXmlFilePath, "CPSettings");
 
 	if cpSettingsXml and cpSettingsXml ~= 0 then
