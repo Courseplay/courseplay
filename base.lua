@@ -522,6 +522,29 @@ function courseplay:draw()
 			renderText(0.2,0.135,0.02,"combineIsTurning: "..tostring(self.cp.mode2DebugTurning ))
 		end	
 	end
+	
+	
+	if courseplay.debugChannels[10] and self.cp.BunkerSiloMap ~= nil and self.cp.actualTarget ~= nil then
+		local fillUnit = self.cp.BunkerSiloMap[self.cp.actualTarget.line][self.cp.actualTarget.column]
+		--print(string.format("fillUnit %s; self.cp.actualTarget.line %s; self.cp.actualTarget.column %s",tostring(fillUnit),tostring(self.cp.actualTarget.line),tostring(self.cp.actualTarget.column)))
+		local sx,sz = fillUnit.sx,fillUnit.sz
+		local wx,wz = fillUnit.wx,fillUnit.wz
+		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
+		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz)+0.5;
+		drawDebugLine(sx, y, sz, 1, 0, 0, wx, y, wz, 1, 0, 0);
+		drawDebugLine(wx, y, wz, 1, 0, 0, hx, y, hz, 1, 0, 0);
+		drawDebugLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz, 1, 0, 0);
+		drawDebugPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1, 1);
+		renderText(0.2,0.225,0.02,"unit.fillLevel: "..tostring(fillUnit.fillLevel))
+		if self.cp.mode9SavedLastFillLevel ~= nil then
+			renderText(0.2,0.195,0.02,"SavedLastFillLevel: "..tostring(self.cp.mode9SavedLastFillLevel))
+			renderText(0.2,0.165,0.02,"triesTheSameFillUnit: "..tostring(self.cp.mode9triesTheSameFillUnit))
+		end
+		
+	end
+	
+	
+	
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)

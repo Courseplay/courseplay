@@ -19,7 +19,7 @@ handles "mode9": Fill and empty shovel
 NOTE: rotation: movingTool.curRot[1] (only x-axis) / translation: movingTool.curTrans[3] (only z-axis)
 ]]
 
-function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
+function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt)
 	--state 1: goto BunkerSilo
 	--state 2: get ready to load / loading
 	--state 3: transport to BGA
@@ -33,7 +33,6 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 		return false;
 	end;
 
-
 	--get moving tools (only once after starting)
 	if vehicle.cp.movingToolsPrimary == nil then
 		vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = courseplay:getMovingTools(vehicle);
@@ -45,6 +44,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 		courseplay:setIsLoaded(vehicle, false);
 	end;
 
+	
 	-- STATE 1: DRIVE TO BUNKER SILO (1st waiting point)
 	if vehicle.cp.shovelState == 1 then
 		if vehicle.cp.waypointIndex + 1 > vehicle.cp.shovelFillStartPoint then
@@ -55,25 +55,75 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 				vehicle.cp.shovel:setFillLevel(vehicle.cp.shovel.cp.capacity * 0.97, vehicle.cp.shovel.cp.fillType);
 			end;
 			if vehicle.cp.mode9TargetSilo == nil then
-				--print(string.format("vehicle.cp.mode9TargetSilo = nil call getTargetBunkerSilo"))
+				courseplay:debug(('%s: vehicle.cp.mode9TargetSilo = nil call getTargetBunkerSilo'):format(nameNum(vehicle)), 10);
 				vehicle.cp.mode9TargetSilo = courseplay:getMode9TargetBunkerSilo(vehicle)
 			end
 			if vehicle.cp.mode9TargetSilo then
-				--[[if vehicle.cp.BunkerSiloMap == nil then
-					print(string.format("vehicle.cp.mode9TargetSilo = %s call createMap",tostring(vehicle.cp.mode9TargetSilo.saveId)))
+				if vehicle.cp.BunkerSiloMap == nil then
+				courseplay:debug(('%s: vehicle.cp.mode9TargetSilo = %s call createMap'):format(nameNum(vehicle),tostring(vehicle.cp.mode9TargetSilo.saveId)), 10);
 					vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, vehicle.cp.mode9TargetSilo)
+					if vehicle.cp.BunkerSiloMap ~= nil then
+						local stopSearching = false
+						local mostFillLevelAtLine = 0
+						local mostFillLevelIndex = 2
+						for lineIndex, line in pairs(vehicle.cp.BunkerSiloMap) do
+							if stopSearching then
+								break
+							end
+							mostFillLevelAtLine = 0
+							for column, fillUnit in pairs(line) do
+								if 	mostFillLevelAtLine < fillUnit.fillLevel then
+									mostFillLevelAtLine = fillUnit.fillLevel
+									mostFillLevelIndex = column
+								end
+								if column == #line and mostFillLevelAtLine > 0 then
+									fillUnit = line[mostFillLevelIndex]
+									if vehicle.cp.mode9SavedLastFillLevel == courseplay:round(fillUnit.fillLevel,1) then
+										courseplay:debug(('%s triesTheSameFillUnit fillLevel: %s'):format(nameNum(vehicle),tostring(vehicle.cp.mode9SavedLastFillLevel)),10)
+										vehicle.cp.mode9triesTheSameFillUnit = true
+									end
+									vehicle.cp.actualTarget = {
+														line = lineIndex;
+														column = mostFillLevelIndex;
+																}
+									vehicle.cp.mode9SavedLastFillLevel = courseplay:round(fillUnit.fillLevel,1)
+									
+									stopSearching = true
+									break
+								end
+							end
+						end
+					end
+				else
+					
+					
+				
 				end
-				 --find a way to decide, which side to go next and set
-				vehicle.cp.totalOffsetX = 2.5 
-				vehicle.cp.toolOffsetZ = 0
-				]]
 			end
 		end;
 
 
 	-- STATE 2: PREPARE LOADING
 	elseif vehicle.cp.shovelState == 2 then
-
+		if vehicle.cp.mode9TargetSilo and vehicle.cp.BunkerSiloMap and vehicle.cp.actualTarget then
+			local targetUnit = vehicle.cp.BunkerSiloMap[vehicle.cp.actualTarget.line][vehicle.cp.actualTarget.column]
+			local cx , cz = targetUnit.cx, targetUnit.cz
+			local nx,ny,nz = getWorldTranslation(vehicle.cp.shovel.shovelTipReferenceNode)
+			local _,_,backUpZ = worldToLocal(vehicle.cp.DirectionNode, cx , targetUnit.y , cz); -- its the savety switch in case I miss the point 
+			local distanceToTarget =  courseplay:distance(nx, nz, cx, cz) --distance from shovel to target
+			if distanceToTarget < 1 or backUpZ < 2 then
+				vehicle.cp.actualTarget.line = math.min(vehicle.cp.actualTarget.line + 1,#vehicle.cp.BunkerSiloMap)
+				vehicle.cp.mode9triesTheSameFillUnit = false
+			end
+			if vehicle.cp.mode9triesTheSameFillUnit and distanceToTarget < 3 then
+				local takenFromGround = TipUtil.removeFromGroundByArea(targetUnit.sx, targetUnit.sz, targetUnit.wx, targetUnit.wz, targetUnit.hx, targetUnit.hz, targetUnit.fillType)
+				if takenFromGround > 0 then
+					vehicle.cp.shovel:setUnitFillLevel(1, takenFromGround + vehicle.cp.shovel:getFillLevel(targetUnit.fillType), 0, true)
+					courseplay:debug(('%s couldnt get the material -> remove %s fromArea'):format(nameNum(vehicle),tostring(takenFromGround)),10)
+				end
+			end
+			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, cx, targetUnit.y, cz);
+		end
 		if vehicle.cp.shovelStopAndGo then
 			if vehicle.cp.shovelLastFillLevel == nil then
 				vehicle.cp.shovelLastFillLevel = fillLevelPct;
@@ -108,6 +158,13 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 
 	-- STATE 3: TRANSPORT TO BGA
 	elseif vehicle.cp.shovelState == 3 then
+		local p = vehicle.cp.shovelFillStartPoint
+		local _,y,_ = getWorldTranslation(vehicle.cp.DirectionNode);
+		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx ,y, vehicle.Waypoints[p].cz); 
+		if vehicle.cp.BunkerSiloMap ~= nil and vehicle.Waypoints[vehicle.cp.waypointIndex].rev and z < -5 then
+			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, y, vehicle.Waypoints[p].cz);
+		end
+		
 		if vehicle.cp.previousWaypointIndex + 4 > vehicle.cp.shovelEmptyPoint then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
 				vehicle.cp.shovel.trailerFound = nil;
@@ -115,9 +172,6 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 				courseplay:setShovelState(vehicle, 7);
 			end;
 		end;
-		if vehicle.cp.BunkerSiloMap then
-			vehicle.cp.BunkerSiloMap = nil
-		end
 	-- STATE 7: WAIT FOR TRAILER 10m BEFORE EMPTYING POINT
 	elseif vehicle.cp.shovelState == 7 then
 		local p = vehicle.cp.shovelEmptyPoint;
@@ -198,13 +252,16 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive, dt)
 		courseplay:handleSpecialTools(vehicle,vehicle,false,nil,nil,nil,nil,nil);
 
 		courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[3], dt);
-
+	
 		if vehicle.cp.waypointIndex == 1 then
+			vehicle.cp.BunkerSiloMap = nil
+			vehicle.cp.actualTarget = nil
 			courseplay:setShovelState(vehicle, 1);
+			
 		end;
 	end;
 
-	return allowedToDrive;
+	return allowedToDrive , lx,lz;
 end;
 
 function courseplay:setShovelState(vehicle, state, extraText)
@@ -386,8 +443,79 @@ function courseplay:getMovingTools(vehicle)
 	return primaryMovingTools, secondaryMovingTools;
 end;
 
-function courseplay:createBunkerSiloMap(vehicle, Silo)
+function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
+	local sx,sz = Silo.bunkerSiloArea.sx,Silo.bunkerSiloArea.sz;
+	local wx,wz = Silo.bunkerSiloArea.wx,Silo.bunkerSiloArea.wz;
+	local hx,hz = Silo.bunkerSiloArea.hx,Silo.bunkerSiloArea.hz;
+	local sy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz);
+	local bunkerWidth = courseplay:distance(sx,sz, wx, wz)
+	local bunkerLength = courseplay:distance(sx,sz, hx, hz)
+	local startDistance = courseplay:distanceToPoint(vehicle, sx, sy, sz)
+	local endDistance = courseplay:distanceToPoint(vehicle, hx, sy, hz)
+	
+	local widthCount = math.floor(bunkerWidth/vehicle.cp.workWidth)
+	local heightCount = math.floor(bunkerLength/vehicle.cp.workWidth)
+	courseplay:debug(('%s: Bunkersilo will be devided in %d lines and %d columns'):format(nameNum(vehicle), heightCount, widthCount), 10);
+	local heightLengthX = (Silo.bunkerSiloArea.hx-Silo.bunkerSiloArea.sx)/heightCount
+	local heightLengthZ = (Silo.bunkerSiloArea.hz-Silo.bunkerSiloArea.sz)/heightCount
+	local widthLengthX = (Silo.bunkerSiloArea.wx-Silo.bunkerSiloArea.sx)/widthCount
+	local widthLengthZ = (Silo.bunkerSiloArea.wz-Silo.bunkerSiloArea.sz)/widthCount
+	
+	
+	
 	local map = {}
+	for heightIndex = 1,heightCount do
+		map[heightIndex]={}
+		for widthIndex = 1,widthCount do
+			local newWx = sx + widthLengthX
+			local newWz = sz + widthLengthZ
+			local newHx = sx + heightLengthX
+			local newHz = sz + heightLengthZ
+			local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newWx, 1, newWz); 
+			local hY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newHx, 1, newHz);
+			local fillType = TipUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
+			local newFillLevel = TipUtil.getFillLevelAtArea(fillType, sx, sz, newWx, newWz, newHx, newHz )
+			local cx = sx + (widthLengthX/2) + (heightLengthX/2)  + ((widthLengthX/(2*widthCount))*(2-widthIndex))
+			local cz = sz + (widthLengthZ/2) + (heightLengthZ/2)  + ((widthLengthZ/(2*widthCount))*(2-widthIndex))
+
+			map[heightIndex][widthIndex] ={
+										sx = sx;
+										sz = sz;
+										y = wY;
+										wx = newWx;
+										wz = newWz;
+										hx = newHx;
+										hz = newHz;
+										cx = cx;
+										cz = cz;
+										fillLevel = newFillLevel;
+										fillType = fillType;
+											}
+											
+			sx = map[heightIndex][widthIndex].wx
+			sz = map[heightIndex][widthIndex].wz
+		end
+		sx = map[heightIndex][1].hx
+		sz = map[heightIndex][1].hz
+	end	
+	
+	--invert table
+	if endDistance < startDistance then
+		courseplay:debug(('%s: Bunkersilo will be approached from the back -> turn map'):format(nameNum(vehicle)), 10);
+		local newMap = {}	
+		local lineCounter = #map 
+		for lineIndex=1,lineCounter do 
+			local newLineIndex = lineCounter+1-lineIndex;
+			--print(string.format("put line%s into line%s",tostring(lineIndex),tostring(newLineIndex)))
+			newMap[newLineIndex]={}
+			local columnCount = #map[lineIndex]
+			for columnIndex =1, columnCount do
+				--print(string.format("  put column%s into column%s",tostring(columnIndex),tostring(columnCount+1-columnIndex)))
+				newMap[newLineIndex][columnCount+1-columnIndex] = map[lineIndex][columnIndex]
+			end
+		end	
+		map = newMap
+	end
 	return map
 end
 

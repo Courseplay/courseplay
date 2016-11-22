@@ -162,6 +162,7 @@ function courseplay:start(self)
 	self.cp.shovelFillStartPoint = nil
 	self.cp.shovelFillEndPoint = nil
 	self.cp.shovelEmptyPoint = nil
+	self.cp.mode9SavedLastFillLevel = 0;
 	local nearestpoint = dist
 	local recordNumber = 0
 	local curLaneNumber = 1;
@@ -484,7 +485,7 @@ function courseplay:stop(self)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
 	end
 
-
+		
 	HelperUtil.releaseHelper(self.currentHelper);
 
 	self.isHired = false;
@@ -539,7 +540,7 @@ function courseplay:stop(self)
 	end;
 
 	courseplay:releaseCombineStop(self)
-	
+	self.cp.BunkerSiloMap = nil
 	
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1

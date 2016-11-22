@@ -20,11 +20,12 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
 		-- Start: Fixes issue #525
-		local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode, 0, 1, -3);
-		local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
-		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, tx, ty, tz, nx, ny, nz);
-		--  End:  Fixes issue #525
-
+		if not vehicle.cp.mode == 9 then
+			local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode, 0, 1, -3);
+			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
+			courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, tx, ty, tz, nx, ny, nz);
+			--  End:  Fixes issue #525
+		end
 		return -lx,-lz,fwd;
 	end;
 
@@ -204,7 +205,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 		courseplay:setWaypointIndex(vehicle, vehicle.cp.lastReverseRecordnumber);
 	end;]]
 
-	if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and vehicle.cp.tipperFillLevel > 0 then
+	if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and vehicle.cp.totalFillLevel > 0 then
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;
