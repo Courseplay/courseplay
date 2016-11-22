@@ -204,7 +204,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": силосная яма заполнена!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="В этом бункере нет такого продукта!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Забрать из бункера:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="В бункере не осталось выбранного продукта, увы..." />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="В бункере не осталось выбранного продукта, увы...! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s: включено распыление соломы!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Показать первую точку" />

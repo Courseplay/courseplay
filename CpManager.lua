@@ -940,9 +940,9 @@ function CpManager:loadXmlSettings()
 end;
 
 function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
-	if #g_currentMission.cp_courses == 0 and #g_currentMission.cp_folders == 0 then
-		local cpFile = loadXMLFile("cpFile", self.cpXmlFilePath);
+	local cpFile = loadXMLFile("cpFile", self.cpXmlFilePath);
 
+	if not fileExists(self.cpXmlFilePath) and false then
 		-------------------------------------------------------------------------
 		-- Import Settings from old file
 		-------------------------------------------------------------------------
@@ -998,19 +998,91 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 
 		-- Save Imported settings.
 		self:saveXmlSettings();
+	end;
 
-		-------------------------------------------------------------------------
-		-- Import Courses and Folders from old file
-		-------------------------------------------------------------------------
+	-------------------------------------------------------------------------
+	-- Import Folders and Courses from old file
+	-------------------------------------------------------------------------
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- DO CHECKS AND SETUP BEFORE IMPORTING
+	local startFromFolderID, startFromCourseID = Utils.getNoNil(courseplay.courses:getMaxFolderID(), 0) + 1, Utils.getNoNil(courseplay.courses:getMaxCourseID(), 0) + 1;
+	if hasXMLProperty(cpFile, "XML.folders.folder(0)") or hasXMLProperty(cpFile, "XML.courses.course(0)") then
+		local FolderName = string.format('Import from savegame%d',g_careerScreen.selectedIndex);
+		local folderNameClean = courseplay:normalizeUTF8(FolderName);
+		local folder = { id = startFromFolderID, uid = 'f' .. startFromFolderID, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = 0 }
+		folders_by_id[startFromFolderID] = folder;
+
+		save = true;
+	end;
+
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- LOAD FOLDERS
+	if hasXMLProperty(cpFile, "XML.folders.folder(0)") then
+		-- g_careerScreen.selectedIndex
+		print('## Courseplay: Importing old folders from "courseplay.xml"');
+		local j = 0;
+		local currentFolder, FolderName, id, parent, folder;
+		local finish_all = false;
+		local folders_without_id = {};
+		repeat
+			-- current folder
+			currentFolder = string.format("XML.folders.folder(%d)", j)
+			if not hasXMLProperty(cpFile, currentFolder) then
+				finish_all = true;
+				break;
+			end;
+
+			-- folder id
+			id = getXMLInt(cpFile, currentFolder .. "#id");
+			if id then
+				id = id + startFromFolderID;
+				-- folder name
+				FolderName = getXMLString(cpFile, currentFolder .. "#name");
+				if FolderName == nil then
+					FolderName = string.format('NO_NAME%d',j);
+				end
+				local folderNameClean = courseplay:normalizeUTF8(FolderName);
+
+				-- folder parent
+				parent = getXMLInt(cpFile, currentFolder .. "#parent");
+				if parent == nil then
+					parent = 0;
+				end;
+				parent = parent + startFromFolderID;
+
+				-- "save" current folder
+				folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent };
+				if id ~= 0 then
+					folders_by_id[id] = folder;
+				else
+					table.insert(folders_without_id, folder);
+				end;
+				j = j + 1;
+			end;
+		until finish_all == true
+
+		if #folders_without_id > 0 then
+			-- give a new ID and save
+			local maxID = self:getMaxFolderID()
+			for i = #folders_without_id, 1, -1 do
+				maxID = maxID + 1
+				folders_without_id[i].id = maxID
+				folders_without_id[i].uid = 'f' .. maxID
+				folders_by_id[maxID] = table.remove(folders_without_id)
+			end
+			save = true;
+		end
+	end;
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- LOAD COURSES
+	if hasXMLProperty(cpFile, "XML.courses.course(0)") then
 		print('## Courseplay: Importing old courses from "courseplay.xml"');
 
-		g_currentMission.cp_courses = nil -- make sure it's empty (especially in case of a reload)
-		g_currentMission.cp_courses = {}
-		courses_by_id = g_currentMission.cp_courses
 		local courses_without_id = {}
 
-		-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		-- LOAD COURSES
 		local waypoints;
 		local i = 0;
 		while true do
@@ -1020,141 +1092,96 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 				break;
 			end;
 
-			-- course name
-			local courseName = getXMLString(cpFile, courseKey .. '#name');
-			if courseName == nil then
-				courseName = ('NO_NAME%d'):format(i);
-			end;
-			local courseNameClean = courseplay:normalizeUTF8(courseName);
-
 			-- course ID
-			local id = getXMLInt(cpFile, courseKey .. '#id') or 0;
-
-			-- course parent
-			local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
-
-			--course waypoints
-			waypoints = {};
-
-			local wpNum = 1;
-			while true do
-				local key = courseKey .. '.waypoint' .. wpNum;
-
-				if not hasXMLProperty(cpFile, key .. '#pos') then
-					break;
+			local id = getXMLInt(cpFile, courseKey .. '#id');
+			if id then
+				id = id + startFromCourseID;
+				-- course name
+				local courseName = getXMLString(cpFile, courseKey .. '#name');
+				if courseName == nil then
+					courseName = ('NO_NAME%d'):format(i);
 				end;
-				local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
-				if x == nil or z == nil then
-					break;
+				local courseNameClean = courseplay:normalizeUTF8(courseName);
+
+				-- course parent
+				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
+				parent = parent + startFromFolderID;
+
+				--course waypoints
+				waypoints = {};
+
+				local wpNum = 1;
+				while true do
+					local key = courseKey .. '.waypoint' .. wpNum;
+
+					if not hasXMLProperty(cpFile, key .. '#pos') then
+						break;
+					end;
+					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
+					if x == nil or z == nil then
+						break;
+					end;
+
+					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
+					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
+					speed = tonumber(speed);
+					if math.ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
+						speed = math.ceil(speed * 3600);
+					end;
+
+					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
+					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
+					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
+					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
+
+					local generated   =   getXMLBool(cpFile, key .. '#generated');
+					local laneDir	  = getXMLString(cpFile, key .. '#dir');
+					local turn 		  = getXMLString(cpFile, key .. '#turn');
+					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
+					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
+					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
+
+					crossing = crossing == 1 or wpNum == 1;
+					wait = wait == 1;
+					rev = rev == 1;
+
+					if turn == 'false' then
+						turn = nil;
+					end;
+					turnStart = turnStart == 1;
+					turnEnd = turnEnd == 1;
+
+					waypoints[wpNum] = {
+						cx = x,
+						cz = z,
+						angle = angle,
+						speed = speed,
+
+						rev = rev,
+						wait = wait,
+						crossing = crossing,
+						generated = generated,
+						laneDir = laneDir,
+						turn = turn,
+						turnStart = turnStart,
+						turnEnd = turnEnd,
+						ridgeMarker = ridgeMarker
+					};
+
+					wpNum = wpNum + 1;
+				end; -- END while true (waypoints)
+
+				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
+				if id ~= 0 then
+					courses_by_id[id] = course;
+				else
+					table.insert(courses_without_id, course);
 				end;
 
-				local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
-				local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
-				speed = tonumber(speed);
-				if math.ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
-					speed = math.ceil(speed * 3600);
-				end;
-
-				-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
-				local wait 		  =    getXMLInt(cpFile, key .. '#wait');
-				local rev 		  =    getXMLInt(cpFile, key .. '#rev');
-				local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
-
-				local generated   =   getXMLBool(cpFile, key .. '#generated');
-				local laneDir	  = getXMLString(cpFile, key .. '#dir');
-				local turn 		  = getXMLString(cpFile, key .. '#turn');
-				local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
-				local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
-				local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
-
-				crossing = crossing == 1 or wpNum == 1;
-				wait = wait == 1;
-				rev = rev == 1;
-
-				if turn == 'false' then
-					turn = nil;
-				end;
-				turnStart = turnStart == 1;
-				turnEnd = turnEnd == 1;
-
-				waypoints[wpNum] = {
-					cx = x,
-					cz = z,
-					angle = angle,
-					speed = speed,
-
-					rev = rev,
-					wait = wait,
-					crossing = crossing,
-					generated = generated,
-					laneDir = laneDir,
-					turn = turn,
-					turnStart = turnStart,
-					turnEnd = turnEnd,
-					ridgeMarker = ridgeMarker
-				};
-
-				wpNum = wpNum + 1;
-			end; -- END while true (waypoints)
-
-			local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
-			if id ~= 0 then
-				courses_by_id[id] = course;
-			else
-				table.insert(courses_without_id, course);
+				waypoints = nil;
 			end;
-
-			waypoints = nil;
 			i = i + 1;
 		end; -- END while true (courses)
-
-
-		-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		-- LOAD FOLDERS
-		print('## Courseplay: Importing old folders from "courseplay.xml"');
-		local j = 0
-		local currentFolder, FolderName, id, parent, folder
-		local finish_all = false
-		g_currentMission.cp_folders = nil
-		g_currentMission.cp_folders = {}
-		folders_by_id = g_currentMission.cp_folders
-		local folders_without_id = {}
-		repeat
-			-- current folder
-			currentFolder = string.format("XML.folders.folder(%d)", j)
-			if not hasXMLProperty(cpFile, currentFolder) then
-				finish_all = true;
-				break;
-			end;
-
-			-- folder name
-			FolderName = getXMLString(cpFile, currentFolder .. "#name")
-			if FolderName == nil then
-				FolderName = string.format('NO_NAME%d',j)
-			end
-			local folderNameClean = courseplay:normalizeUTF8(FolderName);
-
-			-- folder id
-			id = getXMLInt(cpFile, currentFolder .. "#id")
-			if id == nil then
-				id = 0
-			end
-
-			-- folder parent
-			parent = getXMLInt(cpFile, currentFolder .. "#parent")
-			if parent == nil then
-				parent = 0
-			end
-
-			-- "save" current folder
-			folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent }
-			if id ~= 0 then
-				folders_by_id[id] = folder
-			else
-				table.insert(folders_without_id, folder)
-			end
-			j = j + 1
-		until finish_all == true
 
 		if #courses_without_id > 0 then
 			-- give a new ID and save
@@ -1165,22 +1192,11 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 				courses_without_id[i].uid = 'c' .. maxID
 				courses_by_id[maxID] = courses_without_id[i]
 			end
-		end
-		if #folders_without_id > 0 then
-			-- give a new ID and save
-			local maxID = self:getMaxFolderID()
-			for i = #folders_without_id, 1, -1 do
-				maxID = maxID + 1
-				folders_without_id[i].id = maxID
-				folders_without_id[i].uid = 'f' .. maxID
-				folders_by_id[maxID] = table.remove(folders_without_id)
-			end
-		end
-
-		delete(cpFile);
-		-- Report back that we want to save all courses and folders.
-		save = true;
+			save = true;
+		end;
 	end;
+
+	delete(cpFile);
 
 	-------------------------------------------------------------------------
 	-- Delete content of old file

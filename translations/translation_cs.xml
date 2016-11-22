@@ -203,7 +203,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=":青贮池已满!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="没有选定仓筒类型!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="选定的仓筒类型:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="仓筒空了!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="仓筒空了! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="启动 %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="指向起始点" />

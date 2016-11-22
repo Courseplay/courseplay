@@ -208,7 +208,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker je plný!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Silo neobsahuje vybranou plodinu" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Na sile se nakládá:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Silo je prázdné!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Silo je prázdné! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Nastartovat při %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Hledání prvního bodu" />

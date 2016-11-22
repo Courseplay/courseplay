@@ -208,7 +208,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL"					text=": silos bunkrowy jest pełny!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE"				text="Silos na farmie na ma wymaganego typu uprawy" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE"				text="Ładowanie silosu na farmie:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY"				text="Silos na farmie jest pusty!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY"				text="Silos na farmie jest pusty! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL"				text="Uruchamianie %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT"			text="Szukaj pierwszego punktu trasy" />

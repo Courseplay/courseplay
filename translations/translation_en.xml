@@ -208,7 +208,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker silo is full!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Farm silo doesn't have the selected fill type" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Farm silo load:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm silo is empty!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm silo is empty! Waiting for more." />
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Starting up %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Search for first waypoint" />

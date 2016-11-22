@@ -208,7 +208,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunkersilo ist voll!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Farmsilo hat den ausgewählten Fülltyp nicht" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Farmsilo-Befüllung:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farmsilo ist leer!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farmsilo ist leer! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=":Farmsilo ist voll. Fahre mit nächstem fort." /> 
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s startet" /> 
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Nach erstem Wegpunkt suchen" />

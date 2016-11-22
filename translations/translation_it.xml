@@ -195,7 +195,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": il silo è pieno!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Il granaio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Il granaio sta caricando:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": il granaio è pieno! Contiuna al prossimo granaio." />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />

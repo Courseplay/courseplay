@@ -208,7 +208,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": バンカーサイロがいっぱいです!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="このサイロに選択したものがありません" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="サイロから:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="サイロは空です!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="サイロは空です! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="起動 %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="最初のウエイポイントを検索します" />

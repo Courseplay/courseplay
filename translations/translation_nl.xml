@@ -204,7 +204,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker silo is vol!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Boerderij Silo heeft niet de juiste vulling" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Boerderij Silo laadt:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm Silo is leeg!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm Silo is leeg! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Opstarten %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Eerste markering zoeken" />

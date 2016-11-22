@@ -204,7 +204,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": el silo ésta lleno!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="El silo no dispone del tipo seleccionado" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Cargando silo:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="El silo está vacío" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="El silo está vacío! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Iniciando en %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Buscar el primer punto" />

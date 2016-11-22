@@ -706,8 +706,11 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 			if not siloTrigger.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) then
 				siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
+				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
 				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);  --!!! fillTypeIntToName is nil
-			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.driveOnAtFillLevel then
+			elseif siloTrigger.isFilling then
+				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
+			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.driveOnAtFillLevel and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then
 				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
 		else
