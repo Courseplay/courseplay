@@ -589,7 +589,7 @@ function CpManager:realTime10SecsChanged()
 	if self.wagesActive and g_server ~= nil then
 		local totalWages = 0;
 		for vehicleNum, vehicle in pairs(self.activeCoursePlayers) do
-			if vehicle:getIsCourseplayDriving() and not vehicle.isHired then
+			if vehicle:getIsCourseplayDriving() and not vehicle.aiIsStarted then
 				totalWages = totalWages + self.wagePer10Secs;
 			end;
 		end;

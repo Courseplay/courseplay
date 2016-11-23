@@ -920,6 +920,10 @@ end;
 ]]
 
 function courseplay:preDelete()
+	for index,coursePlayer in pairs (CpManager.activeCoursePlayers) do
+		courseplay:stop(coursePlayer)
+	end
+	
 	if self.cp ~= nil and self.cp.numActiveGlobalInfoTexts ~= 0 then
 		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
@@ -929,6 +933,7 @@ function courseplay:preDelete()
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 	end;
+	
 	-- Delete map hotspot if there is any
 	courseplay:deleteMapHotspot(self);
 end;

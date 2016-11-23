@@ -878,20 +878,12 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				-------------------------------
 				if vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping then
 					if vehicle.cp.totalFillLevel > 0 then
-						if trailerInTipRange and startDistance > 5 and endDistance > 5 then 
+						if trailerInTipRange and startDistance > 8 and endDistance > 8 then 
 							goForTipping = true
 							allowedToDrive = false
 						end
 					else
-						for index = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints  do
-							local px,pz = vehicle.Waypoints[index].cx,vehicle.Waypoints[index].cz
-							local py = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px,1,pz)
-							local _,_,sz = worldToLocal(vehicle.cp.DirectionNode, px, py, pz);
-							if not vehicle.Waypoints[index].rev and sz > 3 then
-								courseplay:setWaypointIndex(vehicle, index)
-								break
-							end
-						end
+						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle))
 					end
 					
 				-------------------------------

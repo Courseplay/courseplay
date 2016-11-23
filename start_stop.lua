@@ -3,10 +3,10 @@ local curFile = 'start_stop.lua';
 -- starts driving the course
 function courseplay:start(self)
 	self.currentHelper = HelperUtil.getRandomHelper()
-	HelperUtil.useHelper(self.currentHelper);
 
 	self.isHired = true;
-	self.isHirableBlocked = false;
+	self.isHirableBlocked = true;
+
 	self.cp.forceIsActiveBackup = self.forceIsActive;
 	self.forceIsActive = true;
 	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
@@ -485,10 +485,9 @@ function courseplay:stop(self)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
 	end
 
-		
-	HelperUtil.releaseHelper(self.currentHelper);
-
 	self.isHired = false;
+	self.isHirableBlocked = false;
+	
 	self.forceIsActive = self.cp.forceIsActiveBackup;
 	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.steeringEnabled = true;
