@@ -53,7 +53,8 @@ function courseplay:start(self)
 	self.cp.calculatedCourseToCombine = false
 
 	--!!! AITractor.addCollisionTrigger(self, self);
-		
+	courseplay:resetTools(self)	
+	
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
 			--remove cutter atTrafficCollisionTrigger in case of having changed or removed it while not in CP
@@ -83,12 +84,26 @@ function courseplay:start(self)
 	-- adapt collis height to vehicles height , its a runonce
 	if self.cp.ColliHeightSet == nil and self.cp.numTrafficCollisionTriggers > 0 then
 		local height = 0;
-		local step = self.sizeLength/2;
+		local step = (self.sizeLength/2)+1 ;
+		local stepBehind, stepFront = step, step;
+		if self.attachedImplements ~= nil then
+			for index, implement in pairs(self.attachedImplements) do
+				local tool = implement.object
+				local x,y,z = getWorldTranslation(tool.rootNode);
+			    local _,_,nz =  worldToLocal(self.cp.DirectionNode, x, y, z);
+				if nz > 0 then
+					stepFront = stepFront + (tool.sizeLength)+2				
+				else
+					stepBehind = stepBehind + (tool.sizeLength)+2	
+				end
+			end
+		end
+		
 		local distance = self.sizeLength;
 		local nx, ny, nz = localDirectionToWorld(self.rootNode, 0, -1, 0);	
 		self.cp.HeightsFound = 0;
 		self.cp.HeightsFoundColli = 0;			
-		for i=-step,step,0.5 do				
+		for i=-stepBehind,stepFront,0.5 do				
 			local x,y,z = localToWorld(self.rootNode, 0, distance, i);
 			raycastAll(x, y, z, nx, ny, nz, "findVehicleHeights", distance, self);
 			--print("drive raycast "..tostring(i).." end");
@@ -124,7 +139,7 @@ function courseplay:start(self)
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
 	self.cp.turnTimer = 8000
-	courseplay:resetTools(self)
+	
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
@@ -583,6 +598,7 @@ function courseplay:stop(self)
 	end;
 
 	-- resetting variables
+	self.cp.ColliHeightSet = nil
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
@@ -663,6 +679,7 @@ end
 function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 	local height = self.sizeLength - distance
 	local vehicle = false
+	print(string.format("found %s (%s)",tostring(getName(transformId)),tostring(transformId)))
 	if self.cp.trafficCollisionTriggerToTriggerIndex[transformId] ~= nil then
 		if self.cp.HeightsFoundColli < height then
 			self.cp.HeightsFoundColli = height
@@ -671,7 +688,10 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 		vehicle = true
 	elseif getParent(transformId) == self.rootNode and self.aiTrafficCollisionTrigger ~= transformId then
 		vehicle = true
+	elseif self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[getParent(transformId)] then
+		vehicle = true
 	end
+
 	if vehicle and self.cp.HeightsFound < height then
 		self.cp.HeightsFound = height
 	end

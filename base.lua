@@ -920,8 +920,8 @@ end;
 ]]
 
 function courseplay:preDelete()
-	for index,coursePlayer in pairs (CpManager.activeCoursePlayers) do
-		courseplay:stop(coursePlayer)
+	if self.cp ~= nil and self.cp.isDriving then
+		courseplay:stop(self)
 	end
 	
 	if self.cp ~= nil and self.cp.numActiveGlobalInfoTexts ~= 0 then
