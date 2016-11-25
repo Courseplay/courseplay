@@ -4,6 +4,13 @@ local abs, max, rad, deg, cos, sin = math.abs, math.max, math.rad, math.deg, mat
 function courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio)
 	local turnRadius = 0;
 	CPRatio = CPRatio or 0;
+	
+	-- Add protection from 0 calculations
+	if rotMax == 1 then
+		rotMax = rad(89);
+	elseif rotMax == 0 then
+		return turnRadius;
+	end;
 
 	-- ArticulatedAxis Steering
 	if (type == "ASW" or type == "Tool") and CPRatio > 0 and CPRatio < 1  then
@@ -721,7 +728,16 @@ function courseplay:getToolTurnRadius(workTool)
 				-- Trailer part
 				wheelBase = workToolDistances.pivotToTurningNode;
 				CPRatio = 0;
-				TR = courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio);
+				-- Protection in cause CP mistakes a implent has a pivoted trailer and doesnt updated pivotRotMax.
+				-- This protects calculateTurnRadius Function from 0 calcs
+				if pivotRotMax > rad(15) then
+					TR = courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio);
+				-- If pivotRotMax is not greater than 15 degrees,
+				-- then giants have fucked up and we cant get the real pivotRotMax value.
+				-- We will then use half of the length from attacherJoint to turningNode as the turnRadius instead.
+				else
+					TR = (workToolDistances.attacherJointToPivot + workToolDistances.pivotToTurningNode) / 2;
+				end;
 
 				-- Take the highest one
 				if pivotTR > TR then
