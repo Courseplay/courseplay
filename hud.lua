@@ -102,7 +102,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_OVERLOADER]			 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 3
 		[courseplay.MODE_SEED_FERTILIZE]		 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; -- mode 4
 		[courseplay.MODE_TRANSPORT]				 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 5
-		[courseplay.MODE_FIELDWORK]				 = { [0] = true,  [1] = true, [2] = true, [3] = true, [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; -- mode 6
+		[courseplay.MODE_FIELDWORK]				 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; -- mode 6
 		[courseplay.MODE_COMBINE_SELF_UNLOADING] = { [0] = false, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 7
 		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 8
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = true  }; -- mode 9
