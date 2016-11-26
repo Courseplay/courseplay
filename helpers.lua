@@ -207,13 +207,10 @@ function courseplay:getVarValueFromString(self, str)
 end;
 
 function courseplay:boolToInt(bool)
-	if bool == nil or type(bool) ~= "boolean" then
-		return nil;
-	elseif bool == true then
+	if bool and type(bool) == 'boolean' then
 		return 1;
-	elseif bool == false then
-		return 0; 
 	end;
+	return;
 end;
 function courseplay:intToBool(int)
 	if int == nil or type(int) ~= "number" then
@@ -782,10 +779,6 @@ end;
 
 function courseplay:getObjectName(object, xmlFile)
 	-- if object.name ~= nil the return object.name; end;
-
-	if object.cp and (object.cp.hasSpecializationPathVehicle or object.cp.hasSpecializationTrafficVehicle) then
-		return 'TrafficVehicle_' .. tostring(object.rootNode);
-	end;
 
 	if object.configFileName then
 		local storeItem = StoreItemsUtil.storeItemsByXMLFilename[object.configFileName:lower()];

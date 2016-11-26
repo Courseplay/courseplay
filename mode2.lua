@@ -420,7 +420,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 	-- STATE 4 (drive to rear of combine)
 	elseif vehicle.cp.modeState == 4 then
-		if combine.cp.offset == nil or vehicle.cp.combineOffset == 0 or combine.cp.isHolmerDlcCrabSteeringPossible then
+		if combine.cp.offset == nil or vehicle.cp.combineOffset == 0 or combine.cp.isCrabSteeringPossible then
 			--print("offset not saved - calculate")
 			courseplay:calculateCombineOffset(vehicle, combine);
 		elseif not combine.cp.isChopper and not combine.cp.isSugarBeetLoader and vehicle.cp.combineOffsetAutoMode and vehicle.cp.combineOffset ~= combine.cp.offset then
@@ -431,7 +431,7 @@ function courseplay:unload_combine(vehicle, dt)
 		--courseplay:addToCombinesIgnoreList(vehicle, combine)
 		refSpeed = vehicle.cp.speeds.field
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-		local tX, tY, tZ = nil, nil, nil
+		local tX, tY, tZ
 
 		if combine.cp.isSugarBeetLoader then
 			local prnToCombineZ = courseplay:calculateVerticalOffset(vehicle, combine);
@@ -452,7 +452,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 		currentX, currentZ = tX, tZ
 
-		local lx, ly, lz = nil, nil, nil
+		local lx, ly, lz
 
 		lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, tX, y, tZ)
 
@@ -1032,7 +1032,7 @@ function courseplay:unload_combine(vehicle, dt)
 	end
 	
 	if g_server ~= nil then
-		local lx, lz = nil, nil
+		local lx, lz
 		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
 			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
@@ -1207,9 +1207,7 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 		if raycastNodeParent == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--safety distance so the trailer doesn't crash into the pipe (sidearm)
 			local additionalSafetyDistance = 0;
-			if combine.cp.isGrimmeMaxtron620 then
-				additionalSafetyDistance = 0.9;
-			elseif combine.cp.isGrimmeTectron415 then
+			if combine.cp.isGrimmeTectron415 then
 				additionalSafetyDistance = -0.5;
 			end;
 

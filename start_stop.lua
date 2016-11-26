@@ -366,7 +366,7 @@ function courseplay:start(self)
 	end;
 	
 	--check Crab Steering mode for HolmerDLC
-	if self.cp.isHolmerDlcCrabSteeringPossible and self.crabSteering.state > 2  then
+	if self.cp.isCrabSteeringPossible and self.crabSteering.state > 2  then
 		self.cp.hasCrabSteeringActive = true;
 	end
 
@@ -679,7 +679,7 @@ end
 function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 	local height = self.sizeLength - distance
 	local vehicle = false
-	print(string.format("found %s (%s)",tostring(getName(transformId)),tostring(transformId)))
+	--print(string.format("found %s (%s)",tostring(getName(transformId)),tostring(transformId)))
 	if self.cp.trafficCollisionTriggerToTriggerIndex[transformId] ~= nil then
 		if self.cp.HeightsFoundColli < height then
 			self.cp.HeightsFoundColli = height
