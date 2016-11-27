@@ -421,7 +421,9 @@ function courseplay:generateCourse(vehicle)
 	local pointDistance = 5;
 	local pipSafety = 0.1;
 	local pathPoints = {};
-
+  local maxPointsAtTurn = CpManager.courseMaxPointsAtTurn; 
+  local stepForPoints = CpManager.courseStepForPoints;
+  
 	if dir == "N" or dir == "S" then --North or South
 		numLanes = math.ceil(dimensions.width / workWidth);
 		pointsPerLane = math.ceil(dimensions.height / pointDistance);
@@ -449,13 +451,16 @@ function courseplay:generateCourse(vehicle)
 			end;
 			courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, curLaneDir), 7); --WORKS
 
-			for a=1, pointsPerLane do
+		for a=1, pointsPerLane do
+      -- if a % stepForPoints == 0 or a < (maxPointsAtTurn + 1) or a > (pointsPerLane - maxPointsAtTurn + 1) then
 				local curPoint = {
 					num = a + ((curLane-1) * pointsPerLane);
 					lane = curLane;
 					laneDir = curLaneDir;
 					x = dimensions.minX + (workWidth * curLane) - (workWidth/2);
 					z = dimensions.minZ;
+          -- x = x1;
+          -- z = z1;
 				};
 
 				if crn == "NW" or crn == "SE" then
@@ -501,6 +506,7 @@ function courseplay:generateCourse(vehicle)
 				else
 					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
 				end;
+      -- end; --END für if maxPointsAtTurn
 			end; --END for curPoint in pointsPerLane
 		end; --END for curLane in numLanes
 	--END North or South
@@ -533,6 +539,7 @@ function courseplay:generateCourse(vehicle)
 			courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, curLaneDir), 7); --WORKS
 
 			for a=1, pointsPerLane do
+      -- if a % stepForPoints == 0 or a < (maxPointsAtTurn + 1) or a > (pointsPerLane - maxPointsAtTurn + 1) then
 				local curPoint = {
 					num = a + ((curLane-1) * pointsPerLane);
 					lane = curLane;
@@ -584,10 +591,38 @@ function courseplay:generateCourse(vehicle)
 				else
 					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
 				end;
+      -- end; --END für if maxPointsAtTurn
 			end; --END for curPoint in pointsPerLane
 		end; --END for curLane in numLanes
 	end; --END East or West
-
+  -- cycle through lanes, let 5 points at the begin and end of lane as they are. In between only let every 10th point and remove all other
+  -- go from back to front, to have indices stable  
+  local cpCurrentID = #(pathPoints);
+  courseplay:debug('before optimize numPoints='..cpCurrentID, 7);
+  while cpCurrentID >= maxPointsAtTurn do
+    local cpLastID = cpCurrentID;
+    local cpLast = pathPoints[cpLastID];
+    local cpCurrent;
+    local curLane = cpLast.lane;
+    repeat
+      cpCurrentID = cpCurrentID - 1;
+      cpCurrent = pathPoints[cpCurrentID];
+    until cpCurrent.lane ~= curLane or cpCurrentID < 2;
+    if cpCurrentID == 1 then 
+      cpCurrentID = 0; 
+    end;
+    local cpFirstID = cpCurrentID+1;
+    local cpFirst = pathPoints[cpFirstID];
+    if cpLastID - cpFirstID > stepForPoints then -- only if more than 10 points in current lane
+      for pID = (cpLastID - maxPointsAtTurn), (cpFirstID + maxPointsAtTurn), -1 do
+        if (pID - (cpFirstID + maxPointsAtTurn)) % stepForPoints ~= 0 then
+          table.remove(pathPoints, pID); 
+        end;
+      end;
+    end;
+  end;
+  courseplay:debug(' after optimize numPoints='..#(pathPoints), 7);
+  
 
 	---############################################################################
 	-- (4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse

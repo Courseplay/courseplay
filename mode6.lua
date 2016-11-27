@@ -390,6 +390,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, fillLevelPc
 			if (fillLevelPct == 100 or vehicle.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
 				if vehicle.cp.hasUnloadingRefillingCourse and vehicle.cp.abortWork == nil then
 					vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
+          if vehicle.Waypoints[vehicle.cp.previousWaypointIndex].laneDir ~= nil then -- generated field course, no headland
+            vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - math.floor(10 / CpManager.courseStepForPoints + 0.5) - 1; -- optimized reduced Waypoints: we need less backup before restarting work
+          end;
 					-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
 					if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 then
 						for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
