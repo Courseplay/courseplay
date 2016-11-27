@@ -166,6 +166,9 @@ function courseplay.button:render()
 			elseif fn == 'changeReverseSpeed' then
 				canScrollUp   = vehicle.cp.speeds.reverse < vehicle.cp.speeds.max;
 				canScrollDown = vehicle.cp.speeds.reverse > vehicle.cp.speeds.minReverse;
+			elseif fn == 'changeLookAheadDistance' then
+				canScrollUp   = vehicle.cp.speeds.useEnhancedSpeedControl and vehicle.cp.speeds.lookAheadDistance < 100;
+				canScrollDown = vehicle.cp.speeds.useEnhancedSpeedControl and vehicle.cp.speeds.lookAheadDistance > 0
 			end;
 
 		elseif pg == courseplay.hud.PAGE_GENERAL_SETTINGS then
@@ -321,6 +324,12 @@ function courseplay.button:render()
 						show = vehicle.cp.speeds.reverse > vehicle.cp.speeds.minReverse;
 					elseif prm > 0 then
 						show = vehicle.cp.speeds.reverse < vehicle.cp.speeds.max;
+					end;
+				elseif fn == 'changeLookAheadDistance' then
+					if prm < 0 then
+						show = vehicle.cp.speeds.useEnhancedSpeedControl and vehicle.cp.speeds.lookAheadDistance > 0;
+					elseif prm > 0 then
+						show = vehicle.cp.speeds.useEnhancedSpeedControl and vehicle.cp.speeds.lookAheadDistance < 100;
 					end;
 				end;
 

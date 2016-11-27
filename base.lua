@@ -175,7 +175,18 @@ function courseplay:load(xmlFile)
 		minField = 3;
 		minStreet = 3;
 		max = self.cruiseControl.maxSpeed or 60;
+		useEnhancedSpeedControl = false;
+		lookAheadDistance = 25;
+		speedControlPoints = {};
+		speedControlPointsVersion = 0;
 	};
+
+	
+	self.cp.speeds.speedControlPoints[1] = { angle = 0.0; speed = courseplay:round(self.cp.speeds.street, 2) }
+	self.cp.speeds.speedControlPoints[2] = { angle = 90.0; speed = courseplay:round(self.cp.speeds.turn, 2) }
+	for i = 3, courseplay.speedControlPointCount do
+		self.cp.speeds.speedControlPoints[i] = { angle = 90.0; speed = 0.00 }
+	end
 
 	self.cp.toolsDirty = false
 	self.cp.orgRpm = nil;
@@ -1297,6 +1308,60 @@ function courseplay:loadFromAttributesAndNodes(xmlFile, key, resetVehicles)
 		if turn ~= 0	then self.cp.speeds.turn	= turn;   end;
 		if field ~= 0	then self.cp.speeds.field	= field;  end;
 		if street ~= 0	then self.cp.speeds.street	= street; end;
+		self.cp.speeds.useEnhancedSpeedControl = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#useEnhancedSpeedControl'), false);
+		local lookAheadDistance = floor(tonumber(getXMLString(xmlFile, curKey .. '#lookahead')	 or '25'));
+		if lookAheadDistance ~= 25	then self.cp.speeds.lookAheadDistance	= lookAheadDistance; end;
+		local speedControlPoints = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#speedControlPoints'), '0.0,' .. courseplay:round(self.cp.speeds.street, 2) .. ';90.0,' .. courseplay:round(self.cp.speeds.turn, 2)); 
+		speedControlPoints = Utils.splitString(';', speedControlPoints);
+		for i = 1, #self.cp.speeds.speedControlPoints do
+			if i <= #speedControlPoints then
+				local speedControlPoint = Utils.splitString(',', speedControlPoints[i]);
+				if #speedControlPoint == 2 then
+					if i == 1 then
+						self.cp.speeds.speedControlPoints[i] = {
+							angle = 0.0;
+							speed = math.min(courseplay:round(tonumber(speedControlPoint[2]), 2), courseplay:round(self.cp.speeds.max, 2));
+						}
+					else
+						self.cp.speeds.speedControlPoints[i] = {
+							angle = math.min(courseplay:round(tonumber(speedControlPoint[1]), 1), 90.0);
+							speed = math.min(courseplay:round(tonumber(speedControlPoint[2]), 2), courseplay:round(self.cp.speeds.max, 2));
+						}
+					end
+				elseif i == 1 then
+					self.cp.speeds.speedControlPoints[i] = {
+						angle = 0.0;
+						speed = courseplay:round(self.cp.speeds.street, 2);
+					}
+				elseif i == 2 then
+					self.cp.speeds.speedControlPoints[i] = {
+						angle = 90.0;
+						speed = courseplay:round(self.cp.speeds.turn, 2);
+					}
+				else
+					self.cp.speeds.speedControlPoints[i] = {
+						angle = 90.0;
+						speed = 0.0;
+					}
+				end
+			elseif i == 1 then
+				self.cp.speeds.speedControlPoints[i] = {
+					angle = 0.0;
+					speed = courseplay:round(self.cp.speeds.street, 2);
+				}
+			elseif i == 2 then
+				self.cp.speeds.speedControlPoints[i] = {
+					angle = 90.0;
+					speed = courseplay:round(self.cp.speeds.turn, 2);
+				}
+			else
+				self.cp.speeds.speedControlPoints[i] = {
+					angle = 90.0;
+					speed = 0.0;
+				}
+			end
+		end
+
 
 		-- MODE 2
 		curKey = key .. '.courseplay.combi';
@@ -1405,11 +1470,20 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 	--Offset data
 	local offsetData = string.format('%.1f;%.1f;%.1f;%s', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange));
+	local speedControlPoints = ''
+	for i = 1, #self.cp.speeds.speedControlPoints do
+		if i <= 2 or self.cp.speeds.speedControlPoints[i - 1].angle < 90 or self.cp.speeds.speedControlPoints[i].speed > 0 then
+			if speedControlPoints ~= '' then
+				speedControlPoints = speedControlPoints .. ';'
+			end
+			speedControlPoints = speedControlPoints .. string.format('%0.1f', self.cp.speeds.speedControlPoints[i].angle) .. ',' .. string.format('%0.2f', self.cp.speeds.speedControlPoints[i].speed)
+		end
+	end
 
 
 	--NODES
 	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q multiSiloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), Fillable.fillTypeIntToName[self.cp.multiSiloSelectedFillType]);
-	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
+	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" useEnhancedSpeedControl=%q lookahead="%d" speedControlPoints=%q />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street, tostring(self.cp.speeds.useEnhancedSpeedControl), self.cp.speeds.lookAheadDistance, speedControlPoints);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
 	local shovels, combine = '', '';

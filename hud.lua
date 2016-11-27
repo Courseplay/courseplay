@@ -562,10 +562,50 @@ function courseplay.hud:renderHud(vehicle)
 
 	--MAIN CONTENT
 	courseplay:setFontSettings('white', false);
+	local valueWidth = getTextWidth(self.fontSizes.contentValue, '00.0')
+	local speedValueWidth = getTextWidth(self.fontSizes.contentValue, '000')
+	local valueGroupWidth = getTextWidth(self.fontSizes.contentValue, '00.0  ')
+	local speedControlPoints = vehicle.cp.speeds.speedControlPoints
 	local page = vehicle.cp.hud.currentPage;
 	for line,columns in pairs(vehicle.cp.hud.content.pages[page]) do
 		for column,entry in pairs(columns) do
-			if column == 1 and entry.text ~= nil and entry.text ~= '' then
+			if vehicle.cp.speeds.useEnhancedSpeedControl and page == 5 and (line == 7 or line == 8) and column == 1 then
+				renderText(self.col1posX + entry.indention, self.linesPosY[line], self.fontSizes.contentTitle, entry.text);
+			elseif vehicle.cp.speeds.useEnhancedSpeedControl and page == 5 and line == 7 and column == 2 then
+				setTextAlignment(RenderText.ALIGN_RIGHT);
+				for i=1, #speedControlPoints do
+					for buttonIndex = 1, #vehicle.cp.buttons[page] do
+						if vehicle.cp.buttons[page][buttonIndex].isHovered and vehicle.cp.buttons[page][buttonIndex].functionToCall 
+							and string.sub(vehicle.cp.buttons[page][buttonIndex].functionToCall, 1, string.len('changeSpeedControlAngle')) == 'changeSpeedControlAngle' 
+							and tonumber(string.sub(vehicle.cp.buttons[page][buttonIndex].functionToCall, -1)) == i then
+							courseplay:setFontSettings('hover', false);
+						end
+					end
+					renderText(vehicle.cp.hud.content.pages[page][line][column].posX + speedValueWidth + valueGroupWidth * (i-1), self.linesPosY[line], self.fontSizes.contentValue, string.format('%4.1f', speedControlPoints[i].angle));
+					courseplay:setFontSettings('white', false);
+					if speedControlPoints[i].angle == 90 then
+						break;
+					end
+				end
+				setTextAlignment(RenderText.ALIGN_LEFT);
+			elseif vehicle.cp.speeds.useEnhancedSpeedControl and page == 5 and line == 8 and column == 2 then
+				setTextAlignment(RenderText.ALIGN_RIGHT);
+				for i=1, #speedControlPoints do
+					for buttonIndex = 1,  #vehicle.cp.buttons[page] do
+						if vehicle.cp.buttons[page][buttonIndex].isHovered and vehicle.cp.buttons[page][buttonIndex].functionToCall 
+							and string.sub(vehicle.cp.buttons[page][buttonIndex].functionToCall, 1, string.len('changeSpeedControlSpeed')) == 'changeSpeedControlSpeed' 
+							and tonumber(string.sub(vehicle.cp.buttons[page][buttonIndex].functionToCall, -1)) == i then
+							courseplay:setFontSettings('hover', false);
+						end
+					end
+					renderText(vehicle.cp.hud.content.pages[page][line][column].posX + speedValueWidth + valueGroupWidth * (i-1), self.linesPosY[line], self.fontSizes.contentValue, string.format('%d', g_i18n:getSpeed(speedControlPoints[i].speed)));
+					courseplay:setFontSettings('white', false);
+					if speedControlPoints[i].angle == 90 then
+						break;
+					end
+				end
+				setTextAlignment(RenderText.ALIGN_LEFT);
+			elseif column == 1 and entry.text ~= nil and entry.text ~= '' then
 				if entry.isClicked then
 					courseplay:setFontSettings('activeRed', false);
 				elseif entry.isHovered then
@@ -904,14 +944,29 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[5][4][1].text = courseplay:loc('COURSEPLAY_SPEED_REVERSING');
 		vehicle.cp.hud.content.pages[5][5][1].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE');
 
+		if vehicle.cp.speeds.useEnhancedSpeedControl then
+			vehicle.cp.hud.content.pages[5][6][1].text = courseplay:loc('COURSEPLAY_SPEED_LOOKAHEAD');
+			vehicle.cp.hud.content.pages[5][7][1].text = courseplay:loc('COURSEPLAY_SPEED_CONTROLANGLE');
+			vehicle.cp.hud.content.pages[5][8][1].text = string.format(courseplay:loc('COURSEPLAY_SPEED_CONTROLSPEED') , g_i18n:getSpeedMeasuringUnit());
+		end
+
 		vehicle.cp.hud.content.pages[5][1][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.turn), g_i18n:getSpeedMeasuringUnit());
 		vehicle.cp.hud.content.pages[5][2][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.field), g_i18n:getSpeedMeasuringUnit());
 		vehicle.cp.hud.content.pages[5][4][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.reverse), g_i18n:getSpeedMeasuringUnit());
 
+		if vehicle.cp.speeds.useEnhancedSpeedControl then
+			vehicle.cp.hud.content.pages[5][6][2].text = string.format(courseplay:loc('COURSEPLAY_SPEED_LOOKAHEAD_VALUE'), vehicle.cp.speeds.lookAheadDistance);
+		end
+		
 		local streetSpeedStr = ('%d %s'):format(g_i18n:getSpeed(vehicle.cp.speeds.street), g_i18n:getSpeedMeasuringUnit());
 		if vehicle.cp.speeds.useRecordingSpeed then
-			vehicle.cp.hud.content.pages[5][3][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC'):format(streetSpeedStr);
-			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_RECORDING');
+			if vehicle.cp.speeds.useEnhancedSpeedControl then
+				vehicle.cp.hud.content.pages[5][3][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_ENHANCED_MAX');
+				vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_ENHANCED');
+			else
+				vehicle.cp.hud.content.pages[5][3][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC'):format(streetSpeedStr);
+				vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_RECORDING');
+			end
 		else
 			vehicle.cp.hud.content.pages[5][3][2].text = streetSpeedStr;
 			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_MAX');
@@ -1472,6 +1527,28 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	courseplay.button:new(vehicle, 5, nil, 'toggleUseRecordingSpeed', nil, self.contentMinX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
 
+	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navMinus' }, 'changeLookAheadDistance',    -1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -5, false);
+	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navPlus' },  'changeLookAheadDistance',     1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  5, false);
+	courseplay.button:new(vehicle, 5, nil, 'changeLookAheadDistance', 1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 5, true, true);
+
+	local valuePosX = vehicle.cp.hud.content.pages[5][7][2].posX
+	local speedValueWidth = getTextWidth(self.fontSizes.contentValue, '000')
+	local valueWidth = getTextWidth(self.fontSizes.contentValue, '00.0')
+	local valueGroupWidth = getTextWidth(self.fontSizes.contentValue, '00.0  ')
+	local speedUnitFactor = 10 / g_i18n:getSpeed(10)
+	
+	local speedControlPoints = vehicle.cp.speeds.speedControlPoints
+	for i=2, #speedControlPoints do
+		courseplay.button:new(vehicle, 5, nil, 'changeSpeedControlAngle' .. i, .1, valuePosX + speedValueWidth + valueGroupWidth * (i-1) - valueWidth, self.linesButtonPosY[7], valueWidth, mouseWheelArea.h, 7, 5, true, true);
+	end
+
+	for i=1, #speedControlPoints do
+		if i == 1 then
+			courseplay.button:new(vehicle, 5, nil, 'changeSpeedControlSpeed' .. i, 1 * speedUnitFactor, valuePosX + speedValueWidth + valueGroupWidth * (i-1) - speedValueWidth, self.linesButtonPosY[8], valueWidth, mouseWheelArea.h, 8, 5 * speedUnitFactor, true, true);
+		else
+			courseplay.button:new(vehicle, 5, nil, 'changeSpeedControlSpeed' .. i, 1 * speedUnitFactor, valuePosX + speedValueWidth + valueGroupWidth * (i-1) - valueWidth, self.linesButtonPosY[8], valueWidth, mouseWheelArea.h, 8, 5 * speedUnitFactor, true, true);
+		end
+	end
 
 	-- ##################################################
 	-- Page 6: General settings

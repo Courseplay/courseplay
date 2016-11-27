@@ -31,6 +31,8 @@ courseplay.buttons = {};
 courseplay.fields = {};
 courseplay.generation = {};
 
+courseplay.speedControlPointCount = 9
+
 local sonOfaBangSonOfaBoom = {
 	['44d143f3e847254a55835a8298ba4e21'] = true;
 	['6fbb6a98a4054b1d603bd8c591d572af'] = true;

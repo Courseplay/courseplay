@@ -513,12 +513,16 @@ function courseplay:drive(self, dt)
 			mode7onCourse = false
 		end
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.cp.waypointIndex].speed ~= nil and mode7onCourse then
-			if self.Waypoints[self.cp.waypointIndex].speed < self.cp.speeds.crawl then
-				refSpeed = courseplay:getAverageWpSpeed(self , 4)
-				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+			if not self.cp.speeds.useEnhancedSpeedControl then
+				if self.Waypoints[self.cp.waypointIndex].speed < self.cp.speeds.crawl then
+					refSpeed = courseplay:getAverageWpSpeed(self , 4)
+					speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+				else
+					refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.cp.waypointIndex].speed); --normaly use speed from waypoint, but  maximum street speed
+					speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+				end
 			else
-				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.cp.waypointIndex].speed); --normaly use speed from waypoint, but  maximum street speed
-				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+				refSpeed = courseplay:getEnhancedControlSpeed(self, dt)
 			end
 		end;		
 	end;
@@ -1127,6 +1131,98 @@ function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
 	end
 	
 	return refSpeed/divider
+end;
+
+function courseplay:angleDifference(a, b)
+	local d = math.abs(a - b) % 360
+	if d > 180 then
+		return 360 - d
+	else
+		return d
+	end
+end
+
+function courseplay:getEnhancedControlSpeed(vehicle, dt)
+	local activeWaypointIndex = vehicle.cp.waypointIndex;
+	local activeWaypoint = vehicle.Waypoints[activeWaypointIndex];
+	
+	local targetWaypointIndex = (activeWaypointIndex + -1 - 1) % vehicle.cp.numWaypoints + 1;
+	local targetWaypoint = vehicle.Waypoints[targetWaypointIndex];
+	
+	local nextTargetWaypointIndex = (targetWaypointIndex + 1 - 1) % vehicle.cp.numWaypoints + 1;
+	local nextTargetWaypoint = vehicle.Waypoints[nextTargetWaypointIndex];
+	
+	local testedDistance = 0
+	
+	local sumOfSpeeds = 0
+	local countOfSpeeds = 0
+	local isTestingDistance = false;
+	
+	while not isTestingDistance or testedDistance < vehicle.cp.speeds.lookAheadDistance do
+		if not targetWaypoint.nextAngle or targetWaypoint.nextAngle ~= nextTargetWaypoint.angle then
+			--print(('Pre-Calculating Static Data for %d'):format(targetWaypointIndex));
+			targetWaypoint.nextAngle = nextTargetWaypoint.angle
+			targetWaypoint.angleDifference = courseplay:angleDifference(
+				courseplay.utils.normalizeAngle(targetWaypoint.angle), 
+				courseplay.utils.normalizeAngle(targetWaypoint.nextAngle));
+			local sourceWaypointIndex = (targetWaypointIndex + -1 - 1) % vehicle.cp.numWaypoints + 1;
+			local sourceWaypoint = vehicle.Waypoints[sourceWaypointIndex];
+			targetWaypoint.distance = courseplay:distance(sourceWaypoint.cx, sourceWaypoint.cz, targetWaypoint.cx, targetWaypoint.cz);
+			targetWaypoint.calculatedSpeed = nil;
+		end
+		if not targetWaypoint.calculatedSpeed or targetWaypoint.calculatedWithspeedControlPointsVersion ~= vehicle.cp.speeds.speedControlPointsVersion then
+			--print(('Calculating Speed for %d'):format(targetWaypointIndex));
+			targetWaypoint.calculatedSpeed = courseplay:getSpeedFromAngleDifferenceUsingControlPoints(vehicle, targetWaypoint.angleDifference);
+			targetWaypoint.calculatedWithspeedControlPointsVersion = vehicle.cp.speeds.speedControlPointsVersion;
+		end
+		
+		local speed = targetWaypoint.calculatedSpeed;
+		
+		if isTestingDistance then
+			testedDistance = testedDistance + targetWaypoint.distance;
+			if speed < vehicle.cp.curSpeed then
+				sumOfSpeeds = sumOfSpeeds + speed;
+				countOfSpeeds = countOfSpeeds + 1;
+			end
+		else
+			if nextTargetWaypointIndex == activeWaypointIndex then
+				local vehicleX, _, vehicleZ = getWorldTranslation(vehicle.cp.DirectionNode)
+				testedDistance = testedDistance + courseplay:distance(vehicleX, vehicleZ, nextTargetWaypoint.cx, nextTargetWaypoint.cz);
+				isTestingDistance = true;
+			end
+			
+			sumOfSpeeds = sumOfSpeeds + speed;
+			countOfSpeeds = countOfSpeeds + 1;
+		end
+
+		targetWaypointIndex, targetWaypoint = nextTargetWaypointIndex, nextTargetWaypoint
+
+		nextTargetWaypointIndex = (targetWaypointIndex + 1 - 1) % vehicle.cp.numWaypoints + 1;
+		nextTargetWaypoint = vehicle.Waypoints[nextTargetWaypointIndex];
+	end
+
+	activeWaypoint.lastSpeed = vehicle.cp.curSpeed;
+
+	return sumOfSpeeds / countOfSpeeds
+end;
+
+function courseplay:getSpeedFromAngleDifferenceUsingControlPoints(vehicle, angleDiff)
+	local speedControlPoints = vehicle.cp.speeds.speedControlPoints;
+	local controlPoint = 2
+	while controlPoint < #speedControlPoints and angleDiff > speedControlPoints[controlPoint].angle and speedControlPoints[controlPoint].angle < 90 do
+		controlPoint = controlPoint + 1
+	end
+	
+	local minAngle = speedControlPoints[controlPoint - 1].angle
+	local maxAngle = speedControlPoints[controlPoint].angle
+	local maxSpeed = speedControlPoints[controlPoint - 1].speed
+	local minSpeed = speedControlPoints[controlPoint].speed
+	
+	local speedFactor = 1 - (math.min(angleDiff, maxAngle) - minAngle) / (maxAngle - minAngle)
+	local speed = speedFactor * (maxSpeed - minSpeed) + minSpeed;
+	
+	--print(('angleDiff=%.2f, controlPoint=%d, minAngle=%.2f, maxAngle=%.2f, maxSpeed=%.2f, minSpeed=%.2f, speedFactor=%.2f, speed=%.2f'):format(angleDiff, controlPoint, minAngle, maxAngle, g_i18n:getSpeed(maxSpeed), g_i18n:getSpeed(minSpeed), speedFactor, g_i18n:getSpeed(speed)))
+	return speed
 end;
 
 function courseplay:setFourWheelDrive(vehicle, workArea)

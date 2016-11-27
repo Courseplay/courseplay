@@ -416,6 +416,73 @@ function courseplay:changeMaxSpeed(vehicle, changeBy)
 	end;
 end
 
+function courseplay:changeLookAheadDistance(vehicle, changeBy)
+	vehicle.cp.speeds.lookAheadDistance = Utils.clamp(vehicle.cp.speeds.lookAheadDistance + changeBy, 0, 100);
+end
+
+function courseplay:changeSpeedControlAngle(vehicle, controlPoint, changeBy)
+	local speedControlPoints = vehicle.cp.speeds.speedControlPoints
+	if controlPoint == 1 or (controlPoint > 1 and speedControlPoints[controlPoint - 1].angle == 90) then
+		return
+	end 
+	
+	local minAngle = 0
+	local maxAngle = 90
+	if controlPoint > 1 then
+		minAngle = speedControlPoints[controlPoint - 1].angle + 0.1
+	end
+	if controlPoint < #speedControlPoints and speedControlPoints[controlPoint + 1].angle < 90 then
+		maxAngle = speedControlPoints[controlPoint + 1].angle - 0.1
+	end
+	local angle = Utils.clamp(speedControlPoints[controlPoint].angle + changeBy, minAngle, maxAngle); 
+	if speedControlPoints[controlPoint].angle ~= angle then
+		speedControlPoints[controlPoint].angle = angle; 
+	
+		if speedControlPoints[controlPoint].angle == 90 then
+			for i=controlPoint + 1, #speedControlPoints  do
+				speedControlPoints[i].speed = 0
+			end
+		end
+		
+		vehicle.cp.speeds.speedControlPointsVersion = vehicle.cp.speeds.speedControlPointsVersion + 1
+	end
+end
+
+for i = 1, courseplay.speedControlPointCount do
+	courseplay['changeSpeedControlAngle' .. i] = function (self, vehicle, changeBy)
+		self:changeSpeedControlAngle(vehicle, i, changeBy)
+	end
+end
+
+function courseplay:changeSpeedControlSpeed(vehicle, controlPoint, changeBy)
+	local speedControlPoints = vehicle.cp.speeds.speedControlPoints
+
+	if controlPoint > 1 and speedControlPoints[controlPoint - 1].angle == 90 then
+		return
+	end 
+	
+	local minSpeed = 0
+	local maxSpeed = courseplay:round(vehicle.cp.speeds.max, 2)
+	if controlPoint > 1 then
+		maxSpeed = speedControlPoints[controlPoint - 1].speed
+	end
+	if controlPoint < #speedControlPoints then
+		minSpeed = speedControlPoints[controlPoint + 1].speed
+	end
+	local speed = Utils.clamp(courseplay:round(speedControlPoints[controlPoint].speed + changeBy, 2), minSpeed, maxSpeed); 
+	if speedControlPoints[controlPoint].speed ~= speed then
+		speedControlPoints[controlPoint].speed = speed;
+		
+		vehicle.cp.speeds.speedControlPointsVersion = vehicle.cp.speeds.speedControlPointsVersion + 1
+	end
+end
+
+for i = 1, courseplay.speedControlPointCount do
+	courseplay['changeSpeedControlSpeed' .. i] = function (self, vehicle, changeBy)
+		self:changeSpeedControlSpeed(vehicle, i, changeBy)
+	end
+end
+
 function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage)
 	local speed = force or (vehicle.cp.speeds.reverse + changeBy);
 	if not force then
@@ -429,7 +496,16 @@ function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage
 end
 
 function courseplay:toggleUseRecordingSpeed(vehicle)
-	vehicle.cp.speeds.useRecordingSpeed = not vehicle.cp.speeds.useRecordingSpeed;
+	if vehicle.cp.speeds.useRecordingSpeed then
+		if vehicle.cp.speeds.useEnhancedSpeedControl then
+			vehicle.cp.speeds.useEnhancedSpeedControl = false;
+			vehicle.cp.speeds.useRecordingSpeed = false;
+		else
+			vehicle.cp.speeds.useEnhancedSpeedControl = true;
+		end
+	else
+		vehicle.cp.speeds.useRecordingSpeed = true;
+	end
 end;
 
 function courseplay:changeWarningLightsMode(vehicle, changeBy)

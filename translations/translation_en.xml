@@ -75,11 +75,17 @@
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Field speed:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Street speed:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Reversing speed:" />
+		<text name="COURSEPLAY_SPEED_LOOKAHEAD" 						 text="Look ahead:" />
+		<text name="COURSEPLAY_SPEED_CONTROLANGLE" 						 text="Angle ranges:" />
+		<text name="COURSEPLAY_SPEED_CONTROLSPEED" 						 text="Target speeds (%s):" />
+		<text name="COURSEPLAY_SPEED_LOOKAHEAD_VALUE" 					 text="%d meter(s)" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Speed:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="from recording" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maximum speed" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatic (from course, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="no course loaded" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_ENHANCED" 				 text="enhanced speed control" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_ENHANCED_MAX" 			 text="automatic (enhanced speed control)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Warning lights:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="never turn on" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="beacon lights (on the street)" />
