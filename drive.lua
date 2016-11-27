@@ -14,13 +14,26 @@ function courseplay:drive(self, dt)
 		
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
-		local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
-		local tx2, ty2, tz2 = localToWorld(self.cp.DirectionNode,3,1,self.cp.backMarkerOffset)
-		local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, -1, 0, 0)
-		local distance = 6
-		drawDebugLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance), 1, 0, 0) 
-		drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0) 
-	end 
+		if self.cp.aiFrontMarker and self.cp.backMarkerOffset then
+			local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
+			local tx2, ty2, tz2 = localToWorld(self.cp.DirectionNode,3,1,self.cp.backMarkerOffset)
+			local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, -1, 0, 0)
+			local distance = 6
+			drawDebugLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance), 1, 0, 0)
+			drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0)
+		end;
+		local workTool = courseplay:getFirstReversingWheeledWorkTool(self);
+		if workTool and workTool.workAreas then
+			for index, workArea in ipairs(workTool.workAreas) do
+				local sx, sy, sz = getWorldTranslation(workArea["start"]);
+				drawDebugLine(sx, sy, sz, 1, 0, 0, sx, sy+3, sz, 1, 0, 0);
+				local wx, wy, wz = getWorldTranslation(workArea["width"]);
+				drawDebugLine(wx, wy, wz, 1, 0, 0, wx, wy+3, wz, 1, 0, 0);
+				local hx, hy, hz = getWorldTranslation(workArea["height"]);
+				drawDebugLine(hx, hy, hz, 1, 0, 0, hx, hy+3, hz, 1, 0, 0);
+			end;
+		end;
+	end
 	
 	local forceTrueSpeed = false
 	local refSpeed = huge
@@ -75,8 +88,8 @@ function courseplay:drive(self, dt)
 	end
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
-		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, cty + 3, cz, 0, 0, 1)
-		--drawDebugPoint(cx, cty+3, cz, 1, 0 , 1, 1);
+		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
+		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz, 0, 0, 1)
 	end;
 
 	-- HORIZONTAL/VERTICAL OFFSET
@@ -102,6 +115,8 @@ function courseplay:drive(self, dt)
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
 		if self.Waypoints[self.cp.waypointIndex].turn ~= nil then
+			-- TODO: (Claus) Change the isTurning to use turnStart from waypoint instead
+			-- TODO: (Claus) Change the isTurning is calculated by distance to turn point
 			self.cp.isTurning = self.Waypoints[self.cp.waypointIndex].turn
 		end
 		if self.cp.abortWork ~= nil and self.cp.totalFillLevelPercent == 0 then
@@ -515,7 +530,7 @@ function courseplay:drive(self, dt)
 		self.cp.TrafficBrake = false
 		return
 	end
-	self.cp.checkMarkers = false
+	self.cp.checkMarkers = false;
 	
 	--SPEED SETTING
 	local isAtEnd   = self.cp.waypointIndex > self.cp.numWaypoints - 3;
@@ -677,6 +692,10 @@ function courseplay:drive(self, dt)
 				distToChange = 2.85; --orig: 5
 			end;
 		end;
+
+		if beforeReverse then
+			self.cp.shortestDistToWp = nil
+		end
 	else
 		if self.cp.hasSpecializationArticulatedAxis then
 			distToChange = 5; -- ArticulatedAxis vehicles stear better with a longer change distance
@@ -691,10 +710,6 @@ function courseplay:drive(self, dt)
 	-- record shortest distance to the next waypoint
 	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.cp.distanceToTarget then
 		self.cp.shortestDistToWp = self.cp.distanceToTarget
-	end
-
-	if beforeReverse then
-		self.cp.shortestDistToWp = nil
 	end
 
 	if self.invertedDrivingDirection then
@@ -721,9 +736,10 @@ function courseplay:drive(self, dt)
 				steeringAngle = self.cp.steeringAngle * 2;
 			end;
 
-			local useDriveToPoint = self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
+			-- Using false to disable the driveToPoint. This could be made into an setting option later on.
+			local useDriveToPoint = false and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
 			if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
-				if math.abs(self.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+				if math.abs(self.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then
 						self.nextMovingDirection = -1
 					else
@@ -733,7 +749,8 @@ function courseplay:drive(self, dt)
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 				AIVehicleUtil.driveInDirection(self, dt, steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			else
-				local tX,_,tZ = worldToLocal(self.cp.DirectionNode, cx, cty, cz);
+				local directionNode = self.aiVehicleDirectionNode or self.cp.DirectionNode;
+				local tX,_,tZ = worldToLocal(directionNode, cx, cty, cz);
 				if courseplay:isWheelloader(self) then
 					tZ = tZ * 0.5; -- wheel loaders need to turn more
 				end;
@@ -906,6 +923,18 @@ function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	return newSpeed;
 end
 	
+function courseplay:getSpeedWithLimiter(vehicle, refSpeed)
+	for _, workTool in ipairs(vehicle.cp.workTools) do
+	--for i=1, #(vehicle.cp.workTools) do
+		--local workTool = vehicle.cp.workTools[i];
+		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isSprayerSpeedLimitActive) then
+			refSpeed = math.min(refSpeed, workTool.speedLimit)
+		end
+	end;
+
+	return refSpeed;
+end
+
 function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
