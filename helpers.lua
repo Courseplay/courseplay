@@ -32,22 +32,8 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 
 	local isFolding, isFolded, isUnfolded = false, true, true;
 	courseplay:debug(string.format('%s: isFolding(): realUnfoldDirection=%s, turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s', nameNum(workTool), tostring(workTool.cp.realUnfoldDirection), tostring(workTool.turnOnFoldDirection), tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), 17);
-
+	
 	for k,foldingPart in pairs(workTool.foldingParts) do
-		--local charSet = foldingPart.animCharSet;
-		--local animTime = charSet ~= 0 and getAnimTrackTime(charSet, 0) or workTool:getRealAnimationTime(foldingPart.animationName);
-
-		--isFolded/isUnfolded
-		--print(string.format('\tfoldingPart %d: animTime=%s, foldAnimTime=%s, isFoldedAnimTime=%s, isUnfoldedAnimTime=%s', k, tostring(animTime), tostring(workTool.foldAnimTime), tostring(foldingPart.isFoldedAnimTime),  tostring(foldingPart.isUnfoldedAnimTime)));
-		if workTool.foldAnimTime ~= foldingPart.isFoldedAnimTimeNormal then
-			isFolded = false;
-			courseplay:debug(string.format('\tfoldingPart %d: foldAnimTime=%s, isFoldedAnimTimeNormal=%s, isUnfoldedAnimTimeNormal=%s -> isFolded = false', k, tostring(workTool.foldAnimTime), tostring(foldingPart.isFoldedAnimTimeNormal),  tostring(foldingPart.isUnfoldedAnimTimeNormal)), 17);
-		end;
-		if workTool.foldAnimTime ~= foldingPart.isUnfoldedAnimTimeNormal then
-			isUnfolded = false;
-			courseplay:debug(string.format('\tfoldingPart %d: foldAnimTime=%s, isFoldedAnimTimeNormal=%s, isUnfoldedAnimTimeNormal=%s -> isUnfolded = false', k, tostring(workTool.foldAnimTime), tostring(foldingPart.isFoldedAnimTimeNormal),  tostring(foldingPart.isUnfoldedAnimTimeNormal)), 17);
-		end;
-
 		--isFolding
 		if workTool.oldFoldAnimTime == nil then workTool.oldFoldAnimTime = 0; end;
 		if workTool.foldAnimTime ~= workTool.oldFoldAnimTime then
@@ -58,11 +44,13 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 			elseif workTool.foldMoveDirection < 0 and workTool.foldAnimTime > 0 then
 				isFolding = true;
 			end;
-
 			workTool.oldFoldAnimTime = workTool.foldAnimTime;
 		end;
 	end;
-
+	
+	isUnfolded = workTool:getIsUnfolded();
+	isFolded = not isUnfolded and not isFolding;
+	
 	courseplay:debug(string.format('\treturn isFolding=%s, isFolded=%s, isUnfolded=%s', tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), 17);
 	return isFolding, isFolded, isUnfolded;
 end;

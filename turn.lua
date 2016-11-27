@@ -325,10 +325,10 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 			end;
 		end;
 		if moveDown then
-			if workTool.aiLower ~= nil then
+			if workTool.aiLower ~= nil and not workTool:getIsInWorkPosition() then
 				workTool:aiLower();
 			end
-		elseif workTool.aiRaise ~= nil then
+		elseif workTool.aiRaise ~= nil and workTool:getIsInWorkPosition() then
 				workTool:aiRaise()
 		end
 	
