@@ -69,11 +69,6 @@ function courseplay:drive(self, dt)
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
 	end]]
 
-	-- Turn on sound / control lights
-	if not self.isControlled then
-		--!!! self:setLightsVisibility(CpManager.lightsNeeded);
-	end;
-
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 
@@ -137,7 +132,19 @@ function courseplay:drive(self, dt)
 	end;
 
 
-	-- WARNING LIGHTS
+	-- LIGHTS
+	local lightMask = 0
+	local combineBeaconOn = self.cp.isCombine and self.cp.totalFillLevelPercent > 80;
+	local beaconOn = (self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
+					 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
+					 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
+					 or combineBeaconOn) or false;
+	if beaconOn then
+		lightMask = 1
+	else
+		lightMask = 7
+	end
+	
 	if self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_NEVER then -- never
 		if self.beaconLightsActive then
 			self:setBeaconLightsVisibility(false);
@@ -146,12 +153,6 @@ function courseplay:drive(self, dt)
 			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
 		end;
 	else -- on street/always
-		local combineBeaconOn = self.cp.isCombine and self.cp.totalFillLevelPercent > 80;
-		local beaconOn = (self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
-						 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
-						 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
-						 or combineBeaconOn) or false;
-
 		if self.beaconLightsActive ~= beaconOn then
 			self:setBeaconLightsVisibility(beaconOn);
 		end;
@@ -164,7 +165,18 @@ function courseplay:drive(self, dt)
 			end;
 		end;
 	end;
-
+	
+	-- lights
+	if CpManager.lightsNeeded then
+		if self.lightsTypesMask ~= lightMask then
+			self:setLightsTypesMask(lightMask)
+		end
+	elseif 	self.lightsTypesMask ~= 0 then
+		self:setLightsTypesMask(0)		
+	end;
+	
+	
+	
 
 	-- the tipper that is currently loaded/unloaded
 	local activeTipper;
@@ -737,7 +749,7 @@ function courseplay:drive(self, dt)
 			end;
 
 			-- Using false to disable the driveToPoint. This could be made into an setting option later on.
-			local useDriveToPoint = false and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
+			local useDriveToPoint = false --and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
 			if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
 				if math.abs(self.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then

@@ -7,6 +7,8 @@ function courseplay:start(self)
 	self.isHired = true;
 	self.isHirableBlocked = true;
 
+	self.cp.savedLightsMask  =  self.aiLightsTypesMask;
+	self.aiLightsTypesMask = nil; 
 	self.cp.forceIsActiveBackup = self.forceIsActive;
 	self.forceIsActive = true;
 	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
@@ -503,6 +505,7 @@ function courseplay:stop(self)
 	self.isHired = false;
 	self.isHirableBlocked = false;
 	
+	self.aiLightsTypesMask = self.cp.savedLightsMask;
 	self.forceIsActive = self.cp.forceIsActiveBackup;
 	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.steeringEnabled = true;
