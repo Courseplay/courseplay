@@ -300,8 +300,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
 		local trailerFillType = self.cp.workTools[1].cp.fillType;
 		if trailerFillType == nil or trailerFillType == 0 then
-			for i=2,#(self.cp.workTools) do
-				trailerFillType = self.cp.workTools[i].currentFillType;
+			for i=1,#(self.cp.workTools) do
+				trailerFillType = self.cp.workTools[i].cp.fillType;
 				if trailerFillType ~= nil and trailerFillType ~= 0 then 
 					break
 				end

@@ -307,8 +307,7 @@ function courseplay:unload_combine(vehicle, dt)
 		vehicle.cp.choppersTurnHasEnded = false
 	end
 	local aiTurn = false	
-		
-	for index,strategy in pairs(combine.driveStrategies) do
+	for index,strategy in pairs(tractor.driveStrategies) do
 		if strategy.activeTurnStrategy ~= nil then
 			combine.cp.turnStrategyIndex = index
 			strategy.activeTurnStrategy.didNotMoveTimer = strategy.activeTurnStrategy.didNotMoveTimeout;

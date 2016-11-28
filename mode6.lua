@@ -271,7 +271,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 							if not isFolding and isUnfolded and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
 								--lower
-								if needsLowering and workTool.aiNeedsLowering and not workTool:getIsInWorkPosition() then
+								if needsLowering and workTool.aiNeedsLowering then
 									workTool:aiLower()
 									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
@@ -310,7 +310,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 
 							--raise
-							if needsLowering and workTool.aiNeedsLowering and vehicle.cp.turnStage == 0 and workTool:getIsInWorkPosition()then
+							if needsLowering and workTool.aiNeedsLowering and vehicle.cp.turnStage == 0 then
 								workTool:aiRaise();
 								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 							end;
@@ -454,7 +454,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 						-- stop when there's no trailer to fill - courtesy of upsidedown
 						local chopperWaitForTrailer = false;
-						if tool.cp.isChopper and tool.lastValidFillType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+						if tool.cp.isChopper and tool.lastValidInputFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 							if not tool.pipeFoundTrailer then
 								chopperWaitForTrailer = true;
 							end								
@@ -539,7 +539,13 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,false,false,allowedToDrive,nil)
 				end
 				if not specialTool then
-					tool:setIsTurnedOn(false);
+					if isTurnedOn then
+						tool:setIsTurnedOn(false);
+						if tool.aiRaise ~= nil then
+							tool:aiRaise()
+							tool:setPipeState(1)
+						end
+					end	
 					if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
 						courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 						workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
@@ -573,14 +579,19 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				elseif tool.cp.isChopper or courseplay:isSpecialChopper(workTool) then
 					-- resume driving
 					local ch, gr = FillUtil.FILLTYPE_CHAFF, FillUtil.FILLTYPE_GRASS_WINDROW;
-					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) or pipeState > 0 then
-						if tool.lastValidFillType ~= FruitUtil.FRUITTYPE_UNKNOWN then
+					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) 
+					or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) 
+					or pipeState > 0 then
+						if tool.lastValidInputFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 							if tool.pipeFoundTrailer then
 								tool.cp.waitingForTrailerToUnload = false;
 							end
 						else
 							mayIDrive = allowedToDrive;
 						end;
+					end
+					if vehicle.cp.abortWork ~= nil then
+						mayIDrive = allowedToDrive;
 					end
 				end
 				allowedToDrive = mayIDrive;
