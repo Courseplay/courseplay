@@ -567,7 +567,7 @@ function courseplay:stop(self)
 	end
 	self.cp.turnStage = 0;
 	self.cp.isTurning = nil;
-	courseplay:clearTurnTargets(self);
+	--courseplay:clearTurnTargets(self);
 	self.aiTractorTargetX = nil
 	self.aiTractorTargetZ = nil
 	self.aiTractorTargetBeforeTurnX = nil

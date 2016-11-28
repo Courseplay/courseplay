@@ -6,8 +6,8 @@ function CpManager:setUpDebugChannels()
 	if CpManager.isDeveloper then
 		-- TODO: (Claus) Remove my default active debug channels when done.
 		--defaultActive[6] = true;
-		defaultActive[12] = true;
-		defaultActive[14] = true;
+		--defaultActive[12] = true;
+		--defaultActive[14] = true;
 	end;
 
 	-- DEBUG CHANNELS

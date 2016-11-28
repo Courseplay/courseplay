@@ -334,10 +334,6 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 	
 	end;
 	if not specialTool then
-	
-		--[[if self.setFoldState ~= nil then
-			self:setFoldState(state, true);
-		end;]] --!!! disabled just to know whether it's stll needed
 		if self.cp.mode == 4 then
 			for _,workTool in pairs(self.cp.workTools) do								 --vvTODO (Tom) why is this here vv?
 				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.turnOnVehicle.isTurnedOn ~= workToolonOff then
