@@ -3,7 +3,10 @@ local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 function courseplay:goReverse(vehicle,lx,lz)
 	local fwd = false;
 	local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle) or vehicle.cp.workTools[1];
-	local newTarget = vehicle.cp.turnTargets[vehicle.cp.curTurnIndex];
+	local newTarget;
+	if vehicle.cp.turnTargets and vehicle.cp.curTurnIndex then
+		newTarget = vehicle.cp.turnTargets[vehicle.cp.curTurnIndex];
+	end;
 
 	if workTool then
 		-- Attacher modules and HookLift modules that needs the hookLiftTrailer
