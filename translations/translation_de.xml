@@ -66,6 +66,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Fruchtumfahrung" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="seitl. Abstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bei:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Wende auf dem Feld:" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Wendekreis:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="vertik. Abstand:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Drescher" />

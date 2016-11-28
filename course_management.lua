@@ -126,6 +126,12 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.Waypoints = course.waypoints
 			vehicle.cp.numWaypoints = #vehicle.Waypoints;
 			vehicle:setCpVar('currentCourseName',course.name,courseplay.isClient)
+
+			-- for turn maneuver
+			vehicle.cp.courseWorkWidth = course.workWidth;
+			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+			vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
+
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
 		else -- add new course to old course
@@ -225,6 +231,18 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.numWaypoints = #vehicle.Waypoints;
 			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
 			vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
+
+			-- for turn maneuver
+			if not vehicle.cp.courseWorkWidth then
+				vehicle.cp.courseWorkWidth = course.workWidth;
+			end;
+			if not vehicle.cp.courseNumHeadlandLanes then
+				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+			end;
+			if vehicle.cp.courseHeadlandDirectionCW == nil then
+				vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
+			end;
+
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 
@@ -456,7 +474,7 @@ function courseplay.courses:saveFoldersToXml(cpCManXml)
 		cpCManXml = self:getCourseManagerXML();
 		deleteFile = true;
 	end;
-	
+
 	local index = 0;
 	for k,_ in pairs(g_currentMission.cp_folders) do
 		self:saveFolderToXml(k, cpCManXml, index);
@@ -547,11 +565,31 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 		-- setXMLFloat seems imprecise...
 		local courseXmlFilePath = CpManager.cpCoursesFolderPath .. g_currentMission.cp_courseManager[freeSlot].fileName;
 		local courseXml = createXMLFile("courseXml", courseXmlFilePath, 'course');
-		setXMLString(courseXml, "course#name", g_currentMission.cp_courseManager[freeSlot].name);
+		if cp_course.workWidth then
+			setXMLFloat(courseXml, "course#workWidth", cp_course.workWidth);
+		end;
+		if cp_course.numHeadlandLanes then
+			setXMLInt(courseXml, "course#numHeadlandLanes", cp_course.numHeadlandLanes);
+		end;
+		if cp_course.headlandDirectionCW ~= nil then
+			setXMLBool(courseXml, "course#headlandDirectionCW", cp_course.headlandDirectionCW);
+		end;
 
 		if courseXml and courseXml ~= 0 then
-
-			local types = { pos='String', angle='String', rev='Int', wait='Int', crossing='Int', speed='String', generated='Bool', dir='String', turn='String', turnstart='Int', turnend='Int', ridgemarker='Int' };
+			local types = {
+				pos='String',
+				angle='String',
+				rev='Int',
+				wait='Int',
+				crossing='Int',
+				speed='String',
+				generated='Bool',
+				lane='Int',
+				dir='String',
+				turn='String',
+				turnstart='Int',
+				turnend='Int',
+				ridgemarker='Int' };
 
 			for k, v in pairs(cp_course.waypoints) do
 				local waypoint = {
@@ -570,6 +608,7 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 					turnstart =    v.turnStart and courseplay:boolToInt(v.turnStart) or nil;
 					turnend =	   v.turnEnd and courseplay:boolToInt(v.turnEnd) or nil;
 					ridgemarker = (v.ridgeMarker and v.ridgeMarker ~= 0) and v.ridgeMarker or nil;
+					lane =		  (v.lane and v.lane < 0) and v.lane or nil;
 				};
 
 				waypoints[k] = waypoint;
@@ -683,7 +722,13 @@ function courseplay.courses:updateCourseManagerSlotsXml(slot, cpCManXml)
 	end;
 
 	if g_currentMission.cp_courseManager[slot].isUsed then
-		local types = { isUsed = 'Bool', fileName = 'String', id = 'Int', name = 'String', parent = 'Int'}
+		local types = {
+			isUsed = 'Bool',
+			fileName = 'String',
+			id = 'Int',
+			name = 'String',
+			parent = 'Int'
+		};
 		courseplay.utils.setMultipleXML(cpCManXml, string.format('courseManager.saveSlot.slot(%d)', g_currentMission.cp_courseManager[slot].index), g_currentMission.cp_courseManager[slot], types)
 	else
 		self.removeFromManagerXml("course", slot, cpCManXml);
@@ -1155,11 +1200,20 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 				-- course parent
 				local parent = slot.parent or 0;
 
+				-- course workWidth
+				local workWidth = getXMLFloat(courseXml, courseKey .. "#workWidth");
+
+				-- course numHeadlandLanes
+				local numHeadlandLanes = getXMLInt(courseXml, courseKey .. "#numHeadlandLanes");
+
+				-- course headlandDirectionCW
+				local headlandDirectionCW = getXMLBool(courseXml, courseKey .. "#headlandDirectionCW");
+
 				--course waypoints
 				waypoints = {};
 				local wpNum = 1;
 				while true do
-					local key = 'course.waypoint' .. wpNum;
+					local key = courseKey .. '.waypoint' .. wpNum;
 					if not hasXMLProperty(courseXml, key .. '#pos') then
 						break;
 					end;
@@ -1178,6 +1232,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					local rev 		  =    getXMLInt(courseXml, key .. '#rev');
 					local crossing 	  =    getXMLInt(courseXml, key .. '#crossing');
 					local generated   =   getXMLBool(courseXml, key .. '#generated');
+					local lane		  =    getXMLInt(courseXml, key .. '#lane');
 					local laneDir	  = getXMLString(courseXml, key .. '#dir');
 					local turn 		  = getXMLString(courseXml, key .. '#turn');
 					local turnStart	  =    getXMLInt(courseXml, key .. '#turnstart');
@@ -1200,6 +1255,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						wait = wait,
 						crossing = crossing,
 						generated = generated,
+						lane = lane,
 						laneDir = laneDir,
 						turn = turn,
 						turnStart = turnStart,
@@ -1208,7 +1264,18 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					};
 					wpNum = wpNum + 1;
 				end; -- END while true (waypoints)
-				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
+				local course = {
+					id =				  id,
+					uid =				  'c' .. id ,
+					type =				  'course',
+					name =				  courseName,
+					nameClean =			  courseNameClean,
+					waypoints =			  waypoints,
+					parent =			  parent,
+					workWidth =			  workWidth,
+					numHeadlandLanes =	  numHeadlandLanes,
+					headlandDirectionCW = headlandDirectionCW
+				};
 				if id ~= 0 then
 					courses_by_id[id] = course;
 				else

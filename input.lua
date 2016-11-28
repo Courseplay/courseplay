@@ -306,7 +306,11 @@ function courseplay:executeFunction(self, func, value, page)
 					end;
 				end;
 			end; --END if not self:getIsCourseplayDriving()
-		end; --END is page 0 or 1
+		elseif page == 3 then
+			if line == 2 then
+				self.cp.turnOnField = not self.cp.turnOnField;
+			end;
+		end; --END is page 0 or 1 or 3
 	end; --END isRowFunction
 end;
 

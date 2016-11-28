@@ -39,7 +39,7 @@ function courseplay:handle_mode2(vehicle, dt)
 	local currentTipper = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill]
 
 	if currentTipper == nil then
-		vehicle.cp.toolsDirty = true
+		vehicle.cp.tooIsDirty = true
 		return false
 	end
 

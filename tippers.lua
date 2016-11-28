@@ -6,14 +6,14 @@ function courseplay:attachImplement(implement)
 	--- Update Vehicle
 	local workTool = implement.object;
 	if workTool.attacherVehicle.cp.hasSpecializationSteerable then
-		workTool.attacherVehicle.cp.toolsDirty = true;
+		workTool.attacherVehicle.cp.tooIsDirty = true;
 	end;
 
 	courseplay:setAttachedCombine(self);
 end;
 function courseplay:detachImplement(implementIndex)
 	--- Update Vehicle
-	self.cp.toolsDirty = true;
+	self.cp.tooIsDirty = true;
 end;
 --[[ !!!
 local origVehicleDetachImplement = Vehicle.detachImplement;
@@ -56,9 +56,11 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.siloSelectedEasyFillType = 0;
 	courseplay:changeSiloFillType(vehicle, 1, vehicle.cp.siloSelectedFillType);
 
+	courseplay:calculateWorkWidth(vehicle, true);
+
 	vehicle.cp.currentTrailerToFill = nil;
 	vehicle.cp.trailerFillDistance = nil;
-	vehicle.cp.toolsDirty = false;
+	vehicle.cp.tooIsDirty = false;
 end;
 
 function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
@@ -130,7 +132,7 @@ function courseplay:isAttachedMixer(workTool)
 end;
 function courseplay:isAttacherModule(workTool)
 	if workTool.attacherJoint then
-		return (workTool.attacherJoint.jointType == Vehicle.JOINTTYPE_SEMITRAILER and (not workTool.wheels or (workTool.wheels and #workTool.wheels == 0))) or workTool.cp.isAttacherModule == true;
+		return (workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_SEMITRAILER and (not workTool.wheels or (workTool.wheels and #workTool.wheels == 0))) or workTool.cp.isAttacherModule == true;
 	end;
 	return false;
 end;
@@ -144,23 +146,23 @@ function courseplay:isBigM(workTool)
 	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
 end;
 function courseplay:isCombine(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
+	return workTool.cp.hasSpecializationCombine and workTool.attachedCutters ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return (workTool.cp.hasSpecializationCombine or workTool.cp.hasSpecializationAICombine) and workTool.attachedCutters ~= nil and workTool.cp.capacity == 0 or courseplay:isSpecialChopper(workTool);
+	return workTool.cp.hasSpecializationCombine and workTool.attachedCutters ~= nil and workTool.cp.capacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
 	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
 end;
 function courseplay:isFrontloader(workTool)
-	return workTool.cp.hasSpecializationCylindered  and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
+	return workTool.cp.hasSpecializationCylindered and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
 end;
 function courseplay:isHarvesterSteerable(workTool)
-	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isGrimmeMaxtron620 or workTool.cp.isGrimmeTectron415;
+	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isHarvesterSteerable;
 end;
 function courseplay:isHookLift(workTool)
 	if workTool.attacherJoint then
-		return workTool.attacherJoint.jointType == Vehicle.JOINTTYPE_HOOKLIFT;
+		return workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_HOOKLIFT;
 	end;
 	return false;
 end
@@ -185,8 +187,8 @@ end
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
 	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
 end;
-function courseplay:isWheelloader(workTool)			--vv added for Kasi, check whether it could cause problems (Tom)
-	return workTool.typeName:match("wheelLoader") or workTool.cp.isWheelLoader;
+function courseplay:isWheelloader(workTool)
+	return workTool.typeName:match("wheelLoader");
 end;
 
 -- UPDATE WORKTOOL DATA
@@ -197,6 +199,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	else
 		cpPrintLine(6);
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=true)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool)), 6);
+	end;
+
+	-- Reset distances if in debug mode 6.
+	if courseplay.debugChannels[6] ~= nil and courseplay.debugChannels[6] == true then
+		workTool.cp.distances = nil;
 	end;
 
 	courseplay:setNameVariable(workTool);
@@ -212,7 +219,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 3: AUGERWAGON
 	elseif vehicle.cp.mode == 3 then
-		if workTool.cp.isAugerWagon then -- if workTool.cp.hasSpecializationTrailer then
+		if workTool.cp.isAugerWagon then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end
@@ -259,13 +266,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or courseplay:isMower(workTool)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
-		and not workTool.cp.isCaseIHPuma160
 		and not courseplay:isSprayer(workTool)
 		and not courseplay:isSowingMachine(workTool)
 		then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			courseplay:setMarkers(vehicle, workTool,isImplement);
+			courseplay:setMarkers(vehicle, workTool);
 			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
 			if workTool.cp.hasSpecializationPlough then 
@@ -326,12 +332,13 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		local _,_,tractorToImplZ = worldToLocal(vehicle.cp.DirectionNode, implX,implY,implZ);
 
 		vehicle.cp.aiBackMarker = nil; --TODO (Jakob): still needed?
-		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true then 
+		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true and not workTool.cp.canBeReversed then
 			vehicle.cp.aiTurnNoBackward = true;
 			courseplay:debug(('%s: workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
-		elseif not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ <= 0 then
-			vehicle.cp.aiTurnNoBackward = true;
-			courseplay:debug(('%s: workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ (%.2f) <= 0 --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool), tractorToImplZ), 6);
+		-- TODO: (Claus) Check if we still need this. [Disables for now]
+		--elseif not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ <= 0 then
+		--	vehicle.cp.aiTurnNoBackward = true;
+		--	courseplay:debug(('%s: workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ (%.2f) <= 0 --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool), tractorToImplZ), 6);
 		end;
 	end;
 
@@ -444,15 +451,22 @@ function courseplay:setTipRefOffset(vehicle)
 	end;
 end;
 
-function courseplay:setMarkers(vehicle, object,isImplement)
-	local aLittleBitMore = 1;
-	object.cp.backMarkerOffset = nil
-	object.cp.aiFrontMarker = nil
+function courseplay:setMarkers(vehicle, object)
+	local aLittleBitMore 		= 0.5;
+	local pivotJointNode 		= courseplay:getPivotJointNode(object);
+	object.cp.backMarkerOffset 	= nil;
+	object.cp.aiFrontMarker 	= nil;
+
+	-- Get and set vehicle distances if not set
+	local vehicleDistances = vehicle.cp.distances or courseplay:getDistances(vehicle);
+	-- Get and set object distances if not set
+	local objectDistances = object.cp.distances or courseplay:getDistances(object);
+
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
 	local area = object.workAreas
 	if object.attachedCutters ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
 		courseplay:debug(('%s: setMarkers(): %s is a combine -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		return
+		return;
 	end
 	
 	if not area then
@@ -463,19 +477,49 @@ function courseplay:setMarkers(vehicle, object,isImplement)
 	local tableLength = #(area)
 	if tableLength == 0 then
 		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		return
+		return;
 	end
 	for k = 1, tableLength do
 		for j,node in pairs(area[k]) do
 			if j == "start" or j == "height" or j == "width" then 
-				local x, y, z = getWorldTranslation(node)
-				local _, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
-				courseplay:debug(('%s: %s Point %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), tostring(j), tostring(ztt)), 6);
+				local x, y, z;
+				local ztt = 0;
+				local type;
+
+				if pivotJointNode and object.attacherJoint.jointType then
+					type = "Pivot Trailer";
+					x, y, z = getWorldTranslation(pivotJointNode);
+
+					-- Get the marker offset from the pivot node.
+					_, _, ztt = worldToLocal(node, x, y, z);
+					ztt = ztt * -1;
+
+					-- Calculate the offset based on the distances
+					ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) + ztt;
+
+				elseif courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType then
+					type = "Trailer";
+					x, y, z = getWorldTranslation(object.attacherJoint.node)
+
+					-- Get the marker offset from the pivot node.
+					_, _, ztt = worldToLocal(node, x, y, z);
+					ztt = ztt * -1;
+
+					-- Calculate the offset based on the distances
+					ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] * -1) + ztt;
+
+				else
+					type = "Vehicle";
+					x, y, z = getWorldTranslation(node);
+					_, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+				end;
+
+				courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);
 				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
-					object.cp.backMarkerOffset = ztt
+					object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
 				end
 				if object.cp.aiFrontMarker == nil  or ztt < object.cp.aiFrontMarker then
-					object.cp.aiFrontMarker = ztt
+					object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
 				end
 			end
 		end
@@ -588,72 +632,6 @@ function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
 	end;
 	cpPrintLine(6, 1);
 end;
-
-function courseplay:setOldAutoTurnDiameter(vehicle, hasWorkTool)
-	local sinAlpha = 0;		-- Sinus vom Lenkwinkel
-	local wheelbase = 0;	-- Radstand
-	local track = 0;		-- Spurweite
-	local turnDiameter = 0;	-- Wendekreis unbereinigt
-	local xerion = false
-	if vehicle.foundWheels == nil then
-		vehicle.foundWheels = {}
-	end
-	for i=1, #(vehicle.wheels) do
-		local wheel =  vehicle.wheels[i]
-		if wheel.rotMax ~= 0 then
-			if vehicle.foundWheels[1] == nil then
-				sinAlpha = wheel.rotMax
-				vehicle.foundWheels[1] = wheel
-			elseif vehicle.foundWheels[2] == nil then
-				vehicle.foundWheels[2] = wheel
-			elseif vehicle.foundWheels[4] == nil then
-				vehicle.foundWheels[4] = wheel
-			end
-		elseif vehicle.foundWheels[3] == nil then
-			vehicle.foundWheels[3] = wheel
-		end
-	
-	end
-	if vehicle.foundWheels[3] == nil then --Xerion and Co
-		sinAlpha = sinAlpha *2
-		xerion = true
-	end
-		
-	if #(vehicle.foundWheels) == 3 or xerion then
-		local wh1X, wh1Y, wh1Z = getWorldTranslation(vehicle.foundWheels[1].driveNode);
-		local wh2X, wh2Y, wh2Z = getWorldTranslation(vehicle.foundWheels[2].driveNode);
-		local wh3X, wh3Y, wh3Z = 0,0,0
-		if xerion then
-			wh3X, wh3Y, wh3Z = getWorldTranslation(vehicle.foundWheels[4].driveNode);
-		else
-			wh3X, wh3Y, wh3Z = getWorldTranslation(vehicle.foundWheels[3].driveNode);
-		end	 
-		track  = courseplay:distance(wh1X, wh1Z, wh2X, wh2Z)
-		wheelbase = courseplay:distance(wh1X, wh1Z, wh3X, wh3Z)
-		turnDiameter = 2*wheelbase/sinAlpha+track
-		vehicle.foundWheels = {}
-	else
-		turnDiameter = vehicle.cp.turnDiameter                  -- Kasi and Co are not supported. Nobody does hauling with a Kasi or Quadtrack !!!
-	end;
-	
-	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then --TODO (Jakob): I've added modes 3, 4 & 6 - needed?
-		vehicle.cp.turnDiameterAuto = turnDiameter;
-		--print(string.format("vehicle.cp.workTools[1].sizeLength = %s  turnDiameter = %s", tostring(vehicle.cp.workTools[1].sizeLength),tostring( turnDiameter)))
-		if vehicle.cp.numWorkTools == 1 and vehicle.cp.workTools[1].attacherVehicle ~= vehicle and (vehicle.cp.workTools[1].sizeLength > turnDiameter) then
-			vehicle.cp.turnDiameterAuto = vehicle.cp.workTools[1].sizeLength;
-		end;
-		if (vehicle.cp.numWorkTools > 1) then
-			vehicle.cp.turnDiameterAuto = turnDiameter * 1.5;
-		end
-	end;
-
-	if vehicle.cp.turnDiameterAutoMode then
-		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
-		if abs(vehicle.cp.turnDiameter) > 50 then
-			vehicle.cp.turnDiameter = 15
-		end
-	end;
-end
 
 --##################################################
 
@@ -791,7 +769,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			end;
 		end;
 	end
-	
+
 	if freeCapacity == 0 then
 		if vehicle.cp.isTipping then
 			if not courseplay.SiloIsFullMessageTimeOn then
@@ -840,15 +818,15 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			if isBGA and not bgaIsFull then
 
 				local stopAndGo = false;
-				
+
 				-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint if possible.
 				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
 					bestTipReferencePoint = tipper.cp.rearTipRefPoint;
-					
+
 				end;
 
 				-- Check if bestTipReferencePoint it's inversed
-				
+
 				--[[if tipper.cp.inversedRearTipNode == nil then
 					local vx,vy,vz = getWorldTranslation(vehicle.rootNode)
 					local _,_,tz = worldToLocal(tipper.tipReferencePoints[bestTipReferencePoint].node, vx,vy,vz);
@@ -867,25 +845,25 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				local ex, ey, ez = worldToLocal(ctt.triggerEndId, x, y, z);
 				local startDistance = Utils.vector2Length(sx, sz);
 				local endDistance = Utils.vector2Length(ex, ez);
-				
+
 				--stop if we are not empty but near the end of the trigger
 				if 	tipper.cp.isTipping and (endDistance <1 or startDistance <1) then
 					allowedToDrive = false;
 				end
-				
+
 				-------------------------------
 				--- Reverse into BGA and unload
 				-------------------------------
 				if vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping then
 					if vehicle.cp.totalFillLevel > 0 then
-						if trailerInTipRange and startDistance > 8 and endDistance > 8 then 
+						if trailerInTipRange and startDistance > 8 and endDistance > 8 then
 							goForTipping = true
 							allowedToDrive = false
 						end
 					else
 						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle))
 					end
-					
+
 				-------------------------------
 				--- Normal BGA unload
 				-------------------------------
@@ -893,7 +871,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					if trailerInTipRange then
 						goForTipping = true
 					end
-						
+
 					-- Get the animation
 					local animation = tipper.tipAnimations[bestTipReferencePoint];
 					local totalLength = abs(endDistance - startDistance)*0.9;
@@ -1054,7 +1032,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 			workToolSprayerFillLevelPct = workTool.cp.fillLevelPercent
 		end
 		local fillLevelPct = vehicle.cp.totalFillLevelPercent;
-		
+
 		local isSprayer = courseplay:isSprayer(workTool);
 
 		if isSprayer then
@@ -1064,16 +1042,16 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				return allowedToDrive, lx, lz;
 			end;
 		end;
-		
+
 		-- Sprayer / liquid manure transporters
 		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool:allowFillType(FillUtil.FILLTYPE_MANURE) then
 			-- print(('\tworkTool %d (%q)'):format(i, nameNum(workTool)));
 			local fillTrigger;
 			if vehicle.cp.fillTrigger ~= nil then
-				
+
 				courseplay:debug(('%s: vehicle.cp.fillTrigger = %s'):format(nameNum(vehicle), tostring(vehicle.cp.fillTrigger)), 19);
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
-				if (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then 
+				if (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
 					if courseplay:fillTypesMatch(trigger, workTool) then
 						--print('\t\tslow down, it\'s a sprayerFillTrigger');
 						courseplay:debug(('%s: trigger is SprayerFillTrigger -> set vehicle.cp.isInFilltrigger'):format(nameNum(vehicle)), 19);
@@ -1107,12 +1085,12 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, workTool);
 			local canRefill = workToolSprayerFillLevelPct < driveOn and fillTypesMatch;
 			courseplay:debug(('%s: canRefill:%s; fillTypesMatch:%s'):format(nameNum(vehicle),tostring(canRefill),tostring(fillTypesMatch)), 19);
-			
+
 			if canRefill and vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
 				canRefill = not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -2, 2, 'wait', true, false);
 
 				if canRefill then
-					if (workTool.isSpreaderInRange ~= nil and workTool.isSpreaderInRange.manureTriggerc ~= nil) 
+					if (workTool.isSpreaderInRange ~= nil and workTool.isSpreaderInRange.manureTriggerc ~= nil)
 					-- regular fill triggers
 					or (fillTrigger ~= nil and fillTrigger.triggerId ~= nil and vehicle.cp.lastMode8UnloadTriggerId ~= nil and fillTrigger.triggerId == vehicle.cp.lastMode8UnloadTriggerId)
 					-- manureLager fill trigger
@@ -1146,7 +1124,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				courseplay:debug(('%s: canRefill is false -> break'):format(nameNum(vehicle)), 19);
 			end;
 		end;
-		
+
 		-- SOWING MACHINE -- NOTE: no elseif, as a workTool might be both a sprayer and a seeder (URF)
 		if courseplay:isSowingMachine(workTool) then
 			if vehicle.cp.fillTrigger ~= nil then

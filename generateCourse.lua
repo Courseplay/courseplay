@@ -877,6 +877,11 @@ function courseplay:generateCourse(vehicle)
 	vehicle.cp.numCourses = 1;
 	courseplay.signs:updateWaypointSigns(vehicle);
 
+	-- extra data for turn maneuver
+	vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
+	vehicle.cp.courseNumHeadlandLanes = numHeadlandLanesCreated;
+	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.headland.userDirClockwise;
+
 	vehicle.cp.hasGeneratedCourse = true;
 	courseplay:setFieldEdgePath(vehicle, nil, 0);
 	courseplay:validateCourseGenerationData(vehicle);

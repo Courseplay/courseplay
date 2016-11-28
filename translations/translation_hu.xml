@@ -62,6 +62,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Útvonal keresése" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Oldaltávolság:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Tölteni indul:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Fordulási sugár:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Eltolás előre/hátra:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Kombájn" />

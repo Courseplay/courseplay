@@ -1107,6 +1107,15 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
 				parent = parent + startFromFolderID;
 
+				-- course workWidth
+				local workWidth = getXMLFloat(cpFile, courseKey .. "#workWidth");
+
+				-- course numHeadlandLanes
+				local numHeadlandLanes = getXMLInt(cpFile, courseKey .. "#numHeadlandLanes");
+
+				-- course headlandDirectionCW
+				local headlandDirectionCW = getXMLBool(cpFile, courseKey .. "#headlandDirectionCW");
+
 				--course waypoints
 				waypoints = {};
 
@@ -1135,6 +1144,7 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
 
 					local generated   =   getXMLBool(cpFile, key .. '#generated');
+					local lane		  =    getXMLInt(cpFile, key .. '#lane');
 					local laneDir	  = getXMLString(cpFile, key .. '#dir');
 					local turn 		  = getXMLString(cpFile, key .. '#turn');
 					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
@@ -1171,7 +1181,18 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 					wpNum = wpNum + 1;
 				end; -- END while true (waypoints)
 
-				local course = { id = id, uid = 'c' .. id , type = 'course', name = courseName, nameClean = courseNameClean, waypoints = waypoints, parent = parent };
+				local course = {
+					id = id,
+					uid = 'c' .. id ,
+					type = 'course',
+					name = courseName,
+					nameClean = courseNameClean,
+					waypoints = waypoints,
+					parent = parent,
+					workWidth = workWidth,
+					numHeadlandLanes = numHeadlandLanes,
+					headlandDirectionCW = headlandDirectionCW
+				};
 				if id ~= 0 then
 					courses_by_id[id] = course;
 				else

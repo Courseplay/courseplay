@@ -50,6 +50,7 @@ function courseplay:load(savegame)
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
 	self.cp.aiTurnNoBackward = false --bool
+	self.cp.canBeReversed = nil --bool
 	self.cp.backMarkerOffset = nil --float
 	self.cp.aiFrontMarker = nil --float
 	self.cp.turnTimer = 8000 --int
@@ -125,6 +126,7 @@ function courseplay:load(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
+	self.cp.turnOnField = true;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
 
@@ -165,6 +167,8 @@ function courseplay:load(savegame)
 	self.cp.curTarget = {};
 	self.cp.curTargetMode7 = {};
 	self.cp.nextTargets = {};
+	self.cp.turnTargets = {};
+	self.cp.curTurnIndex = 1;
 
 	-- speed limits
 	self.cp.speeds = {
@@ -175,7 +179,7 @@ function courseplay:load(savegame)
 		street = 50;
 		crawl = 3;
 		discharge = 8;
-		
+
 		minReverse = 3;
 		minTurn = 3;
 		minField = 3;
@@ -183,7 +187,7 @@ function courseplay:load(savegame)
 		max = self.cruiseControl.maxSpeed or 60;
 	};
 
-	self.cp.toolsDirty = false
+	self.cp.tooIsDirty = false
 	self.cp.orgRpm = nil;
 
 	-- data basis for the Course list
@@ -261,6 +265,11 @@ function courseplay:load(savegame)
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 
 	self.cp.steeringAngle = Utils.getNoNil(math.deg(self.maxRotation), 30);
+	if self.cp.steeringAngleCorrection then
+		self.cp.steeringAngle = Utils.getNoNil(self.cp.steeringAngleCorrection, self.cp.steeringAngle);
+	elseif self.cp.steeringAngleMultiplier then
+		self.cp.steeringAngle = self.cp.steeringAngle * self.cp.steeringAngleMultiplier;
+	end;
 	self.cp.tempCollis = {}
 	self.CPnumCollidingVehicles = 0;
 	self.cpTrafficCollisionIgnoreList = {};
@@ -346,8 +355,6 @@ function courseplay:load(savegame)
 	self.cp.driveOnAtFillLevel = 90
 	self.cp.refillUntilPct = 100;
 
-	--self.turn_factor = nil --TODO: is never set, but used in mode2:816 in localToWorld function
-	courseplay:setAckermannSteeringInfo(self, xmlFile);
 	self.cp.vehicleTurnRadius = courseplay:getVehicleTurnRadius(self);
 	self.cp.turnDiameter = self.cp.vehicleTurnRadius * 2;
 	self.cp.turnDiameterAuto = self.cp.vehicleTurnRadius * 2;
@@ -522,8 +529,7 @@ function courseplay:draw()
 			renderText(0.2,0.135,0.02,"combineIsTurning: "..tostring(self.cp.mode2DebugTurning ))
 		end	
 	end
-	
-	
+
 	if courseplay.debugChannels[10] and self.cp.BunkerSiloMap ~= nil and self.cp.actualTarget ~= nil then
 		local fillUnit = self.cp.BunkerSiloMap[self.cp.actualTarget.line][self.cp.actualTarget.column]
 		--print(string.format("fillUnit %s; self.cp.actualTarget.line %s; self.cp.actualTarget.column %s",tostring(fillUnit),tostring(self.cp.actualTarget.line),tostring(self.cp.actualTarget.column)))
@@ -540,11 +546,8 @@ function courseplay:draw()
 			renderText(0.2,0.195,0.02,"SavedLastFillLevel: "..tostring(self.cp.mode9SavedLastFillLevel))
 			renderText(0.2,0.165,0.02,"triesTheSameFillUnit: "..tostring(self.cp.mode9triesTheSameFillUnit))
 		end
-		
 	end
-	
-	
-	
+
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)
@@ -906,7 +909,7 @@ function courseplay:updateTick(dt)
 	end;
 
 	--attached or detached implement?
-	if self.cp.toolsDirty then
+	if self.cp.tooIsDirty then
 		self.cpTrafficCollisionIgnoreList = {}
 		courseplay:resetTools(self)
 	end
@@ -1342,6 +1345,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
+		self.cp.turnOnField  		  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnOnField'), 			 true);
 		self.cp.workWidth 			  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),			 3);
 		self.cp.ridgeMarkersAutomatic = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'), true);
 		self.cp.abortWork 			  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),			 0);
@@ -1444,7 +1448,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving));
-	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct);
+	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField));
 	local shovels, combine = '', '';
 	if shovelRotsAttrNodes or shovelTransAttrNodes then
 		shovels = string.format('<shovel rot=%q trans=%q />', shovelRotsAttrNodes, shovelTransAttrNodes);

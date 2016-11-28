@@ -48,7 +48,7 @@ function courseplay:set_waitpoint(vehicle)
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local wait = true;
 	local rev = courseplay:trueOrNil(vehicle.cp.drivingDirReverse);
-	local crossing = nil;
+	local crossing;
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, 0);
 	vehicle.cp.recordingTimer = 1
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
@@ -60,7 +60,7 @@ end
 function courseplay:set_crossing(vehicle, stop)
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
-	local wait = nil;
+	local wait;
 	local rev = courseplay:trueOrNil(vehicle.cp.drivingDirReverse);
 	local crossing = true;
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, vehicle.cp.curSpeed);
@@ -147,7 +147,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
-	local wait, rev, crossing = nil, nil, nil;
+	local wait, rev, crossing;
 	if vehicle.cp.isRecordingTurnManeuver then
 		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, vehicle.cp.curSpeed, "noDirection", true, nil);
 	else
@@ -204,7 +204,7 @@ end;
 function courseplay:change_DriveDirection(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
-	local wait, crossing = nil, nil;
+	local wait, crossing;
 	local rev = courseplay:trueOrNil(vehicle.cp.drivingDirReverse);
 	courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, 0);
 	vehicle.cp.drivingDirReverse = not vehicle.cp.drivingDirReverse
@@ -264,6 +264,11 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.numWaypoints = 0;
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.waitPoints = {};
+
+	-- for turn maneuver
+	vehicle.cp.courseWorkWidth = nil;
+	vehicle.cp.courseNumHeadlandLanes = nil;
+	vehicle.cp.courseHeadlandDirectionCW = nil;
 
 	vehicle.cp.hasGeneratedCourse = false;
 	courseplay:validateCourseGenerationData(vehicle);

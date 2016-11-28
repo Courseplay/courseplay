@@ -183,6 +183,16 @@ function inputCourseNameDialogue:onSaveClick()
 		vehicle.cp.numCourses = 1;
 
 		local course = { id = vehicle.cp.currentCourseId, uid = 'c'..vehicle.cp.currentCourseId, type = 'course', name = vehicle.cp.currentCourseName, nameClean = courseplay:normalizeUTF8(vehicle.cp.currentCourseName), waypoints = vehicle.Waypoints, parent = 0 }
+		if vehicle.cp.courseWorkWidth then -- data for turn maneuver
+			course.workWidth = vehicle.cp.courseWorkWidth;
+		end;
+		if vehicle.cp.courseNumHeadlandLanes then
+			course.numHeadlandLanes = vehicle.cp.courseNumHeadlandLanes;
+		end;
+		if vehicle.cp.courseHeadlandDirectionCW ~= nil then
+			course.headlandDirectionCW = vehicle.cp.courseHeadlandDirectionCW;
+		end;
+
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
 		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
 		

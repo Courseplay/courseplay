@@ -119,6 +119,17 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 	-- ###########################################################
 
+	--- SPECIAL VARIABLES THAT CAN BE USED:
+	--
+	-- workTool.cp.steeringAngleCorrection		(Angle in degrees)		Overwrite the default steering angle if set. NOTE: steeringAngleMultiplier will have no effect if this is set.
+	-- workTool.cp.steeringAngleMultiplier:		(Number)				Used if vehicle needs to turn faster or slower.
+	--																	2 	= turns 2 times slower.
+	--																	0.5 = turns 2 times slower.
+	-- workTool.cp.componentNumAsDirectionNode:	(Component Index)		Used to set another component as the Direction Node. Starts from index 1 as the first component.
+	-- workTool.cp.directionNodeZOffset:		(Distance in meters)	If set, then the Direction Node will be offset by the value set.
+	-- TODO: Add description for all the special varialbes that is usable here.
+	-- ###########################################################
+
 	-- MODS
 	-- [1] MOD COMBINES
 
@@ -126,7 +137,13 @@ function courseplay:setNameVariable(workTool)
 
 	-- [2] MOD TRACTORS
 
-	-- ###########################################################
+	elseif workTool.cp.xmlFileName ==  'KirovetsK700A.xml' then
+		workTool.cp.isKirovetsK700A = true;
+		--workTool.cp.steeringAngleCorrection = 10;
+		--workTool.cp.directionNodeZOffset = 1.644;
+		--workTool.cp.componentNumAsDirectionNode = 2;
+
+		-- ###########################################################
 
 	-- [3] MOD TRAILERS
 
@@ -468,8 +485,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 end
 
 function courseplay:askForSpecialSettings(self, object)
-	-- SPECIAL VARIABLES TO USE:
-	--[[
+	--- SPECIAL VARIABLES THAT CAN BE USED:
+	--
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
 	-- object.cp.backMarkerOffsetCorection:		(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise and/or turn off the work tool
 	--																	Positive value, moves it forward, Negative value moves it backwards.
@@ -487,8 +504,7 @@ function courseplay:askForSpecialSettings(self, object)
 	-- self.cp.noStopOnTurn:					(Boolean)				Set this to true if the work tool don't need to stop for 1½ sec before turning.
 	--																	Some work tool types automatically set this to true.
 	-- self.cp.backMarkerOffset:				(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise/lower or turn on/off the work tool
-	-- TODO: (Claus) Add description for all the special varialbes that is usable here.
-	]]
+	-- TODO: Add description for all the special varialbes that is usable here.
 
 	courseplay:debug(('%s: askForSpecialSettings(..., %q)'):format(nameNum(self), nameNum(object)), 6);
 

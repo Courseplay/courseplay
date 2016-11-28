@@ -33,21 +33,21 @@
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Carica percorso" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d sec" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />           
+		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nome del percorso:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome della directory:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtro percorsi:" />
 		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- (This is the name of the Return Button) -->
 		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s per annullare" />			
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s per salvare Percorso" />	
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Directory" />	
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s per filtrare Percorsi" />	
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s per annullare" />
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s per salvare Percorso" />
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Directory" />
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s per filtrare Percorsi" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Percorsi: %q" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="ha raggiunto il punto di scarico." />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha raggiunto il punto d'attesa" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha raggiunto la fine del percorso" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di grano." />  
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di grano." />
 		<text name="COURSEPLAY_WORK_END" 								 text="ha finito il lavoro." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": attrezzo necessita di essere scaricato." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": attrezzo deve essere rifornito." />
@@ -59,6 +59,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evita la coltura" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distanza laterale:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Inizia a:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Gira nel campo:" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Raggio di sterzata" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Distanza verticale:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Trebbia" />
@@ -99,7 +100,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Guida accanto la trebbia" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Vai alla trebbia" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="La trebbia mi dice di fermarmi" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	                 text="Aspettando che la mia area di sosta sia libera" /> 
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Aspettando che la mia area di sosta sia libera" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Girando in direzione %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Guida a %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Aspettando che il livello di riempimento sia raggiunto" />
@@ -158,11 +159,11 @@
 		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="salva posizione di riempimento" /> 
 		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="salva posizione di trasporto" /> 
 		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="salva posizione prima di svuotamento" /> 
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="salva posizione svuota pala" /> 
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="salva posizione svuota pala" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="muovi a posizione di riempimento" /> 
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi a posizione di trasporto" /> 
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	         text="muovi a posizione prima di svuotamento" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione svuota pala" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 text="muovi a posizione prima di svuotamento" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione svuota pala" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; go" />
 
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il corso al" />
@@ -195,7 +196,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": il silo è pieno!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Il granaio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Il granaio sta caricando:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": il granaio è pieno! Contiuna al prossimo granaio." />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
@@ -205,16 +206,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostra il Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Nascondi Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funzioni Courseplay" />
-		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: modificatore" /> 
+		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: modificatore" />
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: accetta menu secondario" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Mostra/nascondi Courseplay HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: usa/ferma percorso" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay: ferma all'ultimo punto o al prossimo trigger" />
-		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay: avvia ora" />
-		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo successivo" />
-		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: modo precedente" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: azione del mouse" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: azione secondaria del mouse" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: ferma all'ultimo punto o al prossimo trigger" />
+		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: avvia ora" />
+		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: modo successivo" />
+		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo precedente" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: azione del mouse" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare percorso in corso caricato" />
