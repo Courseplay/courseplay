@@ -1176,7 +1176,7 @@ function courseplay:isWheeledWorkTool(workTool)
 		end;
 	end;
 
-	if allowedJointType[workTool.attacherJoint.jointType] and workTool.wheels and #workTool.wheels > 0 then
+	if workTool.attacherJoint and allowedJointType[workTool.attacherJoint.jointType] and workTool.wheels and #workTool.wheels > 0 then
 		-- Attempt to find the pivot node.
 		local node, _ = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
 		if node then
