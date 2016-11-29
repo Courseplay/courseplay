@@ -380,8 +380,8 @@ function courseplay:turn(vehicle, dt)
 	else
 		--- Add WP to follow while doing last bit before raising Implement
 		if not newTarget then
-			local fromPointX, fromPointZ = self.Waypoints[self.cp.waypointIndex - 1].cx, self.Waypoints[self.cp.waypointIndex - 1].cz
-			local toPointX, toPointZ = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
+			local fromPointX, fromPointZ = vehicle.Waypoints[vehicle.cp.waypointIndex - 1].cx, vehicle.Waypoints[vehicle.cp.waypointIndex - 1].cz
+			local toPointX, toPointZ = vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz
 			local dist = courseplay:distance(fromPointX, fromPointZ, toPointX, toPointZ);
 			local dx, dz = (toPointX - fromPointX) / dist, (toPointZ - fromPointZ) / dist;
 			local extraForward = 0;
