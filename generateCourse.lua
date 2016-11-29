@@ -254,7 +254,7 @@ function courseplay:generateCourse(vehicle)
 							local dx,dy,dz = worldToLocal(vehicle.cp.headland.tg, offsP.cx, offsP.cy, offsP.cz);
 							local overlap = dx > -noGoWidth and dx < noGoWidth and dz > 0 and dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio;
 							if overlap then
-								courseplay:debug(string.format('\toffset point %d: OVERLAP!!!', i), 7);
+								courseplay:debug(string.format('\toffset point %d: OVERLAP!', i), 7);
 								courseplay:debug(string.format('\t\tcount=%d, swingDir=%d, checkNum=%d', count, swingDir, checkNum), 7);
 								courseplay:debug(string.format('\t\tdx,dy,dz=%.1f,%.1f,%.1f', dx,dy,dz), 7);
 								-- courseplay:debug(string.format('\t\tdx > -noGoWidth = %s // dx < noGoWidth = %s // dz > 0 = %s, dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio = %s', tostring(dx > -noGoWidth), tostring(dx < noGoWidth), tostring(dz > 0), tostring(dz < cp.distToNextPoint * vehicle.cp.headland.rectWidthRatio)), 7);
@@ -262,7 +262,7 @@ function courseplay:generateCourse(vehicle)
 								table.insert(toBeDeleted, i);
 								break;
 							else
-								-- courseplay:debug(string.format('\t\tNO OVERLAP!!! --> new checkNum = %d + (%d * %d) = %d', checkNum, count, swingDir, checkNum + (count * swingDir)), 7);
+								-- courseplay:debug(string.format('\t\tNO OVERLAP! --> new checkNum = %d + (%d * %d) = %d', checkNum, count, swingDir, checkNum + (count * swingDir)), 7);
 								checkNum = checkNum + (count * swingDir);
 								--rudimentary looped table
 								if checkNum < 1 then

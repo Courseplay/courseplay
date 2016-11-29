@@ -118,18 +118,18 @@ function courseplay:vehicleDelete()
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
 
-function courseplay:foldableLoad(xmlFile)
+function courseplay:foldableLoad(savegame)
 	if self.cp == nil then self.cp = {}; end;
 
 	--FOLDING PARTS STARTMOVEDIRECTION
-	local startMoveDir = 1 --!!!getXMLInt(xmlFile, 'vehicle.foldingParts#startMoveDirection');
-	if startMoveDir == nil and false then --!!!
+	local startMoveDir = getXMLInt(self.xmlFile, 'vehicle.foldingParts#startMoveDirection');
+	if startMoveDir == nil then
  		local singleDir;
 		local i = 0;
 		while true do -- go through single foldingPart entries
 			local key = string.format('vehicle.foldingParts.foldingPart(%d)', i);
-			if not hasXMLProperty(xmlFile, key) then break; end;
-			local dir = getXMLInt(xmlFile, key .. '#startMoveDirection');
+			if not hasXMLProperty(self.xmlFile, key) then break; end;
+			local dir = getXMLInt(self.xmlFile, key .. '#startMoveDirection');
 			if dir then
 				if singleDir == nil then --first foldingPart -> set singleDir
 					singleDir = dir;

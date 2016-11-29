@@ -58,8 +58,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			tool = workTool
 			workTool.cp.turnStage = vehicle.cp.turnStage
 		end
-		--courseplay:getOwnFillLevelAndCapacity(tool) --!!!
-		
+				
 		fillLevelPct = workTool.cp.fillLevelPercent
 		
 		local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
@@ -102,7 +101,6 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						-- automatic opening for balers
 						if workTool.baler.unloadingState ~= nil then
 							fillLevelPct = courseplay:round(workTool.cp.fillLevelPercent, 3);
-							--!!! local capacity = courseplay:round(100 * (workTool.realBalerOverFillingRatio or 1), 3);
 							local capacity = workTool.cp.capacity
 							local fillLevel = workTool.cp.fillLevel
 							--print(string.format("if courseplay:isRoundbaler(workTool)(%s) and fillLevelPct(%s) > capacity(%s) * 0.9 and fillLevelPct < capacity and workTool.baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",

@@ -162,7 +162,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 			local px,_,pz = getWorldTranslation(probe1);
 			local rotAngle = 0.1; -- 5.73 deg
 
-			local return2field = not courseplay:isField(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!!!
+			local return2field = not courseplay:isField(px, pz, 0.1, 0.1); --there is NO guarantee that probe1 (px,pz) is in field just because tg is!
 			self:dbg(string.format('return to field first : %s', tostring(return2field)), dbgType);
 			local cnt = 2*math.pi/0.1;
 			while courseplay:isField(px, pz, 0.1, 0.1) or return2field do

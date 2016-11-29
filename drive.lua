@@ -801,10 +801,6 @@ end
 
 
 function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
-	if courseplay.setCollisionDirection == nil then --!!!
-		return --!!!
-	end --!!!
-	
 	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.cp.waypointIndex > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.cp.waypointIndex > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.cp.waypointIndex > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	--local maxlx = 0.5; --sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°

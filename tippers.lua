@@ -15,25 +15,6 @@ function courseplay:detachImplement(implementIndex)
 	--- Update Vehicle
 	self.cp.tooIsDirty = true;
 end;
---[[ !!!
-local origVehicleDetachImplement = Vehicle.detachImplement;
-Vehicle.detachImplement = function(self, implementIndex, noEventSend)
-	-- don't allow detaching while CP is active
-	local tractor = self:getRootAttacherVehicle();
-	if tractor and tractor.hasCourseplaySpec and tractor.cp.isDriving and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to abort
-		print('Courseplay warning: you need to stop Courseplay before detaching implements!');
-		return;
-	end;
-
-	origVehicleDetachImplement(self, implementIndex, noEventSend);
-
-	-- update attachCombineIndex and minHudPage
-	if self.hasCourseplaySpec and not noEventSend then -- if noEventSend == true, detachImplement has been called from Vehicle:delete() -> no need to set attachedCombine anymore
-		courseplay:setAttachedCombine(self);
-	end;
-end;
-]]
-
 
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
@@ -244,7 +225,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 5: TRANSFER
 	elseif vehicle.cp.mode == 5 then
-		-- For reverse testing and only for developers!!!!
+		-- For reverse testing and only for developers!
 		if isImplement and CpManager.isDeveloper then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
@@ -685,7 +666,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			if not siloTrigger.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) then
 				siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
-				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);  --!!! fillTypeIntToName is nil
+				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);
 			elseif siloTrigger.isFilling then
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
 			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.driveOnAtFillLevel and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then

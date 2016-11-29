@@ -1,4 +1,4 @@
-function courseplay:turn(self, dt) --!!!
+function courseplay:turn(self, dt) 
 	--[[ TURN STAGES:
 	0:	raise implements
 	1:	start forward turn
@@ -146,7 +146,6 @@ function courseplay:turn(self, dt) --!!!
 				self.turnStageTimer = self.turnStageTimer - dt;
 				if self.turnStageTimer < 0 then
 					self.turnStageTimer = Utils.getNoNil(self.didNotMoveTimeout,20000)
-					--!!! self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
 					self.cp.turnStage = 2;
 
 					newTargetX = self.aiTractorTargetBeforeSaveX;
@@ -175,7 +174,7 @@ function courseplay:turn(self, dt) --!!!
 		elseif self.cp.turnStage == 1 then
 			-- turn
 			local dirX, dirZ = self.aiTractorDirectionX, self.aiTractorDirectionZ;
-			local _,y,_ = getWorldTranslation(self.cp.DirectionNode); --!!! y is new in getDriveDirection
+			local _,y,_ = getWorldTranslation(self.cp.DirectionNode);
 			if self.cp.isTurning == "right" then
 				self.aiTractorTurnLeft = false;
 			else
@@ -196,8 +195,7 @@ function courseplay:turn(self, dt) --!!!
 			self.aiTractorDirectionZ = -dirZ;
 			self.cp.turnStage = 2;
 			self.turnStageTimer = Utils.getNoNil(self.didNotMoveTimeout,20000)
-			--!!! self.turnStageTimer = Utils.getNoNil(self.turnStage2Timeout,20000)
-
+			
 		-- TURN STAGE ??? --TODO (Jakob): what's the situation here? turnStage not > 1 and not > 0 ? When do we get to this point?
 		else              -- The situation is when a turn timeout appears...
 			self.cp.turnStage = 1;

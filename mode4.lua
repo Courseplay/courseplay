@@ -172,7 +172,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 						if workTool.setIsTurnedOn ~= nil and not workTool.turnOnVehicle.isTurnedOn then
 							courseplay:setMarkers(self, workTool);
 							if courseplay:isSowingMachine(workTool) then
-								workTool:setIsTurnedOn(true,false); --!!!
+								workTool:setIsTurnedOn(true,false);
 							else
 								if workTool.lastTurnedOn then
 									workTool.lastTurnedOn = false

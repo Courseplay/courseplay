@@ -54,7 +54,6 @@ function courseplay:start(self)
 	courseplay:setRecordingIsPaused(self, false);
 	self.cp.calculatedCourseToCombine = false
 
-	--!!! AITractor.addCollisionTrigger(self, self);
 	courseplay:resetTools(self)	
 	
 	if self.attachedCutters ~= nil then
@@ -583,7 +582,6 @@ function courseplay:stop(self)
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
 	self.cp.isUnloadingStopped = false
-	--!!! AITractor.removeCollisionTrigger(self, self);
 	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
 	self.cp.inTraffic = false

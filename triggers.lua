@@ -371,7 +371,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					if courseplay.debugChannels[1] then
 						courseplay:debug(('    trigger (%s) does not accept trailerFillType (%s)'):format(tostring(triggerId), tostring(trailerFillType)), 1);
 						courseplay:debug(('    trigger (%s) acceptedFillTypes:'):format(tostring(triggerId)), 1);
-						--!!! courseplay:printTipTriggersFruits(trigger)
+						courseplay:printTipTriggersFruits(trigger)
 					end
 				else
 					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (trailerFillType=%s)", nameNum(self), tostring(triggerId), tostring(trailerFillType)), 1);

@@ -55,7 +55,7 @@ function courseplay:handle_mode2(vehicle, dt)
 		courseplay:setMode2NextState(vehicle, 2);
 	end
 	
-	if currentTipper.fillUnits[1].fillLevel >= currentTipper.fillUnits[1].capacity or vehicle.cp.isLoaded then  --!!!
+	if currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.isLoaded then
 		if #(vehicle.cp.workTools) > vehicle.cp.currentTrailerToFill and not vehicle.cp.isLoaded then -- TODO (Jakob): use numWorkTools
 			vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
 		else
@@ -380,7 +380,7 @@ function courseplay:unload_combine(vehicle, dt)
 		else
 			-- tractor behind combine
 			if not combine.cp.isChopper then
-				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset, 0, -(turnDiameter + safetyDistance)) --!!!
+				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset, 0, -(turnDiameter + safetyDistance))
 			else
 				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(turnDiameter + safetyDistance))
 			end
@@ -485,7 +485,7 @@ function courseplay:unload_combine(vehicle, dt)
 			vehicle.cp.nextTargets = {}
 		end
 
-		if (not combine.cp.isChopper or combine.haeckseldolly) and (combineFillLevel == 0 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !!!
+		if (not combine.cp.isChopper or combine.haeckseldolly) and (combineFillLevel == 0 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !
 			if combine.cp.offset == nil then
 				--print("saving offset")
 				combine.cp.offset = vehicle.cp.combineOffset;
@@ -1272,13 +1272,7 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 end;
 
 function courseplay:calculateVerticalOffset(vehicle, combine)
-	local cwX,cwY,cwZ;
-	--[[ !!! if combine.cp.isSugarBeetLoader then
-		cwX, cwY, cwZ = getWorldTranslation(combine.unloadingTrigger.node);
-	else]]
-		cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode);
-	--end;
-	
+	local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode);
 	local _, _, prnToCombineZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, cwX, cwY, cwZ);
 	
 	return prnToCombineZ;
