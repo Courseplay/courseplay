@@ -121,7 +121,7 @@ function courseplay:setNameVariable(workTool)
 
 	--- SPECIAL VARIABLES THAT CAN BE USED:
 	--
-	-- workTool.cp.steeringAngleCorrection		(Angle in degrees)		Overwrite the default steering angle if set. NOTE: steeringAngleMultiplier will have no effect if this is set.
+	-- workTool.cp.steeringAngleCorrection:		(Angle in degrees)		Overwrite the default steering angle if set. NOTE: steeringAngleMultiplier will have no effect if this is set.
 	-- workTool.cp.steeringAngleMultiplier:		(Number)				Used if vehicle needs to turn faster or slower.
 	--																	2 	= turns 2 times slower.
 	--																	0.5 = turns 2 times slower.

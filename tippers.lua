@@ -316,10 +316,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true and not workTool.cp.canBeReversed then
 			vehicle.cp.aiTurnNoBackward = true;
 			courseplay:debug(('%s: workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
-		-- TODO: (Claus) Check if we still need this. [Disables for now]
-		--elseif not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ <= 0 then
-		--	vehicle.cp.aiTurnNoBackward = true;
-		--	courseplay:debug(('%s: workTool.aiLeftMarker == nil and #(workTool.wheels) > 0 and tractorToImplZ (%.2f) <= 0 --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool), tractorToImplZ), 6);
 		end;
 	end;
 
@@ -433,7 +429,7 @@ function courseplay:setTipRefOffset(vehicle)
 end;
 
 function courseplay:setMarkers(vehicle, object)
-	local aLittleBitMore 		= 0.5;
+	local aLittleBitMore 		= 1;
 	local pivotJointNode 		= courseplay:getPivotJointNode(object);
 	object.cp.backMarkerOffset 	= nil;
 	object.cp.aiFrontMarker 	= nil;
@@ -511,7 +507,7 @@ function courseplay:setMarkers(vehicle, object)
 	end
 
 	if vehicle.cp.aiFrontMarker == nil or object.cp.aiFrontMarker > (vehicle.cp.aiFrontMarker - aLittleBitMore) then
-		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker + aLittleBitMore;
+		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker + aLittleBitMore * 0.75;
 	end
 
 	if vehicle.cp.aiFrontMarker < -7 then

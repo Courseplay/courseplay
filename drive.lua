@@ -22,7 +22,7 @@ function courseplay:drive(self, dt)
 			drawDebugLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance), 1, 0, 0)
 			drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0)
 		end;
-		local workTool = courseplay:getFirstReversingWheeledWorkTool(self);
+		local workTool = courseplay:getFirstReversingWheeledWorkTool(self) or self.cp.workTools[1];
 		if workTool and workTool.workAreas then
 			for index, workArea in ipairs(workTool.workAreas) do
 				local sx, sy, sz = getWorldTranslation(workArea["start"]);
@@ -109,13 +109,11 @@ function courseplay:drive(self, dt)
 
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
-		if self.Waypoints[self.cp.waypointIndex].turn ~= nil then
-			-- TODO: (Claus) Change the isTurning to use turnStart from waypoint instead
-			-- TODO: (Claus) Change the isTurning is calculated by distance to turn point
-			self.cp.isTurning = self.Waypoints[self.cp.waypointIndex].turn
+		if self.Waypoints[self.cp.waypointIndex].turnStart then
+			self.cp.isTurning = self.Waypoints[self.cp.waypointIndex].turnStart;
 		end
 		if self.cp.abortWork ~= nil and self.cp.totalFillLevelPercent == 0 then
-			self.cp.isTurning = nil
+			self.cp.isTurning = nil;
 		end
 
 		--RESET OFFSET TOGGLES
@@ -537,7 +535,7 @@ function courseplay:drive(self, dt)
 	end;
 
 
-	if self.cp.isTurning ~= nil then
+	if self.cp.isTurning then
 		courseplay:turn(self, dt);
 		self.cp.TrafficBrake = false
 		return
