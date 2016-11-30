@@ -510,11 +510,6 @@ function courseplay:setMarkers(vehicle, object)
 		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker + aLittleBitMore * 0.75;
 	end
 
-	if vehicle.cp.aiFrontMarker < -7 then
-		vehicle.aiToolExtraTargetMoveBack = abs(vehicle.cp.aiFrontMarker)
-	end
-
-	courseplay:debug(('%s: setMarkers(): turnEndBackDistance = %s, aiToolExtraTargetMoveBack = %s'):format(nameNum(vehicle), tostring(vehicle.turnEndBackDistance), tostring(vehicle.aiToolExtraTargetMoveBack)), 6);
 	courseplay:debug(('%s: setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s'):format(nameNum(vehicle), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker)), 6);
 end;
 

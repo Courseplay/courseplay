@@ -149,7 +149,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local wait, rev, crossing;
 	if vehicle.cp.isRecordingTurnManeuver then
-		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, vehicle.cp.curSpeed, "noDirection", true, nil);
+		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, vehicle.cp.curSpeed, true, nil);
 	else
 		local preTurnStartPoint = vehicle.Waypoints[vehicle.cp.waypointIndex - 2];
 		local turnStartPoint = vehicle.Waypoints[vehicle.cp.waypointIndex - 1];
@@ -163,12 +163,6 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 
 		--local relativeDirX = (dir1Z * dir2X) - (dir1X * dir2Z); --usually: z: upwards positive, downwards negative
 		local relativeDirX =  (dir1X * dir2Z) - (dir1Z * dir2X); --GIANTS: z: downwards positive, upwards negative --> inverse calcuation
-		local turnDirStr = 'noDirection';
-		if relativeDirX > 0 then
-			turnDirStr = 'right';
-		elseif relativeDirX < 0 then
-			turnDirStr = 'left';
-		end;
 
 		local minUpVerticalHypotenuse = Utils.vector2Length(vl1, vl2);
 		local turnVerticalDirStr = 'level';
@@ -178,7 +172,6 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 			turnVerticalDirStr = 'down';
 		end;
 
-		vehicle.Waypoints[vehicle.cp.waypointIndex - 1].turn = turnDirStr; --set turnStart point's turn direction
 		if courseplay.debugChannels[16] then
 			local printStr = '';
 			printStr = printStr .. string.format('\tvx1,vz1=%.2f,%.2f\n', vx1,vz1);
@@ -186,11 +179,11 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 			printStr = printStr .. string.format('\tvl1,vl2=%.2f,%.2f\n', vl1,vl2);
 			printStr = printStr .. string.format('\tdir1X,dir1Z=%.3f,%.3f\n', dir1X,dir1Z);
 			printStr = printStr .. string.format('\tdir2X,dir2Z=%.3f,%.3f\n', dir2X,dir2Z);
-			printStr = printStr .. string.format('\trelativeDirX=%.3f -> turnDirStr=%q, turnVerticalDirStr=%q', relativeDirX, turnDirStr, turnVerticalDirStr);
+			printStr = printStr .. string.format('\trelativeDirX=%.3f -> turnVerticalDirStr=%q', relativeDirX, turnVerticalDirStr);
 			print(printStr);
 		end;
 
-		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, vehicle.cp.curSpeed, nil, nil, true);
+		courseplay:setNewWaypointFromRecording(vehicle, cx, cz, newAngle, wait, rev, crossing, vehicle.cp.curSpeed, nil, true);
 	end;
 
 	vehicle.cp.recordingTimer = 1
@@ -307,9 +300,9 @@ function courseplay:setRecordingIsPaused(vehicle, pause)
 	end;
 end;
 
-function courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, wait, rev, crossing, speed, turn, turnStart, turnEnd)
-	vehicle.Waypoints[vehicle.cp.waypointIndex] = { cx = cx, cz = cz, angle = angle, wait = wait, rev = rev, crossing = crossing, speed = speed, turn = turn, turnStart = turnStart, turnEnd = turnEnd };
-	courseplay:debug(string.format('%s: recording: set new waypoint (#%d): cx,cz=%.1f,%.1f, angle=%.1f, wait=%s, rev=%s, crossing=%s, speed=%.5f, turn=%s, turnStart=%s, turnEnd=%s', nameNum(vehicle), vehicle.cp.waypointIndex, cx, cz, angle, tostring(wait), tostring(rev), tostring(crossing), speed, tostring(turn), tostring(turnStart), tostring(turnEnd)), 16);
+function courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, wait, rev, crossing, speed, turnStart, turnEnd)
+	vehicle.Waypoints[vehicle.cp.waypointIndex] = { cx = cx, cz = cz, angle = angle, wait = wait, rev = rev, crossing = crossing, speed = speed, turnStart = turnStart, turnEnd = turnEnd };
+	courseplay:debug(string.format('%s: recording: set new waypoint (#%d): cx,cz=%.1f,%.1f, angle=%.1f, wait=%s, rev=%s, crossing=%s, speed=%.5f, turnStart=%s, turnEnd=%s', nameNum(vehicle), vehicle.cp.waypointIndex, cx, cz, angle, tostring(wait), tostring(rev), tostring(crossing), speed, tostring(turnStart), tostring(turnEnd)), 16);
 	vehicle.cp.numWaypoints = vehicle.cp.waypointIndex
 end;
 

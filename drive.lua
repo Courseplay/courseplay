@@ -441,14 +441,6 @@ function courseplay:drive(self, dt)
 	end;
 	self.cp.inTraffic = false;
 
-	-- AI TRACTOR DIRECTION
-	local dx,_,dz = localDirectionToWorld(self.cp.DirectionNode, 0, 0, 1);
-	local length = Utils.vector2Length(dx,dz);
-	if self.cp.turnStage == 0 then
-		self.aiTractorDirectionX = dx/length;
-		self.aiTractorDirectionZ = dz/length;
-	end
-
 	-- HANDLE TIPPER COVER
 	if self.cp.tipperHasCover and self.cp.automaticCoverHandling and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6) then
 		local showCover = false;
@@ -664,7 +656,7 @@ function courseplay:drive(self, dt)
 
 
 	-- DISTANCE TO CHANGE WAYPOINT
-	if self.cp.waypointIndex == 1 or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turn then
+	if self.cp.waypointIndex == 1 or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turnStart then
 		if self.cp.hasSpecializationArticulatedAxis then
 			distToChange = self.cp.mode == 9 and 2 or 1; -- ArticulatedAxis vehicles
 		else

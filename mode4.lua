@@ -37,7 +37,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 					self.cp.abortWork = 6
 				end
 				courseplay:setWaypointIndex(self, self.cp.abortWork);
-				if self.Waypoints[self.cp.waypointIndex].turn ~= nil or self.Waypoints[self.cp.waypointIndex+1].turn ~= nil  then
+				if self.Waypoints[self.cp.waypointIndex].turnStart or self.Waypoints[self.cp.waypointIndex+1].turnStart then
 					courseplay:setWaypointIndex(self, self.cp.waypointIndex - 2);
 				end
 			end
@@ -65,8 +65,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
 				for i=self.cp.abortWork,self.cp.previousWaypointIndex do
 					local wp = self.Waypoints[i];
-					if wp.turn ~= nil then
-						courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turn=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turn)), 12);
+					if wp.turnStart then
+						courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turnStart and true or false)), 12);
 						courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
 						self.cp.switchLaneOffset = true;
 						break;

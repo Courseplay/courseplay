@@ -275,7 +275,7 @@ function courseplay:start(self)
 	if lookForNearestWaypoint then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
-			if self.Waypoints[i]~= nil and self.Waypoints[i].turn ~= nil then
+			if self.Waypoints[i]~= nil and self.Waypoints[i].turnStart then
 				courseplay:setWaypointIndex(self, i + 2);
 				changed = true
 				break

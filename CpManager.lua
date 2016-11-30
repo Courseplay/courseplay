@@ -1145,8 +1145,6 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 
 					local generated   =   getXMLBool(cpFile, key .. '#generated');
 					local lane		  =    getXMLInt(cpFile, key .. '#lane');
-					local laneDir	  = getXMLString(cpFile, key .. '#dir');
-					local turn 		  = getXMLString(cpFile, key .. '#turn');
 					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
 					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
 					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
@@ -1155,9 +1153,6 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 					wait = wait == 1;
 					rev = rev == 1;
 
-					if turn == 'false' then
-						turn = nil;
-					end;
 					turnStart = turnStart == 1;
 					turnEnd = turnEnd == 1;
 
@@ -1171,8 +1166,6 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 						wait = wait,
 						crossing = crossing,
 						generated = generated,
-						laneDir = laneDir,
-						turn = turn,
 						turnStart = turnStart,
 						turnEnd = turnEnd,
 						ridgeMarker = ridgeMarker

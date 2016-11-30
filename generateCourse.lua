@@ -374,8 +374,6 @@ function courseplay:generateCourse(vehicle)
 					cp.crossing = nil;
 					cp.generated = true;
 					cp.lane = curLane * -1; --negative lane = headland
-					-- cp.firstInLane = false;
-					cp.turn = nil;
 					cp.turnStart = nil;
 					cp.turnEnd = nil;
 					cp.ridgeMarker = laneRidgeMarker;
@@ -453,7 +451,6 @@ function courseplay:generateCourse(vehicle)
 				local curPoint = {
 					num = a + ((curLane-1) * pointsPerLane);
 					lane = curLane;
-					laneDir = curLaneDir;
 					x = dimensions.minX + (workWidth * curLane) - (workWidth/2);
 					z = dimensions.minZ;
 				};
@@ -536,7 +533,6 @@ function courseplay:generateCourse(vehicle)
 				local curPoint = {
 					num = a + ((curLane-1) * pointsPerLane);
 					lane = curLane;
-					laneDir = curLaneDir;
 					x = dimensions.minX;
 					z = dimensions.minZ + (workWidth * curLane) - (workWidth/2);
 				};
@@ -636,7 +632,6 @@ function courseplay:generateCourse(vehicle)
 			rev = nil,
 			crossing = nil,
 			lane = cp.lane,
-			laneDir = cp.laneDir,
 			turnStart = courseplay:trueOrNil(cp.lastInLane and cp.lane < numLanes),
 			turnEnd = courseplay:trueOrNil(cp.firstInLane and i > 1),
 			ridgeMarker = cp.ridgeMarker,
@@ -663,9 +658,7 @@ function courseplay:generateCourse(vehicle)
 				newFirstInLane.crossing = point.crossing;
 				newFirstInLane.rev = point.rev;
 				newFirstInLane.lane = point.lane;
-				newFirstInLane.laneDir = point.laneDir;
 				newFirstInLane.firstInLane = true;
-				newFirstInLane.turn = point.turn;
 				newFirstInLane.turnStart = nil;
 				newFirstInLane.turnEnd = courseplay:trueOrNil(i > 1);
 				newFirstInLane.ridgeMarker = 0;
@@ -674,36 +667,12 @@ function courseplay:generateCourse(vehicle)
 				--reset some vars in old first point
 				point.wait = nil;
 				point.firstInLane = false;
-				point.turn = nil;
 				point.turnStart = nil;
 				point.turnEnd = nil;
 			end;
 		end; --END cp.firstInLane
 
 		if cp.lastInLane and i ~= numPoints then
-			--North
-			if cp.laneDir == "N" then
-				if np.x < cp.x then point.turn = "left" end;
-				if np.x > cp.x then point.turn = "right" end;
-
-			--East
-			elseif cp.laneDir == "E" then
-				if np.z < cp.z then point.turn = "left" end;
-				if np.z > cp.z then point.turn = "right" end;
-
-			--South
-			elseif cp.laneDir == "S" then
-				if np.x < cp.x then point.turn = "right" end;
-				if np.x > cp.x then point.turn = "left" end;
-
-			--West
-			elseif cp.laneDir == "W" then
-				if np.z < cp.z then point.turn = "right" end;
-				if np.z > cp.z then point.turn = "left" end;
-			end;
-			--courseplay:debug("--------------------------------------------------------------------", 7);
-			--courseplay:debug(string.format("laneDir=%s, point.turn=%s", cp.laneDir, tostring(point.turn)), 7);
-
 			angleDeg = courseplay:positiveAngleDeg(angleDeg);
 
 			local testPoint, testLength = {}, 20;
@@ -722,9 +691,7 @@ function courseplay:generateCourse(vehicle)
 				newLastInLane.crossing = point.crossing;
 				newLastInLane.rev = point.rev;
 				newLastInLane.lane = point.lane;
-				newLastInLane.laneDir = point.laneDir;
 				newLastInLane.lastInLane = true;
-				newLastInLane.turn = point.turn;
 				newLastInLane.turnStart = courseplay:trueOrNil(i < numPoints);
 				newLastInLane.turnEnd = nil;
 				newLastInLane.ridgeMarker = 0;
@@ -732,7 +699,6 @@ function courseplay:generateCourse(vehicle)
 
 				point.wait = nil;
 				point.lastInLane = false;
-				point.turn = nil;
 				point.turnStart = nil;
 				point.turnEnd = nil;
 

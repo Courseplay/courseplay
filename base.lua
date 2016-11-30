@@ -176,7 +176,7 @@ function courseplay:load(savegame)
 		reverse =  6;
 		turn =   10;
 		field =  24;
-		street = 50;
+		street = self.cruiseControl.maxSpeed or 50;
 		crawl = 3;
 		discharge = 8;
 

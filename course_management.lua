@@ -558,9 +558,9 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 
 	-- Dont save course if we already have a saveSlot.
 	if not isOwnSaveSlot then
-		-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; turn is a string; turn, speed may be nil!
-		-- from xml: rev=int wait=int crossing=int generated=bool, turn=string!!, turnstart=int turnend=int ridgemarker=int
-		-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turn="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2
+		-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; speed may be nil!
+		-- from xml: rev=int wait=int crossing=int generated=bool, turnstart=int turnend=int ridgemarker=int
+		-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2
 		local waypoints = {}
 		-- setXMLFloat seems imprecise...
 		local courseXmlFilePath = CpManager.cpCoursesFolderPath .. g_currentMission.cp_courseManager[freeSlot].fileName;
@@ -586,7 +586,6 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 				generated='Bool',
 				lane='Int',
 				dir='String',
-				turn='String',
 				turnstart='Int',
 				turnend='Int',
 				ridgemarker='Int' };
@@ -603,8 +602,6 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 					wait =		   v.wait and courseplay:boolToInt(v.wait) or nil;
 					crossing =	   v.crossing and courseplay:boolToInt(v.crossing) or nil;
 					generated =	   v.generated and v.generated or nil;
-					dir =		  (v.laneDir and v.laneDir ~= "") and v.laneDir or nil;
-					turn =		  (v.turn and v.turn ~= "") and v.turn or nil;
 					turnstart =    v.turnStart and courseplay:boolToInt(v.turnStart) or nil;
 					turnend =	   v.turnEnd and courseplay:boolToInt(v.turnEnd) or nil;
 					ridgemarker = (v.ridgeMarker and v.ridgeMarker ~= 0) and v.ridgeMarker or nil;
@@ -1234,16 +1231,12 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					local generated   =   getXMLBool(courseXml, key .. '#generated');
 					local lane		  =    getXMLInt(courseXml, key .. '#lane');
 					local laneDir	  = getXMLString(courseXml, key .. '#dir');
-					local turn 		  = getXMLString(courseXml, key .. '#turn');
 					local turnStart	  =    getXMLInt(courseXml, key .. '#turnstart');
 					local turnEnd 	  =    getXMLInt(courseXml, key .. '#turnend');
 					local ridgeMarker =    getXMLInt(courseXml, key .. '#ridgemarker') or 0;
 					crossing = crossing == 1 or wpNum == 1;
 					wait = wait == 1;
 					rev = rev == 1;
-					if turn == 'false' then
-						turn = nil;
-					end;
 					turnStart = turnStart == 1;
 					turnEnd = turnEnd == 1;
 					waypoints[wpNum] = {
@@ -1256,8 +1249,6 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						crossing = crossing,
 						generated = generated,
 						lane = lane,
-						laneDir = laneDir,
-						turn = turn,
 						turnStart = turnStart,
 						turnEnd = turnEnd,
 						ridgeMarker = ridgeMarker

@@ -180,8 +180,6 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.waypoints[w].speed)
 
 				streamDebugWriteBool(streamId, course.waypoints[w].generated)
-				streamDebugWriteString(streamId, (course.waypoints[w].laneDir or ""))
-				streamDebugWriteString(streamId, course.waypoints[w].turn)
 				streamDebugWriteBool(streamId, course.waypoints[w].turnStart)
 				streamDebugWriteBool(streamId, course.waypoints[w].turnEnd)
 				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
@@ -253,7 +251,6 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 
 				local generated = streamDebugReadBool(streamId)
 				local dir = streamDebugReadString(streamId)
-				local turn = streamDebugReadString(streamId)
 				local turnStart = streamDebugReadBool(streamId)
 				local turnEnd = streamDebugReadBool(streamId)
 				local ridgeMarker = streamDebugReadInt32(streamId)
@@ -267,8 +264,6 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 					crossing = crossing, 
 					speed = speed,
 					generated = generated,
-					laneDir = dir,
-					turn = turn,
 					turnStart = turnStart,
 					turnEnd = turnEnd,
 					ridgeMarker = ridgeMarker 
