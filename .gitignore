@@ -21,7 +21,6 @@ $RECYCLE.BIN/
 # Satis
 TurnRadiusCalculation.lua
 TriangleCalculation.lua
-modDesc.xml
 
 # Jakob
 *.WinMerge

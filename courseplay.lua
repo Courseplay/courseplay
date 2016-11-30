@@ -42,9 +42,9 @@ CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nic
 if CpManager.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
 else
-	print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	courseplay.houstonWeGotAProblem = true;
-	return;
+	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
+	--courseplay.houstonWeGotAProblem = true;
+	--return;
 end;
 
 local function initialize()
