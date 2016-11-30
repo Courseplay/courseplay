@@ -312,10 +312,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		local implX,implY,implZ = getWorldTranslation(workTool.rootNode);
 		local _,_,tractorToImplZ = worldToLocal(vehicle.cp.DirectionNode, implX,implY,implZ);
 
-		vehicle.cp.aiBackMarker = nil; --TODO (Jakob): still needed?
-		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true and not workTool.cp.canBeReversed then
+		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.cp.notToBeReversed then
 			vehicle.cp.aiTurnNoBackward = true;
-			courseplay:debug(('%s: workTool.aiLeftMarker ~= nil and workTool.aiForceTurnNoBackward == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
+			courseplay:debug(('%s: workTool.aiLeftMarker ~= nil and workTool.cp.notToBeReversed == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
 		end;
 	end;
 

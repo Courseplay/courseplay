@@ -319,18 +319,8 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
 	-- Cultivators [Giants]
-	elseif workTool.cp.xmlFileName == 'koeckerlingAllrounder.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isKoeckerlingAllrounder = true;
 
 	-- Seeders [Giants]
-	elseif workTool.cp.xmlFileName == 'vaderstadRapid600s.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isVaderstadRapid600s = true;
-
-	elseif workTool.cp.xmlFileName == 'horschMaestro12SW.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isHorschMaestro12SW = true;
-
-	elseif workTool.cp.xmlFileName == 'lemkenSolitair12.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isLemkenSolitair12 = true;
 
 	-- Special tools [Giants]
 	elseif workTool.typeName == 'strawBlower' then -- Checked: Is Default Giants Vehicle Type
@@ -493,7 +483,7 @@ function courseplay:askForSpecialSettings(self, object)
 	-- object.cp.frontMarkerOffsetCorection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
 	--																	Positive value, moves it forward, Negative value moves it backwards.
 	-- object.cp.widthWillCollideOnTurn			(Boolean)				If set, then the vehicle will reverse(if possible) further back, before turning to make room for the width of the tool
-	-- object.cp.canBeReversed					(Boolean)				Tools that can be reversed even if the default Giants value: aiForceTurnNoBackward is set to true
+	-- object.cp.notToBeReversed				(Boolean)				Tools that should not be reversed with.
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
 	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
 	-- object.cp.isPushWagon					(Boolean)				Set to true if the trailer is unloading by not lifting the trailer but pushing it out in the rear end. (Used in BGA tipping)
@@ -511,19 +501,7 @@ function courseplay:askForSpecialSettings(self, object)
 	local automaticToolOffsetX;
 
 	-- OBJECTS
-	if object.cp.isHorschMaestro12SW then
-		object.cp.canBeReversed = true;
-
-	elseif object.cp.isVaderstadRapid600s then
-		object.cp.canBeReversed = true;
-
-	elseif object.cp.isLemkenSolitair12 then
-		object.cp.canBeReversed = true;
-
-	elseif object.cp.isKoeckerlingAllrounder then
-		object.cp.canBeReversed = true;
-
-	elseif object.cp.isUrsusT127 then
+	if object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
 
 	elseif object.cp.isAugerWagon then
