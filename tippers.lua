@@ -455,50 +455,59 @@ function courseplay:setMarkers(vehicle, object)
 		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return;
 	end
+
+	local avoidType = {
+		[WorkArea.AREATYPE_RIDGEMARKER] = true;
+		[WorkArea.AREATYPE_MOWERDROP] = true;
+		[WorkArea.AREATYPE_WINDROWERDROP] = true;
+		[WorkArea.AREATYPE_TEDDERDROP] = true;
+	}
 	for k = 1, tableLength do
-		for j,node in pairs(area[k]) do
-			if j == "start" or j == "height" or j == "width" then 
-				local x, y, z;
-				local ztt = 0;
-				local type;
+		if not avoidType[area[k].type] then
+			for j,node in pairs(area[k]) do
+				if j == "start" or j == "height" or j == "width" then
+					local x, y, z;
+					local ztt = 0;
+					local type;
 
-				if pivotJointNode and object.attacherJoint.jointType then
-					type = "Pivot Trailer";
-					x, y, z = getWorldTranslation(pivotJointNode);
+					if pivotJointNode and object.attacherJoint.jointType then
+						type = "Pivot Trailer";
+						x, y, z = getWorldTranslation(pivotJointNode);
 
-					-- Get the marker offset from the pivot node.
-					_, _, ztt = worldToLocal(node, x, y, z);
-					ztt = ztt * -1;
+						-- Get the marker offset from the pivot node.
+						_, _, ztt = worldToLocal(node, x, y, z);
 
-					-- Calculate the offset based on the distances
-					ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) + ztt;
+						-- Calculate the offset based on the distances
+						ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt;
 
-				elseif courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType then
-					type = "Trailer";
-					x, y, z = getWorldTranslation(object.attacherJoint.node)
+					elseif courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType then
+						type = "Trailer";
+						x, y, z = getWorldTranslation(object.attacherJoint.node)
 
-					-- Get the marker offset from the pivot node.
-					_, _, ztt = worldToLocal(node, x, y, z);
-					ztt = ztt * -1;
+						-- Get the marker offset from the pivot node.
+						_, _, ztt = worldToLocal(node, x, y, z);
 
-					-- Calculate the offset based on the distances
-					ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] * -1) + ztt;
+						-- Calculate the offset based on the distances
+						ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] * -1) - ztt;
 
-				else
-					type = "Vehicle";
-					x, y, z = getWorldTranslation(node);
-					_, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
-				end;
+					else
+						type = "Vehicle";
+						x, y, z = getWorldTranslation(node);
+						_, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+					end;
 
-				courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);
-				if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
-					object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
-				end
-				if object.cp.aiFrontMarker == nil  or ztt < object.cp.aiFrontMarker then
-					object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
+					courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);
+					if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
+						object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
+					end
+					if object.cp.aiFrontMarker == nil  or ztt < object.cp.aiFrontMarker then
+						object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
+					end
 				end
 			end
-		end
+		else
+			courseplay:debug(("%s: Avoiding workArea Type %s"):format(nameNum(vehicle), WorkArea.areaTypeIntToName[area[k].type]), 6);
+		end;
 	end
 
 	if vehicle.cp.backMarkerOffset == nil or object.cp.backMarkerOffset < (vehicle.cp.backMarkerOffset + aLittleBitMore) then
