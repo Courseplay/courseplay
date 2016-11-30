@@ -494,11 +494,11 @@ function courseplay:turn(vehicle, dt)
 
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 	if newTarget and (newTarget.turnReverse or not newTarget.useSmoothTurn) then
-		if math.abs(self.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
 			if not moveForwards then
-				self.nextMovingDirection = -1
+				vehicle.nextMovingDirection = -1
 			else
-				self.nextMovingDirection = 1
+				vehicle.nextMovingDirection = 1
 			end
 		end
 
