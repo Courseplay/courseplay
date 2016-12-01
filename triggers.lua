@@ -585,21 +585,27 @@ function courseplay:updateAllTriggers()
 	if g_currentMission.onCreateLoadedObjects ~= nil then
 		courseplay:debug('\tcheck onCreateLoadedObjects', 1);
 		for k, object in pairs(g_currentMission.onCreateLoadedObjects) do
-			-- BGA: liquidManureSiloTrigger
-			if object.isa and object:isa(Bga) and object.liquidManureSiloTrigger then
-				local trigger = object.liquidManureSiloTrigger;
-				trigger.isLiquidManureFillTrigger = true;
-				trigger.isBGAliquidManureFillTrigger = true;
-				courseplay:cpAddTrigger(trigger.triggerId, trigger, 'liquidManure', 'nonUpdateable');
-				courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d) [BGA]'):format(trigger.triggerId), 1);
 
+			--newBGA DigestateSiloTrigger
+			if object.tipTriggerTargets ~= nil then
+				for index, value in pairs(object.tipTriggerTargets) do
+					if type(value)=='table' and value.digestateSiloTrigger then
+						local trigger = value.digestateSiloTrigger
+						trigger.isLiquidManureFillTrigger = true
+						courseplay:cpAddTrigger(trigger.triggerId, trigger, 'liquidManure', 'nonUpdateable');
+						courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d) [digestateBGA]'):format(trigger.triggerId), 1);
+					end
+				end
+
+			end
 			-- Cows husbandry: liquidManureSiloTrigger
-			elseif object.isa and object:isa(AnimalHusbandry) and object.liquidManureTrigger then
+			if object.isa and object:isa(AnimalHusbandry) and object.liquidManureTrigger then
 				local trigger = object.liquidManureTrigger;
 				trigger.isLiquidManureFillTrigger = true;
 				trigger.isCowsLiquidManureFillTrigger = true;
+				local name = object.animalDesc.name
 				courseplay:cpAddTrigger(trigger.triggerId, trigger, 'liquidManure', 'nonUpdateable');
-				courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d) [cows]'):format(trigger.triggerId), 1);
+				courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d) [%s]'):format(trigger.triggerId,name), 1);
 
 			-- ManureLager
 			elseif object.triggerId ~= nil then
