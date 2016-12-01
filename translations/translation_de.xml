@@ -106,9 +106,9 @@
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Drescher wendet" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Kein Arbeitsbereich in diesem Kurs" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="kombinierte Kurse" />
-		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Fahre hintern Drescher" />
-		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Fahre neben Drescher" />
-		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Fahre zum Drescher" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="fahre hinter den Drescher" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="fahre neben dem Drescher" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="fahre zum Drescher" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Drescher sagt ich soll anhalten" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Warte bis die Warteposition frei ist" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="wende in Richtung Koordinaten %d %d" />
