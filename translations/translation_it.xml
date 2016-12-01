@@ -37,8 +37,8 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nome del percorso:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome della directory:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtro percorsi:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- (This is the name of the Return Button) -->
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- (This is the short text of the Escape Button) -->
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Invio" />					<!-- (This is the name of the Return Button) -->
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Esc" />						<!-- (This is the short text of the Escape Button) -->
 		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s per annullare" />
 		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s per salvare Percorso" />
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Directory" />
@@ -166,10 +166,10 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione svuota pala" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; go" />
 
-		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il corso al" />
+		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il percorso al" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto più vicino" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primo punto" />
-		<text name="COURSEPLAY_CURRENT_POINT" 							 text="corrente punto" />
+		<text name="COURSEPLAY_CURRENT_POINT" 							 text="punto corrente" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Percorso perimetrale del campo" />
 		<text name="COURSEPLAY_FIELD" 									 text="Campo" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Scansione campi in esecuzione" />
@@ -196,14 +196,14 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": il silo è pieno!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Il granaio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Il granaio sta caricando:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!! Attendo che si riempia." />  <!-- TODO: TRANSLATION! Translate new added text. -->
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": il granaio è pieno! Contiuna al prossimo granaio." />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo di seme: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Utilizzo: %s %s (%s)" />
-		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostra il Courseplay HUD" />
+		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostra Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Nascondi Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funzioni Courseplay" />
 		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: modificatore" />
