@@ -236,7 +236,10 @@ function courseplay:load(savegame)
 	else
 		if courseplay:isWheelloader(self)then
 			if self.cp.hasSpecializationArticulatedAxis then
-				DirectionNode = self.components[Utils.getNoNil(self.cp.componentNumAsDirectionNode, 2)].node;
+				local nodeIndex = Utils.getNoNil(self.cp.componentNumAsDirectionNode, 2)
+				if self.components[nodeIndex] ~= nil then
+					DirectionNode = self.components[nodeIndex].node;
+				end
 			end;
 		end
 		if DirectionNode == nil then
