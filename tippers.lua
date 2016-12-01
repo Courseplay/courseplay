@@ -761,16 +761,19 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				courseplay:resetTipTrigger(vehicle)
 				courseplay:resetCustomTimer(vehicle, 'SiloIsFullMessage', true);
 				courseplay.SiloIsFullMessageTimeOn = nil;
-				vehicle.cp.stopAtEndMode1 = true;
 				vehicle.cp.isTipping = false;
+				if self.cp.mode == 1 then
+					vehicle.cp.stopAtEndMode1 = true;
+				end			
 			end;
-
 			CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_FULL')
 		else
 			courseplay:resetTipTrigger(vehicle)
 			courseplay:resetCustomTimer(vehicle, 'SiloIsFullMessage', true);
 			courseplay.SiloIsFullMessageTimeOn = nil;
-			vehicle.cp.stopAtEndMode1 = true;
+			if self.cp.mode == 1 then
+				vehicle.cp.stopAtEndMode1 = true;
+			end
 		end;
 
 		return allowedToDrive;
