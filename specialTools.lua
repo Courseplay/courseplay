@@ -455,7 +455,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		if tractor.cp.hasCrabSteeringActive then
 			local nextRidgeMarker = tractor.Waypoints[math.min(tractor.cp.waypointIndex+ tractor.cp.ridgeMarkerIndex ,tractor.cp.numWaypoints)].ridgeMarker
 			local onField = nextRidgeMarker == ridgeMarker;
-			local state = tractor.crabSteering.stateTarget;
+			local state = tractor.crabSteering.state;
 			if implementsDown and onField then
 				if ridgeMarker == 1 and state ~= 3 then
 					tractor:setCrabSteering(3);

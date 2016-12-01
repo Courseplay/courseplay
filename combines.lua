@@ -432,15 +432,7 @@ function courseplay:getSpecialCombineOffset(combine)
 		end
 	end
 	
-	if combine.cp.isHolmerTerraDosT4_40 then
-		if combine.crabSteering.stateTarget == 2 then	
-			combine.cp.offset = 6.5;
-			return 6.5;
-		elseif combine.crabSteering.stateTarget < 2 then
-			combine.cp.offset = 4.6;
-			return 4.6;
-		end	
-	elseif combine.cp.isSugarBeetLoader and combine.cp.isHolmerTerraFelis2 then
+	if combine.cp.isSugarBeetLoader and combine.cp.isHolmerTerraFelis2 then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.pipeRaycastNode);
 		local combineToUtwX,_,_ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, utwX,utwY,utwZ);
 		return combineToUtwX;
