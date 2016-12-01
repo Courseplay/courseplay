@@ -33,16 +33,16 @@
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Tiempo de espera" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d seg" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNIT_METER" 								 text="metros" />            
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nombre de ruta:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nombre de la carpeta:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrar las rutas:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Volver" />					
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />		
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s para cancelar" />	
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s para salvar ruta" />		
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s para salvar carpeta" />		
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s para filtrar rutas" />		
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Rutas: %q" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Crear nueva carpeta" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Buscar carpetas y rutas" />
@@ -50,7 +50,7 @@
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="ha alcanzado el punto de descarga." />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha alcanzado el punto de espera" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha alcanzado el punto final" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha terminado el transporte Modo 1." /> 
 		<text name="COURSEPLAY_WORK_END" 								 text="ha terminado el trabajo." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": equipamiento necesita ser descargado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": el equipamiento necesita ser rellenado." />
@@ -62,7 +62,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar los cultivos" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distancia lateral:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar en:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Giro dentro del campo:" />  
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Radio de giro:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Decalaje vertical:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Cosechadora" />
@@ -205,8 +205,8 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": el silo ésta lleno!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="El silo no dispone del tipo seleccionado" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Cargando silo:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="El silo está vacío! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="El silo está vacío! esperando a que se llene." />  
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": El silo está lleno! continúo al siguiente silo." />  
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Iniciando en %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Buscar el primer punto" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Salvar ruta actual" />
@@ -242,9 +242,9 @@
 		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay: parar en último punto o siguiente trigger" />
 		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay: conducir ahora" />
 		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: modo siguiente" />
-		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: modo anterior mode" />
+		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: modo anterior" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: acción del ratón" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: acción secondaria del ratón" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: acción secundaria del ratón" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar el cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="ocultar el cursor" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Cargar ruta/combinarla con la ruta cargada" />
