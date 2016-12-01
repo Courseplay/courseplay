@@ -129,6 +129,8 @@ function courseplay:load(savegame)
 	self.cp.turnOnField = true;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
+	self.cp.hasPlough = false;
+	self.cp.hasRotateablePlough = false;
 
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 

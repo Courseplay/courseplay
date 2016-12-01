@@ -311,16 +311,25 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.directionNodeZOffset = 2;
 		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
-	-- Wheel Loaders [Giants]
+	-- WHEEL LOADERS [Giants]
 	-- JCB 435S [Giants]
 	elseif workTool.cp.xmlFileName == 'jcb435s.xml' then -- Checked: Is Default Giants Vehicle
 		workTool.cp.isJCB435S = true;
 		workTool.cp.directionNodeZOffset = -0.705;
 		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
-	-- Cultivators [Giants]
+	-- CULTIVATORS [Giants]
 
-	-- Seeders [Giants]
+	-- PLOUGHS [Giants]
+	-- Salford 8312 [Giants]
+	elseif workTool.cp.xmlFileName == 'salford8312.xml' then -- Checked: Is Default Giants Vehicle
+		workTool.cp.isSalford8312 = true;
+
+	-- Lemken Titan 11 [Giants]
+	--elseif workTool.cp.xmlFileName == 'lemkenTitan11.xml' then -- Checked: Is Default Giants Vehicle
+	--	workTool.cp.isLemkenTitan11 = true;
+
+	-- SEEDERS [Giants]
 
 	-- Special tools [Giants]
 	elseif workTool.typeName == 'strawBlower' then -- Checked: Is Default Giants Vehicle Type
@@ -503,6 +512,14 @@ function courseplay:askForSpecialSettings(self, object)
 	-- OBJECTS
 	if object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
+
+	elseif object.cp.isSalford8312 then
+		object.cp.notToBeReversed = true;
+		automaticToolOffsetX = 0.2; -- ToolOffsetX is 0.2 meters to the right
+
+	--elseif object.cp.isLemkenTitan11 then
+	--	object.cp.notToBeReversed = true;
+	--	automaticToolOffsetX = 1.0; -- ToolOffsetX is 0.2 meters to the right
 
 	elseif object.cp.isAugerWagon then
 		if object.cp.foldPipeAtWaitPoint then

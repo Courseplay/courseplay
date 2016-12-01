@@ -254,11 +254,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 									vehicle.cp.runOnceStartCourse = false;
-								elseif waypoint == 2 and vehicle.cp.runOnceStartCourse then --wegpunkte finden und richtung setzen...
+								elseif waypoint == 2 and vehicle.cp.runOnceStartCourse then --find waypoints and set directions...
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 									if workTool:getIsPloughRotationAllowed() then
-										AITractor.aiRotateLeft(vehicle);
+										AIVehicle.aiRotateLeft(vehicle);
 										vehicle.cp.runOnceStartCourse = false;
 									end
 								elseif vehicle.cp.runOnceStartCourse then

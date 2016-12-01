@@ -122,7 +122,7 @@ function courseplay:drive(self, dt)
 				self.cp.switchLaneOffset = true;
 				courseplay:debug(string.format("%s: isTurning=false, switchLaneOffset=false -> set switchLaneOffset to true", nameNum(self)), 12);
 			end;
-			if self.cp.hasPlough and not self.cp.switchToolOffset then
+			if self.cp.hasPlough and self.cp.hasRotateablePlough and not self.cp.switchToolOffset then
 				self.cp.switchToolOffset = true;
 				courseplay:debug(string.format("%s: isTurning=false, switchToolOffset=false -> set switchToolOffset to true", nameNum(self)), 12);
 			end;

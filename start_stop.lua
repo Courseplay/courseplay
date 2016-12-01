@@ -570,10 +570,6 @@ function courseplay:stop(self)
 	self.cp.turnStage = 0;
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
-	self.aiTractorTargetX = nil
-	self.aiTractorTargetZ = nil
-	self.aiTractorTargetBeforeTurnX = nil
-	self.aiTractorTargetBeforeTurnZ = nil
 	self.cp.backMarkerOffset = nil
 	self.cp.aiFrontMarker = nil
 	self.cp.aiTurnNoBackward = false
@@ -637,6 +633,7 @@ function courseplay:stop(self)
 
 	self.cp.hasBaleLoader = false;
 	self.cp.hasPlough = false;
+	self.cp.hasRotateablePlough = false;
 	self.cp.hasSowingMachine = false;
 	self.cp.hasSprayer = false;
 	if self.cp.tempToolOffsetX ~= nil then

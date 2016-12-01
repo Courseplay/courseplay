@@ -272,6 +272,13 @@ function courseplay:turn(vehicle, dt)
 			courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), 14);
 			cpPrintLine(14, 3);
 
+			-- Rotate tools if needed.
+			if turnInfo.targetDeltaX > 0 then
+				AIVehicle.aiRotateLeft(vehicle);
+			else
+				AIVehicle.aiRotateRight(vehicle);
+			end;
+
 			vehicle.cp.turnStage = 2;
 			--vehicle.cp.turnStage = 100; -- Stop the tractor (Developing Tests)
 
@@ -723,8 +730,15 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 	courseplay:generateTurnCircle(vehicle, center2, center1, center3, turnInfo.turnRadius, turnInfo.direction);
 	courseplay:generateTurnCircle(vehicle, center3, center2, stopDir, turnInfo.turnRadius, (turnInfo.direction * -1), true);
 
-	--- Extra WP 1 - End Turn
-	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.zOffset + 5);
+	--- Extra WP - Make strait points to field edge if needed
+	if turnInfo.frontMarker < 0 and (targetOffsetZ + turnInfo.zOffset) * -1 < 0 then
+		local toPoint = {}
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.frontMarker - 3);
+		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint);
+	end;
+
+	--- Extra WP - End Turn turnInfo.frontMarker
+	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.zOffset - turnInfo.frontMarker + 5);
 	courseplay:addTurnTarget(vehicle, posX, posZ, false, true);
 end;
 
