@@ -37,12 +37,12 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="任务名：" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="目录名" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="检索任务：" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="返回" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
 		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s 取消" />				<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s 保存任务" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s 保存目录" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s 检索任务" />		<!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="任务: %q" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="新建目录" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="检索任务和目录" />
@@ -50,7 +50,7 @@
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="已达到卸载点。" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="已达到等待点" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="已达到终点" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="已完成粮食运输" />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 								 text="工作已完成。" />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": 工具需要卸载。" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": 工具需要装载。" />
@@ -62,7 +62,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="打开地块:" />  <!-- Need Translation! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="转弯半径:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="纵向距离调整:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="联合收割机" />
@@ -136,13 +136,13 @@
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="起始角" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="车辆行驶的方向" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="返回到起始点" />
-		<text name="COURSEPLAY_CORNER_1" 								 text="西南" />
-		<text name="COURSEPLAY_CORNER_2" 								 text="西北" />
-		<text name="COURSEPLAY_CORNER_3" 								 text="东北" />
-		<text name="COURSEPLAY_CORNER_4" 								 text="东南" />
-		<text name="COURSEPLAY_DIRECTION_1" 							 text="北" />
+		<text name="COURSEPLAY_CORNER_1" 								 text="西S" />
+		<text name="COURSEPLAY_CORNER_2" 								 text="西N" />
+		<text name="COURSEPLAY_CORNER_3" 								 text="东N" />
+		<text name="COURSEPLAY_CORNER_4" 								 text="东S" />
+		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
-		<text name="COURSEPLAY_DIRECTION_3" 							 text="南" />
+		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="路径生成的模式" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
@@ -204,8 +204,8 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=":青贮池已满!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="没有选定仓筒类型!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="选定的仓筒类型:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="仓筒空了! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="仓筒空了! 等待." />  <!-- TODO: TRANSLATION! Translate new added text. -->
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": 仓筒已满！继续下一个." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="启动 %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="指向起始点" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="保存当前任务" />
