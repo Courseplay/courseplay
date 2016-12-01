@@ -98,6 +98,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local ridgeMarker = prevPoint.ridgeMarker;
 	local turnStart = prevPoint.turnStart;
 	local turnEnd = prevPoint.turnEnd;
+	local specialTool; -- define it, so it will not be an global value anymore
 	for i=1, #(self.cp.workTools) do
 		workTool = self.cp.workTools[i];
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
@@ -148,10 +149,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 									-- Skip 0 state, since that is the closed state.
 								end;
 
-								if #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= ridgeMarker then
+								if workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= ridgeMarker then
 									workTool:setRidgeMarkerState(ridgeMarker);
 								end;
-							elseif #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+							elseif workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
 								workTool:setRidgeMarkerState(0);
 							end;
 						end;
@@ -226,7 +227,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 				end;
 
 				--retract ridgemarker
-				if #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+				if workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
 					workTool:setRidgeMarkerState(0);
 				end;
 				
