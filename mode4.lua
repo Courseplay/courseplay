@@ -14,7 +14,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
 		z = -z
 		local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
-		if frontMarker + z < 0 then
+		if frontMarker + z -2 < 0 then
 			workArea = true
 			isFinishingWork = true
 		elseif self.cp.finishWork ~= self.cp.stopWork then
@@ -220,7 +220,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 
 				--raise
 				if not isFolding and isUnfolded then
-					if needsLowering and workTool.aiNeedsLowering and workTool:getIsInWorkPosition() then
+					if needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
 						workTool:aiRaise();
 						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 					end;

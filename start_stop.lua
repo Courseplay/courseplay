@@ -54,6 +54,8 @@ function courseplay:start(self)
 	courseplay:setRecordingIsPaused(self, false);
 	self.cp.calculatedCourseToCombine = false
 
+	self.cp.backMarkerOffset = nil
+	self.cp.aiFrontMarker = nil
 	courseplay:resetTools(self)	
 	
 	if self.attachedCutters ~= nil then
@@ -137,8 +139,6 @@ function courseplay:start(self)
 	--add to activeCoursePlayers
 	CpManager:addToActiveCoursePlayers(self);
 
-	self.cp.backMarkerOffset = nil
-	self.cp.aiFrontMarker = nil
 	self.cp.turnTimer = 8000
 	
 	-- show arrow

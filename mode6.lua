@@ -22,7 +22,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		local _,_,z = worldToLocal(vehicle.cp.DirectionNode,vehicle.Waypoints[vehicle.cp.finishWork].cx,y,vehicle.Waypoints[vehicle.cp.finishWork].cz)
 		z = -z
 		local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker,-3)
-		if frontMarker + z < 0 then
+		if frontMarker + z -2 < 0 then
 			workArea = true
 			isFinishingWork = true
 		elseif vehicle.cp.finishWork ~= vehicle.cp.stopWork then
@@ -308,7 +308,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 
 							--raise
-							if needsLowering and workTool.aiNeedsLowering and vehicle.cp.turnStage == 0 then
+							if needsLowering and workTool.aiNeedsLowering and vehicle.cp.turnStage == 0 and workTool:isLowered() then
 								workTool:aiRaise();
 								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 							end;
