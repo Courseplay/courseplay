@@ -31,8 +31,8 @@
 		<text name="UNKNOWN" 											 text="unknown" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="距離" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="待機時間" />
-		<text name="COURSEPLAY_MINUTES" 								 text="%d 分" />
-		<text name="COURSEPLAY_SECONDS" 								 text="%d 秒" />
+		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
+		<text name="COURSEPLAY_SECONDS" 								 text="%d sec" />
 		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="コース名:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="フォルダ名:" />
@@ -49,7 +49,7 @@
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="フォルダへ入れる" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="コース・フォルダを削除" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="フォルダの新規作成" />
-		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="コース・フォルダを検索" />
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="コース・フォルダをサーチ" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="フィルタを解除" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="オーバーロードポイントに到着" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="待機ポイントに到着" />
@@ -63,7 +63,7 @@
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="トリガへ到着" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="ローディング: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウエイポイントを表示" />
-		<text name="COURSEPLAY_PATHFINDING" 							 text="経路検索" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="経路サーチ" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="サイドオフセット:" />
 		<text name="COURSEPLAY_START_AT" 								 text="スタート:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="ターンオンフィールド:" />
@@ -72,11 +72,11 @@
 		<text name="COURSEPLAY_COMBINE" 								 text="コンバイン" />
 		<text name="COURSEPLAY_NONE" 									 text="無" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="コンバインを選択:" />
-		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="コンバインを検索:" />
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="コンバインをサーチ:" />
 		<text name="COURSEPLAY_CURRENT" 								 text="現在:" />
-		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="自動検索" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="手動検索" />
-		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="コンバインをフィールドで検索 %s" />
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="自動サーチ" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="手動サーチ" />
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="コンバインをフィールドでサーチ %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="コースをコピー:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="車両" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="コースは保存されていません" />
@@ -109,7 +109,7 @@
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="前のコンバイン" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="次のコンバイン" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="コンバイン移動" />
-		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="コンバインからの停止要請" />
+		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="コンバインからの停止リクエスト" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="スペースがあくまで停止" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="目標へターン %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="ウエイポイントへ %d %d" />
@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="サイロは空です!" />
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": 農場サイロはいっぱいです! 次のサイロに続きます。" />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="起動 %s!" />
-		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="最初のウエイポイントを検索します" />
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="最初のウエイポイントをサーチします" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="現在のコースを保存" />
 		<text name="COURSEPLAY_RECORDING_STOP" 							 text="コースのレコーディングを停止" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="レコーディングの一時停止" />
