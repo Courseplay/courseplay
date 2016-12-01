@@ -136,13 +136,13 @@
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="起始角" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="车辆行驶的方向" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="返回到起始点" />
-		<text name="COURSEPLAY_CORNER_1" 								 text="西南" />
-		<text name="COURSEPLAY_CORNER_2" 								 text="西北" />
-		<text name="COURSEPLAY_CORNER_3" 								 text="东北" />
-		<text name="COURSEPLAY_CORNER_4" 								 text="东南" />
-		<text name="COURSEPLAY_DIRECTION_1" 							 text="北" />
+		<text name="COURSEPLAY_CORNER_1" 								 text="西S" />
+		<text name="COURSEPLAY_CORNER_2" 								 text="西N" />
+		<text name="COURSEPLAY_CORNER_3" 								 text="东N" />
+		<text name="COURSEPLAY_CORNER_4" 								 text="东S" />
+		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
-		<text name="COURSEPLAY_DIRECTION_3" 							 text="南" />
+		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="路径生成的模式" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
