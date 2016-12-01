@@ -518,8 +518,8 @@ function CpManager:renderFieldScanInfo()
 end;
 
 function CpManager.drawMouseButtonHelp(self, posY, txt)
-	local xLeft = g_currentMission.hudHelpTextPosX1;
-	local xRight = g_currentMission.hudHelpTextPosX2;
+	local xLeft = g_currentMission.helpBoxTextPos1X;
+	local xRight = g_currentMission.helpBoxTextPos2X;
 
 	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
 	if ovl then
