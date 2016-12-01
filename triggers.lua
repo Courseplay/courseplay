@@ -347,10 +347,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					-- check single fillType validity
 					local fillTypeIsValid = true;
-					if trigger.inputFillType then
-						fillTypeIsValid = trigger.inputFillType == 0 or trigger.inputFillType == trailerFillType;
-						courseplay:debug(('    trigger (%s): inputFillType=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), trigger.inputFillType, tostring(fillTypeIsValid)), 1);
-					elseif trigger.currentFillType then
+					if trigger.currentFillType then
 						fillTypeIsValid = trigger.currentFillType == 0 or trigger.currentFillType == trailerFillType;
 						courseplay:debug(('    trigger (%s): currentFillType=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), trigger.currentFillType, tostring(fillTypeIsValid)), 1);
 					elseif trigger.getFillType then
