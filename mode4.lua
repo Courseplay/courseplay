@@ -148,10 +148,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 									-- Skip 0 state, since that is the closed state.
 								end;
 
-								if workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= ridgeMarker then
+								if #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= ridgeMarker then
 									workTool:setRidgeMarkerState(ridgeMarker);
 								end;
-							elseif workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+							elseif #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
 								workTool:setRidgeMarkerState(0);
 							end;
 						end;
@@ -159,7 +159,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 						--lower/raise
 						if needsLowering and workTool.aiNeedsLowering then
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.cp.waypointIndex, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
-							if not workTool:getIsInWorkPosition() then
+							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								workTool:aiLower();
 								courseplay:setCustomTimer(self, "lowerTimeOut" , 5 )
@@ -226,7 +226,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 				end;
 
 				--retract ridgemarker
-				if workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+				if #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
 					workTool:setRidgeMarkerState(0);
 				end;
 				

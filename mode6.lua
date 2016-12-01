@@ -269,7 +269,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 							if not isFolding and isUnfolded and not waitForSpecialTool then --TODO: where does "waitForSpecialTool" come from? what does it do?
 								--lower
-								if needsLowering and workTool.aiNeedsLowering then
+								if needsLowering and workTool.aiNeedsLowering and not workTool:isLowered() then
 									workTool:aiLower()
 									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
