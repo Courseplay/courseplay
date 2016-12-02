@@ -794,12 +794,15 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			local allowedToDriveBackup = allowedToDrive;
 			local fillType = tipper.cp.fillType;
 			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper, tipper.preferedTipReferencePointIndex);
-			local trailerInTipRange =  g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
-			courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
+			local trailerInTipRange = false
+			if not isBGA then
+				trailerInTipRange =  g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
+				courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
+			end
+			
 			local goForTipping = false;
 			local unloadWhileReversing = false; -- Used by Reverse BGA Tipping
 			local isRePositioning = false; -- Used by Reverse BGA Tipping
-
 			--BGA TRIGGER
 			if isBGA and not bgaIsFull then
 
@@ -831,7 +834,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				local ex, ey, ez = worldToLocal(ctt.triggerEndId, x, y, z);
 				local startDistance = Utils.vector2Length(sx, sz);
 				local endDistance = Utils.vector2Length(ex, ez);
-
+				courseplay:debug(('%s: startDistance=%s, endDistance=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(startDistance), tostring(endDistance), tostring(trailerInTipRange)), 2);
 				--stop if we are not empty but near the end of the trigger
 				if 	tipper.cp.isTipping and (endDistance <1 or startDistance <1) then
 					allowedToDrive = false;
@@ -920,7 +923,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							tipper.cp.closestTipDistance = distanceToTrigger
 						end
 						if distanceToTrigger == 0 or isBGA or isNearestPoint then
-							--print("toggleTipState")
 							if isBGA then
 								--tip to ground or existing heap
 								tipper:toggleTipState(nil, bestTipReferencePoint);
