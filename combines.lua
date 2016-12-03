@@ -432,6 +432,11 @@ function courseplay:getSpecialCombineOffset(combine)
 		end
 	end
 	
+	if combine.cp.isGrimmeRootster604 then
+		return -4.5
+ 	end
+	
+	
 	if combine.cp.isSugarBeetLoader and combine.cp.isHolmerTerraFelis2 then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.pipeRaycastNode);
 		local combineToUtwX,_,_ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, utwX,utwY,utwZ);

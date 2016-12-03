@@ -120,7 +120,7 @@ function courseplay:handle_mode2(vehicle, dt)
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
-		if vehicle.cp.nextTargets ~= nil and vehicle.cp.modeState == 5 then
+		if vehicle.cp.nextTargets ~= nil and #vehicle.cp.nextTargets > 0 and vehicle.cp.modeState == 5 then
 			courseplay:unload_combine(vehicle, dt)
 		else
 			-- STOP!!

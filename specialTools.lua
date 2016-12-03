@@ -599,8 +599,8 @@ function courseplay:getSpecialWorkWidth(workTool)
 	end;
 
 	-- Debug Prints
-	if specialWorkWidth and type(self.cp.specialWorkWidth) == "number" then
-		courseplay:debug(("%s workwidth: %.1fm"):format(self.name, specialWorkWidth),7);
+	if specialWorkWidth and type(workTool.cp.specialWorkWidth) == "number" then
+		courseplay:debug(("%s workwidth: %.1fm"):format(workTool.name, specialWorkWidth),7);
 	end;
 
 	return specialWorkWidth;
