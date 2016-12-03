@@ -598,8 +598,6 @@ function courseplay:getSpecialWorkWidth(workTool)
 			specialWorkWidth = 2.9;
 		elseif workTool.cp.isGrimmeSE260 then
 			specialWorkWidth = 1.6
-		elseif workTool.cp.isLizardSilageFork then
-			specialWorkWidth = 4.8
 		end
 	end;
 
