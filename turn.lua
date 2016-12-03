@@ -19,8 +19,8 @@ function courseplay:turn(vehicle, dt)
 	local wpChangeDistance 					= 3;
 	local reverseWPChangeDistance			= 4;
 	local reverseWPChangeDistanceWithTool	= 5;
-	local allowedAngle						= 5; -- Used for changing back into reverse if the vehicle and tool angle difference are below that.
-
+	local isHarvester						= courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle);
+	local allowedAngle						= isHarvester and 15 or 5; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
 	if vehicle.cp.noStopOnEdge then
 		turnOutTimer = 0;
 	end;
@@ -69,7 +69,7 @@ function courseplay:turn(vehicle, dt)
 						end;
 					else
 						local color = { r = 0, g = 1, b = 1}; -- Light Blue Line
-						if nextTurnTarget.reverseWhenPosible then
+						if nextTurnTarget.changeWhenPosible then
 							color["r"], color["g"], color["b"] = 1, 0.706, 0; -- Orange Line
 						end
 						drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ, color["r"], color["g"], color["b"]);  -- Light Blue Line
@@ -256,9 +256,9 @@ function courseplay:turn(vehicle, dt)
 					turnInfo.centerHeight = square(sideC^2 - sideB^2);
 
 					local neededSpace = abs(turnInfo.targetDeltaZ) + turnInfo.zOffset + 1 + turnInfo.centerHeight + (turnInfo.reverseWPChangeDistance * 1.5);
-				    local isHarvester = courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle);
+					turnInfo.isHarvester = courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle);
 				    --- Forward 3 Point Turn
-					if neededSpace < turnInfo.headlandHeight or isHarvester or not turnInfo.turnOnField then
+					if neededSpace < turnInfo.headlandHeight or turnInfo.isHarvester or not turnInfo.turnOnField then
 						courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo);
 
 					--- Reverse 3 Point Turn
@@ -318,27 +318,49 @@ function courseplay:turn(vehicle, dt)
 				end;
 
 				-- Start reversing before time if we are allowed and if we can
-				if newTarget.reverseWhenPosible and reversingWorkTool and reversingWorkTool.cp.realTurningNode then
-					-- Get the angles of the vehicle and tool
+				if newTarget.changeWhenPosible then
+					-- Get the world rotation of the vehicle
 					local _, vehicleRot, _ = getWorldRotation(vehicle.cp.DirectionNode);
 					vehicleRot = deg(vehicleRot) + 180;
-					local _, workToolRot, _ = getWorldRotation(reversingWorkTool.cp.realTurningNode);
-					workToolRot = deg(workToolRot) + 180;
 
-					-- Get the angle difference
-					local angleDifference = abs(vehicleRot - workToolRot);
+					local angleDifference = 0;
 
-					-- If the angle diff is less than the allowed angle, then goto the first reverse wp
-					courseplay:debug(("%s:(Turn) Reverse when %.2f <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
+					if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
+						-- Get the world rotation of the tool
+						local _, workToolRot, _ = getWorldRotation(reversingWorkTool.cp.realTurningNode);
+						workToolRot = deg(workToolRot) + 180;
+
+						-- Get the angle difference
+						angleDifference = abs(vehicleRot - workToolRot);
+					else
+						-- Get the world rotation of the next lane
+						local dx, dz = courseplay.generation:getPointDirection(vehicle.Waypoints[vehicle.cp.waypointIndex+1], vehicle.Waypoints[vehicle.cp.waypointIndex+2]);
+						local laneRot = Utils.getYRotationFromDirection(dx, dz);
+						laneRot = deg(laneRot) + 180;
+
+						-- Get the angle difference
+						angleDifference = abs(vehicleRot - laneRot);
+					end;
+					if angleDifference > 180 then
+						angleDifference = angleDifference - 180;
+					end;
+
+
+					-- If the angle diff is less than the allowed angle, then goto the first wp in oposite drive direction
+					courseplay:debug(("%s:(Turn) Change direction when anglediff(%.2f) <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
 					if angleDifference <= allowedAngle then
+						local changeToForward = newTarget.turnReverse;
 						for i = vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, 1 do
-							if vehicle.cp.turnTargets[i].turnReverse then
-								courseplay:debug(("%s:(Turn) Changing to reverse since %.2f < %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
+							if changeToForward and not vehicle.cp.turnTargets[i].turnReverse then
+								courseplay:debug(("%s:(Turn) Changing to forward"):format(nameNum(vehicle)), 14);
+								vehicle.cp.curTurnIndex = i;
+								return;
+							elseif not changeToForward and vehicle.cp.turnTargets[i].turnReverse then
+								courseplay:debug(("%s:(Turn) Changing to reverse"):format(nameNum(vehicle)), 14);
 								vehicle.cp.curTurnIndex = i;
 								return;
 							end;
 						end;
-						courseplay:debug(("%s:(Turn) No reverse point found."):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
 					end;
 				end;
 			else
@@ -360,14 +382,16 @@ function courseplay:turn(vehicle, dt)
 
 			-- Lower implement and continue on next lane
 			if lowerImplements then
-				courseplay:lowerImplements(vehicle, true, true);
+				if vehicle.cp.abortWork == nil then
+					courseplay:lowerImplements(vehicle, true, true);
+				end;
 
 				vehicle.cp.turnStage = 0;
 				vehicle.cp.isTurning = nil;
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
-				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 4);
-				--courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
 				courseplay:clearTurnTargets(vehicle);
 
 				return;
@@ -409,31 +433,15 @@ function courseplay:turn(vehicle, dt)
 			vehicle.cp.savedNoStopOnTurn = nil;
 		end;
 
-		local offset = Utils.getNoNil(vehicle.cp.totalOffsetX, 0);
-		local x,y,z = localToWorld(vehicle.cp.DirectionNode, offset, 0, backMarker);
-		local dist = courseplay:distance(vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz, x, z);
-		if dist > 7.5 then
-			refSpeed = courseplay:getSpeedWithLimiter(vehicle, vehicle.cp.speeds.field);
-		end;
-		if backMarker <= 0 then
-			if dist < 0.5 then
-				if not vehicle.cp.noStopOnTurn then
-					vehicle.cp.waitForTurnTime = vehicle.timer + turnTimer;
-				end;
-				courseplay:lowerImplements(vehicle, false, false);
-				vehicle.cp.turnStage = 1;
+	    local wpX, wpZ = vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz;
+		local _, _, disZ = worldToLocal(vehicle.cp.DirectionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
+
+		if disZ < backMarker then
+			if not vehicle.cp.noStopOnTurn then
+				vehicle.cp.waitForTurnTime = vehicle.timer + turnTimer;
 			end;
-		else
-			if dist < 0.5 and vehicle.cp.turnStage ~= -1 then
-				vehicle.cp.turnStage = -1;
-				courseplay:lowerImplements(vehicle, false, false);
-			end;
-			if dist > backMarker and vehicle.cp.turnStage == -1 then
-				if not vehicle.cp.noStopOnTurn then
-					vehicle.cp.waitForTurnTime = vehicle.timer + turnTimer;
-				end;
-				vehicle.cp.turnStage = 1;
-			end;
+			courseplay:lowerImplements(vehicle, false, false);
+			vehicle.cp.turnStage = 1;
 		end;
 	end;
 
@@ -962,14 +970,16 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		--- We don't have space on the side we want to turn into, so we do the turn in oposite sirection
 		turnInfo.direction = turnInfo.direction * -1;
 	end;
-	courseplay:debug(("%s:(Turn) centerOffset=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(turnInfo.centerOffset), tostring(sideB), tostring(sideC), tostring(turnInfo.centerHeight)), 14);
+	courseplay:debug(("%s:(Turn) centerOffset=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(turnInfo.centerOffset), tostring(turnInfo.centerHeight)), 14);
+
+	--if turnInfo.isHarvester then
 
 	--- Get the 2 circle center cordinate
-	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.targetDeltaZ - turnInfo.zOffset - 1);
-	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction * -1, 0, turnInfo.targetDeltaZ - turnInfo.zOffset - 1 - turnInfo.centerHeight);
+	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.targetDeltaZ - turnInfo.zOffset);
+	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction * -1, 0, turnInfo.targetDeltaZ - turnInfo.zOffset - turnInfo.centerHeight);
 
 	--- Generate first turn circle (Forward)
-	startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, turnInfo.targetDeltaZ - turnInfo.zOffset - 1);
+	startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, turnInfo.targetDeltaZ - turnInfo.zOffset);
 	courseplay:generateTurnCircle(vehicle, center1, startDir, center2, turnInfo.turnRadius, turnInfo.direction, true);
 
 	--- Move a little bit more forward, so we can reverse properly
@@ -986,21 +996,20 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	courseplay:addTurnTarget(vehicle, posX, posZ);
 
 	--- Generate second turn circle (Reversing)
-	local zPossition = turnInfo.targetDeltaZ - turnInfo.zOffset - 1 - turnInfo.centerHeight;
+	local zPossition = turnInfo.targetDeltaZ - turnInfo.zOffset - turnInfo.centerHeight;
 	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition);
 	courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, turnInfo.turnRadius, turnInfo.direction, true, true);
 
 	--- Move a bit furthen back
-	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, zPossition - 2);
-	courseplay:addTurnTarget(vehicle, posX, posZ, false, false, true);
-	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, zPossition - (turnInfo.reverseWPChangeDistance * 1.5));
-	courseplay:addTurnTarget(vehicle, posX, posZ, false, false, true);
+	fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition - 2);
+	toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition - (turnInfo.reverseWPChangeDistance * 1.5));
+	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true, nil, nil, true);
 
 	--- Move furthen back depending on the frontmarker
 	if turnInfo.frontMarker < zPossition then
 		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition - (turnInfo.reverseWPChangeDistance * 2));
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.frontMarker - (turnInfo.reverseWPChangeDistance * 2));
-		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true);
+		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true, nil, nil, true);
 
 		--- Generate forward straite line if needed
 	else
@@ -1069,13 +1078,13 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	--- Move a bit furthen forward
 	fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2);
 	toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2 + turnInfo.zOffset + turnInfo.wpChangeDistance);
-	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint);
+	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 
 	--- Move furthen forward depending on the frontmarker
 	if turnInfo.frontMarker + zPossition + turnInfo.zOffset < 0 then
 		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + (turnInfo.wpChangeDistance * 2));
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2 + turnInfo.zOffset + abs(turnInfo.frontMarker) + (turnInfo.wpChangeDistance * 2));
-		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint);
+		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 
 	--- Generate reverse straite line if needed
 	else
@@ -1150,14 +1159,14 @@ function courseplay:haveHeadlands(vehicle)
 	return vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0;
 end;
 
-function courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, reverseWhenPosible)
+function courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeWhenPosible)
 	local endTurn = false;
 	local wpDistance = 3;
 	local dist = courseplay:distance(fromPoint.x, fromPoint.z, toPoint.x, toPoint.z);
 	local numPointsNeeded = ceil(dist / wpDistance);
 	local dx, dz = (toPoint.x - fromPoint.x) / dist, (toPoint.z - fromPoint.z) / dist;
 
-	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, false, nil, reverse, nil, nil, nil, reverseWhenPosible);
+	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, false, nil, reverse, nil, nil, nil, changeWhenPosible);
 
 	local posX, posZ;
 	if numPointsNeeded > 0 then
@@ -1166,7 +1175,7 @@ function courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, revers
 			posX = fromPoint.x + (i * wpDistance * dx);
 			posZ = fromPoint.z + (i * wpDistance * dz);
 
-			courseplay:addTurnTarget(vehicle, posX, posZ ,false, nil, reverse, nil, nil, nil, reverseWhenPosible);
+			courseplay:addTurnTarget(vehicle, posX, posZ ,false, nil, reverse, nil, nil, nil, changeWhenPosible);
 		end;
 	end;
 
@@ -1183,7 +1192,7 @@ function courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, revers
 		endTurn = turnEnd;
 	end;
 
-	courseplay:addTurnTarget(vehicle, posX, posZ, false, endTurn, reverse, revPosX, revPosZ, nil, reverseWhenPosible);
+	courseplay:addTurnTarget(vehicle, posX, posZ, false, endTurn, reverse, revPosX, revPosZ, nil, changeWhenPosible);
 
 end;
 
@@ -1270,7 +1279,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	delete(point);
 end;
 
-function courseplay:addTurnTarget(vehicle, posX, posZ, useSmoothTurn, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, reverseWhenPosible)
+function courseplay:addTurnTarget(vehicle, posX, posZ, useSmoothTurn, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, changeWhenPosible)
 	local target = {};
 	target.posX 			  = posX;
 	target.posZ 			  = posZ;
@@ -1279,11 +1288,11 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, useSmoothTurn, turnEnd, t
 	target.turnReverse		  = turnReverse;
 	target.revPosX 			  = revPosX;
 	target.revPosZ 			  = revPosZ;
-	target.reverseWhenPosible = reverseWhenPosible;
+	target.changeWhenPosible = changeWhenPosible;
 	table.insert(vehicle.cp.turnTargets, target);
 
 	if not dontPrint then
-		courseplay:debug(("%s:(Turn:addTurnTarget) posX=%.2f, posZ=%.2f, useSmoothTurn=%s, turnEnd=%s, turnReverse=%s, reverseWhenPosible=%s"):format(nameNum(vehicle), posX, posZ, tostring(useSmoothTurn and true or false), tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(reverseWhenPosible and true or false)), 14);
+		courseplay:debug(("%s:(Turn:addTurnTarget) posX=%.2f, posZ=%.2f, useSmoothTurn=%s, turnEnd=%s, turnReverse=%s, changeWhenPosible=%s"):format(nameNum(vehicle), posX, posZ, tostring(useSmoothTurn and true or false), tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeWhenPosible and true or false)), 14);
 	end;
 end
 

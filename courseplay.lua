@@ -80,7 +80,7 @@ local function initialize()
 		'signs', 
 		'specialTools', 
 		'start_stop', 
-		'tippers', 
+		'toolManager',
 		'triggers', 
 		'turn',
 		'vehicles'

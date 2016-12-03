@@ -1194,40 +1194,72 @@ function courseplay:isWheeledWorkTool(workTool)
 end;
 
 function courseplay:setPathVehiclesSpeed(vehicle,dt)
-	local pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
+	local pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId];
 	--print("update speed")
 	if pathVehicle.speedDisplayDt == nil then
-		pathVehicle.speedDisplayDt = 0
-		pathVehicle.lastSpeed = 0
-		pathVehicle.lastSpeedReal = 0
-		pathVehicle.movingDirection = 1
-	end
-	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt
+		pathVehicle.speedDisplayDt = 0;
+		pathVehicle.lastSpeed = 0;
+		pathVehicle.lastSpeedReal = 0;
+		pathVehicle.movingDirection = 1;
+	end;
+	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt;
 	if pathVehicle.speedDisplayDt > 100 then
-		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode)
+		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode);
 		if pathVehicle.lastPosition == nil then
 		  pathVehicle.lastPosition = {
 			newX,
 			newY,
 			newZ
-		  }
-		end
-		local lastMovingDirection = pathVehicle.movingDirection
-		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3])
+		  };
+		end;
+		local lastMovingDirection = pathVehicle.movingDirection;
+		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3]);
 		if dz > 0.001 then
-		  pathVehicle.movingDirection = 1
+		  pathVehicle.movingDirection = 1;
 		elseif dz < -0.001 then
-		  pathVehicle.movingDirection = -1
+		  pathVehicle.movingDirection = -1;
 		else
-		  pathVehicle.movingDirection = 0
-		end
-		pathVehicle.lastMovedDistance = Utils.vector3Length(dx, dy, dz)
-		local lastLastSpeedReal = pathVehicle.lastSpeedReal
-		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01
-		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01
-		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15
-		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ
-		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100
-	 end
+		  pathVehicle.movingDirection = 0;
+		end;
+		pathVehicle.lastMovedDistance = Utils.vector3Length(dx, dy, dz);
+		local lastLastSpeedReal = pathVehicle.lastSpeedReal;
+		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01;
+		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01;
+		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15;
+		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ;
+		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100;
+	end;
 end
 
+function courseplay:setAbortWorkWaypoint(vehicle)
+	vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
+	vehicle.cp.abortWorkExtraMoveBack = 0;
+
+	--- update triggers if in mode 4 in the case that new BiGPacks had been bought
+	if vehicle.cp.mode == 4 then
+		courseplay:updateAllTriggers();
+	end;
+
+	--- Check for turns
+	for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
+		local wp = vehicle.Waypoints[i];
+		if wp.turnStart then
+			--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
+			if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
+				courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(wp.turnStart and true or false)), 12);
+				courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
+				vehicle.cp.switchLaneOffset = true;
+			end;
+
+			--- If the turn is less than 3 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
+			if vehicle.cp.abortWork + 5 > i then
+				vehicle.cp.abortWork = vehicle.cp.abortWork - 5;
+				vehicle.cp.abortWorkExtraMoveBack = 5;
+			end;
+		end;
+	end;
+	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);
+
+	--- Set the waypoint to the start of the refill course
+	courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
+end;

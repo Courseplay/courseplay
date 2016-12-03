@@ -51,31 +51,15 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 		if self.cp.previousWaypointIndex == self.cp.abortWork and seederFillLevelPct ~= 0 and sprayerFillLevelPct ~= 0 then
 			courseplay:setWaypointIndex(self, self.cp.abortWork + 2);
 		end
-		if self.cp.previousWaypointIndex == self.cp.abortWork + 8 then
-			self.cp.abortWork = nil
+		if self.cp.previousWaypointIndex < self.cp.stopWork and self.cp.previousWaypointIndex > self.cp.abortWork + 9 + self.cp.abortWorkExtraMoveBack then
+			self.cp.abortWork = nil;
 		end
 	end
 	-- save last point
 	if (seederFillLevelPct == 0 or sprayerFillLevelPct == 0 or self.cp.urfStop) and workArea then
 		self.cp.urfStop = false
 		if self.cp.hasUnloadingRefillingCourse and self.cp.abortWork == nil then
-			courseplay:updateAllTriggers(); --update triggers for the case that new BiGPacks had been bought
-			self.cp.abortWork = self.cp.waypointIndex -10
-			-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
-			if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 then
-				for i=self.cp.abortWork,self.cp.previousWaypointIndex do
-					local wp = self.Waypoints[i];
-					if wp.turnStart then
-						courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(self), self.cp.abortWork, i-1, tostring(wp.turnStart and true or false)), 12);
-						courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
-						self.cp.switchLaneOffset = true;
-						break;
-					end;
-				end;
-			end;
-			--courseplay:setWaypointIndex(self, self.cp.stopWork - 4);
-			courseplay:setWaypointIndex(self, self.cp.stopWork +1);
-			--courseplay:debug(string.format("Abort: %d StopWork: %d",self.cp.abortWork,self.cp.stopWork), 12)
+			courseplay:setAbortWorkWaypoint(self);
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');

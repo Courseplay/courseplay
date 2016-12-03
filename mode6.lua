@@ -393,25 +393,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			-- save last point
 			if (fillLevelPct == 100 or vehicle.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
 				if vehicle.cp.hasUnloadingRefillingCourse and vehicle.cp.abortWork == nil then
-					vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
-					-- invert lane offset if abortWork is before previous turn point (symmetric lane change)
-					if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 then
-						for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
-							local wp = vehicle.Waypoints[i];
-							if wp.turnStart then
-								courseplay:debug(string.format('%s: abortWork set (%d), abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), vehicle.cp.abortWork, i-1, tostring(wp.turnStart and true or false)), 12);
-								courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
-								vehicle.cp.switchLaneOffset = true;
-								break;
-							end;
-						end;
-					end;
-					--courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork - 4);
-					courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
-					if vehicle.cp.waypointIndex < 1 then
-						courseplay:setWaypointIndex(vehicle, 1);
-					end
-					--courseplay:debug(string.format("Abort: %d StopWork: %d",vehicle.cp.abortWork,vehicle.cp.stopWork), 12)
+					courseplay:setAbortWorkWaypoint(vehicle);
 				elseif not vehicle.cp.hasUnloadingRefillingCourse and not vehicle.cp.automaticUnloadingOnField then
 					allowedToDrive = false;
 					CpManager:setGlobalInfoText(vehicle, 'NEEDS_UNLOADING');

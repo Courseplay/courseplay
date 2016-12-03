@@ -262,37 +262,55 @@ function courseplay:showDirection(node,lx,lz)
 end
 
 -- Find the first forward waypoint ahead of the vehicle
-function courseplay:getNextFwdPoint(vehicle)
-	local maxVarianceX = sin(rad(30));
-	local firstFwd, firstFwdOver3;
-	courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 13);
-	for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
-		if not vehicle.Waypoints[i].rev then
-			local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
-			local wdx, _, wdz, dist = courseplay:getWorldDirection(x, 0, z, vehicle.Waypoints[i].cx, 0, vehicle.Waypoints[i].cz);
-			local dx,_,dz = worldDirectionToLocal(vehicle.cp.DirectionNode, wdx, 0, wdz);
-			if not firstFwd then
-				firstFwd = i;
-				courseplay:debug(('\tset firstFwd as %d'):format(i), 13);
+function courseplay:getNextFwdPoint(vehicle, isTurning)
+	if isTurning then
+		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 14);
+		for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
+			if vehicle.cp.abortWork and vehicle.cp.abortWork == i then
+				vehicle.cp.abortWork = nil;
 			end;
-			if not firstFwdOver3 and dz and dist and dz * dist >= 3 then
-				firstFwdOver3 = i;
-				courseplay:debug(('\tset firstFwdOver3 as %d'):format(i), 13);
-			end;
-			courseplay:debug(('\tpoint %d, dx=%.4f, dz=%.4f, dist=%.2f, maxVarianceX=%.4f'):format(i, dx, dz, dist, maxVarianceX), 13);
-			if dz > 0 and abs(dx) <= maxVarianceX then -- forward and x angle <= 30°
-				courseplay:debug('\t-> return as waypointIndex', 13);
-				return i;
+			if not vehicle.Waypoints[i].rev then
+				local wpX, wpZ = vehicle.Waypoints[i].cx, vehicle.Waypoints[i].cz;
+				local _, _, disZ = worldToLocal(vehicle.cp.DirectionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
+
+				if disZ > 3 then
+					courseplay:debug(('--> return (%d) as waypointIndex'):format(i), 14);
+					return i;
+				end;
 			end;
 		end;
-	end;
+	else
+		local maxVarianceX = sin(rad(30));
+		local firstFwd, firstFwdOver3;
+		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 13);
+		for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
+			if not vehicle.Waypoints[i].rev then
+				local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
+				local wdx, _, wdz, dist = courseplay:getWorldDirection(x, 0, z, vehicle.Waypoints[i].cx, 0, vehicle.Waypoints[i].cz);
+				local dx,_,dz = worldDirectionToLocal(vehicle.cp.DirectionNode, wdx, 0, wdz);
+				if not firstFwd then
+					firstFwd = i;
+					courseplay:debug(('--> set firstFwd as %d'):format(i), 13);
+				end;
+				if not firstFwdOver3 and dz and dist and dz * dist >= 3 then
+					firstFwdOver3 = i;
+					courseplay:debug(('--> set firstFwdOver3 as %d'):format(i), 13);
+				end;
+				courseplay:debug(('--> point %d, dx=%.4f, dz=%.4f, dist=%.2f, maxVarianceX=%.4f'):format(i, dx, dz, dist, maxVarianceX), 13);
+				if dz > 0 and abs(dx) <= maxVarianceX then -- forward and x angle <= 30°
+					courseplay:debug('----> return as waypointIndex', 13);
+					return i;
+				end;
+			end;
+		end;
 
-	if firstFwdOver3 then
-		courseplay:debug(('\treturn firstFwdOver3 (%d)'):format(firstFwdOver3), 13);
-		return firstFwdOver3;
-	elseif firstFwd then
-		courseplay:debug(('\treturn firstFwd (%d)'):format(firstFwd), 13);
-		return firstFwd;
+		if firstFwdOver3 then
+			courseplay:debug(('\treturn firstFwdOver3 (%d)'):format(firstFwdOver3), 13);
+			return firstFwdOver3;
+		elseif firstFwd then
+			courseplay:debug(('\treturn firstFwd (%d)'):format(firstFwd), 13);
+			return firstFwd;
+		end;
 	end;
 
 	courseplay:debug('\treturn 1', 13);
