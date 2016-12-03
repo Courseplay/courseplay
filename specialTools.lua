@@ -318,6 +318,9 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.directionNodeZOffset = -0.705;
 		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
+	elseif workTool.cp.xmlFileName == 'lizardSilageFork.xml' then	 
+		workTool.cp.isLizardSilageFork = true
+	
 	-- CULTIVATORS [Giants]
 
 	-- PLOUGHS [Giants]
@@ -595,6 +598,8 @@ function courseplay:getSpecialWorkWidth(workTool)
 			specialWorkWidth = 2.9;
 		elseif workTool.cp.isGrimmeSE260 then
 			specialWorkWidth = 1.6
+		elseif workTool.cp.isLizardSilageFork then
+			specialWorkWidth = 4.8
 		end
 	end;
 
