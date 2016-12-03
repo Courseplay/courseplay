@@ -213,7 +213,7 @@ function courseplay:drive(self, dt)
 				if self.cp.totalFillLevelPercent >= self.cp.refillUntilPct or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end
-				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(self.cp.totalFillLevel, 100), self.cp.capacity));
+				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(self.cp.totalFillLevel, 100), self.cp.totalCapacity));
 			end
 		elseif self.cp.mode == 6 then
 			if self.cp.previousWaypointIndex == self.cp.startWork then
