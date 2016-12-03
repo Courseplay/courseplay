@@ -133,7 +133,7 @@ function courseplay:isChopper(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.attachedCutters ~= nil and workTool.cp.capacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
-	return workTool.cp.hasSpecializationFoldable or workTool.foldingParts ~= nil;
+	return workTool.cp.hasSpecializationFoldable and  workTool.foldingParts ~= nil and #workTool.foldingParts > 0;
 end;
 function courseplay:isFrontloader(workTool)
 	return workTool.cp.hasSpecializationCylindered and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
