@@ -26,23 +26,23 @@
 		<text name="COURSEPLAY_MODE_9" 									 text="РАБОТЫ ДЛЯ ПОГРУЗЧИКА" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Продолжить" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Сброс маршрута" />
-		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Перезапустить цикл" />
+		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Завершить цикл" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Разгрузка при:" />
 		<text name="UNKNOWN" 											 text="неизвестный" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="дистанция" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Пауза:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d мин" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d сек" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNIT_METER" 								 text="м" />           
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Название маршрута:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Имя папки:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Введите слово целиком или его фрагмент для начала поиска:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="ENTER" />					
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s - отмена" />				
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s - сохранить" />		
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s - сохранить" />	
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s - подтвердить" />		
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="МАРШРУТЫ %q" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Создать папку" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Поиск маршрутов и папок" />
@@ -50,7 +50,7 @@
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="доехал до места разгрузки." />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="доехал до места ожидания." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="доехал до нужного пункта" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- it is unclear where it and when works -->
 		<text name="COURSEPLAY_WORK_END" 								 text="завершил работу на маршруте." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text="нуждается в разгрузке." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text="нуждается в заправке." />
@@ -62,7 +62,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="правее/левее:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Внутр. разворот:" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Радиус поворота:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="вперед/назад:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Комбайн" />
@@ -75,8 +75,8 @@
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Комбайн с поля № %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Копировать:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Транспорт" />
-		<text name="COURSEPLAY_TEMP_COURSE" 							 text="не сохраненный" />
-		<text name="COURSEPLAY_SPEED_TURN" 								 text="Маневры:" />
+		<text name="COURSEPLAY_TEMP_COURSE" 							 text="несохранённый" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="Манёвры:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="На поле:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="В пути:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Задняя:" />
@@ -111,7 +111,7 @@
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Еду на временную стоянку" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Жду заполнения бункера" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Ищу комбайн для работы" />
-		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Жду завершения маневра комбайна" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Жду завершения манёвра комбайна" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Жду у следующей точки" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Еду за транспортом" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="низкий уровень топлива" />
@@ -144,7 +144,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Запад" />
-		<text name="COURSEPLAY_HEADLAND" 								 text="Обработка краев:" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="Обработка краёв:" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="да" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="нет" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Маркера:" />
@@ -154,7 +154,7 @@
 		<text name="COURSEPLAY_TURN_MANEUVER" 							 text="Поворот:" />
 		<text name="COURSEPLAY_START" 									 text="Старт" />
 		<text name="COURSEPLAY_FINISH" 									 text="Финиш" />
-		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Не рабочий маршрут" />
+		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Нерабочий маршрут" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
@@ -172,7 +172,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Показать позицию" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Показать позицию" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Показать позицию" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Готово, поехали" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Стоять при смене позиций" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Способ запуска:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="с ближайшей точки" />
@@ -205,8 +205,8 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": силосная яма заполнена!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="В этом бункере нет такого продукта!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Забрать из бункера:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="В бункере не осталось выбранного продукта, увы...! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="В бункере не осталось выбранного продукта, увы...!" />  
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text="Выбранное хранилище заполнено!" /> 
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s: включено распыление соломы!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Показать первую точку" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Сохранить маршрут" />
@@ -215,7 +215,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="продолжить запись" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="удалить последнюю точку" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="точка ожидания" />
-		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="перекресток" />
+		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="перекрёсток" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="поворот" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="поворот" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="включить задний ход" />
@@ -251,6 +251,6 @@
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Удалить" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="начало и конец маршрута" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="весь маршрут" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="перекрестки" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="перекрёстки" />
 	</texts>
 </l10n>
