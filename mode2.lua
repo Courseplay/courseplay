@@ -81,6 +81,11 @@ function courseplay:handle_mode2(vehicle, dt)
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.turnDiameter-2, 0, -(vehicle.cp.totalLength+2))
 					end
 				end
+				if vehicle.cp.realisticDriving then
+					if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz) then
+						courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
+					end	
+				end
 				courseplay:setModeState(vehicle, 5);
 				courseplay:setMode2NextState(vehicle, 81);
 			end			
@@ -115,99 +120,100 @@ function courseplay:handle_mode2(vehicle, dt)
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
-		-- STOP!!
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
-		courseplay:resetSlippingTimers(vehicle)
-
-		if vehicle.cp.isLoaded then
-			courseplay:setWaypointIndex(vehicle, 2);
-			courseplay:setModeState(vehicle, 99);
-			return false
-		end
-
-		-- are there any combines out there that need my help?
-		if CpManager.realTime5SecsTimerThrough then
-			if vehicle.cp.lastActiveCombine ~= nil then
-				local distance = courseplay:distanceToObject(vehicle, vehicle.cp.lastActiveCombine)
-				if distance > 20 then
-					vehicle.cp.lastActiveCombine = nil
-					courseplay:debug(string.format("%s (%s): last combine = nil", nameNum(vehicle), tostring(vehicle.id)), 4);
-				else
-					courseplay:debug(string.format("%s (%s): last combine is just %.0fm away, so wait", nameNum(vehicle), tostring(vehicle.id), distance), 4);
+		if vehicle.cp.nextTargets ~= nil and vehicle.cp.modeState == 5 then
+			courseplay:unload_combine(vehicle, dt)
+		else
+			-- STOP!!
+			AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
+			courseplay:resetSlippingTimers(vehicle)
+			if vehicle.cp.isLoaded then
+				courseplay:setWaypointIndex(vehicle, 2);
+				courseplay:setModeState(vehicle, 99);
+				return false
+			end
+			-- are there any combines out there that need my help?
+			if CpManager.realTime5SecsTimerThrough then
+				if vehicle.cp.lastActiveCombine ~= nil then
+					local distance = courseplay:distanceToObject(vehicle, vehicle.cp.lastActiveCombine)
+					if distance > 20 or vehicle.cp.totalFillLevelPercent == 100 then
+						vehicle.cp.lastActiveCombine = nil
+						courseplay:debug(string.format("%s (%s): last combine = nil", nameNum(vehicle), tostring(vehicle.id)), 4);
+					else
+						courseplay:debug(string.format("%s (%s): last combine is just %.0fm away, so wait", nameNum(vehicle), tostring(vehicle.id), distance), 4);
+					end
+				end
+				if vehicle.cp.lastActiveCombine == nil then -- it's important to call this function in the same loop like nilling  vehicle.cp.lastActiveCombine
+					courseplay:updateReachableCombines(vehicle)
 				end
 			end
-			if vehicle.cp.lastActiveCombine == nil then -- it's important to call this function in the same loop like nilling  vehicle.cp.lastActiveCombine
-				courseplay:updateReachableCombines(vehicle)
-			end
-		end
-
-		--is any of the reachable combines full?
-		if vehicle.cp.reachableCombines ~= nil then
-			if #vehicle.cp.reachableCombines > 0 then
-				-- choose the combine that needs me the most
-				if vehicle.cp.bestCombine ~= nil and vehicle.cp.activeCombine == nil then
-					courseplay:debug(string.format("%s (%s): request check-in @ %s", nameNum(vehicle), tostring(vehicle.id), tostring(vehicle.cp.combineID)), 4);
-					if courseplay:registerAtCombine(vehicle, vehicle.cp.bestCombine) then
-						courseplay:setModeState(vehicle, 2);
+			--is any of the reachable combines full?
+			if vehicle.cp.reachableCombines ~= nil then
+				if #vehicle.cp.reachableCombines > 0 then
+					-- choose the combine that needs me the most
+					if vehicle.cp.bestCombine ~= nil and vehicle.cp.activeCombine == nil then
+						courseplay:debug(string.format("%s (%s): request check-in @ %s", nameNum(vehicle), tostring(vehicle.id), tostring(vehicle.cp.combineID)), 4);
+						if courseplay:registerAtCombine(vehicle, vehicle.cp.bestCombine) then
+							courseplay:setModeState(vehicle, 2);
+						end
+					else
+						courseplay:setInfoText(vehicle,"COURSEPLAY_WAITING_FOR_FILL_LEVEL")
 					end
-				else
-					courseplay:setInfoText(vehicle,"COURSEPLAY_WAITING_FOR_FILL_LEVEL")
-				end
 
 
-				local highest_fill_level = 0;
-				local num_courseplayers = 0; --TODO: = fewest courseplayers ?
-				local distance = 0;
+					local highest_fill_level = 0;
+					local num_courseplayers = 0; --TODO: = fewest courseplayers ?
+					local distance = 0;
 
-				vehicle.cp.bestCombine = nil;
-				vehicle.cp.combineID = 0;
-				vehicle.cp.distanceToCombine = 99999999999;
+					vehicle.cp.bestCombine = nil;
+					vehicle.cp.combineID = 0;
+					vehicle.cp.distanceToCombine = math.huge;
 
-				-- chose the combine who needs me the most
-				for k, combine in pairs(vehicle.cp.reachableCombines) do
-					courseplay:setOwnFillLevelsAndCapacities(combine)
-					local fillLevel, capacity = combine.cp.fillLevel, combine.cp.capacity
-					if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired  and fillLevel >= 0.99*capacity then --AC stops at 99% fillLevel so we have to set this as full
-						combine.cp.wantsCourseplayer = true
-					end
-					if (fillLevel >= (capacity * vehicle.cp.followAtFillLevel / 100)) or capacity == 0 or combine.cp.wantsCourseplayer then
-						if capacity == 0 then
-							if combine.courseplayers == nil then
-								vehicle.cp.bestCombine = combine
-							else
-								local numCombineCourseplayers = #combine.courseplayers;
-								if numCombineCourseplayers <= num_courseplayers or vehicle.cp.bestCombine == nil then
-									num_courseplayers = numCombineCourseplayers;
-									if numCombineCourseplayers > 0 then
-										frontTractor = combine.courseplayers[num_courseplayers];
-										local canFollowFrontTractor = frontTractor.cp.totalFillLevelPercent and frontTractor.cp.totalFillLevelPercent >= vehicle.cp.followAtFillLevel;
-										courseplay:debug(string.format('%s: frontTractor (pos %d)=%q, canFollowFrontTractor=%s', nameNum(vehicle), numCombineCourseplayers, nameNum(frontTractor), tostring(canFollowFrontTractor)), 4);
-										if canFollowFrontTractor then
+					-- chose the combine who needs me the most
+					for k, combine in pairs(vehicle.cp.reachableCombines) do
+						courseplay:setOwnFillLevelsAndCapacities(combine)
+						local fillLevel, capacity = combine.cp.fillLevel, combine.cp.capacity
+						if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired  and fillLevel >= 0.99*capacity then --AC stops at 99% fillLevel so we have to set this as full
+							combine.cp.wantsCourseplayer = true
+						end
+						if (fillLevel >= (capacity * vehicle.cp.followAtFillLevel / 100)) or capacity == 0 or combine.cp.wantsCourseplayer then
+							if capacity == 0 then
+								if combine.courseplayers == nil then
+									vehicle.cp.bestCombine = combine
+								else
+									local numCombineCourseplayers = #combine.courseplayers;
+									if numCombineCourseplayers <= num_courseplayers or vehicle.cp.bestCombine == nil then
+										num_courseplayers = numCombineCourseplayers;
+										if numCombineCourseplayers > 0 then
+											frontTractor = combine.courseplayers[num_courseplayers];
+											local canFollowFrontTractor = frontTractor.cp.totalFillLevelPercent and frontTractor.cp.totalFillLevelPercent >= vehicle.cp.followAtFillLevel;
+											courseplay:debug(string.format('%s: frontTractor (pos %d)=%q, canFollowFrontTractor=%s', nameNum(vehicle), numCombineCourseplayers, nameNum(frontTractor), tostring(canFollowFrontTractor)), 4);
+											if canFollowFrontTractor then
+												vehicle.cp.bestCombine = combine
+											end
+										else
 											vehicle.cp.bestCombine = combine
 										end
-									else
-										vehicle.cp.bestCombine = combine
-									end
-								end;
-							end 
+									end;
+								end 
 
-						elseif fillLevel >= highest_fill_level and combine.cp.isCheckedIn == nil then
-							highest_fill_level = fillLevel
-							vehicle.cp.bestCombine = combine
-							distance = courseplay:distanceToObject(vehicle, combine);
-							vehicle.cp.distanceToCombine = distance
-							vehicle.cp.callCombineFillLevel = vehicle.cp.totalFillLevelPercent
-							vehicle.cp.combineID = combine.id
+							elseif fillLevel >= highest_fill_level and combine.cp.isCheckedIn == nil then
+								highest_fill_level = fillLevel
+								vehicle.cp.bestCombine = combine
+								distance = courseplay:distanceToObject(vehicle, combine);
+								vehicle.cp.distanceToCombine = distance
+								vehicle.cp.callCombineFillLevel = vehicle.cp.totalFillLevelPercent
+								vehicle.cp.combineID = combine.id
+							end
 						end
 					end
-				end
 
-				if vehicle.cp.combineID ~= 0 then
-					courseplay:debug(string.format("%s (%s): call combine: %s", nameNum(vehicle), tostring(vehicle.id), tostring(vehicle.cp.combineID)), 4);
-				end
+					if vehicle.cp.combineID ~= 0 then
+						courseplay:debug(string.format("%s (%s): call combine: %s", nameNum(vehicle), tostring(vehicle.id), tostring(vehicle.cp.combineID)), 4);
+					end
 
-			else
-				courseplay:setInfoText(vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
+				else
+					courseplay:setInfoText(vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
+				end
 			end
 		end
 	end
@@ -221,7 +227,7 @@ end
 function courseplay:unload_combine(vehicle, dt)
 	local curFile = "mode2.lua"
 	local allowedToDrive = true
-	local combine = vehicle.cp.activeCombine;
+	local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine;
 	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
 	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
 	local currentX, currentY, currentZ;
@@ -386,17 +392,15 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 		end
 
-		--[[
-		-- PATHFINDING / REALISTIC DRIVING (ASTAR)
+		-- PATHFINDING / REALISTIC DRIVING
 		if vehicle.cp.realisticDriving and not vehicle.cp.calculatedCourseToCombine then
-			-- if courseplay:calculate_course_to(vehicle, currentX, currentZ) then
-			if courseplay:calculateAstarPathToCoords(vehicle, currentX, currentZ) then
+			if courseplay:calculateAstarPathToCoords(vehicle, combine) then
+				courseplay:setCurrentTargetFromList(vehicle, 1);
 				courseplay:setModeState(vehicle, 5);
 				vehicle.cp.shortestDistToWp = nil;
 				courseplay:setMode2NextState(vehicle, 2); -- modeState when waypoint is reached
 			end;
 		end;
-		--]]
 
 
 
@@ -875,7 +879,7 @@ function courseplay:unload_combine(vehicle, dt)
 		currentZ = vehicle.cp.curTarget.z
 		refSpeed = vehicle.cp.speeds.field
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, y, currentZ);
+		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, currentY, currentZ);
 
 		if #(vehicle.cp.nextTargets) == 0 then
 			if distance_to_wp < 10 then
@@ -886,6 +890,11 @@ function courseplay:unload_combine(vehicle, dt)
 
 		-- avoid circling
 		local distToChange = 1
+		
+		if vehicle.cp.mode2nextState == 81 or vehicle.cp.mode2nextState == 2 then
+			distToChange = 3
+		end
+				
 		if vehicle.cp.shortestDistToWp == nil or vehicle.cp.shortestDistToWp > distance_to_wp then
 			vehicle.cp.shortestDistToWp = distance_to_wp
 		end
@@ -1074,105 +1083,27 @@ function courseplay:unload_combine(vehicle, dt)
 		
 
 		if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
-			drawDebugPoint(vehicle.cp.curTarget.x, vehicle.cp.curTarget.y or 0, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
+			drawDebugPoint(vehicle.cp.curTarget.x, vehicle.cp.curTarget.y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
 			
 			for i,tp in pairs(vehicle.cp.nextTargets) do
-				drawDebugPoint(tp.x, tp.y or 0, tp.z, 1, 0.65, 0, 1);
+				drawDebugPoint(tp.x, tp.y +2, tp.z, 1, 0.65, 0, 1);
 				if i == 1 then
-					drawDebugLine(vehicle.cp.curTarget.x, vehicle.cp.curTarget.y or 0, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, tp.y or 0, tp.z, 1, 0, 1); 
+					drawDebugLine(vehicle.cp.curTarget.x, vehicle.cp.curTarget.y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, tp.y + 2, tp.z, 1, 0, 1); 
 				else
 					local pp = vehicle.cp.nextTargets[i-1];
-					drawDebugLine(pp.x, pp.y or 0, pp.z, 1, 0, 1, tp.x, tp.y or 0, tp.z, 1, 0, 1); 
+					drawDebugLine(pp.x, pp.y+2, pp.z, 1, 0, 1, tp.x, tp.y + 2, tp.z, 1, 0, 1); 
 				end;
 			end;
 		end;
 	end
 end
 
--- GET ASTAR PATH TO COMBINE
-function courseplay:calculateAstarPathToCoords(vehicle, targetX, targetZ)
-	courseplay:debug(('%s: calculateAstarPathToCoords(..., targetX=%.2f, targetZ=%.2f)'):format(nameNum(vehicle), targetX, targetZ), 4);
-	local tileSize = 5; -- meters
-	vehicle.cp.calculatedCourseToCombine = true;
+function courseplay:calculateAstarPathToCoords(vehicle,combine,tx,tz)
 	
-	-- check if there is fruit between me and the target, if not then return false in order to avoid the calculating
-	local node = vehicle.cp.DirectionNode;
-	local x, y, z = getWorldTranslation(node);
-	-- local x, y, z = localToWorld(node, 0, 0, tileSize); --make sure first target is in front of us
-
-	local lineIsField = courseplay:isLineField(node, nil, nil, targetX, targetZ);
-	-- local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit(nil, x, z, targetX, targetZ);
-	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit(node, nil, nil, targetX, targetZ);
-	if lineIsField and not hasFruit then
-		courseplay:debug('\tno fruit between tractor and target -> return false', 4);
-		return false;
-	end;
-	courseplay:debug(string.format('\tfruit density between tractor and target = %s -> continue calculation', tostring(density)), 4);
-
-	-- check fruit: tipper
-	if vehicle.cp.workToolAttached then
-		for i,tipper in pairs(vehicle.cp.workTools) do
-			if tipper.getCurrentFruitType and tipper.cp.fillLevel > 0 then
-				local tipperFruitType = tipper:getCurrentFruitType();
-				courseplay:debug(string.format('%s: workTools[%d]: fillType=%d (%s), getCurrentFruitType()=%s (%s)', nameNum(vehicle), i, tipper.currentFillType, tostring(FillUtil.fillTypeIntToName[tipper.currentFillType]), tostring(tipperFruitType), tostring(FruitUtil.fruitIndexToDesc[tipperFruitType].name)), 4);
-				if tipperFruitType and tipperFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
-					fruitType = tipperFruitType;
-					courseplay:debug(string.format('\tset pathFinding fruitType as workTools[%d]\'s fruitType', i), 4);
-					break;
-				end;
-			end;
-		end;
-	end;
-	if fruitType == nil and fieldFruitType ~= nil then
-		fruitType = fieldFruitType;
-		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType=%d (%s) -> set astar fruitType as fieldFruitType', nameNum(vehicle), fieldFruitType, FruitUtil.fruitIndexToDesc[fieldFruitType].name), 4);
-	elseif fruitType == nil and fieldFruitType == nil then
-		courseplay:debug(string.format('%s: tipper fruitType=nil, fieldFruitType = nil -> return false', nameNum(vehicle)), 4);
-		return false;
-	end;
-
-
-	local targetPoints = courseplay:calcMoves(z, x, targetZ, targetX, fruitType);
-	if targetPoints ~= nil then
-		vehicle.cp.nextTargets = {};
-		local numPoints = #targetPoints;
-		local firstPoint = ceil(vehicle.cp.turnDiameter / 5);
-		courseplay:debug(string.format('numPoints=%d, first point = ceil(turnDiameter [%.1f] / 5) = %d', numPoints, vehicle.cp.turnDiameter, firstPoint), 4);
-		if numPoints < firstPoint then
-			return false;
-		end;
-		-- for i, cp in pairs(targetPoints) do
-		for i=firstPoint, numPoints do
-			local cp = targetPoints[i];
-			local insert = true;
-
-			--[[clean path (only keep corner points)
-			if i > firstPoint and i < numPoints then
-				local pp = targetPoints[i-1];
-				local np = targetPoints[i+1];
-				if cp.y == pp.y and cp.y == np.y then
-					courseplay:debug(string.format('\t%d: [x] cp.y==pp.y==np.y = %d, [z] cp.x = %d -> insert=false', i, cp.y, cp.x), 4);
-					insert = false;
-				elseif cp.x == pp.x and cp.x == np.x then
-					courseplay:debug(string.format('\t%d: [x] cp.y = %d, [z] cp.x==pp.x==np.x = %d -> insert=false', i, cp.y, cp.x), 4);
-					insert = false;
-				end;
-			end;
-			--]]
-
-			if insert then
-				courseplay:debug(string.format('%d: [x] cp.y = %d, [z] cp.x = %d, insert=true', i, cp.y, cp.x), 4);
-				table.insert(vehicle.cp.nextTargets, { x = cp.y, y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cp.y, 1, cp.x) + 3, z = cp.x });
-			end;
-		end;
-		courseplay:setCurrentTargetFromList(vehicle, 1);
-		courseplay:setModeState(vehicle, 5);
-		return true;
-	end;
-
-	return false;
-end;
-
+	vehicle.cp.calculatedCourseToCombine = true;
+	return false
+	
+end
 function courseplay:calculateCombineOffset(vehicle, combine)
 	local curFile = "mode2.lua";
 	local offs = vehicle.cp.combineOffset
