@@ -33,16 +33,16 @@
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Doba čekání:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d sek" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Jméno trasy:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Jméno složky:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrovat trasy:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="ENTER" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s pro zrušení" />
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s pro uložení trasy" />
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s pro uložení složky" />
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s pro filtrování tras" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Trasy: %q" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Nahrát/sloučit trasu do nahrané trasy" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Připojit trasu nakonec" />
@@ -54,7 +54,7 @@
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="přijel na místo překládky." />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="přijel na místo čekání." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="dokončil odvoz obilí." />
 		<text name="COURSEPLAY_WORK_END" 								 text="dokončil práci." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": potřebuje vyložit." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": pracovní stroj musí být doplněn." />
@@ -66,7 +66,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Objíždění porostu:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  <!-- Need Translation! -->
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Otáčení na poli:" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Poloměr otáčení:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Odstup vpřed/vzad:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Kombajn" />
@@ -209,8 +209,8 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker je plný!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Silo neobsahuje vybranou plodinu" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Na sile se nakládá:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Silo je prázdné! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Silo je prázdné! Čekám na další." />
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Silo na farmě je plné! Zadej další silo." />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Nastartovat při %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Hledání prvního bodu" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Uložit aktuální trasu" />
@@ -224,7 +224,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Konec otáční" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Začít couvat" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Konec couvání" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" /> <!-- TODO: TRANSLATION! (during recording adds multiple points between last point and current position -->
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě - zobrazit text:" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Vždy použít 4x4:" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Chceš aby pole byla skenována automaticky?" />
