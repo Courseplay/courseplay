@@ -153,9 +153,6 @@ end;
 function courseplay:isMower(workTool)
 	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
 end;
-function courseplay:isPushWagon(workTool)
-	return workTool.typeName:match("forageWagon") or workTool.cp.hasSpecializationSiloTrailer or workTool.cp.isPushWagon;
-end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and workTool.baler ~= nil and (workTool.baler.baleCloseAnimationName ~= nil and workTool.baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
@@ -315,9 +312,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		local implX,implY,implZ = getWorldTranslation(workTool.rootNode);
 		local _,_,tractorToImplZ = worldToLocal(vehicle.cp.DirectionNode, implX,implY,implZ);
 
-		if not vehicle.cp.aiTurnNoBackward and workTool.aiLeftMarker ~= nil and workTool.cp.notToBeReversed then
+		if not vehicle.cp.aiTurnNoBackward and workTool.cp.notToBeReversed then
 			vehicle.cp.aiTurnNoBackward = true;
-			courseplay:debug(('%s: workTool.aiLeftMarker ~= nil and workTool.cp.notToBeReversed == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
+			courseplay:debug(('%s: workTool.cp.notToBeReversed == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
 		end;
 	end;
 
@@ -1039,7 +1036,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 
 				courseplay:debug(('%s: vehicle.cp.fillTrigger = %s'):format(nameNum(vehicle), tostring(vehicle.cp.fillTrigger)), 19);
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
-				if (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
+				if trigger and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
 					if courseplay:fillTypesMatch(trigger, workTool) then
 						--print('\t\tslow down, it\'s a sprayerFillTrigger');
 						courseplay:debug(('%s: trigger is SprayerFillTrigger -> set vehicle.cp.isInFilltrigger'):format(nameNum(vehicle)), 19);

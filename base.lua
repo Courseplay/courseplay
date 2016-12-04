@@ -849,7 +849,7 @@ function courseplay:update(dt)
 			end
 			self:setCpVar('HUD0wantsCourseplayer', combine.cp.wantsCourseplayer,courseplay.isClient);
 			self:setCpVar('HUD0combineForcedSide', combine.cp.forcedSide,courseplay.isClient);
-			self:setCpVar('HUD0isManual', not self.cp.isDriving and not combine.isAIThreshing,courseplay.isClient);
+			self:setCpVar('HUD0isManual', not self.cp.isDriving and not combine.aiIsStarted,courseplay.isClient);
 			self:setCpVar('HUD0turnStage', self.cp.turnStage,courseplay.isClient);
 			local tractor = combine.courseplayers[1]
 			if tractor ~= nil then

@@ -82,17 +82,17 @@ function courseplay:drive(self, dt)
 		cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
 	end
 
-	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
-		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
-		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz, 0, 0, 1)
-	end;
-
 	-- HORIZONTAL/VERTICAL OFFSET
 	if courseplay:getIsVehicleOffsetValid(self) then
 		cx, cz = courseplay:getVehicleOffsettedCoords(self, cx, cz);
 		if courseplay.debugChannels[12] and self.cp.isTurning == nil then
 			drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
 		end;
+	end;
+
+	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
+		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
+		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz, 0, 0, 1)
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
@@ -301,7 +301,7 @@ function courseplay:drive(self, dt)
 		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 3 then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
-		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.cp.waypointIndex == self.cp.stopWork - 4 or (self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork)) then
+		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.cp.waypointIndex == self.cp.stopWork + 1 or (self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork)) then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.cp.mode ~= 7 then
@@ -608,8 +608,8 @@ function courseplay:drive(self, dt)
 
 	if self.cp.TrafficBrake then
 		fwd = self.movingDirection == -1;
-		lx = 0;
-		lz = 1;
+		--lx = 0;
+		--lz = 1;
 	end  	
 	self.cp.TrafficBrake = false
 	self.cp.isTrafficBraking = false
@@ -898,8 +898,7 @@ function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
 	if not forceTrueSpeed then
 		if newSpeed < vehicle.cruiseControl.speed then
-			newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.005, math.min(deltaMinus * 0.0015, 0.035)));
-			--newSpeed = (newSpeed + vehicle.cruiseControl.speed)/2
+			newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.1, math.min(deltaMinus * 0.5, 3)));
 		end;
 	end
 	

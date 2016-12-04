@@ -45,9 +45,6 @@ function courseplay:setNameVariable(workTool)
 	if workTool.cp.hasSpecializationFillable then
 		workTool.cp.closestTipDistance = math.huge;
 	end;
-	if workTool.typeName == 'hookLiftTrailer' then
-		workTool.cp.isHookLiftTrailer = true;
-	end;
 
 	--[[ DEBUG
 	print(nameNum(workTool) .. ': default specs list');
@@ -127,10 +124,14 @@ function courseplay:setNameVariable(workTool)
 	--																	0.5 = turns 2 times slower.
 	-- workTool.cp.componentNumAsDirectionNode:	(Component Index)		Used to set another component as the Direction Node. Starts from index 1 as the first component.
 	-- workTool.cp.directionNodeZOffset:		(Distance in meters)	If set, then the Direction Node will be offset by the value set.
+	-- workTool.cp.widthWillCollideOnTurn:		(Boolean)				If set, then the vehicle will reverse(if possible) further back, before turning to make room for the width of the tool
+	-- workTool.cp.notToBeReversed				(Boolean)				Tools that should not be reversed with.
 	-- TODO: Add description for all the special varialbes that is usable here.
 	-- ###########################################################
 
+	-- ###########################################################
 	-- MODS
+	-- ###########################################################
 	-- [1] MOD COMBINES
 
 	-- ###########################################################
@@ -168,6 +169,7 @@ function courseplay:setNameVariable(workTool)
 
 
 	-- ###########################################################
+	-- END OF MODS
 	-- ###########################################################
 
 
@@ -176,98 +178,74 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 	-- [1] COMBINES / CUTTERS
 	-- Combines / Harvesters [Giants]
-	elseif workTool.cp.xmlFileName == 'grimmeTectron415.xml' then -- Checked: Is Default Giants Vehicle
+	elseif workTool.cp.xmlFileName == 'grimmeTectron415.xml' then
 		workTool.cp.isGrimmeTectron415 = true;
 		workTool.cp.isHarvesterSteerable = true;
-		--workTool.cp.directionNodeZOffset = 2.3;
 
-	elseif workTool.cp.xmlFileName == 'holmerTerraDosT4_40.xml' then -- Checked: Is Default Giants Vehicle
+	elseif workTool.cp.xmlFileName == 'holmerTerraDosT4_40.xml' then
 		workTool.cp.isHolmerTerraDosT4_40 = true;
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.isCrabSteeringPossible = true;
 		workTool.cp.pipeSide = 1;
 		workTool.cp.ridgeMarkerIndex = 6;
 		
-	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isHolmerHR9 = true;
+	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
 		workTool.cp.isCrabSteeringPossible = true;
 
-	elseif workTool.cp.xmlFileName ==  'holmerTerraFelis2.xml' then -- Checked: Is Default Giants Vehicle
+	elseif workTool.cp.xmlFileName ==  'holmerTerraFelis2.xml' then
 		workTool.cp.isHolmerTerraFelis2 = true;
 		workTool.cp.isSugarBeetLoader = true
 
 	-- Harvesters (attachable) [Giants]
-	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then -- Checked: Is Default Giants Vehicle
+	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
+		workTool.cp.notToBeReversed = true;
 	
-	elseif workTool.cp.xmlFileName == 'grimmeSE260.xml' then -- Checked: Is Default Giants Vehicle
+	elseif workTool.cp.xmlFileName == 'grimmeSE260.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
+		workTool.cp.notToBeReversed = true;
 		
-	elseif workTool.cp.xmlFileName == 'poettingerMex5.xml' then -- Checked: Is Default Giants Vehicle
+	elseif workTool.cp.xmlFileName == 'poettingerMex5.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isPoettingerMex5 = true;
 		
 
 	-- ###########################################################
-	-- [2] TRACTORS
+	-- [2] STEERABLE VEHICLES
 	-- Terra Variant 600 eco [Giants Mod: Holmer Pack]
-	elseif workTool.cp.xmlFileName == 'holmerTerraVariant.xml' then -- Checked: Is Giants Mod Vehicle
+	elseif workTool.cp.xmlFileName == 'holmerTerraVariant.xml' then
 		workTool.cp.isHolmerTerraVariant = true;
 		workTool.cp.isCrabSteeringPossible = true;
 		workTool.cp.ridgeMarkerIndex = 1 ;
 
-	-- Wood harvesters [Giants]
-	elseif workTool.typeName == 'woodHarvester' then -- Checked: Is Default Giants Vehicle Type
-		workTool.cp.isWoodHarvester = true;
-		
-	-- Wood chipper [Giants]
-	elseif workTool.typeName == 'woodCrusherTrailer' or workTool.typeName == 'woodCrusherTrailerDrivable' then -- Checked: Is Default Giants Vehicle Type
-		workTool.cp.isWoodChipper = true;	
+	-- New Holland SP.400F (Sprayer) [Giants]
+	elseif workTool.cp.xmlFileName == 'SP400F.xml' then
+		workTool.cp.widthWillCollideOnTurn = true;
 
-	-- Tree Planter [Giants]
-	elseif workTool.typeName == 'treePlanter' then -- Checked: Is Default Giants Vehicle Type
-		workTool.cp.isTreePlanter = true;
-				
-	-- Wood forwarders [Giants]
-	elseif workTool.typeName == 'forwarder' then -- Checked: Is Default Giants Vehicle Type
-		workTool.cp.isWoodForwarder = true;
+	-- Trucks [Giants]
+	elseif workTool.cp.xmlFileName == 'americanTruckDualAxle.xml' then
+		workTool.cp.directionNodeZOffset = 3.471;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
+	elseif workTool.cp.xmlFileName == 'americanTruckOneAxle.xml' then
+		workTool.cp.directionNodeZOffset = 2.317;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
+	elseif workTool.cp.xmlFileName == 'tatraPhoenix.xml' then
+		workTool.cp.directionNodeZOffset = 1.525;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
+	elseif workTool.cp.xmlFileName == 'manTGS18480.xml' then
+		workTool.cp.directionNodeZOffset = 1.959;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
 	-- ###########################################################
 	-- [3] TRAILERS
-	-- Fliegl ASS 298 [Giants]
-	elseif workTool.cp.xmlFileName == 'flieglASS2101.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isFlieglASS298 = true;
-		workTool.cp.isPushWagon = true;
-
-	-- Krampe Bandit 750 [Giants]
-	elseif workTool.cp.xmlFileName == 'krampeBandit750.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isKrampeBandit750 = true;
-		workTool.cp.isPushWagon = true;
-
-	-- Krampe Bandit Sb 30 / 60 [Giants]
-	elseif workTool.cp.xmlFileName == 'krampeSB3060.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isKrampeSB3060 = true;
-		workTool.cp.isPushWagon = true;
-
-	-- Kroeger Agroliner TAW 30 [Giants]
-	elseif workTool.cp.xmlFileName == 'kroegerTAW30.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isKroegerTAW30 = true;
-		workTool.cp.isPushWagon = true;
-
-	-- Bergmann HT 50 [Giants Mod: ITRunner Pack]
-	elseif workTool.cp.xmlFileName == 'containerChaff.xml' then -- Checked: Is Giants Mod Vehicle
-		workTool.cp.isBergmannHT50 = true;
-		workTool.cp.isPushWagon = true;
 
 
 	-- ###########################################################
-	-- [4] MANURE / LIQUID MANURE
-
+	-- [4] FERTILIZER EQUIPMENT
 	-- Zunhammer TV [Giants Mod: Holmer Pack]
-	elseif workTool.cp.xmlFileName == 'zunhammerTV.xml' then -- Checked: Is Giants Mod Vehicle
-		workTool.cp.isZunhammerTV = true;
+	elseif workTool.cp.xmlFileName == 'zunhammerTV.xml' then
 		workTool.cp.isLiquidManureOverloader = true;
 		workTool.cp.isCrabSteeringPossible = true;
 		if workTool.attacherVehicle ~= nil then
@@ -275,12 +253,11 @@ function courseplay:setNameVariable(workTool)
 		end
 
 	-- Zunhammer Vibro [Giants Mod: Holmer Pack]
-	elseif workTool.cp.xmlFileName == 'zunhammerVibro.xml' then -- Checked: Is Giants Mod Vehicle
+	elseif workTool.cp.xmlFileName == 'zunhammerVibro.xml' then
 		workTool.cp.isZunhammerVibro = true;
 
 	-- Bergmann TSW A 19 TV [Giants Mod: Holmer Pack]
-	elseif workTool.cp.xmlFileName == 'bergmannTSWA19.xml' then -- Checked: Is Giants Mod Vehicle
-		workTool.cp.ISBergmannTSWA19 = true
+	elseif workTool.cp.xmlFileName == 'bergmannTSWA19.xml' then
 		workTool.cp.mode9TrafficIgnoreVehicle = true
 		workTool.cp.isCrabSteeringPossible = true;
 		if workTool.attacherVehicle ~= nil then
@@ -288,64 +265,103 @@ function courseplay:setNameVariable(workTool)
 			workTool.cp.isCrabSteeringPossible = true;
 		end
 
+	-- Joskin Modulo 2 [Giants]
+	elseif workTool.cp.xmlFileName == 'joskinModulo.xml' then
+		workTool.cp.widthWillCollideOnTurn = true;
+
+	-- Veenhuis Premium Integral II [Giants]
+	elseif workTool.cp.xmlFileName == 'premiumIntegral30000.xml' then
+		workTool.cp.widthWillCollideOnTurn = true;
+
+	-- Amazone UF 1201 [Giants]
+	elseif workTool.cp.xmlFileName == 'amazoneUF1201.xml' then
+		workTool.cp.widthWillCollideOnTurn = true;
+
+	-- Caruelle Nicolas Stilla 460 [Giants]
+	elseif workTool.cp.xmlFileName == 'caruelleNicolasStilla460.xml' then
+		workTool.cp.widthWillCollideOnTurn = true;
+
 	-- ###########################################################
 	-- [5] BALING
-	-- Ursus T127 bale loader [Giants]
-	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then -- Checked: Is Default Giants Vehicle
+	-- Ursus T127 (Bale Loader) [Giants]
+	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then
 		workTool.cp.isUrsusT127 = true;
 
-	-- Ursus Z586 bale wrapper [Giants]
-	elseif workTool.cp.xmlFileName == 'ursusZ586.xml' then -- Checked: Is Default Giants Vehicle
+	-- Ursus Z586 (Bale Wrapper) [Giants]
+	elseif workTool.cp.xmlFileName == 'ursusZ586.xml' then
 		workTool.cp.isUrsusZ586 = true;
+		workTool.cp.notToBeReversed = true;
+
+	-- Arcusin FSX 63.72 (Bale Loader) [Giants]
+	elseif workTool.cp.xmlFileName == 'arcusinFSX6372.xml' then
+		workTool.cp.isArcusinFSX6372 = true;
 
 	-- ###########################################################
 	-- [6] OTHER TOOLS
-	-- Trucks [Giants]
-	elseif workTool.cp.xmlFileName == 'americanTruckDualAxle.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isAmericanTruckDualAxle = true;
-		workTool.cp.directionNodeZOffset = 2;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
-
-	elseif workTool.cp.xmlFileName == 'americanTruckOneAxle.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isAmericanTruckOneAxle = true;
-		workTool.cp.directionNodeZOffset = 2;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
-
 	-- WHEEL LOADERS [Giants]
 	-- JCB 435S [Giants]
-	elseif workTool.cp.xmlFileName == 'jcb435s.xml' then -- Checked: Is Default Giants Vehicle
-		workTool.cp.isJCB435S = true;
+	elseif workTool.cp.xmlFileName == 'jcb435s.xml' then
 		workTool.cp.directionNodeZOffset = -0.705;
 		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
-	elseif workTool.cp.xmlFileName == 'lizardSilageFork.xml' then	 
-		workTool.cp.isLizardSilageFork = true
-	
 	-- CULTIVATORS [Giants]
 
 	-- PLOUGHS [Giants]
 	-- Salford 8312 [Giants]
-	elseif workTool.cp.xmlFileName == 'salford8312.xml' then -- Checked: Is Default Giants Vehicle
+	elseif workTool.cp.xmlFileName == 'salford8312.xml' then
 		workTool.cp.isSalford8312 = true;
+		workTool.cp.notToBeReversed = true;
 
 	-- Lemken Titan 11 [Giants]
-	--elseif workTool.cp.xmlFileName == 'lemkenTitan11.xml' then -- Checked: Is Default Giants Vehicle
-	--	workTool.cp.isLemkenTitan11 = true;
+	elseif workTool.cp.xmlFileName == 'lemkenTitan11.xml' then
+		workTool.cp.isLemkenTitan11 = true;
 
 	-- SEEDERS [Giants]
 
-	-- Special tools [Giants]
-	elseif workTool.typeName == 'strawBlower' then -- Checked: Is Default Giants Vehicle Type
+	end;
+	-- ###########################################################
+	-- END OF GIANTS DEFAULT / DLC / MOD
+	-- ###########################################################
+
+	-- ###########################################################
+	-- VEHICLE TYPES
+	-- Hooklift trailers [Giants]
+	if workTool.typeName == 'hookLiftTrailer' then
+		workTool.cp.isHookLiftTrailer = true;
+
+	-- Wood harvesters [Giants]
+	elseif workTool.typeName == 'woodHarvester' then
+		workTool.cp.isWoodHarvester = true;
+
+	-- Wood chipper [Giants]
+	elseif workTool.typeName == 'woodCrusherTrailer' or workTool.typeName == 'woodCrusherTrailerDrivable' then
+		workTool.cp.isWoodChipper = true;
+
+	-- Tree Planter [Giants]
+	elseif workTool.typeName == 'treePlanter' then
+		workTool.cp.isTreePlanter = true;
+
+	-- Wood forwarders [Giants]
+	elseif workTool.typeName == 'forwarder' then
+		workTool.cp.isWoodForwarder = true;
+
+	-- Straw blowers [Giants]
+	elseif workTool.typeName == 'strawBlower' then
 		workTool.cp.isStrawBlower = true;
 		workTool.cp.specialUnloadDistance = 0;
 
-	elseif workTool.typeName == 'fuelTrailer' or workTool.cp.hasSpecializationFuelTrailer then -- Checked: Is Default Giants Vehicle Type
+	-- Fuel trailers [Giants]
+	elseif workTool.typeName == 'fuelTrailer' or workTool.cp.hasSpecializationFuelTrailer then
 		workTool.cp.isFuelTrailer = true;
 
-	elseif workTool.typeName == 'waterTrailer' or workTool.cp.hasSpecializationWaterTrailer then -- Checked: Is Default Giants Vehicle Type
+	-- Water trailers [Giants]
+	elseif workTool.typeName == 'waterTrailer' or workTool.cp.hasSpecializationWaterTrailer then
 		workTool.cp.isWaterTrailer = true;
 	end;
 
+	-- ###########################################################
+	-- SPRAYER SETUP
+	-- ###########################################################
 	if courseplay:isSprayer(workTool) then
 		if workTool:allowFillType(FillUtil.FILLTYPE_LIQUIDMANURE) then
 			workTool.cp.isLiquidManureSprayer = true;
@@ -441,7 +457,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 end
 
 function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
-	local forcedStop = not unfold and not lower and not turnOn and not allowedToDriveacover and not unload and not ridgeMarker and forceSpeedLimit ==0;
+	local forcedStop = not unfold and not lower and not turnOn and not allowedToDrivea and not cover and not unload and not ridgeMarker and forceSpeedLimit ==0;
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
@@ -494,13 +510,9 @@ function courseplay:askForSpecialSettings(self, object)
 	--																	Positive value, moves it forward, Negative value moves it backwards.
 	-- object.cp.frontMarkerOffsetCorection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
 	--																	Positive value, moves it forward, Negative value moves it backwards.
-	-- object.cp.widthWillCollideOnTurn			(Boolean)				If set, then the vehicle will reverse(if possible) further back, before turning to make room for the width of the tool
-	-- object.cp.notToBeReversed				(Boolean)				Tools that should not be reversed with.
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
 	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
-	-- object.cp.isPushWagon					(Boolean)				Set to true if the trailer is unloading by not lifting the trailer but pushing it out in the rear end. (Used in BGA tipping)
 	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting point when it needs to unload. Used by bale loaders. Distance from trailer's turning point to the rear unloading point.
-	-- self.cp.aiTurnNoBackward:				(Boolean)				Set to true if the vehicle is not allowed to reverse with the implement/trailer during the turn maneuver.
 	-- self.cp.noStopOnEdge:                    (Boolean)               Set this to true if it dont need to stop the work tool while turning.
 	--																	Some work tool types automatically set this to true.
 	-- self.cp.noStopOnTurn:					(Boolean)				Set this to true if the work tool don't need to stop for 1½ sec before turning.
@@ -515,14 +527,17 @@ function courseplay:askForSpecialSettings(self, object)
 	-- OBJECTS
 	if object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
+		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the right
+
+	elseif object.cp.isArcusinFSX6372 then
+		object.cp.specialUnloadDistance = -3.8;
+		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the right
 
 	elseif object.cp.isSalford8312 then
-		object.cp.notToBeReversed = true;
 		automaticToolOffsetX = 0.2; -- ToolOffsetX is 0.2 meters to the right
 
-	--elseif object.cp.isLemkenTitan11 then
-	--	object.cp.notToBeReversed = true;
-	--	automaticToolOffsetX = 1.0; -- ToolOffsetX is 0.2 meters to the right
+	elseif object.cp.isLemkenTitan11 then
+		automaticToolOffsetX = 1.0; -- ToolOffsetX is 1 meters to the right
 
 	elseif object.cp.isAugerWagon then
 		if object.cp.foldPipeAtWaitPoint then
@@ -550,14 +565,9 @@ function courseplay:askForSpecialSettings(self, object)
 		end;
 
 	elseif object.cp.isGrimmeSE260 then
-		self.cp.aiTurnNoBackward = true
 		automaticToolOffsetX = -1.8
 
-	elseif object.cp.isGrimmeRootster604 then
-		self.cp.aiTurnNoBackward = true
-
 	elseif object.cp.isUrsusZ586 then
-		self.cp.aiTurnNoBackward = true
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		automaticToolOffsetX = -2.5;
@@ -587,7 +597,7 @@ function courseplay:askForSpecialSettings(self, object)
 
 	-- Debug Prints
 	if self.cp.backMarkerOffset and type(self.cp.backMarkerOffset) == "number" then
-		courseplay:debug(("%s backMarkerOffset set to %.1f"):format(self.name, self.cp.backMarkerOffset),6);
+		courseplay:debug(("%s backMarkerOffset set to %.1fm"):format(self.name, self.cp.backMarkerOffset),6);
 	end;
 end
 

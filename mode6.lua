@@ -155,7 +155,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						if workTool.grabberIsMoving then
 							allowedToDrive = false;
 						end;
-						if not workTool.isInWorkPosition and fillLevelPct ~= 100 then
+						if not workTool.isInWorkPosition and fillLevelPct ~= 100 and vehicle.cp.abortWork == nil then
 							workTool.grabberIsMoving = true
 							workTool.isInWorkPosition = true
 							BaleLoader.moveToWorkPosition(workTool)
@@ -164,7 +164,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end;
 				end
 
-				if (fillLevelPct == 100 and vehicle.cp.hasUnloadingRefillingCourse or vehicle.cp.waypointIndex == vehicle.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying('rotatePlatform') and not workTool:getIsAnimationPlaying('emptyRotate') then
+				if (fillLevelPct == 100 and vehicle.cp.hasUnloadingRefillingCourse or vehicle.cp.waypointIndex == vehicle.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying('rotatePlatform') and not workTool:getIsAnimationPlaying('emptyRotate') and not workTool:getIsAnimationPlaying(workTool:getBaleGrabberDropBaleAnimName()) then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil);
 					if not specialTool then
 						workTool.grabberIsMoving = true
@@ -410,7 +410,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			if tool.overloading ~= nil then
 				pipeState = courseplay:getTrailerInPipeRangeState(tool)
 			end
-			if workArea and not tool.isAIThreshing and vehicle.cp.abortWork == nil and vehicle.cp.turnStage == 0 then
+			if workArea and not tool.aiIsStarted and vehicle.cp.abortWork == nil and vehicle.cp.turnStage == 0 then
 											--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
 				specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,ridgeMarker)
 				if not specialTool then

@@ -64,7 +64,7 @@ function courseplay:turn(vehicle, dt)
 						end
 						drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ, color["r"], color["g"], color["b"]); -- Green Line
 						if turnTarget.revPosX and turnTarget.revPosZ then
-							nextPosY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.revPosX, 1, turnTarget.revPosZ);
+							nextPosY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.revPosX, 300, turnTarget.revPosZ);
 							drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, 1, 0, 0, turnTarget.revPosX, nextPosY + 3, turnTarget.revPosZ, 1, 0, 0);  -- Red Line
 						end;
 					else
@@ -76,7 +76,7 @@ function courseplay:turn(vehicle, dt)
 					end;
 				elseif turnTarget.turnReverse and turnTarget.revPosX and turnTarget.revPosZ then
 					local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.posX, 300, turnTarget.posZ);
-					local nextPosY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.revPosX, 1, turnTarget.revPosZ);
+					local nextPosY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.revPosX, 300, turnTarget.revPosZ);
 					drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, 1, 0, 0, turnTarget.revPosX, nextPosY + 3, turnTarget.revPosZ, 1, 0, 0);  -- Red Line
 				end;
 			end;
@@ -115,7 +115,7 @@ function courseplay:turn(vehicle, dt)
 			--- Setting default turnInfo values
 			local turnInfo = {};
 			turnInfo.frontMarker					= frontMarker;
-			turnInfo.halfVehicleWidth 				= 2;
+			turnInfo.halfVehicleWidth 				= 2.5;
 			turnInfo.directionNodeToTurnNodeLength  = directionNodeToTurnNodeLength;
 			turnInfo.wpChangeDistance				= wpChangeDistance;
 			turnInfo.reverseWPChangeDistance 		= reverseWPChangeDistance;
@@ -147,7 +147,7 @@ function courseplay:turn(vehicle, dt)
 			turnInfo.targetNode = createTransformGroup("cpTempTargetNode");
 			link(g_currentMission.terrainRootNode, turnInfo.targetNode);
 			local cx,cz = vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz;
-			local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
+			local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
 			setTranslation(turnInfo.targetNode, cx, cy, cz);
 
 			-- Rotate it's direction to the next wp.
@@ -411,16 +411,13 @@ function courseplay:turn(vehicle, dt)
 	else
 		--- Add WP to follow while doing last bit before raising Implement
 		if not newTarget then
-			local fromPointX, fromPointZ = vehicle.Waypoints[vehicle.cp.waypointIndex - 1].cx, vehicle.Waypoints[vehicle.cp.waypointIndex - 1].cz
-			local toPointX, toPointZ = vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz
-			local dist = courseplay:distance(fromPointX, fromPointZ, toPointX, toPointZ);
-			local dx, dz = (toPointX - fromPointX) / dist, (toPointZ - fromPointZ) / dist;
 			local extraForward = 0;
 			if backMarker < 0 then
 				extraForward = abs(backMarker);
 			end;
-
-			local posX, posZ = toPointX + (extraForward + 10) * dx, toPointZ + (extraForward + 10) * dz;
+			local dx, dz = courseplay.generation:getPointDirection(vehicle.Waypoints[vehicle.cp.waypointIndex-1], vehicle.Waypoints[vehicle.cp.waypointIndex]);
+			local cx, cz = courseplay:getVehicleOffsettedCoords(vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz);
+			local posX, posZ = cx + (extraForward + 10) * dx, cz + (extraForward + 10) * dz;
 			courseplay:addTurnTarget(vehicle, posX, posZ);
 		end;
 
@@ -1224,7 +1221,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	link(g_currentMission.terrainRootNode, point);
 
 	-- Move the point to the center
-	local cY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, center.x, 1, center.z);
+	local cY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, center.x, 300, center.z);
 	setTranslation(point, center.x, cY, center.z);
 
 	-- Rotate it to the start direction
