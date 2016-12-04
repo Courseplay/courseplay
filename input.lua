@@ -250,7 +250,7 @@ function courseplay:executeFunction(self, func, value, page)
 					courseplay:sendCourseplayerHome(combine);
 				elseif line == 4 and combine.cp.isChopper then
 					courseplay:switchCourseplayerSide(combine);
-				elseif line == 5 and combine.cp.isChopper and not self:getIsCourseplayDriving() and not self.isAIThreshing then --manual chopping: initiate/end turning maneuver
+				elseif line == 5 and combine.cp.isChopper and not self:getIsCourseplayDriving() and not self.aiIsStarted then --manual chopping: initiate/end turning maneuver
 					if self.cp.turnStage == 0 then
 						self.cp.turnStage = 1;
 					elseif self.cp.turnStage == 1 then

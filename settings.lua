@@ -106,7 +106,7 @@ function courseplay:sendCourseplayerHome(combine)
 end
 
 function courseplay:switchCourseplayerSide(combine)
-	if combine.capacity == 0 then
+	if courseplay:isChopper(combine) then
 		local tractor = combine.courseplayers[1];
 		if tractor == nil then
 			return;
