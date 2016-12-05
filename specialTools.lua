@@ -118,14 +118,17 @@ function courseplay:setNameVariable(workTool)
 
 	--- SPECIAL VARIABLES THAT CAN BE USED:
 	--
-	-- workTool.cp.steeringAngleCorrection:		(Angle in degrees)		Overwrite the default steering angle if set. NOTE: steeringAngleMultiplier will have no effect if this is set.
-	-- workTool.cp.steeringAngleMultiplier:		(Number)				Used if vehicle needs to turn faster or slower.
-	--																	2 	= turns 2 times slower.
-	--																	0.5 = turns 2 times slower.
-	-- workTool.cp.componentNumAsDirectionNode:	(Component Index)		Used to set another component as the Direction Node. Starts from index 1 as the first component.
-	-- workTool.cp.directionNodeZOffset:		(Distance in meters)	If set, then the Direction Node will be offset by the value set.
-	-- workTool.cp.widthWillCollideOnTurn:		(Boolean)				If set, then the vehicle will reverse(if possible) further back, before turning to make room for the width of the tool
-	-- workTool.cp.notToBeReversed				(Boolean)				Tools that should not be reversed with.
+	-- workTool.cp.steeringAngleCorrection:			(Angle in degrees)		Overwrite the default steering angle if set. NOTE: steeringAngleMultiplier will have no effect if this is set.
+	-- workTool.cp.steeringAngleMultiplier:			(Number)				Used if vehicle needs to turn faster or slower.
+	--																		2 	= turns 2 times slower.
+	--																		0.5 = turns 2 times slower.
+	-- workTool.cp.componentNumAsDirectionNode:		(Component Index)		Used to set another component as the Direction Node. Starts from index 1 as the first component.
+	-- workTool.cp.directionNodeZOffset:			(Distance in meters)	If set, then the Direction Node will be offset by the value set.
+	-- workTool.cp.widthWillCollideOnTurn:			(Boolean)				If set, then the vehicle will reverse(if possible) further back, before turning to make room for the width of the tool
+	-- workTool.cp.notToBeReversed:					(Boolean)				Tools that should not be reversed with.
+	-- workTool.cp.overwriteTurnRadius:         	(Radius in meters)		Overwrite the default turn radius calculation and uses the value specified.
+	--																		Note: Tractors turn radius also takes into account, so if the tractors turn radius is higher than the tool, then it will use that one instead.
+	-- workTool.cp.implementWheelAlwaysOnGround:	(Boolean)				Implements that have the topReferenceNode set, but still have the wheels on the ground all the time.
 	-- TODO: Add description for all the special varialbes that is usable here.
 	-- ###########################################################
 
@@ -299,6 +302,19 @@ function courseplay:setNameVariable(workTool)
 	-- CULTIVATORS [Giants]
 
 	-- PLOUGHS [Giants]
+	-- Amazone Cayron 200 [Giants]
+	elseif workTool.cp.xmlFileName == 'amazoneCayron200.xml' then
+		workTool.cp.isAmazoneCayron200 = true;
+
+	-- Kuhn Vari-Master 153 [Giants]
+	elseif workTool.cp.xmlFileName == 'kuhnVariMaster153.xml' then
+		workTool.cp.isKuhnVariMaster153 = true;
+
+	-- Salford 4204 [Giants]
+	elseif workTool.cp.xmlFileName == 'salford4204.xml' then
+		workTool.cp.isSalford4204 = true;
+		workTool.cp.overwriteTurnRadius = 3;
+
 	-- Salford 8312 [Giants]
 	elseif workTool.cp.xmlFileName == 'salford8312.xml' then
 		workTool.cp.isSalford8312 = true;
@@ -307,6 +323,9 @@ function courseplay:setNameVariable(workTool)
 	-- Lemken Titan 11 [Giants]
 	elseif workTool.cp.xmlFileName == 'lemkenTitan11.xml' then
 		workTool.cp.isLemkenTitan11 = true;
+		workTool.cp.implementWheelAlwaysOnGround = true;
+		workTool.cp.notToBeReversed = true;
+		workTool.cp.overwriteTurnRadius = 4.5;
 
 	-- SEEDERS [Giants]
 
@@ -473,7 +492,7 @@ end
 function courseplay:askForSpecialSettings(self, object)
 	--- SPECIAL VARIABLES THAT CAN BE USED:
 	--
-	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset.
+	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset. Negagive value = left, Positive value = right.
 	-- object.cp.backMarkerOffsetCorection:		(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise and/or turn off the work tool
 	--																	Positive value, moves it forward, Negative value moves it backwards.
 	-- object.cp.frontMarkerOffsetCorection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
@@ -495,17 +514,26 @@ function courseplay:askForSpecialSettings(self, object)
 	-- OBJECTS
 	if object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
-		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the right
+		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
 
 	elseif object.cp.isArcusinFSX6372 then
 		object.cp.specialUnloadDistance = -3.8;
-		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the right
+		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
+
+	elseif object.cp.isAmazoneCayron200 then
+		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
+
+	elseif object.cp.isKuhnVariMaster153 then
+		automaticToolOffsetX = 0.1; -- ToolOffsetX is 0.1 meters to the right
+
+	elseif object.cp.isSalford4204 then
+		automaticToolOffsetX = -0.2; -- ToolOffsetX is 0.2 meters to the left
 
 	elseif object.cp.isSalford8312 then
 		automaticToolOffsetX = 0.2; -- ToolOffsetX is 0.2 meters to the right
 
 	elseif object.cp.isLemkenTitan11 then
-		automaticToolOffsetX = 1.0; -- ToolOffsetX is 1 meters to the right
+		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
 
 	elseif object.cp.isAugerWagon then
 		if object.cp.foldPipeAtWaitPoint then
@@ -558,7 +586,7 @@ function courseplay:askForSpecialSettings(self, object)
 		object.cp.lastFillLevel = object.cp.fillLevel;
 	end;
 
-	if automaticToolOffsetX ~= nil then
+	if automaticToolOffsetX ~= nil and self.cp.tempToolOffsetX == nil then
 		self.cp.tempToolOffsetX = self.cp.toolOffsetX;
 		courseplay:changeToolOffsetX(self, nil, automaticToolOffsetX, true);
 	end;

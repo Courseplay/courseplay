@@ -95,10 +95,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 		--speedlimits
 		local speedLimitActive = false
 		
-		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isSprayerSpeedLimitActive) then
-			forceSpeedLimit = math.min(forceSpeedLimit, workTool.speedLimit)
-			speedLimitActive = true
-		end
+		forceSpeedLimit, speedLimitActive = courseplay:getSpeedWithLimiter(workTool, forceSpeedLimit);
 
 		-- stop while folding
 		if courseplay:isFoldable(workTool) then

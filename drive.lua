@@ -532,8 +532,7 @@ function courseplay:drive(self, dt)
 		self.cp.TrafficBrake = false
 		return
 	end
-	self.cp.checkMarkers = false;
-	
+
 	--SPEED SETTING
 	local isAtEnd   = self.cp.waypointIndex > self.cp.numWaypoints - 3;
 	local isAtStart = self.cp.waypointIndex < 3;
@@ -921,15 +920,10 @@ function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 end
 	
 function courseplay:getSpeedWithLimiter(vehicle, refSpeed)
-	for _, workTool in ipairs(vehicle.cp.workTools) do
-	--for i=1, #(vehicle.cp.workTools) do
-		--local workTool = vehicle.cp.workTools[i];
-		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isSprayerSpeedLimitActive) then
-			refSpeed = math.min(refSpeed, workTool.speedLimit)
-		end
-	end;
+	local speedLimit, speedLimitActivated = vehicle:getSpeedLimit(true);
+	refSpeed = min(refSpeed, speedLimit);
 
-	return refSpeed;
+	return refSpeed, speedLimitActivated;
 end
 
 function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)

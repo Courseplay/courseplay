@@ -452,7 +452,31 @@ function courseplay:setMarkers(vehicle, object)
 
 	local tableLength = #(area)
 	if tableLength == 0 then
-		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
+		if courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] then
+			-- Calculate the offset based on the distances
+			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] * -1;
+
+			local backMarkerCorrection = Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
+			if vehicle.cp.backMarkerOffset == nil or (abs(backMarkerCorrection) > 0 and  ztt + backMarkerCorrection > vehicle.cp.backMarkerOffset) then
+				vehicle.cp.backMarkerOffset = abs(backMarkerCorrection) > 0 and ztt + backMarkerCorrection or 0;
+			end
+
+			local frontMarkerCorrection = Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
+			if vehicle.cp.aiFrontMarker == nil or (abs(frontMarkerCorrection) > 0 and  ztt + frontMarkerCorrection < vehicle.cp.aiFrontMarker) then
+				vehicle.cp.aiFrontMarker = abs(frontMarkerCorrection) > 0 and ztt + frontMarkerCorrection or -3;
+			end
+
+			courseplay:debug(('%s: setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s'):format(nameNum(vehicle), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker)), 6);
+		else
+			--- Set front and back marker to default values, so we don't check again.
+			if vehicle.cp.backMarkerOffset == nil then
+				vehicle.cp.backMarkerOffset = 0;
+			end
+			if vehicle.cp.aiFrontMarker == nil then
+				vehicle.cp.aiFrontMarker = -3;
+			end
+			courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
+		end;
 		return;
 	end
 
@@ -497,10 +521,10 @@ function courseplay:setMarkers(vehicle, object)
 					end;
 
 					courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);
-					if object.cp.backMarkerOffset == nil or ztt > object.cp.backMarkerOffset then
+					if object.cp.backMarkerOffset == nil or ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0) > object.cp.backMarkerOffset then
 						object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
 					end
-					if object.cp.aiFrontMarker == nil  or ztt < object.cp.aiFrontMarker then
+					if object.cp.aiFrontMarker == nil or ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0) < object.cp.aiFrontMarker then
 						object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
 					end
 				end

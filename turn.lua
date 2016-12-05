@@ -26,10 +26,8 @@ function courseplay:turn(vehicle, dt)
 	end;
 
 	--- Make sure front and back markers is calculated.
-	if not vehicle.cp.checkMarkers then
-		vehicle.cp.checkMarkers = true;
+	if not vehicle.cp.aiFrontMarker or not vehicle.cp.backMarkerOffset then
 		for _,workTool in pairs(vehicle.cp.workTools) do
-			courseplay:askForSpecialSettings(vehicle, workTool);
 			courseplay:setMarkers(vehicle, workTool);
 		end;
 	end;
@@ -136,7 +134,7 @@ function courseplay:turn(vehicle, dt)
 			turnInfo.turnDiameter = turnInfo.turnRadius * 2;
 
 			--- Get the new turn target with offset
-			if (vehicle.cp.laneOffset ~= nil and vehicle.cp.laneOffset ~= 0) or (vehicle.cp.toolOffsetX ~= nil and vehicle.cp.toolOffsetX ~= 0) then
+			if courseplay:getIsVehicleOffsetValid(vehicle) then
 				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(vehicle)), 14);
 				courseplay:turnWithOffset(vehicle);
 			end;
@@ -319,9 +317,10 @@ function courseplay:turn(vehicle, dt)
 
 				-- Start reversing before time if we are allowed and if we can
 				if newTarget.changeWhenPosible then
-					-- Get the world rotation of the vehicle
-					local _, vehicleRot, _ = getWorldRotation(vehicle.cp.DirectionNode);
-					vehicleRot = deg(vehicleRot) + 180;
+					-- Get the world rotation of the next lane
+					local dx, dz = courseplay.generation:getPointDirection(vehicle.Waypoints[vehicle.cp.waypointIndex+1], vehicle.Waypoints[vehicle.cp.waypointIndex+2]);
+					local laneRot = Utils.getYRotationFromDirection(dx, dz);
+					laneRot = deg(laneRot) + 180;
 
 					local angleDifference = 0;
 
@@ -331,15 +330,14 @@ function courseplay:turn(vehicle, dt)
 						workToolRot = deg(workToolRot) + 180;
 
 						-- Get the angle difference
-						angleDifference = abs(vehicleRot - workToolRot);
+						angleDifference = abs(laneRot - workToolRot);
 					else
-						-- Get the world rotation of the next lane
-						local dx, dz = courseplay.generation:getPointDirection(vehicle.Waypoints[vehicle.cp.waypointIndex+1], vehicle.Waypoints[vehicle.cp.waypointIndex+2]);
-						local laneRot = Utils.getYRotationFromDirection(dx, dz);
-						laneRot = deg(laneRot) + 180;
+						-- Get the world rotation of the vehicle
+						local _, vehicleRot, _ = getWorldRotation(vehicle.cp.DirectionNode);
+						vehicleRot = deg(vehicleRot) + 180;
 
 						-- Get the angle difference
-						angleDifference = abs(vehicleRot - laneRot);
+						angleDifference = abs(laneRot - vehicleRot);
 					end;
 					if angleDifference > 180 then
 						angleDifference = angleDifference - 180;
@@ -429,6 +427,9 @@ function courseplay:turn(vehicle, dt)
 			vehicle.cp.noStopOnTurn = vehicle.cp.savedNoStopOnTurn;
 			vehicle.cp.savedNoStopOnTurn = nil;
 		end;
+
+		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
+		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
 
 	    local wpX, wpZ = vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz;
 		local _, _, disZ = worldToLocal(vehicle.cp.DirectionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
@@ -991,6 +992,9 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	posX = wp.posX + (4 * dx);
 	posZ = wp.posZ + (4 * dz);
 	courseplay:addTurnTarget(vehicle, posX, posZ);
+	posX = wp.posX + ((2 + turnInfo.wpChangeDistance) * dx);
+	posZ = wp.posZ + ((2 + turnInfo.wpChangeDistance) * dz);
+	courseplay:addTurnTarget(vehicle, posX, posZ);
 
 	--- Generate second turn circle (Reversing)
 	local zPossition = turnInfo.targetDeltaZ - turnInfo.zOffset - turnInfo.centerHeight;
@@ -1065,6 +1069,9 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	courseplay:addTurnTarget(vehicle, posX, posZ, nil, nil, true);
 	posX = wp.posX - (4 * dx);
 	posZ = wp.posZ - (4 * dz);
+	courseplay:addTurnTarget(vehicle, posX, posZ, nil, nil, true);
+	posX = wp.posX - ((2 + turnInfo.reverseWPChangeDistance) * dx);
+	posZ = wp.posZ - ((2 + turnInfo.reverseWPChangeDistance) * dz);
 	courseplay:addTurnTarget(vehicle, posX, posZ, nil, nil, true);
 
 	--- Generate second turn circle

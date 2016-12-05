@@ -79,10 +79,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			needsLowering = workTool.attacherJoint.needsLowering
 		end
 		
-		--speedlimits								--	TODO (Tom) workTool:doCheckSpeedLimit() is not working for harvesters			
-		if workTool.doCheckSpeedLimit and (workTool:doCheckSpeedLimit() or workTool.isPreparerSpeedLimitActive) then
-			forceSpeedLimit = min(forceSpeedLimit, workTool.speedLimit)
-		end
+		--speedlimits
+		forceSpeedLimit = courseplay:getSpeedWithLimiter(workTool, forceSpeedLimit);
 		
 		-- stop while folding
 		if (isFolding or vehicleIsFolding) and vehicle.cp.turnStage == 0 then

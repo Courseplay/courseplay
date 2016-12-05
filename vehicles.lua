@@ -762,7 +762,10 @@ end;
 function courseplay:getToolTurnRadius(workTool)
 	local turnRadius	= 0; -- Default value if none is set
 
-	if courseplay:isWheeledWorkTool(workTool) then
+	if workTool.cp.overwriteTurnRadius and type(workTool.cp.overwriteTurnRadius) == "number" then
+		turnRadius = workTool.cp.overwriteTurnRadius;
+		courseplay:debug(('%s -> TurnRadius: overwriteTurnRadius is set: turnRadius set to %.2fm'):format(nameNum(workTool), turnRadius), 6);
+	elseif courseplay:isWheeledWorkTool(workTool) then
 		local radiusMultiplier = 1.05; -- Used to add a little bit to the radius, for safer turns.
 
 		local wheelBase		= 0;
@@ -898,7 +901,7 @@ function courseplay:getToolTurnRadius(workTool)
 			end;
 		end;
 	else
-		courseplay:debug(('%s -> TurnRadius: Have no wheels. turnRadius set to 0m'):format(nameNum(workTool), turnDiameter), 6);
+		courseplay:debug(('%s -> TurnRadius: Have no wheels. turnRadius set to 0m'):format(nameNum(workTool)), 6);
 	end;
 
 	return turnRadius;
@@ -1183,7 +1186,7 @@ function courseplay:isWheeledWorkTool(workTool)
 			-- Trailers
 			if (workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT)
 			-- Implements with pivot and wheels that do not lift the wheels from the ground.
-			or (node ~= workTool.rootNode and workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and not workTool.attacherJoint.topReferenceNode)
+			or (node ~= workTool.rootNode and workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and (not workTool.attacherJoint.topReferenceNode or workTool.cp.implementWheelAlwaysOnGround))
 			then
 				return true;
 			end;
