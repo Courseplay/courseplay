@@ -423,7 +423,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 	-- STATE 4 (drive to rear of combine)
 	elseif vehicle.cp.modeState == 4 then
-		if combine.cp.offset == nil or vehicle.cp.combineOffset == 0 or combine.cp.isCrabSteeringPossible then
+		if combine.cp.offset == nil or vehicle.cp.combineOffset == 0 then
 			--print("offset not saved - calculate")
 			courseplay:calculateCombineOffset(vehicle, combine);
 		elseif not combine.cp.isChopper and not combine.cp.isSugarBeetLoader and vehicle.cp.combineOffsetAutoMode and vehicle.cp.combineOffset ~= combine.cp.offset then
@@ -505,7 +505,7 @@ function courseplay:unload_combine(vehicle, dt)
 			local nodeSet = false
 			if workWidth < offset then
 				local diff = max (1.5,workWidth/2)
-				if  combine.cp.isHarvesterAttachable or combine.cp.hasCrabSteeringActive then
+				if  combine.cp.isHarvesterAttachable then
 					diff = 5
 				end
 				fruitSide = courseplay:sideToDrive(vehicle, combine, 0);

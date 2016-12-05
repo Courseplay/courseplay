@@ -33,7 +33,7 @@ function courseplay:start(self)
 		return
 	end
 	courseplay:setEngineState(self, true);
-	
+
 	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
@@ -366,9 +366,9 @@ function courseplay:start(self)
 		end;
 	end;
 	
-	--check Crab Steering mode for HolmerDLC
-	if self.cp.isCrabSteeringPossible and self.crabSteering.state > 2  then
-		self.cp.hasCrabSteeringActive = true;
+	--check Crab Steering mode and set it to default
+	if self.crabSteering and self.crabSteering.state ~= self.crabSteering.aiSteeringModeIndex  then
+		self:setCrabSteering(self.crabSteering.aiSteeringModeIndex)
 	end
 
 	-- ok i am near the waypoint, let's go
@@ -624,7 +624,6 @@ function courseplay:stop(self)
 	self.cp.prevFillLevelPct = nil;
 	self.cp.isInRepairTrigger = nil;
 	self.cp.curMapWeightStation = nil;
-	self.cp.hasCrabSteeringActive = nil;
 	courseplay:setSlippingStage(self, 0);
 	courseplay:resetCustomTimer(self, 'slippingStage1');
 	courseplay:resetCustomTimer(self, 'slippingStage2');

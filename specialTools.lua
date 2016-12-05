@@ -185,12 +185,11 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'holmerTerraDosT4_40.xml' then
 		workTool.cp.isHolmerTerraDosT4_40 = true;
 		workTool.cp.isHarvesterSteerable = true;
-		workTool.cp.isCrabSteeringPossible = true;
 		workTool.cp.pipeSide = 1;
 		workTool.cp.ridgeMarkerIndex = 6;
 		
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
-		workTool.cp.isCrabSteeringPossible = true;
+		
 
 	elseif workTool.cp.xmlFileName ==  'holmerTerraFelis2.xml' then
 		workTool.cp.isHolmerTerraFelis2 = true;
@@ -217,7 +216,6 @@ function courseplay:setNameVariable(workTool)
 	-- Terra Variant 600 eco [Giants Mod: Holmer Pack]
 	elseif workTool.cp.xmlFileName == 'holmerTerraVariant.xml' then
 		workTool.cp.isHolmerTerraVariant = true;
-		workTool.cp.isCrabSteeringPossible = true;
 		workTool.cp.ridgeMarkerIndex = 1 ;
 
 	-- New Holland SP.400F (Sprayer) [Giants]
@@ -247,11 +245,7 @@ function courseplay:setNameVariable(workTool)
 	-- Zunhammer TV [Giants Mod: Holmer Pack]
 	elseif workTool.cp.xmlFileName == 'zunhammerTV.xml' then
 		workTool.cp.isLiquidManureOverloader = true;
-		workTool.cp.isCrabSteeringPossible = true;
-		if workTool.attacherVehicle ~= nil then
-			workTool.cp.isCrabSteeringPossible = true;
-		end
-
+	
 	-- Zunhammer Vibro [Giants Mod: Holmer Pack]
 	elseif workTool.cp.xmlFileName == 'zunhammerVibro.xml' then
 		workTool.cp.isZunhammerVibro = true;
@@ -259,11 +253,9 @@ function courseplay:setNameVariable(workTool)
 	-- Bergmann TSW A 19 TV [Giants Mod: Holmer Pack]
 	elseif workTool.cp.xmlFileName == 'bergmannTSWA19.xml' then
 		workTool.cp.mode9TrafficIgnoreVehicle = true
-		workTool.cp.isCrabSteeringPossible = true;
 		if workTool.attacherVehicle ~= nil then
 			workTool.attacherVehicle.cp.mode9TrafficIgnoreVehicle = true
-			workTool.cp.isCrabSteeringPossible = true;
-		end
+	end
 
 	-- Joskin Modulo 2 [Giants]
 	elseif workTool.cp.xmlFileName == 'joskinModulo.xml' then
@@ -473,30 +465,6 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 
 		return false ,allowedToDrive,forceSpeedLimit;
-
-
-	elseif workTool.cp.isCrabSteeringPossible or (workTool.attacherVehicle ~= nil and workTool.attacherVehicle.cp.isCrabSteeringPossible) then
-		local tractor = workTool.attacherVehicle;
-		if workTool.cp.isHolmerTerraDosT4_40 or workTool.cp.isHolmerTerraVariant then
-			tractor = workTool;
-		end
-		if tractor.cp.hasCrabSteeringActive then
-			local nextRidgeMarker = tractor.Waypoints[math.min(tractor.cp.waypointIndex+ tractor.cp.ridgeMarkerIndex ,tractor.cp.numWaypoints)].ridgeMarker
-			local onField = nextRidgeMarker == ridgeMarker;
-			local state = tractor.crabSteering.state;
-			if implementsDown and onField then
-				if ridgeMarker == 1 and state ~= 3 then
-					tractor:setCrabSteering(3);
-				elseif ridgeMarker ==2 and state ~= 2 then
-
-				tractor:setCrabSteering(2);
-				end
-			elseif tractor.cp.isHolmerTerraDosT4_40 and state ~= 1 and not forcedStop then
-				tractor:setCrabSteering(1);
-			elseif tractor.cp.isHolmerTerraVariant and state ~= 0 and not forcedStop then
-				tractor:setCrabSteering(0);
-			end
-		end
 	end;
 
 	return false, allowedToDrive,forceSpeedLimit;
