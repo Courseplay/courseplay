@@ -44,6 +44,13 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Directory" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s per filtrare Percorsi" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Percorsi: %q" />
+	    <text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare percorso in corso caricato" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Aggiungere percorso alla fine" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Spostare nella directory" /> 
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Cancella percorso/directory" />
+	    <text name="COURSEPLAY_CREATE_FOLDER" 							 text="Crea nuova Cartella" />
+		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Ricerca di corsi e cartelle" />
+		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Disattiva filtri" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="ha raggiunto il punto di scarico." />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha raggiunto il punto d'attesa" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha raggiunto la fine del percorso" />
@@ -82,7 +89,10 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="velocità massima" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatica (dal percorso, max. %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="percorso: nessun percorso selezionato" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="luci di avvertimento:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="mai accesi" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="luci e fari (sulla strada)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Fari &amp; luci di emergenza (sulla strada)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Lampeggianti (sempre accesi)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Controlli del Courseplay" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Controlli della trebbia" />
@@ -114,6 +124,8 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Troppi punti d'attesa! Permesso solo %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Troppo pochi punti d'attesa! %d necessario." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="rimorchio sbagliato per questa modalità" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="strumento sbagliato per questa modalità" />
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Questo tipo di veicolo non è supportato in questa modalità." />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="è in attesa di un tempo migliore" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distanza corsia" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Attrezzo: distanza orizz." />
@@ -172,6 +184,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="punto corrente" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Percorso perimetrale del campo" />
 		<text name="COURSEPLAY_FIELD" 									 text="Campo" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(corso attualmente caricato)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Scansione campi in esecuzione" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="Scansione campo %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="Manca un tubo - annullare la ricarica" />
@@ -197,12 +210,34 @@
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Il granaio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Il granaio sta caricando:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!! Attendo che si riempia." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": il granaio è pieno! Contiuna al prossimo granaio." />
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": il granaio è pieno! Contiuna al prossimo granaio." />	
+		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Avvio su %s!" />
+		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Ricerca del primo waypoint" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Salva corso attuale" />
+		<text name="COURSEPLAY_RECORDING_STOP" 							 text="Interrompi la registrazione" />
+		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="In pausa la registrazione" />
+		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Riprendi la registrazione" />
+		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Cancella ultimo waypoint" />
+		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Set punto di attesa" />
+		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Set punto di incrocio" />
+		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Inizia turno manovra" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fine turno manovra" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Inizia retromarcia" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Ferma la retromarcia" />	
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icone mappa: visualizza il testo" />
+		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Usa sempre 4WD" />
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Vuoi analizzare i campi automaticamente?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Vuoi che i tuoi lavoratori guadagnino i salari (%s /ora)?" />	
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo di seme: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Utilizzo: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Mostra/nascondi punti di partenza e arrivo" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Mostra/nascondi tutti i punti" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Mostra/nascondi i punti di incrocio" />
+		
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostra Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Nascondi Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funzioni Courseplay" />
@@ -218,12 +253,5 @@
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: azione secondaria del mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare percorso in corso caricato" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Aggiungere percorso alla fine" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Spostare nella directory" /> 
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Cancella percorso/directory" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Mostra/nascondi punti di partenza e arrivo" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Mostra/nascondi tutti i punti" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Mostra/nascondi i punti di incrocio" />
 	</texts>
 </l10n>
