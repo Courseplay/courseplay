@@ -99,6 +99,15 @@ end;
 Vehicle.loadFinished = Utils.appendedFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
+
+function courseplay:prePreDelete(self)
+	if self.cp ~= nil then
+		courseplay:deleteMapHotspot(self);
+	end
+end;
+FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);
+
+
 function courseplay:vehicleDelete()
 	if self.cp ~= nil then
 		-- Remove created nodes
