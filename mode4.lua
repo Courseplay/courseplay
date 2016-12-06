@@ -139,7 +139,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 						end;
 
 						--lower/raise
-						if needsLowering and workTool.aiNeedsLowering then
+						if (needsLowering or workTool.aiNeedsLowering) then
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.cp.waypointIndex, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
@@ -201,7 +201,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 
 				--raise
 				if not isFolding and isUnfolded then
-					if needsLowering and workTool.aiNeedsLowering and workTool:isLowered() then
+					if (needsLowering or workTool.aiNeedsLowering) and workTool:isLowered() then
 						workTool:aiRaise();
 						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 					end;

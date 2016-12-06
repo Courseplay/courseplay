@@ -530,7 +530,7 @@ function courseplay:askForSpecialSettings(self, object)
 		automaticToolOffsetX = -0.2; -- ToolOffsetX is 0.2 meters to the left
 
 	elseif object.cp.isSalford8312 then
-		automaticToolOffsetX = 0.2; -- ToolOffsetX is 0.2 meters to the right
+		automaticToolOffsetX = 0.5; -- ToolOffsetX is 0.5 meters to the right
 
 	elseif object.cp.isLemkenTitan11 then
 		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
