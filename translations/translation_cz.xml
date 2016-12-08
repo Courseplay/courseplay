@@ -63,7 +63,7 @@
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Místo vysypání dosaženo" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Bude naloženo: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Zobrazit orientační body:" />
-		<text name="COURSEPLAY_PATHFINDING" 							 text="Objíždění porostu:" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="Vjíždění do porostu:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Otáčení na poli:" />
