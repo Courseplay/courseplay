@@ -391,29 +391,28 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 end;
 
 function courseplay:setTipRefOffset(vehicle)
-	vehicle.cp.tipRefOffset = nil;
-	local foundTipRefOffset = false;
+	vehicle.cp.tipRefOffset = 0;
 	for i=1, vehicle.cp.numWorkTools do
+		vehicle.cp.workTools[i].cp.rearTipRefPoint = nil;
 		if vehicle.cp.hasMachinetoFill then
 			vehicle.cp.tipRefOffset = 1.5;
 		elseif vehicle.cp.workTools[i].rootNode ~= nil and vehicle.cp.workTools[i].tipReferencePoints ~= nil then
-			local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.cp.workTools[i].rootNode);
 			if  #(vehicle.cp.workTools[i].tipReferencePoints) > 1 then
-				vehicle.cp.workTools[i].cp.rearTipRefPoint = nil;
 				for n=1 ,#(vehicle.cp.workTools[i].tipReferencePoints) do
-					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].tipReferencePoints[n].node, tipperX, tipperY, tipperZ);
+					local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.cp.workTools[i].tipReferencePoints[n].node);
+					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].rootNode, tipperX, tipperY, tipperZ);
+					courseplay:debug(string.format("point%s : tipRefPointX (%s), tipRefPointY (%s), tipRefPointZ(%s)",tostring(n),tostring(tipRefPointX),tostring(tipRefPointY),tostring( tipRefPointZ)),13)
 					tipRefPointX = abs(tipRefPointX);
-					if not foundTipRefOffset then
-						if (vehicle.cp.tipRefOffset == nil or vehicle.cp.tipRefOffset == 0) and tipRefPointX > 0.1 then
+					if tipRefPointX > vehicle.cp.tipRefOffset then  
+						if tipRefPointX > 0.1 then
 							vehicle.cp.tipRefOffset = tipRefPointX;
-							foundTipRefOffset = true;
 						else
 							vehicle.cp.tipRefOffset = 0
 						end;
-					end;
+					end
 
 					-- Find the rear tipRefpoint in case we are BGA tipping.
-					if tipRefPointX < 0.1 and tipRefPointZ > 0 then
+					if tipRefPointX < 0.1 and tipRefPointZ < 0 then
 						if not vehicle.cp.workTools[i].cp.rearTipRefPoint or vehicle.cp.workTools[i].tipReferencePoints[n].width > vehicle.cp.workTools[i].tipReferencePoints[vehicle.cp.workTools[i].cp.rearTipRefPoint].width then
 							vehicle.cp.workTools[i].cp.rearTipRefPoint = n;
 							courseplay:debug(string.format("%s: Found rear TipRefPoint: %d - tipRefPointZ = %f", nameNum(vehicle), n, tipRefPointZ), 13);
