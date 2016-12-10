@@ -51,8 +51,8 @@
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Neuen Ordner erstellen" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Nach Kursen und Ordnern suchen" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Filter aufheben" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="hat Überladepunkt erreicht." />
-		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="hat Wartepunkt erreicht" />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="hat den Überladepunkt erreicht." />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="hat den Wartepunkt erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="hat den Trigger/das Ende der Route erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="Transport beendet." />
 		<text name="COURSEPLAY_WORK_END" 								 text="hat die Aufgabe erledigt." />
@@ -117,7 +117,7 @@
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Kein Drescher in Reichweite" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Warte bis Drescher gewendet hat" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Warte auf neuen Wegpunkt" />
-		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Fahre hinter Traktor" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Fahre hinter dem Traktor" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="sollte aufgetankt werden" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="muss aufgetankt werden" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="wird aufgetankt" />
@@ -206,11 +206,11 @@
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Während dem Abladen anhalten" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text=": durchdrehende Reifen" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="Auffüllen bis:" />
-		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunkersilo ist voll!" />
-		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Farmsilo hat den ausgewählten Fülltyp nicht" />
-		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Farmsilo-Befüllung:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farmsilo ist leer! warte auf mehr." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=":Farmsilo ist voll. Fahre mit nächstem fort." /> 
+		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Fahrsilo ist voll!" />
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Farm Silo hat den ausgewählten Fülltyp nicht" />
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Farm Silo-Befüllung:" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm Silo ist leer! warte auf mehr." />
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=":Farm Silo ist voll. Fahre mit nächstem fort." /> 
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s startet" /> 
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Nach erstem Wegpunkt suchen" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Aktuellen Kurs speichern" />
@@ -220,8 +220,8 @@
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Letzten Wegpunkt löschen" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Wartepunkt setzen" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Kreuzungspunkt setzen" />
-		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Wendemaneuver beginnen" />
-		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Wendemaneuver beenden" />
+		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Wendemanöver beginnen" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Wendemanöver beenden" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Rückwärtsfahren beginnen" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Rückwärtsfahren beenden" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Zwischenpunkte hinzufügen" />
