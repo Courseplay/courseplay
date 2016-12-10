@@ -312,7 +312,7 @@ function courseplay:drive(self, dt)
 
 		-- MODE 3: UNLOADING
 		if self.cp.mode == 3 and self.cp.workToolAttached and self.cp.waypointIndex >= 2 and self.cp.modeState == 0 then
-			courseplay:handleMode3(self, self.cp.totalFillLevelPercent, allowedToDrive, dt);
+			courseplay:handleMode3(self, allowedToDrive, dt);
 
 		-- MODE 4: REFILL SPRAYER or SEEDER
 		elseif self.cp.mode == 4 then

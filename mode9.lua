@@ -275,7 +275,7 @@ function courseplay:setShovelState(vehicle, state, extraText)
 	end;
 end;
 
-function courseplay:getCurrentMovingToolsPosition(vehicle, movingTools, secondary) --NOTE: still needed for saveShovelPosition()
+function courseplay:getCurrentMovingToolsPosition(vehicle, movingTools, secondary , fixIndex) --NOTE: still needed for saveShovelPosition()
 	if movingTools == nil then
 		print(nameNum(vehicle) .. ': courseplay:getCurrentMovingToolsPosition() return nil');
 		return nil;
@@ -283,16 +283,17 @@ function courseplay:getCurrentMovingToolsPosition(vehicle, movingTools, secondar
 
 	local rotAxis, transAxis = 1, 3; -- 1 = x, 3 = z;
 	local curRot, curTrans = {}, {};
-	for i,mt in pairs(movingTools) do
-		if mt.curRot and mt.curRot[rotAxis] then
-			table.insert(curRot, mt.curRot[rotAxis]);
-		end;
-		if mt.curTrans and mt.curTrans[transAxis] then
-			table.insert(curTrans, mt.curTrans[transAxis]);
-		end;
-	end;
-	if secondary ~= nil then
-		for i,mt in pairs(secondary) do
+	if fixIndex then
+		rotAxis = 3
+		local mt = movingTools[fixIndex]
+			if mt.curRot and mt.curRot[rotAxis] then
+				table.insert(curRot, mt.curRot[rotAxis]);
+			end;
+			if mt.curTrans and mt.curTrans[transAxis] then
+				table.insert(curTrans, mt.curTrans[transAxis]);
+			end;		
+	else
+		for i,mt in pairs(movingTools) do
 			if mt.curRot and mt.curRot[rotAxis] then
 				table.insert(curRot, mt.curRot[rotAxis]);
 			end;
@@ -300,12 +301,21 @@ function courseplay:getCurrentMovingToolsPosition(vehicle, movingTools, secondar
 				table.insert(curTrans, mt.curTrans[transAxis]);
 			end;
 		end;
-	end;
-
+		if secondary ~= nil then
+			for i,mt in pairs(secondary) do
+				if mt.curRot and mt.curRot[rotAxis] then
+					table.insert(curRot, mt.curRot[rotAxis]);
+				end;
+				if mt.curTrans and mt.curTrans[transAxis] then
+					table.insert(curTrans, mt.curTrans[transAxis]);
+				end;
+			end;
+		end;
+	end 
 	return curRot, curTrans;
 end;
 
-function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, secondaryMovingTools, targetPositions, dt)
+function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, secondaryMovingTools, targetPositions, dt ,fixIndex)
 	local targetRotations, targetTranslations = targetPositions.rot, targetPositions.trans;
 	local changed = false;
 	local numPrimaryMovingTools = #movingTools;
@@ -313,13 +323,19 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 
 	for i=1,#targetRotations do
 		local mt, mtMainObject;
-		if i <= numPrimaryMovingTools then
-			mt = movingTools[i];
-			mtMainObject = vehicle;
+		if fixIndex then
+			rotAxis = 3
+			mt = movingTools[fixIndex];
+			mtMainObject = vehicle
 		else
-			mt = secondaryMovingTools[i - numPrimaryMovingTools];
-			mtMainObject = vehicle.cp.shovel;
-		end;
+			if i <= numPrimaryMovingTools then
+				mt = movingTools[i];
+				mtMainObject = vehicle;
+			else
+				mt = secondaryMovingTools[i - numPrimaryMovingTools];
+				mtMainObject = vehicle.cp.shovel;
+			end;
+		end
 		if mt == nil then
 			break
 		end
@@ -327,7 +343,6 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 		local curTrans = mt.curTrans[transAxis];
 		local targetRot = targetRotations[i];
 		local targetTrans = targetTranslations[i];
-
 		if courseplay:round(curRot, 4) ~= courseplay:round(targetRot, 4) or courseplay:round(curTrans, 3) ~= courseplay:round(targetTrans, 3) then
 			local newRot, newTrans;
 
@@ -400,18 +415,19 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			end;
 		end;
 	end;
-
 	return not changed;
 end;
 
 function courseplay:getMovingTools(vehicle)
 	local primaryMovingTools, secondaryMovingTools;
-	local frontLoader, shovel = 0, 0;
+	local frontLoader, shovel ,pipe = 0, 0;
 	for i=1, #(vehicle.attachedImplements) do
 		if vehicle.attachedImplements[i].object.cp.hasSpecializationShovel then
 			shovel = i;
 		elseif courseplay:isFrontloader(vehicle.attachedImplements[i].object) then
 			frontLoader = i;
+		else
+			pipe = i;
 		end;
 	end;
 
@@ -431,8 +447,9 @@ function courseplay:getMovingTools(vehicle)
 			secondaryMovingTools = object.attachedImplements[1].object.movingTools;
 			vehicle.cp.shovel = object.attachedImplements[1].object;
 		end;
-
 		courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
+	elseif pipe ~= 0 then
+		primaryMovingTools = vehicle.attachedImplements[i].object.movingTools;
 	else
 		primaryMovingTools = vehicle.movingTools;
 		vehicle.cp.shovel = vehicle;

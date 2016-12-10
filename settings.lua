@@ -1073,6 +1073,18 @@ function courseplay:resetManualShovelPositionOrder(vehicle)
 	courseplay:resetCustomTimer(vehicle, 'manualShovelPositionOrder');
 end;
 
+function courseplay:movePipeToPosition(vehicle,pos)
+	--print(string.format("%s: movePipeToPosition %s",tostring(vehicle.name),tostring(pos)))
+	vehicle.cp.manualPipePositionOrder = pos
+	courseplay:setCustomTimer(vehicle, 'manualPipePositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
+end
+
+
+function courseplay:resetManualPipePositionOrder(vehicle)
+	vehicle.cp.manualPipePositionOrder = nil;
+	courseplay:resetCustomTimer(vehicle, 'manualPipePositionOrder');
+end
+
 function courseplay:toggleShovelStopAndGo(vehicle)
 	vehicle.cp.shovelStopAndGo = not vehicle.cp.shovelStopAndGo;
 end;

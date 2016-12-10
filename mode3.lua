@@ -8,7 +8,7 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 
 	if workTool.cp.isAugerWagon then
 		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex >= math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) and vehicle.cp.previousWaypointIndex < vehicle.cp.waitPoints[1] and not workTool.cp.isUnloading then
-			courseplay:handleAugerWagon(vehicle, workTool, true, false, "unfold"); --unfold=true, unload=false
+			courseplay:handleAugerWagon(vehicle, workTool, true, false, "unfold",dt); --unfold=true, unload=false
 		end;
 
 		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex == vehicle.cp.waitPoints[1] then
@@ -16,7 +16,7 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 
 			local driveOn = false
 			if fillLevelPct > 0 then
-				courseplay:handleAugerWagon(vehicle, workTool, true, true, "unload"); --unfold=true, unload=true
+				courseplay:handleAugerWagon(vehicle, workTool, true, true, "unload",dt); --unfold=true, unload=true
 			end;
 			if vehicle.cp.prevFillLevelPct ~= nil then
 				if fillLevelPct > 0 and workTool.cp.isUnloading then
@@ -29,7 +29,7 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 			vehicle.cp.prevFillLevelPct = fillLevelPct;
 
 			if (fillLevelPct == 0 or driveOn) and not workTool.cp.isUnloading then
-				courseplay:handleAugerWagon(vehicle, workTool, true, false, "stopUnload"); --unfold=true, unload=false
+				courseplay:handleAugerWagon(vehicle, workTool, true, false, "stopUnload",dt); --unfold=true, unload=false
 				vehicle.cp.prevFillLevelPct = nil;
 				courseplay:cancelWait(vehicle);
 			end;
@@ -48,11 +48,11 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 		end;
 
 		if vehicle.cp.previousWaypointIndex < math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) then -- is before unfold pipe point
-			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldBefore"); --unfold=false, unload=false
+			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldBefore",dt); --unfold=false, unload=false
 		elseif (not vehicle.cp.wait or vehicle.cp.isUnloaded) and vehicle.cp.previousWaypointIndex >= math.min(vehicle.cp.waitPoints[1] + forwardPointsFoldPipe, vehicle.cp.numWaypoints - 1) then -- is past fold pipe point
-			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldAfter"); --unfold=false, unload=false
+			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldAfter",dt); --unfold=false, unload=false
 		elseif workTool.cp.isUnloading and not vehicle.cp.wait then
-			courseplay:handleAugerWagon(vehicle, workTool, true, false, "forceStopUnload"); --unfold=true, unload=false
+			courseplay:handleAugerWagon(vehicle, workTool, true, false, "forceStopUnload",dt); --unfold=true, unload=false
 		end;
 	end;
 
@@ -61,7 +61,7 @@ end;
 
 
 
-function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderName)
+function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderName,dt)
 	courseplay:debug(string.format("\thandleAugerWagon(vehicle, %s, unfold=%s, unload=%s, orderName=%s)", nameNum(workTool), tostring(unfold), tostring(unload), tostring(orderName)), 15);
 	local pipeOrderExists = unfold ~= nil;
 	local unloadOrderExists = unload ~= nil;
@@ -175,7 +175,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 	elseif workTool.typeName == 'augerWagon' or workTool.cp.isAugerWagon then
 		if pipeOrderExists then
 			local pipeIsFolding = workTool.pipeCurrentState == 0;
-			local pipeIsFolded = workTool.pipeCurrentState == 1;
+			local pipeIsFolded = workTool.pipeCurrentState == 1 
 			local pipeIsUnfolded = workTool.pipeCurrentState == 2;
 			courseplay:debug(string.format("\t\tpipeIsFolding=%s, pipeIsFolded=%s, pipeIsUnfolded=%s", tostring(pipeIsFolding), tostring(pipeIsFolded), tostring(pipeIsUnfolded)), 15);
 			if unfold and not pipeIsFolding and pipeIsFolded then
@@ -185,7 +185,37 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				workTool:setPipeState(1);
 				courseplay:debug("\t\t\tsetPipeState(1) (fold)", 15);
 			end;
+			if unfold and pipeIsUnfolded then
+				courseplay:checkAndSetMovingToolsPosition(vehicle, workTool.movingTools, nil, workTool.cp.pipePositions, dt , workTool.cp.pipeIndex ) ;
+			end
+			
 			workTool.cp.lastFoldAnimTime = workTool.foldAnimTime;
 		end;
 	end;
 end;
+
+function courseplay:getPipesRotation(vehicle)
+	vehicle.cp.workToolIndex = nil
+	for i,implement in pairs(vehicle.attachedImplements) do
+		local workTool = implement.object;
+		workTool.cp.pipeIndex = nil
+		workTool.cp.pipePositions = nil 
+		if workTool.movingTools then
+			for index,tool in pairs(workTool.movingTools) do
+				if tool.axis and tool.axis == "AXIS_PIPE" then
+					workTool.cp.pipeIndex =  index
+					vehicle.cp.workToolIndex = i
+				end
+			end
+		end
+		if workTool.cp.pipeIndex ~= nil then
+			local rotation, translation = courseplay:getCurrentMovingToolsPosition(self, workTool.movingTools, nil, workTool.cp.pipeIndex)
+			workTool.cp.pipePositions = {  
+							rot = rotation ;
+							trans = translation;
+							}
+		end
+	end
+end		
+
+

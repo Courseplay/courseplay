@@ -52,6 +52,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Nach Kursen und Ordnern suchen" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Filter aufheben" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="hat Überladepunkt erreicht." />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="Rohrposition speichern" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "Rohrposition anfahren" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="hat Wartepunkt erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="hat den Trigger/das Ende der Route erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="Transport beendet." />

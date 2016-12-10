@@ -52,6 +52,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Recherche de course et de dossier" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 					 	 text="Désactive les filtres" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="a atteint le point de déchargement." />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="a atteint le point d'attente" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 					 	 text="a atteint la fin de la course" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="a terminé le transport." />

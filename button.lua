@@ -209,14 +209,13 @@ function courseplay.button:render()
 	elseif self.overlay ~= nil then
 		if pg ~= -courseplay.hud.PAGE_MANAGE_COURSES then -- NOTE: course buttons' (page -2) visibility are handled in buttonsActiveEnabled(), section 'page2'
 			local show = true;
-
 			-- CONDITIONAL DISPLAY
 			-- Global
 			if pg == "global" then
 				if fn == "showSaveCourseForm" and prm == "course" then
 					show = vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.Waypoints ~= nil and vehicle.cp.numWaypoints ~= 0;
 				end;
-
+				
 			-- Page 1
 			elseif pg == courseplay.hud.PAGE_CP_CONTROL then
 				if fn == "setCpMode" then
@@ -237,6 +236,8 @@ function courseplay.button:render()
 					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
 				elseif fn == 'changeSiloFillType' then
 					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
+				elseif fn == 'movePipeToPosition' then
+					show = not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_OVERLOADER ;
 				end;
 
 			-- Page 2
@@ -400,10 +401,8 @@ function courseplay.button:render()
 				-- NOTE: generateCourse button is handled in buttonsActiveEnabled(), section 'generateCourse'
 				end;
 			end;
-
 			self:setShow(show);
 		end;
-
 
 
 		if self.show then
@@ -415,7 +414,13 @@ function courseplay.button:render()
 				hoverColor = 'closeRed';
 			end;
 
-			if fn == 'moveShovelToPosition' and not self.isDisabled and vehicle.cp.manualShovelPositionOrder and vehicle.cp.manualShovelPositionOrder == prm then  -- forced color
+			if fn == 'movePipeToPosition' then
+				if vehicle.cp.workToolIndex ~= nil and vehicle.cp.manualPipePositionOrder then
+					targetColor = 'warningRed';
+				elseif vehicle.cp.workToolIndex ~= nil then
+					targetColor = 'activeGreen';
+				end	
+			elseif fn == 'moveShovelToPosition' and not self.isDisabled and vehicle.cp.manualShovelPositionOrder and vehicle.cp.manualShovelPositionOrder == prm then  -- forced color
 				targetColor = 'warningRed';
 			elseif not self.isDisabled and not self.isActive and not self.isHovered and self.canBeClicked and not self.isClicked then
 				targetColor = 'white';

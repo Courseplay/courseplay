@@ -51,7 +51,9 @@
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Create new folder" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Search for courses and folders" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Deactivate filter" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="has reached overload point." />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT"				 text="has reached overload point." />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" /> 
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="has reached waiting point" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="has reached trigger/end point" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />

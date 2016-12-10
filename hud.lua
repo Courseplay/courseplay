@@ -3,8 +3,7 @@
 local abs, ceil, floor, max = math.abs, math.ceil, math.floor, math.max;
 local function round(num)
 	return floor(num + 0.5);
-end;
-
+end
 
 local targetAspectRatio = 16/9; -- = 1920/1080;
 local aspectRatioRatio = g_screenAspectRatio / targetAspectRatio;
@@ -469,7 +468,6 @@ function courseplay.hud:setContent(vehicle)
 				break;
 			end;
 		end;
-
 	elseif vehicle.cp.hud.currentPage == 4 then
 		if vehicle.cp.savedCombine ~= nil then -- Force page 4 reload when combine distance is displayed
 			self:setReloadPageOrder(vehicle, 4, true);
@@ -643,7 +641,7 @@ function courseplay.hud:loadPage(vehicle, page)
 	-- self = courseplay.hud
 
 	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 18);
-
+		
 	--PAGE 0: COMBINE SETTINGS
 	if page == self.PAGE_COMBINE_CONTROLS then
 		local combine = vehicle;
@@ -727,6 +725,15 @@ function courseplay.hud:loadPage(vehicle, page)
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
 					vehicle.cp.hud.content.pages[1][6][2].text = FillUtil.fillTypeIndexToDesc[vehicle.cp.siloSelectedFillType].nameI18N;
 				end;
+				
+				if vehicle.cp.mode == courseplay.MODE_OVERLOADER then
+					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_SAVE_PIPE_POSITION');
+					if vehicle.cp.workToolIndex ~= nil then
+						vehicle.cp.hud.content.pages[1][5][2].text = 'OK';
+					end
+				end
+				
+				
 			else
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 
@@ -1392,7 +1399,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- Clear current course
 	vehicle.cp.hud.clearCurrentCourseButton1 = courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
 
-
+	--go to pipe position in mode3
+	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'recordingPlay' }, 'movePipeToPosition', 1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 6, nil, true, false, false, courseplay:loc('COURSEPLAY_MOVE_PIPE_TO_POSITION'));
+					
 	-- ##################################################
 	-- Page 2: Course management
 	--course navigation

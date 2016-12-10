@@ -902,6 +902,15 @@ function courseplay:update(dt)
 			courseplay:resetManualShovelPositionOrder(self);
 		end;
 	end;
+	-- MODE 3: move pipe to positions (manually)
+	if self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.manualPipePositionOrder ~= nil and self.cp.workToolIndex then
+		local workTool = self.attachedImplements[self.cp.workToolIndex].object
+		if courseplay:checkAndSetMovingToolsPosition(self, workTool.movingTools, nil, workTool.cp.pipePositions, dt , workTool.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
+			courseplay:resetManualPipePositionOrder(self);
+		end;
+	end;
+	
+	
 end; --END update()
 
 --[[

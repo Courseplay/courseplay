@@ -266,6 +266,8 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
+					elseif line == 5 then 
+						courseplay:getPipesRotation(self)
 					end;
 
 				else -- driving
