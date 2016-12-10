@@ -725,15 +725,7 @@ function courseplay.hud:loadPage(vehicle, page)
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
 					vehicle.cp.hud.content.pages[1][6][2].text = FillUtil.fillTypeIndexToDesc[vehicle.cp.siloSelectedFillType].nameI18N;
 				end;
-				
-				if vehicle.cp.mode == courseplay.MODE_OVERLOADER then
-					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_SAVE_PIPE_POSITION');
-					if vehicle.cp.workToolIndex ~= nil then
-						vehicle.cp.hud.content.pages[1][5][2].text = 'OK';
-					end
-				end
-				
-				
+
 			else
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 
@@ -787,6 +779,14 @@ function courseplay.hud:loadPage(vehicle, page)
 			end;
 		end;
 
+		if vehicle.cp.mode == courseplay.MODE_OVERLOADER and not vehicle:getIsCourseplayDriving() then
+			vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_SAVE_PIPE_POSITION');
+			if vehicle.cp.pipeWorkToolIndex ~= nil then
+				vehicle.cp.hud.content.pages[1][5][2].text = 'OK';
+			else
+				vehicle.cp.hud.content.pages[1][5][2].text = courseplay:loc('UNKNOWN');
+			end
+		end
 
 	--PAGE 2: COURSE LIST
 	elseif page == self.PAGE_MANAGE_COURSES then

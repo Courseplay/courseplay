@@ -415,9 +415,9 @@ function courseplay.button:render()
 			end;
 
 			if fn == 'movePipeToPosition' then
-				if vehicle.cp.workToolIndex ~= nil and vehicle.cp.manualPipePositionOrder then
+				if vehicle.cp.pipeWorkToolIndex ~= nil and vehicle.cp.manualPipePositionOrder then
 					targetColor = 'warningRed';
-				elseif vehicle.cp.workToolIndex ~= nil then
+				elseif vehicle.cp.pipeWorkToolIndex ~= nil then
 					targetColor = 'activeGreen';
 				end	
 			elseif fn == 'moveShovelToPosition' and not self.isDisabled and vehicle.cp.manualShovelPositionOrder and vehicle.cp.manualShovelPositionOrder == prm then  -- forced color

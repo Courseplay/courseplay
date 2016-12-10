@@ -185,8 +185,8 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				workTool:setPipeState(1);
 				courseplay:debug("\t\t\tsetPipeState(1) (fold)", 15);
 			end;
-			if unfold and pipeIsUnfolded then
-				courseplay:checkAndSetMovingToolsPosition(vehicle, workTool.movingTools, nil, workTool.cp.pipePositions, dt , workTool.cp.pipeIndex ) ;
+			if unfold and pipeIsUnfolded and workTool.cp.pipeIndex then
+				courseplay:checkAndSetMovingToolsPosition(vehicle, workTool.movingTools, nil, vehicle.cp.pipePositions, dt , vehicle.cp.pipeIndex ) ;
 			end
 			
 			workTool.cp.lastFoldAnimTime = workTool.foldAnimTime;
@@ -195,22 +195,22 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 end;
 
 function courseplay:getPipesRotation(vehicle)
-	vehicle.cp.workToolIndex = nil
+	vehicle.cp.pipeWorkToolIndex = nil
 	for i,implement in pairs(vehicle.attachedImplements) do
 		local workTool = implement.object;
-		workTool.cp.pipeIndex = nil
-		workTool.cp.pipePositions = nil 
-		if workTool.movingTools then
+		vehicle.cp.pipeIndex = nil
+		vehicle.cp.pipePositions = nil 
+		if workTool.movingTools and workTool.pipeCurrentState and workTool.pipeCurrentState == 2 then
 			for index,tool in pairs(workTool.movingTools) do
 				if tool.axis and tool.axis == "AXIS_PIPE" then
-					workTool.cp.pipeIndex =  index
-					vehicle.cp.workToolIndex = i
+					vehicle.cp.pipeIndex =  index 				--index of movingTools
+					vehicle.cp.pipeWorkToolIndex = i			--index of attachedImplements
 				end
 			end
 		end
-		if workTool.cp.pipeIndex ~= nil then
-			local rotation, translation = courseplay:getCurrentMovingToolsPosition(self, workTool.movingTools, nil, workTool.cp.pipeIndex)
-			workTool.cp.pipePositions = {  
+		if vehicle.cp.pipeIndex ~= nil then
+			local rotation, translation = courseplay:getCurrentMovingToolsPosition(self, workTool.movingTools, nil, vehicle.cp.pipeIndex)
+			vehicle.cp.pipePositions = {  
 							rot = rotation ;
 							trans = translation;
 							}

@@ -903,9 +903,9 @@ function courseplay:update(dt)
 		end;
 	end;
 	-- MODE 3: move pipe to positions (manually)
-	if self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.manualPipePositionOrder ~= nil and self.cp.workToolIndex then
-		local workTool = self.attachedImplements[self.cp.workToolIndex].object
-		if courseplay:checkAndSetMovingToolsPosition(self, workTool.movingTools, nil, workTool.cp.pipePositions, dt , workTool.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
+	if self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.manualPipePositionOrder ~= nil and self.cp.pipeWorkToolIndex then
+		local workTool = self.attachedImplements[self.cp.pipeWorkToolIndex].object
+		if courseplay:checkAndSetMovingToolsPosition(self, workTool.movingTools, nil, self.cp.pipePositions, dt , self.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
 			courseplay:resetManualPipePositionOrder(self);
 		end;
 	end;
@@ -1401,7 +1401,26 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 			self.cp.stopWhenUnloading = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#stopWhenUnloading'), false);
 		end;
 
+		--overLoaderPipe
+		curKey = key .. '.courseplay.overLoaderPipe';
+		local rot =  getXMLFloat(xmlFile, curKey .. '#rot')
+		local trans = getXMLFloat(xmlFile, curKey .. '#trans')
+		local pipeIndex =  getXMLInt(xmlFile, curKey .. '#pipeIndex')
+		local pipeWorkToolIndex = getXMLInt(xmlFile, curKey .. '#pipeWorkToolIndex')
+		
+	if rot and trans and pipeIndex and pipeWorkToolIndex then
+		self.cp.pipePositions = {}
+		self.cp.pipePositions.rot = {}
+		self.cp.pipePositions.trans={}
+		table.insert(self.cp.pipePositions.rot,rot)
+		table.insert(self.cp.pipePositions.trans,trans)
 
+		self.cp.pipeIndex =  pipeIndex
+		self.cp.pipeWorkToolIndex = pipeWorkToolIndex
+	end
+		
+		
+		
 		courseplay:validateCanSwitchMode(self);
 	end;
 	return BaseMission.VEHICLE_LOAD_OK;
@@ -1446,7 +1465,15 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 			end;
 		end;
 	end;
+	--overloader pipe position
 
+	local overLoaderPipe = '';
+	
+	if self.cp.pipeWorkToolIndex ~= nil then
+		overLoaderPipe = string.format('<overLoaderPipe rot=%q trans=%q pipeIndex ="%i" pipeWorkToolIndex="%i" />',tostring(table.concat(self.cp.pipePositions.rot)),tostring(table.concat(self.cp.pipePositions.trans)),self.cp.pipeIndex,self.cp.pipeWorkToolIndex)
+	end
+
+	
 	--Offset data
 	local offsetData = string.format('%.1f;%.1f;%.1f;%s', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange));
 
@@ -1464,6 +1491,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	if self.cp.isCombine then
 		combine = string.format('<combine driverPriorityUseFillLevel=%q stopWhenUnloading=%q />', tostring(self.cp.driverPriorityUseFillLevel), tostring(self.cp.stopWhenUnloading));
 	end;
+	
 	local cpClose = '</courseplay>';
 
 	local indent = '   ';
@@ -1477,6 +1505,9 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	if self.cp.isCombine then
 		nodes = nodes .. nodeIdent .. indent .. combine .. '\n';
 	end;
+	if self.cp.pipeWorkToolIndex ~= nil then
+		nodes = nodes .. nodeIdent .. indent .. overLoaderPipe .. '\n';
+	end
 	nodes = nodes .. nodeIdent .. cpClose;
 
 	courseplay:debug(nameNum(self) .. ": getSaveAttributesAndNodes(): nodes\n" .. nodes, 10)
