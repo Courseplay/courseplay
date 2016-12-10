@@ -52,8 +52,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Pesquisar por rotas e pastas" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Desativar filtros" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="chegou no ponto para carregar." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="salvar a posição to tubo" />      
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "mover o tubo para posição" />	  
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="chegou no ponto de espera" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="chegou no trigger ou no ponto final" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="Finalizado transporte de grãos." />  
