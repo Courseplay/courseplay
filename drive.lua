@@ -221,7 +221,11 @@ function courseplay:drive(self, dt)
 			elseif self.cp.previousWaypointIndex == self.cp.stopWork and self.cp.abortWork ~= nil then
 				courseplay:setVehicleWait(self, false);
 			elseif self.cp.previousWaypointIndex ~= self.cp.startWork and self.cp.previousWaypointIndex ~= self.cp.stopWork then 
-				CpManager:setGlobalInfoText(self, 'UNLOADING_BALE');
+				if self.cp.isCombine then
+					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
+				else
+					CpManager:setGlobalInfoText(self, 'UNLOADING_BALE');
+				end
 				if self.cp.totalFillLevelPercent == 0 or drive_on then
 					courseplay:setVehicleWait(self, false);
 				end;

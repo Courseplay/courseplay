@@ -366,28 +366,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				end;
 			end; --END other tools
 
-			-- Begin work or go to abortWork
-			if vehicle.cp.previousWaypointIndex == vehicle.cp.startWork and fillLevelPct ~= 100 then
-				if vehicle.cp.abortWork ~= nil then
-					if vehicle.cp.abortWork < 5 then
-						vehicle.cp.abortWork = 6
-					end
-					courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork);
-					if vehicle.cp.waypointIndex < 2 then
-						courseplay:setWaypointIndex(vehicle, 2);
-					end
-					if vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart or vehicle.Waypoints[vehicle.cp.waypointIndex+1].turnStart  then
-						courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex - 2);
-					end
-				end
-			end
-			-- last point reached restart
-			if vehicle.cp.abortWork ~= nil then
-				if (vehicle.cp.previousWaypointIndex == vehicle.cp.abortWork ) and fillLevelPct ~= 100 then
-					courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork + 2); -- drive to waypoint after next waypoint
-					vehicle.cp.abortWork = nil
-				end
-			end
+
 			-- save last point
 			if (fillLevelPct == 100 or vehicle.cp.isLoaded) and workArea and not courseplay:isBaler(workTool) then
 				if vehicle.cp.hasUnloadingRefillingCourse and vehicle.cp.abortWork == nil then
@@ -468,6 +447,22 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							tool.stopForManualUnloader = true
 						end
 							
+						if tool.cp.totalFillLevelPercent >= min(tool.cp.driveOnAtFillLevel,99) and tool.cp.hasUnloadingRefillingCourse then
+							if courseplay:timerIsThrough(tool, 'emptyStrawBox', false) then
+								if tool.cp.abortWork == nil then
+									courseplay:setAbortWorkWaypoint(tool);
+									courseplay:resetCustomTimer(tool, 'emptyStrawBox', true);
+								end
+							else
+								allowedToDrive = false;	
+							end
+							if tool.isStrawEnabled and courseplay:timerIsThrough(tool, 'emptyStrawBox', true) and tool.cp.abortWork == nil then
+								local strawTimer = tool.strawToggleTime or 3500;
+								strawTimer = strawTimer / 1000
+								courseplay:setCustomTimer(tool, 'emptyStrawBox', strawTimer);
+							end
+						end						
+							
 						if tankFillLevelPct >= 100 
 						or tool.waitingForDischarge 
 						or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
@@ -524,14 +519,16 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							tool:setPipeState(1)
 						end
 					end	
-					if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
-						courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
-						workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
-					end;
-					if courseplay:isFoldable(tool) and isEmpty and not isFolding and not isFolded then
-						courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(tool), -tool.cp.realUnfoldDirection), 17);
-						tool:setFoldDirection(-tool.cp.realUnfoldDirection);
-					end;
+					if vehicle.cp.waypointIndex == vehicle.cp.stopWork or (vehicle.cp.abortWork ~= nil and tool.cp.capacity == 0 ) then
+						if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
+							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
+							workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
+						end;
+						if courseplay:isFoldable(tool) and isEmpty and not isFolding and not isFolded then
+							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(tool), -tool.cp.realUnfoldDirection), 17);
+							tool:setFoldDirection(-tool.cp.realUnfoldDirection);
+						end;
+					end
 				end
 				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.cp.fillLevel > 0.1 and tool.courseplayers and #(tool.courseplayers) == 0 then
 					tool.cp.wantsCourseplayer = true
@@ -585,6 +582,35 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				vehicle.aiThreshingDirectionZ = -(dz/length);
 			end
 		end
+		
+		-- Begin work or go to abortWork
+		if vehicle.cp.previousWaypointIndex == vehicle.cp.startWork and fillLevelPct ~= 100 then
+			if vehicle.cp.abortWork ~= nil then
+				if vehicle.cp.abortWork < 5 then
+					vehicle.cp.abortWork = 6
+				end
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork);
+				if vehicle.cp.waypointIndex < 2 then
+					courseplay:setWaypointIndex(vehicle, 2);
+				end
+				if vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart or vehicle.Waypoints[vehicle.cp.waypointIndex+1].turnStart  then
+					courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex - 2);
+				end
+			end
+		end
+		-- last point reached restart
+		if vehicle.cp.abortWork ~= nil then
+			if (vehicle.cp.previousWaypointIndex == vehicle.cp.abortWork ) and fillLevelPct ~= 100 then
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork + 2); -- drive to waypoint after next waypoint
+				--vehicle.cp.abortWork = nil
+			end
+			if vehicle.cp.previousWaypointIndex < vehicle.cp.stopWork and vehicle.cp.previousWaypointIndex > vehicle.cp.abortWork + 8 + vehicle.cp.abortWorkExtraMoveBack then
+				vehicle.cp.abortWork = nil;
+			end
+		end
+	
+		
+		
 	end; --END for i in vehicle.cp.workTools
 
 	if hasFinishedWork then

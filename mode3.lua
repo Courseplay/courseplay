@@ -185,7 +185,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				workTool:setPipeState(1);
 				courseplay:debug("\t\t\tsetPipeState(1) (fold)", 15);
 			end;
-			if unfold and pipeIsUnfolded and workTool.cp.pipeIndex then
+			if unfold and pipeIsUnfolded and vehicle.cp.pipePositions then
 				courseplay:checkAndSetMovingToolsPosition(vehicle, workTool.movingTools, nil, vehicle.cp.pipePositions, dt , vehicle.cp.pipeIndex ) ;
 			end
 			
