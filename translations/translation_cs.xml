@@ -48,8 +48,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="检索任务和目录" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="关闭检索" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="已达到卸载点。" />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="保存管道位置" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "将管道移动到位置" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="已达到等待点" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="已达到终点" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="已完成粮食运输" />  <!-- TODO: TRANSLATION! -->
