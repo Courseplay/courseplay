@@ -223,6 +223,7 @@ function courseplay:setNameVariable(workTool)
 
 	-- New Holland SP.400F (Sprayer) [Giants]
 	elseif workTool.cp.xmlFileName == 'SP400F.xml' then
+		workTool.cp.isSP400F = true;
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	-- Trucks [Giants]
@@ -468,10 +469,31 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 end
 
 function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
-	local forcedStop = not unfold and not lower and not turnOn and not allowedToDrivea and not cover and not unload and not ridgeMarker and forceSpeedLimit ==0;
+	local forcedStop = not unfold and not lower and not turnOn and not allowedToDrive and not cover and not unload and not ridgeMarker and forceSpeedLimit ==0;
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
+	end;
+
+	if workTool.cp.isSP400F then
+		if self.isHired then
+			if unfold then
+				--- Move the wheel base outwards while working.
+				if not workTool:getIsAnimationPlaying("moveWheelBase") and workTool:getAnimationTime("moveWheelBase") < 1 then
+					workTool:playAnimation("moveWheelBase", 0.4, workTool:getAnimationTime("moveWheelBase"));
+				elseif workTool:getIsAnimationPlaying("moveWheelBase") and workTool.animations["moveWheelBase"].currentSpeed < 0 then
+					workTool:setAnimationSpeed("moveWheelBase", 0.4);
+				end;
+			elseif self.isHired then
+				--- Move the wheel base inwards when not working.
+				if not workTool:getIsAnimationPlaying("moveWheelBase") and workTool:getAnimationTime("moveWheelBase") > 0 then
+					workTool:playAnimation("moveWheelBase", -0.4, workTool:getAnimationTime("moveWheelBase"));
+				elseif workTool:getIsAnimationPlaying("moveWheelBase") and workTool.animations["moveWheelBase"].currentSpeed > 0 then
+					workTool:setAnimationSpeed("moveWheelBase", -0.4);
+				end;
+			end;
+		end;
+		return false ,allowedToDrive,forceSpeedLimit;
 	end;
 
 	--Ursus Z586 BaleWrapper
@@ -512,7 +534,11 @@ function courseplay:askForSpecialSettings(self, object)
 	local automaticToolOffsetX;
 
 	-- OBJECTS
-	if object.cp.isUrsusT127 then
+	if object.cp.isSP400F then
+		object.cp.backMarkerOffsetCorection = 0.5;
+		object.cp.frontMarkerOffsetCorection = -0.25;
+
+	elseif object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
 		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
 

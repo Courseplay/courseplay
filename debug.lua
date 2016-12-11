@@ -4,8 +4,11 @@ function CpManager:setUpDebugChannels()
 	-- DEVELOPERS DEFAULT ACTIVE CHANNELS - ONLY WORKS FOR DEVELOPERS.
 	local defaultActive = {};
 	if CpManager.isDeveloper then
-		--defaultActive[12] = true;
-		--defaultActive[14] = true;
+		-- Enable specified debugmode by default for Satis Only!
+		if g_gameSettings:getValue("nickname") == "Sa!is" then
+			defaultActive[12] = true;
+			defaultActive[14] = true;
+		end;
 	end;
 
 	-- DEBUG CHANNELS

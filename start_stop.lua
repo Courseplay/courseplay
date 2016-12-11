@@ -495,12 +495,6 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
-	--stop special tools
-	for _, tool in pairs (self.cp.workTools) do
-							--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
-		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
-	end
-
 	self.isHired = false;
 	self.isHirableBlocked = false;
 	
@@ -529,6 +523,11 @@ function courseplay:stop(self)
 	end;
 	self.currentHelper = nil
 
+	--stop special tools
+	for _, tool in pairs (self.cp.workTools) do
+		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
+		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
+	end
 
 	self.cp.lastInfoText = nil
 
