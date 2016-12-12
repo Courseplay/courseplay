@@ -148,6 +148,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Oeste" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Cabeceira do campo" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="ligado" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
 		<text name="COURSEPLAY_DEACTIVATED" 						 	 text="desligado" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 						 	 text="marcadores" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 					 	 text="A descarregar no campo" />

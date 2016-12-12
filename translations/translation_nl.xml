@@ -148,6 +148,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="geactiveerd" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="alleen Naam" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Naam en Route" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="gedeactiveerd" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Banen markeerders" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Uitladen in het veld" />

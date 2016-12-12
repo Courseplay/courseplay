@@ -152,6 +152,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Westen" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Vorgewende" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktiviert" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="nur Name" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name und Kurs" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="deaktiviert" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Spurreißer" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Abladen auf dem Feld" />

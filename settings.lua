@@ -1527,7 +1527,16 @@ function courseplay:deleteMapHotspot(vehicle)
 	end;
 end;
 function courseplay:toggleIngameMapIconShowText()
-	CpManager.ingameMapIconShowText = not CpManager.ingameMapIconShowText;
+	if not CpManager.ingameMapIconShowName and not CpManager.ingameMapIconShowCourse then
+		CpManager.ingameMapIconShowName = true;
+	elseif CpManager.ingameMapIconShowName and not CpManager.ingameMapIconShowCourse then
+		CpManager.ingameMapIconShowCourse = true
+	else
+		CpManager.ingameMapIconShowName = false;
+		CpManager.ingameMapIconShowCourse = false
+	end
+	--TODO broadcast change to other Multiplayers
+	
 	-- for _,vehicle in pairs(g_currentMission.steerables) do
 	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
 		if vehicle.cp.ingameMapHotSpot then

@@ -152,6 +152,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="neaktivní" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Znamenák stop:" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Vyložit na poli" />

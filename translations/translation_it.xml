@@ -152,6 +152,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="disattivato" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Segnafile" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Scaricando sul campo" />

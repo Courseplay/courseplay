@@ -152,6 +152,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="ターンスペース" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="有効" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="無効" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="リッジマーカー" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="フィールドでアンロード" />

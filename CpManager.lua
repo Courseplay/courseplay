@@ -923,7 +923,7 @@ function CpManager:loadXmlSettings()
 		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#active'),		self.ingameMapIconActive);
 		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showName'),	self.ingameMapIconShowName);
 		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showCourse'),	self.ingameMapIconShowCourse);
-		self.ingameMapIconShowText = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
+		self.ingameMapIconShowText = true --self.ingameMapIconShowName or self.ingameMapIconShowCourse;
 
 		-- 2D course
 		key = 'CPSettings.course2D';
@@ -985,7 +985,7 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#active'),		self.ingameMapIconActive);
 		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#showName'),	self.ingameMapIconShowName);
 		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpFile, key .. '#showCourse'),	self.ingameMapIconShowCourse);
-		self.ingameMapIconShowText = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
+		self.ingameMapIconShowText =  true --self.ingameMapIconShowName or self.ingameMapIconShowCourse;
 
 		-- 2D course
 		key = 'XML.course2D';
