@@ -116,10 +116,15 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 				vehicle.cp.mode9triesTheSameFillUnit = false
 			end
 			if vehicle.cp.mode9triesTheSameFillUnit and distanceToTarget < 3 then
-				local takenFromGround = TipUtil.removeFromGroundByArea(targetUnit.sx, targetUnit.sz, targetUnit.wx, targetUnit.wz, targetUnit.hx, targetUnit.hz, targetUnit.fillType)
-				if takenFromGround > 0 then
-					vehicle.cp.shovel:setUnitFillLevel(1, takenFromGround + vehicle.cp.shovel:getFillLevel(targetUnit.fillType), 0, true)
-					courseplay:debug(('%s couldnt get the material -> remove %s fromArea'):format(nameNum(vehicle),tostring(takenFromGround)),10)
+				local fillType = targetUnit.fillType 
+				if vehicle.cp.shovel:getFreeCapacity(fillType) >= targetUnit.fillLevel then
+					local takenFromGround = TipUtil.removeFromGroundByArea(targetUnit.sx, targetUnit.sz, targetUnit.wx, targetUnit.wz, targetUnit.hx, targetUnit.hz,fillType )
+					if takenFromGround > 0 then
+						vehicle.cp.shovel:setUnitFillLevel(1, takenFromGround + vehicle.cp.shovel:getFillLevel(fillType), 0, true)
+						courseplay:debug(('%s couldnt get the material %s[%i]-> remove %s fromArea'):format(nameNum(vehicle),FillUtil.fillTypeIndexToDesc[fillType].name,fillType,tostring(takenFromGround)),10)
+					end
+				else
+					courseplay:debug(('%s couldnt get the material %s[%i] but its too much for the shovel-> not remove fromArea'):format(nameNum(vehicle),FillUtil.fillTypeIndexToDesc[fillType].name,fillType),10)
 				end
 			end
 			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, cx, targetUnit.y, cz);
@@ -135,21 +140,30 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 			vehicle.cp.shovelLastFillLevel = fillLevelPct;
 		end;
 						--vv TODO checkif its a Giants Bug the Shovel never gets 100%
-		if fillLevelPct >= 99 or vehicle.cp.isLoaded then
+		if fillLevelPct >= 99 or vehicle.cp.isLoaded or vehicle.cp.slippingStage == 2 then
 			if not vehicle.cp.isLoaded then
+				local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
+				local _,_,sfpZ = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cx , ty , vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cz);
 				for i=vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
-					local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
 					local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
-					if z < -3 and vehicle.Waypoints[i].rev  then
+					if ((vehicle.cp.BunkerSiloMap == nil and z < -3 ) or z < sfpZ) and vehicle.Waypoints[i].rev  then
 						--print("z taken:  "..tostring(z));
-						courseplay:setWaypointIndex(vehicle, i + 1);
+						courseplay:setWaypointIndex(vehicle, i);
 						courseplay:setIsLoaded(vehicle, true);
 						break;
 					end;
 				end;
+				if not g_currentMission.missionInfo.stopAndGoBraking then
+					vehicle.nextMovingDirection = -1
+				end
 			else
 				if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[3], dt) then
-					courseplay:setShovelState(vehicle, 3);
+					if vehicle.cp.slippingStage == 2 then
+						vehicle.cp.slippingStageBreak = true
+						courseplay:setShovelState(vehicle, 3,' aborted by slipping');
+					else
+						courseplay:setShovelState(vehicle, 3);
+					end
 				else
 					allowedToDrive = false;
 				end;
@@ -163,6 +177,15 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx ,y, vehicle.Waypoints[p].cz); 
 		if vehicle.cp.BunkerSiloMap ~= nil and vehicle.Waypoints[vehicle.cp.waypointIndex].rev and z < -5 then
 			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, y, vehicle.Waypoints[p].cz);
+		end
+		if vehicle.cp.slippingStageBreak and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+			vehicle.cp.slippingStageBreak = nil
+			if fillLevelPct < 75 then
+				courseplay:setIsLoaded(vehicle, false);
+				courseplay:setShovelState(vehicle, 1,'try again');
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.shovelFillStartPoint - 2);
+				vehicle.cp.BunkerSiloMap = nil
+			end
 		end
 		
 		if vehicle.cp.previousWaypointIndex + 4 > vehicle.cp.shovelEmptyPoint then
@@ -265,14 +288,16 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 end;
 
 function courseplay:setShovelState(vehicle, state, extraText)
-	vehicle.cp.shovelState = state;
-	if courseplay.debugChannels[10] then
-		if extraText then
-			courseplay:debug(('%s: set shovel state to %d (%s)'):format(nameNum(vehicle), state, extraText), 10);
-		else
-			courseplay:debug(('%s: set shovel state to %d'):format(nameNum(vehicle), state), 10);
+	if vehicle.cp.shovelState ~= state then
+		vehicle.cp.shovelState = state;
+		if courseplay.debugChannels[10] then
+			if extraText then
+				courseplay:debug(('%s: set shovel state to %d (%s)'):format(nameNum(vehicle), state, extraText), 10);
+			else
+				courseplay:debug(('%s: set shovel state to %d'):format(nameNum(vehicle), state), 10);
+			end;
 		end;
-	end;
+	end
 end;
 
 function courseplay:getCurrentMovingToolsPosition(vehicle, movingTools, secondary , fixIndex) --NOTE: still needed for saveShovelPosition()
@@ -355,7 +380,7 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 					newRot = targetRot;
 				end;
 				if newRot ~= curRot  then
-					courseplay:debug(string.format('%s: movingTool %d: curRot=%.5f, targetRot=%.5f -> newRot=%.5f', nameNum(vehicle), i, curRot, targetRot, newRot), 10);
+					--courseplay:debug(string.format('%s: movingTool %d: curRot=%.5f, targetRot=%.5f -> newRot=%.5f', nameNum(vehicle), i, curRot, targetRot, newRot), 10);
 					mt.curRot[rotAxis] = newRot;
 					setRotation(mt.node, unpack(mt.curRot));
 					if mt.delayedNode ~= nil then
@@ -377,7 +402,7 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 						newTrans = targetTrans;
 					end;
 					if newTrans ~= curTrans and newTrans >= mt.transMin and newTrans <= mt.transMax then
-						courseplay:debug(string.format('%s: movingTool %d: curTrans=%.5f, targetTrans=%.5f -> newTrans=%.5f', nameNum(vehicle), i, curTrans, targetTrans, newTrans), 10);
+						--courseplay:debug(string.format('%s: movingTool %d: curTrans=%.5f, targetTrans=%.5f -> newTrans=%.5f', nameNum(vehicle), i, curTrans, targetTrans, newTrans), 10);
 						mt.curTrans[transAxis] = newTrans;
 						setTranslation(mt.node, unpack(mt.curTrans));
 						if mt.delayedNode ~= nil then
@@ -469,17 +494,19 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 	local bunkerLength = courseplay:distance(sx,sz, hx, hz)
 	local startDistance = courseplay:distanceToPoint(vehicle, sx, sy, sz)
 	local endDistance = courseplay:distanceToPoint(vehicle, hx, sy, hz)
-	
-	local widthCount = math.floor(bunkerWidth/vehicle.cp.workWidth)
-	local heightCount = math.floor(bunkerLength/vehicle.cp.workWidth)
-	courseplay:debug(('%s: Bunkersilo will be devided in %d lines and %d columns'):format(nameNum(vehicle), heightCount, widthCount), 10);
+	local widthDirX,widthDirY,widthDirZ,widthDistance = courseplay:getWorldDirection(sx,sy,sz, wx,sy,wz);
+	local heightDirX,heightDirY,heightDirZ,heightDistance = courseplay:getWorldDirection(sx,sy,sz, hx,sy,hz);
+
+	local widthCount = math.ceil(bunkerWidth/vehicle.cp.workWidth)
+	local heightCount = math.ceil(bunkerLength/vehicle.cp.workWidth)
+	local unitWidth = bunkerWidth/widthCount
 	local heightLengthX = (Silo.bunkerSiloArea.hx-Silo.bunkerSiloArea.sx)/heightCount
 	local heightLengthZ = (Silo.bunkerSiloArea.hz-Silo.bunkerSiloArea.sz)/heightCount
 	local widthLengthX = (Silo.bunkerSiloArea.wx-Silo.bunkerSiloArea.sx)/widthCount
 	local widthLengthZ = (Silo.bunkerSiloArea.wz-Silo.bunkerSiloArea.sz)/widthCount
+	local getOffTheWall = 0.5;
 	
-	
-	
+	local lastValidfillType = 0
 	local map = {}
 	for heightIndex = 1,heightCount do
 		map[heightIndex]={}
@@ -488,13 +515,26 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 			local newWz = sz + widthLengthZ
 			local newHx = sx + heightLengthX
 			local newHz = sz + heightLengthZ
+			
 			local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newWx, 1, newWz); 
 			local hY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newHx, 1, newHz);
 			local fillType = TipUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
+			if lastValidfillType ~= fillType and fillType ~= 0 then
+				lastValidfillType = fillType
+			end
 			local newFillLevel = TipUtil.getFillLevelAtArea(fillType, sx, sz, newWx, newWz, newHx, newHz )
-			local cx = sx + (widthLengthX/2) + (heightLengthX/2)  + ((widthLengthX/(2*widthCount))*(2-widthIndex))
-			local cz = sz + (widthLengthZ/2) + (heightLengthZ/2)  + ((widthLengthZ/(2*widthCount))*(2-widthIndex))
-
+			local bx = sx + (widthLengthX/2) + (heightLengthX/2)  
+			local bz = sz + (widthLengthZ/2) + (heightLengthZ/2)
+			local offset = 0
+			if widthIndex == 1 then
+				offset = getOffTheWall+ (vehicle.cp.workWidth/2)
+			elseif widthIndex == widthCount then
+				offset = unitWidth- (getOffTheWall+ (vehicle.cp.workWidth/2))
+			else
+				offset = unitWidth/2
+			end
+			local cx,cz = sx +(widthDirX*offset)+(heightLengthX/2),sz +(widthDirZ*offset)+ (heightLengthZ/2)
+			
 			map[heightIndex][widthIndex] ={
 										sx = sx;
 										sz = sz;
@@ -505,6 +545,8 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 										hz = newHz;
 										cx = cx;
 										cz = cz;
+										bx = bx;
+										bz = bz;
 										fillLevel = newFillLevel;
 										fillType = fillType;
 											}
@@ -514,7 +556,8 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 		end
 		sx = map[heightIndex][1].hx
 		sz = map[heightIndex][1].hz
-	end	
+	end
+	courseplay:debug(('%s: Bunkersilo filled with %s(%i) will be devided in %d lines and %d columns'):format(nameNum(vehicle),FillUtil.fillTypeIndexToDesc[lastValidfillType].name ,lastValidfillType, heightCount, widthCount), 10);   
 	
 	--invert table
 	if endDistance < startDistance then

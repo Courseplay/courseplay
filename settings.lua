@@ -205,7 +205,7 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 		for i,implement in pairs(vehicle.attachedImplements) do
 			local tool = implement.object
 			local workWidth = courseplay:getSpecialWorkWidth(tool);
-			if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then
+			if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
 				workWidth = tool.sizeWidth
 			end
 			if workWidth then
@@ -222,6 +222,16 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 			courseplay:debug(('\t-> implL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
 			if tool.attachedImplements then
 				for j,subImplement in pairs(tool.attachedImplements) do
+					local tool = subImplement.object;
+					if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
+						workWidth = tool.sizeWidth
+					end
+					if workWidth then
+						courseplay:debug(('\tSpecial workWidth found in attachedImplement: %.1fm'):format(workWidth), 7);
+						courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
+						return;
+					end;
+				
 					local subLeft, subRight = courseplay:getCuttingAreaValuesX(subImplement.object);
 					if subLeft and subRight then
 						implL = max(implL, subLeft);

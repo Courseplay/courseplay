@@ -541,11 +541,13 @@ function courseplay:draw()
 		--print(string.format("fillUnit %s; self.cp.actualTarget.line %s; self.cp.actualTarget.column %s",tostring(fillUnit),tostring(self.cp.actualTarget.line),tostring(self.cp.actualTarget.column)))
 		local sx,sz = fillUnit.sx,fillUnit.sz
 		local wx,wz = fillUnit.wx,fillUnit.wz
+		local bx,bz = fillUnit.bx,fillUnit.bz
 		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
 		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz)+0.5;
 		drawDebugLine(sx, y, sz, 1, 0, 0, wx, y, wz, 1, 0, 0);
 		drawDebugLine(wx, y, wz, 1, 0, 0, hx, y, hz, 1, 0, 0);
 		drawDebugLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz, 1, 0, 0);
+		drawDebugLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz, 1, 0, 0);
 		drawDebugPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1, 1);
 		renderText(0.2,0.225,0.02,"unit.fillLevel: "..tostring(fillUnit.fillLevel))
 		if self.cp.mode9SavedLastFillLevel ~= nil then
