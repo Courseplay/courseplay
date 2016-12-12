@@ -154,7 +154,7 @@
 		<text name="COURSEPLAY_ACTIVATED" 								 text="activated" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />
-		<text name="COURSEPLAY_DEACTIVATED" 							 text="deaktiviert" />
+		<text name="COURSEPLAY_DEACTIVATED" 							 text="deactivated" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Ridge markers" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Unloading on field" />
 		<text name="COURSEPLAY_AUTOMATIC" 								 text="automatic" />
