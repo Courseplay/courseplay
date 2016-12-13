@@ -52,8 +52,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Vyhledat trasu a složku" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Vypnout filtr" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="přijel na místo překládky." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="uložit pozici roury" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="přesunout rouru do polohy" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="přijel na místo čekání." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="dokončil odvoz obilí." />
@@ -152,8 +152,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="pouze stroj" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="stroj a trasa" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="neaktivní" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Znamenák stop:" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Vyložit na poli" />
