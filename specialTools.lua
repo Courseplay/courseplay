@@ -224,6 +224,8 @@ function courseplay:setNameVariable(workTool)
 	-- New Holland SP.400F (Sprayer) [Giants]
 	elseif workTool.cp.xmlFileName == 'SP400F.xml' then
 		workTool.cp.isSP400F = true;
+		workTool.cp.directionNodeZOffset = 2.15;
+		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	-- Trucks [Giants]

@@ -202,10 +202,13 @@ function courseplay:turn(vehicle, dt)
 			end;
 
 			--- Calculate reverseOffset in case we need to reverse
-			--turnInfo.reverseOffset = turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight;
 			turnInfo.reverseOffset = turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight;
-			if turnInfo.reverseOffset < 0 or not turnInfo.turnOnField then
-				turnInfo.reverseOffset = (turnInfo.turnOnField and 0 or --[[turnInfo.zOffset +]] -2);
+			if turnInfo.reverseOffset <= turnInfo.turnRadius + 0.01 or not turnInfo.turnOnField then
+				if turnInfo.turnOnField and turnInfo.reverseOffset > 0 then
+					turnInfo.reverseOffset = turnInfo.turnRadius;
+				else
+					turnInfo.reverseOffset = turnInfo.frontMarker > 0 and -turnInfo.zOffset - 5 or turnInfo.zOffset;
+				end;
 			end;
 
 			courseplay:debug(("%s:(Turn Data) frontMarker=%q, halfVehicleWidth=%q, directionNodeToTurnNodeLength=%q, wpChangeDistance=%q"):format(nameNum(vehicle), tostring(turnInfo.frontMarker), tostring(turnInfo.halfVehicleWidth), tostring(turnInfo.directionNodeToTurnNodeLength), tostring(turnInfo.wpChangeDistance)), 14);
@@ -545,7 +548,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	local center1, center2, startDir, intersect1, intersect2, stopDir = {}, {}, {}, {}, {}, {};
 
 	-- Check if we can turn on the headlands
-	if (turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
+	if (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) <= turnInfo.headlandHeight then
 		canTurnOnHeadland = true;
 	end;
 
@@ -603,7 +606,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 
 		--- Extra WP 3 - Turn End
 	else
-		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.zOffset + 5);
+		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
 		courseplay:addTurnTarget(vehicle, posX, posZ, false, true);
 	end;
 end;
@@ -619,7 +622,7 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 	local center, startDir, stopDir = {}, {}, {};
 
 	-- Check if we can turn on the headlands
-	if (turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
+	if (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
 		canTurnOnHeadland = true;
 	end;
 
@@ -636,9 +639,6 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 		fromPoint.x, _, fromPoint.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, -directionNodeToTurnNodeLength);
 		toPoint.x, _, toPoint.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnInfo.zOffset - turnInfo.reverseOffset - directionNodeToTurnNodeLength - turnInfo.reverseWPChangeDistance);
 		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true, nil, turnInfo.reverseWPChangeDistance);-- Reverse back
-		--fromPoint.x, _, fromPoint.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, (turnInfo.zOffset + turnInfo.directionNodeToTurnNodeLength + turnInfo.reverseWPChangeDistance) * -1);
-		--toPoint.x, _, toPoint.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, (turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + turnInfo.reverseWPChangeDistance) * -1);
-		--courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true);
 	end;
 
 	----------------------------------------------------------
@@ -725,7 +725,7 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 
 		--- Extra WP 3 - Turn End
 	else
-		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.zOffset + 5);
+		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
 		courseplay:addTurnTarget(vehicle, posX, posZ, false, true);
 	end;
 end;
