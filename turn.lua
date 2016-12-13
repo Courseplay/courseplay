@@ -8,6 +8,12 @@ function courseplay:turn(vehicle, dt)
 	-- 2:	Drive Turn maneuver
 	-- 3:	Lower implement and continue on next lane
 
+	if vehicle.cp.isLoaded then
+		vehicle.cp.isTurning = nil;
+		courseplay:clearTurnTargets(vehicle);
+		return;
+	end
+
 	local allowedToDrive 					= true;
 	local moveForwards 						= true;
 	local refSpeed 							= vehicle.cp.speeds.turn;
@@ -399,7 +405,6 @@ function courseplay:turn(vehicle, dt)
 					courseplay:lowerImplements(vehicle, true, true);
 				end;
 
-				vehicle.cp.turnStage = 0;
 				vehicle.cp.isTurning = nil;
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
@@ -1327,6 +1332,7 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, useSmoothTurn, turnEnd, t
 end
 
 function courseplay:clearTurnTargets(vehicle)
+	vehicle.cp.turnStage = 0;
 	vehicle.cp.turnTargets = {};
 	vehicle.cp.curTurnIndex = 1;
 end

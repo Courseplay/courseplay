@@ -566,7 +566,6 @@ function courseplay:stop(self)
 	if self.cp.modeState > 4 then
 		courseplay:setModeState(self, 1);
 	end
-	self.cp.turnStage = 0;
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
 	self.cp.backMarkerOffset = nil
