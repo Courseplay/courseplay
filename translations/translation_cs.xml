@@ -148,8 +148,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="路径生成的模式" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="仅名称" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="名称和任务" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="关闭" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="田埂标记" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="在田间卸载" />
@@ -190,7 +190,7 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="对称变换车道" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="卸载车辆优先级" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="填充水平" />
-		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": 皮卡车卡住了" />
+		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": 拾取卡住" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": 打包机需要新的包装网" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="测量当前土地的范围路径点" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="地块范围的编号：" />
