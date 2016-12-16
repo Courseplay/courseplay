@@ -152,8 +152,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Solo nome" />            
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nome e Percorso" />		
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="disattivato" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Segnafile" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Scaricando sul campo" />
@@ -170,15 +170,15 @@
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Mancano le posizioni della pala" />
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Posizione di riempimento" />
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Posizione di trasporto" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posizione prima di svuotamento" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Posizione pre svuotamento" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Posizione svuota pala" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="salva posizione di riempimento" /> 
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="salva posizione di trasporto" /> 
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="salva posizione prima di svuotamento" /> 
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="salva posizione riempimento" /> 
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="salva posizione trasporto" /> 
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="salva posizione pre svuotamento" /> 
 		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="salva posizione svuota pala" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="muovi a posizione di riempimento" /> 
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi a posizione di trasporto" /> 
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 text="muovi a posizione prima di svuotamento" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="muovi a posizione riempimento" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi a posizione trasporto" /> 
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 text="muovi a posizione pre svuotamento" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione svuota pala" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; go" />
 
