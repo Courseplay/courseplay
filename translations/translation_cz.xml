@@ -5,7 +5,7 @@
 		<text name="COURSEPLAY_DRIVER" 									 text="Odvozce:" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Aktivovat odvozce" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Zastavit odvozce" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Čekat na posledním bodě nebo triggeru" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Čekat na posledním bodě nebo triggeru:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Strana odvozce:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automaticky" />
 		<text name="COURSEPLAY_LEFT" 									 text="vlevo" />
@@ -13,8 +13,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Poslat odvozce domů" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Zavolat odvozce" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Odvozce zavolán" />
-		<text name="COURSEPLAY_START_COURSE" 							 text="Aktivovat odvozce" />
-		<text name="COURSEPLAY_STOP_COURSE" 							 text="Zastavit odvozce" />
+		<text name="COURSEPLAY_START_COURSE" 							 text="Aktivovat stroj" />
+		<text name="COURSEPLAY_STOP_COURSE" 							 text="Zastavit stroj" />
 		<text name="COURSEPLAY_MODE_1" 									 text="Mod: Odvozce (naložení v místě startu)" />
 		<text name="COURSEPLAY_MODE_2" 									 text="Mod: Kombajn (ke kombajnu/rezačce a pak odvézt)" />
 		<text name="COURSEPLAY_MODE_3" 									 text="Mod: Překládací vůz (odvoz od kombajnu na překládku)" />
@@ -55,7 +55,7 @@
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="uložit pozici roury" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="přesunout rouru do polohy" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="přijel na místo čekání." />
-		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />
+		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />s
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="dokončil odvoz obilí." />
 		<text name="COURSEPLAY_WORK_END" 								 text="dokončil práci." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": potřebuje vyložit." />
@@ -84,7 +84,7 @@
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="dočasná trasa" />
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Rychlost otáčení:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Rychlost na poli:" />
-		<text name="COURSEPLAY_SPEED_MAX" 								 text="Rychlost na cestě:" />
+		<text name="COURSEPLAY_SPEED_MAX" 								 text="Rychlost na silnici:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Rychlost couvání:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Rychlost:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="jako při nahrávání" />
@@ -93,9 +93,9 @@
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Trasa: není nahraná žádná trasa" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Výstražná světla:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="Nikdy nezapínat" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="Maják (na silnici)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Maják + výstražná světla" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Maják (vždy zapnout)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="maják (na silnici)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="maják + výstražná světla" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="maják (vždy zapnout)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Nastavení stroje" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Ovládání odvozce" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Správa tras" />
@@ -137,7 +137,7 @@
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Pracovní šířka:" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="by si rád zaplaval." />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Zapnout CoursePlay HUD:" />
-		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Kanálů ladění:" />
+		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Kanály ladění:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generovat trasu" />
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Počáteční roh:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Směr trasy:" />
@@ -166,7 +166,7 @@
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Lžíce nenalezena" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Pozice lžíce:" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Pozice lžíce" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Chybí pozice lžíce" />
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Pozice lžíce při nakládání:" />
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Pozice lžíce při převozu:" />
@@ -205,14 +205,14 @@
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="by měl být brzy opraven." />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="musí být opraven." />
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="je opravován." />
-		<text name="COURSEPLAY_COVER_HANDLING" 							 text="Kryty" />
+		<text name="COURSEPLAY_COVER_HANDLING" 							 text="Plachta/Kryt vleku:" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 			 text="Odstraň přiřezení ke kombajnu" />
-		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Zastavit při vykládání" />
+		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Zastavit při vykládání:" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="se zasekl" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="Naplnit do:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker je plný!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Silo neobsahuje vybranou plodinu" />
-		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Na sile se nakládá:" />
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Odvozce bude nakládat:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Silo je prázdné! Čekám na další." />
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Silo na farmě je plné! Zadej další silo." />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Nastartovat při %s!" />
