@@ -55,7 +55,7 @@
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="uložit pozici roury" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="přesunout rouru do polohy" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="přijel na místo čekání." />
-		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />s
+		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="dokončil odvoz obilí." />
 		<text name="COURSEPLAY_WORK_END" 								 text="dokončil práci." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": potřebuje vyložit." />
