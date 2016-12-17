@@ -52,8 +52,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"			 text="Wyszukaj kursy i foldery" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER"						 text="Dezaktywuj filtr" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT"				 text="osiągnięto punkt przełdadunku." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="zapisz pozycję rury" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "ustaw rurę do pozycji" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT"					 text="osiągnięto punkt oczekiwania" />
 		<text name="COURSEPLAY_REACHED_END_POINT"						 text="osiągnięto punkt końcowy/trigger" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="zakończył transport ziarna." />
@@ -152,8 +152,8 @@
 		<text name="COURSEPLAY_DIRECTION_4"								 text="Zachód" />
 		<text name="COURSEPLAY_HEADLAND"								 text="Uwrocia" />
 		<text name="COURSEPLAY_ACTIVATED"								 text="aktywuj" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Tylko nazwa" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nazwa i Kurs" />
 		<text name="COURSEPLAY_DEACTIVATED"								 text="dezaktywuj" />
 		<text name="COURSEPLAY_RIDGEMARKERS"							 text="Znaczniki" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD"						 text="Rozładuj na polu" />
