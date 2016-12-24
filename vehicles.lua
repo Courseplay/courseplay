@@ -1,5 +1,7 @@
 local abs, max, rad, deg, cos, sin, ceil = math.abs, math.max, math.rad, math.deg, math.cos, math.sin, math.ceil;
+local _;
 -- ##### VEHICLE TOOLS ##### --
+courseplay.attacherJointNodeRotationList = {};
 
 function courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio)
 	local turnRadius = 0;
@@ -186,21 +188,15 @@ function courseplay:getDistances(object)
 					local xdis,ydis,dis = worldToLocal(object.attacherJoint.node, tnx, tny, tnz);
 					local nodeLength = 0;
 					for i = 1, #backTrack do
-						local btx, bty, btz = getWorldTranslation(backTrack[i]);
 						if i == 1 then
 							tempNode = object.attacherJoint.node;
 						else
 							tempNode = backTrack[i-1];
 						end;
 
-						-- Save the rotations of the tempNode
-						local tnrxTemp, tnryTemp, tnrzTemp = getRotation(tempNode);
-						-- Reset all the rotation to 0 for tempNode, to be sure we get valid data.
-						setRotation(tempNode, 0, 0, 0);
-						-- Get the distance from tempNode to the current backTrack node
-						local _,_,dis = worldToLocal(tempNode, btx, bty, btz);
-						-- Restore the tempNode rotations.
-						setRotation(tempNode, tnrxTemp, tnryTemp, tnrzTemp);
+						local tmpnx, tmpny, tmpnz = getWorldTranslation(tempNode);
+						local _,_,dis = worldToLocal(backTrack[i], tmpnx, tmpny, tmpnz);
+
 						courseplay:debug(('%s: backTrack[%d](node: %s) Length = %.2f'):format(nameNum(object), i, tostring(backTrack[i]), abs(dis)), 6);
 						nodeLength = nodeLength + abs(dis);
 					end;
@@ -795,106 +791,108 @@ function courseplay:getToolTurnRadius(workTool)
 		local attacherVehicleDistances	= attacherVehicle.cp.distances or courseplay:getDistances(attacherVehicle);
 		local workToolDistances			= workTool.cp.distances or courseplay:getDistances(workTool);
 
-		-- We have turningNodeToRearTrailerAttacherJoints value
-		if attacherVehicleDistances.turningNodeToRearTrailerAttacherJoints then
-			frontLength = attacherVehicleDistances.turningNodeToRearTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
+		if deg(rotMax) >= 30 and deg(rotMax) < 90 then
+			-- We have turningNodeToRearTrailerAttacherJoints value
+			if attacherVehicleDistances.turningNodeToRearTrailerAttacherJoints then
+				frontLength = attacherVehicleDistances.turningNodeToRearTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
 
-		-- We have turningNodeToTrailerAttacherJoints value
-		elseif attacherVehicleDistances.turningNodeToTrailerAttacherJoints then
-			frontLength = attacherVehicleDistances.turningNodeToTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
+			-- We have turningNodeToTrailerAttacherJoints value
+			elseif attacherVehicleDistances.turningNodeToTrailerAttacherJoints then
+				frontLength = attacherVehicleDistances.turningNodeToTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
 
-		-- We have to go backwards to find the real front distance (attacherVehicle dont have wheels and might be a weight or something else)
-		else
-			frontLength = attacherVehicleDistances.attacherJointToRearTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
-			local backTrackVehicle = attacherVehicle;
-			local oldBackTrackVehicle;
-			while true do
-				oldBackTrackVehicle = backTrackVehicle;
-				backTrackVehicle = oldBackTrackVehicle.attacherVehicle;
-				if backTrackVehicle and backTrackVehicle ~= {} then
-					local distances = backTrackVehicle.cp.distances or courseplay:getDistances(backTrackVehicle);
-					local jointType = oldBackTrackVehicle.attacherJoint.jointType;
-					if distances.turningNodeToRearTrailerAttacherJoints then
-						frontLength = frontLength + distances.turningNodeToRearTrailerAttacherJoints[jointType];
-						break;
-					elseif distances.turningNodeToTrailerAttacherJoints then
-						frontLength = frontLength + distances.turningNodeToTrailerAttacherJoints[jointType];
-						break;
-					else
-						frontLength = frontLength + (distances.attacherJointToRearTrailerAttacherJoints[jointType] or 0);
-					end;
-				else
-					break;
-				end;
-			end;
-		end;
-		courseplay:debug(('%s -> TurnRadius: rotMax=%d°, frontLength=%.2fm'):format(nameNum(workTool), deg(rotMax), frontLength), 6);
-
-		-- WE ARE A PIVOTED TRAILER / IMPLEMENT
-		if workToolDistances.attacherJointToPivot then
-			local pivotRotMax = 0;
-			local lastNode = courseplay:getLastComponentNodeWithWheels(workTool)
-			local _, _, rotLimits = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, lastNode);
-			if rotLimits then
-				for _, rotLimit in pairs(rotLimits) do
-					if rotLimit[2] > pivotRotMax and rotLimit[2] > rad(15) then
-						pivotRotMax = rotLimit[2];
-					end;
-				end;
-			end;
-			courseplay:debug(('%s -> TurnRadius: pivotRotMax=%d° (Pivot trailer/implement)'):format(nameNum(workTool), deg(pivotRotMax)), 6);
-
-			-- We are an implement and should be handled a bit different
-			if workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT then
-				-- We have a valid pivotRotMax, so calculate it normally.
-				if pivotRotMax > rad(15) then
-					frontLength = frontLength + workToolDistances.attacherJointToPivot;
-					wheelBase = frontLength + workToolDistances.attacherJointOrPivotToTurningNode;
-					CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
-					TR = courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio);
-
-				-- If pivotRotMax is not greater than 15 degrees,
-				-- then giants have fucked up and we cant get the real pivotRotMax value.
-				-- We will then use half of the length from attacherJoint to turningNode as the turnRadius instead.
-				else
-					TR = ceil((workToolDistances.attacherJointToPivot + workToolDistances.attacherJointOrPivotToTurningNode) / 2 * radiusMultiplier);
-				end;
-				courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot implement)'):format(nameNum(workTool), TR), 6);
-
-			-- We are an pivoted trailer
+			-- We have to go backwards to find the real front distance (attacherVehicle dont have wheels and might be a weight or something else)
 			else
-				-- Dolly part
-				wheelBase = frontLength + workToolDistances.attacherJointToPivot;
-				CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
-				local pivotTR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
-
-				-- Trailer part
-				wheelBase = workToolDistances.attacherJointOrPivotToTurningNode;
-				CPRatio = 0;
-				TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio) * radiusMultiplier);
-
-				-- Take the highest one
-				if pivotTR > TR then
-					TR = pivotTR;
+				frontLength = attacherVehicleDistances.attacherJointToRearTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
+				local backTrackVehicle = attacherVehicle;
+				local oldBackTrackVehicle;
+				while true do
+					oldBackTrackVehicle = backTrackVehicle;
+					backTrackVehicle = oldBackTrackVehicle.attacherVehicle;
+					if backTrackVehicle and backTrackVehicle ~= {} then
+						local distances = backTrackVehicle.cp.distances or courseplay:getDistances(backTrackVehicle);
+						local jointType = oldBackTrackVehicle.attacherJoint.jointType;
+						if distances.turningNodeToRearTrailerAttacherJoints then
+							frontLength = frontLength + distances.turningNodeToRearTrailerAttacherJoints[jointType];
+							break;
+						elseif distances.turningNodeToTrailerAttacherJoints then
+							frontLength = frontLength + distances.turningNodeToTrailerAttacherJoints[jointType];
+							break;
+						else
+							frontLength = frontLength + (distances.attacherJointToRearTrailerAttacherJoints[jointType] or 0);
+						end;
+					else
+						break;
+					end;
 				end;
-				courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot trailer)'):format(nameNum(workTool), TR), 6);
+			end;
+			courseplay:debug(('%s -> TurnRadius: rotMax=%d°, frontLength=%.2fm'):format(nameNum(workTool), deg(rotMax), frontLength), 6);
+
+			-- WE ARE A PIVOTED TRAILER / IMPLEMENT
+			if workToolDistances.attacherJointToPivot then
+				local pivotRotMax = 0;
+				local lastNode = courseplay:getLastComponentNodeWithWheels(workTool)
+				local _, _, rotLimits = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, lastNode);
+				if rotLimits then
+					for _, rotLimit in pairs(rotLimits) do
+						if rotLimit[2] > pivotRotMax and rotLimit[2] > rad(15) then
+							pivotRotMax = rotLimit[2];
+						end;
+					end;
+				end;
+				courseplay:debug(('%s -> TurnRadius: pivotRotMax=%d° (Pivot trailer/implement)'):format(nameNum(workTool), deg(pivotRotMax)), 6);
+
+				-- We are an implement and should be handled a bit different
+				if workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT then
+					-- We have a valid pivotRotMax, so calculate it normally.
+					if pivotRotMax > rad(15) then
+						frontLength = frontLength + workToolDistances.attacherJointToPivot;
+						wheelBase = frontLength + workToolDistances.attacherJointOrPivotToTurningNode;
+						CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
+						TR = courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio);
+
+					-- If pivotRotMax is not greater than 15 degrees,
+					-- then giants have fucked up and we cant get the real pivotRotMax value.
+					-- We will then use half of the length from attacherJoint to turningNode as the turnRadius instead.
+					else
+						TR = ceil((workToolDistances.attacherJointToPivot + workToolDistances.attacherJointOrPivotToTurningNode) / 2 * radiusMultiplier);
+					end;
+					courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot implement)'):format(nameNum(workTool), TR), 6);
+
+				-- We are an pivoted trailer
+				else
+					-- Dolly part
+					wheelBase = frontLength + workToolDistances.attacherJointToPivot;
+					CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
+					local pivotTR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
+
+					-- Trailer part
+					wheelBase = workToolDistances.attacherJointOrPivotToTurningNode;
+					CPRatio = 0;
+					TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio) * radiusMultiplier);
+
+					-- Take the highest one
+					if pivotTR > TR then
+						TR = pivotTR;
+					end;
+					courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot trailer)'):format(nameNum(workTool), TR), 6);
+				end;
+
+			-- WE ARE A NORMAL TRAILER OR IMPLEMENT
+			else
+				wheelBase = frontLength + (workToolDistances.attacherJointOrPivotToTurningNode or 0);
+				CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
+
+				TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
+				courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Normal trailer/implement)'):format(nameNum(workTool), TR), 6);
 			end;
 
-		-- WE ARE A NORMAL TRAILER OR IMPLEMENT
-		else
-			wheelBase = frontLength + (workToolDistances.attacherJointOrPivotToTurningNode or 0);
-			CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
-
-			TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
-			courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Normal trailer/implement)'):format(nameNum(workTool), TR), 6);
-		end;
-
-		if TR > 0 then
-			turnRadius = TR;
+			if TR > 0 then
+				turnRadius = TR;
+			end;
 		end;
 
 		-- If we are not an implement then check if half trailer length is bigger than the turnRadius and set it, if it is.
-		if workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT and workToolDistances.attacherJointToRearWheel then
+		if ((deg(rotMax) < 30 and deg(rotMax) >= 90) or workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT) and workToolDistances.attacherJointToRearWheel then
 			if (workToolDistances.attacherJointToRearWheel / 2) > turnRadius then
 				turnRadius = ceil(workToolDistances.attacherJointToRearWheel / 2 * radiusMultiplier);
 				courseplay:debug(('%s -> TurnRadius: Using half tool length = %.2fm'):format(nameNum(workTool), turnRadius), 6);
@@ -1124,22 +1122,8 @@ function courseplay:isInvertedToolNode(workTool, node)
 	if workTool.cp.DirectionNode then
 		return false;
 	end;
-	-- Use node if set else use the workTool.rootNode
-	node = node or workTool.rootNode;
 
-	-- Check if the node is in front of the attacher node
-	local xTipper,yTipper,zTipper = getWorldTranslation(node);
-	local attacherNode = workTool.attacherJoint.node;
-	local rxTemp, ryTemp, rzTemp = getRotation(attacherNode);
-	setRotation(attacherNode, 0, 0, 0);
-	local _,_,direction = worldToLocal(attacherNode, xTipper,yTipper,zTipper);
-	setRotation(attacherNode, rxTemp, ryTemp, rzTemp);
-	local isInFront = direction >= 0;
-
-	-- Check if it's reversed based on if it's in front of the attacher node or not
-	local x,y,z = getWorldTranslation(attacherNode);
-	local _,_,tz = worldToLocal(node, x,y,z);
-	return isInFront and (tz > 0) or (tz < 0);
+	return workTool.cp.haveInvertedToolNode and true or false;
 end;
 
 function courseplay:isPartOfNode(node, partOfNode)
