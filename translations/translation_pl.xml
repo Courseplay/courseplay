@@ -47,7 +47,7 @@
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE"					 text="Kursy: %q" />
 		<text name="COURSEPLAY_LOAD_COURSE"								 text="Załaduj kurs/scal z załadowanym kursem" />
 		<text name="COURSEPLAY_APPEND_COURSE"							 text="Dołącz kurs na końcu" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER"							 text="Przenieś do folder" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER"							 text="Przenieś do folderu" />
 		<text name="COURSEPLAY_DELETE_COURSE"							 text="Usuń kurs/folder" />
 		<text name="COURSEPLAY_CREATE_FOLDER"							 text="Stwórz nowy folder" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"			 text="Wyszukaj kursy i foldery" />
@@ -173,7 +173,7 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION"				 text="Pozycja transportu" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION"			 text="Pozycja przed rozładunkiem" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION"				 text="Pozycja rozładunku" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION"			 text="Zapisz pozycję załadunu" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION"			 text="Zapisz pozycję załadunku" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION"			 text="Zapisz pozycję transportu" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION"		 text="Zapisz pozycję przed rozładunkiem" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION"			 text="Zapisz pozycję rozładunku" />
