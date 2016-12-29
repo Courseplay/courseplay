@@ -60,12 +60,15 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 			end
 			if vehicle.cp.mode9TargetSilo then
 				if vehicle.cp.BunkerSiloMap == nil then
-				courseplay:debug(('%s: vehicle.cp.mode9TargetSilo = %s call createMap'):format(nameNum(vehicle),tostring(vehicle.cp.mode9TargetSilo.saveId)), 10);
+					courseplay:debug(('%s: vehicle.cp.mode9TargetSilo = %s call createMap'):format(nameNum(vehicle),tostring(vehicle.cp.mode9TargetSilo.saveId)), 10);
 					vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, vehicle.cp.mode9TargetSilo)
 					if vehicle.cp.BunkerSiloMap ~= nil then
 						local stopSearching = false
 						local mostFillLevelAtLine = 0
 						local mostFillLevelIndex = 2
+						
+						--get bunkerFilling
+						local bunkerFilling=courseplay:getBunkerSiloFilling(vehicle.cp.BunkerSiloMap)
 						for lineIndex, line in pairs(vehicle.cp.BunkerSiloMap) do
 							if stopSearching then
 								break
@@ -76,7 +79,8 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 									mostFillLevelAtLine = fillUnit.fillLevel
 									mostFillLevelIndex = column
 								end
-								if column == #line and mostFillLevelAtLine > 0 then
+								
+								if column == #line and mostFillLevelAtLine > math.min(vehicle.cp.shovel.cp.capacity*0.1,200) then --avoid little quantities
 									fillUnit = line[mostFillLevelIndex]
 									if vehicle.cp.mode9SavedLastFillLevel == courseplay:round(fillUnit.fillLevel,1) then
 										courseplay:debug(('%s triesTheSameFillUnit fillLevel: %s'):format(nameNum(vehicle),tostring(vehicle.cp.mode9SavedLastFillLevel)),10)
@@ -87,14 +91,16 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 														column = mostFillLevelIndex;
 																}
 									vehicle.cp.mode9SavedLastFillLevel = courseplay:round(fillUnit.fillLevel,1)
-									
-									stopSearching = true
-									break
+									if bunkerFilling.fillType == fillUnit.fillType or bunkerFilling.fillType == 0 then
+										stopSearching = true
+										courseplay:debug(('%s fillUnit found: %s'):format(nameNum(vehicle),bunkerFilling.fillTypeName),10)
+										break
+									end
 								end
 							end
 						end
 					end
-				else
+				--else
 					
 					
 				
@@ -104,7 +110,8 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 
 
 	-- STATE 2: PREPARE LOADING
-	elseif vehicle.cp.shovelState == 2 then
+	elseif vehicle.cp.shovelState == 2 then	
+
 		if vehicle.cp.mode9TargetSilo and vehicle.cp.BunkerSiloMap and vehicle.cp.actualTarget then
 			local targetUnit = vehicle.cp.BunkerSiloMap[vehicle.cp.actualTarget.line][vehicle.cp.actualTarget.column]
 			local cx , cz = targetUnit.cx, targetUnit.cz
@@ -243,6 +250,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 
 	-- STATE 5: UNLOADING
 	elseif vehicle.cp.shovelState == 5 then
+	    vehicle.cp.BunkerSiloMap = nil;
 		--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		courseplay:handleSpecialTools(vehicle,vehicle,true,nil,nil,nil,nil,nil)
 		if vehicle.cp.shovel.trailerFound then
@@ -509,7 +517,7 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 	local lastValidfillType = 0
 	local map = {}
 	for heightIndex = 1,heightCount do
-		map[heightIndex]={}
+		map[heightIndex]={}		
 		for widthIndex = 1,widthCount do
 			local newWx = sx + widthLengthX
 			local newWz = sz + widthLengthZ
@@ -550,7 +558,7 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 										fillLevel = newFillLevel;
 										fillType = fillType;
 											}
-											
+			
 			sx = map[heightIndex][widthIndex].wx
 			sz = map[heightIndex][widthIndex].wz
 		end
@@ -577,6 +585,41 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 		map = newMap
 	end
 	return map
+end
+
+--get fillType of silo; calulated by the max fillinglevel
+function courseplay:getBunkerSiloFilling(map)
+	local FillLevels={}
+	local maxValues={fillType=0,fillTypeName="", fillLevel=0,totalFillLevel=0,numFillTypes=0}
+	-- group levels by fillType
+	if map == nil then
+		return maxValues
+	end
+	local fillType
+	for lineIndex, line in pairs(map) do
+		for tileIndex, tile in pairs(line) do 
+			fillType=tile.fillType
+			if  fillType~=nil and fillType ~=0 and tile.fillLevel ~= nil and tile.fillLevel > 0 then
+			    if FillLevels[fillType] == nil then FillLevels[fillType] = 0 end
+				FillLevels[fillType] = FillLevels[fillType]+tile.fillLevel
+			end
+		end
+	end
+
+	--calc max values		
+	for i,fillLevel in pairs(FillLevels) do 
+		if fillLevel > maxValues.fillLevel and string.upper(FillUtil.fillTypeIndexToDesc[i].name) ~= "TARP" then --ignore tarp (stuff under the plane))
+			maxValues.fillLevel = fillLevel
+			if FillUtil~=nil and FillUtil.fillTypeIndexToDesc[i] ~= nil then
+				maxValues.fillTypeName=FillUtil.fillTypeIndexToDesc[i].name
+			end
+			courseplay:debug(('Level %s: %d'):format(maxValues.fillTypeName,fillLevel), 10);		
+		end 
+		maxValues.totalFillLevel = maxValues.totalFillLevel + fillLevel
+		maxValues.numFillTypes = maxValues.numFillTypes + 1
+	end	
+	courseplay:debug(('number of types: %d (%d)l'):format(maxValues.numFillTypes,maxValues.totalFillLevel), 10);
+	return maxValues	
 end
 
 function courseplay:getMode9TargetBunkerSilo(vehicle)
