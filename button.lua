@@ -400,6 +400,29 @@ function courseplay.button:render()
 					end;
 				-- NOTE: generateCourse button is handled in buttonsActiveEnabled(), section 'generateCourse'
 				end;
+			-- Page 10
+			elseif pg == courseplay.hud.PAGE_BUNKERSILO_SETTINGS then
+				if fn == 'changeShieldHeight' then
+					show = (not vehicle.cp.mode10.automaticHeigth) and vehicle.cp.mode10.leveling			
+					if show and prm < 0 then
+						show = vehicle.cp.mode10.shieldHeight > 0;
+					end				
+				elseif fn == 'changeBunkerSpeed' then
+					show = (not vehicle.cp.mode10.automaticSpeed or not vehicle.cp.mode10.leveling)
+					if show then 
+						if prm < 0 then
+							show = vehicle.cp.speeds.bunkerSilo > 3
+						else
+							show = (vehicle.cp.speeds.bunkerSilo < 15 and vehicle.cp.mode10.leveling) or (vehicle.cp.speeds.bunkerSilo < 20 and not vehicle.cp.mode10.leveling)
+						end
+					end	
+				elseif fn == "changeWorkWidth" and prm < 0 then
+					show = vehicle.cp.workWidth > 0.1;
+				elseif fn == 'changeMode10Radius' then
+					if prm < 0 then
+						show = vehicle.cp.mode10.searchRadius > 1
+					end
+				end
 			end;
 			self:setShow(show);
 		end;
