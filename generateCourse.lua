@@ -420,186 +420,1739 @@ function courseplay:generateCourse(vehicle)
 
 
 	---#################################################################
-	-- (3) DIMENSIONS, ALL PATH POINTS
-	--------------------------------------------------------------------
-	courseplay:debug('(3) DIMENSIONS, ALL PATH POINTS', 7);
-
-	local _, _, dimensions = courseplay.fields:getPolygonData(poly.points, nil, nil, true, true);
-	courseplay:debug(string.format('minX=%s, maxX=%s', tostring(dimensions.minX), tostring(dimensions.maxX)), 7); --WORKS
-	courseplay:debug(string.format('minZ=%s, maxZ=%s', tostring(dimensions.minZ), tostring(dimensions.maxZ)), 7); --WORKS
-	courseplay:debug(string.format('generateCourse(%i): width=%s, height=%s', debug.getinfo(1).currentline, tostring(dimensions.width), tostring(dimensions.height)), 7); --WORKS
-
-	local numLanes, pointsPerLane = 0, 0;
-	local curLaneDir;
-	local pointDistance = 5;
-	local pipSafety = 0.1;
-	local pathPoints = {};
-
-	if dir == "N" or dir == "S" then --North or South
-		numLanes = math.ceil(dimensions.width / workWidth);
-		pointsPerLane = math.ceil(dimensions.height / pointDistance);
-		if numLanes * workWidth < dimensions.width then
-			numLanes = numLanes + 1;
+		-- (3) DIMENSIONS, ALL PATH POINTS & MORE REALISTIC HEADLAND
+		--------------------------------------------------------------------
+		courseplay:debug('(3) DIMENSIONS, ALL PATH POINTS', 7);
+	
+		local _, _, dimensions = courseplay.fields:getPolygonData(poly.points, nil, nil, true, true);
+		courseplay:debug(string.format('minX=%s, maxX=%s', tostring(dimensions.minX), tostring(dimensions.maxX)), 7); --WORKS
+		courseplay:debug(string.format('minZ=%s, maxZ=%s', tostring(dimensions.minZ), tostring(dimensions.maxZ)), 7); --WORKS
+		courseplay:debug(string.format('generateCourse(%i): width=%s, height=%s', debug.getinfo(1).currentline, tostring(dimensions.width), tostring(dimensions.height)), 7); --WORKS
+	
+		local numLanes, pointsPerLane = 0, 0;
+		local curLaneDir;
+		local OverallnumLanes;
+		local pointDistance = 5;
+		local pipSafety = 0.1;
+		local pathPoints = {};
+		
+		local lastPointNum;
+		local lastPointx;
+		local lastPointz;
+		local lastLane;
+		local lastLaneDir;
+		local laneBeforeTurn;
+	
+		local HeadlandNum = 2; 						--ST: 2 Lanes Headland < !!!HAS TO BE REPLACES BY CONFIGURABLE VALUE THAT MUST BE EVEN!!!
+		local LandOverlap = 0;						
+	
+		if vehicle.cp.mode == 6 then
+			LandOverlap = 2;					-- Overlap defined for mode 6. Can also be set as defined by user. Input should be written here, than.
+			courseplay:debug(string.format("Overlap ahs been set to 2, as we have a headland on mode 6"), 7);
+	
 		end;
-		courseplay:debug(string.format('generateCourse(%i): numLanes=%s, pointsPerLane=%s', debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane)), 7); --WORKS
-
-		for curLane=1, numLanes do
-			--Lane directions
-			if dir == "S" then
-				--NORTH->SOUTH, starting at NORTH
-				if courseplay:isOdd(curLane) then
-					curLaneDir = "S";
-				elseif courseplay:isEven(curLane) then
-					curLaneDir = "N";
-				end;
-			elseif dir == "N" then
-				--SOUTH->NORTH, starting at SOUTH
-				if courseplay:isOdd(curLane) then
-					curLaneDir = "N";
-				elseif courseplay:isEven(curLane) then
-					curLaneDir = "S";
-				end;
+	
+		if dir == "N" or dir == "S" then --North or South
+			local minZtmp = dimensions.minZ + (workWidth * HeadlandNum) - (workWidth * LandOverlap);
+			local maxZtmp = dimensions.maxZ - (workWidth * HeadlandNum) + (workWidth * LandOverlap);
+			local heightTmp = maxZtmp - minZtmp;
+			local curPointTempZ;
+			courseplay:debug(string.format('New Z-Limits: minZ=%s, maxZ=%s, height=%s', tostring(minZtmp), tostring(maxZtmp), tostring(heightTmp)), 7); --WORKS
+	
+			numLanes = math.ceil(dimensions.width / workWidth);
+			pointsPerLane = math.ceil(heightTmp / pointDistance) + 1;
+			if numLanes * workWidth < dimensions.width then
+				numLanes = numLanes + 1;
 			end;
-			courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, curLaneDir), 7); --WORKS
-
-			for a=1, pointsPerLane do
-				local curPoint = {
-					num = a + ((curLane-1) * pointsPerLane);
-					lane = curLane;
-					laneDir = curLaneDir;
-					x = dimensions.minX + (workWidth * curLane) - (workWidth/2);
-					z = dimensions.minZ;
-				};
-
-				if crn == "NW" or crn == "SE" then
-					if courseplay:isOdd(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["left"];
-					elseif courseplay:isEven(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["right"];
-					end;
-				elseif crn == "SW" or crn == "NE" then
-					if courseplay:isOdd(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["right"];
-					elseif courseplay:isEven(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["left"];
-					end;
-				end;
-
-				if crn == "NE" or crn == "SE" then
-					curPoint.x = dimensions.maxX - (workWidth * curLane) + (workWidth/2);
-				end;
-
-				if curLaneDir == "S" then
-					curPoint.z = dimensions.minZ + (pointDistance * (a-1));
-
-					if curPoint.z >= dimensions.maxZ then
-						curPoint.z = dimensions.maxZ - pipSafety;
-					end;
-				elseif curLaneDir == "N" then
-					curPoint.z = dimensions.maxZ - (pointDistance * (a-1));
-
-					if curPoint.z <= dimensions.minZ then
-						curPoint.z = dimensions.minZ + pipSafety;
-					end;
-				end;
-
-				--last lane
-				curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
-
-				--is point in field?
-				local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
-				if pointInPoly then
-					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
-					table.insert(pathPoints, curPoint);
-				else
-					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
-				end;
-			end; --END for curPoint in pointsPerLane
-		end; --END for curLane in numLanes
-	--END North or South
-
-	elseif dir == "E" or dir == "W" then --East or West
-		numLanes = math.ceil(dimensions.height / workWidth);
-		pointsPerLane = math.ceil(dimensions.width / pointDistance);
-		if numLanes * workWidth < dimensions.height then
-			numLanes = numLanes + 1;
-		end;
-		courseplay:debug(string.format("generateCourse(%i): numLanes = %s, pointsPerLane = %s", debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane)), 7); --WORKS
-
-		for curLane=1, numLanes do
-			--Lane directions
-			if dir == "E" then
-				--WEST->EAST, starting at WEST
-				if courseplay:isOdd(curLane) then
-					curLaneDir = "E";
-				elseif courseplay:isEven(curLane) then
-					curLaneDir = "W";
-				end;
-			elseif dir == "W" then
-				--EAST->WEST, starting at EAST
-				if courseplay:isOdd(curLane) then
-					curLaneDir = "W";
-				elseif courseplay:isEven(curLane) then
-					curLaneDir = "E";
-				end;
+			courseplay:debug(string.format('generateCourse(%i): numLanes=%s, pointsPerLane=%s, pointDistance=%s, Lanelength=%s', debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane), tostring(pointDistance), tostring(maxZtmp - minZtmp)), 7); --WORKS
+		
+			OverallnumLanes = numLanes + (HeadlandNum * 2);
+			--courseplay:debug(string.format('OverallnumLanes=%s', tostring(OverallnumLanes)), 7); --WORKS
+	
+			if HeadlandNum > 0 then
+				numLanes = numLanes - 1;
 			end;
-			courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, curLaneDir), 7); --WORKS
-
-			for a=1, pointsPerLane do
+			
+		
+			for curLane=1, numLanes do
+				--Lane directions
+				if dir == "S" then
+					--NORTH->SOUTH, starting at NORTH
+					if courseplay:isOdd(curLane) then
+						curLaneDir = "S";
+					elseif courseplay:isEven(curLane) then
+						curLaneDir = "N";
+					end;
+				elseif dir == "N" then
+					--SOUTH->NORTH, starting at SOUTH
+					if courseplay:isOdd(curLane) then
+						curLaneDir = "N";
+					elseif courseplay:isEven(curLane) then
+						curLaneDir = "S";
+					end;
+				end;
+				courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, curLaneDir), 7); --WORKS
+				
+				for a=1, pointsPerLane do
+					local curPoint = {
+						num = a + ((curLane-1) * pointsPerLane);
+						lane = curLane;
+						x = dimensions.minX + (workWidth * curLane) - (workWidth/2);
+						z = minZtmp;
+					};
+	
+					if crn == "NW" or crn == "SE" then
+						if courseplay:isOdd(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["left"];
+						elseif courseplay:isEven(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["right"];
+						end;
+					elseif crn == "SW" or crn == "NE" then
+						if courseplay:isOdd(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["right"];
+						elseif courseplay:isEven(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["left"];
+						end;
+					end;
+	
+					if crn == "NE" or crn == "SE" then
+						curPoint.x = dimensions.maxX - (workWidth * curLane) + (workWidth/2);
+					end;
+	
+					if curLaneDir == "S" then
+						curPoint.z = minZtmp + (pointDistance * (a-1));
+						if curPoint.z >= maxZtmp then
+							curPoint.z = maxZtmp - pipSafety;
+						end;
+						if curPoint.z <= minZtmp then
+							curPoint.z = minZtmp + pipSafety;
+						end;
+						curPointTempZ = curPoint.z + (workWidth * HeadlandNum) - (workWidth * LandOverlap);
+	
+					elseif curLaneDir == "N" then
+						curPoint.z = maxZtmp - (pointDistance * (a-1));
+						if curPoint.z >= maxZtmp then
+							curPoint.z = maxZtmp - pipSafety;
+						end;
+						if curPoint.z <= minZtmp then
+							curPoint.z = minZtmp + pipSafety;
+						end;
+						curPointTempZ = curPoint.z - (workWidth * HeadlandNum) + (workWidth * LandOverlap);
+	
+					end;
+	
+					--last lane
+					curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
+	
+					--is point in field?
+					local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPointTempZ, true, true, true);
+					if pointInPoly then
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+						table.insert(pathPoints, curPoint);
+					else
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+					end;
+	
+					lastPointNum = curPoint.num;
+					lastPointx = curPoint.x;
+					lastPointz = curPoint.z;
+					lastLane = curLane;
+					lastLaneDir = curLaneDir;
+					laneBeforeTurn = curLaneDir;
+					--courseplay:debug(string.format('Stored for later: lastPointNum=%s, lastpointx=%s, lastpointz=%s, lastLane=%s, lastLaneDir=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz), tostring(lastLane), tostring(lastLaneDir)), 7);
+					
+				end; --END for curPoint in pointsPerLane
+			end; --END for curLane in numLanes
+			
+	-- Now here comes the more realistic headland
+	
+			if HeadlandNum > 0 then
+				courseplay:debug(string.format('REALISTIC HEADLAND'), 7);
+				--courseplay:debug(string.format('Stored from Main Land: lastPointNum=%s, lastpointx=%s, lastpointz=%s, lastLane=%s, lastLaneDir=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz), tostring(lastLane), tostring(lastLaneDir)), 7);
+					
+				local HeadMinXtmp;
+				local HeadMaxXtmp;
+				local HeadMinZtmp;
+				local HeadMaxZtmp;
+				local HeadWidthTmp;
+				local HeadHeightTmp;
+				local curPointTempX;
+				
+				local HLcrn;
+				local HLDir;
+	
+	-- First Headland Start
+	
+				--Setting the Dimensions of Headland_1
+	
+				if crn == "SW" or crn == "NW" then
+					
+					if lastLaneDir == "N" then -- PreLast Lane Dir befor Headland is North (Lane before Headland)
+						HLcrn = "SE";
+						HeadMinZtmp = dimensions.minZ;
+						HeadMaxZtmp = lastPointz + (workWidth * LandOverlap);
+					elseif lastLaneDir == "S" then -- PreLast Lane Dir befor Headland is South (Lane before Headland)
+						HLcrn = "NE";
+						HeadMinZtmp = lastPointz - (workWidth * LandOverlap);
+						HeadMaxZtmp = dimensions.maxZ;
+					end;
+					
+					HeadMinXtmp = dimensions.minX;
+					HeadMaxXtmp = lastPointx  + (workWidth/2); --go half the workwith to east
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 1 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+									
+					HLdir = "W";
+				end;
+				if crn == "SE" or crn == "NE" then
+	
+					if lastLaneDir == "N" then -- PreLast Lane Dir befor Headland is North (Lane before Headland)
+						HLcrn = "SW";
+						HeadMinZtmp = dimensions.minZ;
+						HeadMaxZtmp = lastPointz + (workWidth * LandOverlap);
+					elseif lastLaneDir == "S" then -- PreLast Lane Dir befor Headland is South (Lane before Headland)
+						HLcrn = "NW";
+						HeadMinZtmp = lastPointz - (workWidth * LandOverlap);
+						HeadMaxZtmp = dimensions.maxZ;
+					end;
+					
+					HeadMinXtmp = lastPointx - (workWidth/2); --go half the workwith to west
+					HeadMaxXtmp = dimensions.maxX;
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 1 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+					
+					HLdir = "E";
+				end;
+	
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### START ]]
+	--Insert Addisional WayPoint in previous lane get a good turnig manover
+	
+				courseplay:debug(string.format('Inserting Turning Help-Point: Last Point: num=%s, x=%s, z=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz)), 7); --WORKS
+	
+				local xTmp = lastPointx;
+				local zTmp = lastPointz;
+				local turnRadius = vehicle.cp.turnDiameter * 0.5;
+				local turnRadiusMultiplicator = 2;
+			
+			
+				if laneBeforeTurn == "S" then
+					if LandOverlap == 0 then
+						zTmp = zTmp + (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "N" then
+					if LandOverlap == 0 then
+						zTmp = zTmp - (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+	
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "E" then
+					if LandOverlap == 0 then
+						xTmp = xTmp + (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp + (turnRadius * math.sin(90));
+						zTmp = zTmp + (turnRadius * math.cos(90));
+					end;
+				elseif laneBeforeTurn == "W" then
+					if LandOverlap == 0 then
+						xTmp = xTmp - (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				end;
+				
 				local curPoint = {
-					num = a + ((curLane-1) * pointsPerLane);
-					lane = curLane;
-					laneDir = curLaneDir;
-					x = dimensions.minX;
-					z = dimensions.minZ + (workWidth * curLane) - (workWidth/2);
+					num = lastPointNum + 1;
+					lane = lastLane;
+					x = xTmp;
+					z = zTmp;
 				};
-
-				if crn == "SW" or crn == "NE" then
+				table.insert(pathPoints, curPoint);
+				
+				lastPointNum = curPoint.num;
+							
+				courseplay:debug(string.format('Inserting Turning Help-Point: New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### END ]]
+	
+				-- WayPoints for Headland
+	
+				numLanes = HeadlandNum;
+				pointsPerLane = math.ceil(HeadWidthTmp / pointDistance) + 1;
+				--courseplay:debug(string.format('generateCourse(%i): numLanes=%s, pointsPerLane=%s, pointDistance=%s, Lanelength=%s', debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane), tostring(pointDistance), tostring(HeadWidthTmp)), 7); --WORKS
+	
+				-- Draw the Points
+					
+					local lastLaneTmp;
+					local lastLaneDirTmp;
+								
+					for curLane=1, numLanes do
+						--Lane directions
+						if HLdir == "E" then
+							--WEST->EAST, starting at WEST
+							if courseplay:isOdd(curLane) then
+								curLaneDir = "E";
+							elseif courseplay:isEven(curLane) then
+								curLaneDir = "W";
+							end;
+						elseif HLdir == "W" then
+							--EAST->WEST, starting at EAST
+							if courseplay:isOdd(curLane) then
+								curLaneDir = "W";
+							elseif courseplay:isEven(curLane) then
+								curLaneDir = "E";
+							end;
+						end;
+						courseplay:debug(string.format("curLane = %d, curLaneDir = %s", lastLane + curLane, curLaneDir), 7); --WORKS
+	
+						for a=1, pointsPerLane do
+							local curPoint = {
+								num = lastPointNum + 1;
+								lane = lastLane + curLane;
+								x = HeadMinXtmp;
+								z = HeadMinZtmp;
+							};
+	
+							if HLcrn == "SW" or HLcrn == "NE" then
+								if courseplay:isOdd(curLane) then
+									curPoint.ridgeMarker = ridgeMarker["left"];
+								elseif courseplay:isEven(curLane) then
+									curPoint.ridgeMarker = ridgeMarker["right"];
+								end;
+							elseif HLcrn == "SE" or HLcrn == "NW" then
+								if courseplay:isOdd(curLane) then
+									curPoint.ridgeMarker = ridgeMarker["right"];
+								elseif courseplay:isEven(curLane) then
+									curPoint.ridgeMarker = ridgeMarker["left"];
+								end;
+							end;
+	
+							if HLcrn == "SW" or HLcrn == "SE" then
+								curPoint.z = HeadMaxZtmp - (workWidth * curLane ) + (workWidth/2);
+							end;
+							if HLcrn == "NW" or HLcrn == "NE" then
+								curPoint.z = HeadMinZtmp + (workWidth * curLane) -(workWidth/2);
+							end;
+	
+							if curLaneDir == "E" then
+								curPoint.x = HeadMinXtmp + (pointDistance * (a-1));
+	
+								if curPoint.x >= HeadMaxXtmp then
+									curPoint.x = HeadMaxXtmp - pipSafety;
+								end;
+								if curPoint.x <= HeadMinXtmp then
+									curPoint.x = HeadMinXtmp + pipSafety;
+								end;
+	
+							elseif curLaneDir == "W" then
+								curPoint.x = HeadMaxXtmp - (pointDistance * (a-1));
+	
+								if curPoint.x >= HeadMaxXtmp then
+									curPoint.x = HeadMaxXtmp - pipSafety;
+								end;
+								if curPoint.x <= HeadMinXtmp then
+									curPoint.x = HeadMinXtmp + pipSafety;
+								end;
+							end;
+	
+							--last lane
+							curPoint.z = Utils.clamp(curPoint.z, HeadMinZtmp + (workWidth/2), HeadMaxZtmp - (workWidth/2));
+	
+							--is point in field?
+							local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
+	
+							if pointInPoly then
+								--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+								table.insert(pathPoints, curPoint);
+							else
+								--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+							end;
+							lastPointNum = curPoint.num;
+							lastPointx = curPoint.x;
+							lastPointz = curPoint.z;
+						end; --END for curPoint in pointsPerLane
+						lastLaneTmp = lastLane + curLane;
+					end; --END for curLane in numLanes
+					
+					lastLane = lastLaneTmp;
+					laneBeforeTurn = curLaneDir;
+					
+	-- First Headland End
+	
+	
+	-- Do the last lane of the mainland
+	
+				courseplay:debug(string.format('Last Lane of the  MainField'), 7);			
+				--courseplay:debug(string.format('Stored from Main Land: lastPointNum=%s, lastpointx=%s, lastpointz=%s, lastLane=%s, lastLaneDir=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz), tostring(lastLane), tostring(lastLaneDir)), 7);
+	
+	
+				curLane = lastLane + 1;
+	
+				-- Invert Lane direction from last done Lane of main land and get ne PointsPerLane
+	
+				if lastLaneDir == "S" then
+					curLaneDir = "N";
+					pointsPerLane = math.ceil((dimensions.maxZ - dimensions.minZ + (workWidth * HeadlandNum) - (workWidth * LandOverlap)) / pointDistance) + 1;
+				elseif lastLaneDir == "N" then
+					curLaneDir = "S";
+					pointsPerLane = math.ceil((dimensions.maxZ - (workWidth * HeadlandNum) + (workWidth * LandOverlap) - dimensions.minZ) / pointDistance) + 1;
+				end;
+				courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, tostring(curLaneDir)), 7); --WORKS
+				--courseplay:debug(string.format("curLane = %d, curLaneDir = %s, maxZ = %s, HeadMaxZ = %s, minZ = %s, HeadminZ = %s, pointsPerLane = %s", curLane, tostring(curLaneDir), tostring(dimensions.maxZ), tostring(HeadMaxZtmp), tostring(dimensions.minZ), tostring(HeadMinZtmp), tostring(pointsPerLane)), 7); --WORKS
+	
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### START ]]
+	--Insert Addisional WayPoint in previous lane get a good turnig manover
+				
+	
+				courseplay:debug(string.format('Inserting Turning Help-Point: Last Point: num=%s, x=%s, z=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz)), 7); --WORKS
+	
+				local xTmp = lastPointx;
+				local zTmp = lastPointz;
+				local turnRadius = vehicle.cp.turnDiameter * 0.5;
+				local turnRadiusMultiplicator = 2;
+			
+			
+				if laneBeforeTurn == "S" then
+					if LandOverlap == 0 then
+						zTmp = zTmp + (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "W" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "N" then
+					if LandOverlap == 0 then
+						zTmp = zTmp - (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "W" then
+	
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "E" then
+					if LandOverlap == 0 then
+						xTmp = xTmp + (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "S" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "N" then
+						xTmp = xTmp + (turnRadius * math.sin(90));
+						zTmp = zTmp + (turnRadius * math.cos(90));
+					end;
+				elseif laneBeforeTurn == "W" then
+					if LandOverlap == 0 then
+						xTmp = xTmp - (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "S" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "N" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				end;
+				
+				local curPoint = {
+					num = lastPointNum + 1;
+					lane = lastLane;
+					x = xTmp;
+					z = zTmp;
+				};
+				table.insert(pathPoints, curPoint);
+				
+				lastPointNum = curPoint.num
+							
+				courseplay:debug(string.format('Inserting Turning Help-Point: New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### END ]]
+	
+	
+	
+				for a=1, pointsPerLane do
+					local curPoint = {
+						num = lastPointNum + 1;
+						lane = curLane;
+						x = dimensions.maxX;
+						z = dimensions.minZ;
+					};
+	
+					curPoint.ridgeMarker = 0;
+	
+					if curLaneDir == "S" then
+						curPoint.z = dimensions.minZ + (pointDistance * (a-1));
+						if curPoint.z >= dimensions.maxZ - (workWidth * HeadlandNum) + (workWidth * LandOverlap) then
+							curPoint.z = dimensions.maxZ - (workWidth * HeadlandNum) + (workWidth * LandOverlap) - pipSafety;
+						end;
+						if curPoint.z <= dimensions.minZ then
+							curPoint.z = dimensions.minZ + pipSafety;
+						end;
+						curPointTempZ = curPoint.z + (workWidth * HeadlandNum) - (workWidth * LandOverlap);
+	
+					elseif curLaneDir == "N" then
+						curPoint.z = dimensions.maxZ - (pointDistance * (a-1));
+						if curPoint.z >= dimensions.maxZ then
+							curPoint.z = dimensions.maxZ - pipSafety;
+						end;
+						if curPoint.z <= dimensions.minZ + (workWidth * HeadlandNum) - (workWidth * LandOverlap) then
+							curPoint.z = dimensions.minZ + (workWidth * HeadlandNum) - (workWidth * LandOverlap) + pipSafety;
+						end;
+						curPointTempZ = curPoint.z - (workWidth * HeadlandNum) + (workWidth * LandOverlap);
+	
+					end;
+	
+					if crn == "NE" or crn == "SE" then
+						curPoint.x = dimensions.minX;
+					end;
+	
+					curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
+	
+					--is point in field?
+					local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPointTempZ, true, true, true);
+					if pointInPoly then
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+						table.insert(pathPoints, curPoint);
+					else
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+					end;
+	
+					lastPointNum = curPoint.num;
+					lastPointx = curPoint.x;
+					lastPointz = curPoint.z;
+					lastLane = curPoint.lane;
+					lastLaneDir = curLaneDir;
+					laneBeforeTurn = curLaneDir;
+					--courseplay:debug(string.format('Stored for later: lastPointNum=%s, lastpointx=%s, lastpointz=%s, lastLane=%s, lastLaneDir=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz), tostring(lastLane), tostring(lastLaneDir)), 7);
+	
+				end; --END for curPoint in pointsPerLane
+	
+	-- Do the last lane of the mainland - END
+	
+	-- Do the second Headland
+	
+				if crn == "SW" or crn == "NW" then
+					
+					if lastLaneDir == "N" then -- PreLast Lane Dir befor Headland is North (Lane before Headland)
+						HLcrn = "SE";
+						HeadMinZtmp = dimensions.minZ;
+						HeadMaxZtmp = lastPointz + (workWidth * LandOverlap);
+					elseif lastLaneDir == "S" then -- PreLast Lane Dir befor Headland is South (Lane before Headland)
+						HLcrn = "NE";
+						HeadMinZtmp = lastPointz - (workWidth * LandOverlap);
+						HeadMaxZtmp = dimensions.maxZ;
+					end;
+					
+					HeadMinXtmp = dimensions.minX;
+					HeadMaxXtmp = lastPointx  + (workWidth/2); --go half the workwith to east
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 2 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+									
+					HLdir = "W";
+				end;
+				if crn == "SE" or crn == "NE" then
+	
+					if lastLaneDir == "N" then -- PreLast Lane Dir befor Headland is North (Lane before Headland)
+						HLcrn = "SW";
+						HeadMinZtmp = dimensions.minZ;
+						HeadMaxZtmp = lastPointz + (workWidth * LandOverlap);
+					elseif lastLaneDir == "S" then -- PreLast Lane Dir befor Headland is South (Lane before Headland)
+						HLcrn = "NW";
+						HeadMinZtmp = lastPointz - (workWidth * LandOverlap);
+						HeadMaxZtmp = dimensions.maxZ;
+					end;
+					
+					HeadMinXtmp = lastPointx - (workWidth/2); --go half the workwith to west
+					HeadMaxXtmp = dimensions.maxX;
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 2 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+					
+					HLdir = "E";
+				end;
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### START ]]
+	--Insert Addisional WayPoint in previous lane get a good turnig manover
+	
+				courseplay:debug(string.format('Inserting Turning Help-Point: Last Point: num=%s, x=%s, z=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz)), 7); --WORKS
+	
+				local xTmp = lastPointx;
+				local zTmp = lastPointz;
+				local turnRadius = vehicle.cp.turnDiameter * 0.5;
+				local turnRadiusMultiplicator = 2;
+			
+			
+				if laneBeforeTurn == "S" then
+					if LandOverlap == 0 then
+						zTmp = zTmp + (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "N" then
+					if LandOverlap == 0 then
+						zTmp = zTmp - (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+	
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "E" then
+					if LandOverlap == 0 then
+						xTmp = xTmp + (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp + (turnRadius * math.sin(90));
+						zTmp = zTmp + (turnRadius * math.cos(90));
+					end;
+				elseif laneBeforeTurn == "W" then
+					if LandOverlap == 0 then
+						xTmp = xTmp - (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				end;
+				
+				local curPoint = {
+					num = lastPointNum + 1;
+					lane = lastLane;
+					x = xTmp;
+					z = zTmp;
+				};
+				table.insert(pathPoints, curPoint);
+				
+				lastPointNum = curPoint.num
+							
+				courseplay:debug(string.format('Inserting Turning Help-Point: New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### END ]]
+	
+	
+				-- WayPoints for Headland
+	
+				numLanes = HeadlandNum;
+				pointsPerLane = math.ceil(HeadWidthTmp / pointDistance) + 1;
+				--courseplay:debug(string.format('generateCourse(%i): numLanes=%s, pointsPerLane=%s, pointDistance=%s, Lanelength=%s', debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane), tostring(pointDistance), tostring(HeadWidthTmp)), 7); --WORKS
+	
+				-- Draw the Points
+					
+				local lastLaneTmp;
+	
+				for curLane=1, numLanes do
+					--Lane directions
+					if HLdir == "E" then
+						--WEST->EAST, starting at WEST
+						if courseplay:isOdd(curLane) then
+							curLaneDir = "E";
+						elseif courseplay:isEven(curLane) then
+							curLaneDir = "W";
+						end;
+					elseif HLdir == "W" then
+						--EAST->WEST, starting at EAST
+						if courseplay:isOdd(curLane) then
+							curLaneDir = "W";
+						elseif courseplay:isEven(curLane) then
+							curLaneDir = "E";
+						end;
+					end;
+					courseplay:debug(string.format("curLane = %d, curLaneDir = %s", lastLane + curLane, curLaneDir), 7); --WORKS
+	
+					for a=1, pointsPerLane do
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane + curLane;
+							x = HeadMinXtmp;
+							z = HeadMinZtmp;
+						};
+	
+						if HLcrn == "SW" or HLcrn == "NE" then
+							if courseplay:isOdd(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["left"];
+							elseif courseplay:isEven(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["right"];
+							end;
+						elseif HLcrn == "SE" or HLcrn == "NW" then
+							if courseplay:isOdd(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["right"];
+							elseif courseplay:isEven(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["left"];
+							end;
+						end;
+	
+						if HLcrn == "SW" or HLcrn == "SE" then
+							curPoint.z = HeadMaxZtmp - (workWidth * curLane ) + (workWidth/2);
+						end;
+						if HLcrn == "NW" or HLcrn == "NE" then
+							curPoint.z = HeadMinZtmp + (workWidth * curLane) -(workWidth/2);
+						end;
+	
+						if curLaneDir == "E" then
+							curPoint.x = HeadMinXtmp + (pointDistance * (a-1));
+	
+							if curPoint.x >= HeadMaxXtmp then
+								curPoint.x = HeadMaxXtmp - pipSafety;
+							end;
+							if curPoint.x <= HeadMinXtmp then
+								curPoint.x = HeadMinXtmp + pipSafety;
+							end;
+	
+						elseif curLaneDir == "W" then
+							curPoint.x = HeadMaxXtmp - (pointDistance * (a-1));
+	
+							if curPoint.x >= HeadMaxXtmp then
+								curPoint.x = HeadMaxXtmp - pipSafety;
+							end;
+							if curPoint.x <= HeadMinXtmp then
+								curPoint.x = HeadMinXtmp + pipSafety;
+							end;
+						end;
+	
+						--last lane
+						curPoint.z = Utils.clamp(curPoint.z, HeadMinZtmp + (workWidth/2), HeadMaxZtmp - (workWidth/2));
+	
+						--is point in field?
+						local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
+	
+						if pointInPoly then
+							--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+							table.insert(pathPoints, curPoint);
+						else
+							--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+						end;
+						lastPointNum = curPoint.num;
+					end; --END for curPoint in pointsPerLane
+					lastLaneTmp = lastLane + curLane;
+				end; --END for curLane in numLanes
+	
+	-- Do the second Headland - END
+				
+	
+			end;
+			
+			
+		--END North or South
+	
+	-- PART FOR E AND W FOLLOWS BELOW
+	
+		elseif dir == "E" or dir == "W" then --East or West
+			local minXtmp = dimensions.minX + (workWidth * HeadlandNum) - (workWidth * LandOverlap);
+			local maxXtmp = dimensions.maxX - (workWidth * HeadlandNum) + (workWidth * LandOverlap);
+			local widthTmp = maxXtmp - minXtmp;
+			local curPointTempX;
+			--courseplay:debug(string.format('New X-Limits: minX=%s, maxX=%s, height=%s', tostring(minXtmp), tostring(maxXtmp), tostring(widthTmp)), 7); --WORKS
+			
+			numLanes = math.ceil(dimensions.height / workWidth);
+			pointsPerLane = math.ceil(dimensions.width / pointDistance) + 1;
+			if numLanes * workWidth < dimensions.height then
+				numLanes = numLanes + 1;
+			end;
+			courseplay:debug(string.format('generateCourse(%i): numLanes=%s, pointsPerLane=%s, pointDistance=%s, Lanelength=%s', debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane), tostring(pointDistance), tostring(widthTmp)), 7); --WORKS
+	
+			OverallnumLanes = numLanes + (HeadlandNum * 2);
+			--courseplay:debug(string.format('OverallnumLanes=%s', tostring(OverallnumLanes)), 7); --WORKS
+	
+			if HeadlandNum > 0 then
+				numLanes = numLanes - 1;
+			end;
+	
+			for curLane=1, numLanes do
+				--Lane directions
+				if dir == "E" then
+					--WEST->EAST, starting at WEST
 					if courseplay:isOdd(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["left"];
+						curLaneDir = "E";
 					elseif courseplay:isEven(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["right"];
+						curLaneDir = "W";
 					end;
-				elseif crn == "SE" or crn == "NW" then
+				elseif dir == "W" then
+					--EAST->WEST, starting at EAST
 					if courseplay:isOdd(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["right"];
+						curLaneDir = "W";
 					elseif courseplay:isEven(curLane) then
-						curPoint.ridgeMarker = ridgeMarker["left"];
+						curLaneDir = "E";
 					end;
 				end;
-
-				if crn == "SW" or crn == "SE" then
-					curPoint.z = dimensions.maxZ - (workWidth * curLane) + (workWidth/2);
-				end;
-
-				if curLaneDir == "E" then
-					curPoint.x = dimensions.minX + (pointDistance * (a-1));
-
-					if curPoint.x >= dimensions.maxX then
-						curPoint.x = dimensions.maxX - pipSafety;
+				courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, curLaneDir), 7); --WORKS
+	
+				for a=1, pointsPerLane do
+					local curPoint = {
+						num = a + ((curLane-1) * pointsPerLane);
+						lane = curLane;
+						x = minXtmp;
+						z = dimensions.minZ + (workWidth * curLane) - (workWidth/2);
+					};
+	
+					if crn == "SW" or crn == "NE" then
+						if courseplay:isOdd(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["left"];
+						elseif courseplay:isEven(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["right"];
+						end;
+					elseif crn == "SE" or crn == "NW" then
+						if courseplay:isOdd(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["right"];
+						elseif courseplay:isEven(curLane) then
+							curPoint.ridgeMarker = ridgeMarker["left"];
+						end;
 					end;
-				elseif curLaneDir == "W" then
-					curPoint.x = dimensions.maxX - (pointDistance * (a-1));
-
-					if curPoint.x <= dimensions.minX then
-						curPoint.x = dimensions.minX + pipSafety;
+	
+					if crn == "SW" or crn == "SE" then
+						curPoint.z = dimensions.maxZ - (workWidth * curLane) + (workWidth/2);
+					end;
+	
+					if curLaneDir == "E" then
+						curPoint.x = minXtmp + (pointDistance * (a-1));
+	
+						if curPoint.x >= maxXtmp then
+							curPoint.x = maxXtmp - pipSafety;
+						end;
+						if curPoint.x <= minXtmp then
+							curPoint.x = minXtmp + pipSafety;
+						end;
+						curPointTempX = curPoint.x + (workWidth * HeadlandNum) - (workWidth * LandOverlap);
+	
+					elseif curLaneDir == "W" then
+						curPoint.x = maxXtmp - (pointDistance * (a-1));
+	
+						if curPoint.x >= maxXtmp then
+							curPoint.x = maxXtmp - pipSafety;
+						end;
+						if curPoint.x <= minXtmp then
+							curPoint.x = minXtmp + pipSafety;
+						end;
+						curPointTempX = curPoint.x - (workWidth * HeadlandNum) + (workWidth * LandOverlap);
+					end;
+	
+					--last lane
+					curPoint.z = Utils.clamp(curPoint.z, dimensions.minZ + (workWidth/2), dimensions.maxZ - (workWidth/2));
+	
+					--is point in field?
+					local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPointTempX, curPoint.z, true, true, true);
+					if pointInPoly then
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+						table.insert(pathPoints, curPoint);
+					else
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+					end;
+					
+					lastPointNum = curPoint.num;
+					lastPointx = curPoint.x;
+					lastPointz = curPoint.z;
+					lastLane = curLane;
+					lastLaneDir = curLaneDir;
+					
+					lastPointNum = curPoint.num;
+					laneBeforeTurn = curLaneDir;
+	
+				end; --END for curPoint in pointsPerLane
+			end; --END for curLane in numLanes
+	
+		
+		-- Now here comes the more realistic headland
+		
+			if HeadlandNum > 0 then
+				courseplay:debug(string.format('REALISTIC HEADLAND'), 7);
+				--courseplay:debug(string.format('Stored from Main Land: lastPointNum=%s, lastpointx=%s, lastpointz=%s, lastLane=%s, lastLaneDir=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz), tostring(lastLane), tostring(lastLaneDir)), 7);
+	
+	
+				local HeadMinXtmp;
+				local HeadMaxXtmp;
+				local HeadMinZtmp;
+				local HeadMaxZtmp;
+				local HeadWidthTmp;
+				local HeadHeightTmp;
+				local curPointTempX;
+	
+				local HLcrn;
+				local HLDir;
+	
+	-- First Headland Start
+	
+				--Setting the Dimensions of Headland_1
+	
+				if crn == "NE" or crn == "NW" then
+					
+					if lastLaneDir == "W" then -- PreLast Lane Dir befor Headland is North (Lane before Headland)
+						HLcrn = "SE";
+						HeadMinXtmp = dimensions.minX;
+						HeadMaxXtmp = lastPointx + (workWidth * LandOverlap);
+					elseif lastLaneDir == "E" then -- PreLast Lane Dir befor Headland is South (Lane before Headland)
+						HLcrn = "SW";
+						HeadMinXtmp = lastPointx - (workWidth * LandOverlap);
+						HeadMaxXtmp = dimensions.maxX;
+					end;
+					
+					HeadMinZtmp = dimensions.minZ;
+					HeadMaxZtmp = lastPointz  + (workWidth/2); --go half the workwith to south
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 1 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+									
+					HLdir = "N";
+				end;
+				if crn == "SE" or crn == "SW" then
+	
+					if lastLaneDir == "W" then -- PreLast Lane Dir befor Headland is North (Lane before Headland)
+						HLcrn = "NE";
+						HeadMinXtmp = dimensions.minX;
+						HeadMaxXtmp = lastPointx + (workWidth * LandOverlap);
+					elseif lastLaneDir == "E" then -- PreLast Lane Dir befor Headland is South (Lane before Headland)
+						HLcrn = "NW";
+						HeadMinXtmp = lastPointx - (workWidth * LandOverlap);
+						HeadMaxXtmp = dimensions.maxX;
+					end;
+					
+					HeadMinZtmp = lastPointz - (workWidth/2); --go half the workwith to north
+					HeadMaxZtmp = dimensions.maxZ;
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 1 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+					
+					HLdir = "S";
+				end;
+	
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### START ]]
+	--Insert Addisional WayPoint in previous lane get a good turnig manover
+	
+				courseplay:debug(string.format('Inserting Turning Help-Point: Last Point: num=%s, x=%s, z=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz)), 7); --WORKS
+	
+				local xTmp = lastPointx;
+				local zTmp = lastPointz;
+				local turnRadius = vehicle.cp.turnDiameter * 0.5;
+				local turnRadiusMultiplicator = 2;
+			
+			
+				if laneBeforeTurn == "S" then
+					if LandOverlap == 0 then
+						zTmp = zTmp + (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "N" then
+					if LandOverlap == 0 then
+						zTmp = zTmp - (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+	
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "E" then
+					if LandOverlap == 0 then
+						xTmp = xTmp + (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp + (turnRadius * math.sin(90));
+						zTmp = zTmp + (turnRadius * math.cos(90));
+					end;
+				elseif laneBeforeTurn == "W" then
+					if LandOverlap == 0 then
+						xTmp = xTmp - (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
 					end;
 				end;
-
-				--last lane
-				curPoint.z = Utils.clamp(curPoint.z, dimensions.minZ + (workWidth/2), dimensions.maxZ - (workWidth/2));
-
-				--is point in field?
-				local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
-        		if pointInPoly then
-					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
-					table.insert(pathPoints, curPoint);
-				else
-					--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+				
+				local curPoint = {
+					num = lastPointNum + 1;
+					lane = lastLane;
+					x = xTmp;
+					z = zTmp;
+				};
+				table.insert(pathPoints, curPoint);
+				
+				lastPointNum = curPoint.num;
+							
+				courseplay:debug(string.format('Inserting Turning Help-Point: New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### END ]]
+	
+	
+				-- WayPoints for Headland
+	
+				numLanes = HeadlandNum;
+				pointsPerLane = math.ceil(HeadHeightTmp / pointDistance) + 1;
+				--courseplay:debug(string.format('generateCourse(%i): numLanes=%s, pointsPerLane=%s, pointDistance=%s, Lanelength=%s', debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane), tostring(pointDistance), tostring(HeadHeightTmp)), 7); --WORKS
+	
+				-- Draw the Points
+					
+				local lastLaneTmp;
+	
+				for curLane=1, numLanes do
+					--Lane directions
+					if HLdir == "N" then
+						--WEST->EAST, starting at WEST
+						if courseplay:isOdd(curLane) then
+							curLaneDir = "N";
+						elseif courseplay:isEven(curLane) then
+							curLaneDir = "S";
+						end;
+					elseif HLdir == "S" then
+						--EAST->WEST, starting at EAST
+						if courseplay:isOdd(curLane) then
+							curLaneDir = "S";
+						elseif courseplay:isEven(curLane) then
+							curLaneDir = "N";
+						end;
+					end;
+					courseplay:debug(string.format("curLane = %d, curLaneDir = %s", lastLane + curLane, curLaneDir), 7); --WORKS
+	
+					for a=1, pointsPerLane do
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane + curLane;
+							x = HeadMinXtmp;
+							z = HeadMinZtmp;
+						};
+	
+						if HLcrn == "NW" or HLcrn == "SE" then
+							if courseplay:isOdd(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["left"];
+							elseif courseplay:isEven(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["right"];
+							end;
+						elseif HLcrn == "SW" or HLcrn == "NE" then
+							if courseplay:isOdd(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["right"];
+							elseif courseplay:isEven(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["left"];
+							end;
+						end;
+	
+						if crn == "NE" or crn == "SE" then
+							curPoint.x = HeadMaxXtmp - (workWidth * curLane) + (workWidth/2);
+						end;
+						if crn == "NW" or crn == "SW" then
+							curPoint.x = HeadMinXtmp + (workWidth * curLane) - (workWidth/2);
+						end;
+						
+						if curLaneDir == "S" then
+							curPoint.z = HeadMinZtmp + (pointDistance * (a-1));
+	
+							if curPoint.z >= HeadMaxZtmp then
+								curPoint.z = HeadMaxZtmp - pipSafety;
+							end;
+							if curPoint.z <= HeadMinZtmp then
+								curPoint.z = HeadMinZtmp + pipSafety;
+							end;
+	
+						elseif curLaneDir == "N" then
+							curPoint.z = HeadMaxZtmp - (pointDistance * (a-1));
+	
+							if curPoint.z >= HeadMaxZtmp then
+								curPoint.z = HeadMaxZtmp - pipSafety;
+							end;
+							if curPoint.z <= HeadMinZtmp then
+								curPoint.z = HeadMinZtmp + pipSafety;
+							end;
+						end;
+	
+						--last lane
+						curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
+	
+						--is point in field?
+						local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
+	
+						if pointInPoly then
+							--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+							table.insert(pathPoints, curPoint);
+						else
+							--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+						end;
+						lastPointNum = curPoint.num;
+						lastPointx = curPoint.x;
+						lastPointz = curPoint.z;
+					end; --END for curPoint in pointsPerLane
+					lastLaneTmp = lastLane + curLane;
+				end; --END for curLane in numLanes
+	
+				lastLane = lastLaneTmp;
+				laneBeforeTurn = curLaneDir;
+			
+					
+	-- First Headland End
+				
+	-- Do the last lane of the mainland
+				
+				courseplay:debug(string.format('Last Lane of the  MainField'), 7);
+				--courseplay:debug(string.format('Stored from Main Land: lastPointNum=%s, lastpointx=%s, lastpointz=%s, lastLane=%s, lastLaneDir=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz), tostring(lastLane), tostring(lastLaneDir)), 7);
+	
+				curLane = lastLane + 1;
+	
+				-- Invert Lane direction from last done Lane of main land and get ne PointsPerLane
+	
+				if lastLaneDir == "E" then
+					curLaneDir = "W";
+					pointsPerLane = math.ceil((dimensions.maxX - dimensions.minX + (workWidth * HeadlandNum) - (workWidth * LandOverlap)) / pointDistance) + 1;
+				elseif lastLaneDir == "W" then
+					curLaneDir = "E";
+					pointsPerLane = math.ceil((dimensions.maxX - (workWidth * HeadlandNum) + (workWidth * LandOverlap) - dimensions.minX) / pointDistance) + 1;
 				end;
-			end; --END for curPoint in pointsPerLane
-		end; --END for curLane in numLanes
-	end; --END East or West
+				courseplay:debug(string.format("curLane = %d, curLaneDir = %s", curLane, tostring(curLaneDir)), 7); --WORKS
+				--courseplay:debug(string.format("Last Lane Main Field Data = %d, curLaneDir = %s, maxX = %s, HeadMaxX = %s, minX = %s, HeadminX = %s, pointsPerLane = %s", curLane, tostring(curLaneDir), tostring(dimensions.maxX), tostring(HeadMaxXtmp), tostring(dimensions.minX), tostring(HeadMinXtmp), tostring(pointsPerLane)), 7); --WORKS
+	
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### START ]]
+	--Insert Addisional WayPoint in previous lane get a good turnig manover
+				
+	
+				courseplay:debug(string.format('Inserting Turning Help-Point: Last Point: num=%s, x=%s, z=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz)), 7); --WORKS
+	
+				local xTmp = lastPointx;
+				local zTmp = lastPointz;
+				local turnRadius = vehicle.cp.turnDiameter * 0.5;
+				local turnRadiusMultiplicator = 2;
+			
+			
+				if laneBeforeTurn == "S" then
+					if LandOverlap == 0 then
+						zTmp = zTmp + (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "W" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "N" then
+					if LandOverlap == 0 then
+						zTmp = zTmp - (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "W" then
+	
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "E" then
+					if LandOverlap == 0 then
+						xTmp = xTmp + (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "S" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "N" then
+						xTmp = xTmp + (turnRadius * math.sin(90));
+						zTmp = zTmp + (turnRadius * math.cos(90));
+					end;
+				elseif laneBeforeTurn == "W" then
+					if LandOverlap == 0 then
+						xTmp = xTmp - (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if curLaneDir == "S" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif curLaneDir == "N" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				end;
+				
+				local curPoint = {
+					num = lastPointNum + 1;
+					lane = lastLane;
+					x = xTmp;
+					z = zTmp;
+				};
+				table.insert(pathPoints, curPoint);
+				
+				lastPointNum = curPoint.num
+							
+				courseplay:debug(string.format('Inserting Turning Help-Point: New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### END ]]
+	
+	
+	
+				for a=1, pointsPerLane do
+					local curPoint = {
+						num = lastPointNum + 1;
+						lane = curLane;
+						x = dimensions.minX;
+						z = dimensions.maxZ;
+					};
+	
+					curPoint.ridgeMarker = 0;
+	
+					if curLaneDir == "E" then
+						curPoint.x = dimensions.minX + (pointDistance * (a-1));
+						if curPoint.x >= dimensions.maxX - (workWidth * HeadlandNum) + (workWidth * LandOverlap) then
+							curPoint.X = dimensions.maxX - (workWidth * HeadlandNum) + (workWidth * LandOverlap) - pipSafety;
+						end;
+						if curPoint.x <= dimensions.minX then
+							curPoint.x = dimensions.minX + pipSafety;
+						end;
+						curPointTempX = curPoint.x + (workWidth * HeadlandNum) - (workWidth * LandOverlap);
+	
+					elseif curLaneDir == "W" then
+						curPoint.x = dimensions.maxX - (pointDistance * (a-1));
+						if curPoint.x >= dimensions.maxX then
+							curPoint.X = dimensions.maxX - pipSafety;
+						end;
+						if curPoint.x <= dimensions.minX + (workWidth * HeadlandNum) - (workWidth * LandOverlap) then
+							curPoint.x = dimensions.minX + (workWidth * HeadlandNum) - (workWidth * LandOverlap) + pipSafety;
+						end;
+						curPointTempX = curPoint.x - (workWidth * HeadlandNum) + (workWidth * LandOverlap);
+	
+					end;
+	
+					if crn == "SW" or crn == "SE" then
+						curPoint.z = dimensions.minZ;
+					end;
+	
+					curPoint.z = Utils.clamp(curPoint.z, dimensions.minZ + (workWidth/2), dimensions.maxZ - (workWidth/2));
+	
+					--is point in field?
+					local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPointTempX, curPoint.z, true, true, true);
+					if pointInPoly then
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+						table.insert(pathPoints, curPoint);
+					else
+						--courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curLane, a, curPoint.x, curPoint.z), 7);
+					end;
+	
+					lastPointNum = curPoint.num;
+					lastPointx = curPoint.x;
+					lastPointz = curPoint.z;
+					lastLane = curPoint.lane;
+					lastLaneDir = curLaneDir;
+					laneBeforeTurn = curLaneDir;
+	
+				end; --END for curPoint in pointsPerLane
+	
+				--courseplay:debug(string.format('Stored for later: lastPointNum=%s, lastpointx=%s, lastpointz=%s, lastLane=%s, lastLaneDir=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz), tostring(lastLane), tostring(lastLaneDir)), 7);
+	
+	-- Do the last lane of the mainland - END
+	
+	-- Do the second Headland
+	
+				if crn == "NE" or crn == "NW" then
+					
+					if lastLaneDir == "W" then -- PreLast Lane Dir befor Headland is west (Lane before Headland)
+						HLcrn = "SE";
+						HeadMinXtmp = dimensions.minX;
+						HeadMaxXtmp = lastPointx + (workWidth * LandOverlap);
+					elseif lastLaneDir == "E" then -- PreLast Lane Dir befor Headland is east (Lane before Headland)
+						HLcrn = "SW";
+						HeadMinXtmp = lastPointx - (workWidth * LandOverlap);
+						HeadMaxXtmp = dimensions.maxX;
+					end;
+					
+					HeadMinZtmp = dimensions.minZ;
+					HeadMaxZtmp = lastPointz  + (workWidth/2); --go half the workwith to south
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 2 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+									
+					HLdir = "N";
+				end;
+				if crn == "SE" or crn == "SW" then
+	
+					if lastLaneDir == "W" then -- PreLast Lane Dir befor Headland is west (Lane before Headland)
+						HLcrn = "NE";
+						HeadMinXtmp = dimensions.minX;
+						HeadMaxXtmp = lastPointx + (workWidth * LandOverlap);
+					elseif lastLaneDir == "E" then -- PreLast Lane Dir befor Headland is east (Lane before Headland)
+						HLcrn = "NW";
+						HeadMinXtmp = lastPointx - (workWidth * LandOverlap);
+						HeadMaxXtmp = dimensions.maxX;
+					end;
+					
+					HeadMinZtmp = lastPointz - (workWidth/2); --go half the workwith to north
+					HeadMaxZtmp = dimensions.maxZ;
+					HeadWidthTmp = HeadMaxXtmp - HeadMinXtmp;
+					HeadHeightTmp = HeadMaxZtmp - HeadMinZtmp;
+					courseplay:debug(string.format('HeadLand 2 Limits: minX=%s, maxX=%s, minZ=%s, maxZ=%s, width=%s, height=%s', tostring(HeadMinXtmp), tostring(HeadMaxXtmp), tostring(HeadMinZtmp), tostring(HeadMaxZtmp), tostring(HeadWidthTmp), tostring(HeadHeightTmp)), 7); --WORKS
+					
+					HLdir = "S";
+				end;
+	
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### START ]]
+	--Insert Addisional WayPoint in previous lane get a good turnig manover
+	
+				courseplay:debug(string.format('Inserting Turning Help-Point: Last Point: num=%s, x=%s, z=%s', tostring(lastPointNum), tostring(lastPointx), tostring(lastPointz)), 7); --WORKS
+	
+				local xTmp = lastPointx;
+				local zTmp = lastPointz;
+				local turnRadius = vehicle.cp.turnDiameter * 0.5;
+				local turnRadiusMultiplicator = 2;
+			
+			
+				if laneBeforeTurn == "S" then
+					if LandOverlap == 0 then
+						zTmp = zTmp + (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "N" then
+					if LandOverlap == 0 then
+						zTmp = zTmp - (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "E" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "W" then
+	
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					end;
+				elseif laneBeforeTurn == "E" then
+					if LandOverlap == 0 then
+						xTmp = xTmp + (workWidth/2);
+	
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp + (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp + (turnRadius * math.sin(90));
+						zTmp = zTmp + (turnRadius * math.cos(90));
+					end;
+				elseif laneBeforeTurn == "W" then
+					if LandOverlap == 0 then
+						xTmp = xTmp - (workWidth/2);
+						
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane;
+							x = xTmp;
+							z = zTmp;
+						};
+						table.insert(pathPoints, curPoint);
+						lastPointNum = curPoint.num
+						courseplay:debug(string.format('Inserting Turning Help-Point (forward-Point): New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+					end;
+					if HLdir == "S" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp - (turnRadius * turnRadiusMultiplicator);
+					elseif HLdir == "N" then
+						xTmp = xTmp - (turnRadius * turnRadiusMultiplicator);
+						zTmp = zTmp + (turnRadius * turnRadiusMultiplicator);
+					end;
+				end;
+				
+				local curPoint = {
+					num = lastPointNum + 1;
+					lane = lastLane;
+					x = xTmp;
+					z = zTmp;
+				};
+				table.insert(pathPoints, curPoint);
+				
+				lastPointNum = curPoint.num
+							
+				courseplay:debug(string.format('Inserting Turning Help-Point: New Point: num=%s, x=%s, z=%s', tostring(curPoint.num), tostring(curPoint.x), tostring(curPoint.z)), 7); --WORKS
+	
+	--[[ ##### REMOVE WHEN TURNING SCRIPT CAN DO THOSE TURNS ##### END ]]
+	
+	
+				-- WayPoints for Headland
+	
+				numLanes = HeadlandNum;
+				pointsPerLane = math.ceil(HeadHeightTmp / pointDistance) + 1;
+				--courseplay:debug(string.format('generateCourse(%i): numLanes=%s, pointsPerLane=%s, pointDistance=%s, Lanelength=%s', debug.getinfo(1).currentline, tostring(numLanes), tostring(pointsPerLane), tostring(pointDistance), tostring(HeadHeightTmp)), 7); --WORKS
+	
+				-- Draw the Points
+					
+				local lastLaneTmp;
+	
+				for curLane=1, numLanes do
+					--Lane directions
+					if HLdir == "N" then
+						--SOUTH->NORTH, starting at SOUTH
+						if courseplay:isOdd(curLane) then
+							curLaneDir = "N";
+						elseif courseplay:isEven(curLane) then
+							curLaneDir = "S";
+						end;
+					elseif HLdir == "S" then
+						--NORTH->SOUTH, starting at NORTH
+						if courseplay:isOdd(curLane) then
+							curLaneDir = "S";
+						elseif courseplay:isEven(curLane) then
+							curLaneDir = "N";
+						end;
+					end;
+					courseplay:debug(string.format("curLane = %d, curLaneDir = %s", lastLane + curLane, curLaneDir), 7); --WORKS
+	
+					for a=1, pointsPerLane do
+						local curPoint = {
+							num = lastPointNum + 1;
+							lane = lastLane + curLane;
+							x = HeadMinXtmp;
+							z = HeadMinZtmp;
+						};
+	
+						if HLcrn == "NW" or HLcrn == "SE" then
+							if courseplay:isOdd(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["left"];
+							elseif courseplay:isEven(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["right"];
+							end;
+						elseif HLcrn == "SW" or HLcrn == "NE" then
+							if courseplay:isOdd(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["right"];
+							elseif courseplay:isEven(curLane) then
+								curPoint.ridgeMarker = ridgeMarker["left"];
+							end;
+						end;
+	
+						if HLcrn == "NE" or HLcrn == "SE" then
+							curPoint.x = HeadMaxXtmp - (workWidth * curLane) + (workWidth/2);
+						end;
+						if HLcrn == "NW" or HLcrn == "SW" then
+							curPoint.x = HeadMinXtmp + (workWidth * curLane) - (workWidth/2);
+						end;
+						
+						if curLaneDir == "S" then
+							curPoint.z = HeadMinZtmp + (pointDistance * (a-1));
+	
+							if curPoint.z >= HeadMaxZtmp then
+								curPoint.z = HeadMaxZtmp - pipSafety;
+							end;
+							if curPoint.z <= HeadMinZtmp then
+								curPoint.z = HeadMinZtmp + pipSafety;
+							end;
+	
+						elseif curLaneDir == "N" then
+							curPoint.z = HeadMaxZtmp - (pointDistance * (a-1));
+	
+							if curPoint.z >= HeadMaxZtmp then
+								curPoint.z = HeadMaxZtmp - pipSafety;
+							end;
+							if curPoint.z <= HeadMinZtmp then
+								curPoint.z = HeadMinZtmp + pipSafety;
+							end;
+						end;
+	
+						--last lane
+						curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
+	
+						--is point in field?
+						local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
+	
+						if pointInPoly then
+							courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - in Poly - adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+							table.insert(pathPoints, curPoint);
+						else
+							courseplay:debug(string.format("Point %d (lane %d, point %d) - x=%.1f, z=%.1f - not in Poly - not adding to pathPoints", curPoint.num, curPoint.lane, a, curPoint.x, curPoint.z), 7);
+						end;
+						lastPointNum = curPoint.num;
+					end; --END for curPoint in pointsPerLane
+					lastLaneTmp = lastLane + curLane;
+				end; --END for curLane in numLanes
+				
+	-- Do the second Headland - END
+	
+			end; --Headland
+	
+		end;	
+		
+		--END East or West
+	
+		numLanes = OverallnumLanes; --Setting the numLanes to the value of all Lanes including Headland
 
 
 	---############################################################################
@@ -608,10 +2161,11 @@ function courseplay:generateCourse(vehicle)
 	courseplay:debug('(4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse', 7);
 	local fieldWorkCourse = {};
 	local numPoints = #(pathPoints);
-
+	
 	for i=1, numPoints do
 		local cp = pathPoints[i];   --current
 		local np = pathPoints[i+1]; --next
+		local nnp = pathPoints[i+2]; --nextnext
 		local pp = pathPoints[i-1]; --previous
 
 		if i == 1 then
@@ -619,11 +2173,20 @@ function courseplay:generateCourse(vehicle)
 		end;
 		if i == numPoints then
 			np = pathPoints[1];
+			nnp = pathPoints[2];
 		end;
+		if i == numPoints -1 then
+			nnp = pathPoints[1];
+		end;
+
+		--courseplay:debug(string.format("cplane=%d, nplane=%d, nnplane=%d", cp.lane, np.lane, nnp.lane), 7);
 
 		cp.firstInLane = pp.lane ~= cp.lane; --previous point in different lane -> I'm first in lane
 		cp.lastInLane = np.lane ~= cp.lane; --next point in different lane -> I'm last in lane
+		np.lastInLane = nnp.lane ~= np.lane; --nextnext point in different lane -> next is last in lane
 		local isLastLane = cp.lane == numLanes;
+		
+		--courseplay:debug(string.format("cpfirst=%s, cplast=%s, nplast=%s", tostring(cp.firstInLane), tostring(cp.lastInLane), tostring(np.lastInLane)), 7);
 
 
 		--REAL ANGLE: right = 0deg, top = 90deg, left = 180deg, bottom = 270deg
@@ -640,7 +2203,7 @@ function courseplay:generateCourse(vehicle)
 		if cp.firstInLane or i == 1 or isLastLane then
 			cp.ridgeMarker = 0;
 		end;
-
+		
 		local point = {
 			cx = cp.x,
 			cz = cp.z,
@@ -649,12 +2212,14 @@ function courseplay:generateCourse(vehicle)
 			rev = nil,
 			crossing = nil,
 			lane = cp.lane,
-			laneDir = cp.laneDir,
 			turnStart = courseplay:trueOrNil(cp.lastInLane and cp.lane < numLanes),
 			turnEnd = courseplay:trueOrNil(cp.firstInLane and i > 1),
 			ridgeMarker = cp.ridgeMarker,
 			generated = true
 		};
+
+
+--[[ !!! INCLUDES CHANGES FROM THOMAS GAERTNER !!!
 
 		local newFirstInLane, newLastInLane;
 
@@ -756,15 +2321,16 @@ function courseplay:generateCourse(vehicle)
 			newFirstInLane.angle = signAngleDeg;
 			table.insert(fieldWorkCourse, newFirstInLane);
 		end;
-
+]]
 		point.angle = signAngleDeg;
 		table.insert(fieldWorkCourse, point);
 
+--[[ Only nesessary with the above excluded code
 		if newLastInLane ~= nil then
 			newLastInLane.angle = signAngleDeg;
 			table.insert(fieldWorkCourse, newLastInLane);
 		end;
-
+]]
 	end; --END for i in numPoints
 
 
