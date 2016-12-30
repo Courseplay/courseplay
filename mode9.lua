@@ -471,8 +471,9 @@ function courseplay:getMovingTools(vehicle)
 		if object.attachedImplements[1] ~= nil then
 			secondaryMovingTools = object.attachedImplements[1].object.movingTools;
 			vehicle.cp.shovel = object.attachedImplements[1].object;
+			courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
 		end;
-		courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
+		
 	elseif pipe ~= 0 then
 		primaryMovingTools = vehicle.attachedImplements[i].object.movingTools;
 	else
@@ -579,8 +580,13 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 	return map
 end
 
-function courseplay:getMode9TargetBunkerSilo(vehicle)
-	local pointIndex = vehicle.cp.shovelFillStartPoint+1
+function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
+	local pointIndex = 0
+	if forcedPoint then
+		 pointIndex = forcedPoint;
+	else
+		pointIndex = vehicle.cp.shovelFillStartPoint+1
+	end
 	local x,z = vehicle.Waypoints[pointIndex].cx,vehicle.Waypoints[pointIndex].cz			
 	local tx,tz = x,z + 0.50
 	if g_currentMission.bunkerSilos ~= nil then

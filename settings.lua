@@ -66,6 +66,24 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 	return true;
 end;
 
+function courseplay:toggleMode10automaticSpeed(self)
+	if self.cp.mode10.leveling then
+		self.cp.mode10.automaticSpeed = not self.cp.mode10.automaticSpeed
+	end
+end
+
+function courseplay:toggleMode10AutomaticHeight(self)
+	self.cp.mode10.automaticHeigth = not self.cp.mode10.automaticHeigth 
+end
+
+function courseplay:toggleMode10Mode(self)
+	self.cp.mode10.leveling = not self.cp.mode10.leveling
+end
+
+function courseplay:toggleMode10SearchMode(self)
+	self.cp.mode10.searchCourseplayersOnly = not self.cp.mode10.searchCourseplayersOnly
+end
+
 function courseplay:toggleWantsCourseplayer(combine)
 	combine.cp.wantsCourseplayer = not combine.cp.wantsCourseplayer;
 end;
@@ -207,6 +225,9 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 			local workWidth = courseplay:getSpecialWorkWidth(tool);
 			if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
 				workWidth = tool.sizeWidth
+			end
+			if vehicle.cp.mode == 10 then
+				return
 			end
 			if workWidth then
 				courseplay:debug(('\tSpecial workWidth found: %.1fm'):format(workWidth), 7);
@@ -376,6 +397,15 @@ function courseplay:toggleShowVisualWaypointsCrossing(vehicle, force, visibility
 	end;
 end;
 
+function courseplay:changeMode10Radius (vehicle, changeBy)
+	vehicle.cp.mode10.searchRadius = math.max(1,vehicle.cp.mode10.searchRadius + changeBy)
+end
+
+function courseplay:changeShieldHeight (vehicle, changeBy)
+	if vehicle.cp.mode10.leveling and  not vehicle.cp.mode10.automaticHeigth then
+		vehicle.cp.mode10.shieldHeight = Utils.clamp(vehicle.cp.mode10.shieldHeight + changeBy,0,1.2)
+	end
+end
 
 function courseplay:changeDriveOnAtFillLevel(vehicle, changeBy)
 	vehicle.cp.driveOnAtFillLevel = Utils.clamp(vehicle.cp.driveOnAtFillLevel + changeBy, 0, 100);
@@ -440,6 +470,17 @@ function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage
 	if forceReloadPage then
 		courseplay.hud:setReloadPageOrder(vehicle, 5, true);
 	end;
+end
+function courseplay:changeBunkerSpeed(vehicle, changeBy)
+	local upperLimit = 20 
+	if not vehicle.cp.mode10.automaticSpeed or not vehicle.cp.mode10.leveling then
+		local speed = vehicle.cp.speeds.bunkerSilo;
+		if vehicle.cp.mode10.leveling then
+			upperLimit = 15
+		end
+		speed = Utils.clamp(speed + changeBy, 3, upperLimit);
+		vehicle.cp.speeds.bunkerSilo = speed;
+	end
 end
 
 function courseplay:toggleUseRecordingSpeed(vehicle)

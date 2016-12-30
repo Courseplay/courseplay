@@ -11,7 +11,6 @@ function courseplay:drive(self, dt)
 	if self.steeringEnabled then
 		self.steeringEnabled = false;
 	end
-		
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		if self.cp.aiFrontMarker and self.cp.backMarkerOffset then
@@ -136,6 +135,7 @@ function courseplay:drive(self, dt)
 	local beaconOn = (self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
 					 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
 					 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
+					 or (self.cp.mode == 10 and (self.cp.waypointIndex > 1 or #self.cp.mode10.stoppedCourseplayers >0) )
 					 or combineBeaconOn) or false;
 	if beaconOn then
 		lightMask = 1
@@ -180,9 +180,10 @@ function courseplay:drive(self, dt)
 	local activeTipper;
 	local isBypassing = false
 	local isCrawlingToWait = false
-
+	local isWaitingThisLoop = false
 	-- ### WAITING POINTS - START
 	if self.Waypoints[self.cp.previousWaypointIndex].wait and self.cp.wait then
+		isWaitingThisLoop = true
 		-- set wait time end
 		if self.cp.waitTimer == nil and self.cp.waitTime > 0 then
 			self.cp.waitTimer = self.timer + self.cp.waitTime * 1000;
@@ -261,6 +262,12 @@ function courseplay:drive(self, dt)
 			allowedToDrive, lx, lz = courseplay:handleMode8(self, false, true, allowedToDrive, lx, lz, dt);
 		elseif self.cp.mode == 9 then
 			courseplay:setVehicleWait(self, false);
+		
+		elseif self.cp.mode == 10 then
+			if #self.cp.mode10.stoppedCourseplayers > 0 then
+				self.cp.mode10.stoppedCourseplayers ={}
+			end
+			self.cp.actualTarget = nil
 		else
 			CpManager:setGlobalInfoText(self, 'WAIT_POINT');
 		end;
@@ -308,7 +315,7 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.cp.waypointIndex == self.cp.stopWork + 1 or (self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork)) then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
-		elseif self.cp.mode ~= 7 then
+		elseif self.cp.mode ~= 7 and self.cp.mode ~= 10 then
 			if self.cp.modeState ~= 0 then
 				courseplay:setModeState(self, 0);
 			end;
@@ -442,7 +449,24 @@ function courseplay:drive(self, dt)
 	-- MODE 9
 	elseif self.cp.mode == 9 then
 		allowedToDrive,lx,lz  = courseplay:handle_mode9(self,self.cp.totalFillLevelPercent, allowedToDrive,lx,lz, dt);
+	-- MODE 10
+	elseif self.cp.mode == 10 then
+		local continue = true ;
+		continue,allowedToDrive = courseplay:handleMode10(self,allowedToDrive,lx,lz, dt);
+		if self.cp.shieldState ~= self.cp.targetShieldState then
+			--print(string.format("self.cp.shieldState(%s) ~= self.cp.targetShieldState(%s)",tostring(self.cp.shieldState),tostring(self.cp.targetShieldState)))
+			if courseplay:moveShield(self,self.cp.targetShieldState,dt) then
+				self.cp.shieldState = self.cp.targetShieldState
+			end
+		end
+		
+		if not continue then
+			return;
+		end;
+		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-4).."): refSpeed = "..tostring(refSpeed))
 	end;
+	
+	
 	self.cp.inTraffic = false;
 
 	-- HANDLE TIPPER COVER
@@ -462,7 +486,7 @@ function courseplay:drive(self, dt)
 	-- CHECK TRAFFIC
 	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 	
-	if self.cp.waitForTurnTime > self.timer then
+	if self.cp.waitForTurnTime > self.timer or self.cp.isNotAllowedToDrive then
 		allowedToDrive = false
 	end 
 
@@ -766,7 +790,7 @@ function courseplay:drive(self, dt)
 				courseplay:setTrafficCollision(self, lx, lz, workArea)
 			end
 		end
-	else
+	elseif not isWaitingThisLoop then
 		-- reset distance to waypoint
 		self.cp.shortestDistToWp = nil
 		if self.cp.waypointIndex < self.cp.numWaypoints then -- = New
@@ -1224,7 +1248,7 @@ function courseplay:setFourWheelDrive(vehicle, workArea)
 	local changed = false;
 
 	-- set 4WD
-	local awdOn = vehicle.cp.driveControl.alwaysUseFourWD or workArea or vehicle.cp.isBGATipping or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
+	local awdOn = vehicle.cp.driveControl.alwaysUseFourWD or workArea or vehicle.cp.isBGATipping or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or vehicle.cp.mode == 10 or (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
 	local awdOff = not vehicle.cp.driveControl.alwaysUseFourWD and not workArea and not vehicle.cp.isBGATipping and vehicle.cp.slippingStage == 0 and vehicle.cp.mode ~= 9 and not (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
 	if awdOn and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		courseplay:debug(('%s: set fourWheel to true'):format(nameNum(vehicle)), 14);
@@ -1238,7 +1262,7 @@ function courseplay:setFourWheelDrive(vehicle, workArea)
 	end;
 
 	-- set differential lock
-	local targetLockStatus = vehicle.cp.slippingStage > 1;
+	local targetLockStatus = vehicle.cp.slippingStage > 1 or (vehicle.cp.mode == 10 and vehicle.cp.waypointIndex == 1);
 	if vehicle.driveControl.fourWDandDifferentials.diffLockFront ~= targetLockStatus then
 		courseplay:debug(('%s: set diffLockFront to %s'):format(nameNum(vehicle), tostring(targetLockStatus)), 14);
 		vehicle.driveControl.fourWDandDifferentials.diffLockFront = targetLockStatus;

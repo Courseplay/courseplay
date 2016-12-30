@@ -288,6 +288,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			workTool.attacherVehicle.cp.shovelState = 1
 		end;
+	-- MODE 10:Leveler
+	elseif vehicle.cp.mode == 10 then
+		if isImplement and workTool.cp.hasSpecializationLeveler then 
+			hasWorkTool = true;
+			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+		end;
 	end;
 
 	if hasWorkTool then

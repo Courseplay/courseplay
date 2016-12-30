@@ -24,6 +24,7 @@
 		<text name="COURSEPLAY_MODE_7" 									 text="Typ: Drescher fährt selbst abtanken" />
 		<text name="COURSEPLAY_MODE_8" 									 text="Typ: Güllezubringer" />
 		<text name="COURSEPLAY_MODE_9" 									 text="Typ: Schaufel befüllen und entleeren" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Typ: Bunkersilo befüllen und verdichten" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="weiterfahren" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Wegpunkte löschen" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Sofort abfahren" />
@@ -108,9 +109,9 @@
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Drescher wendet" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="Kein Arbeitsbereich in diesem Kurs" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="kombinierte Kurse" />
-		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="fahre hinter den Drescher" />
-		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="fahre neben dem Drescher" />
-		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="fahre zum Drescher" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="fahre hinter Drescher" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="fahre neben Drescher" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="fahre zu Drescher" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Drescher sagt ich soll anhalten" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Warte bis die Warteposition frei ist" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="wende in Richtung Koordinaten %d %d" />
@@ -213,7 +214,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunkersilo ist voll!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Farmsilo hat den ausgewählten Fülltyp nicht" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Farmsilo-Befüllung:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farmsilo ist leer! warte auf mehr." />  <!-- TODO: TRANSLATION! Translate new added text. -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farmsilo ist leer! warte auf mehr." />  
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=":Farmsilo ist voll. Fahre mit nächstem fort." /> 
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s startet" /> 
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Nach erstem Wegpunkt suchen" />
@@ -247,14 +248,29 @@
 		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: Modifikator" />
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: sekundäres Menü-Akzeptieren" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Courseplay HUD öffnen/schließen" />
-		<text name="input_COURSEPLAY_START_STOP" 								 text="Courseplay: Abfahrer einstellen/entlassen" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay: Warten am letzten Wegpunkt oder Trigger" />
-		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay: sofort abfahren" />
-		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: nächster Modus" />
-		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: voriger Modus" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: Maus-Aktion" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: sekundäre Maus-Aktion" />
+		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: Abfahrer einstellen/entlassen" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: Warten am letzten Wegpunkt oder Trigger" />
+		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: sofort abfahren" />
+		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: nächster Modus" />
+		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: voriger Modus" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: Maus-Aktion" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: sekundäre Maus-Aktion" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mauszeiger anzeigen" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Mauszeiger verstecken" />
+		
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="Betriebsart" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="verteilen und verdichten" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="aufschütten" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automatisch anhalten für" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="nur Courseplayer" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="alle mit laufendem Motor" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="erkenne Fahrzeuge im Umkreis von" />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="maximale Geschwindigkeit beim Schieben" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Schildhöhe" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="kein Bunkersilo am Startpunkt gefunden" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="kein Schiebeschild vorhanden" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="vorne montiertes Schiebeschild wird nicht unterstützt" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo Einstellungen" />
+		
 	</texts>
 </l10n>

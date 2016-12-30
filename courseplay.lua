@@ -73,7 +73,8 @@ local function initialize()
 		'mode6', 
 		'mode7', 
 		'mode8', 
-		'mode9', 
+		'mode9',
+		'mode10',		
 		'recording', 
 		'reverse',
 		'settings', 
@@ -133,7 +134,8 @@ local function setGlobalData()
 	courseplay.MODE_COMBINE_SELF_UNLOADING = 7;
 	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
-	courseplay.NUM_MODES = 9;
+	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
+	courseplay.NUM_MODES = 10;
 	------------------------------------------------------------
 
 
