@@ -132,7 +132,8 @@ function courseplay:load(savegame)
 	self.cp.isTipping = false;
 	self.cp.hasPlough = false;
 	self.cp.hasRotateablePlough = false;
-
+	self.cp.isNotAllowedToDrive = false;
+	
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 
 
@@ -150,7 +151,22 @@ function courseplay:load(savegame)
 	for i=2,5 do
 		self.cp.hasShovelStatePositions[i] = false;
 	end;
-
+	
+	--ai mode 10 : bunkersilo
+	self.cp.mode10 = {}
+	self.cp.mode10.stoppedCourseplayers = {}
+	self.cp.mode10.alphaList = {}		
+	self.cp.mode10.leveling = true
+	self.cp.mode10.automaticHeigth = true
+	self.cp.mode10.searchRadius = 50
+	self.cp.mode10.searchCourseplayersOnly = false
+	self.cp.mode10.shieldHeight = 0.3
+	self.cp.mode10.levelerIsFrontAttached = false
+ 	self.cp.mode10.jumpsPerRun = 0
+	self.cp.mode10.automaticSpeed = true
+	self.cp.mode10.lowestAlpha = 99
+	
+	
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
 		crossing = {};
@@ -182,7 +198,8 @@ function courseplay:load(savegame)
 		street = self.cruiseControl.maxSpeed or 50;
 		crawl = 3;
 		discharge = 8;
-
+		bunkerSilo = 20;
+		
 		minReverse = 3;
 		minTurn = 3;
 		minField = 3;
@@ -535,8 +552,8 @@ function courseplay:draw()
 			renderText(0.2,0.135,0.02,"combineIsTurning: "..tostring(self.cp.mode2DebugTurning ))
 		end	
 	end
-
 	if courseplay.debugChannels[10] and self.cp.BunkerSiloMap ~= nil and self.cp.actualTarget ~= nil then
+
 		local fillUnit = self.cp.BunkerSiloMap[self.cp.actualTarget.line][self.cp.actualTarget.column]
 		--print(string.format("fillUnit %s; self.cp.actualTarget.line %s; self.cp.actualTarget.column %s",tostring(fillUnit),tostring(self.cp.actualTarget.line),tostring(self.cp.actualTarget.column)))
 		local sx,sz = fillUnit.sx,fillUnit.sz
@@ -549,10 +566,23 @@ function courseplay:draw()
 		drawDebugLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz, 1, 0, 0);
 		drawDebugLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz, 1, 0, 0);
 		drawDebugPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1, 1);
-		renderText(0.2,0.225,0.02,"unit.fillLevel: "..tostring(fillUnit.fillLevel))
-		if self.cp.mode9SavedLastFillLevel ~= nil then
-			renderText(0.2,0.195,0.02,"SavedLastFillLevel: "..tostring(self.cp.mode9SavedLastFillLevel))
-			renderText(0.2,0.165,0.02,"triesTheSameFillUnit: "..tostring(self.cp.mode9triesTheSameFillUnit))
+		if self.cp.mode == 9 then
+			renderText(0.2,0.225,0.02,"unit.fillLevel: "..tostring(fillUnit.fillLevel))
+			if self.cp.mode9SavedLastFillLevel ~= nil then
+				renderText(0.2,0.195,0.02,"SavedLastFillLevel: "..tostring(self.cp.mode9SavedLastFillLevel))
+				renderText(0.2,0.165,0.02,"triesTheSameFillUnit: "..tostring(self.cp.mode9triesTheSameFillUnit))
+			end
+		elseif self.cp.mode == 10 then
+			local x,y,z = getWorldTranslation(self.cp.workTools[1].rootNode);
+			local ty = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 1, z);
+			local height = y-ty
+			renderText(0.2,0.285,0.02,"numStoppedCPs: "..tostring(#self.cp.mode10.stoppedCourseplayers ))
+			renderText(0.2,0.255,0.02,"height: "..tostring(height))
+			renderText(0.2,0.225,0.02,"shieldHeight: "..tostring(self.cp.mode10.shieldHeight))
+			renderText(0.2,0.195,0.02,"lowestAlpha: "..tostring(self.cp.mode10.lowestAlpha))
+			renderText(0.2,0.165,0.02,"speeds.bunkerSilo: "..tostring(self.cp.speeds.bunkerSilo))
+			renderText(0.2,0.135,0.02,"jumpsPerRun: "..tostring(self.cp.mode10.jumpsPerRun))
+			renderText(0.2,0.105,0.02,"targetHeigth: "..tostring(self.cp.mode10.targetHeigth))
 		end
 	end
 
@@ -793,7 +823,9 @@ function courseplay:update(dt)
 		end;
 
 		courseplay:drive(self, dt);
-
+		
+		self.cp.isNotAllowedToDrive = false
+		
 		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
 			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				CpManager:setGlobalInfoText(self, refIdx, true); --force remove
@@ -1410,18 +1442,27 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		local pipeIndex =  getXMLInt(xmlFile, curKey .. '#pipeIndex')
 		local pipeWorkToolIndex = getXMLInt(xmlFile, curKey .. '#pipeWorkToolIndex')
 		
-	if rot and trans and pipeIndex and pipeWorkToolIndex then
-		self.cp.pipePositions = {}
-		self.cp.pipePositions.rot = {}
-		self.cp.pipePositions.trans={}
-		table.insert(self.cp.pipePositions.rot,rot)
-		table.insert(self.cp.pipePositions.trans,trans)
+		if rot and trans and pipeIndex and pipeWorkToolIndex then
+			self.cp.pipePositions = {}
+			self.cp.pipePositions.rot = {}
+			self.cp.pipePositions.trans={}
+			table.insert(self.cp.pipePositions.rot,rot)
+			table.insert(self.cp.pipePositions.trans,trans)
 
-		self.cp.pipeIndex =  pipeIndex
-		self.cp.pipeWorkToolIndex = pipeWorkToolIndex
-	end
-		
-		
+			self.cp.pipeIndex =  pipeIndex
+			self.cp.pipeWorkToolIndex = pipeWorkToolIndex
+		end
+	
+		--mode10
+		curKey = key .. '.courseplay.mode10';
+		self.cp.mode10.leveling =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#leveling'), true);
+		self.cp.mode10.searchCourseplayersOnly = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#CourseplayersOnly'), true);
+		self.cp.mode10.searchRadius = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#searchRadius'), 50);
+		self.cp.speeds.bunkerSilo = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#maxSiloSpeed'), 20);
+		self.cp.mode10.shieldHeight = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#shieldHeigth'), 0.3);
+		self.cp.mode10.shieldHeight = courseplay:round(self.cp.mode10.shieldHeight,1)
+		self.cp.mode10.automaticSpeed =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticSpeed'), true);
+		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticHeight'), true);
 		
 		courseplay:validateCanSwitchMode(self);
 	end;
@@ -1486,6 +1527,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField));
+	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q />', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth));
 	local shovels, combine = '', '';
 	if shovelRotsAttrNodes or shovelTransAttrNodes then
 		shovels = string.format('<shovel rot=%q trans=%q />', shovelRotsAttrNodes, shovelTransAttrNodes);
@@ -1501,6 +1543,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	nodes = nodes .. nodeIdent .. indent .. speeds .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. combi .. '\n';
 	nodes = nodes .. nodeIdent .. indent .. fieldWork .. '\n';
+	nodes = nodes .. nodeIdent .. indent .. mode10 .. '\n';
 	if shovelRotsAttrNodes or shovelTransAttrNodes then
 		nodes = nodes .. nodeIdent .. indent .. shovels .. '\n';
 	end;

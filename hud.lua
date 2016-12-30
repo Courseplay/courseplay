@@ -66,6 +66,7 @@ function courseplay.hud:setup()
 	self.PAGE_DRIVING_SETTINGS	= 7;
 	self.PAGE_COURSE_GENERATION	= 8;
 	self.PAGE_SHOVEL_POSITIONS	= 9;
+	self.PAGE_BUNKERSILO_SETTINGS = 10;
 
 	self.basePosX = courseplay.hud.basePosX;
 	self.basePosY = courseplay.hud.basePosY;
@@ -95,16 +96,17 @@ function courseplay.hud:setup()
 		textDark 	  = courseplay.utils:rgbToNormal(  1,   1,   1, 1.00)  -- IS FAKE COLOR! ORIG COLOR: 15/15/15/1
 	};
 
-	self.pagesPerMode = {						 --  Pg 0		  Pg 1		  Pg 2		  Pg 3		   Pg 4		    Pg 5		Pg 6		Pg 7		Pg 8		 Pg 9
-		[courseplay.MODE_GRAIN_TRANSPORT]		 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 1
-		[courseplay.MODE_COMBI]					 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 2
-		[courseplay.MODE_OVERLOADER]			 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 3
-		[courseplay.MODE_SEED_FERTILIZE]		 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; -- mode 4
-		[courseplay.MODE_TRANSPORT]				 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 5
-		[courseplay.MODE_FIELDWORK]				 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false }; -- mode 6
-		[courseplay.MODE_COMBINE_SELF_UNLOADING] = { [0] = false, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 7
-		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false }; -- mode 8
-		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = true  }; -- mode 9
+	self.pagesPerMode = {						 --  Pg 0		  Pg 1		  Pg 2		  Pg 3		   Pg 4		    Pg 5		Pg 6		Pg 7		Pg 8		 Pg 9			Pg10
+		[courseplay.MODE_GRAIN_TRANSPORT]		 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false}; -- mode 1
+		[courseplay.MODE_COMBI]					 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 2
+		[courseplay.MODE_OVERLOADER]			 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 3
+		[courseplay.MODE_SEED_FERTILIZE]		 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false,  [10] = false }; -- mode 4
+		[courseplay.MODE_TRANSPORT]				 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 5
+		[courseplay.MODE_FIELDWORK]				 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false,  [10] = false }; -- mode 6
+		[courseplay.MODE_COMBINE_SELF_UNLOADING] = { [0] = false, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 7
+		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 8
+		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = true,  [10] = false  }; -- mode 9
+		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = true  }; -- mode 10
 	};
 
 	self.visibleArea = {};
@@ -153,7 +155,7 @@ function courseplay.hud:setup()
 		version = self:pxToNormal(11, 'y');
 		infoText = self:pxToNormal(16, 'y');
 	};
-	self.numPages = 9;
+	self.numPages = 10;
 	self.numLines = 8;
 	self.lineHeight = self:pxToNormal(23, 'y');
 	self.linesPosY = {};
@@ -182,6 +184,7 @@ function courseplay.hud:setup()
 		[self.PAGE_DRIVING_SETTINGS]  = self.basePosX + self:pxToNormal(368, 'x'),
 		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(272, 'x'),
 		[self.PAGE_SHOVEL_POSITIONS]  = self.basePosX + self:pxToNormal(390, 'x'),
+		[self.PAGE_BUNKERSILO_SETTINGS]  = self.basePosX + self:pxToNormal(390, 'x'),
 	};
 	self.col2posXforce = {
 		[self.PAGE_COMBINE_CONTROLS] = {
@@ -213,7 +216,8 @@ function courseplay.hud:setup()
 		[self.PAGE_GENERAL_SETTINGS]  = courseplay:loc("COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS"), -- general settings
 		[self.PAGE_DRIVING_SETTINGS]  = courseplay:loc("COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"), -- Driving settings
 		[self.PAGE_COURSE_GENERATION] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COURSE_GENERATION"), -- course generation
-		[self.PAGE_SHOVEL_POSITIONS]  = courseplay:loc("COURSEPLAY_SHOVEL_POSITIONS") -- shovel
+		[self.PAGE_SHOVEL_POSITIONS]  = courseplay:loc("COURSEPLAY_SHOVEL_POSITIONS"), -- shovel
+		[self.PAGE_BUNKERSILO_SETTINGS]  = courseplay:loc("COURSEPLAY_MODE10_SETTINGS") -- compacter
 	};
 
 	self.pageTitlePosX = self.visibleArea.x1 + self:pxToNormal(55, 'x');
@@ -270,6 +274,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_COMBINE_SELF_UNLOADING] = {  76,108, 108,76 };
 		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { 112,108, 144,76 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 148,108, 180,76 };
+		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,431, 251,399 };
 	};
 
 	self.pageButtonsUVsPx = {
@@ -283,6 +288,7 @@ function courseplay.hud:setup()
 		[self.PAGE_DRIVING_SETTINGS]  = {   4,72,  36,40 };
 		[self.PAGE_COURSE_GENERATION] = {  40,72,  72,40 };
 		[self.PAGE_SHOVEL_POSITIONS]  = {  76,72, 108,40 };
+		[self.PAGE_BUNKERSILO_SETTINGS]  = { 219,431, 251,399 };  --{ 220,396, 252,365 };
 	};
 
 	self.buttonUVsPx = {
@@ -357,6 +363,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_COMBINE_SELF_UNLOADING] = { 148,144, 180,112 };
 		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { 184,144, 216,112 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 220,144, 252,112 };
+		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,394, 251,362 };
 	};
 
 	-- TOOLTIP
@@ -388,6 +395,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_COMBINE_SELF_UNLOADING]	= courseplay.utils:rgbToNormal(159,  29, 250, 1),       -- Purple
 		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] 	= courseplay.utils:rgbToNormal(255,  27, 231, 1),       -- Pink
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]		= courseplay.utils:rgbToNormal(231,  19,  19, 1),       -- Red
+		[courseplay.MODE_BUNKERSILO_COMPACTER]		= courseplay.utils:rgbToNormal(231,  19,  19, 1),       -- Red
 	};
 
 	-- SOUND
@@ -1105,7 +1113,38 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		vehicle.cp.hud.content.pages[9][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_STOP_AND_GO');
 		vehicle.cp.hud.content.pages[9][5][2].text = vehicle.cp.shovelStopAndGo and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-
+	
+	--Page 10: BunkerSilo compacter 
+	elseif page == self.PAGE_BUNKERSILO_SETTINGS then
+		vehicle.cp.hud.content.pages[10][1][1].text = courseplay:loc('COURSEPLAY_MODE10_MODE');
+		vehicle.cp.hud.content.pages[10][2][1].text = courseplay:loc('COURSEPLAY_MODE10_SEARCH_MODE');
+		vehicle.cp.hud.content.pages[10][3][1].text = courseplay:loc('COURSEPLAY_MODE10_SEARCHRADIUS');
+		vehicle.cp.hud.content.pages[10][4][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
+		vehicle.cp.hud.content.pages[10][5][1].text = courseplay:loc('COURSEPLAY_MODE10_MAX_BUNKERSPEED');
+		
+		vehicle.cp.hud.content.pages[10][3][2].text = ('%i%s'):format(vehicle.cp.mode10.searchRadius, courseplay:loc('COURSEPLAY_UNIT_METER'));
+		vehicle.cp.hud.content.pages[10][4][2].text = ('%.1f%s'):format(vehicle.cp.workWidth, courseplay:loc('COURSEPLAY_UNIT_METER'));
+		if vehicle.cp.mode10.automaticSpeed and vehicle.cp.mode10.leveling then
+			vehicle.cp.hud.content.pages[10][5][2].text = courseplay:loc('COURSEPLAY_AUTOMATIC');
+		else		
+			vehicle.cp.hud.content.pages[10][5][2].text = ('%i %s'):format(vehicle.cp.speeds.bunkerSilo, courseplay:getSpeedMeasuringUnit());
+		end
+		if vehicle.cp.mode10.leveling then
+			vehicle.cp.hud.content.pages[10][6][1].text = courseplay:loc('COURSEPLAY_MODE10_BLADE_HEIGHT');
+			if vehicle.cp.mode10.automaticHeigth then
+				vehicle.cp.hud.content.pages[10][6][2].text = courseplay:loc('COURSEPLAY_AUTOMATIC');
+			else
+				vehicle.cp.hud.content.pages[10][6][2].text = ('%.1f%s'):format(vehicle.cp.mode10.shieldHeight, courseplay:loc('COURSEPLAY_UNIT_METER'));
+			end
+			vehicle.cp.hud.content.pages[10][1][2].text = "WIP: "..courseplay:loc('COURSEPLAY_MODE10_MODE_LEVELING');
+		else
+			vehicle.cp.hud.content.pages[10][1][2].text = courseplay:loc('COURSEPLAY_MODE10_MODE_BUILDUP');
+		end
+		if vehicle.cp.mode10.searchCourseplayersOnly then
+			vehicle.cp.hud.content.pages[10][2][2].text = courseplay:loc('COURSEPLAY_MODE10_SEARCH_MODE_CP');
+		else
+			vehicle.cp.hud.content.pages[10][2][2].text = courseplay:loc('COURSEPLAY_MODE10_SEARCH_MODE_ALL');
+		end
 	end; -- END if page == n
 
 	self:setReloadPageOrder(vehicle, page, false);
@@ -1635,8 +1674,33 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	courseplay.button:new(vehicle, pg, nil, 'toggleShovelStopAndGo', nil, self.col1posX, self.linesPosY[5], self.visibleArea.width, self.lineHeight, 5, nil, true);
 	--END Page 9
-
-
+	
+	
+	-- ##################################################
+	-- Page 10: BunkerSilo settings
+	-- line 1 mode
+		courseplay.button:new(vehicle, 10, nil, 'rowButton', 1, self.col1posX, self.linesPosY[1], w, self.lineHeight, 1, nil, true);
+	-- line 2
+		courseplay.button:new(vehicle, 10, nil, 'rowButton', 2, self.col1posX, self.linesPosY[2], w, self.lineHeight, 2, nil, true);
+	-- line 3 
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navMinus' }, 'changeMode10Radius', -5, self.buttonPosX[2], self.linesButtonPosY[3], wSmall, hSmall, 3, -10, false);
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navPlus' },  'changeMode10Radius',  5, self.buttonPosX[1], self.linesButtonPosY[3], wSmall, hSmall, 3,  10, false);
+	courseplay.button:new(vehicle, 10, nil, 'changeMode10Radius', 5, mouseWheelArea.x, self.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 10, true, true);
+	--line4 workwidth
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navMinus' }, 'changeWorkWidth', -0.1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, -0.5, false);
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navPlus' },  'changeWorkWidth',  0.1, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,  0.5, false);
+	courseplay.button:new(vehicle, 10, nil, 'changeWorkWidth', 0.1, mouseWheelArea.x, self.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 0.5, true, true);
+	--line5 bunkerSpeed
+	courseplay.button:new(vehicle, 10, nil, 'rowButton', 5, self.col1posX, self.linesPosY[5], w, self.lineHeight, 5, nil, true);
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navMinus' }, 'changeBunkerSpeed', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -0.5, false);
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navPlus' },  'changeBunkerSpeed',  1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,  0.5, false);
+	courseplay.button:new(vehicle, 10, nil, 'changeBunkerSpeed', 1, mouseWheelArea.x, self.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 0.5, true, true);
+	--line6 leveler
+	courseplay.button:new(vehicle, 10, nil, 'rowButton', 6, self.col1posX, self.linesPosY[6], w, self.lineHeight, 6, nil, true);
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navMinus' }, 'changeShieldHeight', -0.1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -0.5, false);
+	courseplay.button:new(vehicle, 10, { 'iconSprite.png', 'navPlus' },  'changeShieldHeight',  0.1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  0.5, false);
+	courseplay.button:new(vehicle, 10, nil, 'changeShieldHeight', 0.1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 0.5, true, true);
+	
 	-- ##################################################
 	-- Status icons
 	local bi = self.bottomInfo;

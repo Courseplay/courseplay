@@ -152,6 +152,7 @@ function courseplay:start(self)
 	
 
 	local setLaneNumber = false;
+	local isFrontAttached = false
 	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
 			if  self.aiLower ~= nil then
@@ -160,13 +161,20 @@ function courseplay:start(self)
 				self:setFoldState(-1, true)
 			end
 		end;
-
 		--DrivingLine spec: set lane numbers
 		if self.cp.mode == 4 and not setLaneNumber and workTool.cp.hasSpecializationDrivingLine and not workTool.manualDrivingLine then
 			setLaneNumber = true;
 		end;
+		if self.cp.mode == 10 then
+			local x,y,z = getWorldTranslation(workTool.rootNode)  
+			local _,_,tz = worldToLocal(self.cp.DirectionNode,x,y,z)
+			if tz > 0 then
+				isFrontAttached = true
+			end
+		end
 	end;
-
+	
+	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
 
 	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);
 	local mapIconHeight = 2 / 1080;
@@ -415,15 +423,22 @@ function courseplay:getCanUseCpMode(vehicle)
 			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TOOL');
 		elseif mode == 9 then
 			courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_NOT_FOUND');
+		elseif mode == 10 then
+			courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE10_NOBLADE');
 		else
 			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 		end;
 		return false;
 	end;
+	
+	if mode == 10 and vehicle.cp.mode10.levelerIsFrontAttached then
+		courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE10_NOFRONTBLADE');
+		return false;
+	end
 
 	local minWait, maxWait;
 
-	if mode == 3 or mode == 8 then
+	if mode == 3 or mode == 8 or mode == 10 then
 		minWait, maxWait = 1, 1;
 		if vehicle.cp.numWaitPoints < minWait then
 			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
@@ -556,6 +571,9 @@ function courseplay:stop(self)
 
 	courseplay:releaseCombineStop(self)
 	self.cp.BunkerSiloMap = nil
+	self.cp.mode9TargetSilo = nil
+	self.cp.mode10.lowestAlpha = 99
+	
 	
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.cruiseControl.minSpeed = 1

@@ -39,6 +39,8 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Tedder 			   then workTool.cp.hasSpecializationTedder 			 = true;
 		elseif spec == WaterTrailer		   then workTool.cp.hasSpecializationWaterTrailer		 = true;
 		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;
+		elseif spec == Leveler 		   		then workTool.cp.hasSpecializationLeveler 			 = true;
+			
 		end;
 	end;
 
@@ -120,7 +122,7 @@ function courseplay:setNameVariable(workTool)
 	--
 	-- workTool.cp.steeringAngleCorrection:			(Angle in degrees)		Overwrite the default steering angle if set. NOTE: steeringAngleMultiplier will have no effect if this is set.
 	-- workTool.cp.steeringAngleMultiplier:			(Number)				Used if vehicle needs to turn faster or slower.
-	--																		2 	= turns 2 times slower.
+	--																		2 	= turns 2 times slower.																	
 	--																		0.5 = turns 2 times slower.
 	-- workTool.cp.componentNumAsDirectionNode:		(Component Index)		Used to set another component as the Direction Node. Starts from index 1 as the first component.
 	-- workTool.cp.haveInvertedToolNode:			(Boolean)				Set to true if the tool have it's rootnode pointing in the wrong direction
