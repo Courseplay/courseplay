@@ -273,7 +273,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				courseplay:setModeState(vehicle, 1);
 				vehicle.cp.fillLevelGo = true
 				vehicle.cp.maxHeight = 0
-				-courseplay:getActualTarget(vehicle)
+				courseplay:getActualTarget(vehicle)
 				--return true, false
 			end
 			if vehicle.cp.slippingStage == 1 and vehicle.cp.actualTarget.line > 4 then
