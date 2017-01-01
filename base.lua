@@ -165,6 +165,9 @@ function courseplay:load(savegame)
  	self.cp.mode10.jumpsPerRun = 0
 	self.cp.mode10.automaticSpeed = true
 	self.cp.mode10.lowestAlpha = 99
+	self.cp.mode10.lastTargetLine = 99
+	self.cp.mode10.deadline = nil
+	self.cp.mode10.firstLine = 0
 	
 	
 	-- Visual i3D waypoint signs
