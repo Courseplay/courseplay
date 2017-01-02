@@ -267,7 +267,15 @@ function courseplay:drive(self, dt)
 			if #self.cp.mode10.stoppedCourseplayers > 0 then
 				self.cp.mode10.stoppedCourseplayers ={}
 			end
-			self.cp.actualTarget = nil
+			if (self.cp.actualTarget and self.cp.actualTarget.empty) or (self.cp.mode10.deadline and self.cp.mode10.deadline == self.cp.mode10.firstLine) then
+				if courseplay:timerIsThrough(self,'BunkerEmpty') then
+					courseplay:setCustomTimer(self, "BunkerEmpty", 5);
+					courseplay:getActualTarget(self)
+					print("check for FillLevel")
+				end
+			else
+				self.cp.actualTarget = nil
+			end
 		else
 			CpManager:setGlobalInfoText(self, 'WAIT_POINT');
 		end;

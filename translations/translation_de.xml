@@ -269,7 +269,7 @@
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Schildhöhe" />
 		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="kein Bunkersilo am Startpunkt gefunden" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="kein Schiebeschild vorhanden" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="vorne montiertes Schiebeschild wird nicht unterstützt" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="vorn montierte Schiebeschilder werden nicht unterstützt" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo Einstellungen" />
 		
 	</texts>

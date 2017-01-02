@@ -566,8 +566,11 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 		sx = map[heightIndex][1].hx
 		sz = map[heightIndex][1].hz
 	end
-	courseplay:debug(('%s: Bunkersilo filled with %s(%i) will be devided in %d lines and %d columns'):format(nameNum(vehicle),FillUtil.fillTypeIndexToDesc[lastValidfillType].name ,lastValidfillType, heightCount, widthCount), 10);   
-	
+	if lastValidfillType > 0 then
+		courseplay:debug(('%s: Bunkersilo filled with %s(%i) will be devided in %d lines and %d columns'):format(nameNum(vehicle),FillUtil.fillTypeIndexToDesc[lastValidfillType].name ,lastValidfillType, heightCount, widthCount), 10);   
+	else
+		courseplay:debug(('%s: empty Bunkersilo will be devided in %d lines and %d columns'):format(nameNum(vehicle), heightCount, widthCount), 10);   
+	end
 	--invert table
 	if endDistance < startDistance then
 		courseplay:debug(('%s: Bunkersilo will be approached from the back -> turn map'):format(nameNum(vehicle)), 10);
