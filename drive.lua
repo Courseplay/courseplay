@@ -271,7 +271,7 @@ function courseplay:drive(self, dt)
 				if courseplay:timerIsThrough(self,'BunkerEmpty') then
 					courseplay:setCustomTimer(self, "BunkerEmpty", 5);
 					courseplay:getActualTarget(self)
-					print("check for FillLevel")
+					--print("check for FillLevel")
 				end
 			else
 				self.cp.actualTarget = nil
