@@ -580,12 +580,12 @@ function courseplay:draw()
 			local ty = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 1, z);
 			local height = y-ty
 			renderText(0.2,0.285,0.02,"numStoppedCPs: "..tostring(#self.cp.mode10.stoppedCourseplayers ))
-			renderText(0.2,0.255,0.02,"height: "..tostring(height))
-			renderText(0.2,0.225,0.02,"shieldHeight: "..tostring(self.cp.mode10.shieldHeight))
+			renderText(0.2,0.255,0.02,"height: "..tostring(courseplay:round(height,3)))
+			renderText(0.2,0.225,0.02,"shieldHeight: "..tostring(courseplay:round(self.cp.mode10.shieldHeight,3)))
 			renderText(0.2,0.195,0.02,"lowestAlpha: "..tostring(self.cp.mode10.lowestAlpha))
 			renderText(0.2,0.165,0.02,"speeds.bunkerSilo: "..tostring(self.cp.speeds.bunkerSilo))
 			renderText(0.2,0.135,0.02,"jumpsPerRun: "..tostring(self.cp.mode10.jumpsPerRun))
-			renderText(0.2,0.105,0.02,"targetHeigth: "..tostring(self.cp.mode10.targetHeigth))
+			renderText(0.2,0.105,0.02,"targetHeigth: "..tostring(courseplay:round(self.cp.mode10.targetHeigth,3)))
 		end
 	end
 
