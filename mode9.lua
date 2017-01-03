@@ -626,26 +626,40 @@ function courseplay:getBunkerSiloFilling(map)
 	return maxValues	
 end
 
-function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
-	local pointIndex = 0
-	if forcedPoint then
-		 pointIndex = forcedPoint;
-	else
-		pointIndex = vehicle.cp.shovelFillStartPoint+1
-	end
-	local x,z = vehicle.Waypoints[pointIndex].cx,vehicle.Waypoints[pointIndex].cz			
-	local tx,tz = x,z + 0.50
-	if g_currentMission.bunkerSilos ~= nil then
-		for _, bunker in pairs(g_currentMission.bunkerSilos) do
-			local x1,z1 = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
-			local x2,z2 = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
-			local x3,z3 = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
-			if Utils.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z) then
-				return bunker
-			end
-		end
-	else
-		return false
-	end
-	return false
+function courseplay:getMode9TargetBunkerSilo(vehicle, forcedPoint)
+    local pointIndex = 0
+    local searchPoints = 0;-- look into the next xx waypoints to find the bunker silo
+    if forcedPoint then
+        searchPoints = 5;
+        pointIndex = forcedPoint;
+    else
+        searchPoints = 15;        
+        pointIndex = vehicle.cp.shovelFillStartPoint + 1
+    end
+
+    local x, z
+    local tx, tz
+    repeat
+        if vehicle.Waypoints[pointIndex] == nil then return false end
+        x, z = vehicle.Waypoints[pointIndex].cx, vehicle.Waypoints[pointIndex].cz
+        tx, tz = x, z + 0.50
+        if g_currentMission.bunkerSilos ~= nil then
+            for _, bunker in pairs(g_currentMission.bunkerSilos) do
+                local x1, z1 = bunker.bunkerSiloArea.sx, bunker.bunkerSiloArea.sz
+                local x2, z2 = bunker.bunkerSiloArea.wx, bunker.bunkerSiloArea.wz
+                local x3, z3 = bunker.bunkerSiloArea.hx, bunker.bunkerSiloArea.hz
+                if Utils.hasRectangleLineIntersection2D(x1, z1, x2 - x1, z2 - z1, x3 - x1, z3 - z1, x, z, tx - x, tz - z) then
+                    courseplay:debug(('%s: BunkerSilo found (search,point): %d, %d'):format(nameNum(vehicle),searchPoints, pointIndex), 10);
+                    return bunker
+                end
+            end
+        else
+            return false
+        end
+        searchPoints = searchPoints - 1
+        pointIndex = pointIndex + 1
+        --courseplay:debug(('%s: BunkerSilo still not found (search,point): %d, %d'):format(nameNum(vehicle),searchPoints, pointIndex), 10);
+    until (searchPoints <= 0)
+    courseplay:debug(('%s: no BunkerSilo found, is it just a triggerles heap?'):format(nameNum(vehicle)), 10);
+    return false
 end
