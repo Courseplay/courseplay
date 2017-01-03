@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_7"									 text="Tryb: Kombajn (samoczynny rozładunek)" />
 		<text name="COURSEPLAY_MODE_8"									 text="Tryb: Transport obornika" />
 		<text name="COURSEPLAY_MODE_9"									 text="Tryb: Napełnij i rozładuj łychę" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: Wyrównywanie i ugniatanie" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Tryb: Wyrównywanie i ugniatanie" />
 		<text name="COURSEPLAY_CONTINUE"								 text="Kontynuuj" />
 		<text name="COURSEPLAY_CLEAR_COURSE"							 text="Wyczyść obecny kurs" />
 		<text name="COURSEPLAY_DRIVE_NOW"								 text="Jedź teraz" />
@@ -101,7 +101,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS"				 text="Sterowanie kombajnami" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES"				 text="Zarządzanie kursami" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER"				 text="Wybierz folder" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE"					 text="Ustawienia trybu kombaju" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE"					 text="Ustawienia trybu kombajnu" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES"				 text="Zarządzanie kombajnami" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS"						 text="Limity prędkości" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"				 text="Ustawienia jazdy" />
@@ -189,7 +189,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT"							 text="obecny punkt trasy" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH"							 text="Ścieżka krawędzi pola" />
 		<text name="COURSEPLAY_FIELD"									 text="Pole" />
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"					 text="(obecnie załadownay kurs)" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"					 text="(obecnie załadowany kurs)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS"					 text="Trwa skanowanie pól" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB"						 text="Skanowanie pola %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING"								 text="Nie znaleziono węża - napełnianie anulowane" />

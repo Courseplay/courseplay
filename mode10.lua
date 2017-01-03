@@ -79,11 +79,11 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 		courseplay:setFourWheelDrive(vehicle,inBunker)
 	end
 	
-	if vehicle.cp.actualTarget == nil or vehicle.cp.BunkerSiloMap == nil then
-		courseplay:getActualTarget(vehicle)
-	end
-	
 	if  inBunker or vehicle.cp.mode10.isStuck then 
+		if vehicle.cp.actualTarget == nil or vehicle.cp.BunkerSiloMap == nil then
+			courseplay:getActualTarget(vehicle)
+		end
+		
 		if vehicle.cp.modeState == 1 then --push
 			courseplay:setShieldTarget(vehicle,"down")
 			fwd = false
