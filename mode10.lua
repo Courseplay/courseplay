@@ -19,7 +19,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 	local zeroX,zeroY,zeroZ = dx+(nx*-nodeZ) ,dy+(ny*-nodeZ),dz+(nz*-nodeZ)
 	local offSetX,offSetY,offSetZ = worldToLocal(vehicle.cp.DirectionNode,zeroX,zeroY,zeroZ)
 	local diffY = (zeroY-ty)-(dy-dty)
-	
+	--print ("diffY: "..tostring(courseplay:round(diffY,3)).." zeroY: "..tostring(courseplay:round(zeroY,3)).." ty: "..tostring(courseplay:round(ty,3)).." dy: "..tostring(courseplay:round(dy,3)).." dty: "..tostring(courseplay:round(dty,3)));
 	local fwd = true
 	local cx,cy,cz =0,0,0;
 	local goSave = false
