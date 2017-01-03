@@ -183,7 +183,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 			if fillLevelPct < 75 then
 				courseplay:setIsLoaded(vehicle, false);
 				courseplay:setShovelState(vehicle, 1,'try again');
-				courseplay:setWaypointIndex(vehicle, vehicle.cp.shovelFillStartPoint - 2);
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.shovelFillStartPoint - 1);
 				vehicle.cp.BunkerSiloMap = nil
 			end
 		end
