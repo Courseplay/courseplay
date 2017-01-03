@@ -79,11 +79,11 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 		courseplay:setFourWheelDrive(vehicle,inBunker)
 	end
 	
+	if  inBunker or vehicle.cp.mode10.isStuck then 
 	if vehicle.cp.actualTarget == nil or vehicle.cp.BunkerSiloMap == nil then
 		courseplay:getActualTarget(vehicle)
 	end
 	
-	if  inBunker or vehicle.cp.mode10.isStuck then 
 		if vehicle.cp.modeState == 1 then --push
 			courseplay:setShieldTarget(vehicle,"down")
 			fwd = false
@@ -117,8 +117,8 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			local currentHeight = (y-ty)-(dy-dty)
 			vehicle.cp.currentHeigth = currentHeight
 			local shouldBHeight = vehicle.cp.mode10.shieldHeight
-			local heightDiff  = courseplay:round(shouldBHeight,2) - courseplay:round(currentHeight,2)
-			local targetHeigth = courseplay:round(shouldBHeight,2) - (diffY*0.75)			
+			local heightDiff  = courseplay:round(shouldBHeight,3) - courseplay:round(currentHeight,3)
+			local targetHeigth = courseplay:round(shouldBHeight - diffY*1.75,3) 			
 			
 			if vehicle.cp.mode10.leveling then
 				if vehicle.cp.speeds.bunkerSilo > 15 then
@@ -149,7 +149,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				local closestIndex = 99
 				local closestValue = 99
 				if vehicle.cp.mode10.alphaList[targetHeigth] then
-					closestIndex = targetHeigth
+					closestIndex = targetHeigth                    
 				else
 					for indexHeight,alpha in pairs (vehicle.cp.mode10.alphaList) do
 						local diff = math.abs(targetHeigth-indexHeight)
@@ -230,11 +230,15 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				end
 				
 				--automatic shield height
-				if vehicle.cp.mode10.automaticHeigth and fillLevelChanged and hasFillLevel then
-					vehicle.cp.mode10.shieldHeight = vehicle.cp.mode10.shieldHeight + 0.05
-				elseif emptyTimerIsThrought and vehicle.cp.actualTarget.line > 3 and vehicle.cp.actualTarget.line < #vehicle.cp.BunkerSiloMap*0.75 and vehicle.cp.mode10.jumpsPerRun <= 4 then
-					vehicle.cp.mode10.shieldHeight = vehicle.cp.mode10.shieldHeight - 0.025
-				end
+                if vehicle.cp.mode10.automaticHeigth and fillLevelChanged and hasFillLevel then
+                    vehicle.cp.mode10.shieldHeight = vehicle.cp.mode10.shieldHeight + 0.05
+                elseif vehicle.cp.mode10.automaticHeigth
+                    and emptyTimerIsThrought
+                    and vehicle.cp.actualTarget.line > 3
+                    and vehicle.cp.actualTarget.line < #vehicle.cp.BunkerSiloMap * 0.75
+                    and vehicle.cp.mode10.jumpsPerRun <= 4 then
+                    vehicle.cp.mode10.shieldHeight = vehicle.cp.mode10.shieldHeight - 0.025
+                end
 				
 				if is2Heigh then
 					vehicle.cp.mode10.deadline = math.max(2,vehicle.cp.actualTarget.line-2)
@@ -356,7 +360,7 @@ end
 function courseplay:moveShield(vehicle,moveUp,dt,fixAlpha)
 	local leveler = vehicle.cp.workTools[1]
 	local move = 0
-	local factor = 0.4
+	local factor = 0.8
 	if moveUp == "up" then
 		move = -factor
 	elseif moveUp == "down" then
