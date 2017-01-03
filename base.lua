@@ -1465,7 +1465,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.mode10.shieldHeight = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#shieldHeigth'), 0.3);
 		self.cp.mode10.shieldHeight = courseplay:round(self.cp.mode10.shieldHeight,1)
 		self.cp.mode10.automaticSpeed =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticSpeed'), true);
-		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticHeight'), true);
+		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#automaticHeight'), true);
 		
 		courseplay:validateCanSwitchMode(self);
 	end;

@@ -80,10 +80,10 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 	end
 	
 	if  inBunker or vehicle.cp.mode10.isStuck then 
-	if vehicle.cp.actualTarget == nil or vehicle.cp.BunkerSiloMap == nil then
-		courseplay:getActualTarget(vehicle)
-	end
-	
+		if vehicle.cp.actualTarget == nil or vehicle.cp.BunkerSiloMap == nil then
+			courseplay:getActualTarget(vehicle)
+		end
+		
 		if vehicle.cp.modeState == 1 then --push
 			courseplay:setShieldTarget(vehicle,"down")
 			fwd = false
@@ -149,7 +149,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				local closestIndex = 99
 				local closestValue = 99
 				if vehicle.cp.mode10.alphaList[targetHeigth] then
-					closestIndex = targetHeigth                    
+					closestIndex = targetHeigth
 				else
 					for indexHeight,alpha in pairs (vehicle.cp.mode10.alphaList) do
 						local diff = math.abs(targetHeigth-indexHeight)
