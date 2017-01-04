@@ -388,19 +388,22 @@ function courseplay:drive(self, dt)
 		--FUEL LEVEL + REFILLING
 		if self.fuelCapacity > 0 then
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
-			if currentFuelPercentage < 5 then
-				allowedToDrive = false;
-				CpManager:setGlobalInfoText(self, 'FUEL_MUST');
-			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
+			local searchForFuel = (self.cp.allwaysSearchFuel and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
+			if searchForFuel then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 				if self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
 					self.cp.isInFilltrigger = true;
 				end;
-				CpManager:setGlobalInfoText(self, 'FUEL_SHOULD');
 				if self.fuelFillTriggers[1] then
 					allowedToDrive = false;
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
-				end;
+				end;			
+			end 
+			if currentFuelPercentage < 5 then
+				allowedToDrive = false;
+				CpManager:setGlobalInfoText(self, 'FUEL_MUST');
+			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
+				CpManager:setGlobalInfoText(self, 'FUEL_SHOULD');
 			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
 				allowedToDrive = false;
 				CpManager:setGlobalInfoText(self, 'FUEL_IS');

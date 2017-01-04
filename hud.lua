@@ -993,6 +993,14 @@ function courseplay.hud:loadPage(vehicle, page)
 			end;			
 		end;
 
+		vehicle.cp.hud.content.pages[6][7][1].text = courseplay:loc('COURSEPLAY_FUEL_SEARCH_FOR');
+		if vehicle.cp.allwaysSearchFuel then
+			vehicle.cp.hud.content.pages[6][7][2].text = courseplay:loc('COURSEPLAY_FUEL_ALWAYS');
+		else
+			vehicle.cp.hud.content.pages[6][7][2].text = courseplay:loc('COURSEPLAY_FUEL_BELOW_20PCT');
+		end
+		
+		
 		-- Debug channels
 		vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
 
@@ -1581,6 +1589,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
 		courseplay.button:new(vehicle, pg, nil, 'toggleIngameMapIconShowText', nil, self.contentMinX, self.linesPosY[6], self.contentMaxWidth, self.lineHeight, 6, nil, true);
 	end;
+	
+	courseplay.button:new(vehicle, pg, nil, 'toggleAutoRefuel', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
 
 	-- debug channels
 	vehicle.cp.hud.debugChannelButtons = {};

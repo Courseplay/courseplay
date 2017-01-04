@@ -66,6 +66,9 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 	return true;
 end;
 
+function courseplay:toggleAutoRefuel(self)
+	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 
+end
 function courseplay:toggleMode10automaticSpeed(self)
 	if self.cp.mode10.leveling then
 		self.cp.mode10.automaticSpeed = not self.cp.mode10.automaticSpeed
@@ -402,9 +405,7 @@ function courseplay:changeMode10Radius (vehicle, changeBy)
 end
 
 function courseplay:changeShieldHeight (vehicle, changeBy)
-	if vehicle.cp.mode10.leveling and  not vehicle.cp.mode10.automaticHeigth then
-		vehicle.cp.mode10.shieldHeight = Utils.clamp(vehicle.cp.mode10.shieldHeight + changeBy,0,1.2)
-	end
+	vehicle.cp.mode10.shieldHeight = Utils.clamp(vehicle.cp.mode10.shieldHeight + changeBy,0,1.5)
 end
 
 function courseplay:changeDriveOnAtFillLevel(vehicle, changeBy)
@@ -473,14 +474,12 @@ function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage
 end
 function courseplay:changeBunkerSpeed(vehicle, changeBy)
 	local upperLimit = 20 
-	if not vehicle.cp.mode10.automaticSpeed or not vehicle.cp.mode10.leveling then
-		local speed = vehicle.cp.speeds.bunkerSilo;
-		if vehicle.cp.mode10.leveling then
-			upperLimit = 15
-		end
-		speed = Utils.clamp(speed + changeBy, 3, upperLimit);
-		vehicle.cp.speeds.bunkerSilo = speed;
+	local speed = vehicle.cp.speeds.bunkerSilo;
+	if vehicle.cp.mode10.leveling then
+		upperLimit = 15
 	end
+	speed = Utils.clamp(speed + changeBy, 3, upperLimit);
+	vehicle.cp.speeds.bunkerSilo = speed;
 end
 
 function courseplay:toggleUseRecordingSpeed(vehicle)

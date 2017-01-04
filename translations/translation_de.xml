@@ -272,5 +272,9 @@
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="vorn montierte Schiebeschilder werden nicht unterstützt" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo Einstellungen" />
 		
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Kraftstoff an der Tankstelle nachfüllen" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="immer" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="nur unter 20%" />
+		
 	</texts>
 </l10n>

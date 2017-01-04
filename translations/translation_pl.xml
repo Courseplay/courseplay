@@ -272,6 +272,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="brak podczepionego lemiesza" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="lemiesz podczepiony z przodu nie jest obsługiwany" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Ustawienia silosu bunkrowego" />
+			
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
 		
 	</texts>
 </l10n>

@@ -197,6 +197,28 @@ function courseplay.button:render()
 				canScrollUp   = true;
 				canScrollDown = vehicle.cp.workWidth > 0.1;
 			end;
+			
+		elseif pg == courseplay.hud.PAGE_SHOVEL_POSITIONS then
+			if fn == "changeWorkWidth" then
+				canScrollUp   = true;
+				canScrollDown = vehicle.cp.workWidth > 0.1;
+			end
+			
+		elseif pg == courseplay.hud.PAGE_BUNKERSILO_SETTINGS then
+			if fn == "changeMode10Radius" then
+				canScrollUp   = true;
+				canScrollDown = vehicle.cp.mode10.searchRadius > 1;				
+			elseif fn == "changeShieldHeight" then
+				canScrollUp   = not vehicle.cp.mode10.automaticHeigth 
+				canScrollDown = not vehicle.cp.mode10.automaticHeigth and vehicle.cp.mode10.shieldHeight > 0
+			elseif fn == "changeBunkerSpeed" then
+				local uMayUseIt = (vehicle.cp.mode10.leveling and not vehicle.cp.mode10.automaticSpeed) or not vehicle.cp.mode10.leveling
+				canScrollUp   = uMayUseIt and vehicle.cp.speeds.bunkerSilo < 20;
+				canScrollDown = uMayUseIt and vehicle.cp.speeds.bunkerSilo > 3;
+			elseif fn == "changeWorkWidth" then
+				canScrollUp   = true;
+				canScrollDown = vehicle.cp.workWidth > 0.1;
+			end
 		end;
 
 		if canScrollUp ~= nil then

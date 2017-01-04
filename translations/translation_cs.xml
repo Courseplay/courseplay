@@ -270,6 +270,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="没有连接叶片" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="不支持前面挂载叶片" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="发酵池设置" />
+			
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
 		
 	</texts>
 </l10n>
