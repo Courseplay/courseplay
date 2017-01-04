@@ -259,19 +259,19 @@
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />
+        <text name="COURSEPLAY_MODE10_MODE" 						     text="Modalità" />	
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="Livellare e compattare" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="Riempimento" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Arresta automaticamente per" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="Solo courseplayers" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="Tutte con motore acceso" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Rilevare trattori nel raggio di" />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Velocità massima mentre si spinge" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Altezza lama" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="Nessun bunkersilo rilevato al punto di partenza" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Nessuna lama attaccata" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La lama montata anteriormente non è supportata" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo impostazioni" />
 		
 	</texts>
 </l10n>
