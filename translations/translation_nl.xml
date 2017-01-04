@@ -49,8 +49,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Zoek routes en mappen" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Filter uitschakelen" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="overlaad punt bereikt." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="bewaar pijp positie" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "breng pijp in positie" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="bewaar pijp positie" />        
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "breng pijp in positie" />	  
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="wachtpunt bereikt" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="trigger bereikt/eindpunt" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="is klaar met graan transport." />  
@@ -258,18 +258,18 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Toon/verberg kruispunten" />
 	
 		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="egaliseren en comprimeren" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="opvullen" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automatisch stoppen voor" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="alleen courseplayers" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="alle met draaiende motor" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="zoek tractors binnen bereik van " />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max snelheid bij persen" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blad hoogte" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="geen bunkersilo gevonden bij start punt" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="geen blad gemonteerd" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="blad aan voorzijde wordt niet ondersteund" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo instellingen" />
 		
 	</texts>
 </l10n>
