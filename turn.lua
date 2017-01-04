@@ -26,7 +26,7 @@ function courseplay:turn(vehicle, dt)
 	local reverseWPChangeDistance			= 4;
 	local reverseWPChangeDistanceWithTool	= 5;
 	local isHarvester						= courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle);
-	local allowedAngle						= isHarvester and 15 or 5; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
+	local allowedAngle						= isHarvester and 15 or 2.5; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
 	if vehicle.cp.noStopOnEdge then
 		turnOutTimer = 0;
 	end;
@@ -739,11 +739,11 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 
 	--- Get the 3 circle center cordinate, startDir and stopDir
 	local center1, center2, center3, startDir, stopDir = {}, {}, {}, {}, {};
-	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, (abs(turnInfo.targetDeltaX) + turnInfo.turnRadius) * turnInfo.direction, 0, (targetOffsetZ + turnInfo.zOffset) * -1);
-	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, centerOffset * turnInfo.direction, 0, (targetOffsetZ + centerHeight + turnInfo.zOffset) * -1);
-	center3.x,_,center3.z = localToWorld(turnInfo.targetNode, -turnInfo.turnRadius * turnInfo.direction, 0, (targetOffsetZ + turnInfo.zOffset) * -1);
-	startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, (targetOffsetZ + turnInfo.zOffset) * -1);
-	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, (targetOffsetZ + turnInfo.zOffset) * -1);
+	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, (abs(turnInfo.targetDeltaX) + turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.zOffset - targetOffsetZ);
+	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, centerOffset * turnInfo.direction, 0, turnInfo.zOffset - targetOffsetZ - centerHeight);
+	center3.x,_,center3.z = localToWorld(turnInfo.targetNode, -turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.zOffset - targetOffsetZ);
+	startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, turnInfo.zOffset - targetOffsetZ);
+	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.zOffset - targetOffsetZ);
 
 	--- Generate the 3 turn circles
 	courseplay:generateTurnCircle(vehicle, center1, startDir, center2, turnInfo.turnRadius, (turnInfo.direction * -1));
@@ -751,14 +751,14 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 	courseplay:generateTurnCircle(vehicle, center3, center2, stopDir, turnInfo.turnRadius, (turnInfo.direction * -1), true);
 
 	--- Extra WP - Make strait points to field edge if needed
-	if turnInfo.frontMarker < 0 and (targetOffsetZ + turnInfo.zOffset) * -1 < 0 then
+	if turnInfo.frontMarker < 0 and turnInfo.zOffset - targetOffsetZ < 0 then
 		local toPoint = {}
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.frontMarker - 3);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint);
 	end;
 
 	--- Extra WP - End Turn turnInfo.frontMarker
-	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.zOffset - turnInfo.frontMarker + 5);
+	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.zOffset - turnInfo.frontMarker + 5);
 	courseplay:addTurnTarget(vehicle, posX, posZ, false, true);
 end;
 
