@@ -388,7 +388,7 @@ function courseplay:drive(self, dt)
 		--FUEL LEVEL + REFILLING
 		if self.fuelCapacity > 0 then
 			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
-			local searchForFuel = (self.cp.allwaysSearchFuel and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
+			local searchForFuel = (self.cp.allwaysSearchFuel and (currentFuelPercentage < 95) and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
 			if searchForFuel then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 				if self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
