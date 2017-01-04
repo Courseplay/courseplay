@@ -447,19 +447,19 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							tool.stopForManualUnloader = true
 						end
 							
-						if tool.cp.totalFillLevelPercent >= min(tool.cp.driveOnAtFillLevel,99) and tool.cp.hasUnloadingRefillingCourse then
-							if courseplay:timerIsThrough(tool, 'emptyStrawBox', false) then
-								if tool.cp.abortWork == nil then
-									courseplay:setAbortWorkWaypoint(tool);
-									courseplay:resetCustomTimer(tool, 'emptyStrawBox', true);
+						if vehicle.cp.totalFillLevelPercent >= min(vehicle.cp.driveOnAtFillLevel,99) and vehicle.cp.hasUnloadingRefillingCourse then
+							if courseplay:timerIsThrough(vehicle, 'emptyStrawBox', false) then
+								if vehicle.cp.abortWork == nil then
+									courseplay:setAbortWorkWaypoint(vehicle);
+									courseplay:resetCustomTimer(vehicle, 'emptyStrawBox', true);
 								end
 							else
 								allowedToDrive = false;	
 							end
-							if tool.isStrawEnabled and courseplay:timerIsThrough(tool, 'emptyStrawBox', true) and tool.cp.abortWork == nil then
+							if tool.isStrawEnabled and courseplay:timerIsThrough(vehicle, 'emptyStrawBox', true) and vehicle.cp.abortWork == nil then
 								local strawTimer = tool.strawToggleTime or 3500;
 								strawTimer = strawTimer / 1000
-								courseplay:setCustomTimer(tool, 'emptyStrawBox', strawTimer);
+								courseplay:setCustomTimer(vehicle, 'emptyStrawBox', strawTimer);
 							end
 						end						
 							
