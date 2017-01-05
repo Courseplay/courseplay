@@ -273,9 +273,9 @@
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="フロントマウントブレードはサポートされていません" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="バンカーサイロ設定" />
 			
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="ガソリンスタンドで給油する" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="常時" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="20%以下" />
 		
 	</texts>
 </l10n>
