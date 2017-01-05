@@ -443,7 +443,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								tool:setIsTurnedOn(true);
 							end
 						end
-						if tool.pipeIsUnloading and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
+						if tool.overloading ~= nil and tool.overloading.isActive and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
 							tool.stopForManualUnloader = true
 						end
 							
@@ -465,7 +465,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							
 						if tankFillLevelPct >= 100 
 						or tool.waitingForDischarge 
-						or (tool.cp.stopWhenUnloading and tool.pipeIsUnloading and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
+						or (tool.cp.stopWhenUnloading and tool.overloading ~= nil and  tool.overloading.isActive and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
 						or tool.stopForManualUnloader then
 							tool.waitingForDischarge = true;
 							allowedToDrive = false;
