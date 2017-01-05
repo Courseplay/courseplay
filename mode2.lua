@@ -970,13 +970,8 @@ function courseplay:unload_combine(vehicle, dt)
 			local cx_left, cy_left, cz_left = localToWorld(frontTractor.cp.DirectionNode, 30, 0, -backDistance-20)
 			-- righ side of tractor
 			local cx_right, cy_right, cz_right = localToWorld(frontTractor.cp.DirectionNode, -30, 0, -backDistance-20)
-			local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx_left, y, cz_left)
-			-- distance to left position
-			local disL = Utils.vector2Length(lx, lz)
-			local rx, ry, rz = worldToLocal(vehicle.cp.DirectionNode, cx_right, y, cz_right)
-			-- distance to right position
-			local disR = Utils.vector2Length(rx, rz)
-			if disL < disR then
+			
+			if vehicle.sideToDrive == "left" then
 				currentX, currentY, currentZ = cx_left, cy_left, cz_left
 			else
 				currentX, currentY, currentZ = cx_right, cy_right, cz_right
@@ -1004,8 +999,8 @@ function courseplay:unload_combine(vehicle, dt)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		else
-			if distance > 50 then
-				refSpeed = vehicle.cp.speeds.street
+			if dod > 10 then
+				refSpeed = vehicle.cp.speeds.field
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
 				refSpeed = max(frontTractor.lastSpeedReal*3600,vehicle.cp.speeds.crawl)
