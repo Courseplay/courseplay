@@ -271,9 +271,9 @@
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="blad aan voorzijde wordt niet ondersteund" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo instellingen" />
 			
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Tanken bij tankstation" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="altijd" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="onder 20%" />
 		
 	</texts>
 </l10n>
