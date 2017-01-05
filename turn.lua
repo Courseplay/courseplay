@@ -26,7 +26,7 @@ function courseplay:turn(vehicle, dt)
 	local reverseWPChangeDistance			= 4;
 	local reverseWPChangeDistanceWithTool	= 5;
 	local isHarvester						= courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle);
-	local allowedAngle						= isHarvester and 15 or 2.5; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
+	local allowedAngle						= isHarvester and 15 or 5; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
 	if vehicle.cp.noStopOnEdge then
 		turnOutTimer = 0;
 	end;
@@ -875,6 +875,9 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 			--- Extra WP 1 - Move a bit more forward
 			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset);
+			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + 3);
+			courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint);
+			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + 3);
 			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + directionNodeToTurnNodeLength + extraDistance + turnInfo.wpChangeDistance + 6);
 			courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 

@@ -187,7 +187,12 @@ function courseplay:getDistances(object)
 					local tnx, tny, tnz = getWorldTranslation(tempNode);
 					local xdis,ydis,dis = worldToLocal(object.attacherJoint.node, tnx, tny, tnz);
 					local nodeLength = 0;
+					local isPivoted = false;
 					for i = 1, #backTrack do
+						if rotLimits[i][2] > rad(15) then
+							isPivoted = true;
+						end;
+
 						if i == 1 then
 							tempNode = object.attacherJoint.node;
 						else
@@ -201,8 +206,10 @@ function courseplay:getDistances(object)
 						nodeLength = nodeLength + abs(dis);
 					end;
 
-					distances.attacherJointToPivot = nodeLength
-					courseplay:debug(('%s: attacherJointToPivot=%.2f'):format(nameNum(object), distances.attacherJointToPivot), 6);
+					if isPivoted then
+						distances.attacherJointToPivot = nodeLength;
+						courseplay:debug(('%s: attacherJointToPivot=%.2f'):format(nameNum(object), distances.attacherJointToPivot), 6);
+					end;
 				end;
 			end;
 
@@ -370,7 +377,7 @@ function courseplay:getRealTrailerFrontNode(workTool)
 		if jointNode and backtrack and workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT then
 			local rootNode;
 			for _, joint in ipairs(workTool.componentJoints) do
-				if joint.jointNode == jointNode then
+				if joint.jointNode == jointNode and joint.rotLimit[2] > rad(15) then
 					rootNode = workTool.components[joint.componentIndices[2]].node;
 					break;
 				end;
@@ -389,7 +396,9 @@ function courseplay:getRealTrailerFrontNode(workTool)
 
 				workTool.cp.realFrontNode = node;
 			end;
-		else
+		end;
+
+		if not workTool.cp.realFrontNode then
 			if courseplay:getLastComponentNodeWithWheels(workTool) ~= workTool.rootNode then
 				workTool.cp.realFrontNode = courseplay:getRealTurningNode(workTool, workTool.rootNode, "realFrontNode");
 			else
@@ -525,7 +534,8 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 					-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 					for i = 1, #object.wheels do
-						if courseplay:isPartOfNode(object.wheels[i].node, componentNode) and object.wheels[i].isLeft ~= nil and object.wheels[i].maxLatStiffness > 0 then
+						--if courseplay:isPartOfNode(object.wheels[i].node, componentNode) and object.wheels[i].isLeft ~= nil and object.wheels[i].maxLatStiffness > 0 then
+						if courseplay:isPartOfNode(object.wheels[i].node, componentNode) and object.wheels[i].isSynchronized and object.wheels[i].maxLatStiffness > 0 then
 							local x,_,z = getWorldTranslation(object.wheels[i].driveNode);
 							local _,_,dis = worldToLocal(componentNode, x, y, z);
 							dis = dis * invert;
@@ -661,7 +671,8 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 				-- Loop through all the wheels and see if they are attached to this component.
 				for i = 1, #workTool.wheels do
 					-- isLeft is only set for real wheels and not dummy wheels, so we can use that to sort out the dummy wheels
-					if workTool.wheels[i].isLeft ~= nil then
+					--if workTool.wheels[i].isLeft ~= nil then
+					if workTool.wheels[i].isSynchronized then
 						if courseplay:isPartOfNode(workTool.wheels[i].node, component.node) then
 							-- Check if they are linked together
 							for _, joint in ipairs(workTool.componentJoints) do
@@ -776,7 +787,7 @@ function courseplay:getToolTurnRadius(workTool)
 		for i, attachedImplement in pairs(attacherVehicle.attachedImplements) do
 			if attachedImplement.object == workTool then
 				-- Check if AIVehicleUtil can calculate it for us
-				local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement);
+				local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
 				if AIMaxToolRadius > 0 then
 					courseplay:debug(('%s -> TurnRadius: AIVehicleUtil.getMaxToolRadius=%.2fm'):format(nameNum(workTool), AIMaxToolRadius), 6);
 					return AIMaxToolRadius;
@@ -851,8 +862,7 @@ function courseplay:getToolTurnRadius(workTool)
 						TR = courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio);
 
 					-- If pivotRotMax is not greater than 15 degrees,
-					-- then giants have fucked up and we cant get the real pivotRotMax value.
-					-- We will then use half of the length from attacherJoint to turningNode as the turnRadius instead.
+					-- we will then use half of the length from attacherJoint to turningNode as the turnRadius instead.
 					else
 						TR = ceil((workToolDistances.attacherJointToPivot + workToolDistances.attacherJointOrPivotToTurningNode) / 2 * radiusMultiplier);
 					end;
@@ -860,19 +870,27 @@ function courseplay:getToolTurnRadius(workTool)
 
 				-- We are an pivoted trailer
 				else
-					-- Dolly part
-					wheelBase = frontLength + workToolDistances.attacherJointToPivot;
-					CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
-					local pivotTR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
+					-- We have a valid pivotRotMax, so calculate it normally.
+					if pivotRotMax > rad(15) then
+						-- Dolly part
+						wheelBase = frontLength + workToolDistances.attacherJointToPivot;
+						CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
+						local pivotTR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
 
-					-- Trailer part
-					wheelBase = workToolDistances.attacherJointOrPivotToTurningNode;
-					CPRatio = 0;
-					TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio) * radiusMultiplier);
+						-- Trailer part
+						wheelBase = workToolDistances.attacherJointOrPivotToTurningNode;
+						CPRatio = 0;
+						TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, pivotRotMax, CPRatio) * radiusMultiplier);
 
-					-- Take the highest one
-					if pivotTR > TR then
-						TR = pivotTR;
+						-- Take the highest one
+						if pivotTR > TR then
+							TR = pivotTR;
+						end;
+
+					-- If pivotRotMax is not greater than 15 degrees,
+					-- we will then use half of the length from attacherJoint to turningNode as the turnRadius instead.
+					else
+						TR = ceil((workToolDistances.attacherJointToPivot + workToolDistances.attacherJointOrPivotToTurningNode) / 2 * radiusMultiplier);
 					end;
 					courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot trailer)'):format(nameNum(workTool), TR), 6);
 				end;
