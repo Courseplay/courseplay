@@ -132,6 +132,8 @@ function courseplay:setNameVariable(workTool)
 	-- workTool.cp.overwriteTurnRadius:         	(Radius in meters)		Overwrite the default turn radius calculation and uses the value specified.
 	--																		Note: Tractors turn radius also takes into account, so if the tractors turn radius is higher than the tool, then it will use that one instead.
 	-- workTool.cp.implementWheelAlwaysOnGround:	(Boolean)				Implements that have the topReferenceNode set, but still have the wheels on the ground all the time.
+	-- workTool.cp.realTurnNodeOffsetZ:				(Distance in meters)	If real turning node is not calculated corectly, we can add an manual offset z to it.
+	--																		Positive value, moves it forward, Negative value moves it backwards.
 	-- TODO: Add description for all the special varialbes that is usable here.
 	-- ###########################################################
 
@@ -308,6 +310,7 @@ function courseplay:setNameVariable(workTool)
 	-- CULTIVATORS [Giants]
 	-- Horsch Tiger 10 LT [Giants]
 	elseif workTool.cp.xmlFileName == 'horschTiger10LT.xml' then
+		workTool.cp.realTurnNodeOffsetZ = -2.231;
 		workTool.cp.overwriteTurnRadius = 6;
 
 	-- PLOUGHS [Giants]

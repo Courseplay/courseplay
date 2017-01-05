@@ -534,8 +534,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 					-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 					for i = 1, #object.wheels do
-						--if courseplay:isPartOfNode(object.wheels[i].node, componentNode) and object.wheels[i].isLeft ~= nil and object.wheels[i].maxLatStiffness > 0 then
-						if courseplay:isPartOfNode(object.wheels[i].node, componentNode) and object.wheels[i].isSynchronized and object.wheels[i].maxLatStiffness > 0 then
+						if courseplay:isPartOfNode(object.wheels[i].node, componentNode) and object.wheels[i].isLeft ~= nil and object.wheels[i].maxLatStiffness > 0 then
 							local x,_,z = getWorldTranslation(object.wheels[i].driveNode);
 							local _,_,dis = worldToLocal(componentNode, x, y, z);
 							dis = dis * invert;
@@ -597,6 +596,11 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 				courseplay:debug(('%s: getRealTurningNode(): useNode=%q, nodeName=%q, Distance=%2f'):format(nameNum(object), tostring(useNode ~= nil), tostring(transformGroupName), Distance), 6);
 			end;
 
+			if object.cp.realTurnNodeOffsetZ and type(object.cp.realTurnNodeOffsetZ) == "number" then
+				Distance = Distance + object.cp.realTurnNodeOffsetZ;
+				courseplay:debug(('%s: getRealTurningNode(): Special turn node offset set: realTurnNodeOffsetZ=%2f, New Distance=%2f'):format(nameNum(object), object.cp.realTurnNodeOffsetZ, Distance), 6);
+			end;
+
 			if Distance ~= 0 then
 				setTranslation(node, 0, 0, Distance);
 			end;
@@ -638,8 +642,8 @@ function courseplay:getPivotJointNode(workTool)
 			-- Check if we are in the right component.
 			if component.node == componentNode then
 				for jointIndex, joint in ipairs(workTool.componentJoints) do
-					-- Check if we have the right componentJoint
-					if joint.componentIndices[2] == index then
+					-- Check if we have the right componentJoint and if it's an pivot joint
+					if joint.componentIndices[2] == index and joint.rotLimit[2] > rad(15) then
 						-- Set the joint index and stop the loop.
 						workTool.cp.jointNode = workTool.componentJoints[jointIndex].jointNode;
 						break;
@@ -671,8 +675,7 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 				-- Loop through all the wheels and see if they are attached to this component.
 				for i = 1, #workTool.wheels do
 					-- isLeft is only set for real wheels and not dummy wheels, so we can use that to sort out the dummy wheels
-					--if workTool.wheels[i].isLeft ~= nil then
-					if workTool.wheels[i].isSynchronized then
+					if workTool.wheels[i].isLeft ~= nil then
 						if courseplay:isPartOfNode(workTool.wheels[i].node, component.node) then
 							-- Check if they are linked together
 							for _, joint in ipairs(workTool.componentJoints) do

@@ -26,7 +26,7 @@ function courseplay:turn(vehicle, dt)
 	local reverseWPChangeDistance			= 4;
 	local reverseWPChangeDistanceWithTool	= 5;
 	local isHarvester						= courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle);
-	local allowedAngle						= isHarvester and 15 or 5; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
+	local allowedAngle						= isHarvester and 15 or 3; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
 	if vehicle.cp.noStopOnEdge then
 		turnOutTimer = 0;
 	end;
@@ -341,11 +341,11 @@ function courseplay:turn(vehicle, dt)
 					end;
 					local toolRot = Utils.getYRotationFromDirection(dx, dz);
 					toolRot = deg(toolRot);
+					--courseplay:debug(("%s:(Turn) laneRot=%.2f, toolRot=%.2f"):format(nameNum(vehicle), laneRot, toolRot), 14);
 
 					-- Get the angle difference
 					local angleDifference = min( abs((toolRot + 180 - laneRot) %360 - 180), abs((laneRot + 180 - toolRot) %360 - 180) )
 
-					courseplay:debug(("%s:(Turn) laneRot=%.2f, toolRot=%.2f"):format(nameNum(vehicle), laneRot, toolRot), 14);
 					-- If the angle diff is less than the allowed angle, then goto the first wp in oposite drive direction
 					if angleDifference then
 						courseplay:debug(("%s:(Turn) Change direction when anglediff(%.2f) <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
