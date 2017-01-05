@@ -310,9 +310,10 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 					rightMarker = cutter.aiRightMarker;
 					currentCutter = cutter;
 					if leftMarker ~= nil and rightMarker ~= nil then
-						local x, y, z = getWorldTranslation(currentCutter.rootNode);
-						combine.cp.lmX, _, _ = worldToLocal(leftMarker, x, y, z);
-						combine.cp.rmX, _, _ = worldToLocal(rightMarker, x, y, z);
+						local x, y, z = getWorldTranslation(leftMarker);
+						combine.cp.lmX, _, _ = worldToLocal(currentCutter.rootNode, x, y, z);
+						x, y, z = getWorldTranslation(rightMarker)						
+						combine.cp.rmX, _, _ = worldToLocal(currentCutter.rootNode, x, y, z);
 					end;
 				end;
 			end;
