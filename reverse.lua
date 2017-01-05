@@ -48,7 +48,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 	local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode);
 	local tcx,tcy,tcz =0,0,0;
 	local index = vehicle.cp.waypointIndex + 1;
-	if debugActive then
+	if debugActive and not newTarget then
 		drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1);
 		if not vehicle.cp.checkReverseValdityPrinted then
 			local checkValdity = false;
