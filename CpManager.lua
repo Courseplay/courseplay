@@ -103,9 +103,9 @@ function CpManager:loadMap(name)
 	if CpManager.isDeveloper then
 		addConsoleCommand('cpAddMoney', ('Add %s to your bank account'):format(g_i18n:formatMoney(5000000)), 'devAddMoney', self);
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
-		addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	end;
-
+	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
+	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
 	self.confirmedNoneTipTriggers = {};
