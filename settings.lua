@@ -344,6 +344,16 @@ function courseplay:getCuttingAreaValuesX(object)
 end;
 
 function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
+	local isSetManually = false
+	if force == nil and noDraw == nil then
+		--print("is set manually")
+		isSetManually = true
+	elseif force ~= nil and noDraw ~= nil then
+		--print("is set by script")
+	elseif force ~= nil and noDraw == nil then
+		vehicle.cp.manualWorkWidth = nil
+		--print("is set by calculate button")
+	end
 	if force then
 		vehicle.cp.workWidth = max(courseplay:round(abs(force), 1), 0.1);
 	else
@@ -361,6 +371,9 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 			vehicle.cp.workWidth = max(vehicle.cp.workWidth + changeBy, 0.1);
 		end;
 	end;
+	if isSetManually then
+		vehicle.cp.manualWorkWidth = vehicle.cp.workWidth
+	end
 	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
