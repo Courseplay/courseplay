@@ -257,11 +257,11 @@
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="移动任务到目录" /> 
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="删除任务或目录" /> 
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="模式10" />
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="工作模式" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="平整和压实" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="填充" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="自动停止" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="只是CP" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="CP控制的" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="所有的" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="扫描工作范围 " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="最大速度" />
@@ -271,9 +271,9 @@
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="不支持前面挂载叶片" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="发酵池设置" />
 			
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="在加油站加注燃料" />  <!--Refill fuel at gas station -->
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="总是" />     <!--always -->
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="低于20%" />    <!--below 20% -->
 		
 	</texts>
 </l10n>
