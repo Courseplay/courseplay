@@ -53,8 +53,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Recherche de course et de dossier" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 					 	 text="Désactive les filtres" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="a atteint le point de déchargement." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="Enregistrer la position de la vis" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="Positionner la vis" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="a atteint le point d'attente" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 					 	 text="a atteint la fin de la course" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="a terminé le transport." />
@@ -153,8 +153,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Ouest" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Fourrière:" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="activé" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Nom seul" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nom et Course" />
 		<text name="COURSEPLAY_DEACTIVATED" 						 	 text="désactivé" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 						 	 text="Traceurs:" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 					 	 text="Déchargement aux champs" />
@@ -258,23 +258,23 @@
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 	 text="Afficher le curseur" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 					 	 text="Cacher le curseur" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="Mode" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nivellement et tassement" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="remplissage" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Stopper automatiquent " />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="courseplayers" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="tout véhicule" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Déctection des véhicules dans un rayon de " />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Vitesse max pendant le remplissage" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Hauteur de la lame" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="Le point de départ n'est pas dans le bunkersilo" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Pas de lame attachée" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La lame avant n'est pas supportée" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Paramètres BunkerSilo" />
 			
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Faire le plein à la station" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="toujours" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="en dessous de 20%" />
 		
 	</texts>
 </l10n>
