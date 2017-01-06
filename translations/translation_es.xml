@@ -90,8 +90,8 @@
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="ruta: no se ha cargado la ruta" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Luces adicionales:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="todas apagadas" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="rotativas (solo en carretera)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Rotativas &amp; luces emergencia (solo carretera)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="Rotativas (solo en carretera)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Rotativas y luces emergencia (solo carretera)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Rotativas (siempre encendidas)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Courseplay control" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Controles de cosechadora" />
@@ -116,21 +116,21 @@
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="Cosechadora fuera de alcance" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="Esperar a que la cosechadora gire" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="Esperando el nuevo punto" />
-		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="siguiendo a tractor" />
-		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="debe repostar pronto" />
-		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="debe repostar ya!" />
-		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="está repostando" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Siguiendo a tractor" />
+		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="Debe repostar pronto" />
+		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="Debe repostar ya!" />
+		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="Está repostando" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Demasiados puntos de espera! Sólo %d permitido." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Pocos puntos de espera! Requiere al menos %d." />
-		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="remolque incorrecto para este modo" />
-		<text name="COURSEPLAY_WRONG_TOOL" 								 text="herramienta incorrecta para este modo" />
-		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="este vehículo no es compatible en este modo" />
-		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="está esperando a que el tiempo mejore" />
+		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Remolque incorrecto para este modo" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Herramienta incorrecta para este modo" />
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Este vehículo no es compatible en este modo" />
+		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="Está esperando a que el tiempo mejore" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Decalaje del carril" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Herramienta: decalaje lateral" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Herramienta: decalaje delante/atras" />
-		<text name="COURSEPLAY_FRONT" 									 text="delante" />
-		<text name="COURSEPLAY_BACK" 									 text="detrás" />
+		<text name="COURSEPLAY_FRONT" 									 text="Delante" />
+		<text name="COURSEPLAY_BACK" 									 text="Detrás" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Ancho de trabajo" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="Precaución! Aguas profundas" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Abrir Courseplay:" />
@@ -198,10 +198,10 @@
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="Perímetro del campo número" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="Añadir perímetro del campo %d a la lista" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="Sobrescribir el perímetro del campo %d de la lista" />
-		<text name="COURSEPLAY_USER" 									 text="usuario" />
-		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="debe repararse pronto" />
-		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="debe repararse" />
-		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="está reparado" />
+		<text name="COURSEPLAY_USER" 									 text="Usuario" />
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="Debe repararse pronto" />
+		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="Debe repararse" />
+		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="Está reparado" />
 		<text name="COURSEPLAY_COVER_HANDLING" 							 text="Lonas" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 			 text="Cancelar la asignación a esta cosechadora" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Detenerse durante la descarga" />
@@ -257,23 +257,23 @@
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover a otra carpeta" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Borrar ruta/carpeta" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="Modo" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="Nivelando y Compactando" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="Llenando" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Automáticamente parado para" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="Solo conductores CP" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="Todos con motor encendido" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Detectados tractores en el rango de " />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Velocidad maxima mientras empuja" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Altura de Hoja" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="No se ha detectado punto inicio en BunkerSilo" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Hoja no enganchada" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La hoja frontal no está soportada" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Ajustes BunkerSilo" />
 			
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Recargar gasóleo en gasolinera" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="Siempre" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="Por debajo de 20%" />
 		
 	</texts>
 </l10n>
