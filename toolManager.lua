@@ -821,7 +821,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			local fillType = tipper.cp.fillType;
 			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper, tipper.preferedTipReferencePointIndex);
 			local trailerInTipRange = false
-			if not isBGA then
+			if not isBGA and tipper.tipState == Trailer.TIPSTATE_CLOSED then
 				trailerInTipRange =  g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
 				courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
 			end
@@ -959,10 +959,12 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							else
 								tipper:toggleTipState(ctt, bestTipReferencePoint);
 							end
-							tipper.cp.isTipping = true;
 							courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper.name), 2);
-							allowedToDrive = false;
 						end
+					else
+						tipper.cp.isTipping = true;
+						courseplay:debug(nameNum(vehicle)..": set isTipping", 2);
+						allowedToDrive = false;
 					end;
 				else
 					if tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
