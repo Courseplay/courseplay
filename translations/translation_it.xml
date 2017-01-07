@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_7" 									 text="Modo: La trebbia va a scaricare nel rimorchio" />
 		<text name="COURSEPLAY_MODE_8" 									 text="Modo: Trasporto liquame" />
 		<text name="COURSEPLAY_MODE_9" 									 text="Modo: Riempi e svuota pala" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Modo: Livellare e compattare" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Continua" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Azzera percorso" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Avvia ora" />
