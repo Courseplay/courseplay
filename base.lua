@@ -1397,7 +1397,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.ridgeMarkersAutomatic = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'), true);
 		self.cp.abortWork 			  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),			 0);
 		self.cp.manualWorkWidth		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),	     0);
-		print("load self.cp.manualWorkWidth = "..tostring(self.cp.manualWorkWidth))
 		if self.cp.abortWork 		  == 0 then
 			self.cp.abortWork = nil;
 		end;

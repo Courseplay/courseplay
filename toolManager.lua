@@ -922,6 +922,10 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 			-- REGULAR TIPTRIGGER
 			elseif not isBGA then
+				if ctt.isAreaTrigger then
+					trailerInTipRange = g_currentMission.trailerTipTriggers[tipper] ~= nil
+				end
+				
 				goForTipping = trailerInTipRange;
 
 				--AlternativeTipping: don't unload if full
