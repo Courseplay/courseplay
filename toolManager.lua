@@ -922,10 +922,9 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 
 			-- REGULAR TIPTRIGGER
 			elseif not isBGA then
-				if ctt.isAreaTrigger then
-					trailerInTipRange = g_currentMission.trailerTipTriggers[tipper] ~= nil
-				end
-				
+				--if ctt.isAreaTrigger then
+				--	trailerInTipRange = g_currentMission.trailerTipTriggers[tipper] ~= nil
+				--end
 				goForTipping = trailerInTipRange;
 
 				--AlternativeTipping: don't unload if full
@@ -943,7 +942,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					else
 						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
 					end;
-
 					if tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING then
 						local isNearestPoint = false
 						if distanceToTrigger > tipper.cp.closestTipDistance then
@@ -953,23 +951,33 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 							tipper.cp.closestTipDistance = distanceToTrigger
 						end
 						if distanceToTrigger == 0 or isBGA or isNearestPoint then
-							if isBGA then
+							--if isBGA then
 								--tip to ground or existing heap
-								tipper:toggleTipState(nil, bestTipReferencePoint);
-							else
-								tipper:toggleTipState(ctt, bestTipReferencePoint);
-							end
-							tipper.cp.isTipping = true;
-							courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper.name), 2);
-							allowedToDrive = false;
-						end
+							--	tipper:toggleTipState(nil, bestTipReferencePoint);
+							--else
+							--	tipper:toggleTipState(ctt, bestTipReferencePoint);
+							--end
+								courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper.name), 2);
+							--	allowedToDrive = false;
+								tipper.cp.isTipping = true;
+						end;
 					end;
 				else
-					if tipper.tipState ~= Trailer.TIPSTATE_CLOSING then
+					if tipper.tipState == Trailer.TIPSTATE_CLOSED then
+						if isBGA then
+							--tip to ground or existing heap
+							tipper:toggleTipState(nil, bestTipReferencePoint);
+						else
+							tipper:toggleTipState(ctt, bestTipReferencePoint);
+						end;
+					end;
+					if tipper.tipState == Trailer.TIPSTATE_OPENING or tipper.tipState == Trailer.TIPSTATE_OPEN then
 						tipper.cp.closestTipDistance = math.huge
 						allowedToDrive = false;
+					end						
+					if tipper.tipState == Trailer.TIPSTATE_CLOSING then
+						allowedToDrive = true;
 					end;
-
 					if isBGA and ((not vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
 						allowedToDrive = allowedToDriveBackup;
 					end;
