@@ -1008,11 +1008,11 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	--if turnInfo.isHarvester then
 
 	--- Get the 2 circle center cordinate
-	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.targetDeltaZ - turnInfo.zOffset);
-	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction * -1, 0, turnInfo.targetDeltaZ - turnInfo.zOffset - turnInfo.centerHeight);
+	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.targetDeltaZ + turnInfo.zOffset);
+	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction * -1, 0, turnInfo.targetDeltaZ + turnInfo.zOffset - turnInfo.centerHeight);
 
 	--- Generate first turn circle (Forward)
-	startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, turnInfo.targetDeltaZ - turnInfo.zOffset);
+	startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, turnInfo.targetDeltaZ + turnInfo.zOffset);
 	courseplay:generateTurnCircle(vehicle, center1, startDir, center2, turnInfo.turnRadius, turnInfo.direction, true);
 
 	--- Move a little bit more forward, so we can reverse properly
@@ -1032,7 +1032,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	courseplay:addTurnTarget(vehicle, posX, posZ);
 
 	--- Generate second turn circle (Reversing)
-	local zPossition = turnInfo.targetDeltaZ - turnInfo.zOffset - turnInfo.centerHeight;
+	local zPossition = turnInfo.targetDeltaZ + turnInfo.zOffset - turnInfo.centerHeight;
 	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition);
 	courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, turnInfo.turnRadius, turnInfo.direction, true, true);
 
@@ -1061,7 +1061,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	end;
 
 	--- Finish the turn
-	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.zOffset + 5);
+	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength - turnInfo.zOffset + 5);
 	courseplay:addTurnTarget(vehicle, posX, posZ, false, true);
 end;
 
