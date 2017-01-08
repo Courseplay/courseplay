@@ -208,7 +208,15 @@ function courseplay:turn(vehicle, dt)
 			end;
 
 			--- Calculate reverseOffset in case we need to reverse
-			turnInfo.reverseOffset = turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight;
+			local offset = turnInfo.zOffset;
+			if turnInfo.frontMarker > 0 then
+				offset = -turnInfo.zOffset - turnInfo.frontMarker;
+			end;
+			if turnInfo.turnOnField then
+				turnInfo.reverseOffset = max((turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight), offset);
+			else
+				turnInfo.reverseOffset = offset;
+			end;
 
 			courseplay:debug(("%s:(Turn Data) frontMarker=%q, halfVehicleWidth=%q, directionNodeToTurnNodeLength=%q, wpChangeDistance=%q"):format(nameNum(vehicle), tostring(turnInfo.frontMarker), tostring(turnInfo.halfVehicleWidth), tostring(turnInfo.directionNodeToTurnNodeLength), tostring(turnInfo.wpChangeDistance)), 14);
 			courseplay:debug(("%s:(Turn Data) reverseWPChangeDistance=%q, direction=%q, haveHeadlands=%q, headlandHeight=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseWPChangeDistance), tostring(turnInfo.direction), tostring(turnInfo.haveHeadlands), tostring(turnInfo.headlandHeight)), 14);
@@ -376,7 +384,7 @@ function courseplay:turn(vehicle, dt)
 		elseif vehicle.cp.turnStage == 3 then
 			local _, _, deltaZ = worldToLocal(vehicle.cp.DirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
 
-			local lowerImplements = deltaZ < frontMarker;
+			local lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
 			if newTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
@@ -538,6 +546,11 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	-- Check if we can turn on the headlands
 	if (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) <= turnInfo.headlandHeight then
 		canTurnOnHeadland = true;
+	end;
+
+	--- Get the center height offset
+	if not turnInfo.haveHeadlands then
+		turnInfo.reverseOffset = turnInfo.reverseOffset + abs(turnInfo.targetDeltaZ * 0.75);
 	end;
 
 	--- Add extra length to the directionNodeToTurnNodeLength if there is an pivoted tool behind the tractor.
