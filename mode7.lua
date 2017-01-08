@@ -35,11 +35,16 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 			local cx7, cz7 = vehicle.Waypoints[vehicle.cp.numWaypoints].cx, vehicle.Waypoints[vehicle.cp.numWaypoints].cz;
 			local cty7 = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx7,1, cz7)
 			local lx7, lz7 = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, cx7, cty7, cz7);
-			local x7,y7,z7 = localToWorld(vehicle.cp.DirectionNode, 0, 0, -15);
+			local x7,y7,z7 = localToWorld(vehicle.cp.DirectionNode, 0, 0, -30);
+			local x7d,y7d,z7d = localToWorld(vehicle.cp.DirectionNode, 0, 0, -15);
 			vehicle.cp.mode7t = {};
 			vehicle.cp.mode7t.x = x7;
 			vehicle.cp.mode7t.y = y7;
 			vehicle.cp.mode7t.z = z7;
+			vehicle.cp.mode7d = {};
+			vehicle.cp.mode7d.x = x7d;
+			vehicle.cp.mode7d.y = y7d;
+			vehicle.cp.mode7d.z = z7d;
 			local fx,fy,fz = 0,0,0;
 			local isField = true;
 			for i = 0.5, 3 do
@@ -94,7 +99,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 		refSpeed = vehicle.cp.speeds.field;
 		if vehicle.cp.mode7GoBackBeforeUnloading then
 			refSpeed = vehicle.cp.speeds.turn;
-			local dist = courseplay:distanceToPoint(vehicle, vehicle.cp.mode7t.x,vehicle.cp.mode7t.y,vehicle.cp.mode7t.z);
+			local dist = courseplay:distanceToPoint(vehicle, vehicle.cp.mode7d.x,vehicle.cp.mode7d.y,vehicle.cp.mode7d.z);
 			if dist < 1 then
 				vehicle.cp.mode7GoBackBeforeUnloading = false;
 				courseplay:setWaypointIndex(vehicle, 2);
@@ -170,7 +175,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				
 			elseif targets == 0 then
 				refSpeed = vehicle.cp.speeds.turn;
-				if distance_to_wp < 15 and not isAutoCombine then
+				if distance_to_wp < 10 and not isAutoCombine then
 					vehicle:setIsTurnedOn(true);
 				end
 			end

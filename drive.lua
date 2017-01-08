@@ -37,7 +37,7 @@ function courseplay:drive(self, dt)
 	local forceTrueSpeed = false
 	local refSpeed = huge
 	local speedDebugLine = "refSpeed"
-	self.cp.speedDebugLine = nil
+	self.cp.speedDebugLine = "no speed info"
 	self.cp.speedDebugStreet = nil
 	local cx,cy,cz = 0,0,0
 	-- may I drive or should I hold position for some reason?

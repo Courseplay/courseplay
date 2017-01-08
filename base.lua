@@ -41,6 +41,7 @@ function courseplay:load(savegame)
 		self.cp.mode7makeHeaps = false
 		self.cp.driverPriorityUseFillLevel = false;
 	end
+	self.cp.speedDebugLine = "no speed info"
 	self.cp.stopWhenUnloading = false;
 
 	-- GIANT DLC
@@ -532,7 +533,7 @@ function courseplay:draw()
 	end;
 	--DEBUG Speed Setting
 	if courseplay.debugChannels[21] then
-		renderText(0.2, 0.105, 0.02, string.format("mode%d rn: %d",self.cp.mode,self.cp.waypointIndex));
+		renderText(0.2, 0.105, 0.02, string.format("mode%d waypointIndex: %d",self.cp.mode,self.cp.waypointIndex));
 		renderText(0.2, 0.075, 0.02, self.cp.speedDebugLine);
 		if self.cp.speedDebugStreet then
 			local mode = "max"
@@ -549,10 +550,7 @@ function courseplay:draw()
 		end	
 		if (self.cp.mode == 2 or self.cp.mode ==3) and self.cp.activeCombine ~= nil then
 			local combine = self.cp.activeCombine	
-			renderText(0.2,0.255,0.02,string.format("combine.lastSpeedReal: %.6f ",combine.lastSpeedReal*3600))
-			renderText(0.2,0.225,0.02,"combine.turnStage: "..combine.turnStage)
-			renderText(0.2,0.195,0.02,"combine.cp.turnStage: "..combine.cp.turnStage)
-			renderText(0.2,0.165,0.02,"combine.acTurnStage: "..combine.acTurnStage)
+			renderText(0.2,0.165,0.02,string.format("combine.lastSpeedReal: %.6f ",combine.lastSpeedReal*3600))
 			renderText(0.2,0.135,0.02,"combineIsTurning: "..tostring(self.cp.mode2DebugTurning ))
 		end	
 	end

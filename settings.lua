@@ -1531,6 +1531,9 @@ end;
 
 -- INGAME MAP ICONS
 function courseplay:createMapHotspot(vehicle)
+	if vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING then
+		return
+	end
 	local name = '';
 	if CpManager.ingameMapIconShowText then
 		if CpManager.ingameMapIconShowName then
