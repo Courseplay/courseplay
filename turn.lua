@@ -792,10 +792,20 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	local centerHeight = square(sideC^2 - sideB^2);
 	courseplay:debug(("%s:(Turn) centerOffset=%s, sideB=%s, sideC=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(centerOffset), tostring(sideB), tostring(sideC), tostring(centerHeight)), 14);
 
+	--- Check if we can turn on the headlands
+	if (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
+		canTurnOnHeadland = true;
+	end;
+	courseplay:debug(("%s:(Turn) canTurnOnHeadland=%s, headlandHeight=%.2fm, spaceNeeded=%.2fm"):format(nameNum(vehicle), tostring(canTurnOnHeadland), turnInfo.headlandHeight, (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth)), 14);
+
 	--- Target is behind of us
 	local targetOffsetZ = 0;
 	if turnInfo.targetDeltaZ < turnInfo.zOffset then
-		targetOffsetZ = turnInfo.zOffset + abs(turnInfo.targetDeltaZ);
+		if canTurnOnHeadland then
+			targetOffsetZ = abs(turnInfo.targetDeltaZ);
+		else
+			targetOffsetZ = turnInfo.zOffset + abs(turnInfo.targetDeltaZ);
+		end;
 	end;
 
 	--- Get the center height offset
@@ -803,12 +813,6 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	if not turnInfo.haveHeadlands then
 		centerHeightOffset = centerHeightOffset + abs(turnInfo.targetDeltaZ * 0.75);
 	end;
-
-	--- Check if we can turn on the headlands
-	if (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
-		canTurnOnHeadland = true;
-	end;
-	courseplay:debug(("%s:(Turn) canTurnOnHeadland=%s, headlandHeight=%.2fm, spaceNeeded=%.2fm"):format(nameNum(vehicle), tostring(canTurnOnHeadland), turnInfo.headlandHeight, (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth)), 14);
 
 	--- Get the numLanes and onLaneNum, so we can switch to the right turn maneuver.
 	local widthLeft = (turnInfo.numLanes - turnInfo.onLaneNum) * vehicle.cp.courseWorkWidth;
@@ -838,11 +842,6 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 				toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, centerHeightOffset);
 				courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint);
 			end;
-		else
-			-- Move forward to the first turn circle
-			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, turnInfo.targetDeltaZ + turnInfo.zOffset);
-			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX, 0, centerHeightOffset);
-			courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint);
 		end;
 
 		--- Get the new zOffset
