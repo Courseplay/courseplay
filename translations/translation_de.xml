@@ -273,7 +273,7 @@
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="vorn montierte Schiebeschilder werden nicht unterstützt" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo Einstellungen" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo wird befüllt durch" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTROUGHT" 					 text="durchfahren" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="durchfahren" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="rückwärts abkippen" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Kraftstoff an der Tankstelle nachfüllen" />

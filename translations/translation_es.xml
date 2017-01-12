@@ -272,7 +272,7 @@
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Ajustes BunkerSilo" />
 		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTROUGHT" 					 text="driving trought" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Recargar gasóleo en gasolinera" />
