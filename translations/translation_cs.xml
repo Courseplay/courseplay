@@ -270,7 +270,11 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="没有连接叶片" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="不支持前面挂载叶片" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="发酵池设置" />
-			
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTROUGHT" 					 text="driving trought" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="在加油站加注燃料" />  <!--Refill fuel at gas station -->
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="总是" />     <!--always -->
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="低于20%" />    <!--below 20% -->

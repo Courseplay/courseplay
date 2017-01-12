@@ -265,7 +265,16 @@ function courseplay:drive(self, dt)
 		
 		elseif self.cp.mode == 10 then
 			if #self.cp.mode10.stoppedCourseplayers > 0 then
-				self.cp.mode10.stoppedCourseplayers ={}
+				for i=1,#self.cp.mode10.stoppedCourseplayers do
+					local courseplayer = self.cp.mode10.stoppedCourseplayers[i]
+					local tx,tz = self.Waypoints[1].cx,self.Waypoints[1].cz
+					local ty = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tx, 1, tz);
+					local distance = courseplay:distanceToPoint(courseplayer,tx,ty,tz)
+					if distance > self.cp.mode10.searchRadius then
+						table.remove(self.cp.mode10.stoppedCourseplayers,i)
+						break
+					end
+				end
 			end
 			if (self.cp.actualTarget and self.cp.actualTarget.empty) or (self.cp.mode10.deadline and self.cp.mode10.deadline == self.cp.mode10.firstLine) then
 				if courseplay:timerIsThrough(self,'BunkerEmpty') then

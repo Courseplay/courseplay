@@ -271,7 +271,11 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />
-			
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTROUGHT" 					 text="driving trought" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />

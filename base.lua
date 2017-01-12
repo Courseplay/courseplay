@@ -170,7 +170,8 @@ function courseplay:load(savegame)
 	self.cp.mode10.lastTargetLine = 99
 	self.cp.mode10.deadline = nil
 	self.cp.mode10.firstLine = 0
-	
+	self.cp.mode10.bladeOffset = 0
+	self.cp.mode10.drivingThroughtLoading = false
 	
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
@@ -562,7 +563,16 @@ function courseplay:draw()
 		local wx,wz = fillUnit.wx,fillUnit.wz
 		local bx,bz = fillUnit.bx,fillUnit.bz
 		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
-		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz)+0.5;
+		local y = 0
+		if self.cp.mode10.leveling then
+			if self.cp.mode10.automaticHeigth then
+				y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz)+ fillUnit.height;
+			else
+				y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz) + self.cp.mode10.shieldHeight + self.cp.tractorHeight ;
+			end
+		else
+			y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz) + 0.5;
+		end
 		drawDebugLine(sx, y, sz, 1, 0, 0, wx, y, wz, 1, 0, 0);
 		drawDebugLine(wx, y, wz, 1, 0, 0, hx, y, hz, 1, 0, 0);
 		drawDebugLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz, 1, 0, 0);
@@ -575,19 +585,22 @@ function courseplay:draw()
 				renderText(0.2,0.165,0.02,"triesTheSameFillUnit: "..tostring(self.cp.mode9triesTheSameFillUnit))
 			end
 		elseif self.cp.mode == 10 then
-			local x,y,z = getWorldTranslation(self.cp.workTools[1].rootNode);
-			local ty = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 1, z);
-			local height = y-ty
-			renderText(0.2,0.285,0.02,"numStoppedCPs: "..tostring(#self.cp.mode10.stoppedCourseplayers ))
-			renderText(0.2,0.255,0.02,"height: "..tostring(height))
-			renderText(0.2,0.225,0.02,"shieldHeight: "..tostring(self.cp.mode10.shieldHeight))
-			renderText(0.2,0.195,0.02,"lowestAlpha: "..tostring(self.cp.mode10.lowestAlpha))
-			renderText(0.2,0.165,0.02,"speeds.bunkerSilo: "..tostring(self.cp.speeds.bunkerSilo))
-			renderText(0.2,0.135,0.02,"jumpsPerRun: "..tostring(self.cp.mode10.jumpsPerRun))
-			renderText(0.2,0.105,0.02,"targetHeigth: "..tostring(self.cp.mode10.targetHeigth))
+
+			renderText(0.2,0.395,0.02,"numStoppedCPs: "..tostring(#self.cp.mode10.stoppedCourseplayers ))
+			renderText(0.2,0.365,0.02,"shieldHeight: "..tostring(self.cp.mode10.shieldHeight))
+			renderText(0.2,0.335,0.02,"lowestAlpha: "..tostring(self.cp.mode10.lowestAlpha))
+			renderText(0.2,0.305,0.02,"speeds.bunkerSilo: "..tostring(self.cp.speeds.bunkerSilo))
+			renderText(0.2,0.275,0.02,"jumpsPerRun: "..tostring(self.cp.mode10.jumpsPerRun))
+			renderText(0.2,0.245,0.02,"bladeOffset: "..tostring(self.cp.mode10.bladeOffset))
+			renderText(0.2,0.215,0.02,"diffY: "..tostring(self.cp.diffY ))
+			renderText(0.2,0.195,0.02,"tractorHeight: "..tostring(self.cp.tractorHeight ))
+			renderText(0.2,0.165,0.02,"shouldBHeight: "..tostring(self.cp.shouldBHeight ))
+			renderText(0.2,0.135,0.02,"targetHeigth: "..tostring(self.cp.mode10.targetHeigth))
+			renderText(0.2,0.105,0.02,"height: "..tostring(self.cp.currentHeigth))
 		end
 	end
 
+	
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)

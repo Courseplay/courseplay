@@ -270,7 +270,11 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="geen blad gemonteerd" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="blad aan voorzijde wordt niet ondersteund" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo instellingen" />
-			
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTROUGHT" 					 text="driving trought" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Tanken bij tankstation" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="altijd" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="onder 20%" />

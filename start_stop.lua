@@ -187,6 +187,7 @@ function courseplay:start(self)
 	self.cp.shovelFillEndPoint = nil
 	self.cp.shovelEmptyPoint = nil
 	self.cp.mode9SavedLastFillLevel = 0;
+	self.cp.mode10.alphaList = {}
 	local nearestpoint = dist
 	local recordNumber = 0
 	local curLaneNumber = 1;

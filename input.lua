@@ -324,6 +324,8 @@ function courseplay:executeFunction(self, func, value, page)
 				if self.cp.mode10.leveling then
 					courseplay:toggleMode10AutomaticHeight(self)
 				end
+			elseif 	line == 7 then
+				courseplay:toggleMode10drivingThroughtLoading(self)
 			end 
 		end; --END is page 0 or 1 or 3 or 10
 	end; --END isRowFunction

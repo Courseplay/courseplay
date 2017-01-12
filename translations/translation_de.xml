@@ -225,8 +225,8 @@
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Letzten Wegpunkt löschen" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Wartepunkt setzen" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Kreuzungspunkt setzen" />
-		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Wendemaneuver beginnen" />
-		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Wendemaneuver beenden" />
+		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Wendemanöver beginnen" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Wendemanöver beenden" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Rückwärtsfahren beginnen" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Rückwärtsfahren beenden" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Zwischenpunkte hinzufügen" />
@@ -267,10 +267,14 @@
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="erkenne Fahrzeuge im Umkreis von" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="maximale Geschwindigkeit beim Schieben" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Schildhöhe" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Schildbreite" />
 		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="kein Bunkersilo am Startpunkt gefunden" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="kein Schiebeschild vorhanden" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="vorn montierte Schiebeschilder werden nicht unterstützt" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo Einstellungen" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo wird befüllt durch" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTROUGHT" 					 text="durchfahren" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="rückwärts abkippen" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Kraftstoff an der Tankstelle nachfüllen" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="immer" />

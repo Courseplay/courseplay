@@ -27,7 +27,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 		for rootNode,courseplayer in pairs (CpManager.activeCoursePlayers) do
 			local distance = courseplay:distanceToPoint(courseplayer,vehicle.Waypoints[1].cx,ty ,vehicle.Waypoints[1].cz) --courseplay:nodeToNodeDistance(vehicle.cp.DirectionNode, rootNode)
 			--print(string.format("%s: distance = %s",tostring(rootNode),tostring(distance)))
-			if distance  < vehicle.cp.mode10.searchRadius and courseplayer ~= vehicle then
+			if distance  < vehicle.cp.mode10.searchRadius and courseplayer ~= vehicle and  courseplayer.cp.totalFillLevel ~= nil and courseplayer.cp.totalFillLevel > 1 then
 				local insert = true
 				for i=1,#vehicle.cp.mode10.stoppedCourseplayers do
 					if courseplayer == vehicle.cp.mode10.stoppedCourseplayers[i] then
@@ -114,27 +114,68 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				goSave = true
 			end
 			
-			local currentHeight = (y-ty)-(dy-dty)
+			local currentHeight = courseplay:round(y-ty,2)
 			vehicle.cp.currentHeigth = currentHeight
-			local shouldBHeight = vehicle.cp.mode10.shieldHeight
-			local heightDiff  = courseplay:round(shouldBHeight,2) - courseplay:round(currentHeight,2)
-			local targetHeigth = courseplay:round(shouldBHeight,2) - (diffY*0.75)			
+
+			local shouldBHeight = 0
+			local targetUnit = vehicle.cp.BunkerSiloMap[vehicle.cp.actualTarget.line][vehicle.cp.actualTarget.column]
+			--print(string.format("targetUnit.height(%s)-(dy-dty)(%s)",tostring(targetUnit.height),tostring(y-dty)))
+			---(dy-dty) --vehicle.cp.mode10.shieldHeight
+						
+			cx ,cz = targetUnit.cx, targetUnit.cz
+			cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
+				
+			local distance2Target =  courseplay:distance(x,z, cx, cz) --distance from shovel to target
+			
+			
 			
 			if vehicle.cp.mode10.leveling then
 				if vehicle.cp.speeds.bunkerSilo > 15 then
 					vehicle.cp.speeds.bunkerSilo = 15
-				elseif vehicle.cp.speeds.bunkerSilo > 8 then
+				elseif vehicle.cp.speeds.bunkerSilo > 10 then
 					emptyTimer = 0.8
 				end
+				if vehicle.cp.mode10.automaticSpeed then --hard code till soultion for variable speed is available
+					vehicle.cp.speeds.bunkerSilo = 8
+				end
+				
+				
+				
+				if vehicle.cp.mode10.automaticHeigth then
+					local tempHeight = targetUnit.height
+					if vehicle.cp.actualTarget.line == #vehicle.cp.BunkerSiloMap and tempHeight < 1.2 then
+						shouldBHeight = tempHeight + 0.3
+					elseif vehicle.cp.actualTarget.line < 2 then
+						shouldBHeight = Utils.clamp(tempHeight,0.3,0.8)
+					elseif vehicle.cp.actualTarget.line == 2 and tempHeight > 0.8 then
+						shouldBHeight =  ((tempHeight - 0.8) /distance2Target)+ 0.8
+					else
+						shouldBHeight = math.max(0.3,tempHeight)
+					end	
+				else
+					shouldBHeight = vehicle.cp.mode10.shieldHeight +(dy-dty)	
+				end
+				
 				refSpeed =  15
 			else
-				targetHeigth = 0
 				refSpeed = 20
-			end	
+			end
+				
+			local heightDiff  = courseplay:round(shouldBHeight,2) - courseplay:round(currentHeight,2)
+			local targetHeigth = courseplay:round(shouldBHeight,3) + (courseplay:round(shouldBHeight,3)- currentHeight) -(dy-dty)  - diffY 	+ vehicle.cp.mode10.bladeOffset		
 			
-			vehicle.cp.mode10.targetHeigth = targetHeigth
+			vehicle.cp.shouldBHeight = courseplay:round(shouldBHeight,2)
+			vehicle.cp.tractorHeight = courseplay:round(dy-dty,2)
+			vehicle.cp.diffY = courseplay:round(diffY,2)
+			vehicle.cp.mode10.targetHeigth = courseplay:round(targetHeigth,2)
 						
-			if vehicle.cp.shieldState == "down" and  targetHeigth < 0 then  --TODO find a proper way to trigger  swinging 
+			
+			if not vehicle.cp.mode10.leveling then
+				targetHeigth = 0
+			end
+			
+			
+			--[[if vehicle.cp.shieldState == "down" and  targetHeigth < 0 then  --TODO find a proper way to trigger  swinging 
 				--print("jump detected : "..tostring(vehicle.cp.mode10.lastDiffDiff))
 				if not vehicle.cp.mode10.jumpIsCounted then
 					vehicle.cp.mode10.jumpsPerRun = vehicle.cp.mode10.jumpsPerRun + 1 
@@ -142,9 +183,10 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				end
 			else
 				vehicle.cp.mode10.jumpIsCounted = false
-			end
+			end]]
+
 			
-			if vehicle.cp.shieldState == "down" and math.abs(diffY) > 0.01 then -- math.abs(heightDiff) > 0.05 then
+			if vehicle.cp.shieldState == "down" and math.abs(heightDiff) > 0.01 then -- math.abs(heightDiff) > 0.05 then
 				--check whether we have the target height in our table or set the closest 
 				local closestIndex = 99
 				local closestValue = 99
@@ -164,14 +206,31 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				
 			elseif vehicle.cp.shieldState == "up" then
 				--make a table of moveAlphas per shield height
-				local height = courseplay:round(nodeY,3) --(currentHeight,2)
-				if vehicle.cp.mode10.alphaList[height] == nil then
-					vehicle.cp.mode10.alphaList[height] = vehicle.cp.workTools[1].attacherJointControl.controls[1].moveAlpha
-					--print("add "..tostring(height).." to alphaList")
-					if vehicle.cp.mode10.lowestAlpha > height then
-						vehicle.cp.mode10.lowestAlpha = height
+				local height = courseplay:round(currentHeight-(dy-dty)-diffY,3)
+				if vehicle.cp.mode10.leveling then
+					if vehicle.cp.mode10.alphaList[height] == nil then
+						vehicle.cp.mode10.alphaList[height] = vehicle.cp.workTools[1].attacherJointControl.controls[1].moveAlpha
+						--print("add "..tostring(height).." to alphaList")
+						if vehicle.cp.mode10.lowestAlpha > height then
+							vehicle.cp.mode10.lowestAlpha = height
+						end
+					end
+				else
+					if vehicle.cp.mode10.tempSchieldHeight == nil then 
+						vehicle.cp.mode10.tempSchieldHeight = currentHeight +0.5
+					end
+					if currentHeight < 0.2 then 
+						if currentHeight == vehicle.cp.mode10.tempSchieldHeight then
+							if vehicle.cp.mode10.alphaList[0] == nil then
+								vehicle.cp.mode10.alphaList[0] = vehicle.cp.workTools[1].attacherJointControl.controls[1].moveAlpha
+								vehicle.cp.mode10.tempSchieldHeight = nil
+							end
+						else
+							vehicle.cp.mode10.tempSchieldHeight = currentHeight 
+						end
 					end
 				end
+				
 				return true,false
 			end
 
@@ -187,55 +246,57 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			end
 			
 			--check the target where to go next
-			local targetUnit = vehicle.cp.BunkerSiloMap[vehicle.cp.actualTarget.line][vehicle.cp.actualTarget.column]
-			cx ,cz = targetUnit.cx, targetUnit.cz
-			cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
-			local distance2Target =  courseplay:distance(x,z, cx, cz) --distance from shovel to target
+
 			
 			if distance2Target < 1 then
 				vehicle.cp.actualTarget.line = math.min(vehicle.cp.actualTarget.line + 1,#vehicle.cp.BunkerSiloMap)
+				if vehicle.cp.mode10.bladeOffset == 0 then
+					vehicle.cp.mode10.bladeOffset = courseplay:round( shouldBHeight-currentHeight,2)
+				end	
+					
+				if vehicle.cp.actualTarget.line == #vehicle.cp.BunkerSiloMap then
+					targetUnit = vehicle.cp.BunkerSiloMap[vehicle.cp.actualTarget.line][vehicle.cp.actualTarget.column]
+					cx ,cz = targetUnit.cx, targetUnit.cz
+					cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
+					distance2Target =  courseplay:distance(x,z, cx, cz)
+				end
 			end
 			
 			local is2Heigh = (y-ty > 4 and not vehicle.cp.mode10.leveling)
 			local isAtEnd = (vehicle.cp.actualTarget.line == #vehicle.cp.BunkerSiloMap and distance2Target < 1)
 			local isBladeEmptyTillNow = (not hasFillLevel and vehicle.cp.fillLevelGo and vehicle.cp.actualTarget.line == #vehicle.cp.BunkerSiloMap and distance2Target < 4)
-			local fillLevelChanged = vehicle.cp.mode10FillLevel ~= newFillLevel and newFillLevel~= 0
+			local fillLevelChanged = vehicle.cp.mode10FillLevel ~= newFillLevel and newFillLevel~= 0 and not  vehicle.cp.mode10.leveling
 		
-			if fillLevelChanged
-			or vehicle.cp.slippingStage > 0 
+			if (vehicle.cp.slippingStage > 0 and not vehicle.cp.mode10.isStuck )
+			or fillLevelChanged
 			or emptyTimerIsThrought
 			or is2Heigh
 			or isBladeEmptyTillNow
 			--or (vehicle.cp.mode10.jumpsPerRun >= 2 and vehicle.cp.actualTarget.line > 3)
 			or isAtEnd
 			
+			
 			then
 			--print(string.format("dropOut reason: fillLevelChanged(%s);emptyTimerIsThrought(%s);is2Heigh(%s);isBladeEmptyTillNow(%s)",tostring(fillLevelChanged),tostring(emptyTimerIsThrought),tostring(is2Heigh),tostring(isBladeEmptyTillNow)))
 				if goSave then
 					courseplay:setWaypointIndex(vehicle, 2);
 					vehicle.cp.fillLevelGo = true
-					--courseplay:getActualTarget(vehicle)
+					courseplay:setModeState(vehicle, 2);
 				else
 					courseplay:setModeState(vehicle, 2);
 					vehicle.cp.mode10.isStuck = false
 				end
  
 				--autmatic speed
-				if vehicle.cp.mode10.automaticSpeed and vehicle.cp.mode10.leveling then
+				--[[if vehicle.cp.mode10.automaticSpeed and vehicle.cp.mode10.leveling then
+					vehicle.cp.speeds.bunkerSilo = 8
 					if vehicle.cp.mode10.jumpsPerRun >= 1 then
 						vehicle.cp.speeds.bunkerSilo = math.max(vehicle.cp.speeds.bunkerSilo - 1,3)
 					elseif vehicle.cp.mode10.jumpsPerRun == 0 and vehicle.cp.actualTarget.line > #vehicle.cp.BunkerSiloMap*0.8 then
 						vehicle.cp.speeds.bunkerSilo = math.min(vehicle.cp.speeds.bunkerSilo + 1,15)
 					end
-				end
-				
-				--automatic shield height
-				if vehicle.cp.mode10.automaticHeigth and fillLevelChanged and hasFillLevel then
-					vehicle.cp.mode10.shieldHeight = vehicle.cp.mode10.shieldHeight + 0.05
-				elseif emptyTimerIsThrought and vehicle.cp.actualTarget.line > 3 and vehicle.cp.actualTarget.line < #vehicle.cp.BunkerSiloMap*0.75 and vehicle.cp.mode10.jumpsPerRun <= 4 then
-					vehicle.cp.mode10.shieldHeight = vehicle.cp.mode10.shieldHeight - 0.025
-				end
-				
+				end]]
+
 				if is2Heigh then
 					vehicle.cp.mode10.deadline = math.max(2,vehicle.cp.actualTarget.line-2)
 					--print(string.format("set deadline to %s ",tostring(vehicle.cp.mode10.deadline)))
@@ -243,18 +304,25 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 					vehicle.cp.mode10.deadline = math.max(2,vehicle.cp.actualTarget.line-1)
 					--print(string.format("set deadline to %s ",tostring(vehicle.cp.mode10.deadline)))
 				end
-				
-				vehicle.cp.mode10.jumpsPerRun = 0
+				if courseplay:getCustomTimerExists(vehicle, 'levelerEmpty') then
+					courseplay:resetCustomTimer(vehicle, 'levelerEmpty',true);
+				end
+				--vehicle.cp.mode10.jumpsPerRun = 0
 				vehicle.cp.mode10FillLevel = nil
 				vehicle.cp.mode10.lastTargetLine = vehicle.cp.actualTarget.line	
-					
-					
+				vehicle.cp.mode10.shieldHeightChanged = false	
+				
+				if vehicle.cp.slippingStage > 0 then
+					courseplay:resetSlippingTimers(vehicle)
+					courseplay:setSlippingStage(vehicle, 0);
+				end
+				
 				return true,false
 			else
 				vehicle.cp.mode10FillLevel = newFillLevel
 			end
 			
-			if not vehicle.cp.fillLevelGo  and not hasFillLevel then
+			if not vehicle.cp.fillLevelGo  and not hasFillLevel and vehicle.cp.actualTarget.line > 2 then
 				if courseplay:timerIsThrough(vehicle,'levelerEmpty') then
 					courseplay:setCustomTimer(vehicle, "levelerEmpty", emptyTimer);
 				end
@@ -275,6 +343,8 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				courseplay:setModeState(vehicle, 1);
 				vehicle.cp.fillLevelGo = true
 				vehicle.cp.maxHeight = 0
+				vehicle.cp.mode10.bladeOffset = 0
+				
 				courseplay:getActualTarget(vehicle)
 				--return true, false
 			end
@@ -401,6 +471,8 @@ end
 
 function courseplay:getActualTarget(vehicle)
 	--print(string.format("courseplay:getActualTarget(vehicle) called by %s",tostring(courseplay.utils:getFnCallPath(3))))
+	local newApproach = vehicle.cp.actualTarget == nil 
+	
 	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, vehicle.cp.mode9TargetSilo)
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local stopSearching = false
@@ -411,6 +483,41 @@ function courseplay:getActualTarget(vehicle)
 		local fillingTarget = {}
 		
 		if vehicle.cp.mode10.leveling then -- if leveling, toggle sides independently
+			--if vehicle.cp.mode10.drivingThroughtLoading then
+				local totalFillLevel = vehicle.cp.mode9TargetSilo.fillLevel
+
+				local bunkerLength = vehicle.cp.BunkerSiloMap[1][1].bunkerLength;
+				local bunkerWidth =  vehicle.cp.BunkerSiloMap[1][1].bunkerWidth;
+				local totalHeight = 3.5
+				local elevation = 1.05/totalHeight
+				local height = 0
+				local area = 0
+				local volume = 0
+				local tuneFactor = 0.75
+				--print("totalFillLevel: "..tostring(totalFillLevel))
+				for i=0.05,totalHeight,0.05 do
+					--print("try with "..tostring(i))
+					area = (((bunkerWidth-1) + (bunkerWidth-1+(elevation*i)))/2)*i
+					volume = area * (bunkerLength*tuneFactor)
+					--print("volume is: "..tostring(volume))
+					height = i
+					if vehicle.cp.mode10.drivingThroughtLoading then
+						if i > 1 then
+							tuneFactor = 1
+							height = i*0.95
+						end
+					else
+						tuneFactor = 1
+					end
+					if courseplay:round(volume,1)> totalFillLevel/1000 then
+						--print("break with "..tostring(height))
+						break
+					end
+				end			
+				--print(string.format("height(%s) = (totalFillLevel(%s)/1000) / volume(%s))",tostring(height),tostring(totalFillLevel),tostring(volume)))
+				courseplay:setFillLevels(vehicle,height)
+			--end
+			
 			local fullestColumn = 0
 			if vehicle.cp.mode10.lastActualTarget then
 				local nextColumnIndex = vehicle.cp.mode10.lastActualTarget+1
@@ -421,7 +528,10 @@ function courseplay:getActualTarget(vehicle)
 			else
 				vehicle.cp.mode10.lastActualTarget = 1
 				fullestColumn = 1
-			end			
+			end
+			if newApproach then
+				fullestColumn = math.floor(#vehicle.cp.BunkerSiloMap[1]/2)
+			end
 			levelingTarget = {
 										line = 1;
 										column = fullestColumn;
@@ -431,6 +541,8 @@ function courseplay:getActualTarget(vehicle)
 		end
 
 		-- if not leveling, find column with most fillLevel
+
+
 		for lineIndex, line in pairs(vehicle.cp.BunkerSiloMap) do
 			if stopSearching then
 				break
@@ -448,12 +560,13 @@ function courseplay:getActualTarget(vehicle)
 										column = mostFillLevelIndex;
 										empty = false;
 												}
-					vehicle.cp.mode9SavedLastFillLevel = courseplay:round(fillUnit.fillLevel,1)
 					stopSearching = true
 					break
 				end
 			end
 		end
+			
+
 		if mostFillLevelAtLine == 0 then
 			fillingTarget = {
 										line = 1;
@@ -471,3 +584,13 @@ function courseplay:getActualTarget(vehicle)
 		
 	end
 end
+
+function courseplay:setFillLevels(vehicle,forceHeight)
+	for lineIndex, line in pairs(vehicle.cp.BunkerSiloMap) do
+		for column, fillUnit in pairs(line) do
+			if forceHeight ~= nil then
+				fillUnit.height = forceHeight
+			end
+		end
+	end
+end 

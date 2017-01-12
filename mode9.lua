@@ -499,8 +499,13 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 	local heightDirX,heightDirY,heightDirZ,heightDistance = courseplay:getWorldDirection(sx,sy,sz, hx,sy,hz);
 
 	local widthCount = math.ceil(bunkerWidth/vehicle.cp.workWidth)
+	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
+		widthCount = widthCount+1
+	end
+	
 	local heightCount = math.ceil(bunkerLength/vehicle.cp.workWidth)
 	local unitWidth = bunkerWidth/widthCount
+	local unitHeigth = bunkerLength/heightCount
 	local heightLengthX = (Silo.bunkerSiloArea.hx-Silo.bunkerSiloArea.sx)/heightCount
 	local heightLengthZ = (Silo.bunkerSiloArea.hz-Silo.bunkerSiloArea.sz)/heightCount
 	local widthLengthX = (Silo.bunkerSiloArea.wx-Silo.bunkerSiloArea.sx)/widthCount
@@ -535,6 +540,7 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 				offset = unitWidth/2
 			end
 			local cx,cz = sx +(widthDirX*offset)+(heightLengthX/2),sz +(widthDirZ*offset)+ (heightLengthZ/2)
+			local unitArea = unitWidth*unitHeigth
 			
 			map[heightIndex][widthIndex] ={
 										sx = sx;
@@ -548,8 +554,11 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 										cz = cz;
 										bx = bx;
 										bz = bz;
+										area = unitArea;
 										fillLevel = newFillLevel;
 										fillType = fillType;
+										bunkerLength = bunkerLength;
+										bunkerWidth = bunkerWidth;
 											}
 											
 			sx = map[heightIndex][widthIndex].wx

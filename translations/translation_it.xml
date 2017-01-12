@@ -272,7 +272,11 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Nessuna lama attaccata" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La lama montata anteriormente non è supportata" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo impostazioni" />
-			
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTROUGHT" 					 text="driving trought" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Rifornimento carburante alla stazione di servizio" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="sotto al 20%" />

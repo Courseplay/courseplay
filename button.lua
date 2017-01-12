@@ -209,7 +209,7 @@ function courseplay.button:render()
 				canScrollUp   = true;
 				canScrollDown = vehicle.cp.mode10.searchRadius > 1;				
 			elseif fn == "changeShieldHeight" then
-				canScrollUp   = not vehicle.cp.mode10.automaticHeigth 
+				canScrollUp   = not vehicle.cp.mode10.automaticHeigth and vehicle.cp.mode10.shieldHeight < 1.5
 				canScrollDown = not vehicle.cp.mode10.automaticHeigth and vehicle.cp.mode10.shieldHeight > 0
 			elseif fn == "changeBunkerSpeed" then
 				local uMayUseIt = (vehicle.cp.mode10.leveling and not vehicle.cp.mode10.automaticSpeed) or not vehicle.cp.mode10.leveling
@@ -870,6 +870,6 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 				button:setDisabled(not vehicle.cp.hasShovelStatePositions[button.parameter]);
 			end;
 		end;
-	end;
+	end;	
 end;
 
