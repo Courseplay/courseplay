@@ -89,7 +89,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		end;
 
 		-- implements, no combine or chopper
-		if workTool ~= nil and tool.attachedCutters == nil then
+		if workTool ~= nil and (tool.attachedCutters == nil or (workTool.cp.hasSpecializationTrailer and tool.cp.capacity == 0)) then
 			-- balers
 			if courseplay:isBaler(workTool) then
 				if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
@@ -378,9 +378,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					allowedToDrive = false;
 				end;
 			end;
+			
 
 		--COMBINES
-		elseif workTool.cp.hasSpecializationCutter then
+		elseif workTool.cp.hasSpecializationCutter and not (workTool.cp.hasSpecializationTrailer and tool.cp.capacity == 0) then
 			--Start combine
 			local isTurnedOn = tool:getIsTurnedOn();
 			local pipeState = 0;
@@ -467,6 +468,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						or tool.waitingForDischarge 
 						or (tool.cp.stopWhenUnloading and tool.overloading ~= nil and  tool.overloading.isActive and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
 						or tool.stopForManualUnloader then
+							CpManager:setGlobalInfoText(vehicle, 'NEEDS_UNLOADING');
 							tool.waitingForDischarge = true;
 							allowedToDrive = false;
 							if isTurnedOn then
