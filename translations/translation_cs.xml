@@ -210,7 +210,7 @@
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="没有选定仓筒类型!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="选定的仓筒类型:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="仓筒空了! 等待." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": 仓筒已满！继续下一个." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text="仓筒已满！继续下一个." />  <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="启动 %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="指向起始点" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="保存当前任务" />
@@ -243,13 +243,13 @@
 		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: 更改" />
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay：弹出窗口" />
 		<text name="input_COURSEPLAY_HUD" 								 text="打开/关闭CP界面" />
-		<text name="input_COURSEPLAY_START_STOP" 								 text="Courseplay：开始/停止 任务" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay：停在最后路点或等待点" />
-		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay：开车" />
-		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: 下一个任务模式" />
-		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: 上一个任务模式" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay：鼠标操作" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay：辅助鼠标操作" />
+		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay：开始/停止 任务" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay：停在最后路点或等待点" />
+		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay：开车" />
+		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: 下一个任务模式" />
+		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: 上一个任务模式" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay：鼠标操作" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay：辅助鼠标操作" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="显示鼠标" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="不显示鼠标" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="加载或合并任务" /> 
@@ -270,10 +270,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="没有连接叶片" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="不支持前面挂载叶片" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="发酵池设置" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="叶片宽度" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="发酵池正在填充" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="通过卸载" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="倒车卸载" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="在加油站加注燃料" />  <!--Refill fuel at gas station -->
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="总是" />     <!--always -->
