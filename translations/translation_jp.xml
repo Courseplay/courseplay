@@ -272,10 +272,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="ブレードが付いていません" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="フロントマウントブレードはサポートされていません" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="バンカーサイロ設定" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="ブレードの幅" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="トレーラーアンロード" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="通過" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="リバース" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="ガソリンスタンドで給油する" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="常時" />
