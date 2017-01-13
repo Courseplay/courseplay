@@ -256,8 +256,8 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo precedente" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: azione del mouse" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: azione secondaria del mouse" />
-		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostra il cursore" />
-		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="nascondere il cursore" />
+		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mostra cursore" />
+		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Nascondi cursore" />
 	
         <text name="COURSEPLAY_MODE10_MODE" 						     text="Modalità" />	
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="Livellare e compattare" />
@@ -268,14 +268,14 @@
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Rilevare trattori nel raggio di" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Velocità massima mentre si spinge" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Altezza lama" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="Nessun bunkersilo rilevato al punto di partenza" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="Nessun silo rilevato al punto di partenza" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Nessuna lama attaccata" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La lama montata anteriormente non è supportata" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo impostazioni" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Impostazioni" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Larghezza lama" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Il silo viene riempito da" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="Guida attraverso" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="Scaricare in retromarcia" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Rifornimento carburante alla stazione di servizio" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />
