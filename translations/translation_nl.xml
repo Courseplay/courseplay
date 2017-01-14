@@ -237,16 +237,16 @@
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Toon Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Verberg Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Courseplay functies" />
-		<text name="input_COURSEPLAY_MODIFIER" 								 text="Courseplay: instellingen" />
-		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 					 text="Courseplay: tweede menu accepteren" />
-		<text name="input_COURSEPLAY_HUD" 									 text="Toon/verberg Courseplay HUD" />
-		<text name="input_COURSEPLAY_START_STOP" 								 text="Courseplay: rijd route/stop bestuurder" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 								 text="Courseplay: stop bij laatste punt of volgende trigger" />
-		<text name="input_COURSEPLAY_DRIVENOW" 								 text="Courseplay: nu rijden" />
-		<text name="input_COURSEPLAY_NEXTMODE" 								 text="Courseplay: volgende modus" />
-		<text name="input_COURSEPLAY_PREVMODE" 								 text="Courseplay: vorige modus" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					 text="Courseplay: muis actie" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 					 text="Courseplay: secundaire muis actie" />
+		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: instellingen" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: tweede menu accepteren" />
+		<text name="input_COURSEPLAY_HUD" 								 text="Toon/verberg Courseplay HUD" />
+		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: rijd route/stop bestuurder" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: stop bij laatste punt of volgende trigger" />
+		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: nu rijden" />
+		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: volgende modus" />
+		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: vorige modus" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: muis actie" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: secundaire muis actie" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="toon cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="verberg cursor" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Laad route/Invoegen in geladen route" /> 
@@ -270,10 +270,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="geen blad gemonteerd" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="blad aan voorzijde wordt niet ondersteund" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo instellingen" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blad breedte" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo wordt gevuld door" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="onderdoor rijden" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="achteruit lossen" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Tanken bij tankstation" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="altijd" />

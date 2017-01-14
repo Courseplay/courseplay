@@ -272,10 +272,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="nenhuma lâmina conectada" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="lâmina frontal não suportada" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Configuração do BunkerSilo" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="largura da lâmina" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo sendo preenchido por" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="dirigindo através" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="descarregar de ré" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />

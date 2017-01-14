@@ -176,9 +176,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 					local curLaneReal = self.Waypoints[self.cp.waypointIndex].laneNum;
 					if curLaneReal then
 						local intendedDrivingLane = ((curLaneReal-1) % workTool.nSMdrives) + 1;
-						if workTool.currentDrive ~= intendedDrivingLane then
-							courseplay:debug(string.format('%s: currentDrive=%d, curLaneReal=%d -> intendedDrivingLane=%d -> set', nameNum(workTool), workTool.currentDrive, curLaneReal, intendedDrivingLane), 17);
-							workTool.currentDrive = intendedDrivingLane;
+						if workTool.currentLane ~= intendedDrivingLane then
+							courseplay:debug(string.format('%s: currentLane=%d, curLaneReal=%d -> intendedDrivingLane=%d -> set', nameNum(workTool), workTool.currentLane, curLaneReal, intendedDrivingLane), 17);
+							workTool.currentLane = intendedDrivingLane;
 						end;
 					end;
 				end;
