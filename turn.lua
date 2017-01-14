@@ -32,10 +32,13 @@ function courseplay:turn(vehicle, dt)
 	end;
 
 	--- Make sure front and back markers is calculated.
-	if not vehicle.cp.aiFrontMarker or not vehicle.cp.backMarkerOffset then
+	if not vehicle.cp.haveCheckedMarkersThisTurn then
+		vehicle.cp.aiFrontMarker = nil;
+		vehicle.cp.backMarkerOffset = nil;
 		for _,workTool in pairs(vehicle.cp.workTools) do
 			courseplay:setMarkers(vehicle, workTool);
 		end;
+		vehicle.cp.haveCheckedMarkersThisTurn = true;
 	end;
 
 	--- Get front and back markers
@@ -1351,6 +1354,7 @@ function courseplay:clearTurnTargets(vehicle)
 	vehicle.cp.turnStage = 0;
 	vehicle.cp.turnTargets = {};
 	vehicle.cp.curTurnIndex = 1;
+	vehicle.cp.haveCheckedMarkersThisTurn = false;
 end
 
 function courseplay:lowerImplements(self, moveDown, workToolonOff)
