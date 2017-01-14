@@ -441,6 +441,9 @@ function courseplay:getCanUseCpMode(vehicle)
 
 	if mode == 3 or mode == 8 or mode == 10 then
 		minWait, maxWait = 1, 1;
+		if  vehicle.cp.hasWaterTrailer then
+			maxWait = 10
+		end
 		if vehicle.cp.numWaitPoints < minWait then
 			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
 			return false;
@@ -456,9 +459,6 @@ function courseplay:getCanUseCpMode(vehicle)
 		elseif mode == 8 then
 			if vehicle.cp.workTools[1] == nil then
 				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
-				return false;
-			elseif vehicle.cp.workTools[1].cp.isWaterTrailer and courseplay.triggers.waterReceiversCount == 0 then
-				courseplay:setInfoText(vehicle, 'There are no water triggers on this map'); -- TODO i18n
 				return false;
 			end;
 		end;

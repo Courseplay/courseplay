@@ -14,15 +14,15 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 	-- UNLOADING
 	elseif unload then
 		local workTool = vehicle.cp.workTools[1];
-
-		CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
-
+		local tankIsFull = false
+		
 		if vehicle.cp.prevFillLevelPct then
 			vehicle.cp.isUnloading = vehicle.cp.totalFillLevelPercent < vehicle.cp.prevFillLevelPct;
 		end;
 
 		-- liquid manure sprayers/transporters
 		if workTool.cp.isLiquidManureSprayer or workTool.cp.isLiquidManureOverloader then
+			CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 			--                                            courseplay:handleSpecialTools(vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload)
 			local isSpecialTool, allowedToDrive, lx, lz = courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, nil,   true  );
 			if not isSpecialTool then
@@ -102,12 +102,30 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 
 					if workTool.cp.waterReceiverTrigger then
 						break;
-					end;
-				end;
+					end
+				end
+				
+				--standard water tiptriggers cow, sheep and pigs
+				if not workTool.cp.waterReceiverTrigger then	
+					local triggers = g_currentMission.trailerTipTriggers[workTool]
+					if triggers ~= nil then
+						if workTool.tipState == Trailer.TIPSTATE_OPENING or workTool.tipState == Trailer.TIPSTATE_OPEN then
+							vehicle.cp.isUnloading = true
+						else
+							if workTool.tipState == Trailer.TIPSTATE_CLOSED then
+								workTool:toggleTipState(triggers[1],1);
+							elseif workTool.tipState == Trailer.TIPSTATE_CLOSING then
+								vehicle.cp.isUnloading = false
+								tankIsFull = true
+							end							
+						end
+					end
+				end				
 			end;
 
-			-- start unloading
+			-- start unloading placeables
 			local tank = workTool.cp.waterReceiverTrigger;
+			
 			if tank then
 				-- courseplay:debug(('        tank.WaterTrailerActivatable=%s, tank.waterTrailerActivatable=%s'):format(tostring(tank.WaterTrailerActivatable), tostring(tank.waterTrailerActivatable)), 23);
 				local activatable, isFilling, setterFn;
@@ -127,20 +145,24 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 					return false, lx, lz;
 				end;
 
-				local isActivatable = activatable:getIsActivatable();
-				if isActivatable and not isFilling then
+				if tank.waterTrailerActivatable ~= nil and not isFilling then
 					courseplay:debug(('        isWaterMod=%s, isSchweinezuchtWater=%s, isGreenhouse=%s, getIsActivatable()=%s, isFilling=%s -> %s(true)'):format(tostring(tank.isWaterMod), tostring(tank.isSchweinezuchtWater), tostring(tank.isGreenhouse), tostring(isActivatable), tostring(isFilling), setterFn), 23);
 					if tank.isGreenhouse then
 						tank[setterFn](tank, true, workTool);
+						vehicle.cp.isUnloading = true
+						
 					else
 						tank[setterFn](tank, true);
 					end;
+				else
+					tankIsFull = tank.waterTankFillLevel == tank.waterTankCapacity
 				end;
 			end;
+				
 		end;
 
 
-		local driveOn = vehicle.cp.totalFillLevelPercent == 0;
+		local driveOn = vehicle.cp.totalFillLevelPercent == 0 or tankIsFull ;
 		if not driveOn and vehicle.cp.prevFillLevelPct ~= nil then
 			if vehicle.cp.totalFillLevelPercent > 0 and vehicle.cp.isUnloading then
 				courseplay:setCustomTimer(vehicle, 'fillLevelChange', 7);
@@ -152,7 +174,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 				end;
 			end;
 		elseif driveOn then
-			courseplay:debug('        totalFillLevelPercent == 0 -> driveOn', 23);
+			courseplay:debug('        totalFillLevelPercent == 0 or tank.waterTankFillLevel == tank.waterTankCapacity -> driveOn', 23);
 		end;
 
 		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;

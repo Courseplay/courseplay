@@ -187,7 +187,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	courseplay:setNameVariable(workTool);
 	courseplay:setOwnFillLevelsAndCapacities(workTool,vehicle.cp.mode)
 	local hasWorkTool = false;
-
+	local hasWaterTrailer = false
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
 		if workTool.allowTipDischarge and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
@@ -275,7 +275,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.hasMachinetoFill = true;
 			workTool.cp.waterReceiverTrigger = nil; -- water trailer: make sure it has no saved unloading water trigger
 		end;
-
+		if workTool.cp.isWaterTrailer then
+			hasWaterTrailer = true
+		end
 	-- MODE 9: FILL AND EMPTY SHOVEL
 	elseif vehicle.cp.mode == 9 then
 		if not isImplement and (courseplay:isWheelloader(workTool) or workTool.typeName == 'frontloader' or courseplay:isMixer(workTool)) then
@@ -296,6 +298,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		end;
 	end;
 
+	vehicle.cp.hasWaterTrailer = hasWaterTrailer
+	
 	if hasWorkTool then
 		courseplay:debug(('%s: workTool %q added to workTools (index %d)'):format(nameNum(vehicle), nameNum(workTool), #vehicle.cp.workTools), 6);
 	end;
