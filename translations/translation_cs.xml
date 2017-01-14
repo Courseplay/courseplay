@@ -132,7 +132,7 @@
 		<text name="COURSEPLAY_FRONT" 									 text="前面" />
 		<text name="COURSEPLAY_BACK" 									 text="后面" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="工作面大小" />
-		<text name="COURSEPLAY_WATER_WARNING" 							 text="需要清洗" />
+		<text name="COURSEPLAY_WATER_WARNING" 							 text="车辆需要重置" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="打开CP界面:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="调试通道" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="生成任务路径点" />
