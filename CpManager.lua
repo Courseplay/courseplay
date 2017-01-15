@@ -228,7 +228,7 @@ function CpManager:update(dt)
 		if self.startFieldScanAfter > 0 then
 			self.startFieldScanAfter = self.startFieldScanAfter - dt;
 		end;
-		if courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+		if g_currentMission.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 			courseplay.fields:setAllFieldEdges();
 		end;
 
