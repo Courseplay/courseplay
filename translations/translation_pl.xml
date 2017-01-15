@@ -272,10 +272,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="brak podczepionego lemiesza" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="lemiesz podczepiony z przodu nie jest obsługiwany" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Ustawienia silosu bunkrowego" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="szerokość lemiesza" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silos jest napełniany przez" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="jazda przez" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="rozładunek tyłem" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Uzupełnij paliwo na stacji benzynowej" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="zawsze" />
