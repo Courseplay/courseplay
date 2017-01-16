@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_7" 									 text="Mod: Kombajn se jede sám vysypat" />
 		<text name="COURSEPLAY_MODE_8" 									 text="Mod: Převoz kejdy" />
 		<text name="COURSEPLAY_MODE_9" 									 text="Mod: Nakladač" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Mod: Leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Pokračovat v jízdě" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Odstranit orientační body" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Odvézt bez čekání na doplnění" />
@@ -281,9 +281,9 @@
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
 		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Doplňit palivo na čerpací stanici:" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="vždy" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="méně než 20%" />
 		
 	</texts>
 </l10n>
