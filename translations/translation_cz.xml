@@ -224,6 +224,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Pokračovat v nahrávání" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Smazat poslední bod" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Nastavit bod čekání" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Nastavit bod křížení" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Začít se otáčet" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Konec otáční" />

@@ -10,6 +10,7 @@ local signData = {
 	start =  {   500, 'current',  4.5 }, -- orig height=3
 	stop =   {   500, 'current',  4.5 }, -- orig height=3
 	wait =   {  1000, 'current',  4.5 }, -- orig height=3
+	unload = {  2000, 'current', 4.0 },
 	cross =  {  2000, 'crossing', 4.0 }
 };
 local diamondColors = {
@@ -154,6 +155,8 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 				neededSignType = 'stop';
 			elseif wp.wait then
 				neededSignType = 'wait';
+			elseif wp.unload then
+				neededSignType = 'unload';
 			end;
 
 			-- direction + angle
@@ -199,8 +202,8 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 					self:setTranslation(existingSignData.sign, existingSignData.type, wp.cx, wp.cz);
 					if wp.rotX and wp.rotY then
 						setRotation(existingSignData.sign, wp.rotX, wp.rotY, 0);
-						if neededSignType == 'normal' or neededSignType == 'start' or neededSignType == 'wait' then
-							if neededSignType == 'start' or neededSignType == 'wait' then
+						if neededSignType == 'normal' or neededSignType == 'start' or neededSignType == 'wait' or neededSignType == 'unload' then
+							if neededSignType == 'start' or neededSignType == 'wait' or neededSignType == 'unload' then
 								local signPart = getChildAt(existingSignData.sign, 1);
 								setRotation(signPart, -wp.rotX, 0, 0);
 							end;
@@ -277,7 +280,7 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 		vis = false;
 		isStartEndPoint = k <= 2 or k >= (numSigns - 2);
 
-		if signData.type == 'wait' and (vehicle.cp.visualWaypointsStartEnd or vehicle.cp.visualWaypointsAll) then
+		if (signData.type == 'wait' or signData.type == 'unload') and (vehicle.cp.visualWaypointsStartEnd or vehicle.cp.visualWaypointsAll) then
 			vis = true;
 			local line = getChildAt(signData.sign, 0);
 			if vehicle.cp.visualWaypointsStartEnd then

@@ -93,8 +93,22 @@ function courseplay:goReverse(vehicle,lx,lz)
 			local distance = courseplay:distance(xTipper,zTipper, vehicle.Waypoints[i-1].cx ,vehicle.Waypoints[i-1].cz);
 
 			local waitingPoint;
-			if vehicle.Waypoints[i-1].wait	then waitingPoint = i-1;	end;
-			if vehicle.Waypoints[i].wait 	then waitingPoint = i; 		end;
+			local unloadPoint;
+			if vehicle.Waypoints[i-1].wait then 
+				waitingPoint = i-1;	
+			end;
+			if vehicle.Waypoints[i].wait then
+				waitingPoint = i;
+			end;
+			if vehicle.Waypoints[i-1].unload then 
+				unloadPoint = i-1;	
+			end;
+			if vehicle.Waypoints[i].unload then
+				unloadPoint = i;
+			end;
+			
+			
+			
 			-- HANDLE WAITING POINT WAYPOINT CHANGE
 			if waitingPoint then
 				if workTool.cp.realUnloadOrFillNode then
@@ -122,7 +136,25 @@ function courseplay:goReverse(vehicle,lx,lz)
 				end;
 
 				break;
-
+			elseif unloadPoint then
+				if workTool.cp.rearTipRefPoint then
+					local tipRefPoint = workTool.tipReferencePoints[workTool.cp.rearTipRefPoint].node
+					local x,y,z = getWorldTranslation(tipRefPoint);
+					local tipDistanceToPoint = courseplay:distance(x,z,vehicle.Waypoints[unloadPoint].cx,vehicle.Waypoints[unloadPoint].cz)
+					if tipDistanceToPoint  < 0.5 then
+						courseplay:setWaypointIndex(vehicle, unloadPoint + 1);
+						courseplay:debug(string.format("%s: Is at unload point", nameNum(vehicle)), 13);
+						break;
+					end;		
+				end
+				if distance > 3 then
+					local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
+					if z < 0 then
+						courseplay:setWaypointIndex(vehicle, i - 1);
+						break;
+					end;
+				end;
+				break
 			-- HANDLE LAST REVERSE WAYPOINT CHANGE
 			elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i].rev then
 				if distance <= 2 then

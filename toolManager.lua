@@ -275,9 +275,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.hasMachinetoFill = true;
 			workTool.cp.waterReceiverTrigger = nil; -- water trailer: make sure it has no saved unloading water trigger
 		end;
-		if workTool.cp.isWaterTrailer then
-			hasWaterTrailer = true
-		end
+		hasWaterTrailer = workTool.cp.isWaterTrailer
 	-- MODE 9: FILL AND EMPTY SHOVEL
 	elseif vehicle.cp.mode == 9 then
 		if not isImplement and (courseplay:isWheelloader(workTool) or workTool.typeName == 'frontloader' or courseplay:isMixer(workTool)) then
@@ -1229,3 +1227,34 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 	return allowedToDrive, lx, lz;
 end;
 
+function courseplay:handleUnloading(vehicle,revUnload)
+	local tipRefpoint = 0
+	local stopForTippping = false
+	for index, tipper in pairs (vehicle.cp.workTools) do
+		local goForTipping = false
+		if revUnload then
+			tipRefpoint = tipper.cp.rearTipRefPoint
+		else
+			tipRefpoint = tipper.preferedTipReferencePointIndex
+			local _,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode);
+			local _,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+			if z <= 0 and tipper.cp.fillLevel ~= 0 then
+				stopForTippping = true
+				goForTipping = true
+			end					
+		end
+		if (tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING) and ( not revUnload and goForTipping) then
+			tipper:toggleTipState(nil, tipRefpoint);
+		elseif (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
+			tipper:toggleTipState(nil, tipRefpoint);
+			if revUnload then
+				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+			end
+			
+		end
+	end
+	if vehicle.cp.totalFillLevel == 0 then
+		courseplay:setVehicleWait(vehicle, false);
+	end
+	return stopForTippping
+end

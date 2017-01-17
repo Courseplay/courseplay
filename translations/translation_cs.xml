@@ -219,6 +219,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="继续录制" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="删除上个路径点" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="设置等待点" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="设置合并点" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="设置折返点" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="结束折返" />

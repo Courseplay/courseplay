@@ -581,6 +581,7 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 				angle='String',
 				rev='Int',
 				wait='Int',
+				unload='Int',
 				crossing='Int',
 				speed='String',
 				generated='Bool',
@@ -600,6 +601,7 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 					-- Optional Values
 					rev =		   v.rev and courseplay:boolToInt(v.rev) or nil;
 					wait =		   v.wait and courseplay:boolToInt(v.wait) or nil;
+					unload =	   v.unload and courseplay:boolToInt(v.unload) or nil;
 					crossing =	   v.crossing and courseplay:boolToInt(v.crossing) or nil;
 					generated =	   v.generated and v.generated or nil;
 					turnstart =    v.turnStart and courseplay:boolToInt(v.turnStart) or nil;
@@ -1226,6 +1228,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					end;
 					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
 					local wait 		  =    getXMLInt(courseXml, key .. '#wait');
+					local unload	  =    getXMLInt(courseXml, key .. '#unload');
 					local rev 		  =    getXMLInt(courseXml, key .. '#rev');
 					local crossing 	  =    getXMLInt(courseXml, key .. '#crossing');
 					local generated   =   getXMLBool(courseXml, key .. '#generated');
@@ -1236,6 +1239,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					local ridgeMarker =    getXMLInt(courseXml, key .. '#ridgemarker') or 0;
 					crossing = crossing == 1 or wpNum == 1;
 					wait = wait == 1;
+					unload = unload == 1;
 					rev = rev == 1;
 					turnStart = turnStart == 1;
 					turnEnd = turnEnd == 1;
@@ -1246,6 +1250,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						speed = speed,
 						rev = rev,
 						wait = wait,
+						unload = unload,
 						crossing = crossing,
 						generated = generated,
 						lane = lane,

@@ -224,6 +224,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="レコーディングを再開" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="最後のウエイポイントを削除" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="待機ポイントを設定" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="クロスポイントを設定" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="ターン動作を開始" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="ターン動作を終了" />

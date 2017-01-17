@@ -220,6 +220,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="продолжить запись" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="удалить последнюю точку" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="точка ожидания" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="перекресток" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="поворот" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="поворот" />

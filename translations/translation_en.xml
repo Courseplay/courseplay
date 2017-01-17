@@ -224,6 +224,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Resume the recording" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Delete the last waypoint" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Set wait point" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Set crossing point" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Start turn maneuver" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="End turn maneuver" />
@@ -265,7 +266,7 @@
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="detect tractors in range of " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />
 		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" />

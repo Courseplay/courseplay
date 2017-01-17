@@ -220,6 +220,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Felvétel folytatása" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Az utolsó útvonalpont törlése" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Várakozási pont elhelyezése" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Elágazási pont elhelyezése" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Fordulás indítása (következő sorra)" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fordulás vége" />
