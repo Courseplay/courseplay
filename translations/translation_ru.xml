@@ -17,14 +17,14 @@
 		<text name="COURSEPLAY_STOP_COURSE" 							 text="Прервать маршрут" />
 		<text name="COURSEPLAY_MODE_1" 									 text="ТРАНСПОРТИРОВКА И ПРОДАЖА" />
 		<text name="COURSEPLAY_MODE_2" 									 text="РАБОТА С КОМБАЙНАМИ" />
-		<text name="COURSEPLAY_MODE_3" 									 text="РАБОТА С ПРИЦЕПОМ-КОНВЕЙЕРОМ" />
+		<text name="COURSEPLAY_MODE_3" 									 text="РАБОТА С ПРИЦЕПОМ-ПЕРЕГРУЗЧИКОМ" />
 		<text name="COURSEPLAY_MODE_4" 									 text="УДОБРЕНИЕ И ПОСЕВ" />
 		<text name="COURSEPLAY_MODE_5" 									 text="ПЕРЕГОН ТЕХНИКИ" />
 		<text name="COURSEPLAY_MODE_6" 									 text="РАЗНЫЕ ПОЛЕВЫЕ РАБОТЫ" />
 		<text name="COURSEPLAY_MODE_7" 									 text="САМОРАЗГУЗКА КОМБАЙНА" />
 		<text name="COURSEPLAY_MODE_8" 									 text="ПЕРЕВОЗКА НАВОЗА" />
 		<text name="COURSEPLAY_MODE_9" 									 text="РАБОТЫ ДЛЯ ПОГРУЗЧИКА" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
+		<text name="COURSEPLAY_MODE_10" 								 text="ВЫРАВНИВАНИЕ И УПЛОТНЕНИЕ" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Продолжить" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Сброс маршрута" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Завершить цикл" />
@@ -38,19 +38,23 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Название маршрута:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Имя папки:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Введите слово целиком или его фрагмент для начала поиска:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="ENTER" />					
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s - отмена" />			
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s - сохранить" />		
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s - сохранить" />		
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s - подтвердить" />		
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="ENTER" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s - отмена" />
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s - сохранить" />
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s - сохранить" />
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s - подтвердить" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="МАРШРУТЫ %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Загрузить курс/объеденить из загруженым курсом" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Присоеденить курс в конец" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Переместить в папку" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Удалить курс/папку" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Создать папку" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Поиск маршрутов и папок" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Отключить поиск" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="доехал до места разгрузки." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="Сохранить позицию трубы" />        
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="к сохраненной позиции" />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="сохр. положение перегрузочной трубы" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="в сохранённое положение трубы" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="доехал до места ожидания." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="доехал до нужного пункта" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="транспортировка закончена." /> 
@@ -93,7 +97,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="в дороге - маячок" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="в дороге - маячок и габариты" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="постоянно - маячок" />
-		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="КОНТРОЛЬ МАРШРУТА" />
+		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="УПРАВЛЕНИЕ МАРШРУТОМ" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="УПРАВЛЕНИЕ ТРАНСПОРТОМ" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="ЗАГРУЗИТЬ МАРШРУТ" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="СОДЕРЖИМОЕ ПАПКИ" />
@@ -109,7 +113,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Еду рядом с комбайном" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Маневрирую для погрузки" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Комбайну нужна разгрузка" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Перекур, пусть пока комбайн отъедет" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Ожидаю пока отъедет комбайн" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Возвращение к %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Еду на временную стоянку" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Жду заполнения бункера" />
@@ -120,8 +124,8 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="низкий уровень топлива" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="слишком мало топлива!" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="заправляется" />
-		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Слишком много остановок! Максимум разрешено %d." />
-		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Слишком мало остановок! Минимум нужно %d." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Слишком много остановок! Разрешено максимум %d." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Слишком мало остановок! Необходимо минимум %d." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Неподходящий тип прицепа для маршрута" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Неподходящий тип инструмента для маршрута" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Неподходящий тип техники для маршрута" />
@@ -147,12 +151,12 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Запад" />
-		<text name="COURSEPLAY_HEADLAND" 								 text="Обработка краев:" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="Поворотная полоса:" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="да" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Только имя" />    
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Имя и маршрут" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="только название" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="название и курс" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="нет" />
-		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Маркера:" />
+		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Маркеры:" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Разгрузка на поле" />
 		<text name="COURSEPLAY_AUTOMATIC" 								 text="автоматически" />
 		<text name="COURSEPLAY_MANUAL" 									 text="вручную" />
@@ -164,19 +168,19 @@
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="ПОЗИЦИИ КОВША" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Позиции ковша не установлены" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Не установлены позиции ковша " />
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Загрузка" />
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Транспортировка" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Предразгрузка" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Разгрузка" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Сохранить позицию" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Сохранить позицию" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Сохранить позицию" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Сохранить позицию" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Показать позицию" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Показать позицию" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Показать позицию" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Показать позицию" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Сохранить положение загрузки" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Сохранить транспортное положение" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Сохранить положение предразгрузке" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Сохранить положение разгрузки" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Показать положение загрузки" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Показать транспортное положение" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Показать положение предразгрузке" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Показать положение разгрузки" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Стоять при смене позиций" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Способ запуска:" />
@@ -205,37 +209,41 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 							 text="Тент:" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 			 text="Удалить комбайн из списка" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 					 text="Стоять при разгрузке:" />
-		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="забуксовал. Помогите, помогите..." />
+		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="забуксовал." />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="Наполнять до:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": силосная яма заполнена!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="В этом бункере нет такого продукта!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Забрать из бункера:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="В бункере не осталось выбранного продукта, увы...!" /> 
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text="Выбранное хранилище заполнено!" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="В бункере не осталось выбранного продукта! Подождите немного" />
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Выбранное хранилище заполнено! Продолжить у следующего хранилища" />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s: включено распыление соломы!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Показать первую точку" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Сохранить маршрут" />
 		<text name="COURSEPLAY_RECORDING_STOP" 							 text="остановить запись" />
-		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="пауза" />
+		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="приостановить запись" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="продолжить запись" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="удалить последнюю точку" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="точка ожидания" />
-		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
-		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="перекресток" />
-		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="поворот" />
-		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="поворот" />
-		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="включить задний ход" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="точка разгрузки" />
+		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="пересечение" />
+		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="начало манёвра поворота" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="конец манёвра поворота" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="движение задним ходом" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="отключить задний ход" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="добавить точку" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Показать инфо на карте:" />
 		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Всегда 4х4" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Включить автосканирование полей?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Рабочие хотят %s в час!
-		Разрешить выплачивать зарплаты?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Рабочие хотят %s в час! Разрешить выплачивать зарплаты?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="КАЛЬКУЛЯЦИЯ ПОСЕВОВ" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Участок: %d (%s %s)" />
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="%s" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Семена: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Расходы: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Показать/скрыть начальную и конечную точки" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Показать/скрыть все точки" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Показать/скрыть точки пересечения" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="показать Courseplay" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="скрыть Courseplay" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="функции Courseplay" />
@@ -247,39 +255,31 @@
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: старт маршрута" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: следующий тип работы" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: предыдущий тип работы" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: 1 функция мыши" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: 2 функция мыши" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: 1-я функция мыши" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: 2-я функция мыши" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="показать курсор" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="скрыть курсор" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Загрузить или добавить" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Добавить последним" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Переместить в папку" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Удалить" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="начало и конец маршрута" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="весь маршрут" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="перекрестки" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
-		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
-		
+		<text name="COURSEPLAY_MODE10_MODE" 							 text="Режим" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="выравнивание и уплотнение" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="возведение от конца" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Автоматически останавливается для" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="просто courseplayers" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="всех с работающим двигателем" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Обнаружения тракторов в радиусе " />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Макс. скорость при сгребании" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Высота подъёма отвала" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="в начальной точке не обнаружено силосной ямы" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"							 text="не присоеденён отвал" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="не поддерживается установка отвала спереди" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"							 text="НАСТРОЙКИ РАБОТ В СИЛОСНОЙ ЯМЕ" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Ширина отвала" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Бункер заполняется путем" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="проезда насквозь" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="разгрузки задним ходом" />
+
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						 	 text="Дозаправка на АЗС" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"								 text="всегда" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="ниже 20%" />
 	</texts>
 </l10n>
