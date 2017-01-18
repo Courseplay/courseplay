@@ -223,9 +223,9 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE" 						 text="In pausa la registrazione" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Riprendi la registrazione" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Cancella ultimo waypoint" />
-		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Set punto di attesa" />
-		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
-		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Set punto di incrocio" />
+		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="punto di attesa" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="punto di scarico" />
+		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="incrocio" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Inizia turno manovra" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fine turno manovra" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Inizia retromarcia" />
