@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_7" 									 text="Type: Combine zelflossen" />
 		<text name="COURSEPLAY_MODE_8" 									 text="Type: Mesttransport" />
 		<text name="COURSEPLAY_MODE_9" 									 text="Type: Vullen en legen shovel" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Type: egaliseren en comprimeren" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="doorgaan" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Reset route" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Nu rijden" />
@@ -211,7 +211,7 @@
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Boerderij Silo heeft niet de juiste vulling" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Boerderij Silo laadt:" />		
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm Silo is leeg! Wacht op meer." />  
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Vervolg naar volgende silo." />  
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is vol! Vervolg naar volgende silo." />  
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Opstarten %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Eerste markering zoeken" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Huidige route opslaan" />
@@ -220,7 +220,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Vastleggen hervatten" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Laatste markering verwijderen" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Wachtpunt plaatsten" />
-		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Plaats los punt" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Kruising plaatsen" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Bocht starten" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Bocht stoppen" />
