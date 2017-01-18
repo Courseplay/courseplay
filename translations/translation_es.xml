@@ -268,13 +268,13 @@
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Velocidad maxima mientras empuja" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Altura de niveladora" />
 		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="No se ha detectado punto inicio en BunkerSilo" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Hoja no enganchada" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Niveladora no enganchada" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La niveladora frontal no está soportada" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Ajustes BunkerSilo" />
 		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Anchura niveladora" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="El silo esta siendo llenado por" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="Conduciendo a través de" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="Descarga hacía atrás" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="El silo esta siendo llenado" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="cruzandolo" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="descarga hacía atrás" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Recargar gasóleo en gasolinera" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="Siempre" />
