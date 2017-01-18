@@ -8,7 +8,7 @@ function courseplay:turn(vehicle, dt)
 	-- 2:	Drive Turn maneuver
 	-- 3:	Lower implement and continue on next lane
 
-	if vehicle.cp.isLoaded or (vehicle.cp.mode == 6 and vehicle.cp.abortWork ~= nil) then
+	if vehicle.cp.isLoaded then
 		vehicle.cp.isTurning = nil;
 		courseplay:clearTurnTargets(vehicle);
 		return;

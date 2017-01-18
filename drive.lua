@@ -111,8 +111,32 @@ function courseplay:drive(self, dt)
 		if self.Waypoints[self.cp.waypointIndex].turnStart then
 			self.cp.isTurning = self.Waypoints[self.cp.waypointIndex].turnStart;
 		end
-		if self.cp.abortWork ~= nil and self.cp.totalFillLevelPercent == 0 then
-			self.cp.isTurning = nil;
+
+		--- If we are turning and abortWork is set, then check if we need to abort the turn
+		if self.cp.isTurning and self.cp.abortWork ~= nil then
+			local abortTurn = false;
+			-- Mode 4 Check
+			if self.cp.mode == 4 and self.cp.workTools ~= nil then
+				for _,tool in pairs(self.cp.workTools) do
+					local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool)
+					if hasMoreFillUnits and tool ~= self and
+						((tool.sowingMachine ~= nil and self.cp.totalSeederFillLevelPercent == 0) or (tool.sprayer ~= nil and self.cp.totalSprayerFillLevelPercent == 0))
+					then
+						abortTurn = true;
+					end;
+				end;
+			-- Mode 6 Check
+			elseif self.cp.mode == 6 and self.cp.totalFillLevelPercent == 100 then
+				abortTurn = true;
+			end;
+
+			-- Abort turn if needed.
+			if abortTurn then
+				self.cp.isTurning = nil;
+				if #(self.cp.turnTargets) > 0 then
+					courseplay:clearTurnTargets(self);
+				end;
+			end;
 		end
 
 		--RESET OFFSET TOGGLES
