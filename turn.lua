@@ -753,6 +753,10 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 		targetOffsetZ = abs(turnInfo.targetDeltaZ);
 	end;
 
+	if turnInfo.frontMarker > 0 then
+		targetOffsetZ = targetOffsetZ + (turnInfo.frontMarker * 1.5);
+	end;
+
 	--- Get the 3 circle center cordinate, startDir and stopDir
 	local center1, center2, center3, startDir, stopDir = {}, {}, {}, {}, {};
 	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, (abs(turnInfo.targetDeltaX) + turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.zOffset - targetOffsetZ);
@@ -774,7 +778,7 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 	end;
 
 	--- Extra WP - End Turn turnInfo.frontMarker
-	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.zOffset - turnInfo.frontMarker + 5);
+	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.zOffset + (turnInfo.frontMarker < 0 and -turnInfo.frontMarker or 0) + 5);
 	courseplay:addTurnTarget(vehicle, posX, posZ, false, true);
 end;
 
@@ -811,8 +815,14 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 		end;
 	end;
 
+	--- Front marker is in front of tractor
+	local extraMoveBack = 0
+	if turnInfo.frontMarker > 0 then
+		extraMoveBack = turnInfo.frontMarker;
+	end;
+
 	--- Get the center height offset
-	local centerHeightOffset = -targetOffsetZ + turnInfo.reverseOffset;
+	local centerHeightOffset = -targetOffsetZ + turnInfo.reverseOffset + extraMoveBack;
 	if not turnInfo.haveHeadlands then
 		centerHeightOffset = centerHeightOffset + abs(turnInfo.targetDeltaZ * 0.75);
 	end;
@@ -883,9 +893,8 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 			end;
 
 			--- Do we need to move extra back on the last reverse wp
-			local extraMoveBack = 0;
 			if turnInfo.targetDeltaZ > 0 then
-				extraMoveBack = turnInfo.targetDeltaZ;
+				extraMoveBack = extraMoveBack + turnInfo.targetDeltaZ;
 			end;
 
 			--- Extra WP 1 - Move a bit more forward
@@ -967,9 +976,8 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 			end;
 
 			--- Do we need to move extra back on the last reverse wp
-			local extraMoveBack = 0;
 			if turnInfo.targetDeltaZ > 0 then
-				extraMoveBack = turnInfo.targetDeltaZ;
+				extraMoveBack = extraMoveBack + turnInfo.targetDeltaZ;
 			end;
 
 			--- Add extra length to the directionNodeToTurnNodeLength if there is an pivoted tool behind the tractor.
