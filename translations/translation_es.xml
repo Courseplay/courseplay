@@ -15,17 +15,17 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Llamada del conductor" />
 		<text name="COURSEPLAY_START_COURSE" 							 text="Conducir ruta" />
 		<text name="COURSEPLAY_STOP_COURSE" 							 text="Detener ruta" />
-		<text name="COURSEPLAY_MODE_1" 									 text="Tipo: Ayudante (cargar y conducir)" />
-		<text name="COURSEPLAY_MODE_2" 									 text="Tipo: Combi (cargar de cosechadora y descargar en silo)" />
-		<text name="COURSEPLAY_MODE_3" 									 text="Tipo: cargar de cosechadora y descargar a remolque" />
-		<text name="COURSEPLAY_MODE_4" 									 text="Tipo: Fertilizar y sembrar" />
-		<text name="COURSEPLAY_MODE_5" 									 text="Tipo: Traslado (conducir de un punto al final)" />
-		<text name="COURSEPLAY_MODE_6" 									 text="Tipo: Trabajo campo" />
-		<text name="COURSEPLAY_MODE_7" 									 text="Tipo: Cosechadora ir a remolque y descargar" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Tipo: Transportar estiércol/purines" />
-		<text name="COURSEPLAY_MODE_9" 									 text="Tipo: Cargar y descargar con pala" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
-		<text name="COURSEPLAY_CONTINUE" 								 text="continuar" />
+		<text name="COURSEPLAY_MODE_1" 									 text="Modo: Ayudante (cargar y conducir)" />
+		<text name="COURSEPLAY_MODE_2" 									 text="Modo: Combi (cargar de cosechadora y descargar en silo)" />
+		<text name="COURSEPLAY_MODE_3" 									 text="Modo: cargar de cosechadora y descargar a remolque" />
+		<text name="COURSEPLAY_MODE_4" 									 text="Modo: Fertilizar y sembrar" />
+		<text name="COURSEPLAY_MODE_5" 									 text="Modo: Traslado (conducir de un punto al final)" />
+		<text name="COURSEPLAY_MODE_6" 									 text="Modo: Trabajo campo" />
+		<text name="COURSEPLAY_MODE_7" 									 text="Modo: Cosechadora ir a remolque y descargar" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Modo: Transportar estiércol/purines" />
+		<text name="COURSEPLAY_MODE_9" 									 text="Modo: Cargar y descargar con pala" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Modo: Nivelando y compactando" />
+		<text name="COURSEPLAY_CONTINUE" 								 text="Continuar" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Reiniciar ruta" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Conducir ahora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Conducir a:" />
