@@ -1234,6 +1234,7 @@ function courseplay:handleUnloading(vehicle,revUnload)
 		local goForTipping = false
 		if revUnload then
 			tipRefpoint = tipper.cp.rearTipRefPoint
+			goForTipping = true
 		else
 			tipRefpoint = tipper.preferedTipReferencePointIndex
 			local _,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode);
@@ -1243,7 +1244,7 @@ function courseplay:handleUnloading(vehicle,revUnload)
 				goForTipping = true
 			end					
 		end
-		if (tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING) and ( not revUnload and goForTipping) then
+		if (tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING) and goForTipping then
 			tipper:toggleTipState(nil, tipRefpoint);
 		elseif (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
 			tipper:toggleTipState(nil, tipRefpoint);
