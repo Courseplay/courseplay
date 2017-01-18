@@ -220,7 +220,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Reiniciar la grabación" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Borrar el último punto" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Establecer un punto de espera" />
-		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Fijar punto descarga" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Establecer un punto de cruce" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Iniciar giro o media vuelta" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Finalizar maniobra de media vuelta" />
