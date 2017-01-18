@@ -264,9 +264,9 @@
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Automáticamente parado para" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="Solo conductores CP" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="Todos con motor encendido" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Detectados tractores en el rango de " />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Detectar tractores en el rango de " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Velocidad maxima mientras empuja" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Altura de Hoja" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Altura de niveladora" />
 		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="No se ha detectado punto inicio en BunkerSilo" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Hoja no enganchada" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La niveladora frontal no está soportada" />
