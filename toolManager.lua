@@ -222,8 +222,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 5: TRANSFER
 	elseif vehicle.cp.mode == 5 then
-		-- For reverse testing and only for developers!
-		if isImplement and CpManager.isDeveloper then
+		-- For reversing purpose
+		if isImplement then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
