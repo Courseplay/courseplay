@@ -1253,7 +1253,7 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 
 	--- Check for turns
 	for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
-		local minNumWPBeforeTurn = 6;
+		local minNumWPBeforeTurn = 8;
 		local wp = vehicle.Waypoints[i];
 		if wp and wp.turnStart then
 			--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
