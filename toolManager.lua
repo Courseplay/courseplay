@@ -428,6 +428,7 @@ function courseplay:setTipRefOffset(vehicle)
 					end;
 				end;
 			else
+				vehicle.cp.workTools[i].cp.rearTipRefPoint = 1
 				vehicle.cp.tipRefOffset = 0;
 			end;
 		end;

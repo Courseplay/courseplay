@@ -248,7 +248,9 @@ function courseplay:drive(self, dt)
 				courseplay:setInfoText(self, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(self.cp.totalFillLevel, 100), self.cp.totalCapacity));
 			end
 		elseif self.cp.mode == 6 then
-			if self.cp.previousWaypointIndex == self.cp.startWork then
+			if wayPointIsUnload then
+				stopForUnload = courseplay:handleUnloading(self,wayPointIsRevUnload)
+			elseif self.cp.previousWaypointIndex == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
 			elseif self.cp.previousWaypointIndex == self.cp.stopWork and self.cp.abortWork ~= nil then
 				courseplay:setVehicleWait(self, false);

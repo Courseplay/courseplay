@@ -964,29 +964,34 @@ function courseplay:unload_combine(vehicle, dt)
 		local dx,dz = AIVehicleUtil.getDriveDirection(frontTractor.cp.DirectionNode, x, y, z);
 		local x1, y1, z1 = worldToLocal(frontTractor.cp.DirectionNode, x, y, z)
 		local distance = Utils.vector2Length(x1, z1)
-		if z1 > -backDistance and dz > -0.9 then
-			-- tractor in front of tractor
+		local debugText = ""
+		if z1 > -backDistance and dz > 0.6 then
+			debugText = "tractor in front of tractor"
 			-- left side of tractor
 			local cx_left, cy_left, cz_left = localToWorld(frontTractor.cp.DirectionNode, 30, 0, -backDistance-20)
 			-- righ side of tractor
 			local cx_right, cy_right, cz_right = localToWorld(frontTractor.cp.DirectionNode, -30, 0, -backDistance-20)
-			
-			if vehicle.sideToDrive == "left" then
+
+			if dx > 0 then
 				currentX, currentY, currentZ = cx_left, cy_left, cz_left
 			else
 				currentX, currentY, currentZ = cx_right, cy_right, cz_right
 			end
 		else
+			debugText = "tractor behind tractor"
 			-- tractor behind tractor
 			currentX, currentY, currentZ = localToWorld(frontTractor.cp.DirectionNode, 0, 0, -backDistance * 1.5); -- -backDistance * 1
 		end;
 
-
-
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
 		-- if dod < 2 or (vehicle.cp.positionWithCombine == 2 and frontTractor.cp.modeState ~= 3 and dod < 100) then
-		if dod < 2 or (vehicle.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= 3 and dod < 100) then
+		if courseplay.debugChannels[4] then
+			renderText(0.2, 0.045, 0.02, string.format("%s,dx= %.2f dz= %.2f",debugText,dx,dz));
+			local yy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, currentX, 0, currentZ)
+			drawDebugLine(sx, sy+3, sz, 1, 0, 1, currentX, yy+3, currentZ, 1, 0, 1);
+		end
+		if dod < 2 or (vehicle.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= 3 and dod < 100 ) or not courseplay:isField(currentX, currentZ, 1, 1) then
 			courseplay:debug(string.format('\tdod=%s, frontTractor.cp.modeState=%s -> brakeToStop', tostring(dod), tostring(frontTractor.cp.modeState)), 4);
 			allowedToDrive = false;
 		end

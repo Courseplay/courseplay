@@ -141,6 +141,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 					local tipRefPoint = workTool.tipReferencePoints[workTool.cp.rearTipRefPoint].node
 					local x,y,z = getWorldTranslation(tipRefPoint);
 					local tipDistanceToPoint = courseplay:distance(x,z,vehicle.Waypoints[unloadPoint].cx,vehicle.Waypoints[unloadPoint].cz)
+					courseplay:debug(string.format("%s:workTool.cp.rearTipRefPoint: tipDistanceToPoint: %s", nameNum(vehicle),tostring(tipDistanceToPoint)), 13);
 					if tipDistanceToPoint  < 0.5 then
 						courseplay:setWaypointIndex(vehicle, unloadPoint + 1);
 						courseplay:debug(string.format("%s: Is at unload point", nameNum(vehicle)), 13);
