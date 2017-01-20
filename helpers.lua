@@ -1107,3 +1107,26 @@ function courseplay.utils:rgbToNormal(r, g, b, a)
 
 	return { r/255, g/255, b/255 };
 end;
+
+function courseplay:sekToTimeFormat(numSec)
+	local nSeconds = numSec
+	local nHours = math.floor(nSeconds/3600);
+	local nMins = math.floor(nSeconds/60 - (nHours*60));
+	local nSecs = math.floor(nSeconds - nHours*3600 - nMins *60);
+	local timeTable = {}
+	if nSeconds == 0 then
+		timeTable = {
+					nHours = 0;
+					nMins = 0;
+					nSecs = 0;
+					}
+			return timeTable
+	end
+	timeTable = {
+					nHours = nHours;
+					nMins = nMins;
+					nSecs = nSecs;
+					
+					}
+	return timeTable	
+end

@@ -187,6 +187,8 @@ function courseplay:start(self)
 	self.cp.shovelFillEndPoint = nil
 	self.cp.shovelEmptyPoint = nil
 	self.cp.mode9SavedLastFillLevel = 0;
+	self.cp.workDistance = 0
+	self.cp.mediumWpDistance = 0
 	self.cp.mode10.alphaList = {}
 	local nearestpoint = dist
 	local recordNumber = 0
@@ -225,6 +227,13 @@ function courseplay:start(self)
 			if numWaitPoints > 1 and (self.cp.stopWork == nil or self.cp.stopWork == 0) then
 				self.cp.stopWork = i
 			end
+			if self.cp.startWork and not self.cp.stopWork then
+				if i > 1 then
+					local dist = courseplay:distance(cx, cz, self.Waypoints[i-1].cx, self.Waypoints[i-1].cz)
+					self.cp.workDistance = self.cp.workDistance + dist
+					self.cp.mediumWpDistance = self.cp.workDistance/i
+				end
+			end
 		elseif self.cp.mode == 7  then--combineUnloadMode
 			if numWaitPoints == 1 and (self.cp.startWork == nil or self.cp.startWork == 0) then
 				self.cp.startWork = i
@@ -260,8 +269,7 @@ function courseplay:start(self)
 			wp.laneNum = curLaneNumber;
 		end;
 	end; -- END for wp in self.Waypoints
-
-
+	
 	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses
 	if (self.cp.mode == 4 or self.cp.mode == 6) then
 		if numWaitPoints == 0 or self.cp.startWork == nil then
@@ -632,6 +640,7 @@ function courseplay:stop(self)
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
+	self.cp.turnTimeRecorded = nil;	
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.hasTransferCourse = false
 	courseplay:setStopAtEnd(self, false);

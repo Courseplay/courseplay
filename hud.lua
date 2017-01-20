@@ -353,7 +353,8 @@ function courseplay.hud:setup()
 	self.bottomInfo.waitPointsTextX = self.bottomInfo.waitPointsIconX + self.bottomInfo.iconWidth * 1.5; -- rendered with center alignment
 	self.bottomInfo.waypointIconX = self.bottomInfo.waitPointsIconX - self.buttonSize.middle.margin - self.bottomInfo.iconWidth * 4;
 	self.bottomInfo.waypointTextX = self.bottomInfo.waypointIconX + self.bottomInfo.iconWidth * 1.25;
-
+	self.bottomInfo.timeRemainingX = self.bottomInfo.waypointIconX - self.bottomInfo.iconWidth
+	
 	self.bottomInfo.modeUVsPx = {
 		[courseplay.MODE_GRAIN_TRANSPORT]		 = { 184,108, 216, 76 };
 		[courseplay.MODE_COMBI]					 = { 220,108, 252, 76 };
@@ -458,6 +459,12 @@ function courseplay.hud:setContent(vehicle)
 		vehicle.cp.hud.content.bottomInfo.crossingPointsText = nil;
 	end;
 
+	if vehicle.cp.timeRemaining ~= nil then
+		local timeRemaining = courseplay:sekToTimeFormat(vehicle.cp.timeRemaining)
+		vehicle.cp.hud.content.bottomInfo.timeRemainingText = ('%02.f:%02.f:%02.f'):format(timeRemaining.nHours,timeRemaining.nMins,timeRemaining.nSecs)
+	else
+		vehicle.cp.hud.content.bottomInfo.timeRemainingText = nil
+	end
 	------------------------------------------------------------------
 
 	-- AUTOMATIC PAGE RELOAD BASED ON VARIABLE STATE
@@ -551,6 +558,10 @@ function courseplay.hud:renderHud(vehicle)
 		vehicle.cp.hud.crossingPointsIcon:render();
 	end;
 
+	if vehicle.cp.hud.content.bottomInfo.timeRemainingText ~= nil  then
+		courseplay:setFontSettings('white', false, 'right');
+		renderText(self.bottomInfo.timeRemainingX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.timeRemainingText);
+	end		
 
 	-- VERSION INFO
 	if courseplay.versionDisplayStr ~= nil then
