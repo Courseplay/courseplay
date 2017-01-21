@@ -65,7 +65,10 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar los cultivos" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distancia lateral:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar en:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Giro dentro del campo:" />  
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Giro dentro del campo:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Opposite turn direction:" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="last couple of lanes" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="when possible" />            <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Radio de giro:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Decalaje vertical:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Cosechadora" />

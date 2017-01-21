@@ -819,7 +819,7 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 	elseif vehicle.cp.hud.currentPage == 3 and anySection then
 		local isMode4or6 = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK;
 		for _,button in pairs(vehicle.cp.buttons[3]) do
-			if button.row == 2 and button.functionToCall == 'rowButton' then
+			if (button.row == 1 or button.row == 2) and button.functionToCall == 'rowButton' then
 				button:setDisabled(not isMode4or6);
 				button:setShow(isMode4or6);
 				button:setActive(vehicle.cp.turnOnField);

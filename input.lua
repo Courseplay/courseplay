@@ -309,10 +309,13 @@ function courseplay:executeFunction(self, func, value, page)
 			end
 			
 		elseif page == 3 then
-			if line == 2 then
+			if line == 1 then
 				self.cp.turnOnField = not self.cp.turnOnField;
 			end;
-		
+			if line == 2 then
+				self.cp.oppositeTurnMode = not self.cp.oppositeTurnMode;
+			end;
+
 		elseif page == 10 then
 			if line == 1 and not self:getIsCourseplayDriving() then
 				courseplay:toggleMode10Mode(self)

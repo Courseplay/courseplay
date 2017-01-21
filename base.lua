@@ -48,6 +48,8 @@ function courseplay:load(savegame)
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
 
 	--turn maneuver
+	self.cp.turnOnField = true;
+	self.cp.oppositeTurnMode = false;
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.turnStage = 0 --int
 	self.cp.aiTurnNoBackward = false --bool
@@ -128,7 +130,6 @@ function courseplay:load(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
-	self.cp.turnOnField = true;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
 	self.cp.hasPlough = false;
@@ -1404,6 +1405,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
 		self.cp.turnOnField  		  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnOnField'), 			 true);
+		self.cp.oppositeTurnMode  	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#oppositeTurnMode'), 		 false);
 		self.cp.workWidth 			  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),			 3);
 		self.cp.ridgeMarkersAutomatic = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'), true);
 		self.cp.abortWork 			  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),			 0);
@@ -1548,7 +1550,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel));
-	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q manualWorkWidth="%.1f" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField),Utils.getNoNil(self.cp.manualWorkWidth,0));
+	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q oppositeTurnMode=%q manualWorkWidth="%.1f" />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField), tostring(self.cp.oppositeTurnMode),Utils.getNoNil(self.cp.manualWorkWidth,0));
 	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q />', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth));
 	local shovels, combine = '', '';
 	if shovelRotsAttrNodes or shovelTransAttrNodes then
