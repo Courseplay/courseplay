@@ -618,11 +618,12 @@ function courseplay:drive(self, dt)
 				self.cp.turnTimeRecorded = nil 
 				self.cp.recordedTurnTime = nil 
 			else
-				self.cp.recordedTurnTime = self.cp.recordedTurnTime or 0 + dt
+				self.cp.recordedTurnTime = (self.cp.recordedTurnTime or 0) + dt
 			end
 		end
 		courseplay:turn(self, dt);
 		self.cp.TrafficBrake = false
+		
 		return
 	elseif isFieldWorking and self.cp.recordedTurnTime and not self.cp.turnTimeRecorded then
 		local turnCount = 0
@@ -631,14 +632,16 @@ function courseplay:drive(self, dt)
 				turnCount = turnCount +1
 			end		
 		end
-		self.cp.calculatedTurnTime = turnCount*self.cp.recordedTurnTime
+		self.cp.calculatedTurnTime = turnCount*(self.cp.recordedTurnTime/1000)
 		--print(" self.cp.recordedTurnTime: "..tostring(self.cp.recordedTurnTime).." turns: "..tostring(turnCount))
 		self.cp.turnTimeRecorded = true
-	elseif isFieldWorking then
+	elseif isFieldWorking and self.cp.waypointIndex < self.cp.stopWork then
 		local distance = (self.cp.stopWork-self.cp.waypointIndex) *self.cp.mediumWpDistance -- m
 		local speed = self.cruiseControl.speed/3.6   --m/s
 		local turnTime = math.floor(self.cp.calculatedTurnTime or 5)
 		self.cp.timeRemaining = distance/speed + turnTime
+	elseif not isFieldWorking then
+		self.cp.timeRemaining = nil
 	end 
 	
 	
