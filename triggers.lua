@@ -903,20 +903,25 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 		if not trailer.cp then
 			trailer.cp = {};
 		end;
+		if not trailer.cp.siloTriggerHits then
+			trailer.cp.siloTriggerHits = 0;
+		end;
 
-		if onEnter then
+		-- self.Schnecke is only set for MischStation and that one is not an real SiloTrigger and should not be used as one.
+		if onEnter and not self.Schnecke then
 			-- Add the current SiloTrigger to the cp table, for easier access.
-			-- self.Schnecke is only set for MischStation and that one is not an real SiloTrigger and should not be used as one.
-			if not trailer.cp.currentSiloTrigger and not self.Schnecke then
+			if not trailer.cp.currentSiloTrigger then
 				trailer.cp.currentSiloTrigger = self;
 				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
 			end;
-		elseif onLeave then
-			-- Remove the current SiloTrigger. (Is here in case Giants fixes the above bug))
-			if trailer.cp.currentSiloTrigger ~= nil then
+			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits + 1;
+		elseif onLeave and not self.Schnecke then
+			-- Remove the current SiloTrigger.
+			if trailer.cp.currentSiloTrigger ~= nil and trailer.cp.siloTriggerHits == 1 then
 				trailer.cp.currentSiloTrigger = nil;
 				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
 			end;
+			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits - 1;
 		end;
 	end;
 end;

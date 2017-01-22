@@ -7,7 +7,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	end
 
 	-- tippers are not full
-	if vehicle.cp.isLoaded ~= true and ((vehicle.cp.waypointIndex == 2 and vehicle.cp.totalFillLevel < vehicle.cp.totalCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
+	if vehicle.cp.isLoaded ~= true and ((vehicle.cp.waypointIndex >= 1 and vehicle.cp.waypointIndex <= 3 and vehicle.cp.totalFillLevel < vehicle.cp.totalCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
 		allowedToDrive = courseplay:load_tippers(vehicle, allowedToDrive);
 		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
 	end

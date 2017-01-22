@@ -601,6 +601,7 @@ function courseplay:setTipperCoverData(vehicle)
 			table.insert(vehicle.cp.tippersWithCovers, data);
 			vehicle.cp.tipperHasCover = true;
 
+		-- TODO: Delete old mod code if sure not needed anymore.
 		-- Example: for mods trailer that don't use the default cover specialization. Look at openCloseCover() to see how this is used!
 		else--if workTool.cp.isCoverVehicle then
 			--courseplay:debug(string.format('Implement %q has a cover (isCoverVehicle == true)', tostring(workTool.name)), 6);
@@ -650,13 +651,14 @@ end;
 
 -- ##### LOADING TOOLS ##### --
 function courseplay:load_tippers(vehicle, allowedToDrive)
-	local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
-	local driveOn = false;
-
 	if vehicle.cp.currentTrailerToFill == nil then
 		vehicle.cp.currentTrailerToFill = 1;
 	end
+
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
+
+	local driveOn = false;
+
 	if not currentTrailer.cp.realUnloadOrFillNode then
 		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
 		if not currentTrailer.cp.realUnloadOrFillNode then
@@ -668,15 +670,24 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		end;
 	end;
 
-	if not vehicle.cp.trailerFillDistance then
+	if currentTrailer.cp.currentSiloTrigger == nil and not driveOn then
+		return allowedToDrive;
+	end;
 
-		if not currentTrailer.cp.realUnloadOrFillNode then
-			return allowedToDrive;
-		end;
+	local siloTriggerNode = currentTrailer.cp.currentSiloTrigger.rootNode;
+	local SiloUnloadDistance = -100;
+	local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
+	local vehicleX,vehicleY,vehicleZ = getWorldTranslation(directionNode);
+	local cx, cz = 0, 0;
 
-		local _,y,_ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
-		local _,_,z = worldToLocal(currentTrailer.cp.realUnloadOrFillNode, cx, y, cz);
-		vehicle.cp.trailerFillDistance = z;
+	if not driveOn then
+		local trailerX,_,trailerZ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
+		local _,_,z = worldToLocal(directionNode, trailerX, vehicleY, trailerZ);
+		vehicle.cp.trailerFillDistance = z + 0.5;
+
+		local triggerX,_,triggerZ = getWorldTranslation(siloTriggerNode);
+		_,_,SiloUnloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
+
 	end;
 
 	-- SiloTrigger (Giants)
@@ -694,7 +705,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		if acceptedFillType then
 			local siloIsEmpty = siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1; --g_currentMission.missionStats.farmSiloAmounts[vehicle.cp.siloSelectedFillType] <= 1;
 
-			if not siloTrigger.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) then
+			if not siloTrigger.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) and SiloUnloadDistance < vehicle.cp.trailerFillDistance then
 				siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
 				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);
@@ -737,10 +748,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				vehicle.cp.currentTrailerToFill = nil;
 			end;
 		else
-			local _,y,_ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
-			local _,_,vectorDistanceZ = worldToLocal(currentTrailer.cp.realUnloadOrFillNode, cx, y, cz);
-
-			if vectorDistanceZ < vehicle.cp.trailerFillDistance then
+			if SiloUnloadDistance < vehicle.cp.trailerFillDistance then
 				allowedToDrive = false;
 			end;
 		end;
