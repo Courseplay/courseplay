@@ -245,8 +245,9 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: tweede menu accepteren" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Toon/verberg Courseplay HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: rijd route/stop bestuurder" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: stop bij laatste punt of volgende trigger" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: nu rijden" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: stop bij laatste punt of volgende trigger" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: volgende modus" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: vorige modus" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: muis actie" />

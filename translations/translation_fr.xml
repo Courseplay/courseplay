@@ -253,8 +253,9 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: Accepter les pop-ups" />
 		<text name="input_COURSEPLAY_HUD" 						 		 text="Courseplay: Montrer/cacher l'interface" />
 		<text name="input_COURSEPLAY_START_STOP" 				 		 text="Courseplay: Démarrer/arrêter la course" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 				 		 text="Courseplay: Arrêter au prochain point ou trigger" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 				 		 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 					 		 text="Courseplay: Démarrer maintenant" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 				 		 text="Courseplay: Arrêter au prochain point ou trigger" />
 		<text name="input_COURSEPLAY_NEXTMODE" 					 		 text="Courseplay: mode suivant" />
 		<text name="input_COURSEPLAY_PREVMODE" 					 		 text="Courseplay: mode précedent" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: Action de la souris" />

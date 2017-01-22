@@ -254,8 +254,9 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: accetta menu secondario" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Mostra/nascondi Courseplay HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: usa/ferma percorso" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: ferma all'ultimo punto o al prossimo trigger" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: avvia ora" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: ferma all'ultimo punto o al prossimo trigger" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: modo successivo" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo precedente" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: azione del mouse" />

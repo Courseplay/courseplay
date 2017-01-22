@@ -797,6 +797,8 @@ function courseplay:update(dt)
 			self:setCourseplayFunc('cancelWait', true, false, 1);
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW) and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('setIsLoaded', true, false, 1);
+		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_STOP_AT_END) and self.cp.canDrive and self.cp.isDriving then
+			self:setCourseplayFunc('setStopAtEnd', not self.cp.stopAtEnd, false, 1);
 		elseif self.cp.canSwitchMode and self.cp.nextMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_NEXTMODE) then
 			self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
 		elseif self.cp.canSwitchMode and self.cp.prevMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
