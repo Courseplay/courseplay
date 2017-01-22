@@ -117,7 +117,7 @@ function courseplay:turn(vehicle, dt)
 		----------------------------------------------------------
 		if vehicle.cp.turnStage == 1 then
 			--- Cleanup in case we already have old info
-			courseplay:clearTurnTargets(vehicle); -- Make sure we have cleaned it from any previus usage.
+			courseplay:clearTurnTargets(vehicle, false); -- Make sure we have cleaned it from any previus usage.
 
 			--- Setting default turnInfo values
 			local turnInfo = {};
@@ -431,6 +431,11 @@ function courseplay:turn(vehicle, dt)
 			local cx, cz = courseplay:getVehicleOffsettedCoords(vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicle.Waypoints[vehicle.cp.waypointIndex].cz);
 			local posX, posZ = cx + (extraForward + 10) * dx, cz + (extraForward + 10) * dz;
 			courseplay:addTurnTarget(vehicle, posX, posZ);
+		end;
+
+		if vehicle.cp.lowerToolThisTurnLoop then
+			courseplay:lowerImplements(vehicle, true, true);
+			vehicle.cp.lowerToolThisTurnLoop = false;
 		end;
 
 		if vehicle.isStrawEnabled then
@@ -1385,7 +1390,8 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, useSmoothTurn, turnEnd, t
 	end;
 end
 
-function courseplay:clearTurnTargets(vehicle)
+function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
+	vehicle.cp.lowerToolThisTurnLoop = Utils.getNoNil(lowerToolThisTurnLoop, true); -- if lowerToolThisTurnLoop is set to false, it will not lower any implements in the next turn loop
 	vehicle.cp.turnStage = 0;
 	vehicle.cp.turnTargets = {};
 	vehicle.cp.curTurnIndex = 1;
