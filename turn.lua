@@ -291,10 +291,12 @@ function courseplay:turn(vehicle, dt)
 			cpPrintLine(14, 3);
 
 			-- Rotate tools if needed.
-			if turnInfo.targetDeltaX > 0 then
-				AIVehicle.aiRotateLeft(vehicle);
-			else
-				AIVehicle.aiRotateRight(vehicle);
+			if vehicle.cp.toolOffsetX ~= 0 then
+				if vehicle.cp.toolOffsetX < 0 then
+					AIVehicle.aiRotateLeft(vehicle);
+				else
+					AIVehicle.aiRotateRight(vehicle);
+				end;
 			end;
 
 			vehicle.cp.turnStage = 2;
