@@ -436,6 +436,9 @@ function courseplay:turn(vehicle, dt)
 		end;
 
 		if vehicle.cp.lowerToolThisTurnLoop then
+			if vehicle.getIsTurnedOn ~= nil and not vehicle:getIsTurnedOn() then
+				vehicle:setIsTurnedOn(true, false);
+			end;
 			courseplay:lowerImplements(vehicle, true, true);
 			vehicle.cp.lowerToolThisTurnLoop = false;
 		end;
