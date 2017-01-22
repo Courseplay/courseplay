@@ -66,9 +66,9 @@
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="地块内转向:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Opposite turn direction:" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="last couple of lanes" />     <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="when possible" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="反方向:" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="最后几个车道" />     <!-- last couple of lanes -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="如果可能的话/如果允许" />            <!-- when possible -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="转弯半径:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="纵向距离调整:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="联合收割机" />
