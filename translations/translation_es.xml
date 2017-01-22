@@ -17,7 +17,7 @@
 		<text name="COURSEPLAY_STOP_COURSE" 							 text="Detener ruta" />
 		<text name="COURSEPLAY_MODE_1" 									 text="Modo: Ayudante (cargar y conducir)" />
 		<text name="COURSEPLAY_MODE_2" 									 text="Modo: Combi (cargar de cosechadora y descargar en silo)" />
-		<text name="COURSEPLAY_MODE_3" 									 text="Modo: cargar de cosechadora y descargar a remolque" />
+		<text name="COURSEPLAY_MODE_3" 									 text="Modo: Transferencia (cargar de cosechadora y descargar a remolque)" />
 		<text name="COURSEPLAY_MODE_4" 									 text="Modo: Fertilizar y sembrar" />
 		<text name="COURSEPLAY_MODE_5" 									 text="Modo: Traslado (conducir de un punto al final)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Modo: Trabajo campo" />
