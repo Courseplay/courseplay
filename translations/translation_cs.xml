@@ -248,8 +248,9 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="CP：弹出窗口" />
 		<text name="input_COURSEPLAY_HUD" 								 text="打开/关闭CP界面" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="CP：开始/停止 任务" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="CP：停在最后路点或等待点" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="CP：开车" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="CP：停在最后路点或等待点" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="CP: 下一个任务模式" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="CP: 上一个任务模式" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="CP：鼠标操作" />

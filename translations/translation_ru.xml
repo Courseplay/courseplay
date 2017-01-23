@@ -254,8 +254,9 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: вторичное меню" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Courseplay: показать/скрыть HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: старт/стоп маршрута" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: остановка в следующей точке" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: старт маршрута" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: остановка в следующей точке" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: следующий тип работы" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: предыдущий тип работы" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: 1-я функция мыши" />

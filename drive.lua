@@ -157,7 +157,7 @@ function courseplay:drive(self, dt)
 	local lightMask = 0
 	local combineBeaconOn = self.cp.isCombine and self.cp.totalFillLevelPercent > 80;
 	local beaconOn = (self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
-					 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2) 
+					 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2 and self.cp.trailerFillDistance == nil)
 					 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
 					 or (self.cp.mode == 10 and (self.cp.waypointIndex > 1 or #self.cp.mode10.stoppedCourseplayers >0) )
 					 or combineBeaconOn) or false;
@@ -647,9 +647,9 @@ function courseplay:drive(self, dt)
 	
 	
 	--SPEED SETTING
-	local isAtEnd   = self.cp.waypointIndex > self.cp.numWaypoints - 3;
+	local isAtEnd   = self.cp.waypointIndex > self.cp.numWaypoints - 2;
 	local isAtStart = self.cp.waypointIndex < 3;
-	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd)) 
+	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd or self.cp.trailerFillDistance ~= nil))
 	or	((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd) 
 	or	(self.cp.mode == 9 and self.cp.waypointIndex > self.cp.shovelFillStartPoint and self.cp.waypointIndex <= self.cp.shovelFillEndPoint)
 	or	(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.cp.waypointIndex].wait) or courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, 0, 2, "wait", true, false)))

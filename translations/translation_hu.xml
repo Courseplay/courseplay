@@ -245,8 +245,9 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Vezetősegéd gombkiosztás: Másodlagos" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Vezetősegéd panel be/ki" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Vezetősegéd: Vezető indítása/leállítása" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Vezetősegéd: Indítás azonnal!" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Vezetősegéd: Következő művelet" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Vezetősegéd: Előző művelet" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Vezetősegéd: Egér activálás" />
@@ -261,27 +262,27 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Minden pont megjelenítése/elrejtése" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Elágazási pontok megjelenítése/elrejtése" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />                                  <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />               <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />                            <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />                  <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />                    <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />               <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />         <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />               <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />                          <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" /> <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />                     <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />  <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />                   <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />                           <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />               <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />                       <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />                     <!-- TODO: TRANSLATE! -->
 		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />            <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />                                <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />                             <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>
