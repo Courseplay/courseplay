@@ -71,7 +71,7 @@
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Внутренний разворот:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Обрат. напр. разворота:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="последняя пара полос" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="последняя пара проходов" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="когда возможно" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Радиус поворота:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="вперед/назад:" />
