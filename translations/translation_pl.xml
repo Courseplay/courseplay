@@ -254,7 +254,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY"				 text="Courseplay: Akceptacja podmenu" />
 		<text name="input_COURSEPLAY_HUD"								 text="Pokaż/Ukryj hud Courseplay" />
 		<text name="input_COURSEPLAY_START_STOP"						 text="Courseplay: Wystartuj/Zatrzymaj kierowcę" />
-		<text name="input_COURSEPLAY_CANCELWAIT"						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT"						 text="Courseplay: Kontynuuj" />
 		<text name="input_COURSEPLAY_DRIVENOW"							 text="Courseplay: Jedź teraz" />
 		<text name="input_COURSEPLAY_STOP_AT_END"						 text="Courseplay: Zatrzymaj się w ostatnim miejscu lub następnym triggerze" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: Następny tryb" />
