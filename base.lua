@@ -129,6 +129,7 @@ function courseplay:load(savegame)
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
 	self.cp.canSwitchMode = false;
+	self.cp.tipperLoadMode = 0;
 	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
