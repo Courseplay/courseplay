@@ -254,7 +254,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="コースプレイ: セカンドメニュー" />
 		<text name="input_COURSEPLAY_HUD" 								 text="コースプレイ: HUDの表示・非表示" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="コースプレイ: 開始・停止" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="コースプレイ: 続行" />
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="コースプレイ: 走行" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="コースプレイ: エンドポイントか次トリガで停止" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="コースプレイ: 次のモード" />
