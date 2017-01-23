@@ -215,7 +215,7 @@ function courseplay:turn(vehicle, dt)
 			if turnInfo.frontMarker > 0 then
 				offset = -turnInfo.zOffset - turnInfo.frontMarker;
 			end;
-			if turnInfo.turnOnField and not vehicle.cp.aiTurnNoBackward then
+			if turnInfo.turnOnField and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward then
 				turnInfo.reverseOffset = max((turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight), offset);
 			else
 				turnInfo.reverseOffset = offset;
