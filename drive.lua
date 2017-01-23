@@ -186,8 +186,8 @@ function courseplay:drive(self, dt)
 		if self.beaconLightsActive then
 			self:setBeaconLightsVisibility(false);
 		end;
-		if self.cp.hasHazardLights and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
-			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
+		if self.cp.hasHazardLights and self.turnLightState ~= Lights.TURNSIGNAL_OFF then
+			self:setTurnLightState(Lights.TURNLIGHT_OFF);
 		end;
 	else -- on street/always
 		if self.beaconLightsActive ~= beaconOn then
@@ -195,10 +195,10 @@ function courseplay:drive(self, dt)
 		end;
 		if self.cp.hasHazardLights then
 			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and beaconOn and not combineBeaconOn;
-			if not hazardOn and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
-				self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
-			elseif hazardOn and self.turnSignalState ~= Vehicle.TURNSIGNAL_HAZARD then
-				self:setTurnSignalState(Vehicle.TURNSIGNAL_HAZARD);
+			if not hazardOn and self.turnLightState ~= Lights.TURNLIGHT_OFF then
+				self:setTurnLightState(Lights.TURNLIGHT_OFF);
+			elseif hazardOn and self.turnLightState ~= Lights.TURNLIGHT_HAZARD then
+				self:setTurnLightState(Lights.TURNLIGHT_HAZARD);
 			end;
 		end;
 	end;
