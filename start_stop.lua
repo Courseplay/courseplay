@@ -611,8 +611,8 @@ function courseplay:stop(self)
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);
 	end;
-	if self.turnSignalState and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
-		self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
+	if self.turnLightState and self.turnLightState ~= Lights.TURNLIGHT_OFF then
+		self:setTurnLightState(Lights.TURNLIGHT_OFF);
 	end;
 
 	--open all covers
