@@ -30,11 +30,11 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Avvia ora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Avvia a:" />
 		<text name="UNKNOWN" 											 text="sconosciuto" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Testata senso anti-/orario" />        
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Testata prima/dopo lavoro nel campo" /> 
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Crea lavoro nel campo" />              
 		<text name="COURSEPLAY_DISTANCE" 								 text="distanza" />
-		<text name="COURSEPLAY_WAITING_TIME" 							 text="Carica percorso" />
+		<text name="COURSEPLAY_WAITING_TIME" 							 text="Tempo di attesa" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d sec" />
 		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />
@@ -202,7 +202,7 @@
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio di corsia simmetrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priorità dell'autista" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="livello di riempimento" />
-		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": la lama è intasata" />
+		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": raccoglitore intasato" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": rotopressa ha bisogno di nuovo rotolo di rete" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcolo perimetro del campo corrente" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="Perimetro del campo numero" />
