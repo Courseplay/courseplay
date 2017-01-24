@@ -24,39 +24,39 @@
 		<text name="COURSEPLAY_MODE_7" 							 		 text="Tipo: Ceifeira descarrega no atrelado" />
 		<text name="COURSEPLAY_MODE_8" 							 		 text="Tipo: Transporte de estrume" />
 		<text name="COURSEPLAY_MODE_9" 							 		 text="Tipo: Carregar e descarregar a pá" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Tipo: Nivelar e Compactar" />
 		<text name="COURSEPLAY_CONTINUE" 						 		 text="continuar" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 						 	 text="Limpar o percurso atual" />
 		<text name="COURSEPLAY_DRIVE_NOW" 						 		 text="Conduzir agora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 						 	 text="Conduzir em:" />
 		<text name="UNKNOWN" 								 			 text="desconhecido" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="sentido horário/anti-horário" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="antes/depois do percurso " />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Gerar Percurso no Campo" />
 		<text name="COURSEPLAY_DISTANCE" 						 		 text="distânçia" />
 		<text name="COURSEPLAY_WAITING_TIME" 						 	 text="tempo de espera" />
 		<text name="COURSEPLAY_MINUTES" 						 		 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 						 		 text="%d sec" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNIT_METER" 								 text="metros" />
 		<text name="COURSEPLAY_COURSE_NAME" 				        	 text="Nome do percurso" />
 		<text name="COURSEPLAY_FOLDER_NAME" 						 	 text="Nome da pasta" />
 		<text name="COURSEPLAY_FILTER_COURSES" 						 	 text="Filtrar percursos" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Voltar" />	
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Cancelar" />			
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s para Cancelar" />	
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s para Gravar Percurso" />
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s para Gravar Pasta" />
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s para Filtrar Percursos" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Percursos: %q" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 						 	 text="Criar nova pasta" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Procurar por pastas e percursos" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 					 	 text="Desligar filtros" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="chegou ao ponto de descarga" />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="gravar posição do tubo de transbordo" />  
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="mover tubo de transbordo para posição" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="chegou no ponto de espera" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="chegou ao trigger ou no final do percurso" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="transporte de gãos concluido" /> 
 		<text name="COURSEPLAY_WORK_END" 						 		 text="trabalho concluído" />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					  	 text=": equipamento precisa de ser descarregado!" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 				         text=": equipamento precisa de ser recarregado" />
@@ -68,10 +68,10 @@
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evitar as plantações" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância lateral" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Iniciar a:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  			<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Opposite turn direction:" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="last couple of lanes" />     <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="when possible" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" /> 
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Virar na direção oposta:" /> 
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="Últimos pontos " /> 
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="Quando possivel" />  
 		<text name="COURSEPLAY_TURN_RADIUS" 						 	 text="Raio de viragem:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Distânçia vertical:" />
 		<text name="COURSEPLAY_COMBINE" 						 		 text="Ceifeira" />
@@ -155,8 +155,8 @@
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Oeste" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Cabeceira do campo" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="ligado" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Só o nome" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nome e percurso" />
 		<text name="COURSEPLAY_DEACTIVATED" 						 	 text="desligado" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 						 	 text="marcadores" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 					 	 text="A descarregar no campo" />
@@ -216,8 +216,8 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 						 	 text=": Silo BGA está cheio!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Silo não tem o tipo correto para carregar" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Carregar do silo:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 					 	 text="Silo está vazio! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 					 	 text="Silo está vazio! Em espera..." />
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Silo está cheio! A continuar no próximo silo." />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 					 	 text="Iniciar a %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Pesquisar pelo primeiro ponto" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Guardar percurso atual" />
@@ -251,7 +251,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: aceitar menu secundário" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Mostrar/ocultar Courseplay HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: conduzir/parar no percurso" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continuar" /> 
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: conduzir agora" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: parar no último ponto ou próximo trigger" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: modo seguinte" />
@@ -265,27 +265,27 @@
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover para pasta" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Eliminar percurso/pasta" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />                                  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />                            <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />                  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />                    <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />         <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />                          <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />                     <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />                   <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />                           <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />                       <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />                     <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="modo" />                   
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nivelar e compactar" />              
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="encher" />                           
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="paragem automática" />                 
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="procurar só com CP ligado" />                   
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="só com os motores ligados" />               
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="detetar tractores no alcanse " />        
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="velocidade maxima ao empurrar" />              
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="altura da lâmina" />                         
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="nenhum silo detectado no ponto inicial" /> 
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="sem lamina ligada" />                    
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="lâmina frontal não é suportada" /> 
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Definições do silo" />                  
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="largura da lâmina" />                          
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo está a ser enchido por" />               
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="conduzir através" />                       
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="descarregar em marcha-atrás" />                     
 		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />            <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />                                <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />                             <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />           
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />                               
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />                          
 		
 	</texts>
 </l10n>
