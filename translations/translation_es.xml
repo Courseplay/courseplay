@@ -29,15 +29,15 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Reiniciar ruta" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Conducir ahora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Conducir a:" />
-		<text name="UNKNOWN" 											 text="desconocido" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_DISTANCE" 								 text="distancia" />
+		<text name="UNKNOWN" 											 text="Desconocido" />
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Cabecera sentido contrario agujas de reloj" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Cabecera antes/después de ruta del campo" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generar ruta del campo" />
+		<text name="COURSEPLAY_DISTANCE" 								 text="Distancia" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Tiempo de espera" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d seg" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="metros" />            
+		<text name="COURSEPLAY_UNIT_METER" 								 text="Metros" />            
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nombre de ruta:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nombre de la carpeta:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtrar las rutas:" />
@@ -60,7 +60,7 @@
 		<text name="COURSEPLAY_WORK_END" 								 text="ha terminado el trabajo." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": equipamiento necesita ser descargado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": el equipamiento necesita ser rellenado." />
-		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="descargar pacas." />
+		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="Descargar pacas." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="atasco de trafico." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Punto de descarga alcanzado" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carga: %d de %d" />
@@ -84,18 +84,18 @@
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Buscar cosechadora en el campo %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Copiar ruta:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Vehiculo" />
-		<text name="COURSEPLAY_TEMP_COURSE" 							 text="ruta temporal" />
+		<text name="COURSEPLAY_TEMP_COURSE" 							 text="Ruta temporal" />
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Velocidad de giro:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Velocidad campo:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Velocidad carretera:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Velocidad marcha atras:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Velocidad:" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="de grabación" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="maxima velocidad" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="automatico (de ruta, max. %s)" />
-		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="ruta: no se ha cargado la ruta" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="De grabación" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="Maxima velocidad" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="Automatico (de ruta, max. %s)" />
+		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="Ruta: no se ha cargado la ruta" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Luces adicionales:" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="todas apagadas" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="Todas apagadas" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="Rotativas (solo en carretera)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="Rotativas y luces emergencia (solo carretera)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="Rotativas (siempre encendidas)" />
@@ -186,18 +186,18 @@
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Detenerse e ir a cargar" />
 
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Empezar el curso en el" />
-		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto más cercano" />
-		<text name="COURSEPLAY_FIRST_POINT" 							 text="primer punto" />
-		<text name="COURSEPLAY_CURRENT_POINT" 							 text="punto actual" />
+		<text name="COURSEPLAY_NEAREST_POINT" 							 text="Punto más cercano" />
+		<text name="COURSEPLAY_FIRST_POINT" 							 text="Primer punto" />
+		<text name="COURSEPLAY_CURRENT_POINT" 							 text="Punto actual" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Ruta perímetral del campo" />
 		<text name="COURSEPLAY_FIELD" 									 text="Campo" />
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(ruta actual cargada)" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(Ruta actual cargada)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Escaneo de campos en progreso" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="Escaneando campo %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="Falta una manguera - cancelar la recarga" />
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Cambio a carril simétrico" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Prioridad del conductor" />
-		<text name="COURSEPLAY_FILLEVEL" 								 text="nivel de llenado" />
+		<text name="COURSEPLAY_FILLEVEL" 								 text="Nivel de llenado" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": la cargadora esta bloqueada" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": la encintadora necesita nuevos rollos" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calcular el perímetro del campo actual" />
