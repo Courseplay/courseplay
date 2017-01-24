@@ -1024,13 +1024,17 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	local CPRatio		= 0;
 	local rotMax		= 0;
 	local TR			= 0;
-	local type			= "2WS";
+	local steeringType	= "2WS";
 
 	-- Make sure the turning node have been updated (Script will only run once)
 	courseplay:getRealTurningNode(vehicle);
 
+	if vehicle.cp.overwriteTurnRadius and type(vehicle.cp.overwriteTurnRadius) == "number" then
+		courseplay:debug(('%s -> TurnRadius: overwriteTurnRadius is set: turnRadius set to %.2fm'):format(nameNum(vehicle), vehicle.cp.overwriteTurnRadius), 6);
+		return vehicle.cp.overwriteTurnRadius;
+
 	-- Giants have provided us with maxTurningRadius, so use it.
-	if vehicle.maxTurningRadius then
+	elseif vehicle.maxTurningRadius then
 		return vehicle.maxTurningRadius
 
 	-- We need to calculate it our self.
@@ -1040,13 +1044,13 @@ function courseplay:getVehicleTurnRadius(vehicle)
 			wheelBase = courseplay:getWheelBase(vehicle);
 			CPRatio = courseplay:getCenterPivotRatio(vehicle, wheelBase);
 			rotMax = abs(vehicle.articulatedAxis.rotMax);
-			type = "ASW";
+			steeringType = "ASW";
 
 		-- 4 Wheel Steering
 		elseif vehicle.cp.fourWheelSteerMaxRot then
 			wheelBase = courseplay:getWheelBase(vehicle);
 			rotMax = vehicle.cp.fourWheelSteerMaxRot;
-			type = "4WS";
+			steeringType = "4WS";
 
 		-- 2 Wheel Steering
 		elseif vehicle.wheels then
@@ -1059,7 +1063,7 @@ function courseplay:getVehicleTurnRadius(vehicle)
 		end;
 	end;
 
-	TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
+	TR = ceil(courseplay:calculateTurnRadius(steeringType, wheelBase, rotMax, CPRatio) * radiusMultiplier);
 
 	if TR > 0 then
 		turnRadius = TR;

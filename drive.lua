@@ -2,6 +2,8 @@ local curFile = 'drive.lua';
 
 local abs, max, min, pow, sin , huge = math.abs, math.max, math.min, math.pow, math.sin, math.huge;
 local _;
+local avoidWorkAreaType = {};
+
 -- drives recored course
 function courseplay:drive(self, dt)
 	if not courseplay:getCanUseCpMode(self) then
@@ -14,22 +16,35 @@ function courseplay:drive(self, dt)
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		if self.cp.aiFrontMarker and self.cp.backMarkerOffset then
-			local tx1, ty1, tz1 = localToWorld(self.cp.DirectionNode,3,1,self.cp.aiFrontMarker)
-			local tx2, ty2, tz2 = localToWorld(self.cp.DirectionNode,3,1,self.cp.backMarkerOffset)
-			local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, -1, 0, 0)
+			local directionNode	= self.isReverseDriving and self.cp.reverseDirectionNode or self.cp.DirectionNode;
+			local tx1, ty1, tz1 = localToWorld(directionNode,3,1,self.cp.aiFrontMarker)
+			local tx2, ty2, tz2 = localToWorld(directionNode,3,1,self.cp.backMarkerOffset)
+			local nx, ny, nz = localDirectionToWorld(directionNode, -1, 0, 0)
 			local distance = 6
 			drawDebugLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance), 1, 0, 0)
 			drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0)
 		end;
-		local workTool = courseplay:getFirstReversingWheeledWorkTool(self) or self.cp.workTools[1];
-		if workTool and workTool.workAreas then
-			for index, workArea in ipairs(workTool.workAreas) do
-				local sx, sy, sz = getWorldTranslation(workArea["start"]);
-				drawDebugLine(sx, sy, sz, 1, 0, 0, sx, sy+3, sz, 1, 0, 0);
-				local wx, wy, wz = getWorldTranslation(workArea["width"]);
-				drawDebugLine(wx, wy, wz, 1, 0, 0, wx, wy+3, wz, 1, 0, 0);
-				local hx, hy, hz = getWorldTranslation(workArea["height"]);
-				drawDebugLine(hx, hy, hz, 1, 0, 0, hx, hy+3, hz, 1, 0, 0);
+
+		if #avoidWorkAreaType == 0 then
+			avoidWorkAreaType[WorkArea.AREATYPE_RIDGEMARKER] = true;
+			avoidWorkAreaType[WorkArea.AREATYPE_MOWERDROP] = true;
+			avoidWorkAreaType[WorkArea.AREATYPE_WINDROWERDROP] = true;
+			avoidWorkAreaType[WorkArea.AREATYPE_TEDDERDROP] = true;
+		end;
+		for _,workTool in pairs(self.cp.workTools) do
+			if workTool.workAreas then
+				for k = 1, #workTool.workAreas do
+					if not avoidWorkAreaType[workTool.workAreas[k].type] then
+						for _, workArea in ipairs(workTool.workAreas) do
+							local sx, sy, sz = getWorldTranslation(workArea["start"]);
+							drawDebugLine(sx, sy, sz, 1, 0, 0, sx, sy+3, sz, 1, 0, 0);
+							local wx, wy, wz = getWorldTranslation(workArea["width"]);
+							drawDebugLine(wx, wy, wz, 1, 0, 0, wx, wy+3, wz, 1, 0, 0);
+							local hx, hy, hz = getWorldTranslation(workArea["height"]);
+							drawDebugLine(hx, hy, hz, 1, 0, 0, hx, hy+3, hz, 1, 0, 0);
+						end;
+					end;
+				end;
 			end;
 		end;
 	end
@@ -597,9 +612,6 @@ function courseplay:drive(self, dt)
 		if self.cp.curSpeed > 1 and not self.cp.mode == 9 then
 			allowedToDrive = true;
 			moveForwards = self.movingDirection == 1;
-		elseif self.cp.curSpeed < 0.2 then
-			-- ## The infamous "SUCK IT, GIANTS" fix, a.k.a "chain that fucker down, it ain't goin' nowhere!"
-			--courseplay:getAndSetFixedWorldPosition(self);
 		end;
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1) 
 		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
@@ -827,8 +839,7 @@ function courseplay:drive(self, dt)
 		self.cp.shortestDistToWp = self.cp.distanceToTarget
 	end
 
-	if self.invertedDrivingDirection then
-		lx = -lx
+	if self.isReverseDriving then
 		lz = -lz
 	end
 

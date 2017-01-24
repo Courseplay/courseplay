@@ -1072,7 +1072,11 @@ function courseplay:unload_combine(vehicle, dt)
 		
 			courseplay:setSpeed(vehicle, refSpeed)
 		end
-		
+
+		if vehicle.isReverseDriving then
+			lz = -lz
+		end
+
 		vehicle.cp.TrafficBrake = false
 		if vehicle.cp.modeState == 5 or vehicle.cp.modeState == 2 then   
 			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz)

@@ -317,9 +317,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- aiTurnNoBackward
 	if isImplement and hasWorkTool then
-		local implX,implY,implZ = getWorldTranslation(workTool.rootNode);
-		local _,_,tractorToImplZ = worldToLocal(vehicle.cp.DirectionNode, implX,implY,implZ);
-
 		if not vehicle.cp.aiTurnNoBackward and workTool.cp.notToBeReversed then
 			vehicle.cp.aiTurnNoBackward = true;
 			courseplay:debug(('%s: workTool.cp.notToBeReversed == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
@@ -436,6 +433,7 @@ function courseplay:setTipRefOffset(vehicle)
 end;
 
 function courseplay:setMarkers(vehicle, object)
+	local realDirectionNode		= vehicle.isReverseDriving and vehicle.cp.reverseDirectionNode or vehicle.cp.DirectionNode;
 	local aLittleBitMore 		= 1;
 	local pivotJointNode 		= courseplay:getPivotJointNode(object);
 	object.cp.backMarkerOffset 	= nil;
@@ -525,7 +523,7 @@ function courseplay:setMarkers(vehicle, object)
 					else
 						type = "Vehicle";
 						x, y, z = getWorldTranslation(node);
-						_, _, ztt = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+						_, _, ztt = worldToLocal(realDirectionNode, x, y, z);
 					end;
 
 					courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);

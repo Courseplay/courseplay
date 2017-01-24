@@ -281,8 +281,13 @@ function courseplay:load(savegame)
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
 		setTranslation(DirectionNode, 0, 0, self.cp.directionNodeZOffset);
 	end;
-
 	self.cp.DirectionNode = DirectionNode;
+
+	-- REVERSE DRIVING SETUP
+	if self.cp.hasSpecializationReverseDriving then
+		self.cp.reverseDirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", self.cp.DirectionNode);
+		setRotation(self.cp.reverseDirectionNode, 0, math.rad(180), 0);
+	end;
 
 	-- TRIGGERS
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
