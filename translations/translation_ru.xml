@@ -181,11 +181,11 @@
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text="Разгрузка" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Сохранить положение загрузки" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Сохранить транспортное положение" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Сохранить положение предразгрузке" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Сохранить положение предразгрузки" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Сохранить положение разгрузки" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Показать положение загрузки" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Показать транспортное положение" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Показать положение предразгрузке" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Показать положение предразгрузки" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Показать положение разгрузки" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Стоять при смене позиций" />
 		
