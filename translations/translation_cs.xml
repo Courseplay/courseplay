@@ -30,9 +30,9 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="立即出发" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="允许卸载值：" />
 		<text name="UNKNOWN" 											 text="未知" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="转向角 反向转/正向转" />        <!-- Headland counter-/clockwise-->
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="转向角 之前/之后 田间作业" /> <!-- Headland before/after field course -->
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="生成田间作业" />              <!-- Generate field course -->
 		<text name="COURSEPLAY_DISTANCE" 								 text="距离" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="等待时间" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d 分" />
@@ -251,7 +251,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="CP：弹出窗口" />
 		<text name="input_COURSEPLAY_HUD" 								 text="打开/关闭CP界面" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="CP：开始/停止 任务" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="CP：继续" />    <!-- TODO: TRANSLATE! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="CP：开车" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="CP：停在最后路点或等待点" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="CP: 下一个任务模式" />

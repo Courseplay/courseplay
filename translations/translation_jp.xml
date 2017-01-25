@@ -30,9 +30,9 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="走行" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="目的地:" />
 		<text name="UNKNOWN" 											 text="unknown" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="まくら地 左回り/右回り" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="まくら地 前に/後に フィールドコース" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="フィールドコースを作成する" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="距離" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="待機時間" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -157,7 +157,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
-		<text name="COURSEPLAY_HEADLAND" 								 text="ターンスペース" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="まくら地" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="有効" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="車両名のみ" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="車両名とコース名" />

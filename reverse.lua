@@ -296,6 +296,7 @@ end
 
 -- Find the first forward waypoint ahead of the vehicle
 function courseplay:getNextFwdPoint(vehicle, isTurning)
+	local directionNode	= vehicle.isReverseDriving and vehicle.cp.reverseDirectionNode or vehicle.cp.DirectionNode;
 	if isTurning then
 		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 14);
 		for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
@@ -304,9 +305,9 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 			end;
 			if not vehicle.Waypoints[i].rev then
 				local wpX, wpZ = vehicle.Waypoints[i].cx, vehicle.Waypoints[i].cz;
-				local _, _, disZ = worldToLocal(vehicle.cp.DirectionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
+				local _, _, disZ = worldToLocal(directionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
 
-				if disZ > 3 then
+				if disZ > 5 then
 					courseplay:debug(('--> return (%d) as waypointIndex'):format(i), 14);
 					return i;
 				end;
@@ -318,9 +319,9 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 13);
 		for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
 			if not vehicle.Waypoints[i].rev then
-				local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
+				local x, y, z = getWorldTranslation(directionNode);
 				local wdx, _, wdz, dist = courseplay:getWorldDirection(x, 0, z, vehicle.Waypoints[i].cx, 0, vehicle.Waypoints[i].cz);
-				local dx,_,dz = worldDirectionToLocal(vehicle.cp.DirectionNode, wdx, 0, wdz);
+				local dx,_,dz = worldDirectionToLocal(directionNode, wdx, 0, wdz);
 				if not firstFwd then
 					firstFwd = i;
 					courseplay:debug(('--> set firstFwd as %d'):format(i), 13);

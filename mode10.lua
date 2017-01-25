@@ -402,6 +402,11 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			lx = -lx
 			lz = -lz
 		end
+
+		if vehicle.isReverseDriving then
+			lz = -lz
+		end
+
 		--drawDebugLine(x, y, z, 1, 0, 0, cx, cy+5, cz, 1, 1, 0);
 		courseplay:handleSlipping(vehicle, refSpeed);
 		AIVehicleUtil.driveInDirection(vehicle, dt, steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);

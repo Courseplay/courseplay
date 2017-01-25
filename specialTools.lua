@@ -32,6 +32,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
 		elseif spec == Mower 			   then workTool.cp.hasSpecializationMower 				 = true;
 		elseif spec == Plough 			   then workTool.cp.hasSpecializationPlough 			 = true;
+		elseif spec == ReverseDriving	   then workTool.cp.hasSpecializationReverseDriving		 = true;
 		elseif spec == Shovel 			   then workTool.cp.hasSpecializationShovel 			 = true;
 		elseif spec == SowingMachine 	   then workTool.cp.hasSpecializationSowingMachine 		 = true;
 		elseif spec == Sprayer 			   then workTool.cp.hasSpecializationSprayer 			 = true;
@@ -39,7 +40,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Tedder 			   then workTool.cp.hasSpecializationTedder 			 = true;
 		elseif spec == WaterTrailer		   then workTool.cp.hasSpecializationWaterTrailer		 = true;
 		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;
-		elseif spec == Leveler 		   		then workTool.cp.hasSpecializationLeveler 			 = true;
+		elseif spec == Leveler 		   	   then workTool.cp.hasSpecializationLeveler 			 = true;
 		elseif spec == Overloading 		   then workTool.cp.hasSpecializationOverloader			 = true;	
 		end;
 	end;
@@ -221,6 +222,10 @@ function courseplay:setNameVariable(workTool)
 
 	-- ###########################################################
 	-- [2] STEERABLE VEHICLES
+	-- Valtra T Series [Giants]
+	elseif workTool.cp.xmlFileName == 'valtraTSeries.xml' then
+		workTool.cp.overwriteTurnRadius = 4.5;
+
 	-- Terra Variant 600 eco [Giants Mod: Holmer Pack]
 	elseif workTool.cp.xmlFileName == 'holmerTerraVariant.xml' then
 		workTool.cp.isHolmerTerraVariant = true;
