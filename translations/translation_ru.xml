@@ -31,7 +31,7 @@
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Разгрузка при:" />
 		<text name="UNKNOWN" 											 text="неизвестный" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Поворотная полоса по или против часовой стрелки" />
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Поворотная полоса доили после основного маршрута" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Поворотная полоса до или после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Сгенерировать маршрут" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="дистанция" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Пауза:" />
