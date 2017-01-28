@@ -1473,7 +1473,9 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	vehicle.cp.totalSeederCapacity = vehicle.cp.seederCapacity
 	vehicle.cp.totalSprayerFillLevel = vehicle.cp.sprayerFillLevel
 	vehicle.cp.totalSprayerCapacity = vehicle.cp.sprayerCapacity
-	
+	if vehicle.cp.totalSprayerFillLevel ~= nil and vehicle.cp.sprayerCapacity ~= nil then 
+		vehicle.cp.totalSprayerFillLevelPercent = (vehicle.cp.totalSprayerFillLevel*100)/vehicle.cp.totalSprayerCapacity
+	end
 	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
 		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity;
 	end
@@ -1488,7 +1490,7 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 				vehicle.cp.totalFillLevelPercent = (vehicle.cp.totalFillLevel*100)/vehicle.cp.totalCapacity;
 				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool.name),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
 				--print(string.format("%s: adding %s to vehicle.cp.totalCapacity = %s",tostring(tool.name),tostring(tool.cp.capacity), tostring(vehicle.cp.totalCapacity)))
-				if tool.sowingMachine ~= nil then
+				if tool.sowingMachine ~= nil or tool.cp.isTreePlanter then
 					vehicle.cp.totalSeederFillLevel = (vehicle.cp.totalSeederFillLevel or 0) + tool.cp.seederFillLevel
 					vehicle.cp.totalSeederCapacity = (vehicle.cp.totalSeederCapacity or 0) + tool.cp.seederCapacity
 					vehicle.cp.totalSeederFillLevelPercent = (vehicle.cp.totalSeederFillLevel*100)/vehicle.cp.totalSeederCapacity
@@ -1524,7 +1526,20 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			fillLevelPercent = nil
 		end
 		fillType = fillUnit.lastValidFillType
-		
+		if workTool.cp.isTreePlanter  then
+			local hired = true
+			if workTool.mountedSaplingPallet == nil then
+				workTool.cp.seederFillLevel = 0
+				hired = false;
+			else
+				workTool.cp.seederFillLevel = fillUnit.fillLevel
+			end;
+			if workTool.attacherVehicle ~= nil and workTool.attacherVehicle.isHired ~= hired then
+				workTool.attacherVehicle.isHired = hired;
+			end
+			workTool.cp.seederCapacity = fillUnit.capacity
+			workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+		end	
 		if workTool.sowingMachine ~= nil and index == workTool.sowingMachine.fillUnitIndex then
 			workTool.cp.seederFillLevel = fillUnit.fillLevel
 			--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
