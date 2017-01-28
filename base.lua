@@ -285,7 +285,7 @@ function courseplay:load(savegame)
 
 	-- REVERSE DRIVING SETUP
 	if self.cp.hasSpecializationReverseDriving then
-		self.cp.reverseDirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", self.cp.DirectionNode);
+		self.cp.reverseDirectionNode = courseplay:createNewLinkedNode(self, "realReverseDirectionNode", self.cp.DirectionNode);
 		setRotation(self.cp.reverseDirectionNode, 0, math.rad(180), 0);
 	end;
 
