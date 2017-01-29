@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'courseplay';
-  src:  url('fonts/courseplay.eot?bfvxtr');
-  src:  url('fonts/courseplay.eot?bfvxtr#iefix') format('embedded-opentype'),
-    url('fonts/courseplay.ttf?bfvxtr') format('truetype'),
-    url('fonts/courseplay.woff?bfvxtr') format('woff'),
-    url('fonts/courseplay.svg?bfvxtr#courseplay') format('svg');
+  src:  url('fonts/courseplay.eot?e317w5');
+  src:  url('fonts/courseplay.eot?e317w5#iefix') format('embedded-opentype'),
+    url('fonts/courseplay.ttf?e317w5') format('truetype'),
+    url('fonts/courseplay.woff?e317w5') format('woff'),
+    url('fonts/courseplay.svg?e317w5#courseplay') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -275,5 +275,8 @@
 }
 .icon-github4:before {
   content: "\eab4";
+}
+.icon-bug:before {
+  content: "\e999";
 }
 

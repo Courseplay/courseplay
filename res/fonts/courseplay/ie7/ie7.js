@@ -97,6 +97,7 @@
 		'icon-shovelUnloading': '&#xe627;',
 		'icon-cloud-download': '&#xe9c2;',
 		'icon-github4': '&#xeab4;',
+		'icon-bug': '&#xe999;',
 		'0': 0
 		},
 		els = document.getElementsByTagName('*'),

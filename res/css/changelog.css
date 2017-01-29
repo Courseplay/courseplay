@@ -1,5 +1,5 @@
 #changelog li { padding-bottom:0.5em; }
-.singleChangelog { border-top:1px solid #fcfcfc; border-bottom:1px solid #E0E0E0; padding:2em 0; }
+/*.singleChangelog { border-top:1px solid #fcfcfc; border-bottom:1px solid #E0E0E0; padding:2em 0; }*/
 .singleChangelog:first-of-type { border-top:none; padding-top:0; }
 .singleChangelog:last-of-type { border-bottom:none; padding-bottom:0; }
 /*.singleChangelog.closed > ul { display:none; }*/ /* only via JS */
@@ -72,7 +72,7 @@ body.js .singleChangelog h3:active {
 	background-color:#2C9dC6;
 }
 .changelogContent.bug > li:before {
-	content:'bug';
+	content:'\e999';
 	background-color:#B82B0A;
 }
-}
+

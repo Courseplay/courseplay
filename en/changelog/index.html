@@ -69,10 +69,119 @@
 	<main id="changelog" role="main" class="content">
 		<h1>Changelog</h1>
 
-		<article id="cl_dev" class="singleChangelog" data-version="4.01.0000">
+        <article id="cl_dev5" class="singleChangelog" data-version="5.00.0000">
+            <hr />
+
+            <h3>Changes in version v5.00 (FS17)</h3>
+            <!-- FIX -->
+            <ul class="changelogContent fix">
+                <li>Fix wrong keybinding description.</li>
+
+                <li>Fix reverse driving with an tractor.</li>
+
+                <li>Fix nil ridge markers error.</li>
+            </ul>
+
+            <!-- CHANGE -->
+            <ul class="changelogContent change">
+                <li>
+                    <h4>Improved Grain Transport Mode</h4>
+                    <ul>
+                        <li>Vehicles at a silo should now center the trailers underneath the unloading point, no matter how far ahead the first waypoint is.</li>
+                    </ul>
+                </li>
+
+                <li>Allow reversing with tools in "Transport Mode".</li>
+
+                <li>Disable auto field scanning on field-less maps. (Typically maps that are made for forestry only)</li>
+
+                <li>Enabling small 0.1 steps when workWidth is over over 10.0, by holding down left Alt key.<br>We now have three steps when over 10.0: 0.5 and 2.0 for fast setting and while holding left Alt even 0.1 for fine-tuning.</li>
+
+                <li>
+                    <h4>Mode 6: Fieldwork</h4>
+                    <ul>
+                        <li>Combine in this mode can now go unload like in mode 7 if there is an unload route attached to the course.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <h4>Mode 7: Combine self unloading</h4>
+                    <ul>
+                        <li>Combine can now create heaps as well.</li>
+                        <li>This is done by adding 2 waiting point instead of 1 (which is used to unload into an trailer). One for the heap start and one for the end of the heap.</li>
+                        <li>The combine will adjust the unload speed by it self while doing that.</li>
+                        <li>This is also implemented into "Mode 6: Fieldwork" for combines.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <h4>Mode 9: Shovel Fill and Empty</h4>
+                    <ul>
+                        <li>This is now adapted to the new bunker type.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <h4>Lights</h4>
+                    <ul>
+                        <li>Now switch on an off based on it's situation. When working on the field all lights are turned on. When driving on an recorded route or unload/refill route, it will use normal street light without the work lights.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- NEW -->
+            <ul class="changelogContent new">
+                <li>Added new keybinding to toggle "stop at last point or next trigger" (Have no default keybinding, so needs to be set)</li>
+
+                <li>Added new unload point while recordign an course.</li>
+
+                <li>Implemented water delivery in mode8</li>
+
+                <li>Added always refill fuel feature</li>
+
+                <li>Added work width button to mode 9 settings</li>
+
+                <li>Added possibility to save the position of the overloaders pipe</li>
+
+                <li>
+                    <h4>New Turn System: Stage 1</h4>
+                    <ul>
+                        <li>This is stage 1, which means that it only effects lane turns and not the headlands, which will be implemented in stage 2.</li>
+                        <li>The new turn system works for Seeding/Fertilize and Fieldwork mode.</li>
+                        <li>Turn Types: Wide Turn, Wide Turn With Avoidance (Only used in very special cases), Ohm Turn, Questionmark Turn, Forward 3 Point Turn and Reverse 3 Point Turn.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <h4>New Save System</h4>
+                    <ul>
+                        <li>Each course is now saved in there own xml file inside <code>CoursePlay_Courses\(mapId)\courseStorageXXXX.xml</code> where XXXX is represented by an number.</li>
+                        <li>There is a <code>CoursePlay_Courses\(mapId)\courseManager.xml</code> file there as well to control what course storage file is for which course. This file also controls folders.</li>
+                        <li>All courses are saved outside the savegameX folder and will be available for each savegame that uses the same map, so no need to rerecord any courses for the same map once you starting an new savegame.</li>
+                        <li>This also improves the loading time and fixes the problem with xml files getting to big to be saved.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <h4>New BunkerSilo Mode</h4>
+                    <ul>
+                        <li>New mode that allows using a shield to level and compacting the new bunkersilo system.</li>
+                        <li>Tractors with an shield will clear out of the silo once it registers an incoming vehicle that want's to unload in the silo.</li>
+                        <li>Vehicles that are coming in to unload will wait until the tractor with an shield have cleared out of the silo.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- BUGS -->
+            <ul class="changelogContent bug">
+                <!--li>Add entry if needed.</li-->
+            </ul>
+        </article> <!-- END v5.00.dev -->
+
+		<article id="cl_dev4" class="singleChangelog" data-version="4.01.0000">
 			<hr />
 
-			<h3>Changes in version v4.01</h3>
+			<h3>Changes in version v4.01 (FS15)</h3>
 			<!-- FIX -->
 			<ul class="changelogContent fix">
 				<li>improved detection of attached combines</li>
