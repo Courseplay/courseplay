@@ -1262,26 +1262,45 @@ function courseplay:handleUnloading(vehicle,revUnload)
 	local stopForTippping = false
 	for index, tipper in pairs (vehicle.cp.workTools) do
 		local goForTipping = false
-		if revUnload then
-			tipRefpoint = tipper.cp.rearTipRefPoint
-			goForTipping = true
-		else
-			tipRefpoint = tipper.preferedTipReferencePointIndex
-			local _,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode);
-			local _,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+		if 	tipper.overloading ~= nil then
+			tipRefpoint = tipper.pipeRaycastNode
+			local _,y,_ = getWorldTranslation(tipper.pipeRaycastNode);
+			local _,_,z = worldToLocal(tipper.pipeRaycastNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
 			if z <= 0 and tipper.cp.fillLevel ~= 0 then
 				stopForTippping = true
 				goForTipping = true
-			end					
-		end
-		if (tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING) and goForTipping then
-			tipper:toggleTipState(nil, tipRefpoint);
-		elseif (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
-			tipper:toggleTipState(nil, tipRefpoint);
-			if revUnload then
-				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+			end	
+			if goForTipping and not tipper.overloading.isActive then
+				if tipper:getCanTipToGround() then
+					if not self.dischargeToGround then
+						tipper:setDischargeToGround(true)
+					end
+				else
+					tipper:setOverloadingActive(true)
+				end
 			end
-			
+		else
+			if revUnload then
+				tipRefpoint = tipper.cp.rearTipRefPoint
+				goForTipping = true
+			else
+				tipRefpoint = tipper.preferedTipReferencePointIndex
+				local _,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode);
+				local _,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+				if z <= 0 and tipper.cp.fillLevel ~= 0 then
+					stopForTippping = true
+					goForTipping = true
+				end					
+			end
+			if (tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING) and goForTipping then
+				tipper:toggleTipState(nil, tipRefpoint);
+			elseif (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
+				tipper:toggleTipState(nil, tipRefpoint);
+				if revUnload then
+					courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+				end
+				
+			end
 		end
 	end
 	if vehicle.cp.totalFillLevel == 0 then
