@@ -77,7 +77,7 @@ function courseplay:setNameVariable(workTool)
 			workTool.cp.isHorschTitan34UW = true;
 			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
-	elseif workTool.cp.hasSpecializationOverloader then
+	elseif workTool.cp.hasSpecializationOverloader and not workTool.cp.hasSpecializationCutter then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
 	elseif workTool.cp.hasSpecializationAgrolinerTUW20 then
@@ -113,7 +113,6 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.animationParts ~= nil and workTool.animationParts[2] ~= nil and workTool.toggleUnloadingState ~= nil and workTool.setUnloadingState ~= nil then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.isTaarupShuttle = true;
-
 
 	-- ###########################################################
 	-- ###########################################################
