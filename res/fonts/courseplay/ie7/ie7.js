@@ -13,8 +13,13 @@
 		el.innerHTML = '<span style="font-family: \'courseplay\'">' + entity + '</span>' + html;
 	}
 	var icons = {
-		'icon-cloud-download': '&#xe9c2;',
-		'icon-github4': '&#xeab4;',
+		'icon-english': '&#xe64b;',
+		'icon-faq': '&#xe600;',
+		'icon-installation': '&#xe601;',
+		'icon-changelog': '&#xe602;',
+		'icon-cog': '&#xf013;',
+		'icon-authors': '&#xe61c;',
+		'icon-modcentral': '&#xe900;',
 		'icon-fsuk': '&#xe64d;',
 		'icon-modhoster': '&#xe64e;',
 		'icon-german': '&#xe64c;',
@@ -71,6 +76,7 @@
 		'icon-close': '&#xe610;',
 		'icon-copy': '&#xe611;',
 		'icon-crossSign': '&#xe612;',
+		'icon-unloadSign': '&#xe901;',
 		'icon-delete': '&#xe613;',
 		'icon-eye': '&#xe614;',
 		'icon-courseAppend': '&#xe615;',
@@ -89,12 +95,8 @@
 		'icon-shovelPreUnloading': '&#xe625;',
 		'icon-shovelTransport': '&#xe626;',
 		'icon-shovelUnloading': '&#xe627;',
-		'icon-english': '&#xe64b;',
-		'icon-faq': '&#xe600;',
-		'icon-installation': '&#xe601;',
-		'icon-changelog': '&#xe602;',
-		'icon-cog': '&#xf013;',
-		'icon-authors': '&#xe61c;',
+		'icon-cloud-download': '&#xe9c2;',
+		'icon-github4': '&#xeab4;',
 		'0': 0
 		},
 		els = document.getElementsByTagName('*'),
