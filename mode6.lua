@@ -477,11 +477,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							if workTool:isLowered() then
 									courseplay:lowerImplements(vehicle, false, false);
 							end;
-							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.cp.fillLevel == 0) then
+							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.cp.fillLevel == 0) or (tool.courseplayers and tool.courseplayers[1] == nil) then
 								courseplay:setReverseBackDistance(vehicle, 2);
 								tool.waitingForDischarge = false;
 							end;
-							if tool.stopForManualUnloader and tool.cp.fillLevel == 0 then
+							if tool.stopForManualUnloader and (tool.cp.fillLevel == 0 or not tool.overloading.isActive) then
 								tool.stopForManualUnloader = false
 							end
 						end;
