@@ -8,13 +8,22 @@ function courseplay:attachImplement(implement)
 	if workTool.attacherVehicle.cp.hasSpecializationSteerable then
 		workTool.attacherVehicle.cp.tooIsDirty = true;
 	end;
-
 	courseplay:setAttachedCombine(self);
 end;
+
+AIVehicle.onAttachImplement = Utils.appendedFunction(AIVehicle.onAttachImplement, courseplay.attachImplement);
+
+
 function courseplay:detachImplement(implementIndex)
 	--- Update Vehicle
 	self.cp.tooIsDirty = true;
+	if self.attachedImplements[implementIndex].object == self.cp.attachedCombine then
+		self.cp.attachedCombine = nil;
+		courseplay:setMinHudPage(self);
+	end
 end;
+AIVehicle.onDetachImplement = Utils.appendedFunction(AIVehicle.onDetachImplement, courseplay.detachImplement);
+
 
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}

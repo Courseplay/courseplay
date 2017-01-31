@@ -1536,7 +1536,7 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			else
 				workTool.cp.seederFillLevel = fillUnit.fillLevel
 			end;
-			if workTool.attacherVehicle ~= nil and workTool.attacherVehicle.isHired ~= hired then
+			if workTool.attacherVehicle ~= nil and workTool.attacherVehicle.isHired ~= hired and workTool.attacherVehicle.cp.isDriving then
 				workTool.attacherVehicle.isHired = hired;
 			end
 			workTool.cp.seederCapacity = fillUnit.capacity
