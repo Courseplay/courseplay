@@ -673,7 +673,9 @@ function courseplay:drive(self, dt)
 	then
 		refSpeed = math.min(self.cp.speeds.turn,refSpeed);              -- we are on the field, go field speed
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
+	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) 
+	or (workSpeed ~= nil and workSpeed == 1)
+	or isFinishingWork then
 		refSpeed = math.min(self.cp.speeds.field,refSpeed); 
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	else
@@ -839,7 +841,7 @@ function courseplay:drive(self, dt)
 		self.cp.shortestDistToWp = self.cp.distanceToTarget
 	end
 
-	if self.isReverseDriving then
+	if self.isReverseDriving and not isFinishingWork then
 		lz = -lz
 	end
 

@@ -20,7 +20,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 	if vehicle.cp.waypointIndex == vehicle.cp.finishWork and vehicle.cp.abortWork == nil then
 		local _,y,_ = getWorldTranslation(vehicle.cp.DirectionNode)
 		local _,_,z = worldToLocal(vehicle.cp.DirectionNode,vehicle.Waypoints[vehicle.cp.finishWork].cx,y,vehicle.Waypoints[vehicle.cp.finishWork].cz)
-		z = -z
+		if not vehicle.isReverseDriving then
+			z = -z
+		end
 		local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker,-3)
 		if frontMarker + z -2 < 0 then
 			workArea = true
