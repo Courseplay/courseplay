@@ -641,6 +641,7 @@ function courseplay:stop(self)
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
+	self.cp.hasFinishedWork = nil
 	self.cp.turnTimeRecorded = nil;	
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.hasTransferCourse = false

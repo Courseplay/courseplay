@@ -655,7 +655,7 @@ function courseplay:unload_combine(vehicle, dt)
 			elseif lz < -0.5 then
 				refSpeed = max(combine_speed - vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-			elseif lz > 1 or combine.sentPipeIsUnloading ~= true  then  
+			elseif lz > 1 or not combine.overloading.isActive then  
 				refSpeed = max(combine_speed + vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
