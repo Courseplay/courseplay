@@ -284,6 +284,10 @@ function courseplay:unload_combine(vehicle, dt)
 			return;
 		end;
 	end;
+	local reverser = 1
+	if tractor.isReverseDriving then
+		reverser = -1
+	end
 	local combineIsStopped = tractor.lastSpeedReal*3600 < 0.5
 	
 	-- auto combine
@@ -344,6 +348,8 @@ function courseplay:unload_combine(vehicle, dt)
 
 
 	local x1, y1, z1 = worldToLocal(combineDirNode, x, y, z)
+	x1,z1 = x1*reverser,z1*reverser;
+	
 	local distance = Utils.vector2Length(x1, z1)
 
 	local safetyDistance = 11;
@@ -364,12 +370,13 @@ function courseplay:unload_combine(vehicle, dt)
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		courseplay:setInfoText(vehicle, "COURSEPLAY_DRIVE_BEHIND_COMBINE");
 		local x1, y1, z1 = worldToLocal(tractor.cp.DirectionNode or tractor.rootNode, x, y, z)
-
+		x1,z1 = x1*reverser,z1*reverser;
+		
 		if z1 > -(turnDiameter + safetyDistance) then -- tractor in front of combine
 			-- left side of combine
-			local cx_left, cy_left, cz_left = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 20, 0, -30)
+			local cx_left, cy_left, cz_left = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 20*reverser, 0, -30*reverser)
 			-- righ side of combine
-			local cx_right, cy_right, cz_right = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, -20, 0, -30)
+			local cx_right, cy_right, cz_right = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, -20*reverser, 0, -30*reverser)
 			local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -386,9 +393,9 @@ function courseplay:unload_combine(vehicle, dt)
 		else
 			-- tractor behind combine
 			if not combine.cp.isChopper then
-				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset, 0, -(turnDiameter + safetyDistance))
+				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset*reverser, 0, -(turnDiameter + safetyDistance)*reverser)
 			else
-				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(turnDiameter + safetyDistance))
+				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(turnDiameter + safetyDistance)*reverser)
 			end
 		end
 
@@ -405,6 +412,8 @@ function courseplay:unload_combine(vehicle, dt)
 
 
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
+		lx,lz = lx*reverser,lz*reverser
+		
 		dod = Utils.vector2Length(lx, lz)
 		-- near point
 		if dod < 3 then -- change to vehicle.cp.modeState 4 == drive behind combine or cornChopper
@@ -439,9 +448,9 @@ function courseplay:unload_combine(vehicle, dt)
 		if combine.cp.isSugarBeetLoader then
 			local prnToCombineZ = courseplay:calculateVerticalOffset(vehicle, combine);
 	
-			tX, tY, tZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, prnToCombineZ -5);
+			tX, tY, tZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, prnToCombineZ -5*reverser);
 		else			
-			tX, tY, tZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, -5);
+			tX, tY, tZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, -5*reverser);
 		end
 
 		if combine.attachedImplements ~= nil then
@@ -646,7 +655,7 @@ function courseplay:unload_combine(vehicle, dt)
 			elseif lz < -0.5 then
 				refSpeed = max(combine_speed - vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-			elseif lz > 1 or combine.sentPipeIsUnloading ~= true  then  
+			elseif lz > 1 or not combine.overloading.isActive then  
 				refSpeed = max(combine_speed + vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else

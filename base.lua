@@ -92,7 +92,7 @@ function courseplay:load(savegame)
 	self.cp.visualWaypointsAll = false;
 	self.cp.visualWaypointsCrossing = false;
 	self.cp.warningLightsMode = 1;
-	self.cp.hasHazardLights = self.turnSignalState ~= nil and self.setTurnSignalState ~= nil;
+	self.cp.hasHazardLights = self.turnLightState ~= nil and self.setTurnLightState ~= nil;
 
 
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
@@ -285,7 +285,7 @@ function courseplay:load(savegame)
 
 	-- REVERSE DRIVING SETUP
 	if self.cp.hasSpecializationReverseDriving then
-		self.cp.reverseDirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", self.cp.DirectionNode);
+		self.cp.reverseDirectionNode = courseplay:createNewLinkedNode(self, "realReverseDirectionNode", self.cp.DirectionNode);
 		setRotation(self.cp.reverseDirectionNode, 0, math.rad(180), 0);
 	end;
 

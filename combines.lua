@@ -435,6 +435,8 @@ function courseplay:getSpecialCombineOffset(combine)
 	
 	if combine.cp.isGrimmeRootster604 then
 		return -4.5
+	elseif combine.cp.isPoettingerMex5 then
+		return 5.5, 5.5;
  	end
 	
 	

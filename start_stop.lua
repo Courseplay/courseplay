@@ -612,8 +612,8 @@ function courseplay:stop(self)
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);
 	end;
-	if self.turnSignalState and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
-		self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
+	if self.turnLightState and self.turnLightState ~= Lights.TURNLIGHT_OFF then
+		self:setTurnLightState(Lights.TURNLIGHT_OFF);
 	end;
 
 	--open all covers
@@ -641,6 +641,7 @@ function courseplay:stop(self)
 	self.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
+	self.cp.hasFinishedWork = nil
 	self.cp.turnTimeRecorded = nil;	
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.hasTransferCourse = false

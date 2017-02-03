@@ -9,10 +9,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local sprayerFillLevelPct = self.cp.totalSprayerFillLevelPercent or 100;
 	
 	--print(string.format("seederFillLevelPct:%s; sprayerFillLevelPct:%s",tostring(seederFillLevelPct),tostring(sprayerFillLevelPct)))
-	if self.cp.waypointIndex == self.cp.finishWork and self.cp.abortWork == nil then
+	if self.cp.waypointIndex == self.cp.finishWork and self.cp.abortWork == nil and not self.cp.hasFinishedWork then
 		local _,y,_ = getWorldTranslation(self.cp.DirectionNode)
 		local _,_,z = worldToLocal(self.cp.DirectionNode,self.Waypoints[self.cp.finishWork].cx,y,self.Waypoints[self.cp.finishWork].cz)
-		z = -z
+		if not self.isReverseDriving then
+			z = -z
+		end
 		local frontMarker = Utils.getNoNil(self.cp.aiFrontMarker,-3)
 		if frontMarker + z -2 < 0 then
 			workArea = true
@@ -231,6 +233,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	end; --END for i in self.cp.workTools
 	if hasFinishedWork then
 		isFinishingWork = true
+		self.cp.hasFinishedWork = true
 	end
 	return allowedToDrive, workArea, workSpeed,isFinishingWork,forceSpeedLimit
 end;

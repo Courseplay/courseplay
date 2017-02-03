@@ -17,10 +17,12 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 	local workArea = (vehicle.cp.waypointIndex > vehicle.cp.startWork) and (vehicle.cp.waypointIndex < vehicle.cp.finishWork)
 	local isFinishingWork = false
 	local hasFinishedWork = false
-	if vehicle.cp.waypointIndex == vehicle.cp.finishWork and vehicle.cp.abortWork == nil then
+	if vehicle.cp.waypointIndex == vehicle.cp.finishWork and vehicle.cp.abortWork == nil and not vehicle.cp.hasFinishedWork then
 		local _,y,_ = getWorldTranslation(vehicle.cp.DirectionNode)
 		local _,_,z = worldToLocal(vehicle.cp.DirectionNode,vehicle.Waypoints[vehicle.cp.finishWork].cx,y,vehicle.Waypoints[vehicle.cp.finishWork].cz)
-		z = -z
+		if not vehicle.isReverseDriving then
+			z = -z
+		end
 		local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker,-3)
 		if frontMarker + z -2 < 0 then
 			workArea = true
@@ -448,7 +450,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						end
 							
 						if vehicle.cp.totalFillLevelPercent >= min(vehicle.cp.driveOnAtFillLevel,99) and vehicle.cp.hasUnloadingRefillingCourse then
-							if courseplay:timerIsThrough(vehicle, 'emptyStrawBox', false) then
+							if courseplay:timerIsThrough(vehicle, 'emptyStrawBox', false) or not tool.isStrawEnabled then
 								if vehicle.cp.abortWork == nil then
 									courseplay:setAbortWorkWaypoint(vehicle);
 									courseplay:resetCustomTimer(vehicle, 'emptyStrawBox', true);
@@ -475,11 +477,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							if workTool:isLowered() then
 									courseplay:lowerImplements(vehicle, false, false);
 							end;
-							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.cp.fillLevel == 0) then
+							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.cp.fillLevel == 0) or (tool.courseplayers and tool.courseplayers[1] == nil) then
 								courseplay:setReverseBackDistance(vehicle, 2);
 								tool.waitingForDischarge = false;
 							end;
-							if tool.stopForManualUnloader and tool.cp.fillLevel == 0 then
+							if tool.stopForManualUnloader and (tool.cp.fillLevel == 0 or not tool.overloading.isActive) then
 								tool.stopForManualUnloader = false
 							end
 						end;
@@ -615,6 +617,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 	if hasFinishedWork then
 		isFinishingWork = true
+		vehicle.cp.hasFinishedWork = true
 	end
 	return allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork,forceSpeedLimit
 end

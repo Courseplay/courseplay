@@ -186,8 +186,8 @@ function courseplay:drive(self, dt)
 		if self.beaconLightsActive then
 			self:setBeaconLightsVisibility(false);
 		end;
-		if self.cp.hasHazardLights and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
-			self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
+		if self.cp.hasHazardLights and self.turnLightState ~= Lights.TURNSIGNAL_OFF then
+			self:setTurnLightState(Lights.TURNLIGHT_OFF);
 		end;
 	else -- on street/always
 		if self.beaconLightsActive ~= beaconOn then
@@ -195,10 +195,10 @@ function courseplay:drive(self, dt)
 		end;
 		if self.cp.hasHazardLights then
 			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and beaconOn and not combineBeaconOn;
-			if not hazardOn and self.turnSignalState ~= Vehicle.TURNSIGNAL_OFF then
-				self:setTurnSignalState(Vehicle.TURNSIGNAL_OFF);
-			elseif hazardOn and self.turnSignalState ~= Vehicle.TURNSIGNAL_HAZARD then
-				self:setTurnSignalState(Vehicle.TURNSIGNAL_HAZARD);
+			if not hazardOn and self.turnLightState ~= Lights.TURNLIGHT_OFF then
+				self:setTurnLightState(Lights.TURNLIGHT_OFF);
+			elseif hazardOn and self.turnLightState ~= Lights.TURNLIGHT_HAZARD then
+				self:setTurnLightState(Lights.TURNLIGHT_HAZARD);
 			end;
 		end;
 	end;
@@ -673,7 +673,9 @@ function courseplay:drive(self, dt)
 	then
 		refSpeed = math.min(self.cp.speeds.turn,refSpeed);              -- we are on the field, go field speed
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) or (workSpeed ~= nil and workSpeed == 1) then
+	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart) 
+	or (workSpeed ~= nil and workSpeed == 1)
+	or isFinishingWork then
 		refSpeed = math.min(self.cp.speeds.field,refSpeed); 
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	else
@@ -839,7 +841,7 @@ function courseplay:drive(self, dt)
 		self.cp.shortestDistToWp = self.cp.distanceToTarget
 	end
 
-	if self.isReverseDriving then
+	if self.isReverseDriving and not isFinishingWork then
 		lz = -lz
 	end
 
@@ -1473,7 +1475,9 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	vehicle.cp.totalSeederCapacity = vehicle.cp.seederCapacity
 	vehicle.cp.totalSprayerFillLevel = vehicle.cp.sprayerFillLevel
 	vehicle.cp.totalSprayerCapacity = vehicle.cp.sprayerCapacity
-	
+	if vehicle.cp.totalSprayerFillLevel ~= nil and vehicle.cp.sprayerCapacity ~= nil then 
+		vehicle.cp.totalSprayerFillLevelPercent = (vehicle.cp.totalSprayerFillLevel*100)/vehicle.cp.totalSprayerCapacity
+	end
 	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
 		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity;
 	end
@@ -1488,7 +1492,7 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 				vehicle.cp.totalFillLevelPercent = (vehicle.cp.totalFillLevel*100)/vehicle.cp.totalCapacity;
 				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool.name),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
 				--print(string.format("%s: adding %s to vehicle.cp.totalCapacity = %s",tostring(tool.name),tostring(tool.cp.capacity), tostring(vehicle.cp.totalCapacity)))
-				if tool.sowingMachine ~= nil then
+				if tool.sowingMachine ~= nil or tool.cp.isTreePlanter then
 					vehicle.cp.totalSeederFillLevel = (vehicle.cp.totalSeederFillLevel or 0) + tool.cp.seederFillLevel
 					vehicle.cp.totalSeederCapacity = (vehicle.cp.totalSeederCapacity or 0) + tool.cp.seederCapacity
 					vehicle.cp.totalSeederFillLevelPercent = (vehicle.cp.totalSeederFillLevel*100)/vehicle.cp.totalSeederCapacity
@@ -1524,7 +1528,20 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			fillLevelPercent = nil
 		end
 		fillType = fillUnit.lastValidFillType
-		
+		if workTool.cp.isTreePlanter  then
+			local hired = true
+			if workTool.mountedSaplingPallet == nil then
+				workTool.cp.seederFillLevel = 0
+				hired = false;
+			else
+				workTool.cp.seederFillLevel = fillUnit.fillLevel
+			end;
+			if workTool.attacherVehicle ~= nil and workTool.attacherVehicle.isHired ~= hired and workTool.attacherVehicle.cp.isDriving then
+				workTool.attacherVehicle.isHired = hired;
+			end
+			workTool.cp.seederCapacity = fillUnit.capacity
+			workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+		end	
 		if workTool.sowingMachine ~= nil and index == workTool.sowingMachine.fillUnitIndex then
 			workTool.cp.seederFillLevel = fillUnit.fillLevel
 			--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
