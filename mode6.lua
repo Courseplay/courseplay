@@ -450,7 +450,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						end
 							
 						if vehicle.cp.totalFillLevelPercent >= min(vehicle.cp.driveOnAtFillLevel,99) and vehicle.cp.hasUnloadingRefillingCourse then
-							if courseplay:timerIsThrough(vehicle, 'emptyStrawBox', false) then
+							if courseplay:timerIsThrough(vehicle, 'emptyStrawBox', false) or not tool.isStrawEnabled then
 								if vehicle.cp.abortWork == nil then
 									courseplay:setAbortWorkWaypoint(vehicle);
 									courseplay:resetCustomTimer(vehicle, 'emptyStrawBox', true);

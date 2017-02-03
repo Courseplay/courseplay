@@ -864,7 +864,15 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
 			local fillType = tipper.cp.fillType;
-			local distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+			local distanceToTrigger, bestTipReferencePoint = 0,0;
+			if isBGA then
+				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
+					bestTipReferencePoint = tipper.cp.rearTipRefPoint;
+				end;
+				distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper,bestTipReferencePoint);
+			else
+				distanceToTrigger, bestTipReferencePoint = ctt:getTipDistanceFromTrailer(tipper);
+			end
 			tipper.preferedTipReferencePointIndex = bestTipReferencePoint
 			local trailerInTipRange = false
 			if not isBGA then
@@ -881,11 +889,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				local stopAndGo = false;
 
 				-- Make sure we are using the rear TipReferencePoint as bestTipReferencePoint if possible.
-				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
-					bestTipReferencePoint = tipper.cp.rearTipRefPoint;
-
-				end;
-
+				
 				-- Check if bestTipReferencePoint it's inversed
 
 				--[[if tipper.cp.inversedRearTipNode == nil then
