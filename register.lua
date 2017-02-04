@@ -13,7 +13,7 @@ function courseplay:register()
 		if vehicleType then
 			for i,spec in pairs(vehicleType.specializations) do
 				if spec and spec == drivableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
-					-- print(('\tadding Courseplay to %q'):format(tostring(vehicleType.name)));
+					print(('  adding Courseplay to %q'):format(tostring(vehicleType.name)));
 					table.insert(vehicleType.specializations, courseplaySpec);
 					vehicleType.hasCourseplaySpec = true;
 					vehicleType.hasDrivableSpec = true;
@@ -25,7 +25,7 @@ function courseplay:register()
 	end;
 end;
 
--- if there are any vehicles loaded *after* Courseplay, install the spec into them
+--[[ if there are any vehicles loaded *after* Courseplay, install the spec into them
 local postRegister = function(typeName, className, filename, specializationNames, customEnvironment)
 	local vehicleType = VehicleTypeUtil.vehicleTypes[typeName];
 	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'drivable') then
@@ -37,6 +37,7 @@ local postRegister = function(typeName, className, filename, specializationNames
 	end;
 end;
 VehicleTypeUtil.registerVehicleType = Utils.appendedFunction(VehicleTypeUtil.registerVehicleType, postRegister);
+]]
 
 function courseplay:attachablePostLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
@@ -74,6 +75,12 @@ end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
 function courseplay.vehiclePostLoadFinished(self)
+	--if there are any vehicles loaded *after* Courseplay, install the spec into them
+	if Utils.hasListElement(self.specializationNames, 'drivable') then 
+		--print(tostring(self.name)..": vehiclePostLoadFinished -> call register")
+		courseplay:register()
+	end
+	
 	if self.cp == nil then self.cp = {}; end;
 
 	-- XML FILE NAME VARIABLE
