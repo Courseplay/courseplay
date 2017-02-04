@@ -487,7 +487,9 @@ function courseplay:updateAllTriggers()
 	-- nonUpdateable objects
 	if g_currentMission.nonUpdateables ~= nil then
 		courseplay:debug('\tcheck nonUpdateables', 1);
+		local counter = 0;
 		for k,v in pairs(g_currentMission.nonUpdateables) do
+			counter = counter +1;
 			if g_currentMission.nonUpdateables[k] ~= nil then
 				local trigger = g_currentMission.nonUpdateables[k];
 				local triggerId = trigger.triggerId;
@@ -518,13 +520,16 @@ function courseplay:updateAllTriggers()
 				end;
 			end;
 		end;
+		courseplay:debug(('\t%i in list'):format(counter), 1);
 	end;
 	
 	--itemsToSave (BigPacks)
 	--print("g_currentMission.itemsToSave:"..tostring(g_currentMission.itemsToSave))
 	if g_currentMission.itemsToSave ~= nil then
 		courseplay:debug('\tcheck itemsToSave', 1);
+		local counter = 0;
 		for _,valueTable in pairs (g_currentMission.itemsToSave) do
+			counter = counter +1;
 			if valueTable.item ~= nil then
 				if valueTable.item.fillTrigger ~= nil then
 					local trigger = valueTable.item.fillTrigger
@@ -562,7 +567,8 @@ function courseplay:updateAllTriggers()
 					courseplay:debug('\t\tadd Greenhouse receiver trigger (placeable)', 1);
 				end;				
 			end
-		end		
+		end
+		courseplay:debug(('\t%i in list'):format(counter), 1);		
 	end
 	
 	-- updateable objects
@@ -589,8 +595,9 @@ function courseplay:updateAllTriggers()
 	end;
 	if g_currentMission.onCreateLoadedObjects ~= nil then
 		courseplay:debug('\tcheck onCreateLoadedObjects', 1);
+		local counter = 0;
 		for k, object in pairs(g_currentMission.onCreateLoadedObjects) do
-
+			counter = counter +1;
 			--newBGA DigestateSiloTrigger
 			if object.tipTriggerTargets ~= nil then
 				for index, value in pairs(object.tipTriggerTargets) do
@@ -633,6 +640,7 @@ function courseplay:updateAllTriggers()
 				end;
 			end;
 		end;
+		courseplay:debug(('\t%i in list'):format(counter), 1);
 	end;
 	--HeapTipTrigger
 	if g_currentMission.heapTipTriggers ~= nil then

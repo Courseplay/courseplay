@@ -67,7 +67,7 @@ function courseplay:setNameVariable(workTool)
 
 	-- SPECIALIZATIONS BASED
 	-- [1] AUGER WAGONS
-	if workTool.typeName == 'augerWagon' then
+	if workTool.typeName == 'augerWagon' or string.match( workTool.typeName, "FS17_kotteUniversalPack.kotteUniversal") then
 		if workTool:allowFillType(FillUtil.FILLTYPE_LIQUIDMANURE) then
 			workTool.cp.isLiquidManureOverloader = true;
 		else
