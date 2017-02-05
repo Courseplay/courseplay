@@ -300,8 +300,11 @@ function courseplay:load(savegame)
 	
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
-
-	self.cp.steeringAngle = Utils.getNoNil(math.deg(self.maxRotation), 30);
+	if self.maxRotation then
+		self.cp.steeringAngle = math.deg(self.maxRotation);
+	else
+		self.cp.steeringAngle = 30;
+	end
 	if self.cp.steeringAngleCorrection then
 		self.cp.steeringAngle = Utils.getNoNil(self.cp.steeringAngleCorrection, self.cp.steeringAngle);
 	elseif self.cp.steeringAngleMultiplier then

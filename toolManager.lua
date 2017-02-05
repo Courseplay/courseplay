@@ -1156,7 +1156,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 			end;
 
 			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, workTool);
-			local canRefill = workToolSprayerFillLevelPct < driveOn and fillTypesMatch;
+			local canRefill = workToolSprayerFillLevelPct < driveOn and fillTypesMatch and not vehicle.cp.isLoaded;
 			courseplay:debug(('%s: canRefill:%s; fillTypesMatch:%s'):format(nameNum(vehicle),tostring(canRefill),tostring(fillTypesMatch)), 19);
 
 			if canRefill and vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
