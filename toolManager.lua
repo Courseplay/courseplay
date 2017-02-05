@@ -148,7 +148,7 @@ function courseplay:isFrontloader(workTool)
 	return workTool.cp.hasSpecializationCylindered and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel;
 end;
 function courseplay:isHarvesterSteerable(workTool)
-	return workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isHarvesterSteerable;
+	return Utils.getNoNil(workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isHarvesterSteerable, false);
 end;
 function courseplay:isHookLift(workTool)
 	if workTool.attacherJoint then

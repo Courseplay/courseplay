@@ -113,6 +113,7 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.animationParts ~= nil and workTool.animationParts[2] ~= nil and workTool.toggleUnloadingState ~= nil and workTool.setUnloadingState ~= nil then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.isTaarupShuttle = true;
+	end;
 
 	-- ###########################################################
 	-- ###########################################################
@@ -146,7 +147,7 @@ function courseplay:setNameVariable(workTool)
 
 	-- [2] MOD TRACTORS
 
-	elseif workTool.cp.xmlFileName ==  'KirovetsK700A.xml' then
+	if workTool.cp.xmlFileName ==  'KirovetsK700A.xml' then
 		workTool.cp.isKirovetsK700A = true;
 		--workTool.cp.steeringAngleCorrection = 10;
 		--workTool.cp.directionNodeZOffset = 1.644;
@@ -197,7 +198,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.ridgeMarkerIndex = 6;
 		
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
-		
+		workTool.cp.isHolmerHR9 = true;
 
 	elseif workTool.cp.xmlFileName ==  'holmerTerraFelis2.xml' then
 		workTool.cp.isHolmerTerraFelis2 = true;
@@ -615,6 +616,9 @@ function courseplay:askForSpecialSettings(self, object)
 			tractor.cp.noStopOnEdge = false;
 			tractor.cp.noStopOnTurn = false;
 		end
+
+	elseif object.cp.isHolmerHR9 then
+		object.cp.frontMarkerOffsetCorection = 2;
 
 	elseif self.cp.isHolmerTerraDosT4_40 then
 		self.cp.noStopOnTurn = true;
