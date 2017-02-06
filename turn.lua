@@ -687,8 +687,8 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 
 		--- Extra WP 3 - Turn End
 	else
-		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
-		courseplay:addTurnTarget(vehicle, posX, posZ, true);
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
+		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, nil, true);
 	end;
 end;
 
@@ -806,8 +806,8 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 
 		--- Extra WP 3 - Turn End
 	else
-		posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
-		courseplay:addTurnTarget(vehicle, posX, posZ, true);
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
+		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, nil, true);
 	end;
 end;
 
