@@ -1091,8 +1091,11 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- line 2 = work width
 		vehicle.cp.hud.content.pages[8][2][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
-		vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
-
+		if vehicle.cp.manualWorkWidth then 
+			vehicle.cp.hud.content.pages[8][2][2].text = string.format('%.1fm (mnl)', vehicle.cp.workWidth);
+		else
+			vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
+		end
 		-- line 3 = starting corner
 		vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_CORNER');
 		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE

@@ -864,7 +864,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 		if tipper.tipReferencePoints ~= nil then
 			local allowedToDriveBackup = allowedToDrive;
 			local fillType = tipper.cp.fillType;
-			local distanceToTrigger, bestTipReferencePoint = 0,0;
+			local distanceToTrigger, bestTipReferencePoint = 0,1;
 			if isBGA then
 				if tipper.cp.rearTipRefPoint and tipper.cp.rearTipRefPoint ~= bestTipReferencePoint then
 					bestTipReferencePoint = tipper.cp.rearTipRefPoint;
