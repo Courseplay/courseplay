@@ -1130,3 +1130,28 @@ function courseplay:sekToTimeFormat(numSec)
 					}
 	return timeTable	
 end
+
+function courseplay:startAIVehicle(oldFunction, helperIndex, noEventSend, more)
+    if self.cp and self.cp.isDriving and not self.cp.mode == 7 then
+		print(" starting helper while running Courseplay is not allowed")
+		return
+	end
+	if helperIndex ~= nil then
+        self.currentHelper = HelperUtil.helperIndexToDesc[helperIndex]
+    else
+        self.currentHelper = HelperUtil.getRandomHelper()
+    end
+
+    HelperUtil.useHelper(self.currentHelper)
+
+    g_currentMission.missionStats:updateStats("workersHired", 1);
+
+    if noEventSend == nil or noEventSend == false then
+        if g_server ~= nil then
+            g_server:broadcastEvent(AIVehicleSetStartedEvent:new(self, nil, true, self.currentHelper), nil, nil, self);
+        else
+            g_client:getServerConnection():sendEvent(AIVehicleSetStartedEvent:new(self, nil, true, self.currentHelper));
+        end
+    end
+    self:onStartAiVehicle();
+end

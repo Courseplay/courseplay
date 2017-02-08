@@ -71,7 +71,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 					courseplay:debug(nameNum(vehicle) .. ": approach from right", 11);
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -sideOffset , 0, -3*vehicle.cp.turnDiameter);
 					courseplay:addNewTargetVector(vehicle, sideOffset , 0);
-					courseplay:addNewTargetVector(vehicle, 0 , 3.5);
+					courseplay:addNewTargetVector(vehicle, 0 ,3.5);
 				else
 					courseplay:debug(nameNum(vehicle) .. ": approach from left", 11);
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, sideOffset , 0, -3*vehicle.cp.turnDiameter);
@@ -177,6 +177,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				refSpeed = vehicle.cp.speeds.turn;
 				if distance_to_wp < 10 and not isAutoCombine then
 					vehicle:setIsTurnedOn(true);
+					courseplay:debug(nameNum(vehicle) .. ": setIsTurnedOn()", 11);
 				end
 			end
 			if distance_to_wp < distToChange or aligned then

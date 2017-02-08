@@ -353,6 +353,9 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 		isSetManually = true
 	elseif force ~= nil and noDraw ~= nil then
 		--print("is set by script")
+		if not vehicle.cp.isDriving and vehicle.cp.manualWorkWidth then
+			return
+		end
 	elseif force ~= nil and noDraw == nil then
 		vehicle.cp.manualWorkWidth = nil
 		--print("is set by calculate button")
