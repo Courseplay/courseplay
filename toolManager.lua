@@ -695,7 +695,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		end;
 	end;
 
-	local unloadDistance = -100;
+	local unloadDistance = 1000;
 	local trailerX,_,trailerZ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
 
 	if not driveOn then
@@ -706,8 +706,10 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			local _,_,z = worldToLocal(directionNode, trailerX, vehicleY, trailerZ);
 			vehicle.cp.trailerFillDistance = z + 0.5;
 
-			local triggerX,_,triggerZ = getWorldTranslation(currentTrailer.cp.currentSiloTrigger.rootNode);
-			_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
+			if currentTrailer.cp.currentSiloTrigger ~= nil then
+				local triggerX,_,triggerZ = getWorldTranslation(currentTrailer.cp.currentSiloTrigger.rootNode);
+				_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
+			end;
 		elseif vehicle.cp.tipperLoadMode == 2 then
 			local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
 			if not vehicle.cp.trailerFillDistance then
