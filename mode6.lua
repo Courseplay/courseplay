@@ -316,9 +316,13 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 						--fold
 						if courseplay:isFoldable(workTool) and not isFolding and not isFolded then
-							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
-							workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
-							--workTool:setFoldDirection(-workTool.turnOnFoldDirection);
+							if workTool:getIsFoldAllowed() then
+								courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
+								workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
+							elseif workTool.getIsPloughRotationAllowed ~= nil and workTool:getIsPloughRotationAllowed() and workTool.rotationMax == workTool.rotateLeftToMax then
+								workTool:setRotationMax(not workTool.rotateLeftToMax);
+								courseplay:debug(string.format('%s: rotate plough before folding', nameNum(workTool)), 17);
+							end;
 						end;
 					end;
 				end;
