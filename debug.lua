@@ -7,7 +7,7 @@ function CpManager:setUpDebugChannels()
 		-- Enable specified debugmode by default for Satis Only!
 		if g_gameSettings:getValue("nickname") == "Sa!is" then
 			defaultActive[12] = true;
-			defaultActive[14] = true;
+			--defaultActive[14] = true;
 		end;
 	end;
 
