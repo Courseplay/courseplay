@@ -219,8 +219,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool)
 			vehicle.cp.hasMachinetoFill = true;
-			vehicle.cp.noStopOnEdge = isSprayer;
-			vehicle.cp.noStopOnTurn = isSprayer;
+			vehicle.cp.noStopOnEdge = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
+			vehicle.cp.noStopOnTurn = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
 			if isSprayer then
 				vehicle.cp.hasSprayer = true;
 			end;
