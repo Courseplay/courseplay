@@ -70,14 +70,14 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="ローディング: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウエイポイントを表示" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="経路サーチ" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="サイドオフセット:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="左右オフセット:" />
 		<text name="COURSEPLAY_START_AT" 								 text="スタート:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="フィールドでターン:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="ターンの方向を逆にする:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="最後の数レーン" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="できるだけ" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="ターン半径:" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="バーティカルオフセット:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="前後オフセット:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="コンバイン" />
 		<text name="COURSEPLAY_NONE" 									 text="無" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="コンバインを選択:" />
@@ -99,7 +99,7 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自動 (全コース%s制限)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="コースを読み込んでいません" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="ビーコン:" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="ネバーターンオン" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="点灯しない" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="ビーコンライト (路上)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="ビーコン &amp; ハザード (路上)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="ビーコンライト (常時)" />
@@ -124,7 +124,7 @@
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="ウエイポイントへ %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="充填レベルに到達するまで待機" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 					 text="コンバインとの距離がありません" />
-		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="コンバインまで待ちます" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 				 text="コンバインのターン待ち" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 					 text="新しいウエイポイントを待っています" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="トラクターを追走" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="すぐに給油する必要があります" />
@@ -137,9 +137,9 @@
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="車種が用途に合いません" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="天候待ち" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="レーン オフセット" />
-		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="ツールレベルオフセット" />
-		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="ツールバーティカルオフセット" />
-		<text name="COURSEPLAY_FRONT" 									 text="先方" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="ツール左右オフセット" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="ツール前後オフセット" />
+		<text name="COURSEPLAY_FRONT" 									 text="前方" />
 		<text name="COURSEPLAY_BACK" 									 text="後方" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="作業幅" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="水に注意" />
@@ -199,7 +199,7 @@
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="進行中のフィールドのスキャン" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="フィールドスキャン %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="ホースが見つかりませんでした - 補給停止" />
-		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="車線変更" />
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="レーン変更" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="ドライバーの優先順位" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="積載量" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": ピックアップが詰まっています" />
