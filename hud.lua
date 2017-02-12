@@ -9,16 +9,16 @@ local targetAspectRatio = 16/9; -- = 1920/1080;
 local aspectRatioRatio = g_screenAspectRatio / targetAspectRatio;
 local sizeRatio = 1;
 if g_screenWidth > 1920 then
-	sizeRatio = 1920 / g_screenWidth;
+	--sizeRatio = 1920 / g_screenWidth;
 end;
 
 -- px are in targetSize for 1920x1080
 function courseplay.hud:pxToNormal(px, dimension, fullPixel)
 	local ret;
 	if dimension == 'x' then
-		ret = (px / 1920) * sizeRatio;
+		ret = (px / 1920) * sizeRatio * g_aspectScaleX;
 	else
-		ret = (px / 1080) * sizeRatio * aspectRatioRatio;
+		ret = (px / 1080) * sizeRatio * g_aspectScaleY;
 	end;
 	if fullPixel == nil or fullPixel then
 		ret = self:getFullPx(ret, dimension);

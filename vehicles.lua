@@ -791,14 +791,14 @@ function courseplay:getToolTurnRadius(workTool)
 		for i, attachedImplement in pairs(attacherVehicle.attachedImplements) do
 			if attachedImplement.object == workTool then
 				-- Check if AIVehicleUtil can calculate it for us
-				local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
-				if AIMaxToolRadius > 0 then
-					if workToolDistances.attacherJointOrPivotToTurningNode > AIMaxToolRadius then
-						AIMaxToolRadius = workToolDistances.attacherJointOrPivotToTurningNode;
-					end;
-					courseplay:debug(('%s -> TurnRadius: AIVehicleUtil.getMaxToolRadius=%.2fm'):format(nameNum(workTool), AIMaxToolRadius), 6);
-					return AIMaxToolRadius;
-				end;
+				--local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
+				--if AIMaxToolRadius > 0 then
+				--	if workToolDistances.attacherJointOrPivotToTurningNode > AIMaxToolRadius then
+				--		AIMaxToolRadius = workToolDistances.attacherJointOrPivotToTurningNode;
+				--	end;
+				--	courseplay:debug(('%s -> TurnRadius: AIVehicleUtil.getMaxToolRadius=%.2fm'):format(nameNum(workTool), AIMaxToolRadius), 6);
+				--	return AIMaxToolRadius;
+				--end;
 
 				-- AIVehicleUtil could not calculate it, so we do it our self.
 				rotMax = attachedImplement.upperRotLimit[2];
