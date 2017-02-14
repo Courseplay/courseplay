@@ -110,9 +110,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
-							elseif fillLevel >= capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
+							elseif fillLevel >= capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED and (workTool.baleWrapperState == nil or workTool.baleWrapperState ~= 0) then
 								allowedToDrive = false;
-								if #(workTool.baler.bales) > 0 then
+								if #(workTool.baler.bales) > 0 and (workTool.baleWrapperState == nil or workTool.baleWrapperState == 0) then
 									workTool:setIsUnloadingBale(true, false)
 								end
 							elseif workTool.baler.unloadingState ~= Baler.UNLOADING_CLOSED then
@@ -122,6 +122,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								end
 							elseif fillLevel >= 0 and not workTool.turnOnVehicle.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								workTool:setIsTurnedOn(true, false);
+							end
+							if workTool.baleWrapperState and workTool.baleWrapperState == 4 then
+								workTool:doStateChange(5)
 							end
 						end
 						if workTool.setPickupState ~= nil then
