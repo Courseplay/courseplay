@@ -110,9 +110,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
-							elseif fillLevel >= capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED and (workTool.baleWrapperState == nil or workTool.baleWrapperState ~= 0) then
+							elseif fillLevel >= capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								allowedToDrive = false;
-								if #(workTool.baler.bales) > 0 and (workTool.baleWrapperState == nil or workTool.baleWrapperState == 0) then
+								if #(workTool.baler.bales) > 0 and workTool.baleWrapperState == nil then --Ensures the baler wrapper combo is empty before unloading
 									workTool:setIsUnloadingBale(true, false)
 								end
 							elseif workTool.baler.unloadingState ~= Baler.UNLOADING_CLOSED then
@@ -123,7 +123,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							elseif fillLevel >= 0 and not workTool.turnOnVehicle.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								workTool:setIsTurnedOn(true, false);
 							end
-							if workTool.baleWrapperState and workTool.baleWrapperState == 4 then
+							if workTool.baleWrapperState and workTool.baleWrapperState == 4 then --Unloads the baler wrapper combo
 								workTool:doStateChange(5)
 							end
 						end
