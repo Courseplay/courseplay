@@ -300,6 +300,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isUrsusZ586 = true;
 		workTool.cp.notToBeReversed = true;
 
+	-- Kuhn SW4014 (Bale Wrapper) [Giants Kuhn DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnSW4014.xml' then
 		workTool.cp.isKuhnSW4014 = true;
 		workTool.cp.notToBeReversed = true;
@@ -516,7 +517,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false ,allowedToDrive,forceSpeedLimit;
 	end;
 
-	--Ursus Z586 BaleWrapper
+	--Ursus Z586 BaleWrapper or Kuhn SW4014 BaleWrapper
 	if workTool.cp.isUrsusZ586 or workTool.cp.isKuhnSW4014 then
 		if workTool.baleWrapperState == 4 then
 			workTool:doStateChange(5)
