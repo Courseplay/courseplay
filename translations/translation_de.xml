@@ -73,7 +73,7 @@
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="seitl. Abstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bei:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Wende auf dem Feld:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Drehen in entgegengesetzter Richtung" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Entgegengesetzt wenden" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="letzte Bahn" />     <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="wenn möglich" />            <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Wendekreis:" />
