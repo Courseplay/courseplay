@@ -323,6 +323,14 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.realTurnNodeOffsetZ = -2.231;
 		workTool.cp.overwriteTurnRadius = 6;
 
+	-- Kuhn HR4004 [Giants Kuhn DLC]
+	elseif workTool.cp.xmlFileName == 'kuhnHR4004.xml' then
+		workTool.cp.isKuhnHR4004 = true;
+
+	-- Kuhn DC401 [Giants Kuhn DLC]
+	elseif workTool.cp.xmlFileName == 'kuhnDC401.xml' then
+		workTool.cp.isKuhnDC401 = true;
+
 	-- PLOUGHS [Giants]
 	-- Amazone Cayron 200 [Giants]
 	elseif workTool.cp.xmlFileName == 'amazoneCayron200.xml' then
