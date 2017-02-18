@@ -231,7 +231,7 @@ function courseplay:drive(self, dt)
 		if self.cp.waitTimer == nil and self.cp.waitTime > 0 then
 			self.cp.waitTimer = self.timer + self.cp.waitTime * 1000;
 		end;
-		if 	self.cp.mode <= 2 then
+		if self.cp.mode <= 2 then
 			if wayPointIsUnload then
 				stopForUnload = courseplay:handleUnloading(self,wayPointIsRevUnload)
 			end
@@ -333,8 +333,6 @@ function courseplay:drive(self, dt)
 			else
 				self.cp.actualTarget = nil
 			end
-		else
-			CpManager:setGlobalInfoText(self, 'WAIT_POINT');
 		end;
 
 		-- wait time passed -> continue driving
@@ -347,6 +345,9 @@ function courseplay:drive(self, dt)
 			local _,_,zDist = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.previousWaypointIndex].cx, cty, self.Waypoints[self.cp.previousWaypointIndex].cz);
 			if zDist < 1 then -- don't stop immediately when hitting the waitPoints waypointIndex, but rather wait until we're close enough (1m)
 				allowedToDrive = false;
+				if wayPointIsWait then
+					CpManager:setGlobalInfoText(self, 'WAIT_POINT');
+				end;
 			end;
 		elseif stopForUnload then
 			allowedToDrive = false;
