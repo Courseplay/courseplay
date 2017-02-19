@@ -543,12 +543,14 @@ function courseplay:drive(self, dt)
 	self.cp.inTraffic = false;
 
 	-- HANDLE TIPPER COVER
-	if self.cp.tipperHasCover and self.cp.automaticCoverHandling and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6) then
+	if self.cp.tipperHasCover and self.cp.automaticCoverHandling and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 4 or self.cp.mode == 5 or self.cp.mode == 6) then
 		local showCover = false;
 
-		if self.cp.mode ~= 6 then
+		if self.cp.mode ~= 6 and self.cp.mode ~= 4 then
 			local minCoverWaypoint = self.cp.mode == 1 and 4 or 3;
 			showCover = self.cp.waypointIndex >= minCoverWaypoint and self.cp.waypointIndex < self.cp.numWaypoints and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -1, 2, "unload", true, false);
+		elseif self.cp.mode == 4 then 
+			showCover = true; --will be handled in courseplay:openCloseCover() to prevent extra loops
 		else
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
@@ -1054,13 +1056,19 @@ function courseplay:getSpeedWithLimiter(vehicle, refSpeed)
 	return refSpeed, speedLimitActivated;
 end
 
-function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger)
+function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger,stopOrder)
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.cp.workTools[tIdx];
 
 		-- default Giants trailers
 		if coverType == 'defaultGiants' then
+			local isSprayer, isSowingMachine = courseplay:isSprayer(tipper), courseplay:isSowingMachine(tipper);
+			if (vehicle.cp.mode == 4 and tipper.fillTriggers[1] ~= nil)
+			or (stopOrder and (isSprayer or isSowingMachine)) then
+				return
+			end
+	
 			if tipper.isCoverOpen == showCover then
 				tipper:setCoverState(not showCover);
 			end;

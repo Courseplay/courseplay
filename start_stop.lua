@@ -618,7 +618,7 @@ function courseplay:stop(self)
 
 	--open all covers
 	if self.cp.workToolAttached and self.cp.tipperHasCover and self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6 then
-		courseplay:openCloseCover(self, nil, false);
+		courseplay:openCloseCover(self,60,false,false,true);
 	end;
 
 	-- resetting variables
