@@ -377,19 +377,13 @@ function courseplay:turn(vehicle, dt)
 							local changeToForward = newTarget.turnReverse;
 							for i = vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, 1 do
 								if changeToForward and not vehicle.cp.turnTargets[i].turnReverse then
-									local _, _, deltaZ = worldToLocal(realDirectionNode, vehicle.cp.turnTargets[i].posX, 0, vehicle.cp.turnTargets[i].posZ);
-									if deltaZ > wpChangeDistance then
-										courseplay:debug(("%s:(Turn) Changing to forward (deltaZ = %.2f)"):format(nameNum(vehicle), deltaZ), 14);
-										vehicle.cp.curTurnIndex = i;
-										return;
-									end;
+									courseplay:debug(("%s:(Turn) Changing to forward"):format(nameNum(vehicle)), 14);
+									vehicle.cp.curTurnIndex = i;
+									return;
 								elseif not changeToForward and vehicle.cp.turnTargets[i].turnReverse then
-									local _, _, deltaZ = worldToLocal(realDirectionNode, vehicle.cp.turnTargets[i].posX, 0, vehicle.cp.turnTargets[i].posZ);
-									if deltaZ < -reverseWPChangeDistance then
-										courseplay:debug(("%s:(Turn) Changing to reverse (deltaZ = %.2f)"):format(nameNum(vehicle), deltaZ), 14);
-										vehicle.cp.curTurnIndex = i;
-										return;
-									end;
+									courseplay:debug(("%s:(Turn) Changing to reverse"):format(nameNum(vehicle)), 14);
+									vehicle.cp.curTurnIndex = i;
+									return;
 								end;
 							end;
 						end;
@@ -1163,8 +1157,8 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
 		fromPoint.x = wp.posX;
 		fromPoint.z = wp.posZ;
-		toPoint.x = wp.posX + (turnInfo.wpChangeDistance * dx);
-		toPoint.z = wp.posZ + (turnInfo.wpChangeDistance * dz);
+		toPoint.x = wp.posX + ((2 + turnInfo.wpChangeDistance) * dx);
+		toPoint.z = wp.posZ + ((2 + turnInfo.wpChangeDistance) * dz);
 		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint);
 
 		--- Generate second turn circle (Reversing)
@@ -1189,7 +1183,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		fromPoint.x = x;
 		fromPoint.z = z;
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength - turnInfo.zOffset + 5);
-		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, false, true);
+		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
 	else
 		--- Get the 2 circle center cordinate
 		local center1ZOffset = turnInfo.targetDeltaZ + turnInfo.zOffset + frontOffset;
@@ -1279,8 +1273,8 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
 	fromPoint.x = wp.posX;
 	fromPoint.z = wp.posZ;
-	toPoint.x = wp.posX - (turnInfo.reverseWPChangeDistance * dx);
-	toPoint.z = wp.posZ - (turnInfo.reverseWPChangeDistance * dz);
+	toPoint.x = wp.posX - ((2 + turnInfo.reverseWPChangeDistance) * dx);
+	toPoint.z = wp.posZ - ((2 + turnInfo.reverseWPChangeDistance) * dz);
 	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true);
 
 	--- Generate second turn circle (Forward)
@@ -1305,7 +1299,7 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	fromPoint.x = x;
 	fromPoint.z = z;
 	toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, 0);
-	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true, true, turnInfo.directionNodeToTurnNodeLength + abs(turnInfo.frontMarker) + turnInfo.reverseWPChangeDistance);
+	courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, true, true, turnInfo.directionNodeToTurnNodeLength + abs(turnInfo.frontMarker) + turnInfo.reverseWPChangeDistance);
 end;
 
 function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftTurn)

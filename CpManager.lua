@@ -58,7 +58,8 @@ function CpManager:loadMap(name)
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
 	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
-
+	courseplay:register(true)-- NOTE: running here again to check whether there were mods loaded after courseplay
+	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- COURSEPLAYERS TABLES
 	self.totalCoursePlayers = {};

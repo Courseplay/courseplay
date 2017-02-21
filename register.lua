@@ -8,11 +8,14 @@ local drivableSpec = SpecializationUtil.getSpecialization('drivable');
 local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
 local numInstallationsVehicles = 0;
 
-function courseplay:register()
+function courseplay:register(secondTime)
+	if secondTime then
+		print('## Courseplay: register later loaded mods');
+	end
 	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
-		if vehicleType then
+		if vehicleType and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then 
 			for i,spec in pairs(vehicleType.specializations) do
-				if spec and spec == drivableSpec and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then
+				if spec and spec == drivableSpec then
 					print(('  adding Courseplay to %q'):format(tostring(vehicleType.name)));
 					table.insert(vehicleType.specializations, courseplaySpec);
 					vehicleType.hasCourseplaySpec = true;
@@ -24,20 +27,6 @@ function courseplay:register()
 		end;
 	end;
 end;
-
---[[ if there are any vehicles loaded *after* Courseplay, install the spec into them
-local postRegister = function(typeName, className, filename, specializationNames, customEnvironment)
-	local vehicleType = VehicleTypeUtil.vehicleTypes[typeName];
-	if vehicleType and vehicleType.specializations and not vehicleType.hasCourseplaySpec and Utils.hasListElement(specializationNames, 'drivable') then
-		-- print(('\tadding Courseplay to %q'):format(typeName));
-		table.insert(vehicleType.specializations, courseplaySpec);
-		vehicleType.hasCourseplaySpec = true;
-		vehicleType.hasDrivableSpec = true;
-		numInstallationsVehicles = numInstallationsVehicles + 1;
-	end;
-end;
-VehicleTypeUtil.registerVehicleType = Utils.appendedFunction(VehicleTypeUtil.registerVehicleType, postRegister);
-]]
 
 AIVehicle.startAIVehicle = Utils.overwrittenFunction(AIVehicle.startAIVehicle,courseplay.startAIVehicle)
 
@@ -77,12 +66,6 @@ end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
 function courseplay.vehiclePostLoadFinished(self)
-	--if there are any vehicles loaded *after* Courseplay, install the spec into them
-	if Utils.hasListElement(self.specializationNames, 'drivable') then 
-		--print(tostring(self.name)..": vehiclePostLoadFinished -> call register")
-		courseplay:register()
-	end
-	
 	if self.cp == nil then self.cp = {}; end;
 
 	-- XML FILE NAME VARIABLE

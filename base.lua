@@ -575,9 +575,10 @@ function courseplay:draw()
 		local bx,bz = fillUnit.bx,fillUnit.bz
 		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
 		local y = 0
+		local height = fillUnit.height or 0.5;
 		if self.cp.mode10.leveling then
 			if self.cp.mode10.automaticHeigth then
-				y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz)+ fillUnit.height;
+				y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz)+ height;
 			else
 				y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz) + self.cp.mode10.shieldHeight + self.cp.tractorHeight ;
 			end

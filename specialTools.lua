@@ -300,6 +300,11 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isUrsusZ586 = true;
 		workTool.cp.notToBeReversed = true;
 
+	-- Kuhn SW4014 (Bale Wrapper) [Giants Kuhn DLC]
+	elseif workTool.cp.xmlFileName == 'kuhnSW4014.xml' then
+		workTool.cp.isKuhnSW4014 = true;
+		workTool.cp.notToBeReversed = true;
+
 	-- Arcusin FSX 63.72 (Bale Loader) [Giants]
 	elseif workTool.cp.xmlFileName == 'arcusinFSX6372.xml' then
 		workTool.cp.isArcusinFSX6372 = true;
@@ -317,6 +322,14 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'horschTiger10LT.xml' then
 		workTool.cp.realTurnNodeOffsetZ = -2.231;
 		workTool.cp.overwriteTurnRadius = 6;
+
+	-- Kuhn HR4004 [Giants Kuhn DLC]
+	elseif workTool.cp.xmlFileName == 'kuhnHR4004.xml' then
+		workTool.cp.isKuhnHR4004 = true;
+
+	-- Kuhn DC401 [Giants Kuhn DLC]
+	elseif workTool.cp.xmlFileName == 'kuhnDC401.xml' then
+		workTool.cp.isKuhnDC401 = true;
 
 	-- PLOUGHS [Giants]
 	-- Amazone Cayron 200 [Giants]
@@ -512,8 +525,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false ,allowedToDrive,forceSpeedLimit;
 	end;
 
-	--Ursus Z586 BaleWrapper
-	if workTool.cp.isUrsusZ586 then
+	--Ursus Z586 BaleWrapper or Kuhn SW4014 BaleWrapper
+	if workTool.cp.isUrsusZ586 or workTool.cp.isKuhnSW4014 then
 		if workTool.baleWrapperState == 4 then
 			workTool:doStateChange(5)
 		end
@@ -606,6 +619,11 @@ function courseplay:askForSpecialSettings(self, object)
 		automaticToolOffsetX = -1.8
 
 	elseif object.cp.isUrsusZ586 then
+		self.cp.noStopOnEdge = true
+		self.cp.noStopOnTurn = true
+		automaticToolOffsetX = -2.5;
+
+	elseif object.cp.isKuhnSW4014 then
 		self.cp.noStopOnEdge = true
 		self.cp.noStopOnTurn = true
 		automaticToolOffsetX = -2.5;
