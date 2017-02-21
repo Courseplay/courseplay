@@ -1099,7 +1099,7 @@ end;
 function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt)
 	for _,workTool in ipairs(vehicle.cp.workTools) do
 		if workTool.cp.fillLevel == nil or workTool.cp.capacity == nil then
-			return;
+			return allowedToDrive, lx, lz;
 		end;
 		local workToolSeederFillLevelPct = workTool.cp.seederFillLevelPercent;
 		local workToolSprayerFillLevelPct = workTool.cp.sprayerFillLevelPercent;
