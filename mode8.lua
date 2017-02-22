@@ -170,13 +170,11 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 				-- courseplay:debug(('        isUnloading=%s, totalFillLevelPercent=%.2f, prevFillLevelPct=%.2f, equal=%s, followAtFillLevel=%d, timerThrough=%s'):format(tostring(vehicle.cp.isUnloading), vehicle.cp.totalFillLevelPercent, vehicle.cp.prevFillLevelPct, tostring(vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct), vehicle.cp.followAtFillLevel, tostring(courseplay:timerIsThrough(vehicle, 'fillLevelChange', false))), 23);
 				if vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, 'fillLevelChange', false) then
 					driveOn = true; -- drive on if fillLevelPct doesn't change for 7 seconds and fill level is < followAtFillLevel
-					vehicle.cp.isUnloading = false;
 					courseplay:debug('        no fillLevel change for 7 seconds -> driveOn', 23);
 				end;
 			end;
 		elseif driveOn then
 			courseplay:debug('        totalFillLevelPercent == 0 or tank.waterTankFillLevel == tank.waterTankCapacity -> driveOn', 23);
-			vehicle.cp.isUnloading = false;
 		end;
 
 		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;
