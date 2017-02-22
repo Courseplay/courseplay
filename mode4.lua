@@ -126,7 +126,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 															--vv  used for foldables, which are not folding before start Strautmann manure spreader 
 					if not isFolding and (isUnfolded or hasSetUnfoldOrderThisLoop) then 
 						--set or stow ridge markers
-						if courseplay:isSowingMachine(workTool) and self.cp.ridgeMarkersAutomatic then
+						if (courseplay:isSowingMachine(workTool) or workTool.cp.isKuhnHR4004) and self.cp.ridgeMarkersAutomatic then
 							if ridgeMarker ~= nil then
 								if workTool.cp.haveInversedRidgeMarkerState then
 									if ridgeMarker == 1 then

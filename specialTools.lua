@@ -357,6 +357,9 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 4.5;
 
+	elseif workTool.cp.xmlFileName == 'kuhnDiscolanderXM.xml' then
+		workTool.cp.isKuhnDiscolanderXM52 = true
+
 	-- SEEDERS [Giants]
 
 	end;
@@ -637,6 +640,10 @@ function courseplay:askForSpecialSettings(self, object)
 
 	elseif object.cp.isHolmerHR9 then
 		object.cp.frontMarkerOffsetCorection = 2;
+
+	elseif object.cp.isKuhnDiscolanderXM52 then
+		object.cp.frontMarkerOffsetCorection = 5.6;
+		object.cp.backMarkerOffsetCorection = -4.5;
 
 	elseif self.cp.isHolmerTerraDosT4_40 then
 		self.cp.noStopOnTurn = true;
