@@ -5,20 +5,16 @@ local function round(num)
 	return floor(num + 0.5);
 end
 
-local targetAspectRatio = 16/9; -- = 1920/1080;
-local aspectRatioRatio = g_screenAspectRatio / targetAspectRatio;
-local sizeRatio = 1;
-if g_screenWidth > 1920 then
-	--sizeRatio = 1920 / g_screenWidth;
-end;
+courseplay.hud.sizeRatio = 1;
+courseplay.hud.uiScale = g_gameSettings:getValue("uiScale");
 
 -- px are in targetSize for 1920x1080
 function courseplay.hud:pxToNormal(px, dimension, fullPixel)
 	local ret;
 	if dimension == 'x' then
-		ret = (px / 1920) * sizeRatio * g_aspectScaleX;
+		ret = (px / 1920) * courseplay.hud.sizeRatio * courseplay.hud.uiScale * g_aspectScaleX;
 	else
-		ret = (px / 1080) * sizeRatio * g_aspectScaleY;
+		ret = (px / 1080) * courseplay.hud.sizeRatio * courseplay.hud.uiScale * g_aspectScaleY;
 	end;
 	if fullPixel == nil or fullPixel then
 		ret = self:getFullPx(ret, dimension);
