@@ -374,14 +374,18 @@ function CpManager.saveXmlSettings(self)
 		local key = '';
 		-- Save Hud Possition
 		key = 'CPSettings.courseplayHud';
-		setXMLFloat(cpSettingsXml, key .. '#posX', courseplay.hud.basePosX);
-		setXMLFloat(cpSettingsXml, key .. '#posY', courseplay.hud.basePosY);
+		setXMLFloat(cpSettingsXml, key .. '#posX',		courseplay.hud.basePosX);
+		setXMLFloat(cpSettingsXml, key .. '#posY',		courseplay.hud.basePosY);
+		setXMLFloat(cpSettingsXml, key .. '#hudScale',	courseplay.hud.sizeRatio);
+		setXMLFloat(cpSettingsXml, key .. '#uiScale',	courseplay.hud.uiScale);
+		local string = "\n\tNOTE 1: Do not change the uiScale Manually.\n\tNOTE 2: If you change the hudScale and you haven't changed the posX and posY manually,\n\t\t\tthen you need to delete the posX and posY section to center the hud again.\n\t";
+		setXMLString(cpSettingsXml, key, string);
 
 		-- Save Fields Settings
 		key = 'CPSettings.courseplayFields';
 		setXMLBool(cpSettingsXml, key .. '#automaticScan',				courseplay.fields.automaticScan);
 		setXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields',		courseplay.fields.onlyScanOwnedFields);
-		setXMLBool(cpSettingsXml, key .. '#debugScannedFields',		courseplay.fields.debugScannedFields);
+		setXMLBool(cpSettingsXml, key .. '#debugScannedFields',			courseplay.fields.debugScannedFields);
 		setXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields',	courseplay.fields.debugCustomLoadedFields);
 		setXMLInt (cpSettingsXml, key .. '#scanStep',					courseplay.fields.scanStep);
 
@@ -394,12 +398,12 @@ function CpManager.saveXmlSettings(self)
 		key = 'CPSettings.courseplayIngameMap';
 		setXMLBool(cpSettingsXml, key .. '#active', 		CpManager.ingameMapIconActive);
 		setXMLBool(cpSettingsXml, key .. '#showName', 		CpManager.ingameMapIconShowName);
-		setXMLBool(cpSettingsXml, key .. '#showCourse',	CpManager.ingameMapIconShowCourse);
+		setXMLBool(cpSettingsXml, key .. '#showCourse',		CpManager.ingameMapIconShowCourse);
 
 		-- Save 2D Course Settings
 		key = 'CPSettings.course2D';
-		setXMLFloat(cpSettingsXml, key .. '#posX', 	CpManager.course2dPlotPosX);
-		setXMLFloat(cpSettingsXml, key .. '#posY', 	CpManager.course2dPlotPosY);
+		setXMLFloat(cpSettingsXml, key .. '#posX', 		CpManager.course2dPlotPosX);
+		setXMLFloat(cpSettingsXml, key .. '#posY', 		CpManager.course2dPlotPosY);
 		setXMLFloat(cpSettingsXml, key .. '#opacity',	CpManager.course2dPdaMapOpacity);
 
 		saveXMLFile(cpSettingsXml);
@@ -883,12 +887,53 @@ function CpManager:loadXmlSettings()
 
 		-- hud position
 		local key = 'CPSettings.courseplayHud';
-		local posX, posY = getXMLFloat(cpSettingsXml, key .. '#posX'), getXMLFloat(cpSettingsXml, key .. '#posY');
-		if posX then
-			courseplay.hud.basePosX = courseplay.hud:getFullPx(posX, 'x');
+
+		local sizeRatio, uiScale = getXMLFloat(cpSettingsXml, key .. '#hudScale'), getXMLFloat(cpSettingsXml, key .. '#uiScale');
+		if sizeRatio and sizeRatio ~= courseplay.hud.sizeRatio then
+			courseplay.hud.sizeRatio = sizeRatio;
+
+			-- Reposition hud based on size.
+			courseplay.hud.basePosX = 0.5 - courseplay.hud:pxToNormal(630 / 2, 'x'); -- Center Screen - half hud width
+			courseplay.hud.basePosY = courseplay.hud:pxToNormal(32, 'y');
 		end;
-		if posY then
-			courseplay.hud.basePosY = courseplay.hud:getFullPx(posY, 'y');
+
+		local newUiScale = courseplay.hud.uiScale;
+		local posX, posY = getXMLFloat(cpSettingsXml, key .. '#posX'), getXMLFloat(cpSettingsXml, key .. '#posY');
+		if uiScale and posX then
+			posX = courseplay.hud:getFullPx(posX, 'x');
+		end;
+		if uiScale and posY then
+			posY = courseplay.hud:getFullPx(posY, 'y');
+		end;
+
+	    -- Check if the UI Scale have been changed since last time and reset center position if needed.
+		if uiScale and uiScale ~= newUiScale then
+			print("## CoursePlay: UI Scale have changed. Recalculating hud positions.");
+			-- Set the uiScale to the loaded one so we can get the original posX
+			courseplay.hud.uiScale = uiScale;
+			-- Get the original posX
+			local oldPosX = 0.5 - courseplay.hud:pxToNormal(630 / 2, 'x');
+			local oldPosY = courseplay.hud:pxToNormal(32, 'y');
+			-- Reset the uiScale back to the new one.
+			courseplay.hud.uiScale = newUiScale;
+
+			-- if the position is the same, then we need to update it to the new center position.
+			-- NOTE: If they are not the same, then the posX might have been changed by the user for there own position, and then we dont change it back to the center position.
+			if not posX or (posX and oldPosX == posX) then
+				courseplay.hud.basePosX = 0.5 - courseplay.hud:pxToNormal(630 / 2, 'x'); -- Center Screen - half hud width
+			end;
+			if not posY or (posY and oldPosY == posY) then
+				courseplay.hud.basePosY = courseplay.hud:pxToNormal(32, 'y');
+			end;
+
+		-- Get the saved position if UI Scale are the same.
+		else
+			if uiScale and posX then
+				courseplay.hud.basePosX = posX;
+			end;
+			if uiScale and posY then
+				courseplay.hud.basePosY = posY;
+			end;
 		end;
 
 		-- fields settings
