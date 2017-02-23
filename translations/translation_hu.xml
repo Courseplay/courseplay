@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Típus: Szállitás (Vezetés a célig)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Típus: Földmunkák, gyűjtés, szállítás" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Típus: A kombájn megy kirakodni" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Típus: Trágyaszállítás" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="Típus: Rakodás (kanalat tölt és ürít)" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="tovább hajtás" />

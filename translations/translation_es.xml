@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Modo: Traslado (conducir de un punto al final)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Modo: Trabajo campo" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Modo: Cosechadora ir a remolque y descargar" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Modo: Transportar estiércol/purines" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="Modo: Cargar y descargar con pala" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Modo: Nivelando y compactando" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Continuar" />

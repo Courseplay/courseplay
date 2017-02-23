@@ -16,7 +16,7 @@ function courseplay:drive(self, dt)
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		if self.cp.aiFrontMarker and self.cp.backMarkerOffset then
-			local directionNode	= self.isReverseDriving and self.cp.reverseDirectionNode or self.cp.DirectionNode;
+			local directionNode	= self.isReverseDriving and self.cp.reverseDrivingDirectionNode or self.cp.DirectionNode;
 			local tx1, ty1, tz1 = localToWorld(directionNode,3,1,self.cp.aiFrontMarker)
 			local tx2, ty2, tz2 = localToWorld(directionNode,3,1,self.cp.backMarkerOffset)
 			local nx, ny, nz = localDirectionToWorld(directionNode, -1, 0, 0)
@@ -107,6 +107,11 @@ function courseplay:drive(self, dt)
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
 		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz, 0, 0, 1)
+	end;
+	if CpManager.isDeveloper and self.cp.hasSpecializationArticulatedAxis and courseplay.debugChannels[12] then
+		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
+		local desX, _, desZ = localToWorld(self.cp.DirectionNode, 0, 0, 5);
+		drawDebugLine(ctx, cty + 3.5, ctz, 0, 0, 1, desX, cty + 3.5, desZ, 0, 0, 1);
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);

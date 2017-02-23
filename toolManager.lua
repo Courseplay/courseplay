@@ -442,7 +442,7 @@ function courseplay:setTipRefOffset(vehicle)
 end;
 
 function courseplay:setMarkers(vehicle, object)
-	local realDirectionNode		= vehicle.isReverseDriving and vehicle.cp.reverseDirectionNode or vehicle.cp.DirectionNode;
+	local realDirectionNode		= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
 	local aLittleBitMore 		= 1;
 	local pivotJointNode 		= courseplay:getPivotJointNode(object);
 	object.cp.backMarkerOffset 	= nil;
