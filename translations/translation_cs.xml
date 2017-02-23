@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="模式5：转移(从起点到终点)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="模式6：田间作业（收割和收集）" />
 		<text name="COURSEPLAY_MODE_7" 									 text="模式7：收割机自助卸载" />
-		<text name="COURSEPLAY_MODE_8" 									 text="模式8：流动补充" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="模式9：铲车模式" />
 		<text name="COURSEPLAY_MODE_10" 								 text="模式10：平整和压实" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="继续" />

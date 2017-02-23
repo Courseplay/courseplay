@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="ПЕРЕГОН ТЕХНИКИ" />
 		<text name="COURSEPLAY_MODE_6" 									 text="РАЗНЫЕ ПОЛЕВЫЕ РАБОТЫ" />
 		<text name="COURSEPLAY_MODE_7" 									 text="САМОРАЗГУЗКА КОМБАЙНА" />
-		<text name="COURSEPLAY_MODE_8" 									 text="ПЕРЕВОЗКА НАВОЗА" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="РАБОТЫ ДЛЯ ПОГРУЗЧИКА" />
 		<text name="COURSEPLAY_MODE_10" 								 text="ВЫРАВНИВАНИЕ И УПЛОТНЕНИЕ" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Продолжить" />

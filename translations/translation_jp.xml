@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="タイプ: 回送 (スタートポイントからエンドポイントへ移動)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="タイプ: フィールドワーク" />
 		<text name="COURSEPLAY_MODE_7" 									 text="タイプ: コンバイン セルフアンロード" />
-		<text name="COURSEPLAY_MODE_8" 									 text="タイプ: スラリー輸送" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="タイプ: バケット・ローダー" />
 		<text name="COURSEPLAY_MODE_10" 								 text="タイプ: レベリングと圧縮" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="続行" />

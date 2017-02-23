@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 							 		 text="Type: Route (voyage du début jusqu'à la fin de la course)" />
 		<text name="COURSEPLAY_MODE_6" 							 		 text="Type: Travail des champs" />
 		<text name="COURSEPLAY_MODE_7" 							 		 text="Type: Batteuse va à la remorque pour vider" />
-		<text name="COURSEPLAY_MODE_8" 							 		 text="Type: Transport de fumier" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 							 		 text="Type: Charger et décharger un godet" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 						 		 text="Début" />

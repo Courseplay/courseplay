@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Type: Transfer (drive from start to finish)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Type: Fieldwork" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Type: Combine self-unloading" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Manure transporter" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />
 		<text name="COURSEPLAY_MODE_9" 									 text="Type: Fill and empty shovel" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: Leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="continue" />

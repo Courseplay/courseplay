@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Mod: Průjezd (projede trasu bez zastavení)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Mod: Polní práce" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Mod: Kombajn se jede sám vysypat" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Mod: Převoz kejdy" />
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="Mod: Nakladač" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Mod: Leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Pokračovat v jízdě" />
