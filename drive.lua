@@ -556,7 +556,12 @@ function courseplay:drive(self, dt)
 			local minCoverWaypoint = self.cp.mode == 1 and 4 or 3;
 			showCover = self.cp.waypointIndex >= minCoverWaypoint and self.cp.waypointIndex < self.cp.numWaypoints and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -1, 2, "unload", true, false);
 		elseif self.cp.mode == 4 then 
-			showCover = true; --will be handled in courseplay:openCloseCover() to prevent extra loops
+			if self.cp.waitPoints[3] and self.cp.previousWaypointIndex == self.cp.waitPoints[3] then
+			    -- open cover at loading point
+				showCover = false;
+			else
+				showCover = true; --will be handled in courseplay:openCloseCover() to prevent extra loops
+			end;
 		else
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
