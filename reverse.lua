@@ -296,7 +296,7 @@ end
 
 -- Find the first forward waypoint ahead of the vehicle
 function courseplay:getNextFwdPoint(vehicle, isTurning)
-	local directionNode	= vehicle.isReverseDriving and vehicle.cp.reverseDirectionNode or vehicle.cp.DirectionNode;
+	local directionNode	= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
 	if isTurning then
 		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 14);
 		for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do

@@ -18,7 +18,7 @@ function courseplay:turn(vehicle, dt)
 		return;
 	end
 
-	local realDirectionNode					= vehicle.isReverseDriving and vehicle.cp.reverseDirectionNode or vehicle.cp.DirectionNode;
+	local realDirectionNode					= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
 	local allowedToDrive 					= true;
 	local moveForwards 						= true;
 	local refSpeed 							= vehicle.cp.speeds.turn;

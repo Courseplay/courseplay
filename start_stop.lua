@@ -384,8 +384,9 @@ function courseplay:start(self)
 	end;
 	
 	--check Crab Steering mode and set it to default
-	if self.crabSteering and self.crabSteering.state ~= self.crabSteering.aiSteeringModeIndex  then
-		self:setCrabSteering(self.crabSteering.aiSteeringModeIndex)
+	if self.crabSteering and (self.crabSteering.state ~= self.crabSteering.aiSteeringModeIndex or self.cp.useCrabSteeringMode ~= nil) then
+		local crabSteeringMode = self.cp.useCrabSteeringMode or self.crabSteering.aiSteeringModeIndex;
+		self:setCrabSteering(crabSteeringMode);
 	end
 
 	-- ok i am near the waypoint, let's go
