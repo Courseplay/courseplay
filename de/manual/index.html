@@ -60,7 +60,8 @@
 								<li><a href="#hud_generalSettings"><span class="icon-page6"></span><span>Allgemeine Einstellungen</span></a></li>
 								<li><a href="#hud_drivingSettings"><span class="icon-page7"></span><span>Fahr-/Arbeitseinstellungen</span></a></li>
 								<li><a href="#hud_courseGeneration"><span class="icon-page8"></span><span>Kursgenerierung</span></a></li>
-								<li class="last"><a href="#hud_shovelSettings"><span class="icon-page9"></span><span>Schaufelstellung</span></a></li>
+								<li><a href="#hud_shovelSettings"><span class="icon-page9"></span><span>Schaufelstellung</span></a></li>
+                                <li class="last"><a href="#hud_levelingSettings"><span class="icon-page10"></span><span>Bunkersilo befüllen und verdichten Einstellungen</span></a></li>
 							</ul>
 						</li>
 						<li class='has-sub'>
@@ -73,9 +74,10 @@
 								<li><a href="#driveMode5"><span class="icon-mode5single"></span><span>Überführung</span></a></li>
 								<li><a href="#driveMode6"><span class="icon-mode6single"></span><span>Feldarbeit</span></a></li>
 								<li><a href="#driveMode7"><span class="icon-mode7single"></span><span>Drescher-selbst-abtanken</span></a></li>
-								<li><a href="#driveMode8"><span class="icon-mode8single"></span><span>Güllezubringer</span></a></li>
-								<li class="last"><a href="#driveMode9"><span class="icon-mode9single"></span><span>Schaufel befüllen und entleeren</span></a></li>
-							</ul>
+								<li><a href="#driveMode8"><span class="icon-mode8single"></span><span>Flüssigkeitstransport</span></a></li>
+								<li><a href="#driveMode9"><span class="icon-mode9single"></span><span>Schaufel befüllen und entleeren</span></a></li>
+                                <li class="last"><a href="#driveMode10"><span class="icon-mode10single"></span><span>Bunkersilo befüllen und verdichten</span></a></li>
+                            </ul>
 						</li>
 						<li>
 							<a href="#generateCourse"><span>Kursgenerierung</span></a>
@@ -113,7 +115,7 @@
 	<!-- ------------------------------------------------------------------------------------------- -->
 
 	<main id="manual" role="main" class="content">
-		<h1>Anleitung <span id="manualVersion">gültig für v4.01</span></h1>
+		<h1>Anleitung <span id="manualVersion">gültig für v5.01</span></h1>
 
 		<hr />
 
@@ -133,7 +135,6 @@
 
 		<!-- #################### -->
 		<!-- HUD -->
-
 		<article class="manualSection" id="hud">
 			<h2>HUD</h2>
 			<p>Wenn ihr das HUD öffnet, wird automatisch die Maussteuerung aktiviert. Das heißt, ihr könnt euch mit der Maus nicht mehr umgucken. Um die Maussteuerung zu deaktivieren, müsst ihr einfach nochmal auf die rechte Maustaste klicken. Alternativ könnt ihr auch auf das <span class="icon-close inline" title="HUD schließen" alt="x"></span> oben rechts im HUD klicken. Dabei wird das HUD geschlossen und die Maussteuerung wieder deaktiviert.</p>
@@ -144,7 +145,6 @@
 
 		<!-- #################### -->
 		<!-- HUD PAGE 0 -->
-
 		<article class="manualSection" id="hud_combineSettings">
 			<h2>
 				<span class="icon-page0"></span>
@@ -193,7 +193,6 @@
 
 		<!-- #################### -->
 		<!-- HUD PAGE 1 -->
-
 		<article class="manualSection" id="hud_driverControls">
 			<h2>
 				<span class="icon-page1"></span>
@@ -325,8 +324,8 @@
 			</section>
 		</article>
 
-		<!-- #################### -->
-
+        <!-- #################### -->
+        <!-- HUD PAGE 2 -->
 		<article class="manualSection" id="hud_manageCourses">
 			<h2>
 				<span class="icon-page2"></span>
@@ -393,8 +392,8 @@
 			</section>
 		</article>
 
-		<!-- #################### -->
-
+        <!-- #################### -->
+        <!-- HUD PAGE 3 -->
 		<article class="manualSection" id="hud_mode2settings">
 			<h2>
 				<span class="icon-page3"></span>
@@ -480,8 +479,8 @@
 			</ul>
 		</article>
 
-		<!-- #################### -->
-
+        <!-- #################### -->
+        <!-- HUD PAGE 4 -->
 		<article class="manualSection" id="hud_manageCombine">
 			<h2>
 				<span class="icon-page4"></span>
@@ -492,6 +491,8 @@
 			<p>This can be useful for big and hilly fields where the automatic assignment doesn't always work. Or for areas which aren't fields, like meadows.</p>
 		</article>
 
+        <!-- #################### -->
+        <!-- HUD PAGE 5 -->
 		<article class="manualSection" id="hud_speeds">
 			<h2>
 				<span class="icon-page5"></span>
@@ -510,8 +511,8 @@
 			</dl>
 		</article>
 
-		<!-- #################### -->
-
+        <!-- #################### -->
+        <!-- HUD PAGE 6 -->
 		<article class="manualSection" id="hud_generalSettings">
 			<h2>
 				<span class="icon-page6"></span>
@@ -561,6 +562,8 @@
 			</ul>
 		</article>
 
+        <!-- #################### -->
+        <!-- HUD PAGE 7 -->
 		<article class="manualSection" id="hud_drivingSettings">
 			<h2>
 				<span class="icon-page7"></span>
@@ -631,6 +634,8 @@
 			</ul>
 		</article>
 
+        <!-- #################### -->
+        <!-- HUD PAGE 8 -->
 		<article class="manualSection" id="hud_courseGeneration">
 			<h2>
 				<span class="icon-page8"></span>
@@ -693,6 +698,8 @@
 			</ul>
 		</article>
 
+        <!-- #################### -->
+        <!-- HUD PAGE 9 -->
 		<article class="manualSection" id="hud_shovelSettings">
 			<h2>
 				<span class="icon-page9"></span>
@@ -744,8 +751,19 @@
 			</ul>
 		</article>
 
+        <!-- #################### -->
+        <!-- HUD PAGE 10 -->
+        <article class="manualSection" id="hud_levelingSettings">
+            <h2>
+                <span class="icon-page10"></span>
+                HUD: Bunkersilo befüllen und verdichten Einstellungen
+            </h2>
+            <p class="info"><span class="icon-infoSign inline"></span>Still WIP. To be updated</p>
+        </article>
 
-		<!-- ### DRIVEMODES ### -->
+
+
+        <!-- ### DRIVEMODES ### -->
 		<article class="manualSection" id="driveModes">
 			<h2>Driving modes</h2>
 			<p>There are nine different driving modes:</p>
@@ -928,7 +946,13 @@
 			<p>If filling into a trailer, the trailer does not have to be exactly at/behind waiting point #3, it can in fact be situated slightly in front of it. But, to ensure a perfect procedure, the trailer should be right at your waiting point #3. After unloading, the shovel is set back to the <span class="emphasize2">pre-unloading position</span> (<span class="icon-shovelPreUnloading inline"></span>); the driver will use the "reverse from bunker/trailer" part of your recording and continue the course from the until it reaches the end point.</p>
 		</article>
 
-		<!-- #################### -->
+        <!-- ### DRIVEMODE10 ### -->
+        <article class="manualSection" id="driveMode10">
+            <h2><span class="icon-mode10single"></span> Bunkersilo befüllen und verdichten</h2>
+            <p class="info"><span class="icon-infoSign inline"></span>Still WIP. To be updated</p>
+        </article>
+
+        <!-- #################### -->
 
 		<article class="manualSection" id="generateCourse">
 			<h2>Generating a course</h2>
@@ -1030,7 +1054,7 @@
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
-			<li><a href="../../en/manual/index.html">English version</a></li>
+			<li><a href="../../en/manual/index.html#intro">English version</a></li>
 			<li><a href="../../index.html">Home</a></li>
 		</ul>
 	</footer>

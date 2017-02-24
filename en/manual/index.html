@@ -60,7 +60,8 @@
 								<li><a href="#hud_generalSettings"><span class="icon-page6"></span><span>General settings</span></a></li>
 								<li><a href="#hud_drivingSettings"><span class="icon-page7"></span><span>Drive and work settings</span></a></li>
 								<li><a href="#hud_courseGeneration"><span class="icon-page8"></span><span>Course generation</span></a></li>
-								<li class="last"><a href="#hud_shovelSettings"><span class="icon-page9"></span><span>Shovel positions</span></a></li>
+								<li><a href="#hud_shovelSettings"><span class="icon-page9"></span><span>Shovel positions</span></a></li>
+								<li class="last"><a href="#hud_levelingSettings"><span class="icon-page10"></span><span>Leveling and compacting settings</span></a></li>
 							</ul>
 						</li>
 						<li class='has-sub'>
@@ -73,8 +74,9 @@
 								<li><a href="#driveMode5"><span class="icon-mode5single"></span><span>Transfer</span></a></li>
 								<li><a href="#driveMode6"><span class="icon-mode6single"></span><span>Field work</span></a></li>
 								<li><a href="#driveMode7"><span class="icon-mode7single"></span><span>Combine self unloading</span></a></li>
-								<li><a href="#driveMode8"><span class="icon-mode8single"></span><span>Liquid manure transporter</span></a></li>
-								<li class="last"><a href="#driveMode9"><span class="icon-mode9single"></span><span>Shovel filling and emptying</span></a></li>
+								<li><a href="#driveMode8"><span class="icon-mode8single"></span><span>Liquid product transport</span></a></li>
+								<li><a href="#driveMode9"><span class="icon-mode9single"></span><span>Shovel filling and emptying</span></a></li>
+								<li class="last"><a href="#driveMode10"><span class="icon-mode10single"></span><span>Leveling and compacting</span></a></li>
 							</ul>
 						</li>
 						<li>
@@ -132,7 +134,6 @@
 
 		<!-- #################### -->
 		<!-- HUD -->
-
 		<article class="manualSection" id="hud">
 			<h2>HUD</h2>
 			<p>When opening the hud, the mouse controls are activated automatically. Meaning, you can not use the mouse to look around anymore. In order to deactivate the mouse controls, you need to click the right mouse button again. Alternatively you can click on the <span class="icon-close inline" title="close button"></span> in the upper right corner of the hud. Doing so closes the hud and deactivates the mouse controls.</p>
@@ -143,7 +144,6 @@
 
 		<!-- #################### -->
 		<!-- HUD PAGE 0 -->
-
 		<article class="manualSection" id="hud_combineSettings">
 			<h2>
 				<span class="icon-page0"></span>
@@ -192,7 +192,6 @@
 
 		<!-- #################### -->
 		<!-- HUD PAGE 1 -->
-
 		<article class="manualSection" id="hud_driverControls">
 			<h2>
 				<span class="icon-page1"></span>
@@ -325,7 +324,7 @@
 		</article>
 
 		<!-- #################### -->
-
+        <!-- HUD PAGE 2 -->
 		<article class="manualSection" id="hud_manageCourses">
 			<h2>
 				<span class="icon-page2"></span>
@@ -393,7 +392,7 @@
 		</article>
 
 		<!-- #################### -->
-
+        <!-- HUD PAGE 3 -->
 		<article class="manualSection" id="hud_mode2settings">
 			<h2>
 				<span class="icon-page3"></span>
@@ -480,7 +479,7 @@
 		</article>
 
 		<!-- #################### -->
-
+        <!-- HUD PAGE 4 -->
 		<article class="manualSection" id="hud_manageCombine">
 			<h2>
 				<span class="icon-page4"></span>
@@ -491,7 +490,9 @@
 			<p>This can be useful for big and hilly fields where the automatic assignment doesn't always work. Or for areas which aren't fields, like meadows.</p>
 		</article>
 
-		<article class="manualSection" id="hud_speeds">
+        <!-- #################### -->
+        <!-- HUD PAGE 5 -->
+        <article class="manualSection" id="hud_speeds">
 			<h2>
 				<span class="icon-page5"></span>
 				HUD: Speeds
@@ -509,9 +510,9 @@
 			</dl>
 		</article>
 
-		<!-- #################### -->
-
-		<article class="manualSection" id="hud_generalSettings">
+        <!-- #################### -->
+        <!-- HUD PAGE 6 -->
+        <article class="manualSection" id="hud_generalSettings">
 			<h2>
 				<span class="icon-page6"></span>
 				HUD: General settings
@@ -560,7 +561,9 @@
 			</ul>
 		</article>
 
-		<article class="manualSection" id="hud_drivingSettings">
+        <!-- #################### -->
+        <!-- HUD PAGE 7 -->
+        <article class="manualSection" id="hud_drivingSettings">
 			<h2>
 				<span class="icon-page7"></span>
 				HUD: Drive and work settings
@@ -630,6 +633,8 @@
 			</ul>
 		</article>
 
+        <!-- #################### -->
+        <!-- HUD PAGE 8 -->
 		<article class="manualSection" id="hud_courseGeneration">
 			<h2>
 				<span class="icon-page8"></span>
@@ -692,6 +697,8 @@
 			</ul>
 		</article>
 
+        <!-- #################### -->
+        <!-- HUD PAGE 9 -->
 		<article class="manualSection" id="hud_shovelSettings">
 			<h2>
 				<span class="icon-page9"></span>
@@ -741,6 +748,16 @@
 					<p>If not activated, the driver will drive through the silo, being filled while moving (default setting).</p>
 				</li>
 			</ul>
+		</article>
+
+        <!-- #################### -->
+        <!-- HUD PAGE 10 -->
+		<article class="manualSection" id="hud_levelingSettings">
+			<h2>
+				<span class="icon-page10"></span>
+				HUD: Leveling and compacting settings
+			</h2>
+			<p class="info"><span class="icon-infoSign inline"></span>Still WIP. To be updated</p>
 		</article>
 
 
@@ -927,6 +944,12 @@
 			<p>If filling into a trailer, the trailer does not have to be exactly at/behind waiting point #3, it can in fact be situated slightly in front of it. But, to ensure a perfect procedure, the trailer should be right at your waiting point #3. After unloading, the shovel is set back to the <span class="emphasize2">pre-unloading position</span> (<span class="icon-shovelPreUnloading inline"></span>); the driver will use the "reverse from bunker/trailer" part of your recording and continue the course from the until it reaches the end point.</p>
 		</article>
 
+		<!-- ### DRIVEMODE10 ### -->
+		<article class="manualSection" id="driveMode10">
+			<h2><span class="icon-mode10single"></span> Leveling and compacting</h2>
+            <p class="info"><span class="icon-infoSign inline"></span>Still WIP. To be updated</p>
+		</article>
+
 		<!-- #################### -->
 
 		<article class="manualSection" id="generateCourse">
@@ -1029,7 +1052,7 @@
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
 			<li><a href="https://github.com/Courseplay/courseplay/issues?sort=created&state=open">GitHub Issue Tracker</a></li>
-			<li><a href="../../de/manual/index.html">Deutsche Version</a></li>
+			<li><a href="../../de/manual/index.html#intro">Deutsche Version</a></li>
 			<li><a href="../../index.html">Home</a></li>
 		</ul>
 	</footer>

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'courseplay';
-  src:  url('fonts/courseplay.eot?e317w5');
-  src:  url('fonts/courseplay.eot?e317w5#iefix') format('embedded-opentype'),
-    url('fonts/courseplay.ttf?e317w5') format('truetype'),
-    url('fonts/courseplay.woff?e317w5') format('woff'),
-    url('fonts/courseplay.svg?e317w5#courseplay') format('svg');
+  src:  url('fonts/courseplay.eot?dwafg');
+  src:  url('fonts/courseplay.eot?dwafg#iefix') format('embedded-opentype'),
+    url('fonts/courseplay.ttf?dwafg') format('truetype'),
+    url('fonts/courseplay.woff?dwafg') format('woff'),
+    url('fonts/courseplay.svg?dwafg#courseplay') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -90,6 +90,9 @@
 .icon-mode9block:before {
   content: "\e632";
 }
+.icon-mode10block:before {
+  content: "\e902";
+}
 .icon-mode1single:before {
   content: "\e633";
 }
@@ -116,6 +119,9 @@
 }
 .icon-mode9single:before {
   content: "\e63b";
+}
+.icon-mode10single:before {
+  content: "\e903";
 }
 .icon-page0:before {
   content: "\e63c";
@@ -146,6 +152,9 @@
 }
 .icon-page9:before {
   content: "\e645";
+}
+.icon-page10:before {
+  content: "\e904";
 }
 .icon-headlandClockwise2:before {
   content: "\e649";
