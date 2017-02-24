@@ -15,16 +15,16 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="ドライバーをリクエスト中" />
 		<text name="COURSEPLAY_START_COURSE" 							 text="運転開始" />
 		<text name="COURSEPLAY_STOP_COURSE" 							 text="運転停止" />
-		<text name="COURSEPLAY_MODE_1" 									 text="タイプ: 穀物輸送 (ローディングしてから開始)" />
-		<text name="COURSEPLAY_MODE_2" 									 text="タイプ: コンビ (コンバインからトレーラーへ)" />
-		<text name="COURSEPLAY_MODE_3" 									 text="タイプ: オーガーワゴン (コンバインからオーガーワゴンへ)" />
-		<text name="COURSEPLAY_MODE_4" 									 text="タイプ: 肥料散布や播種" />
-		<text name="COURSEPLAY_MODE_5" 									 text="タイプ: 回送 (スタートポイントからエンドポイントへ移動)" />
+		<text name="COURSEPLAY_MODE_1" 									 text="タイプ: 穀物輸送 (ローディングから開始)" />
+		<text name="COURSEPLAY_MODE_2" 									 text="タイプ: コンビ (コンバインから受け取る)" />
+		<text name="COURSEPLAY_MODE_3" 									 text="タイプ: オーガーワゴン (コンバインから受け取りトレーラーへ)" />
+		<text name="COURSEPLAY_MODE_4" 									 text="タイプ: 肥料散布・播種" />
+		<text name="COURSEPLAY_MODE_5" 									 text="タイプ: 回送 (スタートポイントからエンドポイントへ)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="タイプ: フィールドワーク" />
 		<text name="COURSEPLAY_MODE_7" 									 text="タイプ: コンバイン セルフアンロード" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="タイプ: 液体輸送" />
 		<text name="COURSEPLAY_MODE_9" 									 text="タイプ: バケット・ローダー" />
-		<text name="COURSEPLAY_MODE_10" 								 text="タイプ: レベリングと圧縮" />
+		<text name="COURSEPLAY_MODE_10" 								 text="タイプ: レベリング・圧縮" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="続行" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="現在のコースをクリア" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="走行" />

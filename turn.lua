@@ -138,9 +138,11 @@ function courseplay:turn(vehicle, dt)
 			turnInfo.numLanes ,turnInfo.onLaneNum 	= courseplay:getLaneInfo(vehicle);
 			turnInfo.turnOnField 					= vehicle.cp.turnOnField;
 			turnInfo.reverseOffset 					= 0;
+			turnInfo.extraAlignLength				= 6;
 			turnInfo.haveWheeledImplement 			= reversingWorkTool ~= nil;
 			if turnInfo.haveWheeledImplement then
 				turnInfo.reversingWorkTool 			= reversingWorkTool;
+				turnInfo.extraAlignLength			= turnInfo.extraAlignLength + directionNodeToTurnNodeLength * 2;
 			end;
 			turnInfo.isHarvester					= isHarvester;
 
@@ -671,7 +673,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	--- Extra WP 2 - Reverse back to field edge
 	if not canTurnOnHeadland and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward and turnInfo.turnOnField then
 		-- Move a bit more forward
-		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset + directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + 6);
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset + directionNodeToTurnNodeLength + turnInfo.extraAlignLength + turnInfo.wpChangeDistance);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, nil, nil, nil, true);
 
 		-- Reverse back
@@ -790,7 +792,7 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 	--- Extra WP 2 - Reverse back to field edge
 	if not canTurnOnHeadland and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward and turnInfo.turnOnField then
 		-- Move a bit more forward
-		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset + directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + 6);
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset + directionNodeToTurnNodeLength + turnInfo.extraAlignLength + turnInfo.wpChangeDistance);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, nil, nil, nil, true);
 
 		-- Reverse back
@@ -988,7 +990,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + 3);
 			courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint);
 			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + 3);
-			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + directionNodeToTurnNodeLength + extraDistance + turnInfo.wpChangeDistance + 6);
+			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + directionNodeToTurnNodeLength + extraDistance + turnInfo.extraAlignLength + turnInfo.wpChangeDistance);
 			courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 
 			---newZOffset
@@ -1075,7 +1077,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 			--- Extra WP 1 - Move a bit more forward
 			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, centerHeightOffset);
-			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, centerHeightOffset + directionNodeToTurnNodeLength + extraDistance + turnInfo.wpChangeDistance + 6);
+			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, centerHeightOffset + directionNodeToTurnNodeLength + extraDistance + turnInfo.extraAlignLength + turnInfo.wpChangeDistance);
 			courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 
 			if fromDistance >= 3 then

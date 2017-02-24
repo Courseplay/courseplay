@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Tipo: Transferir (dirigir do início ao fim da rota)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Tipo: Trabalho no campo" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Tipo: Ceifadeira descarrega" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Transporte de Liquidos" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="Tipo: Encher e esvaziar pá carregadeira" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="continua" />
