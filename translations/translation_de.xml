@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Typ: Überführung (Route abfahren)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Typ: Feldarbeit" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Typ: Drescher fährt selbst abtanken" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Flüssigkeitstransport" />
 		<text name="COURSEPLAY_MODE_9" 									 text="Typ: Schaufel befüllen und entleeren" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Typ: Bunkersilo befüllen und verdichten" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="weiterfahren" />
@@ -30,9 +30,9 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Sofort abfahren" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Abfahren bei:" />
 		<text name="UNKNOWN" 											 text="unbekannt" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Vorgewende mit/gegen den Uhrzeigersinn" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Vorgewende vor/nach Feldkurs" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generiere Feldkurs" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Vorgewende mit/gegen den Uhrzeigersinn" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Vorgewende vor/nach Feldkurs" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generiere Feldkurs" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="Entfernung" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Haltezeit" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d Min" />
@@ -73,9 +73,9 @@
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="seitl. Abstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bei:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Wende auf dem Feld:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Entgegengesetzt wenden" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="letzte Bahn" />     <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="wenn möglich" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Entgegengesetzt wenden" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="letzte Bahn" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="wenn möglich" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Wendekreis:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="vertik. Abstand:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Drescher" />
@@ -256,7 +256,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: sekundäres Menü-Akzeptieren" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Courseplay HUD öffnen/schließen" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: Abfahrer einstellen/entlassen" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: weiterfahren" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: weiterfahren" />
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: sofort abfahren" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: Warten am letzten Wegpunkt oder Trigger" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: nächster Modus" />
