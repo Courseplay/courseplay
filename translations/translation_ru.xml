@@ -17,12 +17,12 @@
 		<text name="COURSEPLAY_STOP_COURSE" 							 text="Прервать маршрут" />
 		<text name="COURSEPLAY_MODE_1" 									 text="ТРАНСПОРТИРОВКА И ПРОДАЖА" />
 		<text name="COURSEPLAY_MODE_2" 									 text="РАБОТА С КОМБАЙНАМИ" />
-		<text name="COURSEPLAY_MODE_3" 									 text="РАБОТА С ПРИЦЕПОМ-КОНВЕЙЕРОМ" /> <!-- В русской версии игры это называется конвейерный прицеп, а не перегрузчик -->
+		<text name="COURSEPLAY_MODE_3" 									 text="РАБОТА С ПРИЦЕПОМ-КОНВЕЙЕРОМ" />
 		<text name="COURSEPLAY_MODE_4" 									 text="УДОБРЕНИЕ И ПОСЕВ" />
 		<text name="COURSEPLAY_MODE_5" 									 text="ПЕРЕГОН ТЕХНИКИ" />
 		<text name="COURSEPLAY_MODE_6" 									 text="РАЗНЫЕ ПОЛЕВЫЕ РАБОТЫ" />
 		<text name="COURSEPLAY_MODE_7" 									 text="САМОРАЗГУЗКА КОМБАЙНА" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="ПЕРЕВОЗКА ЖИДКОСТЕЙ" />
 		<text name="COURSEPLAY_MODE_9" 									 text="РАБОТЫ ДЛЯ ПОГРУЗЧИКА" />
 		<text name="COURSEPLAY_MODE_10" 								 text="ВЫРАВНИВАНИЕ И УПЛОТНЕНИЕ" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Продолжить" />
@@ -48,7 +48,7 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s - сохранить" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s - подтвердить" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="МАРШРУТЫ %q" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Загрузить или добавить" /> <!-- Какой еще курс? Курс - это направление, вектор, а это называется МАРШРУТ! -->
+		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Загрузить или добавить" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Добавить последним" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Переместить в папку" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Удалить" />
@@ -56,7 +56,7 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Поиск маршрутов и папок" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Отключить поиск" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="доехал до места разгрузки." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="Сохранить позицию трубы" /> <!-- Не надо размазывать строки по интерфейсу -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="Сохранить позицию трубы" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="к сохраненной позиции" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="доехал до места ожидания." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="доехал до нужного пункта" />
@@ -159,7 +159,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Запад" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Поворотная полоса:" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="да" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Только имя" /> <!-- Это ИМЯ, а не НАЗВАНИЕ -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Только имя" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Имя и маршрут" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="нет" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Маркеры:" />
@@ -243,7 +243,7 @@
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Рабочие хотят %s в час! Разрешить выплачивать зарплаты?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="КАЛЬКУЛЯЦИЯ ПОСЕВОВ" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Участок: %d (%s %s)" />
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="%s" /> <!-- Там и так понятно что это семена, а не валенки -->
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="%s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Расходы: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Показать/скрыть начальную и конечную точки" />
