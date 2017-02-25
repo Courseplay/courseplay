@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 							 		 text="Type: Route (voyage du début jusqu'à la fin de la course)" />
 		<text name="COURSEPLAY_MODE_6" 							 		 text="Type: Travail des champs" />
 		<text name="COURSEPLAY_MODE_7" 							 		 text="Type: Batteuse va à la remorque pour vider" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 							 		 text="Type: Transport de liquides" />
 		<text name="COURSEPLAY_MODE_9" 							 		 text="Type: Charger et décharger un godet" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 						 		 text="Début" />
@@ -30,9 +30,9 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 						 		 text="Démarrer maintenant" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 						 	 text="Partir à:" />
 		<text name="UNKNOWN" 								 			 text="inconnu" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Direction de la fourrière" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Fourrière avant/après le travail du champ" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Génération d'un travail de champ" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="distance" />
 		<text name="COURSEPLAY_WAITING_TIME" 						 	 text="Temps d'attente:" />
 		<text name="COURSEPLAY_MINUTES" 						 		 text="%d min" />
@@ -73,9 +73,9 @@
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distance latéral:" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Démarrer à:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Tourne dans le champ:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Opposite turn direction:" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="last couple of lanes" />     <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="when possible" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Direction de la manoeuvre:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="zone à travailler" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="dès que possible" />
 		<text name="COURSEPLAY_TURN_RADIUS" 						 	 text="Rayon de braquage:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Distance verticale:" />
 		<text name="COURSEPLAY_COMBINE" 						 		 text="Batteuse" />
@@ -85,12 +85,12 @@
 		<text name="COURSEPLAY_CURRENT" 						 		 text="Actuelle:" />
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 					 	 text="recherche automatique" />
 		<text name="COURSEPLAY_MANUAL_SEARCH" 						 	 text="choisir manuellement" />
-		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Recherche sur le champs %s" />
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Recherche sur le champ %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 						 	 text="Importer course:" />
 		<text name="COURSEPLAY_VEHICLE" 						 		 text="Véhicule" />
 		<text name="COURSEPLAY_TEMP_COURSE" 						 	 text="course temporaire" />
 		<text name="COURSEPLAY_SPEED_TURN" 						 		 text="Vitesse de virage:" />
-		<text name="COURSEPLAY_SPEED_FIELD" 						 	 text="Vitesse de champs:" />
+		<text name="COURSEPLAY_SPEED_FIELD" 						 	 text="Vitesse de champ:" />
 		<text name="COURSEPLAY_SPEED_MAX" 						 		 text="Vitesse de route:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 					 	 text="Vitesse de recul:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 						 	 text="Vitesse:" />
@@ -197,7 +197,7 @@
 		<text name="COURSEPLAY_FIELD" 							 		 text="Champ" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(Course actuellement chargée)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Scan des champs en cours" />
-		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 					 	 text="Analyse du champs %d/%d" />
+		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 					 	 text="Analyse du champ %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 						 	 text="Manque un tuyau - annuler la recharge" />
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Changement de voie symétrique" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Priorité du chauffeur" />
@@ -205,9 +205,9 @@
 		<text name="COURSEPLAY_PICKUP_JAMMED" 						 	 text=": le pickup est encombré" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 					 	 text=": la presse a besoin de nouveaux filets" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="Calculer le tour du champ actuel" />
-		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="Tour du champs numéro" />
-		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="Ajoute le tour du champs %d à la liste" />
-		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="Ecraser le tour du champs %d dans la liste" />
+		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="Tour du champ numéro" />
+		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="Ajoute le tour du champ %d à la liste" />
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="Ecraser le tour du champ %d dans la liste" />
 		<text name="COURSEPLAY_USER" 							 		 text="utilisateur" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="doit bientôt être réparé" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="doit être réparé" />
@@ -242,7 +242,7 @@
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 	 text="Voulez-vous que vos champs soient scannés automatiquement ?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 						 	 text="Voulez-vous payer des salaires pour vos ouvriers (%s/heure) ?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilisation des semences" />
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Champs: %d (%s %s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Champ: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Type de semence: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Utilisation: %s %s (%s)" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Montrer/cacher les points du début et de la fin" />
@@ -256,7 +256,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: Accepter les pop-ups" />
 		<text name="input_COURSEPLAY_HUD" 						 		 text="Courseplay: Montrer/cacher l'interface" />
 		<text name="input_COURSEPLAY_START_STOP" 				 		 text="Courseplay: Démarrer/arrêter la course" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 				 		 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 				 		 text="Courseplay: Continue" />
 		<text name="input_COURSEPLAY_DRIVENOW" 					 		 text="Courseplay: Démarrer maintenant" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 				 		 text="Courseplay: Arrêter au prochain point ou trigger" />
 		<text name="input_COURSEPLAY_NEXTMODE" 					 		 text="Courseplay: mode suivant" />
@@ -279,10 +279,10 @@
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Pas de lame attachée" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La lame avant n'est pas supportée" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Paramètres BunkerSilo" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Largeur de la lame" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Remplissage du silo" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="en le traversant" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="en marche arrière" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Faire le plein à la station" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="toujours" />
