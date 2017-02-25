@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5"									 text="Tryb: Transport (jazda od początku do końca)" />
 		<text name="COURSEPLAY_MODE_6"									 text="Tryb: Prace polowe" />
 		<text name="COURSEPLAY_MODE_7"									 text="Tryb: Kombajn (samoczynny rozładunek)" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Tryb: Transport płynnego produktu" />
 		<text name="COURSEPLAY_MODE_9"									 text="Tryb: Napełnij i rozładuj łychę" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Tryb: Wyrównywanie i ugniatanie" />
 		<text name="COURSEPLAY_CONTINUE"								 text="Kontynuuj" />
