@@ -556,6 +556,7 @@ function courseplay:askForSpecialSettings(self, object)
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
 	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
 	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting point when it needs to unload. Used by bale loaders. Distance from trailer's turning point to the rear unloading point.
+	-- self.cp.changeDirAngle					(Angle in Degrees)		Overwrite the default automatic direction change angle, used in turn maneuvers.
 	-- self.cp.noStopOnEdge:                    (Boolean)               Set this to true if it dont need to stop the work tool while turning.
 	--																	Some work tool types automatically set this to true.
 	-- self.cp.noStopOnTurn:					(Boolean)				Set this to true if the work tool don't need to stop for 1½ sec before turning.
@@ -566,6 +567,20 @@ function courseplay:askForSpecialSettings(self, object)
 	courseplay:debug(('%s: askForSpecialSettings(..., %q)'):format(nameNum(self), nameNum(object)), 6);
 
 	local automaticToolOffsetX;
+	-- VEHICLES
+	if self.cp.isGrimmeTectron415 then
+		self.cp.changeDirAngle = 5;
+		self.cp.noStopOnTurn = true;
+		self.cp.noStopOnEdge = true;
+		self.isStrawEnabled = false;
+
+	elseif self.cp.isHolmerTerraDosT4_40 then
+		self.cp.changeDirAngle = 20;
+		self.cp.noStopOnTurn = true;
+		self.cp.noStopOnEdge = true;
+		self.cp.backMarkerOffset = 4.5;
+		self.isStrawEnabled = false;
+	end;
 
 	-- OBJECTS
 	if object.cp.isSP400F then
@@ -647,11 +662,6 @@ function courseplay:askForSpecialSettings(self, object)
 		object.cp.frontMarkerOffsetCorection = 5.6;
 		object.cp.backMarkerOffsetCorection = -4.5;
 
-	elseif self.cp.isHolmerTerraDosT4_40 then
-		self.cp.noStopOnTurn = true;
-		self.cp.noStopOnEdge = true;
-		self.cp.backMarkerOffset = 4.5;
-		self.isStrawEnabled = false;
 	end;
 
 	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then

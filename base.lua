@@ -1597,3 +1597,15 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	return attributes, nodes;
 end
 
+
+-- This is to prevent the selfPropelledPotatoHarvester from turning off while turning
+function courseplay.setIsTurnedOn(self, originalFunction, isTurnedOn, noEventSend)
+	if self.typeName and self.typeName == "selfPropelledPotatoHarvester" then
+		if self.getIsCourseplayDriving and self:getIsCourseplayDriving() and self.cp.isTurning and not isTurnedOn then
+			isTurnedOn = true;
+		end;
+	end;
+
+	originalFunction(self, isTurnedOn, noEventSend);
+end;
+TurnOnVehicle.setIsTurnedOn = Utils.overwrittenFunction(TurnOnVehicle.setIsTurnedOn, courseplay.setIsTurnedOn);

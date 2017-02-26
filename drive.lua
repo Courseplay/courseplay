@@ -225,6 +225,7 @@ function courseplay:drive(self, dt)
 	local isBypassing = false
 	local isCrawlingToWait = false
 	local isWaitingThisLoop = false
+	local drive_on = false
 	local wayPointIsWait = self.Waypoints[self.cp.previousWaypointIndex].wait
 	local wayPointIsUnload = self.Waypoints[self.cp.previousWaypointIndex].unload
 	local wayPointIsRevUnload = wayPointIsUnload and self.Waypoints[self.cp.previousWaypointIndex].rev
@@ -246,7 +247,6 @@ function courseplay:drive(self, dt)
 			courseplay:handleMode3(self, allowedToDrive, dt);
 
 		elseif self.cp.mode == 4 then
-			local drive_on = false
 			if self.cp.previousWaypointIndex == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
 			elseif self.cp.previousWaypointIndex == self.cp.stopWork and self.cp.abortWork ~= nil then
@@ -281,8 +281,20 @@ function courseplay:drive(self, dt)
 					CpManager:setGlobalInfoText(self, 'UNLOADING_BALE');
 				else
 					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
-				end
-				if self.cp.totalFillLevelPercent == 0 or drive_on then
+
+					-- Set Timer if unloading pipe takes time before empty.
+					if self.getFirstEnabledFillType and self.pipeParticleSystems and self.cp.totalFillLevelPercent > 0 then
+						local filltype = self:getFirstEnabledFillType();
+						if filltype ~= FillUtil.FILLTYPE_UNKNOWN and self.pipeParticleSystems[filltype] then
+							local stopTime = self.pipeParticleSystems[filltype][1].stopTime;
+							if stopTime then
+								courseplay:setCustomTimer(self, "waitUntilPipeIsEmpty", stopTime);
+							end;
+						end;
+					end;
+				end;
+				if (self.cp.totalFillLevelPercent == 0 and courseplay:timerIsThrough(self, "waitUntilPipeIsEmpty")) or drive_on then
+					courseplay:resetCustomTimer(self, "waitUntilPipeIsEmpty", true);
 					courseplay:setVehicleWait(self, false);
 				end;
 			end;
@@ -304,8 +316,20 @@ function courseplay:drive(self, dt)
 						end
 					else
 						CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
+
+						-- Set Timer if unloading pipe takes time before empty.
+						if self.getFirstEnabledFillType and self.pipeParticleSystems and self.cp.totalFillLevelPercent > 0 then
+							local filltype = self:getFirstEnabledFillType();
+							if filltype ~= FillUtil.FILLTYPE_UNKNOWN and self.pipeParticleSystems[filltype] then
+								local stopTime = self.pipeParticleSystems[filltype][1].stopTime;
+								if stopTime then
+									courseplay:setCustomTimer(self, "waitUntilPipeIsEmpty", stopTime);
+								end;
+							end;
+						end;
 					end
-				else
+				elseif courseplay:timerIsThrough(self, "waitUntilPipeIsEmpty") then
+					courseplay:resetCustomTimer(self, "waitUntilPipeIsEmpty", true);
 					courseplay:setVehicleWait(self, false);
 					self.cp.isUnloaded = true
 				end
@@ -1597,10 +1621,12 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 end
 
 function courseplay:setCollisionDirection(node, col, colDirX, colDirZ)
-  local parent = getParent(col)
-  local colDirY = 0
-  if parent ~= node then
-    colDirX, colDirY, colDirZ = worldDirectionToLocal(parent, localDirectionToWorld(node, colDirX, 0, colDirZ))
-  end
-  setDirection(col, colDirX, colDirY, colDirZ, 0, 1, 0)
-end
+	local parent = getParent(col)
+	local colDirY = 0
+	if parent ~= node then
+		colDirX, colDirY, colDirZ = worldDirectionToLocal(parent, localDirectionToWorld(node, colDirX, 0, colDirZ))
+	end
+	if not (colDirX == 0 and colDirZ == 0) then
+		setDirection(col, colDirX, colDirY, colDirZ, 0, 1, 0);
+	end;
+end;
