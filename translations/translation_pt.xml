@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_MODE_5" 							 		 text="Tipo: Transferir (conduzir do início ao fim do percurso)" />
 		<text name="COURSEPLAY_MODE_6" 							 		 text="Tipo: Trabalhar no campo" />
 		<text name="COURSEPLAY_MODE_7" 							 		 text="Tipo: Ceifeira descarrega no atrelado" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Transporte de estrume liquido" /> 
 		<text name="COURSEPLAY_MODE_9" 							 		 text="Tipo: Carregar e descarregar a pá" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Tipo: Nivelar e Compactar" />
 		<text name="COURSEPLAY_CONTINUE" 						 		 text="continuar" />
