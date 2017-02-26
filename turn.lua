@@ -31,7 +31,7 @@ function courseplay:turn(vehicle, dt)
 	local reverseWPChangeDistance			= 3;
 	local reverseWPChangeDistanceWithTool	= vehicle.isReverseDriving and 3 or 5;
 	local isHarvester						= Utils.getNoNil(courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle), false);
-	local allowedAngle						= isHarvester and 15 or 3; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
+	local allowedAngle						= vehicle.cp.changeDirAngle or isHarvester and 15 or 3; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
 	if vehicle.cp.noStopOnEdge then
 		turnOutTimer = 0;
 	end;
@@ -539,13 +539,14 @@ function courseplay:turn(vehicle, dt)
 	--Set the driving direction
 	----------------------------------------------------------
 	if newTarget then
+		local posX, posZ = newTarget.revPosX or newTarget.posX, newTarget.revPosZ or newTarget.posZ;
 		local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
-		dtpX,_,dtpZ = worldToLocal(directionNode, newTarget.posX, vehicleY, newTarget.posZ);
+		dtpX,_,dtpZ = worldToLocal(directionNode, posX, vehicleY, posZ);
 		if courseplay:isWheelloader(vehicle) then
 			dtpZ = dtpZ * 0.5; -- wheel loaders need to turn more
 		end;
 
-		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, newTarget.posX, vehicleY, newTarget.posZ);
+		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, posX, vehicleY, posZ);
 		if newTarget.turnReverse then
 			lx, lz, moveForwards = courseplay:goReverse(vehicle,lx,lz);
 		end;
