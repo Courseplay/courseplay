@@ -1,5 +1,6 @@
 local abs, max, rad, deg, cos, sin, ceil = math.abs, math.max, math.rad, math.deg, math.cos, math.sin, math.ceil;
 local _;
+local truckAttacherJoint = {};
 -- ##### VEHICLE TOOLS ##### --
 courseplay.attacherJointNodeRotationList = {};
 
@@ -1070,6 +1071,96 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	end;
 
 	return turnRadius
+end;
+
+function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
+	local offset = 0;
+
+	-- Build the truckAttacherJoint list if not already done.
+	if #truckAttacherJoint == 0 then
+		truckAttacherJoint[AttacherJoints.jointTypeNameToInt["semitrailer"]] = true;
+		truckAttacherJoint[AttacherJoints.jointTypeNameToInt["hookLift"]] = true;
+		if AttacherJoints.jointTypeNameToInt["terraVariant"] then
+			truckAttacherJoint[AttacherJoints.jointTypeNameToInt["terraVariant"]] = true;
+		end;
+	end;
+
+	-- Make sure we are not some standard combine/crawler/articulated vehicle
+	if not (vehicle.cp.hasSpecializationArticulatedAxis or vehicle.cp.hasSpecializationCombine or vehicle.cp.hasSpecializationCrawler or courseplay:isHarvesterSteerable(vehicle)) then
+		local isTruck = false;
+	    local isAllWheelStering = false;
+		local haveStraitWheels = false;
+		local haveTurningWheels = false;
+		local dirNodeOffset = 0;
+		local wheelBase = 0;
+		local minDis, maxDis = 0, 0;
+		local _, y, _ = getWorldTranslation(directionNode);
+
+		-- Check for starit and turning wheels
+		for index, wheel in ipairs(vehicle.wheels) do
+			if wheel.rotMax == 0 and wheel.maxLatStiffness > 0 then
+				haveStraitWheels = true;
+			else
+				haveTurningWheels = true;
+			end;
+		end;
+
+		-- Check if it's actually an four wheel steering
+		if not haveStraitWheels and haveTurningWheels then
+			isAllWheelStering = true;
+			--print("Is All Wheel Stering");
+		end;
+
+		-- Get the distance from the aiVehicleDirectionNode to the front wheels
+		for i, wheel in ipairs(vehicle.wheels) do
+			local x,_,z = getWorldTranslation(wheel.repr);
+			local _,_,dis = worldToLocal(directionNode, x, y, z);
+			if i > 1 then
+				if dis < minDis then minDis = dis; end;
+				if dis > maxDis then maxDis = dis; end;
+			else
+				minDis = dis;
+				maxDis = dis;
+			end;
+		end;
+
+		if isAllWheelStering then
+			dirNodeOffset = maxDis + minDis;
+		else
+			dirNodeOffset = maxDis * 0.5;
+		end;
+		wheelBase = abs(maxDis) + abs(minDis);
+		--print(("wheelBase is %.2fm"):format(wheelBase));
+
+		-- first check for specific attacher joints that normally only trucks have.
+		for index, attacherJoint in ipairs(vehicle.attacherJoints) do
+			if truckAttacherJoint[attacherJoint.jointType] then
+				--print("Is Truck Based on AttacherJoint");
+				isTruck = true;
+			end;
+		end;
+
+		-- If we were not an truck, then check the length, since we could still be an truck based in it's length
+		if not isTruck and wheelBase > 3.5 then
+			--print("Is Truck Based on Wheelbase");
+			isTruck = true;
+		end;
+
+		if isTruck and dirNodeOffset > 0.25 then
+			offset = dirNodeOffset;
+		end;
+	end;
+
+	-- If an offset is set in setNameVariable() then apply it
+	if vehicle.cp.directionNodeZOffset and vehicle.cp.directionNodeZOffset ~= 0 then
+		offset = offset + vehicle.cp.directionNodeZOffset;
+	end;
+
+	--if offset ~= 0 then
+	--	print(("Offset set to %.2fm"):format(offset));
+	--end;
+
+	return offset;
 end;
 
 function courseplay:getWheelBase(vehicle, fromTurningNode)

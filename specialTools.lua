@@ -22,6 +22,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Baler 			   then workTool.cp.hasSpecializationBaler 				 = true;
 		elseif spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;
 		elseif spec == Cover 			   then workTool.cp.hasSpecializationCover				 = true;
+		elseif spec == Crawler 			   then workTool.cp.hasSpecializationCrawler			 = true;
 		elseif spec == Cultivator 		   then workTool.cp.hasSpecializationCultivator 		 = true;
 		elseif spec == Cutter 			   then workTool.cp.hasSpecializationCutter 			 = true;
 		elseif spec == Cylindered 		   then workTool.cp.hasSpecializationCylindered 		 = true;
@@ -237,22 +238,8 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'SP400F.xml' then
 		workTool.cp.isSP400F = true;
 		workTool.cp.directionNodeZOffset = 2.15;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 		workTool.cp.widthWillCollideOnTurn = true;
 
-	-- Trucks [Giants]
-	elseif workTool.cp.xmlFileName == 'americanTruckDualAxle.xml' then
-		workTool.cp.directionNodeZOffset = 3.471;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
-	elseif workTool.cp.xmlFileName == 'americanTruckOneAxle.xml' then
-		workTool.cp.directionNodeZOffset = 2.317;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
-	elseif workTool.cp.xmlFileName == 'tatraPhoenix.xml' then
-		workTool.cp.directionNodeZOffset = 1.525;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
-	elseif workTool.cp.xmlFileName == 'manTGS18480.xml' then
-		workTool.cp.directionNodeZOffset = 1.959;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
 	-- ###########################################################
 	-- [3] TRAILERS
@@ -273,7 +260,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.mode9TrafficIgnoreVehicle = true
 		if workTool.attacherVehicle ~= nil then
 			workTool.attacherVehicle.cp.mode9TrafficIgnoreVehicle = true
-	end
+		end
 
 	-- Joskin Modulo 2 [Giants]
 	elseif workTool.cp.xmlFileName == 'joskinModulo.xml' then
@@ -317,7 +304,6 @@ function courseplay:setNameVariable(workTool)
 	-- JCB 435S [Giants]
 	elseif workTool.cp.xmlFileName == 'jcb435s.xml' then
 		workTool.cp.directionNodeZOffset = -0.705;
-		workTool.cp.showDirectionNode = true; -- Only for debug mode 12
 
 	-- CULTIVATORS [Giants]
 	-- Horsch Tiger 10 LT [Giants]
