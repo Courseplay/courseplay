@@ -276,10 +276,11 @@ function courseplay:load(savegame)
 		end
 	end;
 
-	if self.cp.directionNodeZOffset and self.cp.directionNodeZOffset ~= 0 then
+	local directionNodeOffset = courseplay:getVehicleDirectionNodeOffset(self, DirectionNode);
+	if directionNodeOffset ~= 0 then
 		self.cp.oldDirectionNode = DirectionNode;  -- Only used for debugging.
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
-		setTranslation(DirectionNode, 0, 0, self.cp.directionNodeZOffset);
+		setTranslation(DirectionNode, 0, 0, directionNodeOffset);
 	end;
 	self.cp.DirectionNode = DirectionNode;
 
@@ -616,8 +617,7 @@ function courseplay:draw()
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)
-		-- In specialTools.lua -> courseplay:setNameVariable(workTool), add the value "workTool.cp.showDirectionNode = true;" to the specific vehicle, while testing.
-		if self.cp.oldDirectionNode and self.cp.showDirectionNode then
+		if self.cp.oldDirectionNode then
 			local ox,oy,oz = getWorldTranslation(self.cp.oldDirectionNode);
 			drawDebugPoint(ox, oy+4, oz, 0.9098, 0.6902 , 0.2706, 1);
 		end;
