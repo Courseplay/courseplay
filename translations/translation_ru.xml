@@ -6,6 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Запустить по маршруту" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в следующей точке" />
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Водительская сторона" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="автоматически" />
 		<text name="COURSEPLAY_LEFT" 									 text="влево" />

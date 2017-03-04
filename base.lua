@@ -76,6 +76,11 @@ function courseplay:load(savegame)
 	self.cp.driveSlowTimer = 0;
 	self.cp.positionWithCombine = nil;
 
+	--Mode 1 Run Loop
+ 	self.cp.runNumber = 11; -- Number of times to run Mode 1. Set to 11 for unlimited runs by default.
+ 	self.cp.runCounter = 0; -- Current Number of runs
+	self.cp.runReset = false -- Resets run loop at stop.
+
 	-- RECORDING
 	self.cp.isRecording = false;
 	self.cp.recordingIsPaused = false;
@@ -880,7 +885,7 @@ function courseplay:update(dt)
 					showDriveOnButton = true;
 				end;
 			else
-				if (self.cp.wait and (self.Waypoints[self.cp.waypointIndex].wait or self.Waypoints[self.cp.previousWaypointIndex].wait)) or (self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) then
+				if (self.cp.wait and (self.Waypoints[self.cp.waypointIndex].wait or self.Waypoints[self.cp.previousWaypointIndex].wait)) or (self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) or (self.cp.runReset and self.cp.waypointIndex == self.cp.numWaypoints) then
 					showDriveOnButton = true;
 				end;
 			end;
@@ -1368,6 +1373,12 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
 		self.cp.warningLightsMode  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#lights'),			 1);
 		self.cp.waitTime 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#waitTime'),		 0);
+		self.cp.runReset		 = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#runReset'),			 false);
+ 		self.cp.runCounter  	= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runCounter'),	 		 0);
+ 		self.cp.runNumber		 = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runNumber'),			 11);
+ 		if self.cp.runReset == true then
+ 			self.cp.runCounter = 0;
+ 		end;
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
@@ -1559,7 +1570,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q>', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), FillUtil.fillTypeIntToName[self.cp.siloSelectedFillType]);
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q runReset=%q runNumber="%d" runCounter="%d" >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), FillUtil.fillTypeIntToName[self.cp.siloSelectedFillType], tostring(self.cp.runReset), self.cp.runNumber, self.cp.runCounter);
 	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel));

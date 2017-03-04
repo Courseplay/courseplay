@@ -6,6 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Szállító elindítása" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Szállító megállítása" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Állj az utlsó pontnál, következő triggernél" />
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Ürítés oldala:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatikus" />
 		<text name="COURSEPLAY_LEFT" 									 text="bal" />

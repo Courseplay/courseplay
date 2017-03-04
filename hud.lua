@@ -771,6 +771,11 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end
 
+			if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
+ 				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
+ 				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.runNumber < 11 and string.format("%d of %d",vehicle.cp.runCounter, vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
+ 			end;
+
 		elseif not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
 			if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) and not vehicle.cp.canDrive then
 				if vehicle.cp.numWaypoints == 0 then
@@ -1455,6 +1460,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	for i=1, self.numLines do
 		courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], w, self.lineHeight, i, nil, true);
 	end;
+
+	--Number of Runs For Mode1
+ 	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'navMinus' }, 'changeRunNumber', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -5, false);
+ 	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'navPlus' },  'changeRunNumber',  1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,  5, false);
+ 	courseplay.button:new(vehicle, 1, nil, 'changeRunNumber', 1, mouseWheelArea.x, self.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, nil, true, true);
 
 	-- Silo Fill Type Selector
 	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'navLeft' },  'changeSiloFillType', -1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -1, false);
