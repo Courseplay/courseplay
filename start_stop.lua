@@ -33,7 +33,8 @@ function courseplay:start(self)
 		return
 	end
 	courseplay:setEngineState(self, true);
-
+	self.cp.saveFuel = false
+	
 	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
@@ -736,4 +737,29 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 	end
 
 	return true
+end
+
+function courseplay:checkSaveFuel(vehicle,allowedToDrive)
+	if allowedToDrive then
+		if courseplay:getCustomTimerExists(vehicle,'fuelSaveTimer')  then 
+			print("reset timer")
+			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
+		end
+		if vehicle.cp.saveFuel then
+			print("reset saveFuel")
+			vehicle.cp.saveFuel = false
+		end	
+	else
+		-- set fuel save timer
+		if not vehicle.cp.saveFuel then
+			if courseplay:timerIsThrough(vehicle,'fuelSaveTimer',false) then
+				--print(" timer is throught and not nil")
+				print("set saveFuel")
+				vehicle.cp.saveFuel = true
+			elseif courseplay:timerIsThrough(vehicle,'fuelSaveTimer') then
+				print(" set timer ")
+				courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
+			end
+		end
+	end
 end

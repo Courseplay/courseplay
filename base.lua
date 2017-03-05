@@ -142,7 +142,8 @@ function courseplay:load(savegame)
 	self.cp.hasPlough = false;
 	self.cp.hasRotateablePlough = false;
 	self.cp.isNotAllowedToDrive = false;
-	self.cp.allwaysSearchFuel = true
+	self.cp.allwaysSearchFuel = true;
+	self.cp.saveFuel = false;
 	
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 

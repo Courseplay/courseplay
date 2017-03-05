@@ -6,6 +6,17 @@ local avoidWorkAreaType = {};
 
 -- drives recored course
 function courseplay:drive(self, dt)
+	
+	if self.cp.saveFuel then
+		if self.isMotorStarted then
+			--print("stop Order")
+			courseplay:setEngineState(self, false);
+		end
+	elseif not self.isMotorStarted then
+		courseplay:setEngineState(self, true);
+		--print("start Order")
+	end
+	
 	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
@@ -637,7 +648,8 @@ function courseplay:drive(self, dt)
 		end
 	end
 	-- MODE 9 END
-
+	
+	courseplay:checkSaveFuel(self,allowedToDrive)
 	
 	-- allowedToDrive false -> STOP OR HOLD POSITION
 	if not allowedToDrive then
