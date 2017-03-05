@@ -742,11 +742,11 @@ end
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 	if allowedToDrive then
 		if courseplay:getCustomTimerExists(vehicle,'fuelSaveTimer')  then 
-			print("reset timer")
+			--print("reset timer")
 			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
 		end
 		if vehicle.cp.saveFuel then
-			print("reset saveFuel")
+			--print("reset saveFuel")
 			vehicle.cp.saveFuel = false
 		end	
 	else
@@ -754,10 +754,10 @@ function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 		if not vehicle.cp.saveFuel then
 			if courseplay:timerIsThrough(vehicle,'fuelSaveTimer',false) then
 				--print(" timer is throught and not nil")
-				print("set saveFuel")
+				--print("set saveFuel")
 				vehicle.cp.saveFuel = true
 			elseif courseplay:timerIsThrough(vehicle,'fuelSaveTimer') then
-				print(" set timer ")
+				--print(" set timer ")
 				courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
 			end
 		end
