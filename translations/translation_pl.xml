@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START"					 text="Wystartuj kierowcę" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP"					 text="Zatrzymaj kierowcę" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT"						 text="Zatrzymaj się w ostatnim punkcie" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Ilość tras do wykonania" />
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Dowolna" />
 		<text name="COURSEPLAY_UNLOADING_SIDE"							 text="Po stronie kierowcy" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE"						 text="automatycznie" />
 		<text name="COURSEPLAY_LEFT"									 text="lewo" />
