@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Abfahrer starten" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Abfahrer stoppen" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Warten am letzten Wegpunkt oder Trigger" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Anzahl der Durchläufe"/>
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="unbegrenzt" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Abfahrerseite" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />

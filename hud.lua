@@ -773,7 +773,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 			if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
  				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
- 				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.runNumber < 11 and string.format("%d of %d",vehicle.cp.runCounter, vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
+ 				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.runNumber < 11 and string.format("%d / %d",vehicle.cp.runCounter, vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
  			end;
 
 		elseif not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
