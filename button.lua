@@ -124,6 +124,9 @@ function courseplay.button:render()
 			elseif fn == "changeSiloFillType" then
 				canScrollUp   = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 				canScrollDown = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
+			elseif fn == 'changeRunNumber' then
+ 				canScrollUp = vehicle.cp.runNumber < 11 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive
+ 				canScrollDown = vehicle.cp.runNumber > vehicle.cp.runCounter and vehicle.cp.runNumber > 1 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and not vehicle.cp.runReset
 			end;
 
 		elseif pg == courseplay.hud.PAGE_MANAGE_COURSES then
@@ -260,6 +263,12 @@ function courseplay.button:render()
 					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 				elseif fn == 'movePipeToPosition' then
 					show = not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_OVERLOADER ;
+				elseif fn == 'changeRunNumber' then
+ 					if prm < 0 then
+ 						show = vehicle.cp.runNumber > vehicle.cp.runCounter and vehicle.cp.runNumber > 1 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and not vehicle.cp.runReset
+ 					elseif prm > 0 then
+ 						show = vehicle.cp.runNumber < 11 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive 
+ 					end;
 				end;
 
 			-- Page 2

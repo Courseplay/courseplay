@@ -529,6 +529,11 @@ function courseplay:stop(self)
 	self.steeringEnabled = true;
 	self.disableCharacterOnLeave = true;
 
+	if self.cp.runReset == true then
+ 		self.cp.runCounter = 0;
+ 		self.cp.runReset = false;
+ 	end;
+
 	if self.vehicleCharacter ~= nil then
 		self.vehicleCharacter:delete();
 	end

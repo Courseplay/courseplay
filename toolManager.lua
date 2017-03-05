@@ -70,6 +70,10 @@ function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltyp
 			newVal = 1;
 		end
 	end;
+	if vehicle.cp.siloSelectedFillType ~= eftl[newVal] then
+ 		--Mode 1 Run Counter Reset
+ 		vehicle.cp.runCounter = 0;
+ 	end
 	vehicle.cp.siloSelectedEasyFillType = newVal;
 	vehicle.cp.siloSelectedFillType = eftl[newVal];
 end;
@@ -764,6 +768,12 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		vehicle.cp.trailerFillDistance = nil;
 		vehicle.cp.currentTrailerToFill = nil;
 		vehicle.cp.tipperLoadMode = 0;
+		if vehicle.cp.runNumber < 11 then
+				vehicle.cp.runCounter = vehicle.cp.runCounter + 1
+ 		elseif vehicle.cp.runNumber == 11 then
+ 			vehicle.cp.runCounter = 1 -- restets the number of runs if set to unlimted on tipper load
+ 		end;
+ 		vehicle.cp.runReset = false;
 		return allowedToDrive;
 	end;
 
