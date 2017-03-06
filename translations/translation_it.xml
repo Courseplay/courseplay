@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Avvia autista" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Ferma autista" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Ferma all'ultimo punto o al prossimo trigger" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Numero di corse da effettuare" />
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Illimtate" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Lato scarico" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="Nessun lato di scarico" />
 		<text name="COURSEPLAY_LEFT" 									 text="sinistra" />
