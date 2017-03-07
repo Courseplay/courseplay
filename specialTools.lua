@@ -345,6 +345,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 4.5;
 
+	-- Kuhn Discolander XM52 [Giants Kuhn DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnDiscolanderXM.xml' then
 		workTool.cp.isKuhnDiscolanderXM52 = true
 

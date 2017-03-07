@@ -23,6 +23,7 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 					courseplay:setCustomTimer(vehicle, "fillLevelChange", 10);
 				elseif fillLevelPct == vehicle.cp.prevFillLevelPct and fillLevelPct < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
 					driveOn = true; -- drive on if fillLevelPct doesn't change for 10 seconds and fill level is < required_fillLevelPct_for_follow
+					courseplay:debug('        no fillLevel change for 10 seconds -> driveOn', 15);
 				end;
 			end;
 
@@ -30,7 +31,6 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 
 			if (fillLevelPct == 0 or driveOn) and not workTool.cp.isUnloading then
 				courseplay:handleAugerWagon(vehicle, workTool, true, false, "stopUnload",dt); --unfold=true, unload=false
-				vehicle.cp.prevFillLevelPct = nil;
 				courseplay:cancelWait(vehicle);
 			end;
 		end;
@@ -51,6 +51,8 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldBefore",dt); --unfold=false, unload=false
 		elseif (not vehicle.cp.wait or vehicle.cp.isUnloaded) and vehicle.cp.previousWaypointIndex >= math.min(vehicle.cp.waitPoints[1] + forwardPointsFoldPipe, vehicle.cp.numWaypoints - 1) then -- is past fold pipe point
 			courseplay:handleAugerWagon(vehicle, workTool, false, false, "foldAfter",dt); --unfold=false, unload=false
+			courseplay:resetCustomTimer(vehicle, "fillLevelChange", true)
+			vehicle.cp.prevFillLevelPct = nil;
 		elseif workTool.cp.isUnloading and not vehicle.cp.wait then
 			courseplay:handleAugerWagon(vehicle, workTool, true, false, "forceStopUnload",dt); --unfold=true, unload=false
 		end;
