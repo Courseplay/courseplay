@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Start bestuurder" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Stop bestuurder" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Stop bij laatste punt of volgende trigger" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Aantal rondes te gaan " /> <!-- TODO: TRANSLATION! -->
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Onbeperkt" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Bestuurderszijde" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Type: Verladen (van start naar finish)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Type: Veldwerk" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Type: Combine zelflossen" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Vloeibare lading transport" />  <!-- TODO: Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="Type: Vullen en legen shovel" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: egaliseren en comprimeren" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="doorgaan" />
