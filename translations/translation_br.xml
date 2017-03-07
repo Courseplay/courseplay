@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Dirigir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Parar" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Parar no último ponto ou no próximo trigger" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Total de voltas" /> 
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Ilimitado" /> 
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Lado do motorista" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automático" />
 		<text name="COURSEPLAY_LEFT" 									 text="esquerda" />
