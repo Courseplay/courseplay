@@ -113,6 +113,14 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 	if cancelStopAtEnd then
 		courseplay:setStopAtEnd(vehicle, false);
 	end;
+	if vehicle.cp.runReset == true then
+ 		if vehicle.cp.runNumber < 10 then
+ 			courseplay:changeRunNumber(vehicle, 1)
+ 		else
+ 			vehicle.cp.runNumber = 1
+ 			vehicle.cp.runCounter = 0
+ 		end
+ 	end;
 end;
 
 function courseplay:setStopAtEnd(vehicle, bool)
@@ -1483,6 +1491,10 @@ function courseplay:changeRefillUntilPct(vehicle, changeBy)
 	vehicle.cp.refillUntilPct = Utils.clamp(vehicle.cp.refillUntilPct + changeBy, 1, 100);
 end;
 
+function courseplay:changeRunNumber(vehicle, changeBy)
+ 	vehicle.cp.runNumber = Utils.clamp(vehicle.cp.runNumber + changeBy, 1, 11);
+end;
+
 function courseplay:toggleSucHud(vehicle)
 	vehicle.cp.suc.active = not vehicle.cp.suc.active;
 	courseplay.buttons:setActiveEnabled(vehicle, 'suc');
@@ -1656,7 +1668,7 @@ function courseplay:setAttachedCombine(vehicle)
 end;
 
 function courseplay:getIsEngineReady(vehicle)
-	return vehicle.isMotorStarted and (vehicle.motorStartTime == nil or vehicle.motorStartTime < g_currentMission.time);
+	return (vehicle.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.motorStartTime == nil or vehicle.motorStartTime < g_currentMission.time);
 end;
 
 ----------------------------------------------------------------------------------------------------

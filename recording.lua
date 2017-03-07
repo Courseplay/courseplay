@@ -292,6 +292,10 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.course2dDimensions = nil;
 	vehicle.cp.course2dDrawData = nil;
 	vehicle.cp.course2dBackground = nil;
+
+	--Mode 1 Run Counter
+ 	vehicle.cp.runCounter = 0;
+ 	
 end;
 
 function courseplay:currentVehAngle(vehicle)

@@ -6,6 +6,17 @@ local avoidWorkAreaType = {};
 
 -- drives recored course
 function courseplay:drive(self, dt)
+	
+	if self.cp.saveFuel then
+		if self.isMotorStarted then
+			--print("stop Order")
+			courseplay:setEngineState(self, false);
+		end
+	elseif not self.isMotorStarted then
+		courseplay:setEngineState(self, true);
+		--print("start Order")
+	end
+	
 	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
@@ -519,9 +530,12 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- STOP AT END MODE 1
-		if self.cp.stopAtEndMode1 and self.cp.waypointIndex == self.cp.numWaypoints then
+		if (self.cp.stopAtEndMode1 or self.cp.runCounter >= self.cp.runNumber) and self.cp.waypointIndex == self.cp.numWaypoints then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
+			if self.cp.runCounter >= self.cp.runNumber then
+ 				self.cp.runReset = true;
+ 			end
 		end;
 	end;
 	-- ### NON-WAITING POINTS END
@@ -580,7 +594,12 @@ function courseplay:drive(self, dt)
 			local minCoverWaypoint = self.cp.mode == 1 and 4 or 3;
 			showCover = self.cp.waypointIndex >= minCoverWaypoint and self.cp.waypointIndex < self.cp.numWaypoints and self.cp.currentTipTrigger == nil and self.cp.trailerFillDistance == nil and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -1, 2, "unload", true, false);
 		elseif self.cp.mode == 4 then 
-			showCover = true; --will be handled in courseplay:openCloseCover() to prevent extra loops
+			if self.cp.waitPoints[3] and self.cp.previousWaypointIndex == self.cp.waitPoints[3] then
+			    -- open cover at loading point
+				showCover = false;
+			else
+				showCover = true; --will be handled in courseplay:openCloseCover() to prevent extra loops
+			end;
 		else
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
@@ -629,7 +648,8 @@ function courseplay:drive(self, dt)
 		end
 	end
 	-- MODE 9 END
-
+	
+	courseplay:checkSaveFuel(self,allowedToDrive)
 	
 	-- allowedToDrive false -> STOP OR HOLD POSITION
 	if not allowedToDrive then

@@ -124,6 +124,8 @@ function courseplay:handle_mode2(vehicle, dt)
 			courseplay:unload_combine(vehicle, dt)
 		else
 			-- STOP!!
+			courseplay:checkSaveFuel(vehicle,false)
+			
 			AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
 			courseplay:resetSlippingTimers(vehicle)
 			if vehicle.cp.isLoaded then
@@ -1059,6 +1061,8 @@ function courseplay:unload_combine(vehicle, dt)
 			allowedToDrive = false
 		end
 
+		courseplay:checkSaveFuel(vehicle,allowedToDrive)
+		
 		if not allowedToDrive then
 			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
 			vehicle.cp.speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
