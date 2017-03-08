@@ -72,6 +72,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carregando: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar as plantações" />
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância horisontal:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar rota em:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" />
