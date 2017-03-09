@@ -525,6 +525,10 @@ function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
 
+function courseplay:togglePloughFieldEdge(self)
+	self.cp.ploughFieldEdge = not self.cp.ploughFieldEdge;
+end;
+
 function courseplay:toggleSearchCombineMode(vehicle)
 	vehicle.cp.searchCombineAutomatically = not vehicle.cp.searchCombineAutomatically;
 	if not vehicle.cp.searchCombineAutomatically then

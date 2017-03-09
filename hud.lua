@@ -893,6 +893,11 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[3][6][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
 		end;
 
+		if vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.cp.hasPlough then
+			vehicle.cp.hud.content.pages[3][7][1].text = courseplay:loc('COURSEPLAY_PLOUGH_FIELD_EDGE');
+			vehicle.cp.hud.content.pages[3][7][2].text = vehicle.cp.ploughFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+		end;
+
 
 	--PAGE 4: COMBINE ASSIGNMENT
 	elseif page == self.PAGE_MANAGE_COMBINES then
@@ -957,6 +962,8 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[5][3][2].text = streetSpeedStr;
 			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_MAX');
 		end;
+	
+
 
 
 	--PAGE 6: GENERAL SETTINGS
@@ -1552,6 +1559,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeRefillUntilPct',  1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  5, false);
 	courseplay.button:new(vehicle, 3, nil, 'changeRefillUntilPct', 1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 5, true, true);
 
+	-- Plough to Field Edge
+	courseplay.button:new(vehicle, 3, nil, 'togglePloughFieldEdge', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
+
 
 	-- ##################################################
 	-- Page 4: Combine management
@@ -1589,6 +1599,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	courseplay.button:new(vehicle, 5, nil, 'toggleUseRecordingSpeed', nil, self.contentMinX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
 
+	
+
 
 	-- ##################################################
 	-- Page 6: General settings
@@ -1596,6 +1608,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- realistic driving
 	courseplay.button:new(vehicle, pg, nil, 'toggleRealisticDriving', nil,  self.contentMinX, self.linesPosY[1], self.contentMaxWidth, self.lineHeight, 1, nil, true);
+
+	
 
 	-- open hud with mouse/keyboard
 	courseplay.button:new(vehicle, pg, nil, 'toggleOpenHudWithMouse', nil,  self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);

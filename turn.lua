@@ -36,6 +36,12 @@ function courseplay:turn(vehicle, dt)
 		turnOutTimer = 0;
 	end;
 
+	--- This is in case we use manually recorded fieldswork course and not generated.
+	if not vehicle.cp.courseWorkWidth then
+		courseplay:calculateWorkWidth(vehicle, true);
+		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
+	end;
+
 	--- Make sure front and back markers is calculated.
 	if not vehicle.cp.haveCheckedMarkersThisTurn then
 		vehicle.cp.aiFrontMarker = nil;
@@ -44,19 +50,32 @@ function courseplay:turn(vehicle, dt)
 			courseplay:setMarkers(vehicle, workTool);
 		end;
 		vehicle.cp.haveCheckedMarkersThisTurn = true;
+		if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
+			-- First headland is only half the work width
+			vehicle.cp.headlandHeight = vehicle.cp.courseWorkWidth / 2;
+			-- Add extra workwidth for each extra headland
+			if vehicle.cp.courseNumHeadlandLanes - 1 > 0 then
+				vehicle.cp.headlandHeight = vehicle.cp.headlandHeight + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth);
+			end;
+		else
+			vehicle.cp.headlandHeight = 0;
+		end; 
+		local frontMarker2 = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
+		local backMarker2 = Utils.getNoNil(vehicle.cp.backMarkerOffset,0);
+		if vehicle.cp.hasPlough and (vehicle.cp.ploughFieldEdge or math.abs(frontMarker2 - backMarker2) < vehicle.cp.headlandHeight) then
+			vehicle.cp.aiFrontMarker = backMarker2;
+			vehicle.cp.backMarkerOffset = frontMarker2
+		end
 	end;
 
 	--- Get front and back markers
 	local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
 	local backMarker = Utils.getNoNil(vehicle.cp.backMarkerOffset,0);
 
+	
+
 	local vehicleX, vehicleY, vehicleZ = getWorldTranslation(realDirectionNode);
 
-	--- This is in case we use manually recorded fieldswork course and not generated.
-	if not vehicle.cp.courseWorkWidth then
-		courseplay:calculateWorkWidth(vehicle, true);
-		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
-	end;
 
 	----------------------------------------------------------
 	-- Debug prints
@@ -134,7 +153,7 @@ function courseplay:turn(vehicle, dt)
 			turnInfo.reverseWPChangeDistance 		= reverseWPChangeDistance;
 			turnInfo.direction 						= -1;
 			turnInfo.haveHeadlands 					= courseplay:haveHeadlands(vehicle);
-			turnInfo.headlandHeight 				= 0;
+			turnInfo.headlandHeight 				= vehicle.cp.headlandHeight;
 			turnInfo.numLanes ,turnInfo.onLaneNum 	= courseplay:getLaneInfo(vehicle);
 			turnInfo.turnOnField 					= vehicle.cp.turnOnField;
 			turnInfo.reverseOffset 					= 0;
@@ -209,14 +228,17 @@ function courseplay:turn(vehicle, dt)
 			turnInfo.targetDeltaZ = turnInfo.targetDeltaZ - turnInfo.zOffset;
 
 			--- Get headland height
-			if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
-				-- First headland is only half the work width
-				turnInfo.headlandHeight = vehicle.cp.courseWorkWidth / 2;
-				-- Add extra workwidth for each extra headland
-				if vehicle.cp.courseNumHeadlandLanes - 1 > 0 then
-					turnInfo.headlandHeight = turnInfo.headlandHeight + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth);
-				end;
-			end;
+			-- if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
+			-- 	-- First headland is only half the work width
+			-- 	turnInfo.headlandHeight = vehicle.cp.courseWorkWidth / 2;
+			-- 	-- Add extra workwidth for each extra headland
+			-- 	if vehicle.cp.courseNumHeadlandLanes - 1 > 0 then
+			-- 		turnInfo.headlandHeight = turnInfo.headlandHeight + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth);
+			-- 	end;
+			-- end; 
+			
+
+			
 
 			--- Calculate reverseOffset in case we need to reverse
 			local offset = turnInfo.zOffset;
