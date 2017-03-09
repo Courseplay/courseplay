@@ -758,13 +758,18 @@ function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 	else
 		-- set fuel save timer
 		if not vehicle.cp.saveFuel then
-			if courseplay:timerIsThrough(vehicle,'fuelSaveTimer',false) then
-				--print(" timer is throught and not nil")
-				--print("set saveFuel")
-				vehicle.cp.saveFuel = true
-			elseif courseplay:timerIsThrough(vehicle,'fuelSaveTimer') then
-				--print(" set timer ")
-				courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
+			if vehicle.cp.mode == 10 and vehicle.cp.waypointIndex == 1 then
+				-- leveling in mode 1 do not turn off engine
+				vehicle.cp.saveFuel = false
+			else
+				if courseplay:timerIsThrough(vehicle,'fuelSaveTimer',false) then
+					--print(" timer is throught and not nil")
+					--print("set saveFuel")
+					vehicle.cp.saveFuel = true
+				elseif courseplay:timerIsThrough(vehicle,'fuelSaveTimer') then
+					--print(" set timer ")
+					courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
+				end
 			end
 		end
 	end
