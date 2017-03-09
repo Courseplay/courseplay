@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="ローディング: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウエイポイントを表示" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="経路サーチ" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="境界を過ぎて耕す" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="左右オフセット:" />
 		<text name="COURSEPLAY_START_AT" 								 text="スタート:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="フィールドでターン:" />
@@ -196,10 +196,10 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="近くのウエイポイント" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="スタートポイント" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="記憶中のウエイポイント" />
-		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="フィールドエッジパス" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="フィールド境界線" />
 		<text name="COURSEPLAY_FIELD" 									 text="フィールド" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(現在読み込まれているコース)" />
-		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="進行中のフィールドのスキャン" />
+		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="進行中のフィールドスキャン" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="フィールドスキャン %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="ホースが見つかりませんでした - 補給停止" />
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="レーン変更" />
@@ -207,8 +207,8 @@
 		<text name="COURSEPLAY_FILLEVEL" 								 text="積載量" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text=": ピックアップが詰まっています" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 						 text=": ベーラーは、新しいネットのロールが必要" />
-		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="現在のフィールドのエッジパスをスキャンします" />
-		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="フィールドエッジパス番号" />
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 				 text="現在のフィールドの境界線をスキャンします" />
+		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 			 text="フィールド境界線番号" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="リストに %d番のエッジパスを追加します" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="リストの %d番のエッジパスを上書きします" />
 		<text name="COURSEPLAY_USER" 									 text="ユーザー" />
