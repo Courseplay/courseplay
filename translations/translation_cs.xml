@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="开始卸载" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="停止卸载" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="停在最后或下一个起点" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="任务执行次数" /> <!-- TODO: TRANSLATION! -->
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="无限" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="卸载位置" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="无卸载位置" />
 		<text name="COURSEPLAY_LEFT" 									 text="左" />
@@ -68,7 +68,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="装载: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径点显示选择：" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="地块边缘" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="地块内转向:" />
