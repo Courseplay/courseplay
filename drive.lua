@@ -14,8 +14,10 @@ function courseplay:drive(self, dt)
 		end
 	elseif not self.isMotorStarted then
 		courseplay:setEngineState(self, true);
-		--print("start Order")
-	end
+		--("start Order")
+	elseif not courseplay:getIsEngineReady(self) then	
+		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1) 
+	end;
 	
 	if not courseplay:getCanUseCpMode(self) then
 		return;
@@ -578,6 +580,7 @@ function courseplay:drive(self, dt)
 		end
 		
 		if not continue then
+			courseplay:checkSaveFuel(self,allowedToDrive)
 			return;
 		end;
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-4).."): refSpeed = "..tostring(refSpeed))

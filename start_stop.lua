@@ -534,7 +534,10 @@ function courseplay:stop(self)
 		courseplay:setEngineState(self, true);
 		self.cp.saveFuel = false;		
 	end
-	
+	if courseplay:getCustomTimerExists(self,'fuelSaveTimer')  then 
+		--print("reset existing timer")
+		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
+	end
 	
 	if self.cp.runReset == true then
  		self.cp.runCounter = 0;
@@ -748,7 +751,7 @@ end
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 	if allowedToDrive then
 		if courseplay:getCustomTimerExists(vehicle,'fuelSaveTimer')  then 
-			--print("reset timer")
+			--print("reset existing timer")
 			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
 		end
 		if vehicle.cp.saveFuel then
