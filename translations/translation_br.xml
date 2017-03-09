@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Tipo: Transferir (dirigir do início ao fim da rota)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Tipo: Trabalho no campo" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Tipo: Ceifadeira descarrega" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Transporte de Liquidos" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Transporte de produtos Líquidos" />  
 		<text name="COURSEPLAY_MODE_9" 									 text="Tipo: Encher e esvaziar pá carregadeira" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="continua" />
@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carregando: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar as plantações" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar borda do campo" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância horisontal:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar rota em:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" />
@@ -260,7 +260,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: aceitar menu secundário" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Mostrar/ocultar Courseplay HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: dirigir/parar na rota" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continuar" />    
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: dirigir agora" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: parar no último ponto ou no próximo trigger" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: próximo modo" />
