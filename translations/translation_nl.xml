@@ -6,14 +6,14 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Start bestuurder" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Stop bestuurder" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Stop bij laatste punt of volgende trigger" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Aantal rondes te gaan " /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Onbeperkt" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Aantal rondes te gaan " />
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Onbeperkt" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Bestuurderszijde" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
 		<text name="COURSEPLAY_RIGHT" 									 text="rechts" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Stuur bestuurder weg" />
-		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Verzoek bestuurder" />
+		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Roep bestuurder op" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Bestuurder opgeroepen" />
 		<text name="COURSEPLAY_START_COURSE" 							 text="Route beginnen" />
 		<text name="COURSEPLAY_STOP_COURSE" 							 text="Stop bestuurder" />
@@ -68,7 +68,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Laden: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Toon markeringen" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Om gewas rijden" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Voorbij veldrand ploegen" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Zijwaardse afstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bij:" />		
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Keer op veld:" />
@@ -100,7 +100,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="Alarmlichten:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="altijd uit" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="zwaailicht aan (op de weg)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="waarschuwingslichten aan ( op de weg)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="alarmlichten aan (op de weg)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 					 text="zwaailichten (altijd aan)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 					 text="Courseplay bediening" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Combine bediening" />
@@ -264,24 +264,24 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Route bijvoegen" /> 
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Verplaats naar map" /> 
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Verwijder route/map" /> 
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Toon/verberg 'start en 'eind' markeringen" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Toon/verberg 'start'- en 'eind'-markeringen" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Toon/verberg alle markeringen" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Toon/verberg kruispunten" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="modus" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="egaliseren en comprimeren" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="opvullen" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automatisch stoppen voor" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="alleen courseplayers" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="alle met draaiende motor" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="zoek tractors binnen bereik van " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max snelheid bij persen" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blad hoogte" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="geen bunkersilo gevonden bij start punt" />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max snelheid bij comprimeren" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="bladhoogte" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="geen bunkersilo gevonden bij startpunt" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="geen blad gemonteerd" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="blad aan voorzijde wordt niet ondersteund" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo instellingen" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blad breedte" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="bladbreedte" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo wordt gevuld door" />
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="onderdoor rijden" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="achteruit lossen" />
