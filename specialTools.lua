@@ -337,6 +337,7 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'salford8312.xml' then
 		workTool.cp.isSalford8312 = true;
 		workTool.cp.notToBeReversed = true;
+		workTool.cp.overwriteTurnRadius = 7;
 
 	-- Lemken Titan 11 [Giants]
 	elseif workTool.cp.xmlFileName == 'lemkenTitan11.xml' then
@@ -593,6 +594,8 @@ function courseplay:askForSpecialSettings(self, object)
 
 	elseif object.cp.isSalford8312 then
 		automaticToolOffsetX = 0.5; -- ToolOffsetX is 0.5 meters to the right
+		object.cp.backMarkerOffsetCorection = -7.5;
+		object.cp.frontMarkerOffsetCorection = -10;
 
 	elseif object.cp.isLemkenTitan11 then
 		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
