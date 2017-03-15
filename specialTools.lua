@@ -593,7 +593,7 @@ function courseplay:askForSpecialSettings(self, object)
 		automaticToolOffsetX = -0.2; -- ToolOffsetX is 0.2 meters to the left
 
 	elseif object.cp.isSalford8312 then
-		automaticToolOffsetX = 0.4; -- ToolOffsetX is 0.5 meters to the right
+		automaticToolOffsetX = 0.4; -- ToolOffsetX is 0.4 meters to the right
 		object.cp.backMarkerOffsetCorection = -7.5;
 		object.cp.frontMarkerOffsetCorection = -10;
 
