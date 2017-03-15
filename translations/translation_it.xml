@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carico: %d di %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostra punti di passaggio" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evita la coltura" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Ara oltre i confini del campo" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distanza laterale:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Inizia a:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Gira nel campo:" />

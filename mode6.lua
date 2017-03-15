@@ -408,7 +408,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end;
-						if not isFolding and isUnfolded and not isTurnedOn then
+						if not isFolding and isUnfolded and not isTurnedOn and not vehicle.cp.saveFuel  then
 							courseplay:debug(string.format('%s: Start Treshing', nameNum(tool)), 12);
 							tool:setIsTurnedOn(true);
 							if pipeState > 0 then

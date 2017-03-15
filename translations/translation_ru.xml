@@ -41,7 +41,7 @@
 		<text name="COURSEPLAY_SECONDS" 								 text="%d сек" />
 		<text name="COURSEPLAY_UNIT_METER" 								 text="м" />         
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Название маршрута:" />
-		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Имя папки:" />
+		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Название папки:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Введите слово целиком или его фрагмент для начала поиска:" />
 		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="ENTER" />
 		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />
@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Заполнение %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Плуг за границы поля" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="правее/левее:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Внутренний разворот:" />

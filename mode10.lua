@@ -411,7 +411,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 		courseplay:handleSlipping(vehicle, refSpeed);
 		AIVehicleUtil.driveInDirection(vehicle, dt, steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			
-		return false,false;
+		return false,true;
 	else
 		courseplay:setShieldTarget(vehicle,"up")
 		if vehicle.cp.previousWaypointIndex < 2 and vehicle.cp.slippingStage > 1 then

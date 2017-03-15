@@ -7,7 +7,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Zastavit odvozce" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Čekat na posledním bodě nebo triggeru:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Neomezený" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Strana odvozce:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automaticky" />
 		<text name="COURSEPLAY_LEFT" 									 text="vlevo" />
@@ -24,17 +24,17 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Mod: Průjezd (projede trasu bez zastavení)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Mod: Polní práce" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Mod: Kombajn se jede sám vysypat" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Mod: Převoz kapalin" />
 		<text name="COURSEPLAY_MODE_9" 									 text="Mod: Nakladač" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Mod: Leveling and compacting" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Mod: Nahrnování a dusání" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Pokračovat v jízdě" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Odstranit orientační body" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Odvézt bez čekání na doplnění" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Odvézt při:" />
 		<text name="UNKNOWN" 											 text="neznámý" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Úvrať proti/po směru hodinových ručiček" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Úvrať před/po práci na poli" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generovat polní prace" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="vzdálenost" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Doba čekání:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -76,9 +76,9 @@
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Otáčení na poli:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Opposite turn direction:" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="last couple of lanes" />     <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="when possible" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Otáčení v opačném směru:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="posledních pár pruhů" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="pokud to bude možné" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Poloměr otáčení:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Odstup vpřed/vzad:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Kombajn" />
@@ -260,7 +260,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: vedlejší menu povoleno" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Zobrazit/skrýt Courseplay HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: aktivovat/zastavit odvozce" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: pokračovat" />
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: odvézt bez čekání na doplnění" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: čekat na posledním bodě nebo triggeru" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: další mód" />
@@ -270,23 +270,23 @@
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="skrýt kurzor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="zobrazit kurzor" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />                                  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />                            <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />                  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />                    <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />         <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />                          <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />                     <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />                   <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />                           <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />                       <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />                     <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="mod" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nahrnování a dusání" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="naplnit" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Automaticky zastavit:" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="jen CoursePlayers" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="všechny s běžícím motorem" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Detekovat traktor v okruhu:" />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Maximální rychlost při dusání:" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Výška radlice:" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="Silážní jáma nebyla detekována v počátečním bodě." />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Není připojena radlice." />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="Vpředu upevněná radlice není podporována." />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Nastavení silážní jámy" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Šířka radlice:" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silážní jáma se plňí:" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="projížděním" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="couváním" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Doplňit palivo na čerpací stanici:" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="vždy" />
