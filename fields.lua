@@ -616,11 +616,13 @@ end;
 function courseplay.fields:getFruitData(area)
 	local usage, price, text = {}, {}, {};
 
-	for i,fruitData in ipairs(self.seedUsageCalculator.fruitTypes) do
-		local name = fruitData.name;
-		usage[name] = fruitData.usagePerSqm * area;
-		price[name] = fruitData.pricePerLiter * usage[name];
-		text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('unit_literShort'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
+	if self.seedUsageCalculator.fruitTypes then
+		for i,fruitData in ipairs(self.seedUsageCalculator.fruitTypes) do
+			local name = fruitData.name;
+			usage[name] = fruitData.usagePerSqm * area;
+			price[name] = fruitData.pricePerLiter * usage[name];
+			text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('unit_literShort'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
+		end;
 	end;
 
 	return usage, price, text;
