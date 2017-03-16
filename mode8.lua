@@ -186,6 +186,10 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 			courseplay:cancelWait(vehicle);
 			vehicle.cp.isUnloaded = true;
 			vehicle.cp.isUnloading = false;
+			if courseplay:getCustomTimerExists(vehicle,'fillLevelChange')  then 
+				--print("reset existing timer")
+				courseplay:resetCustomTimer(vehicle,'fillLevelChange',true)
+			end
 			if workTool.cp.waterReceiverTrigger then
 				courseplay:debug('        driveOn -> set waterReceiverTrigger to nil', 23);
 				workTool.cp.waterReceiverTrigger = nil;
