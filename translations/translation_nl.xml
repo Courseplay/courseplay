@@ -129,8 +129,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="moet spoedig bijgetankt worden" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="moet bijgetankt worden" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="wordt bijgetankt" />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Teveel markeringen! Maar %d toegestaan." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Te weinig markeringen! %d nodig." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Verkeerde trailer voor deze modus" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="verkeerde gereedschap voor deze modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dit voertuig wordt nu niet ondersteund" />
@@ -138,6 +141,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Baan uit lijn" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Gereedschap uit lijn horizontaal" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Gereedschap uit lijn verticaal" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FRONT" 									 text="voorzijde" />
 		<text name="COURSEPLAY_BACK" 									 text="achterzijde" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Werkbreedte" />

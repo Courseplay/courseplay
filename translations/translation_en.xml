@@ -133,8 +133,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="should be refueled soon" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="must be refueled" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="is being refueled" />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Too many waiting points! Only %d allowed." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Too few waiting points! %d needed." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="wrong trailer for this mode" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="wrong tool for this mode" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="This vehicle type isn't supported in this mode." />
@@ -142,6 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Lane offset" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Tool offset horizontal" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Tool offset vertical" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />
 		<text name="COURSEPLAY_FRONT" 									 text="front" />
 		<text name="COURSEPLAY_BACK" 									 text="back" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Working width" />

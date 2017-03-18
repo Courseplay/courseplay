@@ -737,6 +737,15 @@ function courseplay.hud:loadPage(vehicle, page)
 					end;
 				end;
 
+				if vehicle.cp.hasAugerWagon and (vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) then
+					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_SAVE_PIPE_POSITION');
+					if vehicle.cp.pipeWorkToolIndex ~= nil then
+						vehicle.cp.hud.content.pages[1][4][2].text = 'OK';
+					else
+						vehicle.cp.hud.content.pages[1][4][2].text = courseplay:loc('UNKNOWN');
+					end
+				end
+
 				if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0 then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
 					vehicle.cp.hud.content.pages[1][6][2].text = FillUtil.fillTypeIndexToDesc[vehicle.cp.siloSelectedFillType].nameI18N;
@@ -771,7 +780,7 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end
 
-			if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
+			if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0 then
  				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
  				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.runNumber < 11 and string.format("%d / %d",vehicle.cp.runCounter, vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
  			end;
@@ -799,15 +808,6 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end;
 		end;
-
-		if vehicle.cp.mode == courseplay.MODE_OVERLOADER and not vehicle:getIsCourseplayDriving() then
-			vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_SAVE_PIPE_POSITION');
-			if vehicle.cp.pipeWorkToolIndex ~= nil then
-				vehicle.cp.hud.content.pages[1][5][2].text = 'OK';
-			else
-				vehicle.cp.hud.content.pages[1][5][2].text = courseplay:loc('UNKNOWN');
-			end
-		end
 
 	--PAGE 2: COURSE LIST
 	elseif page == self.PAGE_MANAGE_COURSES then
@@ -962,9 +962,12 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[5][3][2].text = streetSpeedStr;
 			vehicle.cp.hud.content.pages[5][5][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_MAX');
 		end;
-	
 
-
+		-- Always use 4WD
+		if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasFourWD then
+			vehicle.cp.hud.content.pages[5][7][1].text = courseplay:loc('COURSEPLAY_ALWAYS_USE_4WD');
+			vehicle.cp.hud.content.pages[5][7][2].text = vehicle.cp.driveControl.alwaysUseFourWD and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+		end;
 
 	--PAGE 6: GENERAL SETTINGS
 	elseif page == self.PAGE_GENERAL_SETTINGS then
@@ -1063,10 +1066,22 @@ function courseplay.hud:loadPage(vehicle, page)
 			end;
 		end;
 
-		-- Always use 4WD
-		if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasFourWD then
-			vehicle.cp.hud.content.pages[7][5][1].text = courseplay:loc('COURSEPLAY_ALWAYS_USE_4WD');
-			vehicle.cp.hud.content.pages[7][5][2].text = vehicle.cp.driveControl.alwaysUseFourWD and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+		if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
+			--load/Unload horizontal offset
+			vehicle.cp.hud.content.pages[7][5][1].text = courseplay:loc('COURSEPLAY_LOAD_UNLOAD_OFFSET_X');
+			if vehicle.cp.loadUnloadOffsetX and vehicle.cp.loadUnloadOffsetX ~= 0 then
+				vehicle.cp.hud.content.pages[7][5][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.loadUnloadOffsetX), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.loadUnloadOffsetX > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
+			else
+				vehicle.cp.hud.content.pages[7][5][2].text = '---';
+			end;
+
+			--load/Unload vertical offset
+			vehicle.cp.hud.content.pages[7][6][1].text = courseplay:loc('COURSEPLAY_LOAD_UNLOAD_OFFSET_Z');
+			if vehicle.cp.loadUnloadOffsetZ and vehicle.cp.loadUnloadOffsetZ ~= 0 then
+				vehicle.cp.hud.content.pages[7][6][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.loadUnloadOffsetZ), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.loadUnloadOffsetZ > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'));
+			else
+				vehicle.cp.hud.content.pages[7][6][2].text = '---';
+			end;
 		end;
 
 		--Copy course from driver
@@ -1493,7 +1508,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud.clearCurrentCourseButton1 = courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
 
 	--go to pipe position in mode3
-	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'recordingPlay' }, 'movePipeToPosition', 1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 6, nil, true, false, false, courseplay:loc('COURSEPLAY_MOVE_PIPE_TO_POSITION'));
+	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'recordingPlay' }, 'movePipeToPosition', 1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, nil, true, false, false, courseplay:loc('COURSEPLAY_MOVE_PIPE_TO_POSITION'));
 					
 	-- ##################################################
 	-- Page 2: Course management
@@ -1599,7 +1614,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	courseplay.button:new(vehicle, 5, nil, 'toggleUseRecordingSpeed', nil, self.contentMinX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
 
-	
+	-- 4WD button in line 5: only added if driveControl and 4WD exist
 
 
 	-- ##################################################
@@ -1608,8 +1623,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- realistic driving
 	courseplay.button:new(vehicle, pg, nil, 'toggleRealisticDriving', nil,  self.contentMinX, self.linesPosY[1], self.contentMaxWidth, self.lineHeight, 1, nil, true);
-
-	
 
 	-- open hud with mouse/keyboard
 	courseplay.button:new(vehicle, pg, nil, 'toggleOpenHudWithMouse', nil,  self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
@@ -1665,7 +1678,13 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navUp' },   'changeToolOffsetZ',  0.1, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,   0.5, false);
 	courseplay.button:new(vehicle, 7, nil, 'changeToolOffsetZ', 0.1, mouseWheelArea.x, self.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 0.5, true, true);
 
-	-- 4WD button in line 5: only added if driveControl and 4WD exist
+	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navLeft' },  'changeLoadUnloadOffsetX', -0.1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5,  -0.5, false);
+	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navRight' }, 'changeLoadUnloadOffsetX',  0.1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,   0.5, false);
+	courseplay.button:new(vehicle, 7, nil, 'changeLoadUnloadOffsetX', 0.1, mouseWheelArea.x, self.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 0.5, true, true);
+
+	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navDown' }, 'changeLoadUnloadOffsetZ', -0.1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6,  -0.5, false);
+	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navUp' },   'changeLoadUnloadOffsetZ',  0.1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,   0.5, false);
+	courseplay.button:new(vehicle, 7, nil, 'changeLoadUnloadOffsetZ', 0.1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 0.5, true, true);
 
 	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navDown' },   'switchDriverCopy', -1, self.buttonPosX[2], self.linesButtonPosY[7], wSmall, hSmall, 7, nil, false);
 	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navUp' }, 'switchDriverCopy',  1, self.buttonPosX[1], self.linesButtonPosY[7], wSmall, hSmall, 7, nil, false);

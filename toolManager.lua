@@ -28,6 +28,7 @@ AIVehicle.onDetachImplement = Utils.appendedFunction(AIVehicle.onDetachImplement
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
+	vehicle.cp.hasAugerWagon = false;
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 
 	-- Reset fill type.
@@ -206,6 +207,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		if workTool.allowTipDischarge and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+			if workTool.cp.isAugerWagon then
+				vehicle.cp.hasAugerWagon = true;
+			end;
 		end;
 
 	-- MODE 3: AUGERWAGON
@@ -213,6 +217,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		if workTool.cp.isAugerWagon then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+			vehicle.cp.hasAugerWagon = true;
 		end
 
 	-- MODE 4: FERTILIZER AND SEEDING
@@ -1203,8 +1208,10 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				end;
 				--												 unfold, lower, turnOn, allowedToDrive, cover, unload)
 				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
-				vehicle.cp.fillTrigger = nil;
-				courseplay:debug('%s: vehicle.cp.isLoaded or workToolSprayerFillLevelPct >= driveOn -> set vehicle.cp.fillTrigger to nil', 19);
+				if not (vehicle.cp.fillTrigger and courseplay.triggers.all[vehicle.cp.fillTrigger].isWeightStation) then
+					vehicle.cp.fillTrigger = nil;
+					courseplay:debug(('%s: vehicle.cp.isLoaded or workToolSprayerFillLevelPct >= driveOn -> set vehicle.cp.fillTrigger to nil'):format(nameNum(vehicle)), 19);
+				end;
 			else
 				courseplay:debug(('%s: canRefill is false -> break'):format(nameNum(vehicle)), 19);
 			end;
@@ -1302,7 +1309,16 @@ function courseplay:handleUnloading(vehicle,revUnload)
 			if z <= 0 and tipper.cp.fillLevel ~= 0 then
 				stopForTippping = true
 				goForTipping = true
-			end	
+			end
+			if goForTipping and vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
+				local filltype = vehicle:getFirstEnabledFillType();
+				if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+					local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
+					if stopTime then
+						courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
+					end;
+				end;
+			end;
 			if goForTipping and not tipper.overloading.isActive then
 				if tipper:getCanTipToGround() then
 					if not self.dischargeToGround then
@@ -1336,8 +1352,82 @@ function courseplay:handleUnloading(vehicle,revUnload)
 			end
 		end
 	end
-	if vehicle.cp.totalFillLevel == 0 then
+	if vehicle.cp.totalFillLevel == 0 and courseplay:timerIsThrough(vehicle, "waitUntilPipeIsEmpty") then
+		courseplay:resetCustomTimer(vehicle, "waitUntilPipeIsEmpty", true);
 		courseplay:setVehicleWait(vehicle, false);
 	end
 	return stopForTippping
+end
+
+function courseplay:handleHeapUnloading(vehicle)
+	local stopForUnload = false;
+	if vehicle.cp.makeHeaps then
+		if vehicle.cp.previousWaypointIndex == vehicle.cp.heapStart then
+			if vehicle.cp.totalFillLevel > 0 then
+				if vehicle.pipeCurrentState ~= 2 then
+					vehicle:setPipeState(2);
+				end
+				if vehicle:getCanTipToGround() then
+					if not vehicle.dischargeToGround then
+						vehicle.cp.speeds.discharge = courseplay:getDischargeSpeed(vehicle);
+						vehicle:setDischargeToGround(true);
+						courseplay:setVehicleWait(vehicle, false);
+					end;
+				else
+					-- TODO show message "not able to discharge"
+				end;
+			end;
+		end;
+		if vehicle.cp.previousWaypointIndex > vehicle.cp.heapStart and vehicle.cp.previousWaypointIndex < vehicle.cp.heapStop then
+			-- Set Timer if unloading pipe takes time before empty.
+			if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
+				local filltype = vehicle:getFirstEnabledFillType();
+				if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+					local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
+					if stopTime then
+						courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
+					end;
+				end;
+			end;
+		end;
+		if vehicle.cp.previousWaypointIndex == vehicle.cp.heapStop then
+			if vehicle.cp.totalFillLevel > 0 then
+				stopForUnload = true;
+				-- Set Timer if unloading pipe takes time before empty.
+				if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
+					local filltype = vehicle:getFirstEnabledFillType();
+					if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+						local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
+						if stopTime then
+							courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
+						end;
+					end;
+				end;
+			elseif courseplay:timerIsThrough(vehicle, "waitUntilPipeIsEmpty") then
+				courseplay:resetCustomTimer(vehicle, "waitUntilPipeIsEmpty", true);
+				courseplay:setVehicleWait(vehicle, false);
+			end;
+		end;
+	end;
+	return stopForUnload;
+end;
+
+function courseplay:getDischargeSpeed(vehicle)
+	courseplay:debug(nameNum(vehicle) .. ":getDischargeSpeed()", 11);
+	local refSpeed = 0
+
+	local sx,sz = vehicle.Waypoints[vehicle.cp.heapStart].cx, vehicle.Waypoints[vehicle.cp.heapStart].cz;
+	local ex,ez = vehicle.Waypoints[vehicle.cp.heapStop].cx, vehicle.Waypoints[vehicle.cp.heapStop].cz;
+	local length = courseplay:distance(sx,sz, ex,ez) -5  --just to be sure, that we will get all in...
+	local fillDelta = vehicle.cp.totalFillLevel / vehicle.cp.totalCapacity;
+	courseplay:debug(nameNum(vehicle) .. ":  TipRange length: "..tostring(length), 11);
+
+	local completeTipDuration = (vehicle.cp.totalFillLevel/vehicle.overloading.capacity)+ (vehicle.overloading.delay.time/1000)
+	courseplay:debug(nameNum(vehicle) .. ":  complete tip duration: "..tostring(completeTipDuration), 11);
+
+	local meterPrSeconds = length / completeTipDuration;
+	refSpeed =  meterPrSeconds * 3.6
+	courseplay:debug(nameNum(vehicle) .. ":  refSpeed: "..tostring(refSpeed), 11);
+
+	return refSpeed
 end

@@ -1,5 +1,5 @@
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
-function courseplay:handle_mode1(vehicle, allowedToDrive)
+function courseplay:handle_mode1(vehicle, allowedToDrive, dt)
 	-- done tipping
 	if vehicle.cp.currentTipTrigger and vehicle.cp.totalFillLevel == 0 then
 		courseplay:resetTipTrigger(vehicle, true);
@@ -9,6 +9,11 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 	if ((vehicle.cp.isLoaded and vehicle.cp.trailerFillDistance) or vehicle.cp.isLoaded ~= true) and ((vehicle.cp.waypointIndex >= 1 and vehicle.cp.waypointIndex <= 3 and vehicle.cp.totalFillLevel < vehicle.cp.totalCapacity and vehicle.cp.isUnloaded == false) or vehicle.cp.trailerFillDistance) then
 		allowedToDrive = courseplay:load_tippers(vehicle, allowedToDrive);
 		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
+	end;
+
+	-- If we are an auger wagon, we don't have an tip point, so handle it as an auger wagon in mode 3
+	if vehicle.cp.hasAugerWagon then
+		courseplay:handleMode3(vehicle, allowedToDrive, dt);
 	end
 
 	-- damn, I missed the trigger!
@@ -34,10 +39,10 @@ function courseplay:handle_mode1(vehicle, allowedToDrive)
 			if startReversing then
 				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(vehicle)), 13);
 			end;
-			
-			local isBGA = t.bunkerSilo ~= nil 
+
+			local isBGA = t.bunkerSilo ~= nil
 			local triggerLength = Utils.getNoNil(vehicle.cp.currentTipTrigger.cpActualLength,20)
-			local maxDist = isBGA and (vehicle.cp.totalLength + 55) or (vehicle.cp.totalLength + triggerLength); 
+			local maxDist = isBGA and (vehicle.cp.totalLength + 55) or (vehicle.cp.totalLength + triggerLength);
 			if distToTrigger > maxDist or startReversing then --it's a backup, so we don't need to care about +/-10m
 				courseplay:resetTipTrigger(vehicle);
 				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(vehicle), distToTrigger, maxDist), 1);

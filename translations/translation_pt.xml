@@ -129,8 +129,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 					 	 text="precisa de reabastecer em breve" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 					 	 text="tem de reabastecer" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 					 	 text="a reabastecer" />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Muitos pontos de espera! Só %d são permitidos." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Poucos pontos de espera! São necessários $d" />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 						 	 text="atrelado incorreto para este modo" />
 		<text name="COURSEPLAY_WRONG_TOOL" 			        		 	 text="implemento errado para este modo" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Este veículo não é suportado neste modo" />
@@ -138,6 +141,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 						 	 text="Distânçia da faixa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 						 	 text="Distânçia horizontal do equipamento" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 						 	 text="Distânçia vertical do equipamento" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FRONT" 							 		 text="frente" />
 		<text name="COURSEPLAY_BACK" 							 		 text="trás" />
 		<text name="COURSEPLAY_WORK_WIDTH" 						 		 text="Largura de trabalho" />

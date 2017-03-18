@@ -723,6 +723,7 @@ function CpManager:setupGlobalInfoText()
 		WAIT_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };
 		WATER						= { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
 		WEATHER						= { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
+		WEIGHING_VEHICLE			= { level =  0, text = 'COURSEPLAY_IS_BEING_WEIGHED' };
 		WORK_END					= { level =  1, text = 'COURSEPLAY_WORK_END' };
 	};
 end;

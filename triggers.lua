@@ -500,6 +500,12 @@ function courseplay:updateAllTriggers()
 						courseplay:cpAddTrigger(triggerId, trigger, 'gasStation', 'nonUpdateable');
 						courseplay:debug('\t\tadd GasStationTrigger', 1);
 
+					-- WeightStationTriggers
+					elseif trigger.isa and trigger:isa(WeighStation) then
+						trigger.isWeightStation = true;
+						courseplay:cpAddTrigger(triggerId, trigger, 'weightStation', 'nonUpdateable');
+						courseplay:debug('\t\tadd WeightStationTrigger', 1);
+
 					-- SowingMachineFillTriggers
 					elseif trigger.fillType and trigger.fillType == FillUtil.FILLTYPE_SEEDS then
 						trigger.isSowingMachineFillTrigger = true;
@@ -511,6 +517,7 @@ function courseplay:updateAllTriggers()
 						trigger.isSprayerFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'sprayer', 'nonUpdateable');
 						courseplay:debug('\t\tadd SprayerFillTrigger', 1);
+
 					-- WaterTrailerFillTriggers
 					elseif trigger.isa and trigger:isa(WaterTrailerFillTrigger) then
 						trigger.isWaterTrailerFillTrigger = true;

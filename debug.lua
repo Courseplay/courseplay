@@ -36,7 +36,7 @@ function CpManager:setUpDebugChannels()
 		 [8] = 'Debug: course management';
 		 [9] = 'Debug: path finding';
 		[10] = 'Debug: mode9: shovel loading/unloading';
-		[11] = 'Debug: mode7: combine self-unloading';
+		[11] = 'Debug: Combine self-unloading and heaps';
 		[12] = 'Debug: all other debugs (uncategorized)';
 		[13] = 'Debug: reverse driving';
 		[14] = 'Debug: driving specific';

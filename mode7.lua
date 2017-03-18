@@ -8,7 +8,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 	end
 	
 	local pipeState = courseplay:getTrailerInPipeRangeState(vehicle);
-	if not vehicle.cp.mode7makeHeaps then
+	if not vehicle.cp.makeHeaps then
 		if pipeState > 0 then
 			vehicle:setPipeState(pipeState);
 		elseif not vehicle.aiIsStarted then
@@ -206,19 +206,3 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 
 	return continue, cx, cy, cz, refSpeed, allowedToDrive;
 end;
-
-function courseplay:getDischargeSpeed(vehicle)
-	courseplay:debug(nameNum(vehicle) .. ":getDischargeSpeed()", 11);
-	local refSpeed = 0
-	local sx,sz = vehicle.Waypoints[vehicle.cp.startWork].cx, vehicle.Waypoints[vehicle.cp.startWork].cz; 
-	local ex,ez = vehicle.Waypoints[vehicle.cp.stopWork].cx, vehicle.Waypoints[vehicle.cp.stopWork].cz;
-	local length = courseplay:distance(sx,sz, ex,ez) -5  --just to be sure, that we will get all in...
-	local fillDelta = vehicle.cp.totalFillLevel / vehicle.cp.totalCapacity;
-	courseplay:debug(nameNum(vehicle) .. ":  TipRange length: "..tostring(length), 11);
-	local completeTipDuration = (vehicle.cp.totalFillLevel/vehicle.overloading.capacity)+ (vehicle.overloading.delay.time/1000) 
-	courseplay:debug(nameNum(vehicle) .. ":  complete tip duration: "..tostring(completeTipDuration), 11);
-	local meterPrSeconds = length / completeTipDuration;
-	refSpeed =  meterPrSeconds * 3.6 
-	courseplay:debug(nameNum(vehicle) .. ":  refSpeed: "..tostring(refSpeed), 11);
-	return refSpeed
-end
