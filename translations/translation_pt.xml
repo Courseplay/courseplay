@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Conduzir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Parar o condutor" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 					 	 text="Parar no último ponto ou próximo trigger" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Numero de passagens" />
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Ilimitado" /> 
 		<text name="COURSEPLAY_UNLOADING_SIDE" 						 	 text="Lado do condutor" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automático" />
 		<text name="COURSEPLAY_LEFT" 							 		 text="esquerda" />
@@ -68,7 +68,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 	 text="A carregar: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 	 text="Mostrar pontos" />
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evitar as plantações" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar borda do campo" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância lateral" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Iniciar a:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" /> 
