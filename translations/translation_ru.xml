@@ -133,11 +133,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="низкий уровень топлива" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="слишком мало топлива!" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="заправляется" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="взвешивается" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Слишком много остановок! Разрешено максимум %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Слишком мало остановок! Необходимо минимум %d." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Слишком много точек разгрузки! Разрешено максимум %d." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Слишком мало точек разгрузки! Необходимо минимум %d." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Неподходящий тип прицепа для маршрута" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Неподходящий тип инструмента для маршрута" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Неподходящий тип техники для маршрута" />
@@ -145,8 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Смещение от центра:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="правее/левее:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="вперед/назад:" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Гориз. смещние Загрузки/Разгрузки" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Вертик. смещ. Загр./Разгр./Ожидания" />
 		<text name="COURSEPLAY_FRONT" 									 text="вперед" />
 		<text name="COURSEPLAY_BACK" 									 text="назад" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Рабочая ширина:" />
