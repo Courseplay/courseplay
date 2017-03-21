@@ -133,11 +133,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="dev'essere rifornito al più presto" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="dev'essere rifornito ora" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="si sta rifornendo" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="viene pesato" />   
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Troppi punti d'attesa! Permesso solo %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Troppo pochi punti d'attesa! %d necessario." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Troppi punti di scarico! Permesso solo %d." />   
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Troppo pochi punti di scarico! %d necessario." />  
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="rimorchio sbagliato per questa modalità" />
 		<text name="COURSEPLAY_WRONG_TOOL" 							 	 text="strumento sbagliato per questa modalità" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Questo tipo di veicolo non è supportato in questa modalità." />
@@ -145,8 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distanza corsia" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Attrezzo: distanza orizz." />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Attrezzo: distanza vert." />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Carico/Scarico distanza orizz." />     
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Carico/Scarico/Attesa distanza vert." />       
 		<text name="COURSEPLAY_FRONT" 									 text="anteriore" />
 		<text name="COURSEPLAY_BACK" 									 text="posteriore" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Larghezza di lavoro" />
