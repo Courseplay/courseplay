@@ -266,6 +266,8 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
+					elseif line == 4 then
+						courseplay:getPipesRotation(self);
 					end;
 
 				else -- driving
@@ -304,10 +306,7 @@ function courseplay:executeFunction(self, func, value, page)
 					end;
 				end;
 			end; --END if not self:getIsCourseplayDriving()
-			if line == 5 then 
-				courseplay:getPipesRotation(self)
-			end
-			
+
 		elseif page == 3 then
 			if line == 1 then
 				self.cp.turnOnField = not self.cp.turnOnField;

@@ -36,9 +36,8 @@ function courseplay:load(savegame)
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
-	if self.cp.isCombine then
+	if self.cp.isCombine or self.cp.isHarvesterSteerable then
 		self.cp.mode7Unloading = false
-		self.cp.mode7makeHeaps = false
 		self.cp.driverPriorityUseFillLevel = false;
 	end
 	self.cp.speedDebugLine = "no speed info"
@@ -89,6 +88,8 @@ function courseplay:load(savegame)
 
 	self.cp.waitPoints = {};
 	self.cp.numWaitPoints = 0;
+	self.cp.unloadPoints = {};
+	self.cp.numUnloadPoints = 0;
 	self.cp.waitTime = 0;
 	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
@@ -124,6 +125,9 @@ function courseplay:load(savegame)
 	courseplay:setNextPrevModeVars(self);
 	self.cp.modeState = 0
 	self.cp.mode2nextState = nil;
+	self.cp.heapStart = nil
+	self.cp.heapStop = nil
+	self.cp.makeHeaps = false
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
@@ -145,7 +149,8 @@ function courseplay:load(savegame)
 	self.cp.isNotAllowedToDrive = false;
 	self.cp.allwaysSearchFuel = true;
 	self.cp.saveFuel = false;
-	
+	self.cp.hasAugerWagon = false;
+
 	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 
 
@@ -416,6 +421,9 @@ function courseplay:load(savegame)
 	self.cp.symmetricLaneChange = false;
 	self.cp.switchLaneOffset = false;
 	self.cp.switchToolOffset = false;
+	self.cp.loadUnloadOffsetX = 0;
+	self.cp.loadUnloadOffsetZ = 0;
+	self.cp.skipOffsetX = false;
 
 	self.cp.workWidth = 3
 	self.cp.headlandHeight = 0;
@@ -515,7 +523,7 @@ function courseplay:postLoad(savegame)
 
 		-- add "always use 4WD" button
 		if self.cp.driveControl.hasFourWD then
-			courseplay.button:new(self, 7, nil, 'toggleAlwaysUseFourWD', nil, courseplay.hud.col1posX, courseplay.hud.linesPosY[5], courseplay.hud.contentMaxWidth, 0.015, 5, nil, true);
+			courseplay.button:new(self, 5, nil, 'toggleAlwaysUseFourWD', nil, courseplay.hud.col1posX, courseplay.hud.linesPosY[7], courseplay.hud.contentMaxWidth, 0.015, 7, nil, true);
 		end;
 	end;
 end;
@@ -974,7 +982,7 @@ function courseplay:update(dt)
 		end;
 	end;
 	-- MODE 3: move pipe to positions (manually)
-	if self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.manualPipePositionOrder ~= nil and self.cp.pipeWorkToolIndex then
+	if (self.cp.mode == courseplay.MODE_OVERLOADER or self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) and self.cp.manualPipePositionOrder ~= nil and self.cp.pipeWorkToolIndex then
 		local workTool = self.attachedImplements[self.cp.pipeWorkToolIndex].object
 		if courseplay:checkAndSetMovingToolsPosition(self, workTool.movingTools, nil, self.cp.pipePositions, dt , self.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
 			courseplay:resetManualPipePositionOrder(self);
@@ -1091,7 +1099,9 @@ function courseplay:renderInfoText(vehicle)
 			end		
 		elseif what[1] == "COURSEPLAY_STARTING_UP_TOOL" 
 		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_FEW"
-		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_MANY" then
+		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_MANY"
+		or what[1] == "COURSEPLAY_UNLOADING_POINTS_TOO_FEW"
+		or what[1] == "COURSEPLAY_UNLOADING_POINTS_TOO_MANY" then
 			if what[2] then
 				text = string.format(courseplay:loc(what[1]), what[2]);
 			end
@@ -1174,6 +1184,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.laneOffset = streamDebugReadFloat32(streamId)
 	self.cp.toolOffsetX = streamDebugReadFloat32(streamId)
 	self.cp.toolOffsetZ = streamDebugReadFloat32(streamId)
+	self.cp.loadUnloadOffsetX = streamDebugReadFloat32(streamId)
+	self.cp.loadUnloadOffsetZ = streamDebugReadFloat32(streamId)
 	courseplay:setHudPage(self, streamDebugReadInt32(streamId));
 	self.cp.HUD0noCourseplayer = streamDebugReadBool(streamId);
 	self.cp.HUD0wantsCourseplayer = streamDebugReadBool(streamId);
@@ -1294,6 +1306,8 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteFloat32(streamId,self.cp.laneOffset)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetX)
 	streamDebugWriteFloat32(streamId,self.cp.toolOffsetZ)
+	streamDebugWriteFloat32(streamId,self.cp.loadUnloadOffsetX)
+	streamDebugWriteFloat32(streamId,self.cp.loadUnloadOffsetZ)
 	streamDebugWriteInt32(streamId,self.cp.hud.currentPage)
 	streamDebugWriteBool(streamId,self.cp.HUD0noCourseplayer)
 	streamDebugWriteBool(streamId,self.cp.HUD0wantsCourseplayer)
@@ -1448,12 +1462,16 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		end	
 		
 		self.cp.refillUntilPct = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#refillUntilPct'), 100);
-		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
+		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
 		offsetData = Utils.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
 		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
 		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == 'true');
+		if not offsetData[5] then offsetData[5] = 0; end;
+		courseplay:changeLoadUnloadOffsetX(self, nil, tonumber(offsetData[5]));
+		if not offsetData[6] then offsetData[6] = 0; end;
+		courseplay:changeLoadUnloadOffsetZ(self, nil, tonumber(offsetData[6]));
 
 		-- SHOVEL POSITIONS
 		curKey = key .. '.courseplay.shovel';
@@ -1570,7 +1588,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 	
 	--Offset data
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange));
+	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange), self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ);
 
 
 	--NODES

@@ -107,7 +107,7 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 	if vehicle.cp.wait then
 		courseplay:setVehicleWait(vehicle, false);
 	end;
-	if vehicle.cp.mode == 3 then
+	if vehicle.cp.mode == 1 or vehicle.cp.mode == 3 then
 		vehicle.cp.isUnloaded = true;
 	end;
 	if cancelStopAtEnd then
@@ -222,6 +222,20 @@ function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
 
 	if not noDraw and vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
+	end;
+end;
+
+function courseplay:changeLoadUnloadOffsetX(vehicle, changeBy, force)
+	vehicle.cp.loadUnloadOffsetX = force or (courseplay:round(vehicle.cp.loadUnloadOffsetX, 1) + changeBy);
+	if abs(vehicle.cp.loadUnloadOffsetX) < 0.1 then
+		vehicle.cp.loadUnloadOffsetX = 0;
+	end;
+end;
+
+function courseplay:changeLoadUnloadOffsetZ(vehicle, changeBy, force)
+	vehicle.cp.loadUnloadOffsetZ = force or (courseplay:round(vehicle.cp.loadUnloadOffsetZ, 1) + changeBy);
+	if abs(vehicle.cp.loadUnloadOffsetZ) < 0.1 then
+		vehicle.cp.loadUnloadOffsetZ = 0;
 	end;
 end;
 

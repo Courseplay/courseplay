@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT"							 text="Ładowanie: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE"							 text="Punkty trasy:" />
 		<text name="COURSEPLAY_PATHFINDING"								 text="Znalezienie drogi" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Pług przy krawędzi pola" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL"				 text="Korekcja boczna:" />
 		<text name="COURSEPLAY_START_AT"								 text="Podjedź przy:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Nawrót na polu:" />
@@ -132,9 +132,12 @@
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR"						 text="Podążaj za ciągnikiem" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED"						 text="powinien zostać wkrótce zatankowany" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED"						 text="musi zostać zatankowany" />
-		<text name="COURSEPLAY_IS_BEING_REFUELED"						 text="jest tankowany" />
+		<text name="COURSEPLAY_IS_BEING_REFUELED"						 text="jest teraz tankowany" />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="jest teraz ważony" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY"					 text="Za dużo punktów oczekiwania! Dozwolone tylko %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW"					 text="Za mało punktów oczekiwania! Wymagane %d." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Za dużo punktów rozładunku! Dozwolone tylko %d." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Za mało punktów rozładunku! Wymagane %d." />
 		<text name="COURSEPLAY_WRONG_TRAILER"							 text="Zła przyczepa do tego trybu" />
 		<text name="COURSEPLAY_WRONG_TOOL"								 text="Złe narzędzie do tego trybu" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"		 text="Ten typ pojazdu nie jest obsługiwany w tym trybie." />
@@ -142,6 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET"								 text="Korekcja pasa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X"							 text="Korekcja pozioma narzędzia" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z"							 text="Korekcja pionowa narzędzia" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Korekcja pionowa załadunku/rozładunku" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Korekcja pozioma załadunku/rozładunku/oczekiwania" />
 		<text name="COURSEPLAY_FRONT"									 text="przód" />
 		<text name="COURSEPLAY_BACK"									 text="tył" />
 		<text name="COURSEPLAY_WORK_WIDTH"								 text="Szerokość robocza" />
@@ -233,7 +238,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME"					 text="Wznów nagrywanie" />
 		<text name="COURSEPLAY_RECORDING_DELETE"						 text="Usuń ostatni punkt trasy" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT"						 text="Ustaw punkt oczekiwania" />
-		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Ustaw punkt rozładunku" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS"						 text="Ustaw punkt skrzyżowania" />
 		<text name="COURSEPLAY_RECORDING_TURN_START"					 text="Rozpocznij manewr zawracania" />
 		<text name="COURSEPLAY_RECORDING_TURN_END"						 text="Zakończ manewr zawracania" />

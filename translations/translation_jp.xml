@@ -133,8 +133,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="すぐに給油する必要があります" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="給油する必要があります" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="給油中" />
-		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="多くのポイント! Only %d allowed." />
-		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="少ないポイント! %d needed." />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="重量測定中" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="待機ポイントが多すぎ！ 最大数 %d " />  <!-- TODO: TRANSLATE LAST BITS -->
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="待機ポイントが少ない！ 必要数 %d " />        <!-- TODO: TRANSLATE LAST BITS -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="アンロードポイントが多すぎ！ 最大数 %d " />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="アンロードポイントが少ない！ 必要数 %d " />           <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="トレーラーが用途に合いません" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ツールが用途に合いません" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="車種が用途に合いません" />
@@ -142,6 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="レーン オフセット" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="ツール左右オフセット" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="ツール前後オフセット" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="ロード・アンロード 左右オフセット" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="ロード・アンロード 前後オフセット" />       <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FRONT" 									 text="前方" />
 		<text name="COURSEPLAY_BACK" 									 text="後方" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="作業幅" />

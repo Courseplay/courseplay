@@ -259,7 +259,7 @@ end;
 function courseplay:fillTypesMatch(fillTrigger, workTool)
 	if fillTrigger ~= nil then
 		if fillTrigger.fillType then   --replaced rawget(fillTrigger, 'fillType') 
-			return workTool:allowFillType( fillTrigger.fillType , false);
+			return workTool:allowFillType(fillTrigger.fillType, false);
 		elseif fillTrigger.currentFillType then
 			return workTool:allowFillType(fillTrigger.currentFillType, false);
 		elseif fillTrigger.getFillType then

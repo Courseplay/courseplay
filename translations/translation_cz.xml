@@ -133,8 +133,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="bude potřebovat dotankovat." />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="musí tankovat." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="tankuje." />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů čekání! Pouze %d bodů je povoleno." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Postrádá body čekání. Vyžaduje %d body čekání." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Máš pro tento mod nevhodný přívěs" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Máš pro tento mod nevhodné nářadí" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Tento typ vozidla není v tomto módu podporován." />
@@ -142,6 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Odstup od trasy:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Horiz. posunutí stroje:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Vertik. posunutí stroje:" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FRONT" 									 text="přední" />
 		<text name="COURSEPLAY_BACK" 									 text="zadní" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Pracovní šířka:" />

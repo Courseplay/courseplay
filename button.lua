@@ -125,8 +125,8 @@ function courseplay.button:render()
 				canScrollUp   = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 				canScrollDown = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 			elseif fn == 'changeRunNumber' then
- 				canScrollUp = vehicle.cp.runNumber < 11 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive
- 				canScrollDown = vehicle.cp.runNumber > vehicle.cp.runCounter and vehicle.cp.runNumber > 1 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and not vehicle.cp.runReset
+ 				canScrollUp = vehicle.cp.runNumber < 11 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and #vehicle.cp.easyFillTypeList > 0;
+ 				canScrollDown = vehicle.cp.runNumber > vehicle.cp.runCounter and vehicle.cp.runNumber > 1 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and not vehicle.cp.runReset and #vehicle.cp.easyFillTypeList > 0;
 			end;
 
 		elseif pg == courseplay.hud.PAGE_MANAGE_COURSES then
@@ -188,7 +188,19 @@ function courseplay.button:render()
 				canScrollUp   = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK;
 				canScrollDown = canScrollUp;
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-				canScrollUp   = vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
+				canScrollUp   = vehicle.cp.mode == courseplay.MODE_OVERLOADER
+							 or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
+							 or vehicle.cp.mode == courseplay.MODE_FIELDWORK
+							 or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
+							 or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
+				canScrollDown = canScrollUp;
+			elseif fn == "changeLoadUnloadOffsetX" or fn == "changeLoadUnloadOffsetZ" then
+				canScrollUp   = vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT
+							 or vehicle.cp.mode == courseplay.MODE_OVERLOADER
+							 or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
+							 or vehicle.cp.mode == courseplay.MODE_FIELDWORK
+							 or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
+							 or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
 				canScrollDown = canScrollUp;
 			end;
 
@@ -262,12 +274,12 @@ function courseplay.button:render()
 				elseif fn == 'changeSiloFillType' then
 					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 				elseif fn == 'movePipeToPosition' then
-					show = not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_OVERLOADER ;
+					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.hasAugerWagon and (vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT);
 				elseif fn == 'changeRunNumber' then
  					if prm < 0 then
- 						show = vehicle.cp.runNumber > vehicle.cp.runCounter and vehicle.cp.runNumber > 1 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and not vehicle.cp.runReset
+ 						show = vehicle.cp.runNumber > vehicle.cp.runCounter and vehicle.cp.runNumber > 1 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and not vehicle.cp.runReset and #vehicle.cp.easyFillTypeList > 0;
  					elseif prm > 0 then
- 						show = vehicle.cp.runNumber < 11 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive 
+ 						show = vehicle.cp.runNumber < 11 and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and vehicle.cp.canDrive and #vehicle.cp.easyFillTypeList > 0;
  					end;
 				end;
 
@@ -393,7 +405,18 @@ function courseplay.button:render()
 				elseif fn == "toggleSymmetricLaneChange" then
 					show = (vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.laneOffset ~= 0;
 				elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
-					show = vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING;
+					show = vehicle.cp.mode == courseplay.MODE_OVERLOADER
+						or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
+						or vehicle.cp.mode == courseplay.MODE_FIELDWORK
+						or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
+						or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
+				elseif fn == "changeLoadUnloadOffsetX" or fn == "changeLoadUnloadOffsetZ" then
+					show = vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT
+						or vehicle.cp.mode == courseplay.MODE_OVERLOADER
+						or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
+						or vehicle.cp.mode == courseplay.MODE_FIELDWORK
+						or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
+						or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
 				elseif fn == "switchDriverCopy" and prm < 0 then
 					show = vehicle.cp.selectedDriverNumber > 0;
 				elseif fn == "copyCourse" then

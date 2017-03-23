@@ -133,8 +133,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="sollte aufgetankt werden" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="muss aufgetankt werden" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="wird aufgetankt" />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Zu viele Wartepunkte! Nur %d erlaubt." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Zu wenig Wartepunkte! %d benötigt." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="falscher Trailer für diesen Modus" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="falsches Gerät für diesen Modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt." />
@@ -142,6 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Bahnversatz" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Gerät-Versatz (horizontal)" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Gerät-Versatz (vertikal)" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FRONT" 									 text="vorne" />
 		<text name="COURSEPLAY_BACK" 									 text="hinten" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Arbeitsbreite" />
@@ -225,7 +230,7 @@
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Farmsilo-Befüllung:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farmsilo ist leer! warte auf mehr." />  
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=":Farmsilo ist voll. Fahre mit nächstem fort." /> 
-		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s startet" /> 
+		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="%s startet" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Nach erstem Wegpunkt suchen" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Aktuellen Kurs speichern" />
 		<text name="COURSEPLAY_RECORDING_STOP" 							 text="Aufnahme beenden" />
