@@ -613,7 +613,7 @@ function courseplay:drive(self, dt)
 
 		courseplay:openCloseCover(self, dt, showCover, self.cp.currentTipTrigger ~= nil);
 	elseif self.cp.tipperHasCover then
-		courseplay:openCloseCover(self, dt, false, self.cp.currentTipTrigger ~= nil);
+		courseplay:openCloseCover(self, dt, false);
 	end;
 
 	-- CHECK TRAFFIC
