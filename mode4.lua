@@ -145,9 +145,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 								if workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= ridgeMarker then
 									workTool:setRidgeMarkerState(ridgeMarker);
 								end;
-							elseif workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
-								workTool:setRidgeMarkerState(0);
 							end;
+						elseif workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+							workTool:setRidgeMarkerState(0);
 						end;
 
 						--lower/raise
