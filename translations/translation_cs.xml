@@ -129,7 +129,7 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="油料不足,尽快补充." />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="油料严重不足,必须补充." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="正在加油" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="正在测量……" />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="太多的等待点！ 只允许 %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="等待点太少! %d 需求." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
@@ -141,8 +141,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="路径横向调整" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="工具横向调整" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="工具纵向调整" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="装卸点横向调整" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="卸载点纵向调整" />       <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FRONT" 									 text="前面" />
 		<text name="COURSEPLAY_BACK" 									 text="后面" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="工作面大小" />

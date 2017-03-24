@@ -13,8 +13,8 @@ function courseplay:goReverse(vehicle,lx,lz)
 		if courseplay:isHookLift(workTool) or courseplay:isAttacherModule(workTool) then
 			workTool = workTool.attacherVehicle;
 
-			if workTool == vehicle then
-			workTool = vehicle.cp.workTools[2];
+			if workTool == vehicle and vehicle.cp.workTools[2] ~= nil then
+				workTool = vehicle.cp.workTools[2];
 				if courseplay:isAttacherModule(workTool) then
 					workTool = workTool.attacherVehicle;
 				end;
@@ -30,7 +30,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 				local _, vehicleY, _ = getWorldTranslation(vehicle.cp.DirectionNode);
 				lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, newTarget.revPosX, vehicleY, newTarget.revPosZ);
 			end;
-		elseif not vehicle.cp.mode == 9 then
+		elseif vehicle.cp.mode ~= 9 then
 			-- Start: Fixes issue #525
 			local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode, 0, 1, -3);
 			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
