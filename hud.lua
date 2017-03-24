@@ -767,7 +767,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE and vehicle.cp.hasSowingMachine then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
+					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 
 				elseif vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.cp.hasBaleLoader and not vehicle.cp.hasUnloadingRefillingCourse then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_UNLOADING_ON_FIELD');
@@ -776,7 +776,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				if vehicle.cp.tipperHasCover and (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_TRANSPORT or vehicle.cp.mode == courseplay.MODE_FIELDWORK) then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_COVER_HANDLING');
-					vehicle.cp.hud.content.pages[1][6][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
+					vehicle.cp.hud.content.pages[1][6][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 				end;
 			end
 
