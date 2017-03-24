@@ -1075,6 +1075,7 @@ end;
 
 function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 	local offset = 0;
+	local isTruck = false;
 
 	-- Build the truckAttacherJoint list if not already done.
 	if #truckAttacherJoint == 0 then
@@ -1087,7 +1088,6 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 
 	-- Make sure we are not some standard combine/crawler/articulated vehicle
 	if not (vehicle.cp.hasSpecializationArticulatedAxis or vehicle.cp.hasSpecializationCombine or vehicle.cp.hasSpecializationCrawler or courseplay:isHarvesterSteerable(vehicle)) then
-		local isTruck = false;
 	    local isAllWheelStering = false;
 		local haveStraitWheels = false;
 		local haveTurningWheels = false;
@@ -1127,7 +1127,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 		if isAllWheelStering then
 			dirNodeOffset = maxDis + minDis;
 		else
-			dirNodeOffset = maxDis * 0.5;
+			dirNodeOffset = maxDis * 0.75;
 		end;
 		wheelBase = abs(maxDis) + abs(minDis);
 		--print(("wheelBase is %.2fm"):format(wheelBase));
@@ -1160,7 +1160,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 	--	print(("Offset set to %.2fm"):format(offset));
 	--end;
 
-	return offset;
+	return offset, isTruck;
 end;
 
 function courseplay:getWheelBase(vehicle, fromTurningNode)

@@ -288,7 +288,7 @@ function courseplay:load(savegame)
 		end
 	end;
 
-	local directionNodeOffset = courseplay:getVehicleDirectionNodeOffset(self, DirectionNode);
+	local directionNodeOffset, isTruck = courseplay:getVehicleDirectionNodeOffset(self, DirectionNode);
 	if directionNodeOffset ~= 0 then
 		self.cp.oldDirectionNode = DirectionNode;  -- Only used for debugging.
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
@@ -318,6 +318,9 @@ function courseplay:load(savegame)
 	else
 		self.cp.steeringAngle = 30;
 	end
+	if isTruck then
+		self.cp.revSteeringAngle = self.cp.steeringAngle * 0.25;
+	end;
 	if self.cp.steeringAngleCorrection then
 		self.cp.steeringAngle = Utils.getNoNil(self.cp.steeringAngleCorrection, self.cp.steeringAngle);
 	elseif self.cp.steeringAngleMultiplier then
