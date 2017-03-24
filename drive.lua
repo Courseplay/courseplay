@@ -96,9 +96,12 @@ function courseplay:drive(self, dt)
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
 	end]]
 
+
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
-
+	if self.Waypoints[self.cp.waypointIndex].rev and self.cp.oldDirectionNode then
+		ctx, cty, ctz = getWorldTranslation(self.cp.oldDirectionNode);
+	end;
 	if self.cp.waypointIndex > self.cp.numWaypoints then
 		courseplay:debug(string.format("drive %d: %s: self.cp.waypointIndex (%s) > self.cp.numWaypoints (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.waypointIndex), tostring(self.cp.numWaypoints)), 12); --this should never happen
 		courseplay:setWaypointIndex(self, self.cp.numWaypoints);
@@ -927,6 +930,9 @@ function courseplay:drive(self, dt)
 			-- Using false to disable the driveToPoint. This could be made into an setting option later on.
 			local useDriveToPoint = false --and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
 			if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
+				if self.Waypoints[self.cp.waypointIndex].rev and self.cp.revSteeringAngle then
+					steeringAngle = self.cp.revSteeringAngle;
+				end;
 				if math.abs(self.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then
 						self.nextMovingDirection = -1
