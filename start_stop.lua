@@ -789,6 +789,14 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 end
 
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
+	if not vehicle.cp.saveFuelOptionActive then
+		if vehicle.cp.saveFuel then
+			vehicle.cp.saveFuel = false
+			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
+		end
+		return
+	end
+	
 	if allowedToDrive then
 		if courseplay:getCustomTimerExists(vehicle,'fuelSaveTimer')  then 
 			--print("reset existing timer")

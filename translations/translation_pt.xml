@@ -293,7 +293,8 @@
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />           
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />                               
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />                          
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->		
 		
 	</texts>
 </l10n>

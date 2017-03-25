@@ -296,6 +296,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="ガソリンスタンドで給油する" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="常時" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="20%以下" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>

@@ -294,6 +294,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Tanken bij tankstation" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="altijd" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="onder 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>

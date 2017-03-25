@@ -296,6 +296,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Doplňit palivo na čerpací stanici:" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="vždy" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="méně než 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>
