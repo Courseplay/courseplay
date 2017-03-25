@@ -136,8 +136,8 @@
 		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Muitos pontos de espera! Somente %d permitidos." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Poucos pontos de espera! Necessários $d" />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Muitos pontos para descarregar! Somente %d permitidos." /> 
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Poucos pontos para descarregar! Necessários %d." /> 
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="carreta incorreta para este modo" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ferramenta errada para este modo" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Este veículo não é suportado neste modo" />
@@ -145,8 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distancia da faixa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Distancia horizontal do equipamento" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Distancia vertical do equipamento" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Distancia Horizontal para Carregar/Descarregar" />     
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Distancia Vertical para Carregar/Descarregar e espera" />  
 		<text name="COURSEPLAY_FRONT" 									 text="a frente" />
 		<text name="COURSEPLAY_BACK" 									 text="ré" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Largura de trabalho" />
@@ -296,7 +296,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Salvar opção para reabastecer" />						 
 		
 	</texts>
 </l10n>
