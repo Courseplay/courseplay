@@ -599,6 +599,12 @@ function courseplay:stop(self)
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
+		if tool.cp.originalCapacities then
+			for index,fillUnit in pairs(tool.fillUnits) do
+				fillUnit.capacity =  tool.cp.originalCapacities[index]
+			end
+			tool.cp.originalCapacities = nil
+		end
 	end
 
 	self.cp.lastInfoText = nil
@@ -783,6 +789,14 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 end
 
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
+	if not vehicle.cp.saveFuelOptionActive then
+		if vehicle.cp.saveFuel then
+			vehicle.cp.saveFuel = false
+			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
+		end
+		return
+	end
+	
 	if allowedToDrive then
 		if courseplay:getCustomTimerExists(vehicle,'fuelSaveTimer')  then 
 			--print("reset existing timer")

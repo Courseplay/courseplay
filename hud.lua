@@ -968,6 +968,10 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[5][7][1].text = courseplay:loc('COURSEPLAY_ALWAYS_USE_4WD');
 			vehicle.cp.hud.content.pages[5][7][2].text = vehicle.cp.driveControl.alwaysUseFourWD and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
+		
+		--FuelSaveOption
+			vehicle.cp.hud.content.pages[5][8][1].text = courseplay:loc('COURSEPLAY_FUELSAVEOPTION');
+			vehicle.cp.hud.content.pages[5][8][2].text = vehicle.cp.saveFuelOptionActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 
 	--PAGE 6: GENERAL SETTINGS
 	elseif page == self.PAGE_GENERAL_SETTINGS then
@@ -1613,6 +1617,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 5, nil, 'changeReverseSpeed', 1, mouseWheelArea.x, self.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
 
 	courseplay.button:new(vehicle, 5, nil, 'toggleUseRecordingSpeed', nil, self.contentMinX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
+	
+	courseplay.button:new(vehicle, 5, nil, 'toggleFuelSaveOption', nil, self.contentMinX, self.linesPosY[8], self.contentMaxWidth, self.lineHeight, 8, nil, true);
 
 	-- 4WD button in line 5: only added if driveControl and 4WD exist
 

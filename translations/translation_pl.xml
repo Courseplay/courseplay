@@ -296,6 +296,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Uzupełnij paliwo na stacji benzynowej" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="zawsze" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="poniżej 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>

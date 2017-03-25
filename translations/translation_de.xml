@@ -295,6 +295,8 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Kraftstoff an der Tankstelle nachfüllen" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="immer" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="nur unter 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Kraftstoff-Sparmodus" />
+		
 		
 	</texts>
 </l10n>

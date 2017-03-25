@@ -65,6 +65,10 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 
 	return true;
 end;
+function courseplay:toggleFuelSaveOption(self)
+	self.cp.saveFuelOptionActive = not self.cp.saveFuelOptionActive 
+end
+
 
 function courseplay:toggleAutoRefuel(self)
 	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 

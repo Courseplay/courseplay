@@ -294,6 +294,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="在加油站加注燃料" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="总是" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="低于20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>
