@@ -296,21 +296,22 @@ function courseplay:unload_combine(vehicle, dt)
 	local AutoCombineIsTurning = false
 	local combineIsAutoCombine = false
 	local autoCombineExtraMoveBack = 0
-	if tractor.acParameters ~= nil and tractor.acParameters.enabled and tractor.isHired  then
-		combineIsAutoCombine = true
-		if tractor.cp.turnStage == nil then
-			tractor.cp.turnStage = 0
-		end
-		-- if tractor.acTurnStage ~= 0 then 
-		if tractor.acTurnStage > 0 and not (tractor.acTurnStage >= 20 and tractor.acTurnStage <= 22) then
-			tractor.cp.turnStage = 2
-			autoCombineExtraMoveBack = vehicle.cp.turnDiameter*1.5
-			AutoCombineIsTurning = true
-			-- print(('%s: acTurnStage=%d -> cp.turnState=2, AutoCombineIsTurning=true'):format(nameNum(tractor), tractor.acTurnStage)); --TODO: 140308 AutoTractor
-		else
-			tractor.cp.turnStage = 0
-		end
-	end
+	-- Disables AutoCombine code -- TODO: Implement new AC which is renamed to AIVehicleExtension: https://github.com/Mogli12/AIVehicleExtension
+	--if tractor.acParameters ~= nil and tractor.acParameters.enabled and tractor.isHired  then
+	--	combineIsAutoCombine = true
+	--	if tractor.cp.turnStage == nil then
+	--		tractor.cp.turnStage = 0
+	--	end
+	--	-- if tractor.acTurnStage ~= 0 then
+	--	if tractor.acTurnStage > 0 and not (tractor.acTurnStage >= 20 and tractor.acTurnStage <= 22) then
+	--		tractor.cp.turnStage = 2
+	--		autoCombineExtraMoveBack = vehicle.cp.turnDiameter*1.5
+	--		AutoCombineIsTurning = true
+	--		-- print(('%s: acTurnStage=%d -> cp.turnState=2, AutoCombineIsTurning=true'):format(nameNum(tractor), tractor.acTurnStage)); --TODO: 140308 AutoTractor
+	--	else
+	--		tractor.cp.turnStage = 0
+	--	end
+	--end
 	
 	-- is combine turning ?
 	if not vehicle.cp.choppersTurnHasEnded and combine.cp.isChopper and combine.turnStage == 3 and combine.waitingForTrailerToUnload then
@@ -543,7 +544,7 @@ function courseplay:unload_combine(vehicle, dt)
 					end
 					local tipperX,tipperY,tipperZ = getWorldTranslation(currentTipper.rootNode)
 					local dirX,dirZ = combine.acDirectionBeforeTurn.trace[index].dx,combine.acDirectionBeforeTurn.trace[index].dz
-					
+
 					vehicle.cp.cpTurnBaseNode = createTransformGroup('cpTurnBaseNode');
 					link(getRootNode(), vehicle.cp.cpTurnBaseNode);
 					setTranslation(vehicle.cp.cpTurnBaseNode, tipperX,tipperY,tipperZ);
