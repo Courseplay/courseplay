@@ -1536,6 +1536,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.mode10.shieldHeight = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#shieldHeight'), 0.3);
 		self.cp.mode10.automaticSpeed =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticSpeed'), true);
 		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticHeight'), true);
+		self.cp.mode10.bladeOffset = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#bladeOffset'), 0);
 		
 		courseplay:validateCanSwitchMode(self);
 	end;
@@ -1600,7 +1601,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel));
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q oppositeTurnMode=%q manualWorkWidth="%.1f" ploughFieldEdge=%q />', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField), tostring(self.cp.oppositeTurnMode),Utils.getNoNil(self.cp.manualWorkWidth,0),tostring(self.cp.ploughFieldEdge));
-	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q />', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth));
+	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q bladeOffset="%.1f"/>', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth), self.cp.mode10.bladeOffset);
 	local shovels, combine = '', '';
 	if shovelRotsAttrNodes or shovelTransAttrNodes then
 		shovels = string.format('<shovel rot=%q trans=%q />', shovelRotsAttrNodes, shovelTransAttrNodes);

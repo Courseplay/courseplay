@@ -599,6 +599,12 @@ function courseplay:stop(self)
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
+		if tool.cp.originalCapacities then
+			for index,fillUnit in pairs(tool.fillUnits) do
+				fillUnit.capacity =  tool.cp.originalCapacities[index]
+			end
+			tool.cp.originalCapacities = nil
+		end
 	end
 
 	self.cp.lastInfoText = nil
