@@ -1621,7 +1621,7 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	--print(string.format("vehicle itself(%s): vehicle.cp.totalCapacity:(%s)",tostring(vehicle.name),tostring(vehicle.cp.totalCapacity)))
 	if vehicle.cp.workTools ~= nil then
 		for _,tool in pairs(vehicle.cp.workTools) do
-			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool)
+			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool,vehicle.cp.mode)
 			if hasMoreFillUnits and tool ~= vehicle then
 				vehicle.cp.totalFillLevel = (vehicle.cp.totalFillLevel or 0) + tool.cp.fillLevel
 				vehicle.cp.totalCapacity = (vehicle.cp.totalCapacity or 0 ) + tool.cp.capacity
@@ -1656,6 +1656,13 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 		return false
 	end
 	for index,fillUnit in pairs(workTool.fillUnits) do
+		if mode == 10 then
+			if not workTool.cp.originalCapacities then
+				workTool.cp.originalCapacities = {}
+				workTool.cp.originalCapacities[index]= fillUnit.capacity
+				fillUnit.capacity = fillUnit.capacity *3
+			end
+		end
 		fillLevel = fillLevel + fillUnit.fillLevel
 		capacity = capacity + fillUnit.capacity
 		if fillLevel ~= nil and capacity ~= nil then

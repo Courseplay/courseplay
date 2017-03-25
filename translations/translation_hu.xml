@@ -294,6 +294,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />            <!-- TODO: TRANSLATE! -->
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />                                <!-- TODO: TRANSLATE! -->
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />                             <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>

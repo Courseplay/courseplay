@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Faire le plein à la station" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="toujours" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="en dessous de 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>
