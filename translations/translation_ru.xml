@@ -296,7 +296,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						 	 text="Дозаправка на АЗС" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"								 text="всегда" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="ниже 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Экономить топливо" />
 		
 	</texts>
 </l10n>
