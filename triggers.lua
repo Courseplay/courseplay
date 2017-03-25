@@ -171,7 +171,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 				elseif onLeave and not isInOtherTrigger then
 					self.cp.collidingObjects.all[otherId] = nil
 					if self.cp.collidingVehicleId == otherId then
-						if TriggerNumber ~= 4 then
+						--if TriggerNumber ~= 4 then
 							--self.CPnumCollidingVehicles = math.max(self.CPnumCollidingVehicles - 1, 0);
 							--if self.CPnumCollidingVehicles == 0 then
 								--self.cp.collidingVehicleId = nil
@@ -179,9 +179,9 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 							--end
 							courseplay:setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
 							courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);
-						else
-							courseplay:debug(string.format('%s: 	onLeave - keep "self.CPnumCollidingVehicles"', nameNum(self)), 3);
-						end
+						--else
+						--	courseplay:debug(string.format('%s: 	onLeave - keep "self.CPnumCollidingVehicles"', nameNum(self)), 3);
+						--end
 					elseif self.cp.collidingVehicleId ~= nil then
 						courseplay:debug(string.format('%s: 	onLeave - not valid for "self.cp.collidingVehicleId" keep it', nameNum(self)), 3);
 					else

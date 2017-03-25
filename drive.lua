@@ -931,9 +931,13 @@ function courseplay:drive(self, dt)
 
 			-- Using false to disable the driveToPoint. This could be made into an setting option later on.
 			local useDriveToPoint = false --and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
+			local disableLongCollisionCheck = workArea;
 			if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
-				if self.Waypoints[self.cp.waypointIndex].rev and self.cp.revSteeringAngle then
-					steeringAngle = self.cp.revSteeringAngle;
+				if self.Waypoints[self.cp.waypointIndex].rev then
+					if self.cp.revSteeringAngle then
+						steeringAngle = self.cp.revSteeringAngle;
+					end;
+					disableLongCollisionCheck = true;
 				end;
 				if math.abs(self.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then
@@ -954,7 +958,7 @@ function courseplay:drive(self, dt)
 			end;
 			
 			if not isBypassing then
-				courseplay:setTrafficCollision(self, lx, lz, workArea)
+				courseplay:setTrafficCollision(self, lx, lz, disableLongCollisionCheck);
 			end
 		end
 	elseif not isWaitingThisLoop then
@@ -984,7 +988,7 @@ end
 -- END drive();
 
 
-function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
+function courseplay:setTrafficCollision(vehicle, lx, lz, disadleLongCheck)
 	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.cp.waypointIndex > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.cp.waypointIndex > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.cp.waypointIndex > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	--local maxlx = 0.5; --sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
@@ -1004,7 +1008,7 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
 		local recordNumber = vehicle.cp.waypointIndex
 		if vehicle.cp.collidingVehicleId == nil then
 			for i=2,vehicle.cp.numTrafficCollisionTriggers do
-				if workArea or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
+				if disadleLongCheck or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
 					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 				else
 					
