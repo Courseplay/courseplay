@@ -73,11 +73,11 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 	 text="Montrer les points" />
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evite les cultures" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distance latéral:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Labour des fourrières:" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Démarrer à:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Tourne dans le champ:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Direction de la manoeuvre:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="zone à travailler" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Manoeuvre:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="dans zone à travailler" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="dès que possible" />
 		<text name="COURSEPLAY_TURN_RADIUS" 						 	 text="Rayon de braquage:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Distance verticale:" />
@@ -133,11 +133,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 					 	 text="doit bientôt faire le plein." />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 					 	 text="doit faire le plein." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 					 	 text="est en train d'être ravitaillé." />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="se fait peser" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Trop de points d'attente! Seulement %d permis." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Trop peu de points d'attente! Nécessaire %d." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Trop de points de déchargement! Seulement %d permis." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Trop peu de points de déchargement! Nécessaire %d." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 						 	 text="pas la bonne remorque pour ce mode" />
 		<text name="COURSEPLAY_WRONG_TOOL" 						 		 text="pas le bon outil pour ce mode" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Ce véhicule n'est pas supporté dans ce mode" />
@@ -145,8 +145,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 						 	 text="Décalage de la voie" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 						 	 text="Outil: décalage latéral" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 						 	 text="Outil: décalage av/ar" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Charg./Décharg. décalage latéral" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Charg./Décharg./Attente décalage av/ar" />
 		<text name="COURSEPLAY_FRONT" 							 		 text="avant" />
 		<text name="COURSEPLAY_BACK" 							 		 text="arrière" />
 		<text name="COURSEPLAY_WORK_WIDTH" 						 		 text="Largeur de travail" />
@@ -238,7 +238,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Reprendre l'enregistrement" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 					 	 text="Supprimer le dernier point" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 					 	 text="Placer un point d'attente" />
-		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Placer un point de déchargement" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Placer un point de croisement" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Commencer la manœuvre de demi-tour" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 					 	 text="Terminer la manœuvre de demi-tour" />
@@ -295,7 +295,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Faire le plein à la station" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="toujours" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="en dessous de 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Eco. carburant:" />
 		
 	</texts>
 </l10n>
