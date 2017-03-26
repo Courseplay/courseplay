@@ -44,7 +44,7 @@
 		<text name="COURSEPLAY_FOLDER_NAME" 						 	 text="Nome da pasta" />
 		<text name="COURSEPLAY_FILTER_COURSES" 						 	 text="Filtrar percursos" />
 		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Voltar" />	
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Cancelar" />			
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Cancelar" />
 		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s para Cancelar" />	
 		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s para Gravar Percurso" />
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s para Gravar Pasta" />
@@ -273,28 +273,28 @@
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover para pasta" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Eliminar percurso/pasta" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="modo" />                   
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nivelar e compactar" />              
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="encher" />                           
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="paragem automática" />                 
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="procurar só com CP ligado" />                   
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="só com os motores ligados" />               
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="detetar tractores no alcanse " />        
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="velocidade máxima ao empurrar" />              
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="altura da lâmina" />                         
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="nenhum silo detectado no ponto inicial" /> 
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="sem lâmina ligada" />                    
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="modo" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nivelar e compactar" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="encher" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="paragem automática" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="procurar só com CP ligado" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="só com os motores ligados" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="detetar tractores no alcanse " />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="velocidade máxima ao empurrar" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="altura da lâmina" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="nenhum silo detectado no ponto inicial" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="sem lâmina ligada" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="lâmina frontal não é suportada" /> 
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Definições do silo" />                  
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="largura da lâmina" />                          
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo está a ser enchido por" />               
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="conduzir através" />                       
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="descarregar em marcha-atrás" />                     
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Definições do silo" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="largura da lâmina" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo está a ser enchido por" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="conduzir através" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="descarregar em marcha-atrás" />
 		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />           
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />                               
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->		
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="guardar opção para reabastecer" />
 		
 	</texts>
 </l10n>
