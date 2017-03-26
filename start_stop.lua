@@ -429,6 +429,11 @@ function courseplay:start(self)
 		courseplay:createMapHotspot(self);
 	end;
 
+	-- Disable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
+	if self.cropDestruction then
+		courseplay:disableCropDestruction(self);
+	end;
+
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
@@ -617,6 +622,11 @@ function courseplay:stop(self)
 	if courseplay.isClient then
 		return
 	end
+
+	-- Enable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
+	if self.cropDestruction then
+		courseplay:enableCropDestruction(self);
+	end;
 
 	if self.cp.hasDriveControl then
 		local changed = false;
