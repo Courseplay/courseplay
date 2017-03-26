@@ -23,6 +23,8 @@ function courseplay:start(self)
 			self.vehicleCharacter:setCharacterVisibility(false)
 		end
 	end
+    -- Start the reset character timer.
+	courseplay:setCustomTimer(self, "resetCharacter", 300);
 
 	if courseplay.isClient then
 		return
@@ -575,6 +577,9 @@ function courseplay:stop(self)
  		self.cp.runCounter = 0;
  		self.cp.runReset = false;
  	end;
+
+	-- Reset the reset character timer.
+	courseplay:resetCustomTimer(self, "resetCharacter", true);
 
 	if self.vehicleCharacter ~= nil then
 		self.vehicleCharacter:delete();

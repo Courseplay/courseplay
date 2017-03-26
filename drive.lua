@@ -6,7 +6,20 @@ local avoidWorkAreaType = {};
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	
+	-- Reset Character each 2 min to prevent glitching out.
+	if courseplay:timerIsThrough(self, "resetCharacter", false) then
+		if self.vehicleCharacter ~= nil then
+			self.vehicleCharacter:delete();
+			self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name));
+			if self.isEntered then
+				self.vehicleCharacter:setCharacterVisibility(false);
+			end;
+		end;
+		--print("Character have been reset!");
+		courseplay:setCustomTimer(self, "resetCharacter", 300);
+	end;
+
+
 	if self.cp.saveFuel then
 		if self.isMotorStarted then
 			--print("stop Order")
