@@ -647,6 +647,10 @@ function courseplay:stop(self)
 		self.cp.cruiseControlSpeedBackup = nil;
 	end;
 
+	if vehicle.cp.takeOverSteering then
+		vehicle.cp.takeOverSteering = false
+	end
+	
 	courseplay:releaseCombineStop(self)
 	self.cp.BunkerSiloMap = nil
 	self.cp.mode9TargetSilo = nil

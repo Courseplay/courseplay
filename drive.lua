@@ -267,6 +267,29 @@ function courseplay:drive(self, dt)
 	local wayPointIsUnload = self.Waypoints[self.cp.previousWaypointIndex].unload
 	local wayPointIsRevUnload = wayPointIsUnload and self.Waypoints[self.cp.previousWaypointIndex].rev
 	local stopForUnload = false
+	local breakCode = false	
+	local revUnloadingPoint = 0
+	
+	if self.Waypoints[self.cp.previousWaypointIndex].rev and self.cp.numUnloadPoints > 0 then
+		for i=1,self.cp.numUnloadPoints do
+			local index = self.cp.unloadPoints[i]
+			if self.Waypoints[index].rev then
+				revUnloadingPoint = index
+			end
+		end
+	end
+	
+	if revUnloadingPoint > 0 then
+		stopForUnload,breakCode  = courseplay:handleUnloading(self,true,dt,revUnloadingPoint)
+		if stopForUnload then
+			allowedToDrive = false;
+		end
+		if breakCode then
+			return;
+		end
+	end
+	
+	
 	-- ### WAITING POINTS - START
 	if (wayPointIsWait or wayPointIsUnload) and self.cp.wait then
 		isWaitingThisLoop = true
@@ -276,7 +299,7 @@ function courseplay:drive(self, dt)
 		end;
 		if self.cp.mode <= 2 then
 			if wayPointIsUnload then
-				stopForUnload = courseplay:handleUnloading(self,wayPointIsRevUnload)
+				stopForUnload,breakCode  = courseplay:handleUnloading(self,wayPointIsRevUnload,dt)
 			elseif self.cp.mode == 1 and wayPointIsWait then
 				if self.cp.hasAugerWagon then
 					courseplay:handle_mode1(self, allowedToDrive, dt);
@@ -315,7 +338,7 @@ function courseplay:drive(self, dt)
 				if self.cp.makeHeaps then
 					stopForUnload = courseplay:handleHeapUnloading(self);
 				else
-					stopForUnload = courseplay:handleUnloading(self,wayPointIsRevUnload);
+					stopForUnload,breakCode = courseplay:handleUnloading(self,wayPointIsRevUnload,dt);
 				end;
 			elseif self.cp.previousWaypointIndex == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
@@ -411,6 +434,11 @@ function courseplay:drive(self, dt)
 		elseif stopForUnload then
 			allowedToDrive = false;
 		end;
+		
+		if breakCode then
+			return
+		end
+		
 	-- ### WAITING POINTS - END
 
 	-- ### NON-WAITING POINTS
