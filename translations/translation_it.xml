@@ -110,7 +110,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 			 text="Controlli della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 				 text="Gestione percorsi" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="Scegliere la cartella" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Opzioni della modalità combi" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="Opzioni modalità lavoro in campo" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="Gestione della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="Velocità limite" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="Parametri di guida" />
@@ -296,7 +296,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Rifornimento di carburante" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="sotto al 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Risparmio carburante" />
 		
 	</texts>
 </l10n>
