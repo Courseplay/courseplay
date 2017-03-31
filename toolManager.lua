@@ -1005,6 +1005,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						local triggerX,_,triggerZ = getWorldTranslation(vehicle.cp.currentTipTrigger.rootNode);
 						_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
 
+						--print(('trailerUnloadDistance = %s unloadDistance = %s'):format(tostring(trailerUnloadDistance), tostring(unloadDistance)))
 						goForTipping = trailerInTipRange and trailerUnloadDistance > unloadDistance
 					else
 						goForTipping = trailerInTipRange
@@ -1012,7 +1013,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				else
 					goForTipping = trailerInTipRange
 				end
-				--print(('trailerUnloadDistance = %s unloadDistance = %s'):format(tostring(trailerUnloadDistance), tostring(unloadDistance)))
+				
 
 				--AlternativeTipping: don't unload if full
 				if ctt.fillLevel ~= nil and ctt.capacity ~= nil and ctt.fillLevel >= ctt.capacity then
