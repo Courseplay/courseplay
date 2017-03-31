@@ -647,8 +647,8 @@ function courseplay:stop(self)
 		self.cp.cruiseControlSpeedBackup = nil;
 	end;
 
-	if vehicle.cp.takeOverSteering then
-		vehicle.cp.takeOverSteering = false
+	if self.cp.takeOverSteering then
+		self.cp.takeOverSteering = false
 	end
 	
 	courseplay:releaseCombineStop(self)
