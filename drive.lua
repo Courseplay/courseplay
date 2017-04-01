@@ -1701,7 +1701,7 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 		return false
 	end
 	for index,fillUnit in pairs(workTool.fillUnits) do
-		if mode == 10 then
+		if mode == 10 and workTool.cp.hasSpecializationLeveler then
 			if not workTool.cp.originalCapacities then
 				workTool.cp.originalCapacities = {}
 				workTool.cp.originalCapacities[index]= fillUnit.capacity
