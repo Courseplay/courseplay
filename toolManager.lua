@@ -991,8 +991,29 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			elseif not isBGA then
 				if ctt.isAreaTrigger then
 					trailerInTipRange = g_currentMission.trailerTipTriggers[tipper] ~= nil
+					if not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+						local unloadDistance = 1000;
+						local trailerX,_,trailerZ = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
+						
+						local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
+						local _,vehicleY,_ = getWorldTranslation(directionNode);
+
+						local _,_,z = worldToLocal(directionNode, trailerX, vehicleY, trailerZ);
+						local trailerUnloadDistance = z + 1;
+					
+						
+						local triggerX,_,triggerZ = getWorldTranslation(vehicle.cp.currentTipTrigger.rootNode);
+						_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
+
+						--print(('trailerUnloadDistance = %s unloadDistance = %s'):format(tostring(trailerUnloadDistance), tostring(unloadDistance)))
+						goForTipping = trailerInTipRange and trailerUnloadDistance > unloadDistance
+					else
+						goForTipping = trailerInTipRange
+					end;
+				else
+					goForTipping = trailerInTipRange
 				end
-				goForTipping = trailerInTipRange;
+				
 
 				--AlternativeTipping: don't unload if full
 				if ctt.fillLevel ~= nil and ctt.capacity ~= nil and ctt.fillLevel >= ctt.capacity then

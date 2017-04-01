@@ -1400,6 +1400,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
  		self.cp.saveFuelOptionActive = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#saveFuelOption'),			 true);
 		if self.cp.runReset == true then
  			self.cp.runCounter = 0;
+ 			self.cp.runReset = false;
  		end;
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);

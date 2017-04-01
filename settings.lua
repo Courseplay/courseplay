@@ -118,12 +118,7 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 		courseplay:setStopAtEnd(vehicle, false);
 	end;
 	if vehicle.cp.runReset == true then
- 		if vehicle.cp.runNumber < 10 then
- 			courseplay:changeRunNumber(vehicle, 1)
- 		else
- 			vehicle.cp.runNumber = 1
  			vehicle.cp.runCounter = 0
- 		end
  	end;
 end;
 
