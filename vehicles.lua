@@ -54,6 +54,35 @@ function courseplay:deleteCollisionVehicle(vehicle)
 	end
 end
 
+function courseplay:disableCropDestruction(vehicle)
+	-- Make sure we have the cp table
+	if vehicle.cp == nil then vehicle.cp = {}; end;
+
+	-- Disable crop destruction if enabled
+	if vehicle.cropDestruction then
+		vehicle.cp.cropDestructionIsActiveBackup = vehicle.cropDestruction.isActive;
+		vehicle.cropDestruction.isActive = false;
+	end;
+
+	-- CHECK ATTACHED IMPLEMENTS
+	for _,impl in pairs(vehicle.attachedImplements) do
+		courseplay:disableCropDestruction(impl.object);
+	end;
+end;
+
+function courseplay:enableCropDestruction(vehicle)
+	-- Enable crop destruction if backup is set
+	if vehicle.cropDestruction and vehicle.cp and vehicle.cp.cropDestructionIsActiveBackup ~= nil then
+		vehicle.cropDestruction.isActive = vehicle.cp.cropDestructionIsActiveBackup;
+		vehicle.cp.cropDestructionIsActiveBackup = nil;
+	end;
+
+	-- CHECK ATTACHED IMPLEMENTS
+	for _,impl in pairs(vehicle.attachedImplements) do
+		courseplay:enableCropDestruction(impl.object);
+	end;
+end;
+
 --- courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode, doReverse)
 --	Returns: (node, backtrack, rotLimits)
 --		node will return either:		1. The jointNode that connects to the toNode,

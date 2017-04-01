@@ -92,7 +92,10 @@ end
 function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is in courseplay because it's vehicle based
 	-- global array for courses, no refreshing needed any more
 	courseplay.courses:reinitializeCourses();
-
+	
+	if vehicle.cp.lastValidTipDistance ~= nil then
+		vehicle.cp.lastValidTipDistance = nil
+	end
 	if addCourseAtEnd == nil then addCourseAtEnd = false; end;
 
 	courseplay:debug(string.format('%s: loadCourse(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(vehicle), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), 8);

@@ -23,6 +23,8 @@ function courseplay:start(self)
 			self.vehicleCharacter:setCharacterVisibility(false)
 		end
 	end
+    -- Start the reset character timer.
+	courseplay:setCustomTimer(self, "resetCharacter", 300);
 
 	if courseplay.isClient then
 		return
@@ -427,6 +429,11 @@ function courseplay:start(self)
 		courseplay:createMapHotspot(self);
 	end;
 
+	-- Disable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
+	if self.cropDestruction then
+		courseplay:disableCropDestruction(self);
+	end;
+
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
@@ -576,6 +583,9 @@ function courseplay:stop(self)
  		self.cp.runReset = false;
  	end;
 
+	-- Reset the reset character timer.
+	courseplay:resetCustomTimer(self, "resetCharacter", true);
+
 	if self.vehicleCharacter ~= nil then
 		self.vehicleCharacter:delete();
 	end
@@ -613,6 +623,11 @@ function courseplay:stop(self)
 		return
 	end
 
+	-- Enable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
+	if self.cropDestruction then
+		courseplay:enableCropDestruction(self);
+	end;
+
 	if self.cp.hasDriveControl then
 		local changed = false;
 		if self.cp.driveControl.hasFourWD and self.driveControl.fourWDandDifferentials.fourWheel ~= self.cp.driveControl.fourWDBackup then
@@ -632,6 +647,10 @@ function courseplay:stop(self)
 		self.cp.cruiseControlSpeedBackup = nil;
 	end;
 
+	if self.cp.takeOverSteering then
+		self.cp.takeOverSteering = false
+	end
+	
 	courseplay:releaseCombineStop(self)
 	self.cp.BunkerSiloMap = nil
 	self.cp.mode9TargetSilo = nil

@@ -6,7 +6,20 @@ local avoidWorkAreaType = {};
 
 -- drives recored course
 function courseplay:drive(self, dt)
-	
+	-- Reset Character each 2 min to prevent glitching out.
+	if courseplay:timerIsThrough(self, "resetCharacter", false) then
+		if self.vehicleCharacter ~= nil then
+			self.vehicleCharacter:delete();
+			self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name));
+			if self.isEntered then
+				self.vehicleCharacter:setCharacterVisibility(false);
+			end;
+		end;
+		--print("Character have been reset!");
+		courseplay:setCustomTimer(self, "resetCharacter", 300);
+	end;
+
+
 	if self.cp.saveFuel then
 		if self.isMotorStarted then
 			--print("stop Order")
@@ -254,6 +267,29 @@ function courseplay:drive(self, dt)
 	local wayPointIsUnload = self.Waypoints[self.cp.previousWaypointIndex].unload
 	local wayPointIsRevUnload = wayPointIsUnload and self.Waypoints[self.cp.previousWaypointIndex].rev
 	local stopForUnload = false
+	local breakCode = false	
+	local revUnloadingPoint = 0
+	
+	if self.Waypoints[self.cp.previousWaypointIndex].rev and self.cp.numUnloadPoints > 0 then
+		for i=1,self.cp.numUnloadPoints do
+			local index = self.cp.unloadPoints[i]
+			if self.Waypoints[index].rev then
+				revUnloadingPoint = index
+			end
+		end
+	end
+	
+	if revUnloadingPoint > 0 then
+		stopForUnload,breakCode  = courseplay:handleUnloading(self,true,dt,revUnloadingPoint)
+		if stopForUnload then
+			allowedToDrive = false;
+		end
+		if breakCode then
+			return;
+		end
+	end
+	
+	
 	-- ### WAITING POINTS - START
 	if (wayPointIsWait or wayPointIsUnload) and self.cp.wait then
 		isWaitingThisLoop = true
@@ -263,7 +299,7 @@ function courseplay:drive(self, dt)
 		end;
 		if self.cp.mode <= 2 then
 			if wayPointIsUnload then
-				stopForUnload = courseplay:handleUnloading(self,wayPointIsRevUnload)
+				stopForUnload,breakCode  = courseplay:handleUnloading(self,wayPointIsRevUnload,dt)
 			elseif self.cp.mode == 1 and wayPointIsWait then
 				if self.cp.hasAugerWagon then
 					courseplay:handle_mode1(self, allowedToDrive, dt);
@@ -302,7 +338,7 @@ function courseplay:drive(self, dt)
 				if self.cp.makeHeaps then
 					stopForUnload = courseplay:handleHeapUnloading(self);
 				else
-					stopForUnload = courseplay:handleUnloading(self,wayPointIsRevUnload);
+					stopForUnload,breakCode = courseplay:handleUnloading(self,wayPointIsRevUnload,dt);
 				end;
 			elseif self.cp.previousWaypointIndex == self.cp.startWork then
 				courseplay:setVehicleWait(self, false);
@@ -398,6 +434,11 @@ function courseplay:drive(self, dt)
 		elseif stopForUnload then
 			allowedToDrive = false;
 		end;
+		
+		if breakCode then
+			return
+		end
+		
 	-- ### WAITING POINTS - END
 
 	-- ### NON-WAITING POINTS
@@ -931,9 +972,13 @@ function courseplay:drive(self, dt)
 
 			-- Using false to disable the driveToPoint. This could be made into an setting option later on.
 			local useDriveToPoint = false --and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
+			local disableLongCollisionCheck = workArea;
 			if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
-				if self.Waypoints[self.cp.waypointIndex].rev and self.cp.revSteeringAngle then
-					steeringAngle = self.cp.revSteeringAngle;
+				if self.Waypoints[self.cp.waypointIndex].rev then
+					if self.cp.revSteeringAngle then
+						steeringAngle = self.cp.revSteeringAngle;
+					end;
+					disableLongCollisionCheck = true;
 				end;
 				if math.abs(self.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 					if not fwd then
@@ -954,7 +999,7 @@ function courseplay:drive(self, dt)
 			end;
 			
 			if not isBypassing then
-				courseplay:setTrafficCollision(self, lx, lz, workArea)
+				courseplay:setTrafficCollision(self, lx, lz, disableLongCollisionCheck);
 			end
 		end
 	elseif not isWaitingThisLoop then
@@ -984,7 +1029,7 @@ end
 -- END drive();
 
 
-function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
+function courseplay:setTrafficCollision(vehicle, lx, lz, disadleLongCheck)
 	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.cp.waypointIndex > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.cp.waypointIndex > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.cp.waypointIndex > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	--local maxlx = 0.5; --sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
@@ -1004,7 +1049,7 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, workArea)
 		local recordNumber = vehicle.cp.waypointIndex
 		if vehicle.cp.collidingVehicleId == nil then
 			for i=2,vehicle.cp.numTrafficCollisionTriggers do
-				if workArea or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
+				if disadleLongCheck or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
 					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 				else
 					
@@ -1656,7 +1701,7 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 		return false
 	end
 	for index,fillUnit in pairs(workTool.fillUnits) do
-		if mode == 10 then
+		if mode == 10 and workTool.cp.hasSpecializationLeveler then
 			if not workTool.cp.originalCapacities then
 				workTool.cp.originalCapacities = {}
 				workTool.cp.originalCapacities[index]= fillUnit.capacity
