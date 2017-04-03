@@ -938,7 +938,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				-------------------------------
 				if vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping then
 					if vehicle.cp.totalFillLevel > 0 then
-						if trailerInTipRange and startDistance > 5 and endDistance > 5 then
+						if trailerInTipRange and startDistance > 8 and endDistance > 8 then
 							goForTipping = true
 							allowedToDrive = false
 						end
