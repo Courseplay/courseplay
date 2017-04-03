@@ -70,7 +70,8 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 							courseplay:debug('                Unloading at Liquid Manure Sell Trigger', 23);
 						end;
 					else 
-						tankIsFull = true		
+						--Should only happen if user tries to sell disgeate. TODO mabye? Add a messeage on screen saying unaccepted fill type
+						courseplay:debug('                Unsupported  filltype or trigger', 23);	
 					end		
 				end;
 			end;
