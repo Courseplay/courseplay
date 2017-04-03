@@ -50,18 +50,15 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 
 						local inBGAExtensionTrigger = triggers[1].bga and triggers[1].bga.fermenter_bioOK
 						local goForUnloading = workTool.cp.fillLevel > 0 and workTool.tipState == Trailer.TIPSTATE_CLOSED 
-						local BGAExtensionfull = false;
 
 						--Stop Unloading to BGA Extension
 						if inBGAExtensionTrigger and not goForUnloading and triggers[1].bga.BGA_Bonus >= triggers[1].bga.BGA_Bonus_Capacity*0.99 and (workTool.tipState == Trailer.TIPSTATE_OPENING or workTool.tipState == Trailer.TIPSTATE_OPEN) then
-							BGAExtensionfull = true
 							workTool:toggleTipState(triggers[1],1);	
 							courseplay:debug('                BGA Extension Mod is full resuming course', 23);
 
 						--Start Unloading to BGA Extension
-						elseif inBGAExtensionTrigger and triggers[1].bga.BGA_Bonus < triggers[1].bga.BGA_Bonus_Capacity*0.99  and goForUnloading and not BGAExtensionfull then
+						elseif inBGAExtensionTrigger and triggers[1].bga.BGA_Bonus < triggers[1].bga.BGA_Bonus_Capacity*0.99  and goForUnloading then
 							workTool:toggleTipState(triggers[1],1);	
-							vehicle.cp.isUnloading = true;
 							courseplay:debug('                Unloading at BGA Extension Mod', 23);
 
 						--Liquid Manure Sell Trigger
