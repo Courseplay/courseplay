@@ -43,13 +43,33 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 					vehicle.cp.lastMode8UnloadTriggerId = workTool.ReFillTrigger.manureTrigger;
 					courseplay:debug(('    %s: [ManureLager] setIsReFilling(true), triggerId=%d'):format(nameNum(workTool), vehicle.cp.lastMode8UnloadTriggerId), 23);
 
-				-- BGA extension V3.0
-				elseif workTool.fillTriggers[1] and workTool.fillTriggers[1].bga and workTool.fillTriggers[1].bga.fermenter_bioOK and workTool.fillTriggers[1].fillLevel < workTool.fillTriggers[1].capacity then
-					if not workTool.isFilling and workTool.fillLevel > 1 then
-						workTool:setIsFilling(true);
-						vehicle.cp.lastMode8UnloadTriggerId = workTool.fillTriggers[1].triggerId;
-						courseplay:debug(('    %s: [BGAextension] setIsFilling(true), triggerId=%d'):format(nameNum(workTool), vehicle.cp.lastMode8UnloadTriggerId), 23);
-					end;
+				--Liquid Manure Sell Triggers and BGA Extension Mod
+				elseif workTool.cp.isLiquidManureOverloader then
+					local triggers = g_currentMission.trailerTipTriggers[workTool]
+					if triggers ~= nil and triggers[1].acceptedFillTypes ~= nil and triggers[1].acceptedFillTypes[workTool.cp.fillType] then
+
+						local inBGAExtensionTrigger = triggers[1].bga and triggers[1].bga.fermenter_bioOK
+						local goForUnloading = workTool.cp.fillLevel > 0 and workTool.tipState == Trailer.TIPSTATE_CLOSED 
+
+						--Stop Unloading to BGA Extension
+						if inBGAExtensionTrigger and not goForUnloading and triggers[1].bga.BGA_Bonus >= triggers[1].bga.BGA_Bonus_Capacity*0.99 and (workTool.tipState == Trailer.TIPSTATE_OPENING or workTool.tipState == Trailer.TIPSTATE_OPEN) then
+							workTool:toggleTipState(triggers[1],1);	
+							courseplay:debug('                BGA Extension Mod is full resuming course', 23);
+
+						--Start Unloading to BGA Extension
+						elseif inBGAExtensionTrigger and triggers[1].bga.BGA_Bonus < triggers[1].bga.BGA_Bonus_Capacity*0.99  and goForUnloading then
+							workTool:toggleTipState(triggers[1],1);	
+							courseplay:debug('                Unloading at BGA Extension Mod', 23);
+
+						--Liquid Manure Sell Trigger
+						elseif goForUnloading and not inBGAExtensionTrigger then
+							workTool:toggleTipState(triggers[1],1);	
+							courseplay:debug('                Unloading at Liquid Manure Sell Trigger', 23);
+						end;
+					else 
+						--Should only happen if user tries to sell disgeate. TODO mabye? Add a messeage on screen saying unaccepted fill type
+						courseplay:debug('                Unsupported  filltype or trigger', 23);	
+					end		
 				end;
 			end;
 
