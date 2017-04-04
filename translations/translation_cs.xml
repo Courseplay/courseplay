@@ -132,8 +132,8 @@
 		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="正在测量……" />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="太多的等待点！ 只允许 %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="等待点太少! %d 需求." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="卸载点太多了，只允许 %d 个." />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="卸载点太少了，需要 %d 个." />           <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="错误的拖斗类型" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="当前工具不支持本模式" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="当前车辆不支持本模式" />
@@ -294,7 +294,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="在加油站加注燃料" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="总是" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="低于20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="省燃油选项" />						 <!-- TODO: TRANSLATE! -->
 		
 	</texts>
 </l10n>
