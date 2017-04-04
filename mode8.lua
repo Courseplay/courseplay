@@ -46,7 +46,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 				--Liquid Manure Sell Triggers and BGA Extension Mod
 				elseif workTool.cp.isLiquidManureOverloader then
 					local triggers = g_currentMission.trailerTipTriggers[workTool]
-					if triggers ~= nil and triggers[1].acceptedFillTypes ~= nil and triggers[1].acceptedFillTypes[workTool.cp.fillType] then
+					if triggers ~= nil and triggers[1].acceptedFillTypes ~= nil and triggers[1].acceptedFillTypes[workTool.cp.fillType] and workTool.cp.fillType == FillUtil.fillTypeNameToInt.liquidManure then
 
 						local inBGAExtensionTrigger = triggers[1].bga and triggers[1].bga.fermenter_bioOK
 						local goForUnloading = workTool.cp.fillLevel > 0 and workTool.tipState == Trailer.TIPSTATE_CLOSED 
@@ -77,9 +77,10 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 		elseif workTool.cp.isFuelTrailer then
 			-- do nothing
 
+		end
 
 		-- water trailers
-		elseif workTool.cp.isWaterTrailer then
+		if workTool.cp.isWaterTrailer then
 			-- check if workTool is in waterReceiver trigger
 			courseplay:debug(('    %s: unload'):format(nameNum(workTool)), 23);
 			if not workTool.cp.waterReceiverTrigger then
@@ -147,7 +148,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 			local tank = workTool.cp.waterReceiverTrigger;
 			
 			if tank then
-				-- courseplay:debug(('        tank.WaterTrailerActivatable=%s, tank.waterTrailerActivatable=%s'):format(tostring(tank.WaterTrailerActivatable), tostring(tank.waterTrailerActivatable)), 23);
+				 --courseplay:debug(('        tank.WaterTrailerActivatable=%s, tank.waterTrailerActivatable=%s'):format(tostring(tank.WaterTrailerActivatable), tostring(tank.waterTrailerActivatable)), 23);
 				local activatable, isFilling, setterFn;
 				if tank.isWaterMod then -- WaterMod
 					activatable = tank.WaterTrailerActivatable;
