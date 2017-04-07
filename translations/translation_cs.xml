@@ -130,8 +130,8 @@
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="油料严重不足,必须补充." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="正在加油" />
 		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="正在测量……" />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="太多的等待点！ 只允许 %d." />
-		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="等待点太少! %d 需求." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="太多的等待点！ 只允许 %d 个." />
+		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="等待点太少! 需要 %d 个 ." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="卸载点太多了，只允许 %d 个." />    <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="卸载点太少了，需要 %d 个." />           <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="错误的拖斗类型" />
