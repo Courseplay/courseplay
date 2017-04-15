@@ -59,6 +59,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="a várakozási ponton van." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="az utolsó ponton van." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 								 text="végzett a munkával." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": A munka folytatásához ki kell ürítened!" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": A munkaeszközt újra kell tölteni." />

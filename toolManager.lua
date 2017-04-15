@@ -773,12 +773,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		vehicle.cp.trailerFillDistance = nil;
 		vehicle.cp.currentTrailerToFill = nil;
 		vehicle.cp.tipperLoadMode = 0;
-		if vehicle.cp.runNumber < 11 then
-				vehicle.cp.runCounter = vehicle.cp.runCounter + 1
- 		elseif vehicle.cp.runNumber == 11 then
- 			vehicle.cp.runCounter = 1 -- restets the number of runs if set to unlimted on tipper load
- 		end;
- 		vehicle.cp.runReset = false;
+		courseplay:changeRunCounter(vehicle)
 		return allowedToDrive;
 	end;
 
@@ -1232,6 +1227,9 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				if not (vehicle.cp.fillTrigger and courseplay.triggers.all[vehicle.cp.fillTrigger].isWeightStation) then
 					vehicle.cp.fillTrigger = nil;
 					courseplay:debug(('%s: vehicle.cp.isLoaded or workToolSprayerFillLevelPct >= driveOn -> set vehicle.cp.fillTrigger to nil'):format(nameNum(vehicle)), 19);
+					if workTool.cp.isLiquidManureOverloader then
+						courseplay:changeRunCounter(vehicle)
+					end
 				end;
 			else
 				courseplay:debug(('%s: canRefill is false -> break'):format(nameNum(vehicle)), 19);
@@ -1290,6 +1288,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 					workTool:setIsFuelFilling(false);
 				end;
 				vehicle.cp.fillTrigger = nil;
+				courseplay:changeRunCounter(vehicle)
 			end;
 
 		-- WATER TRAILER
@@ -1311,6 +1310,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 					workTool:setIsWaterTrailerFilling(false);
 				end;
 				vehicle.cp.fillTrigger = nil;
+				courseplay:changeRunCounter(vehicle)
 			end;
 		end;
 	end;

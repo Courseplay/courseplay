@@ -63,6 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="hat Wartepunkt erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="hat den Trigger/das Ende der Route erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="Transport beendet." />
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 								 text="hat die Aufgabe erledigt." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": Gerät muss entladen werden." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": Gerät muss aufgefüllt werden." />
