@@ -902,10 +902,18 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	courseplay:debug(("%s:(Turn) centerOffset=%s, sideB=%s, sideC=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(centerOffset), tostring(sideB), tostring(sideC), tostring(centerHeight)), 14);
 
 	--- Check if we can turn on the headlands
-	if (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
+	local spaceNeeded = 0;
+	if vehicle.cp.oppositeTurnMode then
+		spaceNeeded = -turnInfo.zOffset + centerHeight + turnInfo.turnRadius + turnInfo.halfVehicleWidth;
+	else
+		spaceNeeded = -turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth;
+	end;
+
+	if spaceNeeded < turnInfo.headlandHeight then
 		canTurnOnHeadland = true;
 	end;
-	courseplay:debug(("%s:(Turn) canTurnOnHeadland=%s, headlandHeight=%.2fm, spaceNeeded=%.2fm"):format(nameNum(vehicle), tostring(canTurnOnHeadland), turnInfo.headlandHeight, (-turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth)), 14);
+
+	courseplay:debug(("%s:(Turn) canTurnOnHeadland=%s, headlandHeight=%.2fm, spaceNeeded=%.2fm"):format(nameNum(vehicle), tostring(canTurnOnHeadland), turnInfo.headlandHeight, spaceNeeded), 14);
 
 	--- Target is behind of us
 	local targetOffsetZ = 0;
@@ -932,15 +940,15 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	--- Get the numLanes and onLaneNum, so we can switch to the right turn maneuver.
 	local width = vehicle.cp.courseWorkWidth * 0.5;
 	local doNormalTurn = true;
-	local spaceNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
+	local widthNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
 	if vehicle.cp.oppositeTurnMode then
 		width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
-		doNormalTurn = (turnInfo.haveHeadlands and spaceNeeded > (width + turnInfo.headlandHeight) or spaceNeeded > width);
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), spaceNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
+		doNormalTurn = (turnInfo.haveHeadlands and widthNeeded > (width + turnInfo.headlandHeight) or widthNeeded > width);
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
 	else
 		width = (turnInfo.numLanes - turnInfo.onLaneNum) * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
-		doNormalTurn = (turnInfo.haveHeadlands and spaceNeeded < (width + turnInfo.headlandHeight) or spaceNeeded < width);
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), spaceNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
+		doNormalTurn = (turnInfo.haveHeadlands and widthNeeded < (width + turnInfo.headlandHeight) or widthNeeded < width);
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
 	end;
 
 	--- Do the oposite direction turns for bale loaders, so we avoide bales in the normal turn direction
@@ -986,8 +994,8 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 		--- If we have headlands, then see if we can skip the reversing back part.
 		if turnInfo.haveHeadlands and newZOffset < turnInfo.directionNodeToTurnNodeLength * 0.5 then
-			posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + 6);
-			courseplay:addTurnTarget(vehicle, posX, posZ, true);
+			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + 6);
+			courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
 		else
 			--- Add extra length to the directionNodeToTurnNodeLength if there is an pivoted tool behind the tractor.
 			-- This is to prevent too sharp turning when reversing to the first reverse point.
@@ -1076,8 +1084,8 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 		--- If the last turn circle ends 3m behind the new lane start, we dont need to reverse back.
 		if fromDistance < -3 then
-			posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + 6);
-			courseplay:addTurnTarget(vehicle, posX, posZ, true);
+			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + 6);
+			courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
 
 		--- The last turn circle is less than 3m behind the lane start, so we have to reverse back.
 		else
@@ -1142,15 +1150,15 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		--- Get the numLanes and onLaneNum, so we can switch to the right turn maneuver.
 		local width = vehicle.cp.courseWorkWidth * 0.5;
 		local doNormalTurn = true;
-		local spaceNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
+		local widthNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
 		if vehicle.cp.oppositeTurnMode then
 			width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
-			doNormalTurn = spaceNeeded > width;
-			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), spaceNeeded, width), 14);
+			doNormalTurn = widthNeeded > width;
+			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
 		else
 			width = (turnInfo.numLanes - turnInfo.onLaneNum) * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
-			doNormalTurn = spaceNeeded < width;
-			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), spaceNeeded, width), 14);
+			doNormalTurn = widthNeeded < width;
+			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
 		end;
 
 		if not doNormalTurn then
@@ -1266,15 +1274,15 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	--- Get the numLanes and onLaneNum, so we can switch to the right turn maneuver.
 	local width = vehicle.cp.courseWorkWidth * 0.5;
 	local doNormalTurn = true;
-	local spaceNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
+	local widthNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
 	if vehicle.cp.oppositeTurnMode then
 		width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
-		doNormalTurn = spaceNeeded > width;
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), spaceNeeded, width), 14);
+		doNormalTurn = widthNeeded > width;
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
 	else
 		width = (turnInfo.numLanes - turnInfo.onLaneNum) * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
-		doNormalTurn = spaceNeeded < width;
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), spaceNeeded, width), 14);
+		doNormalTurn = widthNeeded < width;
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
 	end;
 
 	if not doNormalTurn then
