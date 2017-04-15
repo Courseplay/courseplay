@@ -832,12 +832,14 @@ function courseplay:updateAllTriggers()
 	if courseplay.liquidManureOverloaders ~= nil then
 		for rootNode, vehicle in pairs(courseplay.liquidManureOverloaders) do
 			local trigger = vehicle.unloadTrigger
-			local triggerId = trigger.triggerId
-			trigger.isLiquidManureFillTrigger = true;
-			trigger.isLiquidManureOverloaderFillTrigger = true;
-			trigger.parentVehicle = vehicle
-			courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
-			courseplay:debug(('\t\tadd overloader\'s liquidManureFillTrigger (id %d)'):format(triggerId), 1);
+			if trigger then
+				local triggerId = trigger.triggerId
+				trigger.isLiquidManureFillTrigger = true;
+				trigger.isLiquidManureOverloaderFillTrigger = true;
+				trigger.parentVehicle = vehicle
+				courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+				courseplay:debug(('\t\tadd overloader\'s liquidManureFillTrigger (id %d)'):format(triggerId), 1);
+			end;
 		end
 	end
 end;
