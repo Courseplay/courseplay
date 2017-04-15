@@ -79,6 +79,7 @@ function courseplay:load(savegame)
  	self.cp.runNumber = 11; -- Number of times to run Mode 1. Set to 11 for unlimited runs by default.
  	self.cp.runCounter = 0; -- Current Number of runs
 	self.cp.runReset = false -- Resets run loop at stop.
+	self.cp.runCounterChanged = false;
 
 	-- RECORDING
 	self.cp.isRecording = false;
