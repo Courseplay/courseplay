@@ -63,7 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="待機ポイントに到着" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="トリガやエンドポイントに到着" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="穀物輸送を終了しました。" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="液体輸送を終了しました。" />
 		<text name="COURSEPLAY_WORK_END" 								 text="作業終了" />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": アンロードしてください" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": 補給してください" />
