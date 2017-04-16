@@ -63,7 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="hat Wartepunkt erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="hat den Trigger/das Ende der Route erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="Transport beendet." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="Flüssigkeitstransport beendet." /> 
 		<text name="COURSEPLAY_WORK_END" 								 text="hat die Aufgabe erledigt." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": Gerät muss entladen werden." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": Gerät muss aufgefüllt werden." />
@@ -134,11 +134,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="sollte aufgetankt werden" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="muss aufgetankt werden" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="wird aufgetankt" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="wird gewogen" /> 
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Zu viele Wartepunkte! Nur %d erlaubt." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Zu wenig Wartepunkte! %d benötigt." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Zu viele Entladepunkte! Nur %d erlaubt." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Zu wenige Entladepunkte! %d benötigt." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="falscher Trailer für diesen Modus" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="falsches Gerät für diesen Modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt." />
@@ -146,8 +146,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Bahnversatz" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Gerät-Versatz (horizontal)" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Gerät-Versatz (vertikal)" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Lade/Entlade- Versatz(horizontal)" /> 
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Lade/Entlade- Versatz(vertikal)" />
 		<text name="COURSEPLAY_FRONT" 									 text="vorne" />
 		<text name="COURSEPLAY_BACK" 									 text="hinten" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Arbeitsbreite" />

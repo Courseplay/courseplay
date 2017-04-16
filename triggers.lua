@@ -17,7 +17,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	---
 	
 	
-	if not self.isMotorStarted then return; end;
+	if not self.isMotorStarted and not self.cp.saveFuel then return; end;
 
 	--oops i found myself
 	if otherId == self.rootNode then 

@@ -19,7 +19,6 @@ function courseplay:drive(self, dt)
 		courseplay:setCustomTimer(self, "resetCharacter", 300);
 	end;
 
-
 	if self.cp.saveFuel then
 		if self.isMotorStarted then
 			--print("stop Order")
@@ -35,6 +34,7 @@ function courseplay:drive(self, dt)
 	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
+	
 	--keeping steering disabled
 	if self.steeringEnabled then
 		self.steeringEnabled = false;
