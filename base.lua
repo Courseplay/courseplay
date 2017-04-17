@@ -633,7 +633,20 @@ function courseplay:draw()
 			renderText(0.2,0.105,0.02,"height: "..tostring(self.cp.currentHeigth))
 		end
 	end
-
+	if courseplay.debugChannels[10] and self.cp.tempMOde9PointX ~= nil then
+		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
+		drawDebugLine(self.cp.tempMOde9PointX2,self.cp.tempMOde9PointY2+2,self.cp.tempMOde9PointZ2, 1, 0, 0, self.cp.tempMOde9PointX,self.cp.tempMOde9PointY+2,self.cp.tempMOde9PointZ, 1, 0, 0);
+		local bunker = self.cp.mode9TargetSilo
+		if bunker ~= nil then
+			local sx,sz = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
+			local wx,wz = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
+			local hx,hz = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
+			drawDebugLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz, 0, 0, 1);
+			drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+			drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+		end
+	end
+	
 	
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
