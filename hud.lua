@@ -780,7 +780,7 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end
 
-			if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0 then
+			if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and #vehicle.cp.easyFillTypeList > 0 then
  				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
  				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.runNumber < 11 and string.format("%d / %d",vehicle.cp.runCounter, vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
  			end;

@@ -63,6 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT"					 text="osiągnięto punkt oczekiwania" />
 		<text name="COURSEPLAY_REACHED_END_POINT"						 text="osiągnięto punkt końcowy/trigger" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="zakończył transport ziarna." />
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END"								 text="zakończył pracę." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING"							 text=": narzędzie pracy musi zostać rozładowane." />
 		<text name="COURSEPLAY_NEEDS_REFILLING"							 text=": narzędzie pracy musi zostać załadowane." />

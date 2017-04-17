@@ -808,7 +808,11 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 end
 
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
-	if not vehicle.cp.saveFuelOptionActive then
+	if (not vehicle.cp.saveFuelOptionActive) 
+	or (vehicle.cp.mode == courseplay.MODE_COMBI and vehicle.cp.activeCombine ~= nil)
+	or (vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.courseplayers ~= nil and #vehicle.courseplayers > 0)
+	or ((vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT or vehicle.cp.mode == courseplay.MODE_OVERLOADER) and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait)
+	then
 		if vehicle.cp.saveFuel then
 			vehicle.cp.saveFuel = false
 			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)

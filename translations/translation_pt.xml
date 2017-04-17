@@ -59,6 +59,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="chegou no ponto de espera" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="chegou ao trigger ou no final do percurso" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="transporte de grãos concluído" /> 
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 						 		 text="trabalho concluído" />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					  	 text=": equipamento precisa de ser descarregado!" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 				         text=": equipamento precisa de ser carregado" />

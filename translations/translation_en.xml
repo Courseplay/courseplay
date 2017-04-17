@@ -63,6 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="has reached waiting point" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="has reached trigger/end point" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." />
 		<text name="COURSEPLAY_WORK_END" 								 text="has finished work." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": work tool needs to be unloaded." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": work tool needs to be refilled." />

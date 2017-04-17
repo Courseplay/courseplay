@@ -59,6 +59,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="wachtpunt bereikt" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="trigger bereikt/eindpunt" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="is klaar met graan transport." />  
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 								 text="werk afgerond." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": gereedschap legen." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": gereedschap vullen." />

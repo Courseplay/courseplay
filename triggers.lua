@@ -17,7 +17,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	---
 	
 	
-	if not self.isMotorStarted then return; end;
+	if not self.isMotorStarted and not self.cp.saveFuel then return; end;
 
 	--oops i found myself
 	if otherId == self.rootNode then 
@@ -832,12 +832,14 @@ function courseplay:updateAllTriggers()
 	if courseplay.liquidManureOverloaders ~= nil then
 		for rootNode, vehicle in pairs(courseplay.liquidManureOverloaders) do
 			local trigger = vehicle.unloadTrigger
-			local triggerId = trigger.triggerId
-			trigger.isLiquidManureFillTrigger = true;
-			trigger.isLiquidManureOverloaderFillTrigger = true;
-			trigger.parentVehicle = vehicle
-			courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
-			courseplay:debug(('\t\tadd overloader\'s liquidManureFillTrigger (id %d)'):format(triggerId), 1);
+			if trigger then
+				local triggerId = trigger.triggerId
+				trigger.isLiquidManureFillTrigger = true;
+				trigger.isLiquidManureOverloaderFillTrigger = true;
+				trigger.parentVehicle = vehicle
+				courseplay:cpAddTrigger(triggerId, trigger, 'liquidManure', 'nonUpdateable');
+				courseplay:debug(('\t\tadd overloader\'s liquidManureFillTrigger (id %d)'):format(triggerId), 1);
+			end;
 		end
 	end
 end;

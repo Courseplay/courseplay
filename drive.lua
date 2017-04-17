@@ -19,7 +19,6 @@ function courseplay:drive(self, dt)
 		courseplay:setCustomTimer(self, "resetCharacter", 300);
 	end;
 
-
 	if self.cp.saveFuel then
 		if self.isMotorStarted then
 			--print("stop Order")
@@ -35,6 +34,7 @@ function courseplay:drive(self, dt)
 	if not courseplay:getCanUseCpMode(self) then
 		return;
 	end;
+	
 	--keeping steering disabled
 	if self.steeringEnabled then
 		self.steeringEnabled = false;
@@ -579,10 +579,14 @@ function courseplay:drive(self, dt)
 			CpManager:setGlobalInfoText(self, 'END_POINT');
 		end;
 
-		-- STOP AT END MODE 1
+		-- STOP AT END MODE 1 & 8
 		if (self.cp.stopAtEndMode1 or self.cp.runCounter >= self.cp.runNumber) and self.cp.waypointIndex == self.cp.numWaypoints then
 			allowedToDrive = false;
-			CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
+			if self.cp.mode == 8 then
+				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_8');
+			else
+				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
+			end
 			if self.cp.runCounter >= self.cp.runNumber then
  				self.cp.runReset = true;
  			end
@@ -1019,6 +1023,7 @@ function courseplay:drive(self, dt)
 				courseplay:setWaypointIndex(self, 1);
 			end
 			self.cp.isUnloaded = false
+			self.cp.runCounterChanged = false;
 			courseplay:setStopAtEnd(self, false);
 			courseplay:setIsLoaded(self, false);
 			courseplay:setIsRecording(self, false);

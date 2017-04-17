@@ -63,6 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha raggiunto il punto d'attesa" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha raggiunto la fine del percorso" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di granaglie." />
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 								 text="ha finito il lavoro." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": l'attrezzo necessita di essere scaricato." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": l'attrezzo deve essere rifornito." />

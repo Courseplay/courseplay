@@ -63,6 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="a atteint le point d'attente" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 					 	 text="a atteint la fin de la course" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="a terminé le transport." />
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 							 	 text="a terminé le travail." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					 	 text=": l'outil a besoin d'être vidé." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 					 	 text=": l'outil a besoin d'être rechargé." />
