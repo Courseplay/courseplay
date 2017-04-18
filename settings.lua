@@ -1514,7 +1514,7 @@ end;
 
 function courseplay:changeRunCounter(vehicle, bool)
 	if vehicle.cp.runCounterBool ~= bool then
-		if bool == true then
+		if bool == true and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -3, 3, 'wait', true, false) then
 			if vehicle.cp.runNumber < 11 then
 				vehicle.cp.runCounter = vehicle.cp.runCounter + 1
 			elseif vehicle.cp.runNumber == 11 then
