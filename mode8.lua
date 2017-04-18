@@ -9,8 +9,11 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 	-- LOADING
 	if load then
 		courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
+		if  vehicle.cp.waypointIndex > vehicle.cp.waitPoints[vehicle.cp.numWaitPoints] and vehicle.cp.fillTrigger == nil then
+			courseplay:changeRunCounter(vehicle, false)
+		end;
 		allowedToDrive, lx, lz = courseplay:refillWorkTools(vehicle, vehicle.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
-
+		
 	-- UNLOADING
 	elseif unload then
 		local workTool = vehicle.cp.workTools[1];
