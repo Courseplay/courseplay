@@ -815,8 +815,8 @@ function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 	then
 		if vehicle.cp.saveFuel then
 			vehicle.cp.saveFuel = false
-			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
 		end
+		courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
 		return
 	end
 	

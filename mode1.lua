@@ -1,6 +1,9 @@
 -- handles "mode1" : waiting at start until tippers full - driving course and unloading on trigger
-function courseplay:handle_mode1(vehicle, allowedToDrive, dt)
+function courseplay:handle_mode1(vehicle, allowedToDrive,dt)
+	local takeOverSteering = false
+	
 	-- done tipping
+	
 	if vehicle.cp.currentTipTrigger and vehicle.cp.totalFillLevel == 0 then
 		courseplay:resetTipTrigger(vehicle, true);
 	end
@@ -54,9 +57,9 @@ function courseplay:handle_mode1(vehicle, allowedToDrive, dt)
 
 	-- tipper is not empty and tractor reaches TipTrigger
 	if vehicle.cp.totalFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
-		allowedToDrive = courseplay:unload_tippers(vehicle, allowedToDrive);
+		allowedToDrive,takeOverSteering = courseplay:unload_tippers(vehicle, allowedToDrive,dt);
 		courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 	end;
 
-	return allowedToDrive;
+	return allowedToDrive,takeOverSteering;
 end;

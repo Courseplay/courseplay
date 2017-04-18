@@ -1,8 +1,7 @@
 local max, min = math.max, math.min;
 
-function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, refSpeed )
+function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, refSpeed,dt )
 	local workTool;
-	local activeTipper = nil
 	local specialTool = false
 	local forceSpeedLimit = refSpeed 
 	local fillLevelPct = 0
@@ -369,9 +368,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 					-- tipper is not empty and tractor reaches TipTrigger
 					if vehicle.cp.totalFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
-						allowedToDrive, activeTipper = courseplay:unload_tippers(vehicle, allowedToDrive);
+						allowedToDrive,takeOverSteering = courseplay:unload_tippers(vehicle, allowedToDrive,dt);
 						courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 					end
+					
+					
 				end;
 			end; --END other tools
 
@@ -626,5 +627,5 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		isFinishingWork = true
 		vehicle.cp.hasFinishedWork = true
 	end
-	return allowedToDrive, workArea, workSpeed, activeTipper ,isFinishingWork,forceSpeedLimit
+	return allowedToDrive, workArea, workSpeed, takeOverSteering ,isFinishingWork,forceSpeedLimit
 end

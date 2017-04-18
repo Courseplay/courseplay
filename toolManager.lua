@@ -805,8 +805,9 @@ end
 
 
 -- ##### UNLOADING TOOLS ##### --
-function courseplay:unload_tippers(vehicle, allowedToDrive)
+function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 	local ctt = vehicle.cp.currentTipTrigger;
+	local takeOverSteering = false
 	if ctt.getTipDistanceFromTrailer == nil then
 		courseplay:debug(nameNum(vehicle) .. ": getTipDistanceFromTrailer function doesn't exist for currentTipTrigger - unloading function aborted", 2);
 		return allowedToDrive;
@@ -895,6 +896,11 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			local goForTipping = false;
 			local unloadWhileReversing = false; -- Used by Reverse BGA Tipping
 			local isRePositioning = false; -- Used by Reverse BGA Tipping
+			if tipper.tipState == Trailer.TIPSTATE_CLOSED and vehicle.cp.keepOnTipping then
+				vehicle.cp.keepOnTipping = false
+				print("reset vehicle.cp.keepOnTipping")
+			end
+			
 			--BGA TRIGGER
 			if isBGA and not bgaIsFull then
 
@@ -912,6 +918,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				]]
 				-- Local values used in both normal and reverse direction
 
+			
 				local x,y,z = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node)
 				local tx,ty,tz = x,y,z+0.50
 				local x1,z1 = ctt.bunkerSiloArea.sx,ctt.bunkerSiloArea.sz
@@ -933,9 +940,13 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 				-------------------------------
 				if vehicle.Waypoints[vehicle.cp.waypointIndex].rev or vehicle.cp.isReverseBGATipping then
 					if vehicle.cp.totalFillLevel > 0 then
-						if trailerInTipRange and startDistance > 8 and endDistance > 8 then
+						if trailerInTipRange and ((startDistance > 8 and endDistance > 8) or vehicle.cp.keepOnTipping) then
 							goForTipping = true
 							allowedToDrive = false
+							if vehicle.cp.lastValidTipDistance and not vehicle.cp.keepOnTipping then
+								vehicle.cp.keepOnTipping = true
+								print("set vehicle.cp.keepOnTipping")
+							end
 						end
 					else
 						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle))
@@ -1017,6 +1028,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			end
 
 			--UNLOAD
+			--print("goForTipping = "..tostring(goForTipping))
+			
 			if ctt.acceptedFillTypes[fillType] and goForTipping == true then
 				--print("ctt.acceptedFillTypes[fillType] and goForTipping == true; tipper.cp.isTipping= "..tostring(tipper.cp.isTipping))
 				if not tipper.cp.isTipping then
@@ -1050,6 +1063,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 					else
 						tipper.cp.isTipping = true;
 						courseplay:debug(nameNum(vehicle)..": set isTipping", 2);
+						print("set isTipping")
 						allowedToDrive = false;
 					end;
 				else
@@ -1058,6 +1072,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 						allowedToDrive = false;
 					end;
 
+					takeOverSteering = courseplay:manageCompleteTipping(vehicle,tipper,dt)
+					
 					if isBGA and ((not vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not vehicle.cp.isReverseBGATipping) or unloadWhileReversing) then
 						allowedToDrive = allowedToDriveBackup;
 					end;
@@ -1081,7 +1097,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive)
 			end;
 		end;
 	end;
-	return allowedToDrive;
+	return allowedToDrive,takeOverSteering;
 end
 
 function courseplay:addCpNilTempFillLevelFunction()
@@ -1388,19 +1404,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				--print("toggeltipstate by "..message)
 			end
 			
-			if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer > 100 then
-				if tipper.couldNotDropTimer > tipper.couldNotDropTimerThreshold *0.9 then
-					tipper.couldNotDropTimer = 0
-				end
-				vehicle.cp.takeOverSteering = true
-				takeOverSteering = true
-			end		
-			
-			if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer < 100 and vehicle.cp.takeOverSteering then
-				vehicle.cp.takeOverSteering = false	
-				vehicle.cp.lastValidTipDistance = z
-				--print("reset takeOverSteering z= "..tostring(z))
-			end
+			takeOverSteering = courseplay:manageCompleteTipping(vehicle,tipper,dt,z)
 			
 			--finsh and go for next round
 			if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
@@ -1409,17 +1413,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				if revUnload then
 					courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 				end				
-			end
-			
-			if vehicle.cp.takeOverSteering then
-				local fwdWayoint = courseplay:getNextFwdPoint(vehicle)
-				local x,z = vehicle.Waypoints[fwdWayoint].cx, vehicle.Waypoints[fwdWayoint].cz;
-				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
-				local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
-				AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
-			end
-			
-			
+			end			
 			
 		end
 	end
@@ -1427,7 +1421,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 		courseplay:resetCustomTimer(vehicle, "waitUntilPipeIsEmpty", true);
 		courseplay:setVehicleWait(vehicle, false);
 	end
-	return stopForTipping,vehicle.cp.takeOverSteering
+	return stopForTipping,takeOverSteering
 end
 
 function courseplay:handleHeapUnloading(vehicle)
@@ -1501,4 +1495,30 @@ function courseplay:getDischargeSpeed(vehicle)
 	courseplay:debug(nameNum(vehicle) .. ":  refSpeed: "..tostring(refSpeed), 11);
 
 	return refSpeed
+end
+
+function courseplay:manageCompleteTipping(vehicle,tipper,dt,z)
+	_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode);
+	_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+	if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer > 100 then
+		if tipper.couldNotDropTimer > tipper.couldNotDropTimerThreshold *0.9 then
+			tipper.couldNotDropTimer = 0
+		end
+		vehicle.cp.takeOverSteering = true
+	end		
+	
+	if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer < 100 and vehicle.cp.takeOverSteering then
+		vehicle.cp.takeOverSteering = false	
+		vehicle.cp.lastValidTipDistance = z or 0
+		--print("reset takeOverSteering z= "..tostring(z))
+	end
+	
+	if vehicle.cp.takeOverSteering then
+		local fwdWayoint = courseplay:getNextFwdPoint(vehicle)
+		local x,z = vehicle.Waypoints[fwdWayoint].cx, vehicle.Waypoints[fwdWayoint].cz;
+		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+		local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
+	end
+	return vehicle.cp.takeOverSteering
 end
