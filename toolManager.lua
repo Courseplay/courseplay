@@ -1327,7 +1327,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				allowedToDrive = false;
 				courseplay:changeRunCounter(vehicle, true)
 				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.fillLevel, 100), workTool.cp.capacity));
-			elseif workTool.waterTrailerFillTriggers[1] ~= nil and fillLevelPct >= driveOn then
+			elseif workTool.waterTrailerFillTriggers[1] ~= nil then
 				if workTool.isWaterTrailerFilling then
 					workTool:setIsWaterTrailerFilling(false);
 				end;
