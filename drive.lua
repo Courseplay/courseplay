@@ -449,8 +449,12 @@ function courseplay:drive(self, dt)
 				courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 			end;
 
-			allowedToDrive = courseplay:handle_mode1(self, allowedToDrive, dt);
+			allowedToDrive,breakCode = courseplay:handle_mode1(self, allowedToDrive, dt);
 		end;
+		
+		if breakCode then
+			return
+		end
 		
 		--resetTrailer when empty after unloading in Bunkersilo
 		if self.cp.totalFillLevel == 0 then
@@ -616,12 +620,16 @@ function courseplay:drive(self, dt)
 
 	-- MODE 6
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
-		allowedToDrive, workArea, workSpeed, activeTipper, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, lx, lz,refSpeed);
+		allowedToDrive, workArea, workSpeed, breakCode, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, lx, lz,refSpeed,dt);
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		if not workArea and self.cp.currentTipTrigger == nil and self.cp.totalFillLevel and self.cp.totalFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.cp.waypointIndex].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
+		if breakCode then
+			return
+		end
+		
 	-- MODE 9
 	elseif self.cp.mode == 9 then
 		allowedToDrive,lx,lz  = courseplay:handle_mode9(self,self.cp.totalFillLevelPercent, allowedToDrive,lx,lz, dt);
