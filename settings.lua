@@ -1517,11 +1517,13 @@ function courseplay:changeRunCounter(vehicle, bool)
 		if bool == true and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -3, 3, 'wait', true, false) then
 			if vehicle.cp.runNumber < 11 then
 				vehicle.cp.runCounter = vehicle.cp.runCounter + 1
+				courseplay.hud:setReloadPageOrder(vehicle, 1, true)
 			elseif vehicle.cp.runNumber == 11 then
 				vehicle.cp.runCounter = 1 -- restets the number of runs if set to unlimted on tipper load
 			end;
 			vehicle.cp.runReset = false;
-			courseplay.hud:setReloadPageOrder(vehicle, 1, true)
+		else
+			bool = false
 		end;
 		vehicle.cp.runCounterBool = bool
 	end;
