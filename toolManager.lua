@@ -1229,9 +1229,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				-- 												 unfold, lower, turnOn, allowedToDrive, cover, unload)
 				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
 
-				if workTool.cp.isLiquidManureOverloader then
-					courseplay:changeRunCounter(vehicle, true)
-				end
+				
 
 				if not workTool.isFilling then
 					workTool:setIsFilling(true);
@@ -1246,6 +1244,9 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
 				if not (vehicle.cp.fillTrigger and courseplay.triggers.all[vehicle.cp.fillTrigger].isWeightStation) then
 					vehicle.cp.fillTrigger = nil;
+					if workTool.cp.isLiquidManureOverloader then
+						courseplay:changeRunCounter(vehicle, true)
+					end
 					courseplay:debug(('%s: vehicle.cp.isLoaded or workToolSprayerFillLevelPct >= driveOn -> set vehicle.cp.fillTrigger to nil'):format(nameNum(vehicle)), 19);
 				end;
 			else
@@ -1301,13 +1302,13 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 					workTool:setIsFuelFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:changeRunCounter(vehicle, true)
 				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.fillLevel, 100), workTool.cp.capacity));
 			elseif workTool.fuelFillTriggers[1] ~= nil then
 				if workTool.isFuelFilling then
 					workTool:setIsFuelFilling(false);
 				end;
 				vehicle.cp.fillTrigger = nil;
+				courseplay:changeRunCounter(vehicle, true)
 			end;
 
 		-- WATER TRAILER
@@ -1325,13 +1326,13 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 					workTool:setIsWaterTrailerFilling(true);
 				end;
 				allowedToDrive = false;
-				courseplay:changeRunCounter(vehicle, true)
 				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.fillLevel, 100), workTool.cp.capacity));
 			elseif workTool.waterTrailerFillTriggers[1] ~= nil then
 				if workTool.isWaterTrailerFilling then
 					workTool:setIsWaterTrailerFilling(false);
 				end;
 				vehicle.cp.fillTrigger = nil;
+				courseplay:changeRunCounter(vehicle, true)
 			end;
 		end;
 	end;
