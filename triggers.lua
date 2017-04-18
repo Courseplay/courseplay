@@ -436,6 +436,9 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 		elseif trigger.isGasStationTrigger or trigger.isDamageModTrigger then
 			self.cp.fillTrigger = transformId;
 			courseplay:debug(('%s: trigger %s is valid-> set self.cp.fillTrigger'):format(nameNum(self), tostring(transformId)), 19);
+		elseif trigger.isWaterTrailerFillTrigger then
+			self.cp.fillTrigger = transformId;
+			courseplay:debug(('%s: trigger %s is valid-> set self.cp.fillTrigger'):format(nameNum(self), tostring(transformId)), 19);
 		end;
 		return true;
 	end;

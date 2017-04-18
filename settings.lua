@@ -118,7 +118,7 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 		courseplay:setStopAtEnd(vehicle, false);
 	end;
 	if vehicle.cp.runReset == true then
- 			vehicle.cp.runCounter = 0
+ 		vehicle.cp.runCounter = 0
  	end;
 end;
 
@@ -1512,15 +1512,18 @@ function courseplay:changeRunNumber(vehicle, changeBy)
  	vehicle.cp.runNumber = Utils.clamp(vehicle.cp.runNumber + changeBy, 1, 11);
 end;
 
-function courseplay:changeRunCounter(vehicle)
-	if not vehicle.cp.runCounterChanged then
-		if vehicle.cp.runNumber < 11 then
-			vehicle.cp.runCounter = vehicle.cp.runCounter + 1
-		elseif vehicle.cp.runNumber == 11 then
-			vehicle.cp.runCounter = 1 -- restets the number of runs if set to unlimted on tipper load
+function courseplay:changeRunCounter(vehicle, bool)
+	if vehicle.cp.runCounterBool ~= bool then
+		if bool == true and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -3, 3, 'wait', true, false) then
+			if vehicle.cp.runNumber < 11 then
+				vehicle.cp.runCounter = vehicle.cp.runCounter + 1
+			elseif vehicle.cp.runNumber == 11 then
+				vehicle.cp.runCounter = 1 -- restets the number of runs if set to unlimted on tipper load
+			end;
+			vehicle.cp.runReset = false;
+			courseplay.hud:setReloadPageOrder(vehicle, 1, true)
 		end;
-		vehicle.cp.runReset = false;
-		vehicle.cp.runCounterChanged = true;
+		vehicle.cp.runCounterBool = bool
 	end;
 end;
 
