@@ -579,17 +579,22 @@ function courseplay:drive(self, dt)
 			CpManager:setGlobalInfoText(self, 'END_POINT');
 		end;
 
-		-- STOP AT END MODE 1 & 8
-		if (self.cp.stopAtEndMode1 or self.cp.runCounter >= self.cp.runNumber) and self.cp.waypointIndex == self.cp.numWaypoints then
+		-- STOP AT END MODE 1
+		if self.cp.stopAtEndMode1 and self.cp.waypointIndex == self.cp.numWaypoints then
 			allowedToDrive = false;
-			if self.cp.mode == 8 then
+		end;
+
+		--STOP AT END OF RUNCOUNTER
+		if self.cp.runCounter >= self.cp.runNumber then
+			if self.cp.mode == 8 and self.cp.isInFilltrigger and not self.cp.runCounterBool then
+				allowedToDrive = false;
+				self.cp.runReset = true;
 				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_8');
-			else
+			elseif self.cp.mode == 1 and self.cp.waypointIndex == self.cp.numWaypoints then
+				allowedToDrive = false;
+				self.cp.runReset = true;
 				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
-			end
-			if self.cp.runCounter >= self.cp.runNumber then
- 				self.cp.runReset = true;
- 			end
+			end;
 		end;
 	end;
 	-- ### NON-WAITING POINTS END
@@ -1023,7 +1028,6 @@ function courseplay:drive(self, dt)
 				courseplay:setWaypointIndex(self, 1);
 			end
 			self.cp.isUnloaded = false
-			self.cp.runCounterChanged = false;
 			courseplay:setStopAtEnd(self, false);
 			courseplay:setIsLoaded(self, false);
 			courseplay:setIsRecording(self, false);

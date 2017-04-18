@@ -56,6 +56,7 @@ function courseplay:handle_mode1(vehicle, allowedToDrive, dt)
 	if vehicle.cp.totalFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
 		allowedToDrive = courseplay:unload_tippers(vehicle, allowedToDrive);
 		courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+		courseplay:changeRunCounter(vehicle, false)
 	end;
 
 	return allowedToDrive;
