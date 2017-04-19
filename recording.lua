@@ -295,6 +295,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 
 	--Mode 1 Run Counter
  	vehicle.cp.runCounter = 0;
+ 	courseplay:changeRunCounter(vehicle, false)
  	
 end;
 

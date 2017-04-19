@@ -74,6 +74,7 @@ function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltyp
 	if vehicle.cp.siloSelectedFillType ~= eftl[newVal] then
  		--Mode 1 Run Counter Reset
  		vehicle.cp.runCounter = 0;
+ 		courseplay:changeRunCounter(vehicle, false)
  	end
 	vehicle.cp.siloSelectedEasyFillType = newVal;
 	vehicle.cp.siloSelectedFillType = eftl[newVal];

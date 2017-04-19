@@ -1522,10 +1522,10 @@ function courseplay:changeRunCounter(vehicle, bool)
 				vehicle.cp.runCounter = 1 -- restets the number of runs if set to unlimted on tipper load
 			end;
 			vehicle.cp.runReset = false;
-		else
-			bool = false
+			vehicle.cp.runCounterBool = bool
+		elseif bool == false then
+			vehicle.cp.runCounterBool = bool
 		end;
-		vehicle.cp.runCounterBool = bool
 	end;
 end;
 
