@@ -59,7 +59,6 @@ function courseplay:handle_mode1(vehicle, allowedToDrive,dt)
 	if vehicle.cp.totalFillLevel > 0 and vehicle.cp.currentTipTrigger ~= nil and vehicle.cp.waypointIndex > 3 then
 		allowedToDrive,takeOverSteering = courseplay:unload_tippers(vehicle, allowedToDrive,dt);
 		courseplay:setInfoText(vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
-		courseplay:changeRunCounter(vehicle, false)
 	end;
 
 	return allowedToDrive,takeOverSteering;

@@ -590,7 +590,7 @@ function courseplay:drive(self, dt)
 
 		--STOP AT END OF RUNCOUNTER
 		if self.cp.runCounter >= self.cp.runNumber then
-			if self.cp.mode == 8 and self.cp.fillTrigger and not self.cp.runCounterBool and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -3, 3, 'wait', true, false) then
+			if self.cp.mode == 8 and self.cp.fillTrigger and not self.cp.runCounterBool and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -3, 3, 'wait', true, false) then
 				allowedToDrive = false;
 				self.cp.runReset = true;
 				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_8');
@@ -1039,6 +1039,9 @@ function courseplay:drive(self, dt)
 			courseplay:setStopAtEnd(self, false);
 			courseplay:setIsLoaded(self, false);
 			courseplay:setIsRecording(self, false);
+			if self.cp.mode == 1 then
+				courseplay:changeRunCounter(self, false)
+			end;
 			self:setCpVar('canDrive',true,courseplay.isClient)
 		end
 	end
