@@ -586,6 +586,7 @@ function courseplay:drive(self, dt)
 		-- STOP AT END MODE 1
 		if self.cp.stopAtEndMode1 and self.cp.waypointIndex == self.cp.numWaypoints then
 			allowedToDrive = false;
+			CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
 		end;
 
 		--STOP AT END OF RUNCOUNTER

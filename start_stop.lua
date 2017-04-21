@@ -155,7 +155,9 @@ function courseplay:start(self)
 	
 
 	local setLaneNumber = false;
-	local isFrontAttached = false
+	local isFrontAttached = false;
+	local isReversePossible = true;
+	local tailerCount = 0;
 	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
 			if  self.aiLower ~= nil then
@@ -175,8 +177,14 @@ function courseplay:start(self)
 				isFrontAttached = true
 			end
 		end
+		if workTool.cp.hasSpecializationTrailer then
+			tailerCount = tailerCount + 1
+			if tailerCount > 1 then
+				isReversePossible = false
+			end
+		end
 	end;
-	
+	self.cp.isReversePossible = isReversePossible
 	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
 
 	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);

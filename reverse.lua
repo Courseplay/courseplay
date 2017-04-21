@@ -1,6 +1,6 @@
 local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 
-function courseplay:goReverse(vehicle,lx,lz)
+function courseplay:goReverse(vehicle,lx,lz,mode2)
 	local fwd = false;
 	local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle) or vehicle.cp.workTools[1];
 	local newTarget;
@@ -41,6 +41,9 @@ function courseplay:goReverse(vehicle,lx,lz)
 	end;
 
 	local node = workTool.cp.realTurningNode;
+	if mode2 then
+		vehicle.cp.toolsRealTurningNode = node;
+	end
 	local isPivot = workTool.cp.isPivot;
 	local xTipper,yTipper,zTipper = getWorldTranslation(node);
 	if debugActive then drawDebugPoint(xTipper, yTipper+5, zTipper, 1, 0 , 0, 1) end;
@@ -80,7 +83,7 @@ function courseplay:goReverse(vehicle,lx,lz)
 			tcx = newTarget.posX;
 			tcz = newTarget.posZ;
 		end;
-	else
+	elseif not mode2 then
 		for i= index, vehicle.cp.numWaypoints do
 			if vehicle.Waypoints[i].rev and not vehicle.Waypoints[i-1].wait then
 				tcx = vehicle.Waypoints[i].cx;
@@ -186,6 +189,8 @@ function courseplay:goReverse(vehicle,lx,lz)
 				end;
 			end;
 		end;
+	elseif mode2 then
+		tcx,tcz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z;
 	end;
 
 	if debugActive then
