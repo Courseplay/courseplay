@@ -48,8 +48,10 @@ function courseplay:handle_mode2(vehicle, dt)
 		local node = vehicle.cp.activeCombine.cp.DirectionNode or vehicle.cp.activeCombine.rootNode;
 		if vehicle.cp.combineOffset > 0 then
 			vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(node, 25, 0, 0)
+			vehicle.cp.curTarget.rev = false
 		else
 			vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(node, -25, 0, 0)
+			vehicle.cp.curTarget.rev = false
 		end
 		courseplay:setModeState(vehicle, 5);
 		courseplay:setMode2NextState(vehicle, 2);
@@ -74,11 +76,14 @@ function courseplay:handle_mode2(vehicle, dt)
 				end
 				if (vehicle.cp.activeCombine ~= nil and vehicle.cp.activeCombine.cp.isWoodChipper) or targetIsInFront then
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, overTakeDistance)
+					vehicle.cp.curTarget.rev = false
 				else
 					if vehicle.cp.combineOffset > 0 then
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.turnDiameter+2, 0, -(vehicle.cp.totalLength+2))
+						vehicle.cp.curTarget.rev = false
 					else
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.turnDiameter-2, 0, -(vehicle.cp.totalLength+2))
+						vehicle.cp.curTarget.rev = false
 					end
 				end
 				if vehicle.cp.realisticDriving then
@@ -348,15 +353,13 @@ function courseplay:unload_combine(vehicle, dt)
 	if combineIsTurning then
 		offset_to_chopper = vehicle.cp.combineOffset * 1.6 --1,3
 	end
-
-
 	local x1, y1, z1 = worldToLocal(combineDirNode, x, y, z)
+	
 	x1,z1 = x1*reverser,z1*reverser;
 	
 	local distance = Utils.vector2Length(x1, z1)
-
 	local safetyDistance = 11;
-	if combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader or combine.cp.isWoodChipper then
+	if combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader or combine.cp.isWoodChipper or combine.cp.isPoettingerMex5 then
 		safetyDistance = 24;
 	elseif courseplay:isAttachedCombine(combine) then
 		safetyDistance = 11;
@@ -535,6 +538,7 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 			if combineIsTurning or vehicle.cp.forceNewTargets then
 				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
+				vehicle.cp.curTarget.rev = false
 				courseplay:debug(string.format("%s: combine is empty and turning",nameNum(vehicle)),4)
 				if combineIsAutoCombine then
 
@@ -565,9 +569,11 @@ function courseplay:unload_combine(vehicle, dt)
 				if combine.cp.isHarvesterAttachable then
 					courseplay:debug(string.format("%s: combine is isHarvesterAttachable move out of the way",nameNum(vehicle)),4)
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, 0 , 0, 5);
+					vehicle.cp.curTarget.rev = false
 					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.8 ,totalLength + trailerOffset,currentTipper);
 				else
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, sideMultiplier*offset*0.8 , 0, totalLength + trailerOffset);
+					vehicle.cp.curTarget.rev = false
 				end
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,(totalLength*3)+trailerOffset,currentTipper);
 				courseplay:setModeState(vehicle, 9);				
@@ -776,32 +782,58 @@ function courseplay:unload_combine(vehicle, dt)
 		if vehicle.cp.modeState == 3 or vehicle.cp.modeState == 4 then
 			if combine.cp.isChopper then
 				local fruitSide = courseplay:sideToDrive(vehicle, combine, -10,true);
-				
-				--new chopper turn maneuver by Thomas Gärtner  
+				local maxDiameter = max(totalLength,turnDiameter)
+					
+				--another new chopper turn maneuver by Thomas Gärtner  
 				if fruitSide == "left" then -- chopper will turn left
 
 					if vehicle.cp.combineOffset > 0 then -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+						vehicle.cp.curTarget.rev = false
 						courseplay:addNewTargetVector(vehicle, 2*turnDiameter*-1 ,  turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter*-1, 0, turnDiameter);
-						vehicle.cp.chopperIsTurning = true
+						if vehicle.cp.isReversePossible then
+							local maxDiameter = max(20,vehicle.cp.turnDiameter)
+							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
+							vehicle.cp.curTarget.rev = false
+							vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-1,maxDiameter,tractor.cp.workWidth)
+										
+							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth,-maxDiameter -vehicle.cp.totalLength)
+							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth, 2,nil,nil,true);
+						else
+							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter*-1, 0, turnDiameter);
+							vehicle.cp.chopperIsTurning = true
+						end
 					end
 					
 				else -- chopper will turn right
 					if vehicle.cp.combineOffset < 0 then -- I'm right of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+						vehicle.cp.curTarget.rev = false
 						courseplay:addNewTargetVector(vehicle, 2*turnDiameter,     turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter, 0, turnDiameter);
-						vehicle.cp.chopperIsTurning = true
+						if vehicle.cp.isReversePossible then
+							local maxDiameter = max(20,vehicle.cp.turnDiameter)
+							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
+							vehicle.cp.curTarget.rev = false
+							
+							vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,1,maxDiameter,tractor.cp.workWidth)
+							
+											
+							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth,-maxDiameter -vehicle.cp.totalLength)
+							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth, 2,nil,nil,true);
+
+						else
+							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter, 0, turnDiameter);
+							vehicle.cp.chopperIsTurning = true
+						end
 					end
 				end
 
@@ -834,7 +866,8 @@ function courseplay:unload_combine(vehicle, dt)
 	-- STATE 7
 	if vehicle.cp.modeState == 7 then
 		if not combineIsTurning then
-			courseplay:setModeState(vehicle, 2);
+			--courseplay:setModeState(vehicle, 2);
+			courseplay:setModeState(vehicle, 3);
 		else
 			courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 		end
@@ -893,7 +926,12 @@ function courseplay:unload_combine(vehicle, dt)
 		refSpeed = vehicle.cp.speeds.field
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, currentY, currentZ);
-
+		if vehicle.cp.curTarget.rev then
+			local nodeX,_,nodeZ =0,0,0
+			nodeX,_,nodeZ = getWorldTranslation(vehicle.cp.toolsRealTurningNode)
+			distance_to_wp = courseplay:distance(nodeX, nodeZ, currentX, currentZ);
+		end		
+		
 		if #(vehicle.cp.nextTargets) == 0 then
 			if distance_to_wp < 10 then
 				refSpeed = vehicle.cp.speeds.turn
@@ -906,7 +944,10 @@ function courseplay:unload_combine(vehicle, dt)
 		
 		if vehicle.cp.mode2nextState == 81 or vehicle.cp.mode2nextState == 2 then
 			distToChange = 3
+		elseif vehicle.cp.nextTargets and vehicle.cp.curTarget.turn then
+			distToChange = 5
 		end
+
 				
 		if vehicle.cp.shortestDistToWp == nil or vehicle.cp.shortestDistToWp > distance_to_wp then
 			vehicle.cp.shortestDistToWp = distance_to_wp
@@ -915,7 +956,6 @@ function courseplay:unload_combine(vehicle, dt)
 		if distance_to_wp > vehicle.cp.shortestDistToWp and distance_to_wp < 3 then
 			distToChange = distance_to_wp + 1
 		end
-
 		if distance_to_wp < distToChange then
 			--[[if vehicle.cp.mode2nextState == 81 then
 				if vehicle.cp.activeCombine ~= nil then
@@ -932,7 +972,7 @@ function courseplay:unload_combine(vehicle, dt)
 				if vehicle.cp.mode2nextState ~= 2 then
 					vehicle.cp.calculatedCourseToCombine = false
 				end
-				if vehicle.cp.mode2nextState == 7 then
+				if vehicle.cp.mode2nextState == 7 or vehicle.cp.mode2nextState == 3 then
 					courseplay:switchToNextMode2State(vehicle);
 					--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(combineDirNode, vehicle.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
@@ -991,9 +1031,18 @@ function courseplay:unload_combine(vehicle, dt)
 				currentX, currentY, currentZ = cx_right, cy_right, cz_right
 			end
 		else
+			local sideOffset = 0
+			if tractor.cp.workWidth < 4 then
+				if vehicle.sideToDrive == 'right' then
+					sideOffset = -4
+				else
+					sideOffset = 4
+				end				
+			end
+		
 			debugText = "tractor behind tractor"
 			-- tractor behind tractor
-			currentX, currentY, currentZ = localToWorld(frontTractor.cp.DirectionNode, 0, 0, -backDistance * 1.5); -- -backDistance * 1
+			currentX, currentY, currentZ = localToWorld(frontTractor.cp.DirectionNode, sideOffset, 0, -backDistance * 1.5); -- -backDistance * 1
 		end;
 
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
@@ -1077,6 +1126,18 @@ function courseplay:unload_combine(vehicle, dt)
 				lz = 1
 		end
 		
+		if vehicle.cp.modeState == 5 then
+			if vehicle.cp.curTarget.rev then
+				lx,lz,moveForwards = courseplay:goReverse(vehicle,lx,lz,true)
+				refSpeed = min(refSpeed, vehicle.cp.speeds.reverse)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+			elseif vehicle.cp.curTarget.turn then
+				refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+			end
+		end
+		
+		
 		if abs(lx) > 0.5 then
 			refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
 			speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
@@ -1084,33 +1145,45 @@ function courseplay:unload_combine(vehicle, dt)
 				
 		if allowedToDrive then
 			vehicle.cp.speedDebugLine = speedDebugLine
-		
 			courseplay:setSpeed(vehicle, refSpeed)
 		end
+		
 
+				
 		if vehicle.isReverseDriving then
 			lz = -lz
 		end
 
 		vehicle.cp.TrafficBrake = false
-		if vehicle.cp.modeState == 5 or vehicle.cp.modeState == 2 then   
+		if (vehicle.cp.modeState == 5 and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev ) or vehicle.cp.modeState == 2 then   
 			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz)
 		end
+		
 		courseplay:setTrafficCollision(vehicle, lx, lz,true)
 		
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
+		if math.abs(vehicle.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
+			if not moveForwards then
+				vehicle.nextMovingDirection = -1
+			else
+				vehicle.nextMovingDirection = 1
+			end;
+		end;
 		
-
-		if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
-			drawDebugPoint(vehicle.cp.curTarget.x, vehicle.cp.curTarget.y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
+				
+		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+		if courseplay.debugChannels[4] and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
+			drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
 			
 			for i,tp in pairs(vehicle.cp.nextTargets) do
-				drawDebugPoint(tp.x, tp.y +2, tp.z, 1, 0.65, 0, 1);
+				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
+				drawDebugPoint(tp.x, y +2, tp.z, 1, 0.65, 0, 1);
 				if i == 1 then
-					drawDebugLine(vehicle.cp.curTarget.x, vehicle.cp.curTarget.y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, tp.y + 2, tp.z, 1, 0, 1); 
+					drawDebugLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
 				else
 					local pp = vehicle.cp.nextTargets[i-1];
-					drawDebugLine(pp.x, pp.y+2, pp.z, 1, 0, 1, tp.x, tp.y + 2, tp.z, 1, 0, 1); 
+					drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
 				end;
 			end;
 		end;
@@ -1277,3 +1350,50 @@ end;
 
 function courseplay:onModeStateChange(vehicle, oldState, newState)
 end;
+
+function courseplay:convertTable(turnTargets)
+	local newTable = {}
+	for i=1,#turnTargets do
+		newTable[i] = {}
+		newTable[i].x = turnTargets[i].posX
+		newTable[i].z = turnTargets[i].posZ
+		newTable[i].y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newTable[i].x, 0, newTable[i].z);
+		newTable[i].rev = turnTargets[i].turnReverse or false
+		newTable[i].turn = true 
+	end
+	return  newTable
+end
+
+function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidth)
+		--inspired by Satis :-)
+		
+		local targets = {}
+		local center1, center2, startDir, stopDir = {}, {}, {}, {};
+		local diameter = sentDiameter
+		local radius = diameter/2
+		local center1SideOffset = radius*direction
+		local center2SideOffset = -(workwidth-radius)*direction
+		local sideC = diameter;
+		local sideB = abs(center1SideOffset-center2SideOffset);
+		
+		local centerHeight = math.sqrt(sideC^2 - sideB^2);
+				
+		--- Get the 2 circle center cordinate
+		center1.x,_,center1.z = localToWorld(vehicle.cp.DirectionNode, center1SideOffset, 0, 0);
+		center2.x,_,center2.z = localToWorld(vehicle.cp.DirectionNode, center2SideOffset, 0, -centerHeight);
+
+		
+		
+		--- Generate first turn circle
+		startDir.x,_,startDir.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, 0);
+		courseplay:generateTurnCircle(vehicle, center1, startDir, center2, radius, direction);
+
+		--- Generate second turn circle
+		stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.DirectionNode, -centerHeight*direction, 0, -centerHeight+radius);
+		courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, radius, -direction, true);
+		
+		targets = courseplay:convertTable(vehicle.cp.turnTargets)
+		vehicle.cp.turnTargets = {}
+		
+		return targets
+end

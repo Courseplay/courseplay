@@ -664,7 +664,7 @@ function courseplay:copyCourse(vehicle)
 		vehicle:setCpVar('canDrive',true,courseplay.isClient);
 		vehicle.cp.abortWork = nil;
 
-		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
+		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z ,vehicle.cp.curTarget.rev = nil, nil, nil, nil;
 		vehicle.cp.nextTargets = {};
 		if vehicle.cp.activeCombine ~= nil then
 			courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
@@ -1492,8 +1492,9 @@ function courseplay:setCurrentTargetFromList(vehicle, index)
 	end;
 end;
 
-function courseplay:addNewTargetVector(vehicle, x, z, trailer,node)
+function courseplay:addNewTargetVector(vehicle, x, z, trailer,node,rev)
 	local tx, ty, tz = 0,0,0
+	local pointReverse = false
 	if node ~= nil then
 		tx, ty, tz = localToWorld(node, x, 0, z);
 	elseif trailer ~= nil then
@@ -1501,7 +1502,10 @@ function courseplay:addNewTargetVector(vehicle, x, z, trailer,node)
 	else
 		tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);
 	end
-	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz });
+	if rev then
+		pointReverse = true
+	end
+	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz,rev = pointReverse });
 end;
 
 function courseplay:changeRefillUntilPct(vehicle, changeBy)

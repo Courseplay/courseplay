@@ -42,7 +42,8 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == WaterTrailer		   then workTool.cp.hasSpecializationWaterTrailer		 = true;
 		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;
 		elseif spec == Leveler 		   	   then workTool.cp.hasSpecializationLeveler 			 = true;
-		elseif spec == Overloading 		   then workTool.cp.hasSpecializationOverloader			 = true;	
+		elseif spec == Overloading 		   then workTool.cp.hasSpecializationOverloader			 = true;
+		elseif spec == Trailer	 		   then workTool.cp.hasSpecializationTrailer			 = true;		
 		end;
 	end;
 
