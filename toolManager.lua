@@ -1048,7 +1048,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						else
 							tipper.cp.closestTipDistance = distanceToTrigger
 						end
-						if distanceToTrigger == 0 or isBGA or isNearestPoint then
+						if (distanceToTrigger == 0 and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev) or isBGA or isNearestPoint then
 							if isBGA then
 								--tip to ground or existing heap
 								tipper:toggleTipState(nil, bestTipReferencePoint);
