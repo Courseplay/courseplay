@@ -7,10 +7,10 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 
 
 	-- LOADING
-	if load then
+	if load and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0) then
 		courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		allowedToDrive, lx, lz = courseplay:refillWorkTools(vehicle, vehicle.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
-		
+
 	-- UNLOADING
 	elseif unload then
 		local workTool = vehicle.cp.workTools[1];
@@ -203,23 +203,27 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;
 
 		if driveOn and not vehicle.cp.isUnloading then
-			vehicle.cp.prevFillLevelPct = nil;
+			courseplay:resetMode8(vehicle)
 			courseplay:cancelWait(vehicle);
-			vehicle.cp.isUnloaded = true;
-			vehicle.cp.isUnloading = false;
-			if courseplay:getCustomTimerExists(vehicle,'fillLevelChange')  then 
-				--print("reset existing timer")
-				courseplay:resetCustomTimer(vehicle,'fillLevelChange',true)
-			end
 			if workTool.cp.waterReceiverTrigger then
 				courseplay:debug('        driveOn -> set waterReceiverTrigger to nil', 23);
 				workTool.cp.waterReceiverTrigger = nil;
-			end;
-			if  vehicle.cp.waypointIndex >= vehicle.cp.waitPoints[vehicle.cp.numWaitPoints] and vehicle.cp.fillTrigger == nil then
-				courseplay:changeRunCounter(vehicle, false)
 			end;
 		end;
 	end;
 
 	return allowedToDrive, lx, lz;
 end;
+
+function courseplay:resetMode8(vehicle)
+	vehicle.cp.prevFillLevelPct = nil;
+	vehicle.cp.isUnloaded = true;
+	vehicle.cp.isUnloading = false;
+	if courseplay:getCustomTimerExists(vehicle,'fillLevelChange')  then 
+		--print("reset existing timer")
+		courseplay:resetCustomTimer(vehicle,'fillLevelChange',true)
+	end
+	if  vehicle.cp.waypointIndex >= vehicle.cp.waitPoints[vehicle.cp.numWaitPoints] and vehicle.cp.fillTrigger == nil then
+		courseplay:changeRunCounter(vehicle, false)
+	end;
+end
