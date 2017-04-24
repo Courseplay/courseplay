@@ -1,4 +1,5 @@
 function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, dt, tx, ty, tz, nx, ny, nz)
+	--load = load and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0)
 	courseplay:debug(('%s: handleMode8(load=%s, unload=%s, allowedToDrive=%s)'):format(nameNum(vehicle), tostring(load), tostring(unload), tostring(allowedToDrive)), 23);
 
 	if not vehicle.cp.workToolAttached then
@@ -7,7 +8,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 
 
 	-- LOADING
-	if load and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0) then
+	if load then
 		courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		allowedToDrive, lx, lz = courseplay:refillWorkTools(vehicle, vehicle.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 
@@ -203,7 +204,6 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;
 
 		if driveOn and not vehicle.cp.isUnloading then
-			courseplay:resetMode8(vehicle)
 			courseplay:cancelWait(vehicle);
 			if workTool.cp.waterReceiverTrigger then
 				courseplay:debug('        driveOn -> set waterReceiverTrigger to nil', 23);

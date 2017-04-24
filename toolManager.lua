@@ -1064,7 +1064,6 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 					else
 						tipper.cp.isTipping = true;
 						courseplay:debug(nameNum(vehicle)..": set isTipping", 2);
-						print("set isTipping")
 						allowedToDrive = false;
 					end;
 				else
