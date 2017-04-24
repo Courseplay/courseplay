@@ -589,6 +589,7 @@ function courseplay:stop(self)
 	if self.cp.runReset == true then
  		self.cp.runCounter = 0;
  		self.cp.runReset = false;
+ 		courseplay:changeRunCounter(self, false)
  	end;
 
 	-- Reset the reset character timer.

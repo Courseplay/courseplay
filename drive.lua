@@ -591,7 +591,6 @@ function courseplay:drive(self, dt)
 
 		--STOP AT END OF RUNCOUNTER
 		if self.cp.runCounter >= self.cp.runNumber then
-			courseplay:debug(string.format('%s: self.cp.fillTrigger = %s vehicle.cp.runCounterBool = %s Waitpoint Nearby = %s', nameNum(self), tostring(self.cp.fillTrigger), tostring(self.cp.runCounterBool), tostring(courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -3, 3, 'wait', true, false))), 12);
 			if self.cp.mode == 8 and self.cp.fillTrigger and not self.cp.runCounterBool and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -3, 3, 'wait', true, false) then
 				allowedToDrive = false;
 				self.cp.runReset = true;
@@ -601,9 +600,10 @@ function courseplay:drive(self, dt)
 				allowedToDrive = false;
 				self.cp.runReset = true;
 				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
+				courseplay:debug(string.format('%s: Mode 1 Has tried to stop', nameNum(self)), 12);
 			elseif self.cp.runCounter > self.cp.runNumber then --Something broke stop.
 				allowedToDrive = false;
-				self.cp.runReset = true;
+				self.cp.runReset = true
 				courseplay:debug(string.format('%s: Something went wrong with runcounter stopping', nameNum(self)), 12);
 				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_8');
 			end;

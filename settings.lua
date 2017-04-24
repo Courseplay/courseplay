@@ -110,6 +110,9 @@ end;
 function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 	if vehicle.cp.wait then
 		courseplay:setVehicleWait(vehicle, false);
+		if vehicle.cp.mode == 8 then
+			courseplay:resetMode8(vehicle)
+		end;
 	end;
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 3 then
 		vehicle.cp.isUnloaded = true;
