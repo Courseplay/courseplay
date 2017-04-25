@@ -591,7 +591,7 @@ function courseplay:drive(self, dt)
 
 		--STOP AT END OF RUNCOUNTER
 		if self.cp.runCounter >= self.cp.runNumber then
-			if self.cp.mode == 8 and self.cp.fillTrigger and not self.cp.runCounterBool and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -3, 3, 'wait', true, false) then
+			if self.cp.mode == 8 and (self.cp.fillTrigger or self.cp.isInFilltrigger) and not self.cp.runCounterBool and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -3, 3, 'wait', true, false) then
 				allowedToDrive = false;
 				self.cp.runReset = true;
 				courseplay:debug(string.format('%s: Mode8 Has tried to stop', nameNum(self)), 12);
