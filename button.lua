@@ -125,11 +125,11 @@ function courseplay.button:render()
 				canScrollUp   = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 				canScrollDown = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
 			elseif fn == 'changeRunNumber' then
- 				canScrollUp = vehicle.cp.runNumber < 11 and (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and vehicle.cp.canDrive and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0)and #vehicle.cp.easyFillTypeList > 0;
  				local canChange = true
 				if ((vehicle.cp.fillTrigger or vehicle.cp.isInFilltrigger) or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) and not vehicle.cp.runCounterBool then
 					canChange = vehicle.cp.runNumber - vehicle.cp.runCounter > 1
 				end
+ 				canScrollUp = vehicle.cp.runNumber < 11 and (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and vehicle.cp.canDrive and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0) and #vehicle.cp.easyFillTypeList > 0;
  				canScrollDown = vehicle.cp.runNumber > vehicle.cp.runCounter and vehicle.cp.runNumber > 1 and (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT)  and vehicle.cp.canDrive and canChange and #vehicle.cp.easyFillTypeList > 0;
 			end;
 
