@@ -1517,7 +1517,6 @@ end;
 
 function courseplay:changeRunNumber(vehicle, changeBy)
  	vehicle.cp.runNumber = Utils.clamp(vehicle.cp.runNumber + changeBy, 1, 11);
- 	vehicle.cp.runReset = false;
 end;
 
 function courseplay:changeRunCounter(vehicle, bool)

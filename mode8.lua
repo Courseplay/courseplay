@@ -1,5 +1,5 @@
 function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, dt, tx, ty, tz, nx, ny, nz)
-	--load = load and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0)
+	load = load and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0)
 	courseplay:debug(('%s: handleMode8(load=%s, unload=%s, allowedToDrive=%s)'):format(nameNum(vehicle), tostring(load), tostring(unload), tostring(allowedToDrive)), 23);
 
 	if not vehicle.cp.workToolAttached then
