@@ -56,6 +56,7 @@
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Удалить" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Создать папку" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Поиск маршрутов и папок" />
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Обновить список" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Отключить поиск" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="доехал до места разгрузки." />
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="Сохранить позицию трубы" />
