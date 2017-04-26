@@ -43,8 +43,8 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nome del percorso:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome della cartella:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtro percorsi:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Invio" />					
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Esc" />						
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Invio" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Esc" />
 		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s per annullare" />
 		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s per salvare Percorso" />
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Cartella" />
@@ -63,7 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha raggiunto il punto d'attesa" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha raggiunto la fine del percorso" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di granaglie." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="ha finito il trasporto di liquidi." />
 		<text name="COURSEPLAY_WORK_END" 								 text="ha finito il lavoro." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": l'attrezzo necessita di essere scaricato." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": l'attrezzo deve essere rifornito." />
