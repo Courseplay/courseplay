@@ -178,8 +178,8 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [7] MOD OTHER TOOLS
-
-
+	elseif workTool.cp.xmlFileName == 'kuhnTF1500.xml' then
+		workTool.cp.isKuhnTF1500 = true;
 	-- ###########################################################
 	-- END OF MODS
 	-- ###########################################################
@@ -677,6 +677,8 @@ function courseplay:getSpecialWorkWidth(workTool)
 			specialWorkWidth = 2.9;
 		elseif workTool.cp.isGrimmeSE260 then
 			specialWorkWidth = 1.6
+		elseif workTool.cp.isKuhnTF1500 then
+			specialWorkWidth = 4
 		end
 	end;
 
