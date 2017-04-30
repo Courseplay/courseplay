@@ -243,15 +243,16 @@ end;
 
 function courseplay:calculateWorkWidth(vehicle, noDraw)
 	local l,r;
-
 	courseplay:debug(('%s: calculateWorkWidth()'):format(nameNum(vehicle)), 7);
 	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);
 	courseplay:debug(('\tvehL=%s, vehR=%s'):format(tostring(vehL), tostring(vehR)), 7);
-
+	local shouldBWorkWidth = 3
+	
 	local implL,implR = -9999,9999;
 	if vehicle.attachedImplements then
 		for i,implement in pairs(vehicle.attachedImplements) do
 			local tool = implement.object
+			--print("checking "..tostring(tool.name))
 			local workWidth = courseplay:getSpecialWorkWidth(tool);
 			if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
 				workWidth = tool.sizeWidth
@@ -261,38 +262,41 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 			end
 			if workWidth then
 				courseplay:debug(('\tSpecial workWidth found: %.1fm'):format(workWidth), 7);
-				courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
-				return;
+				shouldBWorkWidth = workWidth
+				--courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
+			else
+				local left, right = courseplay:getCuttingAreaValuesX(implement.object);
+				if left and right then
+					implL = max(implL, left);
+					implR = min(implR, right);
+				end;
+				courseplay:debug(('\t-> implL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
 			end;
-
-			local left, right = courseplay:getCuttingAreaValuesX(implement.object);
-			if left and right then
-				implL = max(implL, left);
-				implR = min(implR, right);
-			end;
-			courseplay:debug(('\t-> implL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
+			
 			if tool.attachedImplements then
 				for j,subImplement in pairs(tool.attachedImplements) do
 					local tool = subImplement.object;
 					if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
 						workWidth = tool.sizeWidth
 					end
+					local workWidth = courseplay:getSpecialWorkWidth(tool);
 					if workWidth then
 						courseplay:debug(('\tSpecial workWidth found in attachedImplement: %.1fm'):format(workWidth), 7);
-						courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
-						return;
+						shouldBWorkWidth = max(shouldBWorkWidth,workWidth)
+						--courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
+					else			
+						local subLeft, subRight = courseplay:getCuttingAreaValuesX(subImplement.object);
+						if subLeft and subRight then
+							implL = max(implL, subLeft);
+							implR = min(implR, subRight);
+						end;
+						courseplay:debug(('\t-> implL=%s, implR=%s'):format(j, tostring(implL), tostring(implR)), 7);
 					end;
-				
-					local subLeft, subRight = courseplay:getCuttingAreaValuesX(subImplement.object);
-					if subLeft and subRight then
-						implL = max(implL, subLeft);
-						implR = min(implR, subRight);
-					end;
-					courseplay:debug(('\t-> implL=%s, implR=%s'):format(j, tostring(implL), tostring(implR)), 7);
 				end;
 			end;
 		end;
 	end;
+	
 	if implL == -9999 or implR == 9999 then
 		implL, implR = nil, nil;
 		courseplay:debug('\timplL=nil, implR=nil', 7);
@@ -317,9 +321,13 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 	end;
 
 	local workWidth = l - r;
-	courseplay:debug(('\tl=%s, r=%s -> workWidth=l-r=%s'):format(tostring(l), tostring(r), tostring(workWidth)), 7);
+	
+	shouldBWorkWidth = max(shouldBWorkWidth,workWidth)
+	
+	courseplay:debug(('\tl=%s, r=%s -> workWidth=l-r=%s'):format(tostring(l), tostring(r), tostring(shouldBWorkWidth)), 7);
 
-	courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
+	courseplay:changeWorkWidth(vehicle, nil, shouldBWorkWidth, noDraw);
+
 end;
 
 function courseplay:getCuttingAreaValuesX(object)
@@ -385,7 +393,12 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 		--print("is set by calculate button")
 	end
 	if force then
-		vehicle.cp.workWidth = max(courseplay:round(abs(force), 1), 0.1);
+		if force == 0 then
+			return
+		end
+		local newWidth = max(courseplay:round(abs(force), 1), 0.1)
+		--vehicle.cp.workWidth = min(vehicle.cp.workWidth,newWidth); --TODO: check what is better:the smallest or the widest work width to consider
+		vehicle.cp.workWidth = newWidth
 	else
 		if vehicle.cp.workWidth + changeBy > 10 then
 			if abs(changeBy) == 0.1 and not (Input.keyPressedState[Input.KEY_lalt]) then -- pressing left Alt key enables to have small 0.1 steps even over 10.0 
@@ -407,6 +420,8 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
+	
 end;
 
 function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibilityUpdate)
