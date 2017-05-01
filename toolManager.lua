@@ -1504,8 +1504,9 @@ function courseplay:getDischargeSpeed(vehicle)
 end
 
 function courseplay:manageCompleteTipping(vehicle,tipper,dt,z)
-	_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode);
-	_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+	local node = tipper.cp.realUnloadOrFillNode or tipper.rootNode;
+	_,y,_ = getWorldTranslation(node);
+	_,_,z = worldToLocal(node, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
 	if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer > 100 then
 		if tipper.couldNotDropTimer > tipper.couldNotDropTimerThreshold *0.9 then
 			tipper.couldNotDropTimer = 0
