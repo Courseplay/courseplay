@@ -678,7 +678,7 @@ function courseplay:getSpecialWorkWidth(workTool)
 		elseif workTool.cp.isGrimmeSE260 then
 			specialWorkWidth = 1.6
 		elseif workTool.cp.isKuhnTF1500 then
-			specialWorkWidth = 4
+			specialWorkWidth = 0
 		end
 	end;
 
