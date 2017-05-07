@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automático" />
 		<text name="COURSEPLAY_LEFT" 									 text="esquerda" />
 		<text name="COURSEPLAY_RIGHT" 									 text="direita" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Enviar o motorista para a rota" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Motorista seguir na rota" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Chamar o motorista" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Motorista foi chamado" />
 		<text name="COURSEPLAY_START_COURSE" 							 text="Dirigir na rota" />
@@ -26,7 +26,7 @@
 		<text name="COURSEPLAY_MODE_7" 									 text="Tipo: Ceifadeira descarrega" />
 		<text name="COURSEPLAY_MODE_8" 									 text="Type: Transporte de produtos Líquidos" />  
 		<text name="COURSEPLAY_MODE_9" 									 text="Tipo: Encher e esvaziar pá carregadeira" />
-		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
+		<text name="COURSEPLAY_MODE_10" 								 text="Type: Nivelar e compactar" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="continua" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Limpar rota atual" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Dirigir agora" />
@@ -57,24 +57,24 @@
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Criar nova pasta" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Pesquisar por rotas e pastas" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Desativar filtros" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="chegou no ponto para carregar." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="salvar a posição to tubo" />      
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="descarregando..." />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="salvar a posição do tubo" />      
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "mover o tubo para posição" />	  
-		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="chegou no ponto de espera" />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="esperando..." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="chegou no trigger ou no ponto final" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="Finalizado transporte de grãos." />  
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="Finalizado transporte de líquidos." /> 
 		<text name="COURSEPLAY_WORK_END" 								 text="trabalho finalizado." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": equipamento precisa ser descarregado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": equipamento precisa ser recarregado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="descarregando fardos." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="em tráfego." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="trigger alcançado" />
-		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carregando: %d of %d" />
+		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carregando: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar as plantações" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar borda do campo" /> 
-		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância horisontal:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância horizontal:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar rota em:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Virar na direção oposta:" /> 
@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="precisa reabastecer" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="reabastecer" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="reabastecendo" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="Pesando..." />    
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Muitos pontos de espera! Somente %d permitidos." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Poucos pontos de espera! Necessários $d" />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Muitos pontos para descarregar! Somente %d permitidos." /> 
@@ -151,10 +151,10 @@
 		<text name="COURSEPLAY_FRONT" 									 text="a frente" />
 		<text name="COURSEPLAY_BACK" 									 text="ré" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Largura de trabalho" />
-		<text name="COURSEPLAY_WATER_WARNING" 							 text="gostaria de ir nadar?" />
+		<text name="COURSEPLAY_WATER_WARNING" 							 text="mergulhado na agua." />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Abrir Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Debugar canais" />
-		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Geração de rota" />
+		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Geração de rotas" />
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Iniciar no canto" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Iniciar na direção" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Retornar ao primeiro ponto" />
@@ -277,7 +277,7 @@
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="ocultar cursor do mouse" />
 	
 		<text name="COURSEPLAY_MODE10_MODE" 						     text="modo" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="Nivelamento e Compactação" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="Nivelar e Compactar" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="Enchendo" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="parada automática" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="pesquisar modo" />
@@ -299,7 +299,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Salvar opção para reabastecer" />
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->		
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Carrer lista de rotas" />            
 		
 	</texts>
 </l10n>
