@@ -298,6 +298,8 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="nur unter 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Kraftstoff-Sparmodus" />
 		
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
+		
 		
 	</texts>
 </l10n>

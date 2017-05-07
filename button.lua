@@ -294,7 +294,7 @@ function courseplay.button:render()
 			-- Page 2
 			elseif pg == courseplay.hud.PAGE_MANAGE_COURSES then
 				if fn == "reloadCoursesFromXML" then
-					show = g_server ~= nil;
+					show = g_server ~= nil and not vehicle.cp.canDrive;
 				elseif fn == "showSaveCourseForm" and prm == "filter" then
 					show = not vehicle.cp.hud.choose_parent;
 				elseif fn == 'clearCurrentLoadedCourse' then
