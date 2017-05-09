@@ -50,7 +50,7 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Cartella" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s per filtrare Percorsi" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Percorsi: %q" />
-	    <text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare percorso in percorso caricato" />
+	    <text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Caricare/combinare percorso al percorso caricato" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Aggiungere percorso alla fine" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Spostare nella cartella" /> 
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Cancella percorso/cartella" />
@@ -63,7 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha raggiunto il punto d'attesa" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha raggiunto la fine del percorso" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di granaglie." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="ha finito il trasporto di liquidi." />
 		<text name="COURSEPLAY_WORK_END" 								 text="ha finito il lavoro." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": l'attrezzo necessita di essere scaricato." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": l'attrezzo deve essere rifornito." />
@@ -299,7 +299,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="sotto al 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Risparmio carburante" />
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Ricarica lista percorsi" />
 		
 	</texts>
 </l10n>
