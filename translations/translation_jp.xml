@@ -299,7 +299,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="20%以下" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="アイドリングストップ" />
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="コースリスト更新" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="コースリスト更新" />
 		
 	</texts>
 </l10n>
