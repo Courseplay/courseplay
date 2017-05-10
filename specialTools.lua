@@ -349,9 +349,26 @@ function courseplay:setNameVariable(workTool)
 
 	-- Kuhn Discolander XM52 [Giants Kuhn DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnDiscolanderXM.xml' then
-		workTool.cp.isKuhnDiscolanderXM52 = true
+		workTool.cp.isKuhnDiscolanderXM52 = true;
 
 	-- SEEDERS [Giants]
+
+	--Big Bud DLC
+	--Seed Kawk 980 Air Cart
+	elseif workTool.cp.xmlFileName == 'seedHawk980AirCart.xml' then
+		workTool.cp.isSeedHawk980AirCart = true;
+		workTool.cp.notToBeReversed = true;
+
+	--Big Bud DLC
+	--Hatzenbichler TH1400
+	elseif workTool.cp.xmlFileName == 'hatzenbichlerTH1400.xml' then
+		workTool.cp.isHatzenbichlerTH1400 = true;
+		workTool.cp.notToBeReversed = true;
+
+	--Big Bud DLC
+	--Htzenbichler Terminator 18
+	elseif workTool.cp.xmlFileName == 'hatzenbichlerTerminator18.xml' then
+		workTool.cp.isHatzenbichlerTerminator18 = true;
 
 	end;
 	-- ###########################################################
@@ -531,6 +548,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false ,allowedToDrive,forceSpeedLimit;
 	end;
 
+	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence
+	if workTool.cp.isSeedHawk980AirCart or workTool.cp.isHatzenbichlerTH1400 then
+		return true ,allowedToDrive,forceSpeedLimit;
+	end;
+
 	return false, allowedToDrive,forceSpeedLimit;
 end
 
@@ -652,6 +674,10 @@ function courseplay:askForSpecialSettings(self, object)
 	elseif object.cp.isKuhnDiscolanderXM52 then
 		object.cp.frontMarkerOffsetCorection = 5.6;
 		object.cp.backMarkerOffsetCorection = -4.5;
+
+	elseif object.cp.isHatzenbichlerTerminator18 then
+		object.cp.frontMarkerOffsetCorection = -6;
+		object.cp.backMarkerOffsetCorection = -6;
 
 	end;
 
