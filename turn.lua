@@ -1549,23 +1549,21 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
 		
-		if not specialTool and workTool.setPickupState ~= nil then
-			if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
-				workTool:setPickupState(moveDown, false);
+		if not specialTool then
+			if workTool.setPickupState ~= nil then
+				if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
+					workTool:setPickupState(moveDown, false);
+				end;
 			end;
-		end;
-		if moveDown then
-			if workTool.aiLower ~= nil and not workTool:isLowered() then
-				workTool:aiLower();
-			end
-		elseif workTool.aiRaise ~= nil and workTool:isLowered() then
-				workTool:aiRaise()
-		end
-
-	end;
-	if not specialTool then
-		if self.cp.mode == 4 then
-			for _,workTool in pairs(self.cp.workTools) do								 --vvTODO (Tom) why is this here vv?
+			if moveDown then
+				if workTool.aiLower ~= nil and not workTool:isLowered() then
+					workTool:aiLower();
+				end
+			elseif workTool.aiRaise ~= nil and workTool:isLowered() then
+					workTool:aiRaise()
+			end;		
+			if self.cp.mode == 4 then
+																						 --vvTODO (Tom) why is this here vv?
 				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.turnOnVehicle.isTurnedOn ~= workToolonOff then
 					workTool:setIsTurnedOn(workToolonOff, false);                          -- disabled for Pantera
 				end;

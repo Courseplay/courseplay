@@ -470,8 +470,8 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end
 	
-	if not area then
-		courseplay:debug(('%%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
+	if not area or object.cp.noWorkArea then
+		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return;
 	end;
 
@@ -978,7 +978,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.reverse;
 						courseplay:changeReverseSpeed(vehicle, nil, refSpeed, true);
 						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
-						print(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed));
+						--print(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed));
 					end;
 				end;
 
@@ -1006,14 +1006,17 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						local _,vehicleY,_ = getWorldTranslation(directionNode);
 
 						local _,_,z = worldToLocal(directionNode, trailerX, vehicleY, trailerZ);
-						local trailerUnloadDistance = z + 1;
-					
+
+						if not vehicle.cp.trailerFillDistance then
+							vehicle.cp.trailerFillDistance = z + 1;
+						end;
 						
 						local triggerX,_,triggerZ = getWorldTranslation(vehicle.cp.currentTipTrigger.rootNode);
 						_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
 
-						--print(('trailerUnloadDistance = %s unloadDistance = %s'):format(tostring(trailerUnloadDistance), tostring(unloadDistance)))
-						goForTipping = trailerInTipRange and trailerUnloadDistance > unloadDistance
+						--print(('trailerUnloadDistance = %s unloadDistance = %s'):format(tostring(vehicle.cp.trailerFillDistance), tostring(unloadDistance)))
+						goForTipping = trailerInTipRange and vehicle.cp.trailerFillDistance > unloadDistance 
+
 					else
 						goForTipping = trailerInTipRange
 					end;
@@ -1126,6 +1129,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		vehicle.cp.isUnloaded = true;
 	end
 	vehicle.cp.currentTipTrigger = nil;
+	vehicle.cp.trailerFillDistance = nil;
 	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	vehicle.cp.isBGATipping = false;
