@@ -298,6 +298,8 @@
 		<text name="COURSEPLAY_FUEL_ALWAYS"								 text="всегда" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="ниже 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Экономить топливо" />
+
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Обновить список" />
 		
 	</texts>
 </l10n>

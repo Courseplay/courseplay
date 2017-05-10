@@ -298,5 +298,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="en dessous de 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Eco. carburant:" />
 		
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
+		
 	</texts>
 </l10n>

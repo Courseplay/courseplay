@@ -297,5 +297,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="Por debajo de 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Guardar opción combustible." />
 		
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Recargar lista de rutas" />
+		
 	</texts>
 </l10n>
