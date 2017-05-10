@@ -470,7 +470,7 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end
 	
-	if not area or object.cp.isHatzenbichlerTH1400 then
+	if not area or object.cp.noWorkArea then
 		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return;
 	end;
@@ -978,7 +978,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.reverse;
 						courseplay:changeReverseSpeed(vehicle, nil, refSpeed, true);
 						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
-						print(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed));
+						--print(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed));
 					end;
 				end;
 
@@ -1014,8 +1014,9 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						local triggerX,_,triggerZ = getWorldTranslation(vehicle.cp.currentTipTrigger.rootNode);
 						_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
 
-						print(('trailerUnloadDistance = %s unloadDistance = %s'):format(tostring(vehicle.cp.trailerFillDistance), tostring(unloadDistance)))
-						goForTipping = trailerInTipRange and vehicle.cp.trailerFillDistance > unloadDistance
+						--print(('trailerUnloadDistance = %s unloadDistance = %s'):format(tostring(vehicle.cp.trailerFillDistance), tostring(unloadDistance)))
+						goForTipping = trailerInTipRange and vehicle.cp.trailerFillDistance > unloadDistance 
+
 					else
 						goForTipping = trailerInTipRange
 					end;
