@@ -299,7 +299,11 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="20%以下" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="アイドリングストップ" />
 		
+<<<<<<< HEAD
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
+=======
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="コースリスト更新" />
+>>>>>>> refs/remotes/Courseplay/master
 		
 	</texts>
 </l10n>
