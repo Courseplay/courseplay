@@ -1225,18 +1225,9 @@ function courseplay:reloadCoursesFromXML(vehicle)
 end;
 
 function courseplay:reloadCoursesList(vehicle)
-	if g_server ~= nil then
 		courseplay.courses:loadCoursesAndFoldersFromXml();
-		if not vehicle:getIsCourseplayDriving() then
-			local loadedCoursesBackup = vehicle.cp.loadedCourses;
-			courseplay:clearCurrentLoadedCourse(vehicle);
-			vehicle.cp.loadedCourses = loadedCoursesBackup;
-			courseplay:reloadCourses(vehicle, true);
-		end;
 		courseplay.settings.update_folders()
 		courseplay.settings.setReloadCourseItems()
-		--courseplay.hud.reloadCourses()
-	end
 end;
 
 function courseplay:setMouseCursor(self, show)

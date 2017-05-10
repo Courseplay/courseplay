@@ -296,7 +296,7 @@ function courseplay.button:render()
 				if fn == "reloadCoursesFromXML" then
 					show = g_server ~= nil;
 				elseif fn == "reloadCoursesList" then
-					show = g_server ~= nil and not vehicle.cp.canDrive;
+					show = not vehicle.cp.canDrive;
 				elseif fn == "showSaveCourseForm" and prm == "filter" then
 					show = not vehicle.cp.hud.choose_parent;
 				elseif fn == 'clearCurrentLoadedCourse' then
