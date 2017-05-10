@@ -46,6 +46,9 @@ function courseplay:load(savegame)
 	-- GIANT DLC
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
 
+	--AIVE Stop Variable
+	self.cp.isACStopped = false;
+
 	--turn maneuver
 	self.cp.turnOnField = true;
 	self.cp.oppositeTurnMode = false;

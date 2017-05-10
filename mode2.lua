@@ -310,7 +310,7 @@ function courseplay:unload_combine(vehicle, dt)
 		-- if tractor.acTurnStage ~= 0 then
 		if tractor.acTurnStage ~= 0 then --Todo Ask mogil what are good turn stages, -2 is turn finish 41 is raise implement?
 			tractor.cp.turnStage = 2
-			autoCombineExtraMoveBack = vehicle.cp.turnDiameter*1.5
+			autoCombineExtraMoveBack = vehicle.cp.turnDiameter*2
 			AutoCombineIsTurning = true
 			print(('%s: acTurnStage=%d -> cp.turnState=2, AutoCombineIsTurning=true'):format(nameNum(tractor), tractor.acTurnStage)); --TODO: 140308 AutoTractor
 		else
@@ -724,6 +724,8 @@ function courseplay:unload_combine(vehicle, dt)
 			elseif tractor:getIsCourseplayDriving() then
 				combine.cp.waitingForTrailerToUnload = true
 			end
+		elseif AutoCombineIsTurning and vehicle.cp.isACStopped and distance < 100 and vehicle.cp.modeState == 2 then
+			allowedToDrive = false;
 		elseif distance < 50 then
 			--[[for i=1, #combine.acDirectionBeforeTurn.trace do
 				local px,pz = combine.acDirectionBeforeTurn.trace[i].px,combine.acDirectionBeforeTurn.trace[i].pz
