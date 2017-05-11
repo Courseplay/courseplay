@@ -1008,7 +1008,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						goForTipping = trailerInTipRange and vehicle.cp.prevTrailerDistance and vehicle.cp.prevTrailerDistance < unloadDistance
 						vehicle.cp.prevTrailerDistance = unloadDistance 
 						courseplay:debug(string.format('%s: unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.2f', nameNum(vehicle), unloadDistance, vehicle.cp.prevTrailerDistance), 2);
-						
+
 					else
 						goForTipping = trailerInTipRange
 					end;
@@ -1121,7 +1121,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		vehicle.cp.isUnloaded = true;
 	end
 	vehicle.cp.currentTipTrigger = nil;
-	--vehicle.cp.trailerFillDistance = nil;
+	vehicle.cp.prevTrailerDistance = nil;
 	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	vehicle.cp.isBGATipping = false;
