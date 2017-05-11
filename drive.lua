@@ -9,7 +9,11 @@ function courseplay:drive(self, dt)
 	-- Reset Character each 2 min to prevent glitching out.
 	if courseplay:timerIsThrough(self, "resetCharacter", false) then
 		if self.vehicleCharacter ~= nil then
+			local backup = self.currentHelper
 			self.vehicleCharacter:delete();
+			if self.currentHelper == nil then
+				self.currentHelper = backup
+			end;
 			self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name));
 			if self.isEntered then
 				self.vehicleCharacter:setCharacterVisibility(false);
