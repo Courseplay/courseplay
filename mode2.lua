@@ -308,7 +308,7 @@ function courseplay:unload_combine(vehicle, dt)
 			tractor.cp.turnStage = 0
 		end
 		-- if tractor.acTurnStage ~= 0 then
-		if tractor.acTurnStage ~= 0 then --Todo Ask mogil what are good turn stages, -2 is turn finish 41 is raise implement?
+		if tractor.acTurnStage > 0 then --Todo Ask mogil what are good turn stages, -2 is turn finish 41 is raise implement?
 			tractor.cp.turnStage = 2
 			autoCombineExtraMoveBack = vehicle.cp.turnDiameter*2
 			AutoCombineIsTurning = true
@@ -798,7 +798,7 @@ function courseplay:unload_combine(vehicle, dt)
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						if vehicle.cp.isReversePossible then
+						if vehicle.cp.isReversePossible  and not combineIsAutoCombine then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
@@ -821,7 +821,7 @@ function courseplay:unload_combine(vehicle, dt)
 						vehicle.cp.chopperIsTurning = true
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						if vehicle.cp.isReversePossible then
+						if vehicle.cp.isReversePossible and not combineIsAutoCombine then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
