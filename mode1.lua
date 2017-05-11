@@ -15,9 +15,10 @@ function courseplay:handle_mode1(vehicle, allowedToDrive,dt)
 	end;
 
 	-- If we are an auger wagon, we don't have an tip point, so handle it as an auger wagon in mode 3
-	if vehicle.cp.hasAugerWagon then
-		courseplay:handleMode3(vehicle, allowedToDrive, dt);
-	end
+	-- This should be in drive.lua on line 305 IMO --pops64
+	-- if vehicle.cp.hasAugerWagon then
+	-- 	courseplay:handleMode3(vehicle, allowedToDrive, dt);
+	-- end
 
 	-- damn, I missed the trigger!
 	if vehicle.cp.currentTipTrigger ~= nil then
