@@ -349,9 +349,26 @@ function courseplay:setNameVariable(workTool)
 
 	-- Kuhn Discolander XM52 [Giants Kuhn DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnDiscolanderXM.xml' then
-		workTool.cp.isKuhnDiscolanderXM52 = true
+		workTool.cp.isKuhnDiscolanderXM52 = true;
 
 	-- SEEDERS [Giants]
+
+	--Big Bud DLC
+	--Seed Kawk 980 Air Cart
+	elseif workTool.cp.xmlFileName == 'seedHawk980AirCart.xml' then
+		workTool.cp.isSeedHawk980AirCart = true;
+		workTool.cp.notToBeReversed = true;
+
+	--Big Bud DLC
+	--Hatzenbichler TH1400
+	elseif workTool.cp.xmlFileName == 'hatzenbichlerTH1400.xml' then
+		workTool.cp.isHatzenbichlerTH1400 = true;
+		workTool.cp.notToBeReversed = true;
+
+	--Big Bud DLC
+	--Htzenbichler Terminator 18
+	elseif workTool.cp.xmlFileName == 'hatzenbichlerTerminator18.xml' then
+		workTool.cp.isHatzenbichlerTerminator18 = true;
 
 	end;
 	-- ###########################################################
@@ -531,6 +548,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false ,allowedToDrive,forceSpeedLimit;
 	end;
 
+	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence
+	if workTool.cp.isSeedHawk980AirCart or workTool.cp.isHatzenbichlerTH1400 then
+		return true ,allowedToDrive,forceSpeedLimit;
+	end;
+
 	return false, allowedToDrive,forceSpeedLimit;
 end
 
@@ -551,6 +573,7 @@ function courseplay:askForSpecialSettings(self, object)
 	-- self.cp.noStopOnTurn:					(Boolean)				Set this to true if the work tool don't need to stop for 1½ sec before turning.
 	--																	Some work tool types automatically set this to true.
 	-- self.cp.backMarkerOffset:				(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise/lower or turn on/off the work tool
+	-- object.cp.noWorkArea						(Boolean)				Some implement have workarea that don't work. This will have set markers skip over thoses tools
 	-- TODO: Add description for all the special varialbes that is usable here.
 
 	courseplay:debug(('%s: askForSpecialSettings(..., %q)'):format(nameNum(self), nameNum(object)), 6);
@@ -652,6 +675,13 @@ function courseplay:askForSpecialSettings(self, object)
 	elseif object.cp.isKuhnDiscolanderXM52 then
 		object.cp.frontMarkerOffsetCorection = 5.6;
 		object.cp.backMarkerOffsetCorection = -4.5;
+
+	elseif object.cp.isHatzenbichlerTerminator18 then
+		object.cp.frontMarkerOffsetCorection = -4;
+		object.cp.backMarkerOffsetCorection = -10.75;
+
+	elseif object.cp.isHatzenbichlerTH1400 then
+		object.cp.noWorkArea = true;
 
 	end;
 

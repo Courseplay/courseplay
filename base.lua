@@ -62,6 +62,7 @@ function courseplay:load(savegame)
 	self.cp.turnTimer = 8000 --int
 	self.cp.noStopOnEdge = false --bool
 	self.cp.noStopOnTurn = false --bool
+	self.cp.noWorkArea = false -- bool
 
 	self.cp.combineOffsetAutoMode = true
 	self.cp.isDriving = false;
@@ -385,6 +386,7 @@ function courseplay:load(savegame)
 	self.cp.workToolAttached = false;
 	self.cp.currentTrailerToFill = nil;
 	self.cp.trailerFillDistance = nil;
+	self.cp.prevTrailerDistance = nil;
 	self.cp.isUnloaded = false;
 	self.cp.isLoaded = false;
 	self.cp.totalFillLevel = nil;
