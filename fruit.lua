@@ -234,13 +234,19 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 				leftFruit,rightFruit = 100, 0; --fruitSide = "left"
 			end
 		else
-			if combine.acTurnStage == 0 or (combine.acTurnStage >= 20 and combine.acTurnStage <= 22) then
+			if combine.acTurnStage == 0 then
 				if combine.acParameters.leftAreaActive then 
 					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
 				else
 					leftFruit,rightFruit = 100, 0; --fruitSide = "left"
 				end
-			end
+			else
+				if combine.acParameters.leftAreaActive then
+					leftFruit,rightFruit = 100, 0; --fruitSide = "left"
+				else
+					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
+				end
+			end;
 		end
 	
 	-- AI HELPER COMBINE
