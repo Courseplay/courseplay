@@ -228,13 +228,21 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired then -- autoCombine
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is AutoCombine", nameNum(combine)), 4);
 		if not combine.acParameters.upNDown then
-			if combine.acParameters.leftAreaActive then
-				leftFruit,rightFruit = 0, 100; --fruitSide = "right"
+			if combine.acTurnStage == 0 then
+				if combine.acParameters.leftAreaActive then
+					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
+				else
+					leftFruit,rightFruit = 100, 0; --fruitSide = "left"
+				end
 			else
-				leftFruit,rightFruit = 100, 0; --fruitSide = "left"
-			end
+				if combine.acParameters.leftAreaActive then
+					leftFruit,rightFruit = 100, 0; --fruitSide = "left"
+				else
+					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
+				end
+			end;
 		else
-			if combine.acTurnStage == 0 or (combine.acTurnStage >= 20 and combine.acTurnStage <= 22) then
+			if combine.acTurnStage == 0 then
 				if combine.acParameters.leftAreaActive then 
 					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
 				else
