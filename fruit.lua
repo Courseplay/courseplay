@@ -228,8 +228,14 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired then -- autoCombine
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is AutoCombine", nameNum(combine)), 4);
 		if not combine.acParameters.upNDown then
+			if combine.acParameters.leftAreaActive then
+				leftFruit,rightFruit = 0, 100; --fruitSide = "right"
+			else
+				leftFruit,rightFruit = 100, 0; --fruitSide = "left"
+			end
+		else
 			if combine.acTurnStage == 0 then
-				if combine.acParameters.leftAreaActive then
+				if combine.acParameters.leftAreaActive then 
 					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
 				else
 					leftFruit,rightFruit = 100, 0; --fruitSide = "left"
@@ -241,14 +247,6 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
 				end
 			end;
-		else
-			if combine.acTurnStage == 0 then
-				if combine.acParameters.leftAreaActive then 
-					leftFruit,rightFruit = 0, 100; --fruitSide = "right"
-				else
-					leftFruit,rightFruit = 100, 0; --fruitSide = "left"
-				end
-			end
 		end
 	
 	-- AI HELPER COMBINE

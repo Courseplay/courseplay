@@ -301,18 +301,23 @@ function courseplay:unload_combine(vehicle, dt)
 	local AutoCombineIsTurning = false
 	local combineIsAutoCombine = false
 	local autoCombineExtraMoveBack = 0
+	local autoCombineCircleMode = false
 	--print(('tractor.acParameters = %s tractor.acParameters.enabled = %s tractor.acTurnStage = %s tractor.isHired = %s'):format(tostring(tractor.acParameters),tostring(tractor.acParameters.enabled),tostring(tractor.acTurnStage),tostring(tractor.isHired)))
-	if tractor.acParameters ~= nil and tractor.acParameters.enabled and tractor.isHired  then
+	if tractor.acParameters ~= nil and tractor.acParameters.enabled and tractor.isHired then
 		combineIsAutoCombine = true
+		autoCombineCircleMode = not tractor.acParameters.upNDown
 		if tractor.cp.turnStage == nil then
 			tractor.cp.turnStage = 0
 		end
+		if autoCombineCircleMode then
+			tractor.acTurnMode = '7'
+		end;
 		-- if tractor.acTurnStage ~= 0 then
-		if tractor.acTurnStage > 0 then --Todo Ask mogil what are good turn stages, -2 is turn finish 41 is raise implement?
+		if tractor.acTurnStage > 0 then
 			tractor.cp.turnStage = 2
 			autoCombineExtraMoveBack = vehicle.cp.turnDiameter*2
 			AutoCombineIsTurning = true
-			print(('%s: acTurnStage=%d -> cp.turnState=2, AutoCombineIsTurning=true'):format(nameNum(tractor), tractor.acTurnStage)); --TODO: 140308 AutoTractor
+			courseplay:debug(string.format('%s: acTurnStage=%d -> cp.turnState=2, AutoCombineIsTurning=true', nameNum(tractor), tractor.acTurnStage), 4); --TODO: 140308 AutoTractor
 		else
 			tractor.cp.turnStage = 0
 		end
@@ -717,15 +722,13 @@ function courseplay:unload_combine(vehicle, dt)
 	if combineIsTurning and not combine.cp.isChopper and vehicle.cp.modeState > 1 then
 		if combine.cp.fillLevel > combine.cp.capacity*0.9 then
 			if combineIsAutoCombine and tractor.acIsCPStopped ~= nil then
-				-- print(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
+				 courseplay:debug(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true', 4); --TODO: 140308 AutoTractor
 				tractor.acIsCPStopped = true
 			elseif combine.aiIsStarted  then
 				stopAICombine = true
 			elseif tractor:getIsCourseplayDriving() then
 				combine.cp.waitingForTrailerToUnload = true
 			end
-		elseif AutoCombineIsTurning and vehicle.cp.isACStopped and distance < 100 and vehicle.cp.modeState == 2 then
-			allowedToDrive = false;
 		elseif distance < 50 then
 			--[[for i=1, #combine.acDirectionBeforeTurn.trace do
 				local px,pz = combine.acDirectionBeforeTurn.trace[i].px,combine.acDirectionBeforeTurn.trace[i].pz
@@ -745,7 +748,7 @@ function courseplay:unload_combine(vehicle, dt)
 			--courseplay:resetCustomTimer(vehicle, 'fieldEdgeTimeOut');
 			if not courseplay:timerIsThrough(vehicle, 'fieldEdgeTimeOut') or vehicle.cp.modeState > 2 then
 				if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
-					 print(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true'); --TODO: 140308 AutoTractor
+					 courseplay:debug(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true', 4); --TODO: 140308 AutoTractor
 					tractor.acIsCPStopped = true
 				elseif combine.aiIsStarted then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
 					stopAICombine = true
@@ -798,7 +801,7 @@ function courseplay:unload_combine(vehicle, dt)
 	
 					else --i'm right of choppper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						if vehicle.cp.isReversePossible  and not combineIsAutoCombine then
+						if vehicle.cp.isReversePossible  and not autoCombineCircleMode then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
@@ -821,7 +824,7 @@ function courseplay:unload_combine(vehicle, dt)
 						vehicle.cp.chopperIsTurning = true
 					else -- I'm left of chopper
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						if vehicle.cp.isReversePossible and not combineIsAutoCombine then
+						if vehicle.cp.isReversePossible and not autoCombineCircleMode then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
