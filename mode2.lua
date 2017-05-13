@@ -309,7 +309,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if tractor.cp.turnStage == nil then
 			tractor.cp.turnStage = 0
 		end
-		if autoCombineCircleMode then
+		if autoCombineCircleMode and tractor.cp.isChopper then
 			tractor.acTurnMode = '7'
 		end;
 		-- if tractor.acTurnStage ~= 0 then
