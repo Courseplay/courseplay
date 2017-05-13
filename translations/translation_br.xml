@@ -57,10 +57,10 @@ S<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Criar nova pasta" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Pesquisar por rotas e pastas" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Desativar filtros" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="descarregando..." />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="descarregando" />
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="salvar a posição do tubo" />      
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "mover o tubo para posição" />	  
-		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="esperando..." />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="esperando" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="chegou no trigger ou no ponto final" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text=" Transporte de grãos finalizado." />  
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="Transporte de líquidos finalizado." /> 
@@ -133,8 +133,8 @@ S<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Seguindo trator" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="precisa reabastecer" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="reabastecer" />
-		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="reabastecendo..." />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="Pesando..." />    
+		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="reabastecendo" />
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="Pesando" />    
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Muitos pontos de espera! Somente %d permitidos." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Poucos pontos de espera! Necessários $d" />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Muitos pontos para descarregar! Somente %d permitidos." /> 
@@ -192,7 +192,7 @@ S<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Salvar posição de transporte" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Salvar posição pré-descarregar" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Salvar posição de descarregar" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Mover para posição de carregar" />
+de		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Mover para posição de carregar" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Mover para posição de transporte" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Mover para posição pré descarregar" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Mover para posição descarregar" />
@@ -218,7 +218,7 @@ S<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 		 text="Adicionar borda do campo %d na lista" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST" text="Reescrever borda do campo %d na lista" />
 		<text name="COURSEPLAY_USER" 									 text="usuário" />
-		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="precisa reparar" />
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 				 text="precisa de reparos" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 				 text="reparar" />
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 				 text="reparando" />
 		<text name="COURSEPLAY_COVER_HANDLING" 							 text="cobertura" />
