@@ -303,7 +303,7 @@ function courseplay:unload_combine(vehicle, dt)
 	local autoCombineExtraMoveBack = 0
 	local autoCombineCircleMode = false
 	--print(('tractor.acParameters = %s tractor.acParameters.enabled = %s tractor.acTurnStage = %s tractor.isHired = %s'):format(tostring(tractor.acParameters),tostring(tractor.acParameters.enabled),tostring(tractor.acTurnStage),tostring(tractor.isHired)))
-	if tractor.acParameters ~= nil and tractor.acParameters.enabled and tractor.isHired then
+	if tractor.acParameters ~= nil and tractor.acParameters.enabled and tractor.isHired and not tractor.cp.isDriving then
 		combineIsAutoCombine = true
 		autoCombineCircleMode = not tractor.acParameters.upNDown
 		if tractor.cp.turnStage == nil then
