@@ -519,7 +519,7 @@ function courseplay:setMarkers(vehicle, object)
 					local ztt = 0;
 					local type;
 
-					if pivotJointNode and object.attacherJoint.jointType then
+					if pivotJointNode and object.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] then
 						type = "Pivot Trailer";
 						x, y, z = getWorldTranslation(pivotJointNode);
 
@@ -529,7 +529,7 @@ function courseplay:setMarkers(vehicle, object)
 						-- Calculate the offset based on the distances
 						ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt;
 
-					elseif courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType then
+					elseif courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] then
 						type = "Trailer";
 						x, y, z = getWorldTranslation(object.attacherJoint.node)
 

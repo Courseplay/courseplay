@@ -241,6 +241,10 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.directionNodeZOffset = 2.15;
 		workTool.cp.widthWillCollideOnTurn = true;
 
+	--Big Bud 747 [Giants Big Bud DLC]
+	elseif workTool.cp.xmlFileName == 'bigBud747.xml' then
+		workTool.cp.overwriteTurnRadius = 9;
+
 
 	-- ###########################################################
 	-- [3] TRAILERS
@@ -320,6 +324,22 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'kuhnDC401.xml' then
 		workTool.cp.isKuhnDC401 = true;
 
+	-- Bednar Swifter SM 18000 [Giants Big Bud DLC]
+	elseif workTool.cp.xmlFileName == 'bednarSM18000.xml' then
+		workTool.cp.isBednarSM18000 = true;
+		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. Should be able to reverse but kinks out if it tries.
+
+	-- Flexi Coil ST 820 [Giants Big Bud DLC]
+	elseif workTool.cp.xmlFileName == 'flexicoilST820.xml' then
+		workTool.cp.isFlexicoilST820 = true;
+		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. Should be able to reverse but kinks out if it tries.
+
+	--Cultiplow Platinum 8m [Giants Big Bud DLC]
+	elseif workTool.cp.xmlFileName == 'agrisemCultiplowPlatinum8m.xml' then
+		workTool.cp.isAgrisemCultiplowPlatinum8m = true;
+		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. Should be able to reverse but kinks out if it tries.
+		workTool.cp.overwriteTurnRadius = 7;
+
 	-- PLOUGHS [Giants]
 	-- Amazone Cayron 200 [Giants]
 	elseif workTool.cp.xmlFileName == 'amazoneCayron200.xml' then
@@ -347,28 +367,36 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 4.5;
 
+	-- Gregoire Besson SPSL 9 [Giants Big Bud DLC]
+	elseif workTool.cp.xmlFileName == 'gregoireBessonSPSL9.xml' then
+		workTool.cp.isGregoireBessonSPSL9 = true;
+		workTool.cp.notToBeReversed = true;
+		workTool.cp.implementWheelAlwaysOnGround = true;
+		workTool.cp.overwriteTurnRadius = 6;
+
 	-- Kuhn Discolander XM52 [Giants Kuhn DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnDiscolanderXM.xml' then
 		workTool.cp.isKuhnDiscolanderXM52 = true;
 
 	-- SEEDERS [Giants]
 
-	--Big Bud DLC
-	--Seed Kawk 980 Air Cart
+	--Seed Kawk 980 Air Cart [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'seedHawk980AirCart.xml' then
 		workTool.cp.isSeedHawk980AirCart = true;
 		workTool.cp.notToBeReversed = true;
 
-	--Big Bud DLC
-	--Hatzenbichler TH1400
+	--Hatzenbichler TH1400 [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'hatzenbichlerTH1400.xml' then
 		workTool.cp.isHatzenbichlerTH1400 = true;
 		workTool.cp.notToBeReversed = true;
 
-	--Big Bud DLC
-	--Htzenbichler Terminator 18
+	--Htzenbichler Terminator 18 [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'hatzenbichlerTerminator18.xml' then
 		workTool.cp.isHatzenbichlerTerminator18 = true;
+
+	--Seed Hawk XL Toolbar 84ft [Giants Big Bud DLC]
+	elseif	 workTool.cp.xmlFileName == 'seedHawkXLAirDrill84.xml' then
+		workTool.cp.isSeedHawkXLAirDrill84 = true;
 
 	end;
 	-- ###########################################################
@@ -683,6 +711,25 @@ function courseplay:askForSpecialSettings(self, object)
 	elseif object.cp.isHatzenbichlerTH1400 then
 		object.cp.noWorkArea = true;
 
+	elseif object.cp.isGregoireBessonSPSL9 then
+		automaticToolOffsetX = 2.1;
+
+	elseif object.cp.isBednarSM18000 then
+		object.cp.frontMarkerOffsetCorection = 2.5;
+		object.cp.backMarkerOffsetCorection = -6;
+
+	elseif object.cp.isFlexicoilST820 then
+		object.cp.frontMarkerOffsetCorection = 1.85
+		object.cp.backMarkerOffsetCorection = -1.6;
+
+	elseif object.cp.isAgrisemCultiplowPlatinum8m then
+		object.cp.frontMarkerOffsetCorection = 2.2
+		object.cp.backMarkerOffsetCorection = -1.25;
+
+	elseif object.cp.isSeedHawkXLAirDrill84 then
+		object.cp.frontMarkerOffsetCorection = 2.45
+		object.cp.backMarkerOffsetCorection = -2.2;
+
 	end;
 
 	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
@@ -709,6 +756,8 @@ function courseplay:getSpecialWorkWidth(workTool)
 			specialWorkWidth = 1.6
 		elseif workTool.cp.isKuhnTF1500 then
 			specialWorkWidth = 0
+		elseif workTool.cp.isGregoireBessonSPSL9 then
+			specialWorkWidth = 10.5
 		end
 	end;
 
