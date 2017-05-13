@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+S<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Iniciar gravação da rota" />
@@ -32,8 +32,8 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Dirigir agora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Dirigir em:" />
 		<text name="UNKNOWN" 											 text="desconhecido" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland sentido horário/anti-horário" />        
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland antes/depois da rota" /> 
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Borda do campo sentido horário/anti-horário" />        
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Borda do campo antes/depois da rota" /> 
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Gerar rota no campo" />             
 		<text name="COURSEPLAY_DISTANCE" 								 text="distância" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Aguardando tempo" />
@@ -62,23 +62,23 @@
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "mover o tubo para posição" />	  
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="esperando..." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="chegou no trigger ou no ponto final" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="Finalizado transporte de grãos." />  
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="Finalizado transporte de líquidos." /> 
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text=" Transporte de grãos finalizado." />  
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="Transporte de líquidos finalizado." /> 
 		<text name="COURSEPLAY_WORK_END" 								 text="trabalho finalizado." />
-		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": equipamento precisa ser descarregado." />
-		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": equipamento precisa ser recarregado." />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": descarregar equipamento." />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": recarregar equipamento." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="descarregando fardos." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="em tráfego." />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="trigger alcançado" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="chegou no trigger" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carregando: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar as plantações" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar borda do campo" /> 
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar na borda do campo" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância horizontal:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar rota em:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Virar na direção oposta:" /> 
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="Ultima pista" />     
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="Ultima faixa" />     
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="quando possível" />           
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Raio de giro:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Distância vertical:" />
@@ -133,15 +133,15 @@
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 						 text="Seguindo trator" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="precisa reabastecer" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="reabastecer" />
-		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="reabastecendo" />
+		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="reabastecendo..." />
 		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="Pesando..." />    
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Muitos pontos de espera! Somente %d permitidos." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Poucos pontos de espera! Necessários $d" />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Muitos pontos para descarregar! Somente %d permitidos." /> 
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Poucos pontos para descarregar! Necessários %d." /> 
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="carreta incorreta para este modo" />
-		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ferramenta errada para este modo" />
-		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Este veículo não é suportado neste modo" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ferramenta incorreta para este modo" />
+		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="veículo incorreto para este modo" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="aguardando o tempo melhorar" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distancia da faixa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Distancia horizontal do equipamento" />
@@ -166,7 +166,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Leste" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sul" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
-		<text name="COURSEPLAY_HEADLAND" 								 text="Cabeceira" />
+		<text name="COURSEPLAY_HEADLAND" 								 text="borda do campo" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="ativado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Somente nome" />            
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nome e rota" />		
@@ -207,7 +207,7 @@
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(Rota atual carregada)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Escaneamento do campo em andamento" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="Escaneando campo %d/%d" />
-		<text name="COURSEPLAY_HOSEMISSING" 							 text="Nenhum cano encontrado - cancelar recarga" />
+		<text name="COURSEPLAY_HOSEMISSING" 							 text="Nenhum tubo encontrado - cancelar recarga" />
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Mudança de faixa simétrica" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Prioridade do motorista" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="nivel de enchimento" />
@@ -299,7 +299,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Salvar opção para reabastecer" />
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Carrer lista de rotas" />            
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Carregar lista de rotas" />            
 		
 	</texts>
 </l10n>
