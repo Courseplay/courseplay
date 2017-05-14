@@ -268,7 +268,6 @@ function courseplay:unregisterFromCombine(vehicle, combine)
 		vehicle.trafficCollisionIgnoreList[combine.rootNode] = nil
 	end
 	
-	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired then
 		if combine.cp.turnStage ~= 0 then
 			combine.cp.turnStage = 0
 		end
