@@ -332,6 +332,7 @@ function courseplay:setNameVariable(workTool)
 	-- Flexi Coil ST 820 [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'flexicoilST820.xml' then
 		workTool.cp.isFlexicoilST820 = true;
+		workTool.cp.overwriteTurnRadius = 7;
 		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. Should be able to reverse but kinks out if it tries.
 
 	--Cultiplow Platinum 8m [Giants Big Bud DLC]
@@ -397,6 +398,7 @@ function courseplay:setNameVariable(workTool)
 	--Seed Hawk XL Toolbar 84ft [Giants Big Bud DLC]
 	elseif	 workTool.cp.xmlFileName == 'seedHawkXLAirDrill84.xml' then
 		workTool.cp.isSeedHawkXLAirDrill84 = true;
+		workTool.cp.overwriteTurnRadius = 10;
 
 	end;
 	-- ###########################################################
@@ -705,8 +707,8 @@ function courseplay:askForSpecialSettings(self, object)
 		object.cp.backMarkerOffsetCorection = -4.5;
 
 	elseif object.cp.isHatzenbichlerTerminator18 then
-		object.cp.frontMarkerOffsetCorection = -4;
-		object.cp.backMarkerOffsetCorection = -10.75;
+		object.cp.frontMarkerOffsetCorection = -6.5;
+		object.cp.backMarkerOffsetCorection = -6.5;
 
 	elseif object.cp.isHatzenbichlerTH1400 then
 		object.cp.noWorkArea = true;
@@ -715,20 +717,7 @@ function courseplay:askForSpecialSettings(self, object)
 		automaticToolOffsetX = 2.1;
 
 	elseif object.cp.isBednarSM18000 then
-		object.cp.frontMarkerOffsetCorection = 2.5;
-		object.cp.backMarkerOffsetCorection = -6;
-
-	elseif object.cp.isFlexicoilST820 then
-		object.cp.frontMarkerOffsetCorection = 1.85
-		object.cp.backMarkerOffsetCorection = -1.6;
-
-	elseif object.cp.isAgrisemCultiplowPlatinum8m then
-		object.cp.frontMarkerOffsetCorection = 2.2
-		object.cp.backMarkerOffsetCorection = -1.25;
-
-	elseif object.cp.isSeedHawkXLAirDrill84 then
-		object.cp.frontMarkerOffsetCorection = 2.45
-		object.cp.backMarkerOffsetCorection = -2.2;
+		object.cp.backMarkerOffsetCorection = -3.25;
 
 	end;
 
