@@ -179,6 +179,7 @@ function courseplay:handle_mode2(vehicle, dt)
 					for k, combine in pairs(vehicle.cp.reachableCombines) do
 						courseplay:setOwnFillLevelsAndCapacities(combine)
 						local fillLevel, capacity = combine.cp.fillLevel, combine.cp.capacity
+						if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired and fillLevel >= 0.99*capacity and not combine.cp.isDriving then --AC stops at 99% fillLevel so we have to set this as full
 							combine.cp.wantsCourseplayer = true
 						end
 						if (fillLevel >= (capacity * vehicle.cp.followAtFillLevel / 100)) or capacity == 0 or combine.cp.wantsCourseplayer then
