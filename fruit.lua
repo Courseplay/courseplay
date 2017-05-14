@@ -225,7 +225,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit(%s): left %f, right %f", nameNum(combine),tostring(fruitType), leftFruit, rightFruit), 4);
 	
 	-- AUTO COMBINE
-	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired then -- autoCombine
+	if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired and not combine.cp.isDriving then -- autoCombine
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is AutoCombine", nameNum(combine)), 4);
 		if not combine.acParameters.upNDown then
 			if combine.acParameters.leftAreaActive then

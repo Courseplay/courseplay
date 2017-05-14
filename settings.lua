@@ -246,7 +246,7 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 	courseplay:debug(('%s: calculateWorkWidth()'):format(nameNum(vehicle)), 7);
 	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);
 	courseplay:debug(('\tvehL=%s, vehR=%s'):format(tostring(vehL), tostring(vehR)), 7);
-	local shouldBWorkWidth = 3
+	local shouldBWorkWidth = 0
 	
 	local implL,implR = -9999,9999;
 	if vehicle.attachedImplements then
@@ -323,6 +323,10 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 	local workWidth = l - r;
 	
 	shouldBWorkWidth = max(shouldBWorkWidth,workWidth)
+
+	if shouldBWorkWidth == 0 then
+		shouldBWorkWidth = 3;
+	end;
 	
 	courseplay:debug(('\tl=%s, r=%s -> workWidth=l-r=%s'):format(tostring(l), tostring(r), tostring(shouldBWorkWidth)), 7);
 
