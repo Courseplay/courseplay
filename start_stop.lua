@@ -442,6 +442,11 @@ function courseplay:start(self)
 		courseplay:disableCropDestruction(self);
 	end;
 
+	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
+	if self.mrUseMrTransmission ~= nil then
+		self.mrUseMrTransmission = false
+	end
+
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 
@@ -635,6 +640,11 @@ function courseplay:stop(self)
 	-- Enable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
 	if self.cropDestruction then
 		courseplay:enableCropDestruction(self);
+	end;
+
+	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
+	if self.mrUseMrTransmission ~= nil then
+		self.mrUseMrTransmission = true;
 	end;
 
 	if self.cp.hasDriveControl then

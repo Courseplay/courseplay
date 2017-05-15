@@ -384,7 +384,7 @@ function courseplay:load(savegame)
 	self.cp.workToolAttached = false;
 	self.cp.currentTrailerToFill = nil;
 	self.cp.trailerFillDistance = nil;
-	self.cp.prevTrailerDistance = nil;
+	self.cp.prevTrailerDistance = 100.0;
 	self.cp.isUnloaded = false;
 	self.cp.isLoaded = false;
 	self.cp.totalFillLevel = nil;

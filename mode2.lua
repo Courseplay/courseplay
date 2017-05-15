@@ -509,7 +509,7 @@ function courseplay:unload_combine(vehicle, dt)
 			vehicle.cp.nextTargets = {}
 		end
 
-		if (not combine.cp.isChopper or combine.haeckseldolly) and (combineFillLevel == 0 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !
+		if (not combine.cp.isChopper or combine.haeckseldolly) and (combineFillLevel < 1 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !
 			if combine.cp.offset == nil then
 				--print("saving offset")
 				combine.cp.offset = vehicle.cp.combineOffset;

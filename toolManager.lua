@@ -1121,7 +1121,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		vehicle.cp.isUnloaded = true;
 	end
 	vehicle.cp.currentTipTrigger = nil;
-	vehicle.cp.prevTrailerDistance = nil;
+	vehicle.cp.prevTrailerDistance = 100.0;
 	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	vehicle.cp.isBGATipping = false;
