@@ -59,7 +59,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="已达到等待点" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="已达到终点" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="已完成粮食运输" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="已经完成液体运输" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 								 text="工作已完成。" />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": 工具需要卸载。" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": 工具需要装载。" />
@@ -297,7 +297,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="低于20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="省燃油选项" />						 <!-- TODO: TRANSLATE! -->
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="刷新目录" />            <!-- TODO: TRANSLATION! -->
 		
 	</texts>
 </l10n>
