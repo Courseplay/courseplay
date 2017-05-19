@@ -1005,10 +1005,10 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 
 						local unloadDistance = courseplay:distance(trailerX, trailerZ, triggerX, triggerZ) 
 
-						goForTipping = trailerInTipRange and vehicle.cp.prevTrailerDistance and vehicle.cp.prevTrailerDistance < unloadDistance
-						vehicle.cp.prevTrailerDistance = unloadDistance 
-						courseplay:debug(string.format('%s: unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.2f', nameNum(vehicle), unloadDistance, vehicle.cp.prevTrailerDistance), 2);
-
+						courseplay:debug(string.format('%s: unloadDistance = %.2f tipper.cp.trailerFillDistance = %.2f', nameNum(vehicle), unloadDistance, tipper.cp.prevTrailerDistance), 2);
+						goForTipping = trailerInTipRange and tipper.cp.prevTrailerDistance and tipper.cp.prevTrailerDistance < unloadDistance
+						tipper.cp.prevTrailerDistance = unloadDistance 
+						
 					else
 						goForTipping = trailerInTipRange
 					end;
@@ -1121,13 +1121,13 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		vehicle.cp.isUnloaded = true;
 	end
 	vehicle.cp.currentTipTrigger = nil;
-	vehicle.cp.prevTrailerDistance = 100.0;
 	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	vehicle.cp.isBGATipping = false;
 	for k, tipper in pairs(vehicle.cp.workTools) do
 		tipper.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 		tipper.cp.isTipping = false;
+		tipper.cp.prevTrailerDistance = 100.00;
 	end;
 	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
 	if vehicle.cp.backupUnloadSpeed then
