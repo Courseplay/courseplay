@@ -150,7 +150,7 @@ function courseplay:load(savegame)
 	self.cp.hasPlough = false;
 	self.cp.hasRotateablePlough = false;
 	self.cp.isNotAllowedToDrive = false;
-	self.cp.allwaysSearchFuel = true;
+	self.cp.allwaysSearchFuel = false;
 	self.cp.saveFuel = false;
 	self.cp.saveFuelOptionActive = true;
 	self.cp.hasAugerWagon = false;
@@ -384,7 +384,7 @@ function courseplay:load(savegame)
 	self.cp.workToolAttached = false;
 	self.cp.currentTrailerToFill = nil;
 	self.cp.trailerFillDistance = nil;
-	self.cp.prevTrailerDistance = 100.0;
+	self.cp.prevTrailerDistance = 100.00;
 	self.cp.isUnloaded = false;
 	self.cp.isLoaded = false;
 	self.cp.totalFillLevel = nil;
@@ -1461,7 +1461,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.driveOnAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillDriveOn'),			 90);
 		self.cp.turnDiameter		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 self.cp.vehicleTurnRadius * 2);
 		self.cp.realisticDriving 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#realisticDriving'),		 true);
-		self.cp.allwaysSearchFuel 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#allwaysSearchFuel'),	 true);
+		self.cp.allwaysSearchFuel 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#allwaysSearchFuel'),	 false);
 		
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
