@@ -85,7 +85,8 @@ local function initialize()
 		'toolManager',
 		'triggers', 
 		'turn',
-		'vehicles'
+		'vehicles',
+    'course-generator/cp'
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 3, 3; -- + 3 as 'register.lua', 'courseplay.lua' and 'CpManager.lua' have already been loaded

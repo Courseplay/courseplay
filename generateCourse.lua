@@ -8,10 +8,11 @@
 @copyright: No reproduction, usage or copying without the explicit permission by the author allowed.
 ]]
 
+
+
 function courseplay:generateCourse(vehicle)
 	local self = courseplay.generation;
 	-----------------------------------
-
 
 	local fieldCourseName = tostring(vehicle.cp.currentCourseName);
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
@@ -35,6 +36,8 @@ function courseplay:generateCourse(vehicle)
 	end;
 
 	courseplay:debug(string.format('before headland: poly=%s, poly.points=%s, poly.numPoints=%s', tostring(poly), tostring(poly.points), tostring(poly.numPoints)), 7);
+
+  generate( vehicle, poly )
 
 	--TODO: needed here?
 	--[[
