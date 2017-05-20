@@ -1005,7 +1005,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 
 						local unloadDistance = courseplay:distance(trailerX, trailerZ, triggerX, triggerZ) 
 
-						courseplay:debug(string.format('%s: unloadDistance = %.2f tipper.cp.trailerFillDistance = %.2f', nameNum(vehicle), unloadDistance, tipper.cp.prevTrailerDistance), 2);
+						courseplay:debug(string.format('%s: unloadDistance = %.2f tipper.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(tipper.cp.prevTrailerDistance)), 2);
 						goForTipping = trailerInTipRange and tipper.cp.prevTrailerDistance and tipper.cp.prevTrailerDistance < unloadDistance
 						tipper.cp.prevTrailerDistance = unloadDistance 
 						
