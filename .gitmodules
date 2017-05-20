@@ -1,0 +1,3 @@
+[submodule "course-generator"]
+	path = course-generator
+	url = https://github.com/pvajko/course-generator
