@@ -37,7 +37,7 @@ function courseplay:generateCourse(vehicle)
 
 	courseplay:debug(string.format('before headland: poly=%s, poly.points=%s, poly.numPoints=%s', tostring(poly), tostring(poly.points), tostring(poly.numPoints)), 7);
 
-  generate( vehicle, poly )
+  generate( vehicle, fieldCourseName, poly )
 
 	--TODO: needed here?
 	--[[
