@@ -37,8 +37,6 @@ function courseplay:generateCourse(vehicle)
 
 	courseplay:debug(string.format('before headland: poly=%s, poly.points=%s, poly.numPoints=%s', tostring(poly), tostring(poly.points), tostring(poly.numPoints)), 7);
 
-  generate( vehicle, fieldCourseName, poly )
-
 	--TODO: needed here?
 	--[[
 	poly.xValues, poly.zValues = {}, {};
@@ -77,6 +75,10 @@ function courseplay:generateCourse(vehicle)
 	local crn = corners[vehicle.cp.startingCorner];
 	local dir = directions[vehicle.cp.startingDirection];
 
+  if vehicle.cp.headland.numLanes and vehicle.cp.headland.numLanes > 0 then
+    generate( vehicle, fieldCourseName, poly )
+    return
+  end
 
 	---#################################################################
 	-- (2) HEADLAND
