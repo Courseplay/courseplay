@@ -231,6 +231,19 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				table.insert(vehicle.Waypoints, course2[i]);
 			end;
 
+			do	-- if both courses are generated, remove waitpoints and make the transition a generic turn
+				local jp1 = vehicle.Waypoints[course1wp]
+				local jp2 = vehicle.Waypoints[course1wp+1]
+				if jp1.generated and jp2.generated and jp1.wait and jp2.wait then
+					jp1 = shallowCopy(jp1)
+					jp2 = shallowCopy(jp2)
+					jp1.wait, jp2.wait = false, false
+					jp1.turnStart, jp2.turnEnd = true
+					vehicle.Waypoints[course1wp] = jp1
+					vehicle.Waypoints[course1wp + 1] = jp2
+				end
+			end
+
 			vehicle.cp.numWaypoints = #vehicle.Waypoints;
 			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
 			vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
