@@ -231,7 +231,7 @@
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Carregando silo:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Silo está vazio! Esperando mais." />  
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Silo está cheio! Continuar no proximo silo." />  
-		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Iniciando em %s!" />
+n		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Iniciando em %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Pesquisar pelo primeiro ponto" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Salvar rota atual" />
 		<text name="COURSEPLAY_RECORDING_STOP" 							 text="Parar a gravação" />
@@ -268,7 +268,7 @@
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: dirigir/parar na rota" />
 		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continuar" />    
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: dirigir agora" />
-		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: parar no próximo trigger ou mo último ponto     " />
+		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: parar no próximo trigger ou no último ponto     " />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: próximo modo" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo anterior" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: ações do mouse" />
@@ -299,7 +299,6 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Salvar opção para reabastecer" />
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->		
-		
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Recarregar lista de rotas" />            
 	</texts>
 </l10n>
