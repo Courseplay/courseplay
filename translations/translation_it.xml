@@ -43,8 +43,8 @@
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Nome del percorso:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Nome della cartella:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Filtro percorsi:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Invio" />					
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Esc" />						
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Invio" />
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="Esc" />
 		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s per annullare" />
 		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s per salvare Percorso" />
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Cartella" />
