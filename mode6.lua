@@ -511,9 +511,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				
 				end
 			 --Stop combine
-			elseif vehicle.cp.waypointIndex == vehicle.cp.stopWork or vehicle.cp.abortWork ~= nil then
+			elseif not workArea or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork or vehicle.cp.abortWork ~= nil then
 				local isEmpty = tool.cp.fillLevel == 0
-				if vehicle.cp.abortWork == nil and vehicle.cp.wait then
+				if vehicle.cp.abortWork == nil and vehicle.cp.wait and vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork then
 					allowedToDrive = false;
 				end
 				if isEmpty then
@@ -530,6 +530,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						end
 					end	
 					if vehicle.cp.waypointIndex == vehicle.cp.stopWork or (vehicle.cp.abortWork ~= nil and tool.cp.capacity == 0 ) then
+						if  pipeState == 0 and tool.cp.isCombine then
+							tool:setPipeState(1)
+						end
 						if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
 							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
@@ -540,7 +543,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						end;
 					end
 				end
-				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.cp.fillLevel > 0.1 and tool.courseplayers and #(tool.courseplayers) == 0 then
+				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.cp.fillLevel > 0.1 and tool.courseplayers and #(tool.courseplayers) == 0 and vehicle.cp.waypointIndex == vehicle.cp.stopWork then
 					tool.cp.wantsCourseplayer = true
 				end
 			end
@@ -552,7 +555,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						tool:setOverloadingActive(true);
 					end
 				end
-			elseif  pipeState == 0 and tool.cp.isCombine and tool.cp.fillLevel < tool.cp.capacity then
+			elseif  pipeState == 0 and tool.cp.isCombine and tool.cp.fillLevel < tool.cp.capacity and workArea then
 				tool:setPipeState(1)
 			end
 			if tool.cp.waitingForTrailerToUnload then
