@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Start bestuurder" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Stop bestuurder" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Stop bij laatste punt of volgende trigger" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Aantal rondes te gaan " /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Onbeperkt" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Aantal rondes te gaan " /> 
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="Onbeperkt" /> 
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Bestuurderszijde" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Type: Verladen (van start naar finish)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Type: Veldwerk" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Type: Combine zelflossen" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Vloeibare lading transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Vloeibare lading transport" />  
 		<text name="COURSEPLAY_MODE_9" 									 text="Type: Vullen en legen shovel" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: egaliseren en comprimeren" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="doorgaan" />
@@ -59,7 +59,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="wachtpunt bereikt" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="trigger bereikt/eindpunt" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="is klaar met graan transport." />  
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="is klaar met vloeibaar transport." /> 
 		<text name="COURSEPLAY_WORK_END" 								 text="werk afgerond." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": gereedschap legen." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": gereedschap vullen." />
@@ -69,7 +69,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Laden: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Toon markeringen" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Om gewas rijden" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Ploegen voorbij veldrand" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Ploegen voorbij veldrand" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Zijwaardse afstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bij:" />		
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Keer op veld:" />
@@ -130,11 +130,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="moet spoedig bijgetankt worden" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="moet bijgetankt worden" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="wordt bijgetankt" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="wordt gewogen" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="wordt gewogen" />   
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Teveel markeringen! Maar %d toegestaan." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Te weinig markeringen! %d nodig." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Te veel los punten! %d toegestaan." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Te weinig los punten! %d nodig." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Te veel los punten! %d toegestaan." />   
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Te weinig los punten! %d nodig." />           
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Verkeerde trailer voor deze modus" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="verkeerde gereedschap voor deze modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dit voertuig wordt nu niet ondersteund" />
@@ -142,8 +142,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Baan uit lijn" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Gereedschap uit lijn horizontaal" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Gereedschap uit lijn verticaal" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Laad/Los/wacht horizontaal uit lijn" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Laad/los/wacht verticaal uit lijn" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Laad/Los/wacht horizontaal uit lijn" />     
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Laad/los/wacht verticaal uit lijn" />      
 		<text name="COURSEPLAY_FRONT" 									 text="voorzijde" />
 		<text name="COURSEPLAY_BACK" 									 text="achterzijde" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Werkbreedte" />
@@ -295,9 +295,8 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Tanken bij tankstation" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="altijd" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="onder 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="brandstop bespaar optie" />						
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
-		
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="herlaadt route lijst" />            
 	</texts>
 </l10n>
