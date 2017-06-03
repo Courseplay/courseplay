@@ -1228,6 +1228,12 @@ function courseplay:reloadCoursesFromXML(vehicle)
 	end
 end;
 
+function courseplay:reloadCoursesList(vehicle)
+		courseplay.courses:loadCoursesAndFoldersFromXml();
+		courseplay.settings.update_folders()
+		courseplay.settings.setReloadCourseItems()
+end;
+
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
 	InputBinding.setShowMouseCursor(show);
