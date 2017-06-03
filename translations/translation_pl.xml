@@ -299,7 +299,11 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="poniżej 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Opcja oszczędzania paliwa" />
 		
+<<<<<<< HEAD
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
+=======
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Przeładuj listę kursu" />
+>>>>>>> refs/remotes/Courseplay/master
 		
 	</texts>
 </l10n>
