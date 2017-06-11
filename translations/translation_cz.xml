@@ -162,10 +162,12 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="severozápad" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="jihovýchod" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="pouze stroj" />

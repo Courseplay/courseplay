@@ -162,10 +162,12 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="North-West" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="North-East" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="South-East" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="North" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="まくら地" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="有効" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="車両名のみ" />

@@ -158,10 +158,12 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Noroeste" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordeste" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sudeste" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
 		<text name="COURSEPLAY_DIRECTION_1" 						 	 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 						 	 text="Este" />
 		<text name="COURSEPLAY_DIRECTION_3" 						 	 text="Sul" />
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Oeste" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Cabeceira do campo" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="ligado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Só o nome" />

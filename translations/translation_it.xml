@@ -162,10 +162,12 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Nord-Ovest" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nord-Est" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sud-Est" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Est" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sud" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Solo nome" />            
