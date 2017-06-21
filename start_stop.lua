@@ -443,8 +443,9 @@ function courseplay:start(self)
 	end;
 
 	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
-	if self.mrUseMrTransmission ~= nil then
-		self.mrUseMrTransmission = false
+	if self.mrUseMrTransmission and self.mrUseMrTransmission == true then
+		self.mrUseMrTransmission = false;
+		self.cp.changedMRMod = true;
 	end
 
 	--print("startStop "..debug.getinfo(1).currentline)
@@ -643,8 +644,9 @@ function courseplay:stop(self)
 	end;
 
 	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
-	if self.mrUseMrTransmission ~= nil then
+	if self.mrUseMrTransmission and self.cp.changedMRMod == true then
 		self.mrUseMrTransmission = true;
+		self.cp.changedMRMod = false;
 	end;
 
 	if self.cp.hasDriveControl then

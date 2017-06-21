@@ -46,6 +46,9 @@ function courseplay:load(savegame)
 	-- GIANT DLC
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
 
+	-- --More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
+	self.cp.changedMRMod = false;
+
 	--turn maneuver
 	self.cp.turnOnField = true;
 	self.cp.oppositeTurnMode = false;
