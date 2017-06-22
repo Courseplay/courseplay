@@ -298,6 +298,8 @@
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="vedno" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="pod 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="opcija varčevanja z gorivom" />
+
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
 		
 	</texts>
 </l10n>
