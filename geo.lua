@@ -170,6 +170,8 @@ function addToDirectionStats( directionStats, angle, length )
   end
 end
 
+--- Trying to figure out in which direction 
+-- the field is the longest.
 function getBestDirection( directionStats )
   local best = { range = 0, length = 0 }
   for range, stats in pairs( directionStats ) do
@@ -363,13 +365,6 @@ function rotatePoints( points, angle )
     table.insert( result, newPoint )
   end
   result.boundingBox = getBoundingBox( result )
-  return result
-end
-
---- Rotates a set of points around the center of the bounding 
--- box
-function rotatePointsInPlace( points, angle )
-  result = rotatePoints( result, angle )
   return result
 end
 
