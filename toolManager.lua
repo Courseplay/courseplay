@@ -1527,10 +1527,15 @@ function courseplay:getDischargeSpeed(vehicle)
 	return refSpeed
 end
 
-function courseplay:manageCompleteTipping(vehicle,tipper,dt,z)
+function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 	local node = tipper.cp.realUnloadOrFillNode or tipper.rootNode;
-	_,y,_ = getWorldTranslation(node);
-	_,_,z = worldToLocal(node, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+	local _,y,_ = getWorldTranslation(node);
+	local z 
+	if zSent ~= nil then
+		z = zSent
+	else	
+		_,_,z = worldToLocal(node, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+	end
 	if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer > 100 then
 		if tipper.couldNotDropTimer > tipper.couldNotDropTimerThreshold *0.9 then
 			tipper.couldNotDropTimer = 0
@@ -1541,7 +1546,7 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,z)
 	if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer < 100 and vehicle.cp.takeOverSteering then
 		vehicle.cp.takeOverSteering = false	
 		vehicle.cp.lastValidTipDistance = z or 0
-		--print("reset takeOverSteering z= "..tostring(z))
+		print("reset takeOverSteering z= "..tostring(z).." Zsent: "..tostring(zSent))
 	end
 	
 	if vehicle.cp.takeOverSteering then
