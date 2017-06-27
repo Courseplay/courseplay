@@ -1546,7 +1546,7 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 	if (tipper.tipState == Trailer.TIPSTATE_OPEN or tipper.tipState == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer < 100 and vehicle.cp.takeOverSteering then
 		vehicle.cp.takeOverSteering = false	
 		vehicle.cp.lastValidTipDistance = z or 0
-		print("reset takeOverSteering z= "..tostring(z).." Zsent: "..tostring(zSent))
+		--print("reset takeOverSteering z= "..tostring(z).." Zsent: "..tostring(zSent))
 	end
 	
 	if vehicle.cp.takeOverSteering then
