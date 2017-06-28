@@ -158,12 +158,13 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Noord-West" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Noord-Oost" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Zuid-Oost" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
+		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Noord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Oost" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Zuid" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="geactiveerd" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="alleen Naam" />

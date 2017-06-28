@@ -8,6 +8,11 @@ function generate( vehicle, name, poly )
 
   --  get the vehicle position
   local x, _, z = getWorldTranslation( vehicle.rootNode )
+  if vehicle.cp.startingCorner == 6 and vehicle.cp.generationPosition.hasSavedPosition then
+	x,z = vehicle.cp.generationPosition.x,vehicle.cp.generationPosition.z
+  end
+  
+  
   -- translate it into our coordinate system
   local location = { x = x, y = -z }
 

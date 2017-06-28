@@ -162,12 +162,13 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Noroeste" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordeste" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sudeste" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
+		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Leste" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sul" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabeceira" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="ativado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Somente nome" />            

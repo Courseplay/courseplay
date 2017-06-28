@@ -75,11 +75,15 @@ function courseplay:generateCourse(vehicle)
 	local crn = corners[vehicle.cp.startingCorner];
 	local dir = directions[vehicle.cp.startingDirection];
 
-  -- Automatic direction selected so use the algorithm that can generate lanes in any direction
-  if vehicle.cp.startingDirection == 5 then
-    generate( vehicle, fieldCourseName, poly )
-    return
-  end
+	-- Automatic direction selected so use the algorithm that can generate lanes in any direction
+	if vehicle.cp.startingDirection == 5 then
+		if vehicle.cp.startingCorner == 5 then
+			vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
+			vehicle.cp.generationPosition.hasSavedPosition = true
+		end
+		generate( vehicle, fieldCourseName, poly )
+		return
+	end
 
   -- Otherwise, revert to the N/E/S/W directions
 

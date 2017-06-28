@@ -1035,11 +1035,15 @@ end;
 --Course generation
 function courseplay:switchStartingCorner(vehicle)
 	vehicle.cp.startingCorner = vehicle.cp.startingCorner + 1;
-	if vehicle.cp.startingCorner > 5 then
+	local maxNumber = 5
+	if vehicle.cp.generationPosition.hasSavedPosition then
+		maxNumber = 6
+	end
+	if vehicle.cp.startingCorner > maxNumber then
 		vehicle.cp.startingCorner = 1;
 	end;
 	vehicle.cp.hasStartingCorner = true;
-  if vehicle.cp.startingCorner == 5 then
+  if vehicle.cp.startingCorner >= 5 then
     -- starting direction is always auto when starting corner is vehicle location
     vehicle.cp.hasStartingDirection = true;
     vehicle.cp.startingDirection = 5;

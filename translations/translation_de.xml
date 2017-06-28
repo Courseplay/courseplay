@@ -162,12 +162,13 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Nordwest" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordost" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Südost" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="aktuelle Fahrzeugposition" />
+		<text name="COURSEPLAY_CORNER_6" 								 text="letzte benutzte Fahrzeugposition" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norden" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Osten" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Süden" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Westen" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Vorgewende" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="nur Name" />

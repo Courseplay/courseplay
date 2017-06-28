@@ -163,7 +163,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />     <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND" 								 text="路径生成的模式" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="仅名称" />
