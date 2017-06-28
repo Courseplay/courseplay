@@ -85,7 +85,15 @@ local function initialize()
 		'toolManager',
 		'triggers', 
 		'turn',
-		'vehicles'
+		'vehicles',
+    'course-generator/cp',
+    'course-generator/track',
+    'course-generator/center',
+    'course-generator/headland',
+    'course-generator/geo',
+    'course-generator/bspline',
+    'course-generator/file',
+    'course-generator/courseGenerator'
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 3, 3; -- + 3 as 'register.lua', 'courseplay.lua' and 'CpManager.lua' have already been loaded
@@ -97,7 +105,7 @@ local function initialize()
 		--print('\t### Courseplay: ' .. filePath .. ' has been loaded');
 		numFilesLoaded = numFilesLoaded + 1;
 	end;
-	
+
 	print(('### Courseplay: initialized %d/%d files (v%s)'):format(numFilesLoaded, numFiles, courseplay.version));
 end;
 

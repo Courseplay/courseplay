@@ -1,0 +1,13 @@
+﻿<courseManager>
+    <saveSlot>
+        <slot fileName="courseStorage0001.xml" id="1" parent="2" isUsed="true" name="12 combi"/>
+        <slot fileName="courseStorage0002.xml" id="2" parent="3" isUsed="true" name="15 Harvest"/>
+        <slot fileName="courseStorage0003.xml" id="3" parent="1" isUsed="true" name="(Customized) 15 Harvest"/>
+        <slot fileName="courseStorage0004.xml" id="4" parent="1" isUsed="true" name="(Customized) 12 combi"/>
+    </saveSlot>
+    <folders>
+        <folder id="1" parent="0" name="Folder 1"/>
+        <folder id="2" parent="0" name="Folder 2"/>
+        <folder id="3" parent="2" name="Folder 3"/>
+    </folders>
+</courseManager>

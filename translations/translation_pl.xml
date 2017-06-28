@@ -162,10 +162,12 @@
 		<text name="COURSEPLAY_CORNER_2"								 text="Północny-Zachód" />
 		<text name="COURSEPLAY_CORNER_3"								 text="Północny-Wschód" />
 		<text name="COURSEPLAY_CORNER_4"								 text="Południowy-Wschód" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
 		<text name="COURSEPLAY_DIRECTION_1"								 text="Północ" />
 		<text name="COURSEPLAY_DIRECTION_2"								 text="Wschód" />
 		<text name="COURSEPLAY_DIRECTION_3"								 text="Południe" />
 		<text name="COURSEPLAY_DIRECTION_4"								 text="Zachód" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
 		<text name="COURSEPLAY_HEADLAND"								 text="Uwrocia" />
 		<text name="COURSEPLAY_ACTIVATED"								 text="aktywuj" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Tylko nazwa" />
@@ -300,6 +302,7 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Opcja oszczędzania paliwa" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Przeładuj listę kursu" />
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
 		
 	</texts>
 </l10n>

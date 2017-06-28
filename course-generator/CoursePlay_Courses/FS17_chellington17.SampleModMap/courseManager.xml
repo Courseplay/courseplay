@@ -1,0 +1,7 @@
+﻿<courseManager>
+    <saveSlot>
+        <slot fileName="courseStorage0001.xml" id="1" parent="0" isUsed="true" name="16 SW"/>
+        <slot fileName="courseStorage0002.xml" id="2" parent="0" isUsed="true" name="6NW to E"/>
+        <slot fileName="courseStorage0003.xml" id="3" parent="0" isUsed="true" name="(Customized) 16 SW"/>
+    </saveSlot>
+</courseManager>

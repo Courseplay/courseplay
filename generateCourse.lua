@@ -8,10 +8,11 @@
 @copyright: No reproduction, usage or copying without the explicit permission by the author allowed.
 ]]
 
+
+
 function courseplay:generateCourse(vehicle)
 	local self = courseplay.generation;
 	-----------------------------------
-
 
 	local fieldCourseName = tostring(vehicle.cp.currentCourseName);
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
@@ -74,6 +75,13 @@ function courseplay:generateCourse(vehicle)
 	local crn = corners[vehicle.cp.startingCorner];
 	local dir = directions[vehicle.cp.startingDirection];
 
+  -- Automatic direction selected so use the algorithm that can generate lanes in any direction
+  if vehicle.cp.startingDirection == 5 then
+    generate( vehicle, fieldCourseName, poly )
+    return
+  end
+
+  -- Otherwise, revert to the N/E/S/W directions
 
 	---#################################################################
 	-- (2) HEADLAND
