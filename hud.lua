@@ -891,6 +891,9 @@ function courseplay.hud:loadPage(vehicle, page)
 		if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
 			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
 			vehicle.cp.hud.content.pages[3][6][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
+		elseif vehicle.cp.lastValidTipDistance ~= nil then
+			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_LAST_VAILD_TIP_DIST');
+			vehicle.cp.hud.content.pages[3][6][2].text = ('%.1fm'):format(vehicle.cp.lastValidTipDistance);
 		end;
 
 		if vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.cp.hasPlough then
@@ -1581,6 +1584,10 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navMinus' }, 'changeRefillUntilPct', -1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -5, false);
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeRefillUntilPct',  1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  5, false);
 	courseplay.button:new(vehicle, 3, nil, 'changeRefillUntilPct', 1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 5, true, true);
+	
+	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navMinus' }, 'changeLastValidTipDistance', -0.5, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -2, false);
+	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeLastValidTipDistance',  0.5, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  2, false);
+	courseplay.button:new(vehicle, 3, nil, 'changeLastValidTipDistance', 0.5, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 2, true, true);
 
 	-- Plough to Field Edge
 	courseplay.button:new(vehicle, 3, nil, 'togglePloughFieldEdge', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);

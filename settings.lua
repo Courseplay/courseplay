@@ -1559,6 +1559,11 @@ function courseplay:changeRefillUntilPct(vehicle, changeBy)
 	vehicle.cp.refillUntilPct = Utils.clamp(vehicle.cp.refillUntilPct + changeBy, 1, 100);
 end;
 
+function courseplay:changeLastValidTipDistance(vehicle, changeBy)
+	vehicle.cp.lastValidTipDistance = Utils.clamp(vehicle.cp.lastValidTipDistance + changeBy, -500, 0);
+end;
+
+
 function courseplay:changeRunNumber(vehicle, changeBy)
  	vehicle.cp.runNumber = Utils.clamp(vehicle.cp.runNumber + changeBy, 1, 11);
 end;

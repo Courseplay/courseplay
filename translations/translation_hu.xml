@@ -66,6 +66,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="kirakja a bálákat." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="dugóban van (forgalomban)" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Elérte a triggert" />
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Töltés: %d -ból %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Útpontok megjelenítése" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Útvonal keresése" />

@@ -70,6 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="ベールをアンロード" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="トラフィックエラー" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="トリガへ到着" />
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="ローディング: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウエイポイントを表示" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="経路サーチ" />

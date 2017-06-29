@@ -70,6 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="descarregando fardos." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="em tráfego." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="trigger alcançado" />
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carregando: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar as plantações" />

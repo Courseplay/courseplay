@@ -70,6 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="sta scaricando le balle." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="è nel traffico." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="ha raggiunto il punto di scarico" />
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carico: %d di %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostra punti di passaggio" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evita la coltura" />

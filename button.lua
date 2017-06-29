@@ -864,6 +864,11 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 				button:setShow(isMode4or6);
 				button:setActive(vehicle.cp.turnOnField);
 				button:setCanBeClicked(not button.isDisabled);
+			elseif button.functionToCall == 'changeLastValidTipDistance' then
+				local activate = vehicle.cp.lastValidTipDistance ~= nil
+				button:setDisabled(not activate);
+				button:setCanBeClicked(activate);
+				button:setShow(activate);
 			end;
 		end;
 

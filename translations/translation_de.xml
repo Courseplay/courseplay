@@ -70,6 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="Ballen werden entladen." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="steckt im Verkehr fest" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Abladestelle erreicht" />
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Abstand z. Abladepunkt" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Wird beladen: %d von %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Wegpunkte anzeigen" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Fruchtumfahrung" />

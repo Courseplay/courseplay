@@ -70,6 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="skládá balíky." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="stojí v dopravní zácpě." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Místo vysypání dosaženo" />
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Bude naloženo: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Zobrazit orientační body:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Vjíždění do porostu:" />

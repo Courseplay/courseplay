@@ -314,7 +314,15 @@ function courseplay:start(self)
 		courseplay:changeWaitTime(self, -self.cp.waitTime);
 	end;
 
-
+	if self.cp.numUnloadPoints > 0 and self.cp.lastValidTipDistance == nil then
+		for _,courseplayer in pairs(CpManager.totalCoursePlayers) do
+			if self.cp.currentCourseName == courseplayer.cp.currentCourseName and courseplayer.cp.lastValidTipDistance ~= nil then
+				self.cp.lastValidTipDistance = courseplayer.cp.lastValidTipDistance
+				break
+			end
+		end
+	end
+	
 	if lookForNearestWaypoint then
 		local changed = false
 		for i=recordNumber,recordNumber+3 do
