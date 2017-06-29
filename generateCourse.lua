@@ -80,6 +80,7 @@ function courseplay:generateCourse(vehicle)
 		if vehicle.cp.startingCorner == 5 then
 			vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
 			vehicle.cp.generationPosition.hasSavedPosition = true
+			vehicle.cp.generationPosition.fieldNum = vehicle.cp.fieldEdge.selectedField.fieldNum
 		end
 		generate( vehicle, fieldCourseName, poly )
 		return
