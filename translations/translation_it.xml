@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="sta scaricando le balle." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="è nel traffico." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="ha raggiunto il punto di scarico" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Distanza dal punto di scarico" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carico: %d di %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostra punti di passaggio" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evita la coltura" />
@@ -163,13 +163,13 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Nord-Ovest" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nord-Est" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sud-Est" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5" 								 text="posizione corrente del veicolo" />  	
+		<text name="COURSEPLAY_CORNER_6" 								 text="ultima posizione usata" />	
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Est" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sud" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />  <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" /> 
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Solo nome" />            
@@ -304,7 +304,7 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Risparmio carburante" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Ricarica lista percorsi" />
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Impossibile generare il percorso. Riprovare cambiando impostazioni o spostando il veicolo."/>
 		
 	</texts>
 </l10n>
