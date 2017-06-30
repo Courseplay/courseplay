@@ -1400,22 +1400,22 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 					tipRefpoint = tipper.cp.rearTipRefPoint
 					if reverseCourseUnloadpoint ~= nil and reverseCourseUnloadpoint > 0 then
 						_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode or tipRefpoint);
-						_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[reverseCourseUnloadpoint].cx, y, vehicle.Waypoints[reverseCourseUnloadpoint].cz);
+						_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode or tipRefpoint, vehicle.Waypoints[reverseCourseUnloadpoint].cx, y, vehicle.Waypoints[reverseCourseUnloadpoint].cz);
 						if vehicle.cp.lastValidTipDistance ~= nil and (z > vehicle.cp.lastValidTipDistance or tipper.tipState ~= Trailer.TIPSTATE_CLOSED) then
 							stopForTipping = true
 							goForTipping = true
 						end
 						message = "script"					
 					else
-						_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode);
-						_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+						_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode or tipRefpoint);
+						_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode or tipRefpoint, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
 						goForTipping = true
 						message = "point"
 					end
 				else
 					tipRefpoint = tipper.preferedTipReferencePointIndex
 					_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode or tipRefpoint);
-					_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
+					_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode or tipRefpoint, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
 					if z <= 0 and tipper.cp.fillLevel ~= 0 then
 						stopForTipping = true
 						goForTipping = true
