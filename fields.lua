@@ -654,3 +654,29 @@ function courseplay.fields:formatNumber(number, precision, money)
 	return str;
 end;
 
+
+function courseplay.fields.saveAllFields()
+	if g_server ~= nil and CpManager.cpCoursesFolderPath ~= nil then
+		local fileName = createXMLFile("cpFields", CpManager.cpCoursesFolderPath .. "/cpFields.xml", "CPFields");
+    print( CpManager.cpCoursesFolderPath .. "/cpFields.xml")
+		if fileName and fileName ~= 0 then
+			local fieldIndex = 0;
+			for _,fieldData in pairs(courseplay.fields.fieldData) do
+        print( fieldIndex )
+        local key = ("CPFields.field(%d)"):format(fieldIndex);
+        setXMLInt(fileName, key .. '#fieldNum',	fieldData.fieldNum);
+        setXMLInt(fileName, key .. '#numPoints',	fieldData.numPoints);
+        for i,point in ipairs(fieldData.points) do
+          setXMLString(fileName, key .. (".point%d#pos"):format(i), ("%.2f %.2f %.2f"):format(point.cx, point.cy, point.cz))
+        end;
+
+        fieldIndex = fieldIndex + 1;
+			end;
+
+			saveXMLFile(fileName);
+			delete(fileName);
+		else
+			print("Error: Courseplay's custom fields could not be saved to " .. CpManager.cpCoursesFolderPath);
+		end;
+	end;
+end

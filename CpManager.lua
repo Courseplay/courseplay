@@ -106,6 +106,7 @@ function CpManager:loadMap(name)
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
 	end;
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
+  addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -453,6 +454,11 @@ function CpManager:devStopAll()
 		return ('stopped all Courseplayers');
 	end;
 end;
+
+function CpManager:devSaveAllFields()
+  courseplay.fields.saveAllFields()
+  return( 'All fields saved' )
+end
 
 function CpManager:setupFieldScanInfo()
 	-- FIELD SCAN INFO DISPLAY
