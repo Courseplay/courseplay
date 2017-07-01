@@ -11,3 +11,11 @@ function courseGenerator.debug( text )
     print( text )
   end
 end
+
+--- Return true when running in the game
+-- used by file and log functions to determine how exactly to do things,
+-- for example, io.flush is not available from within the game.
+--
+function courseGenerator.isRunningInGame()
+  return g_currentModDirectory ~= nil;
+end
