@@ -998,7 +998,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 			elseif not isBGA then
 				if ctt.isAreaTrigger then
 					trailerInTipRange = g_currentMission.trailerTipTriggers[tipper] ~= nil
-					if not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+					if not vehicle.Waypoints[vehicle.cp.waypointIndex].rev and not tipper.cp.isTipping then
 
 						local trailerX,_,trailerZ = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
 						local triggerX,_,triggerZ = getWorldTranslation(vehicle.cp.currentTipTrigger.rootNode);
