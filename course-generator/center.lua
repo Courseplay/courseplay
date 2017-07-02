@@ -117,6 +117,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
       table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
     end
     linkParallelTracks( track, block.tracksWithWaypoints, block.bottomToTop, block.leftToRight, nTracksToSkip ) 
+    addRidgeMarkers( track )
   end
 
   -- now rotate and translate everything back to the original coordinate system
@@ -335,6 +336,8 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
         if ( j == #parallelTracks[ i ].waypoints and i ~= endTrack ) then
           point.turnStart = true
         end
+        point.trackNumber = i 
+        point.lastTrack = i == endTrack
         table.insert( result, point )
       end      
     else
@@ -510,5 +513,52 @@ function overlaps( t1, t2 )
     return false
   else
     return true
+  end
+end
+
+function addRidgeMarkers( track )
+  -- ugly copy paste, should be refactored
+	local ridgeMarker = {
+		none = 0,
+		left = 1,
+		right = 2
+	};
+  -- ridge markers should be on the unworked side so 
+  -- just check the turn at the end of the first track.
+  -- If it is a right turn then we start with the ridge marker on the right
+  local turnStartIx = nil
+  for i=1, #track do
+    if track[ i ].turnStart then 
+      turnStartIx = i
+      break
+    end
+  end
+  print( "Turnstart at ", turnStartIx )
+  -- first track has one point only, should not happen 
+  if turnStartIx < 2 or #track < 3 then return end
+  -- Leverage the fact that at this point tracks are parallel to the x axis.
+  local drivingToTheRight = track[ turnStartIx ].x > track[ turnStartIx - 1 ].x 
+  local turningDown = track[ turnStartIx ].y > track[ turnStartIx + 1 ].y
+  local startRidgeMarkerOnTheRight = ( drivingToTheRight and turningDown ) or
+                                     ( not drivingToTheRight and not turningDown )
+  for i, p in ipairs( track ) do
+    -- no ridge marker on the last track
+    if not p.lastTrack and p.trackNumber and not p.turnStart and not p.turnEnd then 
+      if p.trackNumber % 2 == 1 then
+        -- odd tracks
+        if startRidgeMarkerOnTheRight then
+          p.ridgeMarker = ridgeMarker.right
+        else 
+          p.ridgeMarker = ridgeMarker.left
+        end
+      else 
+        -- even tracks
+        if startRidgeMarkerOnTheRight then
+          p.ridgeMarker = ridgeMarker.left
+        else 
+          p.ridgeMarker = ridgeMarker.right
+        end
+      end
+    end
   end
 end
