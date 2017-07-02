@@ -47,9 +47,11 @@ function courseplay:start(self)
 		self.cp.orgRpm[2] = self.motor.maxRpm
 		self.cp.orgRpm[3] = self.motor.maxRpm
 	end
-
+	
+	self.cpTrafficCollisionIgnoreList = {}
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil
+	
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
 	self:setIsCourseplayDriving(false);
@@ -720,7 +722,6 @@ function courseplay:stop(self)
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
 	self.cp.isUnloadingStopped = false
-	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
 	self.cp.inTraffic = false
 	self.cp.bypassWaypointsSet = false
