@@ -533,7 +533,6 @@ function addRidgeMarkers( track )
       break
     end
   end
-  print( "Turnstart at ", turnStartIx )
   -- first track has one point only, should not happen 
   if turnStartIx < 2 or #track < 3 then return end
   -- Leverage the fact that at this point tracks are parallel to the x axis.
