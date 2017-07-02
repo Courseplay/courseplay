@@ -65,11 +65,11 @@ function courseplay:deleteCollisionVehicle(vehicle)
 		--if vehicle.CPnumCollidingVehicles == 0 then
 		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
 		if foundOtherId then
-			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: next "vehicle.cp.collidingVehicleId" is %s', nameNum(vehicle),tostring(nextCollisionVehicleID)), 3);
+			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: next "self.cp.collidingVehicleId " is %s', nameNum(vehicle),tostring(nextCollisionVehicleID)), 3);
 			vehicle.cp.collidingVehicleId = nextCollisionVehicleID;
 		else
 			vehicle.cp.collidingVehicleId = nil
-			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "vehicle.cp.collidingVehicleId" to nil', nameNum(vehicle)), 3);
+			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "self.cp.collidingVehicleId" to nil', nameNum(vehicle)), 3);
 		end
 	end
 end

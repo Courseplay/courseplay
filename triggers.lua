@@ -135,22 +135,28 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 							courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(otherId)), 3);	
 							vehicleOnList = true
 						else
-							for a,b in pairs (self.cpTrafficCollisionIgnoreList) do
-								local veh1 = g_currentMission.nodeToVehicle[a];
-								if veh1 ~= nil then
-									local veh1Name = ""
-									veh1Name = veh1.name;
-									local veh2Name = vehicle.name;
-									if not veh2Name and vehicle.cp then 
-										veh2Name = vehicle.cp.xmlFileName; 
+							local foundOne = false
+							for IdOnList,b in pairs (self.cpTrafficCollisionIgnoreList) do
+								courseplay:debug(string.format("%s:	self.cpTrafficCollisionIgnoreList[%s]", nameNum(self), tostring(IdOnList)), 3);
+								foundOne = true
+								local vehicleOnCollList = g_currentMission.nodeToVehicle[IdOnList];
+								if vehicleOnCollList ~= nil then
+									local vehicleOnCollListName = ""
+									vehicleOnCollListName = vehicleOnCollList.name;
+									local triggeredVehicleName = vehicle.name;
+									if not triggeredVehicleName and vehicle.cp then 
+										triggeredVehicleName = vehicle.cp.xmlFileName; 
 									end;
-									courseplay:debug(string.format("%s:		%s vs %q", nameNum(self), tostring(veh1Name), tostring(veh2Name)), 3);
-									if veh1.id == vehicle.id then
-										courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(veh2Name)), 3);
+									courseplay:debug(string.format("%s:		%s (ID %s) vs %q (ID %s)", nameNum(self), tostring(vehicleOnCollListName),tostring(vehicleOnCollList.id), tostring(triggeredVehicleName),tostring(vehicle.id)), 3);
+									if vehicleOnCollList.id == vehicle.id then
+										courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(triggeredVehicleName)), 3);
 										vehicleOnList = true
 										break
 									end
 								end
+							end
+							if not foundOne then
+								courseplay:debug(string.format("%s:	self.cpTrafficCollisionIgnoreList is empty", nameNum(self)), 3);
 							end
 						end
 					end
