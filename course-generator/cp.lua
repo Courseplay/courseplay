@@ -1,6 +1,36 @@
 --- This is the interface to Courseplay
 -- 
 
+--- Convert the generated course to CP waypoint format
+--
+local function writeCourseToVehicleWaypoints( vehicle, course )
+	vehicle.Waypoints = {};
+
+  for i, point in ipairs( course ) do
+    local wp = {}
+
+    wp.generated = true
+    wp.ridgeMarker = point.ridgeMarker
+    wp.angle = toCpAngle( point.nextEdge.angle )
+    wp.cx = point.x
+    wp.cz = -point.y
+    wp.wait = nil
+    wp.rev = nil
+    wp.crossing = nil
+
+    if point.passNumber then
+      wp.lane = -point.passNumber
+    end
+    if point.turnStart then
+      wp.turnStart = true
+    end
+    if point.turnEnd then
+      wp.turnEnd = true
+    end
+    table.insert( vehicle.Waypoints, wp )
+  end
+end
+
 function courseGenerator.generate( vehicle, name, poly )
 
   local field = fromCpField( name, poly.points ) 
@@ -80,35 +110,5 @@ function courseGenerator.generate( vehicle, name, poly )
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
 
-end
-
---- Convert the generated course to CP waypoint format
---
-local function writeCourseToVehicleWaypoints( vehicle, course )
-	vehicle.Waypoints = {};
-
-  for i, point in ipairs( course ) do
-    local wp = {}
-
-    wp.generated = true
-    wp.ridgeMarker = 0
-    wp.angle = toCpAngle( point.nextEdge.angle )
-    wp.cx = point.x
-    wp.cz = -point.y
-    wp.wait = nil
-    wp.rev = nil
-    wp.crossing = nil
-
-    if point.passNumber then
-      wp.lane = -point.passNumber
-    end
-    if point.turnStart then
-      wp.turnStart = true
-    end
-    if point.turnEnd then
-      wp.turnEnd = true
-    end
-    table.insert( vehicle.Waypoints, wp )
-  end
 end
 
