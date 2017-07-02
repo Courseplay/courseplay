@@ -86,14 +86,14 @@ local function initialize()
 		'triggers', 
 		'turn',
 		'vehicles',
+    'course-generator/courseGenerator',
     'course-generator/cp',
     'course-generator/track',
     'course-generator/center',
     'course-generator/headland',
     'course-generator/geo',
     'course-generator/bspline',
-    'course-generator/file',
-    'course-generator/courseGenerator'
+    'course-generator/file'
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 3, 3; -- + 3 as 'register.lua', 'courseplay.lua' and 'CpManager.lua' have already been loaded
