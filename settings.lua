@@ -242,6 +242,12 @@ function courseplay:changeLoadUnloadOffsetZ(vehicle, changeBy, force)
 end;
 
 function courseplay:calculateWorkWidth(vehicle, noDraw)
+	
+	if vehicle.cp.manualWorkWidth and noDraw ~= nil then
+		--courseplay:changeWorkWidth(vehicle, nil, vehicle.cp.manualWorkWidth, noDraw); 
+		return
+	end
+	
 	local l,r;
 	courseplay:debug(('%s: calculateWorkWidth()'):format(nameNum(vehicle)), 7);
 	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);

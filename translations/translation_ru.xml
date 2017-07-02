@@ -7,7 +7,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в следующей точке" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Выполнить количество рейсов" />
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Неограниченно" />
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="неограниченно" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Водительская сторона" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="автоматически" />
 		<text name="COURSEPLAY_LEFT" 									 text="влево" />
@@ -70,19 +70,19 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="выгрузка тюков." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Достигнут пункт разгрузки" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Расстояние до точки разгрузки" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Заполнение %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Плуг за границы поля" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="правее/левее:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Правее/левее:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Внутренний разворот:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Обрат. напр. разворота:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="последняя пара проходов" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="когда возможно" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Радиус поворота:" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="вперед/назад:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Вперед/назад:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Комбайн" />
 		<text name="COURSEPLAY_NONE" 									 text="отсутствует" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="Выбрать:" />
@@ -145,16 +145,16 @@
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Неподходящий тип техники для маршрута" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="надо подождать хорошей погоды" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Смещение от центра:" />
-		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="правее/левее:" />
-		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="вперед/назад:" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Гориз. смещние Загрузки/Разгрузки" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Вертик. смещ. Загр./Разгр./Ожидания" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Правее/левее:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Вперед/назад:" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Гориз. смещение загрузки/разгрузки:" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Вертик. смещ. загр./разгр./ожидания:" />
 		<text name="COURSEPLAY_FRONT" 									 text="вперед" />
 		<text name="COURSEPLAY_BACK" 									 text="назад" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Рабочая ширина:" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="не хотелось бы намокнуть" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Открыть Courseplay:" />
-		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Режим отладки" />
+		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Режимы отладки:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="ГЕНЕРАЦИЯ МАРШРУТА" />
 		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Стартовый угол:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Направление:" />
@@ -172,8 +172,8 @@
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Автоматическое" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Поворотная полоса:" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="да" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Только название техники" />
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Название техники и маршрут" />
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="название техники" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="название техники и маршрут" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="нет" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Маркеры:" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Разгрузка на поле" />
@@ -251,7 +251,7 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="отключить задний ход" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="добавить точку" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Показать инфо на карте:" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Всегда 4х4" />
+		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Всегда 4х4:" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Включить автосканирование полей?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Рабочие хотят %s в час! Разрешить выплачивать зарплаты?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="КАЛЬКУЛЯЦИЯ ПОСЕВОВ" />
@@ -298,10 +298,10 @@
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="проезда насквозь" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="разгрузки задним ходом" />
 
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						 	 text="Дозаправка на АЗС" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						 	 text="Дозаправка на АЗС:" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"								 text="всегда" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="ниже 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Экономить топливо" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="при ниже 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Экономить топливо:" />
 
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Обновить список" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Не удалось сгенерировать курс. Попробуйте изменить настройки или переместить технику в другое место."/>

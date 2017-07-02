@@ -78,6 +78,7 @@ function courseGenerator.generate( vehicle, name, poly )
     -- work the center of the field first, then the headland
     field.course = reverseCourse( field.course )
   end
+  removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 
   writeCourseToVehicleWaypoints( vehicle, field.course )
 

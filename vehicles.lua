@@ -45,12 +45,32 @@ function courseplay:deleteCollisionVehicle(vehicle)
 			g_currentMission.nodeToVehicle[Id] = nil
 		end
 		vehicle.cp.collidingObjects.all[Id] = nil
+		vehicle.cp.collidingObjects[4][Id] = nil
+		
+		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: checking vehicle.cp.collidingObjects.all ', nameNum(vehicle)), 3);
+		local foundOtherId = false
+		local distanceToCollisionVehicle = math.huge
+		local nextCollisionVehicleID = 0
+		for index,_ in pairs(vehicle.cp.collidingObjects.all) do
+			foundOtherId = true
+			local collisionVehicle = g_currentMission.nodeToVehicle[index];
+			local distanceToCollisionVehiclefromList = courseplay:distanceToObject(vehicle, collisionVehicle)
+			if distanceToCollisionVehiclefromList < distanceToCollisionVehicle then
+				distanceToCollisionVehicle = distanceToCollisionVehiclefromList
+				nextCollisionVehicleID = index
+				courseplay:debug(string.format('%s: 	deleteCollisionVehicle:     %s', nameNum(vehicle),tostring(index)), 3);
+			end	
+		end
 		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
 		--if vehicle.CPnumCollidingVehicles == 0 then
 		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
-		vehicle.cp.collidingObjects[4][Id] = nil
-		vehicle.cp.collidingVehicleId = nil
-		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "collidingVehicleId" to nil', nameNum(vehicle)), 3);
+		if foundOtherId then
+			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: next "self.cp.collidingVehicleId " is %s', nameNum(vehicle),tostring(nextCollisionVehicleID)), 3);
+			vehicle.cp.collidingVehicleId = nextCollisionVehicleID;
+		else
+			vehicle.cp.collidingVehicleId = nil
+			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "self.cp.collidingVehicleId" to nil', nameNum(vehicle)), 3);
+		end
 	end
 end
 

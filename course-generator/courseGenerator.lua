@@ -5,7 +5,7 @@ courseGenerator = {}
 --  or use the CP debug channel when running in the game.
 
 function courseGenerator.debug( text )
-  if isRunningInGame then
+  if courseGenerator.isRunningInGame() then
 	  courseplay:debug( text, 7 );
   else
     print( text )
@@ -17,5 +17,5 @@ end
 -- for example, io.flush is not available from within the game.
 --
 function courseGenerator.isRunningInGame()
-  return g_currentModDirectory ~= nil;
+  return courseplay ~= nil;
 end

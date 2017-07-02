@@ -66,7 +66,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="Descargar pacas." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="atasco de trafico." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Punto de descarga alcanzado" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: Translate its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Distancia a punto descarga" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carga: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar los puntos" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar los cultivos" />
@@ -159,13 +159,13 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Noroeste" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordeste" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sureste" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5" 								 text="Posición Actual Vehículo" />
+		<text name="COURSEPLAY_CORNER_6" 								 text="Última Posición Usada" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Este" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sur" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabecera" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="activado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Solo nombre" />

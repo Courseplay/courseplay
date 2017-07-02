@@ -933,7 +933,7 @@ function courseplay:unload_combine(vehicle, dt)
 		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, currentY, currentZ);
 		if vehicle.cp.curTarget.rev then
 			local nodeX,_,nodeZ =0,0,0
-			nodeX,_,nodeZ = getWorldTranslation(vehicle.cp.toolsRealTurningNode)
+			nodeX,_,nodeZ = getWorldTranslation(vehicle.cp.toolsRealTurningNode or vehicle.cp.DirectionNode)
 			distance_to_wp = courseplay:distance(nodeX, nodeZ, currentX, currentZ);
 		end		
 		
