@@ -69,6 +69,8 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					isInOtherTrigger = true
 				end
 			end
+			courseplay:debug(string.format(" "), 3);
+			courseplay:debug(string.format("%s::::::::::::::::::::::::::::::::::::::::::::::", nameNum(self)), 3);
 			courseplay:debug(string.format("%s:%s Trigger%d: triggered collision with %d ", nameNum(self),debugMessage,TriggerNumber,otherId), 3);
 			--is it a traffic light ?
 			local trafficLightDistance = 0 
@@ -178,7 +180,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 							courseplay:deleteCollisionVehicle(self);
 							--end
 							courseplay:setCollisionDirection(self.cp.trafficCollisionTriggers[1], self.cp.trafficCollisionTriggers[2], 0, -1);
-							courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);
+							--courseplay:debug(string.format('%s: 	onLeave - setting "self.cp.collidingVehicleId" to nil', nameNum(self)), 3);
 						--else
 						--	courseplay:debug(string.format('%s: 	onLeave - keep "self.CPnumCollidingVehicles"', nameNum(self)), 3);
 						--end

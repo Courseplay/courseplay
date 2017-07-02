@@ -961,7 +961,6 @@ function courseplay:unload_combine(vehicle, dt)
 		if distance_to_wp > vehicle.cp.shortestDistToWp and distance_to_wp < 3 then
 			distToChange = distance_to_wp + 1
 		end
-		print(string.format("if distance_to_wp (%.2f) < distToChange (%.2f) then",distance_to_wp, distToChange))
 		if distance_to_wp < distToChange then
 			--[[if vehicle.cp.mode2nextState == 81 then
 				if vehicle.cp.activeCombine ~= nil then
