@@ -52,14 +52,19 @@ function courseplay:deleteCollisionVehicle(vehicle)
 		local distanceToCollisionVehicle = math.huge
 		local nextCollisionVehicleID = 0
 		for index,_ in pairs(vehicle.cp.collidingObjects.all) do
-			foundOtherId = true
-			local collisionVehicle = g_currentMission.nodeToVehicle[index];
-			local distanceToCollisionVehiclefromList = courseplay:distanceToObject(vehicle, collisionVehicle)
-			if distanceToCollisionVehiclefromList < distanceToCollisionVehicle then
-				distanceToCollisionVehicle = distanceToCollisionVehiclefromList
-				nextCollisionVehicleID = index
-				courseplay:debug(string.format('%s: 	deleteCollisionVehicle:     %s', nameNum(vehicle),tostring(index)), 3);
-			end	
+			courseplay:debug(string.format('%s: 	deleteCollisionVehicle:also colliding is %s', nameNum(vehicle),tostring(index)), 3);
+			if vehicle.cpTrafficCollisionIgnoreList[index] == nil then
+				foundOtherId = true
+				local collisionVehicle = g_currentMission.nodeToVehicle[index];
+				local distanceToCollisionVehiclefromList = courseplay:distanceToObject(vehicle, collisionVehicle)
+				if distanceToCollisionVehiclefromList < distanceToCollisionVehicle then
+					distanceToCollisionVehicle = distanceToCollisionVehiclefromList
+					nextCollisionVehicleID = index
+					courseplay:debug(string.format('%s: 	deleteCollisionVehicle:its closer', nameNum(vehicle)), 3);
+				end
+			else
+				courseplay:debug(string.format('%s: 	deleteCollisionVehicle:%s is on ignoreList so ignore it', nameNum(vehicle),tostring(index)), 3);
+			end
 		end
 		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
 		--if vehicle.CPnumCollidingVehicles == 0 then
