@@ -1195,12 +1195,10 @@ function courseplay:unload_combine(vehicle, dt)
 	end
 end
 
-function courseplay:calculateAstarPathToCoords(vehicle,combine,tx,tz)
-	
-	vehicle.cp.calculatedCourseToCombine = true;
-	return false
-	
+function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
+	return calculatePathToCoords( vehicle, combine, tx, tz )
 end
+
 function courseplay:calculateCombineOffset(vehicle, combine)
 	local curFile = "mode2.lua";
 	local offs = vehicle.cp.combineOffset
@@ -1401,4 +1399,68 @@ function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidt
 		vehicle.cp.turnTargets = {}
 		
 		return targets
+end
+
+function courseplay:calculatePathToCoords( vehicle, combine, tx, tz )
+	
+	vehicle.cp.calculatedCourseToCombine = true;
+
+	local cx, cz = 0, 0
+	local fruitType = 0
+
+	if combine ~= nil then
+		courseplay:debug( "combine is there->take CombineCoords", 9 )
+		cx, _, cz = getWorldTranslation( combine.rootNode )
+	else
+		courseplay:debug( "combine is nil->take WaypointCoords", 9 )
+		cx, cz = tx, tz
+	end
+
+	local hasFruit, _, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode, 
+                                                                     nil, nil, cx, cz, fixedFruitType )
+	
+	if not hasFruit then
+		courseplay:debug( "no fruit->go directly", 9 )
+		return false
+	else
+		courseplay:debug( string.format( "there is %s(%d) in my way -> create path around it",fruitName,fruitType), 9 )
+	end
+
+	-- where am I ?
+	if courseplay.fields == nil then
+		courseplay:debug( nameNum(vehicle).."- Pathfinding: no field data available!", 9 )
+		courseplay:debug( "to use the full function of pathfinding, you have to activate the automatic field scan or scan this field manually", 9 )
+		return false
+	end
+	
+	local fieldNum = courseplay:onWhichFieldAmI( vehicle ); 
+		
+	if fieldNum == 0 then
+		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine;
+		fieldNum = courseplay:onWhichFieldAmI( combine );
+		if fieldNum == 0 then
+			courseplay:debug( "I'm not on field, my combine isn't either", 9 )
+			return false
+		else
+			courseplay:debug( "I'm not on field, my combine is on ".. tostring( fieldNum ), 9 )
+		end
+	else
+		courseplay:debug( "I'm on field " .. tostring( fieldNum ), 9 )
+	end
+
+	local vx,vy,vz = getWorldTranslation( vehicle.cp.DirectionNode )
+  local path = pathFinder.findPath( courseplay.fields.fieldData[fieldNum].points, 
+                                    { vx, vz }, { cx, cz }, 3 )
+  if path then
+    courseplay:debug( string.format( "Path found with %d waypoints", #path ), 9 )
+  else
+    courseplay:debug( string.format( "No path found, reverting back to dumb mode" ), 9 )
+    return false
+  end
+  -- path only has x,z, add y 
+  for _, point in ipairs( path ) do
+	  point.y = getTerrainHeightAtWorldPos( g_currentMission.terrainRootNode, point.x, 1, point.z )
+  end
+	vehicle.cp.nextTargets = path
+  return true                                 
 end
