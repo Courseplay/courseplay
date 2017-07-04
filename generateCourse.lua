@@ -82,7 +82,7 @@ function courseplay:generateCourse(vehicle)
 			vehicle.cp.generationPosition.hasSavedPosition = true
 			vehicle.cp.generationPosition.fieldNum = vehicle.cp.fieldEdge.selectedField.fieldNum
 		end
-		generate( vehicle, fieldCourseName, poly )
+		courseGenerator.generate( vehicle, fieldCourseName, poly )
 		return
 	end
 
