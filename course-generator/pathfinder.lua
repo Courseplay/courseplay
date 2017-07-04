@@ -12,7 +12,7 @@ local function hasFruit( x, y, width )
     return courseplay:areaHasFruit( x, -y, nil, width )  
   else
     -- for testing in standalone mode
-    return math.random() > 0.7
+    return math.random() > 0.75
   end
 end
 
@@ -52,7 +52,7 @@ local function isValidNeighbor( theNode, node )
   return d < gridSpacing * 1.5 and not node.hasFruit
 end
 
-local function pointsToXy( points )
+function pointsToXy( points )
   local result = {}
   for _, point in ipairs( points ) do
     table.insert( result, { x = point.cx, y = -point.cz })
@@ -60,7 +60,7 @@ local function pointsToXy( points )
   return result
 end
 
-local function pointsToXz( points )
+function pointsToXz( points )
   local result = {}
   for _, point in ipairs( points) do
     table.insert( result, { x = point.x, z = -point.y })
@@ -72,22 +72,35 @@ local function pointToXy( point )
   return({ x = point.x, y = -point.z })
 end
 
+function pointToXz( point )
+  return({ x = point.x, z = -point.y })
+end
+
 
 --- Find a path between from and to in a polygon using the A star
 -- algorithm where the nodes are a grid with 'width' spacing. 
---
+-- Expects FS coordinates (x,-z)
 function pathFinder.findPath( from, to, cpPolygon, width )
   gridSpacing = width
   local grid = generateGridForPolygon( pointsToXy( cpPolygon ), width ) 
   -- from and to must be a node. change z to y as a-star works in x/y system
-  table.insert( grid, pointToXy( from ))
-  table.insert( grid, pointToXy( to ))
-	--courseplay:debug(tableShow(grid, ' grid', 9), 9);
-  local path = a_star.path( from, to, grid, isValidNeighbor )
-  if not isRunningInGame then
+  local fromNode = pointToXy( from )
+  local toNode = pointToXy( to )
+  table.insert( grid, fromNode )
+  table.insert( grid, toNode )
+	courseGenerator.debug( string.format( "Grid generated with %d points", #grid) , 9);
+  local path = a_star.path( fromNode, toNode, grid, isValidNeighbor )
+  if not courseGenerator.isRunningInGame() then
     io.stdout:flush()
   end
-  return pointsToXz( path ), grid
+  if path then 
+    calculatePolygonData( path )
+    path = smooth( path, math.rad( 30 ), 1, true )
+	  courseGenerator.debug( string.format( "Path generated with %d points", #path ) , 9);
+    return pointsToXz( path ), grid 
+  else
+    return nil, grid 
+  end
 end
 
 
