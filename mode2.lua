@@ -1416,28 +1416,29 @@ end
 -- if there's fruit between me and the combine, calculate a path around it and return true.
 -- if there's no fruit or no path around it or couldn't calculate path, return false
 function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
-	
-
 	local cx, cz = 0, 0
 	local fruitType = 0
 
+  -- if a combine was passed, use it's location
 	if combine ~= nil then
-		courseplay:debug( "combine is there->take CombineCoords", 9 )
 		cx, _, cz = getWorldTranslation( combine.rootNode )
 	else
-		courseplay:debug( "combine is nil->take WaypointCoords", 9 )
 		cx, cz = tx, tz
 	end
 
 	local hasFruit, _, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode, 
                                                                      nil, nil, cx, cz, fixedFruitType )
-	
 	if not hasFruit then
-		courseplay:debug( "no fruit -> go directly", 9 )
+    -- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
+    -- and drive directly to the combine.
 		return false
 	else
 		courseplay:debug( string.format( "there is %s(%d) in my way -> create path around it",fruitName,fruitType), 9 )
 	end
+
+ 
+  -- tractor coordinates
+	local vx,vy,vz = getWorldTranslation( vehicle.cp.DirectionNode )
 
 	-- where am I ?
 	if courseplay.fields == nil then
@@ -1445,7 +1446,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
 		courseplay:debug( "to use the full function of pathfinding, you have to activate the automatic field scan or scan this field manually", 9 )
 		return false
 	end
-	
+
 	local fieldNum = courseplay:onWhichFieldAmI( vehicle ); 
 		
 	if fieldNum == 0 then
@@ -1456,6 +1457,11 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
 			return false
 		else
 			courseplay:debug( "I'm not on field, my combine is on ".. tostring( fieldNum ), 9 )
+      -- pathfinding works only within the field, so we'll have to get to the field first
+	    local closestPointToVehicleIx = courseplay.generation:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, vx, vz )
+      -- we'll use this instead of the vehicle location, so tractor will drive directly to this point first 
+      vx = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cx
+      vz = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cz
 		end
 	else
 		courseplay:debug( "I'm on field " .. tostring( fieldNum ), 9 )
@@ -1463,17 +1469,18 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
 
   -- spacing of the grid used in the A* algorithm.
   local gridSpacing = 3
-	local vx,vy,vz = getWorldTranslation( vehicle.cp.DirectionNode )
   courseplay:debug( string.format( "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz ), 9 )
   local path = pathFinder.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
                                     courseplay.fields.fieldData[fieldNum].points, gridSpacing )
+
   if path then
     courseplay:debug( string.format( "Path found with %d waypoints", #path ), 9 )
   else
     courseplay:debug( string.format( "No path found, reverting to dumb mode" ), 9 )
     return false
   end
-  -- path only has x,z, add y 
+
+  -- path only has x,z, add y, most likely for the debug lines only.
   if g_currentMission then
    -- courseplay:debug( tableShow( g_currentMission, "currentMission", 9, ' ', 3 ), 9 )
     for _, point in ipairs( path ) do
@@ -1483,10 +1490,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
     courseplay:debug( string.format( "g_currentMission does not exist, oops. " ))
     return false
   end
-  -- now, this path goes all the way to the combine. That's not good as we won't switch to 
-  -- STATE_DRIVE_TO_COMBINE mode. So remove the last five waypoints (which will be about 
-  -- 5*gridSpacing meter from the combine)
-  for i = 1, 0 do table.remove( path ) end
+  -- TODO: make sure path begins far away from the tractor so it won't circle around
 	vehicle.cp.nextTargets = path
 	vehicle.cp.calculatedCourseToCombine = true;
   return true                                 
