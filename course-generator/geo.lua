@@ -181,10 +181,12 @@ function getBestDirection( directionStats )
     end
   end
   local sum = 0
-  for i, dir in ipairs( directionStats[ best.range ].dirs ) do
-    sum = sum + dir
+  if directionStats[ best.range ] then
+    for i, dir in ipairs( directionStats[ best.range ].dirs ) do
+      sum = sum + dir
+    end
+    best.dir = math.floor( sum / #directionStats[ best.range ].dirs)
   end
-  best.dir = math.floor( sum / #directionStats[ best.range ].dirs)
   return best
 end
 
