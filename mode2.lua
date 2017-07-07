@@ -1419,6 +1419,12 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
 	local cx, cz = 0, 0
 	local fruitType = 0
 
+  -- pathfinding is expensive and we don't want it happen in every update cycle
+  if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
+    return false
+  end
+  courseplay:setCustomTimer( vehicle, 'pathfinder', 2 )
+
   -- if a combine was passed, use it's location
 	if combine ~= nil then
 		cx, _, cz = getWorldTranslation( combine.rootNode )
@@ -1468,11 +1474,11 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
 	end
 
   -- spacing of the grid used in the A* algorithm.
-  local gridSpacing = 3
+  local gridSpacing = 4 
   courseplay:debug( string.format( "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz ), 9 )
   local path = pathFinder.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
                                     courseplay.fields.fieldData[fieldNum].points, gridSpacing )
-
+   
   if path then
     courseplay:debug( string.format( "Path found with %d waypoints", #path ), 9 )
   else
@@ -1490,7 +1496,17 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
     courseplay:debug( string.format( "g_currentMission does not exist, oops. " ))
     return false
   end
-  -- TODO: make sure path begins far away from the tractor so it won't circle around
+  -- make sure path begins far away from the tractor so it won't circle around
+  local pointFarEnoughIx = 1
+  for _, point in ipairs( path ) do 
+		local lx, ly, lz = worldToLocal( vehicle.cp.DirectionNode, point.x, point.y, point.z )
+		local d = Utils.vector2Length(lx, lz)
+    if d > 20 then break end
+    pointFarEnoughIx = pointFarEnoughIx + 1
+  end
+  for i = 1, pointFarEnoughIx do
+    table.remove( path, 1 ) 
+  end
 	vehicle.cp.nextTargets = path
 	vehicle.cp.calculatedCourseToCombine = true;
   return true                                 

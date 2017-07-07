@@ -39,10 +39,10 @@ local cachedPaths = nil
 ----------------------------------------------------------------
 
 local function dist ( x1, y1, x2, y2 )
-	return math.sqrt ( math.pow ( x2 - x1, 2 ) + math.pow ( y2 - y1, 2 ) )
-end
+  return math.sqrt ( math.pow ( x2 - x1, 2 ) + math.pow ( y2 - y1, 2 ) )
+end  
 
-local function dist_between ( nodeA, nodeB )
+local function g_score_to_neighbor ( nodeA, nodeB )
 	return dist ( nodeA.x, nodeA.y, nodeB.x, nodeB.y )
 end
 
@@ -105,15 +105,15 @@ end
 -- public functions
 ----------------------------------------------------------------
 
-function a_star.path ( start, goal, nodes, valid_node_func )
+function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func, g_score_to_neighbor_func )
 
-  print(string.format( "from: %.1f, %.1f to: %.1f, %.1f, distance %.1f", start.x, start.y, goal.x, goal.y, 
-                          dist( start.x, start.y, goal.x, goal.y )))
 	local closedset = {}
 	local openset = { start }
 	local came_from = {}
 
 	if valid_node_func then is_valid_node = valid_node_func end
+	if neighbor_nodes_func then neighbor_nodes = neighbor_nodes_func end
+	if g_score_to_neighbor_func then g_score_to_neighbor = g_score_to_neighbor_func end
 
 	local g_score, f_score = {}, {}
 	g_score [ start ] = 0
@@ -135,7 +135,7 @@ function a_star.path ( start, goal, nodes, valid_node_func )
 		for _, neighbor in ipairs ( neighbors ) do 
 			if not_in ( closedset, neighbor ) then
 			
-				local tentative_g_score = g_score [ current ] + dist_between ( current, neighbor )
+				local tentative_g_score = g_score [ current ] + g_score_to_neighbor ( current, neighbor )
 				 
 				if not_in ( openset, neighbor ) or tentative_g_score < g_score [ neighbor ] then 
 					came_from 	[ neighbor ] = current

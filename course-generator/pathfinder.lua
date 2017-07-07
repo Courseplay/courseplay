@@ -4,6 +4,19 @@ pathFinder = {}
 --
 --
 local gridSpacing
+local count
+
+--- add some area with fruit for tests
+local function addFruit( grid )
+  for y, row in ipairs( grid.map ) do
+    for x, index in pairs( row ) do
+      if y > 5 and y < 30 and x > 14 and x < #row / 2 then
+        grid[ index ].hasFruit = true
+      end
+    end
+  end
+end
+
 --- Does the area around x, z has fruit?
 -- 
 local function hasFruit( x, y, width )
@@ -11,7 +24,7 @@ local function hasFruit( x, y, width )
     return courseplay:areaHasFruit( x, -y, nil, width )  
   else
     -- for testing in standalone mode
-    return math.random() > 1.8
+    return false 
   end
 end
 
@@ -59,8 +72,7 @@ local function isValidNeighbor( theNode, node )
   --courseplay:debug( string.format( "node: %.2f, %.2f", node.x, node.y ))
   local d = a_star.distance( theNode.x, theNode.y, node.x, node.y )
   -- must be close enough (little more than sqrt(2) to allow for diagonals
-  -- and must not have fruit.
-  return d < gridSpacing * 1.5 and not node.hasFruit
+  return d < gridSpacing * 1.5
 end
 
 --- a_star will call back here to get the valid neighbors
@@ -70,6 +82,7 @@ end
 -- This reduces the iterations by two magnitudes
 local function getNeighbors( theNode, grid )
 	local neighbors = {}
+  count = count + 1
   if theNode.column and theNode.row then
     -- we have the grid coordinates of theNode, we can figure out its neighbors
     -- how big is the area to check for neighbors?
@@ -78,9 +91,8 @@ local function getNeighbors( theNode, grid )
       for row = theNode.row - height, theNode.row + height do
         -- skip own node
         if not ( column == theNode.column and row == theNode.row ) and grid.map[ row ] and grid.map[ row ][ column ] then
-          pathFinder.count = pathFinder.count + 1
           neighbor = grid[ grid.map[ row ][ column ]]
-          if neighbor and not neighbor.hasFruit then table.insert( neighbors, neighbor ) end
+          if neighbor then table.insert( neighbors, neighbor ) end
         end
       end
     end
@@ -91,6 +103,22 @@ local function getNeighbors( theNode, grid )
     end
   end
 	return neighbors
+end
+
+--- g() score to neighbor, A star will call back here when calculating the score
+--
+function gScoreToNeibhbor( node, neighbor )
+  if neighbor.hasFruit then
+    -- this is the key parameter to tweak. This is basically the distance you are 
+    -- willing to travel in order not to cross one grid spacing of fruit. So, for 
+    -- example with a grid spacing of 3 meters, you rather go around 250 meters 
+    -- than to cross 3 meters of fruit. The purpose of this is to allow for a path
+    -- with some fruit in it, which comes in handy when your combine is full on the
+    -- first headland. This will minimize to amount of fruit you have to drive through.
+    return 250
+  else
+    return a_star.distance( node.x, node.y, neighbor.x, neighbor.y )
+  end
 end
 
 --- Add a non-grid node to the grid
@@ -155,16 +183,19 @@ end
 -- Expects FS coordinates (x,-z)
 function pathFinder.findPath( from, to, cpPolygon, width )
   gridSpacing = width
-  pathFinder.count = 0
+  count = 0
   local grid = generateGridForPolygon( pointsToXy( cpPolygon ), width ) 
   -- from and to must be a node. change z to y as a-star works in x/y system
   local fromNode = pointToXy( from )
   local toNode = pointToXy( to )
+  if not courseGenerator.isRunningInGame() then
+    addFruit( grid )
+  end
 	courseGenerator.debug( string.format( "Grid generated with %d points", #grid) , 9);
   addOffGridNode( grid, fromNode )
   addOffGridNode( grid, toNode )
-  local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors )
-	courseGenerator.debug( string.format( "Number of iterations %d", pathFinder.count) , 9);
+  local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors, gScoreToNeibhbor )
+	courseGenerator.debug( string.format( "Number of iterations %d", count) , 9);
   if not courseGenerator.isRunningInGame() then
     io.stdout:flush()
   end
