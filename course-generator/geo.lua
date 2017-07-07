@@ -97,9 +97,17 @@ end
 -- If the distance to the next point is less than distanceThreshold,
 -- the current point is removed and the next one is replaced with a 
 -- point between the current and the next.
-function applyLowPassFilter( polygon, angleThreshold, distanceThreshold )
+function applyLowPassFilter( polygon, angleThreshold, distanceThreshold, isLine )
   local ix = function( a ) return getPolygonIndex( polygon, a ) end
-  local index = 1
+  local index, lastIndex
+  if isLine then 
+    -- don't wrap around the ends if it is a line
+    index = 1
+    lastIndex = #polygon - 1
+  else
+    index = 1
+    lastIndex = #polygon
+  end
   repeat
     local cp, np = polygon[ ix( index )], polygon[ ix( index + 1 )]
     -- need to recalculate the edge length as we are moving points 
@@ -114,11 +122,24 @@ function applyLowPassFilter( polygon, angleThreshold, distanceThreshold )
     if isTooSharp or isTooClose then
       table.remove( polygon, ix( index ))
       calculatePolygonData( polygon )
-      --table.insert( marks, cp )
     else
       index = index + 1
     end
   until index > #polygon
+end
+
+--- make sure points in line are at least d apart
+-- except in curves 
+function space( line, angleThreshold, d )
+  local result = { line[ 1 ]}
+  for i = 2, #line do
+    local cp, pp = line[ i ], result[ #result ]
+    local isCurve = math.abs( getDeltaAngle( cp.prevEdge.angle, pp.prevEdge.angle )) > angleThreshold 
+    if getDistanceBetweenPoints( cp, pp ) > d or isCurve then
+      table.insert( result, cp ) 
+    end
+  end
+  return result
 end
 
 function calculatePolygonData( polygon )
@@ -137,12 +158,12 @@ function calculatePolygonData( polygon )
     dx = cp.x - pp.x
     dy = cp.y - pp.y
     angle, length = toPolar( dx, dy )
-    polygon[ i ].prevEdge = { from=pp, to=cp, angle=angle, length=length, dx=dx, dy=dy }
+    polygon[ i ].prevEdge = { from={ x=pp.x, y=pp.y} , to={ x=cp.x, y=cp.y }, angle=angle, length=length, dx=dx, dy=dy }
     -- vector from this to the next point 
     dx = np.x - cp.x
     dy = np.y - cp.y
     angle, length = toPolar( dx, dy )
-    polygon[ i ].nextEdge = { from=cp, to=np, angle=angle, length=length, dx=dx, dy=dy }
+    polygon[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
     if length < shortestEdgeLength then shortestEdgeLength = length end
     -- detect clockwise/counterclockwise direction 
     if pp.prevEdge and cp.prevEdge then
@@ -158,6 +179,61 @@ function calculatePolygonData( polygon )
   polygon.shortestEdgeLength = shortestEdgeLength
   polygon.boundingBox = getBoundingBox( polygon )
 end
+
+--- Round corners of a polygon to turningRadius
+--
+function roundCorners( polygon, turningRadius )
+  local result = {}
+  -- check for corners in a distance depending on the turning radius
+  local d = turningRadius * 3 
+  local angleThreshold = math.rad( 45 )
+  i = 1
+  while ( i <= #polygon ) do
+    toIx = getIndexInDistance( polygon, i, d )
+    table.insert( result, polygon[ i ])
+    if toIx then
+      -- Is there a significant direction change within d distance?
+      local da = getDeltaAngle( polygon[ i ].prevEdge.angle,
+                        polygon[ toIx ].nextEdge.angle )
+      if math.abs( da ) > angleThreshold then
+        print( polygon[ i ].prevEdge.to.x - polygon[ i ].x )
+        local points = findArcBetweenEdges( polygon[ i ].prevEdge, 
+                                            polygon[ toIx ].nextEdge,
+                                            turningRadius )
+        if points then
+          print( string.format( "OK, Arc with %.2f radius found between %d and %d", turningRadius, i, toIx ))  
+          polygon[ i ].cornerScore = 1
+          points[ 1 ].cornerScore = 2
+          points[ #points ].cornerScore = 4
+          -- replace points between i and toIx with the arc
+          for j, point in ipairs( points ) do
+            table.insert( result, point )
+          end
+          i = toIx
+        else
+          print( string.format( "FAIL, Can't find an arc with %.2f radius", turningRadius ))  
+        end
+      end
+    end
+    i = i + 1
+  end
+  return result
+end
+
+
+-- Find the index of the vertex in d distance
+-- from startIx of a polygon
+--
+function getIndexInDistance( polygon, fromIx, distance )
+  local d = 0
+  local toIx = fromIx
+  while ( toIx < #polygon and d < distance ) do 
+    d = d + polygon[ toIx ].nextEdge.length  
+    toIx = toIx + 1
+  end
+  return toIx
+end
+
 
 function addToDirectionStats( directionStats, angle, length )
   local width = 10 
@@ -188,62 +264,6 @@ function getBestDirection( directionStats )
     best.dir = math.floor( sum / #directionStats[ best.range ].dirs)
   end
   return best
-end
-
---- Removes loops at corners by looking at the last 
--- few sections. If the last section intersects one 
--- of the previous sections, there is a loop and we 
--- replace it with the intersection point.
-function removeLoops( polygon, loopFilterLength )
-  local result = {}
-  local ix = function( a ) return getPolygonIndex( polygon, a ) end
-  for i, point in ipairs( polygon ) do
-    local lastSection = { x1 = polygon[ ix( i )].x,
-                          y1 = polygon[ ix( i )].y,
-                          x2 = polygon[ ix( i - 1 )].x,
-                          y2 = polygon[ ix( i - 1 )].y }
-    local intersectionAt = nil
-    local xPoint = nil
-    -- start with the section before the last ( -2 ) as 
-    -- two connected section always intersect 
-    for j = i - 2, i - loopFilterLength, -1 do
-      -- iterate through the last loopFilterLength sections and see if 
-      -- any of these intersect the current section
-      if polygon[ ix( j )] and polygon[ ix( j - 1 )] then
-        local currentSection = { x1 = polygon[ ix( j )].x,
-                                 y1 = polygon[ ix( j )].y,
-                                 x2 = polygon[ ix( j - 1 )].x,
-                                 y2 = polygon[ ix( j - 1 )].y }
-        xPoint = getIntersection( lastSection.x1, lastSection.y1, 
-                                  lastSection.x2, lastSection.y2, 
-                                  currentSection.x1, currentSection.y1,
-                                  currentSection.x2, currentSection.y2 )
-        if xPoint then 
-          --print( "intersection between ", i, ix( i - 1 ), ix( i ), j, ix( j - 1 ), ix( j ) )
-          intersectionAt = j
-          break
-        end
-      end
-    end
-    if intersectionAt then
-      -- replace that point with the intersection
-      polygon[ intersectionAt ] = { x = xPoint.x, y = xPoint.y }
-      -- and mark the rest up until and including the current for
-      -- removal (don't remove here as we are iterating through the table
-      for j = intersectionAt + 1, i do
-        polygon[ ix( j )].remove = true
-      end
-    end
-  end
-  local i = 1
-  repeat
-    if ( polygon[ i ].remove ~= nil ) then 
-      table.remove( polygon, i )
-    else
-      i = i + 1
-    end
-  until i > #polygon
-  calculatePolygonData( polygon )
 end
 
 --- Iterate through an elements of a polygon starting
@@ -293,6 +313,84 @@ function getIntersectionOfLineAndPolygon( polygon, p1, p2 )
     end
   end
   return nil, nil
+end
+
+--- Find the points of an arc with radius r connecting to 
+--  edges of a polygon.
+--  e1, e2 are the edges like in calculatePolygonData
+--  and we assume that as we walk around the polygon with increasing
+--  vertice indexes, e1 comes first, then e2.
+--  We want to use this to round sharp edges of polygon.
+--
+function findArcBetweenEdges( e1, e2, r )
+  -- first, find the intersection of ab and cd. We most likely 
+  -- have to make them longer, as they are edges of a polygon 
+  -- lengthen ab forward and cd backwards by double radius
+  -- calculate distance from 'is' to the point where a circle
+  -- with r radius would touch ab/cd
+  local is = getIntersectionOfExtendedEdges( e1, e2, 2 * r * math.pi )
+  if is == nil then return nil end
+  -- need to reverse one of the edges to get the correct angle between the two
+  local alpha = getDeltaAngle( reverseAngle( e1.angle ), e2.angle )
+  -- this is how far from 'is' the circle touches the e1 e2 lines
+  local d = math.abs( r / math.tan( alpha / 2 ))
+  -- our edges must be at least d distance from 'is' to be able
+  -- to connect them with an arc  
+  local e1ToIs = getDistanceBetweenPoints( e1.to, is ) 
+  local isToE2 = getDistanceBetweenPoints( is, e2.from ) 
+  if lt( e1ToIs, d ) or lt( isToE2, d ) then
+    return nil 
+  end
+  -- let's check if we really need to find an arc here. If we can
+  -- draw a circle with a radius > r, there's nothing to do here.
+  local rCalculated = math.abs( math.min( e1ToIs, isToE2 ) * math.tan( alpha / 2 ))
+  print( string.format( "rCalculated=%.2f", rCalculated )) 
+  if r < rCalculated then 
+    r = rCalculated 
+    d = math.min( e1ToIs, isToE2 )
+    is = getIntersectionOfExtendedEdges( e1, e2, 2 * r * math.pi )
+  end
+  -- looks good, so start adding waypoints between e1.to and e2.from.
+  -- first, go straight until we are exactly at d from is
+  local points = {}
+  local delta = e1ToIs - d
+  local p = { x=e1.to.x + delta * e1.dx / e1.length,
+              y=e1.to.y + delta * e1.dy / e1.length }
+  table.insert( points, p )
+  -- from here, go around in an arc until we are heading to e2.angle
+  alpha = getDeltaAngle( e1.angle, e2.angle )
+  -- do about 10 degree steps
+  local nSteps = math.abs( math.floor( alpha * 36 / ( 2 * math.pi )))
+  -- delta angle for one step
+  local deltaAlpha = alpha / ( nSteps + 1 )
+  -- length of a step
+  local length = 2 * r * math.abs( math.sin( alpha / nSteps / 2 ))
+  local currentAlpha = e1.angle + deltaAlpha
+  -- now walk around the arc
+  for n = 1, nSteps, 1 do
+    p = addPolarVectorToPoint( p, currentAlpha, length )
+    table.insert( points, p )
+    currentAlpha = currentAlpha + deltaAlpha
+  end
+  return points 
+end
+
+-- Find the intersection of ab and cd. We extend them both with
+-- extensionLength, ab forward, cd backwards as they are edges 
+-- of a polygon
+function getIntersectionOfExtendedEdges( ab, cd, extensionLength )
+  local ab = deepCopy( ab, true )
+  local cd = deepCopy( cd, true )
+  ab.to.x = ab.to.x + extensionLength * ab.dx / ab.length
+  ab.to.y = ab.to.y + extensionLength * ab.dy / ab.length
+  cd.from.x = cd.from.x - extensionLength * cd.dx / cd.length
+  cd.from.y = cd.from.y - extensionLength * cd.dy / cd.length
+  --print( ab.from.x, ab.from.y, ab.to.x, ab.to.y,
+   --                           cd.from.x, cd.from.y, cd.to.x, cd.to.y )
+  -- see if they inersect now 
+  local is = getIntersection( ab.from.x, ab.from.y, ab.to.x, ab.to.y,
+                              cd.from.x, cd.from.y, cd.to.x, cd.to.y )
+  return is
 end
 
 function getIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y)
@@ -379,6 +477,13 @@ function reverse( t )
   return result
 end
 
+function reverseAngle( angle )
+  local r = angle + math.pi
+  if r > math.pi * 2 then
+    r = r - math.pi * 2 
+  end
+  return r
+end
 
 function getInwardDirection( isClockwise )
   if isClockwise then
@@ -402,3 +507,27 @@ function copyPoint( point )
   return result
 end
 
+-- this is from courseplay/helper.lua, should be removed once integrated with courseplay
+function deepCopy(tab, recursive)
+-- note that if 'recursive' is not 'true', only tab is copied. 
+-- if tab contains tables itself again, these tables are not copied 
+-- but referenced again (the reference is copied).
+	local result = {};
+	for k,v in pairs(tab) do
+		if recursive and type(v) == 'table' then
+			result[k] = deepCopy(v, recursive);
+		else
+			result[k] = v;
+		end;
+	end;
+	return result;
+end;
+
+--- Less than operator with limited precision
+-- to tolerate floating point precision errors
+function lt( a, b )
+  -- for courseplay, we are calculating in meters, so 
+  -- we are fine with one millimeter precision
+  local epsilon = 0.001
+  return a < ( b - epsilon )
+end

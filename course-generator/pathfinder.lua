@@ -177,6 +177,9 @@ function pointToXz( point )
   return({ x = point.x, z = -point.y })
 end
 
+function pointToXz( point )
+  return({ x = point.x, z = -point.y })
+end
 
 --- Find a path between from and to in a polygon using the A star
 -- algorithm where the nodes are a grid with 'width' spacing. 
@@ -196,13 +199,16 @@ function pathFinder.findPath( from, to, cpPolygon, width )
   addOffGridNode( grid, toNode )
   local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors, gScoreToNeibhbor )
 	courseGenerator.debug( string.format( "Number of iterations %d", count) , 9);
-  if not courseGenerator.isRunningInGame() then
-    io.stdout:flush()
-  end
   if path then 
+    calculatePolygonData( path )
+    path = smooth( path, math.rad( 0 ), 1, true )
 	  courseGenerator.debug( string.format( "Path generated with %d points", #path ) , 9);
     calculatePolygonData( path )
-    path = smooth( path, math.rad( 30 ), 1, true )
+    path = space( path, math.rad( 15 ), 5 )
+	  courseGenerator.debug( string.format( "Path spaced, has now  %d points", #path ) , 9);
+    if not courseGenerator.isRunningInGame() then
+      io.stdout:flush()
+    end
     return pointsToXz( path ), grid 
   else
     return nil, grid 
