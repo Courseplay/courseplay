@@ -163,8 +163,10 @@
 		<text name="COURSEPLAY_CORNER_2" 						 		 text="Nord-Ouest" />
 		<text name="COURSEPLAY_CORNER_3" 						 		 text="Nord-Est" />
 		<text name="COURSEPLAY_CORNER_4" 						 		 text="Sud-Est" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="utiliser la position actuelle en coin de départ" />
-		<text name="COURSEPLAY_CORNER_6" 								 text="utiliser la dernière position en coin de départ" />
+		<text name="COURSEPLAY_CORNER_5_START" 							 text="Commencez à la position actuelle du véhicule" />
+		<text name="COURSEPLAY_CORNER_5_END" 							 text="Fin de la position actuelle du véhicule" />
+		<text name="COURSEPLAY_CORNER_6_START"							 text="Commencez au dernier poste utilisé" />
+		<text name="COURSEPLAY_CORNER_6_END"							 text="Fin au dernier poste utilisé" />
 		<text name="COURSEPLAY_DIRECTION_1" 						 	 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 						 	 text="Est" />
 		<text name="COURSEPLAY_DIRECTION_3" 						 	 text="Sud" />
