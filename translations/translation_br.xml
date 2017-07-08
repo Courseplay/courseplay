@@ -186,7 +186,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Finalizar" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="rota inválida" />
 		
-		<!-- shovel stuff -->
+		<!-- shovel stuff  -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="nenhuma pá carregadeira encontrada" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Posições da pá carregadeira" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Faltam algumas posições da pá carregadeira" />
