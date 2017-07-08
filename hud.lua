@@ -1138,16 +1138,16 @@ function courseplay.hud:loadPage(vehicle, page)
 			if vehicle.cp.startingCorner > 4 then
 				if vehicle.cp.headland.orderBefore then
 					if vehicle.cp.startingCorner == 5 then
-						vehicle.cp.hud.content.pages[8][3][2].text = string.format("%s %s","Start at",courseplay:loc('COURSEPLAY_CORNER_5'));
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_5_START');
 					else
-						vehicle.cp.hud.content.pages[8][3][2].text = string.format("%s %s","Start at",courseplay:loc('COURSEPLAY_CORNER_6'));
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_6_START');
 					end;
 					--courseplay:debug("LOOK HERE-----SHOULD BE TRUE------"+tostring(not vehicle.cp.headland.orderBefore), 7);
 				else
 					if vehicle.cp.startingCorner == 5 then
-						vehicle.cp.hud.content.pages[8][3][2].text = string.format("%s %s","End at",courseplay:loc('COURSEPLAY_CORNER_5'));
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_5_END');
 					else
-						vehicle.cp.hud.content.pages[8][3][2].text = string.format("%s %s","End at",courseplay:loc('COURSEPLAY_CORNER_6'));
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_6_END');
 					end;
 					--courseplay:debug("LOOK HERE-----SHOULD BE FALSE-----"+tostring(not vehicle.cp.headland.orderBefore), 7);
 				end;
