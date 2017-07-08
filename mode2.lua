@@ -426,7 +426,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if vehicle.cp.realisticDriving and not vehicle.cp.calculatedCourseToCombine then
       -- if there's fruit between me and the combine, calculate a path around it.
       -- as far as I can tell, currentX/currentZ is where we want to end up (and not in the middle of the combine)
-			if courseplay:calculateAstarPathToCoords(vehicle, nil, currentX, currentZ ) then
+			if courseplay:calculateAstarPathToCoords(vehicle, combine ) then
         -- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay:setCurrentTargetFromList(vehicle, 1);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
@@ -1506,6 +1506,20 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
   end
   for i = 1, pointFarEnoughIx do
     table.remove( path, 1 ) 
+  end
+  -- make sure path ends far away from the combine so it can switch to the next mode
+  if combine then
+    local pointFarEnoughIx = #path
+    for i = #path, 1, -1 do
+      local point = path[ i ]
+      local lx, ly, lz = worldToLocal( combine.cp.DirectionNode or combine.rootNode, point.x, point.y, point.z )
+      local d = Utils.vector2Length(lx, lz)
+      if d > 20 then break end
+      pointFarEnoughIx = pointFarEnoughIx - 1
+    end
+    for i = #path, pointFarEnoughIx, -1 do
+      table.remove( path ) 
+    end
   end
 	vehicle.cp.nextTargets = path
 	vehicle.cp.calculatedCourseToCombine = true;
