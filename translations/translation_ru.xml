@@ -163,8 +163,10 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Северо-Запад" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Северо-Восток" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Юго-Восток" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Текущее местоположение техники" />
-		<text name="COURSEPLAY_CORNER_6" 								 text="Последнее используемое положение" />
+		<text name="COURSEPLAY_CORNER_5_START" 							 text="Начало в позиции текущего транспортного средства" />
+		<text name="COURSEPLAY_CORNER_5_END" 							 text="Конец в позиции текущего транспортного средства" />
+		<text name="COURSEPLAY_CORNER_6_START"							 text="Начать с последнего использованного положения" />
+		<text name="COURSEPLAY_CORNER_6_END"							 text="Конец при последнем используемом положении" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
