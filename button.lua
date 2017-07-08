@@ -379,6 +379,12 @@ function courseplay.button:render()
 					elseif prm > 0 then
 						show = vehicle.cp.speeds.reverse < vehicle.cp.speeds.max;
 					end;
+				elseif vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasFourWD and fn == 'changeDriveControlMode' then
+					if prm < 0 then
+						show = vehicle.cp.driveControl.mode > vehicle.cp.driveControl.OFF;
+					else
+						show = vehicle.cp.driveControl.mode < vehicle.cp.driveControl.AWD_BOTH_DIFF;	
+					end;
 				end;
 
 			-- Page 6

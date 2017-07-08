@@ -897,10 +897,11 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 			local goForTipping = false;
 			local unloadWhileReversing = false; -- Used by Reverse BGA Tipping
 			local isRePositioning = false; -- Used by Reverse BGA Tipping
-			if tipper.tipState == Trailer.TIPSTATE_CLOSED and vehicle.cp.keepOnTipping then
-				vehicle.cp.keepOnTipping = false
-				print("reset vehicle.cp.keepOnTipping")
-			end
+			-- Moved to drive in attempt to fix loop bug
+			-- if tipper.tipState == Trailer.TIPSTATE_CLOSED and vehicle.cp.keepOnTipping  then
+			-- 	vehicle.cp.keepOnTipping = false
+			-- 	print("reset vehicle.cp.keepOnTipping")
+			-- end
 			
 			--BGA TRIGGER
 			if isBGA and not bgaIsFull then
@@ -946,7 +947,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 							allowedToDrive = false
 							if vehicle.cp.lastValidTipDistance and not vehicle.cp.keepOnTipping then
 								vehicle.cp.keepOnTipping = true
-								print("set vehicle.cp.keepOnTipping")
+								--print("set vehicle.cp.keepOnTipping")
 							end
 						end
 					else
@@ -1401,7 +1402,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 					if reverseCourseUnloadpoint ~= nil and reverseCourseUnloadpoint > 0 then
 						_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode or tipRefpoint);
 						_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode or tipRefpoint, vehicle.Waypoints[reverseCourseUnloadpoint].cx, y, vehicle.Waypoints[reverseCourseUnloadpoint].cz);
-						if vehicle.cp.lastValidTipDistance ~= nil and (z > vehicle.cp.lastValidTipDistance or tipper.tipState ~= Trailer.TIPSTATE_CLOSED) then
+						if vehicle.cp.lastValidTipDistance ~= nil and (z > vehicle.cp.lastValidTipDistance or tipper.tipState ~= Trailer.TIPSTATE_CLOSED) and tipper.cp.fillLevel ~= 0 then
 							stopForTipping = true
 							goForTipping = true
 						end

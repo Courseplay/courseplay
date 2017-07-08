@@ -245,7 +245,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="前进模式" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="增加路径点" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="地图图标:显示任务车辆信息" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="打开4WD模式" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="无卸载位置" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量土地范围路径么？" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="你想要CP赚取雇人的工资么(%s/小时)？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="种子使用量" />

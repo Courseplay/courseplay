@@ -251,7 +251,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Ferma la retromarcia" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icone mappa: visualizza il testo" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Usa sempre 4WD" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Off" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Vuoi analizzare i campi automaticamente?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Vuoi che i tuoi lavoratori guadagnino i salari (%s /ora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
