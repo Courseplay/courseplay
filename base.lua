@@ -829,6 +829,8 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:update(dt)
+  -- UPDATE CLOCK
+  courseplay.clock = courseplay.clock + dt
 	-- KEYBOARD EVENTS
 	if self:getIsActive() and self.isEntered and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then

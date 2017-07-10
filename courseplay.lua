@@ -30,6 +30,7 @@ courseplay.hud = {};
 courseplay.buttons = {};
 courseplay.fields = {};
 courseplay.generation = {};
+courseplay.clock = 0;
 
 local sonOfaBangSonOfaBoom = {
 	['56bb4a8d3f72d5a31aee0c317302dde5'] = true; -- Thomas
