@@ -32,13 +32,13 @@ function courseplay:handle_mode2(vehicle, dt)
 	local frontTractor;
 
 	-- STATE 0 (default, when not active)
-	if vehicle.cp.modeState == 0 then
+	if vehicle.cp.modeState == STATE_DEFAULT then
 		courseplay:setModeState(vehicle, STATE_WAIT_AT_START);
 	end
 
 
 	-- STATE 1 (wait for work at start point)
-	if vehicle.cp.modeState == 1 and vehicle.cp.activeCombine ~= nil then
+	if vehicle.cp.modeState == STATE_WAIT_AT_START and vehicle.cp.activeCombine ~= nil then
 		courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 	end
@@ -56,7 +56,7 @@ function courseplay:handle_mode2(vehicle, dt)
 	end
 
 	-- STATE 10 (switch side)
-	if vehicle.cp.activeCombine ~= nil and (vehicle.cp.modeState == 10 or vehicle.cp.activeCombine.turnAP ~= nil and vehicle.cp.activeCombine.turnAP == true) then
+	if vehicle.cp.activeCombine ~= nil and (vehicle.cp.modeState == STATE_WAIT_AT_START0 or vehicle.cp.activeCombine.turnAP ~= nil and vehicle.cp.activeCombine.turnAP == true) then
 		local node = vehicle.cp.activeCombine.cp.DirectionNode or vehicle.cp.activeCombine.rootNode;
 		if vehicle.cp.combineOffset > 0 then
 			vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(node, 25, 0, 0)
@@ -69,13 +69,16 @@ function courseplay:handle_mode2(vehicle, dt)
 		courseplay:setMode2NextState(vehicle, STATE_DRIVE_TO_COMBINE);
 	end
 	
+  -- Trailers full?
 	if currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.isLoaded then
 		if #(vehicle.cp.workTools) > vehicle.cp.currentTrailerToFill and not vehicle.cp.isLoaded then -- TODO (Jakob): use numWorkTools
+      -- got more than one trailer, switch to next
 			vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
 		else
+      -- one trailer and that's full
 			vehicle.cp.currentTrailerToFill = nil
-			if vehicle.cp.modeState ~= 5 then
-				if vehicle.cp.modeState == 9 then
+			if vehicle.cp.modeState ~= STATE_FOLLOW_TARGET_WPS then
+				if vehicle.cp.modeState == STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY then
 					vehicle.cp.nextTargets ={}
 				end
 				local targetIsInFront = false
@@ -109,7 +112,8 @@ function courseplay:handle_mode2(vehicle, dt)
 		end
 	end
 	
-	if vehicle.cp.modeState == 1 and (vehicle.cp.totalFillLevelPercent >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.isLoaded) then
+  -- Have enough payload, can now drive back to the silo
+	if vehicle.cp.modeState == STATE_WAIT_AT_START and (vehicle.cp.totalFillLevelPercent >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.isLoaded) then
 		vehicle.cp.currentTrailerToFill = nil
 		courseplay:setWaypointIndex(vehicle, 2);
 		courseplay:setIsLoaded(vehicle, true);
@@ -122,8 +126,8 @@ function courseplay:handle_mode2(vehicle, dt)
 		end 
 		if vehicle.cp.positionWithCombine == 1 then
 			-- is there a trailer to fill, or at least a waypoint to go to?
-			if vehicle.cp.currentTrailerToFill or vehicle.cp.modeState == 5 then
-				if vehicle.cp.modeState == 6 then
+			if vehicle.cp.currentTrailerToFill or vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS then
+				if vehicle.cp.modeState == STATE_FOLLOW_TRACTOR then
 					courseplay:setModeState(vehicle, STATE_DRIVE_TO_COMBINE);
 				end
 				courseplay:unload_combine(vehicle, dt)
@@ -137,7 +141,7 @@ function courseplay:handle_mode2(vehicle, dt)
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
-		if vehicle.cp.nextTargets ~= nil and #vehicle.cp.nextTargets > 0 and vehicle.cp.modeState == 5 and vehicle.cp.lastActiveCombine then
+		if vehicle.cp.nextTargets ~= nil and #vehicle.cp.nextTargets > 0 and vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.lastActiveCombine then
 			courseplay:unload_combine(vehicle, dt)
 		else
 			-- STOP!!
@@ -359,7 +363,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 	vehicle.cp.mode2DebugTurning = combineIsTurning
 	
-	if vehicle.cp.modeState == 2 or vehicle.cp.modeState == 3 or vehicle.cp.modeState == 4 then
+	if vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE or vehicle.cp.modeState == STATE_DRIVE_TO_PIPE or vehicle.cp.modeState == STATE_DRIVE_TO_REAR then
 		if combine == nil then
 			courseplay:setInfoText(vehicle, "combine == nil, this should never happen");
 			allowedToDrive = false
@@ -430,8 +434,8 @@ function courseplay:unload_combine(vehicle, dt)
         -- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay:setCurrentTargetFromList(vehicle, 1);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
-				vehicle.cp.shortestDistToWp = nil;
 				courseplay:setMode2NextState(vehicle, STATE_DRIVE_TO_COMBINE); -- modeState when waypoint is reached
+				vehicle.cp.shortestDistToWp = nil;
 			end;
 		end;
 
@@ -706,7 +710,7 @@ function courseplay:unload_combine(vehicle, dt)
 	--END STATE 3
 	
 	-- STATE 9 (wait till combine is gone)
-	elseif vehicle.cp.modeState == 9 then
+	elseif vehicle.cp.modeState == STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY then
 		local lastIndex = #vehicle.cp.nextTargets
 		local tx,ty,tz = vehicle.cp.nextTargets[lastIndex].x,vehicle.cp.nextTargets[lastIndex].y,vehicle.cp.nextTargets[lastIndex].z;
 		if vehicle.cp.swayPointDistance == nil then
@@ -734,7 +738,7 @@ function courseplay:unload_combine(vehicle, dt)
 	local cx, cy, cz = getWorldTranslation(combineDirNode)
 	local sx, sy, sz = getWorldTranslation(vehicle.cp.DirectionNode)
 	distance = courseplay:distance(sx, sz, cx, cz)
-	if combineIsTurning and not combine.cp.isChopper and vehicle.cp.modeState > 1 then
+	if combineIsTurning and not combine.cp.isChopper and vehicle.cp.modeState > STATE_WAIT_AT_START then
 		if combine.cp.fillLevel > combine.cp.capacity*0.9 then
 			if combineIsAutoCombine and tractor.acIsCPStopped ~= nil then
 				 courseplay:debug(nameNum(tractor) .. ': fillLevel > 90%% -> set acIsCPStopped to true', 4); --TODO: 140308 AutoTractor
@@ -785,7 +789,7 @@ function courseplay:unload_combine(vehicle, dt)
 					tractor.acIsCPStopped = false
 				end
 			end
-		elseif distance < 100 and vehicle.cp.modeState == 2 then
+		elseif distance < 100 and vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE then
 			allowedToDrive = false;
 		end		
 	elseif vehicle.cp.fieldEdgeTimeOutSet then
@@ -799,7 +803,7 @@ function courseplay:unload_combine(vehicle, dt)
 	end
 	
 	if combineIsTurning and distance < 20 then
-		if vehicle.cp.modeState == 3 or vehicle.cp.modeState == 4 then
+		if vehicle.cp.modeState == STATE_DRIVE_TO_PIPE or vehicle.cp.modeState == STATE_DRIVE_TO_REAR then
 			if combine.cp.isChopper then
 				local fruitSide = courseplay:sideToDrive(vehicle, combine, -10,true);
 				local maxDiameter = max(totalLength,turnDiameter)
@@ -872,10 +876,10 @@ function courseplay:unload_combine(vehicle, dt)
 				end;
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				vehicle.cp.shortestDistToWp = nil
-				courseplay:setMode2NextState(vehicle, 7);
+				courseplay:setMode2NextState(vehicle, STATE_WAIT_FOR_PIPE);
 			end
-		-- elseif vehicle.cp.modeState ~= 5 and vehicle.cp.modeState ~= 99 and not vehicle.cp.realisticDriving then
-		elseif vehicle.cp.modeState ~= 5 and vehicle.cp.modeState ~= 9 and not vehicle.cp.realisticDriving then
+		-- elseif vehicle.cp.modeState ~= STATE_FOLLOW_TARGET_WPS and vehicle.cp.modeState ~= 99 and not vehicle.cp.realisticDriving then
+		elseif vehicle.cp.modeState ~= STATE_FOLLOW_TARGET_WPS and vehicle.cp.modeState ~= STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY and not vehicle.cp.realisticDriving then
 			-- just wait until combine has turned
 			allowedToDrive = false
 			courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_WANTS_ME_TO_STOP");
@@ -884,7 +888,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 
 	-- STATE 7
-	if vehicle.cp.modeState == 7 then
+	if vehicle.cp.modeState == STATE_WAIT_FOR_PIPE then
 		if not combineIsTurning then
 			--courseplay:setModeState(vehicle, STATE_DRIVE_TO_COMBINE);
 			courseplay:setModeState(vehicle, STATE_DRIVE_TO_PIPE);
@@ -936,9 +940,6 @@ function courseplay:unload_combine(vehicle, dt)
 
 	-- STATE 5 (follow target points)
 	if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
-		if combine ~= nil then
-			--courseplay:removeFromCombinesIgnoreList(vehicle, combine)
-		end
 		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_DRIVE_TO_WAYPOINT;%d;%d",vehicle.cp.curTarget.x,vehicle.cp.curTarget.z));
 		currentX = vehicle.cp.curTarget.x
 		currentY = vehicle.cp.curTarget.y
@@ -960,10 +961,11 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		-- avoid circling
-		local distToChange = 1
+    -- if we are closer than distToChange meters to the current waypoint, we switch our target to the next
+		local distToChange = 5
 		
 		if vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL or vehicle.cp.mode2nextState == STATE_DRIVE_TO_COMBINE then
-			distToChange = 3
+			distToChange = 5 
 		elseif vehicle.cp.nextTargets and vehicle.cp.curTarget.turn then
 			distToChange = 5
 		end
@@ -976,31 +978,50 @@ function courseplay:unload_combine(vehicle, dt)
 		if distance_to_wp > vehicle.cp.shortestDistToWp and distance_to_wp < 3 then
 			distToChange = distance_to_wp + 1
 		end
-		if distance_to_wp < distToChange then
-			--[[if vehicle.cp.mode2nextState == 81 then
-				if vehicle.cp.activeCombine ~= nil then
-					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-				end
-			end]]
 
+		if distance_to_wp < distToChange then
+      -- Switching to next waypoint
 			vehicle.cp.shortestDistToWp = nil
 			if #(vehicle.cp.nextTargets) > 0 then
-        -- still have waypoints left, set next target and remome current one from list
-				courseplay:setCurrentTargetFromList(vehicle, 1);
+        -- still have waypoints left
+        -- if we are chasing our combine, check if we are close enough now (this can happen when
+        -- it has moved since we set our course to it and we are now driving close by) In this case.
+        -- abort the course and catch it.
+        local continueCourse = true
+        if vehicle.cp.mode2nextState == STATE_DRIVE_TO_COMBINE then
+          -- how far it is then?
+	        local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine;
+          if combine then
+            local distanceToCombine = courseplay:distanceToObject( vehicle, combine )
+            if distanceToCombine < 50 then
+              courseplay:debug( string.format( "Only %.2f meters from the combine on the way, abort course and following the combine", distanceToCombine ), 9 )
+              continueCourse = false
+              vehicle.cp.nextTargets = {}
+              courseplay:switchToNextMode2State(vehicle);
+              courseplay:setMode2NextState(vehicle, STATE_DEFAULT);
+            else
+              courseplay:debug( string.format( "Combine is still %.2f meters from me, continuing course", distanceToCombine ), 9 )
+            end 
+          end
+        end
+        if continueCourse then
+          -- set next target and remome current one from list
+          courseplay:setCurrentTargetFromList(vehicle, 1);
+        end
 			else
         -- no more waypoints left
 				allowedToDrive = false
+        
 				if vehicle.cp.mode2nextState ~= STATE_DRIVE_TO_COMBINE then
 					vehicle.cp.calculatedCourseToCombine = false
 				end
+
 				if vehicle.cp.mode2nextState == STATE_WAIT_FOR_PIPE or vehicle.cp.mode2nextState == STATE_DRIVE_TO_PIPE then
 					courseplay:switchToNextMode2State(vehicle);
-					--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(combineDirNode, vehicle.chopper_offset*0.7, 0, -9) -- -2          --??? *0,5 -10
 
 				elseif vehicle.cp.mode2nextState == STATE_DRIVE_TO_REAR and combineIsTurning then
 					courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 				elseif vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL then -- tipper turning from combine
-					-- print(('%s [%s(%d)]: no nextTargets, mode2nextState=81 -> set waypointIndex to 2, modeState to 99, isLoaded to true, return false'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
 					courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 					courseplay:setIsLoaded(vehicle, true);
@@ -1068,13 +1089,13 @@ function courseplay:unload_combine(vehicle, dt)
 
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
 		dod = Utils.vector2Length(lx, lz)
-		-- if dod < 2 or (vehicle.cp.positionWithCombine == 2 and frontTractor.cp.modeState ~= 3 and dod < 100) then
+		-- if dod < 2 or (vehicle.cp.positionWithCombine == 2 and frontTractor.cp.modeState ~= STATE_DRIVE_TO_PIPE and dod < 100) then
 		if courseplay.debugChannels[4] then
 			renderText(0.2, 0.045, 0.02, string.format("%s,dx= %.2f dz= %.2f",debugText,dx,dz));
 			local yy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, currentX, 0, currentZ)
 			drawDebugLine(sx, sy+3, sz, 1, 0, 1, currentX, yy+3, currentZ, 1, 0, 1);
 		end
-		if dod < 2 or (vehicle.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= 3 and dod < 100 ) or not courseplay:isField(currentX, currentZ, 1, 1) then
+		if dod < 2 or (vehicle.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= STATE_DRIVE_TO_PIPE and dod < 100 ) or not courseplay:isField(currentX, currentZ, 1, 1) then
 			courseplay:debug(string.format('\tdod=%s, frontTractor.cp.modeState=%s -> brakeToStop', tostring(dod), tostring(frontTractor.cp.modeState)), 4);
 			allowedToDrive = false;
 		end
@@ -1098,7 +1119,7 @@ function courseplay:unload_combine(vehicle, dt)
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
 	end
 
-	if vehicle.cp.modeState ~= 9  and (currentX == nil or currentZ == nil) then
+	if vehicle.cp.modeState ~= STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY  and (currentX == nil or currentZ == nil) then
 		if vehicle.cp.infoText == nil then
 			courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_WAYPOINT");
 		end
@@ -1147,7 +1168,7 @@ function courseplay:unload_combine(vehicle, dt)
 				lz = 1
 		end
 		
-		if vehicle.cp.modeState == 5 then
+		if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS then
 			if vehicle.cp.curTarget.rev then
 				lx,lz,moveForwards = courseplay:goReverse(vehicle,lx,lz,true)
 				refSpeed = min(refSpeed, vehicle.cp.speeds.reverse)
@@ -1176,7 +1197,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		vehicle.cp.TrafficBrake = false
-		if (vehicle.cp.modeState == 5 and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev ) or vehicle.cp.modeState == 2 then   
+		if (vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE then   
 			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz)
 		end
 		
@@ -1351,7 +1372,8 @@ end;
 
 function courseplay:setMode2NextState(vehicle, nextState)
 	if nextState == nil then return; end;
-
+  local oldNextState = vehicle.cp.mode2nextState or 0 
+  courseplay:debug( string.format( "%s: Setting next state: %d -> %d", nameNum( vehicle ), oldNextState, nextState ), 9 )
 	if vehicle.cp.mode2nextState ~= nextState then
 		vehicle.cp.mode2nextState = nextState;
 	end;
