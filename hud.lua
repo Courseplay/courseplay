@@ -972,8 +972,8 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- Always use 4WD
 		if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasFourWD then
-			vehicle.cp.hud.content.pages[5][7][1].text = courseplay:loc('COURSEPLAY_ALWAYS_USE_4WD');
-			vehicle.cp.hud.content.pages[5][7][2].text = vehicle.cp.driveControl.alwaysUseFourWD and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+			vehicle.cp.hud.content.pages[5][7][1].text = courseplay:loc('COURSEPLAY_DRIVECONTROL');
+			vehicle.cp.hud.content.pages[5][7][2].text =  courseplay:loc('COURSEPLAY_DRIVECONTROL_MODE_' .. vehicle.cp.driveControl.mode);
 		end;
 		
 		--FuelSaveOption
@@ -1650,6 +1650,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 5, nil, 'toggleFuelSaveOption', nil, self.contentMinX, self.linesPosY[8], self.contentMaxWidth, self.lineHeight, 8, nil, true);
 
 	-- 4WD button in line 5: only added if driveControl and 4WD exist
+	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navLeft' },  'changeDriveControlMode', -1, self.buttonPosX[2], self.linesButtonPosY[7], wSmall, hSmall, 7, -1, false);
+	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navRight' }, 'changeDriveControlMode',  1, self.buttonPosX[1], self.linesButtonPosY[7], wSmall, hSmall, 7, -1, false);
 
 
 	-- ##################################################

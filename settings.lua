@@ -1722,8 +1722,8 @@ function courseplay:toggleIngameMapIconShowText()
 	end;
 end;
 
-function courseplay:toggleAlwaysUseFourWD(vehicle)
-	vehicle.cp.driveControl.alwaysUseFourWD = not vehicle.cp.driveControl.alwaysUseFourWD;
+function courseplay:changeDriveControlMode(vehicle, changeBy)
+	vehicle.cp.driveControl.mode = Utils.clamp(vehicle.cp.driveControl.mode + changeBy, vehicle.cp.driveControl.OFF, vehicle.cp.driveControl.AWD_BOTH_DIFF);
 end;
 
 function courseplay:getAndSetFixedWorldPosition(object, recursive)

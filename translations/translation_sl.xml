@@ -171,7 +171,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="vzhod" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jug" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="zahod" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Avtomatsko" />   
 		<text name="COURSEPLAY_HEADLAND" 								 text="Headland" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktiviran" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Samo ime" />
@@ -253,7 +253,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="UStavi vzvratno vožnjo" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Dodaj delne točke" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikone na zemljevidu: prikaži napis" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Vedno uporabi 4x4" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Avtomatsko" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Ali želite da se polja skenirajo avtomatsko?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Ali želite da vaši delavi zaslužijo denar (%s/uro)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Kalkulator porabe semen" />

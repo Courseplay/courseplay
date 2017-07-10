@@ -253,7 +253,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP"					 text="Zatrzymaj powrotną jazdę" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Dodaj punkt pośredni" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"				 text="Tekst przy ikonie na mapie" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD"							 text="Używaj zawsze napędu na wszystkie koła" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Ustawienia Drive Control" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automatycznie" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4x4 zawsze" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4x4 zawsze &amp; zblokowany przedni dyf. przy pracy polowej" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4x4 zawsze &amp; zblokowany tylny dyf. przy pracy polowej" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4x4 zawsze &amp; zblokowane oba dyf. przy pracy polowej" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN"						 text="Czy chcesz, aby pola były skanowane automatycznie?" />
 		<text name="COURSEPLAY_YES_NO_WAGES"							 text="Czy chcesz, aby pracownicy dostawali wynagrodzenie (%s/godzinę)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR"						 text="Oblicz zużycie nasion" />

@@ -253,7 +253,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="後進動作を終了" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="現在地までウエイポイントを追加" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="マップアイコン: テキスト表示" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="オールタイム4WD" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="自動" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="フィールドを自動的にスキャンされるようにしますか?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="作業者に賃金を支払いますか? (%s/時間)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="消費量計" />

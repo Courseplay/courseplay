@@ -253,8 +253,13 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Parar marcha ré" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Adicionar pontos de divisão" /> 
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icones do mapa: Mostrar texto" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Usar sempre tração nas quatro rodas" />
-		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Você deseja que os campos sejam escaneados automaticamente?" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automático" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4X4 Permanente" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4X4 Permanente &amp; Diferencial na frente ligado" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4X4 Permanente &amp; Diferencial traseiro ligado" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4X4 Permanente &amp; Diferencial frente e traseiro ligados" /> 
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Você deseja que os campos sejam escaneados automaticamente?" /> 
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Você deseja que seus trabalhadores recebam salários (%s / hora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Cálculo do uso de sementes" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Campo: %d (%s %s)" />

@@ -253,7 +253,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Konec couvání" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě - zobrazit text:" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="Vždy použít 4x4:" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automaticky" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Chceš aby pole byla skenována automaticky?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Chceš aby byli pomocníci placeni (%s/hodinu)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Kalkulačka spotřeby osiva" />
