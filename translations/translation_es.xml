@@ -249,10 +249,10 @@
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Iconos del mapa: mostrar etiquetas" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automático" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4x4 Siempre" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4x4 Siempre + Difer. Delantero para trabajo de campo." />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4x4 Siempre + Difer. Trasero para trabajo de campo." />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4x4 Siempre + Ambos Difer. para trabajo de campo." />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="¿Desea usted que los campos sean escaneados automaticamente?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="¿Desea usted que sus trabajadores reciban un salario (%s/hora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Cálculo de uso de semillas" />
