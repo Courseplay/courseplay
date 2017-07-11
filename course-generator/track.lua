@@ -118,6 +118,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   end
   if #field.course > 0 then
     calculatePolygonData( field.course )
+    addTurnsToCorners( field.course, math.rad( 150 ))
   end
   -- flush STDOUT when not in the game for debugging
   if not courseGenerator.isRunningInGame() then
@@ -149,3 +150,21 @@ function reverseCourse( course )
   return result
 end
 
+--- This makes sense only when these turns are implemented in Coursplay.
+-- as of now, it'll generate nice turns only for 180 degree
+function addTurnsToCorners( vertices, angleThreshold )
+  i = 1
+  while i < #vertices - 1 do
+    local cp = vertices[ i ]
+    local np = vertices[ i + 1 ]
+    if cp.prevEdge and np.nextEdge then
+      -- start a turn at the current point only if the next one is not a start of the turn already
+      if not np.turnStart and math.abs( getDeltaAngle( np.nextEdge.angle, cp.prevEdge.angle )) > angleThreshold then
+        cp.turnStart = true
+        np.turnEnd = true
+        i = i + 2
+      end
+    end
+    i = i + 1
+  end
+end

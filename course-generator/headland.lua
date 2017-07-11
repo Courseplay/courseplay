@@ -75,30 +75,12 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
                                  currentOffset, doSmooth, inward )
 end
 
---- This makes sense only when these turns are implemented in Coursplay.
--- as of now, it'll generate nice turns only for 180 degree 
-function addTurnsToCorners( vertices, angleThreshold )
-  local ix = function( a ) return getPolygonIndex( vertices, a ) end
-  i = 1
-  while i < #vertices do
-    local cp = vertices[ i ]
-    local np = vertices[ ix( i + 1 )]
-    if math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > angleThreshold then
-      cp.turnStart = true
-      np.turnEnd = true
-      i = i + 2
-    end
-    i = i + 1
-  end
-end
-
 --- Link the generated, parallel circular headland tracks to
 -- a single spiral track
 -- First, We have to find where to start our course. 
 --  If we work on the headland first:
 --  - the starting point will be on the outermost headland track
---    close to the current vehicle position. The vehicle's heading 
---    is used to decide the direction, clockwise or counterclockwise
+--    close to the current vehicle position. 
 --  - for the subsequent headland passes, we add a 90 degree vector 
 --    to the first point of the first pass and then continue from there
 --    inwards
