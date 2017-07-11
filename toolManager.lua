@@ -1345,27 +1345,35 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 	--print("reverseCourseUnloadpoint: "..tostring(reverseCourseUnloadpoint).."  revUnload: "..tostring(revUnload))
 
 	if (vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable) and vehicle.cp.totalFillLevelPercent > 0 then
-		if vehicle.cp.previousWaypointIndex == vehicle.cp.unloadPoints[1] then
-			stopForTipping = true;
-			if vehicle.pipeCurrentState ~= 2 then
-				vehicle:setPipeState(2);
-			end;
-			if vehicle:getCanTipToGround() and vehicle.cp.mode == 6 then
-				if not vehicle.dischargeToGround then
-					vehicle:setDischargeToGround(true);
-				end
-			end;
-			if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
-				local filltype = vehicle:getFirstEnabledFillType();
-				if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
-					local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
-					if stopTime then
-						courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
+		for i=1, #(vehicle.cp.workTools) do
+			workTool = vehicle.cp.workTools[i];
+			local combine = vehicle
+			if courseplay:isAttachedCombine(workTool) then
+				combine = workTool
+			end
+			if vehicle.cp.previousWaypointIndex == vehicle.cp.unloadPoints[1] then
+				stopForTipping = true;
+				if combine.pipeCurrentState ~= 2 then
+					combine:setPipeState(2);
+				end;
+				print(('combine:getCanTipToGround() = %s'):format(combine:getCanTipToGround()))
+				if combine:getCanTipToGround() then
+					if not combine.dischargeToGround then
+						combine:setDischargeToGround(true);
+					end
+				end;
+				if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
+					local filltype = vehicle:getFirstEnabledFillType();
+					if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+						local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
+						if stopTime then
+							courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
+						end;
 					end;
 				end;
 			end;
-		end
-	else
+		end;
+	elseif not (vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable) then
 		
 		for index, tipper in pairs (vehicle.cp.workTools) do
 			local goForTipping = false
@@ -1447,45 +1455,46 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 	if vehicle.cp.totalFillLevel == 0 and courseplay:timerIsThrough(vehicle, "waitUntilPipeIsEmpty") then
 		courseplay:resetCustomTimer(vehicle, "waitUntilPipeIsEmpty", true);
 		courseplay:setVehicleWait(vehicle, false);
+		if vehicle.cp.isCombine and vehicle.pipeCurrentState ~= 0 then
+			vehicle:setPipeState(0);
+		end;
 	end
 	return stopForTipping,takeOverSteering
 end
 
 function courseplay:handleHeapUnloading(vehicle)
+	--Todo right now it starts when tractor is under unload point. Be nice if pipe was under
 	local stopForUnload = false;
-	if vehicle.cp.makeHeaps then
-		if (vehicle.cp.waypointIndex + 1) == vehicle.cp.heapStart and vehicle.pipeCurrentState ~= 2 then
-			vehicle:setPipeState(2);
+	--For Mode 7 Has workTools is empty
+	if #(vehicle.cp.workTools) == 0 then
+		vehicle.cp.workTools[1] = vehicle
+	end;
+	for i=1, #(vehicle.cp.workTools) do
+		workTool = vehicle.cp.workTools[i];
+		local combine = vehicle
+		if workTool and courseplay:isAttachedCombine(workTool) then
+			combine = workTool
 		end
-		if vehicle.cp.previousWaypointIndex == vehicle.cp.heapStart then
-			if vehicle.cp.totalFillLevel > 0 then
-				if vehicle:getCanTipToGround() then
-					if not vehicle.dischargeToGround then
-						vehicle.cp.speeds.discharge = courseplay:getDischargeSpeed(vehicle);
-						vehicle:setDischargeToGround(true);
-						courseplay:setVehicleWait(vehicle, false);
-					end;
-				else
-					stopForUnload = true;
-					-- TODO show message "not able to discharge"
-				end;
-			end;
-		end;
-		if vehicle.cp.previousWaypointIndex > vehicle.cp.heapStart and vehicle.cp.previousWaypointIndex < vehicle.cp.heapStop then
-			-- Set Timer if unloading pipe takes time before empty.
-			if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
-				local filltype = vehicle:getFirstEnabledFillType();
-				if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
-					local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
-					if stopTime then
-						courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
+		
+		if vehicle.cp.makeHeaps then
+			if (vehicle.cp.waypointIndex + 1) == vehicle.cp.heapStart and combine.pipeCurrentState ~= 2 then
+				combine:setPipeState(2);
+			end
+			if vehicle.cp.previousWaypointIndex == vehicle.cp.heapStart then
+				if combine.cp.fillLevel > 0 then
+					if combine:getCanTipToGround() then
+						if not combine.dischargeToGround then
+							combine:setDischargeToGround(true);
+							vehicle.cp.speeds.discharge = courseplay:getDischargeSpeed(vehicle, combine);
+							courseplay:setVehicleWait(vehicle, false);
+						end;
+					else
+						stopForUnload = true;
+						-- TODO show message "not able to discharge"
 					end;
 				end;
 			end;
-		end;
-		if vehicle.cp.previousWaypointIndex == vehicle.cp.heapStop then
-			if vehicle.cp.totalFillLevel > 0 then
-				stopForUnload = true;
+			if vehicle.cp.previousWaypointIndex > vehicle.cp.heapStart and vehicle.cp.previousWaypointIndex < vehicle.cp.heapStop then
 				-- Set Timer if unloading pipe takes time before empty.
 				if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 					local filltype = vehicle:getFirstEnabledFillType();
@@ -1496,16 +1505,33 @@ function courseplay:handleHeapUnloading(vehicle)
 						end;
 					end;
 				end;
-			elseif courseplay:timerIsThrough(vehicle, "waitUntilPipeIsEmpty") then
-				courseplay:resetCustomTimer(vehicle, "waitUntilPipeIsEmpty", true);
-				courseplay:setVehicleWait(vehicle, false);
 			end;
-		end;			
+			if vehicle.cp.previousWaypointIndex == vehicle.cp.heapStop then
+				if combine.cp.fillLevel > 0 then
+					stopForUnload = true;
+					-- Set Timer if unloading pipe takes time before empty.
+					if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
+						local filltype = vehicle:getFirstEnabledFillType();
+						if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+							local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
+							if stopTime then
+								courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
+							end;
+						end;
+					end;
+				elseif courseplay:timerIsThrough(vehicle, "waitUntilPipeIsEmpty") then
+					courseplay:resetCustomTimer(vehicle, "waitUntilPipeIsEmpty", true);
+					courseplay:setVehicleWait(vehicle, false);
+				elseif combine.pipeCurrentState ~= 0 then
+					combine:setPipeState(0);
+				end;
+			end		
+		end;
 	end;
 	return stopForUnload;
 end;
 
-function courseplay:getDischargeSpeed(vehicle)
+function courseplay:getDischargeSpeed(vehicle, combine)
 	courseplay:debug(nameNum(vehicle) .. ":getDischargeSpeed()", 11);
 	local refSpeed = 0
 
@@ -1514,11 +1540,9 @@ function courseplay:getDischargeSpeed(vehicle)
 	local length = courseplay:distance(sx,sz, ex,ez)*.8  --just to be sure, that we will get all in...
 	courseplay:debug(nameNum(vehicle) .. ":  TipRange length: "..tostring(length), 11);
 
-	-- Old Calculation
-	-- completeTipDuration = (vehicle.cp.totalFillLevel/vehicle.overloading.capacity)+ (vehicle.overloading.delay.time/1000)
-	local completeTipDuration = vehicle.cp.totalFillLevel*((2.1*(vehicle.overloading.delay.time/1000))/vehicle.overloading.capacity)
-	completeTipDuration = completeTipDuration + completeTipDuration*.2
-
+	-- 1.25s Seems to be the correct vaule for discharge speed of all combines tested
+	-- added overloading delay has that varies from combine to combine
+	local completeTipDuration = (combine.cp.fillLevel/combine.overloading.capacity) * 1.25 + (combine.overloading.delay.time/1000)
 	courseplay:debug(nameNum(vehicle) .. ":  complete tip duration: "..tostring(completeTipDuration), 11);
 
 	local meterPrSeconds = length / completeTipDuration;

@@ -511,7 +511,7 @@ function courseplay:getCanUseCpMode(vehicle)
 
 	local minWait, maxWait, minUnload, maxUnload;
 
-	if mode == 3 or mode == 8 or mode == 10 then
+	if (mode == 1 and vehicle.cp.hasAugerWagon) or mode == 3 or mode == 8 or mode == 10 then
 		minWait, maxWait = 1, 1;
 		if  vehicle.cp.hasWaterTrailer then
 			maxWait = 10
@@ -524,9 +524,13 @@ function courseplay:getCanUseCpMode(vehicle)
 			return false;
 		end;
 		if mode == 3 then
+			maxUnload = 0
 			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
 				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 				return false;
+			elseif vehicle.cp.numUnloadPoints > maxUnload then
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
+			return false; 
 			end;
 		elseif mode == 8 then
 			if vehicle.cp.workTools[1] == nil then
