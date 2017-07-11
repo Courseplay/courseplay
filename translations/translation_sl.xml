@@ -163,10 +163,10 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="severozahod" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="severovzhod" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="jugovzhod" />
-		<text name="COURSEPLAY_CORNER_5_START" 							 text="Začnite pri trenutnem položaju vozila" />
-		<text name="COURSEPLAY_CORNER_5_END" 							 text="Končajte na trenutnem položaju vozila" />
-		<text name="COURSEPLAY_CORNER_6_START"							 text="Začni pri zadnji uporabi" />
-		<text name="COURSEPLAY_CORNER_6_END"							 text="Konec pri zadnji uporabi" />
+		<text name="COURSEPLAY_CORNER_5_START" 							 text="Start at Current vehicle position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_5_END" 							 text="End at Current vehicle position" />     <!-- TODO: TRANSLATION! --> 
+		<text name="COURSEPLAY_CORNER_6_START"							 text="Start at Last used position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_6_END"							 text="End at Last used position" />     <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="vzhod" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jug" />
@@ -310,7 +310,7 @@
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="pod 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="opcija varčevanja z gorivom" />
 
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Ni mogoče ustvariti tečaja. Poskusite spremeniti nastavitve ali premakniti vozilo."/>
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>  <!-- TODO: TRANSLATION! -->
 		
 	</texts>
 </l10n>
