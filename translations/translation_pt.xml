@@ -159,10 +159,10 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Noroeste" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordeste" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sudeste" />
-		<text name="COURSEPLAY_CORNER_5_START" 							 text="Comece na posição atual do veículo" />
-		<text name="COURSEPLAY_CORNER_5_END" 							 text="Fim na posição atual do veículo" />
-		<text name="COURSEPLAY_CORNER_6_START"							 text="Iniciar na última posição usada" />
-		<text name="COURSEPLAY_CORNER_6_END"							 text="End at Last used position" />
+		<text name="COURSEPLAY_CORNER_5_START" 							 text="Start at Current vehicle position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_5_END" 							 text="End at Current vehicle position" />     <!-- TODO: TRANSLATION! --> 
+		<text name="COURSEPLAY_CORNER_6_START"							 text="Start at Last used position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_6_END"							 text="End at Last used position" />     <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_DIRECTION_1" 						 	 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 						 	 text="Este" />
 		<text name="COURSEPLAY_DIRECTION_3" 						 	 text="Sul" />
