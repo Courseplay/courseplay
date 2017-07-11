@@ -489,6 +489,10 @@ function courseplay.hud:setContent(vehicle)
 		if vehicle.cp.copyCourseFromDriver ~= nil or courseplay.utils:hasVarChanged(vehicle, 'totalOffsetX') then -- Force page 7 reload when vehicle distance is displayed
 			self:setReloadPageOrder(vehicle, 7, true);
 		end;
+	elseif vehicle.cp.hud.currentPage == 8 then
+		if vehicle.cp.startingCorner > 4 then -- REFRESH TEXT
+				self:setReloadPageOrder(vehicle, 8, true);
+		end;
 	end;
 
 	-- RELOAD PAGE
@@ -1131,9 +1135,23 @@ function courseplay.hud:loadPage(vehicle, page)
 		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
 		if vehicle.cp.hasStartingCorner then
 			vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc(string.format('COURSEPLAY_CORNER_%d', vehicle.cp.startingCorner)); -- NE/SE/SW/NW
-			if vehicle.cp.startingCorner == 6 then
-				vehicle.cp.hud.content.pages[8][3][2].text = vehicle.cp.hud.content.pages[8][3][2].text..string.format(" (%s %d)",courseplay:loc('COURSEPLAY_FIELD'),vehicle.cp.generationPosition.fieldNum);
-			end
+			if vehicle.cp.startingCorner > 4 then
+				if vehicle.cp.headland.orderBefore then
+					if vehicle.cp.startingCorner == 5 then
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_5_START');
+					else
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_6_START');
+					end;
+					--courseplay:debug("LOOK HERE-----SHOULD BE TRUE------"+tostring(not vehicle.cp.headland.orderBefore), 7);
+				else
+					if vehicle.cp.startingCorner == 5 then
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_5_END');
+					else
+						vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc('COURSEPLAY_CORNER_6_END');
+					end;
+					--courseplay:debug("LOOK HERE-----SHOULD BE FALSE-----"+tostring(not vehicle.cp.headland.orderBefore), 7);
+				end;
+			end;
 		else
 			vehicle.cp.hud.content.pages[8][3][2].text = '---';
 		end;

@@ -163,8 +163,10 @@
 		<text name="COURSEPLAY_CORNER_2"								 text="Północny-Zachód" />
 		<text name="COURSEPLAY_CORNER_3"								 text="Północny-Wschód" />
 		<text name="COURSEPLAY_CORNER_4"								 text="Południowy-Wschód" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Obecna pozycja pojazdu" />
-		<text name="COURSEPLAY_CORNER_6" 								 text="Ostatnio użyta pozycja" />
+		<text name="COURSEPLAY_CORNER_5_START" 							 text="Start at Current vehicle position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_5_END" 							 text="End at Current vehicle position" />     <!-- TODO: TRANSLATION! --> 
+		<text name="COURSEPLAY_CORNER_6_START"							 text="Start at Last used position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_6_END"							 text="End at Last used position" />     <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_DIRECTION_1"								 text="Północ" />
 		<text name="COURSEPLAY_DIRECTION_2"								 text="Wschód" />
 		<text name="COURSEPLAY_DIRECTION_3"								 text="Południe" />

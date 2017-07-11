@@ -159,8 +159,10 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Noroeste" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordeste" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sudeste" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5_START" 							 text="Start at Current vehicle position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_5_END" 							 text="End at Current vehicle position" />     <!-- TODO: TRANSLATION! --> 
+		<text name="COURSEPLAY_CORNER_6_START"							 text="Start at Last used position" />     <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_CORNER_6_END"							 text="End at Last used position" />     <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_DIRECTION_1" 						 	 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 						 	 text="Este" />
 		<text name="COURSEPLAY_DIRECTION_3" 						 	 text="Sul" />
@@ -307,7 +309,7 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->	
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>  <!-- TODO: TRANSLATION! -->
 
 	</texts>
 </l10n>
