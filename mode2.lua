@@ -436,6 +436,7 @@ function courseplay:unload_combine(vehicle, dt)
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_DRIVE_TO_COMBINE); -- modeState when waypoint is reached
 				vehicle.cp.shortestDistToWp = nil;
+        print( string.format( "CurrentX/Z %f %f", currentX, currentY ))
 			end;
 		end;
 
@@ -458,7 +459,6 @@ function courseplay:unload_combine(vehicle, dt)
 			courseplay:setModeState(vehicle, STATE_DRIVE_TO_REAR);
 		end;
 		-- END STATE 2
-
 
 	-- STATE 4 (drive to rear of combine)
 	elseif vehicle.cp.modeState == STATE_DRIVE_TO_REAR then
@@ -898,6 +898,7 @@ function courseplay:unload_combine(vehicle, dt)
 		refSpeed = vehicle.cp.speeds.turn
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	end
+  -- END STATE 7
 
 
 	--[[ TODO: MODESTATE 99 - WTF?
@@ -993,7 +994,8 @@ function courseplay:unload_combine(vehicle, dt)
 	        local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine;
           if combine then
             local distanceToCombine = courseplay:distanceToObject( vehicle, combine )
-            if distanceToCombine < 50 then
+            -- magic constants, distance based on turn diameter
+            if distanceToCombine < Utils.getNoNil( vehicle.cp.turnDiameter * 1.5, 20 ) then
               courseplay:debug( string.format( "Only %.2f meters from the combine on the way, abort course and following the combine", distanceToCombine ), 9 )
               continueCourse = false
               vehicle.cp.nextTargets = {}
@@ -1118,6 +1120,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		--courseplay:debug(string.format("distance: %d  dod: %d",distance,dod ), 4)
 	end
+  -- END STATE 6 FOLLOW TRACTOR
 
 	if vehicle.cp.modeState ~= STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY  and (currentX == nil or currentZ == nil) then
 		if vehicle.cp.infoText == nil then
@@ -1523,7 +1526,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
   for _, point in ipairs( path ) do 
 		local lx, ly, lz = worldToLocal( vehicle.cp.DirectionNode, point.x, point.y, point.z )
 		local d = Utils.vector2Length(lx, lz)
-    if d > 20 then break end
+    if d > Utils.getNoNil( vehicle.cp.turnDiameter, 5 ) then break end
     pointFarEnoughIx = pointFarEnoughIx + 1
   end
   for i = 1, pointFarEnoughIx do
@@ -1536,16 +1539,21 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
       local point = path[ i ]
       local lx, ly, lz = worldToLocal( combine.cp.DirectionNode or combine.rootNode, point.x, point.y, point.z )
       local d = Utils.vector2Length(lx, lz)
-      if d > 20 then break end
+      if d > Utils.getNoNil( vehicle.cp.turnDiameter, 5 ) then break end
       pointFarEnoughIx = pointFarEnoughIx - 1
     end
     for i = #path, pointFarEnoughIx, -1 do
       table.remove( path ) 
     end
   end
-	vehicle.cp.nextTargets = path
-	vehicle.cp.calculatedCourseToCombine = true;
-  return true                                 
+  if #path < 2 then
+    courseplay:debug( string.format( "Path hasn't got enough aypoints (%d), no fruit avoidance", #path ), 9 )
+    return false
+  else
+    vehicle.cp.nextTargets = path
+    vehicle.cp.calculatedCourseToCombine = true;
+    return true                                 
+  end
 end
 
 function courseplay:onWhichFieldAmI(vehicle)
