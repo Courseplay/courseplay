@@ -427,9 +427,8 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		-- PATHFINDING / REALISTIC DRIVING
-		if vehicle.cp.realisticDriving and not vehicle.cp.calculatedCourseToCombine then
+		if vehicle.cp.realisticDriving then
       -- if there's fruit between me and the combine, calculate a path around it.
-      -- as far as I can tell, currentX/currentZ is where we want to end up (and not in the middle of the combine)
 			if courseplay:calculateAstarPathToCoords(vehicle, combine ) then
         -- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay:setCurrentTargetFromList(vehicle, 1);
@@ -1012,30 +1011,34 @@ function courseplay:unload_combine(vehicle, dt)
 			else
         -- no more waypoints left
 				allowedToDrive = false
+       
+        -- we are following waypoints mode (for instance because we were in STATE_DRIVE_TO_COMBINE but 
+        -- due the the realistic driving settings, we switched to STATE_FOLLOW_TARGET_WPS).
+        -- now, we are attempting to switch back to drive to combine mode
         
-				if vehicle.cp.mode2nextState ~= STATE_DRIVE_TO_COMBINE then
-					vehicle.cp.calculatedCourseToCombine = false
-				end
-
 				if vehicle.cp.mode2nextState == STATE_WAIT_FOR_PIPE or vehicle.cp.mode2nextState == STATE_DRIVE_TO_PIPE then
 					courseplay:switchToNextMode2State(vehicle);
 
 				elseif vehicle.cp.mode2nextState == STATE_DRIVE_TO_REAR and combineIsTurning then
 					courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
+
 				elseif vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL then -- tipper turning from combine
 					courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 					courseplay:setIsLoaded(vehicle, true);
 					courseplay:setModeState(vehicle, STATE_DEFAULT);
 					courseplay:setWaypointIndex(vehicle, 2);
+
 				elseif vehicle.cp.mode2nextState == STATE_WAIT_AT_START then
 					-- refSpeed = vehicle.cp.speeds.turn
 					courseplay:switchToNextMode2State(vehicle);
 					courseplay:setMode2NextState(vehicle, STATE_DEFAULT);
+
 				else
           -- no special processing, just switch to the next mode here
 					courseplay:switchToNextMode2State(vehicle);
 					courseplay:setMode2NextState(vehicle, STATE_DEFAULT);
+
 				end
 			end
 		end
@@ -1443,12 +1446,6 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
 	local cx, cz = 0, 0
 	local fruitType = 0
 
-  -- pathfinding is expensive and we don't want it happen in every update cycle
-  if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
-    return false
-  end
-  courseplay:setCustomTimer( vehicle, 'pathfinder', 2 )
-
   -- if a combine was passed, use it's location
 	if combine ~= nil then
 		cx, _, cz = getWorldTranslation( combine.rootNode )
@@ -1465,8 +1462,13 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
 	else
 		courseplay:debug( string.format( "there is %s(%d) in my way -> create path around it",fruitName,fruitType), 9 )
 	end
+  
+  -- pathfinding is expensive and we don't want it happen in every update cycle
+  if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
+    return false
+  end
+  courseplay:setCustomTimer( vehicle, 'pathfinder', 2 )
 
- 
   -- tractor coordinates
 	local vx,vy,vz = getWorldTranslation( vehicle.cp.DirectionNode )
 
@@ -1550,7 +1552,6 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
     return false
   else
     vehicle.cp.nextTargets = path
-    vehicle.cp.calculatedCourseToCombine = true;
     return true                                 
   end
 end
