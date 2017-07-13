@@ -14,6 +14,12 @@ function CpManager:setUpDebugChannels()
 			defaultActive[12] = true;
 			defaultActive[14] = true;
 		end;
+		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
+			defaultActive[3] = true;
+			defaultActive[4] = true;
+			defaultActive[7] = true;
+			defaultActive[9] = true;
+		end;
 	end;
 
 	-- DEBUG CHANNELS
@@ -81,7 +87,8 @@ end;
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
-		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
+    local seconds = courseplay.clock / 1000
+		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. string.format( "%.3f", seconds ) .. ' s] ' .. str);
 	end;
 end;
 
