@@ -436,7 +436,6 @@ function courseplay:unload_combine(vehicle, dt)
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_DRIVE_TO_COMBINE); -- modeState when waypoint is reached
 				vehicle.cp.shortestDistToWp = nil;
-        print( string.format( "CurrentX/Z %f %f", currentX, currentY ))
 			end;
 		end;
 

@@ -38,6 +38,7 @@ local sonOfaBangSonOfaBoom = {
 	['c8029c5126f522ec8839ec30fcabc22e'] = true; -- sKyDaNcEr
 	['06475174d922e7dcbb3ed34c0236dbdf'] = true; -- Justin
 	['b74ad095badc54d4334039f2f73f240e'] = true; -- Pops64
+	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
 };
 CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
 
