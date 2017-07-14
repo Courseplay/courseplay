@@ -561,6 +561,7 @@ function courseplay:getCanUseCpMode(vehicle)
 			return false;
 		end;
 		if mode == 6 then
+			maxUnload = 0;
 			if vehicle.cp.hasBaleLoader then
 				minWait, maxWait = 2, 3;
 				if vehicle.cp.numWaitPoints < minWait then
@@ -569,14 +570,15 @@ function courseplay:getCanUseCpMode(vehicle)
 				elseif vehicle.cp.numWaitPoints > maxWait then
 					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 					return false;
-				end;
-			end;
-			if vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable then
+				end;																									--TODO: Remove when tippers are supported with 2 unload points
+			elseif (vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable or vehicle.cp.hasHarvesterAttachable) and not vehicle.cp.hasSpecialChopper then
 				maxUnload = 2;
-				if vehicle.cp.numUnloadPoints > maxUnload then
-					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
-					return false;
-				end;
+			else
+				maxUnload = 1;
+			end;
+			if vehicle.cp.numUnloadPoints > maxUnload then
+				courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
+				return false;
 			end;
 		end;
 

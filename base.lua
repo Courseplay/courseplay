@@ -36,6 +36,8 @@ function courseplay:load(savegame)
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
+	self.cp.hasHarvesterAttachable = false;
+	self.cp.hasSpecialChopper = false;
 	if self.cp.isCombine or self.cp.isHarvesterSteerable then
 		self.cp.mode7Unloading = false
 		self.cp.driverPriorityUseFillLevel = false;
