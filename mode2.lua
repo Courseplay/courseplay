@@ -137,7 +137,7 @@ function courseplay:handle_mode2(vehicle, dt)
 			frontTractor = vehicle.cp.activeCombine.courseplayers[vehicle.cp.positionWithCombine - 1]
 			courseplay:debug(string.format('%s: activeCombine ~= nil, my position=%d, frontTractor (positionWithCombine %d) = %q', nameNum(vehicle), vehicle.cp.positionWithCombine, vehicle.cp.positionWithCombine - 1, nameNum(frontTractor)), 4);
 			--	courseplay:follow_tractor(vehicle, dt, tractor)
-			courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_TRACTOR);
+			courseplay:setModeState(vehicle, STATE_FOLLOW_TRACTOR);
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
@@ -1369,7 +1369,7 @@ end;
 -- MODE STATE FUNCTIONS
 function courseplay:setModeState(vehicle, state, debugLevel)
 	debugLevel = debugLevel or 2;
-  courseplay:debug( string.format( "%s: Switching state: %d -> %d", nameNum( vehicle ), vehicle.cp.modeState, state ), 9 )
+  courseplay:debug( string.format( "%s: Switching state: %d -> %d", nameNum( vehicle ), vehicle.cp.modeState, Utils.getNoNil( state, -1 )), 9 )
 	if vehicle.cp.modeState ~= state then
 		vehicle.cp.modeState = state;
 	end;
@@ -1548,7 +1548,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
     end
   end
   if #path < 2 then
-    courseplay:debug( string.format( "Path hasn't got enough aypoints (%d), no fruit avoidance", #path ), 9 )
+    courseplay:debug( string.format( "Path hasn't got enough waypoints (%d), no fruit avoidance", #path ), 9 )
     return false
   else
     vehicle.cp.nextTargets = path
