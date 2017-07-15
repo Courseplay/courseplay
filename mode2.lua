@@ -558,7 +558,10 @@ function courseplay:unload_combine(vehicle, dt)
 			else
 				sideMultiplier = 1;				
 			end
+      -- combine empty. Move tractor closer to the next row 
 			if combineIsTurning or vehicle.cp.forceNewTargets then
+        -- if the combine is now turning, turn around the tractor too 
+        -- first waypoint is to the side opposite to the fruit
 				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
 				vehicle.cp.curTarget.rev = false
 				courseplay:debug(string.format("%s: combine is empty and turning",nameNum(vehicle)),4)
@@ -579,6 +582,7 @@ function courseplay:unload_combine(vehicle, dt)
 					courseplay:debug(string.format("%s: combineIsAutoCombine- create vehicle.cp.cpTurnBaseNode (%s; %s)",nameNum(vehicle),tostring(vehicle.cp.cpTurnBaseNode), tostring(getName(vehicle.cp.cpTurnBaseNode))),4)
 				end
 				courseplay:debug(string.format("%s: addNewTargetVector: currentTipper: %s ,vehicle.cp.cpTurnBaseNode: %s",nameNum(vehicle),tostring(currentTipper),tostring(vehicle.cp.cpTurnBaseNode)),4)				
+        -- and then add more waypoints bringing us back near the unharvested fruit
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.5 ,  (-totalLength*2)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*3)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*4)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
@@ -587,6 +591,7 @@ function courseplay:unload_combine(vehicle, dt)
 					vehicle.cp.forceNewTargets = nil
 				end
 			else
+        -- if the combine is not turning, don't turn around the tractor just move closer to the fruit
 				courseplay:debug(string.format("%s: combine is empty ",nameNum(vehicle)),4)
 				if combine.cp.isHarvesterAttachable then
 					courseplay:debug(string.format("%s: combine is isHarvesterAttachable move out of the way",nameNum(vehicle)),4)
