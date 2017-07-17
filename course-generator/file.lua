@@ -132,9 +132,20 @@ function writeCourseToFile( field, fileName )
     if i == #field.course then
       crossing = 'crossing="1" wait="1"'
     end
+    local angle
+    if point.nextEdge then
+      angle = toCpAngle( point.nextEdge.angle )
+    else
+      print( string.format( "ERROR: Can't find angle for waypoint %d", wp ))
+      angle = 0
+    end
+    local ridgeMarker = ""
+    if point.ridgeMarker then
+      ridgeMarker = string.format( 'ridgemarker="%d"', point.ridgeMarker )
+    end
     io.write( 
-      string.format( '  <waypoint%d angle="%.2f" generated="true" speed="0" pos="%.2f %.2f" %s %s %s/>\n',
-                     wp, toCpAngle( point.nextEdge.angle ), point.x, -point.y, turn, lane, crossing ))
+      string.format( '  <waypoint%d angle="%.2f" generated="true" speed="0" pos="%.2f %.2f" %s %s %s %s/>\n',
+                     wp, angle, point.x, -point.y, ridgeMarker, turn, lane, crossing ))
     wp = wp + 1
   end
   io.write( " </course>" )

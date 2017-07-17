@@ -153,7 +153,10 @@ end
 --- This makes sense only when these turns are implemented in Coursplay.
 -- as of now, it'll generate nice turns only for 180 degree
 function addTurnsToCorners( vertices, angleThreshold )
-  i = 1
+  -- start at the second wp to avoid having the first waypoint a turn start,
+  -- that throws an nil in getPointDirection (due to the way calculatePolygonData 
+  -- works, the prevEdge to the first point is bogus anyway)
+  i = 2
   while i < #vertices - 1 do
     local cp = vertices[ i ]
     local np = vertices[ i + 1 ]

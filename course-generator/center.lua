@@ -505,7 +505,11 @@ function addPointToListOrderedByX( is, point )
   while i > 0 and point.x < is[ i ].x do 
     i = i - 1
   end
-  table.insert( is, i + 1, point )
+  -- don't enter duplicates as that'll result in grid points outside the 
+  -- field (when used for the pathfinding)
+  if i == 0 or point.x ~= is[ i ].x then
+    table.insert( is, i + 1, point )
+  end
 end
 
 --- check if two tracks overlap. We assume tracks are horizontal
