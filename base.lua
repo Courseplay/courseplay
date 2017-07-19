@@ -36,6 +36,8 @@ function courseplay:load(savegame)
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
+	self.cp.hasHarvesterAttachable = false;
+	self.cp.hasSpecialChopper = false;
 	if self.cp.isCombine or self.cp.isHarvesterSteerable then
 		self.cp.mode7Unloading = false
 		self.cp.driverPriorityUseFillLevel = false;
@@ -531,13 +533,19 @@ function courseplay:postLoad(savegame)
 			hasManualMotorStart = g_currentMission.driveControl.useModules.manMotorStart;
 			hasMotorKeepTurnedOn = g_currentMission.driveControl.useModules.manMotorKeepTurnedOn;
 			hasShuttleMode = g_currentMission.driveControl.useModules.shuttle;
-			alwaysUseFourWD = false;
+			--alwaysUseFourWD = false;
+			mode = 0;
+			OFF = 0;
+			AWD = 1;
+			AWD_FRONT_DIFF = 2;
+			AWD_REAR_DIFF = 3;
+			AWD_BOTH_DIFF = 4;
 		};
 
-		-- add "always use 4WD" button
-		if self.cp.driveControl.hasFourWD then
-			courseplay.button:new(self, 5, nil, 'toggleAlwaysUseFourWD', nil, courseplay.hud.col1posX, courseplay.hud.linesPosY[7], courseplay.hud.contentMaxWidth, 0.015, 7, nil, true);
-		end;
+		-- add "always use 4WD" button. This was moved into hud and shown based off conditions in button
+		-- if self.cp.driveControl.hasFourWD then
+		-- 	--courseplay.button:new(self, 5, nil, 'toggleAlwaysUseFourWD', nil, courseplay.hud.col1posX, courseplay.hud.linesPosY[7], courseplay.hud.contentMaxWidth, 0.015, 7, nil, true);
+		-- end
 	end;
 end;
 
@@ -829,6 +837,8 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:update(dt)
+  -- UPDATE CLOCK
+  courseplay.clock = courseplay.clock + dt
 	-- KEYBOARD EVENTS
 	if self:getIsActive() and self.isEntered and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then

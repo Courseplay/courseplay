@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="ベールをアンロード" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="トラフィックエラー" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="トリガへ到着" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="アンロードポイントまでの距離" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="ローディング: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウエイポイントを表示" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="経路サーチ" />
@@ -163,13 +163,13 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="North-West" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="North-East" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="South-East" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
-		<text name="COURSEPLAY_DIRECTION_1" 							 text="North" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />   <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_CORNER_5" 								 text="現在の車両位置" />
+		<text name="COURSEPLAY_CORNER_6" 								 text="最後に使用された位置" />
+		<text name="COURSEPLAY_DIRECTION_1" 							 text="North" />
+		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" />
+		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" />
+		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="自動" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="まくら地" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="有効" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="車両名のみ" />
@@ -251,7 +251,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="後進動作を終了" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="現在地までウエイポイントを追加" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="マップアイコン: テキスト表示" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD" 							 text="オールタイム4WD" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="自動" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="フィールドを自動的にスキャンされるようにしますか?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="作業者に賃金を支払いますか? (%s/時間)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="消費量計" />
@@ -304,7 +309,7 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="アイドリングストップ" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="コースリスト更新" />
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="コースを生成できませんでした。 設定を変更したり、車両を動かしてみてください。"/>
 		
 	</texts>
 </l10n>

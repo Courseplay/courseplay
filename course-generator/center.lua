@@ -117,6 +117,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
       table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
     end
     linkParallelTracks( track, block.tracksWithWaypoints, block.bottomToTop, block.leftToRight, nTracksToSkip ) 
+    addRidgeMarkers( track )
   end
 
   -- now rotate and translate everything back to the original coordinate system
@@ -211,9 +212,13 @@ function addWaypointsToTracks( tracks, width, extendTracks )
         end
       end
     end
-    -- return only tracks with waypoints
+    -- return only tracks with at least two waypoints
     if tracks[ i ].waypoints then
-      table.insert( result, tracks[ i ])
+      if #tracks[ i ].waypoints > 1 then
+        table.insert( result, tracks[ i ])
+      else
+        courseGenerator.debug( string.format( "Track %d has only one waypoint, skipping.", i ))
+      end
     end
   end
   return result
@@ -335,6 +340,10 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
         if ( j == #parallelTracks[ i ].waypoints and i ~= endTrack ) then
           point.turnStart = true
         end
+        -- these will come in handy for the ridge markers
+        point.trackNumber = i 
+        point.lastTrack = i == endTrack
+        point.firstTrack = i == startTrack
         table.insert( result, point )
       end      
     else
@@ -510,5 +519,79 @@ function overlaps( t1, t2 )
     return false
   else
     return true
+  end
+end
+
+-- ugly copy paste, should be refactored
+local ridgeMarker = {
+  none = 0,
+  left = 1,
+  right = 2
+};
+
+--- Add ridge markers to all up/down tracks, including the first and the last.
+-- The last one does not need it but we'll take care of that once we know 
+-- which track will really be the last one, because if we reverse the course
+-- this changes.
+--
+function addRidgeMarkers( track )
+  -- ridge markers should be on the unworked side so 
+  -- just check the turn at the end of the first track.
+  -- If it is a right turn then we start with the ridge marker on the right
+  local turnStartIx = 0
+  for i=1, #track do
+    if track[ i ].turnStart then 
+      turnStartIx = i
+      break
+    end
+  end
+  -- first track has one point only, should not happen 
+  if turnStartIx < 2 or #track < 3 then return end
+  -- Leverage the fact that at this point tracks are parallel to the x axis.
+  local drivingToTheRight = track[ turnStartIx ].x > track[ turnStartIx - 1 ].x 
+  local turningDown = track[ turnStartIx ].y > track[ turnStartIx + 1 ].y
+  local startRidgeMarkerOnTheRight = ( drivingToTheRight and turningDown ) or
+                                     ( not drivingToTheRight and not turningDown )
+  for i, p in ipairs( track ) do
+    if p.trackNumber and not p.turnStart and not p.turnEnd then 
+      if p.trackNumber % 2 == 1 then
+        -- odd tracks
+        if startRidgeMarkerOnTheRight then
+          p.ridgeMarker = ridgeMarker.right
+        else 
+          p.ridgeMarker = ridgeMarker.left
+        end
+      else 
+        -- even tracks
+        if startRidgeMarkerOnTheRight then
+          p.ridgeMarker = ridgeMarker.left
+        else 
+          p.ridgeMarker = ridgeMarker.right
+        end
+      end
+    end
+  end
+end
+
+--- Make sure the last worked up down track does not have 
+-- ridge markers.
+-- Also, remove the ridge marker after the turn end so it is off
+-- during the turn
+function removeRidgeMarkersFromLastTrack( course, isReversed )
+  for i, p in ipairs( course ) do
+    -- if the course is not reversed (working on headland first)
+    -- remove ridge markers from the last track
+    if not isReversed and p.lastTrack then
+      p.ridgeMarker = ridgeMarker.none
+    end
+    -- if it is reversed, the first track becomes the last
+    if isReversed and p.firstTrack then
+      p.ridgeMarker = ridgeMarker.none 
+    end
+    -- if the previous wp is a turn end, remove 
+    -- (dunno why, this is how the old course generator works)
+    if i > 1 and course[ i - 1 ].turnEnd then
+      p.ridgeMarker = ridgeMarker.none
+    end
   end
 end

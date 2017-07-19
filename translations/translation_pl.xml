@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES"							 text="rozładunek bel." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC"							 text="jest zablokowany." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED"				 		 text="osiągnięto punkt kiprowania" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Odległość do punktu rozładunku" />
 		<text name="COURSEPLAY_LOADING_AMOUNT"							 text="Ładowanie: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE"							 text="Punkty trasy:" />
 		<text name="COURSEPLAY_PATHFINDING"								 text="Znalezienie drogi" />
@@ -163,13 +163,13 @@
 		<text name="COURSEPLAY_CORNER_2"								 text="Północny-Zachód" />
 		<text name="COURSEPLAY_CORNER_3"								 text="Północny-Wschód" />
 		<text name="COURSEPLAY_CORNER_4"								 text="Południowy-Wschód" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5" 								 text="Obecna pozycja pojazdu" />
+		<text name="COURSEPLAY_CORNER_6" 								 text="Ostatnio użyta pozycja" />
 		<text name="COURSEPLAY_DIRECTION_1"								 text="Północ" />
 		<text name="COURSEPLAY_DIRECTION_2"								 text="Wschód" />
 		<text name="COURSEPLAY_DIRECTION_3"								 text="Południe" />
 		<text name="COURSEPLAY_DIRECTION_4"								 text="Zachód" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatyczny" />
 		<text name="COURSEPLAY_HEADLAND"								 text="Uwrocia" />
 		<text name="COURSEPLAY_ACTIVATED"								 text="aktywuj" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Tylko nazwa" />
@@ -251,7 +251,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP"					 text="Zatrzymaj powrotną jazdę" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Dodaj punkt pośredni" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"				 text="Tekst przy ikonie na mapie" />
-		<text name="COURSEPLAY_ALWAYS_USE_4WD"							 text="Używaj zawsze napędu na wszystkie koła" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Ustawienia Drive Control" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automatycznie" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4x4 zawsze" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4x4 zawsze &amp; zblokowany przedni dyf. przy pracy polowej" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4x4 zawsze &amp; zblokowany tylny dyf. przy pracy polowej" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4x4 zawsze &amp; zblokowane oba dyf. przy pracy polowej" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN"						 text="Czy chcesz, aby pola były skanowane automatycznie?" />
 		<text name="COURSEPLAY_YES_NO_WAGES"							 text="Czy chcesz, aby pracownicy dostawali wynagrodzenie (%s/godzinę)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR"						 text="Oblicz zużycie nasion" />
@@ -304,7 +309,7 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Opcja oszczędzania paliwa" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Przeładuj listę kursów" />
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE"					 text="Nie można wygrnerować kursu. Spróbuj zmienić ustawienia lub przemieścić pojazd."/>
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE"					 text="Nie można wygenerować kursu. Spróbuj zmienić ustawienia lub przemieścić pojazd."/>
 		
 	</texts>
 </l10n>

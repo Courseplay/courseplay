@@ -242,6 +242,12 @@ function courseplay:changeLoadUnloadOffsetZ(vehicle, changeBy, force)
 end;
 
 function courseplay:calculateWorkWidth(vehicle, noDraw)
+	
+	if vehicle.cp.manualWorkWidth and noDraw ~= nil then
+		--courseplay:changeWorkWidth(vehicle, nil, vehicle.cp.manualWorkWidth, noDraw); 
+		return
+	end
+	
 	local l,r;
 	courseplay:debug(('%s: calculateWorkWidth()'):format(nameNum(vehicle)), 7);
 	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);
@@ -1716,8 +1722,8 @@ function courseplay:toggleIngameMapIconShowText()
 	end;
 end;
 
-function courseplay:toggleAlwaysUseFourWD(vehicle)
-	vehicle.cp.driveControl.alwaysUseFourWD = not vehicle.cp.driveControl.alwaysUseFourWD;
+function courseplay:changeDriveControlMode(vehicle, changeBy)
+	vehicle.cp.driveControl.mode = Utils.clamp(vehicle.cp.driveControl.mode + changeBy, vehicle.cp.driveControl.OFF, vehicle.cp.driveControl.AWD_BOTH_DIFF);
 end;
 
 function courseplay:getAndSetFixedWorldPosition(object, recursive)

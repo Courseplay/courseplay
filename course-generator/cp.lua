@@ -1,7 +1,37 @@
 --- This is the interface to Courseplay
 -- 
 
-function generate( vehicle, name, poly )
+--- Convert the generated course to CP waypoint format
+--
+local function writeCourseToVehicleWaypoints( vehicle, course )
+	vehicle.Waypoints = {};
+
+  for i, point in ipairs( course ) do
+    local wp = {}
+
+    wp.generated = true
+    wp.ridgeMarker = point.ridgeMarker
+    wp.angle = toCpAngle( point.nextEdge.angle )
+    wp.cx = point.x
+    wp.cz = -point.y
+    wp.wait = nil
+    wp.rev = nil
+    wp.crossing = nil
+
+    if point.passNumber then
+      wp.lane = -point.passNumber
+    end
+    if point.turnStart then
+      wp.turnStart = true
+    end
+    if point.turnEnd then
+      wp.turnEnd = true
+    end
+    table.insert( vehicle.Waypoints, wp )
+  end
+end
+
+function courseGenerator.generate( vehicle, name, poly )
 
   local field = fromCpField( name, poly.points ) 
   calculatePolygonData( field.boundary )
@@ -48,6 +78,7 @@ function generate( vehicle, name, poly )
     -- work the center of the field first, then the headland
     field.course = reverseCourse( field.course )
   end
+  removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 
   writeCourseToVehicleWaypoints( vehicle, field.course )
 
@@ -82,40 +113,3 @@ function generate( vehicle, name, poly )
 
 end
 
---- Convert the generated course to CP waypoint format
---
-function writeCourseToVehicleWaypoints( vehicle, course )
-	vehicle.Waypoints = {};
-
-  for i, point in ipairs( course ) do
-    local wp = {}
-
-    wp.generated = true
-    wp.ridgeMarker = 0
-    wp.angle = toCpAngle( point.nextEdge.angle )
-    wp.cx = point.x
-    wp.cz = -point.y
-    wp.wait = nil
-    wp.rev = nil
-    wp.crossing = nil
-
-    if point.passNumber then
-      wp.lane = -point.passNumber
-    end
-    if point.turnStart then
-      wp.turnStart = true
-    end
-    if point.turnEnd then
-      wp.turnEnd = true
-    end
-    table.insert( vehicle.Waypoints, wp )
-  end
-end
-
---- Return true when running in the game
--- used by file and log functions to determine how exactly to do things,
--- for example, io.flush is not available from within the game.
---
-function isRunningInGame()
-  return g_currentModDirectory ~= nil;
-end

@@ -569,7 +569,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					local ch, gr = FillUtil.FILLTYPE_CHAFF, FillUtil.FILLTYPE_GRASS_WINDROW;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) 
 					or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) 
-					or pipeState > 0 then
+					or pipeState > 0 
+					or vehicle.cp.turnStage ~= 0 then
 						if tool.lastValidInputFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
 							if tool.pipeFoundTrailer then
 								tool.cp.waitingForTrailerToUnload = false;

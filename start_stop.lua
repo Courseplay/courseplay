@@ -47,9 +47,11 @@ function courseplay:start(self)
 		self.cp.orgRpm[2] = self.motor.maxRpm
 		self.cp.orgRpm[3] = self.motor.maxRpm
 	end
-
+	
+	self.cpTrafficCollisionIgnoreList = {}
 	self.CPnumCollidingVehicles = 0;
 	self.cp.collidingVehicleId = nil
+	
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
 	self:setIsCourseplayDriving(false);
@@ -316,9 +318,23 @@ function courseplay:start(self)
 
 	if self.cp.numUnloadPoints > 0 and self.cp.lastValidTipDistance == nil then
 		for _,courseplayer in pairs(CpManager.totalCoursePlayers) do
-			if self.cp.currentCourseName == courseplayer.cp.currentCourseName and courseplayer.cp.lastValidTipDistance ~= nil then
-				self.cp.lastValidTipDistance = courseplayer.cp.lastValidTipDistance
-				break
+			if self ~= courseplayer then
+				for index,value in pairs(self.cp.unloadPoints) do
+					--print(string.format("self: %s: %s",tostring(index),tostring(value)))
+					local selfPoint = self.Waypoints[value]
+					--print(tostring(selfPoint))
+					if courseplayer.cp.numUnloadPoints > 0 and courseplayer.cp.lastValidTipDistance ~= nil then 
+						for index,value in pairs(courseplayer.cp.unloadPoints) do
+							--print(string.format("courseplayer: %s: %s",tostring(index),tostring(value)))
+							local point = courseplayer.Waypoints[value]
+							--print(tostring(point))
+							if selfPoint == point then
+								self.cp.lastValidTipDistance = courseplayer.cp.lastValidTipDistance;
+								break
+							end
+						end
+					end
+				end
 			end
 		end
 	end
@@ -495,7 +511,7 @@ function courseplay:getCanUseCpMode(vehicle)
 
 	local minWait, maxWait, minUnload, maxUnload;
 
-	if mode == 3 or mode == 8 or mode == 10 then
+	if (mode == 1 and vehicle.cp.hasAugerWagon) or mode == 3 or mode == 8 or mode == 10 then
 		minWait, maxWait = 1, 1;
 		if  vehicle.cp.hasWaterTrailer then
 			maxWait = 10
@@ -508,9 +524,13 @@ function courseplay:getCanUseCpMode(vehicle)
 			return false;
 		end;
 		if mode == 3 then
+			maxUnload = 0
 			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
 				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
 				return false;
+			elseif vehicle.cp.numUnloadPoints > maxUnload then
+			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
+			return false; 
 			end;
 		elseif mode == 8 then
 			if vehicle.cp.workTools[1] == nil then
@@ -541,6 +561,7 @@ function courseplay:getCanUseCpMode(vehicle)
 			return false;
 		end;
 		if mode == 6 then
+			maxUnload = 0;
 			if vehicle.cp.hasBaleLoader then
 				minWait, maxWait = 2, 3;
 				if vehicle.cp.numWaitPoints < minWait then
@@ -549,14 +570,15 @@ function courseplay:getCanUseCpMode(vehicle)
 				elseif vehicle.cp.numWaitPoints > maxWait then
 					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 					return false;
-				end;
-			end;
-			if vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable then
+				end;																									--TODO: Remove when tippers are supported with 2 unload points
+			elseif (vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable or vehicle.cp.hasHarvesterAttachable) and not vehicle.cp.hasSpecialChopper then
 				maxUnload = 2;
-				if vehicle.cp.numUnloadPoints > maxUnload then
-					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
-					return false;
-				end;
+			else
+				maxUnload = 1;
+			end;
+			if vehicle.cp.numUnloadPoints > maxUnload then
+				courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
+				return false;
 			end;
 		end;
 
@@ -706,7 +728,6 @@ function courseplay:stop(self)
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
 	self.cp.isUnloadingStopped = false
-	self.cpTrafficCollisionIgnoreList = {}
 	self.cp.foundColli = {}
 	self.cp.inTraffic = false
 	self.cp.bypassWaypointsSet = false

@@ -371,7 +371,7 @@ function courseplay:drive(self, dt)
 			end;
 		elseif self.cp.mode == 7 then
 			if wayPointIsUnload and self.cp.makeHeaps then
-				stopForUnload = courseplay:handleHeapUnloading(self);
+					stopForUnload = courseplay:handleHeapUnloading(self);
 			elseif wayPointIsWait then
 				if self.cp.totalFillLevel > 0 then
 					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
@@ -464,6 +464,10 @@ function courseplay:drive(self, dt)
 			for _,tipper in pairs (self.cp.workTools) do
 				if tipper.tipState ~= nil and (tipper.tipState == Trailer.TIPSTATE_OPENING or tipper.tipState == Trailer.TIPSTATE_OPEN) then
 					tipper:toggleTipState();
+				end
+				if (tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING) and self.cp.keepOnTipping then
+					self.cp.keepOnTipping = false
+					--print("reset vehicle.cp.keepOnTipping")
 				end
 			end
 		end
@@ -1559,9 +1563,9 @@ function courseplay:setFourWheelDrive(vehicle, workArea)
 	local changed = false;
 
 	-- set 4WD
-	local awdOn = vehicle.cp.driveControl.alwaysUseFourWD or workArea or vehicle.cp.isBGATipping or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or vehicle.cp.mode == 10 or (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
+	local awdOn = workArea or vehicle.cp.isBGATipping or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or vehicle.cp.mode == 10 or (vehicle.cp.mode == 2 and (vehicle.cp.modeState > 1 or vehicle.cp.waypointIndex < 3));
 	local awdOff = not vehicle.cp.driveControl.alwaysUseFourWD and not workArea and not vehicle.cp.isBGATipping and vehicle.cp.slippingStage == 0 and vehicle.cp.mode ~= 9 and not (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1);
-	if awdOn and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
+	if (awdOn or vehicle.cp.driveControl.mode > 0) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then
 		courseplay:debug(('%s: set fourWheel to true'):format(nameNum(vehicle)), 14);
 		vehicle.driveControl.fourWDandDifferentials.fourWheel = true;
 		courseplay:setCustomTimer(vehicle, '4WDminTime', 5);
@@ -1574,14 +1578,17 @@ function courseplay:setFourWheelDrive(vehicle, workArea)
 
 	-- set differential lock
 	local targetLockStatus = vehicle.cp.slippingStage > 1 or (vehicle.cp.mode == 10 and vehicle.cp.waypointIndex == 1);
-	if vehicle.driveControl.fourWDandDifferentials.diffLockFront ~= targetLockStatus then
+	local Front = targetLockStatus or (awdOn and (vehicle.cp.driveControl.mode == 2 or vehicle.cp.driveControl.mode == 4));
+	local Rear = targetLockStatus or (awdOn and (vehicle.cp.driveControl.mode == 3 or vehicle.cp.driveControl.mode == 4));
+
+	if vehicle.driveControl.fourWDandDifferentials.diffLockFront ~= Front then
 		courseplay:debug(('%s: set diffLockFront to %s'):format(nameNum(vehicle), tostring(targetLockStatus)), 14);
-		vehicle.driveControl.fourWDandDifferentials.diffLockFront = targetLockStatus;
+		vehicle.driveControl.fourWDandDifferentials.diffLockFront = Front;
 		changed = true;
 	end;
-	if vehicle.driveControl.fourWDandDifferentials.diffLockBack ~= targetLockStatus then
+	if vehicle.driveControl.fourWDandDifferentials.diffLockBack ~= Rear then
 		courseplay:debug(('%s: set diffLockBack to %s'):format(nameNum(vehicle), tostring(targetLockStatus)), 14);
-		vehicle.driveControl.fourWDandDifferentials.diffLockBack = targetLockStatus;
+		vehicle.driveControl.fourWDandDifferentials.diffLockBack = Rear;
 		changed = true;
 	end;
 
