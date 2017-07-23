@@ -837,12 +837,14 @@ function courseplay:unload_combine(vehicle, dt)
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						if vehicle.cp.isReversePossible  and not autoCombineCircleMode then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
+							local verticalWaypointShift = courseplay:getWayointShift(vehicle,tractor)
+							tractor.cp.verticalWaypointShift = verticalWaypointShift
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
 							vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-1,maxDiameter,tractor.cp.workWidth)
 										
-							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth,-maxDiameter -vehicle.cp.totalLength)
-							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth, 2,nil,nil,true);
+							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth,-(max(maxDiameter +vehicle.cp.totalLength,maxDiameter +vehicle.cp.totalLength -verticalWaypointShift)))
+							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
 						else
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter*-1, 0, turnDiameter);
 							vehicle.cp.chopperIsTurning = true
@@ -860,14 +862,14 @@ function courseplay:unload_combine(vehicle, dt)
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						if vehicle.cp.isReversePossible and not autoCombineCircleMode then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
+							local verticalWaypointShift = courseplay:getWayointShift(vehicle,tractor)
+							tractor.cp.verticalWaypointShift = verticalWaypointShift
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
-							
 							vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,1,maxDiameter,tractor.cp.workWidth)
-							
-											
-							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth,-maxDiameter -vehicle.cp.totalLength)
-							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth, 2,nil,nil,true);
+
+							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth,-(max(maxDiameter +vehicle.cp.totalLength,maxDiameter +vehicle.cp.totalLength-verticalWaypointShift)))
+							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
 
 						else
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter, 0, turnDiameter);
@@ -994,6 +996,12 @@ function courseplay:unload_combine(vehicle, dt)
 		if distance_to_wp > vehicle.cp.shortestDistToWp and distance_to_wp < 3 then
 			distToChange = distance_to_wp + 1
 		end
+
+		-- wait for turning chopper if the field edges are not equal
+		if combineIsTurning and abs(tractor.cp.verticalWaypointShift) > 2 then
+			courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
+			allowedToDrive = false
+		end	
 
 		if distance_to_wp < distToChange then
 			-- Switching to next waypoint
@@ -1264,7 +1272,7 @@ function courseplay:unload_combine(vehicle, dt)
 
 		vehicle.cp.TrafficBrake = false
 		if (vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE then   
-			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz)
+			--lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz)
 		end
 		
 		courseplay:setTrafficCollision(vehicle, lx, lz,true)
@@ -1602,6 +1610,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
   -- make sure path ends far away from the combine so it can switch to the next mode
   if combine then
     local pointFarEnoughIx = #path
+
     for i = #path, 1, -1 do
       local point = path[ i ]
       local lx, ly, lz = worldToLocal( combine.cp.DirectionNode or combine.rootNode, point.x, point.y, point.z )
@@ -1635,4 +1644,20 @@ function courseplay:onWhichFieldAmI(vehicle)
 		end	
 	end
 	return fieldNum
+end
+
+function courseplay:getWayointShift(vehicle,tractor)
+	if not tractor:getIsCourseplayDriving() then
+		return 0;
+	else
+		local px,pz = tractor.Waypoints[tractor.cp.waypointIndex].cx, tractor.Waypoints[tractor.cp.waypointIndex].cz
+		local py = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 0, pz)
+		local _,_,vehicleShift = worldToLocal(tractor.cp.DirectionNode,px,py,pz)
+
+		local nx,nz = tractor.Waypoints[tractor.cp.waypointIndex+1].cx, tractor.Waypoints[tractor.cp.waypointIndex+1].cz
+		local ny = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, nx, 0, nz)
+		local _,_,npShift = worldToLocal(tractor.cp.DirectionNode,nx,ny,nz)
+
+		return npShift-vehicleShift;
+	end
 end
