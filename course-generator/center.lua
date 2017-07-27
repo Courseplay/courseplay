@@ -4,7 +4,9 @@
 local rotatedMarks = {}
 
 -- Distance of waypoints on the generated track in meters
-waypointDistance = 5
+local waypointDistance = 5
+-- don't generate waypoints closer than minWaypointDistance 
+local minWaypointDistance = waypointDistance * 0.25
 
 --- Find the best angle to use for the tracks in a polygon.
 --  The best angle results in the minimum number of tracks
@@ -22,7 +24,7 @@ function findBestTrackAngle( polygon, width )
     local tracks = generateParallelTracks( rotated, width )
     local nFullTracks, nSplitTracks, nBlocks = countTracks( tracks )
     local blocks = {}
-    blocks = splitCenterIntoBlocks( tracks, blocks )
+    blocks = splitCenterIntoBlocks( tracks, blocks, width )
     local nSmallBlocks = countSmallBlocks( blocks )
     -- instead of just the number of tracks, consider some other factors. We prefer just one block (that is,
     -- the field has a convex solution) and angles closest to the direction of the longest edge of the field
@@ -78,7 +80,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
   local parallelTracks = generateParallelTracks( rotated, width )
 
   local blocks = {}
-  blocks = splitCenterIntoBlocks( parallelTracks, blocks )
+  blocks = splitCenterIntoBlocks( parallelTracks, blocks, width )
 
   for i, block in ipairs( blocks ) do
     for _, j in ipairs({ 1, #block }) do
@@ -123,6 +125,8 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
   -- now rotate and translate everything back to the original coordinate system
   if marks then 
     rotatedMarks = translatePoints( rotatePoints( rotatedMarks, -math.rad( polygon.bestAngle )), dx, dy )
+  -- will be approximately the same distance from the origo and the rotation calculation
+  -- will be more accurate
     for i = 1, #rotatedMarks do
       table.insert( marks, rotatedMarks[ i ])
     end
@@ -206,8 +210,9 @@ function addWaypointsToTracks( tracks, width, extendTracks )
           table.insert( tracks[ i ].waypoints, { x=x, y=tracks[ i ].from.y, track=i })
         end
         -- make sure we actually reached newTo, if waypointDistance is too big we may end up 
-        -- well before the innermost headland track or field boundary
-        if newTo - tracks[ i ].waypoints[ #tracks[ i ].waypoints ].x > waypointDistance * 0.25 then
+        -- well before the innermost headland track or field boundary, or even worse, with just
+        -- a single waypoint
+        if newTo - tracks[ i ].waypoints[ #tracks[ i ].waypoints ].x > minWaypointDistance then
           table.insert( tracks[ i ].waypoints, { x=newTo, y=tracks[ i ].from.y, track=i })
         end
       end
@@ -458,7 +463,7 @@ end
 -- These blocks consist of tracks and each of these tracks will have
 -- exactly two intersection points with the headland
 --
-function splitCenterIntoBlocks( tracks, blocks )
+function splitCenterIntoBlocks( tracks, blocks, width )
   local block = {}
   local previousTrack = nil
   for i, t in ipairs( tracks ) do
@@ -466,20 +471,23 @@ function splitCenterIntoBlocks( tracks, blocks )
     -- as long as there are only 2 intersections with the field boundary, we
     -- are ok as this is a convex area
     if #t.intersections >= 2 then
-      -- add this track to the new block
-      -- but move the leftmost two intersections of the original track to this block
-      -- first find the two leftmost intersections (min x), which are ix 1 and 2 as 
-      -- the list of intersections is ordered by x
-      local newTrack = { from=t.from, to=t.to, intersections={ copyPoint( t.intersections[ 1 ]), copyPoint( t.intersections[ 2 ])}}
-      -- continue with this block only if the tracks overlap, otherwise we are done with this
-      -- block. Don't check first track obviously
-      if previousTrack and not overlaps( newTrack, previousTrack ) then
-        break
+      local trackLength = t.intersections[ 2 ].x - t.intersections[ 1 ].x 
+      if trackLength >= width + minWaypointDistance then
+        -- add this track to the new block
+        -- but move the leftmost two intersections of the original track to this block
+        -- first find the two leftmost intersections (min x), which are ix 1 and 2 as 
+        -- the list of intersections is ordered by x
+        local newTrack = { from=t.from, to=t.to, intersections={ copyPoint( t.intersections[ 1 ]), copyPoint( t.intersections[ 2 ])}}
+        -- continue with this block only if the tracks overlap, otherwise we are done with this
+        -- block. Don't check first track obviously
+        if previousTrack and not overlaps( newTrack, previousTrack ) then
+          break
+        end
+        previousTrack = newTrack
+        table.insert( block, newTrack )
+        table.remove( t.intersections, 1 )
+        table.remove( t.intersections, 1 )
       end
-      previousTrack = newTrack
-      table.insert( block, newTrack )
-      table.remove( t.intersections, 1 )
-      table.remove( t.intersections, 1 )
     end
   end
   if #block == 0 then
@@ -493,7 +501,7 @@ function splitCenterIntoBlocks( tracks, blocks )
     block.topLeftIntersection = block[ #block ].intersections[ 1 ]
     block.topRightIntersection = block[ #block ].intersections[ 2 ]
     table.insert( blocks, block )
-    return splitCenterIntoBlocks( tracks, blocks )
+    return splitCenterIntoBlocks( tracks, blocks, width )
   end
 end
 
