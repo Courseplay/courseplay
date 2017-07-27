@@ -837,7 +837,7 @@ function courseplay:unload_combine(vehicle, dt)
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						if vehicle.cp.isReversePossible  and not autoCombineCircleMode then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
-							local verticalWaypointShift = courseplay:getWayointShift(vehicle,tractor)
+							local verticalWaypointShift = courseplay:getWaypointShift(vehicle,tractor)
 							tractor.cp.verticalWaypointShift = verticalWaypointShift
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
@@ -862,7 +862,7 @@ function courseplay:unload_combine(vehicle, dt)
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						if vehicle.cp.isReversePossible and not autoCombineCircleMode then
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
-							local verticalWaypointShift = courseplay:getWayointShift(vehicle,tractor)
+							local verticalWaypointShift = courseplay:getWaypointShift(vehicle,tractor)
 							tractor.cp.verticalWaypointShift = verticalWaypointShift
 							vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 							vehicle.cp.curTarget.rev = false
@@ -998,7 +998,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		-- wait for turning chopper if the field edges are not equal
-		if combineIsTurning and abs(tractor.cp.verticalWaypointShift) > 2 then
+		if combineIsTurning and tractor.cp.verticalWaypointShift and abs(tractor.cp.verticalWaypointShift) > 2 then
 			courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 			allowedToDrive = false
 		end	
@@ -1646,7 +1646,7 @@ function courseplay:onWhichFieldAmI(vehicle)
 	return fieldNum
 end
 
-function courseplay:getWayointShift(vehicle,tractor)
+function courseplay:getWaypointShift(vehicle,tractor)
 	if not tractor:getIsCourseplayDriving() then
 		return 0;
 	else
