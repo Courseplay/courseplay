@@ -135,8 +135,11 @@ end
 --
 function reverseCourse( course )
   local result = {}
+  -- remove any non-center track turns first
+  removeHeadlandTurns( course )
   for i = #course, 1, -1 do
     local newPoint = copyPoint( course[ i ])
+    -- reverse center track turns
     if newPoint.turnStart then
       newPoint.turnStart = nil
       newPoint.turnEnd = true
@@ -146,8 +149,21 @@ function reverseCourse( course )
     end
     table.insert( result, newPoint )
   end
+  -- regenerate non-center track turns for the reversed course
   calculatePolygonData( result )
+  addTurnsToCorners( result, math.rad( 150 ))
   return result
+end
+
+-- Remove all turns inserted by addTurnsToCorners 
+function removeHeadlandTurns( course )
+  for i, p in ipairs( course ) do
+    if p.headlandTurn then
+      p.turnStart = nil
+      p.turnEnd = nil
+      p.text = nil
+    end
+  end
 end
 
 --- This makes sense only when these turns are implemented in Coursplay.
@@ -162,9 +178,16 @@ function addTurnsToCorners( vertices, angleThreshold )
     local np = vertices[ i + 1 ]
     if cp.prevEdge and np.nextEdge then
       -- start a turn at the current point only if the next one is not a start of the turn already
-      if not np.turnStart and math.abs( getDeltaAngle( np.nextEdge.angle, cp.prevEdge.angle )) > angleThreshold then
+      -- and there really is a turn
+      if not np.turnStart and not cp.turnStart and not cp.turnEnd and 
+        math.abs( getDeltaAngle( np.nextEdge.angle, cp.prevEdge.angle )) > angleThreshold and
+        math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > angleThreshold then
         cp.turnStart = true
+        cp.headlandTurn = true
+        cp.text = string.format( "turn start %.1f", math.deg( cp.nextEdge.angle ))
         np.turnEnd = true
+        np.headlandTurn = true
+        np.text = string.format( "turn end %.1f", math.deg( np.nextEdge.angle ))
         i = i + 2
       end
     end
