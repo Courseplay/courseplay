@@ -59,14 +59,14 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="chegou no ponto de espera" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="chegou ao trigger ou no final do percurso" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="transporte de grãos concluído" /> 
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="transporte de líquido concluído." />
 		<text name="COURSEPLAY_WORK_END" 						 		 text="trabalho concluído" />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					  	 text=": equipamento precisa de ser descarregado!" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 				         text=": equipamento precisa de ser carregado" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 					 	 text="a descarregar fardos" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 	 text="trânsito congestionado" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 	 text="chegou ao ponto de descarga" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Distânçia do ponto para descarregar alcançado" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 	 text="A carregar: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 	 text="Mostrar pontos" />
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evitar as plantações" />
@@ -159,13 +159,13 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Noroeste" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordeste" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sudeste" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5" 								 text="Posição atual do veículo" />
+		<text name="COURSEPLAY_CORNER_6" 								 text="Última posição utilizada" />
 		<text name="COURSEPLAY_DIRECTION_1" 						 	 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 						 	 text="Este" />
 		<text name="COURSEPLAY_DIRECTION_3" 						 	 text="Sul" />
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Oeste" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />  <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Cabeceira do campo" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="ligado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Só o nome" />
@@ -247,12 +247,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Parar marcha atrás" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Adicionar pontos de divisão" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ícones do mapa: Mostrar legendas" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automático" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Controlo de Tração" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automático" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Sempre Ligado" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Sempre Ligado; Diferencial dianteiro ligado" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Sempre Ligado; Diferencial traseiro ligado" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Sempre Ligado; Dois diferenciais ligados" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 	 text="Pretende que os campos sejam verificados automaticamente?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 						 	 text="Pretende que os seus trabalhadores recebam salários (%s / hora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Cálculo do uso das sementes" />
@@ -283,31 +283,31 @@
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover para pasta" />
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Eliminar percurso/pasta" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="modo" />                   
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nivelar e compactar" />              
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="encher" />                           
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="paragem automática" />                 
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="procurar só com CP ligado" />                   
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="só com os motores ligados" />               
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="detetar tractores no alcanse " />        
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="velocidade máxima ao empurrar" />              
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="altura da lâmina" />                         
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="nenhum silo detectado no ponto inicial" /> 
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="sem lâmina ligada" />                    
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="lâmina frontal não é suportada" /> 
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Definições do silo" />                  
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="largura da lâmina" />                          
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo está a ser enchido por" />               
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="conduzir através" />                       
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="descarregar em marcha-atrás" />                     
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="modo" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nivelar e compactar" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="encher" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="paragem automática" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="procurar só com CP ligado" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="só com os motores ligados" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="detetar tractores no alcanse " />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="velocidade máxima ao empurrar" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="altura da lâmina" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="nenhum silo detectado no ponto inicial" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="sem lâmina ligada" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="lâmina frontal não é suportada" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Definições do silo" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="largura da lâmina" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo está a ser enchido por" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="conduzir através" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="descarregar em marcha-atrás" />
 		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />           
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />                               
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Reabastecer o tanque de combustível" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="sempre" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="abaixo de 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->	
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="opção de reabastecimento" />
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Atualizar lista de percursos" />
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Não foi possível gerar percurso. Tente alterar as opções ou mover o veículo."/>
 
 	</texts>
 </l10n>
