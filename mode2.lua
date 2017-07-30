@@ -998,7 +998,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		-- wait for turning chopper if the field edges are not equal
-		if combineIsTurning and tractor.cp.verticalWaypointShift and abs(tractor.cp.verticalWaypointShift) > 2 then
+		if combineIsTurning and tractor.cp.verticalWaypointShift and abs(tractor.cp.verticalWaypointShift) > 2 and vehicle.cp.mode2nextState == "STATE_WAIT_FOR_PIPE" then
 			courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 			allowedToDrive = false
 		end	
