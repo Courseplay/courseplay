@@ -121,6 +121,9 @@ function courseplay:handle_mode2(vehicle, dt)
 			if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz) then
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_ALL_TRAILERS_FULL );
+			else
+				courseplay:setWaypointIndex(vehicle, 2);
+				courseplay:setIsLoaded(vehicle, true);
 			end	
 		else
 			courseplay:setWaypointIndex(vehicle, 2);
