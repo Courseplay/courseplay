@@ -56,7 +56,7 @@ function courseplay:handle_mode2(vehicle, dt)
 	end
 
 	-- STATE 10 (switch side)
-	if vehicle.cp.activeCombine ~= nil and (vehicle.cp.modeState == STATE_WAIT_AT_START0 or vehicle.cp.activeCombine.turnAP ~= nil and vehicle.cp.activeCombine.turnAP == true) then
+	if vehicle.cp.activeCombine ~= nil and (vehicle.cp.modeState == STATE_WAIT_AT_START or vehicle.cp.activeCombine.turnAP ~= nil and vehicle.cp.activeCombine.turnAP == true) then
 		local node = vehicle.cp.activeCombine.cp.DirectionNode or vehicle.cp.activeCombine.rootNode;
 		if vehicle.cp.combineOffset > 0 then
 			vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(node, 25, 0, 0)
@@ -780,7 +780,7 @@ function courseplay:unload_combine(vehicle, dt)
 			drawDebugLine(px,cy+3,pz, 1, 1, 1, px+(-dirX*100), cy+10,pz+(-dirZ*100), 1, 1, 1);]]
 			--courseplay:setCustomTimer(vehicle, 'fieldEdgeTimeOut', 15);
 			--courseplay:resetCustomTimer(vehicle, 'fieldEdgeTimeOut');
-			if not courseplay:timerIsThrough(vehicle, 'fieldEdgeTimeOut') or vehicle.cp.modeState > 2 then
+			if not courseplay:timerIsThrough(vehicle, 'fieldEdgeTimeOut') or vehicle.cp.modeState > STATE_DRIVE_TO_COMBINE then
 				if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
 					 courseplay:debug(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true', 4); --TODO: 140308 AutoTractor
 					tractor.acIsCPStopped = true
