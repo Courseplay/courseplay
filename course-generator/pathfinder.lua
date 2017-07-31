@@ -10,7 +10,7 @@ local count
 local function addFruit( grid )
   for y, row in ipairs( grid.map ) do
     for x, index in pairs( row ) do
-      if y > 5 and y < 30 and x > 14 and x < #row / 2 then
+      if y > 40 and y < #row - 50 and x > 14 and x < #row / 2 then
         grid[ index ].hasFruit = true
       end
     end
@@ -107,7 +107,7 @@ end
 
 --- g() score to neighbor, A star will call back here when calculating the score
 --
-function gScoreToNeibhbor( node, neighbor )
+function gScoreToNeighbor( node, neighbor )
   if neighbor.hasFruit then
     -- this is the key parameter to tweak. This is basically the distance you are 
     -- willing to travel in order not to cross one grid spacing of fruit. So, for 
@@ -197,7 +197,8 @@ function pathFinder.findPath( from, to, cpPolygon, width )
 	courseGenerator.debug( string.format( "Grid generated with %d points", #grid) , 9);
   addOffGridNode( grid, fromNode )
   addOffGridNode( grid, toNode )
-  local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors, gScoreToNeibhbor )
+  -- limit number of iterations depending on the grid size to avoid long freezes
+  local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors, gScoreToNeighbor, #grid * 0.75 )
 	courseGenerator.debug( string.format( "Number of iterations %d", count) , 9);
   if path then 
     calculatePolygonData( path )

@@ -105,11 +105,12 @@ end
 -- public functions
 ----------------------------------------------------------------
 
-function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func, g_score_to_neighbor_func )
+function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func, g_score_to_neighbor_func, max_iterations )
 
 	local closedset = {}
 	local openset = { start }
 	local came_from = {}
+  local iterations = 0
 
 	if valid_node_func then is_valid_node = valid_node_func end
 	if neighbor_nodes_func then neighbor_nodes = neighbor_nodes_func end
@@ -120,7 +121,8 @@ function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func,
 	f_score [ start ] = g_score [ start ] + heuristic_cost_estimate ( start, goal )
 
 
-	while #openset > 0 do
+	while #openset > 0 and iterations < max_iterations do
+    iterations = iterations + 1
 		local current = lowest_f_score ( openset, f_score )
 		if current == goal then
 			local path = unwind_path ( {}, came_from, goal )
