@@ -211,6 +211,9 @@ function CpManager:deleteMap()
 end;
 
 function CpManager:update(dt)
+  -- UPDATE CLOCK
+  courseplay.clock = courseplay.clock + dt
+
 	if g_currentMission.paused or (g_gui.currentGui ~= nil and g_gui.currentGuiName ~= 'inputCourseNameDialogue') then
 		return;
 	end;
