@@ -1612,20 +1612,17 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
   for i = 1, pointFarEnoughIx do
     table.remove( path, 1 ) 
   end
-  -- make sure path ends far away from the combine so it can switch to the next mode
-  if combine then
-    local pointFarEnoughIx = #path
-
-    for i = #path, 1, -1 do
-      local point = path[ i ]
-      local lx, ly, lz = worldToLocal( combine.cp.DirectionNode or combine.rootNode, point.x, point.y, point.z )
-      local d = Utils.vector2Length(lx, lz)
-      if d > Utils.getNoNil( vehicle.cp.turnDiameter, 5 ) then break end
-      pointFarEnoughIx = pointFarEnoughIx - 1
-    end
-    for i = #path, pointFarEnoughIx, -1 do
-      table.remove( path ) 
-    end
+  -- make sure path ends far away from the target so it can switch to the next mode
+  -- without circling
+  local pointFarEnoughIx = #path
+  for i = #path, 1, -1 do
+    local point = path[ i ]
+    local d = Utils.vector2Length( cx - point.x, cz - point.z )
+    if d > Utils.getNoNil( vehicle.cp.turnDiameter, 5 ) then break end
+    pointFarEnoughIx = pointFarEnoughIx - 1
+  end
+  for i = #path, pointFarEnoughIx, -1 do
+    table.remove( path ) 
   end
   if #path < 2 then
     courseplay:debug( string.format( "Path hasn't got enough waypoints (%d), no fruit avoidance", #path ), 9 )
