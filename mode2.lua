@@ -102,8 +102,11 @@ function courseplay:handle_mode2(vehicle, dt)
 					end
 				end
 				if vehicle.cp.realisticDriving then
-					if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz) then
+          -- generate course to target around fruit when needed but don't end course in turnDiameter distance
+          -- before to avoid circling when transitioning to the next mode
+					if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz, vehicle.cp.turnDiameter ) then
 						courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
+				    courseplay:setCurrentTargetFromList(vehicle, 1);
 					end	
 				end
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
@@ -118,7 +121,10 @@ function courseplay:handle_mode2(vehicle, dt)
 		if vehicle.cp.realisticDriving then
 			vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, 1)
 			local cx,cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz
-			if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz) then
+      -- generate course to target around fruit when needed but don't end course in turnDiameter distance
+      -- before to avoid circling when transitioning to the next mode
+			if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz, vehicle.cp.turnDiameter ) then
+				courseplay:setCurrentTargetFromList(vehicle, 1);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_ALL_TRAILERS_FULL );
 			else
@@ -131,7 +137,6 @@ function courseplay:handle_mode2(vehicle, dt)
 		end
 
 	end
-	
 	
 	if vehicle.cp.activeCombine ~= nil then
 		if not vehicle.cp.activeCombine.cp.isChopper and courseplay:isSpecialChopper(vehicle.cp.activeCombine)then -- attached wood chipper will not be recognised as chopper before
@@ -160,8 +165,20 @@ function courseplay:handle_mode2(vehicle, dt)
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
-		if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.nextTargets ~= nil and vehicle.cp.lastActiveCombine then -- and #vehicle.cp.nextTargets > 0 then
-			courseplay:unload_combine(vehicle, dt)
+    -- fake a last combine if we need to
+    if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.nextTargets ~= nil and
+       vehicle.cp.lastActiveCombine == nil and vehicle.cp.mode2nextState and vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL then 
+      -- this can happen when we turn on combi mode with the trailer full before the tractor ever had a combine assigned
+      -- let's see if there's a combine around
+      if vehicle.cp.reachableCombines and #vehicle.cp.reachableCombines > 0 then
+        -- fake a last combine
+        courseplay:debug( "Trailer full, picked a reachable combine to be able to call unload_combine()", 4 )
+        vehicle.cp.lastActiveCombine = vehicle.cp.reachableCombines[ 1 ]
+      end
+    end
+
+		if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.nextTargets ~= nil and vehicle.cp.lastActiveCombine then
+      courseplay:unload_combine(vehicle, dt)
 		else
 			-- STOP!!
 			courseplay:checkSaveFuel(vehicle,false)
@@ -273,7 +290,6 @@ function courseplay:unload_combine(vehicle, dt)
 	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
 	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
 	local currentX, currentY, currentZ;
-	
 	local combineFillLevel, combineIsTurning = nil, false
 	local refSpeed;
 	local handleTurn = false
@@ -316,8 +332,10 @@ function courseplay:unload_combine(vehicle, dt)
 	else -- combine is a chopper / has no tank
 		combineFillLevel = 99;
 	end
+  -- TODO: confusing as hell, in the next sections we sometimes use tractor, sometimes combine
 	local tractor = combine
 	if courseplay:isAttachedCombine(combine) then
+    -- this is the tractor pulling a harvester
 		tractor = combine.attacherVehicle
 
 		-- Really make sure the combine's attacherVehicle still exists - see issue #443
@@ -398,16 +416,7 @@ function courseplay:unload_combine(vehicle, dt)
 	x1,z1 = x1*reverser,z1*reverser;
 	
 	local distance = Utils.vector2Length(x1, z1)
-	local safetyDistance = 11;
-	if combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader or combine.cp.isWoodChipper or combine.cp.isPoettingerMex5 then
-		safetyDistance = 24;
-	elseif courseplay:isAttachedCombine(combine) then
-		safetyDistance = 11;
-	elseif combine.cp.isCombine then
-		safetyDistance = 10;
-	elseif combine.cp.isChopper then
-		safetyDistance = 11;
-	end;
+	local safetyDistance = courseplay:getSafetyDistanceFromCombine( combine )
 	
 	-- STATE 2 (drive to combine)
 	if vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE then
@@ -415,14 +424,28 @@ function courseplay:unload_combine(vehicle, dt)
 		refSpeed = vehicle.cp.speeds.field
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		courseplay:setInfoText(vehicle, "COURSEPLAY_DRIVE_BEHIND_COMBINE");
+
+    -- calculate a world position (currentX/Y/Z) and a vector (lx/lz) to a point near the combine (which is sometimes called 'tractor')
+    -- here, 'tractor' is the combine, x, y, z is the tractor unloading the combine, z1, y1, z1 is the tractor's local coordinates from 
+    -- the combine
 		local x1, y1, z1 = worldToLocal(tractor.cp.DirectionNode or tractor.rootNode, x, y, z)
 		x1,z1 = x1*reverser,z1*reverser;
+
+    if not combine.cp.isChopper then
+      cx_behind, cy_behind, cz_behind = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset*reverser, 0, -(turnDiameter + safetyDistance)*reverser)
+    else
+      cx_behind, cy_behind, cz_behind = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(turnDiameter + safetyDistance)*reverser)
+    end
 		
-		if z1 > -(turnDiameter + safetyDistance) then -- tractor in front of combine
-			-- left side of combine
+		if z1 > -(turnDiameter + safetyDistance) then 
+      -- tractor in front of combine, drive to a position where we can safely transfer to STATE_DRIVE_TO_REAR mode
+
+      -- tractor in front of combine, drive to a position where we can safely transfer to STATE_DRIVE_TO_REAR mode
+			-- left side of combine, 30 meters back, 20 to the left
 			local cx_left, cy_left, cz_left = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 20*reverser, 0, -30*reverser)
-			-- righ side of combine
+			-- righ side of combine, 30 meters back, 20 to the right
 			local cx_right, cy_right, cz_right = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, -20*reverser, 0, -30*reverser)
+
 			local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = Utils.vector2Length(lx, lz)
@@ -430,6 +453,7 @@ function courseplay:unload_combine(vehicle, dt)
 			-- distance to right position
 			local disR = Utils.vector2Length(rx, rz)
 
+      -- prefer the one closest to the combine
 			if disL < disR then
 				currentX, currentY, currentZ = cx_left, cy_left, cz_left
 			else
@@ -437,24 +461,28 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 
 		else
-			-- tractor behind combine
-			if not combine.cp.isChopper then
-				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, vehicle.cp.combineOffset*reverser, 0, -(turnDiameter + safetyDistance)*reverser)
-			else
-				currentX, currentY, currentZ = localToWorld(tractor.cp.DirectionNode or tractor.rootNode, 0, 0, -(turnDiameter + safetyDistance)*reverser)
-			end
+			-- tractor behind combine, drive to a position behind the combine
+		  currentX, currentY, currentZ = cx_behind, cy_behind, cz_behind
 		end
 
+    -- at this point, currentX/Y/Z is a world position near the combine
+		
+    -- with no path finding, get vector to currentX/currentZ
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
 		lx,lz = lx*reverser,lz*reverser
 		
 		dod = Utils.vector2Length(lx, lz)
-		
-		
-		-- PATHFINDING / REALISTIC DRIVING
+   
+		-- PATHFINDING / REALISTIC DRIVING -
+    -- if it is enabled and we are not too close to the combine, we abort STATE_DRIVE_TO_COMBINE mode and 
+    -- switch to follow course mode to avoid fruit instead of driving directly 
+    -- to currentX/currentZ
 		if vehicle.cp.realisticDriving and dod > 20 then 
-			-- if there's fruit between me and the combine, calculate a path around it.
-			if courseplay:calculateAstarPathToCoords(vehicle, combine ) then
+      courseplay:debug( string.format( "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
+                                       dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter ), 4 )
+			-- if there's fruit between me and the combine, calculate a path around it to a point 
+      -- behind the combine.
+			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind ) then
 			-- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay:setCurrentTargetFromList(vehicle, 1);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
@@ -462,12 +490,12 @@ function courseplay:unload_combine(vehicle, dt)
 				vehicle.cp.shortestDistToWp = nil;
 			end;
 		end;
-
+		
 	
 		-- near point
 		if dod < 3 then -- change to vehicle.cp.modeState 4 == drive behind combine or cornChopper
 			if combine.cp.isChopper and (not vehicle.cp.chopperIsTurning or combineIsAutoCombine) then -- decide on which side to drive based on ai-combine
-				courseplay:sideToDrive(vehicle, combine, 10);
+				courseplay:sideToDrive(vehicle, combine, 10)
 				if vehicle.sideToDrive == "right" then
 					vehicle.cp.combineOffset = abs(vehicle.cp.combineOffset) * -1;
 				else 
@@ -1021,7 +1049,7 @@ function courseplay:unload_combine(vehicle, dt)
 					if combine then
 						local distanceToCombine = courseplay:distanceToObject( vehicle, combine )
 						-- magic constants, distance based on turn diameter
-						if distanceToCombine < Utils.getNoNil( vehicle.cp.turnDiameter * 1.5, 20 ) then
+						if distanceToCombine < vehicle.cp.turnDiameter + courseplay:getSafetyDistanceFromCombine( combine ) then
 						  courseplay:debug( string.format( "Only %.2f meters from the combine on the way, abort course and following the combine", distanceToCombine ), 9 )
 						  continueCourse = false
 						  vehicle.cp.nextTargets = {}
@@ -1150,7 +1178,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if vehicle.cp.realisticDriving and distance > 55 then
 			vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, 1)
 			local cx,cz = currentX,currentZ
-			if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz) then
+			if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz, vehicle.cp.turnDiameter ) then
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_FOLLOW_TRACTOR);
 			end	
@@ -1514,7 +1542,7 @@ end
 
 -- if there's fruit between me and the combine, calculate a path around it and return true.
 -- if there's no fruit or no path around it or couldn't calculate path, return false
-function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
+function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance )
 	local cx, cz = 0, 0
 	local fruitType = 0
 
@@ -1618,7 +1646,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz )
   for i = #path, 1, -1 do
     local point = path[ i ]
     local d = Utils.vector2Length( cx - point.x, cz - point.z )
-    if d > Utils.getNoNil( vehicle.cp.turnDiameter, 5 ) then break end
+    if d > Utils.getNoNil( endBeforeTargetDistance, 0 ) then break end
     pointFarEnoughIx = pointFarEnoughIx - 1
   end
   for i = #path, pointFarEnoughIx, -1 do
@@ -1662,4 +1690,18 @@ function courseplay:getWaypointShift(vehicle,tractor)
 
 		return npShift-vehicleShift;
 	end
+end
+
+function courseplay:getSafetyDistanceFromCombine( combine )
+	local safetyDistance = 11;
+	if combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader or combine.cp.isWoodChipper or combine.cp.isPoettingerMex5 then
+		safetyDistance = 24;
+	elseif courseplay:isAttachedCombine(combine) then
+		safetyDistance = 11;
+	elseif combine.cp.isCombine then
+		safetyDistance = 10;
+	elseif combine.cp.isChopper then
+		safetyDistance = 11;
+	end;
+  return safetyDistance
 end
