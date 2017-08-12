@@ -252,12 +252,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Marche avant" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Ajouter des points intermédiaires" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icones sur la carte: afficher le texte" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Options Drive Control" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automatique" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4x4 permanent" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4x4 permanent &amp; différentiel avant pendant le travail" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4x4 permanent &amp; différentiel arrière pendant le travail" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4x4 permanent &amp; différentiels complet pendant le travail" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4x4 permanent &amp; différentiel avant au travail" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4x4 permanent &amp; différentiel arrière au travail" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4x4 permanent &amp; différentiels complet au travail" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 	 text="Voulez-vous que vos champs soient scannés automatiquement ?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 						 	 text="Voulez-vous payer des salaires pour vos ouvriers (%s/heure) ?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilisation des semences" />
