@@ -164,13 +164,17 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Nord-Ovest" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nord-Est" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sud-Est" />
+
 		<text name="COURSEPLAY_CORNER_5" 								 text="Posizione attuale" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="Ultima posizione utilizzata" />
+
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Est" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sud" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
+
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" />
+
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="solo nome" />
@@ -253,11 +257,11 @@
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icone mappa: visualizza il testo" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Off" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Spento" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Attivo" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Attivo &amp; Differenziale anteriore attivo" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Attivo &amp; Differenziale posteriore attivo" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Attivo &amp; Entrambi differenziali attivi" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Vuoi analizzare i campi automaticamente?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Vuoi che i tuoi lavoratori guadagnino i salari (%s /ora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
@@ -310,7 +314,9 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"							 text="Risparmio carburante" />
 
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Ricarica lista percorsi" />
+
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
+
 
 	</texts>
 </l10n>
