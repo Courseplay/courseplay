@@ -156,7 +156,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Open hud with:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Debug channels" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Course generation" />
-		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Starting corner" />
+    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
+    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Starting direction" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Return to first point" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="South-West" />

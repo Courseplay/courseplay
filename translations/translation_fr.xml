@@ -156,7 +156,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 						 	 text="Ouverture de Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 						 	 text="Chaînes de débogage" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Génération d'une course" />
-		<text name="COURSEPLAY_STARTING_CORNER" 					 	 text="Coin de départ:" />
+    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
+    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
 		<text name="COURSEPLAY_STARTING_DIRECTION" 					 	 text="Direction de départ:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Retour au départ:" />
 		<text name="COURSEPLAY_CORNER_1" 						 		 text="Sud-Ouest" />

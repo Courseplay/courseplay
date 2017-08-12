@@ -1127,7 +1127,11 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
 		end
 		-- line 3 = starting corner
-		vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_CORNER');
+    if ( vehicle.cp.startingCorner == 5 or vehicle.cp.startingCorner == 6 ) and not vehicle.cp.headland.orderBefore then
+		  vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_ENDING_LOCATION');
+    else
+		  vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_LOCATION');
+    end
 		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
 		if vehicle.cp.hasStartingCorner then
 			vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc(string.format('COURSEPLAY_CORNER_%d', vehicle.cp.startingCorner)); -- NE/SE/SW/NW

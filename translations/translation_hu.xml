@@ -152,7 +152,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD megnyitása:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Hibakereső csatorna:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Útvonal generálás" />
-		<text name="COURSEPLAY_STARTING_CORNER" 						 text="Kezdő sarok:" />
+    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
+    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Művelés kezdő iránya:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Vissza az első pontra" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Dél/Nyugat" />
