@@ -156,8 +156,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Courseplay öffnen:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Debug-Channels" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Kursgenerierung" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+        <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Startposition" />
+        <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Endposition" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Startrichtung" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Am Startpunkt enden" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Südwest" />
@@ -254,10 +254,10 @@
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Karten-Icons: Text anzeigen" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automatisch" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD immer an" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD immer an &amp; Vorderachssperrdifferential auf den Feld" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD immer an &amp; Hinterachssperrdifferential auf den Feld" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD immer an &amp; Sperrdifferential auf den Feld" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Möchtest du dass die Felder automatisch gescanned werden?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Saatgut-Rechner" />
