@@ -119,7 +119,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="Configurações" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Ceifadeira virando" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="nenhuma area de trabalho para esta rota" />
-		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="rotas combinadas" />
+L		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="rotas combinadas" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Seguir a ceifadeira" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Dirigir para a próxima ceifadeira" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Dirigir para a ceifadeira" />
@@ -156,8 +156,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Abrir Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Debugar canais" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Geração de rota" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Local inicial" /> 
+    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Local final" />      
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Iniciar na direção" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Retornar ao primeiro ponto" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Sudoeste" />
