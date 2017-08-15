@@ -5,12 +5,25 @@ pathFinder = {}
 --
 local gridSpacing
 local count
-
+--
 --- add some area with fruit for tests
-local function addFruit( grid )
+function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
+  local distance = 5
   for y, row in ipairs( grid.map ) do
     for x, index in pairs( row ) do
-      if y > 40 and y < #row - 50 and x > 14 and x < #row / 2 then
+    local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
+      if minDistanceToFieldBoundary > distance then 
+        grid[ index ].hasFruit = true
+      end
+    end
+  end
+end
+
+function pathFinder.addFruitGridDistanceFromBoundary( grid, polygon )
+  local distance = 1
+  for y, row in ipairs( grid.map ) do
+    for x, index in pairs( row ) do
+      if x > distance + 1 and x <= #row - distance and y > distance and y <= #grid.map - distance then
         grid[ index ].hasFruit = true
       end
     end
@@ -92,7 +105,14 @@ local function getNeighbors( theNode, grid )
         -- skip own node
         if not ( column == theNode.column and row == theNode.row ) and grid.map[ row ] and grid.map[ row ][ column ] then
           neighbor = grid[ grid.map[ row ][ column ]]
-          if neighbor then table.insert( neighbors, neighbor ) end
+          if neighbor and 
+            -- we only care about nodes with no fruit ...
+            ( not neighbor.hasFruit or 
+            -- ... or, if they have fruit, but the current node does not. This
+            -- eliminates most nodes with fruit (except the ones close to the harvested area)
+            -- and thus reduces the number of iterations significantly. However, no path will be 
+            -- generated when one of the end points is in the fruit.
+            ( neighbor.hasFruit and not theNode.hasFruit )) then table.insert( neighbors, neighbor ) end
         end
       end
     end
@@ -184,15 +204,15 @@ end
 --- Find a path between from and to in a polygon using the A star
 -- algorithm where the nodes are a grid with 'width' spacing. 
 -- Expects FS coordinates (x,-z)
-function pathFinder.findPath( from, to, cpPolygon, width )
+function pathFinder.findPath( from, to, cpPolygon, width, addFruitFunc )
   gridSpacing = width
   count = 0
   local grid = generateGridForPolygon( pointsToXy( cpPolygon ), width ) 
   -- from and to must be a node. change z to y as a-star works in x/y system
   local fromNode = pointToXy( from )
   local toNode = pointToXy( to )
-  if not courseGenerator.isRunningInGame() then
-    addFruit( grid )
+  if not courseGenerator.isRunningInGame() and addFruitFunc then
+    addFruitFunc( grid, pointsToXy( cpPolygon ))
   end
 	courseGenerator.debug( string.format( "Grid generated with %d points", #grid) , 9);
   addOffGridNode( grid, fromNode )
