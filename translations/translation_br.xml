@@ -119,7 +119,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="Configurações" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Ceifadeira virando" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="nenhuma area de trabalho para esta rota" />
-L		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="rotas combinadas" />
+		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="rotas combinadas" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Seguir a ceifadeira" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Dirigir para a próxima ceifadeira" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Dirigir para a ceifadeira" />
