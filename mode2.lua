@@ -478,12 +478,12 @@ function courseplay:unload_combine(vehicle, dt)
     -- switch to follow course mode to avoid fruit instead of driving directly 
     -- to currentX/currentZ
 		if vehicle.cp.realisticDriving and dod > 20 then 
-      courseplay:debug( string.format( "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
-                                       dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter ), 4 )
 			-- if there's fruit between me and the combine, calculate a path around it to a point 
       -- behind the combine.
 			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind ) then
-			-- there's fruit and a path could be calculated, switch to waypoint mode
+			  -- there's fruit and a path could be calculated, switch to waypoint mode
+        courseplay:debug( string.format( "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
+                                       dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter ), 4 )
 				courseplay:setCurrentTargetFromList(vehicle, 1);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_DRIVE_TO_COMBINE); -- modeState when waypoint is reached
@@ -1563,6 +1563,12 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	else
 		cx, cz = tx, tz
 	end
+  --
+	-- pathfinding is expensive and we don't want it happen in every update cycle
+	if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
+		return false
+	end
+	courseplay:setCustomTimer( vehicle, 'pathfinder', 5 )
 
 	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode,nil, nil, cx, cz, fixedFruitType )
 	if not hasFruit then
@@ -1573,12 +1579,6 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		courseplay:debug( string.format( "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType), 9 )
 	end
   
-	-- pathfinding is expensive and we don't want it happen in every update cycle
-	if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
-		return false
-	end
-	courseplay:setCustomTimer( vehicle, 'pathfinder', 2 )
-
 	-- tractor coordinates
 	local vx,vy,vz = getWorldTranslation( vehicle.cp.DirectionNode )
 
