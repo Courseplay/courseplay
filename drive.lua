@@ -919,7 +919,7 @@ function courseplay:drive(self, dt)
 		courseplay:setFourWheelDrive(self, workArea);
 	end;
 
-
+  local beforeReverse, afterReverse
 	-- DISTANCE TO CHANGE WAYPOINT
 	if self.cp.waypointIndex == 1 or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turnStart then
 		if self.cp.hasSpecializationArticulatedAxis then
@@ -928,8 +928,8 @@ function courseplay:drive(self, dt)
 			distToChange = 0.5;
 		end;
 	elseif self.cp.waypointIndex + 1 <= self.cp.numWaypoints then
-		local beforeReverse = (self.Waypoints[self.cp.waypointIndex + 1].rev and (self.Waypoints[self.cp.waypointIndex].rev == false))
-		local afterReverse = (not self.Waypoints[self.cp.waypointIndex + 1].rev and self.Waypoints[self.cp.previousWaypointIndex].rev)
+		beforeReverse = (self.Waypoints[self.cp.waypointIndex + 1].rev and (self.Waypoints[self.cp.waypointIndex].rev == false))
+		afterReverse = (not self.Waypoints[self.cp.waypointIndex + 1].rev and self.Waypoints[self.cp.previousWaypointIndex].rev)
 		if (self.Waypoints[self.cp.waypointIndex].wait or beforeReverse) and self.Waypoints[self.cp.waypointIndex].rev == false then -- or afterReverse or self.cp.waypointIndex == 1
 			if self.cp.hasSpecializationArticulatedAxis then
 				distToChange = 2; -- ArticulatedAxis vehicles
@@ -976,7 +976,9 @@ function courseplay:drive(self, dt)
 
 	-- record shortest distance to the next waypoint
 	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.cp.distanceToTarget then
+    local shortestDistToWp = Utils.getNoNil( self.cp.shortestDistToWp, -1 )
 		self.cp.shortestDistToWp = self.cp.distanceToTarget
+    --courseplay:debug( string.format( "shortestDistToWp %1.f, distanceToTarget %.1f", shortestDistToWp, self.cp.distanceToTarget ), 12 )
 	end
 
 	if self.isReverseDriving and not isFinishingWork then
@@ -986,6 +988,8 @@ function courseplay:drive(self, dt)
 	-- if distance grows i must be circling
 	if self.cp.distanceToTarget > self.cp.shortestDistToWp and self.cp.waypointIndex > 3 and self.cp.distanceToTarget < 15 and self.Waypoints[self.cp.waypointIndex].rev ~= true then
 		distToChange = self.cp.distanceToTarget + 1
+    courseplay:debug( string.format( "circling? wp=%d distToChange %.1f, shortestDistToWp %1.f, distanceToTarget %.1f", 
+                                     self.cp.waypointIndex, self.cp.shortestDistToWp, distToChange, self.cp.distanceToTarget ), 12 )
 	end
 
 	if self.cp.distanceToTarget > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
@@ -1044,6 +1048,14 @@ function courseplay:drive(self, dt)
 			if self.cp.mode == 7 and self.cp.modeState == 5 then
 			else
 				courseplay:setWaypointIndex(self, self.cp.waypointIndex + 1);
+        local rev = ""
+        if beforeReverse then 
+          rev = "beforeReverse"
+        end
+        if afterReverse then
+          rev = rev .. " afterReverse"
+        end
+        courseplay:debug( string.format( "Switch to next wp: %d, distToChange %.1f, %s", self.cp.waypointIndex, distToChange, rev ), 12 )
 			end
 		else -- last waypoint: reset some variables
 			if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then

@@ -15,8 +15,13 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
     wp.cx = point.x
     wp.cz = -point.y
     wp.wait = nil
-    wp.rev = nil
+    if point.rev then
+      wp.rev = point.rev
+    else 
+      wp.rev = false
+    end
     wp.crossing = nil
+    wp.speed = 0
 
     if point.passNumber then
       wp.lane = -point.passNumber
@@ -48,7 +53,7 @@ function courseGenerator.generate( vehicle, name, poly )
 
   field.width = vehicle.cp.workWidth 
   field.headlandClockwise = vehicle.cp.userDirClockwise
-  field.overlap = 10
+  field.overlap = 0
   field.nTracksToSkip = 0
   field.extendTracks = 0
   field.minDistanceBetweenPoints = 0.5
@@ -76,7 +81,7 @@ function courseGenerator.generate( vehicle, name, poly )
  
   if not vehicle.cp.headland.orderBefore then
     -- work the center of the field first, then the headland
-    field.course = reverseCourse( field.course )
+    field.course = reverseCourse( field.course, vehicle.cp.workWidth )
   end
   removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 

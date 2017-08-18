@@ -219,7 +219,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 								-- Change the direction to forward if we were reversing.
 								if vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
-									-- print(('%s: set waypointIndex to next forward point'):format(nameNum(workTool)));
+									print(('%s: set waypointIndex to next forward point'):format(nameNum(workTool)));
 									courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 								end;
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then

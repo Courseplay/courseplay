@@ -10,8 +10,9 @@ function _refine( points, angleThreshold, isLine )
     refined[ rIx ] = point
     if points[ ix( i + 1 )] then 
       -- if this is a line, don't touch the ends
-      if isSharpTurn( points[ i ].prevEdge, points[ i ].nextEdge, angleThreshold ) and 
-        (( not isLine ) or ( isLine and i > 1  and i < #points )) then
+      if math.abs( points[ i ].deltaAngle ) > angleThreshold and 
+         math.abs( points[ i ].deltaAngle ) < courseGenerator.minHeadlandTurnAngle and 
+         (( not isLine ) or ( isLine and i > 1  and i < #points )) then
         -- insert points only when there is really a curve here
         -- table.insert( marks, points[ i ])
         local x, y =  getPointInTheMiddle( point, points[ ix( i + 1 )]);
@@ -49,7 +50,8 @@ function _tuck( points, s, angleThreshold, isLine )
     local pp, cp, np = points[ ix( i - 1 )], points[ ix( i )], points[ ix( i + 1 )]
     -- tuck points only when there is really a curve here
     -- but if this is a line, don't touch the ends
-    if isSharpTurn( points[ i ].prevEdge, points[ i ].nextEdge, angleThreshold ) and 
+    if math.abs( points[ i ].deltaAngle ) > angleThreshold and 
+       math.abs( points[ i ].deltaAngle ) < courseGenerator.minHeadlandTurnAngle and 
        ( not isLine or ( isLine and i > 1  and i < #points )) then
       -- mid point between the previous and next
       local midPNx, midPNy = getPointInTheMiddle( pp, np )
@@ -68,11 +70,6 @@ end
 function getPointInTheMiddle( a, b ) 
   return a.x + (( b.x - a.x ) / 2 ),
          a.y + (( b.y - a.y ) / 2 )
-end
-
-function isSharpTurn( a, b, angleThreshold )
-    local da = getDeltaAngle( a.angle, b.angle )
-    return math.abs( da ) > angleThreshold
 end
 
 function smooth(points, angleThreshold, order, isLine )

@@ -164,6 +164,7 @@ function calculatePolygonData( polygon )
     dy = np.y - cp.y
     angle, length = toPolar( dx, dy )
     polygon[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
+    polygon[ i ].deltaAngle = getDeltaAngle( polygon[ i ].nextEdge.angle, polygon[ i ].prevEdge.angle )
     if length < shortestEdgeLength then shortestEdgeLength = length end
     -- detect clockwise/counterclockwise direction 
     if pp.prevEdge and cp.prevEdge then

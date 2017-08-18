@@ -118,7 +118,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   end
   if #field.course > 0 then
     calculatePolygonData( field.course )
-    addTurnsToCorners( field.course, math.rad( 150 ))
+    addTurnsToCorners( field.course, courseGenerator.maxHeadlandTurnAngle, implementWidth )
   end
   -- flush STDOUT when not in the game for debugging
   if not courseGenerator.isRunningInGame() then
@@ -133,7 +133,7 @@ end
 -- This function reverses that course so it can be used for fieldwork
 -- starting in the middle of the course.
 --
-function reverseCourse( course )
+function reverseCourse( course, width )
   local result = {}
   -- remove any non-center track turns first
   removeHeadlandTurns( course )
@@ -151,7 +151,7 @@ function reverseCourse( course )
   end
   -- regenerate non-center track turns for the reversed course
   calculatePolygonData( result )
-  addTurnsToCorners( result, math.rad( 150 ))
+  addTurnsToCorners( result, courseGenerator.maxHeadlandTurnAngle, width )
   return result
 end
 
@@ -161,6 +161,7 @@ function removeHeadlandTurns( course )
     if p.headlandTurn then
       p.turnStart = nil
       p.turnEnd = nil
+      p.headlandCorner = nil
       p.text = nil
     end
   end
@@ -168,7 +169,7 @@ end
 
 --- This makes sense only when these turns are implemented in Coursplay.
 -- as of now, it'll generate nice turns only for 180 degree
-function addTurnsToCorners( vertices, angleThreshold )
+function addTurnsToCorners( vertices, angleThreshold, width )
   -- start at the second wp to avoid having the first waypoint a turn start,
   -- that throws an nil in getPointDirection (due to the way calculatePolygonData 
   -- works, the prevEdge to the first point is bogus anyway)
@@ -191,6 +192,58 @@ function addTurnsToCorners( vertices, angleThreshold )
         i = i + 2
       end
     end
+    -- only for headland (where passNumber is defined), not for the up/down tracks
+    if cp.deltaAngle and cp.passNumber and 
+      math.abs( cp.deltaAngle ) > courseGenerator.minHeadlandTurnAngle and 
+      math.abs( cp.deltaAngle ) < courseGenerator.maxHeadlandTurnAngle then
+      cp.headlandTurn = true 
+      cp.headlandCorner = true 
+      cp.text = tostring( i )
+      i = addYTurn( vertices, i, width )
+    end
     i = i + 1
   end
 end
+
+function addYTurn( vertices, i, width )
+  local currentIndex = i + 1
+  -- first of all, drive forward a bit
+  local p = addPolarVectorToPoint( vertices[ i ], vertices[ i ].prevEdge.angle, width / 2 )
+  -- now add a reverse turn, covering half the delta angle
+  local alpha = vertices[ i ].deltaAngle / 2 
+  -- do about 10 degree steps
+  local nSteps = math.abs( math.floor( alpha * 36 / ( 2 * math.pi )))
+  -- delta angle for one step
+  local deltaAlpha = - alpha / ( nSteps + 1 ) 
+  -- length of a step
+  local r = 12
+  local length = - 2 * r * math.abs( math.sin( alpha / nSteps / 2 ))
+  local currentAlpha = vertices[ i ].prevEdge.angle + deltaAlpha
+  -- this is the first waypoint of the turn. CP expects it not reverse
+  -- but the angle should already point backwards.
+  p.nextEdge = {}
+  p.nextEdge.angle = currentAlpha - math.pi
+  p.passNumber = vertices[ i ].passNumber
+  table.insert( vertices, currentIndex, p )
+  currentIndex = currentIndex + 1
+  -- now walk around the arc
+  for n = 1, nSteps, 1 do
+    p = addPolarVectorToPoint( p, currentAlpha, length )
+    p.rev = true
+    p.nextEdge = {}
+    p.passNumber = vertices[ i ].passNumber
+    if n < nSteps then
+      -- while reverse driving, we use the backwards angle ...
+      p.nextEdge.angle = currentAlpha - math.pi
+    else
+      -- ... except the last waypoint where we switch from reverse
+      -- to forward
+      p.nextEdge.angle = currentAlpha 
+    end
+    table.insert( vertices, currentIndex, p )
+    currentIndex = currentIndex + 1
+    currentAlpha = currentAlpha + deltaAlpha
+  end
+  return currentIndex  
+end
+

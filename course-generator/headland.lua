@@ -188,3 +188,11 @@ function addMissingPassNumber( headlandPath )
   end
 end
 
+function markHeadlandCorners( headland )
+  for i, point in ipairs( headland ) do 
+    if math.abs( point.deltaAngle ) > courseGenerator.minHeadlandTurnAngle then
+      point.headlandCorner = true
+      point.text = string.format( "%.1f", math.deg( point.deltaAngle ))
+    end
+  end
+end

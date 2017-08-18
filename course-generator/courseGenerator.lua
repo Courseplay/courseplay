@@ -1,6 +1,14 @@
 --- Setting up packages
 courseGenerator = {}
 
+--[[ 
+ Will generate headland turns if the direction change is betwee minHeadlandTurnAngle
+ and maxHeadlandTurnAngle. Will use the turn system above maxHeadlandTurnAngle.
+ Also, smoothing won't kick in over minHeadlandTurnAngle
+ ]]
+courseGenerator.minHeadlandTurnAngle = math.rad( 60 )
+courseGenerator.maxHeadlandTurnAngle = math.rad( 150 )
+
 --- Debug print, will either just call print when running standalone
 --  or use the CP debug channel when running in the game.
 
