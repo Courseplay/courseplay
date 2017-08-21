@@ -68,7 +68,7 @@ function courseGenerator.generate( vehicle, name, poly )
                               field.overlap, field.nTracksToSkip,
                               field.extendTracks, field.minDistanceBetweenPoints,
                               math.rad( field.angleThresholdDeg ), field.doSmooth,
-                              field.roundCorners
+                              field.roundCorners, vehicle.cp.vehicleTurnRadius
                              )
   
   if not status then 
@@ -81,7 +81,7 @@ function courseGenerator.generate( vehicle, name, poly )
  
   if not vehicle.cp.headland.orderBefore then
     -- work the center of the field first, then the headland
-    field.course = reverseCourse( field.course, vehicle.cp.workWidth )
+    field.course = reverseCourse( field.course, vehicle.cp.workWidth, vehicle.cp.turnRadius )
   end
   removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 

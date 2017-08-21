@@ -21,6 +21,7 @@ function CpManager:setUpDebugChannels()
 			--defaultActive[9] = true;
 			defaultActive[12] = true;
 			defaultActive[13] = true;
+			defaultActive[14] = true;
 			defaultActive[21] = true;
 		end;
 	end;
