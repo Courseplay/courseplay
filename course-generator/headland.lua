@@ -7,7 +7,7 @@ local maxDistanceFromField = 30
 local n
 
 --- Calculate a headland track inside polygon in offset distance
-function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints, angleThreshold,
+function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
                                  currentOffset, doSmooth, inward )
   -- recursion limit
   if currentOffset == 0 then 
@@ -67,11 +67,11 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
   end
   calculatePolygonData( vertices )
   if doSmooth then
-    vertices = smooth( vertices, angleThreshold, 1, false )
+    vertices = smooth( vertices, minSmoothAngle, maxSmoothAngle, 1, false )
   end
   -- only filter points too close, don't care about angle
   applyLowPassFilter( vertices, math.pi, minDistanceBetweenPoints )
-  return calculateHeadlandTrack( vertices, targetOffset, minDistanceBetweenPoints, angleThreshold, 
+  return calculateHeadlandTrack( vertices, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 
                                  currentOffset, doSmooth, inward )
 end
 
@@ -85,7 +85,7 @@ end
 --    to the first point of the first pass and then continue from there
 --    inwards
 --
-function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, doSmooth, angleThreshold )
+function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
   -- first, find the intersection of the outermost headland track and the 
   -- vehicles heading vector. 
   local headlandPath = {}
@@ -155,7 +155,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
   if doSmooth then
     -- skip the first and last point when smoothing, this makes sure smooth() won't try
     -- to wrap around the ends like in case of a closed polygon, this is just a line here.
-    field.headlandPath = smooth( headlandPath, angleThreshold, 2, true )
+    field.headlandPath = smooth( headlandPath, minSmoothAngle, maxSmoothAngle, 2, true )
     addMissingPassNumber( field.headlandPath )
   else
     field.headlandPath = headlandPath
@@ -184,15 +184,6 @@ function addMissingPassNumber( headlandPath )
       end
     else
       point.passNumber = currentPassNumber
-    end
-  end
-end
-
-function markHeadlandCorners( headland )
-  for i, point in ipairs( headland ) do 
-    if math.abs( point.deltaAngle ) > courseGenerator.minHeadlandTurnAngle then
-      point.headlandCorner = true
-      point.text = string.format( "%.1f", math.deg( point.deltaAngle ))
     end
   end
 end

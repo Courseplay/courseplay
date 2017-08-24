@@ -1,7 +1,7 @@
 -- http://stackoverflow.com/questions/29612584/creating-cubic-and-or-quadratic-bezier-curves-to-fit-a-path
 --
 -- insert a point in the middle of each edge.
-function _refine( points, angleThreshold, isLine ) 
+function _refine( points, minSmoothAngle, maxSmoothAngle, isLine ) 
   local ix = function( a ) return getPolygonIndex( points, a ) end
   local refined = {}
   local rIx = 1;
@@ -10,8 +10,8 @@ function _refine( points, angleThreshold, isLine )
     refined[ rIx ] = point
     if points[ ix( i + 1 )] then 
       -- if this is a line, don't touch the ends
-      if math.abs( points[ i ].deltaAngle ) > angleThreshold and 
-         math.abs( points[ i ].deltaAngle ) < courseGenerator.minHeadlandTurnAngle and 
+      if math.abs( points[ i ].deltaAngle ) > minSmoothAngle and 
+         math.abs( points[ i ].deltaAngle ) < maxSmoothAngle and 
          (( not isLine ) or ( isLine and i > 1  and i < #points )) then
         -- insert points only when there is really a curve here
         -- table.insert( marks, points[ i ])
@@ -42,7 +42,7 @@ function _dual( points )
 end
 
 -- move the current point a bit towards the previous and next. 
-function _tuck( points, s, angleThreshold, isLine )
+function _tuck( points, s, minSmoothAngle, maxSmoothAngle, isLine )
   local tucked = {}
   local index = 1
   local ix = function( a ) return getPolygonIndex( points, a ) end
@@ -50,8 +50,8 @@ function _tuck( points, s, angleThreshold, isLine )
     local pp, cp, np = points[ ix( i - 1 )], points[ ix( i )], points[ ix( i + 1 )]
     -- tuck points only when there is really a curve here
     -- but if this is a line, don't touch the ends
-    if math.abs( points[ i ].deltaAngle ) > angleThreshold and 
-       math.abs( points[ i ].deltaAngle ) < courseGenerator.minHeadlandTurnAngle and 
+    if math.abs( points[ i ].deltaAngle ) > minSmoothAngle and 
+       math.abs( points[ i ].deltaAngle ) < maxSmoothAngle and 
        ( not isLine or ( isLine and i > 1  and i < #points )) then
       -- mid point between the previous and next
       local midPNx, midPNy = getPointInTheMiddle( pp, np )
@@ -72,16 +72,16 @@ function getPointInTheMiddle( a, b )
          a.y + (( b.y - a.y ) / 2 )
 end
 
-function smooth(points, angleThreshold, order, isLine )
+function smooth(points, minSmoothAngle, maxSmoothAngle, order, isLine )
   if ( order <= 0  ) then
     return points
   else
-    local refined = _refine( points, angleThreshold, isLine )
+    local refined = _refine( points, minSmoothAngle, maxSmoothAngle, isLine )
     calculatePolygonData( refined )
-    refined = _tuck( refined, 0.5, angleThreshold, isLine )
+    refined = _tuck( refined, 0.5, minSmoothAngle, maxSmoothAngle, isLine )
     calculatePolygonData( refined )
-    refined = _tuck( refined, -0.15, angleThreshold, isLine )
+    refined = _tuck( refined, -0.15, minSmoothAngle, maxSmoothAngle, isLine )
     calculatePolygonData( refined )
-    return smooth( refined, angleThreshold, order - 1, isLine )
+    return smooth( refined, minSmoothAngle, maxSmoothAngle, order - 1, isLine )
   end
 end

@@ -1,13 +1,6 @@
 --- Setting up packages
 courseGenerator = {}
 
---[[ 
- Will generate turns (start/end waypoints) if the direction change over
- minHeadlandTurnAngle to use the turn system.
- Also, smoothing won't kick in over minHeadlandTurnAngle
- ]]
-courseGenerator.minHeadlandTurnAngle = math.rad( 60 )
-
 --- Debug print, will either just call print when running standalone
 --  or use the CP debug channel when running in the game.
 

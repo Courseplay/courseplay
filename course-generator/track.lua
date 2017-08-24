@@ -50,9 +50,12 @@
 --   minimum distance allowed between vertices. Keeps the number of generated
 --   vertices for headland passes low. For fine tuning only
 --
--- angleThreshold
+-- minSmoothAngle
 --   angle between two subsequent edges above which the smoothing kicks in.
 --   This is to smooth corners in the headland
+--
+-- maxSmoothAngle
+--   angle between two subsequent edges above which the smoothing won't kick in
 --
 -- doSmooth
 --   enable smoothing 
@@ -67,11 +70,15 @@
 --   turn radius of the vehicle. Will do whatever we can not to generate turns sharper
 --   than this
 --
+-- minHeadlandTurnAngle
+--   Will generate turns (start/end waypoints) if the direction change over
+--   minHeadlandTurnAngle to use the turn system.
+--
 function generateCourseForField( field, implementWidth, nHeadlandPasses, headlandClockwise, 
                                  headlandStartLocation, overlapPercent, 
                                  nTracksToSkip, extendTracks,
-                                 minDistanceBetweenPoints, angleThreshold, doSmooth, fromInside,
-                                 turnRadius )
+                                 minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
+                                 turnRadius, minHeadlandTurnAngle )
   field.boundingBox = getBoundingBox( field.boundary )
   calculatePolygonData( field.boundary )
   field.headlandTracks = {}
@@ -80,7 +87,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     courseGenerator.debug( "Generating innermost headland track" )
     local distanceOfInnermostHeadlandFromBoundary = ( implementWidth - implementWidth * overlapPercent / 100 ) * ( nHeadlandPasses - 1 ) + implementWidth / 2
     field.headlandTracks[ nHeadlandPasses ] = calculateHeadlandTrack( field.boundary, distanceOfInnermostHeadlandFromBoundary, 
-                                                          minDistanceBetweenPoints, angleThreshold, 0, doSmooth, true ) 
+                                                          minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, true ) 
     previousTrack = field.headlandTracks[ nHeadlandPasses ]
     startHeadlandPass = nHeadlandPasses - 1
     endHeadlandPass = 1
@@ -102,10 +109,10 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     end
     courseGenerator.debug( string.format( "Generating headland track #%d", j ))
     field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, width - width * overlapPercent / 100, 
-                                                        minDistanceBetweenPoints, angleThreshold, 0, doSmooth, not fromInside ) 
+                                                        minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
     previousTrack = field.headlandTracks[ j ]
   end
-  linkHeadlandTracks( field, implementWidth, headlandClockwise, headlandStartLocation, doSmooth, angleThreshold )
+  linkHeadlandTracks( field, implementWidth, headlandClockwise, headlandStartLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
   field.track = generateTracks( field.headlandTracks[ nHeadlandPasses ], implementWidth, nTracksToSkip, extendTracks )
   field.bestAngle = field.headlandTracks[ nHeadlandPasses ].bestAngle
   field.nTracks = field.headlandTracks[ nHeadlandPasses ].nTracks
@@ -123,7 +130,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   end
   if #field.course > 0 then
     calculatePolygonData( field.course )
-    addTurnsToCorners( field.course, implementWidth, turnRadius )
+    addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
   end
   -- flush STDOUT when not in the game for debugging
   if not courseGenerator.isRunningInGame() then
@@ -156,7 +163,7 @@ function reverseCourse( course, width, turnRadius )
   end
   -- regenerate non-center track turns for the reversed course
   calculatePolygonData( result )
-  addTurnsToCorners( result, width, turnRadius )
+  addTurnsToCorners( result, width, turnRadius, minHeadlandTurnAngle )
   return result
 end
 
@@ -174,7 +181,7 @@ end
 
 --- This makes sense only when these turns are implemented in Coursplay.
 -- as of now, it'll generate nice turns only for 180 degree
-function addTurnsToCorners( vertices, width, turnRadius )
+function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
   -- start at the second wp to avoid having the first waypoint a turn start,
   -- that throws an nil in getPointDirection (due to the way calculatePolygonData 
   -- works, the prevEdge to the first point is bogus anyway)
@@ -186,8 +193,8 @@ function addTurnsToCorners( vertices, width, turnRadius )
       -- start a turn at the current point only if the next one is not a start of the turn already
       -- and there really is a turn
       if not np.turnStart and not cp.turnStart and not cp.turnEnd and 
-        math.abs( getDeltaAngle( np.nextEdge.angle, cp.prevEdge.angle )) > courseGenerator.minHeadlandTurnAngle and
-        math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > courseGenerator.minHeadlandTurnAngle then
+        math.abs( getDeltaAngle( np.nextEdge.angle, cp.prevEdge.angle )) > minHeadlandTurnAngle and
+        math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > minHeadlandTurnAngle then
         cp.turnStart = true
         cp.headlandTurn = true
         cp.text = string.format( "turn start %.1f", math.deg( cp.nextEdge.angle ))
@@ -199,56 +206,5 @@ function addTurnsToCorners( vertices, width, turnRadius )
     end
     i = i + 1
   end
-end
-
-function addYTurn( vertices, i, width, turnRadius )
-  local currentIndex = i + 1
-  -- first of all, drive forward a bit
-  local p = addPolarVectorToPoint( vertices[ i ], vertices[ i ].prevEdge.angle, width / 2 )
-  p.nextEdge = {}
-  p.nextEdge.angle = vertices[ i ].prevEdge.angle - math.pi
-  p.passNumber = vertices[ i ].passNumber
-  table.insert( vertices, currentIndex, p )
-  currentIndex = currentIndex + 1
-  -- now back up straight to the waypoint on the corner
-  p = copyPoint( vertices[ i ])
-  p.rev = true
-  -- now add a reverse turn, covering a little more than half the delta angle
-  -- a little more because drive.lua will switch to the next waypoint too early (based on proximity)
-  -- and we really need some precision here and don't want to touch such a fragile code 
-  -- as drive.lua
-  local alpha = vertices[ i ].deltaAngle / 1.8 
-  -- do about 10 degree steps
-  local nSteps = math.abs( math.floor( alpha * 36 / ( 2 * math.pi )))
-  -- delta angle for one step
-  local deltaAlpha = - alpha / ( nSteps + 1 ) 
-  -- length of a step
-  -- use radius slightly bigger to make sure the vehicle can follow it.
-  local length = - 2 * turnRadius * 1.2 * math.abs( math.sin( alpha / nSteps / 2 ))
-  local currentAlpha = vertices[ i ].prevEdge.angle + deltaAlpha
-  -- this is the first waypoint of the turn. CP expects it not reverse
-  -- but the angle should already point backwards.
-  p.nextEdge.angle = currentAlpha - math.pi
-  table.insert( vertices, currentIndex, p )
-  currentIndex = currentIndex + 1
-  -- now walk around the arc
-  for n = 1, nSteps, 1 do
-    p = addPolarVectorToPoint( p, currentAlpha, length )
-    p.rev = true
-    p.nextEdge = {}
-    p.passNumber = vertices[ i ].passNumber
-    if n < nSteps then
-      -- while reverse driving, we use the backwards angle ...
-      p.nextEdge.angle = currentAlpha - math.pi
-    else
-      -- ... except the last waypoint where we switch from reverse
-      -- to forward
-      p.nextEdge.angle = currentAlpha 
-    end
-    table.insert( vertices, currentIndex, p )
-    currentIndex = currentIndex + 1
-    currentAlpha = currentAlpha + deltaAlpha
-  end
-  return currentIndex  
 end
 

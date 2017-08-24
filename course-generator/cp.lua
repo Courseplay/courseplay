@@ -53,11 +53,10 @@ function courseGenerator.generate( vehicle, name, poly )
 
   field.width = vehicle.cp.workWidth 
   field.headlandClockwise = vehicle.cp.userDirClockwise
-  field.overlap = 0
+  field.overlap = 7
   field.nTracksToSkip = 0
   field.extendTracks = 0
   field.minDistanceBetweenPoints = 0.5
-  field.angleThresholdDeg = 30
   field.doSmooth = true
   field.roundCorners = false
 
@@ -67,8 +66,8 @@ function courseGenerator.generate( vehicle, name, poly )
                               vehicle.cp.headland.userDirClockwise, location,
                               field.overlap, field.nTracksToSkip,
                               field.extendTracks, field.minDistanceBetweenPoints,
-                              math.rad( field.angleThresholdDeg ), field.doSmooth,
-                              field.roundCorners, vehicle.cp.vehicleTurnRadius
+                              math.rad( 30 ), math.rad( 60 ), field.doSmooth,
+                              field.roundCorners, vehicle.cp.vehicleTurnRadius, math.rad( 60 )
                              )
   
   if not status then 
