@@ -222,7 +222,7 @@ function pathFinder.findPath( from, to, cpPolygon, width, addFruitFunc )
 	courseGenerator.debug( string.format( "Number of iterations %d", count) , 9);
   if path then 
     calculatePolygonData( path )
-    path = smooth( path, math.rad( 0 ), 1, true )
+    path = smooth( path, math.rad( 0 ), math.rad( 180 ), 1, true )
 	  courseGenerator.debug( string.format( "Path generated with %d points", #path ) , 9);
     calculatePolygonData( path )
     path = space( path, math.rad( 15 ), 5 )
