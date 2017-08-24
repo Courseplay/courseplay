@@ -172,6 +172,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Headland" />
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Generate headland turns" />
+		<text name="COURSEPLAY_TURN_TYPE_HEADLAND_NONE"  text="None" />
+		<text name="COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_STRAIGHT"  text="Reverse straight" />
+		<text name="COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_CURVE"  text="Reverse curve" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="activated" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />

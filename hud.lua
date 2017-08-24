@@ -1159,6 +1159,14 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc('COURSEPLAY_HEADLAND');
 		vehicle.cp.hud.content.pages[8][6][2].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
 
+    -- line 7 = headland turn corners
+		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_GENERATE_HEADLAND_TURNS');
+    if vehicle.cp.headland.numLanes > 0 then
+	    vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
+    else
+	    vehicle.cp.hud.content.pages[8][7][2].text = '---'
+    end
+
 
 	-- PAGE 9: SHOVEL SETTINGS
 	elseif page == self.PAGE_SHOVEL_POSITIONS then
@@ -1746,6 +1754,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- 6.3: numLanes
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeHeadlandNumLanes',   1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeHeadlandNumLanes',  -1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
+
+  -- line 7 (headland turns)
+	courseplay.button:new(vehicle, 8, nil, 'changeHeadlandTurnType', nil, self.col1posX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
 
 	-- generation action button
 	local toolTip = courseplay:loc('COURSEPLAY_GENERATE_FIELD_COURSE');

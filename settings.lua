@@ -1133,6 +1133,15 @@ function courseplay:toggleHeadlandOrder(vehicle)
 	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 
+function courseplay:changeHeadlandTurnType( vehicle )
+  if vehicle.cp.headland.numLanes > 0 then 
+    vehicle.cp.headland.turnType = vehicle.cp.headland.turnType + 1
+    if vehicle.cp.headland.turnType > courseplay.TURN_TYPE_HEADLAND_MAX then
+      vehicle.cp.headland.turnType = courseplay.TURN_TYPE_HEADLAND_MIN
+    end
+  end
+end
+
 function courseplay:validateCourseGenerationData(vehicle)
 	local numWaypoints = 0;
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then

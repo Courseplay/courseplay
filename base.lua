@@ -468,6 +468,8 @@ function courseplay:load(savegame)
 		userDirClockwise = true;
 		orderBefore = true;
 
+    turnType = courseplay.TURN_TYPE_HEADLAND_NONE;
+
 		tg = createTransformGroup('cpPointOrig_' .. tostring(self.rootNode));
 
 		rectWidthRatio = 1.25;
@@ -1195,7 +1197,8 @@ function courseplay:readStream(streamId, connection)
 	self.cp.hasStartingDirection = streamDebugReadBool(streamId);
 	self.cp.hasValidCourseGenerationData = streamDebugReadBool(streamId);
 	self.cp.headland.numLanes = streamDebugReadInt32(streamId)
-    self.cp.hasUnloadingRefillingCourse	 = streamDebugReadBool(streamId);
+	self.cp.headland.turnType = streamDebugReadInt32(streamId)
+  self.cp.hasUnloadingRefillingCourse	 = streamDebugReadBool(streamId);
 	courseplay:setInfoText(self, streamDebugReadString(streamId));
 	self.cp.returnToFirstPoint = streamDebugReadBool(streamId);
 	self.cp.ridgeMarkersAutomatic = streamDebugReadBool(streamId);
@@ -1317,6 +1320,7 @@ function courseplay:writeStream(streamId, connection)
 	streamDebugWriteBool(streamId, self.cp.hasStartingDirection);
 	streamDebugWriteBool(streamId, self.cp.hasValidCourseGenerationData);
 	streamDebugWriteInt32(streamId,self.cp.headland.numLanes);
+	streamDebugWriteInt32(streamId, self.cp.headland.turnType);
 	streamDebugWriteBool(streamId, self.cp.hasUnloadingRefillingCourse)
 	streamDebugWriteString(streamId, self.cp.infoText);
 	streamDebugWriteBool(streamId, self.cp.returnToFirstPoint);

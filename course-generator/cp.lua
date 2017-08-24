@@ -60,14 +60,27 @@ function courseGenerator.generate( vehicle, name, poly )
   field.doSmooth = true
   field.roundCorners = false
 
+  local minSmoothAngle, maxSmoothAngle, minHeadlandTurnAngle 
+
+  if vehicle.cp.headland.turnType == courseplay.TURN_TYPE_HEADLAND_NONE then
+    -- do not generate turns on headland
+    minHeadlandTurnAngle = math.rad( 150 )
+    -- use smoothing instead
+    minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 150 )
+  else
+    -- generate turns over 60 degrees
+    minHeadlandTurnAngle = math.rad( 60 )
+    -- smooth only below 60 degrees
+    minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 60 )
+  end
   
   local status, err = xpcall( generateCourseForField, function() print( err, debug.traceback()) end, 
                               field, vehicle.cp.workWidth, vehicle.cp.headland.numLanes,
                               vehicle.cp.headland.userDirClockwise, location,
                               field.overlap, field.nTracksToSkip,
                               field.extendTracks, field.minDistanceBetweenPoints,
-                              math.rad( 30 ), math.rad( 60 ), field.doSmooth,
-                              field.roundCorners, vehicle.cp.vehicleTurnRadius, math.rad( 60 )
+                              minSmoothAngle, maxSmoothAngle, field.doSmooth,
+                              field.roundCorners, vehicle.cp.vehicleTurnRadius, minHeadlandTurnAngle
                              )
   
   if not status then 

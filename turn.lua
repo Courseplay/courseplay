@@ -9,6 +9,17 @@ local wpCircleDistance	= 1; 	-- Waypoint Distance in circles
 -- after the turn we'll be heading into the opposite direction. 
 local laneTurnAngleThreshold = 135 
 
+-- headland turn modes
+courseplay.TURN_TYPE_HEADLAND_MIN = 1
+courseplay.TURN_TYPE_HEADLAND_NONE = 1
+courseplay.TURN_TYPE_HEADLAND_REVERSE_STRAIGHT = 2
+courseplay.TURN_TYPE_HEADLAND_REVERSE_CURVE = 3
+courseplay.TURN_TYPE_HEADLAND_MAX = 2
+
+courseplay.turnTypeText = { 'COURSEPLAY_TURN_TYPE_HEADLAND_NONE', 
+                            'COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_STRAIGHT',
+                            'COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_CURVE' }
+
 function courseplay:turn(vehicle, dt)
 	---- TURN STAGES:
 	-- 0:	Raise implements
@@ -343,13 +354,18 @@ function courseplay:turn(vehicle, dt)
         -- A SHARP TURN, LIKELY ON THE HEADLAND BUT NOT A LANE SWITCH
         -------------------------------------------------------------
         courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner.", nameNum(vehicle), turnInfo.directionChangeDeg), 14);
+        if turnInfo.isHarvester or true then
+          courseplay:generateTurnTypeHeadlandCornerReverseStraight(vehicle, turnInfo)
+        else
+          courseplay:debug(string.format("%s:(Turn) Not a harvester/combine, not generating corner turn.", nameNum(vehicle)), 14);
+          -- This turn is implemented for harvesters only for now, so just leave without generating a turn, switching to the next waypoint. 
+          vehicle.cp.isTurning = nil;
+          vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
+          courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+          courseplay:clearTurnTargets(vehicle);
+          return;
+        end
 
-        turnInfo.centerOffset = (turnInfo.targetDeltaX * turnInfo.direction) - turnInfo.turnRadius;
-        local sideC = turnInfo.turnDiameter;
-        local sideB = turnInfo.turnRadius + turnInfo.centerOffset;
-        turnInfo.centerHeight = square(sideC^2 - sideB^2);
-
-        courseplay:generateTurnTypeHeadlandCornerReverseStraight(vehicle, turnInfo)
       end
 
 			cpPrintLine(14, 1);
@@ -610,6 +626,7 @@ function courseplay:turn(vehicle, dt)
 		if courseplay:isWheelloader(vehicle) then
 			dtpZ = dtpZ * 0.5; -- wheel loaders need to turn more
 		end;
+    --print( ("dtp %.1f, %.1f, %.1f"):format( dtpX, dtpZ, refSpeed ))
 
 		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, posX, vehicleY, posZ);
 		if newTarget.turnReverse then
