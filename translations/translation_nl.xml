@@ -152,8 +152,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="open Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="fout opsporing kanalen" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Route genereren" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Start locatie" />  
+    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Eind locatie" />     
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Start richting" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Keer terug naar start" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Zuid-West" />
