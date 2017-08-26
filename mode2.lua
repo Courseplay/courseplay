@@ -626,10 +626,13 @@ function courseplay:unload_combine(vehicle, dt)
 					nodeSet = true
 					courseplay:debug(string.format("%s: combineIsAutoCombine- create vehicle.cp.cpTurnBaseNode (%s; %s)",nameNum(vehicle),tostring(vehicle.cp.cpTurnBaseNode), tostring(getName(vehicle.cp.cpTurnBaseNode))),4)
 				end
-				courseplay:debug(string.format("%s: addNewTargetVector: currentTipper: %s ,vehicle.cp.cpTurnBaseNode: %s",nameNum(vehicle),tostring(currentTipper),tostring(vehicle.cp.cpTurnBaseNode)),4)				
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.5 ,  (-totalLength*2)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*3)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,  (-totalLength*4)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+        -- turn around and drive closer to the next row
+				courseplay:debug(string.format("%s: addNewTargetVector: currentTipper: %s, vehicle.cp.cpTurnBaseNode: %s",nameNum(vehicle),tostring(currentTipper),tostring(vehicle.cp.cpTurnBaseNode)),4)				
+        -- don't move the full offset as the tractor may end up too close to the next row, colliding with the combine,
+        -- leave a little space (*0.75)
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.25,  (-totalLength*2)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.75,  (-totalLength*3)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.75,  (-totalLength*4)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				if vehicle.cp.forceNewTargets then
 					vehicle.cp.forceNewTargets = nil
