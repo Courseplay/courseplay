@@ -93,7 +93,7 @@ function courseGenerator.generate( vehicle, name, poly )
  
   if not vehicle.cp.headland.orderBefore then
     -- work the center of the field first, then the headland
-    field.course = reverseCourse( field.course, vehicle.cp.workWidth, vehicle.cp.turnRadius )
+    field.course = reverseCourse( field.course, vehicle.cp.workWidth, vehicle.cp.turnRadius, minHeadlandTurnAngle )
   end
   removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 

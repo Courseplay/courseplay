@@ -145,7 +145,7 @@ end
 -- This function reverses that course so it can be used for fieldwork
 -- starting in the middle of the course.
 --
-function reverseCourse( course, width, turnRadius )
+function reverseCourse( course, width, turnRadius, minHeadlandTurnAngle )
   local result = {}
   -- remove any non-center track turns first
   removeHeadlandTurns( course )
