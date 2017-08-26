@@ -674,7 +674,7 @@ function courseplay:stop(self)
 	end;
 
 	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
-	if self.mrUseMrTransmission and self.cp.changedMRMod == true then
+	if self.mrUseMrTransmission ~= nil and self.cp.changedMRMod == true then
 		self.mrUseMrTransmission = true;
 		self.cp.changedMRMod = false;
 	end;
