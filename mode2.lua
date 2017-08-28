@@ -56,7 +56,7 @@ function courseplay:handle_mode2(vehicle, dt)
 	end
 
 	-- STATE 10 (switch side)
-	if vehicle.cp.activeCombine ~= nil and (vehicle.cp.modeState == STATE_WAIT_AT_START or vehicle.cp.activeCombine.turnAP ~= nil and vehicle.cp.activeCombine.turnAP == true) then
+	if vehicle.cp.activeCombine ~= nil and (vehicle.cp.modeState == STATE_SWITCH_SIDE or vehicle.cp.activeCombine.turnAP ~= nil and vehicle.cp.activeCombine.turnAP == true) then
 		local node = vehicle.cp.activeCombine.cp.DirectionNode or vehicle.cp.activeCombine.rootNode;
 		if vehicle.cp.combineOffset > 0 then
 			vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(node, 25, 0, 0)
