@@ -318,6 +318,9 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 				end;
 			end;
 		end;
+    local ix = math.min(vehicle.cp.waypointIndex + 1, vehicle.cp.numWaypoints)
+	  courseplay:debug(('\tno waypoint found in front of us, returning next waypoint (%d)'):format(ix), 14);
+    return ix
 	else
 		local maxVarianceX = sin(rad(30));
 		local firstFwd, firstFwdOver3;
