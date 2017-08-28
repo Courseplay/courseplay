@@ -354,7 +354,7 @@ function courseplay:turn(vehicle, dt)
         -- A SHARP TURN, LIKELY ON THE HEADLAND BUT NOT A LANE SWITCH
         -------------------------------------------------------------
         courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner.", nameNum(vehicle), turnInfo.directionChangeDeg), 14);
-        if turnInfo.isHarvester or true then
+        if turnInfo.isHarvester then
           courseplay:generateTurnTypeHeadlandCornerReverseStraight(vehicle, turnInfo)
         else
           courseplay:debug(string.format("%s:(Turn) Not a harvester/combine, not generating corner turn.", nameNum(vehicle)), 14);
@@ -400,6 +400,7 @@ function courseplay:turn(vehicle, dt)
 						-- We have more waypoints, so we goto stage 4, which will still change waypoints together with checking if we can lower the implement
 						vehicle.cp.turnStage = 4;
 					end;
+			    courseplay:debug(string.format("%s:(Turn) Ending turn, stage %d", vehicle.cp.turnStage ), 14);
 					return;
 				end;
 
@@ -422,6 +423,7 @@ function courseplay:turn(vehicle, dt)
 
 				-- Change turn waypoint
 				if dist < wpChangeDistance then
+          print( string.format( "ix = %d, dist = %.1f, wpChangeDistance = %.1f", vehicle.cp.curTurnIndex, dist, wpChangeDistance ))
 					vehicle.cp.curTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 				end;
 
@@ -521,7 +523,6 @@ function courseplay:turn(vehicle, dt)
 					dist = dist - (directionNodeToTurnNodeLength + (directionNodeToTurnNodeLength - directionNodeToTurnNodeLengthOffset));
 				end;
 			end;
-
 			-- Change turn waypoint
 			if dist < wpChangeDistance then
 				vehicle.cp.curTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
