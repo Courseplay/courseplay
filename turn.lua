@@ -400,7 +400,7 @@ function courseplay:turn(vehicle, dt)
 						-- We have more waypoints, so we goto stage 4, which will still change waypoints together with checking if we can lower the implement
 						vehicle.cp.turnStage = 4;
 					end;
-			    courseplay:debug(string.format("%s:(Turn) Ending turn, stage %d", vehicle.cp.turnStage ), 14);
+			    courseplay:debug(string.format("%s:(Turn) Ending turn, stage %d", nameNum(vehicle), vehicle.cp.turnStage ), 14);
 					return;
 				end;
 
@@ -423,7 +423,7 @@ function courseplay:turn(vehicle, dt)
 
 				-- Change turn waypoint
 				if dist < wpChangeDistance then
-          print( string.format( "ix = %d, dist = %.1f, wpChangeDistance = %.1f", vehicle.cp.curTurnIndex, dist, wpChangeDistance ))
+          --print( string.format( "ix = %d, dist = %.1f, wpChangeDistance = %.1f", vehicle.cp.curTurnIndex, dist, wpChangeDistance ))
 					vehicle.cp.curTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 				end;
 
