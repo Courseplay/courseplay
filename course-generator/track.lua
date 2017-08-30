@@ -105,10 +105,10 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
       -- the innermost pass is generated
       width = implementWidth / 2
     else 
-      width = implementWidth
+      width = implementWidth * ( 100 - overlapPercent ) / 100
     end
     courseGenerator.debug( string.format( "Generating headland track #%d", j ))
-    field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, width - width * overlapPercent / 100, 
+    field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, width,
                                                         minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
     previousTrack = field.headlandTracks[ j ]
   end
