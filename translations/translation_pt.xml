@@ -168,6 +168,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Oeste" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Cabeceira do campo" />
+    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Generate headland turns" /> 
+		<text name="COURSEPLAY_TURN_TYPE_HEADLAND_NONE"  text="None" />
+		<text name="COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_STRAIGHT"  text="Reverse straight" />
+		<text name="COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_CURVE"  text="Reverse curve" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="ligado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Só o nome" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nome e percurso" />

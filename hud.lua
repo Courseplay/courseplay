@@ -1161,7 +1161,8 @@ function courseplay.hud:loadPage(vehicle, page)
 
     -- line 7 = headland turn corners
 		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_GENERATE_HEADLAND_TURNS');
-    if vehicle.cp.headland.numLanes > 0 then
+    -- only allow for the new course generator
+    if vehicle.cp.headland.numLanes > 0 and vehicle.cp.hasStartingCorner and vehicle.cp.startingCorner > 4 then
 	    vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
     else
 	    vehicle.cp.hud.content.pages[8][7][2].text = '---'
