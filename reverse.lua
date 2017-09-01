@@ -304,7 +304,9 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 	local directionNode	= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
 	if isTurning then
 		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 14);
-		for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
+    -- scan only the next five waypoints, we don't want to end up way further in the course, missing 
+    -- many waypoints.
+		for i = vehicle.cp.waypointIndex, math.min( vehicle.cp.waypointIndex + 5, vehicle.cp.numWaypoints ) do
 			if vehicle.cp.abortWork and vehicle.cp.abortWork == i then
 				vehicle.cp.abortWork = nil;
 			end;
