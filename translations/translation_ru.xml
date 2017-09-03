@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="выгрузка тюков." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Достигнут пункт разгрузки" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Расстояние до точки разгрузки" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Расстояние до точки разгрузки" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Заполнение %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
@@ -156,15 +156,15 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Открыть Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Режимы отладки:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="ГЕНЕРАЦИЯ МАРШРУТА" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Начальное месторасположение" />
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Конечное месторасположение" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Направление:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Возврат на старт:" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Юго-Запад" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="Северо-Запад" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Северо-Восток" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Юго-Восток" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Текущее местоположение техники" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Текущее месторасположение техники" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="Последнее используемое положение" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
