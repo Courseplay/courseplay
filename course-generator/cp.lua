@@ -117,7 +117,7 @@ function courseGenerator.generate( vehicle, name, poly )
 
 	-- extra data for turn maneuver
 	vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
-	vehicle.cp.courseNumHeadlandLanes = numHeadlandLanesCreated;
+	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.headland.numLanes;
 	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.headland.userDirClockwise;
 
 	vehicle.cp.hasGeneratedCourse = true;

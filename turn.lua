@@ -253,6 +253,9 @@ function courseplay:turn(vehicle, dt)
 
 			--- Find the zOffset based on tractors current position from the start turn wp
 			_, _, turnInfo.zOffset = worldToLocal(turnInfo.directionNode, vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz);
+      -- remember this as we'll need it later
+      turnInfo.deltaZBetweenVehicleAndTarget = turnInfo.targetDeltaZ
+      -- targetDeltaZ is now the delta Z between the turn start and turn end waypoints.
 			turnInfo.targetDeltaZ = turnInfo.targetDeltaZ - turnInfo.zOffset;
 
 			--- Get headland height
@@ -986,7 +989,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 	--- Target is behind of us
 	local targetOffsetZ = 0;
-	if turnInfo.targetDeltaZ < turnInfo.zOffset then
+	if turnInfo.deltaZBetweenVehicleAndTarget < 0 then
 		if canTurnOnHeadland then
 			targetOffsetZ = abs(turnInfo.targetDeltaZ);
 		else
@@ -999,6 +1002,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	if turnInfo.frontMarker > 0 then
 		extraMoveBack = turnInfo.frontMarker;
 	end;
+	courseplay:debug(("%s:(Turn) targetOffsetZ=%s, extraMoveBack=%.2fm"):format(nameNum(vehicle), tostring(targetOffsetZ), extraMoveBack), 14);
 
 	--- Get the center height offset
 	local centerHeightOffset = -targetOffsetZ + turnInfo.reverseOffset + extraMoveBack;

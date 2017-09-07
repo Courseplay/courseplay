@@ -152,8 +152,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Abrir Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Canales de depuración" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generación de una ruta" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+    	<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Ubicación Inicial" />
+    	<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Punto Final" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Salida dirección hacia el:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Volver al primer punto:" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Suroeste" />
