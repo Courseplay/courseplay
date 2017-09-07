@@ -62,7 +62,7 @@ function courseGenerator.generate( vehicle, name, poly )
 
   local minSmoothAngle, maxSmoothAngle, minHeadlandTurnAngle 
 
-  if vehicle.cp.headland.turnType == courseplay.TURN_TYPE_HEADLAND_NONE then
+  if vehicle.cp.headland.turnType == courseplay.HEADLAND_CORNER_TYPE_SMOOTH then
     -- do not generate turns on headland
     minHeadlandTurnAngle = math.rad( 150 )
     -- use smoothing instead

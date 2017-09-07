@@ -217,6 +217,16 @@ local function setGlobalData()
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
 
+  -- headland turn modes
+  courseplay.HEADLAND_CORNER_TYPE_MIN = 1
+  courseplay.HEADLAND_CORNER_TYPE_SMOOTH = 1
+  courseplay.HEADLAND_CORNER_TYPE_SHARP = 2
+  courseplay.HEADLAND_CORNER_TYPE_ROUND = 3
+  courseplay.HEADLAND_CORNER_TYPE_MAX = 2
+
+  courseplay.turnTypeText = { 'COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH', 
+                              'COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP',
+                              'COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND' }
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

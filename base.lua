@@ -468,7 +468,7 @@ function courseplay:load(savegame)
 		userDirClockwise = true;
 		orderBefore = true;
 
-    turnType = courseplay.TURN_TYPE_HEADLAND_NONE;
+    turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
 
 		tg = createTransformGroup('cpPointOrig_' .. tostring(self.rootNode));
 

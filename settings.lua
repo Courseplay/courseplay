@@ -1136,8 +1136,8 @@ end;
 function courseplay:changeHeadlandTurnType( vehicle )
   if vehicle.cp.headland.numLanes > 0 then 
     vehicle.cp.headland.turnType = vehicle.cp.headland.turnType + 1
-    if vehicle.cp.headland.turnType > courseplay.TURN_TYPE_HEADLAND_MAX then
-      vehicle.cp.headland.turnType = courseplay.TURN_TYPE_HEADLAND_MIN
+    if vehicle.cp.headland.turnType > courseplay.HEADLAND_CORNER_TYPE_MAX then
+      vehicle.cp.headland.turnType = courseplay.HEADLAND_CORNER_TYPE_MIN
     end
   end
 end

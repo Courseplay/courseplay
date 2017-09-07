@@ -9,17 +9,6 @@ local wpCircleDistance	= 1; 	-- Waypoint Distance in circles
 -- after the turn we'll be heading into the opposite direction. 
 local laneTurnAngleThreshold = 135 
 
--- headland turn modes
-courseplay.TURN_TYPE_HEADLAND_MIN = 1
-courseplay.TURN_TYPE_HEADLAND_NONE = 1
-courseplay.TURN_TYPE_HEADLAND_REVERSE_STRAIGHT = 2
-courseplay.TURN_TYPE_HEADLAND_REVERSE_CURVE = 3
-courseplay.TURN_TYPE_HEADLAND_MAX = 2
-
-courseplay.turnTypeText = { 'COURSEPLAY_TURN_TYPE_HEADLAND_NONE', 
-                            'COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_STRAIGHT',
-                            'COURSEPLAY_TURN_TYPE_HEADLAND_REVERSE_CURVE' }
-
 function courseplay:turn(vehicle, dt)
 	---- TURN STAGES:
 	-- 0:	Raise implements
