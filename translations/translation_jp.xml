@@ -172,7 +172,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="自動" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="まくら地" />
-    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Generate headland turns" /> 
+    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Headland corners" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  text="Smooth" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  text="Turn (combines only)" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  text="Round" />
