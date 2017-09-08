@@ -32,6 +32,9 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
     if point.turnEnd then
       wp.turnEnd = true
     end
+    if point.isConnectingTrack then
+      wp.isConnectingTrack = true 
+    end
     table.insert( vehicle.Waypoints, wp )
   end
 end

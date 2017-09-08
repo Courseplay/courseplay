@@ -143,6 +143,10 @@ function writeCourseToFile( field, fileName )
     if point.ridgeMarker then
       ridgeMarker = string.format( 'ridgemarker="%d"', point.ridgeMarker )
     end
+    local connectingTrack = ""
+    if point.isConnectingTrack then
+      connectingTrack = string.format( 'connectingTrack="true"' )
+    end
     io.write( 
       string.format( '  <waypoint%d angle="%.2f" generated="true" speed="0" pos="%.2f %.2f" %s %s %s %s/>\n',
                      wp, angle, point.x, -point.y, ridgeMarker, turn, lane, crossing ))

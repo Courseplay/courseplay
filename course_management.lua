@@ -592,7 +592,8 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 				dir='String',
 				turnstart='Int',
 				turnend='Int',
-				ridgemarker='Int' };
+				ridgemarker='Int',
+        isconnectingtrack='Bool'};
 
 			for k, v in pairs(cp_course.waypoints) do
 				local waypoint = {
@@ -611,6 +612,7 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 					turnend =	   v.turnEnd and courseplay:boolToInt(v.turnEnd) or nil;
 					ridgemarker = (v.ridgeMarker and v.ridgeMarker ~= 0) and v.ridgeMarker or nil;
 					lane =		  (v.lane and v.lane < 0) and v.lane or nil;
+					isconnectingtrack =	v.isConnectingTrack and v.isConnectingTrack or nil;
 				};
 
 				waypoints[k] = waypoint;
@@ -1240,6 +1242,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					local turnStart	  =    getXMLInt(courseXml, key .. '#turnstart');
 					local turnEnd 	  =    getXMLInt(courseXml, key .. '#turnend');
 					local ridgeMarker =    getXMLInt(courseXml, key .. '#ridgemarker') or 0;
+					local isConnectingTrack   =   getXMLBool(courseXml, key .. '#isconnectingtrack');
 					crossing = crossing == 1 or wpNum == 1;
 					wait = wait == 1;
 					unload = unload == 1;
@@ -1259,7 +1262,8 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						lane = lane,
 						turnStart = turnStart,
 						turnEnd = turnEnd,
-						ridgeMarker = ridgeMarker
+						ridgeMarker = ridgeMarker,
+            isConnectingTrack = isConnectingTrack
 					};
 					wpNum = wpNum + 1;
 				end; -- END while true (waypoints)
