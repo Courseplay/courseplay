@@ -32,8 +32,8 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Dirigir agora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Dirigir em:" />
 		<text name="UNKNOWN" 											 text="desconhecido" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland sentido horário/anti-horário" />        
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland antes/depois da rota" /> 
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Cabeceira sentido horário/anti-horário" />        
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Cabeceira antes/depois da rota" /> 
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Gerar rota no campo" />             
 		<text name="COURSEPLAY_DISTANCE" 								 text="distância" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Aguardando tempo" />
@@ -144,7 +144,7 @@
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="ferramenta errada para este modo" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Este veículo não é suportado neste modo" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="aguardando o tempo melhorar" />
-		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distancia da faixa" />
+  		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Distancia da faixa" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Distancia horizontal do equipamento" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Distancia vertical do equipamento" />
 		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Distancia Horizontal para Carregar/Descarregar" />     
@@ -172,10 +172,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" /> 
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabeceira" />
-    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Headland corners" /> 
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  text="Smooth" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  text="Turn (combines only)" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  text="Round" />
+    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"                      text="Cantos da cabeceira" /> 
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"              text="Suave" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"               text="Virar (somente ceifadeira)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"               text="Virar" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="ativado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Somente nome" />            
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nome e rota" />		
