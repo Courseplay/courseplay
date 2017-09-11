@@ -116,7 +116,12 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
     courseGenerator.debug( string.format( "Track to block %d has %d points", i, #block.trackToThisBlock ))
     for j = 1, #block.trackToThisBlock do
       table.insert( track, block.trackToThisBlock[ j ])
-      track[ #track ].isConnectingTrack = true
+      if j > 3 and j < #block.trackToThisBlock - 1 then
+        -- mark this section as a connecting track where implements should be raised as we are 
+        -- driving on a previously worked headland track. 
+        -- don't mark the first few waypoints to prevent a too early raise and too late lowering
+        track[ #track ].isConnectingTrack = true
+      end
       table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
     end
     linkParallelTracks( track, block.tracksWithWaypoints, block.bottomToTop, block.leftToRight, nTracksToSkip ) 
