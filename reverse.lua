@@ -304,16 +304,19 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 	local directionNode	= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
 	if isTurning then
 		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 14);
-    -- scan only the next five waypoints, we don't want to end up way further in the course, missing 
-    -- many waypoints.
-		for i = vehicle.cp.waypointIndex, math.min( vehicle.cp.waypointIndex + 5, vehicle.cp.numWaypoints ) do
+    -- scan only the next few waypoints, we don't want to end up way further in the course, missing 
+    -- many waypoints. The proper solution here would be to take the workarea into account as the tractor may 
+    -- be well ahead of the turnEnd point in case of long implements. Instead we just assume 10 waypoints is
+    -- long enough.
+		for i = vehicle.cp.waypointIndex, math.min( vehicle.cp.waypointIndex + 10, vehicle.cp.numWaypoints ) do
 			if vehicle.cp.abortWork and vehicle.cp.abortWork == i then
 				vehicle.cp.abortWork = nil;
 			end;
 			if not vehicle.Waypoints[i].rev then
 				local wpX, wpZ = vehicle.Waypoints[i].cx, vehicle.Waypoints[i].cz;
 				local _, _, disZ = worldToLocal(directionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
-
+        local vX, _, vZ = localToWorld( directionNode, 0, 0, 0 )
+		    courseplay:debug(('%s: getNextFwdPoint(), vX = %.1f, vZ = %.1f, i = %d, wpX = %.1f, wpZ = %.1f, disZ = %.1f '):format(nameNum(vehicle), vX, vZ, i, wpX, wpZ, disZ ), 14);
 				if disZ > 5 then
 					courseplay:debug(('--> return (%d) as waypointIndex'):format(i), 14);
 					return i;
