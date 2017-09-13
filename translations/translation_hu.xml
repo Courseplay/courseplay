@@ -7,7 +7,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Szállító megállítása" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Állj az utlsó pontnál, következő triggernél" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNLIMITED" 								 text="Unlimited" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Ürítés oldala:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatikus" />
 		<text name="COURSEPLAY_LEFT" 									 text="bal" />
@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="Típus: Szállitás (Vezetés a célig)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Típus: Földmunkák, gyűjtés, szállítás" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Típus: A kombájn megy kirakodni" />
-		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="Type: Liquid product transport" /> <!-- TODO: TRANSLATION! Retranslate to new name. -->
 		<text name="COURSEPLAY_MODE_9" 									 text="Típus: Rakodás (kanalat tölt és ürít)" />
 		<text name="COURSEPLAY_MODE_10" 								 text="Type: leveling and compacting" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="tovább hajtás" />
@@ -32,33 +32,37 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Indítás azonnal (Nem vár a töltésre)" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Elszállítás:" />
 		<text name="UNKNOWN" 											 text="Ismeretlen" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />        <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />              <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION" 						 text="Headland counter-/clockwise" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER" 					 text="Headland before/after field course" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE" 					 text="Generate field course" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_DISTANCE" 								 text="Távolság" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Várakozási idő" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d perc" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d másodperc" />
-		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNIT_METER" 								 text="m" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSE_NAME" 							 text="Útvonal név:" />
 		<text name="COURSEPLAY_FOLDER_NAME" 							 text="Mappa név:" />
 		<text name="COURSEPLAY_FILTER_COURSES" 							 text="Útvonal szűrő:" />
-		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" />					<!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
-		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" />						<!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
-		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" />				<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" />		<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" />		<!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_BUTTON_RETURN" 							 text="Return" /> <!-- TODO: TRANSLATION! (This is the name of the Return Button) -->
+		<text name="COURSEPLAY_BUTTON_ESC" 								 text="ESC" /> <!-- TODO: TRANSLATION! (This is the short text of the Escape Button) -->
+		<text name="COURSEPLAY_CANCEL_WITH" 							 text="%s to Cancel" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 						 text="%s to Save Course" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s to Save Folder" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s to Filter Courses" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Útvonal: %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 							 text="Útvonal betöltése/hozzáfűzés a betöltött útvonalhoz" />
+		<text name="COURSEPLAY_APPEND_COURSE" 							 text="Útvonal hozzáadása a végéhez" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 							 text="Áthelyezés mappába" />
+		<text name="COURSEPLAY_DELETE_COURSE" 							 text="Útvonal/mappa törlése" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Új mappa létrehozása" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Útvonal keresése a mappákban" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Szűrő alaphelyzetbe" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="az átrakodási ponton van." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="save pipe position" />         <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text= "move pipe to position" />	  <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 						 text="save pipe position" /> <!-- TODO: TRANSLATION! (save the position of the overloaders pipe) -->
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION" 					 text="move pipe to position" /> <!-- TODO: TRANSLATION! (move to the position of the overloaders pipe) -->
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="a várakozási ponton van." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="az utolsó ponton van." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="has finished grain transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WORK_END" 								 text="végzett a munkával." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": A munka folytatásához ki kell ürítened!" />
@@ -66,17 +70,17 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="kirakja a bálákat." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="dugóban van (forgalomban)" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Elérte a triggert" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" /> <!-- TODO: TRANSLATION! its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Töltés: %d -ból %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Útpontok megjelenítése" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Útvonal keresése" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Oldaltávolság:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Tölteni indul:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />  			<!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Opposite turn direction:" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="last couple of lanes" />     <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="when possible" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_TURN_ON_FIELD" 							 text="Turn on field:" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION" 				 text="Opposite turn direction:" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END" 					 text="last couple of lanes" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE" 			 text="when possible" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Fordulási sugár:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Eltolás előre/hátra:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Kombájn" />
@@ -120,7 +124,7 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Kombájn mellett halad" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Kombájnhoz megy" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Kombájn azt mondja, állj!" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Addig vár, míg a várakozási hely felszabadul" />		
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Addig vár, míg a várakozási hely felszabadul" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Irány %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Az %d %d útvonalponthoz megy" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 					 text="Vár, amíg kombájn ürít" />
@@ -131,11 +135,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="Az üzemanyag fogyóban! (20% alatt)" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="Újra kell tankolnod!" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="tankol!" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Túl sok várakozási pont van! Csak %d szükséges." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Túl kevés a várakozási pont! %d szükséges." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW" 				 text="Too few unload points! %d needed." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Rossz szállítóeszköz ehhez a művelethez" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Rossz munkaeszköz ehhez a művelethez" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Ez a járműtípus nem megfelelő ehhez a művelethez." />
@@ -143,8 +147,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Közlekedő út eltolás:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Művelés eltolás oldalra:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Művelés eltolás előre:" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_FRONT" 									 text="elöl" />
 		<text name="COURSEPLAY_BACK" 									 text="hátul" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Munkaszélesség:" />
@@ -152,29 +156,29 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD megnyitása:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Hibakereső csatorna:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Útvonal generálás" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Művelés kezdő iránya:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Vissza az első pontra" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Dél/Nyugat" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="Észak/Nyugat" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Észak/Kelet" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Dél/Kelet" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" /> <!-- TODO: TRANSLATION! its used for the new field course genration if U want to use the current position as starting corner -->
+		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" /> <!-- TODO: TRANSLATION! its used for the new field course genration if U want to use the last used position as starting corner-->
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Észak" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Kelet" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Dél" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Nyugat" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_HEADLAND" 								 text="Munkasáv" />
-    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Headland corners" /> 
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  text="Smooth" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  text="Turn (combines only)" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  text="Round" />
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS" 				 text="Headland corners" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn (combines only)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="Bekapcsolva" />
-		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />            <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
-		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />		<!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" /> <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
+		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" /> <!-- TODO: TRANSLATION! (it's shown while changing the COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT) -->
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="Kikapcsolva" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 							 text="Főbb pontok" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="Kirakodás a földön" />
@@ -234,8 +238,8 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": a BGA siló tele van!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Nem választottad ki a farm tárólóból a terménytípust" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="A farm tároló töltöttsége:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="A farm tárólőja üres! Waiting for more." />  <!-- TODO: TRANSLATION! Translate new added text. -->
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." />  <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="A farm tárólőja üres! Waiting for more." /> <!-- TODO: TRANSLATION! Translate new added text. -->
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is full! Continuing to next silo." /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Beindul %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Első útpont keresése" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Aktuális útvonal mentése" />
@@ -250,7 +254,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fordulás vége" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Tolatás indítása" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Tolatás leállítása" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Osztási pont hozzáadása" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS" 				 text="Osztási pont hozzáadása" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Térképikonok: kijelzőszöveg" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automatikus" />
@@ -264,6 +268,11 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Terület: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Vetőmag típusa: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Szükséglet: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND" 				 text="Kezdő-, és végpont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL" 					 text="Minden pont megjelenítése/elrejtése" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING" 				 text="Elágazási pontok megjelenítése/elrejtése" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Vezetősegéd panel megnyitása" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Vezetősegéd panel bezárása" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Vezetősegéd funkciók" />
@@ -271,7 +280,7 @@
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Vezetősegéd gombkiosztás: Másodlagos" />
 		<text name="input_COURSEPLAY_HUD" 								 text="Vezetősegéd panel be/ki" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Vezetősegéd: Vezető indítása/leállítása" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" />    <!-- TODO: TRANSLATE! -->
+		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continue" /> <!-- TODO: TRANSLATION! -->
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Vezetősegéd: Indítás azonnal!" />
 		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Vezetősegéd: Állj az utolsó ponton következő triggernél" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Vezetősegéd: Következő művelet" />
@@ -280,39 +289,32 @@
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Vezetősegéd: Másodlagos egér aktiválás" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Egérkurzor megjelenítése" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Egérkurzor elrejtése" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Útvonal betöltése/hozzáfűzés a betöltött útvonalhoz" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Útvonal hozzáadása a végéhez" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Áthelyezés mappába" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Útvonal/mappa törlése" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Kezdő-, és végpont megjelenítése/elrejtése" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Minden pont megjelenítése/elrejtése" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Elágazási pontok megjelenítése/elrejtése" />
-	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mode" />                                  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="filling up" />                            <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" />                  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" />                    <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " />         <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" />                          <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="no bunkersilo detected at start point" /> <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="no blade attached" />                     <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="front mounted blade is not supported" />  <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo settings" />                   <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blade width" />                           <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" />               <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" />                       <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="reverse unloading" />                     <!-- TODO: TRANSLATE! -->
-		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Refill fuel at gas station" />            <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="always" />                                <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="below 20%" />                             <!-- TODO: TRANSLATE! -->
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
-		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
-		
+
+		<text name="COURSEPLAY_MODE10_MODE" 							 text="mode" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="leveling and compacting" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP" 					 text="filling up" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="automaticly stop for" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="just courseplayers" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="all with running engine" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="dectect tractors in range of " /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max speed while pushing" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blade height" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_NOSILO" 							 text="no bunkersilo detected at start point" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_NOBLADE" 							 text="no blade attached" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE" 					 text="front mounted blade is not supported" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_SETTINGS" 						 text="BunkerSilo settings" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 						 text="blade width" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo is being filled by" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="driving through" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 				 text="reverse unloading" /> <!-- TODO: TRANSLATION! -->
+
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR" 						 text="Refill fuel at gas station" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FUEL_ALWAYS" 							 text="always" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT" 						 text="below 20%" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION" 							 text="fuel save option" /> <!-- TODO: TRANSLATION! -->
+
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Couldn't generate course. Try changing the settings or moving the vehicle." />
+
 	</texts>
 </l10n>
