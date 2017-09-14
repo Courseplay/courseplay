@@ -152,9 +152,8 @@ function courseplay:start(self)
 	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
 	-- position of next waypoint
 	local cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
-	-- distance
+	-- distance (in any direction)
 	local dist = courseplay:distance(ctx, ctz, cx, cz)
-	
 
 	local setLaneNumber = false;
 	local isFrontAttached = false;
@@ -206,7 +205,7 @@ function courseplay:start(self)
 	self.cp.mediumWpDistance = 0
 	self.cp.mode10.alphaList = {}
 	local nearestpoint = dist
-	local recordNumber = 0
+	local nearestWpIx = 0
 	local curLaneNumber = 1;
 	local hasReversing = false;
 	local lookForNearestWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
@@ -216,7 +215,7 @@ function courseplay:start(self)
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
 				nearestpoint = dist
-				recordNumber = i
+				nearestWpIx = i
 			end;
 		end;
 
@@ -338,23 +337,16 @@ function courseplay:start(self)
 			end
 		end
 	end
+
+	local lookForNextWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEXT_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); 
+
+  if lookForNextWaypoint then
+		-- get the closest wp in front of us
+		safeSetWaypointIndex( self, courseplay:getNextFwdPoint( self, true ))     
+  end
 	
 	if lookForNearestWaypoint then
-		local changed = false
-		for i=recordNumber,recordNumber+3 do
-			if self.Waypoints[i]~= nil and self.Waypoints[i].turnStart then
-				courseplay:setWaypointIndex(self, i + 2);
-				changed = true
-				break
-			end	
-		end
-		if changed == false then
-			courseplay:setWaypointIndex(self, recordNumber);
-		end
-
-		if self.cp.waypointIndex > self.cp.numWaypoints then
-			courseplay:setWaypointIndex(self, 1);
-		end
+		safeSetWaypointIndex( self, nearestWpIx )     
 	end --END if modeState == 0
 
 	if self.cp.waypointIndex > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 and self.cp.mode ~= 8 then
@@ -893,3 +885,23 @@ function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 		end
 	end
 end
+
+function courseplay:safeSetWaypointIndex( vehicle, newIx )
+	for i = newIx, newIx + 3 do
+		-- don't set it too close to a turn start, 
+		if vehicle.Waypoints[ i ] ~= nil and vehicle.Waypoints[ i ].turnStart then
+			-- set it to after the turn
+			newIx = i + 2
+			break
+		end	
+	end
+
+	if vehicle.cp.waypointIndex > vehicle.cp.numWaypoints then
+		courseplay:setWaypointIndex(vehicle, 1);
+	else
+		courseplay:setWaypointIndex( vehicle, newIx );
+	end
+end
+
+-- do not remove this comment
+-- vim: set noexpandtab:

@@ -207,6 +207,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="legközelebbi útpont" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="első útpont" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="Aktuális útpont" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 text="következő útpont" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Művelendő terület:" />
 		<text name="COURSEPLAY_FIELD" 									 text="Terület" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(jelenleg betöltött útvonal)" />

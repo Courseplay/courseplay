@@ -211,6 +211,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nächsten Wegpunkt" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="ersten Wegpunkt" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="aktuellen Wegpunkt" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Feldrandkurs" />
 		<text name="COURSEPLAY_FIELD" 									 text="Feld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(aktuell geladener Kurs)" />

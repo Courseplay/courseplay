@@ -734,6 +734,8 @@ function courseplay.hud:loadPage(vehicle, page)
 						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_FIRST_POINT');
 					elseif vehicle.cp.startAtPoint == courseplay.START_AT_CURRENT_POINT then
 						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_CURRENT_POINT');
+					elseif vehicle.cp.startAtPoint == courseplay.START_AT_NEXT_POINT then
+						vehicle.cp.hud.content.pages[1][3][2].text = courseplay:loc('COURSEPLAY_NEXT_POINT');
 					end;
 				end;
 
@@ -1847,3 +1849,5 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', self.iconSpritePath, self.toolTipIconPosX, self.toolTipIconPosY, self.toolTipIconWidth, self.toolTipIconHeight);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.toolTipIcon, { 112, 180, 144, 148 }, sizeX, sizeY);
 end;
+-- do not remove this comment
+-- vim: set noexpandtab:

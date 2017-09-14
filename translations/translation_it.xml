@@ -211,6 +211,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto più vicino" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primo punto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="punto corrente" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Percorso perimetrale del" />
 		<text name="COURSEPLAY_FIELD" 									 text="campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(percorso attualmente caricato)" />

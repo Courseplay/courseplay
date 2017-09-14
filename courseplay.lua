@@ -155,6 +155,7 @@ local function setGlobalData()
 	courseplay.START_AT_NEAREST_POINT = 1;
 	courseplay.START_AT_FIRST_POINT = 2;
 	courseplay.START_AT_CURRENT_POINT = 3;
+	courseplay.START_AT_NEXT_POINT = 4;
 
 	-- warning lights options
 	courseplay.WARNING_LIGHTS_NEVER = 0;
