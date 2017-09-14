@@ -1078,14 +1078,17 @@ function courseplay:unload_combine(vehicle, dt)
 					end
 				elseif vehicle.cp.mode2nextState == STATE_FOLLOW_TRACTOR then 
 					local frontTractor = vehicle.cp.activeCombine.courseplayers[vehicle.cp.positionWithCombine - 1];
-					local distanceToTractor = courseplay:distanceToObject( vehicle, frontTractor )
-					if distanceToTractor < 50 then
-						courseplay:debug( string.format( "Only %.2f meters to tractor on the way, abort course", distanceToTractor ), 9 )
-						continueCourse = false
-						vehicle.cp.nextTargets = {}
-						courseplay:switchToNextMode2State(vehicle);
-						courseplay:setMode2NextState(vehicle, STATE_DEFAULT);
-					end				
+					-- distanceToObject may be called with nil here
+					if frontTractor then 
+						local distanceToTractor = courseplay:distanceToObject( vehicle, frontTractor )
+						if distanceToTractor < 50 then
+							courseplay:debug( string.format( "Only %.2f meters to tractor on the way, abort course", distanceToTractor ), 9 )
+							continueCourse = false
+							vehicle.cp.nextTargets = {}
+							courseplay:switchToNextMode2State(vehicle);
+							courseplay:setMode2NextState(vehicle, STATE_DEFAULT);
+						end
+					end
 				end
 				if continueCourse then
 				  -- set next target and remome current one from list
@@ -1721,3 +1724,5 @@ function courseplay:getSafetyDistanceFromCombine( combine )
 	end;
   return safetyDistance
 end
+-- do not remove this comment
+-- vim: set noexpandtab:
