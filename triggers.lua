@@ -105,12 +105,25 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 							   and ((vehicle ~= nil  and vehicle.rootNode ~= nil) or fixDistance ~= 0) then
 						local distanceToOtherId = math.huge
 						if fixDistance == 0 then
+							-- Band aid to prevent distanceToObject crashing. Can't follow the logic above to be able to
+							-- find out if and when vehicle may be nil
+							if not vehicle then 
+								courseplay:debug(string.format('%s: 	vehicle is nil, exiting collision trigger', nameNum(self)), 3);
+								return
+							end
 							distanceToOtherId= courseplay:distanceToObject(self, vehicle)
 						else
 							distanceToOtherId = fixDistance
 						end
 						local distanceToCollisionVehicle = math.huge
 						if trafficLightDistance == 0 then
+							-- Band aid to prevent distanceToObject crashing. Can't follow the logic above to be able to
+							-- find out if and when collisionVehicle may be nil. One possibility is that it is removed 
+							-- in vehicle.lua from the collision list in the meanwhile
+							if not collisionVehicle then
+								courseplay:debug(string.format('%s: 	collisionVehicle is nil, exiting collision trigger', nameNum(self)), 3);
+								return
+							end
 							distanceToCollisionVehicle = courseplay:distanceToObject(self, collisionVehicle)
 						else
 							distanceToCollisionVehicle = math.abs(trafficLightDistance)
@@ -366,7 +379,6 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						--self.cp.currentTipTrigger.cpActualLength = courseplay:distanceToObject(self, trigger)*2
 						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.DirectionNode or self.rootNode, trigger.rootNode)*2
 						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
@@ -984,3 +996,5 @@ function BunkerSilo:load(nodeId)
 	
 	return old
 end
+-- do not remove this comment
+-- vim: set noexpandtab:
