@@ -15,7 +15,7 @@ function CpManager:setUpDebugChannels()
 			defaultActive[14] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
-			defaultActive[14] = true;
+			defaultActive[12] = true;
 			defaultActive[4] = true;
 			defaultActive[7] = true;
 			defaultActive[9] = true;

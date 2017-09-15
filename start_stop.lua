@@ -193,7 +193,7 @@ function courseplay:start(self)
 	local mapIconWidth = mapIconHeight / g_screenAspectRatio;
 
 	local numWaitPoints = 0
-	local numUnloadPoints = 0
+	local numUnloadPoints = 1
 	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
 	self.cp.unloadPoints = {};
@@ -209,15 +209,53 @@ function courseplay:start(self)
 	local curLaneNumber = 1;
 	local hasReversing = false;
 	local lookForNearestWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
+
+	local lookForNextWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEXT_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); 
+	local _, myRotation, _ = getWorldRotation( self.cp.DirectionNode )
+	-- one of the remaining waypoints of the course, closest in front of us
+	local nextWaypointIx = 1
+	local foundNextWaypoint = false
+	-- any waypoint of the course, closest in front of us
+	local nearestWaypointInSameDirectionIx = 1
+	local foundNearestWaypointInSameDirection = false
+	local dzNearestWaypointInSameDirection = math.huge
+
+
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz;
-		if lookForNearestWaypoint then
+
+		-- find nearest waypoint regardless of its rotation and direction from us
+		if lookForNearestWaypoint or lookForNextWaypoint then
 			dist = courseplay:distance(ctx, ctz, cx, cz)
 			if dist <= nearestpoint then
 				nearestpoint = dist
 				nearestWpIx = i
 			end;
 		end;
+
+		-- find next waypoint 
+		if lookForNextWaypoint then
+			local _, _, dz = worldToLocal( self.cp.DirectionNode, cx, 0, cz )
+			local deltaAngle = math.huge	
+			if wp.angle ~= nil then 
+				deltaAngle = math.abs( getDeltaAngle( math.rad( wp.angle ), myRotation ))
+			end
+			-- we don't want to deal with anything closer than 5 m to avoid circling
+			-- also, we want the waypoint which points into the direction we are currently heading to
+		  if dist < 30 and dz > 5 and deltaAngle < math.rad( 45 ) then
+				if dz < dzNearestWaypointInSameDirection then
+					nearestWaypointInSameDirectionIx = i
+					dzNearestWaypointInSameDirection = dz
+	        foundNearestWaypointInSameDirection = true
+					courseplay:debug(string.format('%s: found waypoint %d anywhere, distance = %.1f, deltaAngle = %.1f', nameNum(self), i, dz, math.deg( deltaAngle )), 12);
+				end
+				if not foundNextWaypoint and i >= self.cp.waypointIndex then
+					foundNextWaypoint = true
+					nextWaypointIx = i
+					courseplay:debug(string.format('%s: found waypoint %d next, distance = %.1f, deltaAngle = %.1f', nameNum(self), i, dz, math.deg( deltaAngle )), 12);
+				end
+			end
+		end
 
 		if wp.wait then
 			numWaitPoints = numWaitPoints + 1;
@@ -338,15 +376,23 @@ function courseplay:start(self)
 		end
 	end
 
-	local lookForNextWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEXT_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); 
 
   if lookForNextWaypoint then
-		-- get the closest wp in front of us
-		safeSetWaypointIndex( self, courseplay:getNextFwdPoint( self, true ))     
+		if foundNextWaypoint then 
+			courseplay:debug(string.format('%s: found next waypoint: %d', nameNum(self), nextWaypointIx ), 12);
+			courseplay:safeSetWaypointIndex( self, nextWaypointIx )     
+		elseif foundNearestWaypointInSameDirection then
+			courseplay:debug(string.format('%s: no next waypoint found, using the closest one in the same direction: %d', nameNum(self), nearestWaypointInSameDirectionIx), 12);
+			courseplay:safeSetWaypointIndex( self, nearestWaypointInSameDirectionIx )     
+		else
+			courseplay:debug(string.format('%s: no next waypoint found, none found in the same direction, falling back to the nearest: %d', 
+			                               nameNum(self), nearestWpIx ), 12);
+			courseplay:safeSetWaypointIndex( self, nearestWpIx )     
+    end
   end
 	
 	if lookForNearestWaypoint then
-		safeSetWaypointIndex( self, nearestWpIx )     
+		courseplay:safeSetWaypointIndex( self, nearestWpIx )     
 	end --END if modeState == 0
 
 	if self.cp.waypointIndex > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 and self.cp.mode ~= 8 then
