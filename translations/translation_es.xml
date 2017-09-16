@@ -168,11 +168,11 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabecera" />
-    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Headland corners" /> 
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  text="Smooth" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  text="Turn (combines only)" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  text="Round" />
-		<text name="COURSEPLAY_ACTIVATED" 								 text="activado" />
+    	<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Esquinas de Cabeceras" /> 
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  			 text="Suave" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Brusco (Solo Cosechadoras)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="Redondo" />
+		<text name="COURSEPLAY_ACTIVATED" 								 text="Activado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Solo nombre" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nombre y Ruta" />
 		<text name="COURSEPLAY_DEACTIVATED" 							 text="desactivado" />
@@ -252,7 +252,7 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Parar de conducir marcha atrás" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Rellenar puntos" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Iconos del mapa: mostrar etiquetas" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Ajustes Drive Control" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automático" /> 
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4x4 Siempre" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4x4 Siempre + Difer. Delantero para trabajo de campo." />
