@@ -627,18 +627,30 @@ function courseplay:drive(self, dt)
 	local isFinishingWork = false;
 	-- MODE 4
 	if self.cp.mode == 4 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workToolAttached then
+	
 		allowedToDrive, workArea, workSpeed, isFinishingWork, refSpeed = courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed);
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		
 		if not workArea and self.cp.totalFillLevelPercent < self.cp.refillUntilPct then
 			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
+		end;
+		
+		if self.Waypoints[self.cp.waypointIndex].isConnectingTrack then
+			courseplay:lowerImplements(self, false, false)
 		end;
 
 	-- MODE 6
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
+	
 		allowedToDrive, workArea, workSpeed, breakCode, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, lx, lz,refSpeed,dt);
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		
 		if not workArea and self.cp.currentTipTrigger == nil and self.cp.totalFillLevel and self.cp.totalFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.cp.waypointIndex].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
+		end;
+		
+		if self.Waypoints[self.cp.waypointIndex].isConnectingTrack then
+			courseplay:lowerImplements(self, false, false)
 		end;
 
 		if breakCode then

@@ -505,16 +505,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end
 
 					-- Make sure we are lowered when working the field.
-					if allowedToDrive and isTurnedOn and not workTool:isLowered() and not vehicle.cp.isReverseBackToPoint 
-						and not vehicle.Waypoints[vehicle.cp.waypointIndex].isConnectingTrack then
+					if allowedToDrive and isTurnedOn and not workTool:isLowered() and not vehicle.cp.isReverseBackToPoint then
 						courseplay:lowerImplements(vehicle, true, false);
 					end;
-
-					if vehicle.Waypoints[vehicle.cp.waypointIndex].isConnectingTrack and workTool:isLowered() then
-						courseplay:debug(string.format('%s: raise implement on connecting track', nameNum(vehicle)), 17);
-            courseplay:lowerImplements(vehicle, false, false);
-          end
-				
 				end
 			 --Stop combine
 			elseif not workArea or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork or vehicle.cp.abortWork ~= nil then
