@@ -156,8 +156,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Zapnout CoursePlay HUD:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Kanály ladění:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generovat trasu" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Směr trasy:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Návrat na první bod:" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="jihozápad" />
@@ -172,10 +172,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />  <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
-    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Headland corners" /> 
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  text="Smooth" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  text="Turn (combines only)" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  text="Round" />
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS" 				 text="Headland corners" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /><!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Turn (combines only)" /><!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /><!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="pouze stroj" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="stroj a trasa" />
@@ -314,6 +314,6 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>  <!-- TODO: TRANSLATE! -->		
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>  <!-- TODO: TRANSLATE! -->		
 	</texts>
 </l10n>

@@ -172,10 +172,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
-    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  text="Headland corners" /> 
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  text="Smooth" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  text="Turn (combines only)" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  text="Round" />
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn (combines only)" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="solo nome" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="nome e percorso" />

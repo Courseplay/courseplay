@@ -156,8 +156,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Abrir Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Debugar canais" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Geração de rota" />
-    <text name="COURSEPLAY_STARTING_LOCATION" 						 text="Local inicial" /> 
-    <text name="COURSEPLAY_ENDING_LOCATION" 						 text="Local final" />      
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Local inicial" /> 
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Local final" />      
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Iniciar na direção" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Retornar ao primeiro ponto" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Sudoeste" />
@@ -172,7 +172,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" /> 
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabeceira" />
-    <text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"                      text="Cantos da cabeceira" /> 
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"                  text="Cantos da cabeceira" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"              text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"               text="Virar (somente ceifadeira)" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"               text="Virar" />
