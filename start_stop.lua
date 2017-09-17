@@ -211,7 +211,8 @@ function courseplay:start(self)
 	local lookForNearestWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
 
 	local lookForNextWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEXT_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); 
-	local _, myRotation, _ = getWorldRotation( self.cp.DirectionNode )
+	local nx, _, nz = localDirectionToWorld( self.cp.DirectionNode, 0, 0, 1 )
+	local myDirection = math.atan2( nx, nz ) 
 	-- one of the remaining waypoints of the course, closest in front of us
 	local nextWaypointIx = 1
 	local foundNextWaypoint = false
@@ -239,11 +240,11 @@ function courseplay:start(self)
 			local _, _, dz = worldToLocal( self.cp.DirectionNode, cx, 0, cz )
 			local deltaAngle = math.huge	
 			if wp.angle ~= nil then 
-				deltaAngle = math.abs( getDeltaAngle( math.rad( wp.angle ), myRotation ))
+				deltaAngle = math.abs( getDeltaAngle( math.rad( wp.angle ), myDirection ))
 			end
 			-- we don't want to deal with anything closer than 5 m to avoid circling
 			-- also, we want the waypoint which points into the direction we are currently heading to
-			courseplay:debug(string.format('%s: %d, dist=%.1f, dz=%.1f, wp.angle = %.3f, myRotation = %.3f', nameNum(self), i, dist, dz, math.rad( wp.angle ), myRotation ), 12);
+			courseplay:debug(string.format('%s: %d, dist=%.1f, dz=%.1f, wp.angle = %.3f, myDirection = %.3f', nameNum(self), i, dist, dz, wp.angle, math.deg( myDirection )), 12);
 			if dist < 30 and dz > 5 and deltaAngle < math.rad( 45 ) then
 				if dist < distNearestWaypointInSameDirection then
 					nearestWaypointInSameDirectionIx = i
@@ -251,7 +252,7 @@ function courseplay:start(self)
 					foundNearestWaypointInSameDirection = true
 					courseplay:debug(string.format('%s: found waypoint %d anywhere, distance = %.1f, deltaAngle = %.1f', nameNum(self), i, dist, math.deg( deltaAngle )), 12);
 				end
-				if dist < distNextWaypoint and i >= self.cp.waypointIndex then
+				if dist < distNextWaypoint and i >= self.cp.waypointIndex and i <= self.cp.waypointIndex + 10 then
 					foundNextWaypoint = true
 					distNextWaypoint = dist
 					nextWaypointIx = i
