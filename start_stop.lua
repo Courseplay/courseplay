@@ -244,7 +244,6 @@ function courseplay:start(self)
 			end
 			-- we don't want to deal with anything closer than 5 m to avoid circling
 			-- also, we want the waypoint which points into the direction we are currently heading to
-			courseplay:debug(string.format('%s: %d, dist=%.1f, dz=%.1f, wp.angle = %.3f, myDirection = %.3f', nameNum(self), i, dist, dz, wp.angle, math.deg( myDirection )), 12);
 			if dist < 30 and dz > 5 and deltaAngle < math.rad( 45 ) then
 				if dist < distNearestWaypointInSameDirection then
 					nearestWaypointInSameDirectionIx = i
