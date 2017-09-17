@@ -193,7 +193,7 @@ function courseplay:start(self)
 	local mapIconWidth = mapIconHeight / g_screenAspectRatio;
 
 	local numWaitPoints = 0
-	local numUnloadPoints = 1
+	local numUnloadPoints = 0
 	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
 	self.cp.unloadPoints = {};

@@ -83,7 +83,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 		courseplay:setFourWheelDrive(vehicle,inBunker)
 	end
 	
-	if  inBunker or vehicle.cp.mode10.isStuck then 
+	if inBunker or vehicle.cp.mode10.isStuck then 
 		if vehicle.cp.actualTarget == nil or vehicle.cp.BunkerSiloMap == nil then
 			courseplay:getActualTarget(vehicle)
 		end
@@ -242,17 +242,21 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 						end
 					end
 				else
+				--search the alpha where the shield is flat to the ground
 					if vehicle.cp.mode10.tempSchieldHeight == nil then 
 						vehicle.cp.mode10.tempSchieldHeight = currentHeight +0.5
+						--print("set tempSchieldHeight to "..tostring(vehicle.cp.mode10.tempSchieldHeight))
 					end
+					--print("currentHeight: "..tostring(currentHeight))
 					if currentHeight < 0.2 then 
 						if currentHeight == vehicle.cp.mode10.tempSchieldHeight then
-							if vehicle.cp.mode10.alphaList[0] == nil then
-								vehicle.cp.mode10.alphaList[0] = vehicle.cp.workTools[1].attacherJointControl.controls[1].moveAlpha
-								vehicle.cp.mode10.tempSchieldHeight = nil
-							end
+							--if the shield doesnt move it means its flat to the ground
+							vehicle.cp.shieldState = vehicle.cp.targetShieldState
+							--print("shield doesnt move-> break")
 						else
-							vehicle.cp.mode10.tempSchieldHeight = currentHeight 
+							vehicle.cp.mode10.tempSchieldHeight = currentHeight
+							vehicle.cp.mode10.alphaList[0] = vehicle.cp.workTools[1].attacherJointControl.controls[1].moveAlpha
+							--print("set tempSchieldHeight to "..tostring(vehicle.cp.mode10.tempSchieldHeight))							
 						end
 					end
 				end
