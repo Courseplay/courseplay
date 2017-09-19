@@ -1,4 +1,4 @@
--- Field scanner
+200 Field scanner
 -- original algorithm by upsidedown, 24 Nov 2013 / incorporation into Courseplay by Jakob Tischler, 27 Nov 2013
 -- steep angle algorithm by fck54
 
@@ -13,7 +13,7 @@ function courseplay.fields:setup()
 	self.curFieldScanIndex = 0;
 	self.allFieldsScanned = false;
 	self.ingameDataSetUp = false;
-	self.customFieldMaxNum = 150;
+	self.customFieldMaxNum = 200;
 	self.automaticScan = true;
 	self.onlyScanOwnedFields = true;
 	self.debugScannedFields = false;
