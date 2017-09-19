@@ -114,7 +114,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 				 text="СОДЕРЖИМОЕ ПАПКИ" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 					 text="ПАРАМЕТРЫ КОМБАЙНА" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="ВЫБОР КОМБАЙНА" />
-		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="СКОРОСТНЫЕ ПАРАМЕТРЫ" />
+		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="ПАРАМЕТРЫ СКОРОСТИ" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="СМЕЩЕНИЕ МАРШРУТА" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="ДОПОЛНИТЕЛЬНЫЕ ОПЦИИ" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Комбайн поворачивает" />
@@ -211,7 +211,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="с ближайшей точки" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="продолжить маршрут" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="следующая точка ожидания" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Выбрать поле:" />
 		<text name="COURSEPLAY_FIELD" 									 text="поле №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(загруженный маршрут)" />
@@ -266,7 +266,7 @@
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Включить автосканирование полей?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Рабочие хотят %s в час! Разрешить выплачивать зарплаты?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="КАЛЬКУЛЯЦИЯ ПОСЕВОВ" />
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Участок: %d (%s %s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Поле: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="%s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Расходы: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
