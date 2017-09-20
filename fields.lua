@@ -13,7 +13,7 @@ function courseplay.fields:setup()
 	self.curFieldScanIndex = 0;
 	self.allFieldsScanned = false;
 	self.ingameDataSetUp = false;
-	self.customFieldMaxNum = 150;
+	self.customFieldMaxNum = 200;
 	self.automaticScan = true;
 	self.onlyScanOwnedFields = true;
 	self.debugScannedFields = false;
