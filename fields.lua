@@ -1,4 +1,4 @@
-200 Field scanner
+-- Field scanner
 -- original algorithm by upsidedown, 24 Nov 2013 / incorporation into Courseplay by Jakob Tischler, 27 Nov 2013
 -- steep angle algorithm by fck54
 
