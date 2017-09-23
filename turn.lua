@@ -1520,57 +1520,56 @@ function courseplay:generateTurnTypeHeadlandCornerReverseStraight(vehicle, turnI
 	local fromPoint, toPoint = {}, {};
 	local centerForward, startDir, stopDir = {}, {}, {}, {}, {}
 
-  --
-  -- create a helper node from turnTarget but this time rotated into the turnStart direction
-  local tx, _, tz = localToWorld( turnInfo.targetNode, 0, 0, 0 )
-  local turnStartNode = courseplay:createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
-  
-  -- get the center of the forward turning circle
-  -- delta between turn start and turn end
-	local deltaAngle = getDeltaAngle( math.rad( vehicle.Waypoints[vehicle.cp.waypointIndex + 1 ].angle ),
-                                    math.rad( vehicle.Waypoints[vehicle.cp.waypointIndex].angle ))
-  -- TODO: safety check for deltaAngle around 90! 
-  turnInfo.turnRadius = turnInfo.turnRadius * 1.1
-  local deltaZC = turnInfo.turnRadius * math.abs( math.tan( deltaAngle / 2 ))
+	--
+	-- create a helper node from turnTarget but this time rotated into the turnStart direction
+	local tx, _, tz = localToWorld( turnInfo.targetNode, 0, 0, 0 )
+	local turnStartNode = courseplay:createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
+	
+	-- get the center of the forward turning circle
+	-- delta between turn start and turn end
+	local deltaAngle = math.pi - ( math.rad( vehicle.Waypoints[vehicle.cp.waypointIndex + 1 ].angle )
+																 - math.rad( vehicle.Waypoints[vehicle.cp.waypointIndex].angle ))
+	-- TODO: safety check for deltaAngle around 90! 
+	turnInfo.turnRadius = turnInfo.turnRadius * 1.1
+	local deltaZC = turnInfo.turnRadius / math.abs( math.tan( deltaAngle / 2 ))
 	centerForward.x,_,centerForward.z = localToWorld(turnStartNode, - turnInfo.direction * turnInfo.turnRadius, 0, -deltaZC )
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraight(), fwdCircle( %.2f %.2f ), deltaAngle %.2f, deltaZC %.2f"):format( 
-                    nameNum(vehicle), centerForward.x, centerForward.z, math.deg( deltaAngle ), deltaZC ), 14);
+										nameNum(vehicle), centerForward.x, centerForward.z, math.deg( deltaAngle ), deltaZC ), 14);
 
-                   
-  -- drive forward to the edge of the field
-  fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, 0 )
-  -- we want the work area of our implement reach the edge of the field. We are on a headland, the field edge
-  -- is workwidth/2 from us, but our front marker must reach it.
-  toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, vehicle.cp.courseWorkWidth / 2 - turnInfo.frontMarker + turnInfo.wpChangeDistance + 0.5 )
+	-- drive forward to the edge of the field
+	fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, 0 )
+	-- we want the work area of our implement reach the edge of the field. We are on a headland, the field edge
+	-- is workwidth/2 from us, but our front marker must reach it.
+	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, vehicle.cp.courseWorkWidth / 2 - turnInfo.frontMarker + turnInfo.wpChangeDistance + 0.5 )
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraight(), from ( %.2f %.2f ), to ( %.2f %.2f) workWidth: %.1f, frontMarker: %.1f"):format( 
-                    nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, vehicle.cp.courseWorkWidth, turnInfo.frontMarker ), 14);
+										nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, vehicle.cp.courseWorkWidth, turnInfo.frontMarker ), 14);
 	courseplay:generateTurnStraitPoints( vehicle, fromPoint, toPoint, false )
 
-  -- raise the implement before reversing 
+	-- raise the implement before reversing 
 	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].raiseImplement = true 
 
-  -- now back up 
+	-- now back up 
 	local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
 	fromPoint.x = wp.posX;
 	fromPoint.z = wp.posZ;
 	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, - deltaZC - turnInfo.frontMarker )
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraight(), from ( %.2f %.2f ), to ( %.2f %.2f )"):format( 
-                    nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z ), 14);
-	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true);
-                    --
-  -- lower the implement 
+										nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z ), 14);
+	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true); 
+	--
+	-- lower the implement 
 	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].lowerImplement = true 
-  
+
 	--- Generate turn circle (Forward)
 	startDir.x,_,startDir.z = localToWorld( turnStartNode, 0, 0, -deltaZC )
-  stopDir.x, _, stopDir.z = localToWorld( turnInfo.targetNode, 0, 0, deltaZC )
+	stopDir.x, _, stopDir.z = localToWorld( turnInfo.targetNode, 0, 0, deltaZC )
 	courseplay:generateTurnCircle( vehicle, centerForward, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction * -1, true);
 
-  -- Append a short straight section to make sure we finish the turn before switching to 
-  -- the next waypoint.
-  toPoint.x, _, toPoint.z = localToWorld( turnInfo.targetNode, 0, 0, deltaZC + 2 )
+	-- Append a short straight section to make sure we finish the turn before switching to 
+	-- the next waypoint.
+	toPoint.x, _, toPoint.z = localToWorld( turnInfo.targetNode, 0, 0, deltaZC + 2 )
 	courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true );
-  courseplay:destroyNode( turnStartNode )
+	courseplay:destroyNode( turnStartNode )
 end;
 
 
@@ -1855,3 +1854,4 @@ function getDirectionChangeOfTurn( vehicle )
   local isHeadlandCornerTurn = math.abs( directionChangeDeg ) < laneTurnAngleThreshold
   return directionChangeDeg, isHeadlandCornerTurn
 end
+-- vim: set noexpandtab:
