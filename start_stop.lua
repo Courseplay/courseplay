@@ -26,6 +26,7 @@ function courseplay:start(self)
     -- Start the reset character timer.
 	courseplay:setCustomTimer(self, "resetCharacter", 300);
 
+		
 	if courseplay.isClient then
 		return
 	end
@@ -187,7 +188,15 @@ function courseplay:start(self)
 	end;
 	self.cp.isReversePossible = isReversePossible
 	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
-
+	
+	if self.cp.mode == 10 then 
+		if self.cp.mode10.OrigCompactScale == nil then
+			self.cp.mode10.OrigCompactScale = self.bunkerSiloCompactingScale
+			self.bunkerSiloCompactingScale = self.bunkerSiloCompactingScale*5
+		end
+	end
+		
+		
 	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);
 	local mapIconHeight = 2 / 1080;
 	local mapIconWidth = mapIconHeight / g_screenAspectRatio;
@@ -708,7 +717,14 @@ function courseplay:stop(self)
 	if courseplay.isClient then
 		return
 	end
-
+	
+	--mode10 restore original compactingScales
+	if self.cp.mode10.OrigCompactScale ~= nil then
+		self.bunkerSiloCompactingScale = self.cp.mode10.OrigCompactScale 
+		self.cp.mode10.OrigCompactScale = nil
+	end
+	
+	
 	-- Enable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
 	if self.cropDestruction then
 		courseplay:enableCropDestruction(self);

@@ -189,7 +189,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				targetHeigth = 2
 				distance2Target =  courseplay:distanceToPoint(vehicle, cx, cy, cz) --distance from vehicle to target
 			end
-			
+						
 			--[[if vehicle.cp.shieldState == "down" and  targetHeigth < 0 then  --TODO find a proper way to trigger  swinging 
 				--print("jump detected : "..tostring(vehicle.cp.mode10.lastDiffDiff))
 				if not vehicle.cp.mode10.jumpIsCounted then
@@ -392,6 +392,8 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			elseif vehicle.cp.slippingStage > 1 then
 				vehicle.cp.mode10.isStuck = true
 			end
+			refSpeed = vehicle.cp.speeds.turn
+			
 		else
 			vehicle.cp.fillLevelGo = true
 			vehicle.cp.modeState = 1
@@ -598,6 +600,11 @@ function courseplay:getActualTarget(vehicle)
 					print(string.format(" %s",printString))
 				end
 			end
+			
+			if vehicle.cp.mode10.drivingThroughtLoading and vehicle.cp.mode10.leveling then
+				leveled = true
+			end			
+			
 			if leveled then
 				courseplay:debug("set Leveled",10)
 				vehicle.cp.BunkerSiloMap[#vehicle.cp.BunkerSiloMap][1].leveled = true
