@@ -56,6 +56,10 @@ function courseplay:deleteCollisionVehicle(vehicle)
 			if vehicle.cpTrafficCollisionIgnoreList[index] == nil then
 				foundOtherId = true
 				local collisionVehicle = g_currentMission.nodeToVehicle[index];
+				if not collisionVehicle then
+					courseplay:debug(string.format('%s: 	deleteCollisionVehicle: collisionVehicle is nil', nameNum(vehicle)), 3);
+					return
+				end
 				local distanceToCollisionVehiclefromList = courseplay:distanceToObject(vehicle, collisionVehicle)
 				if distanceToCollisionVehiclefromList < distanceToCollisionVehicle then
 					distanceToCollisionVehicle = distanceToCollisionVehiclefromList
@@ -1426,3 +1430,4 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 	--- Set the waypoint to the start of the refill course
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 end;
+-- vim: set noexpandtab:
