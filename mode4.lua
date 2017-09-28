@@ -124,7 +124,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			if allowedToDrive then
 				if not specialTool then
 					--unfold
-					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded then -- and ((self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork - 2) or (self.cp.abortWork == nil and self.cp.waypointIndex == 2)) then
+					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded and not courseplay:onAlignmentCourse( self ) then -- and ((self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork - 2) or (self.cp.abortWork == nil and self.cp.waypointIndex == 2)) then
 						courseplay:debug(string.format('%s: unfold order (foldDir %d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 						workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						hasSetUnfoldOrderThisLoop = true
@@ -155,7 +155,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 						end;
 
 						--lower/raise
-						if (needsLowering or workTool.aiNeedsLowering) then
+						if (needsLowering or workTool.aiNeedsLowering) and not courseplay:onAlignmentCourse( self ) then
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", self.cp.waypointIndex, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
 							if not workTool:isLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);

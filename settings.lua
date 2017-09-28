@@ -594,6 +594,10 @@ function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
 
+function courseplay:toggleAlignmentWaypoint( vehicle )
+	vehicle.cp.alignment.enabled = not vehicle.cp.alignment.enabled
+end
+
 function courseplay:togglePloughFieldEdge(self)
 	self.cp.ploughFieldEdge = not self.cp.ploughFieldEdge;
 end;

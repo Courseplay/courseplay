@@ -73,6 +73,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径点显示选择：" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="地块边缘" /> 
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="地块内转向:" />

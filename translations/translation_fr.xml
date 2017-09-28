@@ -78,6 +78,7 @@
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evite les cultures" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distance latéral:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Labour des fourrières:" />
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
 		<text name="COURSEPLAY_START_AT" 						 		 text="Démarrer à:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Tourne dans le champ:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Manoeuvre:" />

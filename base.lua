@@ -135,7 +135,9 @@ function courseplay:load(savegame)
 	self.cp.heapStart = nil
 	self.cp.heapStop = nil
 	self.cp.makeHeaps = false
+	-- for modes 4 and 6, this the index of the waypoint where the work begins
 	self.cp.startWork = nil
+	-- for modes 4 and 6, this the index of the waypoint where the work ends
 	self.cp.stopWork = nil
 	self.cp.abortWork = nil
 	self.cp.abortWorkExtraMoveBack = 0;
@@ -220,6 +222,10 @@ function courseplay:load(savegame)
 	self.cp.nextTargets = {};
 	self.cp.turnTargets = {};
 	self.cp.curTurnIndex = 1;
+
+	-- alignment course data
+	-- alignment course enabled for developers by default
+	self.cp.alignment = { enabled = CpManager.isDeveloper }
 
 	-- speed limits
 	self.cp.speeds = {

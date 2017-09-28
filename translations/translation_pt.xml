@@ -73,6 +73,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 	 text="Mostrar pontos" />
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evitar as plantações" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar borda do campo" />
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distânçia lateral" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Iniciar a:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" /> 

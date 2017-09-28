@@ -1838,9 +1838,9 @@ function courseplay:turnWithOffset(self)
 	end;
 end;
 
-function courseplay:createNode( name, x, z, yRotation )
+function courseplay:createNode( name, x, z, yRotation, rootNode )
 	local node = createTransformGroup( name )
-	link( g_currentMission.terrainRootNode, node )
+	link( rootNode or g_currentMission.terrainRootNode, node )
 	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z);
 	setTranslation( node, x, y, z );
 	setRotation( node, 0, yRotation, 0);
@@ -1858,4 +1858,120 @@ function getDirectionChangeOfTurn( vehicle )
   local isHeadlandCornerTurn = math.abs( directionChangeDeg ) < laneTurnAngleThreshold
   return directionChangeDeg, isHeadlandCornerTurn
 end
+
+--[[
+The vehicle at vehiclePos moving into the direction of WP waypoint. 
+The direction it should be when reaching the waypoint is wpAngle. 
+We need to determine a T1 target where the vehicle can drive to and actually reach WP in wpAngle direction.
+Then we add waypoints on a circle from T1 to WP.
+see https://ggbm.at/RN3cawGc
+--]]
+
+function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
+	-- make the radius a bit bigger to make sure we can make the turn
+	local turnRadius = 1.2 * vehicle.cp.turnDiameter / 2
+	-- target waypoint we want to reach
+	local wpNode = courseplay:createNode( "wpNode", tx, tz, tDirection )
+  -- which side of the target node are we?
+	local vx, vy, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
+	local dx, _, _ = worldToLocal( wpNode, vx, vy, vz )
+	-- right -1, left +1
+	local leftOrRight = dx < 0 and -1 or 1
+	-- center of turn circle
+	local c1x, c1y, c1z = localToWorld( wpNode, leftOrRight * turnRadius, 0, 0 )
+	local vehicleToC1Distance = courseplay:distance( vx, vz, c1x, c1z )
+	local vehicleToC1Direction = math.atan2(c1x - vx, c1z - vz )
+	local angleBetweenTangentAndC1 = math.pi / 2 - math.asin( turnRadius / vehicleToC1Distance )
+	-- check for NaN, may happen when we are closer han turnRadius
+	if angleBetweenTangentAndC1 ~= angleBetweenTangentAndC1 then
+		return nil
+	end
+	local c1Node = courseplay:createNode( "c1Node", c1x, c1z, vehicleToC1Direction )
+  local t1Node = courseplay:createNode( "t1Node", 0, 0, - leftOrRight * ( math.pi - angleBetweenTangentAndC1 ), c1Node )
+
+	courseplay:debug(string.format("%s:(Align) vehicleToC1Distance = %.1f, vehicleToC1Direction = %.1f angleBetween = %.1f, wpAngle = %.1f, turnRadius = %.1f, %.1f", 
+																	nameNum(vehicle), vehicleToC1Distance, math.deg( vehicleToC1Direction ), math.deg( angleBetweenTangentAndC1 ), math.deg( tDirection ), 
+																	turnRadius, - leftOrRight * math.deg( math.pi - angleBetweenTangentAndC1 )), 14);
+
+	local c1 = {}
+	c1.x, _, c1.z = localToWorld( c1Node, 0, 0, 0 )
+	local t1 = {}
+	t1.x, _, t1.z = localToWorld( t1Node, 0, 0, turnRadius )
+	local wp = { x = tx, z = tz } 
+
+	-- leverage Claus' nice turn generator
+  courseplay:generateTurnCircle( vehicle, c1, t1, wp, turnRadius, leftOrRight, false, false )
+	result = vehicle.cp.turnTargets
+	vehicle.cp.turnTargets = {}
+
+	courseplay:destroyNode( t1Node )
+	courseplay:destroyNode( c1Node )
+	courseplay:destroyNode( wpNode )
+	return result 
+end
+
+-- Start the vehicle on an alignment course towards targetWaypoint.
+-- The alignment course consists of a circle segment ending at targetWaypoint,
+-- with the tangent showing into the direction to the waypoint after targetWaypoint.
+-- This makes sure the vehicle arrives at targetWaypoint in the correct
+-- direction and won't circle around it.
+--
+-- The current course of the vehicle is saved and once the alignment course is completed,
+-- restored so it can continue on the original course. 
+--
+-- No obstacles are checked.
+function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
+	if not vehicle.cp.alignment.enabled then return end
+	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
+	if not points then
+		courseplay:debug(string.format("%s:(Align) can't find an alignment course, may be too close to target wp?", nameNum(vehicle)), 14 )
+		return
+	end
+	-- save current course (if we had at least a trace of object oriented practices
+	-- then all the course data would be in a single table and not flattened 
+	-- out across fifty different keys and it would be so much easier to save/restore a course)
+	vehicle.cp.alignment.savedWaypoints = vehicle.Waypoints
+	vehicle.cp.alignment.savedWaypointIndex = vehicle.cp.waypointIndex	
+	vehicle.cp.alignment.savedpreviousWaypointIndex = vehicle.cp.previousWaypointIndex	
+	-- for my life I won't understand why aren't we just using #vehicle.Waypoints everywhere
+	-- if we were, there'd be a need to save and restore it and maintain it, oh boy, but I don't 
+	-- have a week to refactor it everywhere 
+	vehicle.cp.alignment.savedNumWaypoints = vehicle.cp.numWaypoints
+	vehicle.Waypoints = {}
+	for i, point in ipairs( points ) do
+		-- add coordinates to cx/cz _and_ x/z for Waypoints in general and for nextTargets in mode2. 
+		-- why, why, why can't we call them x and z everywhere?
+		local alignWp = { cx = point.posX, cz = point.posZ, x = point.posX, z = point.posZ } 
+		table.insert( vehicle.Waypoints, alignWp )
+		courseplay:debug(string.format("%s:(Align) Adding an alignment wp: (%1.f, %1.f)", nameNum(vehicle), point.posX, point.posZ), 14)
+	end
+	vehicle.cp.numWaypoints = #vehicle.Waypoints
+	courseplay:setWaypointIndex(vehicle, 1);
+end
+
+-- is the vehicle currently on an alignment course?
+function courseplay:onAlignmentCourse( vehicle )
+	return vehicle.cp.alignment.savedWaypoints ~= nil
+end
+
+function courseplay:getAlignmentCourseWpChangeDistance( vehicle )
+	-- same for all vehicles for now
+	return 3
+end
+
+-- End the alignment course, restore the original course and continue on it.
+function courseplay:endAlignmentCourse( vehicle )
+	if courseplay:onAlignmentCourse( vehicle ) then
+		vehicle.Waypoints = vehicle.cp.alignment.savedWaypoints
+		vehicle.cp.numWaypoints = vehicle.cp.alignment.savedNumWaypoints
+		vehicle.cp.waypointIndex = vehicle.cp.alignment.savedWaypointIndex	
+		vehicle.cp.previousWaypointIndex = vehicle.cp.alignment.savedpreviousWaypointIndex	
+		courseplay:debug(string.format("%s:(Align) Ending alignment course, countinue on original course at waypoint %d.", nameNum(vehicle), vehicle.cp.waypointIndex), 14 )
+		vehicle.cp.alignment.savedWaypoints = nil
+	else
+		courseplay:debug(string.format("%s:(Align) Ending alignment course but not on alignement course.", nameNum(vehicle)), 14 )
+	end
+end
+
+-- do not delete this line
 -- vim: set noexpandtab:

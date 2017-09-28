@@ -907,7 +907,9 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[3][7][1].text = courseplay:loc('COURSEPLAY_PLOUGH_FIELD_EDGE');
 			vehicle.cp.hud.content.pages[3][7][2].text = vehicle.cp.ploughFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
-
+		
+		vehicle.cp.hud.content.pages[3][8][1].text = courseplay:loc('COURSEPLAY_ALIGNMENT_WAYPOINT');
+		vehicle.cp.hud.content.pages[3][8][2].text = vehicle.cp.alignment.enabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 
 	--PAGE 4: COMBINE ASSIGNMENT
 	elseif page == self.PAGE_MANAGE_COMBINES then
@@ -1115,7 +1117,6 @@ function courseplay.hud:loadPage(vehicle, page)
 		else
 			vehicle.cp.hud.content.pages[7][7][2].text = courseplay:loc('COURSEPLAY_NONE');
 		end;
-
 
 	-- PAGE 8: COURSE GENERATION
 	elseif page == self.PAGE_COURSE_GENERATION then
@@ -1618,6 +1619,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- Plough to Field Edge
 	courseplay.button:new(vehicle, 3, nil, 'togglePloughFieldEdge', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
+	courseplay.button:new(vehicle, 3, nil, 'toggleAlignmentWaypoint', nil,  self.contentMinX, self.linesPosY[8], self.contentMaxWidth, self.lineHeight, 8, nil, true);
 
 
 	-- ##################################################
