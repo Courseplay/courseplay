@@ -172,10 +172,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn (combines only)" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Svolte testata campo" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Morbide" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Secche (solo trebbie)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Circolari" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="solo nome" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="nome e percorso" />
@@ -211,7 +211,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto più vicino" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primo punto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="punto corrente" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="punto successivo" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Percorso perimetrale del" />
 		<text name="COURSEPLAY_FIELD" 									 text="campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(percorso attualmente caricato)" />
