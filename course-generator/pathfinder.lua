@@ -112,7 +112,11 @@ local function getNeighbors( theNode, grid )
             -- eliminates most nodes with fruit (except the ones close to the harvested area)
             -- and thus reduces the number of iterations significantly. However, no path will be 
             -- generated when one of the end points is in the fruit.
-            ( neighbor.hasFruit and not theNode.hasFruit )) then table.insert( neighbors, neighbor ) end
+            ( neighbor.hasFruit and not theNode.hasFruit )) 
+            then
+              table.insert( neighbors, neighbor ) 
+              theNode.visited = true
+            end
         end
       end
     end

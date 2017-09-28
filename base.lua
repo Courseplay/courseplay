@@ -464,6 +464,10 @@ function courseplay:load(savegame)
 	self.cp.ridgeMarkersAutomatic = true;
 	self.cp.headland = {
 		maxNumLanes = 6;
+		-- with the old, manual direction selection course generator
+		manuDirMaxNumLanes = 6;
+		-- with the new, auto direction selection course generator
+		autoDirMaxNumLanes = 20;
 		numLanes = 0;
 		userDirClockwise = true;
 		orderBefore = true;
@@ -479,7 +483,8 @@ function courseplay:load(savegame)
 	};
 	link(getRootNode(), self.cp.headland.tg);
 	if CpManager.isDeveloper then
-		self.cp.headland.maxNumLanes = 50;
+		self.cp.headland.manuDirMaxNumLanes = 30;
+		self.cp.headland.autoDirMaxNumLanes = 50;
 	end;
 
 	self.cp.fieldEdge = {
@@ -1694,3 +1699,5 @@ function courseplay.setIsTurnedOn(self, originalFunction, isTurnedOn, noEventSen
 	originalFunction(self, isTurnedOn, noEventSend);
 end;
 TurnOnVehicle.setIsTurnedOn = Utils.overwrittenFunction(TurnOnVehicle.setIsTurnedOn, courseplay.setIsTurnedOn);
+-- do not remove this comment
+-- vim: set noexpandtab:

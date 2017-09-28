@@ -16,18 +16,23 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
   else
     n = n + 1
   end
-  if n > 200 then 
-    courseGenerator.debug( string.format( "Recursion limit reached for headland generation"))
-    return polygon
+  -- limit of the number of recursions based on how far we want to go
+  -- TODO: this may be linked to the factor for calculating the deltaOffset below
+  -- also, make sure there's a minimum (for example when we are generating a dummy headland with 0 offset
+  local recursionLimit = math.max( math.floor( targetOffset * 20 ), 200 )
+  if n > recursionLimit then 
+    courseGenerator.debug( string.format( "Recursion limit of %d reached for headland generation", recursionLimit ))
+    -- this will throw an exception but that's better than silently generating wrong tracks
+    return nil
   end
   -- we'll use the grassfire algorithm and approach the target offset by 
   -- iteration, generating headland tracks close enough to the previous one
   -- so the resulting offset polygon is always clean (its edges don't intersect
   -- each other)
   -- this can be ensured by choosing an offset small enough
-  local deltaOffset = polygon.shortestEdgeLength / 5
+  local deltaOffset = polygon.shortestEdgeLength / 8
 
-  --courseGenerator.debug( string.format( "** Before target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset))
+  -- courseGenerator.debug( string.format( "** Before target=%.2f, current=%.2f, delta=%.2f, target-current=%.2f", targetOffset, currentOffset, deltaOffset, targetOffset - currentOffset ))
   if currentOffset >= targetOffset then return polygon end
 
   deltaOffset = math.min( deltaOffset, targetOffset - currentOffset )
@@ -37,7 +42,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
     deltaOffset = -deltaOffset
   end
 
-  --courseGenerator.debug( string.format( "** After target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset))
+  -- courseGenerator.debug( string.format( "** After target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset))
   local offsetEdges = {} 
   for i, point in ipairs( polygon ) do
     local newEdge = {} 
@@ -47,6 +52,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
   end
  
   local vertices = {} 
+  local intersections = 0
   for i, edge in ipairs( offsetEdges ) do
     local ix = i - 1
     if ix == 0 then ix = #offsetEdges end
@@ -55,6 +61,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
                                     prevEdge.from.x, prevEdge.from.y, prevEdge.to.x, prevEdge.to.y )
     if vertex then
       table.insert( vertices, vertex )
+      intersections = intersections + 1
     else
       if getDistanceBetweenPoints( prevEdge.to, edge.from ) < minDistanceBetweenPoints then
         local x, y = getPointInTheMiddle( prevEdge.to, edge.from )
@@ -93,6 +100,11 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
   local fromIndex = getClosestPointIndex( field.headlandTracks[ 1 ], startLocation )
   local toIndex = getPolygonIndex( field.headlandTracks[ 1 ], fromIndex + 1 ) 
   vectors = {}
+  -- direction we'll be looking for the next inward headland track (relative to
+  -- the headland vertex direcions) We want to go a bit forward, not directly 
+  -- perpendicular 
+  local inwardAngleOffset = 60 
+  local inwardAngle
   for i = 1, #field.headlandTracks do
     -- now find out which direction we have to drive on the headland pass.
     if field.headlandTracks[ i ].isClockwise == isClockwise then
@@ -104,6 +116,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
       field.headlandTracks[ i ].circleStart = toIndex
       field.headlandTracks[ i ].circleEnd = fromIndex 
       field.headlandTracks[ i ].circleStep = 1
+      inwardAngle = inwardAngleOffset
     else
       -- must reverse direction
       -- driving direction is in decreasing index, so we start at fromIndex and go a full circle
@@ -113,19 +126,19 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
       field.headlandTracks[ i ].circleStart = fromIndex
       field.headlandTracks[ i ].circleEnd = toIndex 
       field.headlandTracks[ i ].circleStep = -1
+      inwardAngle = 180 - inwardAngleOffset
     end
     -- remember this, we'll need when generating the link from the last headland pass
     -- to the parallel tracks
     -- switch to the next headland track
-    local tangent = field.headlandTracks[ i ][ fromIndex ].tangent.angle
-    local heading = field.headlandTracks[ i ][ fromIndex ].tangent.angle + getInwardDirection( field.headlandTracks[ i ].isClockwise )
+    local heading = field.headlandTracks[ i ][ fromIndex ].nextEdge.angle + getInwardDirection( field.headlandTracks[ i ].isClockwise, math.rad( inwardAngle ))
     -- We should be able to find the next headland track within a reasonable distance but this 
     -- may not work around corners so we try further
-    local distances = { implementWidth * 1.5, implementWidth * 2, implementWidth * 5 }
+    local distances = { implementWidth * 1.5, implementWidth * 3, implementWidth * 6, implementWidth * 12 }
     for _, distance in ipairs( distances ) do
       -- we may have an issue finding the next track around corners, so try a couple of other headings
       local headings = { heading }
-      for h = 15,120,15 do 
+      for h = 10,120,10 do 
           table.insert( headings, heading + math.rad( h ))
           table.insert( headings, heading - math.rad( h ))
       end
@@ -134,14 +147,11 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
           table.insert( lines, { startLocation, addPolarVectorToPoint( startLocation, h, distance )})
         end
         if field.headlandTracks[ i + 1 ] then
-          courseGenerator.debug( string.format( "Trying to link headland track %d to next track at angle %.2f (tangent is %.2f)", i, math.deg( h ),
-                 math.deg(tangent)))
           fromIndex, toIndex = getIntersectionOfLineAndPolygon( field.headlandTracks[ i + 1 ], startLocation, 
                                addPolarVectorToPoint( startLocation, h, distance ))
           if fromIndex then
+            courseGenerator.debug( string.format( "Linked headland track %d to next track, heading %.1f, distance %.1f, inwardAngle = %d", i, math.deg( h ), distance, inwardAngle ))
             break
-          else
-            courseGenerator.debug( string.format( "Could not link headland track %d to next track at angle %.2f", i, math.deg( h )))
           end
         end
       end

@@ -146,6 +146,7 @@ function calculatePolygonData( polygon )
   local ix = function( a ) return getPolygonIndex( polygon, a ) end
   local directionStats = {}
   local dAngle = 0
+  local area = 0
   local shortestEdgeLength = 1000
   for i, point in ipairs( polygon ) do
     local pp, cp, np = polygon[ ix( i - 1 )], polygon[ ix( i )], polygon[ ix( i + 1 )]
@@ -165,6 +166,7 @@ function calculatePolygonData( polygon )
     angle, length = toPolar( dx, dy )
     polygon[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
     polygon[ i ].deltaAngle = getDeltaAngle( polygon[ i ].nextEdge.angle, polygon[ i ].prevEdge.angle )
+    polygon[ i ].turnRadius = math.abs( polygon[ i ].nextEdge.length / ( 2 * math.asin( polygon[ i ].deltaAngle / 2 )))
     if length < shortestEdgeLength then shortestEdgeLength = length end
     -- detect clockwise/counterclockwise direction 
     if pp.prevEdge and cp.prevEdge then
@@ -173,7 +175,9 @@ function calculatePolygonData( polygon )
       end
     end
     addToDirectionStats( directionStats, angle, length )
+    area = area + cp.x * np.y - cp.y * np.x 
   end
+  polygon.area = area / 2
   polygon.directionStats = directionStats
   polygon.bestDirection = getBestDirection( directionStats )
   polygon.isClockwise = dAngle > 0
@@ -190,7 +194,7 @@ function roundCorners( polygon, turningRadius )
   local angleThreshold = math.rad( 45 )
   i = 1
   while ( i <= #polygon ) do
-    toIx = getIndexInDistance( polygon, i, d )
+    toIx = getTurnData( polygon, i, d )
     table.insert( result, polygon[ i ])
     if toIx then
       -- Is there a significant direction change within d distance?
@@ -221,18 +225,64 @@ function roundCorners( polygon, turningRadius )
   return result
 end
 
-
--- Find the index of the vertex in d distance
--- from startIx of a polygon
---
-function getIndexInDistance( polygon, fromIx, distance )
+-- add headland turn information to the waypoints if this is a sharp 
+-- corner. 
+-- Returns the next index to continue the iteration, that is i + 1 if 
+-- there was no turn, or the index of the next waypoint after the turn.
+function addTurnInfo( vertices, i, turnRadius, minHeadlandTurnAngle )
   local d = 0
+  -- see if we can make a turn to the next wp
+  local r, dA = getTurningRadiusBetweenTwoPoints( vertices[ i ], vertices[ i + 1 ])
+  if r < turnRadius then 
+    -- we can't make it the next see if we have a corner starting here 
+    vertices[ i ].text = string.format( "r=%.1f (%d)", r, i )
+    local toIx, dA, d = getTurnData( vertices, i, turnRadius * math.pi / 2 )
+    print( string.format( "%d-%d, %.1f, %.1f", i, toIx, math.deg( dA ), r ))
+    if math.abs( dA ) > minHeadlandTurnAngle then
+      print( "****" )
+      vertices[ i ].turnStart = true
+      vertices[ i ].headlandTurn = true
+      vertices[ toIx ].turnEnd = true
+      return toIx
+    end
+  end
+  return i + 1
+end
+
+-- get the theoretical turning radius we need to go from 'from' to 'to', 
+-- starting in the from.prevEdge.angle direction and ending up in 
+-- to.nextEdge.angle
+function getTurningRadiusBetweenTwoPoints( from, to )
+  local dA = getDeltaAngle( to.nextEdge.angle, from.prevEdge.angle )
+  local r = math.abs( from.nextEdge.length / dA )
+  return r, dA
+end
+
+-- Find the index of the vertex where the turn ends but not further than d distance
+-- from startIx of a polygon 
+-- Also, return the accumulated direction change total, negative and positive
+--
+function getTurnData( polygon, fromIx, distance )
+  local d = 0
+  local dDirChange = 0 -- distance where the direction actually changes
+  local totalDirChange, posDirChange, negDirChange = 0, 0, 0
+  local prevTotalDirChange = math.huge
   local toIx = fromIx
-  while ( toIx < #polygon and d < distance ) do 
+  while toIx < #polygon and d < distance and 
+    -- stop when direction does not change much over a significant distance 
+    not ( math.abs( totalDirChange - prevTotalDirChange ) < math.rad( 10 ) and 
+          polygon[ toIx ].prevEdge.length > distance / 10 ) do
     d = d + polygon[ toIx ].nextEdge.length  
     toIx = toIx + 1
+    prevTotalDirChange = totalDirChange
+    totalDirChange = totalDirChange + polygon[ toIx ].deltaAngle
+    if polygon[ toIx ].deltaAngle > 0 then
+      posDirChange = posDirChange + polygon[ toIx ].deltaAngle
+    else
+      negDirChange = negDirChange + polygon[ toIx ].deltaAngle
+    end
   end
-  return toIx
+  return math.max( toIx - 1, fromIx ), totalDirChange, dDirChange, posDirChange, negDirChange
 end
 
 
@@ -386,8 +436,6 @@ function getIntersectionOfExtendedEdges( ab, cd, extensionLength )
   ab.to.y = ab.to.y + extensionLength * ab.dy / ab.length
   cd.from.x = cd.from.x - extensionLength * cd.dx / cd.length
   cd.from.y = cd.from.y - extensionLength * cd.dy / cd.length
-  --print( ab.from.x, ab.from.y, ab.to.x, ab.to.y,
-   --                           cd.from.x, cd.from.y, cd.to.x, cd.to.y )
   -- see if they inersect now 
   local is = getIntersection( ab.from.x, ab.from.y, ab.to.x, ab.to.y,
                               cd.from.x, cd.from.y, cd.to.x, cd.to.y )
@@ -486,16 +534,19 @@ function reverseAngle( angle )
   return r
 end
 
-function getInwardDirection( isClockwise )
+function getInwardDirection( isClockwise, angle )
+  if not angle then
+    angle = math.pi / 2
+  end
   if isClockwise then
-    return - math.pi / 2 
+    return -1 * angle
   else
-    return math.pi / 2
+    return angle
   end
 end
 
-function getOutwardDirection( isClockwise )
-  return - getInwardDirection( isClockwise )
+function getOutwardDirection( isClockwise, angle )
+  return - getInwardDirection( isClockwise, angle )
 end
 
 -- shallow copy for preserving point attributes through 

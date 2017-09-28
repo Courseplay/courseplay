@@ -1049,21 +1049,27 @@ function courseplay:switchStartingCorner(vehicle)
 		vehicle.cp.startingCorner = 1;
 	end;
 	vehicle.cp.hasStartingCorner = true;
-  if vehicle.cp.startingCorner >= 5 then
+  if vehicle.cp.startingCorner == 5 or
+		 vehicle.cp.startingCorner == 6 then
     -- starting direction is always auto when starting corner is vehicle location
     vehicle.cp.hasStartingDirection = true;
     vehicle.cp.startingDirection = 5;
+		-- allow more headlands with the new course gen
+		vehicle.cp.headland.maxNumLanes = vehicle.cp.headland.autoDirMaxNumLanes
     courseplay:changeStartingDirection( vehicle )
+    courseplay:changeHeadlandNumLanes(vehicle, 0)
   else
     vehicle.cp.hasStartingDirection = false;
     vehicle.cp.startingDirection = 0;
+		vehicle.cp.headland.maxNumLanes = vehicle.cp.headland.manuDirMaxNumLanes
+    courseplay:changeHeadlandNumLanes(vehicle, 0)
   end
 
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 
 function courseplay:changeStartingDirection(vehicle)
-	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE, 5 = Vehicle location
+	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE, 5 = Vehicle location, 6 = Last vehicle location
 	-- directions: 1 = North, 2 = East, 3 = South, 4 = West, 5 = auto generated
 	local clockwise = true
 	local validDirections = {};
@@ -1080,27 +1086,24 @@ function courseplay:changeStartingDirection(vehicle)
 		elseif vehicle.cp.startingCorner == 4 then --SE
 			validDirections[1] = 4; --W
 			validDirections[2] = 1; --N
-		elseif vehicle.cp.startingCorner == 5 then -- Vehicle location
-      -- everything is auto generated, headland starts at vehicle location
+		elseif vehicle.cp.startingCorner == 5 or
+					 vehicle.cp.startingCorner == 6 then -- Vehicle location
+			-- everything is auto generated, headland starts at vehicle location
 			validDirections[1] = 5; -- auto generated
-      vehicle.cp.startingDirection = 5
-      -- auto directon works only with headland for now
-      if vehicle.cp.headland.numLanes == 0 then
-        vehicle.cp.headland.numLanes = 1
-      end
+			vehicle.cp.startingDirection = 5
 		end;
 
-    if vehicle.cp.startingDirection < 5 then
-      --would be easier with i=i+1, but more stored variables would be needed
-      if vehicle.cp.startingDirection == 0 then
-        vehicle.cp.startingDirection = validDirections[1];
-      elseif vehicle.cp.startingDirection == validDirections[1] then
-        vehicle.cp.startingDirection = validDirections[2];
-        clockwise = false
-      elseif vehicle.cp.startingDirection == validDirections[2] then
-        vehicle.cp.startingDirection = validDirections[1];
-      end;
-    end;
+		if vehicle.cp.startingDirection < 5 then
+			--would be easier with i=i+1, but more stored variables would be needed
+			if vehicle.cp.startingDirection == 0 then
+				vehicle.cp.startingDirection = validDirections[1];
+			elseif vehicle.cp.startingDirection == validDirections[1] then
+				vehicle.cp.startingDirection = validDirections[2];
+				clockwise = false
+			elseif vehicle.cp.startingDirection == validDirections[2] then
+				vehicle.cp.startingDirection = validDirections[1];
+			end;
+		end;
 		vehicle.cp.hasStartingDirection = true;
 	end;
 	if vehicle.cp.headland.userDirClockwise ~= clockwise then
@@ -1115,10 +1118,6 @@ end;
 
 function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
 	vehicle.cp.headland.numLanes = Utils.clamp(vehicle.cp.headland.numLanes + changeBy, 0, vehicle.cp.headland.maxNumLanes);
-  -- force headland for auto direction 
-  if vehicle.cp.headland.numLanes == 0 and vehicle.cp.startingCorner == 5 then
-    vehicle.cp.headland.numLanes = 1
-  end
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 
@@ -1811,3 +1810,5 @@ function courseplay:setCpVar(varName, value, noEventSend)
 		end;
 	end;
 end;
+-- do not remove this comment
+-- vim: set noexpandtab:

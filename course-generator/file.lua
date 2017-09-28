@@ -14,55 +14,7 @@ function fromCpField( fileName, field )
   return result
 end
 
-function loadFieldFromPickle( fileName )
-  local f = io.input( fileName .. ".pickle" )
-  local unpickled = unpickle( io.read( "*all" ))
-  local field = fromCpField( fileName, unpickled.boundary )
-  io.close( f )
-  --local reversed = reverse( unpickled.boundary )
-  --local new  = { name=fileName, boundary=reversed }
-  --io.output( fileName .. "_reversed.pickle" )
-  --io.write( pickle( new ))
-  f = io.open( fileName .. "_vehicle.pickle" )
-  if f then
-    field.vehicle = unpickle( f:read( "*all" )) 
-    io.close( f )
-  end
-  return field
-end
-
 --
--- read the log.txt to get field polygons. I changed generateCourse.lua
--- so it writes the coordinates to log.txt when a course is generated for a field.
---
-function loadFieldsFromLogFile( fileName, fieldName )
-  local i = 1 
-  for line in io.lines(fileName ) do
-    local match = string.match( line, '%[dbg7 %w+%] generateCourse%(%) called for "Field (%w+)"' )
-    if match then 
-      -- start of a new field data 
-      field = match
-      i = 1
-      inputFields[ field ] = { boundary = {}, name=field }
-    end
-    x, y, z = string.match( line, "%[dbg7 %w+%] ([%d%.-]+) ([%d%.-]+) ([%d%.-]+)" )
-    if x then 
-      inputFields[ field ].boundary[ i ] = { cx=tonumber(x), cz=tonumber(z) }
-      i = i + 1
-    end
-  end
-  for key, field in pairs( inputFields ) do
-    io.output( field.name .. ".pickle" )
-    io.write( pickle( field )) 
-    fields[ key ] = { boundary = {}, name=field.name }
-    for i in ipairs( field.boundary ) do
-      -- z axis is actually y and is  from north to south 
-      -- so need to invert it to get a useful direction
-      fields[ key ].boundary[ i ] = { x=field.boundary[ i ].cx, y=-field.boundary[ i ].cz }
-    end
-  end
-end
-
 --- Reconstruct a field from a Courseplay saved course.
 -- As the saved course does not contain the field data we use the 
 -- first headland track as the field boundary
@@ -186,7 +138,7 @@ function loadSavedFields( fileName )
     local fieldNum = string.match( line, '<field fieldNum="([%d%.-]+)"' )
     if fieldNum then
       -- a new field started
-      ix = ix + 1
+      ix = tonumber( fieldNum )
       savedFields[ ix ] = { number=fieldNum, boundary={}}
     end
     local num, cx, cz = string.match( line, '<point(%d+).+pos="([%d%.-]+) [%d%.-]+ ([%d%.-]+)"' )

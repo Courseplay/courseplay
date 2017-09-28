@@ -82,43 +82,54 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   field.boundingBox = getBoundingBox( field.boundary )
   calculatePolygonData( field.boundary )
   field.headlandTracks = {}
-  local previousTrack, startHeadlandPass, endHeadlandPass, step
-  if fromInside then 
-    courseGenerator.debug( "Generating innermost headland track" )
-    local distanceOfInnermostHeadlandFromBoundary = ( implementWidth - implementWidth * overlapPercent / 100 ) * ( nHeadlandPasses - 1 ) + implementWidth / 2
-    field.headlandTracks[ nHeadlandPasses ] = calculateHeadlandTrack( field.boundary, distanceOfInnermostHeadlandFromBoundary, 
-                                                          minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, true ) 
-    previousTrack = field.headlandTracks[ nHeadlandPasses ]
-    startHeadlandPass = nHeadlandPasses - 1
-    endHeadlandPass = 1
-    step = -1
-  else
-    previousTrack = field.boundary
-    startHeadlandPass = 1
-    endHeadlandPass = nHeadlandPasses
-    step = 1
-  end
-  for j = startHeadlandPass, endHeadlandPass, step do
-    local width
-    if j == 1 and not fromInside then 
-      -- when working from inside, the half width is already factored in when
-      -- the innermost pass is generated
-      width = implementWidth / 2
-    else 
-      width = implementWidth * ( 100 - overlapPercent ) / 100
+  if nHeadlandPasses > 0 then 
+    local previousTrack, startHeadlandPass, endHeadlandPass, step
+    if fromInside then 
+      courseGenerator.debug( "Generating innermost headland track" )
+      local distanceOfInnermostHeadlandFromBoundary = ( implementWidth - implementWidth * overlapPercent / 100 ) * ( nHeadlandPasses - 1 ) + implementWidth / 2
+      field.headlandTracks[ nHeadlandPasses ] = calculateHeadlandTrack( field.boundary, distanceOfInnermostHeadlandFromBoundary, 
+                                                            minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, true ) 
+      previousTrack = field.headlandTracks[ nHeadlandPasses ]
+      startHeadlandPass = nHeadlandPasses - 1
+      endHeadlandPass = 1
+      step = -1
+    else
+      startHeadlandPass = 1
+      previousTrack = field.boundary
+      step = 1
+      endHeadlandPass = nHeadlandPasses
     end
-    courseGenerator.debug( string.format( "Generating headland track #%d", j ))
-    field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, width,
-                                                        minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
-    previousTrack = field.headlandTracks[ j ]
+    for j = startHeadlandPass, endHeadlandPass, step do
+      local width
+      if j == 1 and not fromInside then 
+        -- when working from inside, the half width is already factored in when
+        -- the innermost pass is generated
+        width = implementWidth / 2
+      else 
+        width = implementWidth * ( 100 - overlapPercent ) / 100
+      end
+
+      field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, width,
+                                                          minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
+      courseGenerator.debug( string.format( "Generated headland track #%d, area %1.f, clockwise = %s", j, field.headlandTracks[ j ].area, tostring( field.headlandTracks[ j ].isClockwise )))
+      if ( field.headlandTracks[ j ].area >= previousTrack.area or field.headlandTracks[ j ].area <= 10 ) and not fromInside then
+        courseGenerator.debug( string.format( "Can't fit more headlands in field, using %d", j - 1 ))
+        field.headlandTracks[ j ] = nil
+        break
+      end
+      previousTrack = field.headlandTracks[ j ]
+    end
+  else
+    -- no headland pass wanted, still generate a dummy one on the field boundary so
+    -- we have something to work with when generating the up/down tracks
+    courseGenerator.debug( string.format( "No headland, generating dummy headland track" ))
+    field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
   end
   linkHeadlandTracks( field, implementWidth, headlandClockwise, headlandStartLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
-  field.track = generateTracks( field.headlandTracks[ nHeadlandPasses ], implementWidth, nTracksToSkip, extendTracks )
-  field.bestAngle = field.headlandTracks[ nHeadlandPasses ].bestAngle
-  field.nTracks = field.headlandTracks[ nHeadlandPasses ].nTracks
+  field.track, field.bestAngle, field.nTracks = generateTracks( field.headlandTracks[ #field.headlandTracks ], implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0 )
   -- assemble complete course now
   field.course = {}
-  if field.headlandPath then
+  if field.headlandPath and nHeadlandPasses > 0 then
     for i, point in ipairs( field.headlandPath ) do
       table.insert( field.course, point )
     end
@@ -137,7 +148,6 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     io.stdout:flush()
   end
 end
-
 
 --- Reverse a course. This is to build a sowing/cultivating etc. course
 -- from a harvester course.
@@ -179,8 +189,6 @@ function removeHeadlandTurns( course )
   end
 end
 
---- This makes sense only when these turns are implemented in Coursplay.
--- as of now, it'll generate nice turns only for 180 degree
 function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
   -- start at the second wp to avoid having the first waypoint a turn start,
   -- that throws an nil in getPointDirection (due to the way calculatePolygonData 
@@ -208,3 +216,18 @@ function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
   end
 end
 
+function addTurnsToCorners2( vertices, width, turnRadius, minHeadlandTurnAngle )
+  -- start at the second wp to avoid having the first waypoint a turn start,
+  -- that throws an nil in getPointDirection (due to the way calculatePolygonData 
+  -- works, the prevEdge to the first point is bogus anyway)
+  local i = 2
+  while i < #vertices - 1 do
+    if vertices[ i ].passNumber then
+      -- only on headland
+      local nextIndex = addTurnInfo( vertices, i, turnRadius, minHeadlandTurnAngle )
+      i = nextIndex
+    else
+      i = i + 1
+    end
+  end
+end

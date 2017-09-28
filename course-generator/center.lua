@@ -28,11 +28,11 @@ function findBestTrackAngle( polygon, width )
     local nSmallBlocks = countSmallBlocks( blocks )
     -- instead of just the number of tracks, consider some other factors. We prefer just one block (that is,
     -- the field has a convex solution) and angles closest to the direction of the longest edge of the field
-    -- bestDirection + angle is the longest edge dir at the current rotation. cos( angle - currentBestDir ) will be 0 
-    -- when angle is the closest.
-    score = 50 * nSmallBlocks + 20 * #blocks + 5 * nSplitTracks + nFullTracks + 2 * math.abs( math.cos( math.rad( angle - bestDirection + angle )))
+    -- sin( angle - BestDir ) will be 0 when angle is the closest.
+    local angleScore = 3 * math.abs( math.sin( getDeltaAngle( math.rad( angle ), math.rad( bestDirection )))) 
+    score = 50 * nSmallBlocks + 20 * #blocks + 5 * nSplitTracks + nFullTracks + angleScore
     table.insert( bestAngleStats, { angle=angle, nBlocks=#blocks, nFullTracks=nFullTracks, nSplitTracks=nSplitTracks, score=score })
-    if score < minScore then
+    if minScore > score then
       minScore = score
       bestAngleIndex = #bestAngleStats
     end
@@ -59,7 +59,7 @@ end
 
 --- Generate up/down tracks covering a polygon at the optimum angle
 -- 
-function generateTracks( polygon, width, nTracksToSkip, extendTracks )
+function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnectingTracks )
   -- translate polygon so we can rotate it around its center. This way all points
   -- will be approximately the same distance from the origo and the rotation calculation
   -- will be more accurate
@@ -67,15 +67,19 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
   local dx, dy = ( bb.maxX + bb.minX ) / 2, ( bb.maxY + bb.minY ) / 2 
   local translatedPolygon = translatePoints( polygon, -dx , -dy )
   -- Now, determine the angle where the number of tracks is the minimum
-  polygon.bestAngle, polygon.nTracks = findBestTrackAngle( translatedPolygon, width )
-  if not polygon.bestAngle then
-    polygon.bestAngle = polygon.bestDirection.dir
-    courseGenerator.debug( "No best angle found, use the longest edge direction " .. polygon.bestAngle )
+  local bestAngle, nTracks, nBlocks = findBestTrackAngle( translatedPolygon, width )
+  if nBlocks < 1 then
+    courseGenerator.debug( "No room for up/down tracks." )
+    return nil, 0, 0
+  end
+  if not bestAngle then
+    bestAngle = polygon.bestDirection.dir
+    courseGenerator.debug( "No best angle found, use the longest edge direction " .. bestAngle )
   end
   rotatedMarks = {}
   -- now, generate the tracks according to the implement width within the rotated polygon's bounding box
   -- using the best angle
-  local rotated = rotatePoints( translatedPolygon, math.rad( polygon.bestAngle ))
+  local rotated = rotatePoints( translatedPolygon, math.rad( bestAngle ))
 
   local parallelTracks = generateParallelTracks( rotated, width )
 
@@ -115,14 +119,16 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
     connectingTracks[ i ] = {}
     courseGenerator.debug( string.format( "Track to block %d has %d points", i, #block.trackToThisBlock ))
     for j = 1, #block.trackToThisBlock do
-      table.insert( track, block.trackToThisBlock[ j ])
-      if j > 3 and j < #block.trackToThisBlock - 1 then
-        -- mark this section as a connecting track where implements should be raised as we are 
-        -- driving on a previously worked headland track. 
-        -- don't mark the first few waypoints to prevent a too early raise and too late lowering
-        track[ #track ].isConnectingTrack = true
-      end
       table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
+      if addConnectingTracks then
+        table.insert( track, block.trackToThisBlock[ j ])
+        if j > 3 and j < #block.trackToThisBlock - 1 then
+          -- mark this section as a connecting track where implements should be raised as we are 
+          -- driving on a previously worked headland track. 
+          -- don't mark the first few waypoints to prevent a too early raise and too late lowering
+          track[ #track ].isConnectingTrack = true
+        end
+      end
     end
     linkParallelTracks( track, block.tracksWithWaypoints, block.bottomToTop, block.leftToRight, nTracksToSkip ) 
     addRidgeMarkers( track )
@@ -130,7 +136,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
 
   -- now rotate and translate everything back to the original coordinate system
   if marks then 
-    rotatedMarks = translatePoints( rotatePoints( rotatedMarks, -math.rad( polygon.bestAngle )), dx, dy )
+    rotatedMarks = translatePoints( rotatePoints( rotatedMarks, -math.rad( bestAngle )), dx, dy )
   -- will be approximately the same distance from the origo and the rotation calculation
   -- will be more accurate
     for i = 1, #rotatedMarks do
@@ -138,10 +144,10 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks )
     end
   end
   for i = 1, #connectingTracks do
-    connectingTracks[ i ] = translatePoints( rotatePoints( connectingTracks[ i ], -math.rad( polygon.bestAngle )), dx, dy )
+    connectingTracks[ i ] = translatePoints( rotatePoints( connectingTracks[ i ], -math.rad( bestAngle )), dx, dy )
   end
   polygon.connectingTracks = connectingTracks
-  return translatePoints( rotatePoints( track, -math.rad( polygon.bestAngle )), dx, dy )
+  return translatePoints( rotatePoints( track, -math.rad( bestAngle )), dx, dy ), bestAngle, nTracks
 end
 
 ----------------------------------------------------------------------------------
@@ -154,15 +160,22 @@ end
 -- are not connected
 function generateParallelTracks( polygon, width )
   local tracks = {}
-  local trackIndex = 1
-  for y = polygon.boundingBox.minY + width / 2, polygon.boundingBox.maxY, width do
-    local from = { x = polygon.boundingBox.minX, y = y, track=trackIndex }
-    local to = { x = polygon.boundingBox.maxX, y = y, track=trackIndex }
+  local function addTrack( fromX, toX, y, ix )
+    local from = { x = fromX, y = y, track=ix }
+    local to = { x = toX, y = y, track=ix }
     -- for now, all tracks go from min to max, we'll take care of
     -- alternating directions later.
     table.insert( tracks, { from=from, to=to, intersections={}} )
+  end
+  local trackIndex = 1
+  -- go up to maxY - width for now, because the last, uppermost trace must be exactly
+  -- width/2 under maxY
+  for y = polygon.boundingBox.minY + width / 2, polygon.boundingBox.maxY - width / 2, width do
+    addTrack( polygon.boundingBox.minX, polygon.boundingBox.maxX, y, trackIndex ) 
     trackIndex = trackIndex + 1
   end
+  -- add the last track 
+  addTrack( polygon.boundingBox.minX, polygon.boundingBox.maxX, polygon.boundingBox.maxY - width / 2, trackIndex ) 
   -- tracks has now a list of segments covering the bounding box of the 
   -- field. 
   findIntersections( polygon, tracks )
