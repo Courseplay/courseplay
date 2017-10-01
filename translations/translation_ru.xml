@@ -5,7 +5,7 @@
 		<text name="COURSEPLAY_DRIVER" 									 text="Транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Запустить по маршруту" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Остановить транспорт" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в следующей точке" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в следующей точке:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Выполнить количество рейсов" />
  		<text name="COURSEPLAY_UNLIMITED" 								 text="неограниченно" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Водительская сторона" />
@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Поворотная полоса до/после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Сгенерировать маршрут" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="дистанция" />
-		<text name="COURSEPLAY_WAITING_TIME" 							 text="Пауза:" />
+		<text name="COURSEPLAY_WAITING_TIME" 							 text="Пауза в точке ожидания:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d мин" />
 		<text name="COURSEPLAY_SECONDS" 								 text="%d сек" />
 		<text name="COURSEPLAY_UNIT_METER" 								 text="м" />         
@@ -188,7 +188,7 @@
 		<text name="COURSEPLAY_START" 									 text="Старт" />
 		<text name="COURSEPLAY_FINISH" 									 text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Нерабочий маршрут" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Функция удобрения сеялки:" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
