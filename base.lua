@@ -171,7 +171,7 @@ function courseplay:load(savegame)
 	self.cp.shovelFillEndPoint = nil;
 	self.cp.shovelState = 1;
 	self.cp.shovel = {};
-	self.cp.shovelStopAndGo = false;
+	self.cp.shovelStopAndGo = true;
 	self.cp.shovelLastFillLevel = nil;
 	self.cp.shovelStatePositions = {};
 	self.cp.hasShovelStatePositions = {};
@@ -1529,6 +1529,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		curKey = key .. '.courseplay.shovel';
 		local shovelRots = getXMLString(xmlFile, curKey .. '#rot');
 		local shovelTrans = getXMLString(xmlFile, curKey .. '#trans');
+		self.cp.shovelStopAndGo = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#shovelStopAndGo'), true);
 		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (before loading)', 10), 10);
 		if shovelRots and shovelTrans then
 			self.cp.shovelStatePositions = {};
@@ -1658,7 +1659,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q bladeOffset="%.1f" drivingThroughtLoading=%q />', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth), self.cp.mode10.bladeOffset, tostring(self.cp.mode10.drivingThroughtLoading));
 	local shovels, combine = '', '';
 	if shovelRotsAttrNodes or shovelTransAttrNodes then
-		shovels = string.format('<shovel rot=%q trans=%q />', shovelRotsAttrNodes, shovelTransAttrNodes);
+		shovels = string.format('<shovel rot=%q trans=%q shovelStopAndGo=%q />', shovelRotsAttrNodes, shovelTransAttrNodes,tostring(self.cp.shovelStopAndGo));
 	end;
 	if self.cp.isCombine then
 		combine = string.format('<combine driverPriorityUseFillLevel=%q stopWhenUnloading=%q />', tostring(self.cp.driverPriorityUseFillLevel), tostring(self.cp.stopWhenUnloading));

@@ -50,6 +50,8 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 		if vehicle.cp.waypointIndex + 1 > vehicle.cp.shovelFillStartPoint then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[2], dt) then
 				courseplay:setShovelState(vehicle, 2);
+			elseif vehicle.cp.shovelStopAndGo then
+				allowedToDrive = false
 			end;
 			if fillLevelPct >= 98 then
 				vehicle.cp.shovel:setFillLevel(vehicle.cp.shovel.cp.capacity * 0.97, vehicle.cp.shovel.cp.fillType);
