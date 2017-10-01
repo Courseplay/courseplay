@@ -7,7 +7,13 @@
 -- The result will be:
 --
 -- field.headlandPath 
---   array of points containing all headland passes
+--   array of points containing all headland passes linked together
+--
+-- field.headlandTracks
+--   array of circular headland tracks (not connected). #field.headlandTracks
+--   is the number of actually generated tracks, can be less than the requested
+--   because it'll stop adding them once the field is fully covered with headland
+--   tracks (spiral)
 --   
 -- field.connectingTracks
 --   this is the path from the end of the innermost headland track to the start
@@ -126,6 +132,11 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
   end
   linkHeadlandTracks( field, implementWidth, headlandClockwise, headlandStartLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
+  -- ugly hack: if there are no headlands, our tracks go right up to the field boundary. So extend tracks
+  -- exactly width / 2
+  if nHeadlandPasses == 0 then
+    extendTracks = extendTracks + implementWidth / 2
+  end
   field.track, field.bestAngle, field.nTracks = generateTracks( field.headlandTracks[ #field.headlandTracks ], implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0 )
   -- assemble complete course now
   field.course = {}
@@ -146,6 +157,10 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   -- flush STDOUT when not in the game for debugging
   if not courseGenerator.isRunningInGame() then
     io.stdout:flush()
+  end
+  -- make sure we do not return the dummy headland track generated when no headland requested
+  if nHeadlandPasses == 0 then
+    field.headlandTracks = {}
   end
 end
 
