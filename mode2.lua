@@ -106,7 +106,7 @@ function courseplay:handle_mode2(vehicle, dt)
           -- before to avoid circling when transitioning to the next mode
 					if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz, vehicle.cp.turnDiameter ) then
 						courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-				    courseplay:setCurrentTargetFromList(vehicle, 1);
+						courseplay:setCurrentTargetFromList(vehicle, 1);
 					end	
 				end
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
@@ -114,7 +114,6 @@ function courseplay:handle_mode2(vehicle, dt)
 			end			
 		end
 	end
-	
 	-- Have enough payload, can now drive back to the silo
 	if vehicle.cp.modeState == STATE_WAIT_AT_START and (vehicle.cp.totalFillLevelPercent >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.isLoaded) then
 		vehicle.cp.currentTrailerToFill = nil
@@ -165,31 +164,31 @@ function courseplay:handle_mode2(vehicle, dt)
 			courseplay:unload_combine(vehicle, dt)
 		end
 	else -- NO active combine
-    -- fake a last combine if we need to
-    if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.nextTargets ~= nil and
-       vehicle.cp.lastActiveCombine == nil and vehicle.cp.mode2nextState and vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL then 
-      -- this can happen when we turn on combi mode with the trailer full before the tractor ever had a combine assigned
-      -- let's see if there's a combine around
-      if vehicle.cp.reachableCombines and #vehicle.cp.reachableCombines > 0 then
-        -- fake a last combine
-        courseplay:debug( "Trailer full, picked a reachable combine to be able to call unload_combine()", 4 )
-        vehicle.cp.lastActiveCombine = vehicle.cp.reachableCombines[ 1 ]
-      end
-    end
-
+		-- fake a last combine if we need to
+		if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.nextTargets ~= nil and vehicle.cp.lastActiveCombine == nil and vehicle.cp.mode2nextState and vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL then 
+		  -- this can happen when we turn on combi mode with the trailer full before the tractor ever had a combine assigned
+		  -- let's see if there's a combine around
+			if vehicle.cp.reachableCombines and #vehicle.cp.reachableCombines > 0 then
+				-- fake a last combine
+				courseplay:debug( "Trailer full, picked a reachable combine to be able to call unload_combine()", 4 )
+				vehicle.cp.lastActiveCombine = vehicle.cp.reachableCombines[ 1 ]
+			end
+		end
+		
 		if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and vehicle.cp.nextTargets ~= nil and vehicle.cp.lastActiveCombine then
-      courseplay:unload_combine(vehicle, dt)
+			courseplay:unload_combine(vehicle, dt)
 		else
 			-- STOP!!
 			courseplay:checkSaveFuel(vehicle,false)
 			
 			AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
 			courseplay:resetSlippingTimers(vehicle)
-			if vehicle.cp.isLoaded then
-				courseplay:setWaypointIndex(vehicle, 2);
-				--courseplay:setModeState(vehicle, 99);
+			-- We are loaded and have no lastActiveCombine Aviable to us 
+			if vehicle.cp.isLoaded and vehicle.cp.lastActiveCombine == nil then
+				courseplay:setWaypointIndex(vehicle, 2); 
+				-- courseplay:setModeState(vehicle, 99);
 				return false
-			end
+			 end
 			-- are there any combines out there that need my help?
 			if CpManager.realTime5SecsTimerThrough then
 				if vehicle.cp.lastActiveCombine ~= nil then
@@ -1599,8 +1598,8 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 
 	local fieldNum = courseplay:onWhichFieldAmI( vehicle ); 
 		
-	if fieldNum == 0 then
-		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine;
+	if fieldNum == 0 then														-- No combines are aviable use us again
+		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine or vehicle;
 		fieldNum = courseplay:onWhichFieldAmI( combine );
 		if fieldNum == 0 then
 			courseplay:debug( "I'm not on field, my combine isn't either", 9 )

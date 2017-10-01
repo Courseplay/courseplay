@@ -1,7 +1,7 @@
 --
 -- Courseplay
 --
--- @authors: Thomas Gärtner / Satissis
+-- @authors: Thomas Gärtner / Satissis / Pops64 / Pvajko
 -- @version: 5.00 beta
 -- @website: http://courseplay.github.io/courseplay/
 -- @date:    2016

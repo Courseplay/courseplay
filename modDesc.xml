@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.01.00203</version>
+	<version>5.01.00204</version>
 	<author><![CDATA[Courseplay Dev Team]]></author>
 	<title>
 		<br>Courseplay</br>
@@ -22,77 +22,77 @@
 
 	<description>
 		<br>
-<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis
+<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</br>
 		<cs>
-<![CDATA[开发成员:  Thomas Gärtner, Satis
+<![CDATA[开发成员:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 语言支持: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</cs>
 		<cz>
-<![CDATA[Vývojáři:  Thomas Gärtner, Satis
+<![CDATA[Vývojáři:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Překlady: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</cz>
 		<de>
-<![CDATA[Entwickler:  Thomas Gärtner, Satis
+<![CDATA[Entwickler:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Übersetzungen: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</de>
 		<en>
-<![CDATA[Developers:  Thomas Gärtner, Satis
+<![CDATA[Developers:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Translations: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</en>
 		<es>
-<![CDATA[Desarrolladores:  Thomas Gärtner, Satis
+<![CDATA[Desarrolladores:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Traducciones: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</es>
 		<fr>
-<![CDATA[Développeurs:  Thomas Gärtner, Satis
+<![CDATA[Développeurs:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Traductions: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</fr>
 		<it>
-<![CDATA[Sviluppatori:  Thomas Gärtner, Satis
+<![CDATA[Sviluppatori:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Traduzioni: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</it>
 		<jp>
-<![CDATA[開発者:  Thomas Gärtner, Satis
+<![CDATA[開発者:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 翻訳: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</jp>
 		<hu>
-<![CDATA[Készítők:  Thomas Gärtner, Satis
+<![CDATA[Készítők:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Fordítók: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</hu>
 		<nl>
-<![CDATA[Ontwikkelaars:  Thomas Gärtner, Satis
+<![CDATA[Ontwikkelaars:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Vertaling: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</nl>
 		<pl>
-<![CDATA[Deweloperzy:  Thomas Gärtner, Satis
+<![CDATA[Deweloperzy:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Tłumaczenia: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</pl>
 		<pt>
-<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis
+<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</pt>
 		<ru>
-<![CDATA[Разработка:  Thomas Gärtner, Satis
+<![CDATA[Разработка:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Переводчики: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</ru>
 		<sl>
-<![CDATA[Razvijalci:  Thomas Gärtner, Satis
+<![CDATA[Razvijalci:  Thomas Gärtner, Satis, Pops64, Pvajko
 
 Prevodi: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
 		</sl>
