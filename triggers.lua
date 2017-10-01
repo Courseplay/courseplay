@@ -140,12 +140,19 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 					----
 					--checking CollisionIgnoreList
 					if vehicle ~= nil and OtherIdisCloser then
+						local parent = getParent(otherId);
 						courseplay:debug(string.format("%s: 	onEnter, checking CollisionIgnoreList", nameNum(self)), 3);
 						if CpManager.trafficCollisionIgnoreList[otherId] then
 							courseplay:debug(string.format("%s:		%q is on global list", nameNum(self), tostring(vehicle.name)), 3);
 							vehicleOnList = true
+						elseif CpManager.trafficCollisionIgnoreList[parent] then
+							courseplay:debug(string.format("%s:		parent of %q is on global list", nameNum(self), tostring(vehicle.name)), 3);
+							vehicleOnList = true
 						elseif self.trafficCollisionIgnoreList[otherId] then
 							courseplay:debug(string.format("%s:		%q is on local list", nameNum(self), tostring(otherId)), 3);	
+							vehicleOnList = true
+						elseif self.trafficCollisionIgnoreList[parent] then
+							courseplay:debug(string.format("%s:		parent of %q is on local list", nameNum(self), tostring(otherId)), 3);	
 							vehicleOnList = true
 						else
 							local foundOne = false
