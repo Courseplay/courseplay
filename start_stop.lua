@@ -185,6 +185,15 @@ function courseplay:start(self)
 				isReversePossible = false
 			end
 		end
+		
+		if workTool.sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
+			if workTool.cp.orignalAllowsSpraying == nil then
+				workTool.cp.orignalAllowsSpraying = workTool.allowsSpraying
+			end
+			workTool.allowsSpraying = self.cp.fertilizerOption
+		end	
+		
+		
 	end;
 	self.cp.isReversePossible = isReversePossible
 	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
@@ -709,6 +718,10 @@ function courseplay:stop(self)
 				fillUnit.capacity =  tool.cp.originalCapacities[index]
 			end
 			tool.cp.originalCapacities = nil
+		end
+		if tool.cp.orignalAllowsSpraying ~= nil then
+			tool.allowsSpraying = tool.cp.orignalAllowsSpraying
+			tool.cp.orignalAllowsSpraying = nil
 		end
 	end
 

@@ -188,7 +188,10 @@
 		<text name="COURSEPLAY_START" 									 text="Start" />
 		<text name="COURSEPLAY_FINISH" 									 text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Course is not valid" />
-
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" />
+		
+		
+		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="No shovel could be found" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Shovel positions" />

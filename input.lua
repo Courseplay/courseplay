@@ -268,6 +268,8 @@ function courseplay:executeFunction(self, func, value, page)
 						courseplay:changeStartAtPoint(self);
 					elseif line == 4 then
 						courseplay:getPipesRotation(self);
+					elseif line == 5 then
+						courseplay:toggleFertilizeOption(self);
 					end;
 
 				else -- driving

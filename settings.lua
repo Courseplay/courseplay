@@ -69,6 +69,9 @@ function courseplay:toggleFuelSaveOption(self)
 	self.cp.saveFuelOptionActive = not self.cp.saveFuelOptionActive 
 end
 
+function courseplay:toggleFertilizeOption(self)
+	self.cp.fertilizerOption = not self.cp.fertilizerOption 
+end
 
 function courseplay:toggleAutoRefuel(self)
 	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 

@@ -172,10 +172,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Westen" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Vorgewende" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  			 text="Smooth" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Turn (combines only)" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="Round" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Vorgewende-Ecken"/>
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  			 text="weich" /> 
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="scharf (nur Drescher)"/>
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="rund" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="nur Name" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name und Kurs" />
@@ -188,6 +188,7 @@
 		<text name="COURSEPLAY_START" 									 text="Starten" />
 		<text name="COURSEPLAY_FINISH" 									 text="Beenden" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Kein gültiger Kurs geladen" />
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Düngefunktion der Sähmaschine" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="keine Schaufel vorhanden" />
@@ -211,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nächsten Wegpunkt" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="ersten Wegpunkt" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="aktuellen Wegpunkt" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="nächster Wegpunkt" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Feldrandkurs" />
 		<text name="COURSEPLAY_FIELD" 									 text="Feld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(aktuell geladener Kurs)" />
@@ -260,10 +261,10 @@
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Einstellung" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automatisch" /> 
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD an" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD an &amp; Vorderachssperrdiff auf den Feld" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD an &amp; Hinterachssperrdiff auf den Feld" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD an &amp; Vorderachssperrdiff auf dem Feld" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD an &amp; Hinterachssperrdiff auf dem Feld" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD an &amp; Sperrdifferential auf den Feld" />
-		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Möchtest du dass die Felder automatisch gescanned werden?" />
+		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Möchtest du dass die Felder automatisch gescannt werden?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Saatgut-Rechner" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Feld: %d (%s %s)" />

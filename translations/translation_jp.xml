@@ -188,6 +188,7 @@
 		<text name="COURSEPLAY_START" 									 text="開始" />
 		<text name="COURSEPLAY_FINISH" 									 text="終了" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="コースは有効ではありません" />
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="バケットが見つかりません" />

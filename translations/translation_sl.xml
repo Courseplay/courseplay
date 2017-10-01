@@ -188,6 +188,7 @@
 		<text name="COURSEPLAY_START" 									 text="Začetek" />
 		<text name="COURSEPLAY_FINISH" 									 text="Konec" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Pot ni veljavna" />
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Kible ni mogoče najti" />

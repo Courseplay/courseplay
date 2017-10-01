@@ -29,6 +29,7 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
 	vehicle.cp.hasAugerWagon = false;
+	vehicle.cp.hasFertilizerSowingMachine = nil;
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 
 	-- Reset fill type.
@@ -323,7 +324,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
 	end;
-
+	
+	--belongs to mode4 but should be considered even if the mode is not set correctely
+	if workTool.sprayer ~= nil and workTool.sowingMachine ~= nil then
+				vehicle.cp.hasFertilizerSowingMachine = true;
+	end
+	
 	vehicle.cp.hasWaterTrailer = hasWaterTrailer
 	
 	if hasWorkTool then
@@ -1162,7 +1168,11 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 			workToolSprayerFillLevelPct = workTool.cp.fillLevelPercent
 		end
 		local fillLevelPct = vehicle.cp.totalFillLevelPercent;
-
+		if vehicle.cp.hasFertilizerSowingMachine and not vehicle.cp.fertilizerOption then
+			workToolSprayerFillLevelPct = 100
+		end
+		
+		
 		local isSprayer = courseplay:isSprayer(workTool);
 
 		if isSprayer then
@@ -1182,7 +1192,10 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				courseplay:debug(('%s: vehicle.cp.fillTrigger = %s'):format(nameNum(vehicle), tostring(vehicle.cp.fillTrigger)), 19);
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
 				if trigger and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
-					if courseplay:fillTypesMatch(trigger, workTool) then
+					if vehicle.cp.hasFertilizerSowingMachine and not vehicle.cp.fertilizerOption then
+						vehicle.cp.fillTrigger = nil
+						courseplay:debug(('%s: fertilizerOption not active -> reset vehicle.cp.fillTrigger'):format(nameNum(vehicle)), 19);
+					elseif courseplay:fillTypesMatch(trigger, workTool) then   --(vehicle.cp.hasFertilizerSowingMachine and not vehicle.cp.fertilizerOption)
 						--print('\t\tslow down, it\'s a sprayerFillTrigger');
 						courseplay:debug(('%s: trigger is SprayerFillTrigger -> set vehicle.cp.isInFilltrigger'):format(nameNum(vehicle)), 19);
 						vehicle.cp.isInFilltrigger = true;

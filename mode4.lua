@@ -7,6 +7,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local hasFinishedWork = false
 	local seederFillLevelPct = self.cp.totalSeederFillLevelPercent   or 100;
 	local sprayerFillLevelPct = self.cp.totalSprayerFillLevelPercent or 100;
+	if self.cp.hasFertilizerSowingMachine and not self.cp.fertilizerOption then
+		sprayerFillLevelPct = 100
+	end
 	
 	--print(string.format("seederFillLevelPct:%s; sprayerFillLevelPct:%s",tostring(seederFillLevelPct),tostring(sprayerFillLevelPct)))
 	if self.cp.waypointIndex == self.cp.finishWork and self.cp.abortWork == nil and not self.cp.hasFinishedWork then
@@ -34,7 +37,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	-- Begin Work
 	if self.cp.previousWaypointIndex == self.cp.startWork then
 		if seederFillLevelPct ~= 0 and sprayerFillLevelPct ~= 0 then
-			if self.cp.abortWork ~= nil then
+												-- vv it's to prevent nil failure when abortWork is saved but the field course is not been loaded after loadMap
+				if self.cp.abortWork ~= nil and self.cp.abortWork <= self.cp.numWaypoints then  
 				if self.cp.abortWork < 5 then
 					self.cp.abortWork = 6
 				end

@@ -331,6 +331,8 @@ function courseplay.button:render()
 					elseif prm > 0 then
 						show = (vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and vehicle.cp.refillUntilPct < 100;
 					end;
+				elseif fn == 'changeLastValidTipDistance' then
+					show = vehicle.cp.lastValidTipDistance ~= nil
 				end;
 
 			-- Page 4
