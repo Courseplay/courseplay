@@ -185,11 +185,11 @@ function courseplay:handle_mode2(vehicle, dt)
 			
 			AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
 			courseplay:resetSlippingTimers(vehicle)
-			--[[if vehicle.cp.isLoaded then
+			if vehicle.cp.isLoaded then
 				courseplay:setWaypointIndex(vehicle, 2);
-				courseplay:setModeState(vehicle, 99);
+				--courseplay:setModeState(vehicle, 99);
 				return false
-			end]]
+			end
 			-- are there any combines out there that need my help?
 			if CpManager.realTime5SecsTimerThrough then
 				if vehicle.cp.lastActiveCombine ~= nil then
