@@ -5,10 +5,11 @@ pathFinder = {}
 --
 local gridSpacing
 local count
+local biasToRight
 --
 --- add some area with fruit for tests
 function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
-  local distance = 12
+  local distance = 144
   for y, row in ipairs( grid.map ) do
     for x, index in pairs( row ) do
     local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
@@ -83,7 +84,7 @@ local function generateGridForPolygon( polygon )
       end
     end
   end
-  return grid
+  return grid, width
 end
 
 --- Is 'node' a valid neighbor of 'theNode'?
@@ -150,7 +151,9 @@ function gScoreToNeighbor( node, neighbor )
     -- first headland. This will minimize to amount of fruit you have to drive through.
     return 250
   else
-    return a_star.distance( node.x, node.y, neighbor.x, neighbor.y )
+    -- add a little bias so a path from point A to B will be slightly different from the
+    -- point from B to A to avoid collisions when multiple tractors use the same route
+    return a_star.distance( node.x + biasToRight, node.y + biasToRight, neighbor.x, neighbor.y )
   end
 end
 
@@ -215,14 +218,16 @@ function pointToXz( point )
 end
 
 --- Find a path between from and to in a polygon using the A star
--- algorithm where the nodes are a grid with 'width' spacing. 
+-- algorithm 
 -- Expects FS coordinates (x,-z)
 function pathFinder.findPath( from, to, cpPolygon, addFruitFunc )
   count = 0
-  local grid = generateGridForPolygon( pointsToXy( cpPolygon )) 
+  local grid, width = generateGridForPolygon( pointsToXy( cpPolygon )) 
   -- from and to must be a node. change z to y as a-star works in x/y system
   local fromNode = pointToXy( from )
   local toNode = pointToXy( to )
+  -- hold a bit to the right
+  biasToRight = fromNode.x < toNode.x and width / 2 or -width / 2
   if not courseGenerator.isRunningInGame() and addFruitFunc then
     addFruitFunc( grid, pointsToXy( cpPolygon ))
   end
