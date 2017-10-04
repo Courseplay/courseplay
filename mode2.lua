@@ -1622,13 +1622,9 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		end	
 	end
 
-  -- spacing of the grid used in the A* algorithm.
-  -- use a fraction to reduce the chance of ending up right on the field edge (assuming fields 
-  -- are drawn using integer sizes) as that may result in a row or two missing in the grid
-  local gridSpacing = 4.07
   courseplay:debug( string.format( "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz ), 9 )
   local path = pathFinder.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
-                                    courseplay.fields.fieldData[fieldNum].points, gridSpacing )
+                                    courseplay.fields.fieldData[fieldNum].points )
    
   if path then
     courseplay:debug( string.format( "Path found with %d waypoints", #path ), 9 )

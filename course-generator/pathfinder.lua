@@ -8,7 +8,7 @@ local count
 --
 --- add some area with fruit for tests
 function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
-  local distance = 5
+  local distance = 12
   for y, row in ipairs( grid.map ) do
     for x, index in pairs( row ) do
     local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
@@ -41,12 +41,21 @@ local function hasFruit( x, y, width )
   end
 end
 
-local function generateGridForPolygon( polygon, width )
+local function generateGridForPolygon( polygon )
   local grid = {}
   -- map[ row ][ column ] maps the row/column address of the grid to a linear
   -- array index in the grid.
   grid.map = {}
   polygon.boundingBox = getBoundingBox( polygon )
+  calculatePolygonData( polygon )
+  -- this will make sure that the grid will have approximately 64^2 = 4096 points
+  -- TODO: probably need to take the aspect ratio into accont for odd shaped
+  -- (long and narrow) fields
+  -- But don't go below a certain limit as that would drive too close to the fruite 
+  -- for this limit, use a fraction to reduce the chance of ending up right on the field edge (assuming fields 
+  -- are drawn using integer sizes) as that may result in a row or two missing in the grid
+  local width = math.max( 4.71, math.sqrt( polygon.area ) / 64 )
+  gridSpacing = width
   local horizontalLines = generateParallelTracks( polygon, width )
   if not horizontalLines then return grid end
   -- we'll need this when trying to find the array index from the 
@@ -208,10 +217,9 @@ end
 --- Find a path between from and to in a polygon using the A star
 -- algorithm where the nodes are a grid with 'width' spacing. 
 -- Expects FS coordinates (x,-z)
-function pathFinder.findPath( from, to, cpPolygon, width, addFruitFunc )
-  gridSpacing = width
+function pathFinder.findPath( from, to, cpPolygon, addFruitFunc )
   count = 0
-  local grid = generateGridForPolygon( pointsToXy( cpPolygon ), width ) 
+  local grid = generateGridForPolygon( pointsToXy( cpPolygon )) 
   -- from and to must be a node. change z to y as a-star works in x/y system
   local fromNode = pointToXy( from )
   local toNode = pointToXy( to )
