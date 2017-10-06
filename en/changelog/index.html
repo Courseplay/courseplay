@@ -185,6 +185,18 @@
                         <li>Vehicles that are coming in to unload will wait until the tractor with an shield have cleared out of the silo.</li>
                     </ul>
                 </li>
+								<li>
+									<h4>New Course Generation</h4>
+									<ul>
+										<li>generates tracks in any direction</li>
+										<li>finds the optimum angle, that is the direction the parallel tracks must run in order to have the minimum number of turns.</li>
+										<li>makes a best effort to find an angle for non-convex fields which results in continuous tracks</li>
+										<li>start the headland tracks at any location.</li>
+										<li>link the headland tracks with the parallel track (remember, the parallel tracks start location changes with the angle)</li>
+										<li>generate course starting in the center and finishing with the headland for sowing and any fieldwork other than harvesting</li>
+										<li>turn maneuvers for combines on headland corners</li>
+										<li>non-convex fields: can generate path for non-convex fields. This is an experimental feature. If there is no convex solution for a field or the non-convex solution results in significantly less tracks it'll choose the non-convex solution. A non-convex solution will always have the middle of the field divided in two or more blocks which will be worked one by one. Once a block is finished, the course will lead to the next block on the innermost headland path. This is not optimal but will cover the entire field and the course will always remain within the field. In general, the algorithm will try to create the minimum amount of blocks and avoids creating blocks with just a few tracks.</li>
+									</ul>
             </ul>
 
             <!-- BUGS -->

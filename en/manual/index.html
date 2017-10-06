@@ -666,13 +666,24 @@
 					<p class="info"><span class="icon-infoSign inline"></span>This setting is required in order to be able to generate a course.</p>
 				</li>
 				<li>
-					<h4>Starting corner</h4>
-					<p>Choose the field corner from where the course will begin.</p>
+					<h4>Starting/Ending location</h4>
+					<p>Choose the location from where the course will begin/end:</p>
+					<ol>
+						<li>A field corner</li>
+						<li>Current vehicle position</li>
+						<li>Last used position</li>
+					</ol>
+					<p class="info"><span class="icon-infoSign inline"></span>If you select Current vehicle position or Last used position and set the headland to be worked on 
+						after the center of the field (<span class="icon-headlandAfter inline" title="headland after field course"></span>), 
+						the location you select here will be where the course <span class="emphasize3">ends</span>.</p>
 					<p class="info"><span class="icon-infoSign inline"></span>This setting is required in order to be able to generate a course.</p>
 				</li>
 				<li>
 					<h4>Starting direction</h4>
-					<p>Choose the direction that the first lane will go from the starting corner. Available choices depend on the starting corner.</p>
+					<p>Available choices depend on the starting location.</p>
+					<p>If you selected a corner to start from then choose the direction that the first lane will go from the starting corner.</p>
+					<p>If you selected a vehicle position, the starting direction is determined automatically based on the headland direction
+						 (<span class="icon-headlandClockwise2 inline" title="clockwise headland"></span>) or (<span class="icon-headlandCounterClockwise2 inline" title="counter-clockwise headland"></span>).</p>
 					<p class="info"><span class="icon-infoSign inline"></span>This setting is required in order to be able to generate a course.</p>
 				</li>
 				<li>
@@ -682,6 +693,13 @@
 				<li>
 					<h4><span class="icon-headlandClockwise2" style="margin-right:0.2em !important;"></span><span class="icon-headlandBefore"></span> Headland</h4>
 					<p>Set whether the course should include headland ("turn row") (<a href="http://en.wikipedia.org/wiki/Headland_(agriculture)" title="Read more about headland at Wikipedia"><span class="icon-wiki inline"></span> Wikipedia</a>), whether it should be clockwise (<span class="icon-headlandClockwise2 inline" title="clockwise headland"></span>) or counter-clockwise (<span class="icon-headlandCounterClockwise2 inline" title="counter-clockwise headland"></span>) and whether it should be before (<span class="icon-headlandBefore inline" title="headland before field course"></span>) (e.g. with a combine) or after (<span class="icon-headlandAfter inline" title="headland after field course"></span>) (e.g. with a seeder).</p>
+					<p>You can also set the number of headlands to generate here.</p>
+				</li>
+				<li>
+					<h4>Headland corners</h4>
+					<p>Choosing Smooth will generate slightly rounded corners on the headland so vehicles miss less fruit at sharp corners.</p> 
+					<p>You can also opt for making turn maneuvers at the corners (this works for combines only).</p>
+					<p class="info"><span class="icon-infoSign inline"></span>This choice is available only if you select Current vehicle position/Last used postion as a starting location.</p>
 				</li>
 				<li>
 					<h4><span class="icon-page8"></span> Generate course</h4>
