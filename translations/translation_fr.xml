@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 						 	 text="point le plus proche" />
 		<text name="COURSEPLAY_FIRST_POINT" 						 	 text="premier point" />
 		<text name="COURSEPLAY_CURRENT_POINT" 						 	 text="point actuel" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="next waypoint" />  <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 					 	 text="Tour du champ" />
 		<text name="COURSEPLAY_FIELD" 							 		 text="Champ" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(Course actuellement chargée)" />

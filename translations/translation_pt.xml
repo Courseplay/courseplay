@@ -208,7 +208,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 						 	 text="próximo ponto" />
 		<text name="COURSEPLAY_FIRST_POINT" 						 	 text="primeiro ponto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 						 	 text="ponto atual" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="next waypoint" />  <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 					 	 text="Percurso da borda do campo" />
 		<text name="COURSEPLAY_FIELD" 							 		 text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(Percurso atual carregado)" />

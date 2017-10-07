@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="na nejbližším bodě" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="na prvním bodě" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="na vybraném bodě" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="next waypoint" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Trasa okolo pole:" />
 		<text name="COURSEPLAY_FIELD" 									 text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(načtená trasa)" />

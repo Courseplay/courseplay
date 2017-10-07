@@ -6,8 +6,8 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="开始卸载" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="停止卸载" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="停在最后或下一个起点" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="任务执行次数" /> <!-- TODO: TRANSLATION! -->
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="无限" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="任务执行次数" /> 
+ 		<text name="COURSEPLAY_UNLIMITED" 								 text="无限" /> 
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="卸载位置" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="无卸载位置" />
 		<text name="COURSEPLAY_LEFT" 									 text="左" />
@@ -24,7 +24,7 @@
 		<text name="COURSEPLAY_MODE_5" 									 text="模式5：转移(从起点到终点)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="模式6：田间作业（收割和收集）" />
 		<text name="COURSEPLAY_MODE_7" 									 text="模式7：收割机自助卸载" />
-		<text name="COURSEPLAY_MODE_8" 									 text="模式8：液体运输" />  <!-- TODO: Retranslate to new name. -->
+		<text name="COURSEPLAY_MODE_8" 									 text="模式8：液体运输" /> 
 		<text name="COURSEPLAY_MODE_9" 									 text="模式9：铲车模式" />
 		<text name="COURSEPLAY_MODE_10" 								 text="模式10：平整和压实" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="继续" />
@@ -59,7 +59,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="已达到等待点" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="已达到终点" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="已完成粮食运输" />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="已经完成液体运输" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="已经完成液体运输" />
 		<text name="COURSEPLAY_WORK_END" 								 text="工作已完成。" />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": 工具需要卸载。" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": 工具需要装载。" />
@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="装载: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径点显示选择：" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="地块边缘" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="地块边缘" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="地块内转向:" />
@@ -131,11 +131,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="油料不足,尽快补充." />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="油料严重不足,必须补充." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="正在加油" />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="正在测量……" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="正在测量……" />   
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="太多的等待点！ 只允许 %d 个." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="等待点太少! 需要 %d 个 ." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="卸载点太多了，只允许 %d 个." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="卸载点太少了，需要 %d 个." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="卸载点太多了，只允许 %d 个." />    
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="卸载点太少了，需要 %d 个." />         
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="错误的拖斗类型" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="当前工具不支持本模式" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="当前车辆不支持本模式" />
@@ -143,8 +143,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="路径横向调整" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="工具横向调整" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="工具纵向调整" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="装卸点横向调整" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="卸载点纵向调整" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="装卸点横向调整" />     
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="卸载点纵向调整" />      
 		<text name="COURSEPLAY_FRONT" 									 text="前面" />
 		<text name="COURSEPLAY_BACK" 									 text="后面" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="工作面大小" />
@@ -160,7 +160,7 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="西N" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="东N" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="东S" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />
@@ -206,7 +206,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="最近的点" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="起始点" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="当前点" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="next waypoint" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="选择地块范围编号" />
 		<text name="COURSEPLAY_FIELD" 									 text="地块范围路径编号:" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="当前任务" />
@@ -310,9 +310,9 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="在加油站加注燃料" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="总是" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="低于20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="省燃油选项" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="省燃油选项" />					
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="刷新目录" />            <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="刷新目录" />          
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>  <!-- TODO: TRANSLATE! -->		
 		
 	</texts>

@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="próximo ponto" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="primeiro ponto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="ponto atual" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="next waypoint" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Caminho borda do campo" />
 		<text name="COURSEPLAY_FIELD" 									 text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(Rota atual carregada)" />
@@ -316,7 +316,7 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Salvar opção para reabastecer" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Recarregar lista de rotas" />            	
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 text="Não foi possível gerar a rota. Tente mudar as configurações ou mover o veículo."/> 		
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Não foi possível gerar a rota. Tente mudar as configurações ou mover o veículo."/> 		
 		
 	</texts>
 </l10n>

@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="najbližja točka" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="prva točka" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="trenutna točka" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="next waypoint" />  <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Pot okrog polja" />
 		<text name="COURSEPLAY_FIELD" 									 text="Polje" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(trenutno naložena pot)" />

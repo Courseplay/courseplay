@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="unloading bales." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="is in traffic." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="tip trigger reached" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: find a better wording !!  its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Unload Point Stop Short Distance" />  
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Loading: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Show waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Pathfinding" />
@@ -156,8 +156,8 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Open hud with:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Debug channels" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Course generation" />
-		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" /> 
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />     
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Starting direction" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Return to first point" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="South-West" />
@@ -214,7 +214,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nearest waypoint" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="first waypoint" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="current waypoint" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="best nearest waypoint" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Field edge path" />
 		<text name="COURSEPLAY_FIELD" 									 text="Field" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(currently loaded course)" />
