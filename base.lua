@@ -162,7 +162,7 @@ function courseplay:load(savegame)
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
-	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
+	self.cp.startAtPoint = courseplay.START_AT_NEXT_POINT;
 	self.cp.fertilizerOption = true
 
 	-- ai mode 9: shovel
