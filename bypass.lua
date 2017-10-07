@@ -123,6 +123,7 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	
 	if transformId == g_currentMission.terrainRootNode or parent == g_currentMission.terrainRootNode
 	or CpManager.trafficCollisionIgnoreList[transformId]
+	or (self.cp.activeCombine ~= nil and self.cp.activeCombine.acI3D ~= nil and self.cp.activeCombine.acI3D == parent)
 	or (self.cp.activeCombine ~= nil and (self.cp.activeCombine.rootNode == transformId or self.cp.activeCombine.rootNode == parent or self.cp.activeCombine.rootNode == parentParent ))
 	or self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent] or self.cpTrafficCollisionIgnoreList[parentParent]
 	or (self.cp.foundColli ~= nil and table.getn(self.cp.foundColli) > 0 and (self.cp.foundColli[1].id == transformId 
@@ -132,7 +133,7 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 		return true
 	end
 	if self.cp.activeCombine ~= nil then
-		courseplay:debug(nameNum(self) .."found : "..tostring(getName(transformId)).."["..tostring(transformId).."]	self.rootNode: "..tostring(self.rootNode).."	parent: "..tostring(parent).."	self.cp.activeCombine.rootNode: "..tostring(self.cp.activeCombine.rootNode).."  self.cpTrafficCollisionIgnoreList: "..tostring(self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent]),3)
+		courseplay:debug(nameNum(self) .."found : "..tostring(getName(transformId)).."["..tostring(transformId).."]	self.rootNode: "..tostring(self.rootNode).."	parent: "..tostring(parent).." parentParent: "..tostring(parentParent).." self.cp.activeCombine.rootNode: "..tostring(self.cp.activeCombine.rootNode).."  self.cpTrafficCollisionIgnoreList: "..tostring(self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent]),3)
 	else
 		courseplay:debug(nameNum(self) .."found : "..tostring(getName(transformId)).."["..tostring(transformId).."]	self.rootNode: "..tostring(self.rootNode).."	parent: "..tostring(parent).."  self.cpTrafficCollisionIgnoreList: "..tostring(self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent]),3)	
 	end
