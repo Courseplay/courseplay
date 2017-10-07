@@ -989,12 +989,19 @@
 					</figure>
 				</li>
 				<li>
-					<p>Selecting Vehicle position or Last used position instead of a corner starts a different course generation algorithm.
-					</p>
+					<p>Selecting Vehicle position or Last used position instead of a corner starts a different course generation algorithm. </p>
+					<p>In this mode, the vehicle's position determines the start or end of the headland tracks. If you work the headlands
+					   first ()<span class="icon-headlandBefore inline"></span>) the course will start at the field boundary nearest to the vehicle.
+					   If you work the headland last (<span class="icon-headlandAfter inline"></span>), this is where the course will end.</p>
 					<figure>
 						<img src="../../res/img/manual_generateCourse_vehicleLocation.png" class="infoImg">
 						<figcaption>Start of course is based on vehicle position</figcaption>
 					</figure>
+					<p>The algorithm calculates the direction of the up/down tracks in the middle automatically. It finds the direction where
+						the number of the generated tracks is the minimum while the field can be covered in a single pass. </p>
+					<p>Due to the nature of this automatic alignment, the up/down tracks won't necessarily start where the headland ends,
+						so often, there's a connecting track is needed between the two (see the above picture). The vehicle will raise and 
+						turn off implements while traveling on that connecting track.</p>
 				</li>
 				<li>
 					<p>Set the starting direction. That's the direction that the first lane will have.</p>
@@ -1073,7 +1080,7 @@
 	<!-- ------------------------------------------------------------------------------------------- -->
 
 	<footer>
-		<div>&copy; Courseplay Dev Team, 2014</div>
+		<div>&copy; Courseplay Dev Team, 2017</div>
 		<ul id="navFooter">
 			<li><a href="https://github.com/Courseplay/courseplay">GitHub</a></li>
 			<li><a href="https://www.pivotaltracker.com/projects/675867#">Bug Tracker</a></li>
