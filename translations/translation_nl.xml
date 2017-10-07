@@ -20,7 +20,7 @@
 		<text name="COURSEPLAY_MODE_1" 									 text="Type: Transport" />
 		<text name="COURSEPLAY_MODE_2" 									 text="Type: Combi (combine legen en lossen bij silo)" />
 		<text name="COURSEPLAY_MODE_3" 									 text="Type: Overladen (combine legen en overladen in trailer)" />
-		<text name="COURSEPLAY_MODE_4" 									 text="Type: Kunstmest en zaaien" />
+	    <text name="COURSEPLAY_MODE_4" 									 text="Type: Kunstmest en zaaien" />
 		<text name="COURSEPLAY_MODE_5" 									 text="Type: Verladen (van start naar finish)" />
 		<text name="COURSEPLAY_MODE_6" 									 text="Type: Veldwerk" />
 		<text name="COURSEPLAY_MODE_7" 									 text="Type: Combine zelflossen" />
@@ -137,7 +137,7 @@
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Te veel los punten! %d toegestaan." />   
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Te weinig los punten! %d nodig." />           
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Verkeerde trailer voor deze modus" />
-		<text name="COURSEPLAY_WRONG_TOOL" 								 text="verkeerde gereedschap voor deze modus" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Verkeerde gereedschap voor deze modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dit voertuig wordt nu niet ondersteund" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="wacht op beter weer" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Baan uit lijn" />
@@ -168,10 +168,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn (combines only)" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Kopakker bochten" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Vloeiend" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Scherp (alleen combines)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Rond" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="geactiveerd" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="alleen Naam" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Naam en Route" />
@@ -184,7 +184,7 @@
 		<text name="COURSEPLAY_START" 									 text="Start" />
 		<text name="COURSEPLAY_FINISH" 									 text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Geen route geladen" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="bemester functie van zaai machine" />
 
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Geen shovel gevonden" />
@@ -205,10 +205,10 @@
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + Go Laden" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Route starten bij:" />
-		<text name="COURSEPLAY_NEAREST_POINT" 							 text="volgende markering" />
+		<text name="COURSEPLAY_NEAREST_POINT" 							 text="dichtst bijzijnde markering" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="eerste markering" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="huidige markering" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 text="next waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 							     text="volgende markering" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Veldrand route" />
 		<text name="COURSEPLAY_FIELD" 									 text="Veld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(huidige route)" />
@@ -234,10 +234,10 @@
 		<text name="COURSEPLAY_SLIPPING_WARNING" 						 text="Slippend" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 						 text="Bijvullen tot:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 							 text=": Bunker silo is vol!" />
-		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Boerderij Silo heeft niet de juiste vulling" />
-		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Boerderij Silo laadt:" />		
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Farm Silo is leeg! Wacht op meer." />  
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Farm silo is vol! Vervolg naar volgende silo." />  
+		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Boerderij silo heeft niet de juiste vulling" />
+		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Boerderij silo laadt:" />		
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Boerderij silo is leeg! Wacht op meer." />  
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": Boerderij silo is vol! Vervolg naar volgende silo." />  
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Opstarten %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Eerste markering zoeken" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Huidige route opslaan" />
@@ -302,7 +302,7 @@
 		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="geen bunkersilo gevonden bij start punt" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="geen blad gemonteerd" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="blad aan voorzijde wordt niet ondersteund" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="BunkerSilo instellingen" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Bunker silo instellingen" />
 		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="blad breedte" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silo wordt gevuld door" />
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="onderdoor rijden" />
