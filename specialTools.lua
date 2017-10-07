@@ -173,8 +173,20 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [6] MOD BALING
+	elseif workTool.cp.xmlFileName == 'KroneUltimaCF155XC.xml' then
+		workTool.cp.isKroneUltimaCF155XC = true
+		if not workTool.cp.ultimaSpec then
+			for index,name in pairs (workTool.specializationNames) do
+				if name == "FS17_KroneUltimaCF155XC.Ultima" then
+					workTool.cp.ultimaSpec = workTool.specializations[index]
+					break
+				end
+			end
+		end
 	
-	
+	elseif workTool.cp.xmlFileName == 'kuhnFBP3135.xml' then
+		workTool.cp.iskuhnFBP3135 = true
+		
 	-- ###########################################################
 
 	-- [7] MOD OTHER TOOLS
@@ -506,6 +518,9 @@ function courseplay:isSpecialMower(workTool)
 end
 
 function courseplay:isSpecialBaler(workTool)
+	if workTool.cp.isKroneUltimaCF155XC then
+		return true;
+	end
 	return false;
 end;
 
@@ -538,7 +553,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	return false;
 end
 
-function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit)
+function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit,workSpeed)
 	local forcedStop = not unfold and not lower and not turnOn and not allowedToDrive and not cover and not unload and not ridgeMarker and forceSpeedLimit ==0;
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
@@ -576,14 +591,76 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 
 		return false ,allowedToDrive,forceSpeedLimit;
+	
+	elseif 	workTool.cp.isKroneUltimaCF155XC then
+		
+		local balerState = workTool.currentBalerState
+		local capacity = workTool:getUnitCapacity(workTool.mainChamberUnitIndex)
+		local fillLevel = workTool:getUnitFillLevel(workTool.mainChamberUnitIndex)
+		local Ultima = workTool.cp.ultimaSpec
+		
+		
+		--drop bales together if unload is set to collect, if manual stop tractor and push message
+		if workTool.currentBaleDropMode ~= Ultima.DROPMODE_AUTO then
+			local baleInWrapper = workTool.wrapperCurrentBale ~= nil and workTool.wrapperCurrentBale.baleObject ~= nil
+			local mainChamberFull = fillLevel >= capacity
+			
+			if workTool.currentBaleDropMode == Ultima.DROPMODE_MANUAL then
+				if baleInWrapper and fillLevel > capacity * 0.95 then
+					allowedToDrive = false
+					CpManager:setGlobalInfoText(self, 'NEEDS_UNLOADING');
+				end;
+			--drop bale if unload is set to collect
+			elseif workTool.currentBaleDropMode == Ultima.DROPMODE_COLLECT then
+				if (baleInWrapper and mainChamberFull) or workTool.dropNextBaleDirectly then
+					allowedToDrive = false
+				end
+			end;
+		end
+		
+		--turn on
+		if unfold ~= workTool.turnOnVehicle.isTurnedOn then
+			workTool:setIsTurnedOn(unfold, false);
+		end
+	
+		local stoppedForReason = false
+	
+		--stop if net is empty  
+		if workTool.manualNetRoleRefill and not (workTool.netRoleTop.length > 0) then
+			allowedToDrive = false
+			CpManager:setGlobalInfoText(self, 'BALER_NETS');
+			stoppedForReason = true
+		end
+		
+		--stop if foil is empty
+		if workTool.manualFoilRoleRefill and workTool.wrapperIsActive and not (workTool.wrapperFoilHolders[1].remainingFoilLength > 0 and workTool.wrapperFoilHolders[2].remainingFoilLength > 0)then
+			allowedToDrive = false
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');
+			stoppedForReason = true
+		end
+	
+		--inhibit fuelSave because wrapping takes longer than fuelsave timer
+		if self.cp.saveFuelOptionActive and not stoppedForReason then
+			self.cp.saveFuel = false
+			courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
+		end 
+	
+		--pickup
+		if workTool.setPickupState ~= nil then
+			if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= implementsDown then
+				workTool:setPickupState(implementsDown, false);
+			end;
+		end;
+		
+		return true ,allowedToDrive,forceSpeedLimit,workSpeed;
 	end;
 
 	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence
 	if workTool.cp.isSeedHawk980AirCart or workTool.cp.isHatzenbichlerTH1400 then
-		return true ,allowedToDrive,forceSpeedLimit;
+		return true ,allowedToDrive,forceSpeedLimit,workSpeed;
 	end;
 
-	return false, allowedToDrive,forceSpeedLimit;
+	return false, allowedToDrive,forceSpeedLimit,workSpeed;
 end
 
 function courseplay:askForSpecialSettings(self, object)
