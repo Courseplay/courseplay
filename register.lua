@@ -16,7 +16,9 @@ function courseplay:register(secondTime)
 		if vehicleType and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then 
 			for i,spec in pairs(vehicleType.specializations) do
 				if spec and spec == drivableSpec then
-					print(('  adding Courseplay to %q'):format(tostring(vehicleType.name)));
+					if courseplay.isDevVersion then
+						print(('  adding Courseplay to %q'):format(tostring(vehicleType.name)));
+					end
 					table.insert(vehicleType.specializations, courseplaySpec);
 					vehicleType.hasCourseplaySpec = true;
 					vehicleType.hasDrivableSpec = true;

@@ -1041,8 +1041,9 @@ function courseplay.hud:loadPage(vehicle, page)
 		
 		
 		-- Debug channels
-		vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
-
+		if courseplay.isDevVersion then
+			vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
+		end
 
 	--PAGE 7: DRIVING SETTINGS
 	elseif page == self.PAGE_DRIVING_SETTINGS then
@@ -1690,16 +1691,17 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, pg, nil, 'toggleAutoRefuel', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
 
 	-- debug channels
-	vehicle.cp.hud.debugChannelButtons = {};
-	for dbg=1, courseplay.numDebugChannelButtonsPerLine do
-		local data = courseplay.debugButtonPosData[dbg];
-		local toolTip = courseplay.debugChannelsDesc[dbg];
-		vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, pg, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
-	end;
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8, -1, true, false);
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  1, true, false);
-	courseplay.button:new(vehicle, pg, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, -1, true, true);
-
+	if courseplay.isDevVersion then 
+		vehicle.cp.hud.debugChannelButtons = {};
+		for dbg=1, courseplay.numDebugChannelButtonsPerLine do
+			local data = courseplay.debugButtonPosData[dbg];
+			local toolTip = courseplay.debugChannelsDesc[dbg];
+			vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, pg, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
+		end;
+		courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8, -1, true, false);
+		courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  1, true, false);
+		courseplay.button:new(vehicle, pg, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, -1, true, true);
+	end
 
 	-- ##################################################
 	-- Page 7: Driving settings

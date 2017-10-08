@@ -188,8 +188,8 @@
 		<text name="COURSEPLAY_START" 									 text="Iniciar" />
 		<text name="COURSEPLAY_FINISH" 									 text="Finalizar" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="rota inválida" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
-		
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Função fertilizante p.máquina de semea" />
+																		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="nenhuma pá carregadeira encontrada" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Posições da pá carregadeira" />

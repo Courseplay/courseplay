@@ -856,7 +856,12 @@ function courseplay:unload_combine(vehicle, dt)
 			if combine.cp.isChopper then
 				local fruitSide = courseplay:sideToDrive(vehicle, combine, -10,true);
 				local maxDiameter = max(totalLength,turnDiameter)
-				local extraAlignLength = courseplay:getDirectionNodeToTurnNodeLength(vehicle)*2+6;	
+				local extraAlignLength = 9
+				if vehicle.cp.distances ~= nil and vehicle.cp.distances.frontWheelToRearWheel ~=nil then
+					extraAlignLength = vehicle.cp.distances.frontWheelToRearWheel*3;
+				end
+				--local extraAlignLength = courseplay:getDirectionNodeToTurnNodeLength(vehicle)*2+6;	
+				
 				--another new chopper turn maneuver by Thomas Gärtner  
 				if fruitSide == "left" then -- chopper will turn left
 
@@ -877,7 +882,7 @@ function courseplay:unload_combine(vehicle, dt)
 							vehicle.cp.curTarget.rev = false
 							vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-1,maxDiameter,tractor.cp.workWidth)
 										
-							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth,-(max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength -verticalWaypointShift)))
+							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth,-(max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength +extraAlignLength -verticalWaypointShift)))
 							courseplay:addNewTargetVector(vehicle,tractor.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
 						else
 							courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right. Turning the Old Way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
@@ -903,7 +908,7 @@ function courseplay:unload_combine(vehicle, dt)
 							vehicle.cp.curTarget.rev = false
 							vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,1,maxDiameter,tractor.cp.workWidth)
 
-							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth,-(max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength-verticalWaypointShift)))
+							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth,-(max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength +extraAlignLength -verticalWaypointShift)))
 							courseplay:addNewTargetVector(vehicle,-tractor.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
 
 						else
@@ -1707,7 +1712,7 @@ function courseplay:getWaypointShift(vehicle,tractor)
 		local nx,nz = tractor.Waypoints[tractor.cp.waypointIndex+1].cx, tractor.Waypoints[tractor.cp.waypointIndex+1].cz
 		local ny = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, nx, 0, nz)
 		local _,_,npShift = worldToLocal(tractor.cp.DirectionNode,nx,ny,nz)
-		return npShift-vehicleShift+tractor.sizeLength*.5;
+		return npShift-vehicleShift+tractor.sizeLength*0.5;
 	end
 end
 
