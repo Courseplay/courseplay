@@ -1310,18 +1310,23 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		vehicle.cp.TrafficBrake = false
-		if (vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE then   
-      local tx, tz
-      -- when following waypoints, check obstacles on the course, not dead ahead
-      if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS then
-        if #vehicle.cp.nextTargets > 1 then
-          -- look ahead two waypoints if we have that many
-          tx, tz = vehicle.cp.nextTargets[ 2 ].x, vehicle.cp.nextTargets[ 2 ].z
-        else
-          -- otherwise just the next one
-          tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
-        end
-      end
+		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine
+		local distanceToCombine = math.huge 
+		if combine ~= nil and combine.cp.isChopper then
+			distanceToCombine = courseplay:distanceToObject( vehicle, combine )  	
+		end
+		if distanceToCombine > 50 and ((vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE) then   
+			local tx, tz
+			-- when following waypoints, check obstacles on the course, not dead ahead
+			if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS then
+				if #vehicle.cp.nextTargets > 1 then
+				-- look ahead two waypoints if we have that many
+				tx, tz = vehicle.cp.nextTargets[ 2 ].x, vehicle.cp.nextTargets[ 2 ].z
+				else
+				-- otherwise just the next one
+				tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
+				end
+			end
 			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz )
 		end
 		
