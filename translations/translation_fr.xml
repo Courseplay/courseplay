@@ -172,10 +172,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Ouest" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatique" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Fourrière:" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn (combines only)" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Coins de fourrière" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Lissés" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Manoeuvres (Moissonneuse)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Ronds" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="activé" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Nom seul" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nom et Course" />
@@ -188,7 +188,7 @@
 		<text name="COURSEPLAY_START" 							 		 text="Démarrer" />
 		<text name="COURSEPLAY_FINISH" 							 		 text="Arrêter" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 					 	 text="La course n'est pas valide" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Fonction engrais du semoir" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 	 text="Pas de godet trouvé" />
@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 						 	 text="point le plus proche" />
 		<text name="COURSEPLAY_FIRST_POINT" 						 	 text="premier point" />
 		<text name="COURSEPLAY_CURRENT_POINT" 						 	 text="point actuel" />
-		<text name="COURSEPLAY_NEXT_POINT" 								 text="next waypoint" />  <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="prochain point" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 					 	 text="Tour du champ" />
 		<text name="COURSEPLAY_FIELD" 							 		 text="Champ" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(Course actuellement chargée)" />
