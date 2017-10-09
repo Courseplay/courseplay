@@ -188,7 +188,7 @@
 		<text name="COURSEPLAY_START" 									 text="Inizia" />
 		<text name="COURSEPLAY_FINISH" 									 text="Termina" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Il percorso non è valido" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="funzione fertilizzante delle seminatrici" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Pala non trovata" />
