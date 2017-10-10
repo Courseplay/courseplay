@@ -241,7 +241,7 @@ function courseplay:load(savegame)
 
 	self.cp.tooIsDirty = false
 	self.cp.orgRpm = nil;
-
+	
 	-- data basis for the Course list
 	self.cp.reloadCourseItems = true
 	self.cp.sorted = {item={}, info={}}	
@@ -844,6 +844,7 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:update(dt)
+
 	-- KEYBOARD EVENTS
 	if self:getIsActive() and self.isEntered and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
@@ -1048,7 +1049,6 @@ function courseplay:updateTick(dt)
 		self.cpTrafficCollisionIgnoreList = {}
 		courseplay:resetTools(self)
 	end
-
 	self.timer = self.timer + dt;
 end
 

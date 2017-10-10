@@ -1635,7 +1635,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 
   courseplay:debug( string.format( "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz ), 9 )
   local path = pathFinder.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
-                                    courseplay.fields.fieldData[fieldNum].points )
+                                    courseplay.fields.fieldData[fieldNum].points, fruitType )
    
   if path then
     courseplay:debug( string.format( "Path found with %d waypoints", #path ), 9 )

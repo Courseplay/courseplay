@@ -6,6 +6,7 @@ pathFinder = {}
 local gridSpacing
 local count
 local biasToRight
+local fruitToCheck = nil
 --
 --- add some area with fruit for tests
 function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
@@ -13,7 +14,7 @@ function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
   for y, row in ipairs( grid.map ) do
     for x, index in pairs( row ) do
     local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
-      if minDistanceToFieldBoundary > distance then 
+      if minDistanceToFieldBoundary > distance then
         grid[ index ].hasFruit = true
       end
     end
@@ -32,13 +33,17 @@ function pathFinder.addFruitGridDistanceFromBoundary( grid, polygon )
 end
 
 --- Does the area around x, z has fruit?
--- 
-local function hasFruit( x, y, width )
+--
+local function hasFruit( node, width )
   if courseGenerator.isRunningInGame() then
-    return courseplay:areaHasFruit( x, -y, nil, width )  
+    -- check the fruit if we haven't done so yet
+    if node.hasFruit == nil then
+      node.hasFruit = courseplay:areaHasFruit( node.x, -node.y, fruitToCheck, width )
+    end
+    return node.hasFruit
   else
     -- for testing in standalone mode
-    return false 
+    return false
   end
 end
 
@@ -52,19 +57,19 @@ local function generateGridForPolygon( polygon )
   -- this will make sure that the grid will have approximately 64^2 = 4096 points
   -- TODO: probably need to take the aspect ratio into accont for odd shaped
   -- (long and narrow) fields
-  -- But don't go below a certain limit as that would drive too close to the fruite 
-  -- for this limit, use a fraction to reduce the chance of ending up right on the field edge (assuming fields 
+  -- But don't go below a certain limit as that would drive too close to the fruite
+  -- for this limit, use a fraction to reduce the chance of ending up right on the field edge (assuming fields
   -- are drawn using integer sizes) as that may result in a row or two missing in the grid
-  local width = math.max( 4.71, math.sqrt( polygon.area ) / 64 )
+  local width = math.max( 4.071, math.sqrt( polygon.area ) / 64 )
   gridSpacing = width
   local horizontalLines = generateParallelTracks( polygon, width )
   if not horizontalLines then return grid end
-  -- we'll need this when trying to find the array index from the 
-  -- grid coordinates. All of these lines are the same length and start 
+  -- we'll need this when trying to find the array index from the
+  -- grid coordinates. All of these lines are the same length and start
   -- at the same x
   grid.width = math.floor( horizontalLines[ 1 ].from.x / width )
   grid.height = #horizontalLines
-  -- now, add the grid points 
+  -- now, add the grid points
   local margin = width / 2
   for row, line in ipairs( horizontalLines ) do
     local column = 0
@@ -76,8 +81,7 @@ local function generateGridForPolygon( polygon )
           if x > line.intersections[ j ].x + margin and x < line.intersections[ j + 1 ].x - margin then
             local y = line.from.y
             -- check an area bigger than the width to make sure the path is not too close to the fruit
-            local hasFruit = hasFruit( x, y, width * 2 )
-            table.insert( grid, { x = x, y = y, hasFruit = hasFruit, column = column, row = row })
+            table.insert( grid, { x = x, y = y, column = column, row = row })
             grid.map[ row ][ column ] = #grid
           end
         end
@@ -100,7 +104,7 @@ end
 
 --- a_star will call back here to get the valid neighbors
 -- This is an optimization of the original algorithm which would iterate through all nodes
--- of the grid and see if theNode is close enough. We don't need that as we have our nodes in 
+-- of the grid and see if theNode is close enough. We don't need that as we have our nodes in
 -- a grid and we know exactly which (up to) eight nodes are the neighbors.
 -- This reduces the iterations by two magnitudes
 local function getNeighbors( theNode, grid )
@@ -115,16 +119,18 @@ local function getNeighbors( theNode, grid )
         -- skip own node
         if not ( column == theNode.column and row == theNode.row ) and grid.map[ row ] and grid.map[ row ][ column ] then
           neighbor = grid[ grid.map[ row ][ column ]]
-          if neighbor and 
+          local theNodeHasFruit = hasFruit( theNode, gridSpacing * 2 )
+          local neighborHasFruit = neighbor and hasFruit( neighbor, gridSpacing * 2 )
+          if neighbor and
             -- we only care about nodes with no fruit ...
-            ( not neighbor.hasFruit or 
+            ( not neighborHasFruit or
             -- ... or, if they have fruit, but the current node does not. This
             -- eliminates most nodes with fruit (except the ones close to the harvested area)
-            -- and thus reduces the number of iterations significantly. However, no path will be 
+            -- and thus reduces the number of iterations significantly. However, no path will be
             -- generated when one of the end points is in the fruit.
-            ( neighbor.hasFruit and not theNode.hasFruit )) 
+            ( neighborHasFruit and not theNodeHasFruit ))
             then
-              table.insert( neighbors, neighbor ) 
+              table.insert( neighbors, neighbor )
               theNode.visited = true
             end
         end
@@ -142,10 +148,10 @@ end
 --- g() score to neighbor, A star will call back here when calculating the score
 --
 function gScoreToNeighbor( node, neighbor )
-  if neighbor.hasFruit then
-    -- this is the key parameter to tweak. This is basically the distance you are 
-    -- willing to travel in order not to cross one grid spacing of fruit. So, for 
-    -- example with a grid spacing of 3 meters, you rather go around 250 meters 
+  if hasFruit( neighbor, gridSpacing * 2 ) then
+    -- this is the key parameter to tweak. This is basically the distance you are
+    -- willing to travel in order not to cross one grid spacing of fruit. So, for
+    -- example with a grid spacing of 3 meters, you rather go around 250 meters
     -- than to cross 3 meters of fruit. The purpose of this is to allow for a path
     -- with some fruit in it, which comes in handy when your combine is full on the
     -- first headland. This will minimize to amount of fruit you have to drive through.
@@ -169,11 +175,11 @@ local function addOffGridNode( grid, newNode )
         newNode.neighborIndexes = { column }
       end
       -- tell the other node about the new node
-      if node.neighborIndexes then 
+      if node.neighborIndexes then
         -- new node will be added as the last element of the grid
         table.insert( node.neighborIndexes, #grid + 1 )
       else
-        node.neighborIndexes = { #grid + 1 } 
+        node.neighborIndexes = { #grid + 1 }
       end
     end
   end
@@ -218,11 +224,12 @@ function pointToXz( point )
 end
 
 --- Find a path between from and to in a polygon using the A star
--- algorithm 
+-- algorithm
 -- Expects FS coordinates (x,-z)
-function pathFinder.findPath( from, to, cpPolygon, addFruitFunc )
+function pathFinder.findPath( from, to, cpPolygon, fruit, addFruitFunc )
   count = 0
-  local grid, width = generateGridForPolygon( pointsToXy( cpPolygon )) 
+  fruitToCheck = fruit
+  local grid, width = generateGridForPolygon( pointsToXy( cpPolygon ))
   -- from and to must be a node. change z to y as a-star works in x/y system
   local fromNode = pointToXy( from )
   local toNode = pointToXy( to )
@@ -237,7 +244,7 @@ function pathFinder.findPath( from, to, cpPolygon, addFruitFunc )
   -- limit number of iterations depending on the grid size to avoid long freezes
   local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors, gScoreToNeighbor, #grid * 0.75 )
 	courseGenerator.debug( string.format( "Number of iterations %d", count) , 9);
-  if path then 
+  if path then
     calculatePolygonData( path )
     path = smooth( path, math.rad( 0 ), math.rad( 180 ), 1, true )
 	  courseGenerator.debug( string.format( "Path generated with %d points", #path ) , 9);
@@ -247,10 +254,8 @@ function pathFinder.findPath( from, to, cpPolygon, addFruitFunc )
     if not courseGenerator.isRunningInGame() then
       io.stdout:flush()
     end
-    return pointsToXz( path ), grid 
+    return pointsToXz( path ), grid
   else
-    return nil, grid 
+    return nil, grid
   end
 end
-
-
