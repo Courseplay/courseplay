@@ -6,7 +6,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Aktivovat odvozce" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Zastavit odvozce" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Čekat na posledním bodě nebo triggeru:" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Number of runs to preform" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Počet jízd" />
  		<text name="COURSEPLAY_UNLIMITED" 								 text="Neomezený" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Strana odvozce:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automaticky" />
@@ -63,7 +63,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="přijel na místo čekání." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="dokončil odvoz obilí." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="has finished liquid transport." /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="dokončil odvoz kapaliny." /> 
 		<text name="COURSEPLAY_WORK_END" 								 text="dokončil práci." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": potřebuje vyložit." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": pracovní stroj musí být doplněn." />
@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Bude naloženo: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Zobrazit orientační body:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Vjíždění do porostu:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Oborat okraj pole" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Otáčení na poli:" />
@@ -135,11 +135,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="bude potřebovat dotankovat." />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="musí tankovat." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="tankuje." />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="is being weighed" />    <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="Probíhá vážení" />   
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů čekání! Pouze %d bodů je povoleno." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Postrádá body čekání. Vyžaduje %d body čekání." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Too many unload points! Only %d allowed." />    <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Too few unload points! %d needed." />           <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů vykládky! Jen %d povoleno." />   
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Příliš málo bodů vykládky! %d potřeba." />          
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Máš pro tento mod nevhodný přívěs" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Máš pro tento mod nevhodné nářadí" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Tento typ vozidla není v tomto módu podporován." />
@@ -147,8 +147,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Odstup od trasy:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Horiz. posunutí stroje:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Vertik. posunutí stroje:" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Load/Unload offset horizontal" />     <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Load/Unload/Wait offset vertical" />       <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Horizontální odstup od bodu nakládky/vykládky" />   
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Vertikální odstup od bodu nakládky/vykládky" />     
 		<text name="COURSEPLAY_FRONT" 									 text="přední" />
 		<text name="COURSEPLAY_BACK" 									 text="zadní" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Pracovní šířka:" />
@@ -156,26 +156,26 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Zapnout CoursePlay HUD:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Kanály ladění:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generovat trasu" />
-		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Počáteční pozice" />  
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Poslední pozice" />     
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Směr trasy:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Návrat na první bod:" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="jihozápad" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="severozápad" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="jihovýchod" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5" 								 text="aktuální pozice vozidla" />  	
+		<text name="COURSEPLAY_CORNER_6" 								 text="poslední pozice vozidla" />	
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />  <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatický" />  
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS" 				 text="Headland corners" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /><!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Turn (combines only)" /><!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /><!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS" 				 text="Souvraťové rohy" /> 
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Zaoblený" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Pocouvnutí (pouze kombajny/řezačky)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Průjezd" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="pouze stroj" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="stroj a trasa" />
@@ -188,7 +188,7 @@
 		<text name="COURSEPLAY_START" 									 text="Start" />
 		<text name="COURSEPLAY_FINISH" 									 text="Ukončit" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Trasa není platná" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Přihnojování" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Lžíce nenalezena" />
@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="na nejbližším bodě" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="na prvním bodě" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="na vybraném bodě" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="next waypoint" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="následující čekací bod" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Trasa okolo pole:" />
 		<text name="COURSEPLAY_FIELD" 									 text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(načtená trasa)" />
@@ -250,7 +250,7 @@
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 					 text="Pokračovat v nahrávání" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 						 text="Smazat poslední bod" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 						 text="Nastavit bod čekání" />
-		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Set unload point" />
+		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 					 text="Nastavte bod vykládky" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 					 text="Nastavit bod křížení" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 					 text="Začít se otáčet" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Konec otáční" />
@@ -260,10 +260,10 @@
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě - zobrazit text:" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automaticky" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Vždy" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Vždy &amp; Přední Dif. pro práci v terénu" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Vždy &amp; Zadní Dif. pro práci v terénu" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Vždy &amp; Oba Dif. pro práci v terénu" /> 
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Chceš aby pole byla skenována automaticky?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Chceš aby byli pomocníci placeni (%s/hodinu)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Kalkulačka spotřeby osiva" />
@@ -313,9 +313,9 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Doplňit palivo na čerpací stanici:" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="vždy" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="méně než 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="fuel save option" />						 <!-- TODO: TRANSLATE! -->
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="úsporný režim" />						
 		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" />            <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>  <!-- TODO: TRANSLATE! -->		
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Znovunačtení seznamu tras" />         
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Nelze generovat trasu. Zkuste změnit nastavení nebo přemístit vozidlo."/>  
 	</texts>
 </l10n>
