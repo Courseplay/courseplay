@@ -66,7 +66,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="卸载。" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="卡住了!" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="已进入触发区" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="距离2卸载点" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="装载: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径点显示选择：" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
@@ -152,25 +152,25 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="打开CP界面:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="调试通道" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="生成任务路径点" />
-		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="起始位置" />  <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="结束位置" />      <!-- TO BE TRANSLATED -->
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="车辆行驶的方向" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="返回到起始点" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="西S" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="西N" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="东N" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="东S" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Vehicle location" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_CORNER_5" 								 text="车辆位置" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="西" />
-		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />     <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_DIRECTION_5" 							 text="自动" />     <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND" 								 text="路径生成的模式" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" />  <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" />	<!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Turn (combines only)" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="Round" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="岬角" />  <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="光滑" />	<!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="转 (仅收割机)" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="圆" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="仅名称" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="名称和任务" />
@@ -183,7 +183,7 @@
 		<text name="COURSEPLAY_START" 									 text="开始" />
 		<text name="COURSEPLAY_FINISH" 									 text="完成" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="无效任务" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="施肥功能" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="找不到铲斗" />
@@ -206,7 +206,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="最近的点" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="起始点" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="当前点" />
-		<text name="COURSEPLAY_NEXT_POINT" 								 text="next waypoint" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="下一个路径点" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="选择地块范围编号" />
 		<text name="COURSEPLAY_FIELD" 									 text="地块范围路径编号:" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="当前任务" />
@@ -254,10 +254,10 @@
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="地图图标:显示任务车辆信息" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="无卸载位置" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Always" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Always &amp; Foward Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="总是 4WD" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="总是 4WD &amp; 前差速器工作" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="总是 4WD &amp; 后差速器工作" /> <!-- TODO: TRANSLATION! -->
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="总是 4WD &amp; 前后差速器工作" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="需要自动测量土地范围路径么？" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="你想要CP赚取雇人的工资么(%s/小时)？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="种子使用量" />
@@ -313,7 +313,7 @@
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="省燃油选项" />					
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="刷新目录" />          
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Couldn't generate course. Try changing the settings or moving the vehicle."/>  <!-- TODO: TRANSLATE! -->		
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="无法生成任务。尝试更改设置或移动车辆。"/>  <!-- TODO: TRANSLATE! -->		
 		
 	</texts>
 </l10n>
