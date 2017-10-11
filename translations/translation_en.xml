@@ -214,7 +214,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="nearest waypoint" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="first waypoint" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="current waypoint" />
-		<text name="COURSEPLAY_NEXT_POINT" 								 text="best nearest waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="next closest waypoint" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Field edge path" />
 		<text name="COURSEPLAY_FIELD" 									 text="Field" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(currently loaded course)" />
