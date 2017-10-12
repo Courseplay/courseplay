@@ -3,7 +3,7 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Начать запись маршрута" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Транспорт" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Запустить по маршруту" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Отправить транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в следующей точке:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Выполнить количество рейсов" />
@@ -212,7 +212,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="с ближайшей точки" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="продолжить маршрут" />
-		<text name="COURSEPLAY_NEXT_POINT" 								 text="следующая точка ожидания" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="след. ближайшая точка ожидания" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Выбрать поле:" />
 		<text name="COURSEPLAY_FIELD" 									 text="поле №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(загруженный маршрут)" />
