@@ -736,6 +736,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			if currentTrailer.cp.currentSiloTrigger ~= nil then
 				local triggerX,_,triggerZ = getWorldTranslation(currentTrailer.cp.currentSiloTrigger.rootNode);
 				_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
+				courseplay:debug(string.format('%s: Silo Trigger unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(vehicle.cp.trailerFillDistance)), 2);
 			end;
 		elseif vehicle.cp.tipperLoadMode == 2 then
 			local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
@@ -743,6 +744,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				vehicle.cp.trailerFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ) + 0.5;
 			end;
 			unloadDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
+			courseplay:debug(string.format('%s: Non Silo unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(vehicle.cp.trailerFillDistance)), 2);
 		end;
 
 	end;
@@ -808,6 +810,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				vehicle.cp.tipperLoadMode = 0;
 			end;
 		else
+			courseplay:debug(string.format('%s: Stop the tipper unloadDistance = %.4s vehicle.cp.trailerFillDistance = %.4s waypointindex = %s', nameNum(vehicle), tostring(unloadDistance), tostring(vehicle.cp.trailerFillDistance), tostring(vehicle.cp.waypointIndex)), 2);
 			if unloadDistance < vehicle.cp.trailerFillDistance then
 				allowedToDrive = false;
 			end;
