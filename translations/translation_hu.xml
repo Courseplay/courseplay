@@ -12,6 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatikus" />
 		<text name="COURSEPLAY_LEFT" 									 text="bal" />
 		<text name="COURSEPLAY_RIGHT" 									 text="jobb" />
+		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION-->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Szállító elküldése" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Szállító hívása" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Szállító hívása" />
@@ -35,6 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Fordulósáv irány"/> 
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Fordulósáv útvonal elején/végén" /> 
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Útvonal generálás" /> 
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
 		<text name="COURSEPLAY_DISTANCE" 								 text="Távolság" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Várakozási idő" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d perc" />

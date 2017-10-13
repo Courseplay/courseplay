@@ -12,6 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automático" />
 		<text name="COURSEPLAY_LEFT" 									 text="esquerda" />
 		<text name="COURSEPLAY_RIGHT" 									 text="direita" />
+		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION-->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Enviar o motorista para a rota" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Chamar o motorista" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Motorista foi chamado" />
@@ -34,7 +35,8 @@
 		<text name="UNKNOWN" 											 text="desconhecido" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Cabeceira sentido horário/anti-horário" />        
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Cabeceira antes/depois da rota" /> 
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Gerar rota no campo" />             
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Gerar rota no campo" /> 
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
 		<text name="COURSEPLAY_DISTANCE" 								 text="distância" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Aguardando tempo" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />

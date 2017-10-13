@@ -189,8 +189,11 @@ function courseplay.button:render()
 
 		elseif pg == courseplay.hud.PAGE_DRIVING_SETTINGS then
 			if fn == "changeLaneOffset" then
-				canScrollUp   = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK;
+				canScrollUp   = vehicle.cp.multiTools == 1 and (vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK)
 				canScrollDown = canScrollUp;
+			elseif fn == 'changeLaneNumber' then
+				canScrollUp = math.floor(vehicle.cp.multiTools/2) > vehicle.cp.laneNumber
+				canScrollDown = math.floor(vehicle.cp.multiTools/2)*-1 < vehicle.cp.laneNumber
 			elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
 				canScrollUp   = vehicle.cp.mode == courseplay.MODE_OVERLOADER
 							 or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
@@ -215,6 +218,9 @@ function courseplay.button:render()
 			elseif fn == "changeWorkWidth" then
 				canScrollUp   = true;
 				canScrollDown = vehicle.cp.workWidth > 0.1;
+			elseif fn == 'changeMultiTools' then
+				canScrollUp = vehicle.cp.multiTools < 8
+				canScrollDown = vehicle.cp.multiTools > 1
 			end;
 			
 		elseif pg == courseplay.hud.PAGE_SHOVEL_POSITIONS then
@@ -417,7 +423,13 @@ function courseplay.button:render()
 			-- Page 7
 			elseif pg == courseplay.hud.PAGE_DRIVING_SETTINGS then
 				if fn == "changeLaneOffset" then
-					show = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK;
+					show = vehicle.cp.multiTools == 1 and (vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK);
+				elseif fn == 'changeLaneNumber' then
+					if prm > 0 then
+						show = math.floor(vehicle.cp.multiTools/2) > vehicle.cp.laneNumber
+					elseif prm < 0 then
+						show = math.floor(vehicle.cp.multiTools/2)*-1 < vehicle.cp.laneNumber
+					end;
 				elseif fn == "toggleSymmetricLaneChange" then
 					show = (vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.laneOffset ~= 0;
 				elseif fn == "changeToolOffsetX" or fn == "changeToolOffsetZ" then
@@ -469,6 +481,12 @@ function courseplay.button:render()
 						show = vehicle.cp.headland.numLanes < vehicle.cp.headland.maxNumLanes;
 					end;
 				-- NOTE: generateCourse button is handled in buttonsActiveEnabled(), section 'generateCourse'
+				elseif fn == 'changeMultiTools' then
+					if prm > 0 then 
+						show = vehicle.cp.multiTools < 8
+					elseif prm < 0 then
+						show = vehicle.cp.multiTools > 1
+					end;
 				end;
 			-- Page 10
 			elseif pg == courseplay.hud.PAGE_BUNKERSILO_SETTINGS then
