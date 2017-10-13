@@ -11,8 +11,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Bestuurderszijde" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
-		<text name="COURSEPLAY_RIGHT" 									 text="rechts" /
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION-->>
+		<text name="COURSEPLAY_RIGHT" 									 text="rechts" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Stuur bestuurder weg" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Verzoek bestuurder" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Bestuurder opgeroepen" />
@@ -35,8 +34,7 @@
 		<text name="UNKNOWN" 											 text="onbekend" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Keerstrook links-/rechtsom" />        
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Keerstrook voor/na veld route" /> 
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Genereer veld route" /> 
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Genereer veld route" />            
 		<text name="COURSEPLAY_DISTANCE" 								 text="afstand" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Wachttijd" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />

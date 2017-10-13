@@ -1819,11 +1819,7 @@ function courseplay:turnWithOffset(self)
 	--SYMMETRIC LANE CHANGE
 	if self.cp.symmetricLaneChange then
 		if self.cp.switchLaneOffset then
-			if vehicle.cp.multiTools == 1 then
-				courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
-			else
-				courseplay:changeLaneNumber(self, 2*self.cp.laneNum*-1)
-			end;
+			courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
 			self.cp.switchLaneOffset = false;
 			courseplay:debug(string.format("%s: cp.turnStage == 1, switchLaneOffset=true -> new laneOffset=%.1f, new totalOffset=%.1f, set switchLaneOffset to false", nameNum(self), self.cp.laneOffset, self.cp.totalOffsetX), 12);
 		end;

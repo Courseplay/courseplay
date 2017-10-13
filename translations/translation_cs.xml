@@ -12,7 +12,6 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="无卸载位置" />
 		<text name="COURSEPLAY_LEFT" 									 text="左" />
 		<text name="COURSEPLAY_RIGHT" 									 text="右" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION-->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="让拖斗车去卸载" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="要求卸载" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="请求卸载" />
@@ -35,8 +34,7 @@
 		<text name="UNKNOWN" 											 text="未知" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="转向角 反向转/正向转" />        
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="转向角 之前/之后 田间作业" /> 
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="生成田间作业" />  
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="生成田间作业" />              
 		<text name="COURSEPLAY_DISTANCE" 								 text="距离" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="等待时间" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d 分" />

@@ -134,9 +134,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.courseWorkWidth = course.workWidth;
 			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
 			vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
-			course.multiTools = course.multiTools or 1
-			vehicle.cp.multiTools = course.multiTools
-			
+
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
 		else -- add new course to old course
@@ -247,9 +245,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			if vehicle.cp.courseHeadlandDirectionCW == nil then
 				vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			end;
-			course.multiTools = course.multiTools or 1
-			vehicle.cp.multiTools = course.multiTools
-			
+
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 
@@ -580,9 +576,6 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 		end;
 		if cp_course.headlandDirectionCW ~= nil then
 			setXMLBool(courseXml, "course#headlandDirectionCW", cp_course.headlandDirectionCW);
-		end;
-		if cp_course.multiTools ~= nil then
-			setXMLInt(courseXml, "course#multiTools", cp_course.multiTools);
 		end;
 
 		if courseXml and courseXml ~= 0 then
@@ -1219,8 +1212,6 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 
 				-- course headlandDirectionCW
 				local headlandDirectionCW = getXMLBool(courseXml, courseKey .. "#headlandDirectionCW");
-				
-				local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
 
 				--course waypoints
 				waypoints = {};
@@ -1286,8 +1277,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					parent =			  parent,
 					workWidth =			  workWidth,
 					numHeadlandLanes =	  numHeadlandLanes,
-					headlandDirectionCW = headlandDirectionCW,
-					multiTools = 		  multiTools
+					headlandDirectionCW = headlandDirectionCW
 				};
 				if id ~= 0 then
 					courses_by_id[id] = course;

@@ -459,12 +459,7 @@ function courseplay:load(savegame)
 	self.cp.copyCourseFromDriver = nil;
 	self.cp.selectedDriverNumber = 0;
 
-	--MultiTools
-	self.cp.multiTools = 1;
-	self.cp.orginalWorkWidth = nil;
-	self.cp.laneNumber = 0;
-
-	--Course generation	
+	--Course generation
 	self.cp.startingCorner = 0;
 	self.cp.hasStartingCorner = false;
 	self.cp.startingDirection = 0;
@@ -1525,7 +1520,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		end;
 		
 		self.cp.refillUntilPct = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#refillUntilPct'), 100);
-		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
+		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
 		offsetData = Utils.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
@@ -1535,7 +1530,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay:changeLoadUnloadOffsetX(self, nil, tonumber(offsetData[5]));
 		if not offsetData[6] then offsetData[6] = 0; end;
 		courseplay:changeLoadUnloadOffsetZ(self, nil, tonumber(offsetData[6]));
-		if offsetData[7] ~= nil then self.cp.laneNumber = tonumber(offsetData[7]) end;
 
 		-- SHOVEL POSITIONS
 		curKey = key .. '.courseplay.shovel';
@@ -1655,7 +1649,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 
 	
 	--Offset data
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange), self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
+	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange), self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ);
 
 	local runCounter = self.cp.runCounter
 	if self.cp.runReset == true then

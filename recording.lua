@@ -306,11 +306,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	--Mode 1 Run Counter
  	vehicle.cp.runCounter = 0;
  	courseplay:changeRunCounter(vehicle, false)
-	
-	--Multi Tools
-	if vehicle.cp.multiTools > 1 then
-		courseplay:changeLaneNumber(vehicle,0,true) 
- 	end;
+ 	
 end;
 
 function courseplay:currentVehAngle(vehicle)
