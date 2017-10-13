@@ -39,7 +39,7 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
   end
 end
 
-function courseGenerator.generate( vehicle, name, poly )
+function courseGenerator.generate( vehicle, name, poly, workWidth )
 
   local field = fromCpField( name, poly.points ) 
   calculatePolygonData( field.boundary )
@@ -78,7 +78,7 @@ function courseGenerator.generate( vehicle, name, poly )
   end
   
   local status, err = xpcall( generateCourseForField, function() print( err, debug.traceback()) end, 
-                              field, vehicle.cp.workWidth, vehicle.cp.headland.numLanes,
+                              field, workWidth, vehicle.cp.headland.numLanes,
                               vehicle.cp.headland.userDirClockwise, location,
                               field.overlap, field.nTracksToSkip,
                               field.extendTracks, field.minDistanceBetweenPoints,
@@ -96,7 +96,7 @@ function courseGenerator.generate( vehicle, name, poly )
  
   if not vehicle.cp.headland.orderBefore then
     -- work the center of the field first, then the headland
-    field.course = reverseCourse( field.course, vehicle.cp.workWidth, vehicle.cp.turnRadius, minHeadlandTurnAngle )
+    field.course = reverseCourse( field.course, workWidth, vehicle.cp.turnRadius, minHeadlandTurnAngle )
   end
   removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 
@@ -119,7 +119,7 @@ function courseGenerator.generate( vehicle, name, poly )
 	courseplay.signs:updateWaypointSigns(vehicle);
 
 	-- extra data for turn maneuver
-	vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
+	vehicle.cp.courseWorkWidth = workWidth;
   -- use actually generated number of headlands
   vehicle.cp.headland.numLanes = #field.headlandTracks
 	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.headland.numLanes;

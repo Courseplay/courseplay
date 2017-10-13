@@ -12,6 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="Automatic" />
 		<text name="COURSEPLAY_LEFT" 									 text="left" />
 		<text name="COURSEPLAY_RIGHT" 									 text="right" />
+		<text name="COURSEPLAY_CENTER" 									 text="center" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Send driver home" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Request driver" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Driver requested" />
@@ -35,6 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generate field course" />
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- Todo use somthing better -->
 		<text name="COURSEPLAY_DISTANCE" 								 text="distance" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Waiting time" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -75,7 +77,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Show waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Pathfinding" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" />
-    <text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" />
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Side offset:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start at:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Turn on field:" />
@@ -190,7 +192,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Course is not valid" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" />
-		
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" />
 		
 		
 		<!-- shovel stuff -->

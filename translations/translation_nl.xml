@@ -11,7 +11,8 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Bestuurderszijde" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
-		<text name="COURSEPLAY_RIGHT" 									 text="rechts" />
+		<text name="COURSEPLAY_RIGHT" 									 text="rechts" /
+		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Stuur bestuurder weg" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Verzoek bestuurder" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Bestuurder opgeroepen" />
@@ -34,7 +35,8 @@
 		<text name="UNKNOWN" 											 text="onbekend" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Keerstrook links-/rechtsom" />        
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Keerstrook voor/na veld route" /> 
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Genereer veld route" />            
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Genereer veld route" /> 
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
 		<text name="COURSEPLAY_DISTANCE" 								 text="afstand" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Wachttijd" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -186,6 +188,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Geen route geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="bemester functie van zaai machine" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
 
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Geen shovel gevonden" />

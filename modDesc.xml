@@ -1,101 +1,99 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00006</version>
-	<author><![CDATA[Courseplay Dev Team]]></author>
+	<version>5.02.00007</version>
+	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
-		<br>Courseplay</br>
-		<cs>Courseplay 全程驾驶助手</cs>
-		<cz>Courseplay</cz>
-		<de>Courseplay</de>
-		<en>Courseplay</en>
-		<es>Courseplay</es>
-		<fr>Courseplay</fr>
-		<hu>Courseplay - A Vezetősegéd</hu>
-		<it>Courseplay</it>
-		<jp>Courseplay</jp>
-		<nl>Courseplay</nl>
-		<pl>Courseplay</pl>
-		<pt>Courseplay</pt>
-		<ru>Courseplay</ru>
-		<sl>Courseplay</sl>
+		<br>CoursePlay 5</br>
+		<cs>CoursePlay 5 全程驾驶助手</cs>
+		<cz>CoursePlay 5</cz>
+		<de>CoursePlay 5</de>
+		<en>CoursePlay 5</en>
+		<es>CoursePlay 5</es>
+		<fr>CoursePlay 5</fr>
+		<hu>CoursePlay 5 - A Vezetősegéd</hu>
+		<it>CoursePlay 5</it>
+		<jp>CoursePlay 5</jp>
+		<nl>CoursePlay 5</nl>
+		<pl>CoursePlay 5</pl>
+		<pt>CoursePlay 5</pt>
+		<ru>CoursePlay 5</ru>
+		<sl>CoursePlay 5</sl>
 	</title>
 
+	
+	<changeLog><![CDATA[
+
+	- added option to align to 1st waypoint in mode 2, 4 and 6
+	- added easy setup for multiple tools  on one field work course
+	- Bugfixes
+	
+	
+]]></changeLog>
+	
 	<description>
-		<br>
-<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</br>
-		<cs>
-<![CDATA[开发成员:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-语言支持: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</cs>
-		<cz>
-<![CDATA[Vývojáři:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Překlady: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</cz>
 		<de>
-<![CDATA[Entwickler:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Übersetzungen: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
+<![CDATA[
+Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
+]]>
 		</de>
 		<en>
-<![CDATA[Developers:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Translations: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]>		
 		</en>
-		<es>
-<![CDATA[Desarrolladores:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Traducciones: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</es>
 		<fr>
-<![CDATA[Développeurs:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Traductions: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
+<![CDATA[Courseplay est une modification pour Farm Simulator 17, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
+]]>	
 		</fr>
+		<br>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]>	</br>
+		<cs>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]>	</cs>
+		<cz>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></cz>
+		<es>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></es>
+
 		<it>
-<![CDATA[Sviluppatori:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Traduzioni: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</it>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></it>
 		<jp>
-<![CDATA[開発者:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-翻訳: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</jp>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></jp>
 		<hu>
-<![CDATA[Készítők:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Fordítók: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</hu>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></hu>
 		<nl>
-<![CDATA[Ontwikkelaars:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Vertaling: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</nl>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></nl>
 		<pl>
-<![CDATA[Deweloperzy:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Tłumaczenia: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</pl>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></pl>
 		<pt>
-<![CDATA[Desenvolvedores:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Tradutores: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</pt>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></pt>
 		<ru>
-<![CDATA[Разработка:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Переводчики: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</ru>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></ru>
 		<sl>
-<![CDATA[Razvijalci:  Thomas Gärtner, Satis, Pops64, Peter Vajko
-
-Prevodi: [BR] Admilson, [CS] Simba76, [CZ] Albi, [ES] JFMtb, PromGames, Vanquish081, [FR] Gui7545, yumi-modding, David Fontaine, [HU] Chris von Bone, [IT] JD7530, Cristiano Magro, Paxly, [JP] bunesF, [NL] Pewemo, [PL] Ziuta, [PT] PTAzores], [RU] Bernelli, Vasyl`ko, [SL] Semrola]]>
-		</sl>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+]]></sl>
 	</description>
 
 	<multiplayer supported="false" />

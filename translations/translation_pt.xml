@@ -12,6 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automático" />
 		<text name="COURSEPLAY_LEFT" 							 		 text="esquerda" />
 		<text name="COURSEPLAY_RIGHT" 							 		 text="direita" />
+		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Enviar o condutor para o percurso" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Chamar o condutor" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Condutor foi chamado" />
@@ -35,6 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="sentido horário/anti-horário" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="antes/depois do percurso " />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Gerar Percurso no Campo" />
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
 		<text name="COURSEPLAY_DISTANCE" 						 		 text="distânçia" />
 		<text name="COURSEPLAY_WAITING_TIME" 						 	 text="tempo de espera" />
 		<text name="COURSEPLAY_MINUTES" 						 		 text="%d min" />
@@ -186,6 +188,7 @@
 		<text name="COURSEPLAY_FINISH" 							 		 text="Concluir" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 					 	 text="Percurso inválido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 	 text="nenhuma pá encontrada" />

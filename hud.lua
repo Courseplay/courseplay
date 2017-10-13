@@ -1053,8 +1053,14 @@ function courseplay.hud:loadPage(vehicle, page)
 			--Lane offset
 			if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then
 				vehicle.cp.hud.content.pages[7][1][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
-				if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 then
+				if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 and vehicle.cp.multiTools == 1 then
 					vehicle.cp.hud.content.pages[7][1][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.laneOffset > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
+				elseif vehicle.cp.multiTools > 1 then
+					if vehicle.cp.laneNumber == 0 then
+						vehicle.cp.hud.content.pages[7][1][2].text = ('%s'):format(courseplay:loc('COURSEPLAY_CENTER'));
+					else
+						vehicle.cp.hud.content.pages[7][1][2].text = ('%d %s'):format(abs(vehicle.cp.laneNumber), courseplay:loc(vehicle.cp.laneNumber > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
+					end
 				else
 					vehicle.cp.hud.content.pages[7][1][2].text = '---';
 				end;
@@ -1136,11 +1142,11 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
 		end
 		-- line 3 = starting corner
-    if ( vehicle.cp.startingCorner == 5 or vehicle.cp.startingCorner == 6 ) and not vehicle.cp.headland.orderBefore then
-		  vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_ENDING_LOCATION');
-    else
-		  vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_LOCATION');
-    end
+		if ( vehicle.cp.startingCorner == 5 or vehicle.cp.startingCorner == 6 ) and not vehicle.cp.headland.orderBefore then
+			vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_ENDING_LOCATION');
+		else
+			vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_LOCATION');
+		end
 		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
 		if vehicle.cp.hasStartingCorner then
 			vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc(string.format('COURSEPLAY_CORNER_%d', vehicle.cp.startingCorner)); -- NE/SE/SW/NW
@@ -1168,15 +1174,19 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc('COURSEPLAY_HEADLAND');
 		vehicle.cp.hud.content.pages[8][6][2].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
 
-    -- line 7 = headland turn corners
+		-- line 7 = headland turn corners
 		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_GENERATE_HEADLAND_TURNS');
-    -- only allow for the new course generator
-    if vehicle.cp.headland.numLanes > 0 and vehicle.cp.hasStartingCorner and vehicle.cp.startingCorner > 4 then
-	    vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
-    else
-	    vehicle.cp.hud.content.pages[8][7][2].text = '---'
-    end
-
+		-- only allow for the new course generator
+		if vehicle.cp.headland.numLanes > 0 and vehicle.cp.hasStartingCorner and vehicle.cp.startingCorner > 4 then
+			vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
+		else
+			vehicle.cp.hud.content.pages[8][7][2].text = '---'
+		end
+		
+		-- line 8 Multiple Tools
+		vehicle.cp.hud.content.pages[8][8][1].text = courseplay:loc('COURSEPLAY_MULTI_TOOLS');
+		vehicle.cp.hud.content.pages[8][8][2].text = tostring(vehicle.cp.multiTools);
+	
 
 	-- PAGE 9: SHOVEL SETTINGS
 	elseif page == self.PAGE_SHOVEL_POSITIONS then
@@ -1710,6 +1720,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navLeft' },  'changeLaneOffset', -0.1, self.buttonPosX[2], self.linesButtonPosY[1], wSmall, hSmall, 1, -0.5, false);
 	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navRight' }, 'changeLaneOffset',  0.1, self.buttonPosX[1], self.linesButtonPosY[1], wSmall, hSmall, 1,  0.5, false);
 	courseplay.button:new(vehicle, 7, nil, 'changeLaneOffset', 0.1, mouseWheelArea.x, self.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
+	
+	--Lane Number
+	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navLeft' },  'changeLaneNumber', -1, self.buttonPosX[2], self.linesButtonPosY[1], wSmall, hSmall, 1, nil, false);
+	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navRight' }, 'changeLaneNumber',  1, self.buttonPosX[1], self.linesButtonPosY[1], wSmall, hSmall, 1,  nil, false);
+	courseplay.button:new(vehicle, 7, nil, 'changeLaneNumber', 1, mouseWheelArea.x, self.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, nil, true, true);
 
 	courseplay.button:new(vehicle, 7, nil, 'toggleSymmetricLaneChange', nil, self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
 
@@ -1767,8 +1782,13 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeHeadlandNumLanes',   1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeHeadlandNumLanes',  -1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
 
-  -- line 7 (headland turns)
+	-- line 7 (headland turns)
 	courseplay.button:new(vehicle, 8, nil, 'changeHeadlandTurnType', nil, self.col1posX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
+	
+	-- line 8 multi tools
+	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeMultiTools', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);
+	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeMultiTools',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);
+	courseplay.button:new(vehicle, 8, nil, 'changeMultiTools',1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, nil, true, true);
 
 	-- generation action button
 	local toolTip = courseplay:loc('COURSEPLAY_GENERATE_FIELD_COURSE');

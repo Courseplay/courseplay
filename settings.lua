@@ -207,6 +207,40 @@ function courseplay:changeLaneOffset(vehicle, changeBy, force)
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 end;
 
+function courseplay:changeLaneNumber(vehicle, changeBy, reset)
+	--This function takes input from the hud. And claculates laneOffset by dividing tool workwidth and multiplying that by the lane number counting outwards.
+	local toolsIsEven = vehicle.cp.multiTools%2 == 0
+	
+	if reset then
+		vehicle.cp.laneNumber = 0;
+		vehicle.cp.totalOffsetX = vehicle.cp.toolOffsetX;
+		vehicle.cp.laneOffset = 0
+	else
+		--skip zero if multiTools is even
+		if toolsIsEven then
+			if vehicle.cp.laneNumber == -1 and changeBy > 0 then
+				changeBy = 2
+			elseif vehicle.cp.laneNumber == 1 and changeBy < 0 then
+				changeBy = -2
+			end
+		end
+		vehicle.cp.laneNumber = Utils.clamp(vehicle.cp.laneNumber + changeBy, math.floor(vehicle.cp.multiTools/2)*-1, math.floor(vehicle.cp.multiTools/2));
+		local newOffset = 0
+		if toolsIsEven then
+			if vehicle.cp.laneNumber > 0 then
+				newOffset = vehicle.cp.workWidth/2 + (vehicle.cp.workWidth*(vehicle.cp.laneNumber-1))
+			else
+				newOffset = -vehicle.cp.workWidth/2 + (vehicle.cp.workWidth*(vehicle.cp.laneNumber+1))
+			end
+		else
+			newOffset = vehicle.cp.workWidth*vehicle.cp.laneNumber
+		end
+		courseplay:changeLaneOffset(vehicle, nil , newOffset)
+		vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
+	end;
+
+end;
+
 function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy);
 	if abs(vehicle.cp.toolOffsetX) < 0.1 then
@@ -338,7 +372,7 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 	end;
 	
 	courseplay:debug(('\tl=%s, r=%s -> workWidth=l-r=%s'):format(tostring(l), tostring(r), tostring(shouldBWorkWidth)), 7);
-
+	
 	courseplay:changeWorkWidth(vehicle, nil, shouldBWorkWidth, noDraw);
 
 end;
@@ -403,6 +437,8 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 		end
 	elseif force ~= nil and noDraw == nil then
 		vehicle.cp.manualWorkWidth = nil
+		courseplay:changeLaneNumber(vehicle, 0, true)
+		courseplay:changeMultiTools(vehicle, nil, 1)
 		--print("is set by calculate button")
 	end
 	if force then
@@ -433,6 +469,7 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
+
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 	
 end;
@@ -720,7 +757,14 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.selectedDriverNumber = 0;
 		vehicle.cp.hasFoundCopyDriver = false;
 		vehicle.cp.copyCourseFromDriver = nil;
-
+		
+		--MultiTools
+		if src.cp.multiTools > 1 then
+			vehicle.cp.workWidth = src.cp.workWidth
+			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
+			courseplay:changeMultiTools(vehicle, nil, src.cp.multiTools)
+		end;
+		
 		courseplay:validateCanSwitchMode(vehicle);
 
 		-- SETUP 2D COURSE DRAW DATA
@@ -1147,6 +1191,20 @@ function courseplay:changeHeadlandTurnType( vehicle )
     end
   end
 end
+
+function courseplay:changeMultiTools(vehicle, changeBy, force)
+	if force then
+		vehicle.cp.multiTools = force
+	else
+		vehicle.cp.multiTools = Utils.clamp(vehicle.cp.multiTools + changeBy, 1, 8);
+	end
+	
+	if vehicle.cp.multiTools%2 == 0 then
+		courseplay:changeLaneNumber(vehicle, 1)
+	else
+		courseplay:changeLaneNumber(vehicle, 0, true)
+	end;
+end;
 
 function courseplay:validateCourseGenerationData(vehicle)
 	local numWaypoints = 0;

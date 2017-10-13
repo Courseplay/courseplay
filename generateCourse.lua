@@ -55,6 +55,10 @@ function courseplay:generateCourse(vehicle)
 	courseplay:debug('(1) SET UP CORNERS AND DIRECTIONS', 7);
 
 	local workWidth = vehicle.cp.workWidth;
+	if vehicle.cp.multiTools > 1 then
+		workWidth = workWidth * vehicle.cp.multiTools
+	end
+
 	local corners = {
 		[1] = 'SW',
 		[2] = 'NW',
@@ -82,7 +86,7 @@ function courseplay:generateCourse(vehicle)
 			vehicle.cp.generationPosition.hasSavedPosition = true
 			vehicle.cp.generationPosition.fieldNum = vehicle.cp.fieldEdge.selectedField.fieldNum
 		end
-		courseGenerator.generate( vehicle, fieldCourseName, poly )
+		courseGenerator.generate( vehicle, fieldCourseName, poly, workWidth)
 		return
 	end
 
@@ -124,7 +128,7 @@ function courseplay:generateCourse(vehicle)
 				end;
 			end;
 
-			local offsetWidth, noGoWidth = self:getOffsetWidth(vehicle, curLane);
+			local offsetWidth, noGoWidth = self:getOffsetWidth(vehicle, curLane,workWidth);
 			courseplay:debug(string.format('headland lane %d: laneRidgeMarker=%d, offset offsetWidth=%.1f, noGoWidth=%.2f', curLane, laneRidgeMarker, offsetWidth, noGoWidth), 7);
 
 			-- --------------------------------------------------
@@ -857,7 +861,7 @@ function courseplay:generateCourse(vehicle)
 	courseplay.signs:updateWaypointSigns(vehicle);
 
 	-- extra data for turn maneuver
-	vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
+	vehicle.cp.courseWorkWidth = workWidth;
 	vehicle.cp.courseNumHeadlandLanes = numHeadlandLanesCreated;
 	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.headland.userDirClockwise;
 
@@ -1031,8 +1035,8 @@ function courseplay.generation:getPointDirection(cp, np, useC)
 	return dx, dz, vl;
 end;
 
-function courseplay.generation:getOffsetWidth(vehicle, laneNum)
-	local w = vehicle.cp.workWidth;
+function courseplay.generation:getOffsetWidth(vehicle, laneNum,workWidth)
+	local w = workWidth;
 	if laneNum == 1 then
 		w = w/2;
 	end;

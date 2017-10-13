@@ -12,6 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
 		<text name="COURSEPLAY_RIGHT" 									 text="rechts" />
+		<text name="COURSEPLAY_CENTER" 									 text="mittig" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Abfahrer wegschicken" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Abfahrer rufen" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Abfahrer gerufen" />
@@ -35,6 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Vorgewende mit/gegen den Uhrzeigersinn" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Vorgewende vor/nach Feldkurs" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generiere Feldkurs" />
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Fahrzeuge auf selbem Kurs" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="Entfernung" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Haltezeit" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d Min" />
@@ -75,7 +77,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Wegpunkte anzeigen" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Fruchtumfahrung" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Pflüge über Feldbegrenzung" />
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="1.Punkt gerade anfahren" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="seitl. Abstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bei:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Wende auf dem Feld:" />
@@ -190,6 +192,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Beenden" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Kein gültiger Kurs geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Düngefunktion der Sähmaschine" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Drescher-Verband" /> 
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="keine Schaufel vorhanden" />
