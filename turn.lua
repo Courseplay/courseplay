@@ -1937,6 +1937,9 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 	-- if we were, there'd be a need to save and restore it and maintain it, oh boy, but I don't 
 	-- have a week to refactor it everywhere 
 	vehicle.cp.alignment.savedNumWaypoints = vehicle.cp.numWaypoints
+	-- make sure we don't stop at the end of the alignment course 
+	vehicle.cp.alignment.stopAtEnd = vehicle.cp.stopAtEnd
+	vehicle.cp.stopAtEnd = false
 	vehicle.Waypoints = {}
 	for i, point in ipairs( points ) do
 		-- add coordinates to cx/cz _and_ x/z for Waypoints in general and for nextTargets in mode2. 
@@ -1966,6 +1969,7 @@ function courseplay:endAlignmentCourse( vehicle )
 		vehicle.cp.numWaypoints = vehicle.cp.alignment.savedNumWaypoints
 		vehicle.cp.waypointIndex = vehicle.cp.alignment.savedWaypointIndex	
 		vehicle.cp.previousWaypointIndex = vehicle.cp.alignment.savedpreviousWaypointIndex	
+		vehicle.cp.stopAtEnd = vehicle.cp.alignment.stopAtEnd
 		courseplay:debug(string.format("%s:(Align) Ending alignment course, countinue on original course at waypoint %d.", nameNum(vehicle), vehicle.cp.waypointIndex), 14 )
 		vehicle.cp.alignment.savedWaypoints = nil
 	else
