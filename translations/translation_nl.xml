@@ -11,7 +11,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Bestuurderszijde" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
-		<text name="COURSEPLAY_RIGHT" 									 text="rechts" /
+		<text name="COURSEPLAY_RIGHT" 									 text="rechts" />
 		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Stuur bestuurder weg" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Verzoek bestuurder" />
