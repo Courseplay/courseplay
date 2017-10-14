@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="自動" />
 		<text name="COURSEPLAY_LEFT" 									 text="左" />
 		<text name="COURSEPLAY_RIGHT" 									 text="右" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="中央" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="ドライバーをもどす" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="ドライバーをリクエスト" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="ドライバーをリクエスト中" />
@@ -31,12 +31,12 @@
 		<text name="COURSEPLAY_CONTINUE" 								 text="続行" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="現在のコースをクリア" />
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="走行" />
-		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="目的地:" />
+		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="目的地" />
 		<text name="UNKNOWN" 											 text="unknown" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="まくら地 左回り/右回り" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="まくら地 前に/後に フィールドコース" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="フィールドコースを作成する" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="分割数" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="距離" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="待機時間" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -77,36 +77,36 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウェイポイントを表示" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="経路サーチ" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="境界を過ぎて耕す" />
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
-		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="左右オフセット:" />
-		<text name="COURSEPLAY_START_AT" 								 text="スタート:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="フィールドでターン:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="ターンの方向を逆にする:" />
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="開始位置合わせ" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="左右オフセット" />
+		<text name="COURSEPLAY_START_AT" 								 text="スタート" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="フィールドでターン" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="ターンの方向を逆にする" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="最後の数レーン" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="できるだけ" />
-		<text name="COURSEPLAY_TURN_RADIUS" 							 text="ターン半径:" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="前後オフセット:" />
+		<text name="COURSEPLAY_TURN_RADIUS" 							 text="ターン半径" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="前後オフセット" />
 		<text name="COURSEPLAY_COMBINE" 								 text="コンバイン" />
 		<text name="COURSEPLAY_NONE" 									 text="無" />
-		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="コンバインを選択:" />
-		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="コンバインをサーチ:" />
-		<text name="COURSEPLAY_CURRENT" 								 text="現在の選択:" />
+		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="コンバインを選択" />
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 					 text="コンバインをサーチ" />
+		<text name="COURSEPLAY_CURRENT" 								 text="現在の選択" />
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="自動サーチ" />
 		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="手動サーチ" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="コンバインをフィールドでサーチ %s" />
-		<text name="COURSEPLAY_COPY_COURSE" 							 text="コースをコピー:" />
+		<text name="COURSEPLAY_COPY_COURSE" 							 text="コースをコピー" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="車両" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="コースは保存されていません" />
-		<text name="COURSEPLAY_SPEED_TURN" 								 text="ターン速度:" />
-		<text name="COURSEPLAY_SPEED_FIELD" 							 text="フィールド速度:" />
-		<text name="COURSEPLAY_SPEED_MAX" 								 text="路上速度:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="後進速度:" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度:" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="ターン速度" />
+		<text name="COURSEPLAY_SPEED_FIELD" 							 text="フィールド速度" />
+		<text name="COURSEPLAY_SPEED_MAX" 								 text="路上速度" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="後進速度" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="速度" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="実速度" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="最高速度" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 				 text="自動 (全コース%s制限)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 						 text="コースを読み込んでいません" />
-		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="ビーコン:" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 							 text="ビーコン" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 					 text="点灯しない" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 					 text="ビーコンライト (路上)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 					 text="ビーコン &amp; ハザード (路上)" />
@@ -156,7 +156,7 @@
 		<text name="COURSEPLAY_BACK" 									 text="後方" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="作業幅" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="水に注意" />
-		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD表示方法:" />
+		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD表示方法" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="デバグチャンネル" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="コース作成" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="開始地点" />
@@ -187,12 +187,12 @@
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 						 text="フィールドでアンロード" />
 		<text name="COURSEPLAY_AUTOMATIC" 								 text="自動" />
 		<text name="COURSEPLAY_MANUAL" 									 text="手動" />
-		<text name="COURSEPLAY_TURN_MANEUVER" 							 text="ターン機動:" />
+		<text name="COURSEPLAY_TURN_MANEUVER" 							 text="ターンマニューバ:" />
 		<text name="COURSEPLAY_START" 									 text="開始" />
 		<text name="COURSEPLAY_FINISH" 									 text="終了" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="コースは有効ではありません" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="播種機の肥料散布機能" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="コンバイン コンボイ" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="バケットが見つかりません" />
@@ -261,8 +261,8 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="後進動作を開始" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="後進動作を終了" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="現在地までウェイポイントを追加" />
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="マップアイコン: テキスト表示" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="ドライブコントロール設定" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="マップアイコンのテキスト表示" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="ドライブコントロール" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="自動" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="フルタイム4WD" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="フルタイム4WD &amp; FWフロントデフロック" />
@@ -314,7 +314,7 @@
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="通過" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="リバース" />
 		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="ガソリンスタンドで給油する" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="給油" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="常時" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="20%以下" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="アイドリングストップ" />
