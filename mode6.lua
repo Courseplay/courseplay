@@ -594,6 +594,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				vehicle.aiThreshingDirectionX = -(dx/length);
 				vehicle.aiThreshingDirectionZ = -(dz/length);
 			end
+			if vehicle.cp.convoyActive then
+				allowedToDrive, workSpeed = courseplay:manageConvoy(vehicle, allowedToDrive, workSpeed)
+			end
+			
+			
 		end
 		
 		-- Begin work or go to abortWork
@@ -631,4 +636,39 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		vehicle.cp.hasFinishedWork = true
 	end
 	return allowedToDrive, workArea, workSpeed, takeOverSteering ,isFinishingWork,forceSpeedLimit
+end
+
+function courseplay:manageConvoy(vehicle, allowedToDrive, workSpeed)
+	--get my position in convoy and look for the closest combine
+	local ownWaypoint = vehicle.cp.waypointIndex
+	local position = 1
+	local total = 1
+	local distance = 0
+	local closestDistance = math.huge
+	for _,combine in pairs(CpManager.activeCoursePlayers) do
+		if combine ~=vehicle and combine.cp.convoyActive and vehicle.Waypoints[1] == combine.Waypoints[1] then
+			total = total+1
+			if ownWaypoint < combine.cp.waypointIndex then
+				position = position + 1
+				distance = (combine.cp.waypointIndex - ownWaypoint)*5
+				if distance < closestDistance then
+					closestDistance = distance
+				end
+			end
+		end		
+	end
+	
+	--when I'm too close to the combine before me, then stop
+	if position > 1 then
+		if closestDistance < 100 then
+			allowedToDrive = false
+		end
+	else
+		closestDistance = 0
+	end
+	
+	--print(string.format("%s: update convoy pos: %s dist: %s",nameNum(vehicle),tostring(position),tostring(closestDistance))) 
+	vehicle.cp.convoy = {distance = closestDistance,number = position,members = total}
+	
+	return allowedToDrive, workSpeed
 end

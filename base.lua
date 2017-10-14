@@ -166,6 +166,7 @@ function courseplay:load(savegame)
 	
 	self.cp.startAtPoint = courseplay.START_AT_NEXT_POINT;
 	self.cp.fertilizerOption = true
+	self.cp.convoyActive = false
 
 	-- ai mode 9: shovel
 	self.cp.shovelEmptyPoint = nil;

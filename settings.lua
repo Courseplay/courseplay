@@ -65,6 +65,18 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 
 	return true;
 end;
+
+function courseplay:toggleConvoyActive(self)
+	self.cp.convoyActive =  not self.cp.convoyActive
+	if self.cp.convoyActive and self.cp.convoy == nil then
+		self.cp.convoy ={
+						distance= 0,
+						number = 0,
+						members = 0
+						}
+	end	
+end
+
 function courseplay:toggleFuelSaveOption(self)
 	self.cp.saveFuelOptionActive = not self.cp.saveFuelOptionActive 
 end

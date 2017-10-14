@@ -473,7 +473,9 @@ function courseplay.hud:setContent(vehicle)
 	end;
 
 	-- CURRENT PAGE
-	if vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
+	if vehicle.cp.hud.currentPage == 1 and vehicle.cp.convoyActive then
+		self:setReloadPageOrder(vehicle, 1, true);
+	elseif vehicle.cp.hud.currentPage == 3 and vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3) then
 		for i,varName in pairs({ 'combineOffset', 'turnDiameter' }) do
 			if courseplay.utils:hasVarChanged(vehicle, varName) then
 				self:setReloadPageOrder(vehicle, 3, true);
@@ -790,7 +792,30 @@ function courseplay.hud:loadPage(vehicle, page)
 			if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and #vehicle.cp.easyFillTypeList > 0 then
  				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
  				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.runNumber < 11 and string.format("%d / %d",vehicle.cp.runCounter, vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
- 			end;
+ 			elseif vehicle.cp.mode == courseplay.MODE_FIELDWORK and (vehicle.cp.isCombine or vehicle.cp.isChopper) then
+				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_COMBINE_CONVOY');
+				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.convoyActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED')
+				if vehicle.cp.convoyActive then
+					--[[ TODO find a description or new entry in translations for the currently loaded course
+					local currentLoadedCourse = courseplay:loc('COURSEPLAY_CURRENTLY_LOADED_COURSE')
+					if Utils.startsWith(currentLoadedCourse, "(") then
+						local split = Utils.splitString("(", currentLoadedCourse);
+						local split2 = Utils.splitString(")", split[2]);
+						currentLoadedCourse = split2[1]
+					end
+					if vehicle.cp.currentCourseName ~= nil then
+						vehicle.cp.hud.content.pages[1][6][1].text =  string.format("%s: %s",currentLoadedCourse,vehicle.cp.currentCourseName);
+					elseif vehicle.Waypoints[1] ~= nil then
+						vehicle.cp.hud.content.pages[1][6][1].text = string.format("%s: %s",currentLoadedCourse,courseplay:loc('COURSEPLAY_TEMP_COURSE'));
+					end]]
+					if vehicle.cp.currentCourseName ~= nil then
+						vehicle.cp.hud.content.pages[1][6][1].text =  string.format("%s",vehicle.cp.currentCourseName);
+					elseif vehicle.Waypoints[1] ~= nil then
+						vehicle.cp.hud.content.pages[1][6][1].text = string.format("%s",courseplay:loc('COURSEPLAY_TEMP_COURSE'));
+					end
+					vehicle.cp.hud.content.pages[1][6][2].text = string.format("<--%s--> %d/%d",(vehicle.cp.convoy.distance == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.distance,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.number,vehicle.cp.convoy.members)
+				end
+			end;
 
 		elseif not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
 			if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) and not vehicle.cp.canDrive then
@@ -1185,7 +1210,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		
 		-- line 8 Multiple Tools
 		vehicle.cp.hud.content.pages[8][8][1].text = courseplay:loc('COURSEPLAY_MULTI_TOOLS');
-		vehicle.cp.hud.content.pages[8][8][2].text = tostring(vehicle.cp.multiTools);
+		vehicle.cp.hud.content.pages[8][8][2].text = string.format("%d (%.1f%s)",vehicle.cp.multiTools,vehicle.cp.multiTools*vehicle.cp.workWidth,courseplay:loc('COURSEPLAY_UNIT_METER'));
 	
 
 	-- PAGE 9: SHOVEL SETTINGS

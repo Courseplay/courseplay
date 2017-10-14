@@ -936,7 +936,7 @@ end
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 	if (not vehicle.cp.saveFuelOptionActive) 
 	or (vehicle.cp.mode == courseplay.MODE_COMBI and vehicle.cp.activeCombine ~= nil)
-	or (vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.courseplayers ~= nil and #vehicle.courseplayers > 0)
+	or (vehicle.cp.mode == courseplay.MODE_FIELDWORK and ((vehicle.courseplayers ~= nil and #vehicle.courseplayers > 0) or vehicle.cp.convoyActive))
 	or ((vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT or vehicle.cp.mode == courseplay.MODE_OVERLOADER) and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait)
 	then
 		if vehicle.cp.saveFuel then

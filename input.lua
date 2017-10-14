@@ -297,6 +297,9 @@ function courseplay:executeFunction(self, func, value, page)
 						end;
 					end;
 				end; -- end driving
+				if line == 5 then
+					courseplay:toggleConvoyActive(self)
+				end
 			elseif not self:getIsCourseplayDriving() then
 				if not self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.canDrive and self.cp.numWaypoints == 0 then
 					if line == 1 then
