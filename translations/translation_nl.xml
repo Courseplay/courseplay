@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 									 text="links" />
 		<text name="COURSEPLAY_RIGHT" 									 text="rechts" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="midden" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Stuur bestuurder weg" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Verzoek bestuurder" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Bestuurder opgeroepen" />
@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Keerstrook links-/rechtsom" />        
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Keerstrook voor/na veld route" /> 
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Genereer veld route" /> 
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Meerdere werktuigen" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="afstand" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Wachttijd" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -73,7 +73,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Toon markeringen" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Om gewas rijden" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Ploegen voorbij veldrand" /> 
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Centreer met eerste routemarkering" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Zijwaardse afstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bij:" />		
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Keer op veld:" />
@@ -171,7 +171,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Kopakker bochten" />
+		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Buitenrand bochten" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Vloeiend" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Scherp (alleen combines)" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Rond" />
@@ -188,7 +188,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Geen route geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="bemester functie van zaai machine" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine konvooi" />
 
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Geen shovel gevonden" />
@@ -209,7 +209,7 @@
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop + Go Laden" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Route starten bij:" />
-		<text name="COURSEPLAY_NEAREST_POINT" 							 text="dichtst bijzijnde markering" />
+		<text name="COURSEPLAY_NEAREST_POINT" 							 text="dichtstbijzijnde markering" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="eerste markering" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="huidige markering" />
 		<text name="COURSEPLAY_NEXT_POINT" 							     text="volgende markering" />
@@ -217,7 +217,7 @@
 		<text name="COURSEPLAY_FIELD" 									 text="Veld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(huidige route)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="Veldscan bezig" />
-		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="Scan Veld %d/%d" />
+		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="Scan veld %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="Geen vulslang gevonden, vullen geannuleerd" />
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Evenwijdige baanwissel" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Bestuurder voorrang" />
@@ -258,12 +258,12 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Achteruit rijden stoppen" />	
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Voeg tussenpunten toe" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Map iconen, toon tekst" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control instellingen" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automatisch" /> 
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="Altijd 4WD" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="Altijd 4WD &amp; Diff-Lock voorzijde aan bij Veldwerk" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="Altijd 4WD &amp; Diff-Lock achterzijde aan bij Veldwerk" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="Altijd 4WD &amp; Diff-Lock voor- en achterzijde aan bij Veldwerk" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="Altijd 4WD &amp; Diff-Lock voorzijde aan bij veldwerk" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="Altijd 4WD &amp; Diff-Lock achterzijde aan bij veldwerk" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="Altijd 4WD &amp; Diff-Lock voor- en achterzijde aan bij veldwerk" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Velden automatisch scannen?" />
  		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Wilt u de arbeiders belonen (%s/uur)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Zaad verbruik calculator" />
@@ -290,7 +290,7 @@
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Route bijvoegen" /> 
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Verplaats naar map" /> 
 		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Verwijder route/map" /> 
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Toon/verberg 'start en 'eind' markeringen" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Toon/verberg 'start' en 'eind' markeringen" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Toon/verberg alle markeringen" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Toon/verberg kruispunten" />
 	
@@ -303,7 +303,7 @@
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="zoek tractors binnen bereik van " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="max snelheid bij persen" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="blad hoogte" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="geen bunkersilo gevonden bij start punt" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="geen bunker silo gevonden bij start punt" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="geen blad gemonteerd" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="blad aan voorzijde wordt niet ondersteund" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Bunker silo instellingen" />
