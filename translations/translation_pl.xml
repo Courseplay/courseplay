@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE"						 text="Automatycznie" />
 		<text name="COURSEPLAY_LEFT"									 text="Lewo" />
 		<text name="COURSEPLAY_RIGHT"									 text="Prawo" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="Środek" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME"				 text="Wyślij kierowcę do domu" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER"				 text="Przywołaj kierowcę" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED"				 text="Wymagany pracownik" />
@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Uwrocia w lewo/prawo" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Uwrocia przed/po kursie pola" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Wygeneruj kurs pola" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Kilka maszyn" />
 		<text name="COURSEPLAY_DISTANCE"							 	 text="Dystans" />
 		<text name="COURSEPLAY_WAITING_TIME"							 text="Czas oczekiwania" />
 		<text name="COURSEPLAY_MINUTES"									 text="%d minut" />
@@ -59,11 +59,11 @@
 		<text name="COURSEPLAY_CREATE_FOLDER"							 text="Stwórz nowy folder" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS"			 text="Wyszukaj kursy i foldery" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER"						 text="Dezaktywuj filtr" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT"				 text="osiągnięto punkt przeładunku." />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT"				 text="dotarł do punktu przeładunku." />
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="zapisz pozycję rury" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="ustaw rurę do pozycji" />
-		<text name="COURSEPLAY_REACHED_WAITING_POINT"					 text="osiągnięto punkt oczekiwania" />
-		<text name="COURSEPLAY_REACHED_END_POINT"						 text="osiągnięto punkt końcowy/trigger" />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT"					 text="dotarł do punktu oczekiwania" />
+		<text name="COURSEPLAY_REACHED_END_POINT"						 text="dotarł do punktu końcowego" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="zakończył transport ziarna." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="zakończył transport ładunku płynnego." />
 		<text name="COURSEPLAY_WORK_END"								 text="zakończył pracę." />
@@ -71,17 +71,17 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING"							 text=": Narzędzie pracy musi zostać załadowane." />
 		<text name="COURSEPLAY_UNLOADING_BALES"							 text="rozładunek bel." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC"							 text="jest zablokowany." />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED"				 		 text="osiągnięto punkt kiprowania" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED"				 		 text="dotarł do punktu kiprowania" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Odległość do punktu rozładunku" />
 		<text name="COURSEPLAY_LOADING_AMOUNT"							 text="Ładowanie: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE"							 text="Punkty trasy:" />
 		<text name="COURSEPLAY_PATHFINDING"								 text="Znalezienie drogi" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Pług przy krawędzi pola" />
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Wyrównaj do pier. punktu trasy" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL"				 text="Korekcja boczna:" />
 		<text name="COURSEPLAY_START_AT"								 text="Podjedź przy:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Nawrót na polu:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Odwrotny kierunek zawracania:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Odwrotny kier. zawracania:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="Ostatnia para pasów" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="Jeśli możliwe" />
 		<text name="COURSEPLAY_TURN_RADIUS"								 text="Średnica zawracania:" />
@@ -192,7 +192,7 @@
 		<text name="COURSEPLAY_FINISH"									 text="Zakończ" />
 		<text name="COURSEPLAY_NO_VALID_COURSE"							 text="Kurs nieważny" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Nawożenie siewnikiem" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konwuj kombajnów" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 text="Nie znaleziono łychy" />
