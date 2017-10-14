@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatique" />
 		<text name="COURSEPLAY_LEFT" 							 		 text="gauche" />
 		<text name="COURSEPLAY_RIGHT" 							 		 text="droite" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION-->
+		<text name="COURSEPLAY_CENTER" 									 text="centre" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Renvoyer le chauffeur au début" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Appeler un chauffeur" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Chauffeur appelé" />
@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Direction de la fourrière" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Fourrière avant/après le travail du champ" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Génération d'un travail de champ" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Outils Multiples" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="distance" />
 		<text name="COURSEPLAY_WAITING_TIME" 						 	 text="Temps d'attente:" />
 		<text name="COURSEPLAY_MINUTES" 						 		 text="%d min" />
@@ -72,13 +72,13 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 					 	 text="décharge les ballots." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 	 text="est coincé." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 	 text="Le trigger est atteint" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Distance du point de déchargement à reculons" />
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist. point de décharge:" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 	 text="Chargement: %d sur %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 	 text="Montrer les points" />
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evite les cultures" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distance latéral:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Labour des fourrières:" />
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Alignt. sur 1er point:" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Démarrer à:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Tourne dans le champ:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Manoeuvre:" />
@@ -192,7 +192,7 @@
 		<text name="COURSEPLAY_FINISH" 							 		 text="Arrêter" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 					 	 text="La course n'est pas valide" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Fonction engrais du semoir" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Ensemble de Moissonneuses" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 	 text="Pas de godet trouvé" />
