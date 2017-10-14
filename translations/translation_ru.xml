@@ -3,7 +3,7 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Начать запись маршрута" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Транспорт" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Запустить по маршруту" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Отправить транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в следующей точке:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Выполнить количество рейсов" />
@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="автоматически" />
 		<text name="COURSEPLAY_LEFT" 									 text="влево" />
 		<text name="COURSEPLAY_RIGHT" 									 text="вправо" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="по центру" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Отправить на разгрузку" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Вызвать транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Отозвать транспорт" />
@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Поворотная полоса по/против часовой стрелки" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Поворотная полоса до/после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Сгенерировать маршрут" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Совметная работа орудий:" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="дистанция" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Пауза в точке ожидания:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d мин" />
@@ -77,7 +77,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Плуг за границы поля" />
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Выровнять по первой точке:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Правее/левее:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Внутренний разворот:" />
@@ -94,7 +94,7 @@
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="автоматически" />
 		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="вручную" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Комбайн с поля № %s" />
-		<text name="COURSEPLAY_COPY_COURSE" 							 text="Копировать:" />
+		<text name="COURSEPLAY_COPY_COURSE" 							 text="Скопировать курс у:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Транспорт" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="несохраненный" />
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Маневры:" />
@@ -119,14 +119,14 @@
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 				 text="ВЫБОР КОМБАЙНА" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 						 text="ПАРАМЕТРЫ СКОРОСТИ" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 			 text="СМЕЩЕНИЕ МАРШРУТА" />
-		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="ДОПОЛНИТЕЛЬНЫЕ ОПЦИИ" />
+		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 			 text="ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 						 text="Комбайн поворачивает" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 							 text="нет работы на маршруте" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 						 text="- комбинированный" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 					 text="Еду к комбайну" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 					 text="Еду рядом с комбайном" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 						 text="Маневрирую для погрузки" />
-		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Комбайну нужна разгрузка" />
+		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 				 text="Комбайн просит остановится" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 	 text="Ожидаю пока отъедет комбайн" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 						 text="Возвращение к %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 						 text="Еду на временную стоянку" />
@@ -167,7 +167,7 @@
 		<text name="COURSEPLAY_CORNER_2" 								 text="Северо-Запад" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="Северо-Восток" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Юго-Восток" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="Текущее месторасположение техники" />
+		<text name="COURSEPLAY_CORNER_5" 								 text="Текущее расположение техники" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="Последнее используемое положение" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
@@ -192,7 +192,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Нерабочий маршрут" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Функция удобрения сеялки:" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Конвой комбайна" /> <!--After the appearance of this function, I check the accuracy of the translation.  TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
@@ -216,7 +216,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="с ближайшей точки" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="продолжить маршрут" />
-		<text name="COURSEPLAY_NEXT_POINT" 								 text="следующая точка ожидания" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="со следующей ближайшей точки" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Выбрать поле:" />
 		<text name="COURSEPLAY_FIELD" 									 text="поле №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(загруженный маршрут)" />
