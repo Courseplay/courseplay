@@ -192,7 +192,7 @@
 		<text name="COURSEPLAY_FINISH"									 text="Zakończ" />
 		<text name="COURSEPLAY_NO_VALID_COURSE"							 text="Kurs nieważny" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Nawożenie siewnikiem" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konwuj kombajnów" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konwój kombajnów" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 text="Nie znaleziono łychy" />
