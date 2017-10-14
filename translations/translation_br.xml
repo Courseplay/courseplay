@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automático" />
 		<text name="COURSEPLAY_LEFT" 									 text="esquerda" />
 		<text name="COURSEPLAY_RIGHT" 									 text="direita" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="centro" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Enviar o motorista para a rota" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Chamar o motorista" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Motorista foi chamado" />
@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Cabeceira sentido horário/anti-horário" />        
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Cabeceira antes/depois da rota" /> 
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Gerar rota no campo" /> 
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multipla ferramenta" /> 
 		<text name="COURSEPLAY_DISTANCE" 								 text="distância" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Aguardando tempo" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -77,7 +77,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar as plantações" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar borda do campo" /> 
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Alinhar no primeiro ponto" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distância horisontal:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar rota em:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Virar no campo:" />
@@ -192,7 +192,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Finalizar" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="rota inválida" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Função fertilizante p.máquina de semea" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="comboio ceifadeiras" />
 																		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="nenhuma pá carregadeira encontrada" />
