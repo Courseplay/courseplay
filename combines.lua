@@ -120,9 +120,9 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 				if combine.cp.pipeSide == nil then
 					courseplay:getCombinesPipeSide(combine)
 				end				
-				
+				local combineIsInConvoy = combine.cp.convoyActive and combine.cp.convoy.number > 1 
 				local pipeIsInFruit = (combine.cp.pipeSide == 1 and fruitSide == "left") or (combine.cp.pipeSide == -1 and fruitSide == "right")
-				if pipeIsInFruit then
+				if pipeIsInFruit and not combineIsInConvoy then
 					courseplay:debug(nameNum(callerVehicle)..": path finding active and pipe(pipeSide "..tostring(combine.cp.pipeSide)..") is in fruit -> don't register tractor",4)
 					for k, reachableCombine in pairs(callerVehicle.cp.reachableCombines) do
 						if reachableCombine == combine then

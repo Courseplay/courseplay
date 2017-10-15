@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00008</version>
+	<version>5.02.00009</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -48,7 +48,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 		</fr>
 		<br>
 <![CDATA[O Courseplay é uma modificação para o Farming Simulator 17. Ele permite que você dirija varios veículos diferentes de forma autônoma e automática, coloque-os no trabalho de campo, descarregar ceifadeiras, carregar frutos para vender nos pontos, preencher um BGA ou uma carreta com uma pá carregadeira, nívelar e compactar silagem e muito mais ...
-</br>
+]]>    </br>
 		<cs>
 <![CDATA[
 Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
