@@ -1927,6 +1927,11 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 		courseplay:debug(string.format("%s:(Align) can't find an alignment course, may be too close to target wp?", nameNum(vehicle)), 14 )
 		return
 	end
+	if #points < 3 then
+		courseplay:debug(string.format("%s:(Align) Alignment course would be only %d waypoints, it isn't neeeded then.", nameNum(vehicle), #points), 14 )
+		return
+	end
+	
 	-- save current course (if we had at least a trace of object oriented practices
 	-- then all the course data would be in a single table and not flattened 
 	-- out across fifty different keys and it would be so much easier to save/restore a course)
