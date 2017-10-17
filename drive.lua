@@ -215,17 +215,16 @@ function courseplay:drive(self, dt)
 
 
 	-- LIGHTS
-	local lightMask = 0
+	local lightMask = 0  --Lights off
 	local combineBeaconOn = self.cp.isCombine and self.cp.totalFillLevelPercent > 80;
-	local beaconOn = (self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS 
-					 or ((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2 and self.cp.trailerFillDistance == nil)
+	local onStreet = (((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2 and self.cp.trailerFillDistance == nil)
 					 or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
 					 or (self.cp.mode == 10 and (self.cp.waypointIndex > 1 or #self.cp.mode10.stoppedCourseplayers >0) )
-					 or combineBeaconOn) or false;
-	if beaconOn then
-		lightMask = 1
+					 ) or false;
+	if onStreet then
+		lightMask = 1 --Headlights only
 	else
-		lightMask = 7
+		lightMask = 7 -- full working lights
 	end
 	
 	if self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_NEVER then -- never
@@ -236,11 +235,12 @@ function courseplay:drive(self, dt)
 			self:setTurnLightState(Lights.TURNLIGHT_OFF);
 		end;
 	else -- on street/always
+		local beaconOn = onStreet or combineBeaconOn or self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS;
 		if self.beaconLightsActive ~= beaconOn then
 			self:setBeaconLightsVisibility(beaconOn);
 		end;
 		if self.cp.hasHazardLights then
-			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and beaconOn and not combineBeaconOn;
+			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and onStreet and not combineBeaconOn;
 			if not hazardOn and self.turnLightState ~= Lights.TURNLIGHT_OFF then
 				self:setTurnLightState(Lights.TURNLIGHT_OFF);
 			elseif hazardOn and self.turnLightState ~= Lights.TURNLIGHT_HAZARD then
