@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Vorgewende" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Vorgewende-Ecken"/>
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  			 text="weich" /> 
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="scharf (nur Drescher)"/>
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="scharf"/>
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="rund" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="nur Name" />

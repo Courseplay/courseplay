@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND"								 text="Uwrocia" />
     	<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Narożniki uwroci" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Gładko" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Obrót (tylko kombajny)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Obrót" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Kółko" />
 		<text name="COURSEPLAY_ACTIVATED"								 text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Tylko nazwa" />

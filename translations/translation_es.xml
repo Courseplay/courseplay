@@ -173,7 +173,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabecera" />
     	<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Esquinas de Cabeceras" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  			 text="Suave" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Brusco (Solo Cosechadoras)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Brusco" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="Redondo" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="Activado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Solo nombre" />

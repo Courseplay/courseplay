@@ -173,7 +173,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Fordulósáv" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Fordulósáv sarkok" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Simított" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Fordulómanőver (csak kombájn)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Fordulómanőver" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="Kerekített" /> 
 		<text name="COURSEPLAY_ACTIVATED" 								 text="Bekapcsolva" /> 
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Csak név" />          

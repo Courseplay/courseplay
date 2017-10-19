@@ -173,7 +173,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Buitenrand bochten" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Vloeiend" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Scherp (alleen combines)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Scherp" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Rond" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="geactiveerd" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="alleen Naam" />

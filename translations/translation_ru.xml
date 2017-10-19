@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Поворотная полоса:" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"					 text="Углы поворотной полосы:" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"				 text="Сглаживать" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"				 text="Поворот (только комбайн)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"				 text="Поворот" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"				 text="Round" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="да" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="название техники" />

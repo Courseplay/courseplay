@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS" 				 text="Souvraťové rohy" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Zaoblený" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Pocouvnutí (pouze kombajny/řezačky)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Pocouvnutí" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Průjezd" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="pouze stroj" />

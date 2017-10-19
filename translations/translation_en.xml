@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Headland" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn (combines only)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="activated" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />

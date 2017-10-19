@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Fourrière:" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Coins de fourrière" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Lissés" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Manoeuvres (Moissonneuse)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Manoeuvres" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Ronds" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="activé" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Nom seul" />

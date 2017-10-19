@@ -17,7 +17,7 @@ function courseplay:record(vehicle)
 			-- this is a hack to make sure that tractors won't circle around in mode 2:
 			-- the second wp is 10 meters from the first and the third is 20 meters from the second
 			-- this does not allow tight turns at the beginning of a recorded course
-				vehicle.cp.recordingTimer = dist > (vehicle.cp.waypointIndex == 3 and 20 or 10) and 101 or 1;
+			vehicle.cp.recordingTimer = dist > (vehicle.cp.waypointIndex == 3 and 20 or 10) and 101 or 1;
 
 		else
 			local angleDiff = abs(newAngle - prevAngle);

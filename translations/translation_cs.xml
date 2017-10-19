@@ -172,7 +172,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="路径生成的模式" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="岬角" />  
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="光滑" />	
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="转 (仅收割机)" /> 
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="转" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="圆" /> 
 		<text name="COURSEPLAY_ACTIVATED" 								 text="开启" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="仅名称" />

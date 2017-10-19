@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Svolte testata campo" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Morbide" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Secche (solo trebbie)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Secche" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Circolari" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="solo nome" />

@@ -177,7 +177,7 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabeceira" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"                  text="Cantos da cabeceira" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"              text="Suave" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"               text="Virar (somente ceifadeira)" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"               text="Virar" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"               text="Virar" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="ativado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Somente nome" />            
