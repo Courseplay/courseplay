@@ -1,4 +1,4 @@
---- Functions to generate the tracks in the center
+--- Functions to generate the up/down tracks in the center
 --  of the field (non-headland tracks)
 
 local rotatedMarks = {}
@@ -190,6 +190,8 @@ end
 --  intersection points with polygon, ordered from left to right
 function findIntersections( polygon, tracks )
   local ix = function( a ) return getPolygonIndex( polygon, a ) end
+  -- recalculate angles after the rotation for getDistanceBetweenTrackAndHeadland()
+  calculatePolygonData( polygon )
   -- loop through the polygon and check each vector from 
   -- the current point to the next
   for i, cp in ipairs( polygon ) do
@@ -200,6 +202,8 @@ function findIntersections( polygon, tracks )
         -- the line between from and to (the track) intersects the vector from cp to np
         -- remember the polygon vertex where we are intersecting
         is.index = i
+        -- remember the angle we cross the headland 
+        is.angle = cp.tangent.angle
         addPointToListOrderedByX( t.intersections, is )
       end
     end
@@ -214,13 +218,15 @@ end
 -- the first track has the lowest y coordinate
 --
 -- Also, we expect the tracks already have the intersection points with
--- the field boundary and there are exactly two intersection points
+-- the field boundary (or innermost headland) and there are exactly two intersection points
 function addWaypointsToTracks( tracks, width, extendTracks )
   local result = {}
   for i = 1, #tracks do
     if #tracks[ i ].intersections > 1 then
-      local newFrom = math.min( tracks[ i ].intersections[ 1 ].x, tracks[ i ].intersections[ 2 ].x ) + width / 2 - extendTracks
-      local newTo = math.max( tracks[ i ].intersections[ 1 ].x, tracks[ i ].intersections[ 2 ].x ) - width / 2 + extendTracks
+      local isFromIx = tracks[ i ].intersections[ 1 ].x < tracks[ i ].intersections[ 2 ].x and 1 or 2
+      local newFrom = tracks[ i ].intersections[ isFromIx ].x + getDistanceBetweenTrackAndHeadland( width, tracks[ i ].intersections[ isFromIx ].angle ) - extendTracks
+      local isToIx = tracks[ i ].intersections[ 1 ].x >= tracks[ i ].intersections[ 2 ].x and 1 or 2
+      local newTo = tracks[ i ].intersections[ isToIx ].x - getDistanceBetweenTrackAndHeadland( width, tracks[ i ].intersections[ isToIx ].angle ) + extendTracks
       -- if a track is very short (shorter than width) we may end up with newTo being
       -- less than newFrom. Just skip that track
       if newTo > newFrom then
@@ -247,6 +253,22 @@ function addWaypointsToTracks( tracks, width, extendTracks )
   end
   return result
 end 
+
+-- if the up/down tracks were perpendicular to the boundary, we'd have to cut them off
+-- width/2 meters from the intersection point with the boundary. But if we drive on to the 
+-- boundary at an angle, we have to drive further if we don't want to miss fruit.
+-- Note, this also works on unrotated polygons/tracks, all we need is to use the 
+-- angle difference between the up/down and headland tracks instead of just the angle
+-- of the headland track
+function getDistanceBetweenTrackAndHeadland( width, angle )
+  -- distance between headland center and side at an angle 
+  -- (is width / 2 when angle is 90 degrees)
+  local dHeadlandCenterAndSide = math.abs( width / 2 / math.sin( angle ))
+  -- and we need to move further so much so even the side of the up/down track
+  -- reaches the area covered by the headland (this is 0 when angle is 90 degrees)
+  local offset = math.abs( width / 2 / math.tan( angle ))
+  return dHeadlandCenterAndSide - offset
+end
 
 --- Start walking on the headland at the given point until
 -- we bump onto a corner of an unworked block. 
