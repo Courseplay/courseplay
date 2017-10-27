@@ -188,7 +188,7 @@ function courseplay:turn(vehicle, dt)
 			turnInfo.turnDiameter = turnInfo.turnRadius * 2;
 
 			--- Get the new turn target with offset
-			if courseplay:getIsVehicleOffsetValid(vehicle) then
+			if courseplay:getIsVehicleOffsetValid(vehicle) and turnInfo.isHeadlandCorner == false then
 				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(vehicle)), 14);
 				courseplay:turnWithOffset(vehicle);
 			end;
@@ -371,7 +371,7 @@ function courseplay:turn(vehicle, dt)
 			cpPrintLine(14, 3);
 
 			-- Rotate tools if needed.
-			if vehicle.cp.toolOffsetX ~= 0 then
+			if vehicle.cp.toolOffsetX ~= 0 and turnInfo.isHeadlandCorner == false then
 				if vehicle.cp.toolOffsetX < 0 then
 					AIVehicle.aiRotateLeft(vehicle);
 				else
