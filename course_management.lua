@@ -240,6 +240,9 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			-- for turn maneuver
 			if not vehicle.cp.courseWorkWidth then
 				vehicle.cp.courseWorkWidth = course.workWidth;
+				--Place here to prevent it being reset back to one multi Tool on course addition when course isn't auto generated
+				course.multiTools = course.multiTools or 1
+				courseplay:changeMultiTools(vehicle, nil, course.multiTools)
 			end;
 			if not vehicle.cp.courseNumHeadlandLanes then
 				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
@@ -247,8 +250,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			if vehicle.cp.courseHeadlandDirectionCW == nil then
 				vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			end;
-			course.multiTools = course.multiTools or 1
-			courseplay:changeMultiTools(vehicle, nil, course.multiTools)
+			
 			
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
