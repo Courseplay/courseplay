@@ -483,8 +483,9 @@ function courseplay:load(savegame)
 		userDirClockwise = true;
 		orderBefore = true;
 
-    turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
-
+		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
+		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
+		
 		tg = createTransformGroup('cpPointOrig_' .. tostring(self.rootNode));
 
 		rectWidthRatio = 1.25;

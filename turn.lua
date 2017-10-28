@@ -357,9 +357,14 @@ function courseplay:turn(vehicle, dt)
 	            -------------------------------------------------------------
 	            -- A SHARP TURN, LIKELY ON THE HEADLAND BUT NOT A LANE SWITCH
 	            -------------------------------------------------------------
-	            courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner.", nameNum(vehicle), turnInfo.directionChangeDeg), 14);
+	            courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner, maneuver type = %d.", 
+								nameNum(vehicle), turnInfo.directionChangeDeg, vehicle.cp.headland.reverseManeuverType), 14);
 	            if turnInfo.isHarvester then
-		            courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle, turnInfo)
+								if vehicle.cp.headland.reverseManeuverType == courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT then
+									courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle, turnInfo)
+								elseif vehicle.cp.headland.reverseManeuverType == courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_CURVE then
+									courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turnInfo)
+								end
 	            else
 		            courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
 	            end
@@ -1455,17 +1460,17 @@ function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turn
 	centerForward.x,_,centerForward.z = localToWorld(turnInfo.targetNode, - turnInfo.direction * turnInfo.turnRadius, 0, 0 )
 	-- create a tranform group there, rotation set to the half angle between turnStart and turnEnd.
 	local forwardCircleCenterNode =
-	courseplay:createNode( "cpForwardCircleCenterNode", centerForward.x, centerForward.z, math.rad( turnInfo.halfAngle ))
+	courseplay.createNode( "cpForwardCircleCenterNode", centerForward.x, centerForward.z, math.rad( turnInfo.halfAngle ))
 
 	-- temporary center of the reversing arc
 	tempCenterReverse.x,_,tempCenterReverse.z = localToWorld( forwardCircleCenterNode, 2 * turnInfo.direction * turnInfo.turnRadius, 0, 0 )
 	-- because we'll have to move it into turnInfo.halfAngle direction until it touches the turnStart direction line from turnTarget
 	local tempReverseCircleCenterNode =
-	courseplay:createNode( "cpTempReverseCircleCenterNode", tempCenterReverse.x, tempCenterReverse.z, math.rad( turnInfo.halfAngle ))
+	courseplay.createNode( "cpTempReverseCircleCenterNode", tempCenterReverse.x, tempCenterReverse.z, math.rad( turnInfo.halfAngle ))
 
 	-- so create a helper node from turnTarget but this time rotated into the turnStart direction
 	local tx, _, tz = localToWorld( turnInfo.targetNode, 0, 0, 0 )
-	local turnStartNode = courseplay:createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
+	local turnStartNode = courseplay.createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
 
 	local dxTRevC, _, dzTRevC = worldToLocal( turnStartNode, tempCenterReverse.x, 0, tempCenterReverse.z )
 
@@ -1480,7 +1485,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turn
 		nameNum(vehicle), beta, xOffset, lzOffset ), 14);
 	centerReverse.x, _,  centerReverse.z = localToWorld( tempReverseCircleCenterNode, 0, 0, lzOffset )
 	local reverseCircleCenterNode =
-	courseplay:createNode( "cpReverseCircleCenterNode", centerReverse.x, centerReverse.z, math.rad( turnInfo.halfAngle ))
+	courseplay.createNode( "cpReverseCircleCenterNode", centerReverse.x, centerReverse.z, math.rad( turnInfo.halfAngle ))
 
 	local dxRevC, _, dzRevC = worldToLocal( turnStartNode, centerReverse.x, 0, centerReverse.z ) -- dxRevC must be equal to radius here
 
@@ -1497,10 +1502,10 @@ function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turn
 	fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, 0 )
 	-- drive a little past of our target, so we'll start reversing only when we 
 	-- really reached turnEnd
-	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, dzRevC + 1 )
+	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, dzRevC + 3 )
 	courseplay:generateTurnStraitPoints( vehicle, fromPoint, toPoint, false )
 
-	--- Generate first turn circle (Reversing) 
+	--- Generate first turn circle (Reversing)
 	startDir.x,_,startDir.z = localToWorld( turnStartNode, 0, 0, dzRevC )
 	stopDir.x,_,stopDir.z = localToWorld( reverseCircleCenterNode, - turnInfo.direction * turnInfo.turnRadius, 0, 0 )
 	courseplay:generateTurnCircle( vehicle, centerReverse, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction * -1, true, true )
@@ -1509,7 +1514,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turn
 	local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
 	fromPoint.x = wp.posX;
 	fromPoint.z = wp.posZ;
-	toPoint.x, _, toPoint.z = localToWorld( forwardCircleCenterNode, turnInfo.direction * turnInfo.turnRadius, 0, -1 )
+	toPoint.x, _, toPoint.z = localToWorld( forwardCircleCenterNode, turnInfo.direction * turnInfo.turnRadius, 0, -turnInfo.reverseWPChangeDistance )
 	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true);
 
 	--- Generate second turn circle (Forward)
@@ -1525,10 +1530,10 @@ function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turn
 	--courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, false, true )
 
 	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].turnEnd = true;
-	courseplay:destroyNode( turnStartNode )
-	courseplay:destroyNode( tempReverseCircleCenterNode )
-	courseplay:destroyNode( reverseCircleCenterNode )
-	courseplay:destroyNode( forwardCircleCenterNode )
+	courseplay.destroyNode( turnStartNode )
+	courseplay.destroyNode( tempReverseCircleCenterNode )
+	courseplay.destroyNode( reverseCircleCenterNode )
+	courseplay.destroyNode( forwardCircleCenterNode )
 end;
 
 ------------------------------------------------------------------------
@@ -1549,7 +1554,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle
 	--
 	-- create a helper node from turnTarget but this time rotated into the turnStart direction
 	local tx, _, tz = localToWorld( turnInfo.targetNode, 0, 0, 0 )
-	local turnStartNode = courseplay:createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
+	local turnStartNode = courseplay.createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
 
 	-- get the center of the forward turning circle
 	-- delta between turn start and turn end
@@ -1575,8 +1580,8 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle
 	local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
 	fromPoint.x = wp.posX;
 	fromPoint.z = wp.posZ;
-	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, - deltaZC - turnInfo.frontMarker )
-	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), from ( %.2f %.2f ), to ( %.2f %.2f )"):format(
+	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, - deltaZC - turnInfo.frontMarker - 3 )
+	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), straight from ( %.2f %.2f ), to ( %.2f %.2f )"):format(
 		nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z ), 14);
 	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true);
 	--
@@ -1586,13 +1591,17 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle
 	--- Generate turn circle (Forward)
 	startDir.x,_,startDir.z = localToWorld( turnStartNode, 0, 0, -deltaZC )
 	stopDir.x, _, stopDir.z = localToWorld( turnInfo.targetNode, 0, 0, deltaZC )
+	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), circle from ( %.2f %.2f ), to ( %.2f %.2f )"):format(
+		nameNum(vehicle), startDir.x, startDir.z, stopDir.x, stopDir.z ), 14);
 	courseplay:generateTurnCircle( vehicle, centerForward, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction * -1, true);
 
 	-- Append a short straight section to make sure we finish the turn before switching to 
 	-- the next waypoint.
 	toPoint.x, _, toPoint.z = localToWorld( turnInfo.targetNode, 0, 0, deltaZC + 2 )
+	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), straight from ( %.2f %.2f ), to ( %.2f %.2f )"):format(
+		nameNum(vehicle), stopDir.x, stopDir.z, toPoint.x, toPoint.z ), 14);
 	courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true );
-	courseplay:destroyNode( turnStartNode )
+	courseplay.destroyNode( turnStartNode )
 end;
 
 ------------------------------------------------------------------------
@@ -1613,7 +1622,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	--
 	-- create a helper node from turnTarget but this time rotated into the turnStart direction
 	local tx, _, tz = localToWorld( turnInfo.targetNode, 0, 0, 0 )
-	local turnStartNode = courseplay:createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
+	local turnStartNode = courseplay.createNode( "cpTurnStartNode", tx, tz, math.rad( turnInfo.startDirection ))
 	tx, _, tz = localToWorld( turnStartNode, 0, 0, 0 )
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), turn target node is ( %.2f %.2f )"):format(
 		nameNum(vehicle), tx, tz ), 14)
@@ -1683,7 +1692,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, deltaZC + 3 );
 	courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
 
-	courseplay:destroyNode( turnStartNode )
+	courseplay.destroyNode( turnStartNode )
 end;
 
 
@@ -1952,7 +1961,7 @@ function courseplay:turnWithOffset(self)
 	end;
 end;
 
-function courseplay:createNode( name, x, z, yRotation, rootNode )
+function courseplay.createNode( name, x, z, yRotation, rootNode )
 	local node = createTransformGroup( name )
 	link( rootNode or g_currentMission.terrainRootNode, node )
 	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z);
@@ -1961,9 +1970,11 @@ function courseplay:createNode( name, x, z, yRotation, rootNode )
   return node
 end
 
-function courseplay:destroyNode( node )
-	unlink( node )
-	delete( node )
+function courseplay.destroyNode( node )
+	if node then
+		unlink( node )
+		delete( node )
+	end
 end
 
 function getDirectionChangeOfTurn( vehicle )
@@ -1985,7 +1996,7 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
 	-- make the radius a bit bigger to make sure we can make the turn
 	local turnRadius = 1.2 * vehicle.cp.turnDiameter / 2
 	-- target waypoint we want to reach
-	local wpNode = courseplay:createNode( "wpNode", tx, tz, tDirection )
+	local wpNode = courseplay.createNode( "wpNode", tx, tz, tDirection )
   -- which side of the target node are we?
 	local vx, vy, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
 	local dx, _, _ = worldToLocal( wpNode, vx, vy, vz )
@@ -2000,8 +2011,8 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
 	if angleBetweenTangentAndC1 ~= angleBetweenTangentAndC1 then
 		return nil
 	end
-	local c1Node = courseplay:createNode( "c1Node", c1x, c1z, vehicleToC1Direction )
-  local t1Node = courseplay:createNode( "t1Node", 0, 0, - leftOrRight * ( math.pi - angleBetweenTangentAndC1 ), c1Node )
+	local c1Node = courseplay.createNode( "c1Node", c1x, c1z, vehicleToC1Direction )
+  local t1Node = courseplay.createNode( "t1Node", 0, 0, - leftOrRight * ( math.pi - angleBetweenTangentAndC1 ), c1Node )
 
 	courseplay:debug(string.format("%s:(Align) vehicleToC1Distance = %.1f, vehicleToC1Direction = %.1f angleBetween = %.1f, wpAngle = %.1f, turnRadius = %.1f, %.1f", 
 																	nameNum(vehicle), vehicleToC1Distance, math.deg( vehicleToC1Direction ), math.deg( angleBetweenTangentAndC1 ), math.deg( tDirection ), 
@@ -2018,9 +2029,9 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
 	local result = vehicle.cp.turnTargets
 	vehicle.cp.turnTargets = {}
 
-	courseplay:destroyNode( t1Node )
-	courseplay:destroyNode( c1Node )
-	courseplay:destroyNode( wpNode )
+	courseplay.destroyNode( t1Node )
+	courseplay.destroyNode( c1Node )
+	courseplay.destroyNode( wpNode )
 	return result 
 end
 

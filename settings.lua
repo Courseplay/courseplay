@@ -1204,6 +1204,13 @@ function courseplay:changeHeadlandTurnType( vehicle )
   end
 end
 
+function courseplay:changeHeadlandReverseManeuverType( vehicle )
+		vehicle.cp.headland.reverseManeuverType = vehicle.cp.headland.reverseManeuverType + 1
+		if vehicle.cp.headland.reverseManeuverType > courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_MAX then
+			vehicle.cp.headland.reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_MIN
+		end
+end
+
 function courseplay:changeMultiTools(vehicle, changeBy, force)
 	if force then
 		vehicle.cp.multiTools = force

@@ -81,6 +81,7 @@ function CpManager:setUpDebugChannels()
 
 		courseplay.debugButtonPosData[i] = data;
 	end;
+	
 end;
 
 --------------------------------------------------
