@@ -179,9 +179,9 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"              text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"               text="Virar" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"               text="Virar" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> <!-- TRANSLATE THIS -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Manobra de ré na cabeceira"/> 
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="direto" /> 
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curva" /> 
 		<text name="COURSEPLAY_ACTIVATED" 								 text="ativado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Somente nome" />            
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nome e rota" />		
