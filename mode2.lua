@@ -651,7 +651,8 @@ function courseplay:unload_combine(vehicle, dt)
 					vehicle.cp.curTarget.rev = false
 				end
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset ,(totalLength*3)+trailerOffset,currentTipper);
-				courseplay:setModeState(vehicle, STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY);				
+				courseplay:setModeState(vehicle, STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY);	
+				vehicle.cp.isParking = true				
 			end
 
 			if nodeSet then
@@ -665,7 +666,7 @@ function courseplay:unload_combine(vehicle, dt)
 				courseplay:debug(string.format("%s: vehicle.cp.nextTargets: nil ",nameNum(vehicle)),4)
 			end
 			
-			courseplay:setMode2NextState(vehicle, 1);
+			courseplay:setMode2NextState(vehicle, STATE_WAIT_AT_START);
 		end
 
 		--CALCULATE HORIZONTAL OFFSET (side offset)
@@ -1324,7 +1325,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if combine ~= nil and combine.cp.isChopper then
 			distanceToCombine = courseplay:distanceToObject( vehicle, combine )  	
 		end
-		if distanceToCombine > 50 and ((vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE) then   
+		if distanceToCombine > 50 and ((vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev and not vehicle.cp.isParking ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE) then   
 			local tx, tz
 			-- when following waypoints, check obstacles on the course, not dead ahead
 			if vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS then
@@ -1506,6 +1507,9 @@ function courseplay:setModeState(vehicle, state, debugLevel)
 		courseplay:debug( string.format( "%s: Switching state: %d -> %d", nameNum( vehicle ), vehicle.cp.modeState, Utils.getNoNil( state, -1 )), 9 )
 		vehicle.cp.modeState = state;
 	end;
+	if vehicle.cp.isParking and state == STATE_WAIT_AT_START then
+		vehicle.cp.isParking = nil	
+	end
 end;
 
 function courseplay:setMode2NextState(vehicle, nextState)
@@ -1602,7 +1606,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	end
   
 	-- tractor coordinates
-	local vx,vy,vz = getWorldTranslation( vehicle.cp.DirectionNode )
+	local vx,vy,vz =	getWorldTranslation( vehicle.cp.DirectionNode )
 
 	-- where am I ?
 	if courseplay.fields == nil then
@@ -1685,7 +1689,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
     courseplay:debug( string.format( "Path hasn't got enough waypoints (%d), no fruit avoidance", #path ), 9 )
     return false
   else
-    vehicle.cp.nextTargets = path
+	vehicle.cp.nextTargets = path
     return true                                 
   end
 end
