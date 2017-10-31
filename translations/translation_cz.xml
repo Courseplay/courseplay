@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automaticky" />
 		<text name="COURSEPLAY_LEFT" 									 text="vlevo" />
 		<text name="COURSEPLAY_RIGHT" 									 text="vpravo" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="střed" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Poslat odvozce domů" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Zavolat odvozce" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Odvozce zavolán" />
@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Úvrať proti/po směru hodinových ručiček" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Úvrať před/po práci na poli" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generovat polní prace" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Více strojů" />  
 		<text name="COURSEPLAY_DISTANCE" 								 text="vzdálenost" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Doba čekání:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -72,12 +72,12 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="skládá balíky." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="stojí v dopravní zácpě." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Místo vysypání dosaženo" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist 2 unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Vzdálenost k bodu vykládky" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Bude naloženo: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Zobrazit orientační body:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Vjíždění do porostu:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Oborat okraj pole" /> 
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Navedení na první bod" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Otáčení na poli:" />
@@ -179,9 +179,9 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Zaoblený" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Pocouvnutí" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Průjezd" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> <!-- TRANSLATE THIS -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Opačné otoč. na souvrati"/>  
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="Rovně" /> 
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="Křivka" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="pouze stroj" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="stroj a trasa" />
@@ -195,7 +195,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Ukončit" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Trasa není platná" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Přihnojování" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let mor combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konvoj kombajnů" /> 
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Lžíce nenalezena" />
