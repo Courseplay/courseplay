@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Поворотная полоса по/против часовой стрелки" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Поворотная полоса до/после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Сгенерировать маршрут" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Совметная работа орудий:" />
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Совместная работа орудий:" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="дистанция" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Пауза в точке ожидания:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d мин" />
@@ -179,9 +179,9 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"				 text="Сглаживать" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"				 text="Поворот" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"				 text="Round" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> <!-- TRANSLATE THIS -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Разворот в конце поля:"/>
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="по прямой (с реверсом)" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="по дуге (без реверса)" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="да" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="название техники" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="название техники и маршрут" />
@@ -195,7 +195,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Нерабочий маршрут" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Функция удобрения сеялки:" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Конвой комбайна" /> <!--After the appearance of this function, I check the accuracy of the translation.  TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Конвой комбайна" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
