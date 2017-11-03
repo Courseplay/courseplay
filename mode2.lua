@@ -84,6 +84,17 @@ function courseplay:handle_mode2(vehicle, dt)
 				local targetIsInFront = false
 				local cx,cz = vehicle.Waypoints[1].cx, vehicle.Waypoints[1].cz
 				local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 0, cz)
+								
+				if vehicle.cp.realisticDriving then
+					-- generate course to target around fruit when needed but don't end course in turnDiameter distance
+					-- before to avoid circling when transitioning to the next mode
+					if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz, vehicle.cp.turnDiameter * 2 ) then
+						courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
+						courseplay:setCurrentTargetFromList(vehicle, 1); 
+					end	
+				end
+				
+				--turn away from combine to avoid crashing into it
 				local x,_,z = worldToLocal(vehicle.cp.DirectionNode or vehicle.rootNode, cx, cy, cz)
 				local overTakeDistance = 15
 				if z > overTakeDistance then
@@ -101,14 +112,7 @@ function courseplay:handle_mode2(vehicle, dt)
 						vehicle.cp.curTarget.rev = false
 					end
 				end
-				if vehicle.cp.realisticDriving then
-					-- generate course to target around fruit when needed but don't end course in turnDiameter distance
-					-- before to avoid circling when transitioning to the next mode
-					if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz, vehicle.cp.turnDiameter * 2 ) then
-						courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-				    courseplay:setCurrentTargetFromList(vehicle, 1); 
-					end	
-				end
+				
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_ALL_TRAILERS_FULL );
 			end			
@@ -1115,7 +1119,7 @@ function courseplay:unload_combine(vehicle, dt)
 					courseplay:setInfoText(vehicle, "COURSEPLAY_WAITING_FOR_COMBINE_TURNED");
 
 				elseif vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL then -- tipper turning from combine
-	        courseplay:debug(string.format("%s (%s): trailer(s) full, last field waypoint reached, heading for the first course waypoint.", nameNum(vehicle), tostring(vehicle.id)), 4);
+					courseplay:debug(string.format("%s (%s): trailer(s) full, last field waypoint reached, heading for the first course waypoint.", nameNum(vehicle), tostring(vehicle.id)), 4);
 					courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 					courseplay:setIsLoaded(vehicle, true);
@@ -1321,8 +1325,9 @@ function courseplay:unload_combine(vehicle, dt)
 
 		vehicle.cp.TrafficBrake = false
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine
-		local distanceToCombine = math.huge 
-		if combine ~= nil and combine.cp.isChopper then
+		local distanceToCombine = math.huge
+		--reasons for not calling bypassing in 50m range
+		if combine ~= nil and (combine.cp.isChopper or vehicle.cp.isLoaded or vehicle.cp.totalFillLevel >= vehicle.cp.totalCapacity) then
 			distanceToCombine = courseplay:distanceToObject( vehicle, combine )  	
 		end
 		if distanceToCombine > 50 and ((vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev and not vehicle.cp.isParking ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE) then   
@@ -1337,7 +1342,7 @@ function courseplay:unload_combine(vehicle, dt)
 				tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
 				end
 			end
-			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz )
+			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
 		end
 		
 		courseplay:setTrafficCollision(vehicle, lx, lz,true)

@@ -1,10 +1,11 @@
-function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ )
+function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 	if lx > 0.5 then
 		lx = 0.5;
 	elseif lx < -0.5 then
 		lx = -0.5;
 	end;
-	local distance = math.min(self.lastSpeedReal*3600,40)
+	dod = dod or 100
+	local distance = math.min(self.lastSpeedReal*3600,40,dod-5)
 	local heigth = 0.5
   -- a world point 4 m in front of the vehicle center, 0.5 m higher
   -- This is where we start checking for obstacles
@@ -125,9 +126,26 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	local parent = getParent(transformId)
 	local parentParent = getParent(parent)
 	local vehicle = g_currentMission.nodeToVehicle[transformId];
+	
+	-- if Id is not found, try a level higher
 	if vehicle == nil then
 		vehicle = g_currentMission.nodeToVehicle[parent]
 	end
+	
+	--look whether the id is somewhere else in a vehicle (for cutters)
+	if vehicle == nil then
+		for id, foundVehicle in pairs(g_currentMission.nodeToVehicle) do
+			for triggerName, TriggerId in pairs(foundVehicle) do
+				if TriggerId == transformId then
+					vehicle = foundVehicle
+				end
+			end
+		end
+		if vehicle ~= nil and vehicle.cp.hasSpecializationCutter then
+			vehicle = vehicle.attacherVehicle
+		end
+	end
+	
 	local sideFactor = 1
 	local idName = getName(transformId)
 	
@@ -157,10 +175,15 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	self.cp.foundColli[1].z = z
 	self.cp.foundColli[1].s = sideFactor
 	self.cp.foundColli[1].id = transformId
+	
 	if vehicle ~= nil then
 		local length = vehicle.cp.totalLength or vehicle.sizeLength
-		self.cp.foundColli[1].bp = math.sqrt(length^2 + vehicle.sizeWidth^2)
+		local workWidth = Utils.getNoNil(vehicle.cp.workWidth,0)
+		local width = math.max(vehicle.sizeWidth,workWidth)
+		self.cp.foundColli[1].bp = math.sqrt(length^2 + width^2)
 		self.cp.foundColli[1].vehicleId = vehicle.id
+	else
+		--courseplay:findInTables(g_currentMission ,"g_currentMission", transformId)
 	end
 	courseplay:debug(nameNum(self) .."added : "..tostring(getName(transformId)).."["..tostring(transformId).."] to self.cp.foundColli[1] , start bypassing",3)
 
