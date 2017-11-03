@@ -2049,13 +2049,17 @@ end
 -- No obstacles are checked.
 function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 	if not vehicle.cp.alignment.enabled then return end
+	if not ( targetWaypoint and targetWaypoint.angle ) then
+		courseplay.debugVehicle( 14, vehicle, "No target waypoint or no angle on target waypoint, can't generate alginment course.")
+		printCallstack()
+	end
 	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
 	if not points then
-		courseplay:debug(string.format("%s:(Align) can't find an alignment course, may be too close to target wp?", nameNum(vehicle)), 14 )
+		courseplay.debugVehicle( 14, vehicle, "(Align) can't find an alignment course, may be too close to target wp?" )
 		return
 	end
 	if #points < 3 then
-		courseplay:debug(string.format("%s:(Align) Alignment course would be only %d waypoints, it isn't neeeded then.", nameNum(vehicle), #points), 14 )
+		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't neeeded then." )
 		return
 	end
 	
@@ -2078,8 +2082,8 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 		-- why, why, why can't we call them x and z everywhere?
 		local alignWp = { cx = point.posX, cz = point.posZ, x = point.posX, z = point.posZ } 
 		table.insert( vehicle.Waypoints, alignWp )
-		courseplay:debug(string.format("%s:(Align) Adding an alignment wp: (%1.f, %1.f)", nameNum(vehicle), point.posX, point.posZ), 14)
-	end
+		courseplay.debugVehicle( 14, vehicle, "(Align) Adding an alignment wp: (%1.f, %1.f)", point.posX, point.posZ )
+	end	
 	vehicle.cp.numWaypoints = #vehicle.Waypoints
 	courseplay:setWaypointIndex(vehicle, 1);
 end
