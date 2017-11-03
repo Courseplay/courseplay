@@ -1544,7 +1544,7 @@ end;
 ------------------------------------------------------------------------
 function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Reverse Turn", nameNum(vehicle)), 14);
+	courseplay.debugVehicle( 14, vehicle, "(Turn) Using Headland Corner Reverse Turn" )
 	cpPrintLine(14, 3);
 
 	local posX, posZ;
@@ -1561,16 +1561,18 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle
 	turnInfo.turnRadius = turnInfo.turnRadius * 1.1
 	local deltaZC = turnInfo.turnRadius / math.abs( math.tan( turnInfo.deltaAngle / 2 ))
 	centerForward.x,_,centerForward.z = localToWorld(turnStartNode, - turnInfo.direction * turnInfo.turnRadius, 0, -deltaZC )
-	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), fwdCircle( %.2f %.2f ), deltaAngle %.2f, deltaZC %.2f"):format(
-		nameNum(vehicle), centerForward.x, centerForward.z, math.deg( turnInfo.deltaAngle ), deltaZC ), 14);
+	courseplay.debugVehicle( 14, vehicle, 
+		"(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), fwdCircle( %.2f %.2f ), deltaAngle %.2f, deltaZC %.2f",
+		centerForward.x, centerForward.z, math.deg( turnInfo.deltaAngle ), deltaZC )
 
 	-- drive forward to the edge of the field
 	fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, 0 )
 	-- we want the work area of our implement reach the edge of the field. We are on a headland, the field edge
 	-- is workwidth/2 from us, but our front marker must reach it.
 	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, vehicle.cp.courseWorkWidth / 2 - turnInfo.frontMarker + turnInfo.wpChangeDistance + 0.5 )
-	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), from ( %.2f %.2f ), to ( %.2f %.2f) workWidth: %.1f, frontMarker: %.1f"):format(
-		nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, vehicle.cp.courseWorkWidth, turnInfo.frontMarker ), 14);
+	courseplay.debugVehicle( 14, vehicle,
+		"(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), from ( %.2f %.2f ), to ( %.2f %.2f) workWidth: %.1f, frontMarker: %.1f",
+		fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, vehicle.cp.courseWorkWidth, turnInfo.frontMarker )
 	courseplay:generateTurnStraitPoints( vehicle, fromPoint, toPoint, false )
 
 	-- raise the implement before reversing 

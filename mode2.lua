@@ -483,8 +483,8 @@ function courseplay:unload_combine(vehicle, dt)
 			-- behind the combine.
 			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind ) then
 			  -- there's fruit and a path could be calculated, switch to waypoint mode
-				courseplay:debug( string.format( "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
-													dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter ), 4 )
+				courseplay.debugVehicle( 4, vehicle, "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
+													dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter )
 				courseplay:setCurrentTargetFromList(vehicle, 1);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				courseplay:setMode2NextState(vehicle, STATE_DRIVE_TO_COMBINE); -- modeState when waypoint is reached
@@ -1063,13 +1063,13 @@ function courseplay:unload_combine(vehicle, dt)
 						local distanceToCombine = courseplay:distanceToObject( vehicle, combine )
 						-- magic constants, distance based on turn diameter
 						if distanceToCombine < vehicle.cp.turnDiameter + courseplay:getSafetyDistanceFromCombine( combine ) then
-						  courseplay:debug( string.format( "Only %.2f meters from the combine on the way, abort course and following the combine", distanceToCombine ), 9 )
+						  courseplay.debugVehicle( 9, vehicle, "Only %.2f meters from the combine on the way, abort course and following the combine", distanceToCombine )
 						  continueCourse = false
 						  vehicle.cp.nextTargets = {}
 						  courseplay:switchToNextMode2State(vehicle);
 						  courseplay:setMode2NextState(vehicle, STATE_DEFAULT);
 						else
-						  courseplay:debug( string.format( "Combine is still %.2f meters from me, continuing course", distanceToCombine ), 9 )
+						  courseplay.debugVehicle( 9, vehicle, "Combine is still %.2f meters from me, continuing course", distanceToCombine )
 						end 
 					end
 				elseif vehicle.cp.mode2nextState == STATE_ALL_TRAILERS_FULL then 
@@ -1602,7 +1602,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		-- and drive directly to the combine.
 		return false
 	else
-		courseplay:debug( string.format( "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType), 9 )
+		courseplay.debugVehicle( 9, vehicle, "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType)
 	end
   
 	-- tractor coordinates
@@ -1610,8 +1610,8 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 
 	-- where am I ?
 	if courseplay.fields == nil then
-		courseplay:debug( nameNum(vehicle).."- Pathfinding: no field data available!", 9 )
-		courseplay:debug( "to use the full function of pathfinding, you have to activate the automatic field scan or scan this field manually", 9 )
+		courseplay.debugVehicle( 9, vehicle, "Pathfinding: no field data available!" )		
+		courseplay.debugVehicle( 9, vehicle, "to use the full function of pathfinding, you have to activate the automatic field scan or scan this field manually")
 		return false
 	end
 
@@ -1621,10 +1621,10 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine or vehicle;
 		fieldNum = courseplay:onWhichFieldAmI( combine );
 		if fieldNum == 0 then
-			courseplay:debug( "I'm not on field, my combine isn't either", 9 )
+			courseplay.debugVehicle( 9, vehicle, "I'm not on field, my combine isn't either" )
 			return false
 		else
-			courseplay:debug( "I'm not on field, my combine is on ".. tostring( fieldNum ), 9 )
+			courseplay.debugVehicle( 9, vehicle, "I'm not on field, my combine is on ".. tostring( fieldNum ))
 			-- pathfinding works only within the field, so we'll have to get to the field first
 			local closestPointToVehicleIx = courseplay.generation:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, vx, vz )
 			-- we'll use this instead of the vehicle location, so tractor will drive directly to this point first 
@@ -1632,7 +1632,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 			vz = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cz
 		end
 	else
-		courseplay:debug( "I'm on field " .. tostring( fieldNum ), 9 )
+		courseplay.debugVehicle( 9, vehicle, "I'm on field " .. tostring( fieldNum ))
 		local _, pointInPoly, _, _ = courseplay.fields:getPolygonData(courseplay.fields.fieldData[fieldNum].points, cx, cz, true, true, true);
 		if not pointInPoly then
 			local closestPointToVehicleIx = courseplay.generation:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, cx, cz )
@@ -1641,14 +1641,14 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		end	
 	end
 
-  courseplay:debug( string.format( "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz ), 9 )
+  courseplay.debugVehicle( 9, vehicle, "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz )
   local path = pathFinder.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
                                     courseplay.fields.fieldData[fieldNum].points, fruitType )
    
   if path then
-    courseplay:debug( string.format( "Path found with %d waypoints", #path ), 9 )
+    courseplay.debugVehicle( 9, vehicle, "Path found with %d waypoints", #path )
   else
-    courseplay:debug( string.format( "No path found, reverting to dumb mode" ), 9 )
+    courseplay.debugVehicle( 9, vehicle, "No path found, reverting to dumb mode" )
     return false
   end
 
@@ -1686,7 +1686,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
     table.remove( path ) 
   end
   if #path < 2 then
-    courseplay:debug( string.format( "Path hasn't got enough waypoints (%d), no fruit avoidance", #path ), 9 )
+    courseplay.debugVehicle( 9, vehicle, "Path hasn't got enough waypoints (%d), no fruit avoidance", #path )
     return false
   else
 	vehicle.cp.nextTargets = path
