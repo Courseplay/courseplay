@@ -1637,30 +1637,31 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 		nameNum(vehicle), centerForward.x, centerForward.z, math.deg( turnInfo.deltaAngle ), deltaZC ), 14);
 
 	-- drive forward until our implement reaches the headland after the turn
-	fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, - turnInfo.directionNodeToTurnNodeLength )
+	fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, 0 )
 	-- we want the work area of our implement reach the edge of headland after the turn
-	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, - vehicle.cp.courseWorkWidth / 2 + turnInfo.frontMarker )
+	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, vehicle.cp.courseWorkWidth / 2 - turnInfo.frontMarker )
 	-- is this now in front of us? We may not need to drive forward
 	local _, _, dz = worldToLocal( turnInfo.directionNode, toPoint.x, 0, toPoint.z )
-	local wp = {}
 	-- at which waypoint we have to raise the implement
 	local raiseImplementIndex
 	if dz > 0 then
-		courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), driving forward so implement reaches headland"):format( nameNum( vehicle )), 14 )
+		courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), now driving forward so implement reaches headland"):format( nameNum( vehicle )), 14 )
 		courseplay:generateTurnStraitPoints( vehicle, fromPoint, toPoint, false )
-		wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
+		local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
+		-- continue from here
+		fromPoint.x = wp.posX;
+		fromPoint.z = wp.posZ;
 		-- raise implement before backing up
 		raiseImplementIndex = #vehicle.cp.turnTargets
 	else
-		-- if we don't have to drive forward, then we reverse from where we are 
-		wp.posX, wp.posZ = fromPoint.x, fromPoint.z
+		-- if we don't have to drive forward, then we reverse from where we are, but remember,
+		-- in reverse our reference point is the implement's turn node
+		fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, - turnInfo.directionNodeToTurnNodeLength )
 		-- first waypoint is backing up already so raise it right there
 		raiseImplementIndex = 1
 	end
 
 	-- now back up 
-	fromPoint.x = wp.posX;
-	fromPoint.z = wp.posZ;
 	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, - deltaZC - turnInfo.directionNodeToTurnNodeLength - turnInfo.reverseWPChangeDistance)
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), from ( %.2f %.2f ), to ( %.2f %.2f) workWidth: %.1f, raise implement ix: %d"):format(
 		nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, vehicle.cp.courseWorkWidth, raiseImplementIndex ), 14)
@@ -2059,7 +2060,7 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 		return
 	end
 	if #points < 3 then
-		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't neeeded then." )
+		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't neeeded then.", #points )
 		return
 	end
 	
