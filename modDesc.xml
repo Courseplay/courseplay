@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00020</version>
+	<version>5.02.00021</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -23,6 +23,7 @@
 	
 	<changeLog><![CDATA[
 
+	- added support for sprayer Addon (with the friendly support of David FONTAINE)
 	- added combine convoy option
 	- added option to align to 1st waypoint in mode 2, 4 and 6
 	- added easy setup for multiple tools  on one field work course
