@@ -2053,6 +2053,7 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 	if not ( targetWaypoint and targetWaypoint.angle ) then
 		courseplay.debugVehicle( 14, vehicle, "No target waypoint or no angle on target waypoint, can't generate alginment course.")
 		printCallstack()
+		return
 	end
 	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
 	if not points then
