@@ -348,7 +348,7 @@ function courseplay.utils.table.move(t1, t2, t1_index, t2_index)
 	end;
 
 	t2[t2_index] = t1[t1_index];
-	t1[t1_index] = nil;
+	table.remove(t1, t1_index);
 	return t2[t2_index] ~= nil;
 end;
 
