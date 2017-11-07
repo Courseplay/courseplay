@@ -1647,7 +1647,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	end
 
   courseplay.debugVehicle( 9, vehicle, "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz )
-  local path = pathFinder.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
+  local path = courseGenerator.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
                                     courseplay.fields.fieldData[fieldNum].points, fruitType )
    
   if path then

@@ -80,11 +80,15 @@
 --   Will generate turns (start/end waypoints) if the direction change over
 --   minHeadlandTurnAngle to use the turn system.
 --
+-- returnToFirstPoint
+--   Return to the first waypoint of the course after done. Will add a section from the 
+--   last to the first wp if true.
+
 function generateCourseForField( field, implementWidth, nHeadlandPasses, headlandClockwise, 
                                  headlandStartLocation, overlapPercent, 
                                  nTracksToSkip, extendTracks,
                                  minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
-                                 turnRadius, minHeadlandTurnAngle )
+                                 turnRadius, minHeadlandTurnAngle, returnToFirstPoint )
   field.boundingBox = getBoundingBox( field.boundary )
   calculatePolygonData( field.boundary )
   field.headlandTracks = {}
@@ -151,6 +155,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     end
   end
   if #field.course > 0 then
+	if returnToFirstPoint then
+	  addWpsToReturnToFirstPoint( field.course, field.boundary )	
+	end
     calculatePolygonData( field.course )
     addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
   end
@@ -208,7 +215,7 @@ function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
   -- start at the second wp to avoid having the first waypoint a turn start,
   -- that throws an nil in getPointDirection (due to the way calculatePolygonData 
   -- works, the prevEdge to the first point is bogus anyway)
-  i = 2
+  local i = 2
   while i < #vertices - 1 do
     local cp = vertices[ i ]
     local np = vertices[ i + 1 ]
@@ -229,6 +236,23 @@ function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
     end
     i = i + 1
   end
+end
+
+function addWpsToReturnToFirstPoint( course, boundary )
+	-- should not check for fruit
+	local path = pathFinder.findPath( course[ #course ], course[ 1 ], boundary, function() return false end )
+	-- already close enough, don't add extra return path
+	if #path < 5 then
+		return
+	else
+		-- start at the third wp in order to be far enough 
+		-- from the last course wp to avoid circling
+		for i = 3, #path do
+			path[ i ].returnToFirst = true -- just for debugging
+			path[ i ].isConnectingTrack = true -- so it'll raise implements when driving back
+			table.insert( course, path[ i ])
+		end
+	end
 end
 
 function addTurnsToCorners2( vertices, width, turnRadius, minHeadlandTurnAngle )

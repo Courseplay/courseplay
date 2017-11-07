@@ -19,3 +19,54 @@ end
 function courseGenerator.isRunningInGame()
   return courseplay ~= nil;
 end
+
+--- Function to convert between CP/Giants coordinate representations
+-- and the course generator conventional x/y coordinates.
+--
+function courseGenerator.pointsToXy( points )
+	local result = {}
+	for _, point in ipairs( points ) do
+		table.insert( result, { x = point.x or point.cx, y = - ( point.z or point.cz )})
+	end
+	return result
+end
+
+function courseGenerator.pointsToXz( points )
+	local result = {}
+	for _, point in ipairs( points) do
+		table.insert( result, { x = point.x, z = -point.y })
+	end
+	return result
+end
+
+function courseGenerator.pointsToCxCz( points )
+	local result = {}
+	for _, point in ipairs( points) do
+		table.insert( result, { cx = point.x, cz = -point.y })
+	end
+	return result
+end
+
+function courseGenerator.pointToXy( point )
+	return({ x = point.x or point.cx, y = - ( point.z or point.cz )})
+end
+
+function courseGenerator.pointToXz( point )
+	return({ x = point.x, z = -point.y })
+end
+
+function courseGenerator.pointToXz( point )
+	return({ x = point.x, z = -point.y })
+end
+
+--- Pathfinder wrapper for CP 
+-- Expects FS coordinates (x,-z)
+function courseGenerator.findPath( from, to, cpPolygon, fruit )
+	local path, grid = pathFinder.findPath( courseGenerator.pointToXy( from ), courseGenerator.pointToXy( to ),
+		courseGenerator.pointsToXy( cpPolygon ), fruit, nil, nil )
+	if path then
+		return courseGenerator.pointsToXz( path ), grid
+	else
+		return nil, grid
+	end
+end

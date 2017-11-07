@@ -1,5 +1,5 @@
 --- This is the interface to Courseplay
--- 
+-- all course generator related code dependent on CP/Giants functions go here
 
 --- Convert the generated course to CP waypoint format
 --
@@ -83,7 +83,8 @@ function courseGenerator.generate( vehicle, name, poly, workWidth )
                               field.overlap, field.nTracksToSkip,
                               field.extendTracks, field.minDistanceBetweenPoints,
                               minSmoothAngle, maxSmoothAngle, field.doSmooth,
-                              field.roundCorners, vehicle.cp.vehicleTurnRadius, minHeadlandTurnAngle
+                              field.roundCorners, vehicle.cp.vehicleTurnRadius, minHeadlandTurnAngle,
+  							  vehicle.cp.returnToFirstPoint
                              )
   
   if not status then 

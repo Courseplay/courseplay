@@ -6,11 +6,12 @@ pathFinder = {}
 local gridSpacing
 local count
 local biasToRight
-local fruitToCheck = nil
+local fruitToCheck
+local hasFruit
 --
 --- add some area with fruit for tests
 function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
-  local distance = 144
+  local distance = 10
   for y, row in ipairs( grid.map ) do
     for x, index in pairs( row ) do
     local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
@@ -32,18 +33,50 @@ function pathFinder.addFruitGridDistanceFromBoundary( grid, polygon )
   end
 end
 
+function pathFinder.addIsland( grid, polygon )
+  local distance = 64
+  for y, row in ipairs( grid.map ) do
+    for x, index in pairs( row ) do
+    local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
+      if minDistanceToFieldBoundary > distance then
+        grid[ index ].isOnField = true
+      end
+    end
+  end
+end
+
+--- Is this node an island (like a tree in the middle of the field)?
+--
+local function isOnField( node )
+  if courseGenerator.isRunningInGame() then
+    if node.isOnField == nil then
+			local y = getTerrainHeightAtWorldPos( g_currentMission.terrainRootNode, node.x, 0, -node.y );
+      local densityBits = getDensityAtWorldPos( g_currentMission.terrainDetailId, node.x, y, node.z);
+      node.isOnField = densityBits ~= 0;
+	    courseGenerator.debug( string.format( "Island node found at %.1f, %.1f", node.x, -node.y ), 9)
+    end
+  end
+  return node.isOnField
+end
+
 --- Does the area around x, z has fruit?
 --
-local function hasFruit( node, width )
+local function defaultHasFruitFunc( node, width )
   if courseGenerator.isRunningInGame() then
     -- check the fruit if we haven't done so yet
     if node.hasFruit == nil then
       node.hasFruit = courseplay:areaHasFruit( node.x, -node.y, fruitToCheck, width )
     end
-    return node.hasFruit
-  else
-    -- for testing in standalone mode
-    return false
+  end
+  return node.hasFruit
+end
+
+function pathFinder.findIslands( cpPolygon )
+  local grid, width = pathFinder.generateGridForPolygon( courseGenerator.pointsToXy( cpPolygon ))
+  for y, row in ipairs( grid.map ) do
+    for x, index in pairs( row ) do
+      isOnField( grid[ index ])
+    end
   end
 end
 
@@ -91,6 +124,15 @@ local function generateGridForPolygon( polygon )
   return grid, width
 end
 
+function pathFinder.findIslands( cpPolygon )
+	local grid, width = generateGridForPolygon( courseGenerator.pointsToXy( cpPolygon ))
+	for y, row in ipairs( grid.map ) do
+		for x, index in pairs( row ) do
+			isOnField( grid[ index ])
+		end
+	end
+end
+
 --- Is 'node' a valid neighbor of 'theNode'?
 --
 local function isValidNeighbor( theNode, node )
@@ -118,7 +160,7 @@ local function getNeighbors( theNode, grid )
       for row = theNode.row - height, theNode.row + height do
         -- skip own node
         if not ( column == theNode.column and row == theNode.row ) and grid.map[ row ] and grid.map[ row ][ column ] then
-          neighbor = grid[ grid.map[ row ][ column ]]
+          local neighbor = grid[ grid.map[ row ][ column ]]
           local theNodeHasFruit = hasFruit( theNode, gridSpacing * 2 )
           local neighborHasFruit = neighbor and hasFruit( neighbor, gridSpacing * 2 )
           if neighbor and
@@ -187,58 +229,20 @@ local function addOffGridNode( grid, newNode )
 end
 
 
-function pointsToXy( points )
-  local result = {}
-  for _, point in ipairs( points ) do
-    table.insert( result, { x = point.x or point.cx, y = - ( point.z or point.cz )})
-  end
-  return result
-end
-
-function pointsToXz( points )
-  local result = {}
-  for _, point in ipairs( points) do
-    table.insert( result, { x = point.x, z = -point.y })
-  end
-  return result
-end
-
-function pointsToCxCz( points )
-  local result = {}
-  for _, point in ipairs( points) do
-    table.insert( result, { cx = point.x, cz = -point.y })
-  end
-  return result
-end
-
-local function pointToXy( point )
-  return({ x = point.x or point.cx, y = - ( point.z or point.cz )})
-end
-
-function pointToXz( point )
-  return({ x = point.x, z = -point.y })
-end
-
-function pointToXz( point )
-  return({ x = point.x, z = -point.y })
-end
-
 --- Find a path between from and to in a polygon using the A star
 -- algorithm
--- Expects FS coordinates (x,-z)
-function pathFinder.findPath( from, to, cpPolygon, fruit, addFruitFunc )
+-- expects x/y coordinates
+function pathFinder.findPath( fromNode, toNode, polygon, fruit, customHasFruitFunc, addFruitFunc )
   count = 0
   fruitToCheck = fruit
-  local grid, width = generateGridForPolygon( pointsToXy( cpPolygon ))
-  -- from and to must be a node. change z to y as a-star works in x/y system
-  local fromNode = pointToXy( from )
-  local toNode = pointToXy( to )
+  hasFruit = customHasFruitFunc or defaultHasFruitFunc
+  local grid, width = generateGridForPolygon( polygon )
   -- hold a bit to the right
   biasToRight = fromNode.x < toNode.x and width / 2 or -width / 2
   if not courseGenerator.isRunningInGame() and addFruitFunc then
-    addFruitFunc( grid, pointsToXy( cpPolygon ))
-  end
-	courseGenerator.debug( string.format( "Grid generated with %d points", #grid) , 9);
+    addFruitFunc( grid, polygon )
+  end 
+  courseGenerator.debug( string.format( "Grid generated with %d points", #grid) , 9);
   addOffGridNode( grid, fromNode )
   addOffGridNode( grid, toNode )
   -- limit number of iterations depending on the grid size to avoid long freezes
@@ -254,8 +258,6 @@ function pathFinder.findPath( from, to, cpPolygon, fruit, addFruitFunc )
     if not courseGenerator.isRunningInGame() then
       io.stdout:flush()
     end
-    return pointsToXz( path ), grid
-  else
-    return nil, grid
-  end
+  end 
+  return path, grid
 end
