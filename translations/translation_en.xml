@@ -175,13 +175,13 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatic" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Headland" />
-		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Headland corners" />
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> <!-- TRANSLATE THIS -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  			
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> 
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> 
 		<text name="COURSEPLAY_ACTIVATED" 								 text="activated" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Name only" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Name and Course" />

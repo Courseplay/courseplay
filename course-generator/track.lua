@@ -83,12 +83,17 @@
 -- returnToFirstPoint
 --   Return to the first waypoint of the course after done. Will add a section from the 
 --   last to the first wp if true.
+--
+-- islandNodes
+--   List of points within the field which should be bypassed like utility poles or 
+--   trees. 
+--
 
 function generateCourseForField( field, implementWidth, nHeadlandPasses, headlandClockwise, 
                                  headlandStartLocation, overlapPercent, 
                                  nTracksToSkip, extendTracks,
                                  minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
-                                 turnRadius, minHeadlandTurnAngle, returnToFirstPoint )
+                                 turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes )
   field.boundingBox = getBoundingBox( field.boundary )
   calculatePolygonData( field.boundary )
   field.headlandTracks = {}
@@ -121,9 +126,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
 
       field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, width,
                                                           minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
-      courseGenerator.debug( string.format( "Generated headland track #%d, area %1.f, clockwise = %s", j, field.headlandTracks[ j ].area, tostring( field.headlandTracks[ j ].isClockwise )))
+      courseGenerator.debug( "Generated headland track #%d, area %1.f, clockwise = %s", j, field.headlandTracks[ j ].area, tostring( field.headlandTracks[ j ].isClockwise ))
       if ( field.headlandTracks[ j ].area >= previousTrack.area or field.headlandTracks[ j ].area <= 10 ) and not fromInside then
-        courseGenerator.debug( string.format( "Can't fit more headlands in field, using %d", j - 1 ))
+        courseGenerator.debug( "Can't fit more headlands in field, using %d", j - 1 )
         field.headlandTracks[ j ] = nil
         break
       end
@@ -132,7 +137,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   else
     -- no headland pass wanted, still generate a dummy one on the field boundary so
     -- we have something to work with when generating the up/down tracks
-    courseGenerator.debug( string.format( "No headland, generating dummy headland track" ))
+    courseGenerator.debug( "No headland, generating dummy headland track" )
     field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
   end
   linkHeadlandTracks( field, implementWidth, headlandClockwise, headlandStartLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
@@ -168,6 +173,10 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   -- make sure we do not return the dummy headland track generated when no headland requested
   if nHeadlandPasses == 0 then
     field.headlandTracks = {}
+  end
+  if #islandNodes > 0 then
+	bypassIslands(field.course, implementWidth, islandNodes)
+  	calculatePolygonData(field.course)
   end
 end
 
@@ -269,4 +278,69 @@ function addTurnsToCorners2( vertices, width, turnRadius, minHeadlandTurnAngle )
       i = i + 1
     end
   end
+end
+
+
+local function isTooCloseToAnIsland( point, islandNodes, minDistance )
+	for _, islandNode in ipairs( islandNodes ) do
+		local d = getDistanceBetweenPoints( point, islandNode )
+		if d < minDistance then
+			return true
+		end
+	end
+	return false
+end
+
+local function moveWaypointUntilFarEnoughFromIslands( wayPoint, angle, islandNodes, implementWidth )
+	-- for now, only handle smaller islands, if we need to move too much than we give up
+	-- try deviations up to six times of the work width.
+    local lastOffset = 6 * implementWidth
+
+	-- the turn start nodes point into the turn end node not in the direction of the 
+	-- track so use the incoming edge's direction, otherwise we move the turn start
+	-- wp in the wrong dir
+	if wayPoint.turnStart then 
+		realWpAngle = wayPoint.prevEdge.angle
+	else
+		realWpAngle = wayPoint.nextEdge.angle
+	end
+	for offset = 1, lastOffset do
+		local movedWaypoint = addPolarVectorToPoint( wayPoint, realWpAngle + angle, offset )
+		if not isTooCloseToAnIsland( movedWaypoint, islandNodes, implementWidth / 2 ) then
+			return movedWaypoint, offset
+		end
+	end
+	-- just return the original waypoint if we weren't able to find one far enough
+	return wayPoint, lastOffset
+end
+
+--- Attempt to bypass (smaller) islands in the field.
+function bypassIslands( course, width, islandNodes )
+	-- current bypass direction. Needed so once we divert to a direction (left or right) then
+	-- we stay on that side of the obstacle until we finish bypassing
+	local bypassDirection = "None"
+	for _, wayPoint in ipairs( course ) do
+		if isTooCloseToAnIsland( wayPoint, islandNodes, width / 2 ) then
+			-- so, we'll start walking to the left and to the right until we are at least 
+			-- width / 2 distance from the island
+			local movedWaypointToLeft, dLeft = moveWaypointUntilFarEnoughFromIslands( wayPoint, math.rad( 90 ), islandNodes, width )
+			local movedWaypointToRight, dRight = moveWaypointUntilFarEnoughFromIslands( wayPoint, math.rad( -90 ), islandNodes, width )
+			local movedWaypoint
+			if bypassDirection == "None" then
+				-- not yet bypassing, so take the direction which is closer to the original route
+				-- TODO: this means we decide on left or right based on the first waypoint which is too
+				-- close to the island. Should consider building both (left/right) bypasses and decide 
+			    -- later based on distance?
+				movedWaypoint = dLeft < dRight and movedWaypointToLeft or movedWaypointToRight
+				bypassDirection = dLeft < dRight and "Left" or "Right"
+			else
+				-- already started bypassing, so just stay on that side
+				movedWaypoint = bypassDirection == "Left" and movedWaypointToLeft or movedWaypointToRight
+			end
+			wayPoint.x, wayPoint.y = movedWaypoint.x, movedWaypoint.y
+			wayPoint.tooCloseToIsland = true
+		else
+			bypassDirection = "None"
+ 		end
+	end
 end

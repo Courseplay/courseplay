@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00027</version>
+	<version>5.02.00028</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -23,6 +23,7 @@
 	
 	<changeLog><![CDATA[
 
+	- new option for course generation to bypass small islands in fields
 	- added support for sprayer Addon (with the friendly support of David FONTAINE)
 	- added combine convoy option
 	- turn maneuver for headland corners to avoid missing fruit

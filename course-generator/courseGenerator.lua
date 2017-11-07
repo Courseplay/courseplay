@@ -3,12 +3,11 @@ courseGenerator = {}
 
 --- Debug print, will either just call print when running standalone
 --  or use the CP debug channel when running in the game.
-
-function courseGenerator.debug( text )
+function courseGenerator.debug( ... )
   if courseGenerator.isRunningInGame() then
-	  courseplay:debug( text, 7 );
+	  courseplay:debug( string.format( ... ), 7 )
   else
-    print( text )
+    print( string.format( ... ))
   end
 end
 
@@ -69,4 +68,11 @@ function courseGenerator.findPath( from, to, cpPolygon, fruit )
 	else
 		return nil, grid
 	end
+end
+
+--- Island finder wrapper for CP, 
+-- expects FS coordinates
+function courseGenerator.findIslands( fieldData )
+	local islandNodes = pathFinder.findIslands( courseGenerator.pointsToXy( fieldData.points ))
+	fieldData.islandNodes = courseGenerator.pointsToCxCz( islandNodes )
 end

@@ -26,10 +26,17 @@ function courseplay:generateCourse(vehicle)
 		return;
 	end;
 
-	local poly = {};
+	local poly = {}
+	local islandNodes = {}
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
 		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points, true);
 		poly.numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
+		if vehicle.cp.bypassIslands then
+			if not courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes then
+				courseGenerator.findIslands( courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum])
+			end
+			islandNodes = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes
+		end
 	else
 		poly.points = courseplay.utils.table.copy(vehicle.Waypoints, true);
 		poly.numPoints = #(poly.points);
@@ -86,7 +93,7 @@ function courseplay:generateCourse(vehicle)
 			vehicle.cp.generationPosition.hasSavedPosition = true
 			vehicle.cp.generationPosition.fieldNum = vehicle.cp.fieldEdge.selectedField.fieldNum
 		end
-		courseGenerator.generate( vehicle, fieldCourseName, poly, workWidth)
+		courseGenerator.generate( vehicle, fieldCourseName, poly, workWidth, islandNodes )
 		return
 	end
 

@@ -473,6 +473,7 @@ function courseplay:load(savegame)
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	self.cp.ridgeMarkersAutomatic = true;
+	self.cp.bypassIslands = false;
 	self.cp.headland = {
 		maxNumLanes = 6;
 		-- with the old, manual direction selection course generator

@@ -195,9 +195,9 @@ function courseplay.hud:setup()
 			[7] = self.basePosX + self:pxToNormal(202, 'x');
 			[8] = self.basePosX + self:pxToNormal(202, 'x');
 		};
-		[self.PAGE_COURSE_GENERATION] = {
-			[6] = self.basePosX + self:pxToNormal(509, 'x');
-		};
+	};
+	self.col3posX = {
+		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(509, 'x'),
 	};
 
 	self.versionPosY = self.visibleArea.y1 + self:pxToNormal(16, 'y');
@@ -497,7 +497,7 @@ function courseplay.hud:setContent(vehicle)
 	-- RELOAD PAGE
 	if vehicle.cp.hud.reloadPage[vehicle.cp.hud.currentPage] then
 		for line=1,self.numLines do
-			for column=1,2 do
+			for column=1,3 do
 				vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][line][column].text = nil;
 			end;
 		end;
@@ -597,8 +597,8 @@ function courseplay.hud:renderHud(vehicle)
 				end;
 				renderText(self.col1posX + entry.indention, self.linesPosY[line], self.fontSizes.contentTitle, entry.text);
 				courseplay:setFontSettings('white', false);
-			elseif column == 2 and entry.text ~= nil and entry.text ~= "" then
-				renderText(vehicle.cp.hud.content.pages[page][line][2].posX, self.linesPosY[line], self.fontSizes.contentValue, entry.text);
+			elseif column >= 2 and entry.text ~= nil and entry.text ~= "" then
+				renderText(vehicle.cp.hud.content.pages[page][line][column].posX, self.linesPosY[line], self.fontSizes.contentValue, entry.text);
 			end;
 		end;
 	end;
@@ -1200,16 +1200,17 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- line 6 = headland
 		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc('COURSEPLAY_HEADLAND');
-		vehicle.cp.hud.content.pages[8][6][2].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
-
-		-- line 7 = headland turn corners
-		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_GENERATE_HEADLAND_TURNS');
+		vehicle.cp.hud.content.pages[8][6][3].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
 		-- only allow for the new course generator
 		if vehicle.cp.headland.numLanes > 0 and vehicle.cp.hasStartingCorner and vehicle.cp.startingCorner > 4 then
-			vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
+			vehicle.cp.hud.content.pages[8][6][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
 		else
-			vehicle.cp.hud.content.pages[8][7][2].text = '---'
+			vehicle.cp.hud.content.pages[8][6][2].text = '---'
 		end
+
+		-- line 7 = bypass islands
+		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_BYPASS_ISLANDS');
+		vehicle.cp.hud.content.pages[8][7][2].text = vehicle.cp.bypassIslands and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		
 		-- line 8 Multiple Tools
 		vehicle.cp.hud.content.pages[8][8][1].text = courseplay:loc('COURSEPLAY_MULTI_TOOLS');
@@ -1414,7 +1415,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		for line=1,self.numLines do
 			vehicle.cp.hud.content.pages[page][line] = {
 				{ text = nil, isClicked = false, isHovered = false, indention = 0 },
-				{ text = nil, posX = self.col2posX[page] }
+				{ text = nil, posX = self.col2posX[page] },
+				{ text = nil, posX = Utils.getNoNil( self.col3posX[page], 0 ) }
 			};
 			if self.col2posXforce[page] ~= nil and self.col2posXforce[page][line] ~= nil then
 				vehicle.cp.hud.content.pages[page][line][2].posX = self.col2posXforce[page][line];
@@ -1802,20 +1804,19 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 8, nil, 'toggleReturnToFirstPoint', nil, self.col1posX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
 
 	-- line 6 (headland)
-	-- 6.1 direction
-	local orderBtnX = self.col2posXforce[8][6] - self.buttonSize.small.margin - wBig;
+	-- 6.2 turn type
+
+	-- 6.3: order, direction, numLanes
+	local orderBtnX = vehicle.cp.hud.content.pages[8][6][3].posX - self.buttonSize.small.margin - wBig;
 	local dirBtnX = orderBtnX - self:pxToNormal(4, 'x') - wSmall;
-	vehicle.cp.headland.directionButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'headlandDirCW' }, 'toggleHeadlandDirection', nil, dirBtnX, self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false, nil, nil, courseplay:loc('COURSEPLAY_HEADLAND_DIRECTION'));
-
-	-- 6.2 order
 	vehicle.cp.headland.orderButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'headlandOrdBef' }, 'toggleHeadlandOrder', nil, orderBtnX, self.linesButtonPosY[6], wBig, hSmall, 6, nil, false, nil, nil, courseplay:loc('COURSEPLAY_HEADLAND_BEFORE_AFTER'));
-
-	-- 6.3: numLanes
+	vehicle.cp.headland.directionButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'headlandDirCW' }, 'toggleHeadlandDirection', nil, dirBtnX, self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false, nil, nil, courseplay:loc('COURSEPLAY_HEADLAND_DIRECTION'));
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeHeadlandNumLanes',   1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeHeadlandNumLanes',  -1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
+	courseplay.button:new(vehicle, 8, nil, 'changeHeadlandTurnType', nil, self.col1posX, self.linesPosY[6], self.col3posX[ self.PAGE_COURSE_GENERATION ] - self.col1posX, self.lineHeight, 6, nil, true);
 
-	-- line 7 (headland turns)
-	courseplay.button:new(vehicle, 8, nil, 'changeHeadlandTurnType', nil, self.col1posX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
+	-- line 7 (islands)
+	courseplay.button:new(vehicle, 8, nil, 'toggleBypassIslands',  nil, self.col1posX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
 	
 	-- line 8 multi tools
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeMultiTools', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);

@@ -39,10 +39,10 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
   end
 end
 
-function courseGenerator.generate( vehicle, name, poly, workWidth )
+function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
   local field = fromCpField( name, poly.points ) 
-  calculatePolygonData( field.boundary )
+  calculatePolygonData( field.boundary ) 
 
   --  get the vehicle position
   local x, _, z = getWorldTranslation( vehicle.rootNode )
@@ -84,7 +84,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth )
                               field.extendTracks, field.minDistanceBetweenPoints,
                               minSmoothAngle, maxSmoothAngle, field.doSmooth,
                               field.roundCorners, vehicle.cp.vehicleTurnRadius, minHeadlandTurnAngle,
-  							  vehicle.cp.returnToFirstPoint
+  							  vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes )
                              )
   
   if not status then 

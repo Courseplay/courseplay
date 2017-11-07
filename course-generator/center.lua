@@ -38,8 +38,8 @@ function findBestTrackAngle( polygon, width )
     end
   end
   local b = bestAngleStats[ bestAngleIndex ]
-  courseGenerator.debug( string.format( "Best angle=%d, nBlocks=%d, nFullTracks=%d, nSplitTracks=%d, score=%.1f",
-                         b.angle, b.nBlocks, b.nFullTracks, b.nSplitTracks, b.score))
+  courseGenerator.debug( "Best angle=%d, nBlocks=%d, nFullTracks=%d, nSplitTracks=%d, score=%.1f",
+                         b.angle, b.nBlocks, b.nFullTracks, b.nSplitTracks, b.score)
   return b.angle, b.nFullTracks + b.nSplitTracks, b.nBlocks 
 end
 
@@ -93,7 +93,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
       table.insert( rotatedMarks, block[ j ].intersections[ 2 ])
       rotatedMarks[ #rotatedMarks ].label = string.format( "%d-%d/2", i, j )
     end
-    courseGenerator.debug( string.format( "Block %d has %d tracks", i, #block ))
+    courseGenerator.debug( "Block %d has %d tracks", i, #block )
     block.tracksWithWaypoints = addWaypointsToTracks( block, width, extendTracks )
     block.covered = false
   end
@@ -117,7 +117,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
   local connectingTracks = {}
   for i, block in ipairs( workedBlocks ) do
     connectingTracks[ i ] = {}
-    courseGenerator.debug( string.format( "Track to block %d has %d points", i, #block.trackToThisBlock ))
+    courseGenerator.debug( "Track to block %d has %d points", i, #block.trackToThisBlock )
     for j = 1, #block.trackToThisBlock do
       table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
       if addConnectingTracks then
@@ -247,7 +247,7 @@ function addWaypointsToTracks( tracks, width, extendTracks )
       if #tracks[ i ].waypoints > 1 then
         table.insert( result, tracks[ i ])
       else
-        courseGenerator.debug( string.format( "Track %d has only one waypoint, skipping.", i ))
+        courseGenerator.debug( "Track %d has only one waypoint, skipping.", i )
       end
     end
   end
@@ -282,7 +282,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
       if not b.covered then
         -- TODO: we are repeating ourselves here a lot, should be refactored
         if i == b.bottomLeftIntersection.index then
-          courseGenerator.debug( string.format( "Starting block %d at bottom left", j ))
+          courseGenerator.debug( "Starting block %d at bottom left", j )
           b.bottomToTop, b.leftToRight = true, true
           b.covered = true
           -- where we end working the block depends on the number of track
@@ -298,7 +298,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
           b.trackToThisBlock = track
           return ix, getPolygonIndex( headland, ix - step ), b
         elseif i == b.bottomRightIntersection.index then
-          courseGenerator.debug( string.format( "Starting block %d at bottom right", j ))
+          courseGenerator.debug( "Starting block %d at bottom right", j )
           b.bottomToTop, b.leftToRight = true, false
           b.covered = true
           if #b % 2 == 0 then 
@@ -311,7 +311,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
           b.trackToThisBlock = track
           return ix, getPolygonIndex( headland, ix - step ), b
         elseif i == b.topLeftIntersection.index then 
-          courseGenerator.debug( string.format( "Starting block %d at top left", j ))
+          courseGenerator.debug( "Starting block %d at top left", j )
           b.bottomToTop, b.leftToRight = false, true
           b.covered = true
           if #b % 2 == 0 then 
@@ -324,7 +324,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
           b.trackToThisBlock = track
           return ix, getPolygonIndex( headland, ix - step ), b
         elseif i == b.topRightIntersection.index then
-          courseGenerator.debug( string.format( "Starting block %d at top right", j ))
+          courseGenerator.debug( "Starting block %d at top right", j )
           b.bottomToTop, b.leftToRight = false, false
           b.covered = true
           if #b % 2 == 0 then 
@@ -393,7 +393,7 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
         table.insert( result, point )
       end      
     else
-      courseGenerator.debug( string.format( "Track %d has no waypoints, skipping.", i ))
+      courseGenerator.debug( "Track %d has no waypoints, skipping.", i )
     end
   end
 end

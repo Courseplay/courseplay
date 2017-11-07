@@ -65,6 +65,7 @@ function courseplay.fields:setAllFieldEdges()
 					self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
 					if isField then
 						self:setSingleFieldEdgePath(initObject, x, z, self.scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
+						--courseGenerator.findIslands( self.fieldData[ fieldNum ])
 					end;
 
 					self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
@@ -658,19 +659,25 @@ end;
 function courseplay.fields.saveAllFields()
 	if g_server ~= nil and CpManager.cpCoursesFolderPath ~= nil then
 		local fileName = createXMLFile("cpFields", CpManager.cpCoursesFolderPath .. "/cpFields.xml", "CPFields");
-    print( CpManager.cpCoursesFolderPath .. "/cpFields.xml")
+		print( "Saving all fields to " .. CpManager.cpCoursesFolderPath .. "/cpFields.xml")
 		if fileName and fileName ~= 0 then
 			local fieldIndex = 0;
 			for _,fieldData in pairs(courseplay.fields.fieldData) do
-        print( fieldIndex )
-        local key = ("CPFields.field(%d)"):format(fieldIndex);
-        setXMLInt(fileName, key .. '#fieldNum',	fieldData.fieldNum);
-        setXMLInt(fileName, key .. '#numPoints',	fieldData.numPoints);
-        for i,point in ipairs(fieldData.points) do
-          setXMLString(fileName, key .. (".point%d#pos"):format(i), ("%.2f %.2f %.2f"):format(point.cx, point.cy, point.cz))
-        end;
-
-        fieldIndex = fieldIndex + 1;
+				print( "Saving field " .. fieldData.fieldNum .. "..." )
+				local key = ("CPFields.field(%d)"):format(fieldIndex);
+				setXMLInt(fileName, key .. '#fieldNum',	fieldData.fieldNum);
+				setXMLInt(fileName, key .. '#numPoints',	fieldData.numPoints);
+				for i,point in ipairs(fieldData.points) do
+					setXMLString(fileName, key .. (".point%d#pos"):format(i), ("%.2f %.2f %.2f"):format(point.cx, point.cy, point.cz))
+				end;
+				if not fieldData.islandNodes then
+					courseGenerator.findIslands( fieldData )
+				end
+				for i, islandNode in ipairs( fieldData.islandNodes ) do
+					setXMLString( fileName, key .. ( ".islandNode%d#pos"):format( i ), ("%.2f %2.f"):format( islandNode.cx, islandNode.cz ))
+				end
+				
+				fieldIndex = fieldIndex + 1;
 			end;
 
 			saveXMLFile(fileName);

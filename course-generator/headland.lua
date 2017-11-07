@@ -12,7 +12,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
   -- recursion limit
   if currentOffset == 0 then 
     n = 1
-    courseGenerator.debug( string.format( "Generating headland track with offset %.2f", targetOffset ))
+    courseGenerator.debug( "Generating headland track with offset %.2f", targetOffset )
   else
     n = n + 1
   end
@@ -21,7 +21,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
   -- also, make sure there's a minimum (for example when we are generating a dummy headland with 0 offset
   local recursionLimit = math.max( math.floor( targetOffset * 20 ), 200 )
   if n > recursionLimit then 
-    courseGenerator.debug( string.format( "Recursion limit of %d reached for headland generation", recursionLimit ))
+    courseGenerator.debug( "Recursion limit of %d reached for headland generation", recursionLimit )
     -- this will throw an exception but that's better than silently generating wrong tracks
     return nil
   end
@@ -32,7 +32,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
   -- this can be ensured by choosing an offset small enough
   local deltaOffset = polygon.shortestEdgeLength / 8
 
-  -- courseGenerator.debug( string.format( "** Before target=%.2f, current=%.2f, delta=%.2f, target-current=%.2f", targetOffset, currentOffset, deltaOffset, targetOffset - currentOffset ))
+  -- courseGenerator.debug( "** Before target=%.2f, current=%.2f, delta=%.2f, target-current=%.2f", targetOffset, currentOffset, deltaOffset, targetOffset - currentOffset )
   if currentOffset >= targetOffset then return polygon end
 
   deltaOffset = math.min( deltaOffset, targetOffset - currentOffset )
@@ -42,7 +42,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
     deltaOffset = -deltaOffset
   end
 
-  -- courseGenerator.debug( string.format( "** After target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset))
+  -- courseGenerator.debug( "** After target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset)
   local offsetEdges = {} 
   for i, point in ipairs( polygon ) do
     local newEdge = {} 
@@ -150,7 +150,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
           fromIndex, toIndex = getIntersectionOfLineAndPolygon( field.headlandTracks[ i + 1 ], startLocation, 
                                addPolarVectorToPoint( startLocation, h, distance ))
           if fromIndex then
-            courseGenerator.debug( string.format( "Linked headland track %d to next track, heading %.1f, distance %.1f, inwardAngle = %d", i, math.deg( h ), distance, inwardAngle ))
+            courseGenerator.debug( "Linked headland track %d to next track, heading %.1f, distance %.1f, inwardAngle = %d", i, math.deg( h ), distance, inwardAngle )
             break
           end
         end
@@ -158,7 +158,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
       if fromIndex then
         break
       else
-        courseGenerator.debug( string.format( "Could not link headland track %d to next track at distance %.2f", i, distance ))
+        courseGenerator.debug( "Could not link headland track %d to next track at distance %.2f", i, distance )
       end
     end
   end

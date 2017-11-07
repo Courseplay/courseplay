@@ -1195,6 +1195,10 @@ function courseplay:toggleHeadlandOrder(vehicle)
 	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 
+function courseplay:toggleBypassIslands(vehicle)
+	vehicle.cp.bypassIslands = not vehicle.cp.bypassIslands;
+end;
+
 function courseplay:changeHeadlandTurnType( vehicle )
   if vehicle.cp.headland.numLanes > 0 then 
     vehicle.cp.headland.turnType = vehicle.cp.headland.turnType + 1
