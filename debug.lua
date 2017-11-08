@@ -20,6 +20,7 @@ function CpManager:setUpDebugChannels()
 			defaultActive[4] = true;
 			defaultActive[7] = true;
 			defaultActive[9] = true;
+			defaultActive[6] = true;
 		end;
 	end;
 
@@ -81,6 +82,7 @@ function CpManager:setUpDebugChannels()
 
 		courseplay.debugButtonPosData[i] = data;
 	end;
+	
 end;
 
 --------------------------------------------------
@@ -88,10 +90,21 @@ end;
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
-    local seconds = courseplay.clock / 1000
+    	local seconds = courseplay.clock / 1000
 		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. string.format( "%.3f", seconds ) .. ' s] ' .. str);
 	end;
 end;
+
+-- convenience debug function to show the vehicle name and expects string.format() arguments, 
+-- courseplay.debugVehicle( 14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
+function courseplay.debugVehicle( channel, vehicle, ... )
+	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+		local seconds = courseplay.clock / 1000
+		local vehicleName = vehicle and nameNum( vehicle ) or "Uknown vehicle"		
+		print( string.format( '[dbg%d lp%d %.3f s] %s: ', 
+			tostring( channel ), g_updateLoopIndex, seconds,vehicleName ) .. string.format( ... ))
+	end
+end
 
 local lines = {
 	('-'):rep(50),

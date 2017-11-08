@@ -186,6 +186,7 @@ function courseplay.hud:setup()
 		[self.PAGE_COMBINE_CONTROLS] = {
 			[4] = self.basePosX + self:pxToNormal(407, 'x');
 			[5] = self.basePosX + self:pxToNormal(407, 'x');
+			[7] = self.basePosX + self:pxToNormal(407, 'x');
 		};
 		[self.PAGE_GENERAL_SETTINGS] = {
 			[4] = self.basePosX + self:pxToNormal(240, 'x');
@@ -676,6 +677,8 @@ function courseplay.hud:loadPage(vehicle, page)
 				vehicle.cp.hud.content.pages[0][5][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');
 				vehicle.cp.hud.content.pages[0][5][2].text = combine.cp.stopWhenUnloading and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 			end;
+			vehicle.cp.hud.content.pages[0][7][1].text = courseplay:loc('COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE')
+			vehicle.cp.hud.content.pages[0][7][2].text = courseplay:loc( courseplay.headlandReverseManeuverTypeText[ vehicle.cp.headland.reverseManeuverType ])
 		end;
 
 		-- no courseplayer!
@@ -1496,7 +1499,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- ##################################################
 	-- Page 0: Combine controls
 	for i=1, self.numLines do
-		courseplay.button:new(vehicle, 0, nil, "rowButton", i, self.basePosX, self.linesPosY[i], self.contentMaxWidth, self.lineHeight, i, nil, true);
+		if ( i == 7 ) then
+			courseplay.button:new(vehicle, 0, nil, 'changeHeadlandReverseManeuverType', nil, self.col1posX, self.linesPosY[i], self.contentMaxWidth, self.lineHeight, i, nil, true);
+		else
+			courseplay.button:new(vehicle, 0, nil, "rowButton", i, self.basePosX, self.linesPosY[i], self.contentMaxWidth, self.lineHeight, i, nil, true);
+		end
 	end;
 
 

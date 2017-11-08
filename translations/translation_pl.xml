@@ -179,6 +179,9 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Gładko" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Obrót" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Kółko" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Manewr zawracania na uwrociach"/>			
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="prosto" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="po łuku" />
 		<text name="COURSEPLAY_ACTIVATED"								 text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Tylko nazwa" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nazwa i Kurs" />

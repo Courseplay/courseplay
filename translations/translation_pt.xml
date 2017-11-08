@@ -175,6 +175,9 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> <!-- TRANSLATE THIS -->
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="ligado" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Só o nome" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nome e percurso" />

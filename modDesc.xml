@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00016</version>
+	<version>5.02.00024</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -23,6 +23,7 @@
 	
 	<changeLog><![CDATA[
 
+	- added support for sprayer Addon (with the friendly support of David FONTAINE)
 	- added combine convoy option
 	- added option to align to 1st waypoint in mode 2, 4 and 6
 	- added easy setup for multiple tools  on one field work course
@@ -64,7 +65,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 
 		<it>
 <![CDATA[
-Courseplay è una modifica per Farming Simulator 17. Permette di avere molti veicoli diversi che guidano autonomamente, svolgno lavori sui campi, scaricano trebbie, trasferisono i raccolti ai punti di venita, riempono bunker o rimorchi con la benna, livellano e compattano insilato e molto altro...
+Courseplay è una modifica per Farming Simulator 17. Permette di avere molti veicoli diversi che guidano autonomamente, svolgono lavori sui campi, scaricano trebbie, trasferiscono i raccolti ai punti di venita, riempono bunker o rimorchi con la benna, livellano e compattano insilato e molto altro...
 ]]></it>
 		<jp>
 <![CDATA[

@@ -181,7 +181,21 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 						end;
 					end; --END if not isFolding
 				end
-
+				
+				--Sprayer Addon Support
+				if workTool.sectionControlActive then
+					if workTool:getCurrentMode() ~= 4 then
+						workTool:changeMode(4, true);
+					end
+					if workTool:getIsUnfolded() and workTool.getIsTurnedOn ~= nil and workTool:getIsTurnedOn() and #workTool.sections > 0 then
+						for index, section in pairs(workTool.sections) do
+							if workTool:checkIfAreaSprayed(index) == section.activated then
+								workTool:toggleSection(index, section.activated);
+							end;
+						end;
+					end;
+				end;
+				
 				--DRIVINGLINE SPEC
 				if workTool.cp.hasSpecializationDrivingLine and not workTool.manualDrivingLine then
 					local curLaneReal = self.Waypoints[self.cp.waypointIndex].laneNum;
