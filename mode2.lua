@@ -880,7 +880,7 @@ function courseplay:unload_combine(vehicle, dt)
 						vehicle.cp.chopperIsTurning = true
 	
 					else --i'm right of choppper
-						if vehicle.cp.isReversePossible  and not autoCombineCircleMode and combine.cp.forcedSide == nil then
+						if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTool == 1 then
 							courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right. Turning the New Way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							local verticalWaypointShift = courseplay:getWaypointShift(vehicle,tractor)
@@ -906,7 +906,7 @@ function courseplay:unload_combine(vehicle, dt)
 						courseplay:addNewTargetVector(vehicle, 2*turnDiameter,     turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					else -- I'm left of chopper
-						if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil then
+						if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTool == 1 then
 							courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left. Turning the new way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							local verticalWaypointShift = courseplay:getWaypointShift(vehicle,tractor)
