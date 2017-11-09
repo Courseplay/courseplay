@@ -25,6 +25,7 @@
 
 	- added support for sprayer Addon (with the friendly support of David FONTAINE)
 	- added combine convoy option
+	- turn maneuver for headland corners to avoid missing fruit
 	- added option to align to 1st waypoint in mode 2, 4 and 6
 	- added easy setup for multiple tools  on one field work course
 	- Bugfixes
