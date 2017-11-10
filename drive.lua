@@ -1850,7 +1850,7 @@ function courseplay:setCollisionDirection(node, col, colDirX, colDirZ)
 	if parent ~= node then
 		colDirX, colDirY, colDirZ = worldDirectionToLocal(parent, localDirectionToWorld(node, colDirX, 0, colDirZ))
 	end
-	if not (colDirX == 0 and colDirZ == 0) then
+	if not ( math.abs( colDirX ) < 0.001 and math.abs( colDirZ ) < 0.001 ) then
 		setDirection(col, colDirX, colDirY, colDirZ, 0, 1, 0);
 	end;
 end;
