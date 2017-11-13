@@ -200,7 +200,7 @@
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="ПОЗИЦИИ КОВША" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Не установлены позиции ковша " />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 				 text="Не установлены позиции ковша" />
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 				 text="Загрузка" />
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text="Транспортировка" />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text="Предразгрузка" />
@@ -296,7 +296,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: предыдущий тип работы" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: 1-я функция мыши" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: 2-я функция мыши" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: поместить в log марке отладки" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="показать курсор" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="скрыть курсор" />
 	
