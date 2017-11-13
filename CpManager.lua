@@ -276,6 +276,12 @@ function CpManager:update(dt)
 			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 		end;
 	end;
+
+	-- add a debug marker to the log file when Left Alt-D pressed
+	if  InputBinding.hasEvent( InputBinding.COURSEPLAY_DEBUG_MARKER ) then
+		courseplay.logDebugMarker()
+	end
+
 end;
 
 function CpManager:draw()

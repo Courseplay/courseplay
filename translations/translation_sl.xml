@@ -296,6 +296,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: prejšnji način" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: akcija miške" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: druga akcija miške" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="prikaži miškin kazalec" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="skrij miškin kazalec" />
 	

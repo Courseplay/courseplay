@@ -295,6 +295,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo precedente" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: azione del mouse" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: azione secondaria del mouse" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mostra cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Nascondi cursore" />
 

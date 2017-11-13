@@ -295,6 +295,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: voriger Modus" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: Maus-Aktion" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: sekundäre Maus-Aktion" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mauszeiger anzeigen" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Mauszeiger verstecken" />
 		

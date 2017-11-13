@@ -290,6 +290,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="CP: modo anterior" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="CP: acción del ratón" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="CP: acción secundaria del ratón" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar el cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="ocultar el cursor" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Cargar ruta/combinarla con la ruta cargada" />

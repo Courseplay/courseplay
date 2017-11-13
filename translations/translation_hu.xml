@@ -287,6 +287,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Vezetősegéd: Előző művelet" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Vezetősegéd: Egér activálás" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Vezetősegéd: Másodlagos egér aktiválás" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Egérkurzor megjelenítése" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Egérkurzor elrejtése" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Útvonal betöltése/hozzáfűzés a betöltött útvonalhoz" />

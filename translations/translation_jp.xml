@@ -296,6 +296,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="コースプレイ: 前のモード" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="コースプレイ: 左クリック" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="コースプレイ: 右クリック" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="マウスカーソルを表示" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="マウスカーソルを非表示" />
 	

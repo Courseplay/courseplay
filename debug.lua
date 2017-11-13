@@ -90,8 +90,9 @@ end;
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+		local timestamp = getDate( "%H:%M:%S")
     	local seconds = courseplay.clock / 1000
-		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. string.format( "%.3f", seconds ) .. ' s] ' .. str);
+		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. timestamp .. '] ' .. str);
 	end;
 end;
 
@@ -100,10 +101,19 @@ end;
 function courseplay.debugVehicle( channel, vehicle, ... )
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local seconds = courseplay.clock / 1000
-		local vehicleName = vehicle and nameNum( vehicle ) or "Uknown vehicle"		
-		print( string.format( '[dbg%d lp%d %.3f s] %s: ', 
-			tostring( channel ), g_updateLoopIndex, seconds,vehicleName ) .. string.format( ... ))
+		local timestamp = getDate( "%H:%M:%S")
+		local vehicleName = vehicle and nameNum( vehicle ) or "Unknown vehicle"		
+		print( string.format( '[dbg%d lp%d %s] %s: ', 
+			tostring( channel ), g_updateLoopIndex, timestamp,vehicleName ) .. string.format( ... ))
 	end
+end
+
+-- add a debug marker to the log file when Left Alt-D is pressed. This is to mark 
+-- issues in the log file so developers can find relevant log entries easier.
+function courseplay.logDebugMarker()
+	local timestamp = getDate( "%H:%M:%S")
+	print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp, 
+		g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
 end
 
 local lines = {
