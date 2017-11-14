@@ -172,12 +172,12 @@
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
 		<text name="COURSEPLAY_GENERATE_HEADLAND_TURNS"  				 text="Buitenrand bochten" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Vloeiend" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Scherp" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Rond" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> <!-- TRANSLATE THIS -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Buitenrand vloeiend" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Buitenrand scherp" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Buitenrand rond" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Buitenrand tegengestelde beweging"/>  
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="rechtuit" /> 
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="bocht" /> 
 		<text name="COURSEPLAY_ACTIVATED" 								 text="geactiveerd" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="alleen Naam" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Naam en Route" />
