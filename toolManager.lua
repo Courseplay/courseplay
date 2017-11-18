@@ -29,6 +29,7 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
 	vehicle.cp.hasAugerWagon = false;
+	vehicle.cp.hasSugarCaneAugerWagon = false;
 	vehicle.cp.hasFertilizerSowingMachine = nil;
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 
@@ -212,9 +213,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		if workTool.allowTipDischarge and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			if workTool.cp.isAugerWagon then
-				vehicle.cp.hasAugerWagon = true;
-			end;
 		end;
 
 	-- MODE 3: AUGERWAGON
@@ -222,7 +220,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		if workTool.cp.isAugerWagon then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			vehicle.cp.hasAugerWagon = true;
 		end
 
 	-- MODE 4: FERTILIZER AND SEEDING
@@ -329,6 +326,15 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	if workTool.sprayer ~= nil and workTool.sowingMachine ~= nil then
 				vehicle.cp.hasFertilizerSowingMachine = true;
 	end
+	
+	--belongs to mode3 but should be considered even if the mode is not set correctely
+	if workTool.cp.isAugerWagon then
+		vehicle.cp.hasAugerWagon = true;
+		if workTool.cp.isSugarCaneAugerWagon then
+			vehicle.cp.hasSugarCaneAugerWagon = true
+		end
+	end;
+	
 	
 	vehicle.cp.hasWaterTrailer = hasWaterTrailer
 	

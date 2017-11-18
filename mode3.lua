@@ -4,7 +4,7 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 	local backPointsUnfoldPipe = 8; --[[workTool.cp.backPointsUnfoldPipe or 8;]] --NOTE: backPointsUnfoldPipe must not be 0! 
 	local forwardPointsFoldPipe = workTool.cp.forwardPointsFoldPipe or 2;
 	local fillLevelPct = workTool.cp.fillLevelPercent
-	workTool.cp.isUnloading = workTool.cp.fillLevel < workTool.cp.lastFillLevel;
+	workTool.cp.isUnloading = workTool.cp.fillLevel < workTool.cp.lastFillLevel or workTool.cp.isSugarCaneUnloading;
 
 	if workTool.cp.isAugerWagon then
 		if vehicle.cp.wait and vehicle.cp.previousWaypointIndex >= math.max(vehicle.cp.waitPoints[1] - backPointsUnfoldPipe, 2) and vehicle.cp.previousWaypointIndex < vehicle.cp.waitPoints[1] and not workTool.cp.isUnloading then
@@ -17,7 +17,10 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 			local driveOn = false
 			if fillLevelPct > 0 then
 				courseplay:handleAugerWagon(vehicle, workTool, true, true, "unload",dt); --unfold=true, unload=true
+			elseif workTool.cp.isSugarCaneUnloading then -- used for sugarCane overloader to fold completely before driving on
+				courseplay:handleAugerWagon(vehicle, workTool, true, false, "unload",dt); --unfold=true, unload=false
 			end;
+			
 			if vehicle.cp.prevFillLevelPct ~= nil then
 				if fillLevelPct > 0 and workTool.cp.isUnloading then
 					courseplay:setCustomTimer(vehicle, "fillLevelChange", 10);
@@ -28,7 +31,7 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 			end;
 
 			vehicle.cp.prevFillLevelPct = fillLevelPct;
-
+			
 			if (fillLevelPct == 0 or driveOn) and not workTool.cp.isUnloading then
 				courseplay:handleAugerWagon(vehicle, workTool, true, false, "stopUnload",dt); --unfold=true, unload=false
 				courseplay:cancelWait(vehicle);
@@ -59,6 +62,7 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 	end;
 
 	workTool.cp.lastFillLevel = workTool.cp.fillLevel;
+
 end;
 
 
@@ -68,8 +72,36 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 	local pipeOrderExists = unfold ~= nil;
 	local unloadOrderExists = unload ~= nil;
 
+	if workTool.cp.isSugarCaneAugerWagon then 
+		local movingTools = workTool.movingTools
+		if unload then
+			workTool.cp.isSugarCaneUnloading = true
+			local targetPositions = { 	rot = { [1] = 0},
+										trans = { [1] = movingTools[1].transMax }
+									}
+			if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,1) then
+				local targetPositions = { 	rot = { [1] = movingTools[2].rotMin},
+										trans = { [1] = 0 }
+									}
+				courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,2)
+			end
+		else
+			local targetPositions = { 	rot = { [1] = movingTools[2].rotMax},
+										trans = { [1] = 0 }
+									}
+			if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,2) then
+				local targetPositions = { 	rot = { [1] = 0},
+										trans = { [1] = movingTools[1].transMin }
+									}
+				if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,1) then
+					workTool.cp.isSugarCaneUnloading = nil
+				end
+			end
+		end
+	
+	
 	--Taarup Shuttle
-	if workTool.cp.isTaarupShuttle then
+	elseif workTool.cp.isTaarupShuttle then
 		if pipeOrderExists then
 			if unfold and workTool.animationParts[1].clipStartTime then
 				workTool:setAnimationTime(1, workTool.animationParts[1].animDuration, false);
@@ -219,5 +251,3 @@ function courseplay:getPipesRotation(vehicle)
 		end
 	end
 end		
-
-

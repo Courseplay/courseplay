@@ -361,8 +361,9 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 	for i=1,#targetRotations do
 		local mt, mtMainObject;
 		if fixIndex then
-			rotAxis = 3
 			mt = movingTools[fixIndex];
+			rotAxis = mt.rotationAxis
+			transAxis = mt.translationAxis
 			mtMainObject = vehicle
 		else
 			if i <= numPrimaryMovingTools then

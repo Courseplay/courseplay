@@ -265,10 +265,13 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'bigBud747.xml' then
 		workTool.cp.overwriteTurnRadius = 9;
 
-
+	
 	-- ###########################################################
 	-- [3] TRAILERS
-
+	-- platinum edition sugar cane overloaders
+	elseif workTool.cp.xmlFileName == 'canaTrans600.xml' or workTool.cp.xmlFileName == 'doblettColosus10000.xml' or workTool.cp.xmlFileName == 'mf3012.xml'  then
+		workTool.cp.isAugerWagon = true
+		workTool.cp.isSugarCaneAugerWagon = true
 
 	-- ###########################################################
 	-- [4] FERTILIZER EQUIPMENT

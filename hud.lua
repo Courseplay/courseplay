@@ -744,7 +744,7 @@ function courseplay.hud:loadPage(vehicle, page)
 					end;
 				end;
 
-				if vehicle.cp.hasAugerWagon and (vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) then
+				if vehicle.cp.hasAugerWagon and not vehicle.cp.hasSugarCaneAugerWagon and (vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) then
 					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_SAVE_PIPE_POSITION');
 					if vehicle.cp.pipeWorkToolIndex ~= nil then
 						vehicle.cp.hud.content.pages[1][4][2].text = 'OK';

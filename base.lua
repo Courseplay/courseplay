@@ -161,6 +161,7 @@ function courseplay:load(savegame)
 	self.cp.saveFuel = false;
 	self.cp.saveFuelOptionActive = true;
 	self.cp.hasAugerWagon = false;
+	self.cp.hasSugarCaneAugerWagon = false
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
