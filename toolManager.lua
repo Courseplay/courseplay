@@ -179,7 +179,7 @@ function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
 	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
 end;
 function courseplay:isSpecialChopper(workTool)
-	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5
+	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5 or workTool.cp.isTraileredChopper
 end
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
 	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00028</version>
+	<version>5.02.00029</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -29,6 +29,7 @@
 	- turn maneuver for headland corners to avoid missing fruit
 	- added option to align to 1st waypoint in mode 2, 4 and 6
 	- added easy setup for multiple tools  on one field work course
+	- support for Plantium Edition(Still Work In Progress)
 	- Bugfixes
 	
 	

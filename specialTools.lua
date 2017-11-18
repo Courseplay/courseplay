@@ -138,6 +138,7 @@ function courseplay:setNameVariable(workTool)
 	-- workTool.cp.implementWheelAlwaysOnGround:	(Boolean)				Implements that have the topReferenceNode set, but still have the wheels on the ground all the time.
 	-- workTool.cp.realTurnNodeOffsetZ:				(Distance in meters)	If real turning node is not calculated corectly, we can add an manual offset z to it.
 	--																		Positive value, moves it forward, Negative value moves it backwards.
+	-- workTool.cp.isTraileredChopper				(Boolean)				Allows Foragehavesters that are towed to be propely recoginzed by CP
 	-- TODO: Add description for all the special varialbes that is usable here.
 	-- ###########################################################
 
@@ -234,6 +235,13 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'poettingerMex5.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isPoettingerMex5 = true;
+	
+	-- SWT7 [Giants DLC]
+	elseif workTool.cp.xmlFileName == 'lizardSWT7.xml' then
+		workTool.cp.isTraileredChopper = true;
+		workTool.cp.notToBeReversed = true;
+		workTool.cp.overwriteTurnRadius = 9;
+		workTool.cp.isSWT7 = true;
 		
 
 	-- ###########################################################
@@ -795,6 +803,9 @@ function courseplay:askForSpecialSettings(self, object)
 
 	elseif object.cp.isBednarSM18000 then
 		object.cp.backMarkerOffsetCorection = -3.25;
+		
+	elseif object.cp.isSWT7 then
+		automaticToolOffsetX = -2.2;
 
 	end;
 
