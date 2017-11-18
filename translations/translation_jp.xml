@@ -175,7 +175,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="自動" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="まくら地" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="オブジェクトをさける" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="スムース" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="ターン" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="ラウンド" />
@@ -296,7 +296,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="コースプレイ: 前のモード" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="コースプレイ: 左クリック" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="コースプレイ: 右クリック" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="コースプレイ: ログにデバグマーカーを配置する" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="マウスカーソルを表示" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="マウスカーソルを非表示" />
 	
