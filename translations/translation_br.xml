@@ -175,7 +175,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" /> 
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabeceira" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="ignorar objetos na rota" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"              text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"               text="Virar" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"               text="Virar" />
@@ -265,7 +265,7 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Parar marcha ré" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Adicionar pontos de divisão" /> 
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icones do mapa: Mostrar texto" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Configuração do controle de direção" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automático" /> 
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4X4 Permanente" /> 
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4X4 Permanente &amp; Diferencial na frente ligado" /> 
@@ -296,7 +296,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo anterior" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: ações do mouse" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: ações secundárias do mouse" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" /> 
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: colocar debug do marcador no log" /> 
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar cursor do mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="ocultar cursor do mouse" />
 	
