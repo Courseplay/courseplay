@@ -30,6 +30,7 @@ function courseplay:resetTools(vehicle)
 	-- are there any tippers?
 	vehicle.cp.hasAugerWagon = false;
 	vehicle.cp.hasSugarCaneAugerWagon = false;
+	vehicle.cp.hasSugarCaneTrailer = false
 	vehicle.cp.hasFertilizerSowingMachine = nil;
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 
@@ -334,7 +335,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.hasSugarCaneAugerWagon = true
 		end
 	end;
-	
+	if workTool.cp.isSugarCaneTrailer then
+		vehicle.cp.hasSugarCaneTrailer = true
+	end
 	
 	vehicle.cp.hasWaterTrailer = hasWaterTrailer
 	
@@ -917,7 +920,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 			local trailerInTipRange = false
 			if not isBGA then
 				trailerInTipRange =  g_currentMission:getIsTrailerInTipRange(tipper, ctt, bestTipReferencePoint);
-				courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
+				courseplay:debug(('%s: distanceToTrigger=%s, bestTipReferencePoint=%s -> trailerInTipRange=%s'):format(nameNum(tipper), tostring(distanceToTrigger), tostring(bestTipReferencePoint), tostring(trailerInTipRange)), 2);
 			end
 			
 			local goForTipping = false;
@@ -957,7 +960,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 				local ex, ey, ez = worldToLocal(ctt.triggerEndId, x, y, z);
 				local startDistance = Utils.vector2Length(sx, sz);
 				local endDistance = Utils.vector2Length(ex, ez);
-				courseplay:debug(('%s: startDistance=%s, endDistance=%s -> trailerInTipRange=%s'):format(nameNum(vehicle), tostring(startDistance), tostring(endDistance), tostring(trailerInTipRange)), 2);
+				courseplay:debug(('%s: startDistance=%s, endDistance=%s -> trailerInTipRange=%s'):format(nameNum(tipper), tostring(startDistance), tostring(endDistance), tostring(trailerInTipRange)), 2);
 				--stop if we are not empty but near the end of the trigger
 				if 	tipper.cp.isTipping and (endDistance <1 or startDistance <1) then
 					allowedToDrive = false;
@@ -1004,7 +1007,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						local refSpeed = meterPrSeconds * 3.6; -- * 0.90;
 						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.reverse;
 						courseplay:changeReverseSpeed(vehicle, nil, refSpeed, true);
-						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed), 2);
+						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(tipper), totalLength, totalTipDuration, refSpeed), 2);
 						--print(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed));
 					end;
 				end;
@@ -1032,7 +1035,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 
 						local unloadDistance = courseplay:distance(trailerX, trailerZ, triggerX, triggerZ) 
 
-						courseplay:debug(string.format('%s: unloadDistance = %.2f tipper.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(tipper.cp.prevTrailerDistance)), 2);
+						courseplay:debug(string.format('%s: unloadDistance = %.2f tipper.cp.trailerFillDistance = %.4s', nameNum(tipper), unloadDistance, tostring(tipper.cp.prevTrailerDistance)), 2);
 						goForTipping = trailerInTipRange and tipper.cp.prevTrailerDistance and tipper.cp.prevTrailerDistance < unloadDistance
 						tipper.cp.prevTrailerDistance = unloadDistance 
 						
@@ -1057,16 +1060,16 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 				--print("ctt.acceptedFillTypes[fillType] and goForTipping == true; tipper.cp.isTipping= "..tostring(tipper.cp.isTipping))
 				if not tipper.cp.isTipping then
 					if isBGA then
-						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
+						courseplay:debug(nameNum(tipper) .. ": goForTipping = true [BGA trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
 					else
-						courseplay:debug(nameNum(vehicle) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
+						courseplay:debug(nameNum(tipper) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
 					end;
 
 					if tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING then
 						local isNearestPoint = false
-						if distanceToTrigger > tipper.cp.closestTipDistance then
+						if courseplay:round(distanceToTrigger, 1) > courseplay:round(tipper.cp.closestTipDistance, 1) then
 							isNearestPoint = true
-							courseplay:debug(nameNum(vehicle) .. ": isNearestPoint = true ", 2);
+							courseplay:debug(nameNum(tipper) .. ": isNearestPoint = true ", 2);
 						else
 							tipper.cp.closestTipDistance = distanceToTrigger
 						end
@@ -1081,11 +1084,11 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 							else	
 								tipper:toggleTipState(ctt, bestTipReferencePoint);
 							end
-							courseplay:debug(nameNum(vehicle)..": toggleTipState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper.name), 2);
+							courseplay:debug(nameNum(tipper)..": toggleTipState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper.name), 2);
 						end
 					else
 						tipper.cp.isTipping = true;
-						courseplay:debug(nameNum(vehicle)..": set isTipping", 2);
+						courseplay:debug(nameNum(tipper)..": set isTipping", 2);
 						allowedToDrive = false;
 					end;
 				else
@@ -1102,20 +1105,20 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 				end;
 			elseif not ctt.acceptedFillTypes[fillType] then
 				if isBGA then
-					courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [BGA trigger does not accept fruit (" .. tostring(fillType) .. ")]", 2);
+					courseplay:debug(nameNum(tipper) .. ": goForTipping = false [BGA trigger does not accept fruit (" .. tostring(fillType) .. ")]", 2);
 				else
-					courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [trigger does not accept fruit (" .. tostring(fillType) .. ")]", 2);
+					courseplay:debug(nameNum(tipper) .. ": goForTipping = false [trigger does not accept fruit (" .. tostring(fillType) .. ")]", 2);
 				end;
 			elseif isBGA and not bgaIsFull and not trailerInTipRange and not goForTipping then
-				courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [BGA: trailerInTipRange == false]", 2);
+				courseplay:debug(nameNum(tipper) .. ": goForTipping = false [BGA: trailerInTipRange == false]", 2);
 			elseif isBGA and bgaIsFull and not goForTipping then
-				courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [BGA: fillLevel > capacity]", 2);
+				courseplay:debug(nameNum(tipper) .. ": goForTipping = false [BGA: fillLevel > capacity]", 2);
 			elseif isBGA and not goForTipping then
-				courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [BGA]", 2);
+				courseplay:debug(nameNum(tipper) .. ": goForTipping = false [BGA]", 2);
 			elseif not isBGA and not trailerInTipRange and not goForTipping then
-				courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [trailerInTipRange == false]", 2);
+				courseplay:debug(nameNum(tipper) .. ": goForTipping = false [trailerInTipRange == false]", 2);
 			elseif not isBGA and not goForTipping then
-				courseplay:debug(nameNum(vehicle) .. ": goForTipping = false [fillLevel > capacity]", 2);
+				courseplay:debug(nameNum(tipper) .. ": goForTipping = false [fillLevel > capacity]", 2);
 			end;
 		end;
 	end;
@@ -1621,4 +1624,39 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
 	end
 	return vehicle.cp.takeOverSteering
+end
+
+function courseplay:sugarCaneTrailerToggleTipstate()
+	--print(nameNum(self)..": courseplay:sugarCaneTrailerToggleTipstate() called by: "..courseplay.utils:getFnCallPath(2))
+	if self.tipState < Trailer.TIPSTATE_OPEN then
+		self.tipState = Trailer.TIPSTATE_OPENING
+	else
+		self.tipState = Trailer.TIPSTATE_CLOSING
+	end
+end
+
+function courseplay:updateSugarCaneTrailerTipping(vehicle,dt)
+	for _,tipper in pairs(vehicle.cp.workTools) do
+		if tipper.cp.isSugarCaneTrailer then
+			local movingTools = tipper.movingTools
+			if tipper.tipState == Trailer.TIPSTATE_OPENING then
+				local targetPositions = { 	rot = { [1] = movingTools[1].rotMin},
+											trans = { [1] = 0 }
+										}
+				if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,1) then
+					tipper.tipState = Trailer.TIPSTATE_OPEN
+				end
+			elseif tipper.tipState == Trailer.TIPSTATE_CLOSING then
+				local targetPositions = { 	rot = { [1] = movingTools[1].rotMax},
+											trans = { [1] = 0 }
+										}
+				if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,1) then
+					tipper.tipState = Trailer.TIPSTATE_CLOSED
+				end
+			end
+			if tipper.tipState == Trailer.TIPSTATE_OPEN and tipper:getFillLevel() == 0 then
+				tipper.tipState = Trailer.TIPSTATE_CLOSING
+			end
+		end
+	end	
 end

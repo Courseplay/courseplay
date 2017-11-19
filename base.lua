@@ -162,6 +162,7 @@ function courseplay:load(savegame)
 	self.cp.saveFuelOptionActive = true;
 	self.cp.hasAugerWagon = false;
 	self.cp.hasSugarCaneAugerWagon = false
+	self.cp.hasSugarCaneTrailer = false
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
@@ -1046,6 +1047,10 @@ function courseplay:update(dt)
 		end;
 	end;
 	
+	--sugarCaneTrailer update tipping function
+	if self.cp.hasSugarCaneTrailer then
+		courseplay:updateSugarCaneTrailerTipping(self,dt)
+	end
 	
 end; --END update()
 

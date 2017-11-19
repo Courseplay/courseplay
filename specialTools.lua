@@ -160,7 +160,7 @@ function courseplay:setNameVariable(workTool)
 		-- ###########################################################
 
 	-- [3] MOD TRAILERS
-
+	
 
 	-- ###########################################################
 
@@ -287,6 +287,20 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isAugerWagon = true
 		workTool.cp.isSugarCaneAugerWagon = true
 
+	elseif workTool.cp.xmlFileName ==  'randonCanavieiroSemi.xml' or workTool.cp.xmlFileName ==  'randonCanavieiro.xml' then
+		workTool.cp.isSugarCaneTrailer = true
+		if workTool.tipReferencePoints == nil then
+			workTool.tipReferencePoints = {[1]= {["zOffset"] = 0,
+												 ["width"] = 3,
+												 ["node"] = workTool.rootNode,
+												 ["maxZOffset"] = 2
+												} 
+										  }
+			workTool.toggleTipState = courseplay.sugarCaneTrailerToggleTipstate
+			workTool.tipState = Trailer.TIPSTATE_CLOSED
+			workTool.couldNotDropTimer = 0 --TODO add couldNotDropTimer function in :updateSugarCaneTrailerTipping()
+			workTool.allowTipDischarge = true
+		end
 	-- ###########################################################
 	-- [4] FERTILIZER EQUIPMENT
 	-- Zunhammer TV [Giants Mod: Holmer Pack]
