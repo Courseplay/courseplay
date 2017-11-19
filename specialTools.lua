@@ -193,6 +193,7 @@ function courseplay:setNameVariable(workTool)
 	-- [7] MOD OTHER TOOLS
 	elseif workTool.cp.xmlFileName == 'kuhnTF1500.xml' then
 		workTool.cp.isKuhnTF1500 = true;
+		workTool.cp.specialWorkWidth = 0;
 	-- ###########################################################
 	-- END OF MODS
 	-- ###########################################################
@@ -221,20 +222,33 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHolmerTerraFelis2 = true;
 		workTool.cp.isSugarBeetLoader = true
 
+	elseif workTool.cp.xmlFileName ==  'CaseIHA8800MR.xml' then
+		workTool.cp.isCaseIHA8800MR = true;
+		workTool.cp.fixedCombineOffset = 5.3
+		workTool.cp.fixedChopperOffset = 5.3
+		workTool.cp.turnDiameterAutoMode = false
+		workTool.cp.turnDiameter = 17
+		
 	-- Harvesters (attachable) [Giants]
 	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
 		workTool.cp.notToBeReversed = true;
+		workTool.cp.fixedCombineOffset = -4.5
+		workTool.cp.fixedChopperOffset = -4.5
+		workTool.cp.specialWorkWidth = 2.9
 	
 	elseif workTool.cp.xmlFileName == 'grimmeSE260.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
 		workTool.cp.notToBeReversed = true;
+		workTool.cp.specialWorkWidth = 1.6
 		
 	elseif workTool.cp.xmlFileName == 'poettingerMex5.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isPoettingerMex5 = true;
+		workTool.cp.fixedCombineOffset = 5.5
+		workTool.cp.fixedChopperOffset = 5.5
 	
 	-- SWT7 [Giants DLC]
 	elseif workTool.cp.xmlFileName == 'lizardSWT7.xml' then
@@ -397,6 +411,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.implementWheelAlwaysOnGround = true;
 		workTool.cp.overwriteTurnRadius = 6;
+		workTool.cp.specialWorkWidth = 10.5
 
 	-- Kuhn Discolander XM52 [Giants Kuhn DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnDiscolanderXM.xml' then
@@ -830,14 +845,11 @@ end
 function courseplay:getSpecialWorkWidth(workTool)
 	local specialWorkWidth;
 	if workTool.cp then
-		if workTool.cp.isGrimmeRootster604 then
-			specialWorkWidth = 2.9;
-		elseif workTool.cp.isGrimmeSE260 then
-			specialWorkWidth = 1.6
-		elseif workTool.cp.isKuhnTF1500 then
-			specialWorkWidth = 0
-		elseif workTool.cp.isGregoireBessonSPSL9 then
-			specialWorkWidth = 10.5
+		if workTool.cp.isGrimmeRootster604 
+		or workTool.cp.isGrimmeSE260
+		or workTool.cp.isKuhnTF1500
+		or workTool.cp.isGregoireBessonSPSL9 then
+			specialWorkWidth = workTool.cp.specialWorkWidth;
 		end
 	end;
 

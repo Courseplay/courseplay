@@ -433,12 +433,11 @@ function courseplay:getSpecialCombineOffset(combine)
 		end
 	end
 	
-	if combine.cp.isGrimmeRootster604 then
-		return -4.5,-4.5;
-	elseif combine.cp.isPoettingerMex5 then
-		return 5.5, 5.5;
+	if combine.cp.isGrimmeRootster604 
+	or combine.cp.isPoettingerMex5 
+	or combine.cp.isCaseIHA8800MR then
+		return combine.cp.fixedCombineOffset,combine.cp.fixedChopperOffset;
  	end
-	
 	
 	if combine.cp.isSugarBeetLoader and combine.cp.isHolmerTerraFelis2 then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.pipeRaycastNode);
