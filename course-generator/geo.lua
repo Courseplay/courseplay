@@ -175,12 +175,12 @@ function calculatePolygonData( polygon )
       end
     end
     addToDirectionStats( directionStats, angle, length )
-    area = area + cp.x * np.y - cp.y * np.x 
+    area = area + ( cp.x * np.y - cp.y * np.x ) 
   end
-  polygon.area = area / 2
   polygon.directionStats = directionStats
   polygon.bestDirection = getBestDirection( directionStats )
   polygon.isClockwise = dAngle > 0
+  polygon.area = polygon.isClockwise and - area / 2 or area / 2
   polygon.shortestEdgeLength = shortestEdgeLength
   polygon.boundingBox = getBoundingBox( polygon )
 end
@@ -358,12 +358,46 @@ function getIntersectionOfLineAndPolygon( polygon, p1, p2 )
   -- the current point to the next
   for i, cp in ipairs( polygon ) do
     local np = polygon[ ix( i + 1 )] 
-    if getIntersection( cp.x, cp.y, np.x, np.y, p1.x, p1.y, p2.x, p2.y ) then
+    local interSectionPoint = getIntersection( cp.x, cp.y, np.x, np.y, p1.x, p1.y, p2.x, p2.y )
+    if interSectionPoint then
       -- the line between p1 and p2 intersects the vector from cp to np
-      return i, ix( i + 1 )
+      return i, ix( i + 1 ), interSectionPoint
     end
   end
   return nil, nil
+end
+
+--- Same as getIntersectionOfLineAndPolygon but returns all 
+-- intersections in a table
+function getAllIntersectionsOfLineAndPolygon( polygon, p1, p2 )
+  local ix = function( a ) return getPolygonIndex( polygon, a ) end 
+  local intersections = {}
+  -- loop through the polygon and check each vector from 
+  -- the current point to the next
+  for i, cp in ipairs( polygon ) do
+    local np = polygon[ ix( i + 1 )]
+    local intersectionPoint = getIntersection( cp.x, cp.y, np.x, np.y, p1.x, p1.y, p2.x, p2.y )
+    if intersectionPoint then
+      -- only add if this is not found already. Can happen if the p1-p2 goes right through 
+      -- a vertex of the polygon, so it getIntersection will be true for two edges of the polygon
+      local found = false
+      for i, p in ipairs( intersections ) do
+        found = getDistanceBetweenPoints( p.point, intersectionPoint ) < 0.1
+      end
+      if not found then
+        table.insert( intersections, { fromIx = i, toIx = ix( i + 1 ), point = intersectionPoint,
+          d = getDistanceBetweenPoints( p1, intersectionPoint )})
+      end
+    end
+  end
+  -- now bubble sort the intersection points by they distance from p1 so the one closest
+  -- to p1 is the first in the table
+  for i = 1, #intersections -1 do
+    if intersections[ i + 1 ].d < intersections[ i ].d then
+      intersections[ i ], intersections[ i + 1 ] = intersections[ i + 1 ], intersections[ i ]
+    end
+  end
+  return intersections
 end
 
 --- Find the points of an arc with radius r connecting to 
@@ -482,7 +516,7 @@ function createRectangularPolygon( x, y, dx, dy, step )
 end
 
 function getBoundingBox( polygon )
-  local minX, maxX, minY, maxY = 10000, -10000, 10000, -10000
+  local minX, maxX, minY, maxY = math.huge, -math.huge, math.huge, -math.huge
   for i, point in ipairs( polygon ) do
     if ( point.x < minX ) then minX = point.x end
     if ( point.y < minY ) then minY = point.y end
@@ -582,4 +616,47 @@ function lt( a, b )
   -- we are fine with one millimeter precision
   local epsilon = 0.001
   return a < ( b - epsilon )
+end
+
+--- Classes (these should all be in their own files but require does not 
+-- work in the Giants engine so all files must be explicetly loaded with source()
+-- and every single file added to courseplay.lua)
+
+-------------------------------------------------------------------------------
+--- Polygon
+
+Polygon = {}
+Polygon.__index = function( t, k )
+  if not rawget( t, k ) and type( k ) == "number" then
+    -- roll over integer indexes
+    return t[ t.getIndex( t, k )]
+  else
+    return Polygon[ k ]
+  end
+end
+
+--- Polygon constructor.
+-- Integer indices are the vertices of the polygon
+function Polygon:new( vertices )
+  local newPolygon
+  if vertices then
+    newPolygon = { table.unpack( vertices ) }
+  else
+    newPolygon = {}
+  end
+  return setmetatable( newPolygon, self )
+end
+
+--- Always return a valid index to allow iterating over
+-- the beginning or end of a closed polygon.
+function Polygon:getIndex( index )
+  if index > #self then
+    return index - #self
+  elseif index > 0 then
+    return index
+  elseif index == 0 then
+    return #self
+  else
+    return #self + index
+  end
 end

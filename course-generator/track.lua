@@ -1,4 +1,4 @@
---
+  --
 -- Functions to manipulate tracks 
 --
 --
@@ -96,6 +96,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
                                  turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes )
   field.boundingBox = getBoundingBox( field.boundary )
   calculatePolygonData( field.boundary )
+  setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
   field.headlandTracks = {}
   if nHeadlandPasses > 0 then 
     local previousTrack, startHeadlandPass, endHeadlandPass, step
@@ -163,7 +164,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
 	if returnToFirstPoint then
 	  addWpsToReturnToFirstPoint( field.course, field.boundary )	
 	end
-    calculatePolygonData( field.course )
+    calculatePolygonData( field.course ) 
     addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
   end
   -- flush STDOUT when not in the game for debugging
@@ -175,8 +176,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     field.headlandTracks = {}
   end
   if #islandNodes > 0 then
-	bypassIslands(field.course, implementWidth, islandNodes)
-  	calculatePolygonData(field.course)
+    bypassIslandNodes(field.course, implementWidth, islandNodes)
+    -- bypassIslands( field.course, implementWidth, field.islands )
+    calculatePolygonData(field.course)
   end
 end
 
@@ -315,7 +317,7 @@ local function moveWaypointUntilFarEnoughFromIslands( wayPoint, angle, islandNod
 end
 
 --- Attempt to bypass (smaller) islands in the field.
-function bypassIslands( course, width, islandNodes )
+function bypassIslandNodes( course, width, islandNodes )
 	-- current bypass direction. Needed so once we divert to a direction (left or right) then
 	-- we stay on that side of the obstacle until we finish bypassing
 	local bypassDirection = "None"
@@ -343,4 +345,24 @@ function bypassIslands( course, width, islandNodes )
 			bypassDirection = "None"
  		end
 	end
+end
+  
+function bypassIslands( course, width, islands )
+  for _, island in ipairs( islands ) do
+    island:bypass( course )
+  end  
+end 
+-- set up all island related data for the field  
+function setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
+  field.islandPerimeterNodes = Island.getIslandPerimeterNodes( field.islandNodes )
+  field.origIslandPerimeterNodes = deepCopy( field.islandPerimeterNodes )
+  field.islands = {}
+  local islandId = 1
+  while #field.islandPerimeterNodes > 0 do
+    island = Island:new( islandId )
+    island:createFromPerimeterNodes( field.islandPerimeterNodes )
+    island:generateHeadlands( nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
+    table.insert( field.islands, island )
+    islandId = islandId + 1
+  end
 end

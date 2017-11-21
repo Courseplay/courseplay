@@ -114,8 +114,7 @@ local function generateGridForPolygon( polygon, gridSpacingHint )
 end
 
 function pathFinder.findIslands( polygon )
-	local islandFinderGridSpacing = 1
-	local grid, _ = generateGridForPolygon( polygon, islandFinderGridSpacing )
+	local grid, _ = generateGridForPolygon( polygon, Island.gridSpacing )
 	local islandNodes = {}
 	for _, row in ipairs( grid.map ) do
 		for _, index in pairs( row ) do
@@ -125,7 +124,7 @@ function pathFinder.findIslands( polygon )
 				local _, d = getClosestPointIndex( polygon, grid[ index ])
 				-- TODO: should calculate the closest distance to polygon edge, not 
 				-- the vertices. This may miss an island close enough to the field boundary
-				if d > 8 * islandFinderGridSpacing then
+				if d > 8 * Island.gridSpacing then
 					table.insert( islandNodes, grid[ index ])
 					grid[ index ].island = true
 				end
