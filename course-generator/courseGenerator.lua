@@ -58,11 +58,23 @@ function courseGenerator.pointToXz( point )
 	return({ x = point.x, z = -point.y })
 end
 
+--- Convert our angle representation (measured from the x axis up in radians)
+-- into CP's, where 0 is to the south, to our negative y axis.
+--
+function courseGenerator.toCpAngle( angle )
+  local a = math.deg( angle ) + 90
+  if a > 180 then
+    a = a - 360
+  end
+  return a
+end
+
+
 --- Pathfinder wrapper for CP 
 -- Expects FS coordinates (x,-z)
 function courseGenerator.findPath( from, to, cpPolygon, fruit )
 	local path, grid = pathFinder.findPath( courseGenerator.pointToXy( from ), courseGenerator.pointToXy( to ),
-		courseGenerator.pointsToXy( cpPolygon ), fruit, nil, nil )
+		Polygon:new( courseGenerator.pointsToXy( cpPolygon )), fruit, nil, nil )
 	if path then
 		return courseGenerator.pointsToXz( path ), grid
 	else
@@ -73,6 +85,6 @@ end
 --- Island finder wrapper for CP, 
 -- expects FS coordinates
 function courseGenerator.findIslands( fieldData )
-	local islandNodes = pathFinder.findIslands( courseGenerator.pointsToXy( fieldData.points ))
+	local islandNodes = pathFinder.findIslands( Polygon:new( courseGenerator.pointsToXy( fieldData.points )))
 	fieldData.islandNodes = courseGenerator.pointsToCxCz( islandNodes )
 end

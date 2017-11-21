@@ -1,8 +1,3 @@
---
--- Functions to manipulate tracks 
---
---
-
 --- Generate course for a field.
 -- The result will be:
 --
@@ -89,21 +84,23 @@
 --   trees. 
 --
 
-function generateCourseForField( field, implementWidth, nHeadlandPasses, headlandClockwise, 
-                                 headlandStartLocation, overlapPercent, 
-                                 nTracksToSkip, extendTracks,
-                                 minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
-                                 turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes )
-  field.boundingBox = getBoundingBox( field.boundary )
-  calculatePolygonData( field.boundary )
+function generateCourseForField( field, implementWidth, nHeadlandPasses, headlandClockwise,
+    headlandStartLocation, overlapPercent,
+    nTracksToSkip, extendTracks,
+    minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
+    turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes )
+  field.boundingBox =  field.boundary:getBoundingBox()
+  field.boundary = Polygon:new( field.boundary )
+  field.boundary:calculateData()
+  setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, islandNodes )
   field.headlandTracks = {}
-  if nHeadlandPasses > 0 then 
+  if nHeadlandPasses > 0 then
     local previousTrack, startHeadlandPass, endHeadlandPass, step
-    if fromInside then 
+    if fromInside then
       courseGenerator.debug( "Generating innermost headland track" )
       local distanceOfInnermostHeadlandFromBoundary = ( implementWidth - implementWidth * overlapPercent / 100 ) * ( nHeadlandPasses - 1 ) + implementWidth / 2
-      field.headlandTracks[ nHeadlandPasses ] = calculateHeadlandTrack( field.boundary, distanceOfInnermostHeadlandFromBoundary, 
-                                                            minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, true ) 
+      field.headlandTracks[ nHeadlandPasses ] = calculateHeadlandTrack( field.boundary, distanceOfInnermostHeadlandFromBoundary,
+        minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, true )
       previousTrack = field.headlandTracks[ nHeadlandPasses ]
       startHeadlandPass = nHeadlandPasses - 1
       endHeadlandPass = 1
@@ -116,16 +113,16 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     end
     for j = startHeadlandPass, endHeadlandPass, step do
       local width
-      if j == 1 and not fromInside then 
+      if j == 1 and not fromInside then
         -- when working from inside, the half width is already factored in when
         -- the innermost pass is generated
         width = implementWidth / 2
-      else 
+      else
         width = implementWidth * ( 100 - overlapPercent ) / 100
       end
 
       field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, width,
-                                                          minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
+        minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside )
       courseGenerator.debug( "Generated headland track #%d, area %1.f, clockwise = %s", j, field.headlandTracks[ j ].area, tostring( field.headlandTracks[ j ].isClockwise ))
       if ( field.headlandTracks[ j ].area >= previousTrack.area or field.headlandTracks[ j ].area <= 10 ) and not fromInside then
         courseGenerator.debug( "Can't fit more headlands in field, using %d", j - 1 )
@@ -138,7 +135,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     -- no headland pass wanted, still generate a dummy one on the field boundary so
     -- we have something to work with when generating the up/down tracks
     courseGenerator.debug( "No headland, generating dummy headland track" )
-    field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside ) 
+    field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside )
   end
   linkHeadlandTracks( field, implementWidth, headlandClockwise, headlandStartLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
   -- ugly hack: if there are no headlands, our tracks go right up to the field boundary. So extend tracks
@@ -148,22 +145,22 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   end
   field.track, field.bestAngle, field.nTracks = generateTracks( field.headlandTracks[ #field.headlandTracks ], implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0 )
   -- assemble complete course now
-  field.course = {}
+  field.course = Polygon:new()
   if field.headlandPath and nHeadlandPasses > 0 then
-    for i, point in ipairs( field.headlandPath ) do
+    for i, point in field.headlandPath:iterator() do
       table.insert( field.course, point )
     end
   end
   if field.track then
-    for i, point in ipairs( field.track ) do
+    for i, point in field.track:iterator() do
       table.insert( field.course, point )
     end
   end
   if #field.course > 0 then
-	if returnToFirstPoint then
-	  addWpsToReturnToFirstPoint( field.course, field.boundary )	
-	end
-    calculatePolygonData( field.course )
+    if returnToFirstPoint then
+      addWpsToReturnToFirstPoint( field.course, field.boundary )
+    end
+    field.course:calculateData()
     addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
   end
   -- flush STDOUT when not in the game for debugging
@@ -175,9 +172,11 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     field.headlandTracks = {}
   end
   if #islandNodes > 0 then
-	bypassIslands(field.course, implementWidth, islandNodes)
-  	calculatePolygonData(field.course)
+    bypassIslandNodes(field.course, implementWidth, islandNodes)
+    --bypassIslands( field.course, implementWidth, field.islands )
+    field.course:calculateData()
   end
+
 end
 
 --- Reverse a course. This is to build a sowing/cultivating etc. course
@@ -187,7 +186,7 @@ end
 -- starting in the middle of the course.
 --
 function reverseCourse( course, width, turnRadius, minHeadlandTurnAngle )
-  local result = {}
+  local result = Polygon:new()
   -- remove any non-center track turns first
   removeHeadlandTurns( course )
   for i = #course, 1, -1 do
@@ -203,7 +202,7 @@ function reverseCourse( course, width, turnRadius, minHeadlandTurnAngle )
     table.insert( result, newPoint )
   end
   -- regenerate non-center track turns for the reversed course
-  calculatePolygonData( result )
+  result:calculateData()
   addTurnsToCorners( result, width, turnRadius, minHeadlandTurnAngle )
   return result
 end
@@ -315,11 +314,11 @@ local function moveWaypointUntilFarEnoughFromIslands( wayPoint, angle, islandNod
 end
 
 --- Attempt to bypass (smaller) islands in the field.
-function bypassIslands( course, width, islandNodes )
+function bypassIslandNodes( course, width, islandNodes )
 	-- current bypass direction. Needed so once we divert to a direction (left or right) then
 	-- we stay on that side of the obstacle until we finish bypassing
 	local bypassDirection = "None"
-	for _, wayPoint in ipairs( course ) do
+	for _, wayPoint in course:iterator() do
 		if isTooCloseToAnIsland( wayPoint, islandNodes, width / 2 ) then
 			-- so, we'll start walking to the left and to the right until we are at least 
 			-- width / 2 distance from the island
@@ -343,4 +342,25 @@ function bypassIslands( course, width, islandNodes )
 			bypassDirection = "None"
  		end
 	end
+end
+  
+function bypassIslands( course, width, islands )
+  for _, island in ipairs( islands ) do
+    island:bypass( course, true )
+  end  
+end 
+-- set up all island related data for the field  
+function setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 
+                       doSmooth, islandNodes )
+  field.islandPerimeterNodes = Island.getIslandPerimeterNodes( islandNodes )
+  field.origIslandPerimeterNodes = deepCopy( field.islandPerimeterNodes )
+  field.islands = {}
+  local islandId = 1
+  while #field.islandPerimeterNodes > 0 do
+    island = Island:new( islandId )
+    island:createFromPerimeterNodes( field.islandPerimeterNodes )
+    island:generateHeadlands( nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
+    table.insert( field.islands, island )
+    islandId = islandId + 1
+  end
 end

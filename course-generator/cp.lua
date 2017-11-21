@@ -11,7 +11,7 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 
     wp.generated = true
     wp.ridgeMarker = point.ridgeMarker
-    wp.angle = toCpAngle( point.nextEdge.angle )
+    wp.angle = courseGenerator.toCpAngle( point.nextEdge.angle )
     wp.cx = point.x
     wp.cz = -point.y
     wp.wait = nil
@@ -41,8 +41,9 @@ end
 
 function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
-  local field = fromCpField( name, poly.points ) 
-  calculatePolygonData( field.boundary ) 
+  local field = {}
+  field.boundary = Polygon:new( courseGenerator.pointsToXy( poly.points ))
+  field.boundary:calculateData() 
 
   --  get the vehicle position
   local x, _, z = getWorldTranslation( vehicle.rootNode )

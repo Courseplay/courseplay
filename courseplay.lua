@@ -94,8 +94,8 @@ local function initialize()
     'course-generator/headland',
     'course-generator/geo',
     'course-generator/bspline',
-    'course-generator/file',
     'course-generator/a-star',
+    'course-generator/Island',
     'course-generator/pathfinder'
 	};
 
