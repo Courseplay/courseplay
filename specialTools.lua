@@ -284,9 +284,12 @@ function courseplay:setNameVariable(workTool)
 	-- [3] TRAILERS
 	-- platinum edition sugar cane overloaders
 	elseif workTool.cp.xmlFileName == 'canaTrans600.xml' or workTool.cp.xmlFileName == 'doblettColosus10000.xml' or workTool.cp.xmlFileName == 'mf3012.xml'  then
-		workTool.cp.isAugerWagon = true
-		workTool.cp.isSugarCaneAugerWagon = true
-
+		if not workTool.cp.isAugerWagon then
+			workTool.cp.isAugerWagon = true
+			workTool.cp.isSugarCaneAugerWagon = true
+			workTool.toggleTipState = courseplay.sugarCaneTrailerToggleTipstate
+			workTool.tipState = Trailer.TIPSTATE_CLOSED
+		end
 	elseif workTool.cp.xmlFileName ==  'randonCanavieiroSemi.xml' or workTool.cp.xmlFileName ==  'randonCanavieiro.xml' then
 		workTool.cp.isSugarCaneTrailer = true
 		if workTool.tipReferencePoints == nil then

@@ -74,7 +74,44 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 
 	if workTool.cp.isSugarCaneAugerWagon then 
 		local movingTools = workTool.movingTools
+		local tipState = workTool.tipState
+		
+		--find the trailer if there is one		
+		if unload and tipState == Trailer.TIPSTATE_CLOSED then
+			workTool.trailerFound = nil
+			--the distance is 2.3m because if the trailer is further away, it will tip to the ground as well
+			local x,y,z = localToWorld(workTool.shovelTipReferenceNode,0,-2.3,0); 
+			raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", workTool.shovelTipRaycastDistance, workTool);
+			if courseplay.debugChannels[15] then
+				local nx, ny, nz = localDirectionToWorld(workTool.shovelTipReferenceNode, 0, 0, -1)
+				local dist =  workTool.shovelTipRaycastDistance 
+				drawDebugLine(x,y,z, 1, 0, 0, x+(nx*dist),y+(ny*dist),z+(nz*dist), 1, 0, 0);
+			end
+		end
+		
+		local trailerFound = workTool.trailerFound ~= nil
+		local trailerFull = workTool.trailerFound and workTool.trailerFound:getFillLevel() >= workTool.trailerFound:getCapacity()
+		
+		--force the correct tipState 
 		if unload then
+			--start tipping if there is a not full trailer
+			if tipState == Trailer.TIPSTATE_CLOSED and trailerFound and not trailerFull then
+				workTool:toggleTipState()
+			end
+			--abort tipping when trailer is away or full
+			if (tipState == Trailer.TIPSTATE_OPEN or tipState == Trailer.TIPSTATE_OPEN ) and (trailerFull or not trailerFound) then
+				workTool:toggleTipState()
+				workTool.cp.isSugarCaneUnloading = nil
+			end
+		else
+			--close tipper if unloading is finished
+			if tipState == Trailer.TIPSTATE_OPEN then
+				workTool:toggleTipState()
+			end
+		end
+		
+		--execute tipping action
+		if tipState == Trailer.TIPSTATE_OPENING then
 			workTool.cp.isSugarCaneUnloading = true
 			local targetPositions = { 	rot = { [1] = 0},
 										trans = { [1] = movingTools[1].transMax }
@@ -83,9 +120,11 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 				local targetPositions = { 	rot = { [1] = movingTools[2].rotMin},
 										trans = { [1] = 0 }
 									}
-				courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,2)
+				if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,2) then
+					workTool.tipState = Trailer.TIPSTATE_OPEN
+				end
 			end
-		else
+		elseif tipState == Trailer.TIPSTATE_CLOSING then
 			local targetPositions = { 	rot = { [1] = movingTools[2].rotMax},
 										trans = { [1] = 0 }
 									}
@@ -95,6 +134,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 									}
 				if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,1) then
 					workTool.cp.isSugarCaneUnloading = nil
+					workTool.tipState = Trailer.TIPSTATE_CLOSED
 				end
 			end
 		end
