@@ -640,6 +640,7 @@ function courseplay:unload_combine(vehicle, dt)
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*3)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
 				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*4.5)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
+				vehicle.cp.isParking = true 
 				if vehicle.cp.forceNewTargets then
 					vehicle.cp.forceNewTargets = nil
 				end
