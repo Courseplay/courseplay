@@ -399,6 +399,7 @@ function courseplay:drive(self, dt)
 			courseplay:setVehicleWait(self, false);
 		
 		elseif self.cp.mode == 10 then
+			self.cp.mode10.newApproach = true
 			if #self.cp.mode10.stoppedCourseplayers > 0 then
 				for i=1,#self.cp.mode10.stoppedCourseplayers do
 					local courseplayer = self.cp.mode10.stoppedCourseplayers[i]

@@ -394,6 +394,9 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			end
 			refSpeed = vehicle.cp.speeds.turn
 			
+			if vehicle.cp.mode10.newApproach then
+				vehicle.cp.mode10.newApproach = nil
+			end
 		else
 			vehicle.cp.fillLevelGo = true
 			vehicle.cp.modeState = 1
@@ -514,8 +517,8 @@ end
 
 function courseplay:getActualTarget(vehicle)
 	--print(string.format("courseplay:getActualTarget(vehicle) called by %s",tostring(courseplay.utils:getFnCallPath(3))))
-	local newApproach = vehicle.cp.actualTarget == nil 
-	
+	local newApproach = vehicle.cp.actualTarget == nil or vehicle.cp.mode10.newApproach
+		
 	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, vehicle.cp.mode9TargetSilo)
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local stopSearching = false
