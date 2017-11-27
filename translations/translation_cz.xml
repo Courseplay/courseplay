@@ -175,7 +175,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatický" />  
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Vyhnout se překážkám" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Zaoblený" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Pocouvnutí" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Průjezd" />
