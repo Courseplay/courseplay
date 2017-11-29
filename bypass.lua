@@ -133,7 +133,9 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	end
 	
 	--look whether the id is somewhere else in a vehicle (for cutters)
-	if vehicle == nil then
+  -- TODO: disabled to see if this is causing #2441. If yes, we need to 
+  -- find a way to make this more efficient.
+	if vehicle == nil and false then
 		for id, foundVehicle in pairs(g_currentMission.nodeToVehicle) do
 			for triggerName, TriggerId in pairs(foundVehicle) do
 				if TriggerId == transformId then
