@@ -16,7 +16,7 @@ function findBestTrackAngle( polygon, width )
   local bestAngleIndex 
   local score
   local minScore = 10000
-  calculatePolygonData( polygon )
+  polygon:calculateData()
   -- direction where the field is the longest
   local bestDirection = polygon.bestDirection.dir
   for angle = 0, 180, 2 do
@@ -63,7 +63,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
   -- translate polygon so we can rotate it around its center. This way all points
   -- will be approximately the same distance from the origo and the rotation calculation
   -- will be more accurate
-  local bb = getBoundingBox( polygon )
+  local bb = polygon:getBoundingBox()
   local dx, dy = ( bb.maxX + bb.minX ) / 2, ( bb.maxY + bb.minY ) / 2 
   local translatedPolygon = translatePoints( polygon, -dx , -dy )
   -- Now, determine the angle where the number of tracks is the minimum
@@ -76,7 +76,7 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
     bestAngle = polygon.bestDirection.dir
     courseGenerator.debug( "No best angle found, use the longest edge direction " .. bestAngle )
   end
-  rotatedMarks = {}
+  rotatedMarks = Polygon:new()
   -- now, generate the tracks according to the implement width within the rotated polygon's bounding box
   -- using the best angle
   local rotated = rotatePoints( translatedPolygon, math.rad( bestAngle ))
@@ -113,10 +113,10 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
 
   -- workedBlocks has now a the list of blocks we need to work on, including the track
   -- leading to the block from the previous block or the headland.
-  local track = {}
+  local track = Polygon:new()
   local connectingTracks = {}
   for i, block in ipairs( workedBlocks ) do
-    connectingTracks[ i ] = {}
+    connectingTracks[ i ] = Polygon:new()
     courseGenerator.debug( "Track to block %d has %d points", i, #block.trackToThisBlock )
     for j = 1, #block.trackToThisBlock do
       table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
@@ -189,13 +189,12 @@ end
 --  As result, tracks will have an intersections member with all 
 --  intersection points with polygon, ordered from left to right
 function findIntersections( polygon, tracks )
-  local ix = function( a ) return getPolygonIndex( polygon, a ) end
   -- recalculate angles after the rotation for getDistanceBetweenTrackAndHeadland()
-  calculatePolygonData( polygon )
+  polygon:calculateData()
   -- loop through the polygon and check each vector from 
   -- the current point to the next
-  for i, cp in ipairs( polygon ) do
-    local np = polygon[ ix( i + 1 )] 
+  for i, cp in polygon:iterator() do
+    local np = polygon[ i + 1 ] 
     for j, t in ipairs( tracks ) do
       local is = getIntersection( cp.x, cp.y, np.x, np.y, t.from.x, t.from.y, t.to.x, t.to.y ) 
       if is then
@@ -275,9 +274,9 @@ end
 -- returns the to/from index in headland where the work for this 
 -- block ends, that is, where we should start looking for the next block 
 function findTrackToNextBlock( blocks, headland, from, to, step )
-  local track = {}
+  local track = Polygon:new()
   local ix
-  for i in polygonIterator( headland, from, to, step ) do
+  for i in headland:iterator( from, to, step ) do
     for j, b in ipairs( blocks ) do
       if not b.covered then
         -- TODO: we are repeating ourselves here a lot, should be refactored
@@ -296,7 +295,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
             table.insert( track, b.topRightIntersection.point )
           end
           b.trackToThisBlock = track
-          return ix, getPolygonIndex( headland, ix - step ), b
+          return ix, headland:getIndex( ix - step ), b
         elseif i == b.bottomRightIntersection.index then
           courseGenerator.debug( "Starting block %d at bottom right", j )
           b.bottomToTop, b.leftToRight = true, false
@@ -309,7 +308,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
             table.insert( track, b.topLeftIntersection.point )
           end
           b.trackToThisBlock = track
-          return ix, getPolygonIndex( headland, ix - step ), b
+          return ix, headland:getIndex( ix - step ), b
         elseif i == b.topLeftIntersection.index then 
           courseGenerator.debug( "Starting block %d at top left", j )
           b.bottomToTop, b.leftToRight = false, true
@@ -322,7 +321,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
             table.insert( track, b.bottomRightIntersection.point )
           end
           b.trackToThisBlock = track
-          return ix, getPolygonIndex( headland, ix - step ), b
+          return ix, headland:getIndex( ix - step ), b
         elseif i == b.topRightIntersection.index then
           courseGenerator.debug( "Starting block %d at top right", j )
           b.bottomToTop, b.leftToRight = false, false
@@ -335,7 +334,7 @@ function findTrackToNextBlock( blocks, headland, from, to, step )
             table.insert( track, b.bottomLeftIntersection.point )
           end
           b.trackToThisBlock = track
-          return ix, getPolygonIndex( headland, ix - step ), b
+          return ix, headland:getIndex( ix - step ), b
         end
       end
     end -- for all blocks
@@ -605,7 +604,7 @@ function addRidgeMarkers( track )
   local turningDown = track[ turnStartIx ].y > track[ turnStartIx + 1 ].y
   local startRidgeMarkerOnTheRight = ( drivingToTheRight and turningDown ) or
                                      ( not drivingToTheRight and not turningDown )
-  for i, p in ipairs( track ) do
+  for i, p in track:iterator() do
     if p.trackNumber and not p.turnStart and not p.turnEnd then 
       if p.trackNumber % 2 == 1 then
         -- odd tracks

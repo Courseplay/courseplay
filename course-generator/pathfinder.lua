@@ -75,8 +75,8 @@ local function generateGridForPolygon( polygon, gridSpacingHint )
   -- map[ row ][ column ] maps the row/column address of the grid to a linear
   -- array index in the grid.
   grid.map = {}
-  polygon.boundingBox = getBoundingBox( polygon )
-  calculatePolygonData( polygon )
+  polygon.boundingBox = polygon:getBoundingBox()
+  polygon:calculateData()
   -- this will make sure that the grid will have approximately 64^2 = 4096 points
   -- TODO: probably need to take the aspect ratio into accont for odd shaped
   -- (long and narrow) fields
@@ -249,10 +249,11 @@ function pathFinder.findPath( fromNode, toNode, polygon, fruit, customHasFruitFu
   local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors, gScoreToNeighbor, #grid * 0.75 )
 	courseGenerator.debug( "Number of iterations %d", count)
   if path then
-    calculatePolygonData( path )
+    path = Polygon:new( path )
+    path:calculateData()
     path = smooth( path, math.rad( 0 ), math.rad( 180 ), 1, true )
 	  courseGenerator.debug( "Path generated with %d points", #path )
-    calculatePolygonData( path )
+    path:calculateData()
     path = space( path, math.rad( 15 ), 5 )
 	  courseGenerator.debug( "Path spaced, has now  %d points", #path )
     if not courseGenerator.isRunningInGame() then

@@ -44,14 +44,14 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
 
   -- courseGenerator.debug( "** After target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset)
   local offsetEdges = {} 
-  for i, point in ipairs( polygon ) do
+  for i, point in polygon:iterator() do
     local newEdge = {} 
     local newFrom = addPolarVectorToPoint( point.nextEdge.from, point.nextEdge.angle + getInwardDirection( polygon.isClockwise ), deltaOffset )
     local newTo = addPolarVectorToPoint( point.nextEdge.to, point.nextEdge.angle + getInwardDirection( polygon.isClockwise ), deltaOffset )
     table.insert( offsetEdges, { from=newFrom, to=newTo })
   end
  
-  local vertices = {} 
+  local vertices = Polygon:new()
   local intersections = 0
   for i, edge in ipairs( offsetEdges ) do
     local ix = i - 1
@@ -72,7 +72,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
       end
     end
   end
-  calculatePolygonData( vertices )
+  vertices:calculateData()
   if doSmooth then
     vertices = smooth( vertices, minSmoothAngle, maxSmoothAngle, 1, false )
   end
@@ -95,10 +95,10 @@ end
 function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
   -- first, find the intersection of the outermost headland track and the 
   -- vehicles heading vector. 
-  local headlandPath = {}
+  local headlandPath = Polygon:new()
   -- find closest point to starting position on outermost headland track 
   local fromIndex = getClosestPointIndex( field.headlandTracks[ 1 ], startLocation )
-  local toIndex = getPolygonIndex( field.headlandTracks[ 1 ], fromIndex + 1 ) 
+  local toIndex = field.headlandTracks[ 1 ]:getIndex( fromIndex + 1 ) 
   vectors = {}
   -- direction we'll be looking for the next inward headland track (relative to
   -- the headland vertex direcions) We want to go a bit forward, not directly 
@@ -161,7 +161,8 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
         courseGenerator.debug( "Could not link headland track %d to next track at distance %.2f", i, distance )
       end
     end
-  end
+  end  
+
   if doSmooth then
     -- skip the first and last point when smoothing, this makes sure smooth() won't try
     -- to wrap around the ends like in case of a closed polygon, this is just a line here.
@@ -176,7 +177,7 @@ end
 -- assemble the complete spiral headland path from the individual 
 -- parallel headland tracks.
 function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to, step)
-  for i, point in polygonIterator( track, from, to, step ) do
+  for i, point in track:iterator( from, to, step ) do
     table.insert( headlandPath, track[ i ])
     headlandPath[ #headlandPath ].passNumber = passNumber
   end
@@ -187,7 +188,7 @@ end
 -- do this somehow smooth should preserve these, but whatever...
 function addMissingPassNumber( headlandPath )
   local currentPassNumber = 0
-  for i, point in ipairs( headlandPath ) do
+  for i, point in headlandPath:iterator() do
     if point.passNumber then 
       if point.passNumber ~= currentPassNumber then 
         currentPassNumber = point.passNumber

@@ -45,7 +45,7 @@ end
 function getClosestPointIndex( polygon, p )
   local minDistance = 10000
   local ix
-  for i, vertex in ipairs( polygon ) do
+  for i, vertex in polygon:iterator() do
     local d = getDistanceBetweenPoints( vertex, p )
     if d < minDistance then
       minDistance = d
@@ -98,7 +98,6 @@ end
 -- the current point is removed and the next one is replaced with a 
 -- point between the current and the next.
 function applyLowPassFilter( polygon, angleThreshold, distanceThreshold, isLine )
-  local ix = function( a ) return getPolygonIndex( polygon, a ) end
   local index, lastIndex
   if isLine then 
     -- don't wrap around the ends if it is a line
@@ -109,7 +108,7 @@ function applyLowPassFilter( polygon, angleThreshold, distanceThreshold, isLine 
     lastIndex = #polygon
   end
   repeat
-    local cp, np = polygon[ ix( index )], polygon[ ix( index + 1 )]
+    local cp, np = polygon[ index], polygon[ index + 1 ]
     -- need to recalculate the edge length as we are moving points 
     -- around here
     local angle, length = toPolar( np.x - cp.x, np.y - cp.y )
@@ -117,11 +116,11 @@ function applyLowPassFilter( polygon, angleThreshold, distanceThreshold, isLine 
     local isTooSharp = math.abs( getDeltaAngle( np.prevEdge.angle, cp.prevEdge.angle )) > angleThreshold 
     if isTooClose or isTooSharp then
       -- replace current and next point with something in the middle
-      polygon[ ix( index + 1 )].x, polygon[ ix( index + 1 )].y = getPointInTheMiddle( cp, np )
+      polygon[ index + 1 ].x, polygon[ index + 1 ].y = getPointInTheMiddle( cp, np )
     end
     if isTooSharp or isTooClose then
-      table.remove( polygon, ix( index ))
-      calculatePolygonData( polygon )
+      table.remove( polygon, polygon:getIndex( index ))
+      polygon:calculateData()
     else
       index = index + 1
     end
@@ -131,7 +130,7 @@ end
 --- make sure points in line are at least d apart
 -- except in curves 
 function space( line, angleThreshold, d )
-  local result = { line[ 1 ]}
+  local result = Polygon:new({ line[ 1 ]})
   for i = 2, #line do
     local cp, pp = line[ i ], result[ #result ]
     local isCurve = math.abs( getDeltaAngle( cp.prevEdge.angle, pp.prevEdge.angle )) > angleThreshold 
@@ -140,49 +139,6 @@ function space( line, angleThreshold, d )
     end
   end
   return result
-end
-
-function calculatePolygonData( polygon )
-  local ix = function( a ) return getPolygonIndex( polygon, a ) end
-  local directionStats = {}
-  local dAngle = 0
-  local area = 0
-  local shortestEdgeLength = 1000
-  for i, point in ipairs( polygon ) do
-    local pp, cp, np = polygon[ ix( i - 1 )], polygon[ ix( i )], polygon[ ix( i + 1 )]
-    -- vector from the previous to the next point
-    local dx = np.x - pp.x 
-    local dy = np.y - pp.y
-    local angle, length = toPolar( dx, dy )
-    polygon[ i ].tangent = { angle=angle, length=length, dx=dx, dy=dy }
-    -- vector from the previous to this point
-    dx = cp.x - pp.x
-    dy = cp.y - pp.y
-    angle, length = toPolar( dx, dy )
-    polygon[ i ].prevEdge = { from={ x=pp.x, y=pp.y} , to={ x=cp.x, y=cp.y }, angle=angle, length=length, dx=dx, dy=dy }
-    -- vector from this to the next point 
-    dx = np.x - cp.x
-    dy = np.y - cp.y
-    angle, length = toPolar( dx, dy )
-    polygon[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
-    polygon[ i ].deltaAngle = getDeltaAngle( polygon[ i ].nextEdge.angle, polygon[ i ].prevEdge.angle )
-    polygon[ i ].turnRadius = math.abs( polygon[ i ].nextEdge.length / ( 2 * math.asin( polygon[ i ].deltaAngle / 2 )))
-    if length < shortestEdgeLength then shortestEdgeLength = length end
-    -- detect clockwise/counterclockwise direction 
-    if pp.prevEdge and cp.prevEdge then
-      if pp.prevEdge.angle and cp.prevEdge.angle then
-        dAngle = dAngle + getDeltaAngle( cp.prevEdge.angle, pp.prevEdge.angle )
-      end
-    end
-    addToDirectionStats( directionStats, angle, length )
-    area = area + ( cp.x * np.y - cp.y * np.x ) 
-  end
-  polygon.directionStats = directionStats
-  polygon.bestDirection = getBestDirection( directionStats )
-  polygon.isClockwise = dAngle > 0
-  polygon.area = polygon.isClockwise and - area / 2 or area / 2
-  polygon.shortestEdgeLength = shortestEdgeLength
-  polygon.boundingBox = getBoundingBox( polygon )
 end
 
 --- Round corners of a polygon to turningRadius
@@ -317,51 +273,18 @@ function getBestDirection( directionStats )
   return best
 end
 
---- Iterate through an elements of a polygon starting
--- between any from and to indexes with the given step.
--- This will do a full circle, that is roll over from 
--- #polygon to 1 or 1 to #polygon if step < 0
---
-function polygonIterator( polygon, from, to, step )
-  local i = from
-  local lastOne = false
-  return function()
-           if ( not lastOne ) then
-             lastOne = ( i == to )
-             local index, value = i, polygon[ i ] 
-             i = getPolygonIndex( polygon, i + step )
-             return index, value
-           end
-         end
-end
-
---- handle negative indices by circling back to 
--- the end of the polygon
-function getPolygonIndex( polygon, index )
-  if index > #polygon then
-    return index - #polygon
-  elseif index > 0 then
-    return index
-  elseif index == 0 then
-    return #polygon
-  else
-    return #polygon + index 
-  end
-end
-
 -- Does the line defined by p1 and p2 intersect the polygon?
 -- If yes, return two indices. The line intersects the polygon between
 -- these two indices
 function getIntersectionOfLineAndPolygon( polygon, p1, p2 ) 
-  local ix = function( a ) return getPolygonIndex( polygon, a ) end
   -- loop through the polygon and check each vector from 
   -- the current point to the next
-  for i, cp in ipairs( polygon ) do
-    local np = polygon[ ix( i + 1 )] 
+  for i, cp in polygon:iterator() do
+    local np = polygon[ i + 1 ] 
     local interSectionPoint = getIntersection( cp.x, cp.y, np.x, np.y, p1.x, p1.y, p2.x, p2.y )
     if interSectionPoint then
       -- the line between p1 and p2 intersects the vector from cp to np
-      return i, ix( i + 1 ), interSectionPoint
+      return i, polygon:getIndex( i + 1 ), interSectionPoint
     end
   end
   return nil, nil
@@ -370,12 +293,11 @@ end
 --- Same as getIntersectionOfLineAndPolygon but returns all 
 -- intersections in a table
 function getAllIntersectionsOfLineAndPolygon( polygon, p1, p2 )
-  local ix = function( a ) return getPolygonIndex( polygon, a ) end 
   local intersections = {}
   -- loop through the polygon and check each vector from 
   -- the current point to the next
-  for i, cp in ipairs( polygon ) do
-    local np = polygon[ ix( i + 1 )]
+  for i, cp in polygon:iterator() do
+    local np = polygon[ i + 1 ]
     local intersectionPoint = getIntersection( cp.x, cp.y, np.x, np.y, p1.x, p1.y, p2.x, p2.y )
     if intersectionPoint then
       -- only add if this is not found already. Can happen if the p1-p2 goes right through 
@@ -385,7 +307,7 @@ function getAllIntersectionsOfLineAndPolygon( polygon, p1, p2 )
         found = getDistanceBetweenPoints( p.point, intersectionPoint ) < 0.1
       end
       if not found then
-        table.insert( intersections, { fromIx = i, toIx = ix( i + 1 ), point = intersectionPoint,
+        table.insert( intersections, { fromIx = i, toIx = polygon:getIndex( i + 1 ), point = intersectionPoint,
           d = getDistanceBetweenPoints( p1, intersectionPoint )})
       end
     end
@@ -515,20 +437,9 @@ function createRectangularPolygon( x, y, dx, dy, step )
   return rect
 end
 
-function getBoundingBox( polygon )
-  local minX, maxX, minY, maxY = math.huge, -math.huge, math.huge, -math.huge
-  for i, point in ipairs( polygon ) do
-    if ( point.x < minX ) then minX = point.x end
-    if ( point.y < minY ) then minY = point.y end
-    if ( point.x > maxX ) then maxX = point.x end
-    if ( point.y > maxY ) then maxY = point.y end
-  end
-  return { minX=minX, maxX=maxX, minY=minY, maxY=maxY }
-end 
-
 function translatePoints( points, dx, dy )
-  local result = {}
-  for i, point in ipairs( points ) do
+  local result = Polygon:new()
+  for i, point in points:iterator() do
     local newPoint = copyPoint( point )
     newPoint.x = points[ i ].x + dx
     newPoint.y = points[ i ].y + dy 
@@ -538,16 +449,16 @@ function translatePoints( points, dx, dy )
 end
 
 function rotatePoints( points, angle )
-  local result = {}
+  local result = Polygon:new()
   local sin = math.sin( angle )
   local cos = math.cos( angle )
-  for i, point in ipairs( points ) do
+  for i, point in points:iterator() do
     local newPoint = copyPoint( point )
     newPoint.x = points[ i ].x * cos - points[ i ].y  * sin
     newPoint.y = points[ i ].x * sin + points[ i ].y  * cos
     table.insert( result, newPoint )
   end
-  result.boundingBox = getBoundingBox( result )
+  result.boundingBox = result:getBoundingBox()
   return result
 end
 
@@ -629,18 +540,21 @@ Polygon = {}
 Polygon.__index = function( t, k )
   if not rawget( t, k ) and type( k ) == "number" then
     -- roll over integer indexes
-    return t[ t.getIndex( t, k )]
+    return rawget( t, t:getIndex( k ))
   else
     return Polygon[ k ]
   end
 end
+
+-- for 5.1 and 5.2 compatibility
+local unpack = unpack or table.unpack
 
 --- Polygon constructor.
 -- Integer indices are the vertices of the polygon
 function Polygon:new( vertices )
   local newPolygon
   if vertices then
-    newPolygon = { table.unpack( vertices ) }
+    newPolygon = { unpack( vertices ) }
   else
     newPolygon = {}
   end
@@ -650,13 +564,85 @@ end
 --- Always return a valid index to allow iterating over
 -- the beginning or end of a closed polygon.
 function Polygon:getIndex( index )
-  if index > #self then
-    return index - #self
+  if index == 0 then
+    return #self
+  elseif index > #self then
+    return index % #self
   elseif index > 0 then
     return index
-  elseif index == 0 then
-    return #self
   else
     return #self + index
   end
 end
+
+--- Iterate through an elements of a polygon starting
+-- between any from and to indexes with the given step.
+-- This will do a full circle, that is roll over from 
+-- #polygon to 1 or 1 to #polygon if step < 0
+function Polygon:iterator( from, to, step ) 
+  local i = from or 1
+  local n = to or #self
+  local s = step or 1
+  local lastOne = false
+  return function()
+    if ( not lastOne and #self > 0 ) then
+      lastOne = ( i == n )
+      local key, value = i, rawget( self, i )
+      i = self:getIndex( i + s )
+      return key, value
+    end
+  end
+end
+
+function Polygon:calculateData()
+  local directionStats = {}
+  local dAngle = 0
+  local area = 0
+  local shortestEdgeLength = 1000
+  for i, point in self:iterator() do
+    local pp, cp, np = self[ i - 1 ], self[ i ], self[ i + 1 ]
+    -- vector from the previous to the next point
+    local dx = np.x - pp.x
+    local dy = np.y - pp.y
+    local angle, length = toPolar( dx, dy )
+    self[ i ].tangent = { angle=angle, length=length, dx=dx, dy=dy }
+    -- vector from the previous to this point
+    dx = cp.x - pp.x
+    dy = cp.y - pp.y
+    angle, length = toPolar( dx, dy )
+    self[ i ].prevEdge = { from={ x=pp.x, y=pp.y} , to={ x=cp.x, y=cp.y }, angle=angle, length=length, dx=dx, dy=dy }
+    -- vector from this to the next point 
+    dx = np.x - cp.x
+    dy = np.y - cp.y
+    angle, length = toPolar( dx, dy )
+    self[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
+    self[ i ].deltaAngle = getDeltaAngle( self[ i ].nextEdge.angle, self[ i ].prevEdge.angle )
+    self[ i ].turnRadius = math.abs( self[ i ].nextEdge.length / ( 2 * math.asin( self[ i ].deltaAngle / 2 )))
+    if length < shortestEdgeLength then shortestEdgeLength = length end
+    -- detect clockwise/counterclockwise direction 
+    if pp.prevEdge and cp.prevEdge then
+      if pp.prevEdge.angle and cp.prevEdge.angle then
+        dAngle = dAngle + getDeltaAngle( cp.prevEdge.angle, pp.prevEdge.angle )
+      end
+    end
+    addToDirectionStats( directionStats, angle, length )
+    area = area + ( cp.x * np.y - cp.y * np.x )
+  end
+  self.directionStats = directionStats
+  self.bestDirection = getBestDirection( directionStats )
+  self.isClockwise = dAngle > 0
+  self.area = self.isClockwise and - area / 2 or area / 2
+  self.shortestEdgeLength = shortestEdgeLength
+  self.boundingBox = self:getBoundingBox()
+end
+
+function Polygon:getBoundingBox()
+  local minX, maxX, minY, maxY = math.huge, -math.huge, math.huge, -math.huge
+  for i, point in self:iterator() do
+    if ( point.x < minX ) then minX = point.x end
+    if ( point.y < minY ) then minY = point.y end
+    if ( point.x > maxX ) then maxX = point.x end
+    if ( point.y > maxY ) then maxY = point.y end
+  end
+  return { minX=minX, maxX=maxX, minY=minY, maxY=maxY }
+end 

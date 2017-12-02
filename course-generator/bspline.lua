@@ -2,20 +2,19 @@
 --
 -- insert a point in the middle of each edge.
 function _refine( points, minSmoothAngle, maxSmoothAngle, isLine ) 
-  local ix = function( a ) return getPolygonIndex( points, a ) end
-  local refined = {}
+  local refined = Polygon:new()
   local rIx = 1;
   for i = 1, #points do 
     local point = points[ i ];
     refined[ rIx ] = point
-    if points[ ix( i + 1 )] then 
+    if points[ i + 1 ] then 
       -- if this is a line, don't touch the ends
       if math.abs( points[ i ].deltaAngle ) > minSmoothAngle and 
          math.abs( points[ i ].deltaAngle ) < maxSmoothAngle and 
          (( not isLine ) or ( isLine and i > 1  and i < #points )) then
         -- insert points only when there is really a curve here
         -- table.insert( marks, points[ i ])
-        local x, y =  getPointInTheMiddle( point, points[ ix( i + 1 )]);
+        local x, y =  getPointInTheMiddle( point, points[ i + 1 ]);
         rIx = rIx + 1
         refined[ rIx ] = { x = x, y = y }
       end
@@ -27,13 +26,12 @@ end
 
 -- insert point in the middle of each edge and remove the old points.
 function _dual( points ) 
-  local ix = function( a ) return getPolygonIndex( points, a ) end
   local dualed = {}
   local index = 1
   for i = 1, #points do 
     local point = points[ i ];
-    if points[ ix( index + 1 )] then
-      x, y = getPointInTheMiddle( point, points[ ix( index + 1 )]);
+    if points[ index + 1 ] then
+      x, y = getPointInTheMiddle( point, points[ index + 1 ]);
       dualed[ index ] = { x = x, y = y }
     end
     index = index + 1;
@@ -43,11 +41,10 @@ end
 
 -- move the current point a bit towards the previous and next. 
 function _tuck( points, s, minSmoothAngle, maxSmoothAngle, isLine )
-  local tucked = {}
+  local tucked = Polygon:new()
   local index = 1
-  local ix = function( a ) return getPolygonIndex( points, a ) end
   for i = 1, #points do 
-    local pp, cp, np = points[ ix( i - 1 )], points[ ix( i )], points[ ix( i + 1 )]
+    local pp, cp, np = points[ i - 1 ], points[ i ], points[ i + 1 ]
     -- tuck points only when there is really a curve here
     -- but if this is a line, don't touch the ends
     if math.abs( points[ i ].deltaAngle ) > minSmoothAngle and 
@@ -77,11 +74,11 @@ function smooth(points, minSmoothAngle, maxSmoothAngle, order, isLine )
     return points
   else
     local refined = _refine( points, minSmoothAngle, maxSmoothAngle, isLine )
-    calculatePolygonData( refined )
+    refined:calculateData()
     refined = _tuck( refined, 0.5, minSmoothAngle, maxSmoothAngle, isLine )
-    calculatePolygonData( refined )
+    refined:calculateData()
     refined = _tuck( refined, -0.15, minSmoothAngle, maxSmoothAngle, isLine )
-    calculatePolygonData( refined )
+    refined:calculateData()
     return smooth( refined, minSmoothAngle, maxSmoothAngle, order - 1, isLine )
   end
 end

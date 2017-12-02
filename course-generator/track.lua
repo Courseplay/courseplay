@@ -94,8 +94,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
                                  nTracksToSkip, extendTracks,
                                  minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
                                  turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes )
-  field.boundingBox = getBoundingBox( field.boundary )
-  calculatePolygonData( field.boundary )
+  field.boundingBox =  field.boundary:getBoundingBox()
+  field.boundary = Polygon:new( field.boundary )
+  field.boundary:calculateData()
   setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
   field.headlandTracks = {}
   if nHeadlandPasses > 0 then 
@@ -149,14 +150,14 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   end
   field.track, field.bestAngle, field.nTracks = generateTracks( field.headlandTracks[ #field.headlandTracks ], implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0 )
   -- assemble complete course now
-  field.course = {}
+  field.course = Polygon:new()
   if field.headlandPath and nHeadlandPasses > 0 then
-    for i, point in ipairs( field.headlandPath ) do
+    for i, point in field.headlandPath:iterator() do
       table.insert( field.course, point )
     end
   end
   if field.track then
-    for i, point in ipairs( field.track ) do
+    for i, point in field.track:iterator() do
       table.insert( field.course, point )
     end
   end
@@ -164,7 +165,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
 	if returnToFirstPoint then
 	  addWpsToReturnToFirstPoint( field.course, field.boundary )	
 	end
-    calculatePolygonData( field.course ) 
+    field.course:calculateData() 
     addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
   end
   -- flush STDOUT when not in the game for debugging
@@ -178,8 +179,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   if #islandNodes > 0 then
     bypassIslandNodes(field.course, implementWidth, islandNodes)
     -- bypassIslands( field.course, implementWidth, field.islands )
-    calculatePolygonData(field.course)
+    field.course:calculateData()
   end
+
 end
 
 --- Reverse a course. This is to build a sowing/cultivating etc. course
@@ -189,7 +191,7 @@ end
 -- starting in the middle of the course.
 --
 function reverseCourse( course, width, turnRadius, minHeadlandTurnAngle )
-  local result = {}
+  local result = Polygon:new()
   -- remove any non-center track turns first
   removeHeadlandTurns( course )
   for i = #course, 1, -1 do
@@ -205,7 +207,7 @@ function reverseCourse( course, width, turnRadius, minHeadlandTurnAngle )
     table.insert( result, newPoint )
   end
   -- regenerate non-center track turns for the reversed course
-  calculatePolygonData( result )
+  result:calculateData()
   addTurnsToCorners( result, width, turnRadius, minHeadlandTurnAngle )
   return result
 end
@@ -321,7 +323,7 @@ function bypassIslandNodes( course, width, islandNodes )
 	-- current bypass direction. Needed so once we divert to a direction (left or right) then
 	-- we stay on that side of the obstacle until we finish bypassing
 	local bypassDirection = "None"
-	for _, wayPoint in ipairs( course ) do
+	for _, wayPoint in course:iterator() do
 		if isTooCloseToAnIsland( wayPoint, islandNodes, width / 2 ) then
 			-- so, we'll start walking to the left and to the right until we are at least 
 			-- width / 2 distance from the island

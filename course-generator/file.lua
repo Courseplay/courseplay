@@ -37,7 +37,7 @@ function loadFieldFromSavedCourse( fileName )
       table.insert( field.boundary, { x=tonumber( cx ), y=-tonumber( cz )})
     end
   end
-  calculatePolygonData( field.boundary )
+  field.boundary:calculateData()
   return field
 end
 
@@ -151,7 +151,7 @@ end
 
 --- Save a field loaded from a CP saved field into a CP course
 function writeSavedFieldToCourseFile( field, courseFilename )
-  calculatePolygonData( field.boundary )
+  field.boundary:calculateData()
   -- fake a course from the field boundary
   field.course = field.boundary
   -- some reasonable defaults

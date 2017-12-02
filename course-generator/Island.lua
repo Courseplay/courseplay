@@ -12,7 +12,7 @@ function Island:new( islandId )
 	newIsland = {}
 	setmetatable( newIsland, self )
   -- nodes of the island polygon
-  newIsland.nodes = {}
+  newIsland.nodes = Polygon:new()
   newIsland.id = islandId
 	return newIsland
 end
@@ -80,7 +80,7 @@ function Island:createFromPerimeterNodes( perimeterNodes )
       end
     end
   end
-  calculatePolygonData( self.nodes )
+  self.nodes:calculateData()
   self.width = self.nodes.boundingBox.maxX - self.nodes.boundingBox.minX
   self.height = self.nodes.boundingBox.maxY - self.nodes.boundingBox.minY
   courseGenerator.debug( "Island #%d with %d nodes created, %.0fx%0.f, area %.0f", self.id, #self.nodes, self.width, self.height, self.nodes.area )
@@ -153,8 +153,7 @@ end
 -- @param fromIx 
 -- @param toIx course intersected the headland polygon between the indexes fromIx-toIx 
 function Island:bypassOnHeadland( course, startIx, fromIx, toIx)
-  local ix = function( a ) return getPolygonIndex( self.headlandTracks[ 1 ], a ) end
-  -- walk around the island on the headland until we meet the course again.
+  -- walk around the island on the  headland until we meet the course again.
   -- we can start walking either at fromIx or at toIx, that is to go left or right
   -- (don't know which one is left or right but that is not relevant)
   local pathA, pathB = {}, {}
@@ -163,19 +162,19 @@ function Island:bypassOnHeadland( course, startIx, fromIx, toIx)
   local dA, dB = 0, 0
   
   -- try path A first, going around from toIx to fromIx 
-  for i, cp in polygonIterator( self.headlandTracks[ 1 ], toIx, fromIx, 1 ) do
+  for i, cp in self.headlandTracks[ 1 ]:iterator( toIx, fromIx, 1 ) do
     table.insert( pathA, cp )
     dA = dA + cp.nextEdge.length
-    local np = self.headlandTracks[ 1 ][ ix( i + 1 )]
+    local np = self.headlandTracks[ 1 ][ i + 1 ]
     -- does this section of headland intersects the course and where?
     returnIxA, intersectionA = self:getIntersectionWithCourse( course, startIx + 1, cp, np )
     if returnIxA then break end
   end
   -- now try path B, going around from fromIx to toIx 
-  for i, cp in polygonIterator( self.headlandTracks[ 1 ], fromIx, toIx, -1 ) do
+  for i, cp in self.headlandTracks[ 1 ]:iterator( fromIx, toIx, -1 ) do
     table.insert( pathB, cp )
     dB = dB + cp.nextEdge.length
-    local np = self.headlandTracks[ 1 ][ ix( i - 1 )]
+    local np = self.headlandTracks[ 1 ][ i - 1 ]
     -- does this section of headland intersects the course and where?
     returnIxB, intersectionB = self:getIntersectionWithCourse( course, startIx + 1, cp, np )
     if returnIxB then break end
