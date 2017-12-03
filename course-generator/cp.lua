@@ -42,7 +42,7 @@ end
 function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
   local field = fromCpField( name, poly.points ) 
-  calculatePolygonData( field.boundary ) 
+  field.boundary:calculateData() 
 
   --  get the vehicle position
   local x, _, z = getWorldTranslation( vehicle.rootNode )
