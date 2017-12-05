@@ -505,29 +505,41 @@ function courseplay:turn(vehicle, dt)
 		-- TURN STAGES 3 - Lower implement and continue on next lane
 		----------------------------------------------------------
 		elseif vehicle.cp.turnStage == 3 then
-			local _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
-
-			local lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
-			if newTarget.turnReverse then
+			local deltaZ, lowerImplements
+      if courseplay:onAlignmentCourse( vehicle ) then
+        -- on alignment course to the waypoint, ignore front marker, we want to get the vehicle itself to get to the waypoint
+        _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz)
+        lowerImplements = deltaZ < 3  
+      else
+        _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
+        lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
+      end
+    
+      if newTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
 
 			-- Lower implement and continue on next lane
 			if lowerImplements then
-				if vehicle.cp.abortWork == nil then
+        if vehicle.cp.abortWork == nil then
 					courseplay:lowerImplements(vehicle, true, true);
 				end;
 
 				vehicle.cp.isTurning = nil;
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
-				-- move on to the turnEnd (targetNode)
-				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
-				-- and then to the next wp in front of us.
-				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-				courseplay:clearTurnTargets(vehicle);
-
+        if courseplay:onAlignmentCourse( vehicle ) then
+          courseplay:endAlignmentCourse( vehicle )
+          courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex );
+        else
+          -- move on to the turnEnd (targetNode)
+          courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+          -- and then to the next wp in front of us.
+          courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
+          courseplay:clearTurnTargets(vehicle);
+        end
+        
 				return;
 			end;
 
@@ -713,7 +725,7 @@ function courseplay:turn(vehicle, dt)
 	end
 
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-	if newTarget and (newTarget.turnReverse and reversingWorkTool ~= nil) then
+	if newTarget and ((newTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
 			if not moveForwards then
 				vehicle.nextMovingDirection = -1
@@ -2044,8 +2056,7 @@ end
 -- This makes sure the vehicle arrives at targetWaypoint in the correct
 -- direction and won't circle around it.
 --
--- The current course of the vehicle is saved and once the alignment course is completed,
--- restored so it can continue on the original course. 
+-- The alignment course is implemented as a turn maneuver.
 --
 -- No obstacles are checked.
 function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
@@ -2064,35 +2075,20 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't neeeded then.", #points )
 		return
 	end
-	
-	-- save current course (if we had at least a trace of object oriented practices
-	-- then all the course data would be in a single table and not flattened 
-	-- out across fifty different keys and it would be so much easier to save/restore a course)
-	vehicle.cp.alignment.savedWaypoints = vehicle.Waypoints
-	vehicle.cp.alignment.savedWaypointIndex = vehicle.cp.waypointIndex	
-	vehicle.cp.alignment.savedpreviousWaypointIndex = vehicle.cp.previousWaypointIndex	
-	-- for my life I won't understand why aren't we just using #vehicle.Waypoints everywhere
-	-- if we were, there'd be a need to save and restore it and maintain it, oh boy, but I don't 
-	-- have a week to refactor it everywhere 
-	vehicle.cp.alignment.savedNumWaypoints = vehicle.cp.numWaypoints
-	-- make sure we don't stop at the end of the alignment course 
-	vehicle.cp.alignment.stopAtEnd = vehicle.cp.stopAtEnd
-	vehicle.cp.stopAtEnd = false
-	vehicle.Waypoints = {}
+  courseplay:clearTurnTargets( vehicle )
 	for _, point in ipairs( points ) do
-		-- add coordinates to cx/cz _and_ x/z for Waypoints in general and for nextTargets in mode2. 
-		-- why, why, why can't we call them x and z everywhere?
-		local alignWp = { cx = point.posX, cz = point.posZ, x = point.posX, z = point.posZ } 
-		table.insert( vehicle.Waypoints, alignWp )
+		courseplay:addTurnTarget( vehicle, point.posX, point.posZ, false )
 		courseplay.debugVehicle( 14, vehicle, "(Align) Adding an alignment wp: (%1.f, %1.f)", point.posX, point.posZ )
-	end	
-	vehicle.cp.numWaypoints = #vehicle.Waypoints
-	courseplay:setWaypointIndex(vehicle, 1);
+	end
+	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].turnEnd = true
+	vehicle.cp.turnStage = 2
+	vehicle.cp.isTurning = true
+  vehicle.cp.alignment.onAlignmentCourse = true
 end
 
 -- is the vehicle currently on an alignment course?
 function courseplay:onAlignmentCourse( vehicle )
-	return vehicle.cp.alignment.savedWaypoints ~= nil
+	return vehicle.cp.alignment.onAlignmentCourse
 end
 
 function courseplay:getAlignmentCourseWpChangeDistance( vehicle )
@@ -2103,16 +2099,12 @@ end
 -- End the alignment course, restore the original course and continue on it.
 function courseplay:endAlignmentCourse( vehicle )
 	if courseplay:onAlignmentCourse( vehicle ) then
-		vehicle.Waypoints = vehicle.cp.alignment.savedWaypoints
-		vehicle.cp.numWaypoints = vehicle.cp.alignment.savedNumWaypoints
-		vehicle.cp.waypointIndex = vehicle.cp.alignment.savedWaypointIndex	
-		vehicle.cp.previousWaypointIndex = vehicle.cp.alignment.savedpreviousWaypointIndex	
-		vehicle.cp.stopAtEnd = vehicle.cp.alignment.stopAtEnd
 		courseplay:debug(string.format("%s:(Align) Ending alignment course, countinue on original course at waypoint %d.", nameNum(vehicle), vehicle.cp.waypointIndex), 14 )
-		vehicle.cp.alignment.savedWaypoints = nil
+		vehicle.cp.alignment.onAlignmentCourse = false
 	else
 		courseplay:debug(string.format("%s:(Align) Ending alignment course but not on alignment course.", nameNum(vehicle)), 14 )
 	end
+	courseplay:clearTurnTargets( vehicle )
 end
 
 -- do not delete this line

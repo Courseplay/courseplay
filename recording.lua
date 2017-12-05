@@ -13,31 +13,17 @@ function courseplay:record(vehicle)
 		local prevCx, prevCz, prevAngle = prevPoint.cx, prevPoint.cz, prevPoint.angle;
 		local dist = courseplay:distance(cx, cz, prevCx, prevCz);
 
-		if not CpManager.isDeveloper and vehicle.cp.waypointIndex <= 3 then
-			-- this is a hack to make sure that tractors won't circle around in mode 2:
-			-- the second wp is 10 meters from the first and the third is 20 meters from the second
-			-- this does not allow tight turns at the beginning of a recorded course
-			vehicle.cp.recordingTimer = dist > (vehicle.cp.waypointIndex == 3 and 20 or 10) and 101 or 1;
+		local angleDiff = abs(newAngle - prevAngle);
 
+		if vehicle.cp.drivingDirReverse == true then
+			if dist > 2 and (angleDiff > 1.5 or dist > 10) then
+				vehicle.cp.recordingTimer = 101;
+			end;
 		else
-			local angleDiff = abs(newAngle - prevAngle);
-
-			if vehicle.cp.drivingDirReverse == true then
-				if dist > 2 and (angleDiff > 1.5 or dist > 10) then
-					vehicle.cp.recordingTimer = 101;
-				end;
-			else
-				if CpManager.isDeveloper then 
-					if dist > 10 or ( angleDiff > 5 and dist > 1.5 ) then
-						-- allow for mor frequent recording in developer mode
-						vehicle.cp.recordingTimer = 101;
-					end
-				else
-					if dist > 5 and (angleDiff > 5 or dist > 10) then
-						vehicle.cp.recordingTimer = 101;
-					end;
-				end
-		end;
+			-- record more waypoints during turns
+			if dist > 10 or ( angleDiff > 5 and dist > 1.5 ) then
+				vehicle.cp.recordingTimer = 101;
+			end
 	end;
 	end;
 	vehicle.cp.curSpeed = ceil(vehicle.lastSpeedReal*3600)
