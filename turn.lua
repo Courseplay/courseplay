@@ -14,10 +14,11 @@ function courseplay:turn(vehicle, dt)
 	-- 0:	Raise implements
 	-- 1:	Create Turn maneuver (Creating waypoints to follow)
 	-- 2:	Drive Turn maneuver
-	-- 3:	Lower implement and continue on next lane
 
-	if vehicle.cp.isLoaded then
-		vehicle.cp.isTurning = nil;
+  -- abort turn if loaded and heading back to the silo except when on an alignment course
+  -- (which is a turn manuever) to the first course waypoint
+  if vehicle.cp.isLoaded and not courseplay:onAlignmentCourse( vehicle ) then
+    vehicle.cp.isTurning = nil;
 		courseplay:clearTurnTargets(vehicle);
 		return;
 	end
@@ -509,7 +510,10 @@ function courseplay:turn(vehicle, dt)
       if courseplay:onAlignmentCourse( vehicle ) then
         -- on alignment course to the waypoint, ignore front marker, we want to get the vehicle itself to get to the waypoint
         _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz)
-        lowerImplements = deltaZ < 3  
+        lowerImplements = deltaZ < 3
+        courseplay:endAlignmentCourse( vehicle )
+        courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex );
+        return
       else
         _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
         lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
@@ -529,17 +533,11 @@ function courseplay:turn(vehicle, dt)
 				vehicle.cp.isTurning = nil;
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
-        if courseplay:onAlignmentCourse( vehicle ) then
-          courseplay:endAlignmentCourse( vehicle )
-          courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex );
-        else
-          -- move on to the turnEnd (targetNode)
-          courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
-          -- and then to the next wp in front of us.
-          courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-          courseplay:clearTurnTargets(vehicle);
-        end
-        
+        -- move on to the turnEnd (targetNode)
+        courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+        -- and then to the next wp in front of us.
+        courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
+        courseplay:clearTurnTargets(vehicle);
 				return;
 			end;
 
@@ -2105,6 +2103,7 @@ function courseplay:endAlignmentCourse( vehicle )
 		courseplay:debug(string.format("%s:(Align) Ending alignment course but not on alignment course.", nameNum(vehicle)), 14 )
 	end
 	courseplay:clearTurnTargets( vehicle )
+  vehicle.cp.isTurning = nil
 end
 
 -- do not delete this line

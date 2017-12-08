@@ -1076,26 +1076,19 @@ function courseplay:drive(self, dt)
         end
         courseplay:debug( string.format( "%s: Switch to next wp: %d, distToChange %.1f, %s", nameNum( self ), self.cp.waypointIndex, distToChange, rev ), 12 )
 			end
-		else -- last waypoint: reset some variables
-			if courseplay:onAlignmentCourse( self ) then
-				-- we are at the last wp of a temporary alignment course,
-				-- restore original course and continue on that
-				courseplay:endAlignmentCourse( self )
-				courseplay:setWaypointIndex(self, 2);
-			else
-				if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
-				else
-					courseplay:setWaypointIndex(self, 1);
-				end
-				self.cp.isUnloaded = false
-				courseplay:setStopAtEnd(self, false);
-				courseplay:setIsLoaded(self, false);
-				courseplay:setIsRecording(self, false);
-				if self.cp.mode == 1 then
-					courseplay:changeRunCounter(self, false)
-				end;
-				self:setCpVar('canDrive',true,courseplay.isClient)
-			end
+		else -- last waypoint: reset some variable
+      if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
+      else
+        courseplay:setWaypointIndex(self, 1);
+      end
+      self.cp.isUnloaded = false
+      courseplay:setStopAtEnd(self, false);
+      courseplay:setIsLoaded(self, false);
+      courseplay:setIsRecording(self, false);
+      if self.cp.mode == 1 then
+        courseplay:changeRunCounter(self, false)
+      end;
+      self:setCpVar('canDrive',true,courseplay.isClient)
 		end
 	end
 end
