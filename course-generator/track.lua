@@ -83,12 +83,21 @@
 --   List of points within the field which should be bypassed like utility poles or 
 --   trees. 
 --
+-- headlandFirst
+--   Start the course with the headland. If false, will start with the up/down rows
+--   in the middle of the field and finish with the headland
+--
+-- islandBypassMode
+--   See Island.lua, SIMPLE: just move existing waypoints out of the island, CIRCLE: 
+--   generate headland track around island and use that for bypassing. Drive a full
+--   circle around the island when first bypassing.
+--   
 
 function generateCourseForField( field, implementWidth, nHeadlandPasses, headlandClockwise,
     headlandStartLocation, overlapPercent,
     nTracksToSkip, extendTracks,
     minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
-    turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes )
+    turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes, headlandFirst, islandBypassMode )
   field.boundingBox =  field.boundary:getBoundingBox()
   field.boundary = Polygon:new( field.boundary )
   field.boundary:calculateData()
@@ -161,6 +170,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
       addWpsToReturnToFirstPoint( field.course, field.boundary )
     end
     field.course:calculateData()
+    if not headlandFirst then
+      field.course = reverseCourse( field.course )
+    end   
     addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
   end
   -- flush STDOUT when not in the game for debugging
@@ -172,11 +184,15 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     field.headlandTracks = {}
   end
   if #islandNodes > 0 then
-    bypassIslandNodes(field.course, implementWidth, islandNodes)
-    --bypassIslands( field.course, implementWidth, field.islands )
+	  if islandBypassMode == Island.BYPASS_MODE_SIMPLE then
+		  Island.bypassIslandNodes(field.course, implementWidth, islandNodes)
+	  elseif islandBypassMode == Island.BYPASS_MODE_CIRCLE then
+		  for _, island in ipairs( field.islands ) do
+			  island:bypass( field.course, true, doSmooth )
+		  end
+	  end
     field.course:calculateData()
   end
-
 end
 
 --- Reverse a course. This is to build a sowing/cultivating etc. course
@@ -185,10 +201,10 @@ end
 -- This function reverses that course so it can be used for fieldwork
 -- starting in the middle of the course.
 --
-function reverseCourse( course, width, turnRadius, minHeadlandTurnAngle )
+function reverseCourse( course )
   local result = Polygon:new()
   -- remove any non-center track turns first
-  removeHeadlandTurns( course )
+  --removeHeadlandTurns( course )
   for i = #course, 1, -1 do
     local newPoint = copyPoint( course[ i ])
     -- reverse center track turns
@@ -203,7 +219,7 @@ function reverseCourse( course, width, turnRadius, minHeadlandTurnAngle )
   end
   -- regenerate non-center track turns for the reversed course
   result:calculateData()
-  addTurnsToCorners( result, width, turnRadius, minHeadlandTurnAngle )
+  --addTurnsToCorners( result, width, turnRadius, minHeadlandTurnAngle )
   return result
 end
 
@@ -229,8 +245,10 @@ function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
     local np = vertices[ i + 1 ]
     if cp.prevEdge and np.nextEdge then
       -- start a turn at the current point only if the next one is not a start of the turn already
+      -- or not an island bypass point
       -- and there really is a turn
-      if not np.turnStart and not cp.turnStart and not cp.turnEnd and 
+      if not np.turnStart and not cp.turnStart and not cp.turnEnd and
+          not cp.islandBypass and not np.islandBypass and
         math.abs( getDeltaAngle( np.nextEdge.angle, cp.prevEdge.angle )) > minHeadlandTurnAngle and
         math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > minHeadlandTurnAngle then
         cp.turnStart = true
@@ -279,76 +297,6 @@ function addTurnsToCorners2( vertices, width, turnRadius, minHeadlandTurnAngle )
   end
 end
 
-
-local function isTooCloseToAnIsland( point, islandNodes, minDistance )
-	for _, islandNode in ipairs( islandNodes ) do
-		local d = getDistanceBetweenPoints( point, islandNode )
-		if d < minDistance then
-			return true
-		end
-	end
-	return false
-end
-
-local function moveWaypointUntilFarEnoughFromIslands( wayPoint, angle, islandNodes, implementWidth )
-	-- for now, only handle smaller islands, if we need to move too much than we give up
-	-- try deviations up to six times of the work width.
-    local lastOffset = 6 * implementWidth
-
-	-- the turn start nodes point into the turn end node not in the direction of the 
-	-- track so use the incoming edge's direction, otherwise we move the turn start
-	-- wp in the wrong dir
-	if wayPoint.turnStart then 
-		realWpAngle = wayPoint.prevEdge.angle
-	else
-		realWpAngle = wayPoint.nextEdge.angle
-	end
-	for offset = 1, lastOffset do
-		local movedWaypoint = addPolarVectorToPoint( wayPoint, realWpAngle + angle, offset )
-		if not isTooCloseToAnIsland( movedWaypoint, islandNodes, implementWidth / 2 ) then
-			return movedWaypoint, offset
-		end
-	end
-	-- just return the original waypoint if we weren't able to find one far enough
-	return wayPoint, lastOffset
-end
-
---- Attempt to bypass (smaller) islands in the field.
-function bypassIslandNodes( course, width, islandNodes )
-	-- current bypass direction. Needed so once we divert to a direction (left or right) then
-	-- we stay on that side of the obstacle until we finish bypassing
-	local bypassDirection = "None"
-	for _, wayPoint in course:iterator() do
-		if isTooCloseToAnIsland( wayPoint, islandNodes, width / 2 ) then
-			-- so, we'll start walking to the left and to the right until we are at least 
-			-- width / 2 distance from the island
-			local movedWaypointToLeft, dLeft = moveWaypointUntilFarEnoughFromIslands( wayPoint, math.rad( 90 ), islandNodes, width )
-			local movedWaypointToRight, dRight = moveWaypointUntilFarEnoughFromIslands( wayPoint, math.rad( -90 ), islandNodes, width )
-			local movedWaypoint
-			if bypassDirection == "None" then
-				-- not yet bypassing, so take the direction which is closer to the original route
-				-- TODO: this means we decide on left or right based on the first waypoint which is too
-				-- close to the island. Should consider building both (left/right) bypasses and decide 
-			    -- later based on distance?
-				movedWaypoint = dLeft < dRight and movedWaypointToLeft or movedWaypointToRight
-				bypassDirection = dLeft < dRight and "Left" or "Right"
-			else
-				-- already started bypassing, so just stay on that side
-				movedWaypoint = bypassDirection == "Left" and movedWaypointToLeft or movedWaypointToRight
-			end
-			wayPoint.x, wayPoint.y = movedWaypoint.x, movedWaypoint.y
-			wayPoint.tooCloseToIsland = true
-		else
-			bypassDirection = "None"
- 		end
-	end
-end
-  
-function bypassIslands( course, width, islands )
-  for _, island in ipairs( islands ) do
-    island:bypass( course, true )
-  end  
-end 
 -- set up all island related data for the field  
 function setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 
                        doSmooth, islandNodes )
@@ -364,3 +312,4 @@ function setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetwee
     islandId = islandId + 1
   end
 end
+

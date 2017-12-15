@@ -172,6 +172,9 @@
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabecera" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Evitar obstáculos en campos" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="simple" /> <!-- just move existing waypoints out of the island -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circle" /> <!-- drive a full circle around the island when first bypassing -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  			 text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Brusco" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="Redondo" />

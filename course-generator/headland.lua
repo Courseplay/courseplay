@@ -74,7 +74,7 @@ function calculateHeadlandTrack( polygon, targetOffset, minDistanceBetweenPoints
   end
   vertices:calculateData()
   if doSmooth then
-    vertices = smooth( vertices, minSmoothAngle, maxSmoothAngle, 1, false )
+    vertices:smooth( minSmoothAngle, maxSmoothAngle, 1 )
   end
   -- only filter points too close, don't care about angle
   applyLowPassFilter( vertices, math.pi, minDistanceBetweenPoints )
@@ -95,7 +95,7 @@ end
 function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
   -- first, find the intersection of the outermost headland track and the 
   -- vehicles heading vector. 
-  local headlandPath = Polygon:new()
+  local headlandPath = Polyline:new()
   -- find closest point to starting position on outermost headland track 
   local fromIndex = getClosestPointIndex( field.headlandTracks[ 1 ], startLocation )
   local toIndex = field.headlandTracks[ 1 ]:getIndex( fromIndex + 1 ) 
@@ -166,7 +166,8 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
   if doSmooth then
     -- skip the first and last point when smoothing, this makes sure smooth() won't try
     -- to wrap around the ends like in case of a closed polygon, this is just a line here.
-    field.headlandPath = smooth( headlandPath, minSmoothAngle, maxSmoothAngle, 2, true )
+	  headlandPath:smooth( minSmoothAngle, maxSmoothAngle, 2 )
+	  field.headlandPath = headlandPath
     addMissingPassNumber( field.headlandPath )
   else
     field.headlandPath = headlandPath

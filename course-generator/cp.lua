@@ -35,6 +35,10 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
     if point.isConnectingTrack then
       wp.isConnectingTrack = true 
     end
+    if point.islandBypass then
+      -- save radius only for island bypass sections for now.
+      wp.radius = point.radius
+    end
     table.insert( vehicle.Waypoints, wp )
   end
 end
@@ -85,7 +89,10 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
                               field.extendTracks, field.minDistanceBetweenPoints,
                               minSmoothAngle, maxSmoothAngle, field.doSmooth,
                               field.roundCorners, vehicle.cp.vehicleTurnRadius, minHeadlandTurnAngle,
-  							  vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes )
+  							              vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
+                              -- ignore headland order setting when there's no headland
+                              vehicle.cp.headland.orderBefore or vehicle.cp.headland.numLanes == 0, 
+                              vehicle.cp.islandBypassMode
                              )
   
   if not status then 
@@ -96,10 +103,6 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
     return 
   end
  
-  if not vehicle.cp.headland.orderBefore then
-    -- work the center of the field first, then the headland
-    field.course = reverseCourse( field.course, workWidth, vehicle.cp.turnRadius, minHeadlandTurnAngle )
-  end
   removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 
   writeCourseToVehicleWaypoints( vehicle, field.course )

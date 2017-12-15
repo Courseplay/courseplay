@@ -91,6 +91,7 @@ function getDeltaAngle( a1, a2 )
   return a2 - a1
 end
 
+-- TODO: put this into Polyline
 --- This is kind of a low pass filter. If the 
 -- direction change to the  next point is too big, 
 -- the last point is removed
@@ -127,13 +128,14 @@ function applyLowPassFilter( polygon, angleThreshold, distanceThreshold, isLine 
   until index > #polygon
 end
 
+-- TODO: put this into Polyline
 --- make sure points in line are at least d apart
 -- except in curves 
 function space( line, angleThreshold, d )
-  local result = Polygon:new({ line[ 1 ]})
-  for i = 2, #line do
+  local result = Polyline:new({ line[ 1 ]})
+  for i = 2, #line - 1 do
     local cp, pp = line[ i ], result[ #result ]
-    local isCurve = math.abs( getDeltaAngle( cp.prevEdge.angle, pp.prevEdge.angle )) > angleThreshold 
+    local isCurve = math.abs( getDeltaAngle( cp.nextEdge.angle, pp.nextEdge.angle )) > angleThreshold 
     if getDistanceBetweenPoints( cp, pp ) > d or isCurve then
       table.insert( result, cp ) 
     end
@@ -437,6 +439,8 @@ function createRectangularPolygon( x, y, dx, dy, step )
   return rect
 end
 
+-- TODO: put this into Polyline
+
 function translatePoints( points, dx, dy )
   local result = Polygon:new()
   for i, point in points:iterator() do
@@ -447,6 +451,8 @@ function translatePoints( points, dx, dy )
   end
   return result
 end
+
+-- TODO: put this into Polyline
 
 function rotatePoints( points, angle )
   local result = Polygon:new()
@@ -520,6 +526,12 @@ function deepCopy(tab, recursive)
 	return result;
 end;
 
+function getPointInTheMiddle( a, b )
+	return a.x + (( b.x - a.x ) / 2 ),
+	a.y + (( b.y - a.y ) / 2 )
+end
+
+
 --- Less than operator with limited precision
 -- to tolerate floating point precision errors
 function lt( a, b )
@@ -533,10 +545,199 @@ end
 -- work in the Giants engine so all files must be explicetly loaded with source()
 -- and every single file added to courseplay.lua)
 
+-- for 5.1 and 5.2 compatibility
+local unpack = unpack or table.unpack
+
 -------------------------------------------------------------------------------
---- Polygon
+
+Polyline = {}
+Polyline.__index = Polyline
+
+--- Polyline constructor.
+-- Integer indices are the vertices of the polygon
+function Polyline:new( vertices )
+  local newPolyline
+  if vertices then
+    newPolyline = { unpack( vertices ) }
+  else
+    newPolyline = {}
+  end
+  return setmetatable( newPolyline, self )
+end
+
+--- Iterator that won't return nil for i < 1 and i > size
+function Polyline:iterator( from, to, step )
+  local s = step or 1
+  local i, n
+  if s > 0 then
+    i = from and math.max( from, 1 ) or 1
+    n = to and math.min( to, #self ) or #self
+  else
+    i = from and math.min( from, #self ) or #self
+    n = to and math.max( to, 1 ) or 1
+  end 
+  local lastOne = false
+  return function()
+    if ( not lastOne and #self > 0 ) then
+      if s > 0 then 
+        lastOne = i >= n 
+      else
+        lastOne = i <= n 
+      end
+      local key, value = i, self[ i ]
+      i = i + s 
+      return key, value
+    end
+  end
+end
+
+function Polyline:calculateData()
+  local directionStats = {}
+  local dAngle = 0
+  local area = 0
+  local shortestEdgeLength = 1000
+	local dx, dy, angle, length
+  for i, point in self:iterator() do
+    local pp, cp, np = self[ i - 1 ], self[ i ], self[ i + 1 ]
+	  if pp then
+		  -- vector from the previous to this point
+		  dx = cp.x - pp.x
+		  dy = cp.y - pp.y
+		  angle, length = toPolar( dx, dy )
+		  self[ i ].prevEdge = { from={ x=pp.x, y=pp.y} , to={ x=cp.x, y=cp.y }, angle=angle, length=length, dx=dx, dy=dy }
+		  if length < shortestEdgeLength then shortestEdgeLength = length end
+		  -- detect clockwise/counterclockwise direction 
+		  if pp.prevEdge and cp.prevEdge then
+			  if pp.prevEdge.angle and cp.prevEdge.angle then
+				  dAngle = dAngle + getDeltaAngle( cp.prevEdge.angle, pp.prevEdge.angle )
+			  end
+		  end
+	  end
+	  if np then
+		  -- vector from this to the next point 
+		  dx = np.x - cp.x
+		  dy = np.y - cp.y
+		  angle, length = toPolar( dx, dy )
+		  self[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
+		  if length < shortestEdgeLength then shortestEdgeLength = length end
+		  addToDirectionStats( directionStats, angle, length )
+		  area = area + ( cp.x * np.y - cp.y * np.x )
+	  end
+	  if pp and np then
+		  -- vector from the previous to the next point
+		  dx = np.x - pp.x
+		  dy = np.y - pp.y
+		  angle, length = toPolar( dx, dy )
+		  self[ i ].tangent = { angle=angle, length=length, dx=dx, dy=dy }
+		  self[ i ].deltaAngle = getDeltaAngle( self[ i ].nextEdge.angle, self[ i ].prevEdge.angle )
+		  self[ i ].radius = math.abs( self[ i ].nextEdge.length / ( 2 * math.asin( self[ i ].deltaAngle / 2 )))
+	  end
+  end
+  self.directionStats = directionStats
+  self.bestDirection = getBestDirection( directionStats )
+  self.isClockwise = dAngle > 0
+  self.area = self.isClockwise and - area / 2 or area / 2
+  self.shortestEdgeLength = shortestEdgeLength
+  self.boundingBox = self:getBoundingBox()
+end
+
+function Polyline:getBoundingBox()
+  local minX, maxX, minY, maxY = math.huge, -math.huge, math.huge, -math.huge
+  for i, point in self:iterator() do
+    if ( point.x < minX ) then minX = point.x end
+    if ( point.y < minY ) then minY = point.y end
+    if ( point.x > maxX ) then maxX = point.x end
+    if ( point.y > maxY ) then maxY = point.y end
+  end
+  return { minX=minX, maxX=maxX, minY=minY, maxY=maxY }
+end
+
+function Polyline:hasTurnWaypoint( iterator )
+	for _, p in ( iterator or self:iterator()) do
+		if p.turnStart or p.turnEnd then
+			return true
+		end
+	end
+	return false
+end
+
+-- spline functions: smooth, tuck and refine
+-- http://stackoverflow.com/questions/29612584/creating-cubic-and-or-quadratic-bezier-curves-to-fit-a-path
+
+-- insert a point in the middle of each edge.
+function Polyline:refine( iterator, minSmoothAngle, maxSmoothAngle )
+	local pointsToInsert = {}
+	-- iterate through the existing table but do not insert the 
+	-- new points, only remember the index where they would end up
+	-- (as we do not want to modify the table while iterating)
+	local ix = -1
+	for i, _ in iterator do
+		-- initialize ix to the first value of i
+		if ix < 0 then ix = i end
+		if self[ i + 1 ] and self[ i ].deltaAngle then
+			if math.abs( self[ i ].deltaAngle ) > minSmoothAngle and
+			   math.abs( self[ i ].deltaAngle ) < maxSmoothAngle then
+				-- insert points only when there is really a curve here
+				-- also, preserve all attributes of the point
+				local newPoint = copyPoint( self[ i ])
+				newPoint.x, newPoint.y =  getPointInTheMiddle( self[ i ], self[ i + 1 ])
+				newPoint.text = 'refined'
+				newPoint.smoothed = true
+				ix = ix + 1
+				table.insert( pointsToInsert, { ix = ix, point = newPoint })
+			end
+		end
+		self[ i ].smoothed = true
+		ix = ix + 1;
+	end
+	for _, p in ipairs( pointsToInsert ) do
+		table.insert( self, p.ix, p.point )
+	end
+	self:calculateData()
+end
+
+-- move the current point a bit towards the previous and next. 
+function Polyline:tuck( iterator, s, minSmoothAngle, maxSmoothAngle )
+	for i, _ in iterator do
+		local pp, cp, np = self[ i - 1 ], self[ i ], self[ i + 1 ]
+		-- tuck points only when there is really a curve here
+		-- but if this is a line, don't touch the ends
+		if pp and np and 
+			math.abs( self[ i ].deltaAngle ) > minSmoothAngle and
+			math.abs( self[ i ].deltaAngle ) < maxSmoothAngle then
+			-- mid point between the previous and next
+			local midPNx, midPNy = getPointInTheMiddle( pp, np )
+			-- vector from current point to mid point
+			local mx, my = midPNx - cp.x, midPNy - cp.y
+			-- move current point towards (or away from) the midpoint by the factor s
+			self[ i ] = { x=cp.x + mx * s, y=cp.y + my * s }
+		else
+			self[ i ] = cp
+		end
+	end
+	self:calculateData()
+end
+
+function Polyline:smooth( minSmoothAngle, maxSmoothAngle, order, from, to )
+	if ( order <= 0  ) then
+		return
+	else
+		local origSize = #self
+		self:refine( self:iterator( from, to ), minSmoothAngle, maxSmoothAngle )
+		-- if refine added waypoints we need to extend the range
+		if to then to = to + #self - origSize end
+		self:tuck( self:iterator( from, to ), 0.5, minSmoothAngle, maxSmoothAngle )
+		self:tuck( self:iterator( from, to ), -0.15, minSmoothAngle, maxSmoothAngle )
+		return self:smooth( minSmoothAngle, maxSmoothAngle, order - 1, from, to )
+	end
+end
+
+-------------------------------------------------------------------------------
 
 Polygon = {}
+-- base class is the polyline
+setmetatable( Polygon, { __index = Polyline })
+
 Polygon.__index = function( t, k )
   if not rawget( t, k ) and type( k ) == "number" then
     -- roll over integer indexes
@@ -546,20 +747,6 @@ Polygon.__index = function( t, k )
   end
 end
 
--- for 5.1 and 5.2 compatibility
-local unpack = unpack or table.unpack
-
---- Polygon constructor.
--- Integer indices are the vertices of the polygon
-function Polygon:new( vertices )
-  local newPolygon
-  if vertices then
-    newPolygon = { unpack( vertices ) }
-  else
-    newPolygon = {}
-  end
-  return setmetatable( newPolygon, self )
-end
 
 --- Always return a valid index to allow iterating over
 -- the beginning or end of a closed polygon.
@@ -575,9 +762,9 @@ function Polygon:getIndex( index )
   end
 end
 
---- Iterate through an elements of a polygon starting
+--- Iterate through elements of a polygon starting
 -- between any from and to indexes with the given step.
--- This will do a full circle, that is roll over from 
+-- This will do a full circle, that is, roll over from 
 -- #polygon to 1 or 1 to #polygon if step < 0
 function Polygon:iterator( from, to, step ) 
   local i = from or 1
@@ -594,55 +781,3 @@ function Polygon:iterator( from, to, step )
   end
 end
 
-function Polygon:calculateData()
-  local directionStats = {}
-  local dAngle = 0
-  local area = 0
-  local shortestEdgeLength = 1000
-  for i, point in self:iterator() do
-    local pp, cp, np = self[ i - 1 ], self[ i ], self[ i + 1 ]
-    -- vector from the previous to the next point
-    local dx = np.x - pp.x
-    local dy = np.y - pp.y
-    local angle, length = toPolar( dx, dy )
-    self[ i ].tangent = { angle=angle, length=length, dx=dx, dy=dy }
-    -- vector from the previous to this point
-    dx = cp.x - pp.x
-    dy = cp.y - pp.y
-    angle, length = toPolar( dx, dy )
-    self[ i ].prevEdge = { from={ x=pp.x, y=pp.y} , to={ x=cp.x, y=cp.y }, angle=angle, length=length, dx=dx, dy=dy }
-    -- vector from this to the next point 
-    dx = np.x - cp.x
-    dy = np.y - cp.y
-    angle, length = toPolar( dx, dy )
-    self[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
-    self[ i ].deltaAngle = getDeltaAngle( self[ i ].nextEdge.angle, self[ i ].prevEdge.angle )
-    self[ i ].turnRadius = math.abs( self[ i ].nextEdge.length / ( 2 * math.asin( self[ i ].deltaAngle / 2 )))
-    if length < shortestEdgeLength then shortestEdgeLength = length end
-    -- detect clockwise/counterclockwise direction 
-    if pp.prevEdge and cp.prevEdge then
-      if pp.prevEdge.angle and cp.prevEdge.angle then
-        dAngle = dAngle + getDeltaAngle( cp.prevEdge.angle, pp.prevEdge.angle )
-      end
-    end
-    addToDirectionStats( directionStats, angle, length )
-    area = area + ( cp.x * np.y - cp.y * np.x )
-  end
-  self.directionStats = directionStats
-  self.bestDirection = getBestDirection( directionStats )
-  self.isClockwise = dAngle > 0
-  self.area = self.isClockwise and - area / 2 or area / 2
-  self.shortestEdgeLength = shortestEdgeLength
-  self.boundingBox = self:getBoundingBox()
-end
-
-function Polygon:getBoundingBox()
-  local minX, maxX, minY, maxY = math.huge, -math.huge, math.huge, -math.huge
-  for i, point in self:iterator() do
-    if ( point.x < minX ) then minX = point.x end
-    if ( point.y < minY ) then minY = point.y end
-    if ( point.x > maxX ) then maxX = point.x end
-    if ( point.y > maxY ) then maxY = point.y end
-  end
-  return { minX=minX, maxX=maxX, minY=minY, maxY=maxY }
-end 

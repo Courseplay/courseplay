@@ -144,6 +144,9 @@ function courseplay:drive(self, dt)
 		end;
 	end;
   
+  local isTightTurn
+  cx, cz, isTightTurn = courseplay.applyTightTurnOffset( self, cx, cz )
+
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
 		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz, 0, 0, 1)
@@ -156,7 +159,7 @@ function courseplay:drive(self, dt)
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
-	-- courseplay:debug(('ctx=%.2f, ctz=%.2f, cx=%.2f, cz=%.2f, distanceToTarget=%.2f'):format(ctx, ctz, cx, cz, self.cp.distanceToTarget), 2);
+	courseplay:debug(('ctx=%.2f, ctz=%.2f, cx=%.2f, cz=%.2f, distanceToTarget=%.2f'):format(ctx, ctz, cx, cz, self.cp.distanceToTarget), 2);
 	local fwd;
 	local distToChange;
 
@@ -825,9 +828,8 @@ function courseplay:drive(self, dt)
 	or 	(isAtEnd and self.Waypoints[self.cp.waypointIndex].rev)
 	or	(not isAtEnd and (self.Waypoints[self.cp.waypointIndex].rev or self.Waypoints[self.cp.waypointIndex + 1].rev or self.Waypoints[self.cp.waypointIndex + 2].rev))
 	or	(workSpeed ~= nil and workSpeed == 0.5) -- baler in mode 6 , slow down
-	or isCrawlingToWait		
-	-- slow down for the alignment turn
-	or ( courseplay:onAlignmentCourse( self ) and self.cp.distanceToTarget < 10 )
+	or isCrawlingToWait 
+  or isTightTurn
 	then
 		refSpeed = math.min(self.cp.speeds.turn,refSpeed);              -- we are on the field, go field speed
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
@@ -941,9 +943,7 @@ function courseplay:drive(self, dt)
 
   local beforeReverse, afterReverse
 	-- DISTANCE TO CHANGE WAYPOINT
-	if courseplay:onAlignmentCourse( self ) then
-		distToChange = courseplay:getAlignmentCourseWpChangeDistance( self )
-	elseif self.cp.waypointIndex == 1 or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turnStart then
+  if ( self.cp.waypointIndex == 1 and not self.cp.alignment.justFinished ) or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turnStart then
 		if self.cp.hasSpecializationArticulatedAxis then
 			distToChange = self.cp.mode == 9 and 2 or 1; -- ArticulatedAxis vehicles
 		else
@@ -971,7 +971,7 @@ function courseplay:drive(self, dt)
 				distToChange = 2; --orig:1
 			end;
 		elseif self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7 then
-			distToChange = 5;
+      distToChange = 5 
 		elseif self.cp.mode == 9 then
 			distToChange = 4;
 		else
@@ -1000,18 +1000,19 @@ function courseplay:drive(self, dt)
 	if self.cp.shortestDistToWp == nil or self.cp.shortestDistToWp > self.cp.distanceToTarget then
     local shortestDistToWp = Utils.getNoNil( self.cp.shortestDistToWp, -1 )
 		self.cp.shortestDistToWp = self.cp.distanceToTarget
-    --courseplay:debug( string.format( "shortestDistToWp %1.f, distanceToTarget %.1f", shortestDistToWp, self.cp.distanceToTarget ), 12 )
+    -- courseplay:debug( string.format( "shortestDistToWp %.3f, distanceToTarget %.3f", shortestDistToWp, self.cp.distanceToTarget ), 12 )
 	end
 
 	if self.isReverseDriving and not isFinishingWork then
 		lz = -lz
 	end
 
-	-- if distance grows i must be circling
-	if self.cp.distanceToTarget > self.cp.shortestDistToWp and self.cp.waypointIndex > 3 and self.cp.distanceToTarget < 15 and self.Waypoints[self.cp.waypointIndex].rev ~= true then
+	-- if distance grows i must be circling. Allow for half a meter to tolerate slight calculation errors, especially at 
+  -- tight turns where we constantly recalculate the target
+	if self.cp.distanceToTarget > ( self.cp.shortestDistToWp + 0.5 ) and self.cp.waypointIndex > 3 and self.cp.distanceToTarget < 15 and self.Waypoints[self.cp.waypointIndex].rev ~= true then
 		distToChange = self.cp.distanceToTarget + 1
-    courseplay:debug( string.format( "%s: circling? wp=%d distToChange %.1f, shortestDistToWp %1.f, distanceToTarget %.1f", 
-                                     nameNum( self ), self.cp.waypointIndex, self.cp.shortestDistToWp, distToChange, self.cp.distanceToTarget ), 12 )
+    courseplay.debugVehicle( 12, self, "circling? wp=%d distToChange %.1f, shortestDistToWp %.3f, distanceToTarget %.3f", 
+      self.cp.waypointIndex, distToChange, self.cp.shortestDistToWp, self.cp.distanceToTarget )
 	end
 
 	if self.cp.distanceToTarget > distToChange or WpUnload or WpLoadEnd or isFinishingWork then
@@ -1071,7 +1072,7 @@ function courseplay:drive(self, dt)
 			else
         -- SWITCH TO THE NEXT WAYPOINT
 				courseplay:setWaypointIndex(self, self.cp.waypointIndex + 1);
-				
+        courseplay.calculateTightTurnOffset( self )
         local rev = ""
         if beforeReverse then 
           rev = "beforeReverse"
@@ -1395,6 +1396,74 @@ function courseplay:getVehicleOffsettedCoords(vehicle, x, z, isLoadUnloadWait, s
 
 	return x, z;
 end;
+
+--- If we are towing an implement, move to a bigger radius in tight turns 
+-- making sure that the towed implement's trajectory remains closer to the 
+-- course.
+function courseplay.calculateTightTurnOffset( vehicle )
+  if vehicle.cp.mode ~= courseplay.MODE_SEED_FERTILIZE and vehicle.cp.mode ~= courseplay.MODE_FIELDWORK then
+    vehicle.cp.tightTurnOffset = 0
+    return
+  end
+  -- first of all, does the current waypoint have radius data?
+  local r = vehicle.Waypoints[ vehicle.cp.waypointIndex ].radius
+  if not r then
+    vehicle.cp.tightTurnOffset = 0
+    return 
+  end
+  -- is there a wheeled implement behind the tractor and is it on a pivot?
+  local workTool = courseplay:getFirstReversingWheeledWorkTool( vehicle )
+  if not workTool or not workTool.cp.realTurningNode then
+    vehicle.cp.tightTurnOffset = 0
+    return
+  end
+  -- get the distance between the tractor and the towed implement's turn node
+  -- (not quite accurate when the angle between the tractor and the tool is high)
+  local tractorX, _, tractorZ = getWorldTranslation( vehicle.cp.DirectionNode )
+  local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
+  local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+
+  -- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
+  -- we ignore it.
+  if towBarLength < r / 3 then
+    vehicle.cp.tightTurnOffset = 0
+    return
+  end
+  
+  -- Ok, looks like a tight turn, so we need to move a bit left or right of the course
+  -- to keep the tool on the course.
+  local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
+  local offset = rTractor - r
+
+  -- figure out left or right now?
+  local nextAngle = vehicle.Waypoints[ math.min( vehicle.cp.waypointIndex + 1, #vehicle.Waypoints )].angle
+  local currentAngle = vehicle.Waypoints[ vehicle.cp.waypointIndex ].angle
+  if not nextAngle or not currentAngle then
+    vehicle.cp.tightTurnOffset = 0
+    return
+  end
+
+  if getDeltaAngle( math.rad( nextAngle ), math.rad( currentAngle )) < 0 then offset = -offset end
+
+  -- smooth the offset a bit to avoid sudden changes
+  local smoothOffset = ( offset + 2 * Utils.getNoNil( vehicle.cp.tightTurnOffset, 0 )) / 3
+  vehicle.cp.tightTurnOffset = smoothOffset
+
+  courseplay.debugVehicle( 12, vehicle, 'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',
+    r, towBarLength, currentAngle, nextAngle, offset, smoothOffset )
+end
+
+--- Apply the offset for tight turns calculated earlier to the target
+-- coordinates. Return true if any offset applied.
+function courseplay.applyTightTurnOffset( vehicle, x, z )
+  if not vehicle.cp.tightTurnOffset or math.abs( vehicle.cp.tightTurnOffset ) < 0.1 then
+    return x, z, false
+  end
+  local currentWpNode = courseplay.createNode( 'currentWpNode', x, z, math.rad( vehicle.Waypoints[ vehicle.cp.waypointIndex ].angle ))
+  local newX, _, newZ = localToWorld( currentWpNode, vehicle.cp.tightTurnOffset, 0, 0 )
+  courseplay.destroyNode( currentWpNode )
+  return newX, newZ, true
+end
 
 function courseplay:isInWaitArea(vehicle, wpBefore, wpAfter, fromWP, waitIndex, toWaitIndex)
 	local fromWP = Utils.getNoNil(fromWP, 0);

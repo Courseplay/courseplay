@@ -1106,8 +1106,7 @@ function courseplay:switchStartingCorner(vehicle)
 	end;
 	vehicle.cp.startingCorner = newStartingCorner
 	vehicle.cp.hasStartingCorner = true;
-	if vehicle.cp.startingCorner == 5 
-	or vehicle.cp.startingCorner == 6 then
+	if vehicle.cp.isNewCourseGenSelected() then
 		-- starting direction is always auto when starting corner is vehicle location
 		vehicle.cp.hasStartingDirection = true;
 		vehicle.cp.startingDirection = 5;
@@ -1145,8 +1144,7 @@ function courseplay:changeStartingDirection(vehicle)
 		elseif vehicle.cp.startingCorner == 4 then --SE
 			validDirections[1] = 4; --W
 			validDirections[2] = 1; --N
-		elseif vehicle.cp.startingCorner == 5 or
-					 vehicle.cp.startingCorner == 6 then -- Vehicle location
+		elseif vehicle.cp.isNewCourseGenSelected() then -- Vehicle location
 			-- everything is auto generated, headland starts at vehicle location
 			validDirections[1] = 5; -- auto generated
 			vehicle:setCpVar('startingDirection',5,courseplay.isClient);
@@ -1192,8 +1190,11 @@ function courseplay:toggleHeadlandOrder(vehicle)
 	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 
-function courseplay:toggleBypassIslands(vehicle)
-	vehicle.cp.bypassIslands = not vehicle.cp.bypassIslands;
+function courseplay:changeIslandBypassMode(vehicle)
+	vehicle.cp.islandBypassMode = vehicle.cp.islandBypassMode + 1
+	if vehicle.cp.islandBypassMode > Island.BYPASS_MODE_MAX then
+		vehicle.cp.islandBypassMode = Island.BYPASS_MODE_MIN
+	end
 end;
 
 function courseplay:changeHeadlandTurnType( vehicle )

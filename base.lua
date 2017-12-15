@@ -480,11 +480,14 @@ function courseplay:load(savegame)
 	self.cp.hasStartingCorner = false;
 	self.cp.startingDirection = 0;
 	self.cp.hasStartingDirection = false;
+	self.cp.isNewCourseGenSelected = function()
+		return self.cp.hasStartingCorner and self.cp.startingCorner > 4
+	end
 	self.cp.returnToFirstPoint = false;
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	self.cp.ridgeMarkersAutomatic = true;
-	self.cp.bypassIslands = false;
+	self.cp.islandBypassMode = Island.BYPASS_MODE_NONE;
 	self.cp.headland = {
 		maxNumLanes = 6;
 		-- with the old, manual direction selection course generator

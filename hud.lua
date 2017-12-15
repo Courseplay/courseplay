@@ -1170,7 +1170,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
 		end
 		-- line 3 = starting corner
-		if ( vehicle.cp.startingCorner == 5 or vehicle.cp.startingCorner == 6 ) and not vehicle.cp.headland.orderBefore then
+		if vehicle.cp.isNewCourseGenSelected() and not vehicle.cp.headland.orderBefore then
 			vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_ENDING_LOCATION');
 		else
 			vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_LOCATION');
@@ -1202,7 +1202,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc('COURSEPLAY_HEADLAND');
 		vehicle.cp.hud.content.pages[8][6][3].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
 		-- only allow for the new course generator
-		if vehicle.cp.headland.numLanes > 0 and vehicle.cp.hasStartingCorner and vehicle.cp.startingCorner > 4 then
+		if vehicle.cp.headland.numLanes > 0 and vehicle.cp.isNewCourseGenSelected() then
 			vehicle.cp.hud.content.pages[8][6][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
 		else
 			vehicle.cp.hud.content.pages[8][6][2].text = '---'
@@ -1210,8 +1210,13 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- line 7 = bypass islands
 		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_BYPASS_ISLANDS');
-		vehicle.cp.hud.content.pages[8][7][2].text = vehicle.cp.bypassIslands and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-		
+		-- only allow for the new course generator
+		if vehicle.cp.isNewCourseGenSelected() then
+			vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( Island.bypassModeText[ vehicle.cp.islandBypassMode ]);
+		else
+			vehicle.cp.hud.content.pages[8][7][2].text = '---'
+		end
+
 		-- line 8 Multiple Tools
 		vehicle.cp.hud.content.pages[8][8][1].text = courseplay:loc('COURSEPLAY_MULTI_TOOLS');
 		vehicle.cp.hud.content.pages[8][8][2].text = string.format("%d (%.1f%s)",vehicle.cp.multiTools,vehicle.cp.multiTools*vehicle.cp.workWidth,courseplay:loc('COURSEPLAY_UNIT_METER'));
@@ -1816,7 +1821,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 8, nil, 'changeHeadlandTurnType', nil, self.col1posX, self.linesPosY[6], self.col3posX[ self.PAGE_COURSE_GENERATION ] - self.col1posX, self.lineHeight, 6, nil, true);
 
 	-- line 7 (islands)
-	courseplay.button:new(vehicle, 8, nil, 'toggleBypassIslands',  nil, self.col1posX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
+	courseplay.button:new(vehicle, 8, nil, 'changeIslandBypassMode',  nil, self.col1posX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
 	
 	-- line 8 multi tools
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeMultiTools', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);

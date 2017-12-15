@@ -18,6 +18,83 @@ function Island:new( islandId )
   return newIsland
 end
 
+-- bypass types
+Island.BYPASS_MODE_MIN = 1
+Island.BYPASS_MODE_NONE = 1
+Island.BYPASS_MODE_SIMPLE = 2
+Island.BYPASS_MODE_CIRCLE = 3
+Island.BYPASS_MODE_MAX = 3
+
+Island.bypassModeText = {
+	'COURSEPLAY_ISLAND_BYPASS_MODE_NONE',
+	'COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE',
+	'COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE' }
+
+function Island.isTooCloseToAnyIsland( point, islandNodes, minDistance )
+	for _, islandNode in ipairs( islandNodes ) do
+		local d = getDistanceBetweenPoints( point, islandNode )
+		if d < minDistance then
+			return true
+		end
+	end
+	return false
+end
+
+function Island.moveWaypointUntilFarEnoughFromIslands( wayPoint, angle, islandNodes, implementWidth )
+	-- for now, only handle smaller islands, if we need to move too much than we give up
+	-- try deviations up to six times of the work width.
+	local lastOffset = 6 * implementWidth
+
+	-- the turn start nodes point into the turn end node not in the direction of the 
+	-- track so use the incoming edge's direction, otherwise we move the turn start
+	-- wp in the wrong dir
+	if wayPoint.turnStart then
+		realWpAngle = wayPoint.prevEdge.angle
+	else
+		realWpAngle = wayPoint.nextEdge.angle
+	end
+	for offset = 1, lastOffset do
+		local movedWaypoint = addPolarVectorToPoint( wayPoint, realWpAngle + angle, offset )
+		if not Island.isTooCloseToAnyIsland( movedWaypoint, islandNodes, implementWidth / 2 ) then
+			return movedWaypoint, offset
+		end
+	end
+	-- just return the original waypoint if we weren't able to find one far enough
+	return wayPoint, lastOffset
+end
+
+--- Attempt to bypass (smaller) islands in the field. This is used for Island.BYPASS_MODE_SIMPLE,
+-- just moves the existing waypoints out of the island left or right.
+function Island.bypassIslandNodes( course, width, islandNodes )
+	-- current bypass direction. Needed so once we divert to a direction (left or right) then
+	-- we stay on that side of the obstacle until we finish bypassing
+	local bypassDirection = "None"
+	for _, wayPoint in course:iterator() do
+		if Island.isTooCloseToAnyIsland( wayPoint, islandNodes, width / 2 ) then
+			-- so, we'll start walking to the left and to the right until we are at least 
+			-- width / 2 distance from the island
+			local movedWaypointToLeft, dLeft = Island.moveWaypointUntilFarEnoughFromIslands( wayPoint, math.rad( 90 ), islandNodes, width )
+			local movedWaypointToRight, dRight = Island.moveWaypointUntilFarEnoughFromIslands( wayPoint, math.rad( -90 ), islandNodes, width )
+			local movedWaypoint
+			if bypassDirection == "None" then
+				-- not yet bypassing, so take the direction which is closer to the original route
+				-- TODO: this means we decide on left or right based on the first waypoint which is too
+				-- close to the island. Should consider building both (left/right) bypasses and decide 
+				-- later based on distance?
+				movedWaypoint = dLeft < dRight and movedWaypointToLeft or movedWaypointToRight
+				bypassDirection = dLeft < dRight and "Left" or "Right"
+			else
+				-- already started bypassing, so just stay on that side
+				movedWaypoint = bypassDirection == "Left" and movedWaypointToLeft or movedWaypointToRight
+			end
+			wayPoint.x, wayPoint.y = movedWaypoint.x, movedWaypoint.y
+			wayPoint.tooCloseToIsland = true
+		else
+			bypassDirection = "None"
+		end
+	end
+end
+
 function Island.showPassOrTrackNumber( p )
   if p.passNumber then return string.format( 'pass %d', p.passNumber ) end
   if p.trackNumber then return string.format( 'track %d', p.trackNumber ) end
@@ -142,10 +219,15 @@ function Island:getIntersectionWithCourse( course, startIx, p1, p2 )
   return nil, nil
 end
 
---- Add all the original properties of the course waypoints to the
+--- TODO: Add all the original properties of the course waypoints to the
 -- newly created bypass waypoints.
--- Also, add missing turnStart/turnEnd properties
-function Island:decorateBypassWaypoints( course, fromIx, toIx )
+-- TODO: Also, add missing turnStart/turnEnd properties
+function Island:decorateBypassWaypoints( course )
+  -- calculate point attributes, especially the radius
+  course:calculateData()
+  for _, p in course:iterator() do
+    p.islandBypass = true
+  end
 end
 
 --- Find the spot where this track (up/down row or headland) meets again the
@@ -153,11 +235,11 @@ end
 -- @param startIx index of course waypoint where it intersects the headland
 -- @param fromIx 
 -- @param toIx course intersected the headland polygon between the indexes fromIx-toIx 
-function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle )
+function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle, doSmooth )
   -- walk around the island on the  headland until we meet the course again.
   -- we can start walking either at fromIx or at toIx, that is to go left or right
   -- (don't know which one is left or right but that is not relevant)
-  local pathA, pathB = {}, {}
+  local pathA, pathB = Polyline:new(), Polyline:new()
   -- index of course waypoint andintersection point where we again met it
   local returnIxA, returnIxB, intersectionA, intersectionB
   local dA, dB = 0, 0
@@ -196,30 +278,43 @@ function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle )
   -- now pick the shortest path
   local returnIx = dA < dB and returnIxA or returnIxB
   local path = dA < dB and pathA or pathB
+  self:decorateBypassWaypoints( path )
   if returnIx then
     local removeFrom, insertAt = startIx + 1, startIx
-    -- local removeFrom, insertAt = startIx, startIx - 1 -- if we don't want to have the intersection point in the course
-    -- remove original course waypoints
-    courseGenerator.debug( "Island %d: Removing original waypoints (on the island) %d-%d", self.id, removeFrom, returnIx )
-    for i = removeFrom, returnIx do
-      table.remove( course, removeFrom )
-    end
-    -- add the headland waypoints instead
-    courseGenerator.debug( "Island %d: Adding %d headland path waypoints around the island starting at %d", self.id, 
-      #path, insertAt )
-    for i, p in ipairs( path ) do
-      self:insertWaypoint( course, insertAt + i, p, course[ removeFrom - 1 ])
-    end
-    -- continue after the inserted headland piece
-    return startIx + #path
+	  if course:hasTurnWaypoint( course:iterator( removeFrom, returnIx )) then
+		  -- we don't really know what to do if there are turn waypoints on the island, so
+		  -- just don't change anything in that case
+		  courseGenerator.debug( "Island %d: Course has turn start or end waypoints between %d-%d, no bypass", self.id, removeFrom, returnIx )
+	  else
+		  -- local removeFrom, insertAt = startIx, startIx - 1 -- if we don't want to have the intersection point in the course
+		  -- remove original course waypoints
+		  courseGenerator.debug( "Island %d: Removing original waypoints (on the island) %d-%d", self.id, removeFrom, returnIx )
+		  for i = removeFrom, returnIx do
+			  table.remove( course, removeFrom )
+		  end
+		  -- add the headland waypoints instead
+		  courseGenerator.debug( "Island %d: Adding %d headland path waypoints around the island starting at %d", self.id,
+		    #path, insertAt )
+		  for i, p in ipairs( path ) do
+			  self:insertWaypoint( course, insertAt + i, p, course[ removeFrom - 1 ])
+		  end
+		  local origLength = #course
+		  if doSmooth then
+			  course:smooth( math.rad( 20 ), math.rad( 120 ), 2, startIx - 1, startIx + #path + 1 )
+		  end 
+		  -- continue after the inserted headland piece (just need to adjust 
+		  -- the length as smooth may have added waypoints
+			return startIx + #path + #course - origLength
+	  end
   end
   -- nothing changed, continue
   return startIx
 end
 
---- Adjust course to bypass this island
--- @param doCircle drive a full circle around the island
-function Island:bypass( course, doCircle )
+--- Adjust course to bypass this island. Used for Island.BYPASS_MODE_CIRCLE. 
+-- this will bypass the island on a headland generated around it.
+-- @param doCircle drive a full circle around the island when first hit.
+function Island:bypass( course, doCircle, doSmooth)
   local enterIntersection, exitIntersection, enterIx
   local ix = 1
   while ix < #course - 1 do
@@ -235,7 +330,8 @@ function Island:bypass( course, doCircle )
         -- add here a waypoint for the exit too
         self:insertWaypoint( course, ix + 2, intersections[ 2 ].point, course[ ix ])
       end
-      ix = self:bypassOnHeadland( course, ix + 1, intersections[ 1 ].fromIx, intersections[ 1 ].toIx, doCircle )
+	    local startIx = ix + 1
+      ix = self:bypassOnHeadland( course, startIx, intersections[ 1 ].fromIx, intersections[ 1 ].toIx, doCircle, doSmooth )
     end
     ix = ix + 1
   end

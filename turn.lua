@@ -728,7 +728,7 @@ function courseplay:turn(vehicle, dt)
 			if not moveForwards then
 				vehicle.nextMovingDirection = -1
 			else
-				vehicle.nextMovingDirection = 1
+				vfehicle.nextMovingDirection = 1
 			end
 		end
 
@@ -2015,8 +2015,9 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
 	local dx, _, _ = worldToLocal( wpNode, vx, vy, vz )
 	-- right -1, left +1
 	local leftOrRight = dx < 0 and -1 or 1
-	-- center of turn circle
-	local c1x, _, c1z = localToWorld( wpNode, leftOrRight * turnRadius, 0, 0 )
+	-- center of turn circle. Also, move it back a meter so the alignment course ends up 
+  -- a bit further back from the waypoint to prevent circling
+	local c1x, _, c1z = localToWorld( wpNode, leftOrRight * turnRadius, 0, -1 )
 	local vehicleToC1Distance = courseplay:distance( vx, vz, c1x, c1z )
 	local vehicleToC1Direction = math.atan2(c1x - vx, c1z - vz )
 	local angleBetweenTangentAndC1 = math.pi / 2 - math.asin( turnRadius / vehicleToC1Distance )
@@ -2082,6 +2083,7 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
 	vehicle.cp.turnStage = 2
 	vehicle.cp.isTurning = true
   vehicle.cp.alignment.onAlignmentCourse = true
+  vehicle.cp.alignment.justFinished = false
 end
 
 -- is the vehicle currently on an alignment course?
@@ -2099,6 +2101,10 @@ function courseplay:endAlignmentCourse( vehicle )
 	if courseplay:onAlignmentCourse( vehicle ) then
 		courseplay:debug(string.format("%s:(Align) Ending alignment course, countinue on original course at waypoint %d.", nameNum(vehicle), vehicle.cp.waypointIndex), 14 )
 		vehicle.cp.alignment.onAlignmentCourse = false
+    -- that's for the waypoint change distance calculation in drive.lua, for the first waypoint it is 0.5 meters 
+    -- but we won't be able to get that close every time which results in circling. So set this flag to make 
+    -- drive.lua pick a bigger waypoint switch distance
+    vehicle.cp.alignment.justFinished = true
 	else
 		courseplay:debug(string.format("%s:(Align) Ending alignment course but not on alignment course.", nameNum(vehicle)), 14 )
 	end

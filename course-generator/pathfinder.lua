@@ -249,9 +249,9 @@ function pathFinder.findPath( fromNode, toNode, polygon, fruit, customHasFruitFu
   local path = a_star.path( fromNode, toNode, grid, isValidNeighbor, getNeighbors, gScoreToNeighbor, #grid * 0.75 )
 	courseGenerator.debug( "Number of iterations %d", count)
   if path then
-    path = Polygon:new( path )
+    path = Polyline:new( path )
     path:calculateData()
-    path = smooth( path, math.rad( 0 ), math.rad( 180 ), 1, true )
+    path:smooth( math.rad( 0 ), math.rad( 180 ), 1 )
 	  courseGenerator.debug( "Path generated with %d points", #path )
     path:calculateData()
     path = space( path, math.rad( 15 ), 5 )
