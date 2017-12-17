@@ -23,7 +23,7 @@ function CpManager:setUpDebugChannels()
 			defaultActive[6] = true;
 		end;
 	end;
-defaultActive[5] = true;
+
 	-- DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
 	courseplay.numDebugChannels = 23;

@@ -24,6 +24,7 @@ function courseplay:record(vehicle)
 			if dist > 10 or ( angleDiff > 5 and dist > 1.5 ) then
 				vehicle.cp.recordingTimer = 101;
 			end
+		end;
 	end;
 	vehicle.cp.curSpeed = ceil(vehicle.lastSpeedReal*3600)
 	if vehicle.cp.recordingTimer > 100 then
