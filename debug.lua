@@ -112,8 +112,13 @@ end
 -- issues in the log file so developers can find relevant log entries easier.
 function courseplay.logDebugMarker()
 	local timestamp = getDate( "%H:%M:%S")
-	print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp, 
-		g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
+	if g_server ~= nil then
+		print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp, 
+			g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
+	else
+		print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp, 
+			g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
+	end
 end
 
 local lines = {
