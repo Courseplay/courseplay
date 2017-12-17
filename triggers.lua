@@ -50,7 +50,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			
 			-- is this a traffic vehicle?
 			local cm = getCollisionMask(otherId);
-			if vehicle == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(otherId),'Trigger') then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
+			if vehicle == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(otherId),'Trigger') and not string.match(getName(otherId),'trigger') then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
 				courseplay:debug(string.format("%s: 	onEnter, g_currentMission.nodeToVehicle[%s] == nil -> setting %s as aPath vehicle", nameNum(self),otherId,tostring(getName(otherId))), 3);
 				local pathVehicle = {}
 				pathVehicle.rootNode = otherId

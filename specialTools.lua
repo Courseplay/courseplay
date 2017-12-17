@@ -356,7 +356,21 @@ function courseplay:setNameVariable(workTool)
 	-- Arcusin FSX 63.72 (Bale Loader) [Giants]
 	elseif workTool.cp.xmlFileName == 'arcusinFSX6372.xml' then
 		workTool.cp.isArcusinFSX6372 = true;
-
+		
+	--Krone Premos5000 [strawHarvestAddon]
+	elseif 	workTool.cp.xmlFileName == 'premos5000.xml' then
+		workTool.cp.isKronePremos5000 = true;	
+		workTool.cp.isAttachedCombine = true;
+		workTool.cp.fixedCombineOffset = -4.8;
+		
+	elseif 	workTool.cp.xmlFileName == 'comprimaV180XC.xml' then
+		workTool.cp.isKroneComprimaV180XC = true;
+		workTool.cp.isStrawHarvestAddonBaler = true;
+	
+	elseif 	workTool.cp.xmlFileName == 'bigPack1290HDPII.xml' then
+		workTool.cp.isKroneBigPack1290HDPII = true;
+		workTool.cp.isStrawHarvestAddonBaler = true;	
+		
 	-- ###########################################################
 	-- [6] OTHER TOOLS
 	-- WHEEL LOADERS [Giants]
@@ -584,6 +598,9 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 		end;
 	end;
 
+	if workTool.cp.isKronePremos5000 then
+		return true;
+	end
 	--[[if fileNames ~= nil and #fileNames > 0 then
 		for i=1, #fileNames do
 			if workTool.cp.xmlFileName == fileNames[i] .. '.xml' then
@@ -641,7 +658,15 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		local capacity = workTool:getUnitCapacity(workTool.mainChamberUnitIndex)
 		local fillLevel = workTool:getUnitFillLevel(workTool.mainChamberUnitIndex)
 		local Ultima = workTool.cp.ultimaSpec
-		
+		if workTool.cp.sideDoorsOpen == nil then
+			local doorsRopen = false
+			for index,door in pairs(workTool.sideDoors) do
+				if door:getIsOpened() then
+					doorsRopen = true
+				end			
+			end
+			workTool.cp.sideDoorsOpen = doorsRopen
+		end
 		
 		--drop bales together if unload is set to collect, if manual stop tractor and push message
 		if workTool.currentBaleDropMode ~= Ultima.DROPMODE_AUTO then
@@ -651,7 +676,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			if workTool.currentBaleDropMode == Ultima.DROPMODE_MANUAL then
 				if baleInWrapper and fillLevel > capacity * 0.95 then
 					allowedToDrive = false
-					CpManager:setGlobalInfoText(self, 'NEEDS_UNLOADING');
+					CpManager:setGlobalInfoText(self, 'NEEDS_UNLOADING',nil,g_i18n:getText("statistic_baleCount"));
 				end;
 			--drop bale if unload is set to collect
 			elseif workTool.currentBaleDropMode == Ultima.DROPMODE_COLLECT then
@@ -667,21 +692,48 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 	
 		local stoppedForReason = false
-	
+		local refillMessage = ""
 		--stop if net is empty  
 		if workTool.manualNetRoleRefill and not (workTool.netRoleTop.length > 0) then
-			allowedToDrive = false
-			CpManager:setGlobalInfoText(self, 'BALER_NETS');
+			refillMessage = courseplay:loc('COURSEPLAY_FillType_BaleNet')
 			stoppedForReason = true
 		end
 		
 		--stop if foil is empty
 		if workTool.manualFoilRoleRefill and workTool.wrapperIsActive and not (workTool.wrapperFoilHolders[1].remainingFoilLength > 0 and workTool.wrapperFoilHolders[2].remainingFoilLength > 0)then
-			allowedToDrive = false
-			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');
+			if string.len(refillMessage) > 0 then
+				refillMessage = refillMessage..", "
+			end
+			refillMessage = refillMessage..courseplay:loc('COURSEPLAY_FillType_WrappingFoil')
 			stoppedForReason = true
 		end
 	
+		if stoppedForReason then
+			if not workTool.cp.sideDoorsOpen then
+				for index,door in pairs(workTool.sideDoors) do
+					if door:getIsClosed() then
+						door:open()
+					end			
+				end
+				workTool.cp.sideDoorsOpen = true
+			end
+		else
+			if workTool.cp.sideDoorsOpen then
+				for index,door in pairs(workTool.sideDoors) do
+					if door:getIsOpened() then
+						door:close()
+					end
+				end
+				workTool.cp.sideDoorsOpen = false
+			end
+
+		end		
+		
+		if stoppedForReason then
+			allowedToDrive = false
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
+		end
+		
 		--inhibit fuelSave because wrapping takes longer than fuelsave timer
 		if self.cp.saveFuelOptionActive and not stoppedForReason then
 			self.cp.saveFuel = false
@@ -696,6 +748,83 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end;
 		
 		return true ,allowedToDrive,forceSpeedLimit,workSpeed;
+	elseif 	workTool.cp.isKronePremos5000 then
+		local wayPointIsUnload = self.Waypoints[self.cp.previousWaypointIndex].unload -- self unloading with unloading course and unload point
+		--set pipe while working or unloading
+		if unfold or wayPointIsUnload then
+			if workTool.pipeCurrentState ~= 2 then
+				workTool:setPipeState(2)
+			end
+		else
+			if workTool.pipeCurrentState ~= 1 then
+				workTool:setPipeState(1)
+			end
+		end
+		local pelletsFillLevel = workTool:getUnitFillLevel(workTool.pelletizer.fillUnitIndex)
+		local pelletsCapacity = workTool:getUnitCapacity(workTool.pelletizer.fillUnitIndex)
+		local molassesFillLevel = workTool.manualMolassesRefill and workTool:getUnitFillLevel(workTool.pelletizer.molassesFillUnitIndex) or 100
+		local waterFillLevel = workTool.manualWaterRefill and workTool:getUnitFillLevel(workTool.pelletizer.waterFillUnitIndex) or 100
+		local stopForRefill = false
+		local refillMessage = ""
+		if molassesFillLevel <= 0 then
+			stopForRefill = true
+			refillMessage = refillMessage..courseplay:loc('COURSEPLAY_FillType_Molasses')
+		end
+		
+		if waterFillLevel <= 0 then
+			stopForRefill = true
+			if string.len(refillMessage) > 0 then
+				refillMessage = refillMessage..", "
+			end
+			refillMessage = refillMessage..g_i18n:getText("fillType_water")
+		end
+			
+		if stopForRefill then
+			if #workTool.waterTrailerFillTriggers >0  then
+				workTool:setIsWaterTrailerFilling(true)
+			end
+			if #workTool.fillTriggers > 0 and not workTool.isFilling then
+				workTool:setIsFilling(true)
+			end
+			allowedToDrive = false
+ 			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
+		end
+		
+		return false ,allowedToDrive,forceSpeedLimit,workSpeed;	
+	
+	elseif workTool.cp.isStrawHarvestAddonBaler then
+		local supplyFillLevel = workTool.supplies.active and workTool:getUnitFillLevel(workTool.supplies.fillUnitIndex) or 100;
+		local refillMessage = "";
+		local stoppedForReason = false;
+		
+		if supplyFillLevel <= 0 then
+			stoppedForReason = true;
+			if workTool.cp.isKroneComprimaV180XC then
+				refillMessage = courseplay:loc('COURSEPLAY_FillType_BaleNet')	
+			elseif 	workTool.cp.isKroneBigPack1290HDPII then
+				refillMessage = courseplay:loc('COURSEPLAY_FillType_BaleTwine')
+			end
+			if not workTool:getIsSupplyCoverOpen() and not workTool.isSupplyCoverOpening then
+				workTool:setIsSupplyCoverOpening(true)
+			end
+			if #workTool.fillTriggers > 0 and not workTool.isFilling then
+				workTool:setIsFilling(true)
+			end
+		else
+			if workTool:getIsSupplyCoverOpen() then
+				workTool:setIsSupplyCoverOpening(false);
+			end
+			if workTool:getIsAnimationPlaying("lowerTwineBox") then
+				stoppedForReason = true;
+			end
+		end
+
+		if stoppedForReason then	
+			allowedToDrive = false
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
+		end
+		
+		return false ,allowedToDrive,forceSpeedLimit,workSpeed,stoppedForReason;	
 	end;
 
 	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence

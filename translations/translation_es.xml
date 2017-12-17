@@ -323,6 +323,11 @@
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Recargar lista de rutas" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			     text="No se pudo generar la ruta. Intente cambiar la configuración o mover el vehículo"/>
+
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_Molasses"						 text="molasses" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
 		
 	</texts>
 </l10n>

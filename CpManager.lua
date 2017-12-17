@@ -714,7 +714,6 @@ function CpManager:setupGlobalInfoText()
 
 
 	self.globalInfoText.msgReference = {
-		BALER_NETS					= { level = -2, text = 'COURSEPLAY_BALER_NEEDS_NETS' };
 		BGA_IS_FULL					= { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
 		DAMAGE_IS					= { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
 		DAMAGE_MUST					= { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
@@ -745,9 +744,16 @@ function CpManager:setupGlobalInfoText()
 	};
 end;
 
-function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove)
+function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove,additionalString)
 	local git = self.globalInfoText;
 
+	--TODO: test in Multiplayer if it works fine
+	if vehicle.cp.activeGlobalInfoTexts[refIdx] ~= nil and additionalString ~= vehicle.cp.gitAdditionalText then
+		vehicle:setCpVar('gitAdditionalText',additionalString)
+		forceRemove = true
+	end
+	
+	
 	--print(string.format('setGlobalInfoText(vehicle, %s, %s)', tostring(refIdx), tostring(forceRemove)));
 	if forceRemove == true then
 		if g_server ~= nil then
@@ -777,6 +783,9 @@ function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove)
 			vehicle.cp.numActiveGlobalInfoTexts = vehicle.cp.numActiveGlobalInfoTexts + 1;
 		end;
 		local text = nameNum(vehicle) .. " " .. courseplay:loc(data.text);
+		if vehicle.cp.gitAdditionalText ~= nil then
+			text = text..": "..vehicle.cp.gitAdditionalText
+		end
 		--print(string.format('\t%s: setGlobalInfoText [%q] numActiveGlobalInfoTexts=%d, lvl %d,  text=%q', nameNum(vehicle), refIdx, vehicle.cp.numActiveGlobalInfoTexts, data.level, tostring(text)));
 		vehicle.cp.activeGlobalInfoTexts[refIdx] = data.level;
 

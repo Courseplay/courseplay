@@ -49,7 +49,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			end
 		elseif self.cp.hasUnloadingRefillingCourse and self.cp.abortWork ~= nil then
 			allowedToDrive = false;
-			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');		
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,g_i18n:getText("fillType_seeds"));		
 		end
 	end
 	-- last point reached restart
@@ -73,7 +73,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			courseplay:setAbortWorkWaypoint(self);
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
-			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING');
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,g_i18n:getText("fillType_seeds"));
 		end;
 	end
 	--
@@ -94,6 +94,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local turnStart = prevPoint.turnStart;
 	local turnEnd = prevPoint.turnEnd;
 	local specialTool; -- define it, so it will not be an global value anymore
+	
 	for i=1, #(self.cp.workTools) do
 		workTool = self.cp.workTools[i];
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);

@@ -3,6 +3,7 @@ local max, min = math.max, math.min;
 function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, refSpeed,dt )
 	local workTool;
 	local specialTool = false
+	local stoppedForReason = false
 	local forceSpeedLimit = refSpeed 
 	local fillLevelPct = 0
 	--[[
@@ -95,17 +96,17 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			if courseplay:isBaler(workTool) then
 				if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
 																									  --  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit,workSpeed)
-					specialTool, allowedToDrive,forceSpeedLimit,workSpeed = courseplay:handleSpecialTools(vehicle, workTool, true,   true,  true,   allowedToDrive, nil,   nil, nil,forceSpeedLimit,workSpeed);
+					specialTool, allowedToDrive,forceSpeedLimit,workSpeed,stoppedForReason = courseplay:handleSpecialTools(vehicle, workTool, true,   true,  true,   allowedToDrive, nil,   nil, nil,forceSpeedLimit,workSpeed);
 					if not specialTool then
 						-- automatic opening for balers
 						if workTool.baler.unloadingState ~= nil then
 							fillLevelPct = courseplay:round(workTool.cp.fillLevelPercent, 3);
 							local capacity = workTool.cp.capacity
 							local fillLevel = workTool.cp.fillLevel
-							--print(string.format("if courseplay:isRoundbaler(workTool)(%s) and fillLevelPct(%s) > capacity(%s) * 0.9 and fillLevelPct < capacity and workTool.baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
-							--tostring(courseplay:isRoundbaler(workTool)),tostring(fillLevelPct),tostring(capacity),tostring(workTool.baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
+							--print(string.format("if courseplay:isRoundbaler(workTool)(%s) and fillLevel(%s) > capacity(%s) * 0.9 and fillLevel < capacity and workTool.baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
+							--tostring(courseplay:isRoundbaler(workTool)),tostring(fillLevel),tostring(capacity),tostring(workTool.baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
 							if courseplay:isRoundbaler(workTool) and fillLevel > capacity * 0.9 and fillLevel < capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
-								if not workTool.turnOnVehicle.isTurnedOn then
+								if not workTool.turnOnVehicle.isTurnedOn and not stoppedForReason then
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
@@ -135,7 +136,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end
 				end
 
-				if vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork -1 and workTool.turnOnVehicle.isTurnedOn then
+				if (vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork -1 and workTool.turnOnVehicle.isTurnedOn) or stoppedForReason then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 						workTool:setIsTurnedOn(false, false);

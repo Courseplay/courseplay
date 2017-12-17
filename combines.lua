@@ -433,9 +433,7 @@ function courseplay:getSpecialCombineOffset(combine)
 		end
 	end
 	
-	if combine.cp.isGrimmeRootster604 
-	or combine.cp.isPoettingerMex5 
-	or combine.cp.isCaseIHA8800MR then
+	if combine.cp.fixedCombineOffset ~= nil then
 		return combine.cp.fixedCombineOffset,combine.cp.fixedChopperOffset;
  	end
 	

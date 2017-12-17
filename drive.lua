@@ -1777,55 +1777,62 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 				fillUnit.capacity = fillUnit.capacity *3
 			end
 		end
-		fillLevel = fillLevel + fillUnit.fillLevel
-		capacity = capacity + fillUnit.capacity
-		if fillLevel ~= nil and capacity ~= nil then
-			fillLevelPercent = (fillLevel*100)/capacity;
+		if (workTool.cp.isKronePremos5000 and index ~= workTool.pelletizer.fillUnitIndex)
+		or (workTool.cp.isStrawHarvestAddonBaler and index == workTool.supplies.fillUnitIndex)  then
+		
 		else
-			fillLevelPercent = nil
-		end
-		fillType = fillUnit.lastValidFillType
-		if workTool.cp.isTreePlanter  then
-			local hired = true
-			if workTool.mountedSaplingPallet == nil then
-				workTool.cp.seederFillLevel = 0
-				hired = false;
+			fillLevel = fillLevel + fillUnit.fillLevel
+			--print(string.format("%s: adding %s to fillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
+			capacity = capacity + fillUnit.capacity
+			--print(string.format("%s: adding %s to capacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+			if fillLevel ~= nil and capacity ~= nil then
+				fillLevelPercent = (fillLevel*100)/capacity;
 			else
-				workTool.cp.seederFillLevel = fillUnit.fillLevel
-			end;
-			if workTool.attacherVehicle ~= nil and workTool.attacherVehicle.isHired ~= hired and workTool.attacherVehicle.cp.isDriving then
-				workTool.attacherVehicle.isHired = hired;
+				fillLevelPercent = nil
 			end
-			workTool.cp.seederCapacity = fillUnit.capacity
-			workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
-		end	
-		if workTool.sowingMachine ~= nil and index == workTool.sowingMachine.fillUnitIndex then
-			workTool.cp.seederFillLevel = fillUnit.fillLevel
-			--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
-			workTool.cp.seederCapacity = fillUnit.capacity
-			--print(string.format("%s: adding %s to workTool.cp.seederCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
-			if g_currentMission.missionInfo.helperBuySeeds then
-				workTool.cp.seederFillLevel = 100
-				workTool.cp.seederCapacity = 100
-			end
-			workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
-		end
-		if workTool.sprayer ~= nil and index == workTool.sprayer.fillUnitIndex then
-			workTool.cp.sprayerFillLevel = fillUnit.fillLevel
-			--print(string.format("%s: adding %s to workTool.cp.sprayerFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
-			workTool.cp.sprayerCapacity = fillUnit.capacity
-			--print(string.format("%s: adding %s to workTool.cp.sprayerCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
-			
-			if courseplay:isSprayer(workTool) then 
-				if (workTool.cp.isLiquidManureSprayer and g_currentMission.missionInfo.helperSlurrySource == 2)
-					or (workTool.cp.isManureSprayer and g_currentMission.missionInfo.helperManureSource == 2)
-					or (g_currentMission.missionInfo.helperBuyFertilizer and not workTool.cp.isLiquidManureSprayer and not workTool.cp.isManureSprayer) 
-					then
-						workTool.cp.sprayerFillLevel = 100
-						workTool.cp.sprayerCapacity = 100
+			fillType = fillUnit.lastValidFillType
+			if workTool.cp.isTreePlanter  then
+				local hired = true
+				if workTool.mountedSaplingPallet == nil then
+					workTool.cp.seederFillLevel = 0
+					hired = false;
+				else
+					workTool.cp.seederFillLevel = fillUnit.fillLevel
+				end;
+				if workTool.attacherVehicle ~= nil and workTool.attacherVehicle.isHired ~= hired and workTool.attacherVehicle.cp.isDriving then
+					workTool.attacherVehicle.isHired = hired;
 				end
+				workTool.cp.seederCapacity = fillUnit.capacity
+				workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+			end	
+			if workTool.sowingMachine ~= nil and index == workTool.sowingMachine.fillUnitIndex then
+				workTool.cp.seederFillLevel = fillUnit.fillLevel
+				--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
+				workTool.cp.seederCapacity = fillUnit.capacity
+				--print(string.format("%s: adding %s to workTool.cp.seederCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+				if g_currentMission.missionInfo.helperBuySeeds then
+					workTool.cp.seederFillLevel = 100
+					workTool.cp.seederCapacity = 100
+				end
+				workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
 			end
-			workTool.cp.sprayerFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+			if workTool.sprayer ~= nil and index == workTool.sprayer.fillUnitIndex then
+				workTool.cp.sprayerFillLevel = fillUnit.fillLevel
+				--print(string.format("%s: adding %s to workTool.cp.sprayerFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
+				workTool.cp.sprayerCapacity = fillUnit.capacity
+				--print(string.format("%s: adding %s to workTool.cp.sprayerCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+				
+				if courseplay:isSprayer(workTool) then 
+					if (workTool.cp.isLiquidManureSprayer and g_currentMission.missionInfo.helperSlurrySource == 2)
+						or (workTool.cp.isManureSprayer and g_currentMission.missionInfo.helperManureSource == 2)
+						or (g_currentMission.missionInfo.helperBuyFertilizer and not workTool.cp.isLiquidManureSprayer and not workTool.cp.isManureSprayer) 
+						then
+							workTool.cp.sprayerFillLevel = 100
+							workTool.cp.sprayerCapacity = 100
+					end
+				end
+				workTool.cp.sprayerFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+			end
 		end
 	end 
 
