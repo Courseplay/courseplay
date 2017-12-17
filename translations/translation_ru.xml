@@ -67,8 +67,8 @@
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="транспортировка закончена." /> 
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="закончил перевозку жидкостей." />
 		<text name="COURSEPLAY_WORK_END" 								 text="завершил работу на маршруте." />
-		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text="нуждается в разгрузке." />
-		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text="нуждается в заправке." />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": инструмент нуждается в разгрузке " />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": инструмент нуждается в заправке " />
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="выгрузка тюков." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="Достигнут пункт разгрузки" />
@@ -326,10 +326,10 @@
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Обновить список" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Не удалось сгенерировать курс. Попробуйте изменить настройки или переместить технику в другое место."/>
 
-		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_Molasses"						 text="molasses" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="шпагат для тюковки" />
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="сетка для тюковки" />
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="оберточная фольга" />
+		<text name="COURSEPLAY_FillType_Molasses"						 text="меласса" />
 		
 	</texts>
 </l10n>
