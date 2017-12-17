@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00041</version>
+	<version>5.02.00042</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -23,6 +23,7 @@
 	
 	<changeLog><![CDATA[
 
+  - multiplayer enabled
 	- support for straw harvest addon
 	- new option for course generation to bypass small islands in fields
 	- added support for sprayer Addon (with the friendly support of David FONTAINE)
@@ -101,7 +102,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 ]]></sl>
 	</description>
 
-	<multiplayer supported="false" />
+	<multiplayer supported="true" />
 	<iconFilename>img/store.dds</iconFilename>
 	<l10n filenamePrefix="translations/translation" /> <!-- load translations from "translations/translation_<language>.xml file -->
 

@@ -59,7 +59,7 @@ function CpManager:loadMap(name)
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
 	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
 	courseplay:register(true)-- NOTE: running here again to check whether there were mods loaded after courseplay
-
+	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- COURSEPLAYERS TABLES
 	self.totalCoursePlayers = {};
@@ -107,7 +107,7 @@ function CpManager:loadMap(name)
 	end;
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
   addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
-
+	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
 	self.confirmedNoneTipTriggers = {};
@@ -211,9 +211,8 @@ function CpManager:deleteMap()
 end;
 
 function CpManager:update(dt)
-
   -- UPDATE CLOCK
-	courseplay.clock = courseplay.clock + dt
+  courseplay.clock = courseplay.clock + dt
 
 	if g_currentMission.paused or (g_gui.currentGui ~= nil and g_gui.currentGuiName ~= 'inputCourseNameDialogue') then
 		return;
@@ -460,7 +459,7 @@ function CpManager:devStopAll()
 		for _,vehicle in pairs (self.activeCoursePlayers) do
 			courseplay:stop(vehicle);
 		end
-
+		
 		return ('stopped all Courseplayers');
 	end;
 end;
@@ -778,7 +777,7 @@ function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove,additionalStri
 	if vehicle.cp.activeGlobalInfoTexts[refIdx] == nil or vehicle.cp.activeGlobalInfoTexts[refIdx] ~= data.level then
 		if g_server ~= nil then
 			CourseplayEvent.sendEvent(vehicle, "setMPGlobalInfoText", refIdx, false, forceRemove)
-		end
+		end	
 		if vehicle.cp.activeGlobalInfoTexts[refIdx] == nil then
 			vehicle.cp.numActiveGlobalInfoTexts = vehicle.cp.numActiveGlobalInfoTexts + 1;
 		end;

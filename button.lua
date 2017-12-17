@@ -260,7 +260,7 @@ function courseplay.button:render()
 			-- Global
 			if pg == "global" then
 				if fn == "showSaveCourseForm" and prm == "course" then
-					show = vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.Waypoints ~= nil and vehicle.cp.numWaypoints ~= 0;
+					show = vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.Waypoints ~= nil and vehicle.cp.numWaypoints > 0;
 				end;
 				
 			-- Page 1
@@ -300,7 +300,7 @@ function courseplay.button:render()
 			-- Page 2
 			elseif pg == courseplay.hud.PAGE_MANAGE_COURSES then
 				if fn == "reloadCoursesFromXML" then
-					show = g_server ~= nil and not vehicle.cp.canDrive;
+					show = g_server ~= nil and not vehicle.cp.canDrive and not g_currentMission.missionDynamicInfo.isMultiplayer;
 				elseif fn == "showSaveCourseForm" and prm == "filter" then
 					show = not vehicle.cp.hud.choose_parent;
 				elseif fn == 'clearCurrentLoadedCourse' then

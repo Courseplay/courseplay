@@ -803,9 +803,9 @@ function courseplay:drive(self, dt)
 		local distance = (self.cp.stopWork-self.cp.waypointIndex) *self.cp.mediumWpDistance -- m
 		local speed = self.cruiseControl.speed/3.6   --m/s
 		local turnTime = math.floor(self.cp.calculatedTurnTime or 5)
-		self.cp.timeRemaining = distance/speed + turnTime
+		self:setCpVar('timeRemaining',distance/speed + turnTime,courseplay.isClient)
 	elseif not isFieldWorking then
-		self.cp.timeRemaining = nil
+		self:setCpVar('timeRemaining',nil,courseplay.isClient)
 	end 
 	
 	
@@ -1207,8 +1207,8 @@ function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 		end;
 	end
 	
-	vehicle:setCruiseControlMaxSpeed(newSpeed) 
-
+	vehicle:setCruiseControlMaxSpeed(newSpeed)
+	
 	courseplay:handleSlipping(vehicle, refSpeed);
 
 	local tolerance = 2.5;
@@ -1698,9 +1698,13 @@ end
 
 -----------------------------------------------------------------------------------------
 
-function courseplay:setWaypointIndex(vehicle, number)
+function courseplay:setWaypointIndex(vehicle, number,isRecording)
 	if vehicle.cp.waypointIndex ~= number then
-		vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
+		if isRecording then
+			vehicle.cp.waypointIndex = number  
+		else
+			vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
+		end
 		if vehicle.cp.waypointIndex > 1 then
 			vehicle.cp.previousWaypointIndex = vehicle.cp.waypointIndex - 1;
 		else

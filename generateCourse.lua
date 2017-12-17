@@ -91,7 +91,8 @@ function courseplay:generateCourse(vehicle)
 		if vehicle.cp.startingCorner == 5 then
 			vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
 			vehicle.cp.generationPosition.hasSavedPosition = true
-			vehicle.cp.generationPosition.fieldNum = vehicle.cp.fieldEdge.selectedField.fieldNum
+			--vehicle.cp.generationPosition.fieldNum = vehicle.cp.fieldEdge.selectedField.fieldNum
+			vehicle:setCpVar('generationPosition.fieldNum',vehicle.cp.fieldEdge.selectedField.fieldNum,courseplay.isClient)
 		end
 		courseGenerator.generate( vehicle, fieldCourseName, poly, workWidth, islandNodes )
 		return
@@ -612,7 +613,7 @@ function courseplay:generateCourse(vehicle)
 	---############################################################################
 	-- (4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse
 	-------------------------------------------------------------------------------
-	courseplay:debug('(4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse', 7);
+	courseplay:debug('(4) CHECK PATH LANES FOR VALID START AND END POINTS and FILL fieldWorkCourse #pathPoints:'..tostring(#pathPoints), 7);
 	local fieldWorkCourse = {};
 	local numPoints = #(pathPoints);
 
@@ -789,7 +790,7 @@ function courseplay:generateCourse(vehicle)
 	---############################################################################
 	-- (6) CONCATENATE HEADLAND COURSE and FIELDWORK COURSE
 	-------------------------------------------------------------------------------
-	courseplay:debug('(6) CONCATENATE HEADLAND COURSE and FIELDWORK COURSE', 7);
+	courseplay:debug('(6) CONCATENATE HEADLAND COURSE and FIELDWORK COURSE #fieldWorkCourse:'..tostring(#fieldWorkCourse), 7);
 	local lastFivePoints = {};
 	if vehicle.cp.returnToFirstPoint then
 		fieldWorkCourse[#fieldWorkCourse].wait = false;
@@ -851,8 +852,8 @@ function courseplay:generateCourse(vehicle)
 	-- (7) FINAL COURSE DATA
 	-------------------------------------------------------------------------------
 	courseplay:debug('(7) FINAL COURSE DATA', 7);
-	vehicle.cp.numWaypoints = #vehicle.Waypoints	
-	
+	--vehicle:setCpVar('numWaypoints', #vehicle.Waypoints,courseplay.isClient);
+	vehicle.cp.numWaypoints = #vehicle.Waypoints;
 	if vehicle.cp.numWaypoints == 0 then
 		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', 7);
 		return;

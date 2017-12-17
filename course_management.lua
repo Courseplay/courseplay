@@ -21,6 +21,8 @@ end;
 
 -- enables input for course/folder/filter name
 function courseplay:showSaveCourseForm(vehicle, saveWhat) -- fn is in courseplay because it's vehicle based
+	--print(string.format("courseplay:showSaveCourseForm(vehicle(%s), saveWhat(%s))",tostring(vehicle),tostring(saveWhat)))
+	--print(string.format("vehicle.cp.imWriting(%s)",tostring(vehicle.cp.imWriting)))
 	saveWhat = saveWhat or 'course'
 	
 	if saveWhat == 'course' then
@@ -127,7 +129,8 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		if #vehicle.Waypoints == 0 then
 			vehicle.cp.numCourses = 1;
 			vehicle.Waypoints = course.waypoints
-			vehicle.cp.numWaypoints = #vehicle.Waypoints;
+			--vehicle:setCpVar('numWaypoints', #vehicle.Waypoints,courseplay.isClient);
+			vehicle.cp.numWayPoints = #vehicle.Waypoints;
 			vehicle:setCpVar('currentCourseName',course.name,courseplay.isClient)
 
 			-- for turn maneuver
@@ -232,8 +235,8 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			for i=course2wp, numCourse2 do
 				table.insert(vehicle.Waypoints, course2[i]);
 			end;
-
-			vehicle.cp.numWaypoints = #vehicle.Waypoints;
+			vehicle.cp.numWayPoints = #vehicle.Waypoints;
+			--vehicle:setCpVar('numWaypoints', #vehicle.Waypoints,courseplay.isClient);
 			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
 			vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
 
@@ -255,8 +258,9 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 
-		vehicle.cp.canDrive = true;
-
+		
+		vehicle:setCpVar('canDrive',true,courseplay.isClient);
+		
 		courseplay:setWaypointIndex(vehicle, 1);
 		courseplay:setModeState(vehicle, 0);
 		courseplay.signs:updateWaypointSigns(vehicle, "current");
@@ -534,6 +538,10 @@ end
 
 function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 	-- save course to xml file
+	if g_server == nil then
+		return
+	end
+	
 	local deleteFile = false
 	if cpCManXml == nil then
 		cpCManXml = self:getCourseManagerXML()
@@ -721,9 +729,11 @@ function courseplay.courses:removeFromManagerXml(type, type_id, cpCManXml)
 		end;
 	end;
 
-	saveXMLFile(cpCManXml)
-	if deleteFile then
-		delete(cpCManXml)
+	if g_server~= nil then
+		saveXMLFile(cpCManXml)
+		if deleteFile then
+			delete(cpCManXml)
+		end
 	end
 end
 

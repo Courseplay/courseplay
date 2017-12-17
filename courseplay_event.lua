@@ -32,6 +32,8 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 		self.page = true
 	elseif self.page == 997 then
 		self.page = false
+	elseif self.page == 996 then
+		self.page = nil
 	end
 	self.type = streamReadString(streamId);
 	if self.type == "boolean" then
@@ -61,6 +63,8 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 		self.page = 998
 	elseif self.page == false then
 		self.page = 997
+	elseif self.page == nil then
+		self.page = 996
 	end
 	streamWriteInt32(streamId, self.page);
 	streamWriteString(streamId, self.type);
@@ -169,6 +173,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			streamDebugWriteString(streamId, course.type)
 			streamDebugWriteInt32(streamId, course.id)
 			streamDebugWriteInt32(streamId, course.parent)
+			streamDebugWriteInt32(streamId, course.multiTools)
 			streamDebugWriteInt32(streamId, #(course.waypoints))
 			for w = 1, #(course.waypoints) do
 				streamDebugWriteFloat32(streamId, course.waypoints[w].cx)
@@ -180,6 +185,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.waypoints[w].speed)
 
 				streamDebugWriteBool(streamId, course.waypoints[w].generated)
+				
 				streamDebugWriteBool(streamId, course.waypoints[w].turnStart)
 				streamDebugWriteBool(streamId, course.waypoints[w].turnEnd)
 				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
@@ -237,6 +243,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local courseType = streamDebugReadString(streamId)
 			local course_id = streamDebugReadInt32(streamId)
 			local courseParent = streamDebugReadInt32(streamId)
+			local courseMultiTools = streamDebugReadInt32(streamId)
 			local wp_count = streamDebugReadInt32(streamId)
 			local waypoints = {}
 			for w = 1, wp_count do
@@ -250,7 +257,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				local speed = streamDebugReadInt32(streamId)
 
 				local generated = streamDebugReadBool(streamId)
-				local dir = streamDebugReadString(streamId)
+				--local dir = streamDebugReadString(streamId)
 				local turnStart = streamDebugReadBool(streamId)
 				local turnEnd = streamDebugReadBool(streamId)
 				local ridgeMarker = streamDebugReadInt32(streamId)
@@ -270,7 +277,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				};
 				table.insert(waypoints, wp)
 			end
-			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent }
+			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent, multiTools = courseMultiTools  }
 			g_currentMission.cp_courses[course_id] = course
 			g_currentMission.cp_sorted = courseplay.courses:sort()
 		end

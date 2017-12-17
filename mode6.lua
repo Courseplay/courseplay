@@ -669,7 +669,15 @@ function courseplay:manageConvoy(vehicle, allowedToDrive, workSpeed)
 	end
 	
 	--print(string.format("%s: update convoy pos: %s dist: %s",nameNum(vehicle),tostring(position),tostring(closestDistance))) 
-	vehicle.cp.convoy = {distance = closestDistance,number = position,members = total}
-	
+	if vehicle.cp.convoy.distance ~= closestDistance then
+		vehicle:setCpVar('convoy.distance',closestDistance)
+	end
+	if vehicle.cp.convoy.number ~= position then
+		vehicle:setCpVar('convoy.number',position)
+	end
+	if vehicle.cp.convoy.members ~= total then
+		vehicle:setCpVar('convoy.members',total)
+	end
+
 	return allowedToDrive, workSpeed
 end

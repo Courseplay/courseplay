@@ -248,7 +248,7 @@ function courseplay:getDistances(object)
 					local nodeLength = 0;
 					local isPivoted = false;
 					for i = 1, #backTrack do
-						if rotLimits[i][2] > rad(15) then
+						if rotLimits ~= nil and rotLimits[i]~= nil and rotLimits[i][2] ~= nil and rotLimits[i][2] > rad(15) then
 							isPivoted = true;
 						end;
 
@@ -436,7 +436,7 @@ function courseplay:getRealTrailerFrontNode(workTool)
 		if jointNode and backtrack and workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT then
 			local rootNode;
 			for _, joint in ipairs(workTool.componentJoints) do
-				if joint.jointNode == jointNode and joint.rotLimit[2] > rad(15) then
+				if joint.jointNode == jointNode and joint.rotLimit~= nil and joint.rotLimit[2] ~= nil and joint.rotLimit[2] > rad(15) then
 					rootNode = workTool.components[joint.componentIndices[2]].node;
 					break;
 				end;
@@ -702,7 +702,7 @@ function courseplay:getPivotJointNode(workTool)
 			if component.node == componentNode then
 				for jointIndex, joint in ipairs(workTool.componentJoints) do
 					-- Check if we have the right componentJoint and if it's an pivot joint
-					if joint.componentIndices[2] == index and joint.rotLimit[2] > rad(15) then
+					if joint.componentIndices[2] ~= nil and joint.rotLimit~= nil and joint.rotLimit[2]~= nil and joint.componentIndices[2] == index and joint.rotLimit[2] > rad(15) then
 						-- Set the joint index and stop the loop.
 						workTool.cp.jointNode = workTool.componentJoints[jointIndex].jointNode;
 						break;
