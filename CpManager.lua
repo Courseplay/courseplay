@@ -747,8 +747,8 @@ function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove,additionalStri
 	local git = self.globalInfoText;
 
 	--TODO: test in Multiplayer if it works fine
-	if vehicle.cp.activeGlobalInfoTexts[refIdx] ~= nil and additionalString ~= vehicle.cp.gitAdditionalText then
-		vehicle:setCpVar('gitAdditionalText',additionalString)
+	if vehicle.cp.activeGlobalInfoTexts[refIdx] ~= nil and (additionalString ~= vehicle.cp.gitAdditionalText and g_server~= nil) then
+		vehicle:setCpVar('gitAdditionalText',additionalString,courseplay.isClient)
 		forceRemove = true
 	end
 	
