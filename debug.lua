@@ -116,8 +116,7 @@ function courseplay.logDebugMarker()
 		print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp, 
 			g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
 	else
-		print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp, 
-			g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
+		print( string.format( '[dbg lp%d %s] Debug Marker', g_updateLoopIndex, timestamp))
 	end
 end
 
