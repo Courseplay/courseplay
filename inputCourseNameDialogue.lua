@@ -303,3 +303,4 @@ end; --END update()
 
 g_inputCourseNameDialogue = inputCourseNameDialogue:new();
 g_gui:loadGui(courseplay.path .. 'inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);
+FocusManager:setGui("MPLoadingScreen")
