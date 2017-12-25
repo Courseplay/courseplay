@@ -10,6 +10,15 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	if self.cp.hasFertilizerSowingMachine and not self.cp.fertilizerOption then
 		sprayerFillLevelPct = 100
 	end
+	local refillMessage = ""
+	if seederFillLevelPct == 0 and sprayerFillLevelPct == 0 then
+		refillMessage = g_i18n:getText("fillType_seeds")..", "..g_i18n:getText("fillType_fertilizer");
+	elseif sprayerFillLevelPct == 0 then
+		refillMessage = g_i18n:getText("fillType_fertilizer")
+	else
+		refillMessage = g_i18n:getText("fillType_seeds")
+	end
+	
 	
 	--print(string.format("seederFillLevelPct:%s; sprayerFillLevelPct:%s",tostring(seederFillLevelPct),tostring(sprayerFillLevelPct)))
 	if self.cp.waypointIndex == self.cp.finishWork and self.cp.abortWork == nil and not self.cp.hasFinishedWork then
@@ -49,7 +58,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			end
 		elseif self.cp.hasUnloadingRefillingCourse and self.cp.abortWork ~= nil then
 			allowedToDrive = false;
-			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,g_i18n:getText("fillType_seeds"));		
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);		
 		end
 	end
 	-- last point reached restart
@@ -73,7 +82,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			courseplay:setAbortWorkWaypoint(self);
 		elseif not self.cp.hasUnloadingRefillingCourse then
 			allowedToDrive = false;
-			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,g_i18n:getText("fillType_seeds"));
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
 		end;
 	end
 	--

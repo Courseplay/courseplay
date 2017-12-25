@@ -801,9 +801,13 @@ function courseplay:drive(self, dt)
 		self.cp.turnTimeRecorded = true
 	elseif isFieldWorking and self.cp.waypointIndex < self.cp.stopWork then
 		local distance = (self.cp.stopWork-self.cp.waypointIndex) *self.cp.mediumWpDistance -- m
-		local speed = self.cruiseControl.speed/3.6   --m/s
+		local speed = math.max (courseplay:round(self.lastSpeedReal*3600)/3.6,0.1)  --m/s
+		--local speed = self.cruiseControl.speed/3.6   --m/s
 		local turnTime = math.floor(self.cp.calculatedTurnTime or 5)
-		self:setCpVar('timeRemaining',distance/speed + turnTime,courseplay.isClient)
+		if self.cp.course.hasChangedTheWaypointIndex then
+			self.cp.course.hasChangedTheWaypointIndex = nil 
+			self:setCpVar('timeRemaining',distance/speed + turnTime,courseplay.isClient)
+		end
 	elseif not isFieldWorking then
 		self:setCpVar('timeRemaining',nil,courseplay.isClient)
 	end 
@@ -1067,6 +1071,7 @@ function courseplay:drive(self, dt)
 			else
         -- SWITCH TO THE NEXT WAYPOINT
 				courseplay:setWaypointIndex(self, self.cp.waypointIndex + 1);
+				
         local rev = ""
         if beforeReverse then 
           rev = "beforeReverse"
@@ -1700,6 +1705,7 @@ end
 
 function courseplay:setWaypointIndex(vehicle, number,isRecording)
 	if vehicle.cp.waypointIndex ~= number then
+		vehicle.cp.course.hasChangedTheWaypointIndex = true
 		if isRecording then
 			vehicle.cp.waypointIndex = number
 			courseplay.buttons:setActiveEnabled(vehicle, 'recording');

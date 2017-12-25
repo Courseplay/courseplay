@@ -226,7 +226,8 @@ function courseplay:load(savegame)
 	self.cp.lastMergedWP = 0;
 
 	self.cp.loadedCourses = {}
-
+	self.cp.course = {} -- as discussed with Peter, this could be the container for all waypoint stuff in one table
+	
 	-- forced waypoints
 	self.cp.curTarget = {};
 	self.cp.curTargetMode7 = {};
