@@ -175,7 +175,7 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="自動" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="まくら地" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="とびしまをさける" />
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="畑内の飛地をさける" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="無効" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="シンプル" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="サークル" />
