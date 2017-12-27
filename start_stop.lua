@@ -893,7 +893,15 @@ function courseplay:stop(self)
 			end;
 		end;
 	end
-
+	
+	--restart helper in mode7 after stopping CP
+	--vehicle works now in pure helper mode
+	if self.cp.mode == 7 then
+		if self.aiIsStarted then
+			self:startAIVehicle();
+		end
+	end
+	
 	-- remove ingame map hotspot
 	if CpManager.ingameMapIconActive then
 		courseplay:deleteMapHotspot(self);
