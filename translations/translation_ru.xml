@@ -175,10 +175,10 @@
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Запад" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Автоматическое" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Поворотная полоса:" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Обходить островки:" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="simple" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circle" /> <!-- drive a full circle around the island when first bypassing -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Обход островков:" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE" 				 text="отключить" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE" 				 text="простой" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE" 				 text="с проходом по периметру" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"				 text="Сглаживать" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"				 text="Поворот" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"				 text="Round" />
