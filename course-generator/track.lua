@@ -98,11 +98,16 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     nTracksToSkip, extendTracks,
     minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
     turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes, headlandFirst, islandBypassMode )
-  field.boundingBox =  field.boundary:getBoundingBox()
+	field.boundingBox =  field.boundary:getBoundingBox()
   field.boundary = Polygon:new( field.boundary )
   field.boundary:calculateData()
-  setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, islandNodes )
-  field.headlandTracks = {}
+	field.smallIslands = {}
+	field.bigIslands = {}
+	field.islands = {}
+	if islandBypassMode ~= Island.BYPASS_MODE_NONE then
+		setupIslands( field, nHeadlandPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, islandNodes )			
+	end
+	field.headlandTracks = {}
   if nHeadlandPasses > 0 then
     local previousTrack, startHeadlandPass, endHeadlandPass, step
     if fromInside then
@@ -152,7 +157,8 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   if nHeadlandPasses == 0 then
     extendTracks = extendTracks + implementWidth / 2
   end
-  field.track, field.bestAngle, field.nTracks = generateTracks( field.headlandTracks[ #field.headlandTracks ], implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0 )
+  field.track, field.bestAngle, field.nTracks, field.blocks = generateTracks( field.headlandTracks[ #field.headlandTracks ], field.bigIslands,
+    implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0 )
   -- assemble complete course now
   field.course = Polygon:new()
   if field.headlandPath and nHeadlandPasses > 0 then
@@ -172,8 +178,12 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     field.course:calculateData()
     if not headlandFirst then
       field.course = reverseCourse( field.course )
-    end   
-    addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
+    end
+	  if islandBypassMode ~= Island.BYPASS_MODE_NONE then
+		  Island.circleBigIslands( field.course, field.bigIslands, headlandFirst, implementWidth, minSmoothAngle, maxSmoothAngle )
+		  field.course:calculateData()			  
+	  end
+	  addTurnsToCorners( field.course, implementWidth, turnRadius, minHeadlandTurnAngle )
   end
   -- flush STDOUT when not in the game for debugging
   if not courseGenerator.isRunningInGame() then
@@ -187,13 +197,14 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
 	  if islandBypassMode == Island.BYPASS_MODE_SIMPLE then
 		  Island.bypassIslandNodes(field.course, implementWidth, islandNodes)
 	  elseif islandBypassMode == Island.BYPASS_MODE_CIRCLE then
-		  for _, island in ipairs( field.islands ) do
+		  for _, island in ipairs( field.smallIslands ) do
 			  island:bypass( field.course, true, doSmooth )
 		  end
 	  end
     field.course:calculateData()
   end
 end
+
 
 --- Reverse a course. This is to build a sowing/cultivating etc. course
 -- from a harvester course.
@@ -243,20 +254,22 @@ function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
   while i < #vertices - 1 do
     local cp = vertices[ i ]
     local np = vertices[ i + 1 ]
+	  local nnp = vertices[ i + 2 ]
     if cp.prevEdge and np.nextEdge then
       -- start a turn at the current point only if the next one is not a start of the turn already
-      -- or not an island bypass point
+      -- or not an island bypass point or a reversing waypoint
       -- and there really is a turn
       if not np.turnStart and not cp.turnStart and not cp.turnEnd and
           not cp.islandBypass and not np.islandBypass and
-        math.abs( getDeltaAngle( np.nextEdge.angle, cp.prevEdge.angle )) > minHeadlandTurnAngle and
-        math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > minHeadlandTurnAngle then
+          not cp.rev and not np.rev and not nnp.rev and
+        math.abs( getDeltaAngle( np.nextEdge.angle, np.prevEdge.angle )) > minHeadlandTurnAngle then
+        --math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > minHeadlandTurnAngle then
         cp.turnStart = true
         cp.headlandTurn = true
-        cp.text = string.format( "turn start %.1f", math.deg( cp.nextEdge.angle ))
+        --cp.text = string.format( "turn start %.1f", math.deg( cp.nextEdge.angle ))
         np.turnEnd = true
         np.headlandTurn = true
-        np.text = string.format( "turn end %.1f", math.deg( np.nextEdge.angle ))
+        --np.text = string.format( "turn end %.1f", math.deg( np.nextEdge.angle ))
         i = i + 2
       end
     end
@@ -268,7 +281,7 @@ function addWpsToReturnToFirstPoint( course, boundary )
 	-- should not check for fruit
 	local path = pathFinder.findPath( course[ #course ], course[ 1 ], boundary, function() return false end )
 	-- already close enough, don't add extra return path
-	if #path < 5 then
+	if not path or #path < 5 then
 		return
 	else
 		-- start at the third wp in order to be far enough 
@@ -298,18 +311,22 @@ function addTurnsToCorners2( vertices, width, turnRadius, minHeadlandTurnAngle )
 end
 
 -- set up all island related data for the field  
-function setupIslands( field, nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 
+function setupIslands( field, nHeadlandPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
                        doSmooth, islandNodes )
-  field.islandPerimeterNodes = Island.getIslandPerimeterNodes( islandNodes )
-  field.origIslandPerimeterNodes = deepCopy( field.islandPerimeterNodes )
-  field.islands = {}
-  local islandId = 1
-  while #field.islandPerimeterNodes > 0 do
-    island = Island:new( islandId )
-    island:createFromPerimeterNodes( field.islandPerimeterNodes )
-    island:generateHeadlands( nHeadlandPasses, implementWidth, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
-    table.insert( field.islands, island )
-    islandId = islandId + 1
-  end
+	field.islandPerimeterNodes = Island.getIslandPerimeterNodes( islandNodes )
+	field.origIslandPerimeterNodes = deepCopy( field.islandPerimeterNodes )
+	local islandId = 1
+	while #field.islandPerimeterNodes > 0 do
+		local island = Island:new( islandId )
+		island:createFromPerimeterNodes( field.islandPerimeterNodes )
+		island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
+		if island:tooBigToBypass( implementWidth ) then
+			table.insert( field.bigIslands, island )
+		else
+			table.insert( field.smallIslands, island )
+		end
+		table.insert( field.islands, island )
+		islandId = islandId + 1
+	end
 end
 

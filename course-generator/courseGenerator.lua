@@ -1,6 +1,15 @@
 --- Setting up packages
 courseGenerator = {}
 
+-- Distance of waypoints on the generated track in meters
+courseGenerator.waypointDistance = 5
+
+-- corners of a field block
+courseGenerator.BLOCK_CORNER_BOTTOM_LEFT = 1
+courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT = 2
+courseGenerator.BLOCK_CORNER_TOP_RIGHT = 3
+courseGenerator.BLOCK_CORNER_TOP_LEFT = 4
+
 --- Debug print, will either just call print when running standalone
 --  or use the CP debug channel when running in the game.
 function courseGenerator.debug( ... )
@@ -19,6 +28,13 @@ function courseGenerator.isRunningInGame()
   return courseplay ~= nil;
 end
 
+function courseGenerator.getCurrentTime()
+	if courseGenerator.isRunningInGame() then
+		return g_currentMission.time
+	else
+		return os.time()
+	end
+end
 --- Function to convert between CP/Giants coordinate representations
 -- and the course generator conventional x/y coordinates.
 --

@@ -84,7 +84,7 @@ local function generateGridForPolygon( polygon, gridSpacingHint )
   -- for this limit, use a fraction to reduce the chance of ending up right on the field edge (assuming fields
   -- are drawn using integer sizes) as that may result in a row or two missing in the grid
   gridSpacing = gridSpacingHint or math.max( 4.071, math.sqrt( polygon.area ) / 64 )
-  local horizontalLines = generateParallelTracks( polygon, gridSpacing )
+  local horizontalLines = generateParallelTracks( polygon, {}, gridSpacing )
   if not horizontalLines then return grid end
   -- we'll need this when trying to find the array index from the
   -- grid coordinates. All of these lines are the same length and start

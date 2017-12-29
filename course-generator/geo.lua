@@ -64,13 +64,17 @@ function addPolarVectorToPoint( point, angle, length )
   return { x = point.x + length * math.cos( angle ),
            y = point.y + length * math.sin( angle )}
 end
+
+function normalizeAngle( a ) 
+	return a >= 0 and a or 2 * math.pi + a	
+end
 --- Get the average of two angles. 
 -- Works fine even for the transition from -pi/2 to +pi/2
 function getAverageAngle( a1, a2 )
   -- convert the 0 - -180 range into 180 - 360
   if math.abs( a1 - a2 ) > math.pi then
-    if a1 < 0 then a1 = 2 * math.pi + a1 end
-    if a2 < 0 then a2 = 2 * math.pi + a2 end
+	  a1 = normalizeAngle( a1 )
+	  a2 = normalizeAngle( a2 )
   end
   -- calculate average in this range
   local avg = ( a1 + a2 ) / 2
@@ -84,8 +88,8 @@ end
 function getDeltaAngle( a1, a2 )
   -- convert the 0 - -180 range into 180 - 360
   if math.abs( a1 - a2 ) > math.pi then
-    if a1 < 0 then a1 = 2 * math.pi + a1 end
-    if a2 < 0 then a2 = 2 * math.pi + a2 end
+	  a1 = normalizeAngle( a1 )
+	  a2 = normalizeAngle( a2 )
   end
   -- calculate difference in this range
   return a2 - a1
@@ -531,6 +535,11 @@ function getPointInTheMiddle( a, b )
 	a.y + (( b.y - a.y ) / 2 )
 end
 
+function printTable( t )
+	for key, value in pairs( t ) do
+		print( key, value )
+	end
+end
 
 --- Less than operator with limited precision
 -- to tolerate floating point precision errors
@@ -540,7 +549,7 @@ function lt( a, b )
   local epsilon = 0.001
   return a < ( b - epsilon )
 end
-
+	
 --- Classes (these should all be in their own files but require does not 
 -- work in the Giants engine so all files must be explicetly loaded with source()
 -- and every single file added to courseplay.lua)
@@ -564,6 +573,15 @@ function Polyline:new( vertices )
   end
   return setmetatable( newPolyline, self )
 end
+
+function Polyline:copy( other )
+	local newPolyline = {}
+	for i, p in ipairs( other ) do
+		newPolyline[ i ] = copyPoint( p )
+	end
+	return setmetatable( newPolyline, self )
+end
+
 
 --- Iterator that won't return nil for i < 1 and i > size
 function Polyline:iterator( from, to, step )
@@ -730,6 +748,25 @@ function Polyline:smooth( minSmoothAngle, maxSmoothAngle, order, from, to )
 		self:tuck( self:iterator( from, to ), -0.15, minSmoothAngle, maxSmoothAngle )
 		return self:smooth( minSmoothAngle, maxSmoothAngle, order - 1, from, to )
 	end
+end
+
+--- In place translation
+function Polyline:translate( dx, dy )
+	for i, point in ipairs( self ) do
+		point.x = point.x + dx
+		point.y = point.y + dy
+	end
+	self:calculateData()
+end
+
+--- In place rotation
+function Polyline:rotate( angle )
+	local sin = math.sin( angle )
+	local cos = math.cos( angle )
+	for _, point in ipairs( self ) do
+		point.x, point.y = point.x * cos - point.y  * sin, point.x * sin + point.y  * cos
+	end
+	self:calculateData()
 end
 
 -------------------------------------------------------------------------------

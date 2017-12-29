@@ -4,54 +4,85 @@
 local rotatedMarks = {}
 
 -- Distance of waypoints on the generated track in meters
-local waypointDistance = 5
+courseGenerator.waypointDistance = 5
 -- don't generate waypoints closer than minWaypointDistance 
-local minWaypointDistance = waypointDistance * 0.25
+local minWaypointDistance = courseGenerator.waypointDistance * 0.25
+-- When splitting a field into blocks (due to islands or non-convexity) 
+-- consider a block 'small' if it has less than smallBlockTrackCountLimit tracks. 
+-- These are not prefered and will get a penalty in the scoring
+local smallBlockTrackCountLimit = 5
 
+--- find the corner where we will exit the block if entering at entry corner.
+function getBlockExitCorner( entryCorner, nTracks )
+	local oddTracks = nTracks % 2 == 1
+	local exitCorner
+	if entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT then
+		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_TOP_RIGHT or courseGenerator.BLOCK_CORNER_TOP_LEFT
+	elseif entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT then
+		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_TOP_LEFT or courseGenerator.BLOCK_CORNER_TOP_RIGHT
+	elseif entryCorner == courseGenerator.BLOCK_CORNER_TOP_LEFT then
+		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT or courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
+	elseif entryCorner == courseGenerator.BLOCK_CORNER_TOP_RIGHT then
+		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_BOTTOM_LEFT or courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT
+	end
+	return exitCorner
+end
+
+function isCornerOnTheBottom( entryCorner )
+	return entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT or entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
+end
+
+function isCornerOnTheLeft( entryCorner )
+	return entryCorner == courseGenerator.BLOCK_CORNER_TOP_LEFT or entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
+end
 --- Find the best angle to use for the tracks in a polygon.
 --  The best angle results in the minimum number of tracks
 --  (and thus, turns) needed to cover the polygon.
-function findBestTrackAngle( polygon, width )
+function findBestTrackAngle( polygon, islands, width )
   local bestAngleStats = {}
   local bestAngleIndex 
   local score
   local minScore = 10000
-  polygon:calculateData()
+	polygon:calculateData()
   -- direction where the field is the longest
   local bestDirection = polygon.bestDirection.dir
-  for angle = 0, 180, 2 do
-    local rotated = rotatePoints( polygon, math.rad( angle ))
-    local tracks = generateParallelTracks( rotated, width )
-    local nFullTracks, nSplitTracks, nBlocks = countTracks( tracks )
-    local blocks = {}
-    blocks = splitCenterIntoBlocks( tracks, blocks, width )
-    local nSmallBlocks = countSmallBlocks( blocks )
+  for angle = 0, 180, 5 do
+    local rotated = rotatePoints( polygon, math.rad( angle ))	  
+
+	  local rotatedIslands = Island.rotateAll( islands, math.rad( angle ))
+
+	  local tracks = generateParallelTracks( rotated, rotatedIslands, width )
+    local blocks = splitCenterIntoBlocks( tracks, width )
+    local smallBlockScore = countSmallBlockScore( blocks )
     -- instead of just the number of tracks, consider some other factors. We prefer just one block (that is,
     -- the field has a convex solution) and angles closest to the direction of the longest edge of the field
     -- sin( angle - BestDir ) will be 0 when angle is the closest.
     local angleScore = 3 * math.abs( math.sin( getDeltaAngle( math.rad( angle ), math.rad( bestDirection )))) 
-    score = 50 * nSmallBlocks + 20 * #blocks + 5 * nSplitTracks + nFullTracks + angleScore
-    table.insert( bestAngleStats, { angle=angle, nBlocks=#blocks, nFullTracks=nFullTracks, nSplitTracks=nSplitTracks, score=score })
+    score = 50 * smallBlockScore + 10 * #blocks + #tracks + angleScore
+	  courseGenerator.debug( "Tried angle=%d, nBlocks=%d, smallBlockScore=%d, tracks=%d, score=%.1f",
+	  angle, #blocks, smallBlockScore, #tracks, score)
+    table.insert( bestAngleStats, { angle=angle, nBlocks=#blocks, nTracks=#tracks, score=score })
     if minScore > score then
-      minScore = score
+      minScore = score  
       bestAngleIndex = #bestAngleStats
     end
   end
   local b = bestAngleStats[ bestAngleIndex ]
-  courseGenerator.debug( "Best angle=%d, nBlocks=%d, nFullTracks=%d, nSplitTracks=%d, score=%.1f",
-                         b.angle, b.nBlocks, b.nFullTracks, b.nSplitTracks, b.score)
-  return b.angle, b.nFullTracks + b.nSplitTracks, b.nBlocks 
+  courseGenerator.debug( "Best angle=%d, nBlocks=%d, nTracks=%d,  score=%.1f",
+                         b.angle, b.nBlocks, b.nTracks, b.score)
+  return b.angle, b.nTracks, b.nBlocks 
 end
 
 --- Count the blocks with just a few tracks 
-function countSmallBlocks( blocks )
+function countSmallBlockScore( blocks )
   local nResult = 0
   -- if there's only one block, we don't care
   if #blocks == 1 then return nResult end
   for _, b in ipairs( blocks ) do
     -- TODO: consider implement width
-    if #b < 5 then
-      nResult = nResult + 1
+    if #b < smallBlockTrackCountLimit then
+	    nResult = nResult + smallBlockTrackCountLimit - #b
+	    --nResult = nResult + 1
     end
   end 
   return nResult
@@ -59,15 +90,16 @@ end
 
 --- Generate up/down tracks covering a polygon at the optimum angle
 -- 
-function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnectingTracks )
+function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, addConnectingTracks )
   -- translate polygon so we can rotate it around its center. This way all points
   -- will be approximately the same distance from the origo and the rotation calculation
   -- will be more accurate
   local bb = polygon:getBoundingBox()
   local dx, dy = ( bb.maxX + bb.minX ) / 2, ( bb.maxY + bb.minY ) / 2 
   local translatedPolygon = translatePoints( polygon, -dx , -dy )
+	local translatedIslands = Island.translateAll( islands, -dx, -dy )
   -- Now, determine the angle where the number of tracks is the minimum
-  local bestAngle, nTracks, nBlocks = findBestTrackAngle( translatedPolygon, width )
+  local bestAngle, nTracks, nBlocks = findBestTrackAngle( translatedPolygon, translatedIslands, width )
   if nBlocks < 1 then
     courseGenerator.debug( "No room for up/down tracks." )
     return nil, 0, 0
@@ -79,20 +111,14 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
   rotatedMarks = Polygon:new()
   -- now, generate the tracks according to the implement width within the rotated polygon's bounding box
   -- using the best angle
-  local rotated = rotatePoints( translatedPolygon, math.rad( bestAngle ))
+  local rotatedBoundary = rotatePoints( translatedPolygon, math.rad( bestAngle ))
+	local rotatedIslands = Island.rotateAll( translatedIslands, math.rad( bestAngle ))
 
-  local parallelTracks = generateParallelTracks( rotated, width )
+	local parallelTracks = generateParallelTracks( rotatedBoundary, rotatedIslands, width )
 
-  local blocks = {}
-  blocks = splitCenterIntoBlocks( parallelTracks, blocks, width )
+  local blocks = splitCenterIntoBlocks( parallelTracks, width )
 
   for i, block in ipairs( blocks ) do
-    for _, j in ipairs({ 1, #block }) do
-      table.insert( rotatedMarks, block[ j ].intersections[ 1 ])
-      rotatedMarks[ #rotatedMarks ].label = string.format( "%d-%d/1", i, j )
-      table.insert( rotatedMarks, block[ j ].intersections[ 2 ])
-      rotatedMarks[ #rotatedMarks ].label = string.format( "%d-%d/2", i, j )
-    end
     courseGenerator.debug( "Block %d has %d tracks", i, #block )
     block.tracksWithWaypoints = addWaypointsToTracks( block, width, extendTracks )
     block.covered = false
@@ -103,22 +129,19 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
   -- blocks. 
   -- Now we have to connect the first block with the end of the headland track
   -- and then connect each block so we cover the entire polygon.
-
-  local startIx, endIx, step = polygon.circleStart, polygon.circleEnd, polygon.circleStep
-  local workedBlocks = {} 
-  while startIx do
-    startIx, endIx, block = findTrackToNextBlock( blocks, rotated, startIx, endIx, step )
-    table.insert( workedBlocks, block )
-  end
-
+	math.randomseed( courseGenerator.getCurrentTime())
+	local blocksInSequence = findBlockSequence( blocks, rotatedBoundary, polygon.circleStart, polygon.circleStep)
+	local workedBlocks = linkBlocks( blocksInSequence, rotatedBoundary, polygon.circleStart, polygon.circleStep)
+	
   -- workedBlocks has now a the list of blocks we need to work on, including the track
   -- leading to the block from the previous block or the headland.
   local track = Polygon:new()
   local connectingTracks = {}
   for i, block in ipairs( workedBlocks ) do
-    connectingTracks[ i ] = Polygon:new()
-    courseGenerator.debug( "Track to block %d has %d points", i, #block.trackToThisBlock )
-    for j = 1, #block.trackToThisBlock do
+	  connectingTracks[ i ] = Polygon:new()
+	  local nPoints = block.trackToThisBlock and #block.trackToThisBlock or 0
+    courseGenerator.debug( "Track to block %d has %d points", i, nPoints )
+    for j = 1, nPoints do
       table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
       if addConnectingTracks then
         table.insert( track, block.trackToThisBlock[ j ])
@@ -130,15 +153,20 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
         end
       end
     end
-    linkParallelTracks( track, block.tracksWithWaypoints, block.bottomToTop, block.leftToRight, nTracksToSkip ) 
+	  courseGenerator.debug( '%d. block %d, entry corner %d, direction to next = %d, on the bottom = %s, on the left = %s', i, block.id, block.entryCorner,
+	    block.directionToNextBlock or 0, tostring( isCornerOnTheBottom( block.entryCorner )), tostring( isCornerOnTheLeft( block.entryCorner )))
+    local continueWithTurn = not block.trackToThisBlock
+	  if continueWithTurn then
+		  track[ #track ].turnStart = true 
+	  end
+	  linkParallelTracks( track, block.tracksWithWaypoints, 
+      isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), nTracksToSkip, continueWithTurn ) 
     addRidgeMarkers( track )
   end
 
   -- now rotate and translate everything back to the original coordinate system
   if marks then 
     rotatedMarks = translatePoints( rotatePoints( rotatedMarks, -math.rad( bestAngle )), dx, dy )
-  -- will be approximately the same distance from the origo and the rotation calculation
-  -- will be more accurate
     for i = 1, #rotatedMarks do
       table.insert( marks, rotatedMarks[ i ])
     end
@@ -147,7 +175,12 @@ function generateTracks( polygon, width, nTracksToSkip, extendTracks, addConnect
     connectingTracks[ i ] = translatePoints( rotatePoints( connectingTracks[ i ], -math.rad( bestAngle )), dx, dy )
   end
   polygon.connectingTracks = connectingTracks
-  return translatePoints( rotatePoints( track, -math.rad( bestAngle )), dx, dy ), bestAngle, nTracks
+	-- return the information about blocks for visualization
+	for _, b in ipairs( blocks ) do
+		b.polygon:rotate( -math.rad( bestAngle ))
+		b.polygon:translate( dx, dy )
+	end
+  return translatePoints( rotatePoints( track, -math.rad( bestAngle )), dx, dy ), bestAngle, nTracks, blocks
 end
 
 ----------------------------------------------------------------------------------
@@ -158,14 +191,14 @@ end
 --- Generate a list of parallel tracks within the field's boundary
 -- At this point, tracks are defined only by they endpoints and 
 -- are not connected
-function generateParallelTracks( polygon, width )
+function generateParallelTracks( polygon, islands, width )
   local tracks = {}
   local function addTrack( fromX, toX, y, ix )
     local from = { x = fromX, y = y, track=ix }
     local to = { x = toX, y = y, track=ix }
     -- for now, all tracks go from min to max, we'll take care of
     -- alternating directions later.
-    table.insert( tracks, { from=from, to=to, intersections={}} )
+    table.insert( tracks, { from=from, to=to, intersections={}, originalTrackNumber = ix } )
   end
   local trackIndex = 1
   -- go up to maxY - width for now, because the last, uppermost trace must be exactly
@@ -179,22 +212,28 @@ function generateParallelTracks( polygon, width )
   -- tracks has now a list of segments covering the bounding box of the 
   -- field. 
   findIntersections( polygon, tracks )
+	for _, island in ipairs( islands ) do
+		if #island.headlandTracks > 0 then
+			findIntersections( island.headlandTracks[ island.outermostHeadlandIx ], tracks, island.id )
+		end
+	end
   return tracks
 end
 
---- Input is a field boundary (like the innermost headland track) and 
---  a list of segments. The segments represent the parallel tracks. 
+--- Input is a field boundary (like the innermost headland track or a
+--  headland around an island) and 
+--  a list of segments. The segments represent the up/down rows. 
 --  This function finds the intersections with the the field
 --  boundary.
 --  As result, tracks will have an intersections member with all 
---  intersection points with polygon, ordered from left to right
-function findIntersections( polygon, tracks )
+--  intersection points with the headland, ordered from left to right
+function findIntersections( headland, tracks, islandId )
   -- recalculate angles after the rotation for getDistanceBetweenTrackAndHeadland()
-  polygon:calculateData()
+  headland:calculateData()
   -- loop through the polygon and check each vector from 
   -- the current point to the next
-  for i, cp in polygon:iterator() do
-    local np = polygon[ i + 1 ] 
+  for i, cp in headland:iterator() do
+	  local np = headland[ i + 1 ] 
     for j, t in ipairs( tracks ) do
       local is = getIntersection( cp.x, cp.y, np.x, np.y, t.from.x, t.from.y, t.to.x, t.to.y ) 
       if is then
@@ -203,10 +242,33 @@ function findIntersections( polygon, tracks )
         is.index = i
         -- remember the angle we cross the headland 
         is.angle = cp.tangent.angle
+	      is.islandId = islandId
+	      -- also remember which headland this was, we have one boundary around the entire 
+	      -- field and one around each island.
+	      is.headland = headland
+	      is.originalTrackNumber = t.originalTrackNumber
+	      t.onIsland = islandId
         addPointToListOrderedByX( t.intersections, is )
       end
     end
   end
+	-- now that we know which tracks are on the island, detect tracks adjacent to an island
+	if islandId then
+		for i = 1, #tracks do
+			local previousTrack = tracks[ i - 1 ]
+			local t = tracks[ i ]
+			--print( t.originalTrackNumber, previousTrack and previousTrack.onIsland or nil, t.onIsland )
+			if previousTrack and previousTrack.onIsland and not t.onIsland then
+				if not t.adjacentIslands then t.adjacentIslands = {} end
+				t.adjacentIslands[ islandId ] = true
+			end
+			if previousTrack and not previousTrack.onIsland and t.onIsland then
+				if not previousTrack.adjacentIslands then previousTrack.adjacentIslands = {} end
+				previousTrack.adjacentIslands[ islandId ] = true
+			end
+			previousTrack = t
+		end
+	end
 end
 
 --- convert a list of tracks to waypoints, also cutting off
@@ -234,7 +296,7 @@ function addWaypointsToTracks( tracks, width, extendTracks )
       -- less than newFrom. Just skip that track
       if newTo > newFrom then
         tracks[ i ].waypoints = {}
-        for x = newFrom, newTo, waypointDistance do
+        for x = newFrom, newTo, courseGenerator.waypointDistance do
           table.insert( tracks[ i ].waypoints, { x=x, y=tracks[ i ].from.y, track=i })
         end
         -- make sure we actually reached newTo, if waypointDistance is too big we may end up 
@@ -273,87 +335,13 @@ function getDistanceBetweenTrackAndHeadland( width, angle )
   return dHeadlandCenterAndSide - offset
 end
 
---- Start walking on the headland at the given point until
--- we bump onto a corner of an unworked block. 
--- returns the to/from index in headland where the work for this 
--- block ends, that is, where we should start looking for the next block 
-function findTrackToNextBlock( blocks, headland, from, to, step )
-  local track = Polygon:new()
-  local ix
-  for i in headland:iterator( from, to, step ) do
-    for j, b in ipairs( blocks ) do
-      if not b.covered then
-        -- TODO: we are repeating ourselves here a lot, should be refactored
-        if i == b.bottomLeftIntersection.index then
-          courseGenerator.debug( "Starting block %d at bottom left", j )
-          b.bottomToTop, b.leftToRight = true, true
-          b.covered = true
-          -- where we end working the block depends on the number of track
-          -- TODO: works only for alternating tracks as long as no track
-          -- skipped.
-          if #b % 2 == 0 then 
-            ix = b.topLeftIntersection.index
-            table.insert( track, b.topLeftIntersection.point )
-          else
-            ix = b.topRightIntersection.index 
-            table.insert( track, b.topRightIntersection.point )
-          end
-          b.trackToThisBlock = track
-          return ix, headland:getIndex( ix - step ), b
-        elseif i == b.bottomRightIntersection.index then
-          courseGenerator.debug( "Starting block %d at bottom right", j )
-          b.bottomToTop, b.leftToRight = true, false
-          b.covered = true
-          if #b % 2 == 0 then 
-            ix = b.topRightIntersection.index
-            table.insert( track, b.topRightIntersection.point )
-          else
-            ix = b.topLeftIntersection.index 
-            table.insert( track, b.topLeftIntersection.point )
-          end
-          b.trackToThisBlock = track
-          return ix, headland:getIndex( ix - step ), b
-        elseif i == b.topLeftIntersection.index then 
-          courseGenerator.debug( "Starting block %d at top left", j )
-          b.bottomToTop, b.leftToRight = false, true
-          b.covered = true
-          if #b % 2 == 0 then 
-            ix = b.bottomLeftIntersection.index
-            table.insert( track, b.bottomLeftIntersection.point )
-          else
-            ix = b.bottomRightIntersection.index 
-            table.insert( track, b.bottomRightIntersection.point )
-          end
-          b.trackToThisBlock = track
-          return ix, headland:getIndex( ix - step ), b
-        elseif i == b.topRightIntersection.index then
-          courseGenerator.debug( "Starting block %d at top right", j )
-          b.bottomToTop, b.leftToRight = false, false
-          b.covered = true
-          if #b % 2 == 0 then 
-            ix = b.bottomRightIntersection.index
-            table.insert( track, b.bottomRightIntersection.point )
-          else
-            ix = b.bottomLeftIntersection.index 
-            table.insert( track, b.bottomLeftIntersection.point )
-          end
-          b.trackToThisBlock = track
-          return ix, headland:getIndex( ix - step ), b
-        end
-      end
-    end -- for all blocks
-    table.insert( track, headland[ i ])
-  end -- for all points of the headland
-  return nil, nil, nil
-end
-
 --- Link the parallel tracks in the center of the field to one 
 -- continuous track.
 -- if bottomToTop == true then start at the bottom and work our way up
 -- if leftToRight == true then start the first track on the left 
 -- nTracksToSkip - number of tracks to skip when doing alternative 
 -- tracks
-function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, nTracksToSkip ) 
+function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, nTracksToSkip, startWithTurn ) 
   if not bottomToTop then
     -- we start at the top, so reverse order of tracks as after the generation, 
     -- the last one is on the top
@@ -367,7 +355,7 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
   local start
   if leftToRight then
     -- starting on the left, the first track is not reversed
-    start = 2 
+    start = 2   
   else
     start = 1
   end
@@ -382,7 +370,7 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
     if parallelTracks[ i ].waypoints then
       for j, point in ipairs( parallelTracks[ i ].waypoints) do
         -- the first point of a track is the end of the turn (except for the first track)
-        if ( j == 1 and i ~= startTrack ) then 
+        if ( j == 1 and ( i ~= startTrack or startWithTurn )) then 
           point.turnEnd = true
         end
         -- the last point of a track is the start of the turn (except for the last track)
@@ -391,7 +379,9 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
         end
         -- these will come in handy for the ridge markers
         point.trackNumber = i 
-        point.lastTrack = i == endTrack
+	      point.originalTrackNumber = parallelTracks[ i ].originalTrackNumber
+        point.adjacentIslands = parallelTracks[ i ].adjacentIslands
+	      point.lastTrack = i == endTrack
         point.firstTrack = i == startTrack
         table.insert( result, point )
       end      
@@ -413,7 +403,7 @@ function addWaypointsForTurnsWhenNeeded( track )
   for i, point in ipairs( track ) do
     if point.turnEnd then
       local distanceFromTurnStart = getDistanceBetweenPoints( point, track[ i - 1 ])
-      if distanceFromTurnStart > waypointDistance * 2 then
+      if distanceFromTurnStart > courseGenerator.waypointDistance * 2 then
         -- too far, add a waypoint between the start of the current track and 
         -- the end of the previous one.
         local x, y = getPointInTheMiddle( point, track[ i - 1])
@@ -426,35 +416,6 @@ function addWaypointsForTurnsWhenNeeded( track )
   end
   courseGenerator.debug( "track had " .. #track .. ", result has " .. #result )
   return result
-end
-
---- count tracks based on their intersection with a field boundary
--- if there are two intersections, it is one track
--- if there are more than two, it is actually two or more tracks because of a concave field 
-function countTracks( tracks )
-  local nFullTracks = 0
-  -- tracks intersecting a concave field boundary
-  local nSplitTracks = 0 
-  -- try to estimate the number of blocks (in case of a non-convex field there'll be at least two)
-  local nBlocks = 0
-  local nPrevIntersections = 0
-  for j, t in ipairs( tracks ) do
-    if #t.intersections > 2 then 
-      nSplitTracks = nSplitTracks + ( #t.intersections - 2 ) / 2
-    else
-      nFullTracks = nFullTracks + 1
-    end
-    -- whenever there's more intersections then it was before then
-    -- most likely a new block must be created
-    if #t.intersections > nPrevIntersections then
-      nBlocks = nBlocks + ( #t.intersections - nPrevIntersections ) / 2
-      nPrevIntersections = #t.intersections
-    end
-    if #t.intersections < nPrevIntersections then
-      nPrevIntersections = #t.intersections
-    end
-  end
-  return nFullTracks, nSplitTracks, nBlocks
 end
 
 function reverseTracks( tracks )
@@ -501,52 +462,101 @@ function reorderTracksForAlternateFieldwork( parallelTracks, nTracksToSkip )
   return reorderedTracks
 end
 
+
 --- Find blocks of center tracks which have to be worked separately
 -- in case of non-convex fields or islands
 --
 -- These blocks consist of tracks and each of these tracks will have
 -- exactly two intersection points with the headland
 --
-function splitCenterIntoBlocks( tracks, blocks, width )
-  local block = {}
-  local previousTrack = nil
-  for i, t in ipairs( tracks ) do
-    -- start at the bottommost track
-    -- as long as there are only 2 intersections with the field boundary, we
-    -- are ok as this is a convex area
-    if #t.intersections >= 2 then
-      local trackLength = t.intersections[ 2 ].x - t.intersections[ 1 ].x 
-      if trackLength >= width + minWaypointDistance then
-        -- add this track to the new block
-        -- but move the leftmost two intersections of the original track to this block
-        -- first find the two leftmost intersections (min x), which are ix 1 and 2 as 
-        -- the list of intersections is ordered by x
-        local newTrack = { from=t.from, to=t.to, intersections={ copyPoint( t.intersections[ 1 ]), copyPoint( t.intersections[ 2 ])}}
-        -- continue with this block only if the tracks overlap, otherwise we are done with this
-        -- block. Don't check first track obviously
-        if previousTrack and not overlaps( newTrack, previousTrack ) then
-          break
-        end
-        previousTrack = newTrack
-        table.insert( block, newTrack )
-        table.remove( t.intersections, 1 )
-        table.remove( t.intersections, 1 )
-      end
-    end
-  end
-  if #block == 0 then
-    -- no tracks could be added to the block, we are done
-    return blocks
-  else
-    -- block has new tracks, add it to the list and continue splitting
-    -- for our convenience, remember the corners
-    block.bottomLeftIntersection = block[ 1 ].intersections[ 1 ]
-    block.bottomRightIntersection = block[ 1 ].intersections[ 2 ]
-    block.topLeftIntersection = block[ #block ].intersections[ 1 ]
-    block.topRightIntersection = block[ #block ].intersections[ 2 ]
-    table.insert( blocks, block )
-    return splitCenterIntoBlocks( tracks, blocks, width )
-  end
+function splitCenterIntoBlocks( tracks, width )
+	
+	function createEmptyBlocks( n )
+		local b = {}
+		for i = 1, n do
+			table.insert( b, {})
+		end
+		return b
+	end
+	
+	function splitTrack( t )
+		local splitTracks = {}
+		if #t.intersections % 2 ~= 0 or #t.intersections < 2 then
+			courseGenerator.debug( 'Found track with odd number (%d) of intersections', #t.intersections )
+			table.remove( t.intersections, #t.intersections )
+		end
+		if t.to.x - t.from.x < 30 then
+			courseGenerator.debug( 'Found very short track %.1f m', t.to.x - t.from.x )
+		end
+		for i = 1, #t.intersections, 2 do
+			local track = { from=t.from, to=t.to, 
+				intersections={ copyPoint( t.intersections[ i ]), copyPoint( t.intersections[ i + 1 ])},
+				originalTrackNumber = t.originalTrackNumber,
+				adjacentIslands = t.adjacentIslands }
+			table.insert( splitTracks, track )
+		end
+		return splitTracks
+	end
+	
+	function closeCurrentBlocks( blocks, currentBlocks )
+		if currentBlocks then
+			for _, block in ipairs( currentBlocks ) do
+				-- for our convenience, remember the corners
+				block.bottomLeftIntersection = block[ 1 ].intersections[ 1 ]
+				block.bottomRightIntersection = block[ 1 ].intersections[ 2 ]
+				block.topLeftIntersection = block[ #block ].intersections[ 1 ]
+				block.topRightIntersection = block[ #block ].intersections[ 2 ]
+				-- this is for visualization only
+				block.polygon = Polygon:new()
+				block.polygon[ courseGenerator.BLOCK_CORNER_BOTTOM_LEFT ] = block.bottomLeftIntersection
+				table.insert( rotatedMarks, block.bottomLeftIntersection )
+				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
+				block.polygon[ courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT ] = block.bottomRightIntersection
+				table.insert( rotatedMarks, block.bottomRightIntersection )
+				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT
+				block.polygon[ courseGenerator.BLOCK_CORNER_TOP_RIGHT ] = block.topRightIntersection
+				table.insert( rotatedMarks, block.topRightIntersection )
+				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_TOP_RIGHT
+				block.polygon[ courseGenerator.BLOCK_CORNER_TOP_LEFT ] = block.topLeftIntersection
+				table.insert( rotatedMarks, block.topLeftIntersection )
+				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_TOP_LEFT
+				table.insert( blocks, block )
+				block.id = #blocks
+			end
+		end
+	end
+
+	local blocks = {}
+	local previousNumberOfIntersections = 0
+	local currentNumberOfSections = 0
+	local currentBlocks
+	for i, t in ipairs( tracks ) do
+		local startNewBlock = false
+		local splitTracks = splitTrack( t )
+		for j, s in ipairs( splitTracks ) do
+			if currentBlocks and #currentBlocks == #splitTracks and 
+				#t.intersections == previousNumberOfIntersections and 
+				not overlaps( currentBlocks[ j ][ #currentBlocks[ j ]], s ) then
+				--print( string.format( '%d. overlap currentBlocks = %d, splitTracks = %d', j, currentBlocks and #currentBlocks or 0, #splitTracks ))
+				startNewBlock = true
+			end
+		end
+		-- number of track sections after splitting this track. Will be exactly one
+		-- if there are no obstacles in the field.
+		currentNumberOfSections = math.floor( #t.intersections / 2 )
+		if #t.intersections ~= previousNumberOfIntersections or startNewBlock then
+			-- start a new block, first save the current ones if exist
+			previousNumberOfIntersections = #t.intersections
+			closeCurrentBlocks( blocks, currentBlocks )
+			currentBlocks = createEmptyBlocks( currentNumberOfSections )
+		end
+		--print( i, #blocks, #currentBlocks, #splitTracks, currentNumberOfSections )
+		for j, s in ipairs( splitTracks ) do
+			table.insert( currentBlocks[ j ], s )
+		end
+	end
+	closeCurrentBlocks( blocks, currentBlocks )
+	return blocks
 end
 
 --- add a point to a list of intersections but make sure the 
@@ -650,4 +660,239 @@ function removeRidgeMarkersFromLastTrack( course, isReversed )
       p.ridgeMarker = ridgeMarker.none
     end
   end
+end
+
+-- We are using a genetic algorithm to find the optimum sequence of the blocks to work on.
+-- In case of a non-convex field or a field with island(s) in it, the field is divided into
+-- multiple areas (blocks) which are covered by the up/down rows independently. 
+
+-- We are looking for the optimum route to work these blocks, meaning the one with the shortest
+-- path between the blocks. There are two factors determining the length of this path: 
+-- 1. the sequence of blocks
+-- 2. where do we start each block (which corner), which alse determines the exit corner of 
+--    the block.
+--
+-- Most of this is based on the following paper:
+-- Ibrahim A. Hameed, Dionysis Bochtis and Claus A. Sørensen: An Optimized Field Coverage Planning
+-- Approach for Navigation of Agricultural Robots in Fields Involving Obstacle Areas
+
+--- Composit chromosome for a field block to determine the best sequence of blocks 
+FieldBlockChromosome = newClass()
+
+function FieldBlockChromosome:new( nBlocks )
+	local instance = {}
+	local blockNumbers = {}
+	-- array of +1 or -1. +1 at index 2 means that to reach the entry point of the second block
+	-- from the exit point of the first you have to go increasing indexes on the headland.
+	instance.directionToNextBlock = {}
+	for i = 1, nBlocks do table.insert( blockNumbers, i ) end
+	-- this chromosome has the sequence of blocks encoded
+	instance.blockSequence = PermutationEncodedChromosome:new( nBlocks, blockNumbers )
+	-- this chromosome has the entry point for each block encoded
+	instance.entryCorner = ValueEncodedChromosome:new( nBlocks, { courseGenerator.BLOCK_CORNER_BOTTOM_LEFT, courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT,
+		courseGenerator.BLOCK_CORNER_TOP_RIGHT, courseGenerator.BLOCK_CORNER_TOP_LEFT })
+	return setmetatable( instance, self )
+end
+
+function FieldBlockChromosome:__tostring()
+	local str = ''
+	for _, b in ipairs( self.blockSequence ) do
+		str = string.format( '%s%d(%d)-', str, b, self.entryCorner[ b ])
+	end
+	if self.distance and self.fitness then
+		str = string.format( '%s f = %.1f, d = %.1f m', str, self.fitness, self.distance )
+	end
+	return str
+end
+
+function FieldBlockChromosome:fillWithRandomValues()
+	self.blockSequence:fillWithRandomValues()
+	self.entryCorner:fillWithRandomValues()
+end
+
+function FieldBlockChromosome:crossover( spouse ) 
+	local offspring = FieldBlockChromosome:new( #self.blockSequence )
+	offspring.blockSequence = self.blockSequence:crossover( spouse.blockSequence )
+	offspring.entryCorner = self.entryCorner:crossover( spouse.entryCorner )
+	return offspring
+end
+
+function FieldBlockChromosome:mutate( mutationRate )
+	self.blockSequence:mutate( mutationRate )
+	self.entryCorner:mutate( mutationRate )
+end
+
+--- Find the (near) optimum sequence of blocks and entry/exit points.
+-- NOTE: remmeber to call randomseed before. It isn't part of this function
+-- to allow for automatic tests.
+-- headland is the innermost headland pass.
+--
+function findBlockSequence( blocks, headland, circleStart, circleStep )
+	-- GA parameters, depending on the number of blocks
+	local maxGenerations = 10 * #blocks
+	local tournamentSize = 5
+	local mutationRate = 0.03
+	local populationSize = 40 * #blocks
+
+	--- Calculate the fitness of a solution.
+	--
+	-- Calculate the distance to move between block exits and entrances for all 
+	-- blocks in the given sequence. The fitness is the recoprocal of the distance
+	-- so shorter routes are fitter.
+	function calculateFitness( chromosome )
+		chromosome.distance = 0
+		for i = 1, #chromosome.blockSequence do
+			local currentBlockIx = chromosome.blockSequence[ i ]
+			local currentBlockExitCorner = getBlockExitCorner( chromosome.entryCorner[ currentBlockIx ], #blocks[ currentBlockIx ] )
+			local currentBlockExitPoint = blocks[ currentBlockIx ].polygon[ currentBlockExitCorner ]
+			-- in case of the first block we need to add the distance to drive from the end of the 
+			-- innermost headland track to the entry point of the first block
+			local distance, dir
+			if i == 1 then
+				local currentBlockEntryPoint = blocks[ currentBlockIx ].polygon[ chromosome.entryCorner[ currentBlockIx ]]
+				-- TODO: this table comparison assumes the intersections were found on the same exact
+				-- table instance as this upvalue headland. Ugly, should use some headland ID instead
+				if headland == currentBlockEntryPoint.headland then
+					distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { circleStep } )
+					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = chromosome.distance + distance, dir
+				else
+					-- this block's entry point is not on the innermost headland (may be on an island)
+					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = math.huge, 1
+				end 
+			end
+			-- add the distance to the next block (except for the last)
+			if i < #chromosome.blockSequence then
+				local nextBlockIx = chromosome.blockSequence[ i + 1 ]
+				local nextBlockEntryPoint = blocks[ nextBlockIx ].polygon[ chromosome.entryCorner[ nextBlockIx ]]
+				if currentBlockExitPoint.headland == nextBlockEntryPoint.headland then
+					-- can reach the next block on the same headland					
+					distance, dir = getDistanceBetweenPointsOnHeadland( currentBlockExitPoint.headland, currentBlockExitPoint.index, nextBlockEntryPoint.index, { -1, 1 } )
+					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = chromosome.distance + distance, dir
+				else
+					-- next block's entry point is on a different headland, do not allow this by making
+					-- this solution unfit
+					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = math.huge, 1
+				end
+			end
+		end
+		chromosome.fitness = math.floor( 10000 / chromosome.distance )
+		return chromosome.fitness
+	end
+
+	--- Distance when driving on a headland between is1 and is2. These are expected to be 
+	-- intersection points with the headland stored. directions is a list of 
+	-- values -1 or 1, and determines which directions we try to drive on the headland 
+	function getDistanceBetweenPointsOnHeadland( headland, ix1, ix2, directions )
+		local distanceMin = math.huge
+		local directionMin = 0
+		for _, d in ipairs( directions ) do
+			local found = false
+			local distance = 0
+			for i in headland:iterator( ix1, ix1 - d, d ) do
+				distance = distance + headland[ i ].nextEdge.length
+				if i == ix2 then
+					found = true
+					break
+				end
+			end
+			distance = found and distance or math.huge
+			if distance < distanceMin then
+				distanceMin = distance
+				directionMin = d
+			end
+		end
+		return distanceMin, directionMin
+	end
+	
+	
+	-- Set up the initial population with random solutions
+	local population = Population:new( calculateFitness, tournamentSize, mutationRate )
+	population:initialize( populationSize, function()
+		local c = FieldBlockChromosome:new( #blocks )
+		c:fillWithRandomValues()
+		return c
+	end )
+
+	-- let the solution evolve through multiple generations
+	population:calculateFitness()
+	local generation = 1
+	while generation < maxGenerations do
+		local newGeneration = population:breed()
+		population:recombine( newGeneration )
+		generation = generation + 1
+	end
+	print( population.bestChromosome )
+	-- this table contains the blocks and other relevant data in the order they have to be worked on
+	local blocksInSequence = {}
+	for i = 1, #blocks do
+		local blockIx = population.bestChromosome.blockSequence[ i ]
+		local block = blocks[ blockIx ]
+		block.entryCorner = population.bestChromosome.entryCorner[ blockIx ] -- corner where this block should be entered
+		block.directionToNextBlock = population.bestChromosome.directionToNextBlock[ blockIx ] -- step direction on the headland index to take
+		table.insert( blocksInSequence, block )
+	end
+	return blocksInSequence, population.bestChromosome
+end
+
+
+function getTrackBetweenPointsOnHeadland( headland, startIx, endIx, step )
+	local track = Polyline:new()
+	for i in headland:iterator( startIx, endIx, step ) do
+		table.insert( track, headland[ i ])
+	end
+	-- remove first and last point to provide a smoother transition to the up/down rows.
+	-- if we don't do this, the first or last waypoint on the headland may be behind 
+	-- the current track wp and thus we first turn 180 back and then forward again
+	table.remove( track, 1 )
+	table.remove( track, #track )
+	return track
+end
+
+function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBlockDirection )
+	local workedBlocks = {}
+	for i, block in ipairs( blocksInSequence ) do
+		if i == 1 then
+			-- the track to the first block starts at the end of the innermost headland
+			block.trackToThisBlock = getTrackBetweenPointsOnHeadland(	innermostHeadland, circleStart,
+																													block.polygon[ block.entryCorner ].index, firstBlockDirection )
+		end
+		if i > 1 then
+			-- for the rest of the blocks, the track to the block is from the exit point of the previous block
+			local previousBlock = blocksInSequence[ i - 1 ]
+			local previousBlockExitCorner = getBlockExitCorner( previousBlock.entryCorner, #previousBlock )
+			local headland = block.polygon[ block.entryCorner ].headland
+			local previousOriginalTrackNumber = previousBlock.polygon[ previousBlockExitCorner ].originalTrackNumber
+			local thisOriginalTrackNumber = block.polygon[ block.entryCorner ].originalTrackNumber
+			-- Don't need a connecting track when these were originally adjacent tracks.
+			if math.abs( previousOriginalTrackNumber - thisOriginalTrackNumber ) ~= 1 then
+				block.trackToThisBlock = getTrackBetweenPointsOnHeadland( headland, previousBlock.polygon[ previousBlockExitCorner ].index,
+				block.polygon[ block.entryCorner ].index, previousBlock.directionToNextBlock )
+			else
+				
+			end
+		end
+		table.insert( workedBlocks, block )
+	end
+	return workedBlocks
+end
+
+
+--- starting at i, find the first turn start waypoint in a reasonable distance 
+-- and return the index of it
+function skipToTurnStart( course, start, step ) 
+	local ix = start
+	local d = 0
+	while d < 4 * courseGenerator.waypointDistance and ix < #course and ix > 1 do
+		if course[ ix ].turnStart then return ix end
+		d = d + course[ ix ].nextEdge.length
+		ix = ix + step
+	end
+	return start
+end
+
+function removeTurn( course, i, step )
+	if course[ i ].turnStart then
+		course[ i ].turnStart = nil
+		course[ i + 1 ].turnEnd = nil
+	end
 end
