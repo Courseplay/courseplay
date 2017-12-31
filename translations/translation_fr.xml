@@ -175,16 +175,16 @@
 		<text name="COURSEPLAY_DIRECTION_4" 						 	 text="Ouest" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatique" />
 		<text name="COURSEPLAY_HEADLAND" 						 		 text="Fourrière:" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="simple" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circle" /> <!-- drive a full circle around the island when first bypassing -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Détection des obstacles" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="Désactivé" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="Simple" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="Circulaire" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Lissés" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Manoeuvres" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Ronds" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Manoeuvre arrière dans les fourrières"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="ligne droite" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="circulaire" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="Ligne droite" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="Circulaire" />
 		<text name="COURSEPLAY_ACTIVATED" 						 		 text="activé" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Nom seul" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nom et Course" />
@@ -328,10 +328,10 @@
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Recharger la liste de courses" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Impossible de générer la course. Essayez de modifier les paramètres ou de déplacer le véhicule."/>
 		
-		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_Molasses"						 text="molasses" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="Ficelle pour balle" />
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="Filet pour balle" />
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="Film d'enrubannage" />
+		<text name="COURSEPLAY_FillType_Molasses"						 text="Mélasse" />
 		
 	</texts>
 </l10n>
