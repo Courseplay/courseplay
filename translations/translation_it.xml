@@ -176,9 +176,9 @@
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Ignora piccole isole" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="simple" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circle" /> <!-- drive a full circle around the island when first bypassing -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="disattivato" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="semplice" /> <!-- just move existing waypoints out of the island -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circolare" /> <!-- drive a full circle around the island when first bypassing -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Morbide" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Secche" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Circolari" />
@@ -215,7 +215,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi a posizione trasporto" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 text="muovi a posizione pre svuotamento" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione svuota pala" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; go" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; Go" />
 
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il percorso al" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="punto più vicino" />
@@ -250,7 +250,7 @@
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 					 text="Il granaio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 					 text="Il granaio sta caricando:" />
 		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 						 text="Il granaio è vuoto!! Attendo che si riempia." />
-		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": il granaio è pieno! Contiuna al prossimo granaio." />
+		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 						 text=": il granaio è pieno! Continuo al prossimo granaio." />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 						 text="Avvio su %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 				 text="Ricerca del primo punto" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 					 text="Salva percorso attuale" />
@@ -298,7 +298,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo precedente" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: azione del mouse" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: azione secondaria del mouse" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: posiziona marcatore per debug nel log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mostra cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Nascondi cursore" />
 
@@ -328,10 +328,10 @@
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Ricarica lista percorsi" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Non è possibile generare il percorso. Prova a cambiare le impostazioni o a spostare il veicolo."/>
 
-		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_Molasses"						 text="molasses" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="spago balle" />
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="rete balle" />
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="rivestimento balle" />
+		<text name="COURSEPLAY_FillType_Molasses"						 text="melassa" />
 		
 	</texts>
 </l10n>
