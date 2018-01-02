@@ -225,7 +225,7 @@ function courseplay:handle_mode2(vehicle, dt)
 						courseplay:setInfoText(vehicle,"COURSEPLAY_WAITING_FOR_FILL_LEVEL")
 					end
 
-
+					local smallestTimeDiff = math.huge;
 					local highest_fill_level = 0;
 					local num_courseplayers = 0; --TODO: = fewest courseplayers ?
 					local distance = 0;
@@ -270,6 +270,40 @@ function courseplay:handle_mode2(vehicle, dt)
 								vehicle.cp.callCombineFillLevel = vehicle.cp.totalFillLevelPercent
 								vehicle.cp.combineID = combine.id
 							end
+						-- experimental script for big fields
+						-- checks the time needed to reach combine in time and start earlier if it's time to
+						-- it's not a precise calculation but it should work somehow... (calculating the true path to all combines every 5 sec is too expensive)
+						elseif combine.cp.fillLitersPerSecond then
+								local distanceToCombine = courseplay:distanceToObject(vehicle, combine);
+								local capacity = combine:getUnitCapacity(combine.overloading.fillUnitIndex)
+								local fillLevel = combine:getUnitFillLevel(combine.overloading.fillUnitIndex)
+								local triggerFillLevel = capacity* vehicle.cp.followAtFillLevel / 100
+								local timeToReachFillLevel = (triggerFillLevel - fillLevel)/combine.cp.fillLitersPerSecond
+								local approxTimeToCombine = distanceToCombine /(vehicle.cp.speeds.field/3.6)
+								--print(string.format("timeToReachFillLevel:%s ; approxTimeToCombine: %s ",tostring(timeToReachFillLevel),tostring(approxTimeToCombine)))
+								if timeToReachFillLevel < approxTimeToCombine then
+									--print(string.format("timeToReachFillLevel:%s ; approxTimeToCombine: %s ",tostring(timeToReachFillLevel),tostring(approxTimeToCombine)))
+									if smallestTimeDiff > approxTimeToCombine-timeToReachFillLevel then
+										smallestTimeDiff = approxTimeToCombine-timeToReachFillLevel
+										local otherIsCloser = false
+										--is an other mode2 courseplayer closer ?
+										for k, courseplayer in pairs(CpManager.activeCoursePlayers) do
+											if courseplayer.cp.mode == 2 and courseplayer.cp.modeState == STATE_WAIT_AT_START then
+												local vehiclesDistance = courseplay:distanceToObject(courseplayer, combine);
+												if vehiclesDistance < distanceToCombine then
+													otherIsCloser = true
+													--print(" "..nameNum(courseplayer).." is closer so don't check in")
+												end
+											end
+										end
+										if not otherIsCloser then
+											vehicle.cp.bestCombine = combine
+											vehicle.cp.distanceToCombine = distanceToCombine
+											vehicle.cp.callCombineFillLevel = vehicle.cp.totalFillLevelPercent
+											vehicle.cp.combineID = combine.id
+										end
+									end							
+								end
 						end
 					end
 

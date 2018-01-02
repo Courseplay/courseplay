@@ -638,6 +638,12 @@ function courseplay:draw()
 			renderText(0.2,0.135,0.02,"combineIsTurning: "..tostring(self.cp.mode2DebugTurning ))
 		end	
 	end
+	if self.cp.isCombine and courseplay.debugChannels[4] then
+		renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getUnitCapacity(self.overloading.fillUnitIndex) - self:getUnitFillLevel(self.overloading.fillUnitIndex))/self.cp.fillLitersPerSecond))
+		renderText(0.2,0.135,0.02,"self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
+	end
+	
+	
 	if courseplay.debugChannels[10] and self.cp.BunkerSiloMap ~= nil and self.cp.actualTarget ~= nil then
 
 		local fillUnit = self.cp.BunkerSiloMap[self.cp.actualTarget.line][self.cp.actualTarget.column]
@@ -1086,6 +1092,27 @@ function courseplay:updateTick(dt)
 		courseplay:resetTools(self)
 	end
 
+	--get the combines filling rate in l/second
+	if self.cp.isCombine then
+		if courseplay:timerIsThrough(self, 'combineFillLevel') then 
+			courseplay:setCustomTimer(self, "combineFillLevel", 2);
+			local currentFillLevel = self:getUnitFillLevel(self.overloading.fillUnitIndex)
+			local timeDiff = (g_currentMission.time - (self.cp.lastFillLevelTime or g_currentMission.time))/1000
+			self.cp.lastFillLevelTime = g_currentMission.time
+			if self.cp.lastFillLevel ~= nil then
+				if self.cp.lastFillLevel ~= currentFillLevel then
+					self.cp.fillLitersPerSecond = courseplay:round((currentFillLevel - self.cp.lastFillLevel) /timeDiff);
+					self.cp.lastFillLevel = currentFillLevel;
+				else
+					self.cp.fillLitersPerSecond = 0;
+				end
+				--print("time: "..tostring(timeDiff).."; self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
+			else
+				self.cp.lastFillLevel = currentFillLevel;
+			end	
+		end
+	end
+	
 	self.timer = self.timer + dt;
 end
 
