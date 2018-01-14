@@ -199,7 +199,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Course is not valid" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" />
-		
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="No shovel could be found" />

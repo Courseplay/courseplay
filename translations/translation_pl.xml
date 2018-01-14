@@ -199,6 +199,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE"							 text="Kurs nieważny" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Nawożenie siewnikiem" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konwój kombajnów" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 text="Nie znaleziono łychy" />

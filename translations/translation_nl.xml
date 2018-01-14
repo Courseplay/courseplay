@@ -195,6 +195,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Geen route geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="bemester functie van zaai machine" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine konvooi" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
 
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Geen shovel gevonden" />

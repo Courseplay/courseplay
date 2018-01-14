@@ -218,8 +218,11 @@ function courseplay:handle_mode2(vehicle, dt)
 					-- choose the combine that needs me the most
 					if vehicle.cp.bestCombine ~= nil and vehicle.cp.activeCombine == nil then
 						courseplay:debug(string.format("%s (%s): request check-in @ %s", nameNum(vehicle), tostring(vehicle.id), tostring(vehicle.cp.combineID)), 4);
-						if courseplay:registerAtCombine(vehicle, vehicle.cp.bestCombine) then
+						local registered,combineIsTurning  = courseplay:registerAtCombine(vehicle, vehicle.cp.bestCombine)
+						if registered then
 							courseplay:setModeState(vehicle, STATE_DRIVE_TO_COMBINE);
+						elseif combineIsTurning then
+							courseplay:setInfoText(vehicle,"COURSEPLAY_COMBINE_IS_TURNING")
 						end
 					else
 						courseplay:setInfoText(vehicle,"COURSEPLAY_WAITING_FOR_FILL_LEVEL")
@@ -310,7 +313,8 @@ function courseplay:handle_mode2(vehicle, dt)
 					if vehicle.cp.combineID ~= 0 then
 						courseplay:debug(string.format("%s (%s): call combine: %s", nameNum(vehicle), tostring(vehicle.id), tostring(vehicle.cp.combineID)), 4);
 					end
-
+				elseif vehicle.cp.reachableCombineIsInFruit then
+					courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_IN_FRUIT");
 				else
 					courseplay:setInfoText(vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
 				end

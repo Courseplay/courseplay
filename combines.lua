@@ -22,7 +22,8 @@ function courseplay:updateReachableCombines(vehicle)
 	courseplay:debug(string.format("%s: updateReachableCombines()", nameNum(vehicle)), 4);
 
 	vehicle.cp.reachableCombines = {};
-
+	vehicle.cp.reachableCombineIsInFruit = nil
+	
 	if not vehicle.cp.searchCombineAutomatically then
 		if not vehicle.cp.savedCombine then
 			-- manual mode, but no combine selected -> empty list
@@ -108,7 +109,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 				-- is the pipe on the correct side?
 				if (combine.turnStage ~= nil and combine.turnStage > 0) or combine.cp.turnStage ~= 0 then
 					courseplay:debug(nameNum(callerVehicle)..": combine is turning -> don't register tractor",4)
-					return false
+					return false, true
 				end
 				local fruitSide = courseplay:sideToDrive(callerVehicle, combine, -10)
 				if fruitSide == "none" then
@@ -128,6 +129,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 						if reachableCombine == combine then
 							courseplay:debug(nameNum(callerVehicle).."removing combine from reachable combines list",4)
 							callerVehicle.cp.reachableCombines[k] = nil
+							callerVehicle.cp.reachableCombineIsInFruit = true
 						end
 					end
 					return false

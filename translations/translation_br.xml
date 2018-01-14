@@ -199,7 +199,8 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="rota inválida" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Função fertilizante p.máquina de semea" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="comboio ceifadeiras" />
-																		
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
+
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="nenhuma pá carregadeira encontrada" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 						 text="Posições da pá carregadeira" />

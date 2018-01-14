@@ -193,7 +193,8 @@
 		<text name="COURSEPLAY_FINISH" 									 text="完成" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="无效任务" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="施肥功能" /> 
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="联合车队" /> 
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="联合车队" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="找不到铲斗" />

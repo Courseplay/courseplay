@@ -199,6 +199,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Kein gültiger Kurs geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Drescher-Verband" /> 
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="Drescher-Rohr ist in der Frucht" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="keine Schaufel vorhanden" />
