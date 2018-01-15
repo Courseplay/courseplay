@@ -177,8 +177,8 @@
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Vyhnout se překážkám" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="vypnuto" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="jednoduché" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="obkroužení" /> <!-- drive a full circle around the island when first bypassing -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="jednoduché" /> 
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="obkroužení" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Zaoblený" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Pocouvnutí" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Průjezd" />
@@ -199,7 +199,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Trasa není platná" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Přihnojování" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konvoj kombajnů" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="vysýpací roura v neposekaném" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="vysýpací roura v neposekaném" /> 		
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Lžíce nenalezena" />
