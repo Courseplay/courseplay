@@ -39,8 +39,8 @@
 		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Kilka maszyn" />
 		<text name="COURSEPLAY_DISTANCE"							 	 text="Dystans" />
 		<text name="COURSEPLAY_WAITING_TIME"							 text="Czas oczekiwania" />
-		<text name="COURSEPLAY_MINUTES"									 text="%d minut" />
-		<text name="COURSEPLAY_SECONDS"									 text="%d sekund" />
+		<text name="COURSEPLAY_MINUTES"									 text="%d min." />
+		<text name="COURSEPLAY_SECONDS"									 text="%d sek." />
 		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />
 		<text name="COURSEPLAY_COURSE_NAME"								 text="Nazwa kursu:" />
 		<text name="COURSEPLAY_FOLDER_NAME"								 text="Nazwa folderu:" />
@@ -199,7 +199,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE"							 text="Kurs nieważny" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Nawożenie siewnikiem" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konwój kombajnów" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="Rura wyładowcza po stronie uprawy" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 text="Nie znaleziono łychy" />
@@ -265,8 +265,8 @@
 		<text name="COURSEPLAY_RECORDING_SET_CROSS"						 text="Ustaw punkt skrzyżowania" />
 		<text name="COURSEPLAY_RECORDING_TURN_START"					 text="Rozpocznij manewr zawracania" />
 		<text name="COURSEPLAY_RECORDING_TURN_END"						 text="Zakończ manewr zawracania" />
-		<text name="COURSEPLAY_RECORDING_REVERSE_START"					 text="Rozpocznij powrotną jazdę" />
-		<text name="COURSEPLAY_RECORDING_REVERSE_STOP"					 text="Zatrzymaj powrotną jazdę" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_START"					 text="Rozpocznij cofanie" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_STOP"					 text="Zakończ cofanie" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Dodaj punkt pośredni" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"				 text="Tekst przy ikonie na mapie" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Ustawienia Drive Control" />
