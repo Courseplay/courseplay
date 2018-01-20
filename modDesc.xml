@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00052</version>
+	<version>5.02.00053</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -23,7 +23,8 @@
 	
 	<changeLog><![CDATA[
 
-  - multiplayer enabled
+  	- support for big islands
+  	- multiplayer enabled
 	- support for straw harvest addon
 	- new option for course generation to bypass small islands in fields
 	- added support for sprayer Addon (with the friendly support of David FONTAINE)
