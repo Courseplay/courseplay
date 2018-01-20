@@ -319,14 +319,18 @@ function setupIslands( field, nHeadlandPasses, implementWidth, overlapPercent, m
 	while #field.islandPerimeterNodes > 0 do
 		local island = Island:new( islandId )
 		island:createFromPerimeterNodes( field.islandPerimeterNodes )
-		island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
-		if island:tooBigToBypass( implementWidth ) then
-			table.insert( field.bigIslands, island )
-		else
-			table.insert( field.smallIslands, island )
+		-- ignore too really small islands (under 5 sqm), there are too many issues with the 
+		-- headland generation for them
+		if island.nodes.area > 5 then
+			island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
+			if island:tooBigToBypass( implementWidth ) then
+				table.insert( field.bigIslands, island )
+			else
+				table.insert( field.smallIslands, island )
+			end
+			table.insert( field.islands, island )
+			islandId = islandId + 1				
 		end
-		table.insert( field.islands, island )
-		islandId = islandId + 1
 	end
 end
 
