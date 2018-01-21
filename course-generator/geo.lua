@@ -769,6 +769,20 @@ function Polyline:rotate( angle )
 	self:calculateData()
 end
 
+
+function Polyline:space( angleThreshold, d )
+	local i = 2
+	while i < #self do
+		local cp, pp = self[ i ], self[ i - 1 ]
+		local isCurve = math.abs( getDeltaAngle( cp.nextEdge.angle, pp.nextEdge.angle )) > angleThreshold
+		if getDistanceBetweenPoints( cp, pp ) > d or isCurve then
+			i = i + 1
+		else
+			table.remove( self, i )
+		end
+	end
+	self:calculateData()
+end
 -------------------------------------------------------------------------------
 
 Polygon = {}
@@ -817,4 +831,3 @@ function Polygon:iterator( from, to, step )
     end
   end
 end
-

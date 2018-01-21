@@ -200,8 +200,7 @@ function Island:createFromPerimeterNodes( perimeterNodes )
     end
   end
   self.nodes:calculateData()
-	self.nodes = space( self.nodes, math.rad( 20 ), 5 )
-	self.nodes:calculateData()
+	self.nodes:space( math.rad( 20 ), 5 )
 	self.width = self.nodes.boundingBox.maxX - self.nodes.boundingBox.minX
   self.height = self.nodes.boundingBox.maxY - self.nodes.boundingBox.minY
   courseGenerator.debug( "Island #%d with %d nodes created, %.0fx%0.f, area %.0f", self.id, #self.nodes, self.width, self.height, self.nodes.area )
@@ -231,8 +230,8 @@ function Island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPerce
 		local width = i == 1 and implementWidth / 2 or implementWidth * ( 100 - overlapPercent ) / 100
 		self.headlandTracks[ i ] = calculateHeadlandTrack( previousHeadland, width,
 			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, false )
-		courseGenerator.debug( "Generated headland track #%d, area %.1f, clockwise = %s for island %s", i, self.headlandTracks[ i ].area,
-			tostring( self.headlandTracks[ i ].isClockwise ), self.id )
+		courseGenerator.debug( "Generated headland track #%d, %d waypoints, area %.1f, clockwise = %s for island %s", i, #self.headlandTracks[ i ],
+			self.headlandTracks[ i ].area, tostring( self.headlandTracks[ i ].isClockwise ), self.id )
 		previousHeadland = self.headlandTracks[ i ]
 	end
 	self.outermostHeadlandIx = #self.headlandTracks
@@ -477,7 +476,7 @@ function Island:getHeadlandPath( point, distance, width, minSmoothAngle, maxSmoo
 		local d = getDistanceBetweenPoints( point, vertex )
 		if d < distance then
 			local da = getDeltaAngle( point.nextEdge.angle, vertex.nextEdge.angle )
-			print( string.format( '%.1f m, delta %.0f, point %.0f, headland %.0f', d, math.deg( da ), math.deg( point.nextEdge.angle ), math.deg( vertex.nextEdge.angle )))
+			courseGenerator.debug( '%.1f m, delta %.0f, point %.0f, headland %.0f', d, math.deg( da ), math.deg( point.nextEdge.angle ), math.deg( vertex.nextEdge.angle ))
 			if math.abs( da ) < maxDeltaAngle then
 				local isClockwise = self.headlandTracks[ self.outermostHeadlandIx ].isClockwise
 				self:linkHeadlandTracks( point, width, isClockwise, minSmoothAngle, maxSmoothAngle  )
@@ -511,6 +510,5 @@ end
 function inFrontOf( target, position, isReversing )
 	local angle, distance = toPolar( target.x - position.x, target.y - position.y )
 	local bearing = math.abs( getDeltaAngle( angle, position.prevEdge.angle ))
-	print( math.deg( bearing ), math.deg( position.prevEdge.angle ), distance )
 	return bearing < math.pi / 2 and distance > 10
 end
