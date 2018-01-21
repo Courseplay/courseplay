@@ -1649,7 +1649,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	-- drive forward until our implement reaches the headland after the turn
 	fromPoint.x, _, fromPoint.z = localToWorld( turnInfo.directionNode, 0, 0, 0 )
 	-- we want the work area of our implement reach the edge of headland after the turn
-	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, vehicle.cp.courseWorkWidth / 2 - turnInfo.frontMarker )
+	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, - turnInfo.frontMarker )
 	-- is this now in front of us? We may not need to drive forward
 	local _, _, dz = worldToLocal( turnInfo.directionNode, toPoint.x, 0, toPoint.z )
 	-- at which waypoint we have to raise the implement
