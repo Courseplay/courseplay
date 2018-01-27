@@ -23,8 +23,9 @@
 	
 	<changeLog><![CDATA[
 
-  	- support for big islands
-  	- multiplayer enabled
+  - fieldwork row direction can also be selected manually now  
+  - support for big islands
+ 	- multiplayer enabled
 	- support for straw harvest addon
 	- new option for course generation to bypass small islands in fields
 	- added support for sprayer Addon (with the friendly support of David FONTAINE)

@@ -170,6 +170,25 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Dél" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Nyugat" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatikus" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Leghosszabb él" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Kézi" />
+        <text name="COURSEPLAY_DIRECTION_N"                              text="É"/>
+        <text name="COURSEPLAY_DIRECTION_NNE"                            text="ÉÉK"/>
+        <text name="COURSEPLAY_DIRECTION_NE"                             text="ÉK"/>
+        <text name="COURSEPLAY_DIRECTION_ENE"                            text="KÉK"/>
+        <text name="COURSEPLAY_DIRECTION_E"                              text="K"/>
+        <text name="COURSEPLAY_DIRECTION_ESE"                            text="KDK"/>
+        <text name="COURSEPLAY_DIRECTION_SE"                             text="DK"/>
+        <text name="COURSEPLAY_DIRECTION_SSE"                            text="DDK"/>
+        <text name="COURSEPLAY_DIRECTION_S"                              text="D"/>
+        <text name="COURSEPLAY_DIRECTION_SSW"                            text="DDNY"/>
+        <text name="COURSEPLAY_DIRECTION_SW"                             text="DNY"/>
+        <text name="COURSEPLAY_DIRECTION_WSW"                            text="NYDNY"/>
+        <text name="COURSEPLAY_DIRECTION_W"                              text="NY"/>
+        <text name="COURSEPLAY_DIRECTION_WNW"                            text="NYÉNY"/>
+        <text name="COURSEPLAY_DIRECTION_NW"                             text="ÉNY"/>
+        <text name="COURSEPLAY_DIRECTION_NNW"                            text="ÉÉNY"/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="A generálás sikerült, de a jelenlegi iránybeállítások problémát okozhatnak."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Fordulósáv" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="Kikapcsolva" />

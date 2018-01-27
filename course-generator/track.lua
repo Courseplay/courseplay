@@ -92,12 +92,23 @@
 --   generate headland track around island and use that for bypassing. Drive a full
 --   circle around the island when first bypassing.
 --   
+-- centerSettings.useBestAngle
+--   If true, the generator will find the optimal angle for the center rows
+--
+-- centerSettings.useLongestEdgeAngle
+--   If true, the generator will generate the center tracks parallel to the field's 
+--   longest edge. 
+--
+-- centerSettings.rowAngle
+--   If this is supplied, the generator will generate the up/down rows at this angle,
+--   instead of trying to find the optimal angle.
+-- 
 
 function generateCourseForField( field, implementWidth, nHeadlandPasses, headlandClockwise,
     headlandStartLocation, overlapPercent,
     nTracksToSkip, extendTracks,
     minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
-    turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes, headlandFirst, islandBypassMode )
+    turnRadius, minHeadlandTurnAngle, returnToFirstPoint, islandNodes, headlandFirst, islandBypassMode, centerSettings )
 	field.boundingBox =  field.boundary:getBoundingBox()
   field.boundary = Polygon:new( field.boundary )
   field.boundary:calculateData()
@@ -157,8 +168,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
   if nHeadlandPasses == 0 then
     extendTracks = extendTracks + implementWidth / 2
   end
-  field.track, field.bestAngle, field.nTracks, field.blocks = generateTracks( field.headlandTracks[ #field.headlandTracks ], field.bigIslands,
-    implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0 )
+	local resultIsOk = true
+  field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks[ #field.headlandTracks ], field.bigIslands,
+    implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0, centerSettings )
   -- assemble complete course now
   field.course = Polygon:new()
   if field.headlandPath and nHeadlandPasses > 0 then
@@ -203,6 +215,7 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
 	  end
     field.course:calculateData()
   end
+	return resultIsOk
 end
 
 

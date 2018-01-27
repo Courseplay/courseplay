@@ -4,6 +4,35 @@ courseGenerator = {}
 -- Distance of waypoints on the generated track in meters
 courseGenerator.waypointDistance = 5
 
+courseGenerator.ROW_DIRECTION_NORTH = 1
+courseGenerator.ROW_DIRECTION_EAST = 2
+courseGenerator.ROW_DIRECTION_SOUTH = 3
+courseGenerator.ROW_DIRECTION_WEST = 4
+courseGenerator.ROW_DIRECTION_AUTOMATIC = 5
+courseGenerator.ROW_DIRECTION_LONGEST_EDGE = 6
+courseGenerator.ROW_DIRECTION_MANUAL = 7
+
+courseGenerator.trackDirectionRanges = {
+	{ angle =  0  }, 
+	{ angle =  1 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_N' },
+	{ angle =  3 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_NNE' },
+	{ angle =  5 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_NE' },
+	{ angle =  7 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_ENE' },
+	{ angle =  9 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_E' },
+	{ angle = 11 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_ESE' },
+	{ angle = 13 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_SE' },
+	{ angle = 15 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_SSE' },
+	{ angle = 17 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_S' },
+	{ angle = 19 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_SSW' },
+	{ angle = 21 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_SW' },
+	{ angle = 23 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_WSW' },
+	{ angle = 25 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_W' },
+	{ angle = 27 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_WNW' },
+	{ angle = 29 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_NW' },
+	{ angle = 31 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_NNW' },
+	{ angle = 32 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_N' },
+}
+
 -- corners of a field block
 courseGenerator.BLOCK_CORNER_BOTTOM_LEFT = 1
 courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT = 2
@@ -103,4 +132,19 @@ end
 function courseGenerator.findIslands( fieldData )
 	local islandNodes = pathFinder.findIslands( Polygon:new( courseGenerator.pointsToXy( fieldData.points )))
 	fieldData.islandNodes = courseGenerator.pointsToCxCz( islandNodes )
+end
+
+function courseGenerator.getCompassDirectionText( gameAngleDeg ) 
+	local compassAngle = math.rad( courseGenerator.getCompassAngleDeg( gameAngleDeg ))
+	for r = 2, #courseGenerator.trackDirectionRanges, 1 do
+		if compassAngle >= courseGenerator.trackDirectionRanges[ r - 1 ].angle and
+			compassAngle < courseGenerator.trackDirectionRanges[ r ].angle then
+			return courseGenerator.trackDirectionRanges[ r ].text
+		end
+	end
+end
+
+--- Convert the game direction angles to compass direction
+function courseGenerator.getCompassAngleDeg( gameAngleDeg )
+	return ( 360 + gameAngleDeg - 90 ) % 360
 end

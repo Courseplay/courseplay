@@ -38,15 +38,31 @@ end
 --- Find the best angle to use for the tracks in a polygon.
 --  The best angle results in the minimum number of tracks
 --  (and thus, turns) needed to cover the polygon.
-function findBestTrackAngle( polygon, islands, width )
+function findBestTrackAngle( polygon, islands, width, centerSettings )
   local bestAngleStats = {}
   local bestAngleIndex 
   local score
   local minScore = 10000
-	polygon:calculateData()
-  -- direction where the field is the longest
+	polygon:calculateData()	
+
+	-- direction where the field is the longest
   local bestDirection = polygon.bestDirection.dir
-  for angle = 0, 180, 5 do
+	local minAngleDeg, maxAngleDeg, step
+
+	if centerSettings.useLongestEdgeAngle then
+		-- use the direction of the longest edge of the polygon
+		minAngleDeg, maxAngleDeg, step = - bestDirection, - bestDirection, 1
+		courseGenerator.debug( 'ROW ANGLE: USING THE LONGEST FIELD EDGE ANGLE OF %.0f', bestDirection )
+	elseif centerSettings.useBestAngle then
+		-- find the optimum angle
+		minAngleDeg, maxAngleDeg, step = 0, 180, 2
+		courseGenerator.debug( 'ROW ANGLE: FINDING THE OPTIMUM ANGLE' )
+	else
+		-- use the supplied angle
+		minAngleDeg, maxAngleDeg, step = math.deg( centerSettings.rowAngle ), math.deg( centerSettings.rowAngle ), 1
+		courseGenerator.debug( 'ROW ANGLE: USING THE SUPPLIED ANGLE OF %.0f', courseGenerator.getCompassAngleDeg( math.deg( centerSettings.rowAngle )))
+	end
+  for angle = minAngleDeg, maxAngleDeg, step do
     local rotated = rotatePoints( polygon, math.rad( angle ))	  
 
 	  local rotatedIslands = Island.rotateAll( islands, math.rad( angle ))
@@ -61,16 +77,18 @@ function findBestTrackAngle( polygon, islands, width )
     score = 50 * smallBlockScore + 10 * #blocks + #tracks + angleScore
 	  courseGenerator.debug( "Tried angle=%d, nBlocks=%d, smallBlockScore=%d, tracks=%d, score=%.1f",
 	  angle, #blocks, smallBlockScore, #tracks, score)
-    table.insert( bestAngleStats, { angle=angle, nBlocks=#blocks, nTracks=#tracks, score=score })
+    table.insert( bestAngleStats, { angle=angle, nBlocks=#blocks, nTracks=#tracks, score=score, smallBlockScore=smallBlockScore })
     if minScore > score then
       minScore = score  
       bestAngleIndex = #bestAngleStats
     end
   end
   local b = bestAngleStats[ bestAngleIndex ]
-  courseGenerator.debug( "Best angle=%d, nBlocks=%d, nTracks=%d,  score=%.1f",
-                         b.angle, b.nBlocks, b.nTracks, b.score)
-  return b.angle, b.nTracks, b.nBlocks 
+  courseGenerator.debug( "Best angle=%d, nBlocks=%d, nTracks=%d, smallBlockScore=%d, score=%.1f",
+                         b.angle, b.nBlocks, b.nTracks, b.smallBlockScore, b.score)
+  -- if we used the angle given by the user and got small blocks generated,
+	-- warn them that the course may be less than perfect.
+	return b.angle, b.nTracks, b.nBlocks, b.smallBlockScore == 0 or centerSettings.useBestAngle 
 end
 
 --- Count the blocks with just a few tracks 
@@ -90,7 +108,7 @@ end
 
 --- Generate up/down tracks covering a polygon at the optimum angle
 -- 
-function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, addConnectingTracks )
+function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, addConnectingTracks, centerSettings )
   -- translate polygon so we can rotate it around its center. This way all points
   -- will be approximately the same distance from the origo and the rotation calculation
   -- will be more accurate
@@ -98,18 +116,19 @@ function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, a
   local dx, dy = ( bb.maxX + bb.minX ) / 2, ( bb.maxY + bb.minY ) / 2 
   local translatedPolygon = translatePoints( polygon, -dx , -dy )
 	local translatedIslands = Island.translateAll( islands, -dx, -dy )
-  -- Now, determine the angle where the number of tracks is the minimum
-  local bestAngle, nTracks, nBlocks = findBestTrackAngle( translatedPolygon, translatedIslands, width )
-  if nBlocks < 1 then
-    courseGenerator.debug( "No room for up/down tracks." )
-    return nil, 0, 0
-  end
-  if not bestAngle then
-    bestAngle = polygon.bestDirection.dir
-    courseGenerator.debug( "No best angle found, use the longest edge direction " .. bestAngle )
-  end
-  rotatedMarks = Polygon:new()
-  -- now, generate the tracks according to the implement width within the rotated polygon's bounding box
+	local bestAngle, nTracks, nBlocks, resultIsOk
+	-- Now, determine the angle where the number of tracks is the minimum
+	bestAngle, nTracks, nBlocks, resultIsOk = findBestTrackAngle( translatedPolygon, translatedIslands, width, centerSettings )
+	if nBlocks < 1 then
+		courseGenerator.debug( "No room for up/down tracks." )
+		return nil, 0, 0
+	end
+	if not bestAngle then
+		bestAngle = polygon.bestDirection.dir
+		courseGenerator.debug( "No best angle found, use the longest edge direction " .. bestAngle )
+	end
+	rotatedMarks = Polygon:new()
+	-- now, generate the tracks according to the implement width within the rotated polygon's bounding box
   -- using the best angle
   local rotatedBoundary = rotatePoints( translatedPolygon, math.rad( bestAngle ))
 	local rotatedIslands = Island.rotateAll( translatedIslands, math.rad( bestAngle ))
@@ -180,7 +199,7 @@ function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, a
 		b.polygon:rotate( -math.rad( bestAngle ))
 		b.polygon:translate( dx, dy )
 	end
-  return translatePoints( rotatePoints( track, -math.rad( bestAngle )), dx, dy ), bestAngle, nTracks, blocks
+  return translatePoints( rotatePoints( track, -math.rad( bestAngle )), dx, dy ), bestAngle, #parallelTracks, blocks, resultIsOk
 end
 
 ----------------------------------------------------------------------------------
@@ -821,7 +840,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep )
 		population:recombine( newGeneration )
 		generation = generation + 1
 	end
-	print( population.bestChromosome )
+	courseGenerator.debug( tostring( population.bestChromosome ))
 	-- this table contains the blocks and other relevant data in the order they have to be worked on
 	local blocksInSequence = {}
 	for i = 1, #blocks do
