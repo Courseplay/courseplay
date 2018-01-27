@@ -75,7 +75,7 @@
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Расстояние до точки разгрузки" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Заполнение %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
-		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="Избегать движения по посевам:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Плуг за границы поля" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Выровнять по 1-й точке:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Правее/левее:" />
@@ -199,7 +199,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Нерабочий маршрут" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Функция удобрения сеялки:" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Конвой комбайна" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="выгрузной шнек над посевами" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="выгрузной шнек со стороны посевов" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
