@@ -174,8 +174,8 @@
 		<text name="COURSEPLAY_DIRECTION_3"								 text="Południe" />
 		<text name="COURSEPLAY_DIRECTION_4"								 text="Zachód" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatyczny" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Najdłuższa krawędź" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Ręcznie" />
         <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
         <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
         <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
@@ -192,7 +192,7 @@
         <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
         <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
         <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Kurs został pomyślnie wygenerowany, ale ze względu na bieżące ustawienie kierunku może powodować problemy podczas jazdy."/>
 		<text name="COURSEPLAY_HEADLAND"								 text="Uwrocia" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Omijanie przeszkód" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="Nieaktywne" />
