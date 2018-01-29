@@ -476,9 +476,11 @@ function courseplay:load(savegame)
 	self.cp.laneNumber = 0;
 
 	--Course generation	
-	self.cp.startingCorner = 0;
+	self.cp.startingCorner = 4;
 	self.cp.hasStartingCorner = false;
 	self.cp.startingDirection = 0;
+	self.cp.rowDirectionDeg = 0
+	self.cp.rowDirectionMode = courseGenerator.ROW_DIRECTION_AUTOMATIC
 	self.cp.hasStartingDirection = false;
 	self.cp.isNewCourseGenSelected = function()
 		return self.cp.hasStartingCorner and self.cp.startingCorner > 4

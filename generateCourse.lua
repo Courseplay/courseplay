@@ -87,7 +87,7 @@ function courseplay:generateCourse(vehicle)
 	local dir = directions[vehicle.cp.startingDirection];
 
 	-- Automatic direction selected so use the algorithm that can generate lanes in any direction
-	if vehicle.cp.startingDirection == 5 then
+	if vehicle.cp.isNewCourseGenSelected() then
 		if vehicle.cp.startingCorner == 5 then
 			vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
 			vehicle.cp.generationPosition.hasSavedPosition = true

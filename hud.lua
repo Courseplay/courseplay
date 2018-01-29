@@ -197,7 +197,7 @@ function courseplay.hud:setup()
 		};
 	};
 	self.col3posX = {
-		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(509, 'x'),
+		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(450, 'x'),
 	};
 
 	self.versionPosY = self.visibleArea.y1 + self:pxToNormal(16, 'y');
@@ -1189,10 +1189,18 @@ function courseplay.hud:loadPage(vehicle, page)
 		-- 1 = North, 2 = East, 3 = South, 4 = West
 		if vehicle.cp.hasStartingDirection then
 			vehicle.cp.hud.content.pages[8][4][2].text = courseplay:loc(string.format('COURSEPLAY_DIRECTION_%d', vehicle.cp.startingDirection)); -- East/South/West/North
+			-- only allow for the new course generator
+			if vehicle.cp.startingDirection == courseGenerator.ROW_DIRECTION_MANUAL then
+				vehicle.cp.hud.content.pages[8][4][3].text = tostring( courseGenerator.getCompassAngleDeg( vehicle.cp.rowDirectionDeg )) .. '°' .. 
+					' (' .. courseplay:loc( courseGenerator.getCompassDirectionText( vehicle.cp.rowDirectionDeg )) .. ')'
+			else
+				--vehicle.cp.hud.content.pages[8][4][3].text = '---'
+			end
 		else
 			vehicle.cp.hud.content.pages[8][4][2].text = '---';
 		end;
 
+		
 		-- line 5 = return to first point
 		vehicle.cp.hud.content.pages[8][5][1].text = courseplay:loc('COURSEPLAY_RETURN_TO_FIRST_POINT');
 		vehicle.cp.hud.content.pages[8][5][2].text = vehicle.cp.returnToFirstPoint and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
@@ -1802,8 +1810,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 8, nil, 'switchStartingCorner',     nil, self.col1posX, self.linesPosY[3], self.contentMaxWidth, self.lineHeight, 3, nil, true);
 
 	-- line 4 (starting direction)
-	courseplay.button:new(vehicle, 8, nil, 'changeStartingDirection',  nil, self.col1posX, self.linesPosY[4], self.contentMaxWidth, self.lineHeight, 4, nil, true);
-
+	courseplay.button:new(vehicle, 8, nil, 'changeStartingDirection',  nil, self.col1posX, self.linesPosY[4], self.col3posX[ self.PAGE_COURSE_GENERATION ] - self.col1posX, self.lineHeight, 4, nil, true);
+	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeRowAngle',  22.5, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, nil, false);
+	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeRowAngle', -22.5, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4, nil, false);
 	-- line 5 (return to first point)
 	courseplay.button:new(vehicle, 8, nil, 'toggleReturnToFirstPoint', nil, self.col1posX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
 

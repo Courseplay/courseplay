@@ -249,13 +249,17 @@ end
 
 
 function addToDirectionStats( directionStats, angle, length )
-  local width = 10 
-  local range = math.floor( math.deg( angle ) / width ) * width + width / 2
+  local width = 2
+	-- normalize angle
+	local a = math.deg( angle )
+	a = a < 0 and ( a + 180 ) or a
+	a = a % 180
+  local range = math.floor( a / width ) * width + width / 2
   if directionStats[ range ] then  
     directionStats[ range ].length = directionStats[ range ].length + length
-    table.insert( directionStats[ range ].dirs, math.deg( angle ))
+    table.insert( directionStats[ range ].dirs, a )
   else
-    directionStats[ range ] = { length=0, dirs={}}
+    directionStats[ range ] = { length=0, dirs={ a }}
   end
 end
 
@@ -263,18 +267,20 @@ end
 -- the field is the longest.
 function getBestDirection( directionStats )
   local best = { range = 0, length = 0 }
-  for range, stats in pairs( directionStats ) do
-    if stats.length > best.length then 
+  -- find the angle range which has to most length
+	for range, stats in pairs( directionStats ) do
+		if stats.length > best.length then 
       best.length = stats.length
       best.range = range
     end
   end
   local sum = 0
+	-- calculate the average direction of the best range
   if directionStats[ best.range ] then
     for i, dir in ipairs( directionStats[ best.range ].dirs ) do
       sum = sum + dir
     end
-    best.dir = math.floor( sum / #directionStats[ best.range ].dirs)
+    best.dir = math.floor( sum / #directionStats[ best.range ].dirs + 0.5 )
   end
   return best
 end

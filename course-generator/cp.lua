@@ -59,14 +59,17 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
   -- translate it into our coordinate system
   local location = { x = x, y = -z }
 
-  field.width = vehicle.cp.workWidth 
-  field.headlandClockwise = vehicle.cp.userDirClockwise
-  field.overlap = 7
-  field.nTracksToSkip = 0
-  field.extendTracks = 0
-  field.minDistanceBetweenPoints = 0.5
-  field.doSmooth = true
-  field.roundCorners = false
+  local overlap = 7
+  local nTracksToSkip = 0
+  local extendTracks = 0
+  local minDistanceBetweenPoints = 0.5
+  local doSmooth = true
+  local roundCorners = false
+	local centerSettings = { 
+		useBestAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC,
+		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
+		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0
+	}
 
   local minSmoothAngle, maxSmoothAngle, minHeadlandTurnAngle 
 
@@ -82,17 +85,17 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
     minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 60 )
   end
   
-  local status, err = xpcall( generateCourseForField, function() print( err, debug.traceback()) end, 
+  local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end, 
                               field, workWidth, vehicle.cp.headland.numLanes,
                               vehicle.cp.headland.userDirClockwise, location,
-                              field.overlap, field.nTracksToSkip,
-                              field.extendTracks, field.minDistanceBetweenPoints,
-                              minSmoothAngle, maxSmoothAngle, field.doSmooth,
-                              field.roundCorners, vehicle.cp.vehicleTurnRadius, minHeadlandTurnAngle,
+                              overlap, nTracksToSkip,
+                              extendTracks, minDistanceBetweenPoints,
+                              minSmoothAngle, maxSmoothAngle, doSmooth,
+                              roundCorners, vehicle.cp.vehicleTurnRadius, minHeadlandTurnAngle,
   							              vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
                               -- ignore headland order setting when there's no headland
                               vehicle.cp.headland.orderBefore or vehicle.cp.headland.numLanes == 0, 
-                              vehicle.cp.islandBypassMode
+                              vehicle.cp.islandBypassMode, centerSettings
                              )
   
   if not status then 
@@ -102,7 +105,14 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
       messageDialog.target:setCallback( function () g_gui:showGui('') end, self )
     return 
   end
- 
+
+	if not ok then
+		-- show message if the generated course may have issues due to the selected track direction
+		local messageDialog = g_gui:showGui('InfoDialog');
+		messageDialog.target:setText(courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL'));
+		messageDialog.target:setCallback( function () g_gui:showGui('') end, self )
+	end
+	
   removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
 
   writeCourseToVehicleWaypoints( vehicle, field.course )

@@ -1096,7 +1096,7 @@ end;
 
 --Course generation
 function courseplay:switchStartingCorner(vehicle)
-	local newStartingCorner = vehicle.cp.startingCorner +1 
+	local newStartingCorner = vehicle.cp.startingCorner + 1 
 	local maxNumber = 5
 	if vehicle.cp.generationPosition.hasSavedPosition then
 		maxNumber = 6
@@ -1109,11 +1109,9 @@ function courseplay:switchStartingCorner(vehicle)
 	if vehicle.cp.isNewCourseGenSelected() then
 		-- starting direction is always auto when starting corner is vehicle location
 		vehicle.cp.hasStartingDirection = true;
-		vehicle.cp.startingDirection = 5;
+		vehicle.cp.startingDirection = vehicle.cp.rowDirectionMode
 		-- allow more headlands with the new course gen
 		--vehicle.cp.headland.maxNumLanes = vehicle.cp.headland.autoDirMaxNumLanes
-		vehicle:setCpVar('headland.maxNumLanes',vehicle.cp.headland.autoDirMaxNumLanes,courseplay.isClient);
-		courseplay:changeStartingDirection( vehicle )
 		courseplay:changeHeadlandNumLanes(vehicle, 0)
 	else
 		vehicle:setCpVar('hasStartingDirection',false,courseplay.isClient);
@@ -1126,31 +1124,43 @@ function courseplay:switchStartingCorner(vehicle)
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 
+
+function courseplay:changeRowAngle( vehicle, changeBy )
+	if vehicle.cp.startingDirection == courseGenerator.ROW_DIRECTION_MANUAL then
+		vehicle.cp.rowDirectionDeg = ( vehicle.cp.rowDirectionDeg + changeBy ) % 360
+	end 
+end
+	
 function courseplay:changeStartingDirection(vehicle)
 	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE, 5 = Vehicle location, 6 = Last vehicle location
-	-- directions: 1 = North, 2 = East, 3 = South, 4 = West, 5 = auto generated
+	-- directions: 1 = North, 2 = East, 3 = South, 4 = West, 5 = auto generated, see courseGenerator.ROW_DIRECTION*
 	local clockwise = true
-	local validDirections = {};
 	if vehicle.cp.hasStartingCorner then
-		if vehicle.cp.startingCorner == 1 then --SW
-			validDirections[1] = 1; --N
-			validDirections[2] = 2; --E
-		elseif vehicle.cp.startingCorner == 2 then --NW
-			validDirections[1] = 2; --E
-			validDirections[2] = 3; --S
-		elseif vehicle.cp.startingCorner == 3 then --NE
-			validDirections[1] = 3; --S
-			validDirections[2] = 4; --W
-		elseif vehicle.cp.startingCorner == 4 then --SE
-			validDirections[1] = 4; --W
-			validDirections[2] = 1; --N
-		elseif vehicle.cp.isNewCourseGenSelected() then -- Vehicle location
-			-- everything is auto generated, headland starts at vehicle location
-			validDirections[1] = 5; -- auto generated
-			vehicle:setCpVar('startingDirection',5,courseplay.isClient);
-		end;
-
-		if vehicle.cp.startingDirection < 5 then
+		if vehicle.cp.isNewCourseGenSelected() then -- Vehicle location
+			if vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC then
+				vehicle:setCpVar('rowDirectionMode', courseGenerator.ROW_DIRECTION_LONGEST_EDGE, courseplay.isClient);
+			elseif vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE then
+				vehicle:setCpVar('rowDirectionMode', courseGenerator.ROW_DIRECTION_MANUAL, courseplay.isClient);
+			else  
+				vehicle:setCpVar('rowDirectionMode', courseGenerator.ROW_DIRECTION_AUTOMATIC, courseplay.isClient);
+			end
+			vehicle:setCpVar('startingDirection', vehicle.cp.rowDirectionMode, courseplay.isClient);
+		else
+			-- legacy course generator
+			local validDirections = {};
+			if vehicle.cp.startingCorner == 1 then --SW
+				validDirections[1] = 1; --N
+				validDirections[2] = 2; --E
+			elseif vehicle.cp.startingCorner == 2 then --NW
+				validDirections[1] = 2; --E
+				validDirections[2] = 3; --S
+			elseif vehicle.cp.startingCorner == 3 then --NE
+				validDirections[1] = 3; --S
+				validDirections[2] = 4; --W
+			elseif vehicle.cp.startingCorner == 4 then --SE
+				validDirections[1] = 4; --W
+				validDirections[2] = 1; --N
+			end;
 			--would be easier with i=i+1, but more stored variables would be needed
 			if vehicle.cp.startingDirection == 0 then
 				vehicle:setCpVar('startingDirection',validDirections[1],courseplay.isClient);
@@ -1160,7 +1170,7 @@ function courseplay:changeStartingDirection(vehicle)
 			elseif vehicle.cp.startingDirection == validDirections[2] then
 				vehicle:setCpVar('startingDirection',validDirections[1],courseplay.isClient);
 			end;
-		end;
+		end
 		vehicle:setCpVar('hasStartingDirection',true,courseplay.isClient);
 	end;
 	if vehicle.cp.headland.userDirClockwise ~= clockwise then
