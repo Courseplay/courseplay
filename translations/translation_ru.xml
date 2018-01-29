@@ -174,6 +174,25 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Запад" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Автоматическое" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Длинная сторона" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Вручную" />
+		<text name="COURSEPLAY_DIRECTION_N" 							 text="С"/>
+		<text name="COURSEPLAY_DIRECTION_NNE" 							 text="ССВ"/>
+		<text name="COURSEPLAY_DIRECTION_NE" 							 text="СВ"/>
+		<text name="COURSEPLAY_DIRECTION_ENE" 							 text="ВСВ"/>
+		<text name="COURSEPLAY_DIRECTION_E" 							 text="В"/>
+		<text name="COURSEPLAY_DIRECTION_ESE" 							 text="ВЮВ"/>
+		<text name="COURSEPLAY_DIRECTION_SE" 							 text="ЮВ"/>
+		<text name="COURSEPLAY_DIRECTION_SSE" 							 text="ЮЮВ"/>
+		<text name="COURSEPLAY_DIRECTION_S" 							 text="Ю"/>
+		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="ЮЮЗ"/>
+		<text name="COURSEPLAY_DIRECTION_SW" 							 text="ЮЗ"/>
+		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="ЗЮЗ"/>
+		<text name="COURSEPLAY_DIRECTION_W" 							 text="З"/>
+		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="ЗСЗ"/>
+		<text name="COURSEPLAY_DIRECTION_NW" 							 text="СЗ"/>
+		<text name="COURSEPLAY_DIRECTION_NNW" 							 text="ССЗ"/>
+		<text name="COURSEPLAY_COURSE_SUBOPTIMAL"						 text="Маршрут успешно сгенерирован, но из-за текущих настроек направления он может вызвать проблемы при его прохождении."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Поворотная полоса:" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Обход островков:" />
 		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE" 				 text="отключить" />
