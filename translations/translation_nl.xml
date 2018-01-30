@@ -170,28 +170,28 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Zuid" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Verste hoek" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Handmatig" />
         <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                            text="ENE"/>
-        <text name="COURSEPLAY_DIRECTION_E"                              text="E"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                            text="ESE"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                             text="SE"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                            text="SSE"/>
-        <text name="COURSEPLAY_DIRECTION_S"                              text="S"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                            text="SSW"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                             text="SW"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                            text="WSW"/>
+        <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNO"/>
+        <text name="COURSEPLAY_DIRECTION_NE"                             text="NO"/>
+        <text name="COURSEPLAY_DIRECTION_ENE"                            text="ONO"/>
+        <text name="COURSEPLAY_DIRECTION_E"                              text="O"/>
+        <text name="COURSEPLAY_DIRECTION_ESE"                            text="OZO"/>
+        <text name="COURSEPLAY_DIRECTION_SE"                             text="ZO"/>
+        <text name="COURSEPLAY_DIRECTION_SSE"                            text="ZZO"/>
+        <text name="COURSEPLAY_DIRECTION_S"                              text="ZS"/>
+        <text name="COURSEPLAY_DIRECTION_SSW"                            text="ZZW"/>
+        <text name="COURSEPLAY_DIRECTION_SW"                             text="ZW"/>
+        <text name="COURSEPLAY_DIRECTION_WSW"                            text="WZW"/>
         <text name="COURSEPLAY_DIRECTION_W"                              text="W"/>
         <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
         <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
         <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Route gegenereerd, maar vanwege de huidige richting mogelijkkan deze problemen veroorzaken tijdens het rijden."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Buitenrand" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Om obstakels" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="uitgeschakeld" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="simpel" /> 
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="cirkel" /> 
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Buitenrand vloeiend" />
@@ -214,7 +214,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Geen route geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="bemester functie van zaai machine" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine konvooi" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pijp is in product" />	
 
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Geen shovel gevonden" />
