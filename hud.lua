@@ -1813,6 +1813,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 8, nil, 'changeStartingDirection',  nil, self.col1posX, self.linesPosY[4], self.col3posX[ self.PAGE_COURSE_GENERATION ] - self.col1posX, self.lineHeight, 4, nil, true);
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeRowAngle',  22.5, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, nil, false);
 	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeRowAngle', -22.5, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4, nil, false);
+	courseplay.button:new(vehicle, 8, nil, 'changeRowAngle', 1, mouseWheelArea.x, self.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 	-- line 5 (return to first point)
 	courseplay.button:new(vehicle, 8, nil, 'toggleReturnToFirstPoint', nil, self.col1posX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
 

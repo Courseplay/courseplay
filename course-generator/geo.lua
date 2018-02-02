@@ -541,6 +541,14 @@ function getPointInTheMiddle( a, b )
 	a.y + (( b.y - a.y ) / 2 )
 end
 
+function getPointBetween( a, b, dFromA )
+	local dx, dy = b.x - a.x, b.y - a.y
+	local ratio = dFromA / math.sqrt( dx * dx + dy * dy )
+	return a.x + (( b.x - a.x ) * ratio ),
+	a.y + (( b.y - a.y ) * ratio )
+end
+
+
 function printTable( t )
 	for key, value in pairs( t ) do
 		print( key, value )

@@ -221,6 +221,9 @@ function courseplay.button:render()
 			elseif fn == 'changeMultiTools' then
 				canScrollUp = vehicle.cp.multiTools < 8
 				canScrollDown = vehicle.cp.multiTools > 1
+			elseif fn == 'changeRowAngle' then
+				canScrollUp = true
+				canScrollDown = true
 			end;
 			
 		elseif pg == courseplay.hud.PAGE_SHOVEL_POSITIONS then
