@@ -163,14 +163,9 @@ function generateCourseForField( field, implementWidth, nHeadlandPasses, headlan
     field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside )
   end
   linkHeadlandTracks( field, implementWidth, headlandClockwise, headlandStartLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
-  -- ugly hack: if there are no headlands, our tracks go right up to the field boundary. So extend tracks
-  -- exactly width / 2
-  if nHeadlandPasses == 0 then
-    extendTracks = extendTracks + implementWidth / 2
-  end
-	local resultIsOk = true
+  local resultIsOk = true
   field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks[ #field.headlandTracks ], field.bigIslands,
-    implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses > 0, centerSettings )
+    implementWidth, nTracksToSkip, extendTracks, nHeadlandPasses, centerSettings )
   -- assemble complete course now
   field.course = Polygon:new()
   if field.headlandPath and nHeadlandPasses > 0 then
