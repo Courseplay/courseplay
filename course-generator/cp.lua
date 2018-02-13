@@ -84,10 +84,14 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
     -- smooth only below 60 degrees
     minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 60 )
   end
+	
+  -- flip clockwise when starting with the up/down rows	
+  local clockwise = vehicle.cp.headland.orderBefore and vehicle.cp.headland.userDirClockwise or 
+	  not vehicle.cp.headland.userDirClockwise	
   
   local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end, 
                               field, workWidth, vehicle.cp.headland.numLanes,
-                              vehicle.cp.headland.userDirClockwise, location,
+                              clockwise, location,
                               overlap, nTracksToSkip,
                               extendTracks, minDistanceBetweenPoints,
                               minSmoothAngle, maxSmoothAngle, doSmooth,

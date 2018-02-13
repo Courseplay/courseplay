@@ -491,11 +491,11 @@ function courseplay:load(savegame)
 	self.cp.ridgeMarkersAutomatic = true;
 	self.cp.islandBypassMode = Island.BYPASS_MODE_NONE;
 	self.cp.headland = {
-		maxNumLanes = 6;
 		-- with the old, manual direction selection course generator
 		manuDirMaxNumLanes = 6;
 		-- with the new, auto direction selection course generator
 		autoDirMaxNumLanes = 20;
+		maxNumLanes = 20;
 		numLanes = 0;
 		userDirClockwise = true;
 		orderBefore = true;
