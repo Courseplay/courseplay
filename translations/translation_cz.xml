@@ -174,25 +174,25 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="západ" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatický" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
-        <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                            text="ENE"/>
-        <text name="COURSEPLAY_DIRECTION_E"                              text="E"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                            text="ESE"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                             text="SE"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                            text="SSE"/>
-        <text name="COURSEPLAY_DIRECTION_S"                              text="S"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                            text="SSW"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                             text="SW"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                            text="WSW"/>
-        <text name="COURSEPLAY_DIRECTION_W"                              text="W"/>
-        <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
-        <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
-        <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Nejdelší okraj" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manuálně" />
+        <text name="COURSEPLAY_DIRECTION_N"                              text="S"/>
+        <text name="COURSEPLAY_DIRECTION_NNE"                            text="SSV"/>
+        <text name="COURSEPLAY_DIRECTION_NE"                             text="SV"/>
+        <text name="COURSEPLAY_DIRECTION_ENE"                            text="VSV"/>
+        <text name="COURSEPLAY_DIRECTION_E"                              text="V"/>
+        <text name="COURSEPLAY_DIRECTION_ESE"                            text="VJV"/>
+        <text name="COURSEPLAY_DIRECTION_SE"                             text="JV"/>
+        <text name="COURSEPLAY_DIRECTION_SSE"                            text="JJV"/>
+        <text name="COURSEPLAY_DIRECTION_S"                              text="J"/>
+        <text name="COURSEPLAY_DIRECTION_SSW"                            text="JJZ"/>
+        <text name="COURSEPLAY_DIRECTION_SW"                             text="JZ"/>
+        <text name="COURSEPLAY_DIRECTION_WSW"                            text="ZJZ"/>
+        <text name="COURSEPLAY_DIRECTION_W"                              text="Z"/>
+        <text name="COURSEPLAY_DIRECTION_WNW"                            text="ZSZ"/>
+        <text name="COURSEPLAY_DIRECTION_NW"                             text="SZ"/>
+        <text name="COURSEPLAY_DIRECTION_NNW"                            text="SSZ"/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Kurz byl úspěšně generován, ale kvůli aktuálnímu nastavení směru může způsobit problémy při jízdě."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Vyhnout se překážkám" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="vypnuto" />
@@ -288,7 +288,7 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Konec couvání" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě - zobrazit text:" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Nastavení řízení" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automaticky" /> 
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Vždy" /> 
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Vždy &amp; Přední Dif. pro práci v terénu" /> 
