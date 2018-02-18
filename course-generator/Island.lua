@@ -227,7 +227,9 @@ function Island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPerce
 	-- we create the innermost headland first
 	local previousHeadland = self.nodes
 	for i = 1, nHeadlandPasses do
-		local width = i == 1 and implementWidth / 2 or implementWidth * ( 100 - overlapPercent ) / 100
+		-- first headland is a bit further out as our grid spacing limits the resolution. This may 
+		-- prevent hitting objects very close to the edge of the island.
+		local width = i == 1 and implementWidth / 2  + Island.gridSpacing / 2 or implementWidth * ( 100 - overlapPercent ) / 100
 		self.headlandTracks[ i ] = calculateHeadlandTrack( previousHeadland, width,
 			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, false )
 		courseGenerator.debug( "Generated headland track #%d, %d waypoints, area %.1f, clockwise = %s for island %s", i, #self.headlandTracks[ i ],

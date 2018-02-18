@@ -191,7 +191,8 @@ function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, n
 	  end
 	  linkParallelTracks( track, block.tracksWithWaypoints, 
       isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), nTracksToSkip, continueWithTurn ) 
-    fixLongTurns( track, width )
+      -- TODO: This seems to be causing circling with large implements, disabling for now. 
+	  -- fixLongTurns( track, width )
 	  addRidgeMarkers( track )
   end
 
