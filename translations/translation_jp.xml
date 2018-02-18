@@ -174,8 +174,8 @@
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="West" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="自動" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="最長の端" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="マニュアル" />
         <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
         <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
         <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
@@ -192,7 +192,7 @@
         <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
         <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
         <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="コースは正常に生成されましたが、現在の方向設定により、運転中に問題が発生する可能性があります。"/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="まくら地" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="畑内の飛地をさける" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="無効" />
