@@ -188,7 +188,7 @@
         <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
         <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
         <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Ruta generada con éxito, pero debido a la configuración de dirección actual puede causar problemas al conducir."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Cabecera" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Evitar obstáculos en campos" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
@@ -214,7 +214,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="El curso no es válido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Función fertilizar de sembradoras" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Varias Cosechadoras Misma Ruta" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="Tubo cosechadoras esta en modo cultivo" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Falta la pala" />
