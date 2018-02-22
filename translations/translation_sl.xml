@@ -169,6 +169,10 @@
 		<text name="COURSEPLAY_CORNER_4" 								 text="jugovzhod" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
 		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="vzhod" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jug" />

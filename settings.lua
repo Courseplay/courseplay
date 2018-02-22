@@ -1096,13 +1096,13 @@ end;
 
 --Course generation
 function courseplay:switchStartingCorner(vehicle)
-	local newStartingCorner = vehicle.cp.startingCorner + 1 
-	local maxNumber = 5
-	if vehicle.cp.generationPosition.hasSavedPosition then
-		maxNumber = 6
+	local newStartingCorner = vehicle.cp.startingCorner + 1
+	if newStartingCorner == courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION and not vehicle.cp.generationPosition.hasSavedPosition then
+		-- must have saved position for this, if not, skip it
+		newStartingCorner = newStartingCorner + 1
 	end
-	if newStartingCorner > maxNumber then
-		newStartingCorner = 1
+	if newStartingCorner > courseGenerator.STARTING_LOCATION_MAX then
+		newStartingCorner = courseGenerator.STARTING_LOCATION_MIN
 	end;
 	vehicle.cp.startingCorner = newStartingCorner
 	vehicle.cp.hasStartingCorner = true;

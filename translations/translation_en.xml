@@ -169,6 +169,10 @@
 		<text name="COURSEPLAY_CORNER_4" 								 text="South-East" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="Current vehicle position" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="Last used position" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="North" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" />

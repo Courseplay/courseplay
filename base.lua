@@ -483,7 +483,7 @@ function courseplay:load(savegame)
 	self.cp.rowDirectionMode = courseGenerator.ROW_DIRECTION_AUTOMATIC
 	self.cp.hasStartingDirection = false;
 	self.cp.isNewCourseGenSelected = function()
-		return self.cp.hasStartingCorner and self.cp.startingCorner > 4
+		return self.cp.hasStartingCorner and self.cp.startingCorner > courseGenerator.STARTING_LOCATION_SE_LEGACY
 	end
 	self.cp.returnToFirstPoint = false;
 	self.cp.hasGeneratedCourse = false;

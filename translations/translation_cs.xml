@@ -164,6 +164,10 @@
 		<text name="COURSEPLAY_CORNER_3" 								 text="东N" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="东S" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="车辆位置" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />

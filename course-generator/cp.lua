@@ -50,14 +50,16 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
   field.boundary:calculateData() 
 
   --  get the vehicle position
-  local x, _, z = getWorldTranslation( vehicle.rootNode )
-  if vehicle.cp.startingCorner == 6 and vehicle.cp.generationPosition.hasSavedPosition then
-	x,z = vehicle.cp.generationPosition.x,vehicle.cp.generationPosition.z
+  local startingLocation
+  if vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION and vehicle.cp.generationPosition.hasSavedPosition then
+	startingLocation = courseGenerator.pointToXy({ x = vehicle.cp.generationPosition.x, z = vehicle.cp.generationPosition.z })
+  elseif courseGenerator.isOrdinalDirection( vehicle.cp.startingCorner ) then
+	startingLocation = courseGenerator.getStartingLocation( field.boundary, vehicle.cp.startingCorner )
+  else
+	local x, z
+	x, _, z = getWorldTranslation( vehicle.rootNode )
+	startingLocation = courseGenerator.pointToXy({ x = x, z = z })
   end
-  
-  
-  -- translate it into our coordinate system
-  local location = { x = x, y = -z }
 
   local overlap = 7
   local nTracksToSkip = 0
@@ -84,14 +86,16 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
     -- smooth only below 60 degrees
     minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 60 )
   end
-	
-  -- flip clockwise when starting with the up/down rows	
-  local clockwise = vehicle.cp.headland.orderBefore and vehicle.cp.headland.userDirClockwise or 
-	  not vehicle.cp.headland.userDirClockwise	
-  
-  local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end, 
+  -- flip clockwise when starting with the up/down rows
+  local clockwise
+  if vehicle.cp.headland.orderBefore then
+	clockwise = vehicle.cp.headland.userDirClockwise
+  else
+	clockwise = not vehicle.cp.headland.userDirClockwise
+  end
+  local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end,
                               field, workWidth, vehicle.cp.headland.numLanes,
-                              clockwise, location,
+                              clockwise, startingLocation,
                               overlap, nTracksToSkip,
                               extendTracks, minDistanceBetweenPoints,
                               minSmoothAngle, maxSmoothAngle, doSmooth,

@@ -169,6 +169,10 @@
 		<text name="COURSEPLAY_CORNER_4" 								 text="Юго-Восток" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="Текущее расположение техники" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="Последнее используемое положение" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
 		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
 		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />

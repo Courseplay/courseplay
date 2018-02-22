@@ -164,7 +164,11 @@
 		<text name="COURSEPLAY_CORNER_3" 								 text="Észak/Kelet" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Dél/Kelet" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="aktuális járműpozíció" />  
-		<text name="COURSEPLAY_CORNER_6" 								 text="utoljára használt pozíció" />	
+		<text name="COURSEPLAY_CORNER_6" 								 text="utoljára használt pozíció" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="Dél/Nyugat (új)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="Észak/Nyugat (új)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="Észak/Kelet (új)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="Dél/Kelet (új)" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Észak" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Kelet" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Dél" />

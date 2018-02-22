@@ -39,6 +39,25 @@ courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT = 2
 courseGenerator.BLOCK_CORNER_TOP_RIGHT = 3
 courseGenerator.BLOCK_CORNER_TOP_LEFT = 4
 
+-- starting location
+courseGenerator.STARTING_LOCATION_MIN = 1
+courseGenerator.STARTING_LOCATION_SW_LEGACY = 1
+courseGenerator.STARTING_LOCATION_NW_LEGACY = 2
+courseGenerator.STARTING_LOCATION_NE_LEGACY = 3
+courseGenerator.STARTING_LOCATION_SE_LEGACY = 4
+courseGenerator.STARTING_LOCATION_VEHICLE_POSITION = 5
+courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION = 6
+courseGenerator.STARTING_LOCATION_SW = 7
+courseGenerator.STARTING_LOCATION_NW = 8
+courseGenerator.STARTING_LOCATION_NE = 9
+courseGenerator.STARTING_LOCATION_SE = 10
+courseGenerator.STARTING_LOCATION_MAX = 10
+
+function courseGenerator.isOrdinalDirection( startingLocation )
+	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and
+		startingLocation <= courseGenerator.STARTING_LOCATION_SE
+end
+
 --- Debug print, will either just call print when running standalone
 --  or use the CP debug channel when running in the game.
 function courseGenerator.debug( ... )
@@ -132,6 +151,25 @@ end
 function courseGenerator.findIslands( fieldData )
 	local islandNodes = pathFinder.findIslands( Polygon:new( courseGenerator.pointsToXy( fieldData.points )))
 	fieldData.islandNodes = courseGenerator.pointsToCxCz( islandNodes )
+end
+
+--- Find the starting location coordinates when the user wants to start
+-- at a corner. Use the appropriate bounding box coordinates of the field
+-- as the starting location and let the generator find the closest part
+-- of the field which will be the corner as long as it is more or less
+-- rectangular. Oddly shaped fields may produce odd results.
+function courseGenerator.getStartingLocation( boundary, startingCorner )
+	local x, y = 0, 0
+	if startingCorner == courseGenerator.STARTING_LOCATION_NW then
+		x, y = boundary.boundingBox.minX, boundary.boundingBox.maxY
+	elseif startingCorner == courseGenerator.STARTING_LOCATION_NE then
+		x, y = boundary.boundingBox.maxX, boundary.boundingBox.maxY
+	elseif startingCorner == courseGenerator.STARTING_LOCATION_SE then
+		x, y = boundary.boundingBox.maxX, boundary.boundingBox.minY
+	elseif startingCorner == courseGenerator.STARTING_LOCATION_SW then
+		x, y = boundary.boundingBox.minX, boundary.boundingBox.minY
+	end
+	return { x = x, y = y }
 end
 
 function courseGenerator.getCompassDirectionText( gameAngleDeg ) 

@@ -168,7 +168,11 @@
 		<text name="COURSEPLAY_CORNER_3" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="jihovýchod" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="aktuální pozice vozidla" />  	
-		<text name="COURSEPLAY_CORNER_6" 								 text="poslední pozice vozidla" />	
+		<text name="COURSEPLAY_CORNER_6" 								 text="poslední pozice vozidla" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
