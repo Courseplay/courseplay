@@ -168,43 +168,42 @@
 		<text name="COURSEPLAY_CORNER_3" 								 text="Северо-Восток" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Юго-Восток" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="Текущее расположение техники" />
-		<text name="COURSEPLAY_CORNER_6" 								 text="Последнее используемое положение" />
-		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
-		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
-		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
-		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
+		<text name="COURSEPLAY_CORNER_6" 								 text="Последнее использованное положение" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="Юго-Запад (new)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="Северо-Запад (new)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="Северо-Восток (new)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="Юго-Восток (new)" />
+		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Запад" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Автоматическое" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
-        <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                            text="ENE"/>
-        <text name="COURSEPLAY_DIRECTION_E"                              text="E"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                            text="ESE"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                             text="SE"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                            text="SSE"/>
-        <text name="COURSEPLAY_DIRECTION_S"                              text="S"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                            text="SSW"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                             text="SW"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                            text="WSW"/>
-        <text name="COURSEPLAY_DIRECTION_W"                              text="W"/>
-        <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
-        <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
-        <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Длинная сторона" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Вручную" />
+		<text name="COURSEPLAY_DIRECTION_N" 							 text="С"/>
+		<text name="COURSEPLAY_DIRECTION_NNE" 							 text="ССВ"/>
+		<text name="COURSEPLAY_DIRECTION_NE" 							 text="СВ"/>
+		<text name="COURSEPLAY_DIRECTION_ENE" 							 text="ВСВ"/>
+		<text name="COURSEPLAY_DIRECTION_E" 							 text="В"/>
+		<text name="COURSEPLAY_DIRECTION_ESE" 							 text="ВЮВ"/>
+		<text name="COURSEPLAY_DIRECTION_SE" 							 text="ЮВ"/>
+		<text name="COURSEPLAY_DIRECTION_SSE" 							 text="ЮЮВ"/>
+		<text name="COURSEPLAY_DIRECTION_S" 							 text="Ю"/>
+		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="ЮЮЗ"/>
+		<text name="COURSEPLAY_DIRECTION_SW" 							 text="ЮЗ"/>
+		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="ЗЮЗ"/>
+		<text name="COURSEPLAY_DIRECTION_W" 							 text="З"/>
+		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="ЗСЗ"/>
+		<text name="COURSEPLAY_DIRECTION_NW" 							 text="СЗ"/>
+		<text name="COURSEPLAY_DIRECTION_NNW" 							 text="ССЗ"/>
+		<text name="COURSEPLAY_COURSE_SUBOPTIMAL"						 text="Маршрут успешно сгенерирован, но из-за текущих настроек направления он может вызвать проблемы при его прохождении."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Поворотная полоса:" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Обход островков:" />
 		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE" 				 text="отключить" />
 		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE" 				 text="простой" />
 		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE" 				 text="с проходом по периметру" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"				 text="Сглаживать" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"				 text="Поворот" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"				 text="С разворотом" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"				 text="Round" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Разворот в конце поля:"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="по прямой (с реверсом)" />
