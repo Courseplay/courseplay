@@ -7,7 +7,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Ferma autista" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Ferma all'ultimo o al prossimo punto" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Numero di corse da effettuare" />
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Illimitate" />
+		<text name="COURSEPLAY_UNLIMITED" 								 text="Illimitate" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Lato scarico" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="Nessun lato di scarico" />
 		<text name="COURSEPLAY_LEFT" 									 text="sinistra" />
@@ -33,10 +33,10 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Avvia ora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Avvia a:" />
 		<text name="UNKNOWN" 											 text="sconosciuto" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Testata senso anti-/orario" />
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Testata prima/dopo lavoro nel campo" />
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Crea lavoro nel campo" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Attrezzi multipli" />
+		<text name="COURSEPLAY_HEADLAND_DIRECTION" 						 text="Testata senso anti-/orario" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER" 					 text="Testata prima/dopo lavoro nel campo" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE" 					 text="Crea lavoro nel campo" />
+		<text name="COURSEPLAY_MULTI_TOOLS" 							 text="Attrezzi multipli" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="distanza" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Tempo di attesa" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -52,16 +52,16 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s per salvare Cartella" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s per filtrare Percorsi" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Percorsi: %q" />
-	    <text name="COURSEPLAY_LOAD_COURSE" 							 text="Caricare/combinare percorso al percorso caricato" />
+		<text name="COURSEPLAY_LOAD_COURSE" 							 text="Caricare/combinare percorso al percorso caricato" />
 		<text name="COURSEPLAY_APPEND_COURSE" 							 text="Aggiungere percorso alla fine" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 							 text="Spostare nella cartella" />
 		<text name="COURSEPLAY_DELETE_COURSE" 							 text="Cancella percorso/cartella" />
-	    <text name="COURSEPLAY_CREATE_FOLDER" 							 text="Crea nuova cartella" />
+		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Crea nuova cartella" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Ricerca di percorsi e cartelle" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Disattiva filtri" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="ha raggiunto il punto di scarico." />
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 						 text="salva posizione del tubo di scarico" />
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="vai alla posizione del tubo di scarico" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION" 					 text="vai alla posizione del tubo di scarico" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="ha raggiunto il punto d'attesa" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="ha raggiunto la fine del percorso" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="ha finito il trasporto di granaglie." />
@@ -80,10 +80,10 @@
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Allinea al primo punto" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distanza laterale:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Inizia a:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Gira nel campo:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"					 text="Gira nel senso opposto:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"					 text="ultimo paio di corsie" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"				 text="quando possibile" />
+		<text name="COURSEPLAY_TURN_ON_FIELD" 							 text="Gira nel campo:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION" 				 text="Gira nel senso opposto:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END" 					 text="ultimo paio di corsie" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE" 			 text="quando possibile" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Raggio di sterzata" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Distanza verticale:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Trebbia" />
@@ -142,7 +142,7 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Troppi punti d'attesa! Permesso solo %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Troppo pochi punti d'attesa! %d necessario." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Troppi punti di scarico! Permesso solo %d." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Troppo pochi punti di scarico! %d necessario." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW" 				 text="Troppo pochi punti di scarico! %d necessario." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="rimorchio sbagliato per questa modalità" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="strumento sbagliato per questa modalità" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Questo tipo di veicolo non è supportato in questa modalità." />
@@ -180,34 +180,34 @@
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" />
 		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
 		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
-        <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                            text="ENE"/>
-        <text name="COURSEPLAY_DIRECTION_E"                              text="E"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                            text="ESE"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                             text="SE"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                            text="SSE"/>
-        <text name="COURSEPLAY_DIRECTION_S"                              text="S"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                            text="SSW"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                             text="SW"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                            text="WSW"/>
-        <text name="COURSEPLAY_DIRECTION_W"                              text="W"/>
-        <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
-        <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
-        <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+		<text name="COURSEPLAY_DIRECTION_N" 							 text="N" />
+		<text name="COURSEPLAY_DIRECTION_NNE" 							 text="NNE" />
+		<text name="COURSEPLAY_DIRECTION_NE" 							 text="NE" />
+		<text name="COURSEPLAY_DIRECTION_ENE" 							 text="ENE" />
+		<text name="COURSEPLAY_DIRECTION_E" 							 text="E" />
+		<text name="COURSEPLAY_DIRECTION_ESE" 							 text="ESE" />
+		<text name="COURSEPLAY_DIRECTION_SE" 							 text="SE" />
+		<text name="COURSEPLAY_DIRECTION_SSE" 							 text="SSE" />
+		<text name="COURSEPLAY_DIRECTION_S" 							 text="S" />
+		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="SSW" />
+		<text name="COURSEPLAY_DIRECTION_SW" 							 text="SW" />
+		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="WSW" />
+		<text name="COURSEPLAY_DIRECTION_W" 							 text="W" />
+		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="WNW" />
+		<text name="COURSEPLAY_DIRECTION_NW" 							 text="NW" />
+		<text name="COURSEPLAY_DIRECTION_NNW" 							 text="NNW" />
+		<text name="COURSEPLAY_COURSE_SUBOPTIMAL" 						 text="Percorso generato con successo ma a causa delle attuali impostazioni di direzione può causare problemi durante la guida." />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Ignora piccole isole" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="disattivato" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="semplice" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circolare" /> <!-- drive a full circle around the island when first bypassing -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS" 							 text="Ignora piccole isole" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE" 				 text="disattivato" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE" 				 text="semplice" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE" 				 text="circolare" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Morbide" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Secche" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Circolari" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Manovra inversa testata campo"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="Dritta" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="Curva" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE" 			 text="Manovra inversa testata campo" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"  text="Dritta" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE" 	 text="Curva" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="solo nome" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="nome e percorso" />
@@ -220,9 +220,9 @@
 		<text name="COURSEPLAY_START" 									 text="Inizia" />
 		<text name="COURSEPLAY_FINISH" 									 text="Termina" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Il percorso non è valido" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="funzione fertilizzante delle seminatrici" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
+		<text name="COURSEPLAY_FERTILIZERFUNCTION" 						 text="funzione fertilizzante delle seminatrici" />
+		<text name="COURSEPLAY_COMBINE_CONVOY" 							 text="combine convoy" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 						 text="La coclea della trebbia è sul raccolto" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Pala non trovata" />
@@ -238,7 +238,7 @@
 		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="salva posizione svuota pala" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="muovi a posizione riempimento" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi a posizione trasporto" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 text="muovi a posizione pre svuotamento" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="muovi a posizione pre svuotamento" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione svuota pala" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; Go" />
 
@@ -290,11 +290,11 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Fine turno manovra" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Inizia retromarcia" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Ferma la retromarcia" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Aggiungi punti intermedi" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS" 				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icone mappa: visualizza il testo" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Spento" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Sempre" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Spento" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Sempre" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Sempre + differ. anteriore attivo nel lavoro in campo" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Sempre + differ. posteriore attivo nel lavoro in campo" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Sempre + entrambi differ. attivi nel lavoro in campo" />
@@ -305,9 +305,9 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo di seme: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Utilizzo: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Mostra/nascondi punti di partenza e arrivo" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Mostra/nascondi tutti i punti" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Mostra/nascondi i punti di incrocio" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND" 				 text="Mostra/nascondi punti di partenza e arrivo" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL" 					 text="Mostra/nascondi tutti i punti" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING" 				 text="Mostra/nascondi i punti di incrocio" />
 
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Mostra Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Nascondi Courseplay HUD" />
@@ -323,40 +323,40 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: modo precedente" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: azione del mouse" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: azione secondaria del mouse" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: posiziona marcatore per debug nel log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER" 						 text="Courseplay: posiziona marcatore per debug nel log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mostra cursore" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Nascondi cursore" />
 
-        <text name="COURSEPLAY_MODE10_MODE" 							 text="Modalità" />
+		<text name="COURSEPLAY_MODE10_MODE" 							 text="Modalità" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="Livellare e compattare" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="Riempimento" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP" 					 text="Riempimento" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Arresta automaticamente per" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="Solo courseplayers" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="Tutte con motore acceso" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Rilevare trattori nel raggio di" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Velocità massima mentre si spinge" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Altezza lama" />
-		<text name="COURSEPLAY_MODE10_NOSILO"							 text="Nessuna trincea rilevata al punto di partenza" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"							 text="Nessuna lama attaccata" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="La lama montata anteriormente non è supportata" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"							 text="Impostazioni" />
+		<text name="COURSEPLAY_MODE10_NOSILO" 							 text="Nessuna trincea rilevata al punto di partenza" />
+		<text name="COURSEPLAY_MODE10_NOBLADE" 							 text="Nessuna lama attaccata" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE" 					 text="La lama montata anteriormente non è supportata" />
+		<text name="COURSEPLAY_MODE10_SETTINGS" 						 text="Impostazioni" />
 		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 						 text="Larghezza lama" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="La trincea viene riempita da" />
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="Guida attraverso" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 				 text="Scaricare in retromarcia" />
 
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"							 text="Rifornimento di carburante" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"								 text="sempre" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="sotto al 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"							 text="Risparmio carburante" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR" 						 text="Rifornimento di carburante" />
+		<text name="COURSEPLAY_FUEL_ALWAYS" 							 text="sempre" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT" 						 text="sotto al 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION" 							 text="Risparmio carburante" />
 
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Ricarica lista percorsi" />
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Non è possibile generare il percorso. Prova a cambiare le impostazioni o a spostare il veicolo."/>
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Non è possibile generare il percorso. Prova a cambiare le impostazioni o a spostare il veicolo." />
 
 		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="spago balle" />
 		<text name="COURSEPLAY_FillType_BaleNet" 						 text="rete balle" />
 		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="rivestimento balle" />
-		<text name="COURSEPLAY_FillType_Molasses"						 text="melassa" />
-		
+		<text name="COURSEPLAY_FillType_Molasses" 						 text="melassa" />
+
 	</texts>
 </l10n>
