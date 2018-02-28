@@ -5,8 +5,8 @@
 		<text name="COURSEPLAY_DRIVER"									 text="Kierowca" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START"					 text="Wystartuj kierowcę" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP"					 text="Zatrzymaj kierowcę" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT"						 text="Zatrzymaj się w ostatnim punkcie" />
-		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Ilość tras do wykonania" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT"						 text="Zatrzymaj się w ostatnim punkcie:" />
+		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Ilość tras do wykonania:" />
  		<text name="COURSEPLAY_UNLIMITED" 								 text="Dowolna" />
 		<text name="COURSEPLAY_UNLOADING_SIDE"							 text="Po stronie kierowcy" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE"						 text="Automatycznie" />
@@ -36,9 +36,9 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Uwrocia w lewo/prawo" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Uwrocia przed/po kursie pola" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Wygeneruj kurs pola" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Kilka maszyn" />
-		<text name="COURSEPLAY_DISTANCE"							 	 text="Dystans" />
-		<text name="COURSEPLAY_WAITING_TIME"							 text="Czas oczekiwania" />
+		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Kilka maszyn:" />
+		<text name="COURSEPLAY_DISTANCE"							 	 text="Dystans:" />
+		<text name="COURSEPLAY_WAITING_TIME"							 text="Czas oczekiwania:" />
 		<text name="COURSEPLAY_MINUTES"									 text="%d min." />
 		<text name="COURSEPLAY_SECONDS"									 text="%d sek." />
 		<text name="COURSEPLAY_UNIT_METER" 								 text="m" />
@@ -76,12 +76,12 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT"							 text="Ładowanie: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE"							 text="Punkty trasy:" />
 		<text name="COURSEPLAY_PATHFINDING"								 text="Znalezienie drogi" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Pług przy krawędzi pola" />
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Wyrównaj do pier. punktu trasy" />
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Pług przy krawędzi pola:" />
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Wyrównaj do 1 pkt trasy:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL"				 text="Korekcja boczna:" />
 		<text name="COURSEPLAY_START_AT"								 text="Podjedź przy:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Nawrót na polu:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Odwrotny kier. zawracania:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Odwrotny kier. nawrotu:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="Ostatnia para pasów" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="Jeśli możliwe" />
 		<text name="COURSEPLAY_TURN_RADIUS"								 text="Średnica zawracania:" />
@@ -115,7 +115,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS"				 text="Sterowanie kombajnami" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES"				 text="Zarządzanie kursami" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER"				 text="Wybierz folder" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE"					 text="Ustawienia trybu kombajnu" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE"					 text="Ustawienia różnych trybów" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES"				 text="Zarządzanie kombajnami" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS"						 text="Limity prędkości" />
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"				 text="Ustawienia jazdy" />
@@ -147,22 +147,22 @@
 		<text name="COURSEPLAY_WRONG_TOOL"								 text="Złe narzędzie do tego trybu" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE"		 text="Ten typ pojazdu nie jest obsługiwany w tym trybie." />
 		<text name="COURSEPLAY_WEATHER_WARNING"							 text="czeka na lepszą pogodę" />
-		<text name="COURSEPLAY_LANE_OFFSET"								 text="Korekcja pasa" />
-		<text name="COURSEPLAY_TOOL_OFFSET_X"							 text="Korekcja pozioma narzędzia" />
-		<text name="COURSEPLAY_TOOL_OFFSET_Z"							 text="Korekcja pionowa narzędzia" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Korekcja pionowa załadunku/rozładunku" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Korekcja pozioma zał./roz./oczek." />
-		<text name="COURSEPLAY_FRONT"									 text="przód" />
-		<text name="COURSEPLAY_BACK"									 text="tył" />
-		<text name="COURSEPLAY_WORK_WIDTH"								 text="Szerokość robocza" />
+		<text name="COURSEPLAY_LANE_OFFSET"								 text="Korekcja pasa:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X"							 text="Korekcja pozioma narzędzia:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z"							 text="Korekcja pionowa narzędzia:" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Korekcja pionowa zał./roz./oczek.:" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Korekcja pozioma zał./roz./oczek.:" />
+		<text name="COURSEPLAY_FRONT"									 text="Przód" />
+		<text name="COURSEPLAY_BACK"									 text="Tył" />
+		<text name="COURSEPLAY_WORK_WIDTH"								 text="Szerokość robocza:" />
 		<text name="COURSEPLAY_WATER_WARNING"							 text="chciałby popływać" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE"							 text="Otwórz Courseplay:" />
-		<text name="COURSEPLAY_DEBUG_CHANNELS"							 text="Kanały debugowania" />
+		<text name="COURSEPLAY_DEBUG_CHANNELS"							 text="Kanały debugowania:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION"			 text="Generacja kursu" />
-    	<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Lokacja startowa" />
-    	<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Lokacja końcowa" />
-		<text name="COURSEPLAY_STARTING_DIRECTION"						 text="Kierunek startowy" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT"					 text="Powrót do pierwszego punktu" />
+    	<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Lokacja startowa:" />
+    	<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Lokacja końcowa:" />
+		<text name="COURSEPLAY_STARTING_DIRECTION"						 text="Kierunek startowy:" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT"					 text="Powrót do 1 punktu:" />
 		<text name="COURSEPLAY_CORNER_1"								 text="Południowy-Zachód" />
 		<text name="COURSEPLAY_CORNER_2"								 text="Północny-Zachód" />
 		<text name="COURSEPLAY_CORNER_3"								 text="Północny-Wschód" />
@@ -198,17 +198,17 @@
         <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
         <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
         <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Kurs został pomyślnie wygenerowany, ale ze względu na bieżące ustawienie kierunku może powodować problemy podczas jazdy."/>
-		<text name="COURSEPLAY_HEADLAND"								 text="Uwrocia" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Omijanie przeszkód" />
+		<text name="COURSEPLAY_HEADLAND"								 text="Uwrocia:" />
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Omijanie przeszkód:" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="Nieaktywne" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="Uproszczone" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="Okrążanie" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Gładko" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Obrót" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Kółko" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Manewr zawracania na uwrociach"/>			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="prosto" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="po łuku" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Manewr zawracania na uwrociach:"/>			
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="Prosto" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="Po łuku" />
 		<text name="COURSEPLAY_ACTIVATED"								 text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Tylko nazwa" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Nazwa i Kurs" />
@@ -222,17 +222,17 @@
 		<text name="COURSEPLAY_FINISH"									 text="Zakończ" />
 		<text name="COURSEPLAY_NO_VALID_COURSE"							 text="Kurs nieważny" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Nawożenie siewnikiem" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konwój kombajnów" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konwój kombajnów:" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="Rura wyładowcza po stronie uprawy" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 text="Nie znaleziono łychy" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS"						 text="Pozycja łychy" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS"						 text="Pozycja łychy:" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING"				 text="Brakuje pozycji łychy" />
-		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION"					 text="Pozycja załadunku" />
-		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION"				 text="Pozycja transportu" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION"			 text="Pozycja przed rozładunkiem" />
-		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION"				 text="Pozycja rozładunku" />
+		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION"					 text="Pozycja załadunku:" />
+		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION"				 text="Pozycja transportu:" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION"			 text="Pozycja przed rozładunkiem:" />
+		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION"				 text="Pozycja rozładunku:" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION"			 text="Zapisz pozycję załadunku" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION"			 text="Zapisz pozycję transportu" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION"		 text="Zapisz pozycję przed rozładunkiem" />
@@ -241,21 +241,21 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		 text="Przejedź do pozycji transportu" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 text="Przejedź do pozycji przed rozładunkiem" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		 text="Przejedź do pozycji rozładunku" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO"						 text="Zatrzymaj i idź ładować" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO"						 text="Zatrzymaj i jedź ładować" />
 
-		<text name="COURSEPLAY_START_AT_POINT"							 text="Rozpocznij kurs od" />
-		<text name="COURSEPLAY_NEAREST_POINT"							 text="najbliższy punkt trasy" />
-		<text name="COURSEPLAY_FIRST_POINT"								 text="pierwszy punkt trasy" />
-		<text name="COURSEPLAY_CURRENT_POINT"							 text="obecny punkt trasy" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="następny punkt trasy" />
-		<text name="COURSEPLAY_FIELD_EDGE_PATH"							 text="Ścieżka krawędzi pola" />
+		<text name="COURSEPLAY_START_AT_POINT"							 text="Rozpocznij kurs od:" />
+		<text name="COURSEPLAY_NEAREST_POINT"							 text="Najbliższy punkt trasy" />
+		<text name="COURSEPLAY_FIRST_POINT"								 text="Pierwszy punkt trasy" />
+		<text name="COURSEPLAY_CURRENT_POINT"							 text="Obecny punkt trasy" />
+		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="Następny punkt trasy" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH"							 text="Ścieżka krawędzi pola:" />
 		<text name="COURSEPLAY_FIELD"									 text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"					 text="(obecnie załadowany kurs)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS"					 text="Trwa skanowanie pól" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB"						 text="Skanowanie pola %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING"								 text="Nie znaleziono węża - napełnianie anulowane" />
-		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE"					 text="Symetryczna zmiana pasa" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY"				 text="Piorytet kierowcy" />
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE"					 text="Symetryczna zmiana pasa:" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY"				 text="Piorytet kierowcy:" />
 		<text name="COURSEPLAY_FILLEVEL"								 text="Poziom wypełnienia" />
 		<text name="COURSEPLAY_PICKUP_JAMMED"							 text=": Podbierak się zablokował" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS"						 text=": Prasa potrzebuje nowych rolek siatki" />
@@ -267,11 +267,11 @@
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED"				 text="powinien zostać wkrótce naprawiony" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED"					 text="musi być naprawiony" />
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED"				 text="jest w trakcie naprawy" />
-		<text name="COURSEPLAY_COVER_HANDLING"							 text="Plandeka" />
+		<text name="COURSEPLAY_COVER_HANDLING"							 text="Plandeka:" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR"			 text="Usuń zadanie kombajnu" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING"			 		 text="Zatrzymaj podczas rozładunku" />
 		<text name="COURSEPLAY_SLIPPING_WARNING"						 text="ślizga się" />
-		<text name="COURSEPLAY_REFILL_UNTIL_PCT"						 text="Uzupełnić do:" />
+		<text name="COURSEPLAY_REFILL_UNTIL_PCT"						 text="Uzupełnij do:" />
 		<text name="COURSEPLAY_BGA_IS_FULL"								 text=": Silos bunkrowy jest pełny!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE"					 text="Silos na farmie nie ma wymaganego typu uprawy" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE"						 text="Ładowanie silosu na farmie:" />
@@ -292,8 +292,8 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_START"					 text="Rozpocznij cofanie" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP"					 text="Zakończ cofanie" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Dodaj punkt pośredni" />
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"				 text="Tekst przy ikonie na mapie" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Ustawienia Drive Control" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT"				 text="Tekst przy ikonie na mapie:" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Ustawienia Drive Control:" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Automatyczne" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4x4 zawsze" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4x4 zawsze &amp; zabl. przedni dyf. (praca w polu)" />
@@ -301,7 +301,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4x4 zawsze &amp; zabl. oba dyf. (praca w polu)" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN"						 text="Czy chcesz, aby pola były skanowane automatycznie?" />
 		<text name="COURSEPLAY_YES_NO_WAGES"							 text="Czy chcesz, aby pracownicy dostawali wynagrodzenie (%s/godzinę)?" />
-		<text name="COURSEPLAY_SEEDUSAGECALCULATOR"						 text="Oblicz zużycie nasion" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR"						 text="Kalkulator zużycia nasion" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD"				 text="Pole: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE"			 text="Typ nasion: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE"				 text="Zużycie: %s %s (%s)" />
@@ -328,28 +328,28 @@
 		<text name="COURSEPLAY_MOUSEARROW_SHOW"							 text="Pokaż kursor myszy" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE"							 text="Ukryj kursor myszy" />
 	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="Tryb" />
+		<text name="COURSEPLAY_MODE10_MODE" 						     text="Tryb:" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="Wyrównywanie i ugniatanie" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="Napełnianie" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Automatyczne zatrzymanie dla" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="Tylko Courseplayer" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="Wszystkie z uruchomionym silnikiem" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Wykryj pojazdy w zasięgu " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Max. prędkość podczas pchania" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Wysokość lemiesza" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Automatyczne zatrzymanie dla:" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="Tylko Courseplay" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="Wszystkie z uruch. silnikiem" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Wykryj pojazdy w zasięgu:" />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Max. prędkość podczas pchania:" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Wysokość lemiesza:" />
 		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="Nie wykryto silosu bunkrowego w punkcie startowym" />
 		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Brak podczepionego lemiesza" />
 		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="Lemiesz podczepiony z przodu nie jest obsługiwany" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Ustawienia silosu bunkrowego" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Szerokość lemiesza" />
-		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silos jest napełniany przez" />
+		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Ustawienia silosu bunkrowego:" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Szerokość lemiesza:" />
+		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silos jest napełniany przez:" />
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="Przejazd przez silos" />
 		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="Rozładunek tyłem" />
 		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Uzupełnij paliwo na stacji benzynowej" />
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Uzupełnij paliwo na stacji benzynowej:" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="Zawsze" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="Poniżej 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Oszczędzanie paliwa" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="Oszczędzanie paliwa:" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Przeładuj listę kursów" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE"					 text="Nie można wygenerować kursu. Spróbuj zmienić ustawienia lub przemieścić pojazd."/>
