@@ -168,6 +168,7 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-西 (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-东 (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-东 (new)" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />

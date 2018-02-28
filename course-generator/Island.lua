@@ -12,16 +12,16 @@ Island.gridSpacing = 1
 Island.maxRowsToBypassIsland = 5
 
 -- constructor
-function Island:new( islandId ) 
+function Island:new( islandId )
 	newIsland = {}
 	setmetatable( newIsland, self )
-  -- nodes of the island polygon
-  newIsland.nodes = Polygon:new()
-  newIsland.id = islandId
-  newIsland.circled = false
+	-- nodes of the island polygon
+	newIsland.nodes = Polygon:new()
+	newIsland.id = islandId
+	newIsland.circled = false
 	newIsland.headlandTracks = {}
 
-  return newIsland
+	return newIsland
 end
 
 -- copy constructor
@@ -117,41 +117,41 @@ function Island.bypassIslandNodes( course, width, islandNodes )
 end
 
 function Island.showPassOrTrackNumber( p )
-  if p.passNumber then return string.format( 'pass %d', p.passNumber ) end
-  if p.trackNumber then return string.format( 'track %d', p.trackNumber ) end
+	if p.passNumber then return string.format( 'pass %d', p.passNumber ) end
+	if p.trackNumber then return string.format( 'track %d', p.trackNumber ) end
 end
 
 function Island.findNodeWithinDistance( node, otherNodes, d )
-  for i, otherNode in ipairs( otherNodes ) do
-    if getDistanceBetweenPoints( node, otherNode ) < d then
-      return i, otherNode
-    end
-  end
-  return nil, nil
+	for i, otherNode in ipairs( otherNodes ) do
+		if getDistanceBetweenPoints( node, otherNode ) < d then
+			return i, otherNode
+		end
+	end
+	return nil, nil
 end
 
 function Island.getNumberOfIslandNeighbors( point, islandNodes, gridSpacing )
-  local nNeighbors = 0
-  for _, islandNode in ipairs( islandNodes ) do
-    local d = getDistanceBetweenPoints( point, islandNode )
-    -- 1.5 is around sqrt( 2 ), to find diagonal neigbors too
-    if d < 1.5 * gridSpacing then
-      nNeighbors = nNeighbors + 1
-    end
-  end
-  return nNeighbors
+	local nNeighbors = 0
+	for _, islandNode in ipairs( islandNodes ) do
+		local d = getDistanceBetweenPoints( point, islandNode )
+		-- 1.5 is around sqrt( 2 ), to find diagonal neigbors too
+		if d < 1.5 * gridSpacing then
+			nNeighbors = nNeighbors + 1
+		end
+	end
+	return nNeighbors
 end
 
 function Island.getIslandPerimeterNodes( islandNodes )
-  local perimeterNodes = {}
-  for _, islandNode in ipairs( islandNodes ) do
-    -- a node on the perimeter has at least two non-island neigbors (out of the possible
-    -- 8 neighbors at most 6 can be island nodes). 
-    if Island.getNumberOfIslandNeighbors( islandNode, islandNodes, Island.gridSpacing ) <= 6 then
-      table.insert( perimeterNodes, islandNode )
-    end
-  end
-  return perimeterNodes
+	local perimeterNodes = {}
+	for _, islandNode in ipairs( islandNodes ) do
+		-- a node on the perimeter has at least two non-island neigbors (out of the possible
+		-- 8 neighbors at most 6 can be island nodes).
+		if Island.getNumberOfIslandNeighbors( islandNode, islandNodes, Island.gridSpacing ) <= 6 then
+			table.insert( perimeterNodes, islandNode )
+		end
+	end
+	return perimeterNodes
 end
 
 function Island.translateAll( islands, dx, dy )
@@ -180,31 +180,31 @@ end
 -- for that island from perimeterNodes and returns the
 -- remaining nodes.
 function Island:createFromPerimeterNodes( perimeterNodes )
-  if #perimeterNodes < 1 then return perimeterNodes end
-  local currentNode = perimeterNodes[ 1 ]
-  table.insert( self.nodes, currentNode )
-  table.remove( perimeterNodes, 1 )
-  local ix, otherNode 
-  otherNode = currentNode
-  while otherNode do
-    -- find the next node, try closest first. 3.01 so it is guaranteed to be closer than 3 * gridSpacing
-    for _, d in ipairs({ self.gridSpacing * 1.01, 1.5 * self.gridSpacing, 2.3 * self.gridSpacing, 3.01 * self.gridSpacing }) do
-      ix, otherNode = Island.findNodeWithinDistance( currentNode, perimeterNodes, d )
-      if ix then
-        table.insert( self.nodes, otherNode )
-        table.remove( perimeterNodes, ix )
-        -- next node found, continue from that node
-        currentNode = otherNode
-        break
-      end
-    end
-  end
-  self.nodes:calculateData()
+	if #perimeterNodes < 1 then return perimeterNodes end
+	local currentNode = perimeterNodes[ 1 ]
+	table.insert( self.nodes, currentNode )
+	table.remove( perimeterNodes, 1 )
+	local ix, otherNode
+	otherNode = currentNode
+	while otherNode do
+		-- find the next node, try closest first. 3.01 so it is guaranteed to be closer than 3 * gridSpacing
+		for _, d in ipairs({ self.gridSpacing * 1.01, 1.5 * self.gridSpacing, 2.3 * self.gridSpacing, 3.01 * self.gridSpacing }) do
+			ix, otherNode = Island.findNodeWithinDistance( currentNode, perimeterNodes, d )
+			if ix then
+				table.insert( self.nodes, otherNode )
+				table.remove( perimeterNodes, ix )
+				-- next node found, continue from that node
+				currentNode = otherNode
+				break
+			end
+		end
+	end
+	self.nodes:calculateData()
 	self.nodes:space( math.rad( 20 ), 5 )
 	self.width = self.nodes.boundingBox.maxX - self.nodes.boundingBox.minX
-  self.height = self.nodes.boundingBox.maxY - self.nodes.boundingBox.minY
-  courseGenerator.debug( "Island #%d with %d nodes created, %.0fx%0.f, area %.0f", self.id, #self.nodes, self.width, self.height, self.nodes.area )
-end 
+	self.height = self.nodes.boundingBox.maxY - self.nodes.boundingBox.minY
+	courseGenerator.debug( "Island #%d with %d nodes created, %.0fx%0.f, area %.0f", self.id, #self.nodes, self.width, self.height, self.nodes.area )
+end
 
 --- Is this island too big to just bypass? If so, we can't just drive
 -- around it, we actually have to end and turn the up/down rows
@@ -217,7 +217,7 @@ end
 
 --- Does the line from pointA to pointB intersect this island?
 function Island:intersects( pointA, pointB )
-  return getAllIntersectionsOfLineAndPolygon( self.headlandTracks[ self.innermostHeadlandIx ], pointA, pointB )
+	return getAllIntersectionsOfLineAndPolygon( self.headlandTracks[ self.innermostHeadlandIx ], pointA, pointB )
 end
 
 function Island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth )
@@ -230,8 +230,8 @@ function Island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPerce
 		-- first headland is a bit further out as our grid spacing limits the resolution. This may 
 		-- prevent hitting objects very close to the edge of the island.
 		local width = i == 1 and implementWidth / 2  + Island.gridSpacing / 2 or implementWidth * ( 100 - overlapPercent ) / 100
-		self.headlandTracks[ i ] = calculateHeadlandTrack( previousHeadland, width,
-			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, false )
+		self.headlandTracks[ i ] = calculateHeadlandTrack( previousHeadland, courseGenerator.HEADLAND_MODE_NORMAL, width,
+			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, false, nil, nil )
 		courseGenerator.debug( "Generated headland track #%d, %d waypoints, area %.1f, clockwise = %s for island %s", i, #self.headlandTracks[ i ],
 			self.headlandTracks[ i ].area, tostring( self.headlandTracks[ i ].isClockwise ), self.id )
 		previousHeadland = self.headlandTracks[ i ]
@@ -243,47 +243,47 @@ end
 --- Insert a waypoint into course at ix, using the coordinates from wp
 -- but all other properties from sampleWp
 function Island:insertWaypoint( course, ix, wp, sampleWp )
-  courseGenerator.debug( "Island %d: adding a waypoint (%.1f, %.1f) at %d.",
-    self.id, wp.x, wp.y, ix )
-  table.insert( course, ix, wp )
-  course[ ix ].trackNumber = sampleWp.trackNumber
-  course[ ix ].passNumber = sampleWp.passNumber
+	courseGenerator.debug( "Island %d: adding a waypoint (%.1f, %.1f) at %d.",
+		self.id, wp.x, wp.y, ix )
+	table.insert( course, ix, wp )
+	course[ ix ].trackNumber = sampleWp.trackNumber
+	course[ ix ].passNumber = sampleWp.passNumber
 end
 
 --- Find where a part of a course (anywhere beyond startIx) intersects the 
 -- section between p1 and p2.
 function Island:getIntersectionWithCourse( course, startIx, p1, p2 )
-  for i = startIx, #course - 1 do
-    local c1, c2 = course[ i ], course[ i + 1 ]
-    local intersectionPoint = getIntersection( c1.x, c1.y, c2.x, c2.y, p1.x, p1.y, p2.x, p2.y )
-    if intersectionPoint then
-      --courseGenerator.debug( "Island %d: headland intersects at wp %d ", self.id, i )
-      if course[ startIx ].passNumber and course[ i ].passNumber and 
-          course[ startIx ].passNumber == course[ i ].passNumber then
-        courseGenerator.debug( "Island %d: headland intersects pass number %d at wp %d again.", self.id, 
-          course[ i ].passNumber, i )
-        return i, intersectionPoint
-      end
-      if course[ startIx ].trackNumber and course[ i ].trackNumber and
-          course[ startIx ].trackNumber == course[ i ].trackNumber then
-        courseGenerator.debug( "Island %d: headland intersects track number %d at wp %d again.", self.id, 
-          course[ i ].trackNumber, i )
-        return i, intersectionPoint
-      end
-    end   
-  end
-  return nil, nil
+	for i = startIx, #course - 1 do
+		local c1, c2 = course[ i ], course[ i + 1 ]
+		local intersectionPoint = getIntersection( c1.x, c1.y, c2.x, c2.y, p1.x, p1.y, p2.x, p2.y )
+		if intersectionPoint then
+			--courseGenerator.debug( "Island %d: headland intersects at wp %d ", self.id, i )
+			if course[ startIx ].passNumber and course[ i ].passNumber and
+				course[ startIx ].passNumber == course[ i ].passNumber then
+				courseGenerator.debug( "Island %d: headland intersects pass number %d at wp %d again.", self.id,
+					course[ i ].passNumber, i )
+				return i, intersectionPoint
+			end
+			if course[ startIx ].trackNumber and course[ i ].trackNumber and
+				course[ startIx ].trackNumber == course[ i ].trackNumber then
+				courseGenerator.debug( "Island %d: headland intersects track number %d at wp %d again.", self.id,
+					course[ i ].trackNumber, i )
+				return i, intersectionPoint
+			end
+		end
+	end
+	return nil, nil
 end
 
 --- TODO: Add all the original properties of the course waypoints to the
 -- newly created bypass waypoints.
 -- TODO: Also, add missing turnStart/turnEnd properties
 function Island:decorateBypassWaypoints( course )
-  -- calculate point attributes, especially the radius
-  course:calculateData()
-  for _, p in course:iterator() do
-    p.islandBypass = true
-  end
+	-- calculate point attributes, especially the radius
+	course:calculateData()
+	for _, p in course:iterator() do
+		p.islandBypass = true
+	end
 end
 
 --- Find the spot where this track (up/down row or headland) meets again the
@@ -292,104 +292,104 @@ end
 -- @param fromIx 
 -- @param toIx course intersected the headland polygon between the indexes fromIx-toIx 
 function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle, doSmooth )
-  -- walk around the island on the  headland until we meet the course again.
-  -- we can start walking either at fromIx or at toIx, that is to go left or right
-  -- (don't know which one is left or right but that is not relevant)
-  local pathA, pathB = Polyline:new(), Polyline:new()
-  -- index of course waypoint andintersection point where we again met it
-  local returnIxA, returnIxB, intersectionA, intersectionB
-  local dA, dB = 0, 0
-  -- if we want a circle around the island before bypassing...
-  if not self.circled and doCircle then
-    self.circled = true
-    -- create the waypoints for the circle around the island.
-    courseGenerator.debug( "Island %d: circle around first", self.id )
-    for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
-      table.insert( pathA, cp )
-    end
-    for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
-      table.insert( pathB, cp )
-    end
-  end
-  -- try path A first, going around from toIx to fromIx 
-  for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
-    table.insert( pathA, cp )
-    dA = dA + cp.nextEdge.length
-    local np = self.headlandTracks[ self.innermostHeadlandIx ][ i + 1 ]
-    -- does this section of headland intersects the course and where?
-    returnIxA, intersectionA = self:getIntersectionWithCourse( course, startIx + 1, cp, np )
-    if returnIxA then break end
-  end
-  -- now try path B, going around from fromIx to toIx 
-  for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
-    table.insert( pathB, cp )
-    dB = dB + cp.nextEdge.length
-    local np = self.headlandTracks[ self.innermostHeadlandIx ][ i - 1 ]
-    -- does this section of headland intersects the course and where?
-    returnIxB, intersectionB = self:getIntersectionWithCourse( course, startIx + 1, cp, np )
-    if returnIxB then break end
-  end
-  courseGenerator.debug( "Island %d: path A %.0f m, path B %0.f m", self.id, dA, dB )
-  -- now pick the shortest path
-  local returnIx = dA < dB and returnIxA or returnIxB
-  local path = dA < dB and pathA or pathB
-  self:decorateBypassWaypoints( path )
-  if returnIx then
-    local removeFrom, insertAt = startIx + 1, startIx
-	  if course:hasTurnWaypoint( course:iterator( removeFrom, returnIx )) then
-		  -- we don't really know what to do if there are turn waypoints on the island, so
-		  -- just don't change anything in that case
-		  courseGenerator.debug( "Island %d: Course has turn start or end waypoints between %d-%d, no bypass", self.id, removeFrom, returnIx )
-	  else
-		  -- local removeFrom, insertAt = startIx, startIx - 1 -- if we don't want to have the intersection point in the course
-		  -- remove original course waypoints
-		  courseGenerator.debug( "Island %d: Removing original waypoints (on the island) %d-%d", self.id, removeFrom, returnIx )
-		  for i = removeFrom, returnIx do
-			  table.remove( course, removeFrom )
-		  end
-		  -- add the headland waypoints instead
-		  courseGenerator.debug( "Island %d: Adding %d headland path waypoints around the island starting at %d", self.id,
-		    #path, insertAt )
-		  for i, p in ipairs( path ) do
-			  self:insertWaypoint( course, insertAt + i, p, course[ removeFrom - 1 ])
-		  end
-		  local origLength = #course
-		  if doSmooth then
-			  course:smooth( math.rad( 20 ), math.rad( 120 ), 2, startIx - 1, startIx + #path + 1 )
-		  end 
-		  -- continue after the inserted headland piece (just need to adjust 
-		  -- the length as smooth may have added waypoints
+	-- walk around the island on the  headland until we meet the course again.
+	-- we can start walking either at fromIx or at toIx, that is to go left or right
+	-- (don't know which one is left or right but that is not relevant)
+	local pathA, pathB = Polyline:new(), Polyline:new()
+	-- index of course waypoint andintersection point where we again met it
+	local returnIxA, returnIxB, intersectionA, intersectionB
+	local dA, dB = 0, 0
+	-- if we want a circle around the island before bypassing...
+	if not self.circled and doCircle then
+		self.circled = true
+		-- create the waypoints for the circle around the island.
+		courseGenerator.debug( "Island %d: circle around first", self.id )
+		for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
+			table.insert( pathA, cp )
+		end
+		for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
+			table.insert( pathB, cp )
+		end
+	end
+	-- try path A first, going around from toIx to fromIx
+	for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
+		table.insert( pathA, cp )
+		dA = dA + cp.nextEdge.length
+		local np = self.headlandTracks[ self.innermostHeadlandIx ][ i + 1 ]
+		-- does this section of headland intersects the course and where?
+		returnIxA, intersectionA = self:getIntersectionWithCourse( course, startIx + 1, cp, np )
+		if returnIxA then break end
+	end
+	-- now try path B, going around from fromIx to toIx
+	for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
+		table.insert( pathB, cp )
+		dB = dB + cp.nextEdge.length
+		local np = self.headlandTracks[ self.innermostHeadlandIx ][ i - 1 ]
+		-- does this section of headland intersects the course and where?
+		returnIxB, intersectionB = self:getIntersectionWithCourse( course, startIx + 1, cp, np )
+		if returnIxB then break end
+	end
+	courseGenerator.debug( "Island %d: path A %.0f m, path B %0.f m", self.id, dA, dB )
+	-- now pick the shortest path
+	local returnIx = dA < dB and returnIxA or returnIxB
+	local path = dA < dB and pathA or pathB
+	self:decorateBypassWaypoints( path )
+	if returnIx then
+		local removeFrom, insertAt = startIx + 1, startIx
+		if course:hasTurnWaypoint( course:iterator( removeFrom, returnIx )) then
+			-- we don't really know what to do if there are turn waypoints on the island, so
+			-- just don't change anything in that case
+			courseGenerator.debug( "Island %d: Course has turn start or end waypoints between %d-%d, no bypass", self.id, removeFrom, returnIx )
+		else
+			-- local removeFrom, insertAt = startIx, startIx - 1 -- if we don't want to have the intersection point in the course
+			-- remove original course waypoints
+			courseGenerator.debug( "Island %d: Removing original waypoints (on the island) %d-%d", self.id, removeFrom, returnIx )
+			for i = removeFrom, returnIx do
+				table.remove( course, removeFrom )
+			end
+			-- add the headland waypoints instead
+			courseGenerator.debug( "Island %d: Adding %d headland path waypoints around the island starting at %d", self.id,
+				#path, insertAt )
+			for i, p in ipairs( path ) do
+				self:insertWaypoint( course, insertAt + i, p, course[ removeFrom - 1 ])
+			end
+			local origLength = #course
+			if doSmooth then
+				course:smooth( math.rad( 20 ), math.rad( 120 ), 2, startIx - 1, startIx + #path + 1 )
+			end
+			-- continue after the inserted headland piece (just need to adjust
+			-- the length as smooth may have added waypoints
 			return startIx + #path + #course - origLength
-	  end
-  end
-  -- nothing changed, continue
-  return startIx
+		end
+	end
+	-- nothing changed, continue
+	return startIx
 end
 
 --- Adjust course to bypass this island. Used for Island.BYPASS_MODE_CIRCLE. 
 -- this will bypass the island on a headland generated around it.
 -- @param doCircle drive a full circle around the island when first hit.
 function Island:bypass( course, doCircle, doSmooth)
-  local enterIntersection, exitIntersection, enterIx
-  local ix = 1
-  while ix < #course - 1 do
-    local intersections = self:intersects( course[ ix ], course[ ix + 1 ])
-    if #intersections > 0 then
-      -- First intersection with the island. 
-      if marks then table.insert( marks, intersections[ 1 ].point ) end
-      courseGenerator.debug( "Island %d: Intersection headland #1 and %s at course waypoint %d-%d", self.id, 
-        self.showPassOrTrackNumber( course[ ix ]), ix, ix + 1 )
-      self:insertWaypoint( course, ix + 1, intersections[ 1 ].point, course[ ix ])
-      if #intersections == 2 then
-        -- course enters and leaves the island between two waypoints, so 
-        -- add here a waypoint for the exit too
-        self:insertWaypoint( course, ix + 2, intersections[ 2 ].point, course[ ix ])
-      end
-	    local startIx = ix + 1
-      ix = self:bypassOnHeadland( course, startIx, intersections[ 1 ].fromIx, intersections[ 1 ].toIx, doCircle, doSmooth )
-    end
-    ix = ix + 1
-  end
+	local enterIntersection, exitIntersection, enterIx
+	local ix = 1
+	while ix < #course - 1 do
+		local intersections = self:intersects( course[ ix ], course[ ix + 1 ])
+		if #intersections > 0 then
+			-- First intersection with the island.
+			if marks then table.insert( marks, intersections[ 1 ].point ) end
+			courseGenerator.debug( "Island %d: Intersection headland #1 and %s at course waypoint %d-%d", self.id,
+				self.showPassOrTrackNumber( course[ ix ]), ix, ix + 1 )
+			self:insertWaypoint( course, ix + 1, intersections[ 1 ].point, course[ ix ])
+			if #intersections == 2 then
+				-- course enters and leaves the island between two waypoints, so
+				-- add here a waypoint for the exit too
+				self:insertWaypoint( course, ix + 2, intersections[ 2 ].point, course[ ix ])
+			end
+			local startIx = ix + 1
+			ix = self:bypassOnHeadland( course, startIx, intersections[ 1 ].fromIx, intersections[ 1 ].toIx, doCircle, doSmooth )
+		end
+		ix = ix + 1
+	end
 end
 
 function Island:translate( dx, dy )
@@ -418,7 +418,7 @@ function Island.circleBigIslands( course, islands, headlandFirst, width, minSmoo
 	-- if we are harvesting (headlandFirst = true) we want to take care of the island headlands
 	-- when we first get to them. For other fieldworks it is the opposite, we want all the up/down rows 
 	-- done before working on the island headlands.
-	local step = headlandFirst and 1 or -1 
+	local step = headlandFirst and 1 or -1
 	local first = headlandFirst and 1 or #course
 	local last = headlandFirst and #course or 1
 	local i = first
@@ -484,8 +484,8 @@ function Island:getHeadlandPath( point, distance, width, minSmoothAngle, maxSmoo
 				self:linkHeadlandTracks( point, width, isClockwise, minSmoothAngle, maxSmoothAngle  )
 				return self.headlandPath
 			end
-			if math.abs( da ) > math.pi - maxDeltaAngle and 
-				 math.abs( da ) < math.pi then
+			if math.abs( da ) > math.pi - maxDeltaAngle and
+				math.abs( da ) < math.pi then
 				local isClockwise = not self.headlandTracks[ self.outermostHeadlandIx ].isClockwise
 				self:linkHeadlandTracks( point, width, isClockwise, minSmoothAngle, maxSmoothAngle  )
 				return self.headlandPath
@@ -496,14 +496,14 @@ function Island:getHeadlandPath( point, distance, width, minSmoothAngle, maxSmoo
 end
 
 function Island:linkHeadlandTracks( point, width, isClockwise, minSmoothAngle, maxSmoothAngle )
-	linkHeadlandTracks( self, width, isClockwise, point, true, minSmoothAngle, maxSmoothAngle )		
-end 
+	linkHeadlandTracks( self, width, isClockwise, point, true, minSmoothAngle, maxSmoothAngle )
+end
 
 function Island:adjacentTo( point )
 	if point.adjacentIslands then
 		for adjacentIslandId, _ in ipairs( point.adjacentIslands ) do
 			if self.id == adjacentIslandId then return true end
-		end 
+		end
 	end
 	return false
 end

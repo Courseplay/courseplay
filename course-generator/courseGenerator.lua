@@ -13,7 +13,7 @@ courseGenerator.ROW_DIRECTION_LONGEST_EDGE = 6
 courseGenerator.ROW_DIRECTION_MANUAL = 7
 
 courseGenerator.trackDirectionRanges = {
-	{ angle =  0  }, 
+	{ angle =  0  },
 	{ angle =  1 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_N' },
 	{ angle =  3 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_NNE' },
 	{ angle =  5 * math.pi / 16,  text = 'COURSEPLAY_DIRECTION_NE' },
@@ -53,6 +53,16 @@ courseGenerator.STARTING_LOCATION_NE = 9
 courseGenerator.STARTING_LOCATION_SE = 10
 courseGenerator.STARTING_LOCATION_MAX = 10
 
+-- fieldwowrk modes
+-- 0-n headland rows all around the field and up/down rows in the middle
+courseGenerator.HEADLAND_MODE_NORMAL = 1
+-- 0-n headland rows on the short edge, maximum possible number of
+-- headland rows on the long edge covering the entire field, now up/down rows
+-- in the middle.
+courseGenerator.HEADLAND_MODE_NARROW_FIELD = 2
+-- 0-n headland rows on two opposite ends of the field, up/down rows between.
+courseGenerator.HEADLAND_MODE_TWO_SIDE = 3
+
 function courseGenerator.isOrdinalDirection( startingLocation )
 	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and
 		startingLocation <= courseGenerator.STARTING_LOCATION_SE
@@ -61,11 +71,11 @@ end
 --- Debug print, will either just call print when running standalone
 --  or use the CP debug channel when running in the game.
 function courseGenerator.debug( ... )
-  if courseGenerator.isRunningInGame() then
-	  courseplay:debug( string.format( ... ), 7 )
-  else
-    print( string.format( ... ))
-  end
+	if courseGenerator.isRunningInGame() then
+		courseplay:debug( string.format( ... ), 7 )
+	else
+		print( string.format( ... ))
+	end
 end
 
 --- Return true when running in the game
@@ -73,7 +83,7 @@ end
 -- for example, io.flush is not available from within the game.
 --
 function courseGenerator.isRunningInGame()
-  return courseplay ~= nil;
+	return courseplay ~= nil;
 end
 
 function courseGenerator.getCurrentTime()
@@ -126,11 +136,11 @@ end
 -- into CP's, where 0 is to the south, to our negative y axis.
 --
 function courseGenerator.toCpAngle( angle )
-  local a = math.deg( angle ) + 90
-  if a > 180 then
-    a = a - 360
-  end
-  return a
+	local a = math.deg( angle ) + 90
+	if a > 180 then
+		a = a - 360
+	end
+	return a
 end
 
 
@@ -172,7 +182,7 @@ function courseGenerator.getStartingLocation( boundary, startingCorner )
 	return { x = x, y = y }
 end
 
-function courseGenerator.getCompassDirectionText( gameAngleDeg ) 
+function courseGenerator.getCompassDirectionText( gameAngleDeg )
 	local compassAngle = math.rad( courseGenerator.getCompassAngleDeg( gameAngleDeg ))
 	for r = 2, #courseGenerator.trackDirectionRanges, 1 do
 		if compassAngle >= courseGenerator.trackDirectionRanges[ r - 1 ].angle and

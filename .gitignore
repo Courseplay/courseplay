@@ -1,8 +1,6 @@
 .project
 *~
 *.gitattributes
-*.gitignore
-*.editorconfig
 *.idea
 *.iml
 

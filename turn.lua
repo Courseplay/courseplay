@@ -2099,14 +2099,14 @@ end
 -- End the alignment course, restore the original course and continue on it.
 function courseplay:endAlignmentCourse( vehicle )
 	if courseplay:onAlignmentCourse( vehicle ) then
-		courseplay:debug(string.format("%s:(Align) Ending alignment course, countinue on original course at waypoint %d.", nameNum(vehicle), vehicle.cp.waypointIndex), 14 )
+		courseplay:debugVehicle( 14, vehicle, "(Align) Ending alignment course, continue on original course at waypoint %d.", vehicle.cp.waypointIndex)
 		vehicle.cp.alignment.onAlignmentCourse = false
     -- that's for the waypoint change distance calculation in drive.lua, for the first waypoint it is 0.5 meters 
     -- but we won't be able to get that close every time which results in circling. So set this flag to make 
     -- drive.lua pick a bigger waypoint switch distance
     vehicle.cp.alignment.justFinished = true
 	else
-		courseplay:debug(string.format("%s:(Align) Ending alignment course but not on alignment course.", nameNum(vehicle)), 14 )
+		courseplay:debugVehicle( 14, "(Align) Ending alignment course but not on alignment course." )
 	end
 	courseplay:clearTurnTargets( vehicle )
   vehicle.cp.isTurning = nil

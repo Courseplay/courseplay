@@ -1207,9 +1207,13 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- line 6 = headland
 		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc('COURSEPLAY_HEADLAND');
-		vehicle.cp.hud.content.pages[8][6][3].text = vehicle.cp.headland.numLanes ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
+		if vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
+			vehicle.cp.hud.content.pages[8][6][3].text = courseplay:loc('COURSEPLAY_HEADLAND_MODE_NARROW_FIELD');
+		else
+			vehicle.cp.hud.content.pages[8][6][3].text = vehicle.cp.headland.getNumLanes() ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
+		end
 		-- only allow for the new course generator
-		if vehicle.cp.headland.numLanes > 0 and vehicle.cp.isNewCourseGenSelected() then
+		if vehicle.cp.headland.exists() and vehicle.cp.isNewCourseGenSelected() then
 			vehicle.cp.hud.content.pages[8][6][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
 		else
 			vehicle.cp.hud.content.pages[8][6][2].text = '---'

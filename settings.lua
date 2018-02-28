@@ -1110,14 +1110,10 @@ function courseplay:switchStartingCorner(vehicle)
 		-- starting direction is always auto when starting corner is vehicle location
 		vehicle.cp.hasStartingDirection = true;
 		vehicle.cp.startingDirection = vehicle.cp.rowDirectionMode
-		-- allow more headlands with the new course gen
-		--vehicle.cp.headland.maxNumLanes = vehicle.cp.headland.autoDirMaxNumLanes
 		courseplay:changeHeadlandNumLanes(vehicle, 0)
 	else
 		vehicle:setCpVar('hasStartingDirection',false,courseplay.isClient);
 		vehicle:setCpVar('startingDirection',0,courseplay.isClient);
-		--vehicle.cp.headland.maxNumLanes = vehicle.cp.headland.manuDirMaxNumLanes
-		vehicle:setCpVar('headland.maxNumLanes',vehicle.cp.headland.manuDirMaxNumLanes,courseplay.isClient);
 		courseplay:changeHeadlandNumLanes(vehicle, 0)
 	end
 
@@ -1184,8 +1180,13 @@ function courseplay:toggleReturnToFirstPoint(vehicle)
 end;
 
 function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
-	vehicle.cp.headland.numLanes = Utils.clamp(vehicle.cp.headland.numLanes + changeBy, 0, vehicle.cp.headland.maxNumLanes);
-	local numLanes = Utils.clamp(vehicle.cp.headland.numLanes + changeBy, 0, vehicle.cp.headland.maxNumLanes);
+	vehicle.cp.headland.numLanes = Utils.clamp(vehicle.cp.headland.numLanes + changeBy,
+		vehicle.cp.headland.getMinNumLanes(), vehicle.cp.headland.getMaxNumLanes());
+	if vehicle.cp.headland.numLanes < 0 then
+		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NARROW_FIELD
+	else
+		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NORMAL
+	end
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 
@@ -1208,7 +1209,7 @@ function courseplay:changeIslandBypassMode(vehicle)
 end;
 
 function courseplay:changeHeadlandTurnType( vehicle )
-  if vehicle.cp.headland.numLanes > 0 then 
+  if vehicle.cp.headland.exists() then
     local newTurnType = vehicle.cp.headland.turnType + 1
     if newTurnType > courseplay.HEADLAND_CORNER_TYPE_MAX then
       newTurnType = courseplay.HEADLAND_CORNER_TYPE_MIN
@@ -1248,7 +1249,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 	end;
 
 	local hasEnoughWaypoints = numWaypoints >= 4
-	if vehicle.cp.headland.numLanes ~= 0 then
+	if vehicle.cp.headland.exists() then
 		hasEnoughWaypoints = numWaypoints >= 20;
 	end;
 

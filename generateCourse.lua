@@ -104,7 +104,7 @@ function courseplay:generateCourse(vehicle)
 	-- (2) HEADLAND
 	--------------------------------------------------------------------
 	courseplay:debug('(2) HEADLAND', 7);
-	if vehicle.cp.headland.numLanes and vehicle.cp.headland.numLanes > 0 then --we have headland, baby!
+	if vehicle.cp.headland.exists() then --we have headland, baby!
 		local isClockwise = self:isPolyClockwise(poly.points);
 		courseplay:debug(string.format('headland: poly isClockwise=%s', tostring(isClockwise)), 7);
 		if isClockwise ~= vehicle.cp.headland.userDirClockwise then
@@ -116,7 +116,7 @@ function courseplay:generateCourse(vehicle)
 
 
 		local orderCW = vehicle.cp.headland.userDirClockwise;
-		local numLanes = vehicle.cp.headland.numLanes;
+		local numLanes = vehicle.cp.headland.getNumLanes();
 		local polyPoints = poly.points;
 		local polyLength = poly.numPoints;
 
@@ -752,7 +752,7 @@ function courseplay:generateCourse(vehicle)
 	-------------------------------------------------------------------------------
 	courseplay:debug('(5) ROTATE HEADLAND COURSES', 7);
 	local numHeadlandLanesCreated = 0;
-	if vehicle.cp.headland.numLanes > 0 then
+	if vehicle.cp.headland.exists() then
 		numHeadlandLanesCreated = #(vehicle.cp.headland.lanes);
 		if numHeadlandLanesCreated > 0 then
 			if vehicle.cp.headland.orderBefore then --each headland lanes' first point is closest to first fieldwork course point
@@ -796,7 +796,7 @@ function courseplay:generateCourse(vehicle)
 		fieldWorkCourse[#fieldWorkCourse].wait = false;
 
 		local srcCourse = fieldWorkCourse;
-		if vehicle.cp.headland.numLanes and vehicle.cp.headland.numLanes > 0 and vehicle.cp.headland.orderBefore and #(vehicle.cp.headland.lanes) > 0 then
+		if vehicle.cp.headland.exists() and vehicle.cp.headland.orderBefore and #(vehicle.cp.headland.lanes) > 0 then
 			srcCourse = vehicle.cp.headland.lanes[1];
 			courseplay:debug(string.format('lastFivePoints: #headland.lanes=%d, headland.orderBefore=%s -> srcCourse = headland.lanes[1]', #(vehicle.cp.headland.lanes), tostring(vehicle.cp.headland.orderBefore)), 7);
 		end;

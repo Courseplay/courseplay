@@ -173,6 +173,7 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Северо-Запад (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Северо-Восток (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Юго-Восток (new)" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />

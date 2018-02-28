@@ -476,12 +476,12 @@ function courseplay.button:render()
 				elseif fn == "changeStartingDirection" then
 					show = vehicle.cp.hasStartingCorner;
 				elseif fn == 'toggleHeadlandDirection' or fn == 'toggleHeadlandOrder' then
-					show = vehicle.cp.headland.numLanes > 0;
+					show = vehicle.cp.headland.exists();
 				elseif fn == 'changeHeadlandNumLanes' then
 					if prm < 0 then
-						show = vehicle.cp.headland.numLanes > 0;
+						show = vehicle.cp.headland.numLanes > vehicle.cp.headland.getMinNumLanes();
 					elseif prm > 0 then
-						show = vehicle.cp.headland.numLanes < vehicle.cp.headland.maxNumLanes;
+						show = vehicle.cp.headland.getNumLanes() < vehicle.cp.headland.getMaxNumLanes();
 					end;
 				-- NOTE: generateCourse button is handled in buttonsActiveEnabled(), section 'generateCourse'
 				elseif fn == 'changeMultiTools' then

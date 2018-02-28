@@ -1,0 +1,8 @@
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+
+# tab indentation
+[*.{xml,lua}]
+indent_style = tab
+indent_size = 2

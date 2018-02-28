@@ -9,7 +9,7 @@ function newClass( parent)
 	if parent then
 		setmetatable( child, { __index = parent })
 		child.__tostring = parent.__tostring
-	end 
+	end
 
 	return child
 end
@@ -118,7 +118,7 @@ function ValueEncodedChromosome:crossover( spouse )
 	for i = 1, #self do
 		if math.random( 2 ) > 1 then
 			offspring[ i ] = spouse[ i ]
-			
+
 		end
 	end
 	return offspring
@@ -130,7 +130,7 @@ end
 function ValueEncodedChromosome:mutate( mutationRate )
 	if math.random() <= mutationRate then
 		self[ math.random( self.nGenes )] = self.validValues[ math.random( #self.validValues )]
-	end 
+	end
 end
 
 Population = newClass()
@@ -175,7 +175,7 @@ function Population:calculateFitness()
 	end
 end
 
-function Population:selectElite( maxEliteRatio ) 
+function Population:selectElite( maxEliteRatio )
 	local elite = Population:new()
 	for _, c in ipairs( self )  do
 		if c.fitness >= ( self.bestFitness * 0.7 ) then
@@ -247,7 +247,7 @@ function Population:recombine( newGeneration )
 	-- keep the population size stable, keeping only the fittest individuals
 	for i = self.size, #self - 1 do
 		table.remove( self, #self )
-	end	
+	end
 end
 
 function Population:__tostring()
@@ -266,6 +266,6 @@ function Population:__tostring()
 	end
 	if self.bestChromosome then
 		str = string.format( '%s\nBest solution: %s', str, self.bestChromosome )
-	end 
+	end
 	return str
 end

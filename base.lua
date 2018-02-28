@@ -497,45 +497,69 @@ function courseplay:load(savegame)
 		autoDirMaxNumLanes = 20;
 		maxNumLanes = 20;
 		numLanes = 0;
+		mode = courseGenerator.HEADLAND_MODE_NORMAL;
 		userDirClockwise = true;
 		orderBefore = true;
-
+		-- we abuse the numLanes to switch to narrow field mode,
+		-- negative headland lanes mean we are in narrow field mode
+		-- TODO: this is an ugly hack to make life easy for the UI but needs
+		-- to be refactored
+		minNumLanes = -1;
+		-- another ugly hack: the narrow mode is like the normal headland mode
+		-- for most uses (like the turn system). The next two functions are
+		-- to be used instead of the numLanes directly to hide the narrow mode
+		getNumLanes = function()
+			if self.cp.headland.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
+				return math.abs( self.cp.headland.numLanes )
+			else
+				return self.cp.headland.numLanes
+			end
+		end;
+		exists = function()
+			return self.cp.headland.getNumLanes() > 0
+		end;
+		getMinNumLanes = function()
+			return self.cp.isNewCourseGenSelected() and self.cp.headland.minNumLanes or 0
+		end,
+		getMaxNumLanes = function()
+			return self.cp.isNewCourseGenSelected() and self.cp.headland.autoDirMaxNumLanes or self.cp.headland.manuDirMaxNumLanes
+		end,
 		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
 		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
-		
+
 		tg = createTransformGroup('cpPointOrig_' .. tostring(self.rootNode));
 
 		rectWidthRatio = 1.25;
 		noGoWidthRatio = 0.975;
 		minPointDistance = 0.5;
 		maxPointDistance = 7.25;
-	};
+		};
 	link(getRootNode(), self.cp.headland.tg);
 	if CpManager.isDeveloper then
-		self.cp.headland.manuDirMaxNumLanes = 30;
-		self.cp.headland.autoDirMaxNumLanes = 50;
+	self.cp.headland.manuDirMaxNumLanes = 30;
+	self.cp.headland.autoDirMaxNumLanes = 50;
 	end;
 
 	self.cp.fieldEdge = {
-		selectedField = {
-			fieldNum = 0;
-			numPoints = 0;
-			buttonsCreated = false;
-		};
-		customField = {
-			points = nil;
-			numPoints = 0;
-			isCreated = false;
-			show = false;
-			fieldNum = 0;
-			selectedFieldNumExists = false;
-		};
+	selectedField = {
+	fieldNum = 0;
+	numPoints = 0;
+	buttonsCreated = false;
+	};
+	customField = {
+	points = nil;
+	numPoints = 0;
+	isCreated = false;
+	show = false;
+	fieldNum = 0;
+	selectedFieldNumExists = false;
+	};
 	};
 
 	-- WOOD CUTTING: increase max cut length
 	if CpManager.isDeveloper then
-		self.cutLengthMax = 15;
-		self.cutLengthStep = 1;
+	self.cutLengthMax = 15;
+	self.cutLengthStep = 1;
 	end;
 
 	self.cp.mouseCursorActive = false;
@@ -543,9 +567,9 @@ function courseplay:load(savegame)
 	-- 2D course
 	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
 	-- 2D pda map background -- TODO: MP?
-    if g_currentMission.ingameMap and g_currentMission.ingameMap.mapOverlay and g_currentMission.ingameMap.mapOverlay.filename then
-		self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_currentMission.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
-		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
+	if g_currentMission.ingameMap and g_currentMission.ingameMap.mapOverlay and g_currentMission.ingameMap.mapOverlay.filename then
+	self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_currentMission.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
+	self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
 	end;
 
 	-- HUD

@@ -39,8 +39,8 @@ local cachedPaths = nil
 ----------------------------------------------------------------
 
 local function dist ( x1, y1, x2, y2 )
-  return math.sqrt ( math.pow ( x2 - x1, 2 ) + math.pow ( y2 - y1, 2 ) )
-end  
+	return math.sqrt ( math.pow ( x2 - x1, 2 ) + math.pow ( y2 - y1, 2 ) )
+end
 
 local function g_score_to_neighbor ( nodeA, nodeB )
 	return dist ( nodeA.x, nodeA.y, nodeB.x, nodeB.y )
@@ -84,17 +84,17 @@ end
 
 local function remove_node ( set, theNode )
 	for i, node in ipairs ( set ) do
-		if node == theNode then 
+		if node == theNode then
 			set [ i ] = set [ #set ]
 			set [ #set ] = nil
 			break
 		end
-	end	
+	end
 end
 
 local function unwind_path ( flat_path, map, current_node )
 	if map [ current_node ] then
-		table.insert ( flat_path, 1, map [ current_node ] ) 
+		table.insert ( flat_path, 1, map [ current_node ] )
 		return unwind_path ( flat_path, map, map [ current_node ] )
 	else
 		return flat_path
@@ -110,7 +110,7 @@ function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func,
 	local closedset = {}
 	local openset = { start }
 	local came_from = {}
-  local iterations = 0
+	local iterations = 0
 
 	if valid_node_func then is_valid_node = valid_node_func end
 	if neighbor_nodes_func then neighbor_nodes = neighbor_nodes_func end
@@ -122,7 +122,7 @@ function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func,
 
 
 	while #openset > 0 and iterations < max_iterations do
-    iterations = iterations + 1
+		iterations = iterations + 1
 		local current = lowest_f_score ( openset, f_score )
 		if current == goal then
 			local path = unwind_path ( {}, came_from, goal )
@@ -130,16 +130,16 @@ function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func,
 			return path
 		end
 
-		remove_node ( openset, current )		
+		remove_node ( openset, current )
 		table.insert ( closedset, current )
-		
+
 		local neighbors = neighbor_nodes ( current, nodes )
-		for _, neighbor in ipairs ( neighbors ) do 
+		for _, neighbor in ipairs ( neighbors ) do
 			if not_in ( closedset, neighbor ) then
-			
+
 				local tentative_g_score = g_score [ current ] + g_score_to_neighbor ( current, neighbor )
-				 
-				if not_in ( openset, neighbor ) or tentative_g_score < g_score [ neighbor ] then 
+
+				if not_in ( openset, neighbor ) or tentative_g_score < g_score [ neighbor ] then
 					came_from 	[ neighbor ] = current
 					g_score 	[ neighbor ] = tentative_g_score
 					f_score 	[ neighbor ] = g_score [ neighbor ] + heuristic_cost_estimate ( neighbor, goal )

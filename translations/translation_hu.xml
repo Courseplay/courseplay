@@ -169,6 +169,7 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Észak/Nyugat (új)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Észak/Kelet (új)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Dél/Kelet (új)" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Keskeny täbla" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Észak" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Kelet" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Dél" />
