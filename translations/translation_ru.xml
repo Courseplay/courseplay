@@ -5,7 +5,7 @@
 		<text name="COURSEPLAY_DRIVER" 									 text="Транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Отправить транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Остановить транспорт" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в следующей точке:" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в последней точке или триггере:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Выполнить количество рейсов" />
 		<text name="COURSEPLAY_UNLIMITED" 								 text="неограниченно" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Водительская сторона" />
@@ -75,7 +75,7 @@
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Расстояние до точки разгрузки" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Заполнение %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
-		<text name="COURSEPLAY_PATHFINDING" 							 text="Поиск точек:" />
+		<text name="COURSEPLAY_PATHFINDING" 							 text="Избегать движения по посевам:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Плуг за границы поля" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Выровнять по 1-й точке:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Правее/левее:" />
@@ -147,7 +147,7 @@
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Неподходящий тип инструмента для маршрута" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Неподходящий тип техники для маршрута" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="надо подождать хорошей погоды" />
-		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Смещение от центра:" />
+		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Смещение проходов:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Правее/левее:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Вперед/назад:" />
 		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Гориз. смещение загрузки/разгрузки:" />
@@ -173,7 +173,7 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Северо-Запад (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Северо-Восток (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Юго-Восток (new)" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Узкое поле" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
