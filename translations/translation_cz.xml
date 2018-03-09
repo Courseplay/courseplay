@@ -173,7 +173,7 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="severozápad" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="jihovýchod" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Úzké pole" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
