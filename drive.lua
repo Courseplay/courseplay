@@ -159,6 +159,7 @@ function courseplay:drive(self, dt)
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
+
 	courseplay:debug(('ctx=%.2f, ctz=%.2f, cx=%.2f, cz=%.2f, distanceToTarget=%.2f'):format(ctx, ctz, cx, cz, self.cp.distanceToTarget), 2);
 	local fwd;
 	local distToChange;
@@ -1242,11 +1243,11 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger,stopOr
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.cp.workTools[tIdx];
-
 		-- default Giants trailers
 		if coverType == 'defaultGiants' then
 			local isSprayer, isSowingMachine = courseplay:isSprayer(tipper), courseplay:isSowingMachine(tipper);
 			if (vehicle.cp.mode == 4 and tipper.fillTriggers[1] ~= nil)
+			or (vehicle.cp.mode == 1 and tipper.fillTriggers[1] ~= nil)
 			or (stopOrder and (isSprayer or isSowingMachine)) then
 				return
 			end

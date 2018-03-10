@@ -946,7 +946,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 	local trailer = g_currentMission.objectToTrailer[otherShapeId];
 	--print(self.selectedFillType and self.selectedFillType or "no go");
 	if trailer ~= nil and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
-		-- Make sure cp table is pressent in the trailer.
+		-- Make sure cp table is present in the trailer.
 		if not trailer.cp then
 			trailer.cp = {};
 		end;
