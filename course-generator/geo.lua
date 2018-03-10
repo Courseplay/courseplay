@@ -1,3 +1,21 @@
+--[[
+This file is part of Courseplay (https://github.com/Courseplay/courseplay)
+Copyright (C) 2018 Peter Vajko
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+]]
+
 --
 --  Geometry functions. No dependency on track/field/FS/courseplay
 --  2D functions in the x,y plane
@@ -139,106 +157,67 @@ function space( line, angleThreshold, d )
 	return result
 end
 
+
 --- Round corners of a polygon to turningRadius
 --
-function roundCorners( polygon, turningRadius )
-	local result = {}
-	-- check for corners in a distance depending on the turning radius
-	local d = turningRadius * 3
-	local angleThreshold = math.rad( 45 )
-	i = 1
-	while ( i <= #polygon ) do
-		toIx = getTurnData( polygon, i, d )
-		table.insert( result, polygon[ i ])
-		if toIx then
-			-- Is there a significant direction change within d distance?
-			local da = getDeltaAngle( polygon[ i ].prevEdge.angle,
-				polygon[ toIx ].nextEdge.angle )
-			if math.abs( da ) > angleThreshold then
-				print( polygon[ i ].prevEdge.to.x - polygon[ i ].x )
-				local points = findArcBetweenEdges( polygon[ i ].prevEdge,
-					polygon[ toIx ].nextEdge,
-					turningRadius )
-				if points then
-					print( string.format( "OK, Arc with %.2f radius found between %d and %d", turningRadius, i, toIx ))
-					polygon[ i ].cornerScore = 1
-					points[ 1 ].cornerScore = 2
-					points[ #points ].cornerScore = 4
-					-- replace points between i and toIx with the arc
-					for j, point in ipairs( points ) do
-						table.insert( result, point )
-					end
-					i = toIx
-				else
-					print( string.format( "FAIL, Can't find an arc with %.2f radius", turningRadius ))
-				end
-			end
+function roundCorners( polygon, turnRadius )
+	local needsArc = false
+	local cIx = 1 -- current
+	local nIx = cIx + 1 -- next
+	while cIx <= #polygon do
+		polygon[ cIx ].text = cIx
+		local lookaheadDistance, lookbackDistance = 0, 0
+		-- can we get from the current point to the next?
+		while turnRadius > getTurningRadiusBetweenTwoPoints( polygon[ cIx ], polygon[ nIx ], turnRadius ) do
+			nIx, lookaheadDistance, cIx, lookbackDistance = getNextWpPairToCheck( polygon, nIx, lookaheadDistance, cIx, lookbackDistance )
+			needsArc = true
 		end
-		i = i + 1
+		if needsArc then
+			needsArc = false
+			nIx = polygon:replacePointsWithArc( cIx, nIx, turnRadius )
+		end
+		cIx = nIx
+		nIx = cIx + 1 
 	end
-	return result
+	polygon:calculateData()
+	--applyLowPassFilter( polygon, math.pi, 1 )
 end
 
--- add headland turn information to the waypoints if this is a sharp 
--- corner. 
--- Returns the next index to continue the iteration, that is i + 1 if 
--- there was no turn, or the index of the next waypoint after the turn.
-function addTurnInfo( vertices, i, turnRadius, minHeadlandTurnAngle )
-	local d = 0
-	-- see if we can make a turn to the next wp
-	local r, dA = getTurningRadiusBetweenTwoPoints( vertices[ i ], vertices[ i + 1 ])
-	if r < turnRadius then
-		-- we can't make it the next see if we have a corner starting here
-		vertices[ i ].text = string.format( "r=%.1f (%d)", r, i )
-		local toIx, dA, d = getTurnData( vertices, i, turnRadius * math.pi / 2 )
-		print( string.format( "%d-%d, %.1f, %.1f", i, toIx, math.deg( dA ), r ))
-		if math.abs( dA ) > minHeadlandTurnAngle then
-			print( "****" )
-			vertices[ i ].turnStart = true
-			vertices[ i ].headlandTurn = true
-			vertices[ toIx ].turnEnd = true
-			return toIx
-		end
+--- If we find that we can't drive to the next waypoint with our turning radius then we
+-- check if we can drive to the one after the next or the one before the current. If that
+-- still not works then we go further forward and backwards, based on the distance from
+-- the current wp.
+function getNextWpPairToCheck( polygon, fwdIx, lookaheadDistance, backIx, lookbackDistance )
+	local fD = polygon[ fwdIx ].nextEdge.length
+	local bD = polygon[ backIx ].prevEdge.length
+	if lookaheadDistance + fD < lookbackDistance + bD then
+		-- extend our window forward
+		return fwdIx + 1, lookaheadDistance + fD, backIx, lookbackDistance
+	else
+		-- extend our window backwards
+		return fwdIx, lookaheadDistance, backIx - 1, lookbackDistance + bD
 	end
-	return i + 1
 end
 
 -- get the theoretical turning radius we need to go from 'from' to 'to', 
 -- starting in the from.prevEdge.angle direction and ending up in 
 -- to.nextEdge.angle
-function getTurningRadiusBetweenTwoPoints( from, to )
+function getTurningRadiusBetweenTwoPoints( from, to, targetRadius )
 	local dA = getDeltaAngle( to.nextEdge.angle, from.prevEdge.angle )
-	local r = math.abs( from.nextEdge.length / dA )
-	return r, dA
-end
-
--- Find the index of the vertex where the turn ends but not further than d distance
--- from startIx of a polygon 
--- Also, return the accumulated direction change total, negative and positive
---
-function getTurnData( polygon, fromIx, distance )
-	local d = 0
-	local dDirChange = 0 -- distance where the direction actually changes
-	local totalDirChange, posDirChange, negDirChange = 0, 0, 0
-	local prevTotalDirChange = math.huge
-	local toIx = fromIx
-	while toIx < #polygon and d < distance and
-		-- stop when direction does not change much over a significant distance
-		not ( math.abs( totalDirChange - prevTotalDirChange ) < math.rad( 10 ) and
-			polygon[ toIx ].prevEdge.length > distance / 10 ) do
-		d = d + polygon[ toIx ].nextEdge.length
-		toIx = toIx + 1
-		prevTotalDirChange = totalDirChange
-		totalDirChange = totalDirChange + polygon[ toIx ].deltaAngle
-		if polygon[ toIx ].deltaAngle > 0 then
-			posDirChange = posDirChange + polygon[ toIx ].deltaAngle
-		else
-			negDirChange = negDirChange + polygon[ toIx ].deltaAngle
-		end
+	-- TODO: this is true only if the two points are nearly on the same line
+	if math.abs( dA ) < math.rad( 5 ) then return math.huge end
+	-- find intersection of the two edges, extend them by at least 5 m so they intersect even with
+	-- very small radius
+	local is = getIntersectionOfExtendedEdges( from.prevEdge, to.nextEdge, math.max(5, targetRadius * math.pi * 2 ))
+	if is then
+		local dFrom = getDistanceBetweenPoints( from, is )
+		local dTo = getDistanceBetweenPoints( to, is )
+		local r = math.abs( math.min( dFrom, dTo ) / math.tan( dA / 2 ))
+		return r
+	else
+		return 0
 	end
-	return math.max( toIx - 1, fromIx ), totalDirChange, dDirChange, posDirChange, negDirChange
 end
-
 
 function addToDirectionStats( directionStats, angle, length )
 	local width = 2
@@ -339,7 +318,7 @@ function findArcBetweenEdges( e1, e2, r )
 	-- lengthen ab forward and cd backwards by double radius
 	-- calculate distance from 'is' to the point where a circle
 	-- with r radius would touch ab/cd
-	local is = getIntersectionOfExtendedEdges( e1, e2, 2 * r * math.pi )
+	local is = getIntersectionOfExtendedEdges( e1, e2, 20 * r * math.pi )
 	if is == nil then return nil end
 	-- need to reverse one of the edges to get the correct angle between the two
 	local alpha = getDeltaAngle( reverseAngle( e1.angle ), e2.angle )
@@ -352,51 +331,64 @@ function findArcBetweenEdges( e1, e2, r )
 	if lt( e1ToIs, d ) or lt( isToE2, d ) then
 		return nil
 	end
-	-- let's check if we really need to find an arc here. If we can
-	-- draw a circle with a radius > r, there's nothing to do here.
-	local rCalculated = math.abs( math.min( e1ToIs, isToE2 ) * math.tan( alpha / 2 ))
-	print( string.format( "rCalculated=%.2f", rCalculated ))
-	if r < rCalculated then
-		r = rCalculated
-		d = math.min( e1ToIs, isToE2 )
-		is = getIntersectionOfExtendedEdges( e1, e2, 2 * r * math.pi )
-	end
-	-- looks good, so start adding waypoints between e1.to and e2.from.
+	-- start adding waypoints between e1.to and e2.from.
 	-- first, go straight until we are exactly at d from is
-	local points = {}
 	local delta = e1ToIs - d
-	local p = { x=e1.to.x + delta * e1.dx / e1.length,
-	            y=e1.to.y + delta * e1.dy / e1.length }
-	table.insert( points, p )
+	local points = Polyline:new()
+	addStraightSectionToVertex( points, e1.to, e1.angle, delta )
 	-- from here, go around in an arc until we are heading to e2.angle
 	alpha = getDeltaAngle( e1.angle, e2.angle )
-	-- do about 10 degree steps
-	local nSteps = math.abs( math.floor( alpha * 36 / ( 2 * math.pi )))
+	-- do about x degree steps
+	local nSteps = math.abs( math.floor( alpha * 30 / ( 2 * math.pi )))
 	-- delta angle for one step
 	local deltaAlpha = alpha / ( nSteps + 1 )
-	-- length of a step
-	local length = 2 * r * math.abs( math.sin( alpha / nSteps / 2 ))
+	-- length of a step, with a magic constant to cover up the calculation errors
+	-- during the arc construction, without this we always seem to overshoot a bit
+	local length = 2 * r * math.abs( math.sin( alpha / nSteps / 2 )) * 0.975
 	local currentAlpha = e1.angle + deltaAlpha
 	-- now walk around the arc
+	local p = points[ #points ]
 	for n = 1, nSteps, 1 do
 		p = addPolarVectorToPoint( p, currentAlpha, length )
 		table.insert( points, p )
 		currentAlpha = currentAlpha + deltaAlpha
 	end
+	-- now add waypoints to the end if needed
+	delta = isToE2 - d
+	-- continue walking straight to the last wp if not close enough already
+	if delta > courseGenerator.waypointDistance / 4 then
+		addStraightSectionToVertex( points, points[ #points ], currentAlpha, delta )
+	end
 	return points
+end
+
+-- lengthen an edge with delta. Make sure there's a waypoint
+-- every courseGenerator.waypointDistance meters.
+function addStraightSectionToVertex( points, vertex, angle, delta )
+	local d, n = delta, 1
+	if delta > courseGenerator.waypointDistance then
+		n = math.floor( math.abs( delta ) / courseGenerator.waypointDistance ) + 1
+		d = delta / n
+	end
+	local dist = 0
+	for i = 1, n do
+		dist = dist + d
+		local p = addPolarVectorToPoint( vertex, angle, dist )
+		table.insert( points, p )
+	end
 end
 
 -- Find the intersection of ab and cd. We extend them both with
 -- extensionLength, ab forward, cd backwards as they are edges 
 -- of a polygon
-function getIntersectionOfExtendedEdges( ab, cd, extensionLength )
-	local ab = deepCopy( ab, true )
-	local cd = deepCopy( cd, true )
+function getIntersectionOfExtendedEdges( e1, e2, extensionLength )
+	local ab = deepCopy( e1, true )
+	local cd = deepCopy( e2, true )
 	ab.to.x = ab.to.x + extensionLength * ab.dx / ab.length
 	ab.to.y = ab.to.y + extensionLength * ab.dy / ab.length
 	cd.from.x = cd.from.x - extensionLength * cd.dx / cd.length
 	cd.from.y = cd.from.y - extensionLength * cd.dy / cd.length
-	-- see if they inersect now
+	-- see if they intersect now
 	local is = getIntersection( ab.from.x, ab.from.y, ab.to.x, ab.to.y,
 		cd.from.x, cd.from.y, cd.to.x, cd.to.y )
 	return is
@@ -688,6 +680,25 @@ function Polyline:hasTurnWaypoint( iterator )
 	return false
 end
 
+--- Replace the points in the line between to indices with
+-- an arc with radius r
+function Polyline:replacePointsWithArc( fromIx, toIx, r )
+	local arc = findArcBetweenEdges( self[ fromIx ].prevEdge, self[ toIx ].nextEdge, r )
+	if not arc then return toIx end
+	-- remove old vertices
+	self:removeElementsBetween( fromIx + 1, toIx )
+	local targetIx = fromIx + 1
+	-- add the arc instead
+	for i, p in ipairs( arc ) do
+		table.insert( self, targetIx, p )
+		targetIx = targetIx + 1
+	end
+	self:calculateData()
+	-- continue with the next vertex after the curve,
+	-- TODO: will this work at the end of the line?
+	return targetIx + 1
+end
+
 -- spline functions: smooth, tuck and refine
 -- http://stackoverflow.com/questions/29612584/creating-cubic-and-or-quadratic-bezier-curves-to-fit-a-path
 
@@ -792,6 +803,15 @@ function Polyline:space( angleThreshold, d )
 	end
 	self:calculateData()
 end
+
+--- Remove vertices between (and including) two indexes
+--
+function Polyline:removeElementsBetween( fromIx, toIx )
+	for ix = fromIx, toIx do
+		table.remove( self, fromIx )
+	end
+end
+
 -------------------------------------------------------------------------------
 
 Polygon = {}
@@ -838,5 +858,20 @@ function Polygon:iterator( from, to, step )
 			i = self:getIndex( i + s )
 			return key, value
 		end
+	end
+end
+
+--- Remove vertices between (and including) two indexes
+--
+function Polygon:removeElementsBetween( fromIx, toIx )
+	local lastIx
+	if toIx < fromIx then
+		-- overflow case, going around the end of the table
+		lastIx = #self + toIx
+	else
+		lastIx = toIx
+	end
+	for ix = fromIx, lastIx do
+		table.remove( self, self:getIndex( fromIx ))
 	end
 end

@@ -128,6 +128,7 @@ function generateCourseForField( field, implementWidth, headlandSettings,
 			local distanceOfInnermostHeadlandFromBoundary = ( implementWidth - implementWidth * headlandSettings.overlapPercent / 100 ) * ( headlandSettings.nPasses - 1 ) + implementWidth / 2
 			field.headlandTracks[ headlandSettings.nPasses ] = calculateHeadlandTrack( field.boundary, headlandSettings.mode, distanceOfInnermostHeadlandFromBoundary,
 				minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, true, nil, nil )
+			roundCorners( field.headlandTracks[ headlandSettings.nPasses ], turnRadius )
 			previousTrack = field.headlandTracks[ headlandSettings.nPasses ]
 			startHeadlandPass = headlandSettings.nPasses - 1
 			endHeadlandPass = 1
@@ -158,7 +159,6 @@ function generateCourseForField( field, implementWidth, headlandSettings,
 				minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside,
 				centerSettings, j )
 			courseGenerator.debug( "Generated headland track #%d, area %1.f, clockwise = %s", j, field.headlandTracks[ j ].area, tostring( field.headlandTracks[ j ].isClockwise ))
-
 			-- check if the area within the last headland has a reasonable size
 			local minArea = 0.75 * width * field.headlandTracks[ j ].circumference / 2
 
@@ -312,22 +312,6 @@ function addWpsToReturnToFirstPoint( course, boundary )
 			path[ i ].returnToFirst = true -- just for debugging
 			path[ i ].isConnectingTrack = true -- so it'll raise implements when driving back
 			table.insert( course, path[ i ])
-		end
-	end
-end
-
-function addTurnsToCorners2( vertices, width, turnRadius, minHeadlandTurnAngle )
-	-- start at the second wp to avoid having the first waypoint a turn start,
-	-- that throws an nil in getPointDirection (due to the way calculatePolygonData
-	-- works, the prevEdge to the first point is bogus anyway)
-	local i = 2
-	while i < #vertices - 1 do
-		if vertices[ i ].passNumber then
-			-- only on headland
-			local nextIndex = addTurnInfo( vertices, i, turnRadius, minHeadlandTurnAngle )
-			i = nextIndex
-		else
-			i = i + 1
 		end
 	end
 end

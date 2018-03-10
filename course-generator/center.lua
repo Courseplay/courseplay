@@ -93,8 +93,8 @@ function findBestTrackAngle( polygon, islands, width, distanceFromBoundary, cent
 		-- sin( angle - BestDir ) will be 0 when angle is the closest.
 		local angleScore = 3 * math.abs( math.sin( getDeltaAngle( math.rad( angle ), math.rad( bestDirection ))))
 		score = 50 * smallBlockScore + 10 * #blocks + #tracks + angleScore
-		courseGenerator.debug( "Tried angle=%d, nBlocks=%d, smallBlockScore=%d, tracks=%d, score=%.1f",
-			angle, #blocks, smallBlockScore, #tracks, score)
+		--courseGenerator.debug( "Tried angle=%d, nBlocks=%d, smallBlockScore=%d, tracks=%d, score=%.1f",
+		--	angle, #blocks, smallBlockScore, #tracks, score)
 		table.insert( bestAngleStats, { angle=angle, nBlocks=#blocks, nTracks=#tracks, score=score, smallBlockScore=smallBlockScore })
 		if minScore > score then
 			minScore = score
