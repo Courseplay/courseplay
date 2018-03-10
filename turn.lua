@@ -728,7 +728,7 @@ function courseplay:turn(vehicle, dt)
 			if not moveForwards then
 				vehicle.nextMovingDirection = -1
 			else
-				vfehicle.nextMovingDirection = 1
+				vehicle.nextMovingDirection = 1
 			end
 		end
 
