@@ -1247,7 +1247,7 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger,stopOr
 		if coverType == 'defaultGiants' then
 			local isSprayer, isSowingMachine = courseplay:isSprayer(tipper), courseplay:isSowingMachine(tipper);
 			if (vehicle.cp.mode == 4 and tipper.fillTriggers[1] ~= nil)
-			or (vehicle.cp.mode == 1 and tipper.fillTriggers[1] ~= nil)
+			or (vehicle.cp.mode == 1 and tipper.fillTriggers and tipper.fillTriggers[1] ~= nil)
 			or (stopOrder and (isSprayer or isSowingMachine)) then
 				return
 			end
