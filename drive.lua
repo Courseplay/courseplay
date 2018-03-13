@@ -1154,54 +1154,6 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, disadleLongCheck)
 	end;
 end;
 
-
-function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
-	local ahead = false
-	local inQueue = false
-	local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
-	if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
-		local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId);
-		local tx, _, tz = worldToLocal(vehicle.cp.trafficCollisionTriggers[1], vx, vy, vz);
-		local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
-		local halfLength =  (collisionVehicle.sizeLength or 5) * 0.5;
-		local x1,z1 = AIVehicleUtil.getDriveDirection(vehicle.cp.collidingVehicleId, x, y, z);
-		if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
-			ahead = true
-		end;
-		local _,transY,_ = getTranslation(vehicle.cp.collidingVehicleId);
-		if (transY < 0 and collisionVehicle.rootNode == nil) or abs(tx) > 5 and collisionVehicle.rootNode ~= nil and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then
-			courseplay:debug(('%s: checkTraffic:\tcall deleteCollisionVehicle(), transY: %s, tx: %s, vehicle.cp.collidingObjects.all[Id]: %s'):format(nameNum(vehicle),tostring(transY),tostring(tx),tostring(vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId])), 3);
-			courseplay:deleteCollisionVehicle(vehicle);
-			return allowedToDrive;
-		end;
-
-		if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
-			-- courseplay:debug(('%s: checkTraffic:\tcall distance=%.2f'):format(nameNum(vehicle), tz-halfLength), 3);
-			if tz <= halfLength + 4 then --TODO: abs(tz) ?
-				allowedToDrive = false;
-				vehicle.cp.inTraffic = true;
-				courseplay:debug(('%s: checkTraffic:\tstop'):format(nameNum(vehicle)), 3);
-			elseif vehicle.cp.curSpeed > 10 then
-				-- courseplay:debug(('%s: checkTraffic:\tbrake'):format(nameNum(vehicle)), 3);
-				allowedToDrive = false;
-			else
-				-- courseplay:debug(('%s: checkTraffic:\tdo nothing - go, but set "vehicle.cp.isTrafficBraking"'):format(nameNum(vehicle)), 3);
-				vehicle.cp.isTrafficBraking = true;
-			end;
-		end;
-		local attacher
-		if collisionVehicle.getRootAttacherVehicle then
-			attacher = collisionVehicle:getRootAttacherVehicle()
-			inQueue = vehicle.cp.mode == 1 and vehicle.cp.waypointIndex == 1 and attacher.cp ~= nil and attacher.cp.isDriving and attacher.cp.mode == 1 and attacher.cp.waypointIndex == 2 
-		end		
-	end;
-
-	if displayWarnings and vehicle.cp.inTraffic and not inQueue then
-		CpManager:setGlobalInfoText(vehicle, 'TRAFFIC');
-	end;
-	return allowedToDrive;
-end
-
 function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	local newSpeed = math.max(refSpeed,3)	
 	if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
@@ -1273,50 +1225,7 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger,stopOr
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
 
-function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
-	if vehicle.cp.isTrafficBraking then
-		return refSpeed
-	end
-	if vehicle.cp.collidingVehicleId ~= nil then
-		local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId];
-		local vehicleBehind = false
-		if collisionVehicle == nil then
-			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed(1216):	setting vehicle.cp.collidingVehicleId nil",3)
-			courseplay:deleteCollisionVehicle(vehicle)
-			
-			vehicle.cp.collidingVehicleId = nil
-			vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles-1, 0);
-			return refSpeed
-		else
-			local name = getName(vehicle.cp.collidingVehicleId)
-			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed:	 "..tostring(name),3)
-		end
-		local x, y, z = getWorldTranslation(vehicle.cp.collidingVehicleId)
-		local x1, y1, z1 = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
-		if z1 < 0 or abs(x1) > 5 and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then -- vehicle behind tractor
-			vehicleBehind = true
-		end
-		local distance = 0
-		if collisionVehicle.rootNode ~= nil then
-			distance = courseplay:distanceToObject(vehicle, collisionVehicle)
-		end
-		if collisionVehicle.rootNode == nil or collisionVehicle.lastSpeedReal == nil or (distance > 40) or vehicleBehind then
-			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(vehicle),tostring(collisionVehicle.rootNode),tostring(collisionVehicle.lastSpeedReal),distance,tostring(vehicleBehind)),3)
-			courseplay:deleteCollisionVehicle(vehicle)
-			--courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed(1230):	setting vehicle.cp.collidingVehicleId nil",3)
-		
-		else
-			if allowedToDrive and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or collisionVehicle.cp.mode9TrafficIgnoreVehicle)) then
-				if vehicle.cp.curSpeed - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
-					vehicle.cp.TrafficBrake = true
-				else
-					return min(collisionVehicle.lastSpeedReal*3600,refSpeed)
-				end
-			end
-		end
-	end
-	return refSpeed
-end
+
 
 function courseplay:getIsVehicleOffsetValid(vehicle, isLoadUnloadWait)
 	local valid = (vehicle.cp.totalOffsetX ~= nil and vehicle.cp.toolOffsetZ ~= nil and (vehicle.cp.totalOffsetX ~= 0 or vehicle.cp.toolOffsetZ ~= 0))

@@ -86,6 +86,7 @@ local function initialize()
 		'toolManager',
 		'triggers', 
 		'turn',
+		'traffic',
 		'vehicles',
     'course-generator/courseGenerator',
     'course-generator/cp',

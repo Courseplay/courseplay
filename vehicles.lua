@@ -38,50 +38,7 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 	return node;
 end;
 
-function courseplay:deleteCollisionVehicle(vehicle)
-	if vehicle.cp.collidingVehicleId ~= nil  then
-		local Id = vehicle.cp.collidingVehicleId
-		if g_currentMission.nodeToVehicle[Id] and g_currentMission.nodeToVehicle[Id].isCpPathvehicle  then
-			g_currentMission.nodeToVehicle[Id] = nil
-		end
-		vehicle.cp.collidingObjects.all[Id] = nil
-		vehicle.cp.collidingObjects[4][Id] = nil
-		
-		courseplay:debug(string.format('%s: 	deleteCollisionVehicle: checking vehicle.cp.collidingObjects.all ', nameNum(vehicle)), 3);
-		local foundOtherId = false
-		local distanceToCollisionVehicle = math.huge
-		local nextCollisionVehicleID = 0
-		for index,_ in pairs(vehicle.cp.collidingObjects.all) do
-			courseplay:debug(string.format('%s: 	deleteCollisionVehicle:also colliding is %s', nameNum(vehicle),tostring(index)), 3);
-			if vehicle.cpTrafficCollisionIgnoreList[index] == nil then
-				foundOtherId = true
-				local collisionVehicle = g_currentMission.nodeToVehicle[index];
-				if not collisionVehicle then
-					courseplay:debug(string.format('%s: 	deleteCollisionVehicle: collisionVehicle is nil', nameNum(vehicle)), 3);
-					return
-				end
-				local distanceToCollisionVehiclefromList = courseplay:distanceToObject(vehicle, collisionVehicle)
-				if distanceToCollisionVehiclefromList < distanceToCollisionVehicle then
-					distanceToCollisionVehicle = distanceToCollisionVehiclefromList
-					nextCollisionVehicleID = index
-					courseplay:debug(string.format('%s: 	deleteCollisionVehicle:its closer', nameNum(vehicle)), 3);
-				end
-			else
-				courseplay:debug(string.format('%s: 	deleteCollisionVehicle:%s is on ignoreList so ignore it', nameNum(vehicle),tostring(index)), 3);
-			end
-		end
-		--vehicle.CPnumCollidingVehicles = max(vehicle.CPnumCollidingVehicles - 1, 0);
-		--if vehicle.CPnumCollidingVehicles == 0 then
-		--vehicle.numCollidingVehicles[triggerId] = max(vehicle.numCollidingVehicles[triggerId]-1, 0);
-		if foundOtherId then
-			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: next "self.cp.collidingVehicleId " is %s', nameNum(vehicle),tostring(nextCollisionVehicleID)), 3);
-			vehicle.cp.collidingVehicleId = nextCollisionVehicleID;
-		else
-			vehicle.cp.collidingVehicleId = nil
-			courseplay:debug(string.format('%s: 	deleteCollisionVehicle: setting "self.cp.collidingVehicleId" to nil', nameNum(vehicle)), 3);
-		end
-	end
-end
+
 
 function courseplay:disableCropDestruction(vehicle)
 	-- Make sure we have the cp table

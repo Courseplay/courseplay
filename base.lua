@@ -356,7 +356,6 @@ function courseplay:load(savegame)
 		self.cp.steeringAngle = self.cp.steeringAngle * self.cp.steeringAngleMultiplier;
 	end;
 	self.cp.tempCollis = {}
-	self.CPnumCollidingVehicles = 0;
 	self.cpTrafficCollisionIgnoreList = {};
 	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
