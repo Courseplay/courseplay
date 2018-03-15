@@ -373,7 +373,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	courseplay:debug(('%s: adding %q (%q) to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);
 	vehicle.cpTrafficCollisionIgnoreList[workTool.rootNode] = true;
 	-- TRAFFIC COLLISION IGNORE LIST (components)
-	if not isImplement or workTool.cp.hasSpecializationCutter then
+	if workTool.components ~= nil then
 		courseplay:debug(('%s: adding %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);
 		for i,component in pairs(workTool.components) do
 			vehicle.cpTrafficCollisionIgnoreList[component.node] = true;
