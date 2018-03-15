@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="37">
-	<version>5.02.00065</version>
+	<version>5.02.00066</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -23,6 +23,7 @@
 	
 	<changeLog><![CDATA[
 
+  - added support for ROPA DLC
   - new traffic recognition system
   - fieldwork row direction can also be selected manually now  
   - support for big islands

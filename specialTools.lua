@@ -214,6 +214,11 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.pipeSide = 1;
 		workTool.cp.ridgeMarkerIndex = 6;
+	elseif workTool.cp.xmlFileName == 'ropaTiger6.xml' then 
+		workTool.cp.isRopaTiger6 = true;
+		workTool.cp.isHarvesterSteerable = true;
+		workTool.cp.useCrabSteeringMode = 1;
+		
 		
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
 		workTool.cp.isHolmerHR9 = true;
@@ -222,6 +227,14 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHolmerTerraFelis2 = true;
 		workTool.cp.isSugarBeetLoader = true
 
+	elseif workTool.cp.xmlFileName ==  'ropaMaus5.xml' then
+		workTool.cp.isRopaMaus5 = true;
+		workTool.cp.isSugarBeetLoader = true
+
+	elseif workTool.cp.xmlFileName ==  'ropaNawaRoMaus.xml' then
+		workTool.cp.isRopaNawaRoMaus = true;
+		workTool.cp.isSugarBeetLoader = true
+		
 	elseif workTool.cp.xmlFileName ==  'CaseIHA8800MR.xml' then
 		workTool.cp.isCaseIHA8800MR = true;
 		workTool.cp.fixedCombineOffset = 5.3
@@ -238,6 +251,12 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.fixedChopperOffset = -4.5
 		workTool.cp.specialWorkWidth = 2.9
 	
+	elseif workTool.cp.xmlFileName == 'ropaKeiler2.xml' then
+		workTool.cp.isRopaKeiler2 = true;
+		workTool.cp.isHarvesterAttachable = true;
+		--workTool.cp.notToBeReversed = true;
+		workTool.cp.fixedCombineOffset = 5.5
+			
 	elseif workTool.cp.xmlFileName == 'grimmeSE260.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
@@ -882,6 +901,9 @@ function courseplay:askForSpecialSettings(self, object)
 		object.cp.specialUnloadDistance = -1.8;
 		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
 
+	elseif object.cp.isRopaKeiler2 then	
+		automaticToolOffsetX = -2; -- ToolOffsetX is 2 meters to the left
+		
 	elseif object.cp.isArcusinFSX6372 then
 		object.cp.specialUnloadDistance = -3.8;
 		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
@@ -991,12 +1013,7 @@ end
 function courseplay:getSpecialWorkWidth(workTool)
 	local specialWorkWidth;
 	if workTool.cp then
-		if workTool.cp.isGrimmeRootster604 
-		or workTool.cp.isGrimmeSE260
-		or workTool.cp.isKuhnTF1500
-		or workTool.cp.isGregoireBessonSPSL9 then
-			specialWorkWidth = workTool.cp.specialWorkWidth;
-		end
+		specialWorkWidth = workTool.cp.specialWorkWidth;
 	end;
 
 	-- Debug Prints

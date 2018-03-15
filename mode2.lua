@@ -244,8 +244,8 @@ function courseplay:handle_mode2(vehicle, dt)
 						if combine.acParameters ~= nil and combine.acParameters.enabled and combine.isHired and fillLevel >= 0.99*capacity and not combine.cp.isDriving then --AC stops at 99% fillLevel so we have to set this as full
 							combine.cp.wantsCourseplayer = true
 						end
-						if (fillLevel >= (capacity * vehicle.cp.followAtFillLevel / 100)) or capacity == 0 or combine.cp.wantsCourseplayer then
-							if capacity == 0 then
+						if (fillLevel >= (capacity * vehicle.cp.followAtFillLevel / 100)) or capacity == 0 or combine.cp.wantsCourseplayer or combine.cp.isSugarBeetLoader then
+							if capacity == 0 or combine.cp.isSugarBeetLoader then
 								if combine.courseplayers == nil then
 									vehicle.cp.bestCombine = combine
 								else
@@ -617,7 +617,7 @@ function courseplay:unload_combine(vehicle, dt)
 			vehicle.cp.nextTargets = {}
 		end
 
-		if (not combine.cp.isChopper or combine.haeckseldolly) and (combineFillLevel < 1 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !
+		if not combine.cp.isSugarBeetLoader and (not combine.cp.isChopper or combine.haeckseldolly) and (combineFillLevel < 1 or vehicle.cp.forceNewTargets) then --combine empty set waypoints on the field !
 			if combine.cp.offset == nil then
 				--print("saving offset")
 				combine.cp.offset = vehicle.cp.combineOffset;
@@ -1440,7 +1440,7 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis) --TODO (Jakob): theoretically not needed, as it's being dealt with in getSpecialCombineOffset()
 	elseif vehicle.cp.combineOffsetAutoMode and combine.cp.isSugarBeetLoader then
-		local utwX,utwY,utwZ = getWorldTranslation(combine.unloadingTrigger.node);
+		local utwX,utwY,utwZ = getWorldTranslation(combine.pipeRaycastNode or combine.unloadingTrigger.node);
 		local combineToUtwX,_,combineToUtwZ = worldToLocal(combineDirNode, utwX,utwY,utwZ);
 		offs = combineToUtwX;
 

@@ -547,16 +547,24 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					tool.cp.wantsCourseplayer = true
 				end
 			end
-
-			if tool.cp.isCombine and isTurnedOn and tool.cp.fillLevelPercent >80  or ((pipeState > 0 or courseplay:isAttachedCombine(workTool))and not courseplay:isSpecialChopper(workTool))then
-				tool:setPipeState(2)
-				if tool.setOverloadingActive  and tool.getIsPipeUnloadingAllowed then
-					if tool:getIsPipeUnloadingAllowed() then
-						tool:setOverloadingActive(true);
-					end
+			if tool.cp.isRopaKeiler2 then  -- quick and dirty fix, no time to waste
+				if (tool.cp.fillLevelPercent > 20 and  pipeState == 2) or tool.cp.fillLevelPercent >= 100 then
+					tool:setPipeState(2)
+					allowedToDrive = false
+				elseif (tool.cp.fillLevelPercent == 0 and pipeState == 2) or pipeState == 0  then
+					tool:setPipeState(1)
 				end
-			elseif  pipeState == 0 and tool.cp.isCombine and tool.cp.fillLevel < tool.cp.capacity and workArea then
-				tool:setPipeState(1)
+			else
+				if tool.cp.isCombine and isTurnedOn and tool.cp.fillLevelPercent >80  or ((pipeState > 0 or courseplay:isAttachedCombine(workTool))and not courseplay:isSpecialChopper(workTool))then
+					tool:setPipeState(2)
+					if tool.setOverloadingActive  and tool.getIsPipeUnloadingAllowed then
+						if tool:getIsPipeUnloadingAllowed() then
+							tool:setOverloadingActive(true);
+						end
+					end
+				elseif  pipeState == 0 and tool.cp.isCombine and tool.cp.fillLevel < tool.cp.capacity and workArea then
+					tool:setPipeState(1)
+				end
 			end
 			if tool.cp.waitingForTrailerToUnload then
 				local mayIDrive = false;
