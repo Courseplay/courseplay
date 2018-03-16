@@ -276,7 +276,7 @@ function courseplay:handle_mode2(vehicle, dt)
 						-- experimental script for big fields
 						-- checks the time needed to reach combine in time and start earlier if it's time to
 						-- it's not a precise calculation but it should work somehow... (calculating the true path to all combines every 5 sec is too expensive)
-						elseif combine.cp.fillLitersPerSecond then
+						elseif combine.cp.fillLitersPerSecond and not combine.cp.driverPriorityUseFillLevel then
 								local distanceToCombine = courseplay:distanceToObject(vehicle, combine);
 								local capacity = combine:getUnitCapacity(combine.overloading.fillUnitIndex)
 								local fillLevel = combine:getUnitFillLevel(combine.overloading.fillUnitIndex)
