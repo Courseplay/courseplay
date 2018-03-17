@@ -67,8 +67,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			for triggerNumber =1,4 do
 				print(string.format("     self.cp.collidingObjects[%d]:",triggerNumber))
 				for otherID,_ in pairs (self.cp.collidingObjects[triggerNumber]) do
-					print(string.format("       [%d](%s)",otherID,tostring(getName(otherID))))
-				
+					print(string.format("       [%d]",otherID))
 				end
 				print("______________")
 			end
@@ -77,7 +76,17 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	end
 end
 
-
+function courseplay:removeInvalidID(self,otherId)
+	courseplay:debug(string.format("   deleting %d from triggers because the object is not valid",otherId), 3);
+	if self.cp.collidingObjects.all[otherId] then
+		self.cp.collidingObjects.all[otherId] = nil
+	end
+	for triggerNumber =1,4 do
+		if self.cp.collidingObjects[triggerNumber][otherId] then 
+			self.cp.collidingObjects[triggerNumber][otherId] = nil;
+		end
+	end
+end
 
 function courseplay:updateCollisionVehicle(vehicle)
 	courseplay:debug(string.format("%s:updateCollisionVehicle:", nameNum(vehicle)), 3);	
@@ -159,6 +168,11 @@ function courseplay:updateCollisionVehicle(vehicle)
 						distanceToCollisionVehicle = distance
 						currentCollisionVehicleId = otherId;
 					end
+				else 
+					-- experimental script: if we don't need this ID, we can remove it from triggers
+					-- this is to prevent crash by bales in trigger which are been destroyed
+					-- let's see, which obstacles or vehicles we miss with this action				
+					courseplay:removeInvalidID(vehicle,otherId);
 				end;
 			
 			end
