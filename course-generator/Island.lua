@@ -443,46 +443,49 @@ function Island.circleBigIslands( course, islands, headlandFirst, width, minSmoo
 	local found = false
 	while i ~= last and not found do
 		for _, island in ipairs( islands ) do
-			local adjacent = course[ i ].passNumber or island:adjacentTo( course[ i ])
-			local headlandPath = island:getHeadlandPath( course[ i ], adjacent and width or width / 2 , width, minSmoothAngle, maxSmoothAngle )
-			if headlandPath then
-				if not adjacent then
-					-- we are not on a headland or a track adjacent (not intersecting) the island
-					-- so we are on an up/down row which ends in a turn in front of the island.
-					-- so instead of just doing a  turn here we'll drive around the island on the headland
-					-- although we are close to the island, we may not be at the turn start wp yet, so 
-					-- continue forward until we find it.
-					course[ i ].text = "Beforeskip"
-					i = skipToTurnStart( course, i, step )
-					course[ i ].text = "Afterskip"
-					-- make sure we don't insert anything between a turn start and turn end
-					removeTurn( course, i, step )
-				else
-					-- we are on a track or headland adjacent to the island. 
-					-- TODO: continue on the track for a few waypoints straight and then reverse back before
-					-- switching to the headland track.
-					-- TODO: if this is a reverse course (headland last) then back up a bit 
-				end
-				-- now add a little piece to back up so it is easier to return to the up/down row.
-				local backupDistance = 0
-				local ix = #headlandPath - 1
-				while backupDistance < width * 10 and not inFrontOf( course[ i + 1 ], headlandPath[ ix ]) do
+			if not island.hasHeadlandPath then
+				-- does not yet have a path around it
+				local adjacent = course[ i ].passNumber or island:adjacentTo( course[ i ])
+				local headlandPath = island:getHeadlandPath( course[ i ], adjacent and width or width / 2 , width, minSmoothAngle, maxSmoothAngle )
+				if headlandPath then
+					if not adjacent then
+						-- we are not on a headland or a track adjacent (not intersecting) the island
+						-- so we are on an up/down row which ends in a turn in front of the island.
+						-- so instead of just doing a  turn here we'll drive around the island on the headland
+						-- although we are close to the island, we may not be at the turn start wp yet, so
+						-- continue forward until we find it.
+						course[ i ].text = "Beforeskip"
+						i = skipToTurnStart( course, i, step )
+						course[ i ].text = "Afterskip"
+						-- make sure we don't insert anything between a turn start and turn end
+						removeTurn( course, i, step )
+					else
+						-- we are on a track or headland adjacent to the island.
+						-- TODO: continue on the track for a few waypoints straight and then reverse back before
+						-- switching to the headland track.
+						-- TODO: if this is a reverse course (headland last) then back up a bit
+					end
+					-- now add a little piece to back up so it is easier to return to the up/down row.
+					local backupDistance = 0
+					local ix = #headlandPath - 1
+					while backupDistance < width * 10 and not inFrontOf( course[ i + 1 ], headlandPath[ ix ]) do
+						addReverseWpToHeadlandPath( headlandPath, ix )
+						backupDistance = backupDistance + headlandPath[ ix ].prevEdge.length
+						ix = ix - 1
+					end
 					addReverseWpToHeadlandPath( headlandPath, ix )
-					backupDistance = backupDistance + headlandPath[ ix ].prevEdge.length
-					ix = ix - 1
-				end
-				addReverseWpToHeadlandPath( headlandPath, ix )
-				course[ i + 1 ].text = "target"
-				headlandPath[ ix ].text = "#headland"
-				newWp = copyPoint( headlandPath[ #headlandPath ])
-				newWp.x, newWp.y = getPointInTheMiddle( headlandPath[ #headlandPath ], course[ i + 1 ])
-				newWp.rev = false
-				table.insert( headlandPath, newWp )
+					course[ i + 1 ].text = "target"
+					headlandPath[ ix ].text = "#headland"
+					local newWp = copyPoint( headlandPath[ #headlandPath ])
+					newWp.x, newWp.y = getPointInTheMiddle( headlandPath[ #headlandPath ], course[ i + 1 ])
+					newWp.rev = false
+					table.insert( headlandPath, newWp )
 
-				for j = 1, #headlandPath do
-					table.insert( course, i + j, headlandPath[ j ])
+					for j = 1, #headlandPath do
+						table.insert( course, i + j, headlandPath[ j ])
+					end
+					island.hasHeadlandPath = true
 				end
-				found = true
 			end
 		end
 		i = i + step

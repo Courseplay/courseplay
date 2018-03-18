@@ -185,7 +185,7 @@ function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, n
 	-- Now we have to connect the first block with the end of the headland track
 	-- and then connect each block so we cover the entire polygon.
 	math.randomseed( courseGenerator.getCurrentTime())
-	local blocksInSequence = findBlockSequence( blocks, rotatedBoundary, polygon.circleStart, polygon.circleStep)
+	local blocksInSequence = findBlockSequence( blocks, rotatedBoundary, polygon.circleStart, polygon.circleStep, nHeadlandPasses )
 	local workedBlocks = linkBlocks( blocksInSequence, rotatedBoundary, polygon.circleStart, polygon.circleStep)
 
 	-- workedBlocks has now a the list of blocks we need to work on, including the track
@@ -850,7 +850,7 @@ end
 -- to allow for automatic tests.
 -- headland is the innermost headland pass.
 --
-function findBlockSequence( blocks, headland, circleStart, circleStep )
+function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadlandPasses )
 	-- GA parameters, depending on the number of blocks
 	local maxGenerations = 10 * #blocks
 	local tournamentSize = 5
@@ -876,7 +876,12 @@ function findBlockSequence( blocks, headland, circleStart, circleStep )
 				-- TODO: this table comparison assumes the intersections were found on the same exact
 				-- table instance as this upvalue headland. Ugly, should use some headland ID instead
 				if headland == currentBlockEntryPoint.headland then
-					distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { circleStep } )
+					if nHeadlandPasses > 0 then
+						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { circleStep } )
+					else
+						-- if ther's no headland, look for the closest point no matter what direction (as we can ignore the clockwise/ccw settings)
+						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { -1, 1 } )
+					end
 					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = chromosome.distance + distance, dir
 				else
 					-- this block's entry point is not on the innermost headland (may be on an island)
