@@ -1741,11 +1741,15 @@ end
 
 
 function courseplay:onWhichFieldAmI(vehicle)
+	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
+	return courseplay:getFieldNumForPosition( positionX, positionZ )
+end
+
+function courseplay:getFieldNumForPosition( positionX, positionZ )
 	local fieldNum = 0;
-	local postionX,_,postionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
 	for index, field in pairs(courseplay.fields.fieldData) do
-		if postionX >= field.dimensions.minX and postionX <= field.dimensions.maxX and postionZ >= field.dimensions.minZ and postionZ <= field.dimensions.maxZ then	
-			local _, pointInPoly, _, _ = courseplay.fields:getPolygonData(field.points, postionX, postionZ, true, true, true);
+		if positionX >= field.dimensions.minX and positionX <= field.dimensions.maxX and positionZ >= field.dimensions.minZ and positionZ <= field.dimensions.maxZ then
+			local _, pointInPoly, _, _ = courseplay.fields:getPolygonData(field.points, positionX, positionZ, true, true, true);
 			if pointInPoly then
 				fieldNum = index
 				break

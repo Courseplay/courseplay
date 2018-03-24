@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUIProfiles>
+
+	<Profile name="cpSettingsBox" parent="settingsBox">
+		<Value name="size" value="253px 400px"/>
+	</Profile>
+
+	<Profile name="cpMultiTextOption" parent="multiTextOption">
+		<Value name="doLockingOnFocus" value="true" />
+		<Value name="position" value="0px 20px" />
+		<Value name="size" value="253px 24px" />
+		<Value name="margin" value="0px 25px 0px 14px" />
+	</Profile>
+
+	<Profile name="cpMultiTextOptionTitle" parent="multiTextOptionTitle">
+		<Value name="textSize" value="16px"/>
+	</Profile>
+
+	<Profile name="cpMultiTextOptionLeft" parent="multiTextOptionLeft">
+		<Value name="size" value="24px 24px" />
+		<Value name="position" value="0px 0px" />
+		<Value name="iconUVs" value="535px 989px 27px 27px" />
+		<Value name="iconSize" value="14px 14px"/>
+		<Value name="iconTextOffset" value="28px -10px"/>
+		<Value name="iconRotation" value="180"/>
+	</Profile>
+
+	<Profile name="cpMultiTextOptionRight" parent="cpMultiTextOptionLeft">
+		<Value name="screenAlign" value="bottomRight" />
+		<Value name="positionOrigin" value="bottomRight" />
+		<Value name="iconRotation" value="0"/>
+		<Value name="iconTextOffset" value="27px -10px"/>
+	</Profile>
+
+	<Profile name="cpMultiTextOptionBg" parent="multiTextOptionBg">
+		<Value name="position" value="24px 0px" />
+		<Value name="size" value="205px 24px" />
+	</Profile>
+	
+	<Profile name="cpMultiTextOptionText" parent="multiTextOptionText">
+		<Value name="textSize" value="14px"/>
+		<Value name="position" value="0px 6px" />
+		<Value name="textMaxWidth" value="205px"/>
+	</Profile>
+
+</GUIProfiles>

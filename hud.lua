@@ -306,6 +306,7 @@ function courseplay.hud:setup()
 		headlandOrdBef     = { 112,288, 176,256 };
 		headlandOrdAft     = { 184,288, 248,256 };
 		generateCourse     = {  40, 72,  72, 40 };
+		courseGenSettings  = { 220, 36, 252,  4 }; -- same as settings cogwheel for now
 		navUp              = {  76,216, 108,184 };
 		navDown            = { 112,216, 144,184 };
 		navLeft            = {   4,216,  36,184 };
@@ -1214,7 +1215,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		end
 		-- only allow for the new course generator
 		if vehicle.cp.headland.exists() and vehicle.cp.isNewCourseGenSelected() then
-			vehicle.cp.hud.content.pages[8][6][2].text = courseplay:loc( courseplay.turnTypeText[ vehicle.cp.headland.turnType ])
+			vehicle.cp.hud.content.pages[8][6][2].text = courseplay:loc( courseplay.cornerTypeText[ vehicle.cp.headland.turnType ])
 		else
 			vehicle.cp.hud.content.pages[8][6][2].text = '---'
 		end
@@ -1844,6 +1845,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- generation action button
 	local toolTip = courseplay:loc('COURSEPLAY_GENERATE_FIELD_COURSE');
 	vehicle.cp.hud.generateCourseButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'generateCourse' }, 'generateCourse', nil, topIconsX[2], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, toolTip);
+
+	toolTip = courseplay:loc('COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS');
+	vehicle.cp.hud.advancedCourseGeneratorSettingsButton =
+		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'courseGenSettings' }, 'openAdvancedCourseGeneratorSettings', nil, topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, toolTip);
+
 
 	-- Clear current course
 	vehicle.cp.hud.clearCurrentCourseButton8 = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));

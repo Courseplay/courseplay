@@ -1,4 +1,5 @@
 local curFile = 'settings.lua';
+
 local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 
 function courseplay:openCloseHud(vehicle, open)
@@ -182,6 +183,7 @@ function courseplay:setHudPage(vehicle, pageNum)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 
 	courseplay.buttons:setActiveEnabled(vehicle, "all");
+
 end;
 
 function courseplay:changeCombineOffset(vehicle, changeBy)
@@ -1104,6 +1106,10 @@ function courseplay:switchStartingCorner(vehicle)
 	if newStartingCorner > courseGenerator.STARTING_LOCATION_MAX then
 		newStartingCorner = courseGenerator.STARTING_LOCATION_MIN
 	end;
+	self:setStartingCorner( vehicle, newStartingCorner )
+end
+
+function courseplay:setStartingCorner( vehicle, newStartingCorner )
 	vehicle.cp.startingCorner = newStartingCorner
 	vehicle.cp.hasStartingCorner = true;
 	if vehicle.cp.isNewCourseGenSelected() then
@@ -1120,6 +1126,10 @@ function courseplay:switchStartingCorner(vehicle)
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 
+function courseplay:setRowDirectionMode( vehicle, newRowDirectionMode )
+	vehicle:setCpVar('rowDirectionMode', newRowDirectionMode, courseplay.isClient);
+	vehicle:setCpVar('startingDirection', newRowDirectionMode, courseplay.isClient);
+end
 
 function courseplay:changeRowAngle( vehicle, changeBy )
 	if vehicle.cp.startingDirection == courseGenerator.ROW_DIRECTION_MANUAL then

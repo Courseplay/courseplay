@@ -1,16 +1,21 @@
 --- Setting up packages
 courseGenerator = {}
 
+local modDirectory = g_currentModDirectory
+
 -- Distance of waypoints on the generated track in meters
 courseGenerator.waypointDistance = 5
 
+-- These numbers must match the COURSEPLAY_DIRECTION_* texts in the translation files
 courseGenerator.ROW_DIRECTION_NORTH = 1
 courseGenerator.ROW_DIRECTION_EAST = 2
 courseGenerator.ROW_DIRECTION_SOUTH = 3
 courseGenerator.ROW_DIRECTION_WEST = 4
+courseGenerator.ROW_DIRECTION_MIN = 5
 courseGenerator.ROW_DIRECTION_AUTOMATIC = 5
 courseGenerator.ROW_DIRECTION_LONGEST_EDGE = 6
 courseGenerator.ROW_DIRECTION_MANUAL = 7
+courseGenerator.ROW_DIRECTION_MAX = 7
 
 courseGenerator.trackDirectionRanges = {
 	{ angle =  0  },
@@ -45,6 +50,7 @@ courseGenerator.STARTING_LOCATION_SW_LEGACY = 1
 courseGenerator.STARTING_LOCATION_NW_LEGACY = 2
 courseGenerator.STARTING_LOCATION_NE_LEGACY = 3
 courseGenerator.STARTING_LOCATION_SE_LEGACY = 4
+courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN = 5
 courseGenerator.STARTING_LOCATION_VEHICLE_POSITION = 5
 courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION = 6
 courseGenerator.STARTING_LOCATION_SW = 7
@@ -53,15 +59,18 @@ courseGenerator.STARTING_LOCATION_NE = 9
 courseGenerator.STARTING_LOCATION_SE = 10
 courseGenerator.STARTING_LOCATION_MAX = 10
 
--- fieldwowrk modes
+-- headland modes
+courseGenerator.HEADLAND_MODE_MIN = 1
+courseGenerator.HEADLAND_MODE_NONE = 1
 -- 0-n headland rows all around the field and up/down rows in the middle
-courseGenerator.HEADLAND_MODE_NORMAL = 1
+courseGenerator.HEADLAND_MODE_NORMAL = 2
 -- 0-n headland rows on the short edge, maximum possible number of
 -- headland rows on the long edge covering the entire field, now up/down rows
 -- in the middle.
-courseGenerator.HEADLAND_MODE_NARROW_FIELD = 2
+courseGenerator.HEADLAND_MODE_NARROW_FIELD = 3
 -- 0-n headland rows on two opposite ends of the field, up/down rows between.
-courseGenerator.HEADLAND_MODE_TWO_SIDE = 3
+courseGenerator.HEADLAND_MODE_TWO_SIDE = 4
+courseGenerator.HEADLAND_MODE_MAX = 3
 
 function courseGenerator.isOrdinalDirection( startingLocation )
 	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and
@@ -196,3 +205,16 @@ end
 function courseGenerator.getCompassAngleDeg( gameAngleDeg )
 	return ( 360 + gameAngleDeg - 90 ) % 360
 end
+
+-- It is ugly to have a courseplay member function in this file but button.lua seems to be able to
+-- use callbacks only if they are in the courseplay class.
+function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
+	if g_courseGeneratorScreen == nil then
+		g_courseGeneratorScreen = courseGeneratorScreen:new();
+		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
+		g_gui:loadGui( modDirectory .. "course-generator/courseGeneratorScreen.xml", "courseGeneratorScreen", g_courseGeneratorScreen)
+	end
+	g_courseGeneratorScreen:setVehicle( vehicle )
+	g_gui:showGui( 'courseGeneratorScreen' )
+end
+

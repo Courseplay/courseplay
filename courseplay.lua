@@ -89,6 +89,7 @@ local function initialize()
 		'traffic',
 		'vehicles',
     'course-generator/courseGenerator',
+    'course-generator/courseGeneratorScreen',
     'course-generator/cp',
 	'course-generator/Genetic',	
     'course-generator/track',
@@ -226,7 +227,7 @@ local function setGlobalData()
 	courseplay.HEADLAND_CORNER_TYPE_ROUND = 3
 	courseplay.HEADLAND_CORNER_TYPE_MAX = 2
 
-	courseplay.turnTypeText = {
+	courseplay.cornerTypeText = {
 		'COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH',
 		'COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP',
 		'COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND' }

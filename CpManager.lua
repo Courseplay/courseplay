@@ -3,7 +3,7 @@ CpManager = {};
 local CpManager_mt = Class(CpManager);
 addModEventListener(CpManager);
 
-
+local modDirectory = g_currentModDirectory
 
 function CpManager:loadMap(name)
 	self.isCourseplayManager = true;

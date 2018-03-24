@@ -159,6 +159,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD表示方法" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="デバグチャンネル" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="コース作成" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="開始地点" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="終了地点" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="開始方向" />
@@ -173,6 +174,14 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="小さな畑" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="North" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" />
