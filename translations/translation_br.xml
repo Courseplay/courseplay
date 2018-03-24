@@ -52,6 +52,7 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s para salvar pasta" />		
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s para salvar rotas" />		
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Rotas: %q" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Carregar rota/mesclar na rota carragada" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Adicionar rota no final" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover para pasta" />
