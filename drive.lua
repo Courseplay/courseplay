@@ -159,8 +159,9 @@ function courseplay:drive(self, dt)
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
-
-	courseplay:debug(('ctx=%.2f, ctz=%.2f, cx=%.2f, cz=%.2f, distanceToTarget=%.2f'):format(ctx, ctz, cx, cz, self.cp.distanceToTarget), 2);
+	
+	--This is the wrong debug channel please place this in the right channel Pops64 writtne on version 05.02.069
+	--courseplay:debug(('ctx=%.2f, ctz=%.2f, cx=%.2f, cz=%.2f, distanceToTarget=%.2f'):format(ctx, ctz, cx, cz, self.cp.distanceToTarget), 2);
 	local fwd;
 	local distToChange;
 
