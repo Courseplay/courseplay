@@ -5,7 +5,7 @@
 		<text name="COURSEPLAY_DRIVER" 									 text="Транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Отправить транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Остановить транспорт" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в последней точке или триггере:" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Остановиться в последней точке/триггере:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Выполнить количество рейсов" />
 		<text name="COURSEPLAY_UNLIMITED" 								 text="неограниченно" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Водительская сторона" />
