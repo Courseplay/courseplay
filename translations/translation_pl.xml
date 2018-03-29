@@ -173,7 +173,7 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Północny-Zachód (nowy)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Północny-Wschód (nowy)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Południowy-Wschód (nowy)" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Ku środkowi" />
 		<text name="COURSEPLAY_DIRECTION_1"								 text="Północ" />
 		<text name="COURSEPLAY_DIRECTION_2"								 text="Wschód" />
 		<text name="COURSEPLAY_DIRECTION_3"								 text="Południe" />
