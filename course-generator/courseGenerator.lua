@@ -209,12 +209,14 @@ end
 -- It is ugly to have a courseplay member function in this file but button.lua seems to be able to
 -- use callbacks only if they are in the courseplay class.
 function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
-	if g_courseGeneratorScreen == nil then
-		g_courseGeneratorScreen = courseGeneratorScreen:new();
+	local filePath = courseplay.path .. 'course-generator/CoursePlot' .. '.lua';
+	source(filePath);
+	if g_CourseGeneratorScreen == nil then
+		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
 		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
-		g_gui:loadGui( modDirectory .. "course-generator/courseGeneratorScreen.xml", "courseGeneratorScreen", g_courseGeneratorScreen)
+		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
 	end
-	g_courseGeneratorScreen:setVehicle( vehicle )
-	g_gui:showGui( 'courseGeneratorScreen' )
+	g_CourseGeneratorScreen:setVehicle( vehicle )
+	g_gui:showGui( 'CourseGeneratorScreen' )
 end
 
