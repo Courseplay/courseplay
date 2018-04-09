@@ -78,14 +78,14 @@
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Избегать движения по посевам:" />
 		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Плуг за границы поля" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Выровнять по 1-й точке:" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Правее/левее:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Поперечное смещение:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Внутренний разворот:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"					 text="Обрат. напр. разворота:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"					 text="последняя пара проходов" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"				 text="когда возможно" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Радиус поворота:" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Вперед/назад:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Продольное смещение:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Комбайн" />
 		<text name="COURSEPLAY_NONE" 									 text="отсутствует" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 							 text="Выбрать:" />
@@ -159,7 +159,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Открыть Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Режимы отладки:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="ГЕНЕРАЦИЯ МАРШРУТА" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Расширенные настройки генератора курсов" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Точка старта:" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Точка финиша:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Направление:" />
@@ -194,14 +194,14 @@
 		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="ЮЮЗ"/>
 		<text name="COURSEPLAY_DIRECTION_SW" 							 text="ЮЗ"/>
 		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="ЗЮЗ"/>
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Начать работу с" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Основного маршрута" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Проходов поворотной полосы" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Углы поворотной полосы" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="по часовой" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="против часовой" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="нет" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="По кругу" />
 		<text name="COURSEPLAY_DIRECTION_W" 							 text="З"/>
 		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="ЗСЗ"/>
 		<text name="COURSEPLAY_DIRECTION_NW" 							 text="СЗ"/>
@@ -263,7 +263,7 @@
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 					 text="начальная обработка" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 						 text="СКАНИРОВАНИЕ ПОЛЕЙ %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 							 text="Не могу найти" />
-		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Симметрично:" />
+		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 					 text="Симметричная смена проходов:" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 				 text="Приоритет:" />
 		<text name="COURSEPLAY_FILLEVEL" 								 text="загруженность" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 							 text="погрузка остановлена" />
