@@ -94,88 +94,87 @@ function courseplay:updateCollisionVehicle(vehicle)
 	--check all triggers and see, what we have
 	local currentCollisionVehicleId = nil
 	local distanceToCollisionVehicle = huge
-	
+		
 	for otherId,_ in pairs (vehicle.cp.collidingObjects.all) do
 		--ignore objects on list
-		local parent = getParent(otherId);
-		courseplay:debug(string.format("%s:  checking CollisionIgnoreList for %d", nameNum(vehicle),otherId), 3);
-		if CpManager.trafficCollisionIgnoreList[otherId] then
-			courseplay:debug(string.format("  is on global list ->ignore"), 3);
-		elseif CpManager.trafficCollisionIgnoreList[parent] then
-			courseplay:debug(string.format("  parent is on global list ->ignore"), 3);
-		elseif vehicle.cpTrafficCollisionIgnoreList[otherId] then
-			courseplay:debug(string.format("  is on local list ->ignore"), 3);	
-		elseif vehicle.cpTrafficCollisionIgnoreList[parent] then
-			courseplay:debug(string.format("  parent is on local list ->ignore"), 3);	
-		else
-			courseplay:debug(string.format("  is not on CollisionIgnoreList"), 3);
-			local collisionVehicle = g_currentMission.nodeToVehicle[otherId];
-			if (collisionVehicle ~= nil and collisionVehicle.isTrafficLightStopper) --we already had it and marked it
-			or getName(otherId) == "AITrafficStopCanBeMoved"  -- Traffic Light System by Blacky_BPG (WasselMap)
-			or (collisionVehicle ~= nil and collisionVehicle.rootNode == nil) then
-				--is it a traffic light ?
-				local _,translationY,_ = getTranslation(otherId);
-				if collisionVehicle == nil then
-					local trafficLight = {}
-					trafficLight.isTrafficLightStopper = true;
-					trafficLight.name = TrafficLightStopper;
-					trafficLight.lastSpeedReal = 0;
-					g_currentMission.nodeToVehicle[otherId] = trafficLight;
-				elseif not collisionVehicle.isTrafficLightStopper then
-					collisionVehicle.isTrafficLightStopper = true;
-				end				
-				
-				if translationY < -1 then
-					OtherIdisCloser = false
-					courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's green or Off-> go on",3)
-				else
-					courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's red-> set as collision vehicle",3)
-					for triggerNumber = 1,4 do
-						if vehicle.cp.collidingObjects[triggerNumber][otherId] then
-							local trafficLightDistance = triggerNumber*5;
-							if distanceToCollisionVehicle > trafficLightDistance then
-								courseplay:debug(string.format("   %d is closer (%.2f m)",otherId,trafficLightDistance), 3);
-								distanceToCollisionVehicle = trafficLightDistance
-								currentCollisionVehicleId = otherId;
-								break;
-							end
-						end				
-					end				
-				end			
-			elseif collisionVehicle ~= nil then
-				-- is this a normal vehicle?
-				local distance = courseplay:distanceToObject(vehicle, collisionVehicle)
-				if distanceToCollisionVehicle > distance then
-					courseplay:debug(string.format("   %d is closer (%.2f m)",otherId,distance), 3);
-					distanceToCollisionVehicle = distance;
-					currentCollisionVehicleId = otherId;
-				end
+		if entityExists(otherId) then
+			local parent = getParent(otherId);
+			courseplay:debug(string.format("%s:  checking CollisionIgnoreList for %d", nameNum(vehicle),otherId), 3);
+			if CpManager.trafficCollisionIgnoreList[otherId] then
+				courseplay:debug(string.format("  is on global list ->ignore"), 3);
+			elseif CpManager.trafficCollisionIgnoreList[parent] then
+				courseplay:debug(string.format("  parent is on global list ->ignore"), 3);
+			elseif vehicle.cpTrafficCollisionIgnoreList[otherId] then
+				courseplay:debug(string.format("  is on local list ->ignore"), 3);	
+			elseif vehicle.cpTrafficCollisionIgnoreList[parent] then
+				courseplay:debug(string.format("  parent is on local list ->ignore"), 3);	
 			else
-				-- is this a traffic vehicle?
-				local cm = getCollisionMask(otherId);
-				if collisionVehicle == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(otherId),'Trigger') and not string.match(getName(otherId),'trigger') then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
-					courseplay:debug(string.format("   g_currentMission.nodeToVehicle[%s] == nil -> setting %s as aPath vehicle",otherId,tostring(getName(otherId))), 3);
-					local pathVehicle = {}
-					pathVehicle.rootNode = otherId
-					pathVehicle.isCpPathvehicle = true
-					pathVehicle.name = "PathVehicle"
-					pathVehicle.sizeLength = 7
-					pathVehicle.sizeWidth = 3
-					g_currentMission.nodeToVehicle[otherId] = pathVehicle
-					local distance = courseplay:distanceToObject(vehicle, pathVehicle)
+				courseplay:debug(string.format("  is not on CollisionIgnoreList"), 3);
+				local collisionVehicle = g_currentMission.nodeToVehicle[otherId];
+				if (collisionVehicle ~= nil and collisionVehicle.isTrafficLightStopper) --we already had it and marked it
+				or getName(otherId) == "AITrafficStopCanBeMoved"  -- Traffic Light System by Blacky_BPG (WasselMap)
+				or (collisionVehicle ~= nil and collisionVehicle.rootNode == nil) then
+					--is it a traffic light ?
+					local _,translationY,_ = getTranslation(otherId);
+					if collisionVehicle == nil then
+						local trafficLight = {}
+						trafficLight.isTrafficLightStopper = true;
+						trafficLight.name = TrafficLightStopper;
+						trafficLight.lastSpeedReal = 0;
+						g_currentMission.nodeToVehicle[otherId] = trafficLight;
+					elseif not collisionVehicle.isTrafficLightStopper then
+						collisionVehicle.isTrafficLightStopper = true;
+					end				
+					
+					if translationY < -1 then
+						OtherIdisCloser = false
+						courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's green or Off-> go on",3)
+					else
+						courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's red-> set as collision vehicle",3)
+						for triggerNumber = 1,4 do
+							if vehicle.cp.collidingObjects[triggerNumber][otherId] then
+								local trafficLightDistance = triggerNumber*5;
+								if distanceToCollisionVehicle > trafficLightDistance then
+									courseplay:debug(string.format("   %d is closer (%.2f m)",otherId,trafficLightDistance), 3);
+									distanceToCollisionVehicle = trafficLightDistance
+									currentCollisionVehicleId = otherId;
+									break;
+								end
+							end				
+						end				
+					end			
+				elseif collisionVehicle ~= nil then
+					-- is this a normal vehicle?
+					local distance = courseplay:distanceToObject(vehicle, collisionVehicle)
 					if distanceToCollisionVehicle > distance then
 						courseplay:debug(string.format("   %d is closer (%.2f m)",otherId,distance), 3);
-						distanceToCollisionVehicle = distance
+						distanceToCollisionVehicle = distance;
 						currentCollisionVehicleId = otherId;
 					end
-				else 
-					-- experimental script: if we don't need this ID, we can remove it from triggers
-					-- this is to prevent crash by bales in trigger which are been destroyed
-					-- let's see, which obstacles or vehicles we miss with this action				
-					courseplay:removeInvalidID(vehicle,otherId);
-				end;
-			
+				else
+					-- is this a traffic vehicle?
+					local cm = getCollisionMask(otherId);
+					if collisionVehicle == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(otherId),'Trigger') and not string.match(getName(otherId),'trigger') then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
+						courseplay:debug(string.format("   g_currentMission.nodeToVehicle[%s] == nil -> setting %s as aPath vehicle",otherId,tostring(getName(otherId))), 3);
+						local pathVehicle = {}
+						pathVehicle.rootNode = otherId
+						pathVehicle.isCpPathvehicle = true
+						pathVehicle.name = "PathVehicle"
+						pathVehicle.sizeLength = 7
+						pathVehicle.sizeWidth = 3
+						g_currentMission.nodeToVehicle[otherId] = pathVehicle
+						local distance = courseplay:distanceToObject(vehicle, pathVehicle)
+						if distanceToCollisionVehicle > distance then
+							courseplay:debug(string.format("   %d is closer (%.2f m)",otherId,distance), 3);
+							distanceToCollisionVehicle = distance
+							currentCollisionVehicleId = otherId;
+						end
+					end;
+				
+				end
 			end
+		else
+			courseplay:removeInvalidID(vehicle,otherId);
 		end
 	end
 	if currentCollisionVehicleId ~= nil then	
