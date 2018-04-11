@@ -33,7 +33,7 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Sofort abfahren" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Abfahren bei:" />
 		<text name="UNKNOWN" 											 text="unbekannt" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Vorgewende mit/gegen den Uhrzeigersinn" />
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Vorgewende Richtung" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Vorgewende vor/nach Feldkurs" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generiere Feldkurs" />
 		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Fahrzeuge auf selbem Kurs" />
@@ -169,27 +169,27 @@
 		<text name="COURSEPLAY_CORNER_3" 								 text="Nordost" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="Südost" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="aktuelle Fahrzeugposition" />
-		<text name="COURSEPLAY_CORNER_6" 								 text="letzte benutzte Fahrzeugposition" />
-		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
-		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
-		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
-		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_CORNER_6" 								 text="letzte Fahrzeugposition" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="Süd-West" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="Nord-West" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="Nord-Ost " />
+		<text name="COURSEPLAY_CORNER_10" 								 text="Süd-Ost" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Arbeit beginnen auf" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Feldreihen" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Vorgewende-Bahnen" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Vorgewende Ecken" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="im Uhrzeigersinn" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="gegen den Uhrzeigersinn" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Keins" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Rundherum" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Enges Feld" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norden" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Osten" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Süden" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Westen" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatisch" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="längste Kante" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manuell" />
         <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
         <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
         <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
@@ -206,7 +206,7 @@
         <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
         <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
         <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Der Kurs wurde erfolgreich generiert,kann jedoch aufgrund seiner Richtungseinstellungen zu Problemen beim Befahren führen"/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Vorgewende" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Feldinseln umfahren" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="deaktiviert" />
