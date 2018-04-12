@@ -59,7 +59,7 @@ function courseplay:handleMode7(vehicle, cx, cy, cz, refSpeed, allowedToDrive)
 				local length = Utils.vector2Length(dx, dz)
                 vehicle.lastaiThreshingDirectionX = dx / length;
 				vehicle.lastaiThreshingDirectionZ = dz / length;
-				vehicle:stopAIVehicle();
+				vehicle:stopAIVehicle(AIVehicle.STOP_REASON_USER);
 				if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasManualMotorStart then
 					vehicle.driveControl.manMotorStart.wasHired = false
 				end				
