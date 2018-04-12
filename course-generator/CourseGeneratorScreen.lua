@@ -12,6 +12,7 @@ function CourseGeneratorScreen:new(target, custom_mt)
 	self.returnScreenName = "";
 
 	self.vehicle = nil
+	self.boundingBox = nil
 
 	self.directions = {}
 	-- map to look up gui element state from angle
@@ -24,12 +25,16 @@ function CourseGeneratorScreen:new(target, custom_mt)
 		i = i + 1
 	end
 
+	-- List of fields
 	self.fields = {}
-	self.fieldToState = {}
-	i = 1
 	for key, field in pairs( courseplay.fields.fieldData ) do
 		table.insert( self.fields, { name = field.name, number = key })
-		self.fieldToState[ key ] = i
+	end
+	table.sort( self.fields, function( a, b ) return a.number < b.number end )
+	-- set up a reverse lookup table
+	self.fieldToState = {}
+	for i, f in ipairs( self.fields ) do
+		self.fieldToState[ f ] = i
 		i = i + 1
 	end
 	-- add the 'currently loaded course' option
@@ -58,20 +63,22 @@ function CourseGeneratorScreen:onClickGenerate()
 	-- having to reselect the field or closing the GUI
 	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
 	courseplay:generateCourse( self.vehicle )
-	courseplay:setupCourse2dData( self.vehicle )
-	self.vehicle.cp.fieldEdge.selectedField.fieldNum = selectedField
+	self.vehicle. cp.fieldEdge.selectedField.fieldNum = selectedField
 	if not self.coursePlot then
 		self.coursePlot = CoursePlot:new(
 			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
 			self.mapOverview.size[1], self.mapOverview.size[2])
 	end
 	self.coursePlot:setWaypoints( self.vehicle.Waypoints )
+	-- if we have course generated, zoom in on the course
+	self.boundingBox = courseplay.utils:getCourseDimensions(self.vehicle.Waypoints)
 end
 
 function CourseGeneratorScreen:onClose()
 	self.vehicle.cp.hud.reloadPage[ 8 ] = true
 	g_currentMission.isPlayerFrozen = false
 	if self.vehicle then self.vehicle = nil end
+	if self.boundingBox then self.boundingBox = nil end
 	if self.coursePlot then
 		self.coursePlot:delete()
 		self.coursePlot = nil
@@ -92,9 +99,17 @@ function CourseGeneratorScreen:onOpenFieldSelector( element, parameter )
 end
 
 function CourseGeneratorScreen:onClickFieldSelector( state )
-	self.vehicle.cp.fieldEdge.selectedField.fieldNum = self.fields[ state ].number
+	self:selectField( self.fields[ state ].number )
 end
 
+function CourseGeneratorScreen:selectField( fieldNum )
+	self.vehicle.cp.fieldEdge.selectedField.fieldNum = fieldNum
+	if self.coursePlot then
+		self.coursePlot:delete()
+		self.coursePlot = nil
+	end
+	self.boundingBox = courseplay.utils:getCourseDimensions(courseplay.fields.fieldData[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ].points)
+end
 
 -----------------------------------------------------------------------------------------------------
 -- Starting location
@@ -106,7 +121,6 @@ end
 local function getStartingCorner( startingLocationState )
 	return startingLocationState + courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN - 1
 end
-
 
 function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
 	local texts = {}
@@ -194,6 +208,8 @@ function CourseGeneratorScreen:setHeadlandProperties()
 			self.vehicle.cp.headland.numLanes = 1
 			self.headlandPasses:setState( self.vehicle.cp.headland.numLanes )
 		end
+	elseif self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NONE then
+		self.vehicle.cp.headland.numLanes = 0
 	end
 end
 
@@ -294,14 +310,14 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 		-- zoom out completely by default
 		ingameMap.mapVisWidthMin = 1
 
-		if self.coursePlot and self.vehicle.Waypoints then
-			-- if we have course generated, zoom in on the course
-			local bb = courseplay.utils:getCourseDimensions(self.vehicle.Waypoints)
+		if self.boundingBox then
 			local padding = 10
-			local centerX = ( bb.xMin + bb.xMax ) / 2
-			local centerY = ( bb.yMin + bb.yMax ) / 2
-			local width = bb.span + 2 * padding
-			self.coursePlot:setView( centerX, centerY, width )
+			local centerX = ( self.boundingBox.xMin + self.boundingBox.xMax ) / 2
+			local centerY = ( self.boundingBox.yMin + self.boundingBox.yMax ) / 2
+			local width = self.boundingBox.span + 2 * padding
+			if self.coursePlot then
+				self.coursePlot:setView( centerX, centerY, width )
+			end
 			-- figure out view (center and zoom) for ingame map, normailized
 			ingameMap.mapVisWidthMin = 1 / ingameMap.worldSizeX * width
 			-- ingame map uses normalized coordinates, the map corners are (0,0) and (1,1)
@@ -318,7 +334,6 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 			-- self.coursePlot:draw( -ingameMap.worldSizeX / 2, -ingameMap.worldSizeZ / 2, ingameMap.worldSizeX )
 			self.coursePlot:draw()
 		end
-
 	end
 end
 
@@ -340,7 +355,7 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 			for i, field in ipairs( self.fields ) do
 				if field.number == fieldNum then
 					self.fieldSelector:setState( i )
-					self.vehicle.cp.fieldEdge.selectedField.fieldNum = fieldNum
+					self:selectField( fieldNum )
 					return eventUsed
 				end
 			end

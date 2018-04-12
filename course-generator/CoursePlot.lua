@@ -77,8 +77,9 @@ function CoursePlot:draw()
 	local np, startX, startY, endX, endY, dx, dz, dx2D, dy2D, width, rotation, r, g, b
 
 	-- render a line between subsequent waypoints
-	for i, wp in ipairs( reducedWaypoints ) do
-		np = i < #reducedWaypoints and reducedWaypoints[i + 1] or reducedWaypoints[1]
+	for i = 1, #reducedWaypoints - 1 do
+		wp = reducedWaypoints[ i ]
+		np = reducedWaypoints[ i + 1 ]
 
 		startX, startY = self:worldToScreen( wp.cx, wp.cz )
 		endX, endY	   = self:worldToScreen( np.cx, np.cz )
@@ -98,6 +99,4 @@ function CoursePlot:draw()
 		renderOverlay( self.overlayId, startX, startY, width, lineThickness )
 	end;
 	setOverlayRotation( self.overlayId, 0, 0, 0 ) -- reset overlay rotation
-	--renderOverlay( self.overlayId, self.x, self.y, self.width, lineThickness )
-	--renderOverlay( self.overlayId, self.x, self.y + self.width * g_screenWidth / g_screenHeight, self.width, lineThickness )
 end

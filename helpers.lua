@@ -863,10 +863,10 @@ function courseplay.utils:getCourseDimensions(poly)
 	local xMin, yMin = huge, huge;
 	local xMax, yMax = -huge, -huge;
 	for _,point in pairs(poly) do
-		xMin = min(xMin, point.cx);
-		yMin = min(yMin, point.cz);
-		xMax = max(xMax, point.cx);
-		yMax = max(yMax, point.cz);
+		xMin = min(xMin, point.x or point.cx);
+		yMin = min(yMin, point.z or point.cz);
+		xMax = max(xMax, point.x or point.cx);
+		yMax = max(yMax, point.z or point.cz);
 	end;
 	local span = max(xMax-xMin,yMax-yMin);
 
