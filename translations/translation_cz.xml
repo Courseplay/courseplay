@@ -7,7 +7,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Zastavit odvozce" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Čekat na posledním bodě nebo triggeru:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Počet jízd" />
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Neomezený" />
+		<text name="COURSEPLAY_UNLIMITED" 								 text="Neomezený" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Strana odvozce:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automaticky" />
 		<text name="COURSEPLAY_LEFT" 									 text="vlevo" />
@@ -33,10 +33,10 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Odvézt bez čekání na doplnění" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Odvézt při:" />
 		<text name="UNKNOWN" 											 text="neznámý" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Úvrať proti/po směru hodinových ručiček" />
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Úvrať před/po práci na poli" />
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generovat polní prace" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Více strojů" />  
+		<text name="COURSEPLAY_HEADLAND_DIRECTION" 						 text="Úvrať proti/po směru hodinových ručiček" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER" 					 text="Úvrať před/po práci na poli" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE" 					 text="Generovat polní prace" />
+		<text name="COURSEPLAY_MULTI_TOOLS" 							 text="Více strojů" />
 		<text name="COURSEPLAY_DISTANCE" 								 text="vzdálenost" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Doba čekání:" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -52,20 +52,20 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s pro uložení složky" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s pro filtrování tras" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Trasy: %q" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Nahrát/sloučit trasu do nahrané trasy" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Připojit trasu nakonec" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Přesunout do složky" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Smazat trasu/složku" />
+		<text name="COURSEPLAY_LOAD_COURSE" 							 text="Nahrát/sloučit trasu do nahrané trasy" />
+		<text name="COURSEPLAY_APPEND_COURSE" 							 text="Připojit trasu nakonec" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 							 text="Přesunout do složky" />
+		<text name="COURSEPLAY_DELETE_COURSE" 							 text="Smazat trasu/složku" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Vytvořit novou složku" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Vyhledat trasu a složku" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Vypnout filtr" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="přijel na místo překládky." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="uložit pozici roury" />
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="přesunout rouru do polohy" />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 						 text="uložit pozici roury" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION" 					 text="přesunout rouru do polohy" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="přijel na místo čekání." />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="dojel na trigger nebo konec." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="dokončil odvoz obilí." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="dokončil odvoz kapaliny." /> 
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 				 text="dokončil odvoz kapaliny." />
 		<text name="COURSEPLAY_WORK_END" 								 text="dokončil práci." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 						 text=": potřebuje vyložit." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 						 text=": pracovní stroj musí být doplněn." />
@@ -76,14 +76,14 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Bude naloženo: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Zobrazit orientační body:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Vjíždění do porostu:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Oborat okraj pole" /> 
-		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Navedení na první bod" /> 
+		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Oborat okraj pole" />
+		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Navedení na první bod" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Otáčení na poli:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Otáčení v opačném směru:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="posledních pár pruhů" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="pokud to bude možné" />
+		<text name="COURSEPLAY_TURN_ON_FIELD" 							 text="Otáčení na poli:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION" 				 text="Otáčení v opačném směru:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END" 					 text="posledních pár pruhů" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE" 			 text="pokud to bude možné" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Poloměr otáčení:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Odstup vpřed/vzad:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Kombajn" />
@@ -138,11 +138,11 @@
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 						 text="bude potřebovat dotankovat." />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 						 text="musí tankovat." />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 						 text="tankuje." />
-		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="Probíhá vážení" />   
+		<text name="COURSEPLAY_IS_BEING_WEIGHED" 						 text="Probíhá vážení" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů čekání! Pouze %d bodů je povoleno." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Postrádá body čekání. Vyžaduje %d body čekání." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů vykládky! Jen %d povoleno." />   
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Příliš málo bodů vykládky! %d potřeba." />          
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Příliš mnoho bodů vykládky! Jen %d povoleno." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW" 				 text="Příliš málo bodů vykládky! %d potřeba." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Máš pro tento mod nevhodný přívěs" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Máš pro tento mod nevhodné nářadí" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Tento typ vozidla není v tomto módu podporován." />
@@ -150,8 +150,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Odstup od trasy:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Horiz. posunutí stroje:" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Vertik. posunutí stroje:" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Horizontální odstup od bodu nakládky/vykládky" />   
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Vertikální odstup od bodu nakládky/vykládky" />     
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Horizontální odstup od bodu nakládky/vykládky" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Vertikální odstup od bodu nakládky/vykládky" />
 		<text name="COURSEPLAY_FRONT" 									 text="přední" />
 		<text name="COURSEPLAY_BACK" 									 text="zadní" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Pracovní šířka:" />
@@ -161,27 +161,27 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generovat trasu" />
 		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Počáteční pozice" />
-		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Poslední pozice" />     
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Poslední pozice" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Směr trasy:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Návrat na první bod:" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="jihozápad" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="severozápad" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="jihovýchod" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="aktuální pozice vozidla" />  	
+		<text name="COURSEPLAY_CORNER_5" 								 text="aktuální pozice vozidla" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="poslední pozice vozidla" />
 		<text name="COURSEPLAY_CORNER_7" 								 text="jihozápad" />
 		<text name="COURSEPLAY_CORNER_8" 								 text="severozápad" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="jihovýchod" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
+		<text name="COURSEPLAY_START_WORKING_ON" 						 text="Start working on" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS" 							 text="Up/down rows" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 						 text="Headland passes" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 						 text="Headland corners" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 						 text="Clockwise" />
 		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE" 						 text="None" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 					 text="Around" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Úzké pole" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />
@@ -190,34 +190,34 @@
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatický" />
 		<text name="COURSEPLAY_DIRECTION_6" 							 text="Nejdelší okraj" />
 		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manuálně" />
-        <text name="COURSEPLAY_DIRECTION_N"                              text="S"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                            text="SSV"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                             text="SV"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                            text="VSV"/>
-        <text name="COURSEPLAY_DIRECTION_E"                              text="V"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                            text="VJV"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                             text="JV"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                            text="JJV"/>
-        <text name="COURSEPLAY_DIRECTION_S"                              text="J"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                            text="JJZ"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                             text="JZ"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                            text="ZJZ"/>
-        <text name="COURSEPLAY_DIRECTION_W"                              text="Z"/>
-        <text name="COURSEPLAY_DIRECTION_WNW"                            text="ZSZ"/>
-        <text name="COURSEPLAY_DIRECTION_NW"                             text="SZ"/>
-        <text name="COURSEPLAY_DIRECTION_NNW"                            text="SSZ"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Kurz byl úspěšně generován, ale kvůli aktuálnímu nastavení směru může způsobit problémy při jízdě."/>
+		<text name="COURSEPLAY_DIRECTION_N" 							 text="S" />
+		<text name="COURSEPLAY_DIRECTION_NNE" 							 text="SSV" />
+		<text name="COURSEPLAY_DIRECTION_NE" 							 text="SV" />
+		<text name="COURSEPLAY_DIRECTION_ENE" 							 text="VSV" />
+		<text name="COURSEPLAY_DIRECTION_E" 							 text="V" />
+		<text name="COURSEPLAY_DIRECTION_ESE" 							 text="VJV" />
+		<text name="COURSEPLAY_DIRECTION_SE" 							 text="JV" />
+		<text name="COURSEPLAY_DIRECTION_SSE" 							 text="JJV" />
+		<text name="COURSEPLAY_DIRECTION_S" 							 text="J" />
+		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="JJZ" />
+		<text name="COURSEPLAY_DIRECTION_SW" 							 text="JZ" />
+		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="ZJZ" />
+		<text name="COURSEPLAY_DIRECTION_W" 							 text="Z" />
+		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="ZSZ" />
+		<text name="COURSEPLAY_DIRECTION_NW" 							 text="SZ" />
+		<text name="COURSEPLAY_DIRECTION_NNW" 							 text="SSZ" />
+		<text name="COURSEPLAY_COURSE_SUBOPTIMAL" 						 text="Kurz byl úspěšně generován, ale kvůli aktuálnímu nastavení směru může způsobit problémy při jízdě." />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Úvrať:" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Vyhnout se překážkám" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="vypnuto" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="jednoduché" /> 
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="obkroužení" /> 
+		<text name="COURSEPLAY_BYPASS_ISLANDS" 							 text="Vyhnout se překážkám" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE" 				 text="vypnuto" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE" 				 text="jednoduché" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE" 				 text="obkroužení" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Zaoblený" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  			 text="Pocouvnutí" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Pocouvnutí" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Průjezd" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Opačné otoč. na souvrati"/>  
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="Rovně" /> 
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="Křivka" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE" 			 text="Opačné otoč. na souvrati" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"  text="Rovně" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE" 	 text="Křivka" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="pouze stroj" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="stroj a trasa" />
@@ -230,9 +230,9 @@
 		<text name="COURSEPLAY_START" 									 text="Start" />
 		<text name="COURSEPLAY_FINISH" 									 text="Ukončit" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Trasa není platná" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Přihnojování" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Konvoj kombajnů" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="vysýpací roura v neposekaném" /> 		
+		<text name="COURSEPLAY_FERTILIZERFUNCTION" 						 text="Přihnojování" />
+		<text name="COURSEPLAY_COMBINE_CONVOY" 							 text="Konvoj kombajnů" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 						 text="vysýpací roura v neposekaném" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Lžíce nenalezena" />
@@ -256,7 +256,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="na nejbližším bodě" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="na prvním bodě" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="na vybraném bodě" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="následující čekací bod" />
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="následující čekací bod" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Trasa okolo pole:" />
 		<text name="COURSEPLAY_FIELD" 									 text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(načtená trasa)" />
@@ -300,14 +300,14 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Konec otáční" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Začít couvat" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Konec couvání" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Přidat body do nahrávané trasy" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS" 				 text="Přidat body do nahrávané trasy" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikony v mapě - zobrazit text:" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Nastavení řízení" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automaticky" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Vždy" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Vždy &amp; Přední Dif. pro práci v terénu" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Vždy &amp; Zadní Dif. pro práci v terénu" /> 
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Vždy &amp; Oba Dif. pro práci v terénu" /> 
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="automaticky" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Vždy" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Vždy &amp; Přední Dif. pro práci v terénu" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Vždy &amp; Zadní Dif. pro práci v terénu" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Vždy &amp; Oba Dif. pro práci v terénu" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Chceš aby pole byla skenována automaticky?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Chceš aby byli pomocníci placeni (%s/hodinu)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Kalkulačka spotřeby osiva" />
@@ -315,10 +315,10 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Osivo: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Používání: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Zobrazit/skrýt body startu a konce" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Zobrazit/skrýt všechny body" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Zobrazit/skrýt body křížení" />
-	
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND" 				 text="Zobrazit/skrýt body startu a konce" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL" 					 text="Zobrazit/skrýt všechny body" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING" 				 text="Zobrazit/skrýt body křížení" />
+
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Zobrazit Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Skrýt Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funkce Courseplay" />
@@ -333,39 +333,39 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: předchozí mód" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: myš akce" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: myš sekundární akce" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER" 						 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="skrýt kurzor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="zobrazit kurzor" />
-	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="mod" />
+
+		<text name="COURSEPLAY_MODE10_MODE" 							 text="mod" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="nahrnování a dusání" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="naplnit" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP" 					 text="naplnit" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="Automaticky zastavit:" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="jen CoursePlayers" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="všechny s běžícím motorem" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="Detekovat traktor v okruhu:" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="Maximální rychlost při dusání:" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="Výška radlice:" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="Silážní jáma nebyla detekována v počátečním bodě." />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="Není připojena radlice." />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="Vpředu upevněná radlice není podporována." />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Nastavení silážní jámy" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="Šířka radlice:" />
+		<text name="COURSEPLAY_MODE10_NOSILO" 							 text="Silážní jáma nebyla detekována v počátečním bodě." />
+		<text name="COURSEPLAY_MODE10_NOBLADE" 							 text="Není připojena radlice." />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE" 					 text="Vpředu upevněná radlice není podporována." />
+		<text name="COURSEPLAY_MODE10_SETTINGS" 						 text="Nastavení silážní jámy" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 						 text="Šířka radlice:" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silážní jáma se plňí:" />
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="projížděním" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="couváním" />
-		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Doplňit palivo na čerpací stanici:" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="vždy" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="méně než 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="úsporný režim" />						
-		
-		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Znovunačtení seznamu tras" />         
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 	 text="Nelze generovat trasu. Zkuste změnit nastavení nebo přemístit vozidlo."/>  
-	
-		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="motouz" /> 
-		<text name="COURSEPLAY_FillType_BaleNet" 						 text="siť" /> 
-		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapovací folie" /> 
-		<text name="COURSEPLAY_FillType_Molasses"						 text="melasa" /> 		
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 				 text="couváním" />
+
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR" 						 text="Doplňit palivo na čerpací stanici:" />
+		<text name="COURSEPLAY_FUEL_ALWAYS" 							 text="vždy" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT" 						 text="méně než 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION" 							 text="úsporný režim" />
+
+		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Znovunačtení seznamu tras" />
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Nelze generovat trasu. Zkuste změnit nastavení nebo přemístit vozidlo." />
+
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="motouz" />
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="siť" />
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapovací folie" />
+		<text name="COURSEPLAY_FillType_Molasses" 						 text="melasa" />
 	</texts>
 </l10n>

@@ -174,14 +174,14 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
+		<text name="COURSEPLAY_START_WORKING_ON" 						 text="Start working on" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS" 							 text="Up/down rows" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 						 text="Headland passes" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 						 text="Headland corners" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 						 text="Clockwise" />
 		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE" 						 text="None" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 					 text="Around" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Est" />
