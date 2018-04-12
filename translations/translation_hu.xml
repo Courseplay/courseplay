@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="automatikus" />
 		<text name="COURSEPLAY_LEFT" 									 text="bal" />
 		<text name="COURSEPLAY_RIGHT" 									 text="jobb" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /> <!-- TODO TRANSLATION PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="center" /> <!-- TODO TRANSLATION PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Szállító elküldése" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Szállító hívása" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Szállító hívása" />
@@ -363,10 +363,10 @@
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Útvonallista újratöltése" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Útvonalgenerálás sikertelen! Próbálj változtatni a beállításokon vagy állj arréb a járművel!" />
 
-		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_Molasses" 						 text="molasses" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_Molasses" 						 text="molasses" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
 
 	</texts>
 </l10n>
