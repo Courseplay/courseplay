@@ -12,7 +12,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="Avtomatsko" />
 		<text name="COURSEPLAY_LEFT" 									 text="levo" />
 		<text name="COURSEPLAY_RIGHT" 									 text="desno" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /> <!-- TODO TRANSLATION PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="center" /> <!-- TODO TRANSLATION PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Pošlji voznika domov" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Zahtevaj voznika" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Voznik zahtevan" />
@@ -169,7 +169,7 @@
 		<text name="COURSEPLAY_CORNER_3" 								 text="severovzhod" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="jugovzhod" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" /> <!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" /> <!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" /> <!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner -->
 		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
@@ -363,10 +363,10 @@
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Couldn't generate course. Try changing the settings or moving the vehicle." /> <!-- TODO: TRANSLATION! -->
 
-		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_Molasses" 						 text="molasses" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon-->
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_Molasses" 						 text="molasses" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
 
 	</texts>
 </l10n>
