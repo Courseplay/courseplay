@@ -650,8 +650,6 @@ function courseplay:unload_combine(vehicle, dt)
 				sideMultiplier = 1;				
 			end
 			if combineIsTurning or vehicle.cp.forceNewTargets then
-				vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
-				vehicle.cp.curTarget.rev = false
 				courseplay:debug(string.format("%s: combine is empty and turning",nameNum(vehicle)),4)
 				if combineIsAutoCombine then
 
@@ -669,14 +667,25 @@ function courseplay:unload_combine(vehicle, dt)
 					nodeSet = true
 					courseplay:debug(string.format("%s: combineIsAutoCombine- create vehicle.cp.cpTurnBaseNode (%s; %s)",nameNum(vehicle),tostring(vehicle.cp.cpTurnBaseNode), tostring(getName(vehicle.cp.cpTurnBaseNode))),4)
 				end
-				-- turn around and drive closer to the next row
-				courseplay:debug(string.format("%s: addNewTargetVector: currentTipper: %s, vehicle.cp.cpTurnBaseNode: %s",nameNum(vehicle),tostring(currentTipper),tostring(vehicle.cp.cpTurnBaseNode)),4)				
-				-- This was reverted back. sideMultiplier*offset is measured from the tipper starting at the currentTipper or cpTurnBaseNode if not nil.
-				-- So this vaule adds enough Y to the target vector to align the tipper with the center of the last lane cleared by the havester.
-				-- (-totalLength*4)+trailerOffset Adds vertical length after turning to straigten out the trailer so it isn't bent Pops64 increase this to 4.5 because small offset vaules may cause the tipper to block the next lane of the havester 
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.5,  (-totalLength*2)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*3)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
-				courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*4.5)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+				
+				if vehicle.cp.isReversePossible then
+					courseplay:debug(string.format("%s: is reverse possible",nameNum(vehicle)),4)	
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, 0, 0, -(1.5*totalLength));
+					vehicle.cp.curTarget.rev = true
+					--courseplay:addNewTargetVector(vehicle, -sideMultiplier*turnDiameter,trailerOffset-extraMoveBack,currentTipper,vehicle.cp.cpTurnBaseNode,true);
+					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*3.5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
+					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
+				else
+					courseplay:debug(string.format("%s: is not reverse possible",nameNum(vehicle)),4)
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
+					vehicle.cp.curTarget.rev = false
+					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset*0.5,  (-totalLength*2)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*3)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*4.5)+trailerOffset,currentTipper,vehicle.cp.cpTurnBaseNode);
+				end
+							
+				courseplay:debug(string.format("%s: addedNewTargetVector: currentTipper: %s, vehicle.cp.cpTurnBaseNode: %s",nameNum(vehicle),tostring(currentTipper),tostring(vehicle.cp.cpTurnBaseNode)),4)				
+
 				courseplay:setModeState(vehicle, STATE_FOLLOW_TARGET_WPS);
 				vehicle.cp.isParking = true 
 				if vehicle.cp.forceNewTargets then
