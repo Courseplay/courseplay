@@ -669,12 +669,22 @@ function courseplay:unload_combine(vehicle, dt)
 				end
 				
 				if vehicle.cp.isReversePossible then
+					local maxDiameter = max(20,turnDiameter);
+					local maxX,_,maxZ = localToWorld(vehicle.cp.DirectionNode,-sideMultiplier*maxDiameter,0,-(trailerOffset+(0.5*maxDiameter)));
 					courseplay:debug(string.format("%s: is reverse possible",nameNum(vehicle)),4)	
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, 0, 0, -(1.5*totalLength));
-					vehicle.cp.curTarget.rev = true
-					--courseplay:addNewTargetVector(vehicle, -sideMultiplier*turnDiameter,trailerOffset-extraMoveBack,currentTipper,vehicle.cp.cpTurnBaseNode,true);
-					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*3.5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
-					courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
+					if courseplay:isField(maxX, maxZ, 1, 1) then --is the outside point of the course on the field, the make a nice circle
+						courseplay:debug(string.format("%s: points are on field -> turn",nameNum(vehicle)),4)	
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,-(trailerOffset+totalLength+(0.5*maxDiameter)));
+						vehicle.cp.curTarget.rev = true;
+						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,1,maxDiameter,vehicle.cp.combineOffset,trailerOffset+(0.5*maxDiameter))
+						courseplay:addNewTargetVector(vehicle,-vehicle.cp.combineOffset,-(2*maxDiameter+1.5*totalLength))
+					else --go reverse directly
+						courseplay:debug(string.format("%s: points are not on field -> reverse directly",nameNum(vehicle)),4)	
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, 0, 0, -(1.5*totalLength));
+						vehicle.cp.curTarget.rev = true
+						courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*3.5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
+						courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
+					end
 				else
 					courseplay:debug(string.format("%s: is not reverse possible",nameNum(vehicle)),4)
 					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, -sideMultiplier*turnDiameter, 0, trailerOffset);
@@ -1596,9 +1606,9 @@ function courseplay:convertTable(turnTargets)
 	return  newTable
 end
 
-function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidth)
+function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidth,zOffset)
 		--inspired by Satis :-)
-		
+		local additionalZOffset = zOffset or 0;
 		local targets = {}
 		local center1, center2, startDir, stopDir = {}, {}, {}, {};
 		local diameter = sentDiameter
@@ -1611,8 +1621,8 @@ function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidt
 		local centerHeight = math.sqrt(sideC^2 - sideB^2);
 				
 		--- Get the 2 circle center cordinate
-		center1.x,_,center1.z = localToWorld(vehicle.cp.DirectionNode, center1SideOffset, 0, 0);
-		center2.x,_,center2.z = localToWorld(vehicle.cp.DirectionNode, center2SideOffset, 0, -centerHeight);
+		center1.x,_,center1.z = localToWorld(vehicle.cp.DirectionNode, center1SideOffset, 0, 0-additionalZOffset);
+		center2.x,_,center2.z = localToWorld(vehicle.cp.DirectionNode, center2SideOffset, 0, -centerHeight-additionalZOffset);
 
 		
 		
@@ -1621,7 +1631,7 @@ function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidt
 		courseplay:generateTurnCircle(vehicle, center1, startDir, center2, radius, direction);
 
 		--- Generate second turn circle
-		stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.DirectionNode, -centerHeight*direction, 0, -centerHeight+radius);
+		stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.DirectionNode, -centerHeight*direction, 0, -centerHeight+radius-additionalZOffset);
 		courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, radius, -direction, true);
 		
 		targets = courseplay:convertTable(vehicle.cp.turnTargets)
