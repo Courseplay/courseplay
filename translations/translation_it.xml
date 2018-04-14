@@ -174,22 +174,22 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_START_WORKING_ON" 						 text="Iniziare a lavorare su" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS" 							 text="File su/giu" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 						 text="Passate testate di campo" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 						 text="Svolte testate di campo" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 						 text="Senso orario" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Senso antiorario" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE" 						 text="Nessuno" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 					 text="Circolare" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Campo ristretto" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Est" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sud" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Lato più lungo" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manuale" />
 		<text name="COURSEPLAY_DIRECTION_N" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_NNE" 							 text="NNE" />
 		<text name="COURSEPLAY_DIRECTION_NE" 							 text="NE" />
@@ -231,7 +231,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Termina" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Il percorso non è valido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION" 						 text="funzione fertilizzante delle seminatrici" />
-		<text name="COURSEPLAY_COMBINE_CONVOY" 							 text="combine convoy" />
+		<text name="COURSEPLAY_COMBINE_CONVOY" 							 text="convoglio trebbia" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 						 text="La coclea della trebbia è sul raccolto" />
 
 		<!-- shovel stuff -->
@@ -246,10 +246,10 @@
 		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="salva posizione trasporto" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="salva posizione pre svuotamento" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="salva posizione svuota pala" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="muovi a posizione riempimento" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi a posizione trasporto" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="muovi a posizione pre svuotamento" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi a posizione svuota pala" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="muovi in posizione riempimento" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="muovi in posizione trasporto" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="muovi in posizione pre svuotamento" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="muovi in posizione svuota pala" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Caricamento Stop &amp; Go" />
 
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Avviare il percorso al" />

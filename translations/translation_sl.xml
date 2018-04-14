@@ -7,12 +7,12 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Ustavi voznika" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Ustavi se na zadnji točki ali na naslednjem prožilcu" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 text="Število izvedb teka" />
- 		<text name="COURSEPLAY_UNLIMITED" 								 text="Nešteto" /> 
+		<text name="COURSEPLAY_UNLIMITED" 								 text="Nešteto" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 							 text="Stran voznika" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 					 text="Avtomatsko" />
 		<text name="COURSEPLAY_LEFT" 									 text="levo" />
 		<text name="COURSEPLAY_RIGHT" 									 text="desno" />
-		<text name="COURSEPLAY_CENTER" 									 text="center" /><!-- TODO TRANSLATION   PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS-->
+		<text name="COURSEPLAY_CENTER" 									 text="center" /> <!-- TODO TRANSLATION PLEASE DO ALSO TRANSLATE THE moddesc.xml TEXT THANKS -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 				 text="Pošlji voznika domov" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 				 text="Zahtevaj voznika" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 				 text="Voznik zahtevan" />
@@ -33,10 +33,10 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Vozi zdaj" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Vozi ob:" />
 		<text name="UNKNOWN" 											 text="neznano" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Headland counter-/clockwise" />
-		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Headland before/after field course" />
-		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Generiraj pot polja" />
-		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="Multiple Tools" />  <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
+		<text name="COURSEPLAY_HEADLAND_DIRECTION" 						 text="Headland counter-/clockwise" />
+		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER" 					 text="Headland before/after field course" />
+		<text name="COURSEPLAY_GENERATE_FIELD_COURSE" 					 text="Generiraj pot polja" />
+		<text name="COURSEPLAY_MULTI_TOOLS" 							 text="Multiple Tools" /> <!-- TODO Translation. This is so you can have multiple of the same workwidth tools running the same course -->
 		<text name="COURSEPLAY_DISTANCE" 								 text="razdalja" />
 		<text name="COURSEPLAY_WAITING_TIME" 							 text="Čakalni čas" />
 		<text name="COURSEPLAY_MINUTES" 								 text="%d min" />
@@ -52,16 +52,16 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s za shranitev mape" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s za filtriranje poti" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Poti: %q" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Naloži pot/dodaj pot na naloženo pot" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Dodaj pot na konec" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Premakni v mapo" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 	 text="Izbriši pot/mapo" />
+		<text name="COURSEPLAY_LOAD_COURSE" 							 text="Naloži pot/dodaj pot na naloženo pot" />
+		<text name="COURSEPLAY_APPEND_COURSE" 							 text="Dodaj pot na konec" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 							 text="Premakni v mapo" />
+		<text name="COURSEPLAY_DELETE_COURSE" 							 text="Izbriši pot/mapo" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Ustvari novo mapo" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Poišči pot ali mapo" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Onemogoči filter" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT"				 text="je prispel na overload točko." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					     text="shrani položaj cevi" /> 
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="premakni cev na položaj" />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="je prispel na overload točko." />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 						 text="shrani položaj cevi" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION" 					 text="premakni cev na položaj" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="je prispel na čakalno točko" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 						 text="je prispel na prožilec/končno točko" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 				 text="je zaključil s prevozom žita." />
@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 						 text="odlaganje bal." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 							 text="ima ovire." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 						 text="prišel na prožilec za odlaganje" />
-		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist to unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
+		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 text="Dist to unload point" /> <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Nalaganje: %d od %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Prikaži smerne točke" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Iskanje poti" />
@@ -80,10 +80,10 @@
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Stranski odmik:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Začni ob:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Obrni na polju:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 		 text="Obratna smer obračanja:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 		 text="zadnjih nekaj vrst" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 		 text="ko je možno" />
+		<text name="COURSEPLAY_TURN_ON_FIELD" 							 text="Obrni na polju:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION" 				 text="Obratna smer obračanja:" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END" 					 text="zadnjih nekaj vrst" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE" 			 text="ko je možno" />
 		<text name="COURSEPLAY_TURN_RADIUS" 							 text="Obračalni krog:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 				 text="Vertikalni odmik:" />
 		<text name="COURSEPLAY_COMBINE" 								 text="Kombajn" />
@@ -142,7 +142,7 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 				 text="Preveč čakalnih točk! Dovoljenih samo %d." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 					 text="Premalo čakalnih točk! Potrebuješ %d." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Prevečk odlagalnih točk! Dovoljenih samo %d." />
-		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Premalo odlagalnih točk! Potrebuješ %d." />
+		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW" 				 text="Premalo odlagalnih točk! Potrebuješ %d." />
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="napačna prikolica za ta način" />
 		<text name="COURSEPLAY_WRONG_TOOL" 								 text="napačen priključek za ta način" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="To vozilo ni podprto v tem načinu." />
@@ -160,28 +160,28 @@
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Razhroščevalni kanali" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generiranje poti" />
 		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
-		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" /> <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" /> <!-- TO BE TRANSLATED -->
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Začetna smer" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Vrni se na začetno točko" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="jugozahod" />
 		<text name="COURSEPLAY_CORNER_2" 								 text="severozahod" />
 		<text name="COURSEPLAY_CORNER_3" 								 text="severovzhod" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="jugovzhod" />
-		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" />  	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
-		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" />	<!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner-->
+		<text name="COURSEPLAY_CORNER_5" 								 text="current vehicle position" /> <!-- TODO: TRANSLATE its used for the new field course genration if U want to use the current position as starting corner -->
+		<text name="COURSEPLAY_CORNER_6" 								 text="last used position" /> <!-- TODO: TRANSLATE its used for the new field course genration if U want to use the last used position as starting corner -->
 		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
+		<text name="COURSEPLAY_START_WORKING_ON" 						 text="Start working on" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS" 							 text="Up/down rows" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 						 text="Headland passes" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 						 text="Headland corners" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 						 text="Clockwise" />
 		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE" 						 text="None" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 					 text="Around" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="vzhod" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jug" />
@@ -190,34 +190,34 @@
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Avtomatsko" />
 		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
 		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
-        <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                             text="NE"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                            text="ENE"/>
-        <text name="COURSEPLAY_DIRECTION_E"                              text="E"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                            text="ESE"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                             text="SE"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                            text="SSE"/>
-        <text name="COURSEPLAY_DIRECTION_S"                              text="S"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                            text="SSW"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                             text="SW"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                            text="WSW"/>
-        <text name="COURSEPLAY_DIRECTION_W"                              text="W"/>
-        <text name="COURSEPLAY_DIRECTION_WNW"                            text="WNW"/>
-        <text name="COURSEPLAY_DIRECTION_NW"                             text="NW"/>
-        <text name="COURSEPLAY_DIRECTION_NNW"                            text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
+		<text name="COURSEPLAY_DIRECTION_N" 							 text="N" />
+		<text name="COURSEPLAY_DIRECTION_NNE" 							 text="NNE" />
+		<text name="COURSEPLAY_DIRECTION_NE" 							 text="NE" />
+		<text name="COURSEPLAY_DIRECTION_ENE" 							 text="ENE" />
+		<text name="COURSEPLAY_DIRECTION_E" 							 text="E" />
+		<text name="COURSEPLAY_DIRECTION_ESE" 							 text="ESE" />
+		<text name="COURSEPLAY_DIRECTION_SE" 							 text="SE" />
+		<text name="COURSEPLAY_DIRECTION_SSE" 							 text="SSE" />
+		<text name="COURSEPLAY_DIRECTION_S" 							 text="S" />
+		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="SSW" />
+		<text name="COURSEPLAY_DIRECTION_SW" 							 text="SW" />
+		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="WSW" />
+		<text name="COURSEPLAY_DIRECTION_W" 							 text="W" />
+		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="WNW" />
+		<text name="COURSEPLAY_DIRECTION_NW" 							 text="NW" />
+		<text name="COURSEPLAY_DIRECTION_NNW" 							 text="NNW" />
+		<text name="COURSEPLAY_COURSE_SUBOPTIMAL" 						 text="Course generated successfully but due to the current direction settings it may cause issues when driving." />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Headland" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="simple" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circle" /> <!-- drive a full circle around the island when first bypassing -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS" 							 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE" 				 text="dectivated" />
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE" 				 text="simple" /> <!-- just move existing waypoints out of the island -->
+		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE" 				 text="circle" /> <!-- drive a full circle around the island when first bypassing -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Turn" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 text="Round" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="straight" /> <!-- TRANSLATE THIS -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="curve" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE" 			 text="Headland reverse maneuver" /> <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"  text="straight" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE" 	 text="curve" /> <!-- TRANSLATE THIS -->
 		<text name="COURSEPLAY_ACTIVATED" 								 text="aktiviran" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Samo ime" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Ime in pot" />
@@ -230,9 +230,9 @@
 		<text name="COURSEPLAY_START" 									 text="Začetek" />
 		<text name="COURSEPLAY_FINISH" 									 text="Konec" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Pot ni veljavna" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->		
+		<text name="COURSEPLAY_FERTILIZERFUNCTION" 						 text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY" 							 text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 						 text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Kible ni mogoče najti" />
@@ -256,7 +256,7 @@
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="najbližja točka" />
 		<text name="COURSEPLAY_FIRST_POINT" 							 text="prva točka" />
 		<text name="COURSEPLAY_CURRENT_POINT" 							 text="trenutna točka" />
-		<text name="COURSEPLAY_NEXT_POINT" 							 	 text="next waypoint" />  <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_NEXT_POINT" 								 text="next waypoint" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 						 text="Pot okrog polja" />
 		<text name="COURSEPLAY_FIELD" 									 text="Polje" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 				 text="(trenutno naložena pot)" />
@@ -300,7 +300,7 @@
 		<text name="COURSEPLAY_RECORDING_TURN_END" 						 text="Manever na koncu obračanja" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 				 text="Začni vzvratno vožnjo" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="UStavi vzvratno vožnjo" />
-		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"				 text="Dodaj delne točke" />
+		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS" 				 text="Dodaj delne točke" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Ikone na zemljevidu: prikaži napis" />
 		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Avtomatsko" />
@@ -315,9 +315,9 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Vrsta semena: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 				 text="Poraba: %s %s (%s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 				 text="···" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"				 text="Prikaži/skrij začetne in končne točke" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"						 text="Prikaži/skrij vse točke" />
-		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 text="Prikaži/skrij točke križišč" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND" 				 text="Prikaži/skrij začetne in končne točke" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL" 					 text="Prikaži/skrij vse točke" />
+		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING" 				 text="Prikaži/skrij točke križišč" />
 
 		<text name="COURSEPLAY_HUD_OPEN" 								 text="Prikaži Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 								 text="Skrij Courseplay HUD" />
@@ -328,45 +328,45 @@
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: vozi pot/ustavi voznika" />
 		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: nadaljuj" />
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: vozi zdaj" />
-		<text name="input_COURSEPLAY_STOP_AT_END"						 text="Courseplay: ustavi se na zadnji točki ali na naslednjem prožilcu" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 						 text="Courseplay: ustavi se na zadnji točki ali na naslednjem prožilcu" />
 		<text name="input_COURSEPLAY_NEXTMODE" 							 text="Courseplay: naslednji način" />
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="Courseplay: prejšnji način" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: akcija miške" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: druga akcija miške" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER" 						 text="Courseplay: place debug marker in log" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="prikaži miškin kazalec" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="skrij miškin kazalec" />
-	
-		<text name="COURSEPLAY_MODE10_MODE" 						     text="način" />
+
+		<text name="COURSEPLAY_MODE10_MODE" 							 text="način" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 text="ravnanje in stiskanje" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 text="polnjenje" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP" 					 text="polnjenje" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 text="samodejno se ustavi za" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 text="samo course igralci" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 text="vsi z vžganimi motorji" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 text="zaznaj traktorje v bližini" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 text="maksimalna hitrost med porivanjem" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 text="višina rezila" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 	 text="ni zaznanega koritastega silosa na začetni točki" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 	 text="ni priključenega rezila" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"						 text="spredaj priključeno rezilo ni podprto" />
-		<text name="COURSEPLAY_MODE10_SETTINGS"						     text="Nastavitve koritastega silosa" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 	 text="širina rezila" />
+		<text name="COURSEPLAY_MODE10_NOSILO" 							 text="ni zaznanega koritastega silosa na začetni točki" />
+		<text name="COURSEPLAY_MODE10_NOBLADE" 							 text="ni priključenega rezila" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE" 					 text="spredaj priključeno rezilo ni podprto" />
+		<text name="COURSEPLAY_MODE10_SETTINGS" 						 text="Nastavitve koritastega silosa" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 						 text="širina rezila" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 					 text="Silos se polni za" />
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 					 text="pelje skozi" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 	 text="vzvratno odlaganje" />
-		
-		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						     text="Napolni tank na bencinski postaji" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						         text="vedno" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"						 text="pod 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						     text="opcija varčevanja z gorivom" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 				 text="vzvratno odlaganje" />
+
+		<text name="COURSEPLAY_FUEL_SEARCH_FOR" 						 text="Napolni tank na bencinski postaji" />
+		<text name="COURSEPLAY_FUEL_ALWAYS" 							 text="vedno" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT" 						 text="pod 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION" 							 text="opcija varčevanja z gorivom" />
 
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 						 text="Reload course list" /> <!-- TODO: TRANSLATION! -->
-		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Couldn't generate course. Try changing the settings or moving the vehicle."/> <!-- TODO: TRANSLATION! -->
-		
-		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		<text name="COURSEPLAY_FillType_Molasses"						 text="molasses" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		
+		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 				 text="Couldn't generate course. Try changing the settings or moving the vehicle." /> <!-- TODO: TRANSLATION! -->
+
+		<text name="COURSEPLAY_FillType_BaleTwine" 						 text="bale twine" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_BaleNet" 						 text="bale net" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="wrapping foil" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+		<text name="COURSEPLAY_FillType_Molasses" 						 text="molasses" /> <!-- TODO TRANSLATION supply fill types for straw harvest addon -->
+
 	</texts>
 </l10n>
