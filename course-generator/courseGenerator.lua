@@ -1,8 +1,6 @@
 --- Setting up packages
 courseGenerator = {}
 
-local modDirectory = g_currentModDirectory
-
 -- Distance of waypoints on the generated track in meters
 courseGenerator.waypointDistance = 5
 
@@ -204,19 +202,5 @@ end
 --- Convert the game direction angles to compass direction
 function courseGenerator.getCompassAngleDeg( gameAngleDeg )
 	return ( 360 + gameAngleDeg - 90 ) % 360
-end
-
--- It is ugly to have a courseplay member function in this file but button.lua seems to be able to
--- use callbacks only if they are in the courseplay class.
-function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
-	local filePath = courseplay.path .. 'course-generator/CoursePlot' .. '.lua';
-	source(filePath);
-	if g_CourseGeneratorScreen == nil then
-		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
-		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
-		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
-	end
-	g_CourseGeneratorScreen:setVehicle( vehicle )
-	g_gui:showGui( 'CourseGeneratorScreen' )
 end
 

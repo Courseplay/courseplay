@@ -176,6 +176,7 @@
 		<text name="COURSEPLAY_CORNER_9" 								 text="Nordeste (novo)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Sudeste (novo)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />

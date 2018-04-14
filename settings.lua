@@ -1212,9 +1212,9 @@ function courseplay:toggleHeadlandOrder(vehicle)
 end;
 
 function courseplay:changeIslandBypassMode(vehicle)
-	vehicle.cp.islandBypassMode = vehicle.cp.islandBypassMode + 1
-	if vehicle.cp.islandBypassMode > Island.BYPASS_MODE_MAX then
-		vehicle.cp.islandBypassMode = Island.BYPASS_MODE_MIN
+	vehicle.cp.courseGeneratorSettings.islandBypassMode = vehicle.cp.courseGeneratorSettings.islandBypassMode + 1
+	if vehicle.cp.courseGeneratorSettings.islandBypassMode > Island.BYPASS_MODE_MAX then
+		vehicle.cp.courseGeneratorSettings.islandBypassMode = Island.BYPASS_MODE_MIN
 	end
 end;
 

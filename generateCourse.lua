@@ -31,7 +31,7 @@ function courseplay:generateCourse(vehicle)
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
 		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points, true);
 		poly.numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
-		if vehicle.cp.islandBypassMode ~= Island.BYPASS_MODE_NONE then
+		if vehicle.cp.courseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
 			if not courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes then
 				courseGenerator.findIslands( courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum])
 			end

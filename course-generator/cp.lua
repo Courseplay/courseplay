@@ -62,7 +62,6 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		headlandSettings.startLocation = courseGenerator.pointToXy({ x = x, z = z })
 	end
 
-	local nTracksToSkip = 0
 	local extendTracks = 0
 	local minDistanceBetweenPoints = 0.5
 	local doSmooth = true
@@ -70,7 +69,8 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 	local centerSettings = {
 		useBestAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC,
 		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
-		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0
+		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0,
+		nRowsToSkip = vehicle.cp.courseGeneratorSettings.nRowsToSkip
 	}
 
 	local minSmoothAngle, maxSmoothAngle
@@ -101,12 +101,11 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 	headlandSettings.mode = vehicle.cp.headland.mode
 	local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end,
 		field, workWidth, headlandSettings,
-		nTracksToSkip,
 		extendTracks, minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, vehicle.cp.vehicleTurnRadius,
 		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
-		vehicle.cp.islandBypassMode, centerSettings
+		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
 	)
 
 	if not status then
@@ -164,5 +163,19 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
 
+end
+
+local modDirectory = g_currentModDirectory
+
+-- It is ugly to have a courseplay member function in this file but button.lua seems to be able to
+-- use callbacks only if they are in the courseplay class.
+function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
+	if g_CourseGeneratorScreen == nil then
+		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
+		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
+		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
+	end
+	g_CourseGeneratorScreen:setVehicle( vehicle )
+	g_gui:showGui( 'CourseGeneratorScreen' )
 end
 

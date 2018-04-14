@@ -175,6 +175,7 @@
 		<text name="COURSEPLAY_CORNER_9" 								 text="Nord-Ost " />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Süd-Ost" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Arbeit beginnen auf" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Feldreihen" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Vorgewende-Bahnen" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Vorgewende Ecken" />

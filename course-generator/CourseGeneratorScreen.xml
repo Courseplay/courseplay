@@ -53,11 +53,20 @@
 				</GuiElement>
 
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="islandBypassMode" toolTip="$l10n_COURSEPLAY_BYPASS_ISLANDS" onOpen="onOpenIslandBypassMode" onClick="onClickIslandBypassMode"
-										focusId="25" focusChangeTop="24" focusChangeBottom="31">
+										focusId="25" focusChangeTop="24" focusChangeBottom="26">
 					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 					<GuiElement type="text" profile="cpMultiTextOptionText" />
 					<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_BYPASS_ISLANDS"/>
+					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+				</GuiElement>
+
+				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="skipRows" toolTip="$l10n_COURSEPLAY_SKIP_ROWS" onOpen="onOpenSkipRows" onClick="onClickSkipRows"
+										focusId="26" focusChangeTop="25" focusChangeBottom="31">
+					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+					<GuiElement type="text" profile="cpMultiTextOptionText" />
+					<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SKIP_ROWS"/>
 					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 				</GuiElement>
 

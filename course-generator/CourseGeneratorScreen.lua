@@ -191,13 +191,27 @@ function CourseGeneratorScreen:onOpenIslandBypassMode( element, parameter )
 		table.insert( texts, courseplay:loc( Island.bypassModeText[ i ]))
 	end
 	element:setTexts( texts )
-	element:setState( self.vehicle.cp.islandBypassMode )
+	element:setState( self.vehicle.cp.courseGeneratorSettings.islandBypassMode )
 end
 
 function CourseGeneratorScreen:onClickIslandBypassMode( state )
-	self.vehicle.cp.islandBypassMode = state
+	self.vehicle.cp.courseGeneratorSettings.islandBypassMode = state
 end
 
+-----------------------------------------------------------------------------------------------------
+-- Number of rows to skip
+function CourseGeneratorScreen:onOpenSkipRows( element, parameter )
+	local texts = {}
+	for i = 0, 3 do
+		table.insert( texts, tostring( i ))
+	end
+	element:setTexts( texts )
+	element:setState( self.vehicle.cp.courseGeneratorSettings.nRowsToSkip + 1 )
+end
+
+function CourseGeneratorScreen:onClickSkipRows( state )
+	self.vehicle.cp.courseGeneratorSettings.nRowsToSkip = state - 1
+end
 
 -----------------------------------------------------------------------------------------------------
 -- Headland mode
