@@ -33,7 +33,7 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Завершить цикл" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Разгрузка при:" />
 		<text name="UNKNOWN" 											 text="неизвестный" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Поворотная полоса по/против часовой стрелки" />
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Направление поворотной полосы" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="Поворотная полоса до/после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="Сгенерировать маршрут" />
 		<text name="COURSEPLAY_MULTI_TOOLS"								 text="Совместная работа орудий:" />
@@ -195,6 +195,7 @@
 		<text name="COURSEPLAY_DIRECTION_SW" 							 text="ЮЗ"/>
 		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="ЗЮЗ"/>
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Начать работу с" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Пропускать проходов" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Основного маршрута" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Проходов поворотной полосы" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Углы поворотной полосы" />
