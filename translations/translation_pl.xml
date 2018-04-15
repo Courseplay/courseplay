@@ -159,7 +159,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE"							 text="Otwórz Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS"							 text="Kanały debugowania:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION"			 text="Generacja kursu" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Zaawansowane ustawienia generatora kursu" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Lokacja startowa:" />
     	<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Lokacja końcowa:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION"						 text="Kierunek startowy:" />
@@ -174,16 +174,16 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Północny-Zachód (nowy)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Północny-Wschód (nowy)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Południowy-Wschód (nowy)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Na początku" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Pomiń rzędy" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Rzędy" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Uwrocia" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Narożniki uwroci" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="W prawo" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="W lewo" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Brak" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Na około" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Zwężanie" />
 		<text name="COURSEPLAY_DIRECTION_1"								 text="Północ" />
 		<text name="COURSEPLAY_DIRECTION_2"								 text="Wschód" />
 		<text name="COURSEPLAY_DIRECTION_3"								 text="Południe" />
