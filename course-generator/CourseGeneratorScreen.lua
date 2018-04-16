@@ -52,18 +52,15 @@ function CourseGeneratorScreen:onOpen()
 	CourseGeneratorScreen:superClass().onOpen(self)
 end
 
-function CourseGeneratorScreen:onClickOk()
-	courseplay:generateCourse( self.vehicle )
-	self:onClickBack()
-end
-
-function CourseGeneratorScreen:onClickGenerate()
+function CourseGeneratorScreen:generate()
 	-- save the selected field as generateCourse will reset it.
 	-- this way we can regenerate the course with different settings without
 	-- having to reselect the field or closing the GUI
 	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
 	courseplay:generateCourse( self.vehicle )
 	self.vehicle. cp.fieldEdge.selectedField.fieldNum = selectedField
+	-- update number of headland passes in case we ended up generating less 
+	self:setHeadlandProperties()
 	if not self.coursePlot then
 		self.coursePlot = CoursePlot:new(
 			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
@@ -72,6 +69,15 @@ function CourseGeneratorScreen:onClickGenerate()
 	self.coursePlot:setWaypoints( self.vehicle.Waypoints )
 	-- if we have course generated, zoom in on the course
 	self.boundingBox = courseplay.utils:getCourseDimensions(self.vehicle.Waypoints)
+end
+
+function CourseGeneratorScreen:onClickOk()
+	self:generate()
+	self:onClickBack()
+end
+
+function CourseGeneratorScreen:onClickGenerate()
+	self:generate()
 end
 
 function CourseGeneratorScreen:onClose()
@@ -220,8 +226,8 @@ function CourseGeneratorScreen:setHeadlandProperties()
 	if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL then
 		if self.vehicle.cp.headland.getNumLanes() == 0 then
 			self.vehicle.cp.headland.numLanes = 1
-			self.headlandPasses:setState( self.vehicle.cp.headland.numLanes )
 		end
+		self.headlandPasses:setState( self.vehicle.cp.headland.numLanes )
 	elseif self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NONE then
 		self.vehicle.cp.headland.numLanes = 0
 	end
@@ -345,7 +351,6 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 		ingameMap:renderHotspots(leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached, false, true);
 
 		if self.coursePlot and self.vehicle.Waypoints then
-			-- self.coursePlot:draw( -ingameMap.worldSizeX / 2, -ingameMap.worldSizeZ / 2, ingameMap.worldSizeX )
 			self.coursePlot:draw()
 		end
 	end
@@ -355,7 +360,7 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
 		eventUsed = true;
 	end
-	if  not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
+	if not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
 		eventUsed = true
 		-- find the field under the cursor
 		local ingameMap = g_currentMission.ingameMap

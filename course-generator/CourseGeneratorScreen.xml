@@ -9,12 +9,12 @@
 				<GuiElement type="text" profile="headerText" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 			</GuiElement>
 
-			<GuiElement type="boxLayout" profile="cpSettingsBox"position="30px 550px">
-				<GuiElement type="empty" id="mapOverview" size="600px 600px">
+			<GuiElement type="boxLayout" profile="cpSettingsBox"position="0px 600px">
+				<GuiElement type="empty" id="mapOverview" size="640px 640px">
 					<GuiElement type="empty" profile="ingameMapOverviewOverlay" id="dynamicMapImage" onDraw="drawDynamicMapImage"/>
 				</GuiElement>
 			</GuiElement>
-			<GuiElement type="boxLayout" profile="cpSettingsBox" position="474px 550px">
+			<GuiElement type="boxLayout" profile="cpSettingsBox" position="474px 590px">
 				
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="fieldSelector" toolTip="$l10n_COURSEPLAY_FIELD_EDGE_PATH" onOpen="onOpenFieldSelector" onClick="onClickFieldSelector"
 										focusId="21" focusChangeTop="103" focusChangeBottom="22">
@@ -72,7 +72,7 @@
 
 			</GuiElement>
 
-			<GuiElement type="boxLayout" profile="cpSettingsBox" position="737px 550px">
+			<GuiElement type="boxLayout" profile="cpSettingsBox" position="737px 590px">
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandMode" toolTip="$l10n_COURSEPLAY_HEADLAND" onOpen="onOpenHeadlandMode" onClick="onClickHeadlandMode"
 										focusId="31" focusChangeTop="25" focusChangeBottom="32">
 					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
