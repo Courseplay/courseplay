@@ -270,10 +270,10 @@ end;
 
 function courseplay:getPipesRotation(vehicle)
 	vehicle.cp.pipeWorkToolIndex = nil
+	vehicle.cp.pipeIndex = nil
+	vehicle.cp.pipePositions = nil
 	for i,implement in pairs(vehicle.attachedImplements) do
 		local workTool = implement.object;
-		vehicle.cp.pipeIndex = nil
-		vehicle.cp.pipePositions = nil 
 		if workTool.movingTools and workTool.pipeCurrentState and workTool.pipeCurrentState == 2 then
 			for index,tool in pairs(workTool.movingTools) do
 				if tool.axis and tool.axis == "AXIS_PIPE" then
@@ -288,6 +288,7 @@ function courseplay:getPipesRotation(vehicle)
 							rot = rotation ;
 							trans = translation;
 							}
+			break;
 		end
 	end
 end		
