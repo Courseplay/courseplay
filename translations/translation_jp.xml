@@ -33,7 +33,7 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 								 text="走行" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="目的地" />
 		<text name="UNKNOWN" 											 text="unknown" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="まくら地 左回り/右回り" />
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="まくら地の方向" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 text="まくら地 前に/後に フィールドコース" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"					 text="フィールドコースを作成する" />
 		<text name="COURSEPLAY_MULTI_TOOLS"					 			 text="分割数" />
@@ -159,7 +159,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="HUD表示方法" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="デバグチャンネル" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="コース作成" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="高度なコースジェネレータ設定" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="開始地点" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="終了地点" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="開始方向" />
@@ -174,15 +174,15 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="作業開始" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="行をスキップする" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="上/下の行" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="まくら地のパス" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="まくら地のコーナー" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="時計回り" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="反時計回り" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="無" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="周る" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="小さな畑" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="North" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" />
