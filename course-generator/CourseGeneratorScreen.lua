@@ -34,7 +34,7 @@ function CourseGeneratorScreen:new(target, custom_mt)
 	-- set up a reverse lookup table
 	self.fieldToState = {}
 	for i, f in ipairs( self.fields ) do
-		self.fieldToState[ f ] = i
+		self.fieldToState[ f.number ] = i
 		i = i + 1
 	end
 	-- add the 'currently loaded course' option
@@ -138,7 +138,8 @@ function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
 		end
 	end
 	element:setTexts( texts )
-	if not self.vehicle.cp.isNewCourseGenSelected() then
+	-- force new course gen settings.
+	if not self.vehicle.cp.isNewCourseGenSelected() or not self.vehicle.cp.hasStartingCorner then
 		courseplay:setStartingCorner( self.vehicle, courseGenerator.STARTING_LOCATION_VEHICLE_POSITION )
 	end
 	element:setState( getStartingLocationState( self.vehicle.cp.startingCorner ))
