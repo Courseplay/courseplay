@@ -1122,7 +1122,6 @@ function courseplay:setStartingCorner( vehicle, newStartingCorner )
 		vehicle:setCpVar('startingDirection',0,courseplay.isClient);
 		courseplay:changeHeadlandNumLanes(vehicle, 0)
 	end
-
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 

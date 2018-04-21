@@ -169,6 +169,9 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-西 (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-东 (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-东 (new)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
 		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />

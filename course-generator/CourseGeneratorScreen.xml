@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose" onCreate="onCreate">
-	<GuiElement type="bitmap" profile="backgroundImageIngame" />
+	<!--GuiElement type="bitmap" profile="backgroundImageIngame" /-->
 
 
 	<GuiElement type="bitmap" profile="uiElementBg">
@@ -9,11 +9,13 @@
 				<GuiElement type="text" profile="headerText" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 			</GuiElement>
 
-			<GuiElement type="boxLayout" profile="cpSettingsBox"position="0px 600px">
+			<GuiElement type="boxLayout" profile="cpMapBox" position="0px 600px">
 				<GuiElement type="empty" id="mapOverview" size="640px 640px">
 					<GuiElement type="empty" profile="ingameMapOverviewOverlay" id="dynamicMapImage" onDraw="drawDynamicMapImage"/>
 				</GuiElement>
+				<GuiElement type="text" profile="cpHintText" id="hintText" text="$l10n_COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" position="10px 10px"/>
 			</GuiElement>
+
 			<GuiElement type="boxLayout" profile="cpSettingsBox" position="474px 590px">
 				
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="fieldSelector" toolTip="$l10n_COURSEPLAY_FIELD_EDGE_PATH" onOpen="onOpenFieldSelector" onClick="onClickFieldSelector"
