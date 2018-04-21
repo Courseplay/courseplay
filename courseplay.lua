@@ -336,6 +336,7 @@ local function setGlobalData()
 	[87]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
 	[88]={name='self.cp.generationPosition.x',dataFormat='Float'},
 	[89]={name='self.cp.generationPosition.z',dataFormat='Float'}
+	[90]={name='self.cp.fertilizerOption',dataFormat='Bool'}
 	}	
 
 	--print("\t### Courseplay: setGlobalData() finished");
