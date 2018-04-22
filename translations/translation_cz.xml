@@ -159,7 +159,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Zapnout CoursePlay HUD:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Kanály ladění:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generovat trasu" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Pokročilé nastavení tvorby kurzů" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Počáteční pozice" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Poslední pozice" />     
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Směr trasy:" />
@@ -174,15 +174,18 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="severozápad" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="jihovýchod" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Začít pracovat na" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Přeskočit řádky" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Řádky nahoru/dolů" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Souvraťové průniky" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Souvraťové rohy" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Ve směru hodin" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="V protisměru hodin" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Žádný" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Dokola" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Úzké pole" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />

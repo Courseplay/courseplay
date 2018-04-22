@@ -155,7 +155,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="打开CP界面:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="调试通道" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="生成任务路径点" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="高级任务生成设置" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="起始位置" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="结束位置" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="车辆行驶的方向" />
@@ -165,20 +165,23 @@
 		<text name="COURSEPLAY_CORNER_3" 								 text="东N" />
 		<text name="COURSEPLAY_CORNER_4" 								 text="东S" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="车辆位置" />
-		<text name="COURSEPLAY_CORNER_7" 								 text="South-西 (new)" />
-		<text name="COURSEPLAY_CORNER_8" 								 text="North-西 (new)" />
-		<text name="COURSEPLAY_CORNER_9" 								 text="North-东 (new)" />
-		<text name="COURSEPLAY_CORNER_10" 								 text="South-东 (new)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="S-西 (new)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="N-西 (new)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="N-东 (new)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="S-东 (new)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="在地图上选择位置" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(点击地图选择地块)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(点击地图选择起始位置)" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="开始工作" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="跳过行" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="上/下 行" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="岬角通过" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="岬角" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="顺时针" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="逆时针" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="无" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="周围" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="狭窄的地块" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />

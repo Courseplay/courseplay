@@ -170,6 +170,9 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Észak/Nyugat (új)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Észak/Kelet (új)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Dél/Kelet (új)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Válaszd ki a térképen" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(válaszd ki a táblát a térképen)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(válaszd ki a kezdőpontot a térképen)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Kezdje a munkát" />
 		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Sort kihagy" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="középen" />

@@ -5,6 +5,19 @@
 		<Value name="size" value="253px 400px"/>
 	</Profile>
 
+	<Profile name="cpMapBox" parent="settingsBox">
+		<Value name="size" value="640px 640px"/>
+	</Profile>
+
+	<Profile name="cpHintText" parent="textDefault">
+		<Value name="screenAlign" value="bottomLeft" />
+		<Value name="positionOrigin" value="bottomLeft" />
+		<Value name="position" value="0px 10.5px" />
+		<Value name="textAlignment" value="left" />
+		<Value name="textSize" value="12px"/>
+		<Value name="textMaxWidth" value="225px"/>
+	</Profile>
+
 	<Profile name="cpMultiTextOption" parent="multiTextOption">
 		<Value name="doLockingOnFocus" value="true" />
 		<Value name="position" value="0px 20px" />

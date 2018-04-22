@@ -3,6 +3,10 @@ CourseGeneratorScreen = {}
 
 local CourseGeneratorScreen_mt = Class(CourseGeneratorScreen, ScreenElement)
 
+CourseGeneratorScreen.SHOW_NOTHING = 0
+CourseGeneratorScreen.SHOW_FULL_MAP = 1
+CourseGeneratorScreen.SHOW_SELECTED_FIELD = 2
+
 function CourseGeneratorScreen:new(target, custom_mt)
 	if custom_mt == nil then
 		custom_mt = CourseGeneratorScreen_mt
@@ -10,7 +14,7 @@ function CourseGeneratorScreen:new(target, custom_mt)
 	local self = ScreenElement:new(target, custom_mt)
 	-- needed for onClickBack to work.
 	self.returnScreenName = "";
-
+	self.state = CourseGeneratorScreen.SHOW_NOTHING
 	self.vehicle = nil
 	self.boundingBox = nil
 
@@ -47,9 +51,36 @@ function CourseGeneratorScreen:setVehicle( vehicle )
 	self.vehicle = vehicle
 end
 
+function CourseGeneratorScreen:showSelectedField()
+	self.state = CourseGeneratorScreen.SHOW_SELECTED_FIELD
+	self.hintText:setText(courseplay:loc('COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION'))
+end
+
+function CourseGeneratorScreen:showCourse()
+	if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
+		self.coursePlot:setWaypoints( self.vehicle.Waypoints )
+		self.coursePlot:setStartPosition(self.vehicle.Waypoints[1].cx, self.vehicle.Waypoints[1].cz)
+		self.coursePlot:setStopPosition(self.vehicle.Waypoints[#self.vehicle.Waypoints].cx, self.vehicle.Waypoints[#self.vehicle.Waypoints].cz)
+	end
+end
+
 function CourseGeneratorScreen:onOpen()
 	g_currentMission.isPlayerFrozen = true
 	CourseGeneratorScreen:superClass().onOpen(self)
+	if not self.coursePlot then
+		self.coursePlot = CoursePlot:new(
+			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
+			self.mapOverview.size[1], self.mapOverview.size[2])
+		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
+		self.coursePlot:setVisible(true)
+	end
+	if self.vehicle.Waypoints then
+		self:showCourse()
+	else
+		local x, _, z = getWorldTranslation(self.vehicle.rootNode)
+		self.coursePlot:setStartPosition(x, z)
+	end
+	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 end
 
 function CourseGeneratorScreen:generate()
@@ -58,15 +89,11 @@ function CourseGeneratorScreen:generate()
 	-- having to reselect the field or closing the GUI
 	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
 	courseplay:generateCourse( self.vehicle )
-	self.vehicle. cp.fieldEdge.selectedField.fieldNum = selectedField
+	self.vehicle.cp.fieldEdge.selectedField.fieldNum = selectedField
 	-- update number of headland passes in case we ended up generating less 
 	self:setHeadlandProperties()
-	if not self.coursePlot then
-		self.coursePlot = CoursePlot:new(
-			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
-			self.mapOverview.size[1], self.mapOverview.size[2])
-	end
-	self.coursePlot:setWaypoints( self.vehicle.Waypoints )
+	self:showCourse()
+	self:showSelectedField()
 	-- if we have course generated, zoom in on the course
 	self.boundingBox = courseplay.utils:getCourseDimensions(self.vehicle.Waypoints)
 end
@@ -110,10 +137,6 @@ end
 
 function CourseGeneratorScreen:selectField( fieldNum )
 	self.vehicle.cp.fieldEdge.selectedField.fieldNum = fieldNum
-	if self.coursePlot then
-		self.coursePlot:delete()
-		self.coursePlot = nil
-	end
 	self.boundingBox = courseplay.utils:getCourseDimensions(courseplay.fields.fieldData[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ].points)
 end
 
@@ -146,7 +169,16 @@ function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
 end
 
 function CourseGeneratorScreen:onClickStartingLocation( state )
-	courseplay:setStartingCorner( self.vehicle, getStartingCorner(state ))
+	courseplay:setStartingCorner( self.vehicle, getStartingCorner(state))
+	if self.vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_SELECT_ON_MAP and
+		not self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos then
+		if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
+			self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = ({ x = self.vehicle.Waypoints[1].cx, z = self.vehicle.Waypoints[1].cz})
+		else
+			local x, _, z = getWorldTranslation(self.vehicle.rootNode)
+			self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = ({ x = x, z = z })
+		end
+	end
 end
 
 -----------------------------------------------------------------------------------------------------
@@ -331,7 +363,7 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 		-- zoom out completely by default
 		ingameMap.mapVisWidthMin = 1
 
-		if self.boundingBox then
+		if self.state == CourseGeneratorScreen.SHOW_SELECTED_FIELD and self.boundingBox then
 			local padding = 10
 			local centerX = ( self.boundingBox.xMin + self.boundingBox.xMax ) / 2
 			local centerY = ( self.boundingBox.yMin + self.boundingBox.yMax ) / 2
@@ -339,7 +371,7 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 			if self.coursePlot then
 				self.coursePlot:setView( centerX, centerY, width )
 			end
-			-- figure out view (center and zoom) for ingame map, normailized
+			-- figure out view (center and zoom) for ingame map, normalized
 			ingameMap.mapVisWidthMin = 1 / ingameMap.worldSizeX * width
 			-- ingame map uses normalized coordinates, the map corners are (0,0) and (1,1)
 			ingameMap.centerXPos = Utils.clamp(( centerX + ingameMap.worldCenterOffsetX)/ingameMap.worldSizeX, 0, 1)
@@ -350,35 +382,54 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 		ingameMap:setSize(self.mapOverview.size[1], self.mapOverview.size[2])
 		local leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached = ingameMap:drawMap(1)
 		ingameMap:renderHotspots(leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached, false, true);
-
-		if self.coursePlot and self.vehicle.Waypoints then
+		if self.coursePlot then
 			self.coursePlot:draw()
 		end
 	end
 end
 
+function CourseGeneratorScreen:isOnMap(x, y)
+	if x < self.mapOverview.absPosition[ 1 ] or x > self.mapOverview.absPosition[ 1 ] + self.mapOverview.size[ 1 ] or
+		y < self.mapOverview.absPosition[ 2 ] or y > self.mapOverview.absPosition[ 2 ] + self.mapOverview.size[ 2 ] then
+		return false
+	else
+		return true
+	end
+end
+
 function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
-		eventUsed = true;
+		eventUsed = true
 	end
 	if not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
+		-- ignore clicks off the map
+		if not self:isOnMap(posX, posY) then return eventUsed end
 		eventUsed = true
-		-- find the field under the cursor
-		local ingameMap = g_currentMission.ingameMap
+		-- find world coordinates from the mouse cursor position
 		local viewX, viewY = posX - self.mapOverview.absPosition[ 1 ], posY - self.mapOverview.absPosition[ 2 ]
 		local viewW, viewH = self.mapOverview.size[ 1 ], self.mapOverview.size[ 2 ]
-		local x = viewX * ingameMap.worldSizeX / viewW - ingameMap.worldCenterOffsetX
-		local z = ingameMap.worldSizeZ - viewY * ingameMap.worldSizeZ / viewH - ingameMap.worldCenterOffsetZ
-		local fieldNum = courseplay:getFieldNumForPosition( x, z )
-		if fieldNum > 0 and self.fields then
-			-- clicked on a field, set it as selected
-			for i, field in ipairs( self.fields ) do
-				if field.number == fieldNum then
-					self.fieldSelector:setState( i )
-					self:selectField( fieldNum )
-					return eventUsed
+		local x, z = self.coursePlot:screenToWorld(posX, posY)
+		if self.state == CourseGeneratorScreen.SHOW_FULL_MAP then
+			-- find the field under the cursor
+			local fieldNum = courseplay:getFieldNumForPosition( x, z )
+			if fieldNum > 0 and self.fields then
+				-- clicked on a field, set it as selected
+				for i, field in ipairs( self.fields ) do
+					if field.number == fieldNum then
+						-- field found
+						self.fieldSelector:setState( i )
+						self:selectField( fieldNum )
+						-- zoom in on the selected field
+						self:showSelectedField()
+						return eventUsed
+					end
 				end
 			end
+		elseif self.state == CourseGeneratorScreen.SHOW_SELECTED_FIELD then--and		  then
+			self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = { x=x, z=z }
+			self.coursePlot:setStartPosition(x, z)
+			self.vehicle.cp.startingCorner = courseGenerator.STARTING_LOCATION_SELECT_ON_MAP
+			self.startingLocation:setState( getStartingLocationState( self.vehicle.cp.startingCorner ))
 		end
 	end
 	return eventUsed
