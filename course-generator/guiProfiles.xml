@@ -15,7 +15,7 @@
 		<Value name="position" value="0px 10.5px" />
 		<Value name="textAlignment" value="left" />
 		<Value name="textSize" value="12px"/>
-		<Value name="textMaxWidth" value="225px"/>
+		<Value name="textMaxWidth" value="640px"/>
 	</Profile>
 
 	<Profile name="cpMultiTextOption" parent="multiTextOption">
