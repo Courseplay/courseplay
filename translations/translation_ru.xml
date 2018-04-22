@@ -80,7 +80,7 @@
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Выровнять по 1-й точке:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Поперечное смещение:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />
-		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Внутренний разворот:" />
+		<text name="COURSEPLAY_TURN_ON_FIELD"							 text="Разворачиваться в пределах поля:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"					 text="Обрат. напр. разворота:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"					 text="последняя пара проходов" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"				 text="когда возможно" />
@@ -148,10 +148,10 @@
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Неподходящий тип техники для маршрута" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="надо подождать хорошей погоды" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Смещение проходов:" />
-		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Правее/левее:" />
-		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Вперед/назад:" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Гориз. смещение загрузки/разгрузки:" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Вертик. смещ. загр./разгр./ожидания:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_X" 							 text="Поперечное смещение:" />
+		<text name="COURSEPLAY_TOOL_OFFSET_Z" 							 text="Продольное смещение:" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 					 text="Поперечное смещ. загрузки/разгрузки:" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 					 text="Продольное смещ. загр./разгр./ожид.:" />
 		<text name="COURSEPLAY_FRONT" 									 text="вперед" />
 		<text name="COURSEPLAY_BACK" 									 text="назад" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Рабочая ширина:" />
@@ -160,8 +160,8 @@
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Режимы отладки:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="ГЕНЕРАЦИЯ МАРШРУТА" />
 		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Расширенные настройки генератора курсов" />
-		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Точка старта:" />
-		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Точка финиша:" />
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Расположение старта:" />
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Расположение финиша:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Направление:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Возврат на старт:" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Юго-Запад" />
@@ -174,9 +174,9 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Северо-Запад (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Северо-Восток (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Юго-Восток (new)" />
-		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Указанное на карте" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(укажите поле, нажав на карте)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(укажите расположение старта, нажав на карте)" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Узкое поле" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
