@@ -156,8 +156,8 @@
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Hibakereső csatorna:" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Útvonal generálás" />
 		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Űtvonalgenerátor beállítások" />
-		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Starting location" />  <!-- TO BE TRANSLATED -->
-		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Ending location" />      <!-- TO BE TRANSLATED -->
+		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Kezdőpont" />
+		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Végpont" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Művelés kezdő iránya:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 					 text="Vissza az első pontra" />
 		<text name="COURSEPLAY_CORNER_1" 								 text="Dél/Nyugat" />
@@ -170,7 +170,11 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Észak/Nyugat (új)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Észak/Kelet (új)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Dél/Kelet (új)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Válaszd ki a térképen" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(válaszd ki a táblát a térképen)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(válaszd ki a kezdőpontot a térképen)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Kezdje a munkát" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Sort kihagy" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="középen" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="fordulósávon" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Fordulósáv sarkok" />
@@ -204,16 +208,16 @@
         <text name="COURSEPLAY_DIRECTION_NNW"                            text="ÉÉNY"/>
         <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="A generálás sikerült, de a jelenlegi iránybeállítások problémát okozhatnak."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Fordulósáv" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
+		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Szigetek kikerülése" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="Kikapcsolva" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="Egyszerű" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="Köröz" /> <!-- drive a full circle around the island when first bypassing -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="Egyszerű" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="Köröz" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Simított" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 text="Fordulómanőver" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  			 text="Kerekített" /> 
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Fordulósáv tolatómanőver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->			
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="egyenes" /> <!-- TRANSLATE THIS -->
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="kanyarodó" /> <!-- TRANSLATE THIS -->
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 text="Fordulósáv tolatómanőver"/> 			
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 text="egyenes" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 text="kanyarodó" />
 		<text name="COURSEPLAY_ACTIVATED" 								 text="Bekapcsolva" /> 
 		<text name="COURSEPLAY_NAME_ONLY" 								 text="Csak név" />          
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 text="Név és útvonal" />	

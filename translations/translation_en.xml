@@ -174,8 +174,12 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
 		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
@@ -209,7 +213,7 @@
         <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                        text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
 		<text name="COURSEPLAY_HEADLAND" 								 text="Headland" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  						 text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="dectivated" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  				 text="deactivated" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  				 text="simple" /> <!-- just move existing waypoints out of the island -->
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  				 text="circle" /> <!-- drive a full circle around the island when first bypassing -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 text="Smooth" />

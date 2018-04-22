@@ -312,20 +312,21 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 			if vehicle.cp.abortWork and vehicle.cp.abortWork == i then
 				vehicle.cp.abortWork = nil;
 			end;
-			if not vehicle.Waypoints[i].rev then
-				local wpX, wpZ = vehicle.Waypoints[i].cx, vehicle.Waypoints[i].cz;
+			local waypointToCeck = vehicle.Waypoints[i]
+			if not waypointToCeck.rev and not waypointToCeck.turnEnd then
+				local wpX, wpZ = waypointToCeck.cx, waypointToCeck.cz;
 				local _, _, disZ = worldToLocal(directionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
-        local vX, _, vZ = localToWorld( directionNode, 0, 0, 0 )
-		    courseplay:debug(('%s: getNextFwdPoint(), vX = %.1f, vZ = %.1f, i = %d, wpX = %.1f, wpZ = %.1f, disZ = %.1f '):format(nameNum(vehicle), vX, vZ, i, wpX, wpZ, disZ ), 14);
+				local vX, _, vZ = localToWorld( directionNode, 0, 0, 0 )
+				courseplay:debug(('%s: getNextFwdPoint(), vX = %.1f, vZ = %.1f, i = %d, wpX = %.1f, wpZ = %.1f, disZ = %.1f '):format(nameNum(vehicle), vX, vZ, i, wpX, wpZ, disZ ), 14);
 				if disZ > 5 then
 					courseplay:debug(('--> return (%d) as waypointIndex'):format(i), 14);
 					return i;
 				end;
 			end;
 		end;
-    local ix = math.min(vehicle.cp.waypointIndex + 1, vehicle.cp.numWaypoints)
-	  courseplay:debug(('\tno waypoint found in front of us, returning next waypoint (%d)'):format(ix), 14);
-    return ix
+		local ix = math.min(vehicle.cp.waypointIndex + 1, vehicle.cp.numWaypoints)
+		courseplay:debug(('\tno waypoint found in front of us, returning next waypoint (%d)'):format(ix), 14);
+		return ix
 	else
 		local maxVarianceX = sin(rad(30));
 		local firstFwd, firstFwdOver3;

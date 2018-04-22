@@ -1224,7 +1224,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_BYPASS_ISLANDS');
 		-- only allow for the new course generator
 		if vehicle.cp.isNewCourseGenSelected() then
-			vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( Island.bypassModeText[ vehicle.cp.islandBypassMode ]);
+			vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( Island.bypassModeText[ vehicle.cp.courseGeneratorSettings.islandBypassMode ]);
 		else
 			vehicle.cp.hud.content.pages[8][7][2].text = '---'
 		end

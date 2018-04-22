@@ -174,6 +174,9 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Северо-Запад (new)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Северо-Восток (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Юго-Восток (new)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Узкое поле" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
@@ -195,6 +198,7 @@
 		<text name="COURSEPLAY_DIRECTION_SW" 							 text="ЮЗ"/>
 		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="ЗЮЗ"/>
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />

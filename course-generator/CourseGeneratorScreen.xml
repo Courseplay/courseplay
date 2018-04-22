@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI onOpen="onOpen" onClose="onClose" onCreate="onCreate">
-	<GuiElement type="bitmap" profile="backgroundImageIngame" />
+	<!--GuiElement type="bitmap" profile="backgroundImageIngame" /-->
 
 
 	<GuiElement type="bitmap" profile="uiElementBg">
@@ -9,12 +9,14 @@
 				<GuiElement type="text" profile="headerText" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 			</GuiElement>
 
-			<GuiElement type="boxLayout" profile="cpSettingsBox"position="30px 550px">
-				<GuiElement type="empty" id="mapOverview" size="600px 600px">
+			<GuiElement type="boxLayout" profile="cpMapBox" position="0px 600px">
+				<GuiElement type="empty" id="mapOverview" size="640px 640px">
 					<GuiElement type="empty" profile="ingameMapOverviewOverlay" id="dynamicMapImage" onDraw="drawDynamicMapImage"/>
 				</GuiElement>
+				<GuiElement type="text" profile="cpHintText" id="hintText" text="$l10n_COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" position="10px 10px"/>
 			</GuiElement>
-			<GuiElement type="boxLayout" profile="cpSettingsBox" position="474px 550px">
+
+			<GuiElement type="boxLayout" profile="cpSettingsBox" position="474px 590px">
 				
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="fieldSelector" toolTip="$l10n_COURSEPLAY_FIELD_EDGE_PATH" onOpen="onOpenFieldSelector" onClick="onClickFieldSelector"
 										focusId="21" focusChangeTop="103" focusChangeBottom="22">
@@ -53,7 +55,7 @@
 				</GuiElement>
 
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="islandBypassMode" toolTip="$l10n_COURSEPLAY_BYPASS_ISLANDS" onOpen="onOpenIslandBypassMode" onClick="onClickIslandBypassMode"
-										focusId="25" focusChangeTop="24" focusChangeBottom="31">
+										focusId="25" focusChangeTop="24" focusChangeBottom="26">
 					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 					<GuiElement type="text" profile="cpMultiTextOptionText" />
@@ -61,9 +63,18 @@
 					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 				</GuiElement>
 
+				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="skipRows" toolTip="$l10n_COURSEPLAY_SKIP_ROWS" onOpen="onOpenSkipRows" onClick="onClickSkipRows"
+										focusId="26" focusChangeTop="25" focusChangeBottom="31">
+					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+					<GuiElement type="text" profile="cpMultiTextOptionText" />
+					<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SKIP_ROWS"/>
+					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+				</GuiElement>
+
 			</GuiElement>
 
-			<GuiElement type="boxLayout" profile="cpSettingsBox" position="737px 550px">
+			<GuiElement type="boxLayout" profile="cpSettingsBox" position="737px 590px">
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandMode" toolTip="$l10n_COURSEPLAY_HEADLAND" onOpen="onOpenHeadlandMode" onClick="onClickHeadlandMode"
 										focusId="31" focusChangeTop="25" focusChangeBottom="32">
 					<GuiElement type="button" profile="cpMultiTextOptionLeft" />

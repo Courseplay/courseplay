@@ -104,6 +104,11 @@ FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicl
 
 function courseplay:vehicleDelete()
 	if self.cp ~= nil then
+		--if vehicle is a courseplayer, delete the vehicle from activeCourseplayers
+		if CpManager.activeCoursePlayers[self.rootNode] then
+			CpManager:removeFromActiveCoursePlayers(self);
+		end 
+		
 		-- Remove created nodes
 		if self.cp.notesToDelete and #self.cp.notesToDelete > 0 then
 			for _, nodeId in ipairs(self.cp.notesToDelete) do
@@ -115,6 +120,16 @@ function courseplay:vehicleDelete()
 		end;
 
 		if courseplay.combines[self.rootNode] then
+			for _, courseplayer in pairs(g_currentMission.steerables) do
+				if courseplayer.cp then
+					if courseplayer.cp.activeCombine and courseplayer.cp.activeCombine == self then
+						courseplay:unregisterFromCombine(courseplayer, self)
+					end
+					if courseplayer.cp.lastActiveCombine and courseplayer.cp.lastActiveCombine == self then
+						courseplayer.cp.lastActiveCombine = nil
+					end
+				end
+			end
 			courseplay.combines[self.rootNode] = nil;
 		end;
 	end;

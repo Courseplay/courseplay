@@ -50,7 +50,7 @@
 --   Will generate turns (start/end waypoints) if the direction change over
 --   headlandSettings.minHeadlandTurnAngle to use the turn system.
 --
--- nTracksToSkip
+-- centerSettings.nRowsToSkip
 --   center tracks to skip. When 0, normal alternating tracks are generated
 --   when > 0, intermediate tracks are skipped to allow for wider turns
 --
@@ -107,8 +107,7 @@
 --   instead of trying to find the optimal angle.
 -- 
 
-function generateCourseForField( field, implementWidth, headlandSettings,
-                                 nTracksToSkip, extendTracks,
+function generateCourseForField( field, implementWidth, headlandSettings, extendTracks,
                                  minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
                                  turnRadius, returnToFirstPoint, islandNodes, islandBypassMode, centerSettings )
 	field.boundingBox =  field.boundary:getBoundingBox()
@@ -179,7 +178,7 @@ function generateCourseForField( field, implementWidth, headlandSettings,
 	linkHeadlandTracks( field, implementWidth, headlandSettings.isClockwise, headlandSettings.startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
 	local resultIsOk = true
 	field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks[ #field.headlandTracks ], field.bigIslands,
-		implementWidth, nTracksToSkip, extendTracks, headlandSettings.nPasses, centerSettings )
+		implementWidth, extendTracks, headlandSettings.nPasses, centerSettings )
 	-- assemble complete course now
 	field.course = Polygon:new()
 	if field.headlandPath and headlandSettings.nPasses > 0 then

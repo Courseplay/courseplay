@@ -31,7 +31,7 @@ function courseplay:generateCourse(vehicle)
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
 		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points, true);
 		poly.numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
-		if vehicle.cp.islandBypassMode ~= Island.BYPASS_MODE_NONE then
+		if vehicle.cp.courseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
 			if not courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes then
 				courseGenerator.findIslands( courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum])
 			end
@@ -41,18 +41,6 @@ function courseplay:generateCourse(vehicle)
 		poly.points = courseplay.utils.table.copy(vehicle.Waypoints, true);
 		poly.numPoints = #(poly.points);
 	end;
-
-	courseplay:debug(string.format('before headland: poly=%s, poly.points=%s, poly.numPoints=%s', tostring(poly), tostring(poly.points), tostring(poly.numPoints)), 7);
-
-	--TODO: needed here?
-	--[[
-	poly.xValues, poly.zValues = {}, {};
-	for i,cp in pairs(poly.points) do
-		-- courseplay:debug(string.format('generateCourse(%i): x/zValues (%d): add cp.cx [%.1f] to xValues, add cp.cz [%.1f] to zValues', debug.getinfo(1).currentline, i, cp.cx, cp.cz), 7);
-		table.insert(poly.xValues, cp.cx);
-		table.insert(poly.zValues, cp.cz);
-	end;
-	]]
 
 	courseplay:clearCurrentLoadedCourse(vehicle);
 
@@ -91,7 +79,6 @@ function courseplay:generateCourse(vehicle)
 		if vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_VEHICLE_POSITION then
 			vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
 			vehicle.cp.generationPosition.hasSavedPosition = true
-			--vehicle.cp.generationPosition.fieldNum = vehicle.cp.fieldEdge.selectedField.fieldNum
 			vehicle:setCpVar('generationPosition.fieldNum',vehicle.cp.fieldEdge.selectedField.fieldNum,courseplay.isClient)
 		end
 		courseGenerator.generate( vehicle, fieldCourseName, poly, workWidth, islandNodes )

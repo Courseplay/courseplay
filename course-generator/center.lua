@@ -30,21 +30,38 @@ local minWaypointDistance = courseGenerator.waypointDistance * 0.25
 -- These are not prefered and will get a penalty in the scoring
 local smallBlockTrackCountLimit = 5
 
+-- 3D table returning the exit corner
+-- first dimension is the entry corner
+-- second dimension is a boolean: if true, the exit is on the same side (left/right)
+-- third dimension is a boolean: if true, the exit is on the same edge (top/bottom)
+local exitCornerMap = {
+	[courseGenerator.BLOCK_CORNER_BOTTOM_LEFT] = {
+		[true] = { [true] = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT, [false] = courseGenerator.BLOCK_CORNER_TOP_LEFT },
+		[false] = {[true] = courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT,[false] = courseGenerator.BLOCK_CORNER_TOP_RIGHT}
+	},
+	[courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT] = {
+		[true] = { [true] = courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT,[false] = courseGenerator.BLOCK_CORNER_TOP_RIGHT },
+		[false] = {[true] = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT, [false] = courseGenerator.BLOCK_CORNER_TOP_LEFT}
+	},
+	[courseGenerator.BLOCK_CORNER_TOP_LEFT] = {
+		[true] = { [true] = courseGenerator.BLOCK_CORNER_TOP_LEFT,    [false] = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT },
+		[false] = {[true] = courseGenerator.BLOCK_CORNER_TOP_RIGHT,   [false] = courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT}
+	},
+	[courseGenerator.BLOCK_CORNER_TOP_RIGHT] = {
+		[true] = { [true] = courseGenerator.BLOCK_CORNER_TOP_RIGHT,   [false] = courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT },
+		[false] = {[true] = courseGenerator.BLOCK_CORNER_TOP_LEFT,    [false] = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT}
+	},
+}
+
 --- find the corner where we will exit the block if entering at entry corner.
-function getBlockExitCorner( entryCorner, nTracks )
-	local oddTracks = nTracks % 2 == 1
-	local exitCorner
-	if entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT then
-		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_TOP_RIGHT or courseGenerator.BLOCK_CORNER_TOP_LEFT
-	elseif entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT then
-		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_TOP_LEFT or courseGenerator.BLOCK_CORNER_TOP_RIGHT
-	elseif entryCorner == courseGenerator.BLOCK_CORNER_TOP_LEFT then
-		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT or courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
-	elseif entryCorner == courseGenerator.BLOCK_CORNER_TOP_RIGHT then
-		exitCorner = oddTracks and courseGenerator.BLOCK_CORNER_BOTTOM_LEFT or courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT
-	end
-	return exitCorner
+function getBlockExitCorner( entryCorner, nRows, nRowsToSkip )
+	-- if we have an even number of rows, we'll end up on the same side (left/right)
+	local sameSide = nRows % 2 == 0
+	-- if we skip an odd number of rows, we'll end up where we started (bottom/top)
+	local sameEdge = nRowsToSkip % 2 == 1
+	return exitCornerMap[ entryCorner ][ sameSide ][ sameEdge ]
 end
+
 
 function isCornerOnTheBottom( entryCorner )
 	return entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT or entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
@@ -126,7 +143,7 @@ end
 
 --- Generate up/down tracks covering a polygon at the optimum angle
 -- 
-function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, nHeadlandPasses, centerSettings )
+function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses, centerSettings )
 	-- translate polygon so we can rotate it around its center. This way all points
 	-- will be approximately the same distance from the origo and the rotation calculation
 	-- will be more accurate
@@ -185,8 +202,8 @@ function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, n
 	-- Now we have to connect the first block with the end of the headland track
 	-- and then connect each block so we cover the entire polygon.
 	math.randomseed( courseGenerator.getCurrentTime())
-	local blocksInSequence = findBlockSequence( blocks, rotatedBoundary, polygon.circleStart, polygon.circleStep, nHeadlandPasses )
-	local workedBlocks = linkBlocks( blocksInSequence, rotatedBoundary, polygon.circleStart, polygon.circleStep)
+	local blocksInSequence = findBlockSequence( blocks, rotatedBoundary, polygon.circleStart, polygon.circleStep, nHeadlandPasses, centerSettings.nRowsToSkip)
+	local workedBlocks = linkBlocks( blocksInSequence, rotatedBoundary, polygon.circleStart, polygon.circleStep, centerSettings.nRowsToSkip)
 
 	-- workedBlocks has now a the list of blocks we need to work on, including the track
 	-- leading to the block from the previous block or the headland.
@@ -216,10 +233,13 @@ function generateTracks( polygon, islands, width, nTracksToSkip, extendTracks, n
 			track[ #track ].turnStart = true
 		end
 		linkParallelTracks( track, block.tracksWithWaypoints,
-			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), nTracksToSkip, continueWithTurn )
+			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings.nRowsToSkip, continueWithTurn )
 		-- TODO: This seems to be causing circling with large implements, disabling for now.
 		-- fixLongTurns( track, width )
-		addRidgeMarkers( track )
+		if centerSettings.nRowsToSkip == 0 then
+			-- do not add ridge markers if we are skipping rows, don't need when working with GPS :)
+			addRidgeMarkers( track )
+		end
 	end
 
 	-- now rotate and translate everything back to the original coordinate system
@@ -396,15 +416,15 @@ end
 -- continuous track.
 -- if bottomToTop == true then start at the bottom and work our way up
 -- if leftToRight == true then start the first track on the left 
--- nTracksToSkip - number of tracks to skip when doing alternative 
+-- nRowsToSkip - number of tracks to skip when doing alternative
 -- tracks
-function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, nTracksToSkip, startWithTurn )
+function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, nRowsToSkip, startWithTurn )
 	if not bottomToTop then
 		-- we start at the top, so reverse order of tracks as after the generation,
 		-- the last one is on the top
 		parallelTracks = reverseTracks( parallelTracks )
 	end
-	parallelTracks = reorderTracksForAlternateFieldwork( parallelTracks, nTracksToSkip )
+	parallelTracks = reorderTracksForAlternateFieldwork( parallelTracks, nRowsToSkip )
 
 	-- now make sure that the we work on the tracks in alternating directions
 	-- we generate track from left to right, so the ones which we'll traverse
@@ -491,7 +511,7 @@ end
 -- want to skip every second track, we'd work in the following 
 -- order: 1, 3, 5, 4, 2
 --
-function reorderTracksForAlternateFieldwork( parallelTracks, nTracksToSkip )
+function reorderTracksForAlternateFieldwork( parallelTracks, nRowsToSkip )
 	-- start with the first track and work up to the last,
 	-- skipping every nTrackToSkip tracks.
 	local reorderedTracks = {}
@@ -502,14 +522,14 @@ function reorderTracksForAlternateFieldwork( parallelTracks, nTracksToSkip )
 		-- find first non-worked track
 		local start = 1
 		while workedTracks[ start ] do start = start + 1 end
-		for i = start, #parallelTracks, nTracksToSkip + 1 do
+		for i = start, #parallelTracks, nRowsToSkip + 1 do
 			table.insert( reorderedTracks, parallelTracks[ i ])
 			workedTracks[ i ] = true
 			lastWorkedTrack = i
 		end
 		-- we reached the last track, now turn back and work on the
 		-- rest, find the last unworked track first
-		for i = lastWorkedTrack + 1, 1, - ( nTracksToSkip + 1 ) do
+		for i = lastWorkedTrack + 1, 1, - ( nRowsToSkip + 1 ) do
 			if ( i <= #parallelTracks ) and not workedTracks[ i ] then
 				table.insert( reorderedTracks, parallelTracks[ i ])
 				workedTracks[ i ] = true
@@ -850,7 +870,7 @@ end
 -- to allow for automatic tests.
 -- headland is the innermost headland pass.
 --
-function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadlandPasses )
+function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadlandPasses, nRowsToSkip )
 	-- GA parameters, depending on the number of blocks
 	local maxGenerations = 10 * #blocks
 	local tournamentSize = 5
@@ -866,7 +886,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 		chromosome.distance = 0
 		for i = 1, #chromosome.blockSequence do
 			local currentBlockIx = chromosome.blockSequence[ i ]
-			local currentBlockExitCorner = getBlockExitCorner( chromosome.entryCorner[ currentBlockIx ], #blocks[ currentBlockIx ] )
+			local currentBlockExitCorner = getBlockExitCorner( chromosome.entryCorner[ currentBlockIx ], #blocks[ currentBlockIx ], nRowsToSkip )
 			local currentBlockExitPoint = blocks[ currentBlockIx ].polygon[ currentBlockExitCorner ]
 			-- in case of the first block we need to add the distance to drive from the end of the 
 			-- innermost headland track to the entry point of the first block
@@ -976,7 +996,7 @@ function getTrackBetweenPointsOnHeadland( headland, startIx, endIx, step )
 	return track
 end
 
-function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBlockDirection )
+function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBlockDirection, nRowsToSkip )
 	local workedBlocks = {}
 	for i, block in ipairs( blocksInSequence ) do
 		if i == 1 then
@@ -987,7 +1007,7 @@ function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBloc
 		if i > 1 then
 			-- for the rest of the blocks, the track to the block is from the exit point of the previous block
 			local previousBlock = blocksInSequence[ i - 1 ]
-			local previousBlockExitCorner = getBlockExitCorner( previousBlock.entryCorner, #previousBlock )
+			local previousBlockExitCorner = getBlockExitCorner( previousBlock.entryCorner, #previousBlock, nRowsToSkip )
 			local headland = block.polygon[ block.entryCorner ].headland
 			local previousOriginalTrackNumber = previousBlock.polygon[ previousBlockExitCorner ].originalTrackNumber
 			local thisOriginalTrackNumber = block.polygon[ block.entryCorner ].originalTrackNumber

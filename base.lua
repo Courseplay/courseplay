@@ -488,7 +488,14 @@ function courseplay:load(savegame)
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	self.cp.ridgeMarkersAutomatic = true;
-	self.cp.islandBypassMode = Island.BYPASS_MODE_NONE;
+	-- TODO: add all course gen settings to this table
+	-- TODO: create an event for MP
+	self.cp.courseGeneratorSettings = {
+		startingLocation = self.cp.startingCorner,
+		manualStartingLocationWorldPos = nil,
+		islandBypassMode = Island.BYPASS_MODE_NONE,
+		nRowsToSkip = 0
+	}
 	self.cp.headland = {
 		-- with the old, manual direction selection course generator
 		manuDirMaxNumLanes = 6;
