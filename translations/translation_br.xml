@@ -52,7 +52,7 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 					 text="%s para salvar pasta" />		
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 						 text="%s para salvar rotas" />		
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 					 text="Rotas: %q" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Configuração avançada do gerador de rotas" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 	 text="Carregar rota/mesclar na rota carragada" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 	 text="Adicionar rota no final" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 	 text="Mover para pasta" />
@@ -175,25 +175,25 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="Noroeste (novo)" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="Nordeste (novo)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="Sudeste (novo)" />
-		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Selecionar posição no mapa" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(Clique no mapa para selecionar o campo)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(Clique no mapa para selecionar a posição inicial)" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Iniciar o trabalho em" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Ignorar linhas" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Cima/Baixo linhas" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Canto cabeceira" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="horário" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Anti-horário" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Nenhum" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Normal" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Campo estreito" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Leste" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sul" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Borda mais longa" />
 		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
         <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
         <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
