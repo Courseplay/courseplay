@@ -54,12 +54,21 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
 	if vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION and vehicle.cp.generationPosition.hasSavedPosition then
 		headlandSettings.startLocation = courseGenerator.pointToXy({ x = vehicle.cp.generationPosition.x, z = vehicle.cp.generationPosition.z })
+		courseplay.debugVehicle(7, vehicle, "Course starting location is last vehicle position at %.1f/%.1f",
+			vehicle.cp.generationPosition.x, vehicle.cp.generationPosition.z )
 	elseif courseGenerator.isOrdinalDirection( vehicle.cp.startingCorner ) then
 		headlandSettings.startLocation = courseGenerator.getStartingLocation( field.boundary, vehicle.cp.startingCorner )
-	else
+		courseplay.debugVehicle(7, vehicle, "Course starting location is corner %d", vehicle.cp.startingCorner )
+	elseif vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_VEHICLE_POSITION then
 		local x, z
 		x, _, z = getWorldTranslation( vehicle.rootNode )
 		headlandSettings.startLocation = courseGenerator.pointToXy({ x = x, z = z })
+		courseplay.debugVehicle(7, vehicle, "Course starting location is current vehicle position at %.1f/%.1f", x, z )
+	elseif vehicle.cp.courseGeneratorSettings.startingLocationWorldPos then
+		headlandSettings.startLocation = courseGenerator.pointToXy(vehicle.cp.courseGeneratorSettings.startingLocationWorldPos)
+		courseplay.debugVehicle(7, vehicle, "Course starting location position selected on map at %.1f/%.1f",
+			vehicle.cp.courseGeneratorSettings.startingLocationWorldPos.x,
+			vehicle.cp.courseGeneratorSettings.startingLocationWorldPos.z)
 	end
 
 	local extendTracks = 0
