@@ -44,6 +44,7 @@ function CourseGeneratorScreen:new(target, custom_mt)
 	-- add the 'currently loaded course' option
 	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
 	self.fieldToState[ 0 ] = #self.fields
+
 	return self
 end
 
@@ -139,6 +140,48 @@ function CourseGeneratorScreen:selectField( fieldNum )
 	self.vehicle.cp.fieldEdge.selectedField.fieldNum = fieldNum
 	self.boundingBox = courseplay.utils:getCourseDimensions(courseplay.fields.fieldData[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ].points)
 end
+-----------------------------------------------------------------------------------------------------
+-- Working width
+function CourseGeneratorScreen:onOpenWidth( element )
+	local texts = {}
+	self.minWidth, self.maxWidth = 1, 50
+	local formatString = '%.1f m'
+	local w = self.vehicle.cp.workWidth
+	-- have at most 3 values in the text box around the selected
+	if w > self.minWidth then table.insert( texts, string.format(formatString, w - 0.1)) end
+	table.insert(texts, string.format(formatString, w))
+	if w < self.maxWidth then table.insert( texts, string.format(formatString, w + 0.1)) end
+	element:setTexts(texts)
+	if w == self.minWidth then
+		element:setState(1)
+	else
+		element:setState(2)
+	end
+end
+
+function CourseGeneratorScreen:onClickWidth( state )
+	if state == 1 then
+		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
+	else
+		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
+	end
+	self:onOpenWidth(self.width)
+end
+
+function CourseGeneratorScreen:onScrollWidth(element, isDown, isUp, button)
+	local eventUsed = false
+	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
+		eventUsed = true
+		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
+		self:onOpenWidth(self.width)
+	end
+	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
+		eventUsed = true
+		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
+		self:onOpenWidth(self.width)
+	end
+	return eventUsed
+end
 
 -----------------------------------------------------------------------------------------------------
 -- Starting location
@@ -223,7 +266,7 @@ function CourseGeneratorScreen:onClickManualDirectionAngle( state )
 end
 
 -----------------------------------------------------------------------------------------------------
--- Headland corner
+-- Island bypass mode
 function CourseGeneratorScreen:onOpenIslandBypassMode( element, parameter )
 	local texts = {}
 	for i = 1, Island.BYPASS_MODE_MAX do
@@ -236,6 +279,7 @@ end
 function CourseGeneratorScreen:onClickIslandBypassMode( state )
 	self.vehicle.cp.courseGeneratorSettings.islandBypassMode = state
 end
+
 
 -----------------------------------------------------------------------------------------------------
 -- Number of rows to skip
@@ -250,6 +294,35 @@ end
 
 function CourseGeneratorScreen:onClickSkipRows( state )
 	self.vehicle.cp.courseGeneratorSettings.nRowsToSkip = state - 1
+end
+
+-----------------------------------------------------------------------------------------------------
+-- Return to first point
+function CourseGeneratorScreen:onOpenReturnToFirstPoint( element, parameter )
+	local texts = {}
+	table.insert( texts, courseplay:loc( 'COURSEPLAY_DEACTIVATED'))
+	table.insert( texts, courseplay:loc( 'COURSEPLAY_ACTIVATED'))
+	element:setTexts( texts )
+	element:setState( self.vehicle.cp.returnToFirstPoint and 2 or 1 )
+end
+
+function CourseGeneratorScreen:onClickReturnToFirstPoint( state )
+	self.vehicle.cp.returnToFirstPoint = state == 2
+end
+
+-----------------------------------------------------------------------------------------------------
+-- Multiple tools
+function CourseGeneratorScreen:onOpenMultiTools( element, parameter )
+	local texts = {}
+	for i = 1,4 do
+		table.insert( texts, i )
+	end
+	element:setTexts( texts )
+	element:setState( self.vehicle.cp.multiTools )
+end
+
+function CourseGeneratorScreen:onClickMultiTools( state )
+	self.vehicle.cp.multiTools = state
 end
 
 -----------------------------------------------------------------------------------------------------
@@ -388,9 +461,10 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 	end
 end
 
-function CourseGeneratorScreen:isOnMap(x, y)
-	if x < self.mapOverview.absPosition[ 1 ] or x > self.mapOverview.absPosition[ 1 ] + self.mapOverview.size[ 1 ] or
-		y < self.mapOverview.absPosition[ 2 ] or y > self.mapOverview.absPosition[ 2 ] + self.mapOverview.size[ 2 ] then
+
+function CourseGeneratorScreen:isOverElement( x, y, element )
+	if x < element.absPosition[ 1 ] or x > element.absPosition[ 1 ] + element.size[ 1 ] or
+		y < element.absPosition[ 2 ] or y > element.absPosition[ 2 ] + element.size[ 2 ] then
 		return false
 	else
 		return true
@@ -401,9 +475,13 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
 		eventUsed = true
 	end
+	print( isDown, isUp, button )
+	if self:isOverElement(posX, posY, self.width) then
+		return self:onScrollWidth(self.width, isDown, isUp, button)
+	end
 	if not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
 		-- ignore clicks off the map
-		if not self:isOnMap(posX, posY) then return eventUsed end
+		if not self:isOverElement(posX, posY, self.mapOverview) then return eventUsed end
 		eventUsed = true
 		-- find world coordinates from the mouse cursor position
 		local viewX, viewY = posX - self.mapOverview.absPosition[ 1 ], posY - self.mapOverview.absPosition[ 2 ]

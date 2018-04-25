@@ -25,6 +25,10 @@
 		<Value name="margin" value="0px 25px 0px 14px" />
 	</Profile>
 
+	<Profile name="cpSmallMultiTextOption" parent="cpMultiTextOption">
+		<Value name="size" value="123px 24px" />
+	</Profile>
+
 	<Profile name="cpMultiTextOptionTitle" parent="multiTextOptionTitle">
 		<Value name="textSize" value="16px"/>
 	</Profile>
@@ -54,6 +58,14 @@
 		<Value name="textSize" value="14px"/>
 		<Value name="position" value="0px 6px" />
 		<Value name="textMaxWidth" value="205px"/>
+	</Profile>
+
+	<Profile name="cpSmallMultiTextOptionBg" parent="cpMultiTextOptionBg">
+		<Value name="size" value="75px 24px" />
+	</Profile>
+
+	<Profile name="cpSmallMultiTextOptionText" parent="cpMultiTextOptionText">
+		<Value name="textMaxWidth" value="75px"/>
 	</Profile>
 
 </GUIProfiles>

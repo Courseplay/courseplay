@@ -64,7 +64,7 @@
 				</GuiElement>
 
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="skipRows" toolTip="$l10n_COURSEPLAY_SKIP_ROWS" onOpen="onOpenSkipRows" onClick="onClickSkipRows"
-										focusId="26" focusChangeTop="25" focusChangeBottom="31">
+										focusId="26" focusChangeTop="25" focusChangeBottom="27">
 					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 					<GuiElement type="text" profile="cpMultiTextOptionText" />
@@ -72,9 +72,36 @@
 					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 				</GuiElement>
 
+				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="returnToFirstPoint" toolTip="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT" onOpen="onOpenReturnToFirstPoint" onClick="onClickReturnToFirstPoint"
+										focusId="27" focusChangeTop="26" focusChangeBottom="28">
+					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+					<GuiElement type="text" profile="cpMultiTextOptionText" />
+					<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT"/>
+					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+				</GuiElement>
+
+				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="multiTools" toolTip="$l10n_COURSEPLAY_MULTI_TOOLS" onOpen="onOpenMultiTools" onClick="onClickMultiTools" wrap="false"
+										focusId="28" focusChangeTop="27" focusChangeBottom="30">
+					<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
+					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+					<GuiElement type="text" profile="cpMultiTextOptionText" />
+					<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_MULTI_TOOLS"/>
+					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+				</GuiElement>
+
 			</GuiElement>
 
 			<GuiElement type="boxLayout" profile="cpSettingsBox" position="737px 590px">
+				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="width" toolTip="$l10n_COURSEPLAY_WORK_WIDTH" onOpen="onOpenWidth" onClick="onClickWidth" wrap="false"
+										focusId="30" focusChangeTop="25" focusChangeBottom="31">
+					<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
+					<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+					<GuiElement type="text" profile="cpMultiTextOptionText" />
+					<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_WORK_WIDTH"/>
+					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+				</GuiElement>
+
 				<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandMode" toolTip="$l10n_COURSEPLAY_HEADLAND" onOpen="onOpenHeadlandMode" onClick="onClickHeadlandMode"
 										focusId="31" focusChangeTop="25" focusChangeBottom="32">
 					<GuiElement type="button" profile="cpMultiTextOptionLeft" />
@@ -120,13 +147,12 @@
 					<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 				</GuiElement>
 
-
 			</GuiElement>
 
 			<GuiElement type="flowLayout" profile="buttonBox" id="buttonsPC" >
-				<GuiElement type="button" profile="buttonBack"   size="333px 40px" text="$l10n_button_back" onClick="onClickBack"  focusId="101" focusChangeTop="13"  focusChangeBottom="102" />
+				<GuiElement type="button" profile="buttonBack"   size="333px 40px" text="$l10n_button_back" onClick="onClickBack"  focusId="101" focusChangeTop="35"  focusChangeBottom="102" />
 				<GuiElement type="button" profile="buttonReload" size="333px 40px" text="$l10n_COURSEPLAY_GENERATE_FIELD_COURSE"  onClick="onClickGenerate" focusId="102" focusChangeTop="101" focusChangeBottom="103" />
-				<GuiElement type="button" profile="buttonSave"   size="334px 40px" text="$l10n_button_ok"   onClick="onClickOk"    focusId="103" focusChangeTop="102" focusChangeBottom="11" />
+				<GuiElement type="button" profile="buttonSave"   size="334px 40px" text="$l10n_button_ok"   onClick="onClickOk"    focusId="103" focusChangeTop="102" focusChangeBottom="21" />
 			</GuiElement>
 
 		</GuiElement>

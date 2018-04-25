@@ -101,7 +101,6 @@ function courseplay:generateCourse(vehicle)
 
 		courseplay:debug(string.format("generateCourse(%i): headland.numLanes=%s, headland.orderBefore=%s", debug.getinfo(1).currentline, tostring(vehicle.cp.headland.numLanes), tostring(vehicle.cp.headland.orderBefore)), 7);
 
-
 		local orderCW = vehicle.cp.headland.userDirClockwise;
 		local numLanes = vehicle.cp.headland.getNumLanes();
 		local polyPoints = poly.points;
