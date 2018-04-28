@@ -4,16 +4,18 @@
 
 
 	<GuiElement type="bitmap" profile="uiElementBg">
-		<GuiElement type="bitmap" profile="uiElementMainBg" >
+		<GuiElement type="bitmap" profile="uiElementMainBg">
 			<GuiElement type="bitmap" profile="uiElementBaseHeader">
 				<GuiElement type="text" profile="headerText" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 			</GuiElement>
 
-			<GuiElement type="boxLayout" profile="cpMapBox" position="0px 600px">
-				<GuiElement type="empty" id="mapOverview" size="640px 640px">
-					<GuiElement type="empty" profile="ingameMapOverviewOverlay" id="dynamicMapImage" onDraw="drawDynamicMapImage"/>
-				</GuiElement>
-				<GuiElement type="text" profile="cpHintText" id="hintText" text="$l10n_COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" position="10px 10px"/>
+			<GuiElement type="empty" id="mapOverview" profile="ingameMapOverview" position="0px 140px" size="460px 460px">
+				<GuiElement type="empty" profile="ingameMapOverviewOverlay" id="dynamicMapImage" onDraw="drawDynamicMapImage" />
+			</GuiElement>
+			<GuiElement type="empty" profile="cpMapBox" id="mapButtons" position="0px 140px" 	size="460px 30px">
+				<GuiElement type="text" profile="cpHintText" id="hintText" text="$l10n_COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" position="0px 15px"/>
+				<GuiElement type="button" profile="cpResetButton"  position="460px 30px"
+										onClick="onClickResetMap"  focusId="101" focusChangeTop="35"  focusChangeBottom="102" />
 			</GuiElement>
 
 			<GuiElement type="boxLayout" profile="cpSettingsBox" position="474px 590px">

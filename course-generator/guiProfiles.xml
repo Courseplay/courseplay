@@ -7,15 +7,14 @@
 
 	<Profile name="cpMapBox" parent="settingsBox">
 		<Value name="size" value="640px 640px"/>
+		<Value name="alignmentY" value="middle" />
 	</Profile>
 
 	<Profile name="cpHintText" parent="textDefault">
-		<Value name="screenAlign" value="bottomLeft" />
 		<Value name="positionOrigin" value="bottomLeft" />
-		<Value name="position" value="0px 10.5px" />
 		<Value name="textAlignment" value="left" />
 		<Value name="textSize" value="12px"/>
-		<Value name="textMaxWidth" value="640px"/>
+		<Value name="textMaxWidth" value="430px"/>
 	</Profile>
 
 	<Profile name="cpMultiTextOption" parent="multiTextOption">
@@ -66,6 +65,13 @@
 
 	<Profile name="cpSmallMultiTextOptionText" parent="cpMultiTextOptionText">
 		<Value name="textMaxWidth" value="75px"/>
+	</Profile>
+
+	<Profile name="cpResetButton" parent="pcButton">
+		<Value name="size" value="28px 28px"/>
+		<Value name="iconUVs" value="605px 989px 27px 27px"/>
+		<Value name="iconTextOffset" value="35px -10.5px"/>
+		<Value name="positionOrigin" value="topRight"/>
 	</Profile>
 
 </GUIProfiles>

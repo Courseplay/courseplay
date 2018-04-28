@@ -84,6 +84,13 @@ function CourseGeneratorScreen:onOpen()
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 end
 
+function CourseGeneratorScreen:onClickResetMap(element)
+	if self.coursePlot then
+		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
+		self.state = CourseGeneratorScreen.SHOW_FULL_MAP
+	end
+end
+
 function CourseGeneratorScreen:generate()
 	-- save the selected field as generateCourse will reset it.
 	-- this way we can regenerate the course with different settings without
@@ -109,9 +116,11 @@ function CourseGeneratorScreen:onClickGenerate()
 end
 
 function CourseGeneratorScreen:onClose()
-	self.vehicle.cp.hud.reloadPage[ 8 ] = true
 	g_currentMission.isPlayerFrozen = false
-	if self.vehicle then self.vehicle = nil end
+	if self.vehicle then
+		self.vehicle.cp.hud.reloadPage[ 8 ] = true
+		self.vehicle = nil
+	end
 	if self.boundingBox then self.boundingBox = nil end
 	if self.coursePlot then
 		self.coursePlot:delete()
@@ -475,7 +484,6 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
 		eventUsed = true
 	end
-	print( isDown, isUp, button )
 	if self:isOverElement(posX, posY, self.width) then
 		return self:onScrollWidth(self.width, isDown, isUp, button)
 	end
