@@ -170,7 +170,12 @@ function roundCorners( polygon, turnRadius )
 		-- can we get from the current point to the next?
 		while turnRadius > getTurningRadiusBetweenTwoPoints( polygon[ cIx ], polygon[ nIx ], turnRadius ) do
 			nIx, lookaheadDistance, cIx, lookbackDistance = getNextWpPairToCheck( polygon, nIx, lookaheadDistance, cIx, lookbackDistance )
-			needsArc = true
+			if nIx > #polygon or cIx < 1 then
+				-- don't want to deal with rollover, there'll be no rounding at the beginning/end of polygon for now
+				break
+			else
+				needsArc = true
+			end
 		end
 		if needsArc then
 			needsArc = false
@@ -180,12 +185,13 @@ function roundCorners( polygon, turnRadius )
 		nIx = cIx + 1 
 	end
 	polygon:calculateData()
-	--applyLowPassFilter( polygon, math.pi, 1 )
+	-- We have trouble with rounding tight S turns so clean up the resulting glitches.
+	polygon:removeGlitches()
 end
 
 --- If we find that we can't drive to the next waypoint with our turning radius then we
 -- check if we can drive to the one after the next or the one before the current. If that
--- still not works then we go further forward and backwards, based on the distance from
+-- still does not work then we go further forward and backwards, based on the distance from
 -- the current wp.
 function getNextWpPairToCheck( polygon, fwdIx, lookaheadDistance, backIx, lookbackDistance )
 	local fD = polygon[ fwdIx ].nextEdge.length
@@ -340,6 +346,11 @@ function findArcBetweenEdges( e1, e2, r )
 	alpha = getDeltaAngle( e1.angle, e2.angle )
 	-- do about x degree steps
 	local nSteps = math.abs( math.floor( alpha * 30 / ( 2 * math.pi )))
+	-- sanity check. Due to our lousy calculations we may end up here trying to generate an
+	-- arc for just a few degree turn. This then results in weird artifacts like spikes. This
+	-- is mainly becuase we don't handle cleanly the case where the intersection of e1 and e2
+	-- is _behind_ e1.
+	if alpha < math.pi / 12 then return nil end
 	-- delta angle for one step
 	local deltaAlpha = alpha / ( nSteps + 1 )
 	-- length of a step, with a magic constant to cover up the calculation errors
@@ -686,17 +697,17 @@ function Polyline:replacePointsWithArc( fromIx, toIx, r )
 	local arc = findArcBetweenEdges( self[ fromIx ].prevEdge, self[ toIx ].nextEdge, r )
 	if not arc then return toIx end
 	-- remove old vertices
-	self:removeElementsBetween( fromIx + 1, toIx )
-	local targetIx = fromIx + 1
+	self:removeElementsBetween( self:getIndex(fromIx + 1), toIx )
+	local targetIx = self:getIndex(fromIx + 1)
 	-- add the arc instead
 	for i, p in ipairs( arc ) do
 		table.insert( self, targetIx, p )
-		targetIx = targetIx + 1
+		targetIx = self:getIndex(targetIx + 1)
 	end
 	self:calculateData()
 	-- continue with the next vertex after the curve,
 	-- TODO: will this work at the end of the line?
-	return targetIx + 1
+	return self:getIndex(targetIx + 1)
 end
 
 -- spline functions: smooth, tuck and refine
@@ -804,11 +815,40 @@ function Polyline:space( angleThreshold, d )
 	self:calculateData()
 end
 
+-- Yet another cleanup function to remove sudden and short direction changes
+-- resulting from lousy calculations.
+function Polyline:removeGlitches()
+	local i = 2
+	while i < #self do
+		local cp, pp = self[ i ], self[ i - 1 ]
+		local dA = math.abs( getDeltaAngle( pp.nextEdge.angle, pp.prevEdge.angle ))+
+			math.abs( getDeltaAngle( cp.prevEdge.angle, cp.nextEdge.angle ))
+		-- the direction changes a lot over two points, this is a glitch
+		if dA > math.rad(270) then
+			table.remove( self, i )
+		else
+			i = i + 1
+		end
+	end
+	self:calculateData()
+end
+
+
+
 --- Remove vertices between (and including) two indexes
 --
 function Polyline:removeElementsBetween( fromIx, toIx )
-	for ix = fromIx, toIx do
-		table.remove( self, fromIx )
+	local startIx = fromIx
+	-- if interval rolls over, start removing vertices at the end
+	if fromIx > toIx then
+		local endIx = #self
+		for ix = fromIx, endIx do
+			table.remove( self, fromIx )
+		end
+		startIx = 1
+	end
+	for ix = startIx, toIx do
+		table.remove( self, startIx )
 	end
 end
 
