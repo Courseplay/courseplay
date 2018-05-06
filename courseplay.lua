@@ -226,7 +226,7 @@ local function setGlobalData()
 	courseplay.HEADLAND_CORNER_TYPE_SMOOTH = 1
 	courseplay.HEADLAND_CORNER_TYPE_SHARP = 2
 	courseplay.HEADLAND_CORNER_TYPE_ROUND = 3
-	courseplay.HEADLAND_CORNER_TYPE_MAX = 2
+	courseplay.HEADLAND_CORNER_TYPE_MAX = 3
 
 	courseplay.cornerTypeText = {
 		'COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH',
