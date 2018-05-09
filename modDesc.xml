@@ -128,6 +128,10 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 		<input name="COURSEPLAY_MOUSEACTION_PRIMARY"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_LEFT"	/>
 		<input name="COURSEPLAY_MOUSEACTION_SECONDARY"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_RIGHT"	/>
 		<input name="COURSEPLAY_DEBUG_MARKER"			category="ONFOOT VEHICLE"	key1="KEY_lalt KEY_d" 		key2="" button="" device="0" mouse=""					/>
-	</inputBindings>
+    <input name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
+		<input name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
+		<input name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
+		<input name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
+</inputBindings>
 
 </modDesc>

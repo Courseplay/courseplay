@@ -792,6 +792,20 @@ function courseplay:draw()
 					end;
 				else
 					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP);
+          -- if self.cp.movingToolsPrimary and self.cp.movingToolsSecondary then
+            if self.cp.hasShovelStatePositions[2] then
+              g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_LOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD);
+            end;
+            if self.cp.hasShovelStatePositions[3] then
+              g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_TRANSPORT'). InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT);
+            end;
+            if self.cp.hasShovelStatePositions[4] then
+              g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_PREUNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD);
+            end;
+            if self.cp.hasShovelStatePositions[5] then
+              g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_UNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD);
+            end;
+          --end;
 				end;
 			else
 				if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
@@ -940,6 +954,14 @@ function courseplay:update(dt)
 			self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
 		elseif self.cp.canSwitchMode and self.cp.prevMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
 			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
+     elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION) then
+      courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[2], dt)
+    elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION) then
+      courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[3], dt)
+    elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION) then
+      courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[4], dt)
+    elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION) then
+      courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[5], dt)
 		end;
 
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then

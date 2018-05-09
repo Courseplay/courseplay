@@ -339,6 +339,10 @@
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="Courseplay: ações do mouse" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="Courseplay: ações secundárias do mouse" />
 		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="Courseplay: colocar debug do marcador no log" /> 
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="CP: Mover para posição de carregar" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="CP: Mover para posição de transporte" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="CP: Mover para posição pré descarregar" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="CP: Mover para posição descarregar" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="mostrar cursor do mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="ocultar cursor do mouse" />
 	
