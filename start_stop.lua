@@ -185,14 +185,16 @@ function courseplay:start(self)
 				isReversePossible = false
 			end
 		end
-		
+				
 		if workTool.sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
 			if workTool.cp.orignalAllowsSpraying == nil then
 				workTool.cp.orignalAllowsSpraying = workTool.allowsSpraying
 			end
 			workTool.allowsSpraying = self.cp.fertilizerOption
 		end	
-		
+		if workTool.cp.isSugarCaneAugerWagon then
+			isReversePossible = false
+		end
 		
 	end;
 	self.cp.isReversePossible = isReversePossible
