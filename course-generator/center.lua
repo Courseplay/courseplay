@@ -236,12 +236,12 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings.nRowsToSkip, continueWithTurn )
 		-- TODO: This seems to be causing circling with large implements, disabling for now.
 		-- fixLongTurns( track, width )
-		if centerSettings.nRowsToSkip == 0 then
-			-- do not add ridge markers if we are skipping rows, don't need when working with GPS :)
-			addRidgeMarkers( track )
-		end
 	end
 
+	if centerSettings.nRowsToSkip == 0 then
+		-- do not add ridge markers if we are skipping rows, don't need when working with GPS :)
+		addRidgeMarkers( track )
+	end
 	-- now rotate and translate everything back to the original coordinate system
 	if marks then
 		rotatedMarks = translatePoints( rotatePoints( rotatedMarks, -math.rad( bestAngle )), dx, dy )
@@ -699,6 +699,7 @@ local ridgeMarker = {
 	right = 2
 };
 
+
 --- Add ridge markers to all up/down tracks, including the first and the last.
 -- The last one does not need it but we'll take care of that once we know 
 -- which track will really be the last one, because if we reverse the course
@@ -706,40 +707,45 @@ local ridgeMarker = {
 --
 function addRidgeMarkers( track )
 	-- ridge markers should be on the unworked side so
-	-- just check the turn at the end of the first track.
+	-- just check the turn at the end of the row.
 	-- If it is a right turn then we start with the ridge marker on the right
-	local turnStartIx = 0
-	for i=1, #track do
-		if track[ i ].turnStart then
-			turnStartIx = i
-			break
-		end
-	end
-	-- first track has one point only, should not happen
-	if turnStartIx < 2 or #track < 3 then return end
-	-- Leverage the fact that at this point tracks are parallel to the x axis.
-	local drivingToTheRight = track[ turnStartIx ].x > track[ turnStartIx - 1 ].x
-	local turningDown = track[ turnStartIx ].y > track[ turnStartIx + 1 ].y
-	local startRidgeMarkerOnTheRight = ( drivingToTheRight and turningDown ) or
-		( not drivingToTheRight and not turningDown )
-	for i, p in track:iterator() do
-		if p.trackNumber and not p.turnStart and not p.turnEnd then
-			if p.trackNumber % 2 == 1 then
-				-- odd tracks
-				if startRidgeMarkerOnTheRight then
-					p.ridgeMarker = ridgeMarker.right
+	local left, right = 1, 2
+	function getNextTurnDir(startIx)
+		for i = startIx, #track do
+			-- it is an up/down row if it has track number. Otherwise ignore turns
+			if track[i].trackNumber and track[i].turnStart and track[i].deltaAngle then
+				if track[i].deltaAngle >= 0 then
+					return i, right
 				else
-					p.ridgeMarker = ridgeMarker.left
-				end
-			else
-				-- even tracks
-				if startRidgeMarkerOnTheRight then
-					p.ridgeMarker = ridgeMarker.left
-				else
-					p.ridgeMarker = ridgeMarker.right
+					return i, left
 				end
 			end
 		end
+		return nil
+	end
+
+	track:calculateData()
+	local i = 1
+
+	while (i < #track) do
+		local startTurnIx, turnDirection = getNextTurnDir(i)
+		if not startTurnIx then break end
+		-- drive up to the next turn and add ridge markers where applicable
+		while (i < startTurnIx) do
+			-- don't use ridge markers at the first and the last row of the block as
+			-- blocks can be worked in any order and we may screw up the adjacent block
+			if track[i].trackNumber and not track[i].lastTrack and not track[i].firstTrack then
+				if turnDirection == right then
+					track[i].ridgeMarker = ridgeMarker.right
+				else
+					track[i].ridgeMarker = ridgeMarker.left
+				end
+			end
+			i = i + 1
+		end
+		-- we are at the start of the turn now, step over the turn start/end
+		-- waypoints and work on the next row, find the next turn
+		i = i + 2
 	end
 end
 

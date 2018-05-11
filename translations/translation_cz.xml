@@ -174,7 +174,7 @@
 		<text name="COURSEPLAY_CORNER_8" 								 text="severozápad" />
 		<text name="COURSEPLAY_CORNER_9" 								 text="severovýchod" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="jihovýchod" />
-		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Vyberte polohu na mapě" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(kliknutím na mapu vyberete pole)" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(kliknutím na poli vyberete počáteční bod)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Začít pracovat na" />
