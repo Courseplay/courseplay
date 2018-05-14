@@ -957,22 +957,22 @@ function courseplay:update(dt)
 			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION) then
 			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
-				self:setCourseplayFunc('self.cp.shovelPositionFromKey', true, false, 1);
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 2);
 			end;
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION) then
 			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
-				self:setCourseplayFunc('self.cp.shovelPositionFromKey', true, false, 1);
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 3);
 			end;
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION) then
 			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
-				self:setCourseplayFunc('self.cp.shovelPositionFromKey', true, false, 1);
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 4);
 			end;
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION) then
 			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
-				self:setCourseplayFunc('self.cp.shovelPositionFromKey', true, false, 1);
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 5);
 			end;
 		end;
@@ -1126,7 +1126,7 @@ function courseplay:update(dt)
 	if (self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY or self.cp.shovelPositionFromKey) and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
 		if courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[ self.cp.manualShovelPositionOrder ], dt) or courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
 			courseplay:resetManualShovelPositionOrder(self);
-			self:setCourseplayFunc('self.cp.shovelPositionFromKey', false, false, 1);
+				self:setCpVar('shovelPositionFromKey', false, courseplay.isClient);
 		end;
 	end;
 	-- MODE 3: move pipe to positions (manually)
