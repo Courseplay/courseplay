@@ -246,14 +246,14 @@
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 				 text='Position "Transport"' />
 		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 			 text='Position "vor Abladen"' />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 				 text='Position "Abladen"' />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text='"Beladen"-Position speichern' />
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text='"Transport"-Position speichern' />
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text='"Vor abladen"-Position speichern' />
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text='"Abladen"-Position speichern' />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text='"Beladen"-Position setzen' />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text='"Transport"-Position setzen' />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text='"vor Abladen"-Position setzen' />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text='"Abladen"-Position setzen' />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 			 text="Beladeposition speichern" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 			 text="Transportposition speichern" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 		 text="Vor Abladeposition speichern" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 			 text="Abladeposition speichern" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text="Beladeposition setzen" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Transportposition setzen" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Vor Abladeposition setzen" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Abladeposition setzen" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Stop &amp; Go Laden" />
 
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Kurs beginnen am" />
