@@ -956,25 +956,25 @@ function courseplay:update(dt)
 		elseif self.cp.canSwitchMode and self.cp.prevMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
 			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION) then
-			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
+			-- if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 2);
-			end;
+			-- end;
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION) then
-			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
+			-- if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 3);
-			end;
+			-- end;
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION) then
-			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
+			-- if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 4);
-			end;
+			-- end;
 		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION) then
-			if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
+			-- if courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 5);
-			end;
+			-- end;
 		end;
 
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then
