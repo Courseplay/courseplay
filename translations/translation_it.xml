@@ -97,7 +97,7 @@
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Copia percorso:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Veicolo" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="percorso temporaneo" />
-		<text name="COURSEPLAY_SPEED_TURN" 								 text="velocità di sterzata:" />
+		<text name="COURSEPLAY_SPEED_TURN" 								 text="Velocità di sterzata:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="Velocità sul campo:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="Velocità su strada:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Velocità indietro" />
@@ -156,10 +156,10 @@
 		<text name="COURSEPLAY_BACK" 									 text="posteriore" />
 		<text name="COURSEPLAY_WORK_WIDTH" 								 text="Larghezza di lavoro" />
 		<text name="COURSEPLAY_WATER_WARNING" 							 text="vorrebbe nuotare" />
-		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="apri Courseplay:" />
+		<text name="COURSEPLAY_OPEN_HUD_MODE" 							 text="Apri Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 							 text="Canali di messa a punto" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 			 text="Generazione percorso" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 		 text="Impostazioni avanzate generazione percorso" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 						 text="Posizione partenza" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 						 text="Posizione arrivo" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 						 text="Direzione di partenza" />
@@ -170,30 +170,30 @@
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sud-Est" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="Posizione attuale" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="Ultima posizione utilizzata" />
-		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
-		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
-		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
-		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="Sud-Ovest (nuovo)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="Nord-Ovest (nuovo)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="Nord-Est (nuovo)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="Sud-Est (nuovo)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Seleziona pos. sulla mappa" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(clicca mappa per selezionare campo)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(clicca mappa per selezionare posizione iniziale)" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Inizia lavoro da" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Salta fila" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Su/giù fila" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Passaggi testate del campo" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Angolatura testate del campo" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Senso orario" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Senso antiorario" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Nessuno" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Attorno" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Campo stretto" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Est" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sud" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Ovest" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automatico" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
-		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Lato più lungo" />
+		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manuale" />
 		<text name="COURSEPLAY_DIRECTION_N" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_NNE" 							 text="NNE" />
 		<text name="COURSEPLAY_DIRECTION_NE" 							 text="NE" />
@@ -203,13 +203,13 @@
 		<text name="COURSEPLAY_DIRECTION_SE" 							 text="SE" />
 		<text name="COURSEPLAY_DIRECTION_SSE" 							 text="SSE" />
 		<text name="COURSEPLAY_DIRECTION_S" 							 text="S" />
-		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="SSW" />
-		<text name="COURSEPLAY_DIRECTION_SW" 							 text="SW" />
-		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="WSW" />
-		<text name="COURSEPLAY_DIRECTION_W" 							 text="W" />
-		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="WNW" />
-		<text name="COURSEPLAY_DIRECTION_NW" 							 text="NW" />
-		<text name="COURSEPLAY_DIRECTION_NNW" 							 text="NNW" />
+		<text name="COURSEPLAY_DIRECTION_SSW" 							 text="SSO" />
+		<text name="COURSEPLAY_DIRECTION_SW" 							 text="SO" />
+		<text name="COURSEPLAY_DIRECTION_WSW" 							 text="OSO" />
+		<text name="COURSEPLAY_DIRECTION_W" 							 text="O" />
+		<text name="COURSEPLAY_DIRECTION_WNW" 							 text="ONO" />
+		<text name="COURSEPLAY_DIRECTION_NW" 							 text="NO" />
+		<text name="COURSEPLAY_DIRECTION_NNW" 							 text="NNO" />
 		<text name="COURSEPLAY_COURSE_SUBOPTIMAL" 						 text="Percorso generato con successo ma a causa delle attuali impostazioni di direzione può causare problemi durante la guida." />
 		<text name="COURSEPLAY_HEADLAND" 								 text="Testata del campo" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS" 							 text="Ignora piccole isole" />
@@ -235,7 +235,7 @@
 		<text name="COURSEPLAY_FINISH" 									 text="Termina" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Il percorso non è valido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION" 						 text="funzione fertilizzante delle seminatrici" />
-		<text name="COURSEPLAY_COMBINE_CONVOY" 							 text="combine convoy" />
+		<text name="COURSEPLAY_COMBINE_CONVOY" 							 text="convoglio di trebbie" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 						 text="La coclea della trebbia è sul raccolto" />
 
 		<!-- shovel stuff -->
@@ -306,14 +306,14 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="Ferma la retromarcia" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS" 				 text="Aggiungi punti intermedi" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Icone mappa: visualizza il testo" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Drive Control Setting" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Impostazioni Drive Control" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="Spento" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="4WD Sempre" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="4WD Sempre + differ. anteriore attivo nel lavoro in campo" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 text="4WD Sempre + differ. posteriore attivo nel lavoro in campo" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 text="4WD Sempre + entrambi differ. attivi nel lavoro in campo" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 						 text="Vuoi analizzare i campi automaticamente?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Vuoi che i tuoi lavoratori guadagnino i salari (%s /ora)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 							 text="Vuoi che i tuoi lavoratori guadagnino i salari (%s / ora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 					 text="Utilizzo dei semi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 				 text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 			 text="Tipo di seme: %s" />
@@ -328,7 +328,7 @@
 		<text name="COURSEPLAY_FUNCTIONS" 								 text="Funzioni Courseplay" />
 		<text name="input_COURSEPLAY_MODIFIER" 							 text="Courseplay: modificatore" />
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 			 text="Courseplay: accetta menu secondario" />
-		<text name="input_COURSEPLAY_HUD" 								 text="Mostra/nascondi Courseplay HUD" />
+		<text name="input_COURSEPLAY_HUD" 								 text="Courseplay: Mostra/nascondi HUD" />
 		<text name="input_COURSEPLAY_START_STOP" 						 text="Courseplay: usa/ferma percorso" />
 		<text name="input_COURSEPLAY_CANCELWAIT" 						 text="Courseplay: continua" />
 		<text name="input_COURSEPLAY_DRIVENOW" 							 text="Courseplay: avvia ora" />
@@ -375,6 +375,5 @@
 		<text name="COURSEPLAY_FillType_BaleNet" 						 text="rete balle" />
 		<text name="COURSEPLAY_FillType_WrappingFoil" 					 text="rivestimento balle" />
 		<text name="COURSEPLAY_FillType_Molasses" 						 text="melassa" />
-
 	</texts>
 </l10n>
