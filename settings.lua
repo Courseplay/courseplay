@@ -1193,6 +1193,8 @@ function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
 		vehicle.cp.headland.getMinNumLanes(), vehicle.cp.headland.getMaxNumLanes());
 	if vehicle.cp.headland.numLanes < 0 then
 		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NARROW_FIELD
+	elseif vehicle.cp.headland.numLanes == 0 then
+		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NONE
 	else
 		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NORMAL
 	end

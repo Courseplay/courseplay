@@ -69,7 +69,9 @@ courseGenerator.HEADLAND_MODE_NORMAL = 2
 courseGenerator.HEADLAND_MODE_NARROW_FIELD = 3
 -- 0-n headland rows on two opposite ends of the field, up/down rows between.
 courseGenerator.HEADLAND_MODE_TWO_SIDE = 4
-courseGenerator.HEADLAND_MODE_MAX = 3
+courseGenerator.HEADLAND_MODE_MAX = 4
+
+courseGenerator.headlandModeTexts = { 'none', 'normal', 'narrow', 'two side'}
 
 function courseGenerator.isOrdinalDirection( startingLocation )
 	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and

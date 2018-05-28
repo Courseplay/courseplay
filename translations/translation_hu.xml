@@ -183,6 +183,7 @@
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Nincs" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Körben" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Keskeny täbla" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Rövid oldalon" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Észak" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Kelet" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Dél" />

@@ -178,6 +178,7 @@
 		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(укажите поле, нажав на карте)" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(укажите расположение старта, нажав на карте)" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Узкое поле" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />

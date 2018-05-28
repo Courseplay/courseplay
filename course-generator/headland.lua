@@ -22,10 +22,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- calculate a track starting near the vehicle's location
 -- This is in meters
 local maxDistanceFromField = 30
+-- recursion count
 local n
 
+
+-- calculate distance from previous headland at the current location.
+-- this is used for courseGenerator.HEADLAND_MODE_NARROW_FIELD to have the
+-- headlands on the short edge of the field all overlap completely, so on
+-- the short edge every headland pass will use the exact same path
+--  ,--------------------------------------------------------------,
+--  |--------------------------------------------------------------|
+--  |--------------------------------------------------------------|
+--  |--------------------------------------------------------------|
+--  |--------------------------------------------------------------|
+--  '--------------------------------------------------------------'
+local function getLocalDeltaOffset( polygon, point, mode, centerSettings, deltaOffset, currentPassNumber )
+	-- never touch the outermost headland pass
+	if currentPassNumber == 1 then return deltaOffset end
+	if mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
+		local longDirectionAngle
+		if centerSettings.useLongestEdgeAngle or centerSettings.useBestAngle then
+			-- if no angle given, use the longest edge
+			-- TODO: implement best angle
+			longDirectionAngle = math.rad( polygon.bestDirection.dir )
+		elseif centerSettings.rowAngle then
+			longDirectionAngle = centerSettings.rowAngle
+		end
+		-- is the current edge in the long or short direction?
+		local da = getDeltaAngle( longDirectionAngle, point.nextEdge.angle )
+		-- the closer this edge's angle is to the longest edge, the bigger is the offset
+		--print( string.format( '%.1f, %.1f, %.1f', math.abs(math.deg(da)), math.deg( longDirectionAngle), math.deg( point.nextEdge.angle )))
+		return deltaOffset * math.abs( math.cos( da ))
+	else
+		return deltaOffset
+	end
+end
+
+-- smooth adds new points where we loose the passNumber attribute.
+-- here we fix that. I know it's ugly and there must be a better way to
+-- do this somehow smooth should preserve these, but whatever...
+local function addMissingPassNumber( headlandPath )
+	local currentPassNumber = 0
+	for i, point in headlandPath:iterator() do
+		if point.passNumber then
+			if point.passNumber ~= currentPassNumber then
+				currentPassNumber = point.passNumber
+			end
+		else
+			point.passNumber = currentPassNumber
+		end
+	end
+end
+
 --- Calculate a headland track inside polygon in offset distance
-function calculateHeadlandTrack( polygon, mode, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
+function calculateHeadlandTrack( polygon, mode, rightSide, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
                                  currentOffset, doSmooth, inward, centerSettings, currentPassNumber )
 	-- recursion limit
 	if currentOffset == 0 then
@@ -50,7 +100,7 @@ function calculateHeadlandTrack( polygon, mode, targetOffset, minDistanceBetween
 	-- this can be ensured by choosing an offset small enough
 	local deltaOffset = polygon.shortestEdgeLength / 8
 
-	-- courseGenerator.debug( "** Before target=%.2f, current=%.2f, delta=%.2f, target-current=%.2f", targetOffset, currentOffset, deltaOffset, targetOffset - currentOffset )
+	--courseGenerator.debug( "** Before target=%.2f, current=%.2f, delta=%.2f, target-current=%.2f", targetOffset, currentOffset, deltaOffset, targetOffset - currentOffset )
 	if currentOffset >= targetOffset then return polygon end
 
 	deltaOffset = math.min( deltaOffset, targetOffset - currentOffset )
@@ -59,46 +109,68 @@ function calculateHeadlandTrack( polygon, mode, targetOffset, minDistanceBetween
 	if not inward then
 		deltaOffset = -deltaOffset
 	end
-	-- courseGenerator.debug( "** After target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset)
+	--courseGenerator.debug( "** After target=%.2f, current=%.2f, delta=%.2f", targetOffset, currentOffset, deltaOffset)
 	local offsetEdges = {}
-	for i, point in polygon:iterator() do
-		local localOffset = getLocalDeltaOffset( polygon, point, mode, centerSettings, deltaOffset, currentPassNumber )
-		local newFrom = addPolarVectorToPoint( point.nextEdge.from, point.nextEdge.angle + getInwardDirection( polygon.isClockwise ), localOffset )
-		local newTo = addPolarVectorToPoint( point.nextEdge.to, point.nextEdge.angle + getInwardDirection( polygon.isClockwise ), localOffset )
+	for i, edge, from in polygon:edgeIterator() do
+		local localOffset = getLocalDeltaOffset( polygon, from, mode, centerSettings, deltaOffset, currentPassNumber )
+		local newFrom = addPolarVectorToPoint( edge.from, edge.angle + getInwardDirection( rightSide ), localOffset )
+		local newTo = addPolarVectorToPoint( edge.to, edge.angle + getInwardDirection( rightSide ), localOffset )
 		table.insert( offsetEdges, { from=newFrom, to=newTo })
 	end
 
-	local vertices = Polygon:new()
-	for i, edge in ipairs( offsetEdges ) do
-		local ix = i - 1
-		if ix == 0 then ix = #offsetEdges end
-		local prevEdge = offsetEdges[ix ]
-		local vertex = getIntersection( edge.from.x, edge.from.y, edge.to.x, edge.to.y,
-			prevEdge.from.x, prevEdge.from.y, prevEdge.to.x, prevEdge.to.y )
-		if vertex then
-			-- previous edge intersects current, use the intersection point then
-			table.insert( vertices, vertex )
-		else
-			-- previous edge does not intersect current
-			if getDistanceBetweenPoints( prevEdge.to, edge.from ) < minDistanceBetweenPoints then
-				-- but their ends are close enough, so add a point between the two.
-				local x, y = getPointInTheMiddle( prevEdge.to, edge.from )
-				table.insert( vertices, { x=x, y=y })
-			else
-				-- previous ends far away from the current start, add both
-				table.insert( vertices, prevEdge.to )
-				table.insert( vertices, edge.from )
-			end
-		end
-	end
-	vertices:calculateData()
+
+	local vertices = polygon:cloneEmpty()
+	cleanupOffsetEdges(offsetEdges, vertices, minDistanceBetweenPoints)
+
 	if doSmooth then
 		vertices:smooth( minSmoothAngle, maxSmoothAngle, 1 )
 	end
 	-- only filter points too close, don't care about angle
 	applyLowPassFilter( vertices, math.pi, minDistanceBetweenPoints )
-	return calculateHeadlandTrack( vertices, mode, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
+	return calculateHeadlandTrack( vertices, mode, rightSide, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
 		currentOffset, doSmooth, inward, centerSettings, currentPassNumber )
+end
+
+function cleanupOffsetEdges(offsetEdges, result, minDistanceBetweenPoints)
+	for i = 1, #offsetEdges do
+		local edge = offsetEdges[i]
+		local ix = i - 1
+		if ix == 0 then ix = #offsetEdges end
+
+		local prevEdge, vertex
+
+		if result:canWrapAround() then
+			-- closed polygon, wrap around the end and use the last edge
+			prevEdge = offsetEdges[ix]
+			vertex = getIntersection( edge.from.x, edge.from.y, edge.to.x, edge.to.y,
+				prevEdge.from.x, prevEdge.from.y, prevEdge.to.x, prevEdge.to.y )
+		else
+			-- just a line, no wrap around
+			prevEdge = edge
+			vertex = edge.from
+		end
+
+		if vertex then
+			-- previous edge intersects current, use the intersection point then
+			table.insert( result, vertex )
+		else
+			-- previous edge does not intersect current
+			if getDistanceBetweenPoints( prevEdge.to, edge.from ) < minDistanceBetweenPoints then
+				-- but their ends are close enough, so add a point between the two.
+				local x, y = getPointInTheMiddle( prevEdge.to, edge.from )
+				table.insert( result, { x=x, y=y })
+			else
+				-- previous ends far away from the current start, add both
+				table.insert( result, prevEdge.to )
+				table.insert( result, edge.from )
+			end
+		end
+	end
+	if not result.canWrapAround() then
+		-- if we did not wrap around, we missed the end of the last edge
+		table.insert(result, offsetEdges[#offsetEdges].to)
+	end
+	result:calculateData()
 end
 
 --- Link the generated, parallel circular headland tracks to
@@ -116,7 +188,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 	-- vehicles heading vector.
 	local headlandPath = Polyline:new()
 	-- find closest point to starting position on outermost headland track
-	local fromIndex = getClosestPointIndex( field.headlandTracks[ 1 ], startLocation )
+	local fromIndex =  field.headlandTracks[ 1 ]:getClosestPointIndex(startLocation)
 	local toIndex = field.headlandTracks[ 1 ]:getIndex( fromIndex + 1 )
 	vectors = {}
 	-- direction we'll be looking for the next inward headland track (relative to
@@ -166,8 +238,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 					table.insert( lines, { startLocation, addPolarVectorToPoint( startLocation, h, distance )})
 				end
 				if field.headlandTracks[ i + 1 ] then
-					fromIndex, toIndex = getIntersectionOfLineAndPolygon( field.headlandTracks[ i + 1 ], startLocation,
-						addPolarVectorToPoint( startLocation, h, distance ))
+					fromIndex, toIndex = field.headlandTracks[ i + 1 ]:getIntersectionWithLine( startLocation, addPolarVectorToPoint( startLocation, h, distance ))
 					if fromIndex then
 						courseGenerator.debug( "Linked headland track %d to next track, heading %.1f, distance %.1f, inwardAngle = %d", i, math.deg( h ), distance, inwardAngle )
 						break
@@ -203,60 +274,13 @@ function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to, step
 	end
 end
 
--- smooth adds new points where we loose the passNumber attribute.
--- here we fix that. I know it's ugly and there must be a better way to 
--- do this somehow smooth should preserve these, but whatever...
-function addMissingPassNumber( headlandPath )
-	local currentPassNumber = 0
-	for i, point in headlandPath:iterator() do
-		if point.passNumber then
-			if point.passNumber ~= currentPassNumber then
-				currentPassNumber = point.passNumber
-			end
-		else
-			point.passNumber = currentPassNumber
-		end
-	end
-end
-
--- calculate distance from previous headland at the current location.
--- this is used for courseGenerator.HEADLAND_MODE_NARROW_FIELD to have the
--- headlands on the short edge of the field all overlap completely, so on
--- the short edge every headland pass will use the exact same path
---  ,--------------------------------------------------------------,
---  |--------------------------------------------------------------|
---  |--------------------------------------------------------------|
---  |--------------------------------------------------------------|
---  |--------------------------------------------------------------|
---  '--------------------------------------------------------------'
-function getLocalDeltaOffset( polygon, point, mode, centerSettings, deltaOffset, currentPassNumber )
-	-- never touch the outermost headland pass
-	if currentPassNumber == 1 then return deltaOffset end
-	if mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
-		local longDirectionAngle
-		if centerSettings.useLongestEdgeAngle or centerSettings.useBestAngle then
-			-- if no angle given, use the longest edge
-			-- TODO: implement best angle
-			longDirectionAngle = math.rad( polygon.bestDirection.dir )
-		elseif centerSettings.rowAngle then
-			longDirectionAngle = centerSettings.rowAngle
-		end
-		-- is the current edge in the long or short direction?
-		local da = getDeltaAngle( longDirectionAngle, point.nextEdge.angle )
-		-- the closer this edge's angle is to the longest edge, the bigger is the offset
-		--print( string.format( '%.1f, %.1f, %.1f', math.abs(math.deg(da)), math.deg( longDirectionAngle), math.deg( point.nextEdge.angle )))
-		return deltaOffset * math.abs( math.cos( da ))
-	else
-		return deltaOffset
-	end
-end
 
 -- in courseGenerator.HEADLAND_MODE_NARROW_FIELD mode we want to lift the
 -- implements on the short edge (except for the outermost headland).
 -- So we mark those waypoints as connecting tracks here. (would have been
 -- too difficult to propagate this info from the grassfire algorithm so
 -- we just do it again here.
-function markShortEdgesAsConnectingTrack( headlands, mode, centerSettings )
+local function markShortEdgesAsConnectingTrack( headlands, mode, centerSettings )
 	for i, headland in ipairs( headlands ) do
 		for j, point in headland:iterator() do
 			local fakeWidth = 1
@@ -267,4 +291,248 @@ function markShortEdgesAsConnectingTrack( headlands, mode, centerSettings )
 			end
 		end
 	end
+end
+
+function generateAllHeadlandTracks(field, implementWidth, headlandSettings, centerSettings,
+	minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside, turnRadius)
+
+	local previousTrack, startHeadlandPass, endHeadlandPass, step
+	if fromInside then
+		courseGenerator.debug( "Generating innermost headland track" )
+		local distanceOfInnermostHeadlandFromBoundary = ( implementWidth - implementWidth * headlandSettings.overlapPercent / 100 ) * ( headlandSettings.nPasses - 1 ) + implementWidth / 2
+		field.headlandTracks[ headlandSettings.nPasses ] = calculateHeadlandTrack( field.boundary, headlandSettings.mode, field.boundary.isClockwise, distanceOfInnermostHeadlandFromBoundary,
+			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, true, centerSettings, nil )
+		roundCorners( field.headlandTracks[ headlandSettings.nPasses ], turnRadius )
+		previousTrack = field.headlandTracks[ headlandSettings.nPasses ]
+		startHeadlandPass = headlandSettings.nPasses - 1
+		endHeadlandPass = 1
+		step = -1
+	else
+		startHeadlandPass = 1
+		previousTrack = field.boundary
+		step = 1
+		if headlandSettings.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
+			-- in this mode we add headlands until they cover the entire field
+			-- (but use a finite number, not math.huge just to be on the safe side
+			endHeadlandPass = 100
+		else
+			endHeadlandPass = headlandSettings.nPasses
+		end
+	end
+	for j = startHeadlandPass, endHeadlandPass, step do
+		local width
+		if j == 1 and not fromInside then
+			-- when working from inside, the half width is already factored in when
+			-- the innermost pass is generated
+			width = implementWidth / 2
+		else
+			width = implementWidth * ( 100 - headlandSettings.overlapPercent ) / 100
+		end
+
+		field.headlandTracks[ j ] = calculateHeadlandTrack( previousTrack, headlandSettings.mode, previousTrack.isClockwise, width,
+			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside,
+			centerSettings, j )
+		courseGenerator.debug( "Generated headland track #%d, area %1.f, clockwise = %s", j, field.headlandTracks[ j ].area, tostring( field.headlandTracks[ j ].isClockwise ))
+		-- check if the area within the last headland has a reasonable size
+		local minArea = 0.75 * width * field.headlandTracks[ j ].circumference / 2
+
+		if ( field.headlandTracks[ j ].area >= previousTrack.area or field.headlandTracks[ j ].area <= minArea ) and not fromInside then
+			courseGenerator.debug( "Can't fit more headlands in field, using %d", j - 1 )
+			field.headlandTracks[ j ] = nil
+			break
+		end
+		previousTrack = field.headlandTracks[ j ]
+	end
+	markShortEdgesAsConnectingTrack( field.headlandTracks, headlandSettings.mode, centerSettings )
+end
+
+
+--- calculate n headland tracks for any section (between startIx and endIx) of a field boundary
+-- if rightSide is true, the headland is on the right side of the previous headland.
+function calculateOneSide(boundary, startIx, endIx, step, rightSide, headlandSettings, implementWidth,
+													minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
+	local headlands = {}
+	-- construct the boundary
+	headlands[0] = Polyline:new()
+	for i, p in boundary:iterator(startIx, endIx, step) do
+		table.insert(headlands[0], copyPoint(p))
+	end
+	headlands[0]:calculateData()
+
+	for i = 1, headlandSettings.nPasses do
+		local width = i == 1 and implementWidth / 2 or implementWidth
+		headlands[i] = calculateHeadlandTrack(headlands[i - 1], headlandSettings.mode, rightSide, width,
+			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, true, true,
+			centerSettings, i)
+		extendLineToOtherLine(headlands[i], boundary, implementWidth * 2)
+		headlands[i]:space(math.pi, minDistanceBetweenPoints)
+		local side = rightSide and 'right' or 'left'
+		courseGenerator.debug( "Generated %s side headland track #%d at %.1f m with %d points", side, i, width, #headlands[i])
+	end
+	-- we don't need this anymore, was just used as the boundary
+	headlands[0] = nil
+	return headlands
+end
+
+function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTracks, headlandSettings, centerSettings,
+																	 minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle )
+	-- translate polygon so we can rotate it around its center. This way all points
+	-- will be approximately the same distance from the origin and the rotation calculation
+	-- will be more accurate
+	local dx, dy = polygon:getCenter()
+	local boundary = Polygon:copy(polygon)
+	boundary:translate(-dx , -dy)
+	local translatedIslands = Island.translateAll( islands, -dx, -dy )
+
+	local bestAngle, nTracks, nBlocks, resultIsOk
+	-- Now, determine the angle where the number of tracks is the minimum
+	bestAngle, nTracks, nBlocks, resultIsOk = findBestTrackAngle( boundary, translatedIslands, implementWidth, 0, centerSettings )
+	if nBlocks < 1 then
+		courseGenerator.debug( "No room for up/down rows." )
+		return nil, 0, 0, nil, true
+	end
+	if not bestAngle then
+		bestAngle = polygon.bestDirection.dir
+		courseGenerator.debug( "No best angle found, use the longest edge direction " .. bestAngle )
+	end
+
+	-- now, generate the tracks according to the implement width within the rotated polygon's bounding box
+	-- using the best angle
+	boundary:rotate(math.rad(bestAngle))
+	local rotatedIslands = Island.rotateAll( translatedIslands, math.rad( bestAngle ))
+	-- use a distanceFromBoundary > 0 to avoid problems with rectangular fields with not
+	-- perfectly straight sides
+	local parallelTracks = generateParallelTracks( boundary, rotatedIslands, implementWidth, implementWidth / 2 )
+
+	local startTrack, endTrack = 1, #parallelTracks
+
+	-- find the first and last track with at least 2 intersections
+	-- this is usually the first and last track except on odd shaped fields.
+	for i = 1, #parallelTracks, 1 do
+		if #parallelTracks[i].intersections > 1 then
+			startTrack = i
+			break
+		end
+	end
+
+	for i = #parallelTracks, 1, -1 do
+		if #parallelTracks[i].intersections > 1 then
+			endTrack = i
+			break
+		end
+	end
+
+	-- We have now the up/down rows in parallelTracks, each with a list of intersections with
+	-- headlands. The first and last intersection in the list is hopefully the intersection with the boundary
+	-- on the left and the right. The tracks are now also parallel to the x axis, track #1 on the bottom.
+	-- Find the section of the boundary we'll use our headland, first on the left:
+	local bottomLeftIx = parallelTracks[startTrack].intersections[1].headlandVertexIx
+	local topLeftIx = parallelTracks[endTrack].intersections[1].headlandVertexIx
+	local bottomRightIx = parallelTracks[startTrack].intersections[#parallelTracks[startTrack].intersections].headlandVertexIx
+	local topRightIx = parallelTracks[endTrack].intersections[#parallelTracks[endTrack].intersections].headlandVertexIx
+
+	local step = boundary.isClockwise and 1 or -1
+	local leftHeadlands = calculateOneSide(boundary, bottomLeftIx, topLeftIx, step, true, headlandSettings, implementWidth,
+		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
+
+	step = boundary.isClockwise and -1 or 1
+	local rightHeadlands = calculateOneSide(boundary, bottomRightIx, topRightIx, step, false, headlandSettings, implementWidth,
+		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
+
+	-- we need this for the part which connects the left and right side headlands.
+	local headlandAround = calculateHeadlandTrack(boundary, headlandSettings.mode, boundary.isClockwise, implementWidth / 2,
+		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, true, true,
+		centerSettings, 1)
+
+	-- we need this for the part which connects the left and right side headlands.
+	local innerHeadlandAround = calculateHeadlandTrack(boundary, headlandSettings.mode, boundary.isClockwise, implementWidth * 1.5,
+		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, true, true,
+		centerSettings, 1)
+
+	-- figure out where to start the course. It will be the headland end closest to the
+	-- start location
+	local startLocation = Point:copy(headlandSettings.startLocation)
+	startLocation:translate(-dx, -dy)
+	startLocation:rotate(math.rad(bestAngle))
+
+	local _, dLeft = leftHeadlands[1]:getClosestPointIndex(startLocation)
+	local _, dRight = rightHeadlands[1]:getClosestPointIndex(startLocation)
+
+	-- start with the left side or right side?
+	local startLeft = dLeft <= dRight
+	local firstHeadlands = startLeft and leftHeadlands or rightHeadlands
+	local lastHeadlands = startLeft and rightHeadlands or leftHeadlands
+
+	-- the boundary of the up down row area, nPasses headlands on two sides, one headland on one side
+	-- and the field boundary on the other.
+	local innerBoundary = Polygon:new()
+
+	-- now that we know which side to start, put the headland course together
+	local currentLocation = startLocation
+	local result = Polyline:new()
+	for i = 1, #firstHeadlands do
+		for j, p in firstHeadlands[i]:iteratorFromEndClosestToPoint(currentLocation) do
+			if #result > 0 and result[#result].turnStart then
+				p.turnEnd = true
+			end
+			table.insert(result, p)
+			if i == #firstHeadlands then
+				table.insert(innerBoundary, copyPoint(p))
+			end
+		end
+		result[#result].turnStart = true
+		currentLocation = result[#result]
+	end
+	-- ok, find the section of headland connecting the start and the end side
+	local closestIx, _, _ = lastHeadlands[1]:getIteratorParamsFromEndClosestToPoint(result[#result])
+	local sectionBetweenLeftAndRight = headlandAround:getSectionBetweenPoints(result[#result], lastHeadlands[1][closestIx])
+	result:appendLine(sectionBetweenLeftAndRight, implementWidth * 2)
+	result:appendLine(lastHeadlands[1], implementWidth * 2)
+
+	result[#result].turnStart = true
+
+	currentLocation = result[#result]
+	for i = 2, #lastHeadlands do
+		for j, p in lastHeadlands[i]:iteratorFromEndClosestToPoint(currentLocation) do
+			if #result > 0 and result[#result].turnStart then
+				p.turnEnd = true
+			end
+			table.insert(result, p)
+		end
+		result[#result].turnStart = true
+		currentLocation = result[#result]
+	end
+	result:trimEnd(headlandAround, true)
+
+	innerBoundary:appendLine(sectionBetweenLeftAndRight, implementWidth * 2)
+	innerBoundary:appendLine(lastHeadlands[#lastHeadlands], implementWidth * 2)
+	-- the last point in result is now where the up/down rows should start
+	-- this will determine where the up/down rows start
+	innerBoundary.circleStart = innerBoundary:getClosestPointIndex(result[#result])
+
+	local otherSectionBetweenLeftAndRight = boundary:getSectionBetweenPoints(innerBoundary[#innerBoundary], innerBoundary[1])
+	innerBoundary:appendLine(otherSectionBetweenLeftAndRight, implementWidth * 2)
+	innerBoundary:calculateData()
+
+	innerBoundary:rotate(-math.rad(bestAngle))
+	innerBoundary:translate(dx, dy)
+
+	result:calculateData()
+	result:space(math.pi / 3, minDistanceBetweenPoints)
+
+	result:rotate(-math.rad(bestAngle))
+	result:translate(dx, dy)
+	return result, innerBoundary
+end
+
+--- Extend line both ends until it intersects with otherLine
+function extendLineToOtherLine(line, otherLine, extension)
+	-- extend upotherLine
+	local up = addPolarVectorToPoint(line[1], line[1].nextEdge.angle, -extension * 2)
+	local _, _, is = otherLine:getIntersectionWithLine(line[1], up)
+	if is then table.insert(line, 1, is) end
+	local down = addPolarVectorToPoint(line[#line], line[#line].prevEdge.angle, extension * 2)
+	_, _, is = otherLine:getIntersectionWithLine(line[#line], down)
+	if is then table.insert(line, is) end
+	line:calculateData()
 end

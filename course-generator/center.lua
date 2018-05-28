@@ -108,9 +108,10 @@ function findBestTrackAngle( polygon, islands, width, distanceFromBoundary, cent
 		-- instead of just the number of tracks, consider some other factors. We prefer just one block (that is,
 		-- the field has a convex solution) and angles closest to the direction of the longest edge of the field
 		-- sin( angle - BestDir ) will be 0 when angle is the closest.
-		local angleScore = 3 * math.abs( math.sin( getDeltaAngle( math.rad( angle ), math.rad( bestDirection ))))
+		local angleScore = bestDirection and
+			3 * math.abs( math.sin( getDeltaAngle( math.rad( angle ), math.rad( bestDirection )))) or 0
 		score = 50 * smallBlockScore + 10 * #blocks + #tracks + angleScore
-		--courseGenerator.debug( "Tried angle=%d, nBlocks=%d, smallBlockScore=%d, tracks=%d, score=%.1f",
+		-- courseGenerator.debug( "Tried angle=%d, nBlocks=%d, smallBlockScore=%d, tracks=%d, score=%.1f",
 		--	angle, #blocks, smallBlockScore, #tracks, score)
 		table.insert( bestAngleStats, { angle=angle, nBlocks=#blocks, nTracks=#tracks, score=score, smallBlockScore=smallBlockScore })
 		if minScore > score then
@@ -144,11 +145,6 @@ end
 --- Generate up/down tracks covering a polygon at the optimum angle
 -- 
 function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses, centerSettings )
-	-- translate polygon so we can rotate it around its center. This way all points
-	-- will be approximately the same distance from the origo and the rotation calculation
-	-- will be more accurate
-	local bb = polygon:getBoundingBox()
-	local dx, dy = ( bb.maxX + bb.minX ) / 2, ( bb.maxY + bb.minY ) / 2
 	local distanceFromBoundary
 	if nHeadlandPasses == 0 then
 		-- ugly hack: if there are no headlands, our tracks go right up to the field boundary. So extend tracks
@@ -159,11 +155,17 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 		distanceFromBoundary = width
 	end
 
-	local translatedPolygon = translatePoints( polygon, -dx , -dy )
+	-- translate polygon so we can rotate it around its center. This way all points
+	-- will be approximately the same distance from the origo and the rotation calculation
+	-- will be more accurate
+	local dx, dy = polygon:getCenter()
+	local boundary = Polygon:copy(polygon)
+	boundary:translate(-dx , -dy)
 	local translatedIslands = Island.translateAll( islands, -dx, -dy )
+
 	local bestAngle, nTracks, nBlocks, resultIsOk
 	-- Now, determine the angle where the number of tracks is the minimum
-	bestAngle, nTracks, nBlocks, resultIsOk = findBestTrackAngle( translatedPolygon, translatedIslands, width, distanceFromBoundary, centerSettings )
+	bestAngle, nTracks, nBlocks, resultIsOk = findBestTrackAngle( boundary, translatedIslands, width, distanceFromBoundary, centerSettings )
 	if nBlocks < 1 then
 		courseGenerator.debug( "No room for up/down rows." )
 		return nil, 0, 0, nil, true
@@ -175,10 +177,10 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 	rotatedMarks = Polygon:new()
 	-- now, generate the tracks according to the implement width within the rotated polygon's bounding box
 	-- using the best angle
-	local rotatedBoundary = rotatePoints( translatedPolygon, math.rad( bestAngle ))
+	boundary:rotate(math.rad(bestAngle))
 	local rotatedIslands = Island.rotateAll( translatedIslands, math.rad( bestAngle ))
 
-	local parallelTracks = generateParallelTracks( rotatedBoundary, rotatedIslands, width, distanceFromBoundary )
+	local parallelTracks = generateParallelTracks( boundary, rotatedIslands, width, distanceFromBoundary )
 
 	local blocks = splitCenterIntoBlocks( parallelTracks, width )
 
@@ -202,8 +204,8 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 	-- Now we have to connect the first block with the end of the headland track
 	-- and then connect each block so we cover the entire polygon.
 	math.randomseed( courseGenerator.getCurrentTime())
-	local blocksInSequence = findBlockSequence( blocks, rotatedBoundary, polygon.circleStart, polygon.circleStep, nHeadlandPasses, centerSettings.nRowsToSkip)
-	local workedBlocks = linkBlocks( blocksInSequence, rotatedBoundary, polygon.circleStart, polygon.circleStep, centerSettings.nRowsToSkip)
+	local blocksInSequence = findBlockSequence( blocks, boundary, polygon.circleStart, polygon.circleStep, nHeadlandPasses, centerSettings.nRowsToSkip)
+	local workedBlocks = linkBlocks( blocksInSequence, boundary, polygon.circleStart, polygon.circleStep, centerSettings.nRowsToSkip)
 
 	-- workedBlocks has now a the list of blocks we need to work on, including the track
 	-- leading to the block from the previous block or the headland.
@@ -323,6 +325,8 @@ function findIntersections( headland, tracks, islandId )
 				-- also remember which headland this was, we have one boundary around the entire
 				-- field and one around each island.
 				is.headland = headland
+				-- remember where we intersect the headland.
+				is.headlandVertexIx = i
 				is.originalTrackNumber = t.originalTrackNumber
 				t.onIsland = islandId
 				addPointToListOrderedByX( t.intersections, is )
@@ -588,7 +592,7 @@ function splitCenterIntoBlocks( tracks, width )
 			courseGenerator.debug( 'Found track with odd number (%d) of intersections', #t.intersections )
 			table.remove( t.intersections, #t.intersections )
 		end
-		if t.to.x - t.from.x < 30 then
+		if t.to.x - t.from.x < 15 then
 			courseGenerator.debug( 'Found very short track %.1f m', t.to.x - t.from.x )
 		end
 		for i = 1, #t.intersections, 2 do

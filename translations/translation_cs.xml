@@ -182,6 +182,7 @@
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="无" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="周围" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="狭窄的地块" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="N" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="东" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="S" />
