@@ -172,6 +172,7 @@ function roundCorners( polygon, turnRadius )
 			nIx, lookaheadDistance, cIx, lookbackDistance = getNextWpPairToCheck( polygon, nIx, lookaheadDistance, cIx, lookbackDistance )
 			if nIx > #polygon or cIx < 1 then
 				-- don't want to deal with rollover, there'll be no rounding at the beginning/end of polygon for now
+				needsArc = false
 				break
 			else
 				needsArc = true
