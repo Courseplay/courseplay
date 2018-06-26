@@ -751,9 +751,8 @@ function courseplay:draw()
 
 
 	-- HELP BUTTON TEXTS
-	if self:getIsActive() and self.isEntered and g_currentMission.showHelpText then
+	if self:getIsActive() and self.isEntered then
 		local modifierPressed = InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
-
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
 			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER);
 		end;

@@ -268,7 +268,7 @@ function CpManager:update(dt)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- HELP MENU
-	if g_currentMission.showHelpText and g_gui.currentGui == nil and g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
+	if g_gui.currentGui == nil and g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
 		if self.playerOnFootMouseEnabled then
 			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
 		elseif self.globalInfoText.hasContent then
@@ -543,14 +543,15 @@ function CpManager.drawMouseButtonHelp(self, posY, txt)
 
 	local ovl = courseplay.inputBindings.mouse.overlaySecondary;
 	if ovl then
-		local y = posY - g_currentMission.helpBoxTextSize - g_currentMission.helpBoxTextLineSpacing*3;
+		local y = posY - g_currentMission.helpBoxTextSize - g_currentMission.helpBoxTextLineSpacing*2;
 		ovl:setPosition(xLeft - ovl.width*0.2, y);
 		ovl:render();
 		xLeft = xLeft + ovl.width*0.6;
 	end;
 
-	posY = posY - g_currentMission.helpBoxTextSize - g_currentMission.helpBoxTextLineSpacing*2;
+	posY = posY - g_currentMission.helpBoxTextSize - g_currentMission.helpBoxTextLineSpacing;
 	setTextAlignment(RenderText.ALIGN_RIGHT);
+	setTextColor(g_currentMission.helpBoxTextColor[1], g_currentMission.helpBoxTextColor[2], g_currentMission.helpBoxTextColor[3], g_currentMission.helpBoxTextColor[4]);
 	renderText(xRight, posY, g_currentMission.helpBoxTextSize, txt);
 
 	setTextAlignment(RenderText.ALIGN_LEFT);
