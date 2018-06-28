@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="37">
-	<version>5.02.00092</version>
+<modDesc descVersion="39">
+	<version>5.03.00003</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -21,13 +21,36 @@
 	</title>
 
 	
-	<changeLog><![CDATA[
-
-  - course generator setting GUI
-  - added support for RO
-  - new traffic recognition system
-  - fieldwork row direction can also be selected manually now  
-  - support for big islands
+	<description>
+		<de>
+<![CDATA[
+Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
+	changeLog:
+	- neuer Kurs-Generator GUI
+	- support für Ropa Addon
+	- neues Kollisions-Erkennungssystem
+	- Feldarbeitsrichtung kann nun auch manuell vorgegeben werden  
+	- Erkennung und Umfahrung von Feldinseln
+	- multiplayer aktiviert
+	- support für straw harvest addon
+	- support für sprayer Addon (mit freundlicher Unterstützung von David FONTAINE)
+	- neue Funktion: Drescher-Kolonne
+	- neue Wendemanöver im Vorgwende
+	- Ausrichtung am ersten Wegpunkt in allen Feldmodi
+	- Unterstützung für mehrere Geräte auf dem selben Feldkurs
+	- support für Plantium Edition 
+	- bugfixes
+]]>
+		</de>
+		<en>
+<![CDATA[
+Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+	changeLog:
+	- course generator setting GUI
+	- added support for RO
+	- new traffic recognition system
+	- fieldwork row direction can also be selected manually now  
+	- support for big islands
  	- multiplayer enabled
 	- support for straw harvest addon
 	- new option for course generation to bypass small islands in fields
@@ -37,74 +60,29 @@
 	- added option to align to 1st waypoint in mode 2, 4 and 6
 	- added easy setup for multiple tools  on one field work course
 	- support for Plantium Edition(Still Work In Progress)
-	- Bugfixes
-	
-	
-]]></changeLog>
-	
-	<description>
-		<de>
-<![CDATA[
-Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
-]]>
-		</de>
-		<en>
-<![CDATA[
-Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
+	- bugfixes
 ]]>		
 		</en>
 		<fr>
 <![CDATA[Courseplay est une modification pour Farm Simulator 17, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
+	changeLog:
+	- course generator setting GUI
+	- added support for RO
+	- new traffic recognition system
+	- fieldwork row direction can also be selected manually now  
+	- support for big islands
+ 	- multiplayer enabled
+	- support for straw harvest addon
+	- new option for course generation to bypass small islands in fields
+	- added support for sprayer Addon (with the friendly support of David FONTAINE)
+	- added combine convoy option
+	- turn maneuver for headland corners to avoid missing fruit
+	- added option to align to 1st waypoint in mode 2, 4 and 6
+	- added easy setup for multiple tools  on one field work course
+	- support for Plantium Edition(Still Work In Progress)
+	- bugfixes
 ]]>	
 		</fr>
-		<br>
-<![CDATA[O Courseplay é uma modificação para o Farming Simulator 17. Ele permite que você dirija varios veículos diferentes de forma autônoma e automática, coloque-os no trabalho de campo, descarregar ceifadeiras, carregar frutos para vender nos pontos, preencher um BGA ou uma carreta com uma pá carregadeira, nívelar e compactar silagem e muito mais ...
-]]>    </br>
-		<cs>
-<![CDATA[
-Courseplay 是 Farming Simulator 17的一个功能扩展MOD. 它允许车辆独立自动驾驶，进行野外作业，卸载收割机，销售庄稼和商品购买，田间作业和青贮饲料作业等......
-]]>	</cs>
-		<cz>
-<![CDATA[
-Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
-]]></cz>
-		<es>
-<![CDATA[
-Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
-]]></es>
-
-		<it>
-<![CDATA[
-Courseplay è una modifica per Farming Simulator 17. Permette di avere molti veicoli diversi che guidano autonomamente, svolgono lavori sui campi, scaricano trebbie, trasferiscono i raccolti ai punti di venita, riempono bunker o rimorchi con la benna, livellano e compattano insilato e molto altro...
-]]></it>
-		<jp>
-<![CDATA[
-Courseplayは、Farming Simulator 17のMODです。これは多くの車両の自動運転・自動作業を可能にします。彼らはあらゆる作業をこなします、コンバインのアンロード、作物運搬、バンカーやトレーラーのローダー作業、サイレージのレベリングと圧縮、その他いろいろ...
-]]></jp>
-		<hu>
-<![CDATA[
-A Courseplay - Vezetősegéd egy Farming Simulator 17 kiegészítő amivel a munkagépek önállóan képesek bármilyen feladat ellátására: szántás/vetés/aratás/műtrágyázás, kombájn ürítés, terményszállítás, silófeltöltés, rakodás, szintezés, tömörítés és még sokminden más...
-]]></hu>
-		<nl>
-<![CDATA[
-Courseplay is een modificatie voor Farming Simulator 17. Het geeft je de mogelijkheid om veel verschillende voertuigen autonoom en automatisch te laten rond rijden, veldwerk uit te voeren, dorsen & hakselen, granen en goederen te verkopen aan verkooppunten, een bunker of trailer met een shovel te vullen, niveleren en aanrijden van kuilvoer en nog veel meer...
-]]></nl>
-		<pl>
-<![CDATA[
-Courseplay jest modyfikacją do Farming Simulator 17. Pozwala wielu różnym pojazdom poruszać sie autonomicznie i automatycznie, wykonywać prace polowe, rozładowywać kombajny, sprzedawać zapasy magazynowe, napełniać silosy bunkrowe lub przyczepy łychą, wyrównywać i ugniatać sieczkę na kiszonkę i wiele, wiele więcej...
-]]></pl>
-		<pt>
-<![CDATA[
-O Courseplay é uma modificação para o Farming Simulator 17. Permite que você tenha muitos veículos diferentes que circulam de forma autónoma e automática, que façam trabalhos de campo, descarreguem as ceifeiras, carregar e vender os seus produtos, preencher um BGA ou um reboque com uma pá, nivelar, compactar e muito mais...
-]]></pt>
-		<ru>
-<![CDATA[
-Courseplay - это мод для Farming Simulator 17. Он позволяет Вам использовать множество различных транспортных средств, работающих самостоятельно и автоматически, для выполнения различных полевых работ, разгрузки комбайнов, перевозки продукции в точки продажи, загрузки бункеров или прицепов лопатой, выравнивение и уплотнение силосных траншей, а также многое-многое другое...
-]]></ru>
-		<sl>
-<![CDATA[
-Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
-]]></sl>
 	</description>
 
 	<multiplayer supported="true" />
