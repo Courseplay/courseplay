@@ -32,7 +32,7 @@ function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
 	local distance = 10
 	for y, row in ipairs( grid.map ) do
 		for x, index in pairs( row ) do
-			local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
+			local _, minDistanceToFieldBoundary = polygon:getClosestPointIndex({ x = grid[ index ].x, y = grid[ index ].y })
 			if minDistanceToFieldBoundary > distance then
 				grid[ index ].hasFruit = true
 			end
@@ -55,7 +55,7 @@ function pathFinder.addIsland( grid, polygon )
 	local distance = 64
 	for y, row in ipairs( grid.map ) do
 		for x, index in pairs( row ) do
-			local _, minDistanceToFieldBoundary = getClosestPointIndex( polygon, { x = grid[ index ].x, y = grid[ index ].y })
+			local _, minDistanceToFieldBoundary = polygon:getClosestPointIndex({ x = grid[ index ].x, y = grid[ index ].y })
 			if minDistanceToFieldBoundary > distance then
 				grid[ index ].isOnField = true
 			end
@@ -139,7 +139,7 @@ function pathFinder.findIslands( polygon )
 			if not isOnField( grid[ index ]) then
 				-- add a node only if it is far enough from the field boundary
 				-- to filter false positives around the field boundary
-				local _, d = getClosestPointIndex( polygon, grid[ index ])
+				local _, d = polygon:getClosestPointIndex(grid[ index ])
 				-- TODO: should calculate the closest distance to polygon edge, not 
 				-- the vertices. This may miss an island close enough to the field boundary
 				if d > 8 * Island.gridSpacing then

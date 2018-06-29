@@ -30,7 +30,7 @@
 		<text name="COURSEPLAY_MODE_10" 								 text="ВЫРАВНИВАНИЕ И УПЛОТНЕНИЕ" />
 		<text name="COURSEPLAY_CONTINUE" 								 text="Продолжить" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 							 text="Сбросить маршрут" />
-		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Завершить цикл" />
+		<text name="COURSEPLAY_DRIVE_NOW" 								 text="Отправить сейчас" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 							 text="Разгрузка при:" />
 		<text name="UNKNOWN" 											 text="неизвестный" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 text="Направление поворотной полосы" />
@@ -59,7 +59,7 @@
 		<text name="COURSEPLAY_CREATE_FOLDER" 							 text="Создать папку" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 			 text="Поиск маршрутов и папок" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 						 text="Отключить поиск" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="доехал до места разгрузки." />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 				 text="доехал до места перегрузки." />
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 						 text="Сохр. положение перегрузочной трубы" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"					 text="в сохранённое положение трубы" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 					 text="доехал до места ожидания." />
@@ -100,7 +100,7 @@
 		<text name="COURSEPLAY_SPEED_TURN" 								 text="Маневры:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 							 text="На поле:" />
 		<text name="COURSEPLAY_SPEED_MAX" 								 text="В пути:" />
-		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Задняя:" />
+		<text name="COURSEPLAY_SPEED_REVERSING" 						 text="Задняя/Разгрузка:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 							 text="Режим:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 				 text="по настройкам" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 						 text="скоростной" />
@@ -178,6 +178,7 @@
 		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(укажите поле, нажав на карте)" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(укажите расположение старта, нажав на карте)" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Узкое поле" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
@@ -236,7 +237,7 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 						 text="Нерабочий маршрут" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 text="Функция удобрения сеялки:" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 text="Конвой комбайна" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="выгрузной шнек над посевами" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 text="выгрузной шнек со стороны посевов" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 						 text="Ковш не обнаружен" />
@@ -254,7 +255,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text="Установить в транспортное положение" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text="Установить в положение предразгрузки" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text="Установить в положение разгрузки" />
-		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Стоять при смене позиций" />
+		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 						 text="Стоять пока ковш наполняется" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 							 text="Способ запуска:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 							 text="с ближайшей точки" />

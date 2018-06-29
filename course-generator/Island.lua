@@ -245,10 +245,10 @@ function Island:generateHeadlands( nHeadlandPasses, implementWidth, overlapPerce
 	-- we create the innermost headland first
 	local previousHeadland = self.nodes
 	for i = 1, nHeadlandPasses do
-		-- first headland is a bit further out as our grid spacing limits the resolution. This may 
+		-- first headland is a bit further out as our grid spacing limits the resolution. This may
 		-- prevent hitting objects very close to the edge of the island.
 		local width = i == 1 and implementWidth / 2  + Island.gridSpacing / 2 or implementWidth * ( 100 - overlapPercent ) / 100
-		self.headlandTracks[ i ] = calculateHeadlandTrack( previousHeadland, courseGenerator.HEADLAND_MODE_NORMAL, width,
+		self.headlandTracks[ i ] = calculateHeadlandTrack( previousHeadland, courseGenerator.HEADLAND_MODE_NORMAL, previousHeadland.isClockwise, width,
 			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, false, nil, nil )
 		courseGenerator.debug( "Generated headland track #%d, %d waypoints, area %.1f, clockwise = %s for island %s", i, #self.headlandTracks[ i ],
 			self.headlandTracks[ i ].area, tostring( self.headlandTracks[ i ].isClockwise ), self.id )
@@ -323,15 +323,15 @@ function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle, doSmo
 		-- create the waypoints for the circle around the island.
 		courseGenerator.debug( "Island %d: circle around first", self.id )
 		for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
-			table.insert( pathA, cp )
+			table.insert( pathA, copyPoint(cp))
 		end
 		for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
-			table.insert( pathB, cp )
+			table.insert( pathB, copyPoint(cp))
 		end
 	end
 	-- try path A first, going around from toIx to fromIx
 	for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
-		table.insert( pathA, cp )
+		table.insert( pathA, copyPoint(cp))
 		dA = dA + cp.nextEdge.length
 		local np = self.headlandTracks[ self.innermostHeadlandIx ][ i + 1 ]
 		-- does this section of headland intersects the course and where?
@@ -340,7 +340,7 @@ function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle, doSmo
 	end
 	-- now try path B, going around from fromIx to toIx
 	for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
-		table.insert( pathB, cp )
+		table.insert( pathB, copyPoint(cp))
 		dB = dB + cp.nextEdge.length
 		local np = self.headlandTracks[ self.innermostHeadlandIx ][ i - 1 ]
 		-- does this section of headland intersects the course and where?

@@ -187,6 +187,7 @@
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="無" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="周る" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="小さな畑" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="North" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="East" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="South" />

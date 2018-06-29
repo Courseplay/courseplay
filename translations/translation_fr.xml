@@ -187,6 +187,7 @@
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
 		<text name="COURSEPLAY_DIRECTION_1" 						 	 text="Nord" />
 		<text name="COURSEPLAY_DIRECTION_2" 						 	 text="Est" />
 		<text name="COURSEPLAY_DIRECTION_3" 						 	 text="Sud" />

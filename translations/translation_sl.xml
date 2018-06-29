@@ -190,6 +190,7 @@
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="vzhod" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jug" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="zahod" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Avtomatsko" />
 		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />

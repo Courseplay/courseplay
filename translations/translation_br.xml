@@ -188,6 +188,7 @@
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Nenhum" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Normal" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Campo estreito" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Leste" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sul" />

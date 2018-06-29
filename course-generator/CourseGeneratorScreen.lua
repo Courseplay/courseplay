@@ -338,22 +338,31 @@ end
 -- Headland mode
 function CourseGeneratorScreen:setHeadlandProperties()
 	-- headland properties only if we in normal headland mode
-	if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL then
+	print(self.vehicle.cp.headland.mode)
+	if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL or
+		self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
 		if self.vehicle.cp.headland.getNumLanes() == 0 then
 			self.vehicle.cp.headland.numLanes = 1
 		end
 		self.headlandPasses:setState( self.vehicle.cp.headland.numLanes )
+		if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
+			-- force headland turn maneuver for two side mode
+			self.vehicle.cp.headland.turnType = courseplay.HEADLAND_CORNER_TYPE_SHARP
+		end
 	elseif self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NONE then
 		self.vehicle.cp.headland.numLanes = 0
 	end
 end
 
 function CourseGeneratorScreen:setHeadlandFields()
-	local headlandFieldsVisible = self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL
+	local headlandFieldsVisible = self.vehicle.cp.headland.mode ==
+		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE
 	self.headlandDirection:setVisible( headlandFieldsVisible )
 	self.headlandPasses:setVisible( headlandFieldsVisible )
 	self.headlandFirst:setVisible( headlandFieldsVisible )
-	self.headlandCorners:setVisible( headlandFieldsVisible )
+	-- force headland turn maneuver for two side mode
+	self.headlandCorners:setVisible( headlandFieldsVisible and self.vehicle.cp.headland.mode ==
+		courseGenerator.HEADLAND_MODE_NORMAL)
 end
 
 function CourseGeneratorScreen:onOpenHeadlandMode( element, parameter )
@@ -361,6 +370,7 @@ function CourseGeneratorScreen:onOpenHeadlandMode( element, parameter )
 	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NONE' ))
 	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NORMAL' ))
 	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NARROW_FIELD' ))
+	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_TWO_SIDE' ))
 	element:setTexts( texts )
 	self:setHeadlandProperties()
 	element:setState( self.vehicle.cp.headland.mode )

@@ -37,6 +37,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --                  between -180 and +180, the value is the total
 --                  length of edges pointing in that range
 
+-- TODO: make point a real class
+function pointToString(p)
+	local fromAngle, toAngle = 'N/A', 'N/A'
+	if p.nextEdge then
+		toAngle = string.format('%.1f', math.deg(p.nextEdge.angle))
+	end
+	if p.prevEdge then
+		fromAngle = string.format('%.1f', math.deg(p.prevEdge.angle))
+	end
+	return string.format('x=%.1f y=%.1f %s -> %s', p.x, p.y, fromAngle, toAngle)
+end
+
 -- calculates the polar coordinates of x, y with some filtering
 -- around pi/2 where tan is infinite
 function toPolar( x, y )
@@ -58,19 +70,6 @@ function getDistanceBetweenPoints( p1, p2 )
 	local dx = p2.x - p1.x
 	local dy = p2.y - p1.y
 	return math.sqrt( dx * dx + dy * dy )
-end
-
-function getClosestPointIndex( polygon, p )
-	local minDistance = 10000
-	local ix
-	for i, vertex in polygon:iterator() do
-		local d = getDistanceBetweenPoints( vertex, p )
-		if d < minDistance then
-			minDistance = d
-			ix = i
-		end
-	end
-	return ix, minDistance
 end
 
 --- Add a vector defined by polar coordinates to a point
@@ -124,14 +123,17 @@ function applyLowPassFilter( polygon, angleThreshold, distanceThreshold )
 	local index = 1
 	while index <= #polygon do
 		local cp, np = polygon[ index], polygon[ index + 1 ]
-		-- need to recalculate the edge length as we are moving points
-		-- around here
-		local angle, length = toPolar( np.x - cp.x, np.y - cp.y )
-		local isTooClose = length < distanceThreshold
-		local isTooSharp = math.abs( getDeltaAngle( np.prevEdge.angle, cp.prevEdge.angle )) > angleThreshold
-		if isTooClose or isTooSharp then
-			-- replace current and next point with something in the middle
-			polygon[ index + 1 ].x, polygon[ index + 1 ].y = getPointInTheMiddle( cp, np )
+		local isTooClose, isTooSharp = false, false
+		if cp and np and cp.prevEdge and np.prevEdge then
+			-- need to recalculate the edge length as we are moving points
+			-- around here
+			local angle, length = toPolar( np.x - cp.x, np.y - cp.y )
+			isTooClose = length < distanceThreshold
+			isTooSharp =  math.abs( getDeltaAngle( np.prevEdge.angle, cp.prevEdge.angle )) > angleThreshold
+			if isTooClose or isTooSharp then
+				-- replace current and next point with something in the middle
+				polygon[ index + 1 ].x, polygon[ index + 1 ].y = getPointInTheMiddle( cp, np )
+			end
 		end
 		if isTooSharp or isTooClose then
 			table.remove( polygon, polygon:getIndex( index ))
@@ -263,24 +265,7 @@ function getBestDirection( directionStats )
 	return best
 end
 
--- Does the line defined by p1 and p2 intersect the polygon?
--- If yes, return two indices. The line intersects the polygon between
--- these two indices
-function getIntersectionOfLineAndPolygon( polygon, p1, p2 )
-	-- loop through the polygon and check each vector from
-	-- the current point to the next
-	for i, cp in polygon:iterator() do
-		local np = polygon[ i + 1 ]
-		local interSectionPoint = getIntersection( cp.x, cp.y, np.x, np.y, p1.x, p1.y, p2.x, p2.y )
-		if interSectionPoint then
-			-- the line between p1 and p2 intersects the vector from cp to np
-			return i, polygon:getIndex( i + 1 ), interSectionPoint
-		end
-	end
-	return nil, nil
-end
-
---- Same as getIntersectionOfLineAndPolygon but returns all 
+--- Same as getIntersectionWithLine but returns all
 -- intersections in a table
 function getAllIntersectionsOfLineAndPolygon( polygon, p1, p2 )
 	local intersections = {}
@@ -566,6 +551,38 @@ end
 
 -- for 5.1 and 5.2 compatibility
 local unpack = unpack or table.unpack
+-------------------------------------------------------------------------------
+
+Point = {}
+Point.__index = Point
+
+--- Point constructor.
+-- Integer indices are the vertices of the polygon
+function Point:new(x, y)
+	local newPoint
+	newPoint = {x = x, y = y}
+	return setmetatable( newPoint, self )
+end
+
+function Point:copy( other )
+	local newPoint = {}
+	if other then
+		newPoint = copyPoint( other )
+	end
+	return setmetatable( newPoint, self )
+end
+
+function Point:translate(dx, dy)
+	self.x = self.x + dx
+	self.y = self.y + dy
+end
+
+function Point:rotate(angle)
+	self.x, self.y =
+		self.x * math.cos(angle) - self.y  * math.sin(angle),
+		self.x * math.sin(angle) + self.y  * math.cos(angle)
+end
+
 
 -------------------------------------------------------------------------------
 
@@ -584,14 +601,32 @@ function Polyline:new( vertices )
 	return setmetatable( newPolyline, self )
 end
 
+--- Create an empty clone of myself
+function Polyline:cloneEmpty()
+	local newPolyline = {}
+	return setmetatable( newPolyline, getmetatable(self))
+end
+
+
 function Polyline:copy( other )
 	local newPolyline = {}
-	for i, p in ipairs( other ) do
+	for i, p in other:iterator() do
 		newPolyline[ i ] = copyPoint( p )
 	end
 	return setmetatable( newPolyline, self )
 end
 
+function Polyline:__tostring()
+	local result = ''
+	for i, p in self:iterator() do
+		result = result .. string.format('% 4d %s\n', i, pointToString(p))
+	end
+	return result
+end
+
+function Polyline:getIndex(index)
+	return math.max(0, math.min(index, #self))
+end
 
 --- Iterator that won't return nil for i < 1 and i > size
 function Polyline:iterator( from, to, step )
@@ -619,6 +654,50 @@ function Polyline:iterator( from, to, step )
 	end
 end
 
+function Polyline:getClosestPointIndex(p)
+	local minDistance = math.huge
+	local ix
+	for i, vertex in self:iterator() do
+		local d = getDistanceBetweenPoints(vertex, p)
+		if d < minDistance then
+			minDistance = d
+			ix = i
+		end
+	end
+	return ix, minDistance
+end
+
+function Polyline:getIteratorParamsFromEndClosestToPoint(point)
+	local dFromStart = getDistanceBetweenPoints(point, self[1])
+	local dFromEnd = getDistanceBetweenPoints(point, self[#self])
+	local startIx = dFromStart <= dFromEnd and 1 or #self
+	local endIx = dFromStart > dFromEnd and 1 or #self
+	local step = dFromStart <= dFromEnd and 1 or -1
+	return startIx, endIx, step
+end
+
+--- Iterate starting at the end closest to point
+function Polyline:iteratorFromEndClosestToPoint(point)
+	local startIx, endIx, step = self:getIteratorParamsFromEndClosestToPoint(point)
+	return self:iterator(startIx, endIx, step)
+end
+
+--- Iterator to iterate over the edges of a polyline/polygon.
+-- will return #self - 1 edges for a polyline, #self edges for the
+-- polygon as it wraps around then.
+function Polyline:edgeIterator()
+	local i = 1
+	return function()
+		if ( i <= #self and self[i].nextEdge and #self > 1 ) then
+			local key,value, from = i, self[i].nextEdge, self[i]
+			i = i + 1
+			return key, value, from
+		else
+			return nil, nil, nil
+		end
+	end
+end
+
 function Polyline:calculateData()
 	local directionStats = {}
 	local dAngle = 0
@@ -627,6 +706,7 @@ function Polyline:calculateData()
 	local shortestEdgeLength = 1000
 	local dx, dy, angle, length
 	for i, point in self:iterator() do
+		point.prevEdge, point.nextEdge = nil, nil
 		local pp, cp, np = self[ i - 1 ], self[ i ], self[ i + 1 ]
 		if pp then
 			-- vector from the previous to this point
@@ -683,6 +763,12 @@ function Polyline:getBoundingBox()
 	return { minX=minX, maxX=maxX, minY=minY, maxY=maxY }
 end
 
+--- Get center of bounding box
+function Polyline:getCenter()
+	local bb = self:getBoundingBox()
+	return ( bb.maxX + bb.minX ) / 2, ( bb.maxY + bb.minY ) / 2
+end
+
 function Polyline:hasTurnWaypoint( iterator )
 	for _, p in ( iterator or self:iterator()) do
 		if p.turnStart or p.turnEnd then
@@ -709,6 +795,19 @@ function Polyline:replacePointsWithArc( fromIx, toIx, r )
 	-- continue with the next vertex after the curve,
 	-- TODO: will this work at the end of the line?
 	return self:getIndex(targetIx + 1)
+end
+
+--- Return the section of self starting at the vertex closest to point a and ending at the vertex closest to b
+function Polyline:getSectionBetweenPoints(a, b)
+	local startIx = self:getClosestPointIndex(a)
+	local endIx = self:getClosestPointIndex(b)
+	local section = Polyline:new()
+	local i = 1
+	for _, p in self:iteratorClosestDistance(startIx, endIx) do
+		table.insert(section, p)
+		i = i + 1
+	end
+	return section
 end
 
 -- spline functions: smooth, tuck and refine
@@ -784,7 +883,7 @@ end
 
 --- In place translation
 function Polyline:translate( dx, dy )
-	for i, point in ipairs( self ) do
+	for i, point in self:iterator() do
 		point.x = point.x + dx
 		point.y = point.y + dy
 	end
@@ -795,7 +894,7 @@ end
 function Polyline:rotate( angle )
 	local sin = math.sin( angle )
 	local cos = math.cos( angle )
-	for _, point in ipairs( self ) do
+	for _, point in self:iterator() do
 		point.x, point.y = point.x * cos - point.y  * sin, point.x * sin + point.y  * cos
 	end
 	self:calculateData()
@@ -834,8 +933,6 @@ function Polyline:removeGlitches()
 	self:calculateData()
 end
 
-
-
 --- Remove vertices between (and including) two indexes
 --
 function Polyline:removeElementsBetween( fromIx, toIx )
@@ -853,11 +950,110 @@ function Polyline:removeElementsBetween( fromIx, toIx )
 	end
 end
 
--------------------------------------------------------------------------------
+-- open line, no wrap around
+function Polyline:canWrapAround()
+	return false
+end
+
+-- Does the line defined by p1 and p2 intersect the polygon?
+-- If yes, return two indices. The line intersects the polygon between
+-- these two indices
+function Polyline:getIntersectionWithLine(p1, p2)
+	-- loop through the polygon and check each vector from
+	-- the current point to the next
+	for i, cp in self:iterator() do
+		local np = self[ i + 1 ]
+		if np then
+			local interSectionPoint = getIntersection( cp.x, cp.y, np.x, np.y, p1.x, p1.y, p2.x, p2.y )
+			if interSectionPoint then
+				-- the line between p1 and p2 intersects the vector from cp to np
+				return i, self:getIndex( i + 1 ), interSectionPoint
+			end
+		end
+	end
+	return nil, nil, nil
+end
+
+--- Append line to polyline. If they intersect, cut both at the intersection
+-- if they don't, extend self's end and/or line's start until they intersect
+-- line's start is the end closest to self's end.
+-- if trimOnly is true, do not append line, only trim/extend self.
+function Polyline:appendLine(line, extensionLength, trimOnly, isRetry)
+	local lineToAppend = Polyline:new()
+	for i, p in line:iteratorFromEndClosestToPoint(self[#self]) do
+		table.insert(lineToAppend, copyPoint(p))
+	end
+	-- lineToAppend now has the points to append in the correct order
+	-- see if it intersects us
+	local from, to, is, at
+	for i, p in self:iterator(#self, math.max(2, #self - 10), -1) do
+		from, to, is = lineToAppend:getIntersectionWithLine(self[i], self[i - 1])
+		at = i
+		if is then break end
+	end
+	if is then
+		-- we intersect lineToAppend between lineToAppend[from] and lineToAppend[to].
+		for i = #self, at, -1 do
+			-- remove points of self beyond the intersection
+			table.remove(self, i)
+		end
+		-- add the intersection point
+		table.insert(self, is)
+		for i = 1, from do
+			-- remove points of lineToAppend before the intersection
+			table.remove(lineToAppend, 1)
+		end
+	else
+		if isRetry then
+			-- this is a recursion call because they did not intersect, we extended them but still
+			-- don't intersect. So just return.
+			courseGenerator.debug('Could not append lines, they do not intersect even after extended')
+			return
+		end
+		-- bummer, they do not intersect. So estend them both a bit and retry.
+		lineToAppend:calculateData()
+		local p = addPolarVectorToPoint(lineToAppend[1], lineToAppend[1].nextEdge.angle, -extensionLength)
+		table.insert(lineToAppend, 1, p)
+		self:calculateData()
+		p = addPolarVectorToPoint(self[#self], self[#self].prevEdge.angle, extensionLength)
+		table.insert(self, p)
+		self:appendLine(lineToAppend, extensionLength, trimOnly, true)
+		return
+	end
+	-- now append line
+	if not trimOnly then
+		for _, p in lineToAppend:iterator() do
+			table.insert(self, p)
+		end
+	end
+end
+
+--- Trim section of polyline between it's end and intersection with otherLine
+function Polyline:trimEnd(otherLine, insertIntersectionPoint)
+	local i = #self
+	local from, to, is
+	while i > 1 do
+		from, to, is = otherLine:getIntersectionWithLine(self[i], self[i - 1])
+		if is then
+			for j = #self, i - 1, -1 do
+				table.remove(self)
+			end
+			if insertIntersectionPoint then
+				table.insert(self, is)
+			end
+			return
+		end
+		i = i - 1
+	end
+end
+
+----------------------------------------------------------------------------------
 
 Polygon = {}
 -- base class is the polyline
 setmetatable( Polygon, { __index = Polyline })
+-- TODO: is this really the right way to inherit metamethods?
+Polygon.__tostring = Polyline.__tostring
 
 Polygon.__index = function( t, k )
 	if not rawget( t, k ) and type( k ) == "number" then
@@ -868,6 +1064,10 @@ Polygon.__index = function( t, k )
 	end
 end
 
+-- closed line, we can wrap around the ends
+function Polygon:canWrapAround()
+	return true
+end
 
 --- Always return a valid index to allow iterating over
 -- the beginning or end of a closed polygon.
@@ -915,4 +1115,19 @@ function Polygon:removeElementsBetween( fromIx, toIx )
 	for ix = fromIx, lastIx do
 		table.remove( self, self:getIndex( fromIx ))
 	end
+end
+
+--- Iterate from startIx to endIx in the direction with the 
+-- minimum number of steps
+function Polygon:iteratorClosestDistance(startIx, endIx)
+	local dPlus, dMinus
+	if endIx >= startIx then
+		dPlus = endIx - startIx
+		dMinus = startIx + #self - endIx
+	else
+		dPlus = endIx + #self - startIx
+		dMinus = startIx - endIx
+	end
+	local step = dPlus < dMinus and 1 or -1
+	return self:iterator(startIx, endIx, step)
 end
