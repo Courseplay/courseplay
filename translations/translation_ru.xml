@@ -178,7 +178,7 @@
 		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(укажите поле, нажав на карте)" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(укажите расположение старта, нажав на карте)" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Узкое поле" />
-		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Короткая граница" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Север" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Восток" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Юг" />
@@ -307,7 +307,7 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 					 text="отключить задний ход" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS" 				 text="добавить точку" />
 		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 				 text="Показать инфо на карте:" />
-		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Настройки привода:" />
+		<text name="COURSEPLAY_DRIVECONTROL" 							 text="Настройки Drive Control:" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 					 text="автоматически" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 					 text="Всегда 4х4" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 					 text="Всегда 4х4 + блок.передного дифф. на поле" />
