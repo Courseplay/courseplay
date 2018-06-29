@@ -35,6 +35,7 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 		if point.isConnectingTrack then
 			wp.isConnectingTrack = true
 		end
+		wp.headlandHeightForTurn = point.headlandHeightForTurn
 		if point.islandBypass then
 			-- save radius only for island bypass sections for now.
 			wp.radius = point.radius

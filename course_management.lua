@@ -610,8 +610,9 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 				turnstart='Int',
 				turnend='Int',
 				ridgemarker='Int',
-        isconnectingtrack='Bool',
-        radius='String'};
+        		isconnectingtrack='Bool',
+				headlandheightforturn='Int',
+        		radius='String'};
 
 			for k, v in pairs(cp_course.waypoints) do
 				local waypoint = {
@@ -630,8 +631,9 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 					turnend =	   v.turnEnd and courseplay:boolToInt(v.turnEnd) or nil;
 					ridgemarker = (v.ridgeMarker and v.ridgeMarker ~= 0) and v.ridgeMarker or nil;
 					lane =		  (v.lane and v.lane < 0) and v.lane or nil;
+					headlandheightforturn = v.headlandHeightForTurn and v.headlandHeightForTurn or nil;
 					isconnectingtrack =	v.isConnectingTrack and v.isConnectingTrack or nil;
-          radius = v.radius and ('%.1f'):format( v.radius ) or nil
+          			radius = v.radius and ('%.1f'):format( v.radius ) or nil
 				};
 
 				waypoints[k] = waypoint;
@@ -1265,8 +1267,9 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					local turnStart	  =    getXMLInt(courseXml, key .. '#turnstart');
 					local turnEnd 	  =    getXMLInt(courseXml, key .. '#turnend');
 					local ridgeMarker =    getXMLInt(courseXml, key .. '#ridgemarker') or 0;
+					local headlandHeightForTurn = getXMLInt(courseXml, key .. '#headlandheightforturn');
 					local isConnectingTrack   =   getXMLBool(courseXml, key .. '#isconnectingtrack');
-          local radius 	  =  getXMLFloat(courseXml, key .. '#radius');
+          			local radius 	  =  getXMLFloat(courseXml, key .. '#radius');
 					crossing = crossing == 1 or wpNum == 1;
 					wait = wait == 1;
 					unload = unload == 1;
@@ -1287,8 +1290,9 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						turnStart = turnStart,
 						turnEnd = turnEnd,
 						ridgeMarker = ridgeMarker,
-            isConnectingTrack = isConnectingTrack,
-            radius = radius
+						headlandHeightForTurn = headlandHeightForTurn,
+            			isConnectingTrack = isConnectingTrack,
+            			radius = radius
 					};
 					wpNum = wpNum + 1;
 				end; -- END while true (waypoints)

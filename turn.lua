@@ -159,7 +159,13 @@ function courseplay:turn(vehicle, dt)
 			turnInfo.reverseWPChangeDistance 		= reverseWPChangeDistance;
 			turnInfo.direction 						= -1;
 			turnInfo.haveHeadlands 					= courseplay:haveHeadlands(vehicle);
-			turnInfo.headlandHeight 				= vehicle.cp.headlandHeight;
+			-- Headland height in the waypoint overrides the generic headland height calculation. This is for the
+			-- short edge headlands where we make 180 turns on te headland course. The generic calculation would use
+			-- the number of headlands and think there is room on the headland to make the turn.
+			-- Therefore, the course generator will add a headlandHeightForTurn = 0 for these turn waypoints to make
+			-- sure on field turns are calculated correctly.
+			turnInfo.headlandHeight 				= vehicle.Waypoints[vehicle.cp.waypointIndex].headlandHeightForTurn and
+				vehicle.Waypoints[vehicle.cp.waypointIndex].headlandHeightForTurn or vehicle.cp.headlandHeight;
 			turnInfo.numLanes ,turnInfo.onLaneNum 	= courseplay:getLaneInfo(vehicle);
 			turnInfo.turnOnField 					= vehicle.cp.turnOnField;
 			turnInfo.reverseOffset 					= 0;

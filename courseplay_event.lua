@@ -189,6 +189,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteBool(streamId, course.waypoints[w].turnStart)
 				streamDebugWriteBool(streamId, course.waypoints[w].turnEnd)
 				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
+				streamDebugWriteInt32(streamId, course.waypoints[w].headlandHeightForTurn)
 			end
 		end
 				
@@ -261,7 +262,8 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				local turnStart = streamDebugReadBool(streamId)
 				local turnEnd = streamDebugReadBool(streamId)
 				local ridgeMarker = streamDebugReadInt32(streamId)
-				
+				local headlandHeightForTurn = streamDebugReadInt32(streamId)
+
 				local wp = {
 					cx = cx, 
 					cz = cz, 
@@ -273,7 +275,8 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 					generated = generated,
 					turnStart = turnStart,
 					turnEnd = turnEnd,
-					ridgeMarker = ridgeMarker 
+					ridgeMarker = ridgeMarker,
+					headlandHeightForTurn = headlandHeightForTurn
 				};
 				table.insert(waypoints, wp)
 			end
