@@ -181,14 +181,14 @@
 		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Iniciar o trabalho em" />
 		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Ignorar linhas" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Cima/Baixo linhas" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Passes de cabeceira" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Canto cabeceira" />
 		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="horário" />
 		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Anti-horário" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Nenhum" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Normal" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Campo estreito" />
-		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Bordas curtas" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Leste" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sul" />
