@@ -481,6 +481,8 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 			end
 		end
 		result[#result].turnStart = true
+		-- make sure the turn system will handle this 180 turn as if there were no headland to make the turn
+		result[#result].headlandHeightForTurn = 0
 		currentLocation = result[#result]
 	end
 	-- ok, find the section of headland connecting the start and the end side
@@ -490,6 +492,7 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 	result:appendLine(lastHeadlands[1], implementWidth * 2)
 
 	result[#result].turnStart = true
+	result[#result].headlandHeightForTurn = 0
 
 	currentLocation = result[#result]
 	for i = 2, #lastHeadlands do
@@ -500,6 +503,7 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 			table.insert(result, p)
 		end
 		result[#result].turnStart = true
+		result[#result].headlandHeightForTurn = 0
 		currentLocation = result[#result]
 	end
 	result:trimEnd(headlandAround, true)

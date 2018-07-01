@@ -1379,7 +1379,8 @@ function courseplay:readStream(streamId, connection)
 			local turnStart = streamDebugReadBool(streamId)
 			local turnEnd = streamDebugReadBool(streamId)
 			local ridgeMarker = streamDebugReadInt32(streamId)
-			
+			local headlandHeightForTurn = streamDebugReadInt32(streamId)
+
 			local wp = {
 				cx = cx, 
 				cz = cz, 
@@ -1391,7 +1392,8 @@ function courseplay:readStream(streamId, connection)
 				generated = generated,
 				turnStart = turnStart,
 				turnEnd = turnEnd,
-				ridgeMarker = ridgeMarker 
+				ridgeMarker = ridgeMarker,
+				headlandHeightForTurn = headlandHeightForTurn
 			};
 			table.insert(self.Waypoints, wp)
 		end
@@ -1469,7 +1471,8 @@ function courseplay:writeStream(streamId, connection)
 			streamDebugWriteBool(streamId, self.Waypoints[w].turnStart)
 			streamDebugWriteBool(streamId, self.Waypoints[w].turnEnd)
 			streamDebugWriteInt32(streamId, self.Waypoints[w].ridgeMarker)
-		end	
+			streamDebugWriteInt32(streamId, self.Waypoints[w].headlandHeightForTurn)
+		end
 	end
 
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");

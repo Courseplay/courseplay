@@ -187,7 +187,7 @@
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Brak" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Na około" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Zwężanie" />
-		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Krótkie krawędzie" />
 		<text name="COURSEPLAY_DIRECTION_1"								 text="Północ" />
 		<text name="COURSEPLAY_DIRECTION_2"								 text="Wschód" />
 		<text name="COURSEPLAY_DIRECTION_3"								 text="Południe" />
