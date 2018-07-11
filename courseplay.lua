@@ -92,6 +92,8 @@ local function initialize()
 		'turn',
 		'traffic',
 		'vehicles',
+		'PurePursuitController',
+		'Waypoint',
     'course-generator/courseGenerator',
     'course-generator/CourseGeneratorScreen',
 	'course-generator/CoursePlot',

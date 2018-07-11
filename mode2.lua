@@ -1657,7 +1657,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
   --
 	-- pathfinding is expensive and we don't want it happen in every update cycle
 	if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
-		courseplay.debugVehicle( 9, vehicle, "Pathfinding: has been called to many times exiting" )
+		courseplay.debugVehicle( 9, vehicle, "Pathfinding: has been called too many times exiting" )
 		return false
 	end
 	courseplay:setCustomTimer( vehicle, 'pathfinder', 5 )

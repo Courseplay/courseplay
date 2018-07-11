@@ -1172,6 +1172,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 	end;
 end;
 
+-- this does not change lx/lz (direction), only allowedToDrive
 function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt)
 	for _,workTool in ipairs(vehicle.cp.workTools) do
 		if workTool.cp.fillLevel == nil or workTool.cp.capacity == nil then

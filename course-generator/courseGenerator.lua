@@ -138,10 +138,6 @@ function courseGenerator.pointToXz( point )
 	return({ x = point.x, z = -point.y })
 end
 
-function courseGenerator.pointToXz( point )
-	return({ x = point.x, z = -point.y })
-end
-
 --- Convert our angle representation (measured from the x axis up in radians)
 -- into CP's, where 0 is to the south, to our negative y axis.
 --

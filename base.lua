@@ -350,6 +350,7 @@ function courseplay:load(savegame)
 	else
 		self.cp.steeringAngle = 30;
 	end
+	courseplay.debugVehicle( 7, self, 'steering angle is %.1f', self.cp.steeringAngle)
 	if isTruck then
 		self.cp.revSteeringAngle = self.cp.steeringAngle * 0.25;
 	end;
@@ -586,6 +587,8 @@ function courseplay:load(savegame)
 
 	courseplay:validateCanSwitchMode(self);
 	courseplay.buttons:setActiveEnabled(self, 'all');
+
+	self.cp.ppc = PurePursuitController:new(self)
 end;
 
 function courseplay:postLoad(savegame)
@@ -1235,6 +1238,9 @@ function courseplay:delete()
 		if self.cp.course2dPdaMapOverlay then
 			self.cp.course2dPdaMapOverlay:delete();
 		end;
+		if self.cp.ppc then
+			self.cp.ppc:delete()
+		end
 	end;
 end;
 

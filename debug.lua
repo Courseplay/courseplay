@@ -97,13 +97,14 @@ end;
 
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 
 -- courseplay.debugVehicle( 14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
-function courseplay.debugVehicle( channel, vehicle, ... )
+	function courseplay.debugVehicle( channel, vehicle, ... )
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local seconds = courseplay.clock / 1000
 		local timestamp = getDate( "%H:%M:%S")
-		local vehicleName = vehicle and nameNum( vehicle ) or "Unknown vehicle"		
+		local vehicleName = vehicle and nameNum( vehicle ) or "Unknown vehicle"
+		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
 		print( string.format( '[dbg%d lp%d %s] %s: ', 
-			tostring( channel ), g_updateLoopIndex, timestamp,vehicleName ) .. string.format( ... ))
+			tostring( channel ), updateLoopIndex, timestamp,vehicleName ) .. string.format( ... ))
 	end
 end
 

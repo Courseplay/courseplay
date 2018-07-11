@@ -518,7 +518,8 @@ function courseplay:start(self)
 		self.mrUseMrTransmission = false;
 		self.cp.changedMRMod = true;
 	end
-
+	-- Initialize pure pursuit controller
+	self.cp.ppc:initialize()
 	--print("startStop "..debug.getinfo(1).currentline)
 end;
 

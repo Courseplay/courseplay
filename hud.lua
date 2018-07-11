@@ -609,7 +609,7 @@ function courseplay.hud:renderHud(vehicle)
 		for i,data in ipairs(courseplay.debugButtonPosData) do
 			channelNum = courseplay.debugChannelSectionStart + (i - 1);
 			renderText(data.textPosX, data.textPosY, self.fontSizes.contentValue, tostring(channelNum));
-		end;
+		end
 		courseplay:setFontSettings('white', false, 'left');
 	end;
 
@@ -802,6 +802,10 @@ function courseplay.hud:loadPage(vehicle, page)
 					vehicle.cp.hud.content.pages[1][8][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
 				end;
 			end
+
+			vehicle.cp.hud.content.pages[1][1][2].text = vehicle.cp.ppc:isActive() and
+				courseplay:loc('COURSEPLAY_PPC_ON') or
+				courseplay:loc('COURSEPLAY_PPC_OFF');
 
 			if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and #vehicle.cp.easyFillTypeList > 0 then
  				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
@@ -1578,8 +1582,14 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- row buttons
 	local w = self.buttonPosX[2] - self.col1posX;
 	for i=1, self.numLines do
-		courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], w, self.lineHeight, i, nil, true);
+		if i == 1 then
+			courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], self.col2posX[self.PAGE_CP_CONTROL] - self.col1posX, self.lineHeight, i, nil, true);
+			courseplay.button:new(vehicle, 1, nil, 'togglePpc', nil,  self.col2posX[self.PAGE_CP_CONTROL], self.linesPosY[1], self.contentMaxWidth, self.lineHeight, i, nil, true);
+		else
+			courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], w, self.lineHeight, i, nil, true);
+		end
 	end;
+
 
 	--Number of Runs For Mode1
  	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'navMinus' }, 'changeRunNumber', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -5, false);

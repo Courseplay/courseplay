@@ -24,6 +24,8 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	local debugActive = courseplay.debugChannels[13];
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
+		-- Simple reversing, no trailer to back up, so set the direction and get out of here, no need for
+		-- all the sophisticated reversing
 		if newTarget then
 			-- If we have the revPosX, revPosZ set, use those
 			if newTarget.revPosX and newTarget.revPosZ then
@@ -37,9 +39,9 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, tx, ty, tz, nx, ny, nz);
 			--  End:  Fixes issue #525
 		end
-		return -lx,-lz,fwd;
+		-- false means that this is a trivial reverse and can be handled by drive
+		return -lx,-lz,fwd, false;
 	end;
-
 	local node = workTool.cp.realTurningNode;
 	if mode2 then
 		vehicle.cp.toolsRealTurningNode = node;
@@ -163,6 +165,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i].rev then
 				if distance <= 2 then
 					courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+					vehicle.cp.ppc:initialize()
 					courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), 13);
 				end;
 				break;
@@ -260,8 +263,9 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
-
-	return lx,lz,fwd;
+    -- true means this code is taking care of the reversing as this is not a trivial case
+	-- for instance because of a trailer
+	return lx,lz,fwd, true;
 end;
 
 function courseplay:getFirstReversingWheeledWorkTool(vehicle)

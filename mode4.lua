@@ -122,8 +122,6 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 	local nextPoint = vehicle.Waypoints[vehicle.cp.waypointIndex];
 	
 	local ridgeMarker = prevPoint.ridgeMarker;
-	local turnStart = prevPoint.turnStart;
-	local turnEnd = prevPoint.turnEnd;
 	local specialTool; -- define it, so it will not be an global value anymore
 	
 	for i=1, #(vehicle.cp.workTools) do
