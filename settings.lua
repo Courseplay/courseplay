@@ -735,6 +735,8 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.numWayPoints = #vehicle.Waypoints;
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
+		vehicle.cp.courseNumHeadlandLanes = src.cp.courseNumHeadlandLanes
+		vehicle.cp.courseHeadlandDirectionCW = src.cp.courseHeadlandDirectionCW
 
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
@@ -768,6 +770,7 @@ function courseplay:copyCourse(vehicle)
 		--MultiTools
 		if src.cp.multiTools > 1 then
 			vehicle.cp.workWidth = src.cp.workWidth
+			vehicle.cp.courseWorkWidth = src.cp.courseWorkWidth
 			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
 			courseplay:changeMultiTools(vehicle, nil, src.cp.multiTools)
 		end;

@@ -47,6 +47,11 @@ function courseplay:turn(vehicle, dt)
 		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
 	end;
 
+	-- This is to correct courseworkwidth when loading from a save course when using multiTools
+	if vehicle.cp.multiTools and vehicle.cp.multiTools > 1 and vehicle.cp.courseWorkWidth ~= vehicle.cp.workWidth*vehicle.cp.multiTools then
+		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth*vehicle.cp.multiTools
+	end;
+
 	--- Make sure front and back markers is calculated.
 	if not vehicle.cp.haveCheckedMarkersThisTurn then
 		vehicle.cp.aiFrontMarker = nil;
