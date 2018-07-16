@@ -66,7 +66,7 @@ function CourseGeneratorScreen:onOpen()
 		self.coursePlot:setStartPosition(x, z)
 	end
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
-	
+
 	-- Make sure we always load the most up to date field data
 	-- List of fields
 	self.fields = {}
@@ -326,7 +326,7 @@ end
 -- Multiple tools
 function CourseGeneratorScreen:onOpenMultiTools( element, parameter )
 	local texts = {}
-	for i = 1,4 do
+	for i = 1,8 do
 		table.insert( texts, i )
 	end
 	element:setTexts( texts )
@@ -334,7 +334,8 @@ function CourseGeneratorScreen:onOpenMultiTools( element, parameter )
 end
 
 function CourseGeneratorScreen:onClickMultiTools( state )
-	self.vehicle.cp.multiTools = state
+	--Courseplay call here cause of courseplay:changeLaneNumber function is called when this number is changed
+	courseplay:setMultiTools(self.vehicle, state)
 end
 
 -----------------------------------------------------------------------------------------------------

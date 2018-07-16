@@ -218,7 +218,7 @@ function courseplay.button:render()
 			elseif fn == "changeWorkWidth" then
 				canScrollUp   = true;
 				canScrollDown = vehicle.cp.workWidth > 0.1;
-			elseif fn == 'changeMultiTools' then
+			elseif fn == 'changeByMultiTools' then
 				canScrollUp = vehicle.cp.multiTools < 8
 				canScrollDown = vehicle.cp.multiTools > 1
 			elseif fn == 'changeRowAngle' then
@@ -484,7 +484,7 @@ function courseplay.button:render()
 						show = vehicle.cp.headland.getNumLanes() < vehicle.cp.headland.getMaxNumLanes();
 					end;
 				-- NOTE: generateCourse button is handled in buttonsActiveEnabled(), section 'generateCourse'
-				elseif fn == 'changeMultiTools' then
+				elseif fn == 'changeByMultiTools' then
 					if prm > 0 then 
 						show = vehicle.cp.multiTools < 8
 					elseif prm < 0 then
