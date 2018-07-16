@@ -29,22 +29,6 @@ function CourseGeneratorScreen:new(target, custom_mt)
 		i = i + 1
 	end
 
-	-- List of fields
-	self.fields = {}
-	for key, field in pairs( courseplay.fields.fieldData ) do
-		table.insert( self.fields, { name = field.name, number = key })
-	end
-	table.sort( self.fields, function( a, b ) return a.number < b.number end )
-	-- set up a reverse lookup table
-	self.fieldToState = {}
-	for i, f in ipairs( self.fields ) do
-		self.fieldToState[ f.number ] = i
-		i = i + 1
-	end
-	-- add the 'currently loaded course' option
-	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
-	self.fieldToState[ 0 ] = #self.fields
-
 	return self
 end
 
@@ -82,6 +66,25 @@ function CourseGeneratorScreen:onOpen()
 		self.coursePlot:setStartPosition(x, z)
 	end
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
+	
+	-- Make sure we always load the most up to date field data
+	-- List of fields
+	self.fields = {}
+	for key, field in pairs( courseplay.fields.fieldData ) do
+		table.insert( self.fields, { name = field.name, number = key })
+	end
+	table.sort( self.fields, function( a, b ) return a.number < b.number end )
+
+	-- set up a reverse lookup table
+	self.fieldToState = {}
+	for i, f in ipairs( self.fields ) do
+		self.fieldToState[ f.number ] = i
+		i = i + 1
+	end
+
+	-- add the 'currently loaded course' option
+	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
+	self.fieldToState[ 0 ] = #self.fields
 end
 
 function CourseGeneratorScreen:onClickResetMap(element)
