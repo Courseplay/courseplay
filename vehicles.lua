@@ -1399,6 +1399,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 	-- This function allows CP to naviagte to the start of the UnloadingCourse without leaving the field if pathfinding option is enabled
 			-- Todo Remove Mode 2 Crap
 	local allowedToDrive = true
+	local min = math.min
 	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
 	local currentX, currentY, currentZ;
 	local refSpeed;
@@ -1428,7 +1429,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 		if distance_to_wp > vehicle.cp.shortestDistToWp and distance_to_wp < 3 then
 			distToChange = distance_to_wp + 1
 		end
-
+		print(string.format('distance_to_wp = %s distToChange = %s ',tostring(distance_to_wp),tostring(distToChange)))
 		if distance_to_wp < distToChange then
 			-- Switching to next waypoint
 			vehicle.cp.shortestDistToWp = nil
@@ -1519,23 +1520,24 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 	
 		-- check traffic and calculate speed
 		
-	allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
+	--[[ allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
 	if vehicle.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-	end
+	end ]]
 
 	if g_server ~= nil then
 		local lx, lz
 		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
 			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
+			print(string.format('lx = %s dt = %s',tostring(lx),tostring(dt)))
 		else
 			allowedToDrive = false
 		end
 			
 		if not allowedToDrive then
-			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, true, 0, 1)
 			vehicle.cp.speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 			courseplay:resetSlippingTimers(vehicle)
 			return;
@@ -1557,9 +1559,9 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 			courseplay:setSpeed(vehicle, refSpeed)
 		end
 	
-		vehicle.cp.TrafficBrake = false
+		-- vehicle.cp.TrafficBrake = false
 
-		local tx, tz
+		--[[ local tx, tz
 		-- when following waypoints, check obstacles on the course, not dead ahead
 		if #vehicle.cp.nextTargets > 1 then
 		-- look ahead two waypoints if we have that many
@@ -1568,24 +1570,24 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 		-- otherwise just the next one
 			tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
 		end
-		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
-	end
+		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod ) ]]
 	
 	--courseplay:setTrafficCollision(vehicle, lx, lz,true)
 
-	if math.abs(vehicle.lastSpeedReal) < 0.0001 then
+--[[ 	if math.abs(vehicle.lastSpeedReal) < 0.0001 then
 		if not moveForwards then
 			vehicle.nextMovingDirection = -1
 		else
 			vehicle.nextMovingDirection = 1
 		end;
-	end;
+	end; ]]
 	
 	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, true, lx, lz, refSpeed, 1)
+end
 
-		--Debug Crap Still do remove mode 2 crap
+		--Debug Crap Still do change debug channel
 		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
-	--[[ if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+	if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
 		drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
 		
@@ -1599,7 +1601,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 				drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
 			end;
 		end;
-	end; ]]
+	end;
 end;
 
 -- vim: set noexpandtab:

@@ -1643,7 +1643,6 @@ end
 -- if there's fruit between me and the combine, calculate a path around it and return true.
 -- if there's no fruit or no path around it or couldn't calculate path, return false
 function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance)
-	print("HELLLO IM IN THIS FUNCTION")
 	local cx, cz = 0, 0
 	local fruitType = 0
 
