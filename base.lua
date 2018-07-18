@@ -51,6 +51,9 @@ function courseplay:load(savegame)
 	-- --More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
 	self.cp.changedMRMod = false;
 
+	-- Mode4/6 Pathfinding TODO Move this to its proper place
+	self.cp.isNavigatingPathfinding = false
+
 	--turn maneuver
 	self.cp.turnOnField = true;
 	self.cp.oppositeTurnMode = false;

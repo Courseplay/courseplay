@@ -623,6 +623,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				if vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart or vehicle.Waypoints[vehicle.cp.waypointIndex+1].turnStart  then
 					courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex - 2);
 				end
+				local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+				courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, 25)
 			end
 		end
 		-- last point reached restart

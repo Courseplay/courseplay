@@ -106,7 +106,6 @@ function courseplay:drive(self, dt)
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-4).."): refSpeed = "..tostring(refSpeed))
 	end;
 
-
 	--[[ unregister at combine, if there is one
 	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
@@ -646,6 +645,17 @@ function courseplay:drive(self, dt)
 			courseplay:lowerImplements(self, false, false)
 		end;
 
+		if self.cp.abortWork then
+			local stopWork = self.cp.stopWork + 1
+			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == stopWork then
+				courseplay:navigatePathToUnloadCourse(vehicle, dt, false)
+				return
+			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2)) then
+				courseplay:navigatePathToUnloadCourse(vehicle, dt, true)
+				return
+			end
+		end
+
 	-- MODE 6
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 	
@@ -662,6 +672,17 @@ function courseplay:drive(self, dt)
 
 		if breakCode then
 			return
+		end
+
+		if self.cp.abortWork then
+			local stopWork = self.cp.stopWork + 1
+			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == stopWork then
+				courseplay:navigatePathToUnloadCourse(vehicle, dt, false)
+				return
+			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2))  then
+				courseplay:navigatePathToUnloadCourse(vehicle, dt, true)
+				return
+			end
 		end
 		
 	-- MODE 9

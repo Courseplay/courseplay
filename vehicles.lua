@@ -1386,5 +1386,218 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 
 	--- Set the waypoint to the start of the refill course
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
+	local startUnload = vehicle.cp.stopWork + 1
+	local tx, tz = vehicle.Waypoints[startUnload].cx,vehicle.Waypoints[startUnload].cz
+	courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz, 25)
 end;
+
+function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
+	-- Still WIP not even stable moved all code belive to be needed for this function to here
+	-- This function allows CP to naviagte to the start of the UnloadingCourse without leaving the field if pathfinding option is enabled
+			-- Todo Remove Mode 2 Crap
+	local allowedToDrive = true
+	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local currentX, currentY, currentZ;
+	local refSpeed;
+	local handleTurn = false
+	local xt, yt, zt;
+	local dod;
+	local speedDebugLine;
+	vehicle.cp.isNavigatingPathfinding = true
+
+	if vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
+		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_DRIVE_TO_WAYPOINT;%d;%d",vehicle.cp.curTarget.x,vehicle.cp.curTarget.z));
+		currentX = vehicle.cp.curTarget.x
+		currentY = vehicle.cp.curTarget.y
+		currentZ = vehicle.cp.curTarget.z
+		refSpeed = vehicle.cp.speeds.field
+		speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, currentY, currentZ);	
+
+		-- avoid circling
+		-- if we are closer than distToChange meters to the current waypoint, we switch our target to the next
+		-- set to 5 cause this is what it was set to in Mode2. AKA I have no clue it worked for mode2 so if it aint broke I am not fixing it
+		local distToChange = 5
+				
+		if vehicle.cp.shortestDistToWp == nil or vehicle.cp.shortestDistToWp > distance_to_wp then
+			vehicle.cp.shortestDistToWp = distance_to_wp
+		end
+
+		if distance_to_wp > vehicle.cp.shortestDistToWp and distance_to_wp < 3 then
+			distToChange = distance_to_wp + 1
+		end
+
+		if distance_to_wp < distToChange then
+			-- Switching to next waypoint
+			vehicle.cp.shortestDistToWp = nil
+			if #(vehicle.cp.nextTargets) > 0 then
+				-- still have waypoints left
+				local continueCourse = true
+				--TODO update this to refelect return abortWork
+				if isReturningToWork == true then
+					-- how far it is then0?			
+					local abortWork = vehicle.cp.abortWork									
+					local wX, wZ = vehicle.Waypoints[abortWork].cx,vehicle.Waypoints[abortWork].cz
+					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
+					local distanceToAbortWork = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
+					-- magic constants, based on WAG
+					if distanceToAbortWork < 25 then
+						courseplay.debugVehicle( 9, vehicle, "Only %.2f meters from abortWork, abort course and countiune with field work", distanceToAbortWork )
+						continueCourse = false
+						vehicle.cp.nextTargets = {}
+						vehicle.cp.isNavigatingPathfinding = false
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[abortWork])
+					else
+						courseplay.debugVehicle( 9, vehicle, "Combine is still %.2f meters from me, continuing course", distanceToAbortWork )
+					end 
+				elseif isReturningToWork == false then 
+					local startUnload = vehicle.cp.stopWork + 1
+					local wX, wZ = vehicle.Waypoints[startUnload].cx,vehicle.Waypoints[startUnload].cz
+					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
+					local distanceToTarget = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
+					-- magic constants, distance based WAG
+					if distanceToTarget < 25 then
+						courseplay:debug( string.format( "Only %.2f meters to Target on the way, abort course", distanceToTarget ), 9 )
+						continueCourse = false
+						vehicle.cp.nextTargets = {}
+						vehicle.cp.isNavigatingPathfinding = false
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[startUnload])
+					end
+				end
+				if continueCourse then
+					-- set next target and remome current one from list
+					courseplay:setCurrentTargetFromList(vehicle, 1);
+				end
+			else
+				-- no more waypoints left
+				allowedToDrive = false
+					--[[ we are following waypoints mode (for instance because we were in STATE_DRIVE_TO_COMBINE but 
+					due the the realistic driving settings, we switched to STATE_FOLLOW_TARGET_WPS).
+					now, we are attempting to switch back to drive to combine mode Is this still relvant to this code placement]]
+
+				-- TODO Update this to start unloading course, IMPORTANT check for same functionaility else where in CP mode4/6
+				if isReturningToWork == true then
+					-- how far it is then0?			
+					local abortWork = vehicle.cp.abortWork									
+					local wX, wZ = vehicle.Waypoints[abortWork].cx,vehicle.Waypoints[abortWork].cz
+					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
+					local distanceToAbortWork = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
+					-- magic constants, based on WAG
+					if distanceToAbortWork < 25 then
+						courseplay.debugVehicle( 9, vehicle, "Only %.2f meters from abortWork, abort course and countiune with field work", distanceToAbortWork )
+						continueCourse = false
+						vehicle.cp.nextTargets = {}
+						vehicle.cp.isNavigatingPathfinding = false
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[abortWork])
+					else
+						courseplay.debugVehicle( 9, vehicle, "Combine is still %.2f meters from me, continuing course", distanceToAbortWork )
+					end 
+				elseif isReturningToWork == false then 
+					local startUnload = vehicle.cp.stopWork + 1
+					local wX, wZ = vehicle.Waypoints[startUnload].cx,vehicle.Waypoints[startUnload].cz
+					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
+					local distanceToTarget = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
+					-- magic constants, distance based WAG
+					if distanceToTarget < 25 then
+						courseplay:debug( string.format( "Only %.2f meters to Target on the way, abort course", distanceToTarget ), 9 )
+						continueCourse = false
+						vehicle.cp.nextTargets = {}
+						vehicle.cp.isNavigatingPathfinding = false
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[startUnload])
+					end
+				end
+			end
+		end
+	end
+
+	if vehicle.showWaterWarning then
+		allowedToDrive = false
+		CpManager:setGlobalInfoText(vehicle, 'WATER');
+	end
+	
+		-- check traffic and calculate speed
+		
+	allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
+	if vehicle.cp.collidingVehicleId ~= nil then
+		refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+	end
+
+	if g_server ~= nil then
+		local lx, lz
+		local moveForwards = true
+		if currentX ~= nil and currentZ ~= nil then
+			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
+		else
+			allowedToDrive = false
+		end
+			
+		if not allowedToDrive then
+			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
+			vehicle.cp.speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+			courseplay:resetSlippingTimers(vehicle)
+			return;
+		end
+			
+		if vehicle.cp.TrafficBrake then
+			moveForwards = vehicle.movingDirection == -1;
+			lx = 0
+			lz = 1
+		end
+
+		if abs(lx) > 0.5 then
+			refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
+			speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		end
+					
+		if allowedToDrive then
+			vehicle.cp.speedDebugLine = speedDebugLine
+			courseplay:setSpeed(vehicle, refSpeed)
+		end
+	
+		vehicle.cp.TrafficBrake = false
+
+		local tx, tz
+		-- when following waypoints, check obstacles on the course, not dead ahead
+		if #vehicle.cp.nextTargets > 1 then
+		-- look ahead two waypoints if we have that many
+			tx, tz = vehicle.cp.nextTargets[ 2 ].x, vehicle.cp.nextTargets[ 2 ].z
+		else
+		-- otherwise just the next one
+			tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
+		end
+		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
+	end
+	
+	courseplay:setTrafficCollision(vehicle, lx, lz,true)
+
+	if math.abs(vehicle.lastSpeedReal) < 0.0001 then
+		if not moveForwards then
+			vehicle.nextMovingDirection = -1
+		else
+			vehicle.nextMovingDirection = 1
+		end;
+	end;
+	
+	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
+
+		--Debug Crap Still do remove mode 2 crap
+		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+	--[[ if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
+		drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
+		
+		for i,tp in pairs(vehicle.cp.nextTargets) do
+			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
+			drawDebugPoint(tp.x, y +2, tp.z, 1, 0.65, 0, 1);
+			if i == 1 then
+				drawDebugLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+			else
+				local pp = vehicle.cp.nextTargets[i-1];
+				drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+			end;
+		end;
+	end; ]]
+end;
+
 -- vim: set noexpandtab:
