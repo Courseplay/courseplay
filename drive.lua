@@ -647,11 +647,13 @@ function courseplay:drive(self, dt)
 
 		if self.cp.abortWork then
 			local stopWork = self.cp.stopWork + 1
-			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == stopWork then
-				courseplay:navigatePathToUnloadCourse(vehicle, dt, false)
+			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == stopWork + 1 then
+				print('Calling navigate function')
+				courseplay:navigatePathToUnloadCourse(self, dt, false)
 				return
 			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2)) then
-				courseplay:navigatePathToUnloadCourse(vehicle, dt, true)
+				print('Calling navigate function')
+				courseplay:navigatePathToUnloadCourse(self, dt, true)
 				return
 			end
 		end
@@ -676,11 +678,14 @@ function courseplay:drive(self, dt)
 
 		if self.cp.abortWork then
 			local stopWork = self.cp.stopWork + 1
+			
 			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == stopWork then
-				courseplay:navigatePathToUnloadCourse(vehicle, dt, false)
+				print('Calling navigate function')
+				courseplay:navigatePathToUnloadCourse(self, dt, false)
 				return
 			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2))  then
-				courseplay:navigatePathToUnloadCourse(vehicle, dt, true)
+				print('Calling navigate function')
+				courseplay:navigatePathToUnloadCourse(self, dt, true)
 				return
 			end
 		end

@@ -1642,7 +1642,8 @@ end
 
 -- if there's fruit between me and the combine, calculate a path around it and return true.
 -- if there's no fruit or no path around it or couldn't calculate path, return false
-function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance )
+function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance)
+	print("HELLLO IM IN THIS FUNCTION")
 	local cx, cz = 0, 0
 	local fruitType = 0
 
@@ -1660,7 +1661,9 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	courseplay:setCustomTimer( vehicle, 'pathfinder', 5 )
 
 	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode,nil, nil, cx, cz, fixedFruitType )
-	if not hasFruit then
+	--Ingore this condintal if I am being used by Mode4/6
+	local isFieldWork = vehicle.cp.mode == 6 or vehicle.cp.mode == 4
+	if not hasFruit and isFieldWork == false then
 		-- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
 		-- and drive directly to the combine.
 		return false

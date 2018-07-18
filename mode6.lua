@@ -624,7 +624,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex - 2);
 				end
 				local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
-				courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, 25)
+				if courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, 25) then
+					courseplay:setCurrentTargetFromList(vehicle, 1);
+					vehicle.cp.isNavigatingPathfinding = true;
+				end
 			end
 		end
 		-- last point reached restart

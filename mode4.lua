@@ -56,7 +56,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 					courseplay:setWaypointIndex(self, self.cp.waypointIndex - 2);
 				end
 				local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
-				courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, 25)
+				if courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, 25) then
+					courseplay:setCurrentTargetFromList(vehicle, 1);
+					vehicle.cp.isNavigatingPathfinding = true;
+				end
 			end
 		elseif self.cp.hasUnloadingRefillingCourse and self.cp.abortWork ~= nil then
 			allowedToDrive = false;

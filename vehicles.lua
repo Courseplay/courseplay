@@ -1386,9 +1386,12 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 
 	--- Set the waypoint to the start of the refill course
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
-	local startUnload = vehicle.cp.stopWork + 1
-	local tx, tz = vehicle.Waypoints[startUnload].cx,vehicle.Waypoints[startUnload].cz
-	courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz, 25)
+	local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+	if courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz) then
+		print('set Pathfinding')
+		vehicle.cp.isNavigatingPathfinding = true
+		courseplay:setCurrentTargetFromList(vehicle, 1);
+	end
 end;
 
 function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
@@ -1403,8 +1406,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 	local xt, yt, zt;
 	local dod;
 	local speedDebugLine;
-	vehicle.cp.isNavigatingPathfinding = true
-
+	print(string.format('vehicle.cp.nextTargets %s vehicle.cp.curTarget.x = %s, vehicle.cp.curTarget.z =%s', tostring(vehicle.cp.nextTargets), tostring(vehicle.cp.curTarget.x), tostring(vehicle.cp.curTarget.z)))
 	if vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
 		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_DRIVE_TO_WAYPOINT;%d;%d",vehicle.cp.curTarget.x,vehicle.cp.curTarget.z));
 		currentX = vehicle.cp.curTarget.x
@@ -1539,11 +1541,11 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 			return;
 		end
 			
-		if vehicle.cp.TrafficBrake then
+		--[[ if vehicle.cp.TrafficBrake then
 			moveForwards = vehicle.movingDirection == -1;
 			lx = 0
 			lz = 1
-		end
+		end ]]
 
 		if abs(lx) > 0.5 then
 			refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
@@ -1569,7 +1571,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
 	end
 	
-	courseplay:setTrafficCollision(vehicle, lx, lz,true)
+	--courseplay:setTrafficCollision(vehicle, lx, lz,true)
 
 	if math.abs(vehicle.lastSpeedReal) < 0.0001 then
 		if not moveForwards then
@@ -1579,7 +1581,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 		end;
 	end;
 	
-	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
+	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, true, lx, lz, refSpeed, 1)
 
 		--Debug Crap Still do remove mode 2 crap
 		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
