@@ -66,6 +66,8 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 					if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, 25) then
 						courseplay:setCurrentTargetFromList(self, 1);
 						self.cp.isNavigatingPathfinding = true;
+					else
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
 					end
 				end
 			end

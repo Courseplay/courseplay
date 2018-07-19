@@ -1394,6 +1394,8 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 			print('set Pathfinding')
 			vehicle.cp.isNavigatingPathfinding = true
 			courseplay:setCurrentTargetFromList(vehicle, 1);
+		else
+			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.stopWork + 1], true)
 		end
 	end
 
