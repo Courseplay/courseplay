@@ -1666,7 +1666,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		-- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
 		-- and drive directly to the combine.
 		return false
-	else
+	elseif hasFruit then
 		courseplay.debugVehicle( 9, vehicle, "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType)
 	end
   

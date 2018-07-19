@@ -2069,8 +2069,8 @@ end
 -- The alignment course is implemented as a turn maneuver.
 --
 -- No obstacles are checked.
-function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
-	if not vehicle.cp.alignment.enabled then return end
+function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
+	if not vehicle.cp.alignment.enabled and not forceEnable then return end
 	if not ( targetWaypoint and targetWaypoint.angle ) then
 		courseplay.debugVehicle( 14, vehicle, "No target waypoint or no angle on target waypoint, can't generate alginment course.")
 		printCallstack()
