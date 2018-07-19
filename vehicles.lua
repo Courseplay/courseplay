@@ -1520,11 +1520,11 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 	
 		-- check traffic and calculate speed
 		
-	--[[ allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
+	allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
 	if vehicle.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-	end ]]
+	end
 
 	if g_server ~= nil then
 		local lx, lz
@@ -1543,11 +1543,11 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 			return;
 		end
 			
-		--[[ if vehicle.cp.TrafficBrake then
+		if vehicle.cp.TrafficBrake then
 			moveForwards = vehicle.movingDirection == -1;
 			lx = 0
 			lz = 1
-		end ]]
+		end
 
 		if abs(lx) > 0.5 then
 			refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
@@ -1559,9 +1559,9 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 			courseplay:setSpeed(vehicle, refSpeed)
 		end
 	
-		-- vehicle.cp.TrafficBrake = false
+		vehicle.cp.TrafficBrake = false
 
-		--[[ local tx, tz
+		local tx, tz
 		-- when following waypoints, check obstacles on the course, not dead ahead
 		if #vehicle.cp.nextTargets > 1 then
 		-- look ahead two waypoints if we have that many
@@ -1570,9 +1570,9 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 		-- otherwise just the next one
 			tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
 		end
-		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod ) ]]
+		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
 	
-	--courseplay:setTrafficCollision(vehicle, lx, lz,true)
+		courseplay:setTrafficCollision(vehicle, lx, lz,true)
 
 --[[ 	if math.abs(vehicle.lastSpeedReal) < 0.0001 then
 		if not moveForwards then
@@ -1582,26 +1582,27 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 		end;
 	end; ]]
 	
-	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, true, lx, lz, refSpeed, 1)
-end
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, true, lx, lz, refSpeed, 1)
+
 
 		--Debug Crap Still do change debug channel
 		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
-	if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
-		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
-		drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
-		
-		for i,tp in pairs(vehicle.cp.nextTargets) do
-			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
-			drawDebugPoint(tp.x, y +2, tp.z, 1, 0.65, 0, 1);
-			if i == 1 then
-				drawDebugLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
-			else
-				local pp = vehicle.cp.nextTargets[i-1];
-				drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+		if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
+			drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
+			
+			for i,tp in pairs(vehicle.cp.nextTargets) do
+				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
+				drawDebugPoint(tp.x, y +2, tp.z, 1, 0.65, 0, 1);
+				if i == 1 then
+					drawDebugLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+				else
+					local pp = vehicle.cp.nextTargets[i-1];
+					drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+				end;
 			end;
 		end;
-	end;
+	end
 end;
 
 -- vim: set noexpandtab:
