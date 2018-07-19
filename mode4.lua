@@ -61,10 +61,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 						vehicle.cp.switchLaneOffset = true;
 					end;
 				end
-				local tx, tz = self.Waypoints[self.cp.waypointIndex].cx,self.Waypoints[self.cp.waypointIndex].cz
-				if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, 25) then
-					courseplay:setCurrentTargetFromList(self, 1);
-					self.cp.isNavigatingPathfinding = true;
+				if self.cp.realisticDriving then
+					local tx, tz = self.Waypoints[self.cp.waypointIndex].cx,self.Waypoints[self.cp.waypointIndex].cz
+					if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, 25) then
+						courseplay:setCurrentTargetFromList(self, 1);
+						self.cp.isNavigatingPathfinding = true;
+					end
 				end
 			end
 		elseif self.cp.hasUnloadingRefillingCourse and self.cp.abortWork ~= nil then
@@ -78,7 +80,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			courseplay:setWaypointIndex(self, self.cp.abortWork + 2);
 		end
 		local offset = 9;
-		if not self.cp.alignment.enabled then
+		if not self.cp.realisticDriving then
 			local offset = 9;
 			if self.cp.hasSowingMachine then
 				offset = 8;
@@ -86,7 +88,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 		else
 			offset = 0;
 			if self.cp.hasSowingMachine then
-				offset = 1;
+				offset = -1;
 			end;
 		end;
 		if self.cp.previousWaypointIndex < self.cp.stopWork and self.cp.previousWaypointIndex > self.cp.abortWork + offset + self.cp.abortWorkExtraMoveBack then

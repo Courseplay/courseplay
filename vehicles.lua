@@ -1353,7 +1353,7 @@ function courseplay:setPathVehiclesSpeed(vehicle,dt)
 end
 
 function courseplay:setAbortWorkWaypoint(vehicle)
-	if not vehicle.cp.alignment.enabled then
+	if not vehicle.cp.realisticDriving then
 		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
 		vehicle.cp.abortWorkExtraMoveBack = 0;
 
@@ -1387,19 +1387,20 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 		-- If were using align point then there is no need for all that extra distance just make sure we arent ending up starting on a turn waypoint
 		-- Minus two so CP can resume work before the accutall end of where it left off
 		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 2
+		--- Set the waypoint to the start of the refill course
+		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
+		local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+		if courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz) then
+			print('set Pathfinding')
+			vehicle.cp.isNavigatingPathfinding = true
+			courseplay:setCurrentTargetFromList(vehicle, 1);
+		end
 	end
 
 
 	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);
 
-	--- Set the waypoint to the start of the refill course
-	courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
-	local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
-	if courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz) then
-		print('set Pathfinding')
-		vehicle.cp.isNavigatingPathfinding = true
-		courseplay:setCurrentTargetFromList(vehicle, 1);
-	end
+	
 end;
 
 function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)

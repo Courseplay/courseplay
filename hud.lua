@@ -1018,7 +1018,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		-- pathfinding
 		vehicle.cp.hud.content.pages[6][1][1].text = nil;
 		vehicle.cp.hud.content.pages[6][1][2].text = nil;
-		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
+		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER or courseplay.MDOE_FIELDWORK or courseplay.MODE_SEED_FERTILIZE then
 			vehicle.cp.hud.content.pages[6][1][1].text = courseplay:loc('COURSEPLAY_PATHFINDING');
 			vehicle.cp.hud.content.pages[6][1][2].text = vehicle.cp.realisticDriving and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
