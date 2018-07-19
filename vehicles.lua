@@ -1391,7 +1391,6 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 		local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
 		if courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz, 50, true) then
-			print('set Pathfinding')
 			vehicle.cp.isNavigatingPathfinding = true
 			courseplay:setCurrentTargetFromList(vehicle, 1);
 		else

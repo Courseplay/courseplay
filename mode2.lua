@@ -1655,6 +1655,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
   --
 	-- pathfinding is expensive and we don't want it happen in every update cycle
 	if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
+		courseplay.debugVehicle( 9, vehicle, "Pathfinding: has been called to many times exiting" )
 		return false
 	end
 	courseplay:setCustomTimer( vehicle, 'pathfinder', 5 )
@@ -1664,6 +1665,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	if not hasFruit and not skipFruitCheck then
 		-- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
 		-- and drive directly to the combine.
+		courseplay.debugVehicle( 9, vehicle, "Pathfinding: no fruit between tractor and combine" )	
 		return false
 	elseif not skipFruitCheck then
 		courseplay.debugVehicle( 9, vehicle, "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType)
