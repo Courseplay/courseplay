@@ -2076,6 +2076,15 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
 		printCallstack()
 		return
 	end
+	
+	--Readjust x and z for offset being used
+	if courseplay:getIsVehicleOffsetValid(self) then
+		targetWaypoint.cx, targetWaypoint.cz = courseplay:getVehicleOffsettedCoords(self, targetWaypoint.cx, targetWaypoint.cz);
+		if courseplay.debugChannels[12] and self.cp.isTurning == nil then
+			drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+		end;
+	end;
+
 	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
 	if not points then
 		courseplay.debugVehicle( 14, vehicle, "(Align) can't find an alignment course, may be too close to target wp?" )
