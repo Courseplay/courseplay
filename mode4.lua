@@ -7,6 +7,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local hasFinishedWork = false
 	local seederFillLevelPct = self.cp.totalSeederFillLevelPercent   or 100;
 	local sprayerFillLevelPct = self.cp.totalSprayerFillLevelPercent or 100;
+	local astarCalcFail = false
 	if self.cp.hasFertilizerSowingMachine and not self.cp.fertilizerOption then
 		sprayerFillLevelPct = 100
 	end
@@ -62,12 +63,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 					end;
 				end
 				if self.cp.realisticDriving then
-					local tx, tz = self.Waypoints[self.cp.waypointIndex].cx,self.Waypoints[self.cp.waypointIndex].cz
-					if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, 50, true) then
+					local tx, tz = self.Waypoints[self.cp.waypointIndex-2].cx,self.Waypoints[self.cp.waypointIndex-2].cz
+					if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, self.cp.turnDiameter*2, true) then
 						courseplay:setCurrentTargetFromList(self, 1);
 						self.cp.isNavigatingPathfinding = true;
 					else
-						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex-2], true)
 					end
 				end
 			end

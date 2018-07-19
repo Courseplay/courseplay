@@ -1920,7 +1920,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
 					local distanceToTarget = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
 					-- magic constants, based on WAG
-					if distanceToTarget < 50 then
+					if distanceToTarget < vehicle.cp.turnDiameter*2 then
 						courseplay.debugVehicle( 9, vehicle, "Only %.2f meters from abortWork, abort course and countiune with field work", distanceToTarget )
 						continueCourse = false
 						vehicle.cp.nextTargets = {}
@@ -1936,7 +1936,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
 					local distanceToTarget = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
 					-- magic constants, distance based WAG
-					if distanceToTarget < 50 then
+					if distanceToTarget < vehicle.cp.turnDiameter*2 then
 						courseplay:debugVehicle(9, vehicle,  "Only %.2f meters to Target on the way, abort course", distanceToTarget )
 						continueCourse = false
 						vehicle.cp.nextTargets = {}
