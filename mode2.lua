@@ -523,7 +523,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if vehicle.cp.realisticDriving and dod > 20 then 
 			-- if there's fruit between me and the combine, calculate a path around it to a point 
 			-- behind the combine.
-			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind ) then
+			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind, nil ) then
 			  -- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay.debugVehicle( 4, vehicle, "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
 													dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter )
@@ -1642,7 +1642,7 @@ end
 
 -- if there's fruit between me and the combine, calculate a path around it and return true.
 -- if there's no fruit or no path around it or couldn't calculate path, return false
-function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance)
+function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance, skipFruitCheck)
 	local cx, cz = 0, 0
 	local fruitType = 0
 
@@ -1661,12 +1661,11 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 
 	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode,nil, nil, cx, cz, fixedFruitType )
 	--Ingore this condintal if I am being used by Mode4/6
-	local isFieldWork = vehicle.cp.mode == 6 or vehicle.cp.mode == 4
-	if not hasFruit and isFieldWork == false then
+	if not hasFruit and not skipFruitCheck then
 		-- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
 		-- and drive directly to the combine.
 		return false
-	elseif hasFruit then
+	elseif not skipFruitCheck then
 		courseplay.debugVehicle( 9, vehicle, "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType)
 	end
   

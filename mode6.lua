@@ -625,7 +625,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				end
 				if self.cp.realisticDriving then
 					local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
-					if courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, 25) then
+					if courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, 50, true) then
 						courseplay:setCurrentTargetFromList(vehicle, 1);
 						vehicle.cp.isNavigatingPathfinding = true;
 					else

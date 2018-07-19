@@ -63,7 +63,7 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 				end
 				if self.cp.realisticDriving then
 					local tx, tz = self.Waypoints[self.cp.waypointIndex].cx,self.Waypoints[self.cp.waypointIndex].cz
-					if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, 25) then
+					if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, 50, true) then
 						courseplay:setCurrentTargetFromList(self, 1);
 						self.cp.isNavigatingPathfinding = true;
 					else
