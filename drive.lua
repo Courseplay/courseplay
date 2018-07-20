@@ -646,8 +646,8 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.cp.abortWork then
-			local stopWork = self.cp.stopWork + 1
-			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == stopWork then
+			-- If we are navigating pathfinding then don't let drive handle driving and use the below function
+			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == self.cp.stopWork + 1 then
 				courseplay:navigatePathToUnloadCourse(self, dt, true) 
 				return
 			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2)) then
@@ -675,9 +675,9 @@ function courseplay:drive(self, dt)
 		end
 
 		if self.cp.abortWork then
-			local stopWork = self.cp.stopWork + 1
-			
-			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == stopWork then
+			-- If we are navigating pathfinding then don't let drive handle driving and use the below function
+			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == self.cp.stopWork + 1 then
+				courseplay:navigatePathToUnloadCourse(self, dt, true) 
 				return
 			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2))  then
 				courseplay:navigatePathToUnloadCourse(self, dt, true) 

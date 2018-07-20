@@ -1384,8 +1384,7 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 			end;
 		end;
 	else
-		-- If were using align point then there is no need for all that extra distance just make sure we arent ending up starting on a turn waypoint
-		-- Minus two so CP can resume work before the accutall end of where it left off
+		-- If were using align point then there is no need for all that extra distance just enough that it straightens back out after turning
 		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 2
 		--- Set the waypoint to the start of the refill course
 		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);

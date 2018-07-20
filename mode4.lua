@@ -56,10 +56,10 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 				if self.Waypoints[self.cp.waypointIndex].turnStart or self.Waypoints[self.cp.waypointIndex+1].turnStart then
 					courseplay:setWaypointIndex(self, self.cp.waypointIndex - 2);
 					--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
-					if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
-						courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(wp.turnStart and true or false)), 12);
-						courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
-						vehicle.cp.switchLaneOffset = true;
+					if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 and not self.cp.switchLaneOffset then
+						courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(self), i-1, tostring(self.Waypoints[self.cp.waypointIndex].turnStart and true or false)), 12);
+						courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
+						self.cp.switchLaneOffset = true;
 					end;
 				end
 				if self.cp.realisticDriving then
@@ -89,9 +89,9 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 				offset = 8;
 			end;
 		else
-			offset = 0;
+			offset = 2;
 			if self.cp.hasSowingMachine then
-				offset = -1;
+				offset = 1;
 			end;
 		end;
 		if self.cp.previousWaypointIndex < self.cp.stopWork and self.cp.previousWaypointIndex > self.cp.abortWork + offset + self.cp.abortWorkExtraMoveBack then
