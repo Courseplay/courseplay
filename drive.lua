@@ -647,12 +647,11 @@ function courseplay:drive(self, dt)
 
 		if self.cp.abortWork then
 			-- If we are navigating pathfinding then don't let drive handle driving and use the below function
-			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == self.cp.stopWork + 1 then
-				courseplay:navigatePathToUnloadCourse(self, dt, true) 
-				return
-			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2)) then
-				courseplay:navigatePathToUnloadCourse(self, dt, true) 
-				return
+				if self.cp.isNavigatingPathfinding == true then
+					--inTraffic back to false this, clears the inTraffic Message
+					self.cp.inTraffic = false
+					courseplay:navigatePathToUnloadCourse(self, dt, true) 
+					return
 			end
 		end
 
@@ -676,13 +675,12 @@ function courseplay:drive(self, dt)
 
 		if self.cp.abortWork then
 			-- If we are navigating pathfinding then don't let drive handle driving and use the below function
-			if self.cp.isNavigatingPathfinding == true and self.cp.waypointIndex == self.cp.stopWork + 1 then
-				courseplay:navigatePathToUnloadCourse(self, dt, true) 
+			if self.cp.isNavigatingPathfinding == true then
+				--inTraffic back to false this, clears the inTraffic Message
+				self.cp.inTraffic = false
+				courseplay:navigatePathToUnloadCourse(self, dt)
 				return
-			elseif self.cp.isNavigatingPathfinding == true and (self.cp.waypointIndex == self.cp.abortWork or self.cp.waypointIndex == (self.cp.abortWork - 2))  then
-				courseplay:navigatePathToUnloadCourse(self, dt, true) 
-				return
-			end
+			end;
 		end
 		
 	-- MODE 9
@@ -1868,7 +1866,7 @@ function courseplay:setCollisionDirection(node, col, colDirX, colDirZ)
 	end;
 end;
 
-function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
+function courseplay:navigatePathToUnloadCourse(vehicle, dt)
 	-- Still WIP not even stable moved all code belive to be needed for this function to here
 	-- This function allows CP to naviagte to the start of the UnloadingCourse without leaving the field if pathfinding option is enabled
 			-- Todo Remove Mode 2 Crap
@@ -1881,6 +1879,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 	local xt, yt, zt;
 	local dod;
 	local speedDebugLine;
+	local moveForwards = true
 	--print(string.format('vehicle.cp.nextTargets %s vehicle.cp.curTarget.x = %s, vehicle.cp.curTarget.z =%s', tostring(vehicle.cp.nextTargets), tostring(vehicle.cp.curTarget.x), tostring(vehicle.cp.curTarget.z)))
 	if vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
 		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_DRIVE_TO_WAYPOINT;%d;%d",vehicle.cp.curTarget.x,vehicle.cp.curTarget.z));
@@ -1910,43 +1909,21 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 			if #(vehicle.cp.nextTargets) > 0 then
 				-- still have waypoints left
 				local continueCourse = true
-				--TODO update this to refelect return abortWork
-				if isReturningToWork == true then
-					-- how far it is then0?			
-					-- AbortWork waypointIndex is always shifting, waypointIndex is the current waypoint and set before this function takes over, so it is reliably the 
-					-- the correct number
-					local abortWork = vehicle.cp.waypointIndex									
-					local wX, wZ = vehicle.Waypoints[abortWork].cx,vehicle.Waypoints[abortWork].cz
-					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
-					local distanceToTarget = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
-					-- magic constants, based on WAG
-					if distanceToTarget < vehicle.cp.turnDiameter*2 then
-						courseplay.debugVehicle( 9, vehicle, "Only %.2f meters from abortWork, abort course and countiune with field work", distanceToTarget )
-						continueCourse = false
-						vehicle.cp.nextTargets = {}
-						vehicle.cp.isNavigatingPathfinding = false
-						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[abortWork], true)
-						return 
-					else
-						courseplay.debugVehicle( 9, vehicle, "Abort Work is still %.2f meters from me, continuing course", distanceToTarget )
-					end 
-				elseif isReturningToWork == false then 
-					local startUnload = vehicle.cp.stopWork + 1
-					local wX, wZ = vehicle.Waypoints[startUnload].cx,vehicle.Waypoints[startUnload].cz
-					local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wX, 0, wZ)
-					local distanceToTarget = courseplay:distanceToPoint(vehicle, wX, wY, wZ)
-					-- magic constants, distance based WAG
-					if distanceToTarget < vehicle.cp.turnDiameter*2 then
-						courseplay:debugVehicle(9, vehicle,  "Only %.2f meters to Target on the way, abort course", distanceToTarget )
-						continueCourse = false
-						vehicle.cp.nextTargets = {}
-						vehicle.cp.isNavigatingPathfinding = false
-						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[startUnload], true)
-						return 
-					else
-						courseplay.debugVehicle( 9, vehicle, "Unload Course is still %.2f meters from me, continuing course", distanceToTarget )
-					end
-				end
+				--Reset all variables in case generate path gives a course to close to the target and we have more targets left							
+				local wx, wz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+				local wy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wx, 0, wz)
+				local distanceToTarget = courseplay:distanceToPoint(vehicle, wx, wy, wz)
+				-- magic constants, based on WAG
+				if distanceToTarget < vehicle.cp.turnDiameter*2 then
+					courseplay.debugVehicle( 9, vehicle, "Only %.2f meters from end of pathfinding, abort course and countiune with the course", distanceToTarget )
+					continueCourse = false
+					vehicle.cp.nextTargets = {}
+					vehicle.cp.isNavigatingPathfinding = false
+					courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
+				else
+					courseplay.debugVehicle( 9, vehicle, "Abort Work is still %.2f meters from me, continuing pathfinding", distanceToTarget )
+				end 
+		
 				if continueCourse then
 					-- set next target and remome current one from list
 					courseplay:setCurrentTargetFromList(vehicle, 1);
@@ -1954,32 +1931,12 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 			else
 				-- no more waypoints left
 				allowedToDrive = false
-					--[[ we are following waypoints mode (for instance because we were in STATE_DRIVE_TO_COMBINE but 
-					due the the realistic driving settings, we switched to STATE_FOLLOW_TARGET_WPS).
-					now, we are attempting to switch back to drive to combine mode Is this still relvant to this code placement]]
-
-				-- TODO Update this to start unloading course, IMPORTANT check for same functionaility else where in CP mode4/6
-				if isReturningToWork == true then
-					-- how far it is then0?			
-					-- AbortWork waypointIndex is always shifting, waypointIndex is the current waypoint and set before this function takes over, so it is reliably the 
-					-- the correct number								
-			
-					courseplay.debugVehicle( 9, vehicle, "No more waypoints left abort course, resuming work" )
-					continueCourse = false
-					vehicle.cp.nextTargets = {}
-					vehicle.cp.isNavigatingPathfinding = false
-					courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
-					return 
-					
-				elseif isReturningToWork == false then 
-					local startUnload = vehicle.cp.stopWork + 1
-					courseplay:debugVehicle( 9, vehicle, "No more waypoints left abort course, proceding to unload course" )
-					continueCourse = false
-					vehicle.cp.nextTargets = {}
-					vehicle.cp.isNavigatingPathfinding = false
-					courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[startUnload], true)
-					return 
-				end
+				--Reset All used variables and fire the alligment course incase we are not at the correct angle							
+				courseplay.debugVehicle( 9, vehicle, "No more waypoints left abort course, resuming work" )
+				continueCourse = false
+				vehicle.cp.nextTargets = {}
+				vehicle.cp.isNavigatingPathfinding = false
+				courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
 			end
 		end
 	end
@@ -2002,7 +1959,6 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
 			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
-			--print(string.format('lx = %s dt = %s',tostring(lx),tostring(dt)))
 		else
 			allowedToDrive = false
 		end
@@ -2046,15 +2002,15 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, isReturningToWork)
 	
 		courseplay:setTrafficCollision(vehicle, lx, lz,true)
 
---[[ 	if math.abs(vehicle.lastSpeedReal) < 0.0001 then
-		if not moveForwards then
-			vehicle.nextMovingDirection = -1
-		else
-			vehicle.nextMovingDirection = 1
+		if math.abs(vehicle.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
+			if not moveForwards then
+				vehicle.nextMovingDirection = -1
+			else
+				vehicle.nextMovingDirection = 1
+			end;
 		end;
-	end; ]]
 	
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, true, lx, lz, refSpeed, 1)
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 
 
 		--Debug Crap Still do change debug channel

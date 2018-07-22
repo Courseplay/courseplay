@@ -83,13 +83,11 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 			courseplay:setWaypointIndex(self, self.cp.abortWork + 2);
 		end
 		local offset = 9;
-		if not self.cp.realisticDriving then
-			local offset = 9;
-			if self.cp.hasSowingMachine then
-				offset = 8;
-			end;
-		else
-			offset = 2;
+		if self.cp.hasSowingMachine then
+			offset = 8;
+		end;
+		if self.cp.realisticDriving then 
+			offset = 0;
 			if self.cp.hasSowingMachine then
 				offset = 1;
 			end;
