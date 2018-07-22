@@ -1724,9 +1724,9 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	courseplay.debugVehicle( 9, vehicle, "Path found with %d waypoints ingore fruit cause first attempt failed", #path )
   end
   if path == nil then
-	 -- Still Couldn't Find a path we will just go with what we know which is head straight there, TODO allowed to drive if in mode4/6 = false or true what would be better
-  -- Stopping and dispalying a halt message or just going for it and hope for the best. Also TODO check to see if the track between start n end is 100% or not 
-  -- in wich cause we don't need to use this expenisve function
+	-- Still Couldn't Find a path we will just go with what we know which is head straight there, TODO allowed to drive if in mode4/6 = false or true what would be better
+	-- Stopping and dispalying a halt message or just going for it and hope for the best. Also TODO check to see if the track between start n end is 100% or not 
+	-- in wich cause we don't need to use this expenisve function
     courseplay.debugVehicle( 9, vehicle, "No path found, reverting to dumb mode" )
     return false
   end
