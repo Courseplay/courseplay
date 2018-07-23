@@ -138,7 +138,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
 			vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			course.multiTools = course.multiTools or 1
-			courseplay:changeMultiTools(vehicle, nil, course.multiTools)
+			courseplay:setMultiTools(vehicle, course.multiTools)
 			
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
@@ -245,7 +245,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				vehicle.cp.courseWorkWidth = course.workWidth;
 				--Place here to prevent it being reset back to one multi Tool on course addition when course isn't auto generated
 				course.multiTools = course.multiTools or 1
-				courseplay:changeMultiTools(vehicle, nil, course.multiTools)
+				courseplay:setMultiTools(vehicle, course.multiTools)
 			end;
 			if not vehicle.cp.courseNumHeadlandLanes then
 				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;

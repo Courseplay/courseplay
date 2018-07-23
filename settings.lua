@@ -445,7 +445,7 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	elseif force ~= nil and noDraw == nil then
 		vehicle.cp.manualWorkWidth = nil
 		courseplay:changeLaneNumber(vehicle, 0, true)
-		courseplay:changeMultiTools(vehicle, nil, 1)
+		courseplay:setMultiTools(vehicle, 1)
 		--print("is set by calculate button")
 	end
 	if force then
@@ -735,6 +735,8 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.numWayPoints = #vehicle.Waypoints;
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
+		vehicle.cp.courseNumHeadlandLanes = src.cp.courseNumHeadlandLanes
+		vehicle.cp.courseHeadlandDirectionCW = src.cp.courseHeadlandDirectionCW
 
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
@@ -768,8 +770,9 @@ function courseplay:copyCourse(vehicle)
 		--MultiTools
 		if src.cp.multiTools > 1 then
 			vehicle.cp.workWidth = src.cp.workWidth
+			vehicle.cp.courseWorkWidth = src.cp.courseWorkWidth
 			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
-			courseplay:changeMultiTools(vehicle, nil, src.cp.multiTools)
+			courseplay:setMultiTools(vehicle, src.cp.multiTools)
 		end;
 		
 		courseplay:validateCanSwitchMode(vehicle);
@@ -1236,14 +1239,11 @@ function courseplay:changeHeadlandReverseManeuverType( vehicle )
 		end
 end
 
-function courseplay:changeMultiTools(vehicle, changeBy, force)
-	local newMultiTools = 1
-	if force then
-		newMultiTools = force
-	else
-		newMultiTools = Utils.clamp(vehicle.cp.multiTools + changeBy, 1, 8);
-	end
-	vehicle:setCpVar('multiTools',newMultiTools,courseplay.isClient)
+function courseplay:changeByMultiTools(vehicle, changeBy)
+	courseplay:setMultiTools(vehicle, Utils.clamp(vehicle.cp.multiTools + changeBy, 1, 8))
+end;
+function courseplay:setMultiTools(vehicle, set)
+	vehicle:setCpVar('multiTools',set,courseplay.isClient)
 	if vehicle.cp.multiTools%2 == 0 then
 		courseplay:changeLaneNumber(vehicle, 1)
 	else

@@ -54,6 +54,21 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 				courseplay:setWaypointIndex(self, self.cp.abortWork);
 				if self.Waypoints[self.cp.waypointIndex].turnStart or self.Waypoints[self.cp.waypointIndex+1].turnStart then
 					courseplay:setWaypointIndex(self, self.cp.waypointIndex - 2);
+					--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
+					if self.cp.symmetricLaneChange and self.cp.laneOffset ~= 0 and not self.cp.switchLaneOffset then
+						courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(self), i-1, tostring(self.Waypoints[self.cp.waypointIndex].turnStart and true or false)), 12);
+						courseplay:changeLaneOffset(self, nil, self.cp.laneOffset * -1);
+						self.cp.switchLaneOffset = true;
+					end;
+				end
+				if self.cp.realisticDriving then
+					local tx, tz = self.Waypoints[self.cp.waypointIndex-2].cx,self.Waypoints[self.cp.waypointIndex-2].cz
+					if courseplay:calculateAstarPathToCoords( self, nil, tx, tz, self.cp.turnDiameter*2, true) then
+						courseplay:setCurrentTargetFromList(self, 1);
+						self.cp.isNavigatingPathfinding = true;
+					else
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex-2], true)
+					end
 				end
 			end
 		elseif self.cp.hasUnloadingRefillingCourse and self.cp.abortWork ~= nil then
@@ -69,6 +84,12 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 		local offset = 9;
 		if self.cp.hasSowingMachine then
 			offset = 8;
+		end;
+		if self.cp.realisticDriving then 
+			offset = 0;
+			if self.cp.hasSowingMachine then
+				offset = 1;
+			end;
 		end;
 		if self.cp.previousWaypointIndex < self.cp.stopWork and self.cp.previousWaypointIndex > self.cp.abortWork + offset + self.cp.abortWorkExtraMoveBack then
 

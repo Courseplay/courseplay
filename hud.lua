@@ -1018,7 +1018,7 @@ function courseplay.hud:loadPage(vehicle, page)
 		-- pathfinding
 		vehicle.cp.hud.content.pages[6][1][1].text = nil;
 		vehicle.cp.hud.content.pages[6][1][2].text = nil;
-		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
+		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER or courseplay.MDOE_FIELDWORK or courseplay.MODE_SEED_FERTILIZE then
 			vehicle.cp.hud.content.pages[6][1][1].text = courseplay:loc('COURSEPLAY_PATHFINDING');
 			vehicle.cp.hud.content.pages[6][1][2].text = vehicle.cp.realisticDriving and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
@@ -1838,9 +1838,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 8, nil, 'changeIslandBypassMode',  nil, self.col1posX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
 	
 	-- line 8 multi tools
-	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeMultiTools', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);
-	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeMultiTools',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);
-	courseplay.button:new(vehicle, 8, nil, 'changeMultiTools',1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, nil, true, true);
+	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'changeByMultiTools', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);
+	courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' },   'changeByMultiTools',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  nil, false);
+	courseplay.button:new(vehicle, 8, nil, 'changeByMultiTools',1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, nil, true, true);
 
 	-- generation action button
 	local toolTip = courseplay:loc('COURSEPLAY_GENERATE_FIELD_COURSE');

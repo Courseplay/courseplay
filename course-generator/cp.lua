@@ -115,11 +115,17 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		headlandSettings.isClockwise = not vehicle.cp.headland.userDirClockwise
 	end
 	headlandSettings.mode = vehicle.cp.headland.mode
+	-- This is to adjust the turnradius to account for multiTools haveing more tracks than you would have with just one tool causing the innermost tool on the headland 
+	-- turn tighter than possible
+	local turnRadiusAdjustedForMultiTool = vehicle.cp.vehicleTurnRadius
+	if vehicle.cp.multiTools then
+		turnRadiusAdjustedForMultiTool = vehicle.cp.vehicleTurnRadius + vehicle.cp.workWidth*((vehicle.cp.multiTools-1)/2)
+	end
 	local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end,
 		field, workWidth, headlandSettings,
 		extendTracks, minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,
-		roundCorners, vehicle.cp.vehicleTurnRadius,
+		roundCorners, turnRadiusAdjustedForMultiTool,
 		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
 		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
 	)

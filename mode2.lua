@@ -523,7 +523,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if vehicle.cp.realisticDriving and dod > 20 then 
 			-- if there's fruit between me and the combine, calculate a path around it to a point 
 			-- behind the combine.
-			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind ) then
+			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind, nil ) then
 			  -- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay.debugVehicle( 4, vehicle, "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
 													dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter )
@@ -1641,8 +1641,8 @@ function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidt
 end
 
 -- if there's fruit between me and the combine, calculate a path around it and return true.
--- if there's no fruit or no path around it or couldn't calculate path, return false
-function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance )
+-- if there's no fruit or no path around it or couldn't calculate path, return false				
+function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance, mode4_6)
 	local cx, cz = 0, 0
 	local fruitType = 0
 
@@ -1655,16 +1655,19 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
   --
 	-- pathfinding is expensive and we don't want it happen in every update cycle
 	if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
+		courseplay.debugVehicle( 9, vehicle, "Pathfinding: has been called to many times exiting" )
 		return false
 	end
 	courseplay:setCustomTimer( vehicle, 'pathfinder', 5 )
 
 	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode,nil, nil, cx, cz, fixedFruitType )
-	if not hasFruit then
+	--Ingore this condintal if I am being used by Mode4/6
+	if not hasFruit and not mode4_6 then
 		-- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
 		-- and drive directly to the combine.
+		courseplay.debugVehicle( 9, vehicle, "Pathfinding: no fruit between tractor and combine" )	
 		return false
-	else
+	elseif not mode4_6 then
 		courseplay.debugVehicle( 9, vehicle, "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType)
 	end
   
@@ -1683,6 +1686,10 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	if fieldNum == 0 then														-- No combines are aviable use us again
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine or vehicle;
 		fieldNum = courseplay:onWhichFieldAmI( combine );
+		if fieldNum == 0 and mode4_6 then
+			-- My unloading course doesn't end on a field so I need to know on which field I am returning to by using the waypoint x and z
+			fieldNum = courseplay:getFieldNumForPosition( tx, tz )
+		end
 		if fieldNum == 0 then
 			courseplay.debugVehicle( 9, vehicle, "I'm not on field, my combine isn't either" )
 			return false
@@ -1710,7 +1717,16 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
    
   if path then
     courseplay.debugVehicle( 9, vehicle, "Path found with %d waypoints", #path )
-  else
+  elseif path == nil and mode4_6 then
+	-- I couldn't find a path but I still really want a path because I really want to stay on the field but don't care about fruit
+	path = courseGenerator.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
+									courseplay.fields.fieldData[fieldNum].points, function() return false end )
+	courseplay.debugVehicle( 9, vehicle, "Path found with %d waypoints ingore fruit cause first attempt failed", #path )
+  end
+  if path == nil then
+	-- Still Couldn't Find a path we will just go with what we know which is head straight there, TODO allowed to drive if in mode4/6 = false or true what would be better
+	-- Stopping and dispalying a halt message or just going for it and hope for the best. Also TODO check to see if the track between start n end is 100% or not 
+	-- in wich cause we don't need to use this expenisve function
     courseplay.debugVehicle( 9, vehicle, "No path found, reverting to dumb mode" )
     return false
   end

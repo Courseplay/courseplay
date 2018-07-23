@@ -47,6 +47,11 @@ function courseplay:turn(vehicle, dt)
 		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
 	end;
 
+	-- This is to correct courseworkwidth when loading from a save course when using multiTools
+	if vehicle.cp.multiTools and vehicle.cp.multiTools > 1 and vehicle.cp.courseWorkWidth ~= vehicle.cp.workWidth*vehicle.cp.multiTools then
+		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth*vehicle.cp.multiTools
+	end;
+
 	--- Make sure front and back markers is calculated.
 	if not vehicle.cp.haveCheckedMarkersThisTurn then
 		vehicle.cp.aiFrontMarker = nil;
@@ -2064,13 +2069,19 @@ end
 -- The alignment course is implemented as a turn maneuver.
 --
 -- No obstacles are checked.
-function courseplay:startAlignmentCourse( vehicle, targetWaypoint )
-	if not vehicle.cp.alignment.enabled then return end
+function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
+	if not vehicle.cp.alignment.enabled and not forceEnable then return end
 	if not ( targetWaypoint and targetWaypoint.angle ) then
 		courseplay.debugVehicle( 14, vehicle, "No target waypoint or no angle on target waypoint, can't generate alginment course.")
 		printCallstack()
 		return
 	end
+	
+	--Readjust x and z for offset being used
+	if courseplay:getIsVehicleOffsetValid(vehicle) then
+		targetWaypoint.cx, targetWaypoint.cz = courseplay:getVehicleOffsettedCoords(vehicle, targetWaypoint.cx, targetWaypoint.cz);
+	end;
+
 	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
 	if not points then
 		courseplay.debugVehicle( 14, vehicle, "(Align) can't find an alignment course, may be too close to target wp?" )

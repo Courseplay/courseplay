@@ -693,8 +693,7 @@ end;
 --------------------------------------------------
 local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	local trailer = g_currentMission.objectToTrailer[otherShapeId];
-	--print(self.selectedFillType and self.selectedFillType or "no go");
-	if trailer ~= nil and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
+	if trailer ~= nil then
 		-- Make sure cp table is present in the trailer.
 		if not trailer.cp then
 			trailer.cp = {};
@@ -702,16 +701,15 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 		if not trailer.cp.siloTriggerHits then
 			trailer.cp.siloTriggerHits = 0;
 		end;
-
 		-- self.Schnecke is only set for MischStation and that one is not an real SiloTrigger and should not be used as one.
-		if onEnter and not self.Schnecke then
+		if onEnter and not self.Schnecke and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
 			-- Add the current SiloTrigger to the cp table, for easier access.
 			if not trailer.cp.currentSiloTrigger then
 				trailer.cp.currentSiloTrigger = self;
 				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
 			end;
 			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits + 1;
-		elseif onLeave and not self.Schnecke then
+		elseif onLeave and not self.Schnecke and trailer.cp.siloTriggerHits >= 1 then 
 			-- Remove the current SiloTrigger.
 			if trailer.cp.currentSiloTrigger ~= nil and trailer.cp.siloTriggerHits == 1 then
 				trailer.cp.currentSiloTrigger = nil;
