@@ -470,7 +470,7 @@ function courseplay:start(self)
 	end;
 
 	-- Reset pathfinding for mode 4 and 6 if resuming from a waypoint other than the current one
-	if self.cp.mode == 4 or self.cp.mode == 6 and self.cp.realisticDriving == true and #(self.cp.nextTargets) > 0 and not courseplay.START_AT_CURRENT_POINT then
+	if (self.cp.mode == 4 or self.cp.mode == 6) and self.cp.realisticDriving == true and #(self.cp.nextTargets) > 0 and self.cp.startAtPoint ~= courseplay.START_AT_CURRENT_POINT then
 		self.cp.nextTargets = {}
 		self.cp.isNavigatingPathfinding = false
 	end
