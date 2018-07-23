@@ -1383,6 +1383,7 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 				end;
 			end;
 		end;
+		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 	else
 		-- If were using align point then there is no need for all that extra distance just enough that it straightens back out after turning
 		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 2

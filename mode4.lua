@@ -7,7 +7,6 @@ function courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed)
 	local hasFinishedWork = false
 	local seederFillLevelPct = self.cp.totalSeederFillLevelPercent   or 100;
 	local sprayerFillLevelPct = self.cp.totalSprayerFillLevelPercent or 100;
-	local astarCalcFail = false
 	if self.cp.hasFertilizerSowingMachine and not self.cp.fertilizerOption then
 		sprayerFillLevelPct = 100
 	end
