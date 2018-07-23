@@ -621,7 +621,22 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					courseplay:setWaypointIndex(vehicle, 2);
 				end
 				if vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart or vehicle.Waypoints[vehicle.cp.waypointIndex+1].turnStart  then
+					--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
+					if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
+						courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart and true or false)), 12);
+						courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
+						vehicle.cp.switchLaneOffset = true;
+					end;
 					courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex - 2);
+				end
+				if vehicle.cp.realisticDriving then
+					local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex-2].cx,vehicle.Waypoints[vehicle.cp.waypointIndex-2].cz
+					if courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, vehicle.cp.turnDiameter*2, true) then
+						courseplay:setCurrentTargetFromList(vehicle, 1);
+						vehicle.cp.isNavigatingPathfinding = true;
+					else
+						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex-2], true)
+					end
 				end
 			end
 		end
@@ -631,7 +646,11 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork + 2); -- drive to waypoint after next waypoint
 				--vehicle.cp.abortWork = nil
 			end
-			if vehicle.cp.previousWaypointIndex < vehicle.cp.stopWork and vehicle.cp.previousWaypointIndex > vehicle.cp.abortWork + 8 + vehicle.cp.abortWorkExtraMoveBack then
+			local offset = 8
+			if vehicle.cp.realisticDriving then
+				offset = 1
+			end
+			if vehicle.cp.previousWaypointIndex < vehicle.cp.stopWork and vehicle.cp.previousWaypointIndex > vehicle.cp.abortWork + offset + vehicle.cp.abortWorkExtraMoveBack then
 				vehicle.cp.abortWork = nil;
 			end
 		end

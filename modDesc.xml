@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="39">
-	<version>5.03.00010</version>
+	<version>5.03.00011</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -26,6 +26,7 @@
 <![CDATA[
 Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
 	changeLog:
+	- Pathfinding for Mode 4 and 6 to off field course
 	- neuer Kurs-Generator GUI
 	- support für Ropa Addon
 	- neues Kollisions-Erkennungssystem
@@ -46,6 +47,7 @@ Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es 
 <![CDATA[
 Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
 	changeLog:
+	- Pathfinding for Mode 4 and 6 to off field course
 	- course generator setting GUI
 	- added support for RO
 	- new traffic recognition system
@@ -66,6 +68,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 		<fr>
 <![CDATA[Courseplay est une modification pour Farm Simulator 17, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
 	changeLog:
+	- Pathfinding for Mode 4 and 6 to off field course
 	- course generator setting GUI
 	- added support for RO
 	- new traffic recognition system

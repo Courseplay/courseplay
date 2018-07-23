@@ -1353,38 +1353,50 @@ function courseplay:setPathVehiclesSpeed(vehicle,dt)
 end
 
 function courseplay:setAbortWorkWaypoint(vehicle)
-	vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
-	vehicle.cp.abortWorkExtraMoveBack = 0;
+	if not vehicle.cp.realisticDriving then
+		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
+		vehicle.cp.abortWorkExtraMoveBack = 0;
 
-	--- update triggers if in mode 4 in the case that new BiGPacks had been bought
-	if vehicle.cp.mode == 4 then
-		courseplay:updateAllTriggers();
-	end;
+		--- update triggers if in mode 4 in the case that new BiGPacks had been bought
+		if vehicle.cp.mode == 4 then
+			courseplay:updateAllTriggers();
+		end;
 
-	--- Check for turns
-	for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
-		local minNumWPBeforeTurn = 8;
-		local wp = vehicle.Waypoints[i];
-		if wp and wp.turnStart then
-			--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
-			if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
-				courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(wp.turnStart and true or false)), 12);
-				courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
-				vehicle.cp.switchLaneOffset = true;
-			end;
+		--- Check for turns
+		for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
+			local minNumWPBeforeTurn = 8;
+			local wp = vehicle.Waypoints[i];
+			if wp and wp.turnStart then
+				--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
+				if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
+					courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(wp.turnStart and true or false)), 12);
+					courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
+					vehicle.cp.switchLaneOffset = true;
+				end;
 
-			--- If the turn is less than 6 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
-			local wpUntilTurn = i - vehicle.cp.abortWork;
-			if wpUntilTurn < minNumWPBeforeTurn then
-				local extraMoveBack = minNumWPBeforeTurn - wpUntilTurn;
-				vehicle.cp.abortWork = vehicle.cp.abortWork - extraMoveBack;
-				vehicle.cp.abortWorkExtraMoveBack = extraMoveBack;
+				--- If the turn is less than 6 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
+				local wpUntilTurn = i - vehicle.cp.abortWork;
+				if wpUntilTurn < minNumWPBeforeTurn then
+					local extraMoveBack = minNumWPBeforeTurn - wpUntilTurn;
+					vehicle.cp.abortWork = vehicle.cp.abortWork - extraMoveBack;
+					vehicle.cp.abortWorkExtraMoveBack = extraMoveBack;
+				end;
 			end;
 		end;
-	end;
+	else
+		-- If were using align point then there is no need for all that extra distance just enough that it straightens back out after turning
+		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 2
+		--- Set the waypoint to the start of the refill course
+		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
+		local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+		if courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz, vehicle.cp.turnDiameter*2, true) then
+			vehicle.cp.isNavigatingPathfinding = true
+			courseplay:setCurrentTargetFromList(vehicle, 1);
+		else
+			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.stopWork + 1], true)
+		end
+	end
 	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);
-
-	--- Set the waypoint to the start of the refill course
-	courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 end;
+
 -- vim: set noexpandtab:

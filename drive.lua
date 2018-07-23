@@ -106,7 +106,6 @@ function courseplay:drive(self, dt)
 		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-4).."): refSpeed = "..tostring(refSpeed))
 	end;
 
-
 	--[[ unregister at combine, if there is one
 	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
@@ -646,6 +645,16 @@ function courseplay:drive(self, dt)
 			courseplay:lowerImplements(self, false, false)
 		end;
 
+		if self.cp.abortWork then
+			-- If we are navigating pathfinding then don't let drive handle driving and use the below function
+				if self.cp.isNavigatingPathfinding == true then
+					--inTraffic back to false this, clears the inTraffic Message
+					self.cp.inTraffic = false
+					courseplay:navigatePathToUnloadCourse(self, dt, true) 
+					return
+			end
+		end
+
 	-- MODE 6
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 	
@@ -662,6 +671,16 @@ function courseplay:drive(self, dt)
 
 		if breakCode then
 			return
+		end
+
+		if self.cp.abortWork then
+			-- If we are navigating pathfinding then don't let drive handle driving and use the below function
+			if self.cp.isNavigatingPathfinding == true then
+				--inTraffic back to false this, clears the inTraffic Message
+				self.cp.inTraffic = false
+				courseplay:navigatePathToUnloadCourse(self, dt)
+				return
+			end;
 		end
 		
 	-- MODE 9
@@ -1845,6 +1864,173 @@ function courseplay:setCollisionDirection(node, col, colDirX, colDirZ)
 	if not ( math.abs( colDirX ) < 0.001 and math.abs( colDirZ ) < 0.001 ) then
 		setDirection(col, colDirX, colDirY, colDirZ, 0, 1, 0);
 	end;
+end;
+
+function courseplay:navigatePathToUnloadCourse(vehicle, dt)
+	-- Still WIP not even stable moved all code belive to be needed for this function to here
+	-- This function allows CP to naviagte to the start of the UnloadingCourse without leaving the field if pathfinding option is enabled
+			-- Todo Remove Mode 2 Crap
+	local allowedToDrive = true
+	local min = math.min
+	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local currentX, currentY, currentZ;
+	local refSpeed;
+	local handleTurn = false
+	local xt, yt, zt;
+	local dod;
+	local speedDebugLine;
+	local moveForwards = true
+	--print(string.format('vehicle.cp.nextTargets %s vehicle.cp.curTarget.x = %s, vehicle.cp.curTarget.z =%s', tostring(vehicle.cp.nextTargets), tostring(vehicle.cp.curTarget.x), tostring(vehicle.cp.curTarget.z)))
+	if vehicle.cp.curTarget.x ~= nil and vehicle.cp.curTarget.z ~= nil then
+		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_DRIVE_TO_WAYPOINT;%d;%d",vehicle.cp.curTarget.x,vehicle.cp.curTarget.z));
+		currentX = vehicle.cp.curTarget.x
+		currentY = vehicle.cp.curTarget.y
+		currentZ = vehicle.cp.curTarget.z
+		refSpeed = vehicle.cp.speeds.field
+		speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, currentY, currentZ);	
+
+		-- avoid circling
+		-- if we are closer than distToChange meters to the current waypoint, we switch our target to the next
+		-- set to 5 cause this is what it was set to in Mode2. AKA I have no clue it worked for mode2 so if it aint broke I am not fixing it
+		local distToChange = 5
+				
+		if vehicle.cp.shortestDistToWp == nil or vehicle.cp.shortestDistToWp > distance_to_wp then
+			vehicle.cp.shortestDistToWp = distance_to_wp
+		end
+
+		if distance_to_wp > vehicle.cp.shortestDistToWp and distance_to_wp < 3 then
+			distToChange = distance_to_wp + 1
+		end
+		--print(string.format('distance_to_wp = %s distToChange = %s ',tostring(distance_to_wp),tostring(distToChange)))
+		if distance_to_wp < distToChange then
+			-- Switching to next waypoint
+			vehicle.cp.shortestDistToWp = nil
+			if #(vehicle.cp.nextTargets) > 0 then
+				-- still have waypoints left
+				local continueCourse = true
+				--Reset all variables in case generate path gives a course to close to the target and we have more targets left							
+				local wx, wz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+				local wy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wx, 0, wz)
+				local distanceToTarget = courseplay:distanceToPoint(vehicle, wx, wy, wz)
+				-- magic constants, based on WAG
+				if distanceToTarget < vehicle.cp.turnDiameter*2 then
+					courseplay.debugVehicle( 9, vehicle, "Only %.2f meters from end of pathfinding, abort course and countiune with the course", distanceToTarget )
+					continueCourse = false
+					vehicle.cp.nextTargets = {}
+					vehicle.cp.isNavigatingPathfinding = false
+					courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
+				else
+					courseplay.debugVehicle( 9, vehicle, "Abort Work is still %.2f meters from me, continuing pathfinding", distanceToTarget )
+				end 
+		
+				if continueCourse then
+					-- set next target and remome current one from list
+					courseplay:setCurrentTargetFromList(vehicle, 1);
+				end
+			else
+				-- no more waypoints left
+				allowedToDrive = false
+				--Reset All used variables and fire the alligment course incase we are not at the correct angle							
+				courseplay.debugVehicle( 9, vehicle, "No more waypoints left abort course, resuming work" )
+				continueCourse = false
+				vehicle.cp.nextTargets = {}
+				vehicle.cp.isNavigatingPathfinding = false
+				courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
+			end
+		end
+	end
+
+	if vehicle.showWaterWarning then
+		allowedToDrive = false
+		CpManager:setGlobalInfoText(vehicle, 'WATER');
+	end
+	
+		-- check traffic and calculate speed
+		
+	allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
+	if vehicle.cp.collidingVehicleId ~= nil then
+		refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
+		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+	end
+
+	if g_server ~= nil then
+		local lx, lz
+		local moveForwards = true
+		if currentX ~= nil and currentZ ~= nil then
+			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
+		else
+			allowedToDrive = false
+		end
+			
+		if not allowedToDrive then
+			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, true, 0, 1)
+			vehicle.cp.speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+			courseplay:resetSlippingTimers(vehicle)
+			return;
+		end
+			
+		if vehicle.cp.TrafficBrake then
+			moveForwards = vehicle.movingDirection == -1;
+			lx = 0
+			lz = 1
+		end
+
+		if abs(lx) > 0.5 then
+			refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
+			speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		end
+					
+		if allowedToDrive then
+			vehicle.cp.speedDebugLine = speedDebugLine
+			courseplay:setSpeed(vehicle, refSpeed)
+		end
+	
+		vehicle.cp.TrafficBrake = false
+
+		local tx, tz
+		-- when following waypoints, check obstacles on the course, not dead ahead
+		if #vehicle.cp.nextTargets > 1 then
+		-- look ahead two waypoints if we have that many
+			tx, tz = vehicle.cp.nextTargets[ 2 ].x, vehicle.cp.nextTargets[ 2 ].z
+		else
+		-- otherwise just the next one
+			tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
+		end
+		dod = Utils.vector2Length(lx, lz)
+		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
+	
+		courseplay:setTrafficCollision(vehicle, lx, lz,true)
+
+		if math.abs(vehicle.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
+			if not moveForwards then
+				vehicle.nextMovingDirection = -1
+			else
+				vehicle.nextMovingDirection = 1
+			end;
+		end;
+	
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
+
+
+		--Debug Crap Still do change debug channel
+		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+		if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
+			drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
+			
+			for i,tp in pairs(vehicle.cp.nextTargets) do
+				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
+				drawDebugPoint(tp.x, y +2, tp.z, 1, 0.65, 0, 1);
+				if i == 1 then
+					drawDebugLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+				else
+					local pp = vehicle.cp.nextTargets[i-1];
+					drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+				end;
+			end;
+		end;
+	end
 end;
 -- do not delete this line
 -- vim: set noexpandtab:
