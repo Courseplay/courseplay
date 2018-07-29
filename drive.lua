@@ -486,7 +486,7 @@ function courseplay:drive(self, dt)
 		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 2 then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
-		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.cp.waypointIndex == self.cp.stopWork + 1 or (self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork)) then
+		elseif self.cp.mode == 6 and self.cp.hasBaleLoader and (self.cp.waypointIndex == self.cp.stopWork + 1 or (self.cp.abortWork ~= nil and self.cp.waypointIndex == self.cp.abortWork)) and not self.cp.realisticDriving then
 			isBypassing = true
 			lx, lz = courseplay:isTheWayToTargetFree(self,lx, lz)
 		elseif self.cp.mode ~= 7 and self.cp.mode ~= 10 then
@@ -1867,9 +1867,7 @@ function courseplay:setCollisionDirection(node, col, colDirX, colDirZ)
 end;
 
 function courseplay:navigatePathToUnloadCourse(vehicle, dt)
-	-- Still WIP not even stable moved all code belive to be needed for this function to here
 	-- This function allows CP to naviagte to the start of the UnloadingCourse without leaving the field if pathfinding option is enabled
-			-- Todo Remove Mode 2 Crap
 	local allowedToDrive = true
 	local min = math.min
 	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
@@ -2014,8 +2012,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt)
 
 
 		--Debug Crap Still do change debug channel
-		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
-		if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
+		if courseplay.debugChannels[9] and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
 			drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
 			
