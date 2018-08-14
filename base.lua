@@ -195,6 +195,7 @@ function courseplay:load(savegame)
 	for i=2,5 do
 		self.cp.hasShovelStatePositions[i] = false;
 	end;
+	self.cp.shovelPositionFromKey = false;
 	
 	--ai mode 10 : bunkersilo
 	self.cp.mode10 = {}
@@ -589,9 +590,9 @@ function courseplay:load(savegame)
 end;
 
 function courseplay:postLoad(savegame)
-    if savegame ~= nil and savegame.key ~= nil and not savegame.resetVehicles then
+	if savegame ~= nil and savegame.key ~= nil and not savegame.resetVehicles then
 		courseplay.loadVehicleCPSettings(self, savegame.xmlFile, savegame.key, savegame.resetVehicles)
-    end
+	end
 
 	-- Drive Control (upsidedown)
 	if self.driveControl ~= nil and g_currentMission.driveControl ~= nil then
@@ -794,6 +795,20 @@ function courseplay:draw()
 					end;
 				else
 					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP);
+					-- if self.cp.movingToolsPrimary and self.cp.movingToolsSecondary then
+					if self.cp.hasShovelStatePositions[2] then
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_LOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD);
+					end;
+					if self.cp.hasShovelStatePositions[3] then
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_TRANSPORT'). InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT);
+					end;
+					if self.cp.hasShovelStatePositions[4] then
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_PREUNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD);
+					end;
+					if self.cp.hasShovelStatePositions[5] then
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_UNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD);
+					end;
+					--end;
 				end;
 			else
 				if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
@@ -942,6 +957,18 @@ function courseplay:update(dt)
 			self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
 		elseif self.cp.canSwitchMode and self.cp.prevMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
 			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
+		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION) then
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(self, 2);
+		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION) then
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(self, 3);
+		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION) then
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(self, 4);
+		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION) then
+				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(self, 5);
 		end;
 
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then
@@ -1090,9 +1117,10 @@ function courseplay:update(dt)
 	end
 
 	-- MODE 9: move shovel to positions (manually)
-	if self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
+	if (self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY or self.cp.shovelPositionFromKey) and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
 		if courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[ self.cp.manualShovelPositionOrder ], dt) or courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
 			courseplay:resetManualShovelPositionOrder(self);
+				self:setCpVar('shovelPositionFromKey', false, courseplay.isClient);
 		end;
 	end;
 	-- MODE 3: move pipe to positions (manually)

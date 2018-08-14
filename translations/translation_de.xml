@@ -337,7 +337,11 @@
 		<text name="input_COURSEPLAY_PREVMODE" 							 text="CP: voriger Modus" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 				 text="CP: Maus-Aktion" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 			 text="CP: sekundäre Maus-Aktion" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="CP: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 text="CP: platziere Debug-Markierung in Log" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		 text='CP: Schaufel auf Position Beladen setzen' />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 		 text='CP: Schaufel auf Position Transport setzen' />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 	 text='CP: Schaufel auf Position vor Abladen setzen' />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 		 text='CP: Schaufel auf Position Abladen setzen' />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 						 text="Mauszeiger anzeigen" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 						 text="Mauszeiger verstecken" />
 		
