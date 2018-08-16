@@ -10,6 +10,10 @@
 -- Copyright (C) 2014 Courseplay Dev Team
 -- 
 
+-- add steady courseplay identifier to global environment
+local globalEnvironment = getfenv (0);
+globalEnvironment["g_courseplay"] = globalEnvironment[g_currentModName];
+
 courseplay = {};
 courseplay.path = g_currentModDirectory;
 if courseplay.path:sub(-1) ~= '/' then
