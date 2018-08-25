@@ -5,6 +5,10 @@ local abs, atan2, ceil, deg, floor, rad = math.abs, math.atan2, math.ceil, math.
 function courseplay:record(vehicle)
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
+	if vehicle.cp.lastValidTipDistance ~= nil then
+		vehicle.cp.lastValidTipDistance = nil
+	end
+	
 	if vehicle.cp.waypointIndex < 2 then
 		vehicle.rotatedTime = 0
 

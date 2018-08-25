@@ -376,30 +376,6 @@ function courseplay:start(self)
 		courseplay:changeWaitTime(self, -self.cp.waitTime);
 	end;
 
-	if self.cp.numUnloadPoints > 0 and self.cp.lastValidTipDistance == nil then
-		for _,courseplayer in pairs(CpManager.totalCoursePlayers) do
-			if self ~= courseplayer then
-				for index,value in pairs(self.cp.unloadPoints) do
-					--print(string.format("self: %s: %s",tostring(index),tostring(value)))
-					local selfPoint = self.Waypoints[value]
-					--print(tostring(selfPoint))
-					if courseplayer.cp.numUnloadPoints > 0 and courseplayer.cp.lastValidTipDistance ~= nil then 
-						for index,value in pairs(courseplayer.cp.unloadPoints) do
-							--print(string.format("courseplayer: %s: %s",tostring(index),tostring(value)))
-							local point = courseplayer.Waypoints[value]
-							--print(tostring(point))
-							if selfPoint == point then
-								self.cp.lastValidTipDistance = courseplayer.cp.lastValidTipDistance;
-								break
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-
-
   if lookForNextWaypoint then
 		if foundNextWaypoint then 
 			courseplay:debug(string.format('%s: found next waypoint: %d', nameNum(self), nextWaypointIx ), 12);
