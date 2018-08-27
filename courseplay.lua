@@ -10,6 +10,10 @@
 -- Copyright (C) 2014 Courseplay Dev Team
 -- 
 
+-- add steady courseplay identifier to global environment
+local globalEnvironment = getfenv (0);
+globalEnvironment["g_courseplay"] = globalEnvironment[g_currentModName];
+
 courseplay = {};
 courseplay.path = g_currentModDirectory;
 if courseplay.path:sub(-1) ~= '/' then
@@ -336,7 +340,8 @@ local function setGlobalData()
 	[87]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
 	[88]={name='self.cp.generationPosition.x',dataFormat='Float'},
 	[89]={name='self.cp.generationPosition.z',dataFormat='Float'},
-	[90]={name='self.cp.fertilizerOption',dataFormat='Bool'}
+	[90]={name='self.cp.fertilizerOption',dataFormat='Bool'},
+	[91]={name='self.cp.turnOnField',dataFormat='Bool'}
 	}	
 
 	--print("\t### Courseplay: setGlobalData() finished");

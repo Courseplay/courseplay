@@ -720,7 +720,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			end;
 		end;
 	end;
-
+	
 	if vehicle.cp.tipperLoadMode == 0 and not driveOn then
 		if vehicle.cp.waypointIndex == 2 and currentTrailer.cp.currentSiloTrigger == nil then
 			--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
@@ -1454,9 +1454,24 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 					if reverseCourseUnloadpoint ~= nil and reverseCourseUnloadpoint > 0 then
 						_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode or tipRefpoint or tipper.rootNode);
 						_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode or tipRefpoint or tipper.rootNode, vehicle.Waypoints[reverseCourseUnloadpoint].cx, y, vehicle.Waypoints[reverseCourseUnloadpoint].cz);
+						if not vehicle.cp.lastValidTipDistanceChecked and tipper.tipState == Trailer.TIPSTATE_CLOSED then
+							courseplay:debug(nameNum(vehicle) .. ": call courseplay:checkValidTipDistance" , 2);
+							local trueDistanceToHeap = courseplay:checkValidTipDistance(vehicle,tipper,reverseCourseUnloadpoint)
+							if vehicle.cp.lastValidTipDistance == nil or trueDistanceToHeap < vehicle.cp.lastValidTipDistance then
+								vehicle.cp.lastValidTipDistance = trueDistanceToHeap;
+								courseplay:debug(nameNum(vehicle) .. ": heap found, distance changed",2)
+								if vehicle.cp.hud.currentPage == 3 then
+									courseplay.hud:setReloadPageOrder(vehicle, 3, true);
+								end;
+							end
+							
+						end
+						
+						
 						if vehicle.cp.lastValidTipDistance ~= nil and (z > vehicle.cp.lastValidTipDistance or tipper.tipState ~= Trailer.TIPSTATE_CLOSED) and tipper.cp.fillLevel ~= 0 then
 							stopForTipping = true
 							goForTipping = true
+							vehicle.cp.lastValidTipDistanceChecked = nil
 						end
 						message = "script"					
 					else
@@ -1505,6 +1520,27 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 	end
 	return stopForTipping,takeOverSteering
 end
+
+function courseplay:checkValidTipDistance(vehicle,tipper,reverseCourseUnloadpoint)
+	local trueDistanceToHeap = 0
+	local startX,startY,startZ = getWorldTranslation(tipper.cp.realUnloadOrFillNode or tipRefpoint or tipper.rootNode);
+	local p2x,p2y,p2z = vehicle.Waypoints[reverseCourseUnloadpoint].cx, 0, vehicle.Waypoints[reverseCourseUnloadpoint].cz
+	p2y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode,p2x,0,p2z)
+	local basicDistance = -courseplay:distance3D(startX,startY,startZ,p2x,p2y,p2z)
+	local searchWidth = 3
+	for i=0,basicDistance,-0.5 do
+		local tempHeightX,tempHeightY,tempHeightZ = localToWorld(tipper.cp.realUnloadOrFillNode,0,0,i) --local tx1, ty1, tz1 = localToWorld(directionNode,3,1,self.cp.aiFrontMarker)
+		local fillType = TipUtil.getFillTypeAtLine(startX,startY,startZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
+		if fillType == tipper.cp.fillType then
+			trueDistanceToHeap = basicDistance-i;
+			break;
+		end
+	end
+	
+	vehicle.cp.lastValidTipDistanceChecked =true
+	return trueDistanceToHeap;
+end
+
 
 function courseplay:handleHeapUnloading(vehicle)
 	--Todo right now it starts when tractor is under unload point. Be nice if pipe was under
@@ -1617,6 +1653,12 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 		vehicle.cp.takeOverSteering = false	
 		vehicle.cp.lastValidTipDistance = z or 0
 		--print("reset takeOverSteering z= "..tostring(z).." Zsent: "..tostring(zSent))
+		
+		--refresh HUD
+		if vehicle.cp.hud.currentPage == 3 then
+			courseplay.hud:setReloadPageOrder(vehicle, 3, true);
+		end;
+		
 	end
 	
 	if vehicle.cp.takeOverSteering then
