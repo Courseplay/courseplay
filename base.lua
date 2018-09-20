@@ -795,17 +795,17 @@ function courseplay:draw()
 					end;
 				else
 					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP);
-					-- if self.cp.movingToolsPrimary and self.cp.movingToolsSecondary then
-					if self.cp.hasShovelStatePositions[2] then
+					
+					if self.cp.hasShovelStatePositions[2] and InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD ~= nil then
 						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_LOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD);
 					end;
-					if self.cp.hasShovelStatePositions[3] then
+					if self.cp.hasShovelStatePositions[3] and InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT ~= nil then
 						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_TRANSPORT'). InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT);
 					end;
-					if self.cp.hasShovelStatePositions[4] then
+					if self.cp.hasShovelStatePositions[4] and InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD ~= nil then
 						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_PREUNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD);
 					end;
-					if self.cp.hasShovelStatePositions[5] then
+					if self.cp.hasShovelStatePositions[5] and InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD ~= nil then
 						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_UNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD);
 					end;
 					--end;
