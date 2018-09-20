@@ -63,8 +63,10 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 				end
 				if vehicle.cp.realisticDriving then
 					local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex-2].cx,vehicle.Waypoints[vehicle.cp.waypointIndex-2].cz
+					courseplay.debugVehicle( 9, vehicle, "mode4 66")
 					if vehicle.cp.isNavigatingPathfinding == false and courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, vehicle.cp.turnDiameter*2, true) then
 						courseplay:setCurrentTargetFromList(vehicle, 1);
+						courseplay.debugVehicle( 9, vehicle, "mode4 69")
 						vehicle.cp.isNavigatingPathfinding = true;
 					else
 						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex-2], true)

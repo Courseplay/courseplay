@@ -1390,11 +1390,13 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 		--- Set the waypoint to the start of the refill course
 		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 		local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
+		courseplay.debugVehicle( 9, vehicle, "vehicles 1393")
 		if vehicle.cp.isNavigatingPathfinding == false and courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz, vehicle.cp.turnDiameter*2, true) then
 			vehicle.cp.isNavigatingPathfinding = true
+			courseplay.debugVehicle( 9, vehicle, "vehicles 1396")
 			courseplay:setCurrentTargetFromList(vehicle, 1);
 		else
-			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.stopWork + 1], true)
+			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
 		end
 	end
 	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);

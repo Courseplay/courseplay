@@ -631,7 +631,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				end
 				if vehicle.cp.realisticDriving then
 					local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex-2].cx,vehicle.Waypoints[vehicle.cp.waypointIndex-2].cz
+					courseplay.debugVehicle( 9, vehicle, "mode 6 634")
 					if vehicle.cp.isNavigatingPathfinding == false and courseplay:calculateAstarPathToCoords( vehicle, nil, tx, tz, vehicle.cp.turnDiameter*2, true) then
+						courseplay.debugVehicle( 9, vehicle, "mode 6 636")
 						courseplay:setCurrentTargetFromList(vehicle, 1);
 						vehicle.cp.isNavigatingPathfinding = true;
 					else

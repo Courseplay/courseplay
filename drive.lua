@@ -650,7 +650,7 @@ function courseplay:drive(self, dt)
 				if self.cp.isNavigatingPathfinding == true then
 					--inTraffic back to false this, clears the inTraffic Message
 					self.cp.inTraffic = false
-					courseplay:navigatePathToUnloadCourse(self, dt, true) 
+					courseplay:navigatePathToUnloadCourse(self, dt, allowedToDrive) 
 					return
 			end
 		end
@@ -678,7 +678,7 @@ function courseplay:drive(self, dt)
 			if self.cp.isNavigatingPathfinding == true then
 				--inTraffic back to false this, clears the inTraffic Message
 				self.cp.inTraffic = false
-				courseplay:navigatePathToUnloadCourse(self, dt)
+				courseplay:navigatePathToUnloadCourse(self, dt, allowedToDrive)
 				return
 			end;
 		end
@@ -1866,9 +1866,8 @@ function courseplay:setCollisionDirection(node, col, colDirX, colDirZ)
 	end;
 end;
 
-function courseplay:navigatePathToUnloadCourse(vehicle, dt)
+function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 	-- This function allows CP to naviagte to the start of the UnloadingCourse without leaving the field if pathfinding option is enabled
-	local allowedToDrive = true
 	local min = math.min
 	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
 	local currentX, currentY, currentZ;
@@ -2010,8 +2009,6 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt)
 	
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 
-
-		--Debug Crap Still do change debug channel
 		if courseplay.debugChannels[9] and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
 			drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
