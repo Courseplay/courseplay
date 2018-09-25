@@ -1228,7 +1228,6 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				end;
 			end;
 			
-			print(string.format('g_currentmission.LiquideTankActivatable = %s',tostring(g_currentMission.LiquideTankActivatable)))
 			-- check for fillTrigger
 			if workTool.fillTriggers then
 				local trigger = workTool.fillTriggers[1];
@@ -1267,7 +1266,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 					end;
 				end;
 			end;
-			 print(('workToolSprayerFillLevelPct=%.1f, driveOn=%d, fillTrigger=%s, fillTypesMatch=%s, canRefill=%s'):format(workToolSprayerFillLevelPct, driveOn, tostring(fillTrigger), tostring(fillTypesMatch), tostring(canRefill)));
+			-- print(('workToolSprayerFillLevelPct=%.1f, driveOn=%d, fillTrigger=%s, fillTypesMatch=%s, canRefill=%s'):format(workToolSprayerFillLevelPct, driveOn, tostring(fillTrigger), tostring(fillTypesMatch), tostring(canRefill)));
 
 			if canRefill then
 				allowedToDrive = false;
@@ -1313,7 +1312,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 
 		-- SOWING MACHINE -- NOTE: no elseif, as a workTool might be both a sprayer and a seeder (URF)
 		if courseplay:isSowingMachine(workTool) then
-			local farbickscript
+			local factoryScript
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
 				if trigger.isSowingMachineFillTrigger then
@@ -1323,25 +1322,25 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 					
 					--Frabick Script Compatibility
 					if trigger.liquideTrailers and #(trigger.liquideTrailers) > 0 then
-						farbickscript = trigger
+						factoryScript = trigger
 					end
 				end
 			end
-			if workToolSeederFillLevelPct < driveOn and ((workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger) or farbickscript) then
+			if workToolSeederFillLevelPct < driveOn and ((workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger) or factoryScript) then
 				--print(tableShow(workTool.fillTriggers,"workTool.fillTriggers"))
 				if not workTool.isFilling then
-					if farbickscript.FrabikScript then
-						farbickscript:setIsLiquideTankFilling(true, workTool)
+					if factoryScript then
+						factoryScript:setIsLiquideTankFilling(true, workTool)
 					else
 						workTool:setIsFilling(true);
 					end
 				end;
 				allowedToDrive = false;
 				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.seederFillLevel, 100), workTool.cp.seederCapacity));
-			elseif workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger or farbickscript then
+			elseif workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger or factoryScript then
 				if workTool.isFilling then
-					if farbickscript.FrabikScript then
-						farbickscript:setIsLiquideTankFilling(true, workTool)
+					if factoryScript then
+						factoryScript:setIsLiquideTankFilling(true, workTool)
 					else
 						workTool:setIsFilling(false);
 					end
