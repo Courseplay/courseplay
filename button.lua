@@ -778,6 +778,8 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 	end;
 
 	if vehicle.cp.hud.currentPage == 1 and (anySection or section == 'quickModes' or section == 'recording' or section == 'customFieldShow' or section == 'findFirstWaypoint') then
+		local isMode2_3_4_6 = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
+		local isMode4or6 = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK
 		for _,button in pairs(vehicle.cp.buttons[1]) do
 			local fn, prm = button.functionToCall, button.parameter;
 			if fn == 'setCpMode' and (anySection or section == 'quickModes') then
@@ -793,6 +795,18 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 
 			if fn == 'toggleFindFirstWaypoint' and (anySection or section == 'findFirstWaypoint') then
 				button:setActive(vehicle.cp.distanceCheck);
+			end;
+
+			if button.row == 7 and button.functionToCall == 'rowButton' then
+				button:setDisabled(not isMode2_3_4_6);
+				button:setShow(isMode2_3_4_6);
+				button:setActive(vehicle.cp.turnOnField);
+				button:setCanBeClicked(not button.isDisabled);
+			elseif button.row == 8 and button.functionToCall == 'rowButton' then
+				button:setDisabled(not isMode4or6);
+				button:setShow(isMode4or6);
+				button:setActive(vehicle.cp.turnOnField);
+				button:setCanBeClicked(not button.isDisabled);
 			end;
 
 			if anySection or section == 'recording' then
@@ -890,14 +904,9 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 		courseplay.settings.validateCourseListArrows(vehicle);
 
 	elseif vehicle.cp.hud.currentPage == 3 and anySection then
-		local isMode4or6 = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK;
+	
 		for _,button in pairs(vehicle.cp.buttons[3]) do
-			if (button.row == 1 or button.row == 2) and button.functionToCall == 'rowButton' then
-				button:setDisabled(not isMode4or6);
-				button:setShow(isMode4or6);
-				button:setActive(vehicle.cp.turnOnField);
-				button:setCanBeClicked(not button.isDisabled);
-			elseif button.functionToCall == 'changeLastValidTipDistance' then
+			if button.functionToCall == 'changeLastValidTipDistance' then
 				local activate = vehicle.cp.lastValidTipDistance ~= nil
 				button:setDisabled(not activate);
 				button:setCanBeClicked(activate);

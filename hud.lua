@@ -791,6 +791,16 @@ function courseplay.hud:loadPage(vehicle, page)
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_COVER_HANDLING');
 					vehicle.cp.hud.content.pages[1][6][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 				end;
+				
+				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_COMBI then
+					vehicle.cp.hud.content.pages[1][7][1].text = courseplay:loc('COURSEPLAY_TURN_ON_FIELD');
+					vehicle.cp.hud.content.pages[1][7][2].text = vehicle.cp.turnOnField and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+				end;
+
+				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then	
+					vehicle.cp.hud.content.pages[1][8][1].text = courseplay:loc('COURSEPLAY_OPPOSITE_TURN_DIRECTION');
+					vehicle.cp.hud.content.pages[1][8][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
+				end;
 			end
 
 			if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and #vehicle.cp.easyFillTypeList > 0 then
@@ -904,11 +914,6 @@ function courseplay.hud:loadPage(vehicle, page)
 				vehicle.cp.hud.content.pages[3][2][2].text = '---';
 			end;
 
-		elseif vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then
-			vehicle.cp.hud.content.pages[3][1][1].text = courseplay:loc('COURSEPLAY_TURN_ON_FIELD');
-			vehicle.cp.hud.content.pages[3][1][2].text = vehicle.cp.turnOnField and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-			vehicle.cp.hud.content.pages[3][2][1].text = courseplay:loc('COURSEPLAY_OPPOSITE_TURN_DIRECTION');
-			vehicle.cp.hud.content.pages[3][2][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
 		end;
 
 		vehicle.cp.hud.content.pages[3][3][1].text = courseplay:loc('COURSEPLAY_TURN_RADIUS');

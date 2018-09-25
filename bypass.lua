@@ -78,7 +78,7 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 			local targetsIndex = #self.cp.nextTargets
 			if targetsIndex > 0  then
 				local lastX,lastZ = self.cp.nextTargets[targetsIndex].x, self.cp.nextTargets[targetsIndex].z	
-				courseplay:calculateAstarPathToCoords(self,nil,lastX,lastZ)
+				courseplay:calculateAstarPathToCoords(self,nil,lastX,lastZ,nil,self.cp.isNavigatingPathfinding)
 				self.cp.curTarget.x = self.cp.nextTargets[1].x
 				self.cp.curTarget.z = self.cp.nextTargets[1].z
 				self.cp.curTarget.y = getTerrainHeightAtWorldPos( g_currentMission.terrainRootNode, self.cp.curTarget.x, 0, self.cp.curTarget.z )

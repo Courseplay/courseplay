@@ -815,7 +815,7 @@ function courseplay:drive(self, dt)
 		return
 	elseif isFieldWorking and self.cp.recordedTurnTime and not self.cp.turnTimeRecorded then
 		local turnCount = 0
-		for i=self.cp.waypointIndex, math.max( #self.Waypoints, self.cp.stopWork ) do
+		for i=self.cp.waypointIndex, math.min( #self.Waypoints, self.cp.stopWork ) do
 			if self.Waypoints[i].turnStart then
 				turnCount = turnCount +1
 			end		
@@ -1994,8 +1994,12 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 		-- otherwise just the next one
 			tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
 		end
-		dod = Utils.vector2Length(lx, lz)
-		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
+
+		-- Temp AutoCombine Fix, If autocombine is enabled bypass detectes this has a collosion and does not ingore causing this function to preform incorrectly pops64 v05.03.019
+		if vehicle.acParameters == nil then
+			dod = Utils.vector2Length(lx, lz)
+			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
+		end;
 	
 		courseplay:setTrafficCollision(vehicle, lx, lz,true)
 

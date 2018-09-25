@@ -295,7 +295,12 @@ function courseplay:executeFunction(self, func, value, page)
 						if self.cp.tipperHasCover and (self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or self.cp.mode == courseplay.MODE_COMBI or self.cp.mode == courseplay.MODE_TRANSPORT or self.cp.mode == courseplay.MODE_FIELDWORK) then
 							self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling;
 						end;
+					elseif line == 7 then
+						self.cp.turnOnField = not self.cp.turnOnField;
+					elseif line == 8 then
+						self.cp.oppositeTurnMode = not self.cp.oppositeTurnMode;
 					end;
+
 				end; -- end driving
 				if line == 5 then
 					courseplay:toggleConvoyActive(self)
@@ -311,14 +316,6 @@ function courseplay:executeFunction(self, func, value, page)
 					end;
 				end;
 			end; --END if not self:getIsCourseplayDriving()
-
-		elseif page == 3 then
-			if line == 1 then
-				self.cp.turnOnField = not self.cp.turnOnField;
-			end;
-			if line == 2 then
-				self.cp.oppositeTurnMode = not self.cp.oppositeTurnMode;
-			end;
 
 		elseif page == 10 then
 			if line == 1 and not self:getIsCourseplayDriving() then
