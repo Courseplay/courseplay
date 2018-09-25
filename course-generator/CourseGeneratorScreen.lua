@@ -342,7 +342,7 @@ end
 -- Headland mode
 function CourseGeneratorScreen:setHeadlandProperties()
 	-- headland properties only if we in normal headland mode
-	print(self.vehicle.cp.headland.mode)
+	--print(self.vehicle.cp.headland.mode)
 	if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL or
 		self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
 		if self.vehicle.cp.headland.getNumLanes() == 0 then

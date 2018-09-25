@@ -668,7 +668,7 @@ function courseplay:unload_combine(vehicle, dt)
 					courseplay:debug(string.format("%s: combineIsAutoCombine- create vehicle.cp.cpTurnBaseNode (%s; %s)",nameNum(vehicle),tostring(vehicle.cp.cpTurnBaseNode), tostring(getName(vehicle.cp.cpTurnBaseNode))),4)
 				end
 				
-				if vehicle.cp.isReversePossible then
+				if vehicle.cp.isReversePossible and vehicle.cp.turnOnField then
 					local maxDiameter = max(20,turnDiameter);
 					local maxX,_,maxZ = localToWorld(vehicle.cp.DirectionNode,-sideMultiplier*maxDiameter,0,-(trailerOffset+(0.5*maxDiameter)));
 					courseplay:debug(string.format("%s: is reverse possible",nameNum(vehicle)),4)	
@@ -938,7 +938,7 @@ function courseplay:unload_combine(vehicle, dt)
 						vehicle.cp.chopperIsTurning = true
 	
 					else --i'm right of choppper
-						if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 then
+						if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 and vehicle.cp.turnOnField then
 							courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right. Turning the New Way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							local verticalWaypointShift = courseplay:getWaypointShift(vehicle,tractor)
@@ -964,7 +964,7 @@ function courseplay:unload_combine(vehicle, dt)
 						courseplay:addNewTargetVector(vehicle, 2*turnDiameter,     turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					else -- I'm left of chopper
-						if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 then
+						if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 and vehicle.cp.turnOnField then
 							courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left. Turning the new way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 							local maxDiameter = max(20,vehicle.cp.turnDiameter)
 							local verticalWaypointShift = courseplay:getWaypointShift(vehicle,tractor)
