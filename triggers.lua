@@ -418,7 +418,7 @@ function courseplay:updateAllTriggers()
 					trigger.isSowingMachineFillTrigger = true;
 					trigger.FrabikScript = true;
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sowingMachine', 'nonUpdateable');
-					courseplay:debug('\t\tadd SowingMachineFillTrigger', 1);
+					courseplay:debug('\t\tadd SowingMachineFillTrigger [Factory Script Seed]', 1);
 
 				-- SprayerFillTriggers
 				elseif object.Produkte.liquidFertilizerOUT then
@@ -427,7 +427,7 @@ function courseplay:updateAllTriggers()
 					trigger.isSprayerFillTrigger = true;
 					trigger.FrabikScript = true;
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sprayer', 'nonUpdateable');
-					courseplay:debug('\t\tadd SprayerFillTrigger', 1);
+					courseplay:debug('\t\tadd SprayerFillTrigger [Factory Script Liquid Fert]', 1);
 
 				elseif object.Produkte.fertilizerOUT then
 					local trigger = object.Produkte.fertilizerOUT.LiquideTrigger
@@ -435,7 +435,7 @@ function courseplay:updateAllTriggers()
 					trigger.isSprayerFillTrigger = true;
 					trigger.FrabikScript = true;
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sprayer', 'nonUpdateable');
-					courseplay:debug('\t\tadd SprayerFillTrigger', 1);
+					courseplay:debug('\t\tadd SprayerFillTrigger [Factory Script Fert]', 1);
 				end;
 			
 				-- ManureLager
