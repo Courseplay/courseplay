@@ -184,7 +184,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	if courseplay.triggers.allNonUpdateables[transformId] then
 		local trigger = courseplay.triggers.allNonUpdateables[transformId];
 		courseplay:debug(('%s: transformId=%s: %s is allNonUpdateables'):format(nameNum(self), tostring(transformId), name), 19);
-
+		
 		if trigger.isWeightStation and courseplay:canUseWeightStation(self) then
 			self.cp.fillTrigger = transformId;
 			courseplay:debug(('%s: trigger %s is valid'):format(nameNum(self), tostring(transformId)), 19);
@@ -272,6 +272,7 @@ function courseplay:updateAllTriggers()
 			if g_currentMission.nonUpdateables[k] ~= nil then
 				local trigger = g_currentMission.nonUpdateables[k];
 				local triggerId = trigger.triggerId;
+				--print(tableShow(trigger,"nonUpdateables",nil,nil,4))
 				if triggerId ~= nil and trigger.isEnabled then
 					-- GasStationTriggers
 					if trigger.isa and trigger:isa(GasStation) then
@@ -384,6 +385,7 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for k, object in pairs(g_currentMission.onCreateLoadedObjects) do
 			counter = counter +1;
+			--print(tableShow(object,"onCreate",nil,nil,4))
 			--newBGA DigestateSiloTrigger
 			if object.tipTriggerTargets ~= nil then
 				for index, value in pairs(object.tipTriggerTargets) do
@@ -396,6 +398,7 @@ function courseplay:updateAllTriggers()
 				end
 
 			end
+			--print(string.format('object.Produkte =%s FillUtil.FILLTYPE_SEEDS = %s, FillUtil.FILLTYPE_FERTILIZER =%s',tostring(object.Produkte),tostring(FillUtil.FILLTYPE_SEEDS),tostring(FillUtil.FILLTYPE_FERTILIZER)))
 			-- Cows husbandry: liquidManureSiloTrigger
 			if object.isa and object:isa(AnimalHusbandry) and object.liquidManureTrigger then
 				local trigger = object.liquidManureTrigger;
@@ -405,7 +408,37 @@ function courseplay:updateAllTriggers()
 				courseplay:cpAddTrigger(trigger.triggerId, trigger, 'liquidManure', 'nonUpdateable');
 				courseplay:debug(('\t\tadd liquidManureFillTrigger (id %d) [%s]'):format(trigger.triggerId,name), 1);
 
-			-- ManureLager
+			--FrabikScript Seed and Fertlizer
+			
+			elseif object.Produkte ~= nil then
+				--print(string.format('object.Produkte.fillTypes =%s FillUtil.FILLTYPE_SEEDS = %s, FillUtil.FILLTYPE_FERTILIZER =%s',tostring(object.Produkte.fillTypes),tostring(FillUtil.FILLTYPE_SEEDS),tostring(FillUtil.FILLTYPE_FERTILIZER)))
+				if object.Produkte.seedsOUT then
+					local trigger = object.Produkte.seedsOUT.LiquideTrigger
+					trigger.fillType = FillUtil.FILLTYPE_SEEDS
+					trigger.isSowingMachineFillTrigger = true;
+					trigger.FrabikScript = true;
+					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sowingMachine', 'nonUpdateable');
+					courseplay:debug('\t\tadd SowingMachineFillTrigger [Factory Script Seed]', 1);
+
+				-- SprayerFillTriggers
+				elseif object.Produkte.liquidFertilizerOUT then
+					local trigger = object.Produkte.liquidFertilizerOUT.LiquideTrigger
+					trigger.fillType = FillUtil.FILLTYPE_LIQUIDFERTILIZER
+					trigger.isSprayerFillTrigger = true;
+					trigger.FrabikScript = true;
+					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sprayer', 'nonUpdateable');
+					courseplay:debug('\t\tadd SprayerFillTrigger [Factory Script Liquid Fert]', 1);
+
+				elseif object.Produkte.fertilizerOUT then
+					local trigger = object.Produkte.fertilizerOUT.LiquideTrigger
+					trigger.fillType = FillUtil.FILLTYPE_FERTILIZER
+					trigger.isSprayerFillTrigger = true;
+					trigger.FrabikScript = true;
+					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sprayer', 'nonUpdateable');
+					courseplay:debug('\t\tadd SprayerFillTrigger [Factory Script Fert]', 1);
+				end;
+			
+				-- ManureLager
 			elseif object.triggerId ~= nil then
 				if object.isManureLager or object.ManureLagerDirtyFlag or Utils.endsWith(object.className, 'ManureLager') then
 					object.isManureLager = true;
@@ -424,6 +457,8 @@ function courseplay:updateAllTriggers()
 					courseplay:cpAddTrigger(triggerId, object, 'liquidManure', 'nonUpdateable');
 					courseplay:debug('\t\tadd pigs liquidManureFillTrigger [mod]', 1);
 				end;
+			
+			
 			end;
 		end;
 		courseplay:debug(('\t%i in list'):format(counter), 1);
@@ -587,6 +622,7 @@ function courseplay:updateAllTriggers()
 			if courseplay:isValidTipTrigger(trigger) then
 				local triggerId = trigger.triggerId;
 				-- Extended tipTriggers (AlternativeTipTrigger)
+				--print(tableShow(trigger,"tiptriggers",nil,nil,4))
 				if trigger.isExtendedTrigger then
 					trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, 'ExtendedTipTrigger');
 				end;

@@ -240,8 +240,7 @@ function courseplay:load(savegame)
 	self.cp.curTurnIndex = 1;
 
 	-- alignment course data
-	-- alignment course enabled for developers by default
-	self.cp.alignment = { enabled = CpManager.isDeveloper }
+	self.cp.alignment = { enabled = true }
 
 	-- speed limits
 	self.cp.speeds = {
@@ -1536,7 +1535,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.turnDiameter		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 self.cp.vehicleTurnRadius * 2);
 		self.cp.realisticDriving 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#realisticDriving'),		 true);
 		self.cp.allwaysSearchFuel 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#allwaysSearchFuel'),	 false);
-		self.cp.alignment.enabled 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#alignment'),	 		 false);
+		self.cp.alignment.enabled 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#alignment'),	 		 true);
 		
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';

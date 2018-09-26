@@ -1206,6 +1206,8 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 
 				courseplay:debug(('%s: vehicle.cp.fillTrigger = %s'):format(nameNum(vehicle), tostring(vehicle.cp.fillTrigger)), 19);
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
+				
+				--print(tableShow(trigger,"trigger",nil,nil,4))
 				if trigger and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
 					if vehicle.cp.hasFertilizerSowingMachine and not vehicle.cp.fertilizerOption then
 						vehicle.cp.fillTrigger = nil
@@ -1214,16 +1216,22 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 						--print('\t\tslow down, it\'s a sprayerFillTrigger');
 						courseplay:debug(('%s: trigger is SprayerFillTrigger -> set vehicle.cp.isInFilltrigger'):format(nameNum(vehicle)), 19);
 						vehicle.cp.isInFilltrigger = true;
+
+						--Frabick Script Compatibility
+						if fillTrigger == nil and vehicle.cp.fillTrigger and trigger.liquideTrailers and #(trigger.liquideTrailers) > 0 then
+							fillTrigger = trigger
+						end
 					else
 						vehicle.cp.fillTrigger = nil
 						courseplay:debug(('%s: fillTypes dont match -> reset vehicle.cp.fillTrigger'):format(nameNum(vehicle)), 19);
 					end
 				end;
 			end;
-
+			
 			-- check for fillTrigger
 			if workTool.fillTriggers then
 				local trigger = workTool.fillTriggers[1];
+				
 				if trigger ~= nil and (trigger.isSprayerFillTrigger or trigger.isLiquidManureFillTrigger) then
 					fillTrigger = trigger;
 					vehicle.cp.fillTrigger = nil;
@@ -1258,26 +1266,38 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 					end;
 				end;
 			end;
-			-- print(('workToolFillLevelPct=%.1f, driveOn=%d, fillTrigger=%s, fillTypesMatch=%s, canRefill=%s'):format(workToolFillLevelPct, driveOn, tostring(fillTrigger), tostring(fillTypesMatch), tostring(canRefill)));
+			-- print(('workToolSprayerFillLevelPct=%.1f, driveOn=%d, fillTrigger=%s, fillTypesMatch=%s, canRefill=%s'):format(workToolSprayerFillLevelPct, driveOn, tostring(fillTrigger), tostring(fillTypesMatch), tostring(canRefill)));
 
 			if canRefill then
 				allowedToDrive = false;
 				-- 												 unfold, lower, turnOn, allowedToDrive, cover, unload)
 				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
 
-				
-
 				if not workTool.isFilling then
-					workTool:setIsFilling(true);
+					if fillTrigger.FrabikScript then
+						fillTrigger:setIsLiquideTankFilling(true, workTool)
+					else
+						workTool:setIsFilling(true);
+					end
 				end;
 				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.sprayerFillLevel or workTool.cp.fillLevel, 100), workTool.cp.sprayerCapacity or workTool.cp.capacity));
 
 			elseif vehicle.cp.isLoaded or workToolSprayerFillLevelPct >= driveOn and fillTrigger~= nil and (fillTrigger.isSprayerFillTrigger or fillTrigger.isLiquidManureFillTrigger) then
 				if workTool.isFilling then
-					workTool:setIsFilling(false);
+					if fillTrigger.FrabikScript then
+						fillTrigger:setIsLiquideTankFilling(true, workTool)
+					else
+						workTool:setIsFilling(false);
+					end
 				end;
 				--												 unfold, lower, turnOn, allowedToDrive, cover, unload)
 				courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, false, false);
+
+				--FrabikScript compatibility
+				if vehicle.cp.fillTrigger and fillTrigger.FrabikScript then
+					vehicle.cp.fillTrigger = nil;
+				end;
+
 				if not (vehicle.cp.fillTrigger and courseplay.triggers.all[vehicle.cp.fillTrigger].isWeightStation) then
 					vehicle.cp.fillTrigger = nil;
 					if workTool.cp.isLiquidManureOverloader then
@@ -1292,24 +1312,38 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 
 		-- SOWING MACHINE -- NOTE: no elseif, as a workTool might be both a sprayer and a seeder (URF)
 		if courseplay:isSowingMachine(workTool) then
+			local factoryScript
 			if vehicle.cp.fillTrigger ~= nil then
 				local trigger = courseplay.triggers.all[vehicle.cp.fillTrigger];
 				if trigger.isSowingMachineFillTrigger then
 					--print("slow down , its a SowingMachineFillTrigger")
 					courseplay:debug('%s: trigger is SowingMachineFillTrigger -> set vehicle.cp.isInFilltrigger', 19);
 					vehicle.cp.isInFilltrigger = true;
+					
+					--Frabick Script Compatibility
+					if trigger.liquideTrailers and #(trigger.liquideTrailers) > 0 then
+						factoryScript = trigger
+					end
 				end
 			end
-			if workToolSeederFillLevelPct < driveOn and workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger then
+			if workToolSeederFillLevelPct < driveOn and ((workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger) or factoryScript) then
 				--print(tableShow(workTool.fillTriggers,"workTool.fillTriggers"))
 				if not workTool.isFilling then
-					workTool:setIsFilling(true);
+					if factoryScript then
+						factoryScript:setIsLiquideTankFilling(true, workTool)
+					else
+						workTool:setIsFilling(true);
+					end
 				end;
 				allowedToDrive = false;
 				courseplay:setInfoText(vehicle, ('COURSEPLAY_LOADING_AMOUNT;%d;%d'):format(courseplay.utils:roundToLowerInterval(workTool.cp.seederFillLevel, 100), workTool.cp.seederCapacity));
-			elseif workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger then
+			elseif workTool.fillTriggers[1] ~= nil and workTool.fillTriggers[1].isSowingMachineFillTrigger or factoryScript then
 				if workTool.isFilling then
-					workTool:setIsFilling(false);
+					if factoryScript then
+						factoryScript:setIsLiquideTankFilling(true, workTool)
+					else
+						workTool:setIsFilling(false);
+					end
 				end;
 				vehicle.cp.fillTrigger = nil;
 				courseplay:debug('%s: vehicle.cp.isLoaded or workToolSeederFillLevelPct >= driveOn -> set vehicle.cp.fillTrigger to nil', 19);
