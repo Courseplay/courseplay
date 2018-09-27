@@ -676,13 +676,14 @@ function courseplay:unload_combine(vehicle, dt)
 						courseplay:debug(string.format("%s: points are on field -> turn",nameNum(vehicle)),4)	
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,-(trailerOffset+totalLength+(0.5*maxDiameter)));
 						vehicle.cp.curTarget.rev = true;
-						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,1,maxDiameter,vehicle.cp.combineOffset,trailerOffset+(0.5*maxDiameter))
-						courseplay:addNewTargetVector(vehicle,-vehicle.cp.combineOffset,-(2*maxDiameter+1.5*totalLength))
+						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-sideMultiplier,maxDiameter,offset,trailerOffset+(0.5*maxDiameter))
+						courseplay:addNewTargetVector(vehicle,sideMultiplier*offset,-(2*maxDiameter+1.5*totalLength),vehicle.cp.cpTurnBaseNode)
 					else --go reverse directly
 						courseplay:debug(string.format("%s: points are not on field -> reverse directly",nameNum(vehicle)),4)	
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, 0, 0, -(1.5*totalLength));
 						vehicle.cp.curTarget.rev = true
-						courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*3.5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
+						courseplay:addNewTargetVector(vehicle, sideMultiplier*offset/2,  (-totalLength*3),currentTipper,vehicle.cp.cpTurnBaseNode,true);
+						courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*4),currentTipper,vehicle.cp.cpTurnBaseNode,true);
 						courseplay:addNewTargetVector(vehicle, sideMultiplier*offset,  (-totalLength*5),currentTipper,vehicle.cp.cpTurnBaseNode,true);
 					end
 				else
@@ -1002,6 +1003,7 @@ function courseplay:unload_combine(vehicle, dt)
 				courseplay:setMode2NextState(vehicle, STATE_WAIT_FOR_PIPE);
 			end
 		-- elseif vehicle.cp.modeState ~= STATE_FOLLOW_TARGET_WPS and vehicle.cp.modeState ~= 99 and not vehicle.cp.realisticDriving then
+			--Why is vehicle.cp.realisticDriving Here? Asking Cause I will get the tipper trying to unload the combine in the middle of a turn pops64
 		elseif vehicle.cp.modeState ~= STATE_FOLLOW_TARGET_WPS and vehicle.cp.modeState ~= STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY and not vehicle.cp.realisticDriving then
 			-- just wait until combine has turned
 			allowedToDrive = false
