@@ -784,6 +784,7 @@ function courseplay:stop(self)
 	self.cp.aiTurnNoBackward = false
 	self.cp.noStopOnEdge = false
 	self.cp.fillTrigger = nil;
+	self.cp.factoryScriptTrigger = nil;
 	self.cp.tipperLoadMode = 0;
 	self.cp.hasMachineToFill = false;
 	self.cp.unloadOrder = false
