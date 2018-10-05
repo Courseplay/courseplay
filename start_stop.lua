@@ -38,7 +38,7 @@ function courseplay:start(self)
 	courseplay:setEngineState(self, true);
 	self.cp.saveFuel = false
 	
-	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
+	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4)) 
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 
