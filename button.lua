@@ -159,8 +159,8 @@ function courseplay.button:render()
 
 		elseif pg == courseplay.hud.PAGE_MANAGE_COMBINES then
 			if fn == 'setSearchCombineOnField' then
-				canScrollUp   = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField > 0;
-				canScrollDown = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+				canScrollUp   = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField < courseplay.fields.numAvailableFields;
+				canScrollDown = courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineAutomatically and vehicle.cp.searchCombineOnField > 0;
 			end;
 
 		elseif pg == courseplay.hud.PAGE_SPEEDS then

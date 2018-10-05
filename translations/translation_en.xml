@@ -93,7 +93,7 @@
 		<text name="COURSEPLAY_CURRENT" 								 text="Current:" />
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 						 text="automatic search" />
 		<text name="COURSEPLAY_MANUAL_SEARCH" 							 text="select manually" />
-		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Search combine on field %s" />
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 				 text="Search combine on field:  %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 							 text="Copy course:" />
 		<text name="COURSEPLAY_VEHICLE" 								 text="Vehicle" />
 		<text name="COURSEPLAY_TEMP_COURSE" 							 text="temporary course" />
