@@ -699,8 +699,9 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 									if workTool.components[joint.componentIndices[1]].node == node then
 										-- Check if the component is behind the node.
 										local xJoint,yJoint,zJoint = getWorldTranslation(joint.jointNode);
-										local _,_,direction = worldToLocal(node, xJoint,yJoint,zJoint);
-										if (direction * invert) < 0 then
+										local offset,_,direction = worldToLocal(node, xJoint,yJoint,zJoint);
+										--offset check to make sure we are selecting a node that is centered
+										if (direction * invert) < 0 and offset == 0 then
 											-- Component is hehind, so set the node to the new component node.
 											node = component.node;
 										end;

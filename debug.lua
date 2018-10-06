@@ -6,13 +6,12 @@ function CpManager:setUpDebugChannels()
 	if CpManager.isDeveloper then
 		-- Enable specified debugmode by default for Satis Only!
 		if getMD5(g_gameSettings:getValue("nickname")) == "9a9f028043394ff9de1cf6c905b515c1" then
-			--defaultActive[12] = true;
-			--defaultActive[14] = true;
+			--defaultActive[6] = true;
+			--defaultActive[13] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "b74ad095badc54d4334039f2f73f240e" then
 			defaultActive[6] = true;
-			defaultActive[12] = true;
-			defaultActive[14] = true;
+			defaultActive[13] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
 			defaultActive[12] = true;

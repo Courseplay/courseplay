@@ -356,6 +356,10 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'caruelleNicolasStilla460.xml' then
 		workTool.cp.widthWillCollideOnTurn = true;
 
+	-- Einboeck Aerostar-Rotation 1200 [Giants]
+	elseif workTool.cp.xmlFileName == 'einboeckRotation1200.xml' then
+		workTool.cp.widthWillCollideOnTurn = true;
+
 	-- ###########################################################
 	-- [5] BALING
 	-- Ursus T127 (Bale Loader) [Giants]
@@ -411,21 +415,15 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'kuhnDC401.xml' then
 		workTool.cp.isKuhnDC401 = true;
 
-	-- Bednar Swifter SM 18000 [Giants Big Bud DLC]
-	elseif workTool.cp.xmlFileName == 'bednarSM18000.xml' then
-		workTool.cp.isBednarSM18000 = true;
-		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. Should be able to reverse but kinks out if it tries.
-
 	-- Flexi Coil ST 820 [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'flexicoilST820.xml' then
 		workTool.cp.isFlexicoilST820 = true;
 		workTool.cp.overwriteTurnRadius = 7;
-		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. Should be able to reverse but kinks out if it tries.
 
 	--Cultiplow Platinum 8m [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'agrisemCultiplowPlatinum8m.xml' then
 		workTool.cp.isAgrisemCultiplowPlatinum8m = true;
-		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. Should be able to reverse but kinks out if it tries.
+		--workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail
 		workTool.cp.overwriteTurnRadius = 7;
 
 	-- PLOUGHS [Giants]
