@@ -677,7 +677,7 @@ function courseplay:unload_combine(vehicle, dt)
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,-(trailerOffset+totalLength+(0.5*maxDiameter)));
 						vehicle.cp.curTarget.rev = true;
 						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-sideMultiplier,maxDiameter,offset,trailerOffset+(0.5*maxDiameter))
-						courseplay:addNewTargetVector(vehicle,sideMultiplier*offset,-(2*maxDiameter+1.5*totalLength),vehicle.cp.cpTurnBaseNode)
+						courseplay:addNewTargetVector(vehicle,sideMultiplier*offset,-(2*maxDiameter+1.5*totalLength),currentTipper,vehicle.cp.cpTurnBaseNode);
 					else --go reverse directly
 						courseplay:debug(string.format("%s: points are not on field -> reverse directly",nameNum(vehicle)),4)	
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(currentTipper.rootNode, 0, 0, -(1.5*totalLength));
