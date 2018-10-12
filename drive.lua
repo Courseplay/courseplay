@@ -178,7 +178,7 @@ function courseplay:drive(self, dt)
 		end
 
 		--- If we are turning and abortWork is set, then check if we need to abort the turn
-		if self.cp.isTurning and self.cp.abortWork ~= nil then
+		if self.cp.isTurning and self.cp.abortWork ~= nil and not courseplay:onAlignmentCourse(self) then
 			local abortTurn = false;
 			-- Mode 4 Check
 			if self.cp.mode == 4 and self.cp.workTools ~= nil then

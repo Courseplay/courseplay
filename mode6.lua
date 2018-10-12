@@ -242,7 +242,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 			-- other worktools, tippers, e.g. forage wagon
 			else
-				if workArea and fillLevelPct ~= 100 and ((vehicle.cp.abortWork == nil) or (vehicle.cp.abortWork ~= nil and vehicle.cp.previousWaypointIndex == vehicle.cp.abortWork) or (vehicle.cp.runOnceStartCourse)) and vehicle.cp.turnStage == 0 and not courseplay:onAlignmentCourse( vehicle ) then
+				if workArea and fillLevelPct ~= 100 and ((vehicle.cp.abortWork == nil) or (vehicle.cp.abortWork ~= nil and vehicle.cp.previousWaypointIndex == vehicle.cp.abortWork) or (vehicle.cp.runOnceStartCourse)) and vehicle.cp.turnStage == 0 then -- and not courseplay:onAlignmentCourse( vehicle ) then
 					--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
@@ -636,7 +636,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						courseplay.debugVehicle( 9, vehicle, "mode 6 636")
 						courseplay:setCurrentTargetFromList(vehicle, 1);
 						vehicle.cp.isNavigatingPathfinding = true;
-					else
+					elseif not courseplay:onAlignmentCourse( vehicle ) then
 						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex-2], true)
 					end
 				end

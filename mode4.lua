@@ -47,7 +47,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 	if vehicle.cp.previousWaypointIndex == vehicle.cp.startWork then
 		if seederFillLevelPct ~= 0 and sprayerFillLevelPct ~= 0 then
 												-- vv it's to prevent nil failure when abortWork is saved but the field course is not been loaded after loadMap
-				if vehicle.cp.abortWork ~= nil and vehicle.cp.abortWork <= vehicle.cp.numWaypoints then  
+			if vehicle.cp.abortWork ~= nil and vehicle.cp.abortWork <= vehicle.cp.numWaypoints then  
 				if vehicle.cp.abortWork < 5 then
 					vehicle.cp.abortWork = 6
 				end
@@ -68,7 +68,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 						courseplay:setCurrentTargetFromList(vehicle, 1);
 						courseplay.debugVehicle( 9, vehicle, "mode4 69")
 						vehicle.cp.isNavigatingPathfinding = true;
-					else
+					elseif not courseplay:onAlignmentCourse( vehicle ) then
 						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex-2], true)
 					end
 				end
@@ -155,8 +155,8 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 			local hasSetUnfoldOrderThisLoop = false
 			if allowedToDrive then
 				if not specialTool then
-					--unfold
-					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded and not courseplay:onAlignmentCourse( vehicle ) then -- and ((vehicle.cp.abortWork ~= nil and vehicle.cp.waypointIndex == vehicle.cp.abortWork - 2) or (vehicle.cp.abortWork == nil and vehicle.cp.waypointIndex == 2)) then
+					--unfold																									-- Why has this been comments out? Mode6 uses a similar line 
+					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded then -- and ((vehicle.cp.abortWork ~= nil and vehicle.cp.waypointIndex == vehicle.cp.abortWork - 2) or (vehicle.cp.abortWork == nil and vehicle.cp.waypointIndex == 2)) then
 						courseplay:debug(string.format('%s: unfold order (foldDir %d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 						workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						hasSetUnfoldOrderThisLoop = true

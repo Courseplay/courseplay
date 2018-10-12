@@ -518,37 +518,38 @@ function courseplay:turn(vehicle, dt)
 		----------------------------------------------------------
 		elseif vehicle.cp.turnStage == 3 then
 			local deltaZ, lowerImplements
-      if courseplay:onAlignmentCourse( vehicle ) then
-        -- on alignment course to the waypoint, ignore front marker, we want to get the vehicle itself to get to the waypoint
-        _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz)
-        lowerImplements = deltaZ < 3
-        courseplay:endAlignmentCourse( vehicle )
-        courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex );
-        return
-      else
-        _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
-        lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
-      end
+			if courseplay:onAlignmentCourse( vehicle ) then
+				-- on alignment course to the waypoint, ignore front marker, we want to get the vehicle itself to get to the waypoint
+				-- Why are we evening do this? lowerImplements doesn't occur till later in this elseif statement and we are returning out of the function before we even get there
+				_, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz)
+				lowerImplements = deltaZ < 3
+				courseplay:endAlignmentCourse( vehicle )
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex );
+				return
+			else
+				_, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
+				lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
+			end
     
-      if newTarget.turnReverse then
+			if newTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
 
 			-- Lower implement and continue on next lane
 			if lowerImplements then
-        if vehicle.cp.abortWork == nil then
+				if vehicle.cp.abortWork == nil then
 					courseplay:lowerImplements(vehicle, true, true);
 				end;
 
 				vehicle.cp.isTurning = nil;
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
-        -- move on to the turnEnd (targetNode)
-        courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
-        -- and then to the next wp in front of us.
-        courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-        courseplay:clearTurnTargets(vehicle);
+				-- move on to the turnEnd (targetNode)
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+				-- and then to the next wp in front of us.
+				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
+				courseplay:clearTurnTargets(vehicle);
 				return;
 			end;
 
@@ -2091,7 +2092,7 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
 		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't neeeded then.", #points )
 		return
 	end
-  courseplay:clearTurnTargets( vehicle )
+  	courseplay:clearTurnTargets( vehicle )
 	for _, point in ipairs( points ) do
 		courseplay:addTurnTarget( vehicle, point.posX, point.posZ, false )
 		courseplay.debugVehicle( 14, vehicle, "(Align) Adding an alignment wp: (%1.f, %1.f)", point.posX, point.posZ )
