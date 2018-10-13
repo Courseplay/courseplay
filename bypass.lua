@@ -157,6 +157,7 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	if transformId == g_currentMission.terrainRootNode or parent == g_currentMission.terrainRootNode
 	or CpManager.trafficCollisionIgnoreList[transformId]
 	or string.match(idName,'otherCombColliTrigger')  --to prevent hitting the AIVE Triggers
+	or string.match(idName,'aiCollisionTrigger') --to prevent hitting Giants AI Collision Trigger for Mode4/6 pathfinding
 	or (self.cp.activeCombine ~= nil and (self.cp.activeCombine.rootNode == transformId or self.cp.activeCombine.rootNode == parent or self.cp.activeCombine.rootNode == parentParent ))
 	or self.cpTrafficCollisionIgnoreList[transformId] or self.cpTrafficCollisionIgnoreList[parent] or self.cpTrafficCollisionIgnoreList[parentParent]
 	or (self.cp.foundColli ~= nil and table.getn(self.cp.foundColli) > 0 and (self.cp.foundColli[1].id == transformId 
