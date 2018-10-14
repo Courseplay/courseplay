@@ -1091,31 +1091,54 @@ function courseplay:drive(self, dt)
 			end
 			if self.cp.mode == 7 and self.cp.modeState == 5 then
 			else
-        -- SWITCH TO THE NEXT WAYPOINT
+				-- Allows alignement course to be used to transition to up/down until some better fix for the transition can come about
+				if self.Waypoints[self.cp.waypointIndex].isConnectingTrack and (self.cp.mode == 4 or self.cp.mode == 6) then
+					local transitionWP = 0
+					-- Local for a turn start to ensure we don't override a turn transition, we only want a transition that as no help
+					-- Look 15 waypoints ahead, this may neeed adjustment if connecting track goes through a corner in headland this upsets this number
+					for i=1,15 do
+						if self.Waypoints[self.cp.waypointIndex + i].turnStart then -- turn found break
+							transitionWP = 0
+							courseplay:debug( string.format( "%s: Turn Start Found No Align Course Needed", nameNum( self )), 12 )
+							break
+						elseif not self.Waypoints[self.cp.waypointIndex + i].isConnectingTrack then --No turn found and we are coming up on up/down transition set trastionWP
+							transitionWP = i + 2
+							courseplay:debug( string.format( "%s: No Turn Start Found Align Course Needed in %d", nameNum( self ), transitionWP), 12 )
+							break
+						end
+					end
+					if not courseplay:onAlignmentCourse(self) and transitionWP > 0 then
+						courseplay:setWaypointIndex(self, self.cp.waypointIndex + transitionWP)
+						courseplay:debug( string.format( "%s: Setting Waypoint index to %d. Starting Alignement Course", nameNum( self ), self.cp.waypointIndex), 12 )
+						courseplay:startAlignmentCourse( self, self.Waypoints[self.cp.waypointIndex], true )
+						return
+					end
+				end
+				-- SWITCH TO THE NEXT WAYPOINT
 				courseplay:setWaypointIndex(self, self.cp.waypointIndex + 1);
-        courseplay.calculateTightTurnOffset( self )
-        local rev = ""
-        if beforeReverse then 
-          rev = "beforeReverse"
-        end
-        if afterReverse then
-          rev = rev .. " afterReverse"
-        end
-        courseplay:debug( string.format( "%s: Switch to next wp: %d, distToChange %.1f, %s", nameNum( self ), self.cp.waypointIndex, distToChange, rev ), 12 )
+				courseplay.calculateTightTurnOffset( self )
+				local rev = ""
+				if beforeReverse then 
+					rev = "beforeReverse"
+				end
+				if afterReverse then
+					rev = rev .. " afterReverse"
+				end
+				courseplay:debug( string.format( "%s: Switch to next wp: %d, distToChange %.1f, %s", nameNum( self ), self.cp.waypointIndex, distToChange, rev ), 12 )
 			end
 		else -- last waypoint: reset some variable
-      if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
-      else
-        courseplay:setWaypointIndex(self, 1);
-      end
-      self.cp.isUnloaded = false
-      courseplay:setStopAtEnd(self, false);
-      courseplay:setIsLoaded(self, false);
-      courseplay:setIsRecording(self, false);
-      if self.cp.mode == 1 then
-        courseplay:changeRunCounter(self, false)
-      end;
-      self:setCpVar('canDrive',true,courseplay.isClient)
+			if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
+			else
+				courseplay:setWaypointIndex(self, 1);
+			end
+			self.cp.isUnloaded = false
+			courseplay:setStopAtEnd(self, false);
+			courseplay:setIsLoaded(self, false);
+			courseplay:setIsRecording(self, false);
+			if self.cp.mode == 1 then
+				courseplay:changeRunCounter(self, false)
+			end;
+			self:setCpVar('canDrive',true,courseplay.isClient)
 		end
 	end
 end
