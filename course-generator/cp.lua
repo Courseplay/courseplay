@@ -130,19 +130,9 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
 	)
 
+	-- return on exception (but continue on not ok as that is just a warning)
 	if not status then
-		-- show message if there was an exception
-		local messageDialog = g_gui:showGui('InfoDialog');
-		messageDialog.target:setText(courseplay:loc('COURSEPLAY_COULDNT_GENERATE_COURSE'));
-		messageDialog.target:setCallback( function () g_gui:showGui('') end, self )
-		return
-	end
-
-	if not ok then
-		-- show message if the generated course may have issues due to the selected track direction
-		local messageDialog = g_gui:showGui('InfoDialog');
-		messageDialog.target:setText(courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL'));
-		messageDialog.target:setCallback( function () g_gui:showGui('') end, self )
+		return status, ok
 	end
 
 	removeRidgeMarkersFromLastTrack( field.course, not vehicle.cp.headland.orderBefore )
@@ -153,7 +143,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
 	if vehicle.cp.numWaypoints == 0 then
 		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', 7);
-		return;
+		return status, ok;
 	end;
 
 	courseplay:setWaypointIndex(vehicle, 1);
@@ -184,7 +174,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
-
+	return status, ok
 end
 
 local modDirectory = g_currentModDirectory

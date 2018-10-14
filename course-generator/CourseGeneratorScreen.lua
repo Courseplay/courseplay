@@ -99,7 +99,20 @@ function CourseGeneratorScreen:generate()
 	-- this way we can regenerate the course with different settings without
 	-- having to reselect the field or closing the GUI
 	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
-	courseplay:generateCourse( self.vehicle )
+	local status, ok = courseplay:generateCourse(self.vehicle, true)
+
+	if not status then
+		-- show message if there was an exception
+		g_gui:showInfoDialog({text=courseplay:loc('COURSEPLAY_COULDNT_GENERATE_COURSE')})
+		self:onClickResetMap()
+		return
+	end
+
+	if not ok then
+		-- show message if the generated course may have issues due to the selected track direction
+		g_gui:showInfoDialog({text=courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL')})
+	end
+	
 	self.vehicle.cp.fieldEdge.selectedField.fieldNum = selectedField
 	-- update number of headland passes in case we ended up generating less 
 	self:setHeadlandProperties()
