@@ -246,57 +246,6 @@ function courseplay:delete_waypoint(vehicle)
 	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end;
 
--- clears current course -- just setting variables
-function courseplay:clearCurrentLoadedCourse(vehicle)
-	courseplay.courses:resetMerged();
-	courseplay:setWaypointIndex(vehicle, 1,true);
-	vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
-	vehicle.cp.nextTargets = {};
-	if vehicle.cp.activeCombine ~= nil then
-		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-	end
-	vehicle.cp.loadedCourses = {}
-	vehicle:setCpVar('currentCourseName',nil,courseplay.isClient)
-	courseplay:setModeState(vehicle, 1);
-	if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
-		courseplay:setModeState(vehicle, 0);
-	end;
-	vehicle.cp.recordingTimer = 1;
-	vehicle.Waypoints = {}
-	vehicle:setCpVar('canDrive',false,courseplay.isClient);
-	vehicle.cp.abortWork = nil
-	courseplay:resetTipTrigger(vehicle);
-	vehicle.cp.lastMergedWP = 1;
-	vehicle.cp.numCourses = 0;
-	vehicle.cp.numWaypoints = 0;
-	vehicle.cp.numWaitPoints = 0;
-	vehicle.cp.waitPoints = {};
-
-	-- for turn maneuver
-	vehicle.cp.courseWorkWidth = nil;
-	vehicle.cp.courseNumHeadlandLanes = nil;
-	vehicle.cp.courseHeadlandDirectionCW = nil;
-
-	vehicle.cp.hasGeneratedCourse = false;
-	courseplay:validateCourseGenerationData(vehicle);
-	courseplay:validateCanSwitchMode(vehicle);
-
-	courseplay.signs:updateWaypointSigns(vehicle, "current");
-
-	vehicle.cp.hud.clearCurrentCourseButton1:setHovered(false);
-	vehicle.cp.hud.clearCurrentCourseButton2:setHovered(false);
-	vehicle.cp.hud.clearCurrentCourseButton8:setHovered(false);
-
-	-- remove 2D course data
-	vehicle.cp.course2dDimensions = nil;
-	vehicle.cp.course2dDrawData = nil;
-	vehicle.cp.course2dBackground = nil;
-
-	--Mode 1 Run Counter
- 	vehicle.cp.runCounter = 0;
- 	courseplay:changeRunCounter(vehicle, false)
-end;
-
 function courseplay:currentVehAngle(vehicle)
 	local x, y, z = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1);
 	local length = Utils.vector2Length(x, z);

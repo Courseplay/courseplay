@@ -723,64 +723,7 @@ function courseplay:findDrivers(vehicle)
 	return foundDrivers;
 end;
 
-function courseplay:copyCourse(vehicle)
-	if vehicle.cp.hasFoundCopyDriver ~= nil and vehicle.cp.copyCourseFromDriver ~= nil then
-		local src = vehicle.cp.copyCourseFromDriver;
 
-		vehicle.Waypoints = src.Waypoints;
-		vehicle:setCpVar('currentCourseName',src.cp.currentCourseName,courseplay.isClient);
-		vehicle.cp.loadedCourses = src.cp.loadedCourses;
-		vehicle.cp.numCourses = src.cp.numCourses;
-		courseplay:setWaypointIndex(vehicle, 1);
-		vehicle.cp.numWayPoints = #vehicle.Waypoints;
-		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
-		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
-		vehicle.cp.courseNumHeadlandLanes = src.cp.courseNumHeadlandLanes
-		vehicle.cp.courseHeadlandDirectionCW = src.cp.courseHeadlandDirectionCW
-
-		courseplay:setIsRecording(vehicle, false);
-		courseplay:setRecordingIsPaused(vehicle, false);
-		vehicle:setIsCourseplayDriving(false);
-		vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
-		vehicle:setCpVar('canDrive',true,courseplay.isClient);
-		vehicle.cp.abortWork = nil;
-
-		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z ,vehicle.cp.curTarget.rev = nil, nil, nil, nil;
-		vehicle.cp.nextTargets = {};
-		if vehicle.cp.activeCombine ~= nil then
-			courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
-		end
-
-		if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
-			courseplay:setModeState(vehicle, 0);
-			-- print(('%s [%s(%d)]: copyCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
-		else
-			courseplay:setModeState(vehicle, 1);
-			-- print(('%s [%s(%d)]: copyCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-		end;
-		vehicle.cp.recordingTimer = 1;
-
-		courseplay.signs:updateWaypointSigns(vehicle, 'current');
-
-		--reset variables
-		vehicle.cp.selectedDriverNumber = 0;
-		vehicle.cp.hasFoundCopyDriver = false;
-		vehicle.cp.copyCourseFromDriver = nil;
-		
-		--MultiTools
-		if src.cp.multiTools > 1 then
-			vehicle.cp.workWidth = src.cp.workWidth
-			vehicle.cp.courseWorkWidth = src.cp.courseWorkWidth
-			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
-			courseplay:setMultiTools(vehicle, src.cp.multiTools)
-		end;
-		
-		courseplay:validateCanSwitchMode(vehicle);
-
-		-- SETUP 2D COURSE DRAW DATA
-		vehicle.cp.course2dUpdateDrawData = true;
-	end;
-end;
 
 function courseplay.settings.add_folder_settings(folder)
 	folder.showChildren = false

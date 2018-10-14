@@ -95,9 +95,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 	-- global array for courses, no refreshing needed any more
 	courseplay.courses:reinitializeCourses();
 	
-	if vehicle.cp.lastValidTipDistance ~= nil then
-		vehicle.cp.lastValidTipDistance = nil
-	end
 	if addCourseAtEnd == nil then addCourseAtEnd = false; end;
 
 	courseplay:debug(string.format('%s: loadCourse(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(vehicle), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), 8);
@@ -274,6 +271,132 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		vehicle.cp.course2dUpdateDrawData = true;
 	end
 end
+
+function courseplay:copyCourse(vehicle)
+	if vehicle.cp.hasFoundCopyDriver ~= nil and vehicle.cp.copyCourseFromDriver ~= nil then
+		local src = vehicle.cp.copyCourseFromDriver;
+
+		vehicle.Waypoints = src.Waypoints;
+		vehicle:setCpVar('currentCourseName',src.cp.currentCourseName,courseplay.isClient);
+		vehicle.cp.loadedCourses = src.cp.loadedCourses;
+		vehicle.cp.numCourses = src.cp.numCourses;
+		courseplay:setWaypointIndex(vehicle, 1);
+		vehicle.cp.numWayPoints = #vehicle.Waypoints;
+		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
+		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
+		vehicle.cp.courseNumHeadlandLanes = src.cp.courseNumHeadlandLanes
+		vehicle.cp.courseHeadlandDirectionCW = src.cp.courseHeadlandDirectionCW
+
+		courseplay:setIsRecording(vehicle, false);
+		courseplay:setRecordingIsPaused(vehicle, false);
+		vehicle:setIsCourseplayDriving(false);
+		vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
+		vehicle:setCpVar('canDrive',true,courseplay.isClient);
+		vehicle.cp.abortWork = nil;
+
+		if src.cp.searchCombineOnField ~= nil and src.cp.searchCombineOnField > 0 then
+			vehicle.cp.searchCombineOnField = src.cp.searchCombineOnField;
+		end
+		
+		
+		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z ,vehicle.cp.curTarget.rev = nil, nil, nil, nil;
+		vehicle.cp.nextTargets = {};
+		if vehicle.cp.activeCombine ~= nil then
+			courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
+		end
+
+		if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
+			courseplay:setModeState(vehicle, 0);
+			-- print(('%s [%s(%d)]: copyCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
+		else
+			courseplay:setModeState(vehicle, 1);
+			-- print(('%s [%s(%d)]: copyCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
+		end;
+		vehicle.cp.recordingTimer = 1;
+
+		courseplay.signs:updateWaypointSigns(vehicle, 'current');
+
+		--reset variables
+		vehicle.cp.selectedDriverNumber = 0;
+		vehicle.cp.hasFoundCopyDriver = false;
+		vehicle.cp.copyCourseFromDriver = nil;
+		
+		--MultiTools
+		if src.cp.multiTools > 1 then
+			vehicle.cp.workWidth = src.cp.workWidth
+			vehicle.cp.courseWorkWidth = src.cp.courseWorkWidth
+			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
+			courseplay:setMultiTools(vehicle, src.cp.multiTools)
+		end;
+		
+		courseplay:validateCanSwitchMode(vehicle);
+
+		-- SETUP 2D COURSE DRAW DATA
+		vehicle.cp.course2dUpdateDrawData = true;
+	end;
+end;
+
+-- clears current course -- just setting variables
+function courseplay:clearCurrentLoadedCourse(vehicle)
+	
+	--variables to be reset when deleting the current course
+	if vehicle.cp.lastValidTipDistance ~= nil then
+		vehicle.cp.lastValidTipDistance = nil
+	end
+	
+	if vehicle.cp.searchCombineOnField ~= nil and vehicle.cp.searchCombineOnField > 0 then
+		vehicle.cp.searchCombineOnField = 0;
+	end
+	-------------------------------------------------------
+	
+	courseplay.courses:resetMerged();
+	courseplay:setWaypointIndex(vehicle, 1,true);
+	vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
+	vehicle.cp.nextTargets = {};
+	if vehicle.cp.activeCombine ~= nil then
+		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
+	end
+	vehicle.cp.loadedCourses = {}
+	vehicle:setCpVar('currentCourseName',nil,courseplay.isClient)
+	courseplay:setModeState(vehicle, 1);
+	if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
+		courseplay:setModeState(vehicle, 0);
+	end;
+	vehicle.cp.recordingTimer = 1;
+	vehicle.Waypoints = {}
+	vehicle:setCpVar('canDrive',false,courseplay.isClient);
+	vehicle.cp.abortWork = nil
+	courseplay:resetTipTrigger(vehicle);
+	vehicle.cp.lastMergedWP = 1;
+	vehicle.cp.numCourses = 0;
+	vehicle.cp.numWaypoints = 0;
+	vehicle.cp.numWaitPoints = 0;
+	vehicle.cp.waitPoints = {};
+
+	-- for turn maneuver
+	vehicle.cp.courseWorkWidth = nil;
+	vehicle.cp.courseNumHeadlandLanes = nil;
+	vehicle.cp.courseHeadlandDirectionCW = nil;
+
+	vehicle.cp.hasGeneratedCourse = false;
+	courseplay:validateCourseGenerationData(vehicle);
+	courseplay:validateCanSwitchMode(vehicle);
+
+	courseplay.signs:updateWaypointSigns(vehicle, "current");
+
+	vehicle.cp.hud.clearCurrentCourseButton1:setHovered(false);
+	vehicle.cp.hud.clearCurrentCourseButton2:setHovered(false);
+	vehicle.cp.hud.clearCurrentCourseButton8:setHovered(false);
+
+	-- remove 2D course data
+	vehicle.cp.course2dDimensions = nil;
+	vehicle.cp.course2dDrawData = nil;
+	vehicle.cp.course2dBackground = nil;
+
+	--Mode 1 Run Counter
+ 	vehicle.cp.runCounter = 0;
+ 	courseplay:changeRunCounter(vehicle, false)
+end;
 
 function courseplay.courses:sort(courses_to_sort, folders_to_sort, parent_id, level, make_copies)
 --Note: this function is recursive.
