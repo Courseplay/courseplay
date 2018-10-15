@@ -83,10 +83,8 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 	if ix > #course.waypoints then
 		-- beyond the last, so put it on the last for now
 		-- but use the direction of the one before the last as the last one's is bogus
-		self:setToWaypoint(course, #course.waypoints - 1, true)
-		local _, yRot, _ = getRotation(self.node)
 		self:setToWaypoint(course, #course.waypoints)
-		setRotation(self.node, 0, yRot, 0)
+		setRotation(self.node, 0, math.rad(course.waypoints[#course.waypoints - 1].angle), 0)
 		-- And now, move ahead a bit.
 		local nx, ny, nz = localToWorld(self.node, 0, 0, distance)
 		setTranslation(self.node, nx, ny, nz)

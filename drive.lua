@@ -1135,6 +1135,7 @@ function courseplay:drive(self, dt)
 					end
 					if not courseplay:onAlignmentCourse(self) and transitionWP > 0 then
 						courseplay:setWaypointIndex(self, self.cp.waypointIndex + transitionWP)
+						self.cp.ppc:initialize()
 						courseplay:debug( string.format( "%s: Setting Waypoint index to %d. Starting Alignement Course", nameNum( self ), self.cp.waypointIndex), 12 )
 						courseplay:startAlignmentCourse( self, self.Waypoints[self.cp.waypointIndex], true )
 						return
