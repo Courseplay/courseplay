@@ -1097,13 +1097,18 @@ function courseplay:drive(self, dt)
 					-- Local for a turn start to ensure we don't override a turn transition, we only want a transition that as no help
 					-- Look 15 waypoints ahead, this may neeed adjustment if connecting track goes through a corner in headland this upsets this number
 					for i=1,15 do
-						if self.Waypoints[self.cp.waypointIndex + i].turnStart then -- turn found break
-							transitionWP = 0
-							courseplay:debug( string.format( "%s: Turn Start Found No Align Course Needed", nameNum( self )), 12 )
-							break
-						elseif not self.Waypoints[self.cp.waypointIndex + i].isConnectingTrack then --No turn found and we are coming up on up/down transition set trastionWP
-							transitionWP = i + 2
-							courseplay:debug( string.format( "%s: No Turn Start Found Align Course Needed in %d", nameNum( self ), transitionWP), 12 )
+						if self.Waypoints[self.cp.waypointIndex + i] then
+							if self.Waypoints[self.cp.waypointIndex + i].turnStart then -- turn found break
+								transitionWP = 0
+								courseplay:debug( string.format( "%s: Turn Start Found No Align Course Needed", nameNum( self )), 12 )
+								break
+							elseif not self.Waypoints[self.cp.waypointIndex + i].isConnectingTrack then --No turn found and we are coming up on up/down transition set trastionWP
+								transitionWP = i + 2
+								courseplay:debug( string.format( "%s: No Turn Start Found Align Course Needed in %d", nameNum( self ), transitionWP), 12 )
+								break
+							end
+						else
+							-- No need to look for wapoints ahead when beyond maxnumber of waypoints
 							break
 						end
 					end
