@@ -614,7 +614,7 @@ function courseplay:toggleRealisticDriving(vehicle)
 end;
 
 function courseplay:togglePpc(vehicle)
-	print("PPC TOGGLE")
+	courseplay:debugVehicle(12, vehicle, 'PPC TOGGLE')
 	vehicle.cp.ppc:toggleEnable()
 end
 

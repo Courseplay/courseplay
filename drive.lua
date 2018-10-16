@@ -1119,13 +1119,13 @@ function courseplay:drive(self, dt)
 					-- Look 15 waypoints ahead, this may need adjustment if connecting track goes through a corner in headland this upsets this number
 					for i=1,15 do
 						if self.Waypoints[self.cp.waypointIndex + i] then
-							if self.Waypoints[self.cp.waypointIndex + i].turnStart then -- turn found break
+							if self.Waypoints[self.cp.waypointIndex + i].turnStart and self.Waypoints[self.cp.waypointIndex + i].lane then -- turn found break
 								transitionWP = 0
-								courseplay:debug( string.format( "%s: Turn Start Found No Align Course Needed", nameNum( self )), 12 )
+								courseplay:debugVehicle( 12, self, "%s: Turn Start Found No Align Course Needed")
 								break
-							elseif not self.Waypoints[self.cp.waypointIndex + i].isConnectingTrack then --No turn found and we are coming up on up/down transition set trastionWP
-								transitionWP = i + 2
-								courseplay:debug( string.format( "%s: No Turn Start Found Align Course Needed in %d", nameNum( self ), transitionWP), 12 )
+							elseif not self.Waypoints[self.cp.waypointIndex + i].lane then --No turn found and we are coming up on up/down transition set trastionWP
+								transitionWP = i
+								courseplay:debugVehicle( 12, self, "%s: No Turn Start Found Align Course Needed in %d", transitionWP)
 								break
 							end
 						else
@@ -1136,7 +1136,7 @@ function courseplay:drive(self, dt)
 					if not courseplay:onAlignmentCourse(self) and transitionWP > 0 then
 						courseplay:setWaypointIndex(self, self.cp.waypointIndex + transitionWP)
 						self.cp.ppc:initialize()
-						courseplay:debug( string.format( "%s: Setting Waypoint index to %d. Starting Alignement Course", nameNum( self ), self.cp.waypointIndex), 12 )
+						courseplay:debugVehicle( 12, self, "%s: Setting Waypoint index to %d. Starting Alignement Course", self.cp.waypointIndex)
 						courseplay:startAlignmentCourse( self, self.Waypoints[self.cp.waypointIndex], true )
 						return
 					end
