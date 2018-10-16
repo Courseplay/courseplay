@@ -255,7 +255,9 @@ function PurePursuitController:findGoalPoint()
 					self.goalWpNode:setToWaypoint(self.course, self.relevantWpNode.ix)
 					-- and also the current waypoint is now at the relevant WP
 					self.currentWpNode:setToWaypointOrBeyond(self.course, self.relevantWpNode.ix, self.lookAheadDistance)
-					DebugUtil.drawDebugNode(self.goalWpNode.node, string.format('\n\n\n\ntoo far\ninitializing'))
+					if courseplay.debugChannels[12] then
+						DebugUtil.drawDebugNode(self.goalWpNode.node, string.format('\n\n\n\ntoo far\ninitializing'))
+					end
 					self.goalPointDiagText = self.goalPointDiagText .. ' too far, initializing'
 					--courseplay.debugVehicle(12, self.vehicle, 'too far initializing ix: %d dFromPrev: %.4f dToNext: %.4f', ix, d2, d1) -- -----------------------
 					break
@@ -266,7 +268,9 @@ function PurePursuitController:findGoalPoint()
 					-- we can go ahead and find the goal point as usual, as we start approximating
 					-- from the front waypoint and will find the goal point in front of us.
 					-- isGoalPointValid = true
-					DebugUtil.drawDebugNode(self.goalWpNode.node, string.format('\n\n\n\ntoo far'))
+					if courseplay.debugChannels[12] then
+						DebugUtil.drawDebugNode(self.goalWpNode.node, string.format('\n\n\n\ntoo far'))
+					end
 					self.goalPointDiagText = self.goalPointDiagText .. ' too far'
 					--courseplay.debugVehicle(12, self.vehicle, 'too far ix: %d dFromPrev: %.4f dToNext: %.4f', ix, d2, d1) -- -----------------------
 				end
