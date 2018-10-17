@@ -222,7 +222,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								if vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 									print(('%s: set waypointIndex to next forward point'):format(nameNum(workTool)));
 									courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
-									self.cp.ppc:initialize()
+									vehicle.cp.ppc:initialize()
 								end;
 							elseif workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_REDO then
 								-- print(('%s: set state BaleLoader.CHANGE_EMPTY_REDO'):format(nameNum(workTool)));
@@ -641,7 +641,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex-2], true)
 					end
 				end
-				self.cp.ppc:initialize()
+				vehicle.cp.ppc:initialize()
 			end
 		end
 		-- last point reached restart
@@ -649,7 +649,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			if (vehicle.cp.previousWaypointIndex == vehicle.cp.abortWork ) and fillLevelPct ~= 100 then
 				courseplay:setWaypointIndex(vehicle, vehicle.cp.abortWork + 2); -- drive to waypoint after next waypoint
 				--vehicle.cp.abortWork = nil
-				self.cp.ppc:initialize()
+				vehicle.cp.ppc:initialize()
 			end
 			local offset = 8
 			if vehicle.cp.realisticDriving then

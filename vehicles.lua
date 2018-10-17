@@ -1405,7 +1405,7 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 		end
 	end
 	-- Initialize PPC because of the jump in WPs
-	self.cp.ppc:initialize()
+	vehicle.cp.ppc:initialize()
 	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);
 end;
 
