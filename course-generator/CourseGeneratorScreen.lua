@@ -99,7 +99,20 @@ function CourseGeneratorScreen:generate()
 	-- this way we can regenerate the course with different settings without
 	-- having to reselect the field or closing the GUI
 	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
-	courseplay:generateCourse( self.vehicle )
+	local status, ok = courseplay:generateCourse(self.vehicle, true)
+
+	if not status then
+		-- show message if there was an exception
+		g_gui:showInfoDialog({text=courseplay:loc('COURSEPLAY_COULDNT_GENERATE_COURSE')})
+		self:onClickResetMap()
+		return
+	end
+
+	if not ok then
+		-- show message if the generated course may have issues due to the selected track direction
+		g_gui:showInfoDialog({text=courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL')})
+	end
+	
 	self.vehicle.cp.fieldEdge.selectedField.fieldNum = selectedField
 	-- update number of headland passes in case we ended up generating less 
 	self:setHeadlandProperties()
@@ -277,6 +290,28 @@ function CourseGeneratorScreen:onClickManualDirectionAngle( state )
 	self.vehicle.cp.rowDirectionDeg = self.directions[ state ].gameAngleDeg
 end
 
+function CourseGeneratorScreen:onScrollManualDirectionAngle(element, isDown, isUp, button)
+	local eventUsed = false
+	local currentState = self.manualDirectionAngle:getState()
+	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
+		eventUsed = true
+		local newState = currentState + 1
+		newState = newState <= #self.directions and newState or 1
+		print( newState, currentState)
+		self.manualDirectionAngle:setState(newState)
+		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
+	end
+	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
+		eventUsed = true
+		local newState = currentState - 1
+		newState = newState > 0 and newState or #self.directions
+		print( newState, currentState)
+		self.manualDirectionAngle:setState(newState)
+		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
+	end
+	return eventUsed
+end
+
 -----------------------------------------------------------------------------------------------------
 -- Island bypass mode
 function CourseGeneratorScreen:onOpenIslandBypassMode( element, parameter )
@@ -342,7 +377,6 @@ end
 -- Headland mode
 function CourseGeneratorScreen:setHeadlandProperties()
 	-- headland properties only if we in normal headland mode
-	--print(self.vehicle.cp.headland.mode)
 	if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL or
 		self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
 		if self.vehicle.cp.headland.getNumLanes() == 0 then
@@ -500,6 +534,9 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	end
 	if self:isOverElement(posX, posY, self.width) then
 		return self:onScrollWidth(self.width, isDown, isUp, button)
+	end
+	if self:isOverElement(posX, posY, self.manualDirectionAngle) then
+		return self:onScrollManualDirectionAngle(self.width, isDown, isUp, button)
 	end
 	if not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
 		-- ignore clicks off the map

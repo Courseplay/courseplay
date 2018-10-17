@@ -545,11 +545,12 @@ function courseplay:turn(vehicle, dt)
 				vehicle.cp.isTurning = nil;
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
-				-- move on to the turnEnd (targetNode)
-				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
-				-- and then to the next wp in front of us.
-				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-				courseplay:clearTurnTargets(vehicle);
+        -- move on to the turnEnd (targetNode)
+        courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+        -- and then to the next wp in front of us.
+        courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
+				vehicle.cp.ppc:initialize()
+        courseplay:clearTurnTargets(vehicle);
 				return;
 			end;
 
@@ -602,6 +603,7 @@ function courseplay:turn(vehicle, dt)
 
 				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
 				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
+				vehicle.cp.ppc:initialize()
 				courseplay:clearTurnTargets(vehicle);
 
 				return;
@@ -1480,7 +1482,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turn
 
 	-- start with the easy one, get the center of the forward turning circle (this is based on the targetNode)
 	centerForward.x,_,centerForward.z = localToWorld(turnInfo.targetNode, - turnInfo.direction * turnInfo.turnRadius, 0, 0 )
-	-- create a tranform group there, rotation set to the half angle between turnStart and turnEnd.
+	-- create a transform group there, rotation set to the half angle between turnStart and turnEnd.
 	local forwardCircleCenterNode =
 	courseplay.createNode( "cpForwardCircleCenterNode", centerForward.x, centerForward.z, math.rad( turnInfo.halfAngle ))
 
@@ -1995,6 +1997,13 @@ function courseplay.createNode( name, x, z, yRotation, rootNode )
   return node
 end
 
+function courseplay.createNodeFromNode( name, otherNode )
+	local x, y, z = getWorldTranslation(otherNode)
+	local _, yRot, _ = getRotation(otherNode)
+	courseplay.createNode(name, x, z, yRot)
+end
+
+
 function courseplay.destroyNode( node )
 	if node then
 		unlink( node )
@@ -2089,7 +2098,7 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
 		return
 	end
 	if #points < 3 then
-		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't neeeded then.", #points )
+		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't needed then.", #points )
 		return
 	end
   	courseplay:clearTurnTargets( vehicle )

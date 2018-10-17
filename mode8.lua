@@ -1,3 +1,5 @@
+
+-- this function never changes lx or lz
 function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, dt, tx, ty, tz, nx, ny, nz)
 	load = load and (not vehicle.cp.runReset or vehicle.cp.runCounter == 0)
 	courseplay:debug(('%s: handleMode8(load=%s, unload=%s, allowedToDrive=%s)'):format(nameNum(vehicle), tostring(load), tostring(unload), tostring(allowedToDrive)), 23);
@@ -10,6 +12,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 	-- LOADING
 	if load then
 		courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
+		-- lx, lz never changed by this call
 		allowedToDrive, lx, lz = courseplay:refillWorkTools(vehicle, vehicle.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
 
 	-- UNLOADING
@@ -25,7 +28,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 		if workTool.cp.isLiquidManureSprayer or workTool.cp.isLiquidManureOverloader then
 			CpManager:setGlobalInfoText(vehicle, 'OVERLOADING_POINT');
 			--                                            courseplay:handleSpecialTools(vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload)
-			local isSpecialTool, allowedToDrive, lx, lz = courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, nil,   true  );
+			local isSpecialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle, workTool, nil,    nil,   nil,    allowedToDrive, nil,   true  );
 			if not isSpecialTool then
 				-- trailer
 				if workTool.cp.isLiquidManureOverloader and workTool.overloading ~= nil and courseplay:getTrailerInPipeRangeState(workTool) > 0 and not workTool.isOverloadingActive then

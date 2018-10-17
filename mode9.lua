@@ -17,6 +17,8 @@ handles "mode9": Fill and empty shovel
 5)  drive course with recorded direction (most likely in reverse) until end - continue and repeat to 1)
 
 NOTE: rotation: movingTool.curRot[1] (only x-axis) / translation: movingTool.curTrans[3] (only z-axis)
+
+NOTE: although lx and lz are passed in as parameters, they are never used.
 ]]
 
 function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt)

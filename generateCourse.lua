@@ -10,7 +10,7 @@
 
 
 
-function courseplay:generateCourse(vehicle)
+function courseplay:generateCourse(vehicle, silent)
 	local self = courseplay.generation;
 	-----------------------------------
 
@@ -81,8 +81,26 @@ function courseplay:generateCourse(vehicle)
 			vehicle.cp.generationPosition.hasSavedPosition = true
 			vehicle:setCpVar('generationPosition.fieldNum',vehicle.cp.fieldEdge.selectedField.fieldNum,courseplay.isClient)
 		end
-		courseGenerator.generate( vehicle, fieldCourseName, poly, workWidth, islandNodes )
-		return
+		local status, ok = courseGenerator.generate( vehicle, fieldCourseName, poly, workWidth, islandNodes )
+
+		-- called from another screen which will take care of notifying the user, no need for dialogs here.
+		if silent then return status, ok end
+
+		if not status then
+			-- show message if there was an exception
+			local messageDialog = g_gui:showGui('InfoDialog');
+			messageDialog.target:setText(courseplay:loc('COURSEPLAY_COULDNT_GENERATE_COURSE'));
+			messageDialog.target:setCallback( function () g_gui:showGui('') end, self )
+			return status, ok
+		end
+
+		if not ok then
+			-- show message if the generated course may have issues due to the selected track direction
+			local messageDialog = g_gui:showGui('InfoDialog');
+			messageDialog.target:setText(courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL'));
+			messageDialog.target:setCallback( function () g_gui:showGui('') end, self )
+		end
+		return status, ok
 	end
 
   -- Otherwise, revert to the N/E/S/W directions

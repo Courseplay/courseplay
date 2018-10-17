@@ -350,6 +350,7 @@ function courseplay:load(savegame)
 	else
 		self.cp.steeringAngle = 30;
 	end
+	courseplay.debugVehicle( 7, self, 'steering angle is %.1f', self.cp.steeringAngle)
 	if isTruck then
 		self.cp.revSteeringAngle = self.cp.steeringAngle * 0.25;
 	end;
@@ -586,6 +587,8 @@ function courseplay:load(savegame)
 
 	courseplay:validateCanSwitchMode(self);
 	courseplay.buttons:setActiveEnabled(self, 'all');
+
+	self.cp.ppc = PurePursuitController:new(self)
 end;
 
 function courseplay:postLoad(savegame)
@@ -1235,6 +1238,9 @@ function courseplay:delete()
 		if self.cp.course2dPdaMapOverlay then
 			self.cp.course2dPdaMapOverlay:delete();
 		end;
+		if self.cp.ppc then
+			self.cp.ppc:delete()
+		end
 	end;
 end;
 
@@ -1487,7 +1493,8 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
  		self.cp.runCounter  	= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runCounter'),	 		 0);
  		self.cp.runNumber		 = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runNumber'),			 11);
  		self.cp.runCounterBool	= Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#runCounterBool'),		 false);
- 		self.cp.saveFuelOptionActive = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#saveFuelOption'),			 true);
+		self.cp.saveFuelOptionActive = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#saveFuelOption'),			 true);
+		self.cp.ppc.enabled  = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#ppcEnabled'),			 false);
 	
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = Utils.splitString(",", courses);
@@ -1705,7 +1712,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	end;
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q runNumber="%d" runCounter="%d" runCounterBool=%q saveFuelOption=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), FillUtil.fillTypeIntToName[self.cp.siloSelectedFillType], self.cp.runNumber, runCounter, tostring(self.cp.runCounterBool), tostring(self.cp.saveFuelOptionActive));
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q runNumber="%d" runCounter="%d" runCounterBool=%q saveFuelOption=%q ppcEnabled=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), FillUtil.fillTypeIntToName[self.cp.siloSelectedFillType], self.cp.runNumber, runCounter, tostring(self.cp.runCounterBool), tostring(self.cp.saveFuelOptionActive), tostring(self.cp.ppc.enabled));
 	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q alignment=%q searchCombineOnField="%d" />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel),tostring(self.cp.alignment.enabled),self.cp.searchCombineOnField);

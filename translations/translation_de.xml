@@ -3,6 +3,8 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Kursaufzeichnung beginnen" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Abfahrer" />
+		<text name="COURSEPLAY_PPC_OFF" 								 text="normal mode" />
+		<text name="COURSEPLAY_PPC_ON" 									 text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Abfahrer starten" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Abfahrer stoppen" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Warten am letzten Wegpunkt o. Trigger" />
