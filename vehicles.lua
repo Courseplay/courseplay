@@ -1355,6 +1355,7 @@ end
 
 function courseplay:setAbortWorkWaypoint(vehicle)
 	if not vehicle.cp.realisticDriving then
+		-- Set abort Work to 10 waypoints back from where we stopped working to align with course when returing
 		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
 		vehicle.cp.abortWorkExtraMoveBack = 0;
 
@@ -1363,7 +1364,7 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 			courseplay:updateAllTriggers();
 		end;
 
-		--- Check for turns
+		--- Check for turns from the aborkWork WP to where work stopped so we can align with turn to prevent circling and turn alignment issuses
 		for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
 			local minNumWPBeforeTurn = 8;
 			local wp = vehicle.Waypoints[i];
@@ -1375,20 +1376,23 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 					vehicle.cp.switchLaneOffset = true;
 				end;
 
-				--- If the turn is less than 6 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
+				--- If the turn is less than 8 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
 				local wpUntilTurn = i - vehicle.cp.abortWork;
 				if wpUntilTurn < minNumWPBeforeTurn then
 					local extraMoveBack = minNumWPBeforeTurn - wpUntilTurn;
 					vehicle.cp.abortWork = vehicle.cp.abortWork - extraMoveBack;
+					-- Save the additonal offset waypoints so Mode4/6 logic knows how far to go from when reaching abortWork WP to where stopped worked occurs
 					vehicle.cp.abortWorkExtraMoveBack = extraMoveBack;
 				end;
 			end;
 		end;
+		-- Set the waypoint index to the first waypoint of the unload course
 		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
+		
 	else
 		-- If were using align point then there is no need for all that extra distance just enough that it straightens back out after turning
 		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 2
-		--- Set the waypoint to the start of the refill course
+		--- Set the waypoint to the start of the unload course
 		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
 		local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
 		courseplay.debugVehicle( 9, vehicle, "vehicles 1393")
@@ -1400,6 +1404,8 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
 		end
 	end
+	-- Initialize PPC because of the jump in WPs
+	self.cp.ppc:initialize()
 	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);
 end;
 
