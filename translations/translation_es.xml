@@ -3,8 +3,8 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Comenzar grabación" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Conductor" />
-		<text name="COURSEPLAY_PPC_OFF" 								 text="normal mode" />
-		<text name="COURSEPLAY_PPC_ON" 									 text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_PPC_OFF" 								 text="Modo Normal" />
+		<text name="COURSEPLAY_PPC_ON" 									 text="Modo experimental" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Empezar a conducir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Parar de conducir" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Parar en último punto o siguiente trigger" />
@@ -168,30 +168,30 @@
 		<text name="COURSEPLAY_CORNER_4" 								 text="Sureste" />
 		<text name="COURSEPLAY_CORNER_5" 								 text="Posición Actual Vehículo" />
 		<text name="COURSEPLAY_CORNER_6" 								 text="Última Posición Usada" />
-		<text name="COURSEPLAY_CORNER_7" 								 text="South-West (new)" />
-		<text name="COURSEPLAY_CORNER_8" 								 text="North-West (new)" />
-		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
-		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
-		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
-		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
+		<text name="COURSEPLAY_CORNER_7" 								 text="Suroeste (HUD)" />
+		<text name="COURSEPLAY_CORNER_8" 								 text="Noroeste (HUD)" />
+		<text name="COURSEPLAY_CORNER_9" 								 text="Nordeste (HUD)" />
+		<text name="COURSEPLAY_CORNER_10" 								 text="Sureste (HUD)" />
+		<text name="COURSEPLAY_CORNER_11" 								 text="Seleccionar posición sobre el mapa" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(CLick en el mapa para seleccionar campo)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(CLick en el mapa para seleccionar posición de inicio)" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Empezar a trabajar en" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Saltar filas" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Subir/Bajar Filas" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Pases de cabecera" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Esquinas de cabecera" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Sentido agujas reloj" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Sentido contrario agujas reloj" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Ninguno" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Alrededor" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Campo Estrecho" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Bordes Cortos" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Norte" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Este" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Sur" />
 		<text name="COURSEPLAY_DIRECTION_4" 							 text="Oeste" />
 		<text name="COURSEPLAY_DIRECTION_5" 							 text="Automático" />
-		<text name="COURSEPLAY_DIRECTION_6" 							 text="Longest edge" />
+		<text name="COURSEPLAY_DIRECTION_6" 							 text="Borde más Largo" />
 		<text name="COURSEPLAY_DIRECTION_7" 							 text="Manual" />
         <text name="COURSEPLAY_DIRECTION_N"                              text="N"/>
         <text name="COURSEPLAY_DIRECTION_NNE"                            text="NNE"/>
