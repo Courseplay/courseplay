@@ -522,10 +522,6 @@ function courseplay:start(self)
 	self.cp.ppc:initialize()
 	--print("startStop "..debug.getinfo(1).currentline)
 
-	--sugarCaneTrailer update tipping function. Moved here so it only runs once. To ensure we start closed or open
-	if self.cp.hasSugarCaneTrailer then
-		courseplay:updateSugarCaneTrailerTipping(self,dt)
-	end
 end;
 
 function courseplay:getCanUseCpMode(vehicle)

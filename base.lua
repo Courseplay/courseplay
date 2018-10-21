@@ -1133,6 +1133,10 @@ function courseplay:update(dt)
 			courseplay:resetManualPipePositionOrder(self);
 		end;
 	end;	
+	--sugarCaneTrailer update tipping function. Moved here so it only runs once. To ensure we start closed or open
+	if self.cp.hasSugarCaneTrailer then
+		courseplay:updateSugarCaneTrailerTipping(self,dt)
+	end
 end; --END update()
 
 --[[

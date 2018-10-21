@@ -1746,6 +1746,9 @@ function courseplay:updateSugarCaneTrailerTipping(vehicle,dt)
 					tipper.tipState = Trailer.TIPSTATE_CLOSED
 				end
 			end
+			if tipper.tipState == Trailer.TIPSTATE_OPEN and tipper:getFillLevel() == 0 then
+				tipper.tipState = Trailer.TIPSTATE_CLOSING
+			end
 		end
 	end	
 end
