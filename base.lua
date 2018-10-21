@@ -166,6 +166,7 @@ function courseplay:load(savegame)
 	self.cp.hasAugerWagon = false;
 	self.cp.hasSugarCaneAugerWagon = false
 	self.cp.hasSugarCaneTrailer = false
+	self.cp.isMode3Unloading = false
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
@@ -1037,6 +1038,8 @@ function courseplay:update(dt)
 				if self.cp.wait and (self.cp.waypointIndex == self.cp.stopWork or self.cp.previousWaypointIndex == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
 					showDriveOnButton = true;
 				end;
+			elseif self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.isMode3Unloading then
+				showDriveOnButton = true;
 			else
 				if (self.cp.wait and (self.Waypoints[self.cp.waypointIndex].wait or self.Waypoints[self.cp.previousWaypointIndex].wait)) or (self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) or (self.cp.runReset and self.cp.runCounter ~= 0) then
 					showDriveOnButton = true;
@@ -1131,13 +1134,11 @@ function courseplay:update(dt)
 		if courseplay:checkAndSetMovingToolsPosition(self, workTool.movingTools, nil, self.cp.pipePositions, dt , self.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
 			courseplay:resetManualPipePositionOrder(self);
 		end;
-	end;
-	
-	--sugarCaneTrailer update tipping function
+	end;	
+	--sugarCaneTrailer update tipping function. Moved here so it only runs once. To ensure we start closed or open
 	if self.cp.hasSugarCaneTrailer then
 		courseplay:updateSugarCaneTrailerTipping(self,dt)
 	end
-	
 end; --END update()
 
 --[[

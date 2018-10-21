@@ -303,8 +303,6 @@ function courseplay:drive(self, dt)
 			return;
 		end
 	end
-
-
 	-- ### WAITING POINTS - START
 	if (wayPointIsWait or wayPointIsUnload) and self.cp.wait then
 		isWaitingThisLoop = true
@@ -640,6 +638,11 @@ function courseplay:drive(self, dt)
 
 	--------------------------------------------------
 
+	-- MODE 3
+	-- Support for mode3 handling multiple sugar cane trailers
+	if self.cp.isMode3Unloading then
+		allowedToDrive = courseplay:handleMode3(self, allowedToDrive, dt);
+	end
 
 	local workArea = false;
 	local workSpeed = 0;
@@ -863,6 +866,7 @@ function courseplay:drive(self, dt)
 		or 	(isAtEnd and self.Waypoints[self.cp.waypointIndex].rev)
 		or	(not isAtEnd and (self.Waypoints[self.cp.waypointIndex].rev or self.Waypoints[self.cp.waypointIndex + 1].rev or self.Waypoints[self.cp.waypointIndex + 2].rev))
 		or	(workSpeed ~= nil and workSpeed == 0.5) -- baler in mode 6 , slow down
+		or 	(self.cp.mode == 3 and self.cp.isMode3Unloading == true)-- Mode 3 SugarCane Trailer
 		or isCrawlingToWait
 		or isTightTurn
 	then
@@ -1121,11 +1125,11 @@ function courseplay:drive(self, dt)
 						if self.Waypoints[self.cp.waypointIndex + i] then
 							if self.Waypoints[self.cp.waypointIndex + i].turnStart and self.Waypoints[self.cp.waypointIndex + i].lane then -- turn found break
 								transitionWP = 0
-								courseplay:debugVehicle( 12, self, "Turn Start Found No Align Course Needed")
+								courseplay.debugVehicle( 12, self, "Turn Start Found No Align Course Needed")
 								break
 							elseif not self.Waypoints[self.cp.waypointIndex + i].lane then --No turn found and we are coming up on up/down transition set trastionWP
 								transitionWP = i
-								courseplay:debugVehicle( 12, self, "No Turn Start Found Align Course Needed in %d", transitionWP)
+								courseplay.debugVehicle( 12, self, "No Turn Start Found Align Course Needed in %d", transitionWP)
 								break
 							end
 						else
@@ -1136,7 +1140,7 @@ function courseplay:drive(self, dt)
 					if not courseplay:onAlignmentCourse(self) and transitionWP > 0 then
 						courseplay:setWaypointIndex(self, self.cp.waypointIndex + transitionWP)
 						self.cp.ppc:initialize()
-						courseplay:debugVehicle( 12, self, "Setting Waypoint index to %d. Starting Alignement Course", self.cp.waypointIndex)
+						courseplay.debugVehicle( 12, self, "Setting Waypoint index to %d. Starting Alignement Course", self.cp.waypointIndex)
 						courseplay:startAlignmentCourse( self, self.Waypoints[self.cp.waypointIndex], true )
 						return
 					end

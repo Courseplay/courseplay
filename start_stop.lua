@@ -521,6 +521,7 @@ function courseplay:start(self)
 	-- Initialize pure pursuit controller
 	self.cp.ppc:initialize()
 	--print("startStop "..debug.getinfo(1).currentline)
+
 end;
 
 function courseplay:getCanUseCpMode(vehicle)
