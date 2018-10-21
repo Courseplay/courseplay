@@ -8,8 +8,9 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 	if workTool.cp.isSugarCaneAugerWagon then 
 
 		if vehicle.cp.wait and (vehicle.cp.previousWaypointIndex == vehicle.cp.waitPoints[1] or vehicle.cp.waypointIndex == vehicle.cp.waitPoints[1]) then 
-			-- Set Mode 3 Unloading So drive knows we still need to do things
+			-- Set Mode 3 Unloading So drive knows we still need to do things. Set currentTrailerToFill to ensure that we are at nil
 			vehicle.cp.isMode3Unloading = true
+			vehicle.cp.currentTrailerToFill = nil
 			courseplay:cancelWait(vehicle);
 		end
 

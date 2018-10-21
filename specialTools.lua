@@ -239,8 +239,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isCaseIHA8800MR = true;
 		workTool.cp.fixedCombineOffset = 5.3
 		workTool.cp.fixedChopperOffset = 5.3
-		workTool.cp.turnDiameterAutoMode = false
-		workTool.cp.turnDiameter = 17
+		workTool.cp.isHarvesterSteerable = true;
 		
 	-- Harvesters (attachable) [Giants]
 	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
@@ -888,6 +887,8 @@ function courseplay:askForSpecialSettings(self, object)
 		self.cp.noStopOnEdge = true;
 		self.cp.backMarkerOffset = 4.5;
 		self.isStrawEnabled = false;
+	elseif self.cp.isCaseIHA8800MR then
+		self.cp.changeDirAngle = 10;
 	end;
 
 	-- OBJECTS
