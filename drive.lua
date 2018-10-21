@@ -1125,11 +1125,11 @@ function courseplay:drive(self, dt)
 						if self.Waypoints[self.cp.waypointIndex + i] then
 							if self.Waypoints[self.cp.waypointIndex + i].turnStart and self.Waypoints[self.cp.waypointIndex + i].lane then -- turn found break
 								transitionWP = 0
-								courseplay:debugVehicle( 12, self, "Turn Start Found No Align Course Needed")
+								courseplay.debugVehicle( 12, self, "Turn Start Found No Align Course Needed")
 								break
 							elseif not self.Waypoints[self.cp.waypointIndex + i].lane then --No turn found and we are coming up on up/down transition set trastionWP
 								transitionWP = i
-								courseplay:debugVehicle( 12, self, "No Turn Start Found Align Course Needed in %d", transitionWP)
+								courseplay.debugVehicle( 12, self, "No Turn Start Found Align Course Needed in %d", transitionWP)
 								break
 							end
 						else
@@ -1140,7 +1140,7 @@ function courseplay:drive(self, dt)
 					if not courseplay:onAlignmentCourse(self) and transitionWP > 0 then
 						courseplay:setWaypointIndex(self, self.cp.waypointIndex + transitionWP)
 						self.cp.ppc:initialize()
-						courseplay:debugVehicle( 12, self, "Setting Waypoint index to %d. Starting Alignement Course", self.cp.waypointIndex)
+						courseplay.debugVehicle( 12, self, "Setting Waypoint index to %d. Starting Alignement Course", self.cp.waypointIndex)
 						courseplay:startAlignmentCourse( self, self.Waypoints[self.cp.waypointIndex], true )
 						return
 					end

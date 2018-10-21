@@ -1038,6 +1038,8 @@ function courseplay:update(dt)
 				if self.cp.wait and (self.cp.waypointIndex == self.cp.stopWork or self.cp.previousWaypointIndex == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
 					showDriveOnButton = true;
 				end;
+			elseif self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.isMode3Unloading then
+				showDriveOnButton = true;
 			else
 				if (self.cp.wait and (self.Waypoints[self.cp.waypointIndex].wait or self.Waypoints[self.cp.previousWaypointIndex].wait)) or (self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) or (self.cp.runReset and self.cp.runCounter ~= 0) then
 					showDriveOnButton = true;

@@ -782,9 +782,9 @@ function courseplay:unload_combine(vehicle, dt)
 			elseif lz > 2 and (combine_speed*3600) > 5 then
 				refSpeed = max(combine_speed *1.5,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-			--[[ elseif lz > 10 then
+			elseif lz > 10 then
 				refSpeed = vehicle.cp.speeds.turn
-				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed)) ]]
+				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed)) 
 			elseif lz < -1 then
 				refSpeed = max(combine_speed/2,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
@@ -793,7 +793,7 @@ function courseplay:unload_combine(vehicle, dt)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 			
-			if (combineIsTurning and lz < 20) or (combineIsStopped and lz < 4) then
+			if (combineIsTurning and lz < 20) or (combineIsStopped and lz < 5) then
 				refSpeed = vehicle.cp.speeds.crawl
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
