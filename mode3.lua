@@ -14,93 +14,8 @@ function courseplay:handleMode3(vehicle, allowedToDrive, dt)
 		end
 
 		if vehicle.cp.isMode3Unloading == true then
-
-			if vehicle.cp.currentTrailerToFill == nil then
-				vehicle.cp.currentTrailerToFill = 1
-			end
-
-			--Use currentTipper instead of workTool has vehicle.cp.currentTrailerToFill is nil and we don't want workTool interfering
-			local currentTipper = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill]
-			local tipState = currentTipper.tipState
-			fillLevelPct = currentTipper.cp.fillLevelPercent
-			
-			-- Debug to show when next where trailer is looking for unloading trailer
-			if (tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING) and fillLevelPct > 0 then
-				currentTipper.trailerFound = nil
-				--the distance is 2.3m because if the trailer is further away, it will tip to the ground as well
-				local x,y,z = localToWorld(currentTipper.shovelTipReferenceNode,0,-2.3,0); 
-				raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", currentTipper.shovelTipRaycastDistance, currentTipper);
-				if courseplay.debugChannels[15] then
-					local nx, ny, nz = localDirectionToWorld(currentTipper.shovelTipReferenceNode, 0, 0, -1)
-					local dist =  currentTipper.shovelTipRaycastDistance 
-					drawDebugLine(x,y,z, 1, 0, 0, x+(nx*dist),y+(ny*dist),z+(nz*dist), 1, 0, 0);
-				end
-			end
-
-			local trailerFound = currentTipper.trailerFound ~= nil											-- We only want to fill to 95% to ensure we don't dump on the ground
-			local trailerFull = currentTipper.trailerFound and currentTipper.trailerFound:getFillLevel() >= (currentTipper.trailerFound:getCapacity()*.95)
-			local driveOn = false
-
-			print(string.format('trailerFound=%s trailerFull=%s, tipState=%s',tostring(trailerFound),tostring(trailerFull),tostring(tipState)))
-			courseplay:debugVehicle(15,vehicle,'trailerFound=%s trailerFull=%s',tostring(trailerFound),tostring(trailerFull))
-
-			-- Ensure we don't drive when the tipper is unfolded
-			if tipState ~= Trailer.TIPSTATE_CLOSED then
-				allowedToDrive = false
-			end
-
-			if fillLevelPct == 0 then
-				-- Current Tipper is empty check to see if there is another and if so move onto that one
-				if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
-					courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
-					-- Wait unitl the tipper is closed before moveing to the next trailer
-					if tipState == Trailer.TIPSTATE_CLOSED then
-						vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
-						currentTipper.cp.isSugarCaneUnloading = nil
-						currentTipper.cp.prevFillLevelPct = nil
-					end
-				else
-				--No more trailers are aviable driveOn
-				driveOn = true;
-				end
-			-- We found a trailer to unload into STOP driving
-			elseif trailerFound then
-				allowedToDrive = false
-				currentTipper.cp.isSugarCaneUnloading = true
-				courseplay:handleAugerWagon(vehicle, currentTipper, true, true, "unload",dt)
-
-			-- Trailer we are unloading into is filled up. Stop until another trailer comes into range
-			elseif currentTipper.cp.isSugarCaneUnloading == true and (not trailerFound or trailerFull) then
-				courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
-				allowedToDrive = false
-				if currentTipper.cp.prevFillLevelPct ~= nil and vehicle.cp.numWorkTools == vehicle.cp.currentTrailerToFill then
-					if fillLevelPct > 0 and tipState == Trailer.TIPSTATE_CLOSING then
-						courseplay:setCustomTimer(vehicle, "fillLevelChange", 10);
-					elseif fillLevelPct == currentTipper.cp.prevFillLevelPct and fillLevelPct < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
-						driveOn = true-- drive on if fillLevelPct doesn't change for 10 seconds and fill level is < required_fillLevelPct_for_follow
-						courseplay:debug('        no fillLevel change for 10 seconds -> driveOn', 15);
-					end;
-				end;
-	
-				currentTipper.cp.prevFillLevelPct = fillLevelPct;
-			end;
-			print(driveOn)
-			if driveOn then
-				-- If the tipper is in unloading state close it
-				if tipState ~= Trailer.TIPSTATE_CLOSED then
-					courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
-
-				-- Everything is buttoned drive on
-				elseif tipState == Trailer.TIPSTATE_CLOSED then
-					currentTipper.cp.prevFillLevelPct = nil
-					currentTipper.cp.isSugarCaneUnloading = nil
-					vehicle.cp.isMode3Unloading = false
-				
-				end;
-			end
-
-			return allowedToDrive
-		end
+			return courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
+		end	
 
 	elseif workTool.cp.isAugerWagon and not workTool.cp.isSugarCaneAugerWagon then
 		workTool.cp.isUnloading = workTool.cp.fillLevel < workTool.cp.lastFillLevel;
@@ -170,15 +85,15 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 	if workTool.cp.isSugarCaneAugerWagon then 
 		local movingTools = workTool.movingTools
 		local tipState = workTool.tipState
-		
+
 		--force the correct tipState 
 		if unload then
-			--start tipping if there is a not full trailer
-			if tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING then
+			--start tipping
+			if (tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING) then
 				workTool:toggleTipState()
 			end
 		else
-			--close tipper if unloading is finished or unloading trailer has left
+			--close tipper
 			if tipState == Trailer.TIPSTATE_OPEN or tipState == Trailer.TIPSTATE_OPENING then
 				workTool:toggleTipState()
 			end
@@ -364,3 +279,99 @@ function courseplay:getPipesRotation(vehicle)
 		end
 	end
 end		
+
+function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
+	
+	-- Ensure we are starting with a trailer to fill
+	if vehicle.cp.currentTrailerToFill == nil then
+		vehicle.cp.currentTrailerToFill = 1
+	end
+
+	--Select the trailer to fill
+	local currentTipper = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill]
+	local tipState = currentTipper.tipState
+	fillLevelPct = currentTipper.cp.fillLevelPercent
+
+	-- Debug to show when next where trailer is looking for unloading trailer
+	if (tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING) and currentTipper.cp.isSugarCaneUnloading then
+		currentTipper.trailerFound = nil
+		--the distance is 2.3m because if the trailer is further away, it will tip to the ground as well
+		local x,y,z = localToWorld(currentTipper.shovelTipReferenceNode,0,-2.3,0); 
+		raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", currentTipper.shovelTipRaycastDistance, currentTipper);
+		if courseplay.debugChannels[15] then
+			local nx, ny, nz = localDirectionToWorld(currentTipper.shovelTipReferenceNode, 0, 0, -1)
+			local dist =  currentTipper.shovelTipRaycastDistance 
+			drawDebugLine(x,y,z, 1, 0, 0, x+(nx*dist),y+(ny*dist),z+(nz*dist), 1, 0, 0);
+		end
+	end
+
+	local tipperX,_,tipperZ = getWorldTranslation(currentTipper.rootNode);
+	local targetWaypoint = vehicle.Waypoints[vehicle.cp.waitPoints[1]]
+	local unloadDistance = courseplay:distance(tipperX, tipperZ, targetWaypoint.cx, targetWaypoint.cz)
+
+	local atWaitPoint = unloadDistance < 1
+	local trailerFound = currentTipper.trailerFound ~= nil									-- We only want to fill to 95% to ensure we don't dump on the ground
+	local trailerFull = currentTipper.trailerFound and currentTipper.trailerFound:getFillLevel() >= (currentTipper.trailerFound:getCapacity()*.95)
+	local driveOn = false
+
+	print(string.format('trailerFound=%s trailerFull=%s, unloadDistance=%.2f',tostring(trailerFound),tostring(trailerFull),unloadDistance))
+	courseplay:debugVehicle(15,vehicle,'trailerFound=%s trailerFull=%s, unloadDistance=%.2f',tostring(trailerFound),tostring(trailerFull),unloadDistance)
+
+	-- Ensure we don't drive when the tipper is unfolded
+	if tipState ~= Trailer.TIPSTATE_CLOSED then
+		allowedToDrive = false
+	end
+
+	if fillLevelPct == 0 then
+		-- Current Tipper is empty check to see if there is another and if so move onto that one
+		if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
+			courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
+			-- Wait unitl the tipper is closed before moveing to the next trailer
+			if tipState == Trailer.TIPSTATE_CLOSED then
+				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
+				currentTipper.cp.isSugarCaneUnloading = nil
+				currentTipper.cp.prevFillLevelPct = nil
+			end
+		else
+		--No more trailers are aviable driveOn
+		driveOn = true;
+		end
+	-- We found a trailer to unload into STOP driving
+	elseif atWaitPoint then
+		allowedToDrive = false
+		currentTipper.cp.isSugarCaneUnloading = true
+		if trailerFound then
+			courseplay:handleAugerWagon(vehicle, currentTipper, true, true, "unload",dt)
+		end
+	-- Trailer we are unloading into is filled up. Stop until another trailer comes into range
+	elseif currentTipper.cp.isSugarCaneUnloading == true and (not trailerFound or trailerFull) then
+		courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
+		allowedToDrive = false
+		if currentTipper.cp.prevFillLevelPct ~= nil and vehicle.cp.numWorkTools == vehicle.cp.currentTrailerToFill then
+			if fillLevelPct > 0 and tipState == Trailer.TIPSTATE_CLOSING then
+				courseplay:setCustomTimer(vehicle, "fillLevelChange", 10);
+			elseif fillLevelPct == currentTipper.cp.prevFillLevelPct and fillLevelPct < vehicle.cp.followAtFillLevel and courseplay:timerIsThrough(vehicle, "fillLevelChange", false) then
+				driveOn = true-- drive on if fillLevelPct doesn't change for 10 seconds and fill level is < required_fillLevelPct_for_follow
+				courseplay:debug('        no fillLevel change for 10 seconds -> driveOn', 15);
+			end;
+		end;
+
+		currentTipper.cp.prevFillLevelPct = fillLevelPct;
+	end;
+	if driveOn then
+		-- If the tipper is in unloading state close it
+		if tipState ~= Trailer.TIPSTATE_CLOSED then
+			courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
+
+		-- Everything is buttoned up drive on
+		elseif tipState == Trailer.TIPSTATE_CLOSED then
+			currentTipper.cp.prevFillLevelPct = nil
+			currentTipper.cp.isSugarCaneUnloading = nil
+			vehicle.cp.isMode3Unloading = false
+			vehicle.cp.currentTrailerToFill = nil
+		
+		end;
+	end
+
+	return allowedToDrive
+end

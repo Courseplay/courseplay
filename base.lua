@@ -1132,13 +1132,7 @@ function courseplay:update(dt)
 		if courseplay:checkAndSetMovingToolsPosition(self, workTool.movingTools, nil, self.cp.pipePositions, dt , self.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
 			courseplay:resetManualPipePositionOrder(self);
 		end;
-	end;
-	
-	--sugarCaneTrailer update tipping function
-	if self.cp.hasSugarCaneTrailer then
-		courseplay:updateSugarCaneTrailerTipping(self,dt)
-	end
-	
+	end;	
 end; --END update()
 
 --[[
