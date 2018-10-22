@@ -236,7 +236,6 @@ function PurePursuitController:findGoalPoint()
 	-- which the goal point lies. This is the segment intersected by the circle with lookAheadDistance radius
 	-- around the vehicle.
 	local ix = self.relevantWpNode.ix
-	--courseplay.debugVehicle(12, self.vehicle, 'relevant Ix: %d', self.relevantWpNode.ix) -- -----------------------
 	while ix <= #self.vehicle.Waypoints do
 		node1:setToWaypoint(self.course, ix)
 		node2:setToWaypointOrBeyond(self.course, ix + 1, self.lookAheadDistance)
@@ -249,7 +248,7 @@ function PurePursuitController:findGoalPoint()
 
 		-- case i (first node outside virtual circle)
 		if ix == self.firstIx and q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
-			self:showGoalpointDiag(1, 'PPC: initializing, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+			self:showGoalpointDiag(1, 'PPC: initializing, ix=%d, q1=%.1f, q2=%.1f, la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			-- If we weren't on track yet (after initialization, on our way to the first/initialized waypoint)
 			-- set the goal to the relevant WP
 			self.goalWpNode:setToWaypoint(self.course, self.relevantWpNode.ix)
@@ -260,36 +259,38 @@ function PurePursuitController:findGoalPoint()
 
 		-- case ii (common case)
 		if q1 <= self.lookAheadDistance and q2 >= self.lookAheadDistance then
-			self:showGoalpointDiag(2, 'PPC: common case, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+			self:showGoalpointDiag(2, 'PPC: common case, ix=%d, q1=%.1f, q2=%.1f la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			local cosGamma = ( q2 * q2 - q1 * q1 - l * l ) / (-2 * l * q1)
 			local p = q1 * cosGamma + math.sqrt(q1 * q1 * (cosGamma * cosGamma - 1) + self.lookAheadDistance * self.lookAheadDistance)
 			local gx, gy, gz = localToWorld(node1.node, 0, 0, p)
-			setTranslation(self.goalWpNode.node, gx, gy, gz)
+			setTranslation(self.goalWpNode.node, gx, gy + 1, gz)
 			self.wpBeforeGoalPointIx = ix
 			-- current waypoint is the waypoint at the end of the path segment
 			self:setCurrentWaypoint(ix + 1)
-			courseplay.debugVehicle(12, self.vehicle, "PPC: %d, p=%.1f", self.currentWpNode.ix, p)
+			--courseplay.debugVehicle(12, self.vehicle, "PPC: %d, p=%.1f", self.currentWpNode.ix, p)
 			break
 		end
 
 		-- cases iii, iv and v
 		if ix == self.relevantWpNode.ix and q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
-			if self.crossTrackError <= self.lookAheadDistance then
+			if math.abs(self.crossTrackError) <= self.lookAheadDistance then
 				-- case iii (two intersection points)
-				self:showGoalpointDiag(3, 'PPC: two intersection points, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+				self:showGoalpointDiag(3, 'PPC: two intersection points, ix=%d, q1=%.1f, q2=%.1f, la=%.1f, cte=%.1f', ix, q1, q2, 
+					self.lookAheadDistance, self.crossTrackError)
 				local p = math.sqrt(self.lookAheadDistance * self.lookAheadDistance - self.crossTrackError * self.crossTrackError)
 				local gx, gy, gz = localToWorld(self.projectedPosNode, 0, 0, p)
-				setTranslation(self.goalWpNode.node, gx, gy, gz)
+				setTranslation(self.goalWpNode.node, gx, gy + 1, gz)
 				self.wpBeforeGoalPointIx = ix
 				-- current waypoint is the waypoint at the end of the path segment
 				self:setCurrentWaypoint(ix + 1)
 			else
 				-- case iv (no intersection points)
 				-- case v ( goal point dead zone)
-				self:showGoalpointDiag(4, 'PPC: no intersection points, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+				self:showGoalpointDiag(4, 'PPC: no intersection points, ix=%d, q1=%.1f, q2=%.1f, la=%.1f, cte=%.1f', ix, q1, q2, 
+					self.lookAheadDistance, self.crossTrackError)
 				-- set the goal to the projected position
 				local gx, gy, gz = localToWorld(self.projectedPosNode, 0, 0, 0)
-				setTranslation(self.goalWpNode.node, gx, gy, gz)
+				setTranslation(self.goalWpNode.node, gx, gy + 1, gz)
 				self.wpBeforeGoalPointIx = ix
 				-- current waypoint is the waypoint at the end of the path segment
 				self:setCurrentWaypoint(ix + 1)
