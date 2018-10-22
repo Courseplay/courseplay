@@ -26,7 +26,8 @@ See the paper
 Steering Control of an Autonomous Ground Vehicle with Application to the DARPA
 Urban Challenge By Stefan F. Campbell
 
-We use the terminology of that paper here, like 'relevant path segment', 'goal point', etc.
+We use the terminology of that paper here, like 'relevant path segment', 'goal point', etc. and follow the
+algorithm to search for the goal point as described in this paper.
 
 PURPOSE
 
@@ -83,7 +84,11 @@ function PurePursuitController:new(vehicle)
 	newPpc.isReverseActive = false
 	-- enable PPC by default for developers only
 	newPpc.enabled = CpManager.isDeveloper
-	newPpc.goalPointDiagText = ''		
+	-- current goal point search case as described in the paper, for diagnostics only
+	newPpc.case = 0
+	-- index of the first node of the path (where PPC is initialized and starts driving
+	newPpc.firstIx = 1
+	newPpc.crossTrackError = 0
 	return newPpc
 end
 
@@ -107,6 +112,7 @@ function PurePursuitController:initialize()
 	self.nextWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex + 1)
 	self.wpBeforeGoalPointIx = self.nextWpNode.ix
 	self.currentWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex)
+	self.firstIx = self.vehicle.cp.waypointIndex
 	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d', self.vehicle.cp.waypointIndex)
 	self.isReverseActive = false
 	self.isGoalPointValid = false
@@ -178,9 +184,9 @@ end
 function PurePursuitController:findRelevantSegment()
 	-- vehicle position
 	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
-	local crossTrackError, _, dzFromRelevant = worldToLocal(self.relevantWpNode.node, vx, vy, vz);
+	self.crossTrackError, _, dzFromRelevant = worldToLocal(self.relevantWpNode.node, vx, vy, vz);
 	-- adapt our lookahead distance based on the error
-	self.lookAheadDistance = math.min(self.baseLookAheadDistance + math.abs(crossTrackError), self.baseLookAheadDistance * 2)
+	self.lookAheadDistance = math.min(self.baseLookAheadDistance + math.abs(self.crossTrackError), self.baseLookAheadDistance * 2)
 	-- projected vehicle position/rotation	
 	local px, py, pz = localToWorld(self.relevantWpNode.node, 0, 0, dzFromRelevant)
 	local _, yRot, _ = getRotation(self.nextWpNode.node)
@@ -201,7 +207,7 @@ function PurePursuitController:findRelevantSegment()
 		if not self:atLastWaypoint() then
 			-- disable debugging once we reached the last waypoint. Otherwise we'd keep logging
 			-- until the user presses 'Stop driver'.
-			courseplay.debugVehicle(12, self.vehicle, 'PPC: relevant waypoint: %d, crosstrack error: %.1f', self.relevantWpNode.ix, crossTrackError)
+			courseplay.debugVehicle(12, self.vehicle, 'PPC: relevant waypoint: %d, crosstrack error: %.1f', self.relevantWpNode.ix, self.crossTrackError)
 		end
 	end
 	setTranslation(self.projectedPosNode, px, py, pz)
@@ -215,8 +221,8 @@ end
 
 -- Now, from the relevant section forward we search for the goal point, which is the one
 -- lying lookAheadDistance in front of us on the path
+-- this is the algorithm described in Chapter 2 of the paper
 function PurePursuitController:findGoalPoint()
-	local d1, d2
 
 	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode);
 	--local vx, vy, vz = getWorldTranslation(self.projectedPosNode);
@@ -226,8 +232,6 @@ function PurePursuitController:findGoalPoint()
 	local node1 = WaypointNode:new( self.name .. '-node1', false)
 	local node2 = WaypointNode:new( self.name .. '-node2', false)
 
-	local isGoalPointValid = false
-	self.goalPointDiagText = ''
 	-- starting at the relevant segment walk up the path to find the segment on
 	-- which the goal point lies. This is the segment intersected by the circle with lookAheadDistance radius
 	-- around the vehicle.
@@ -238,113 +242,91 @@ function PurePursuitController:findGoalPoint()
 		node2:setToWaypointOrBeyond(self.course, ix + 1, self.lookAheadDistance)
 		local x1, y1, z1 = getWorldTranslation(node1.node)
 		local x2, y2, z2 = getWorldTranslation(node2.node)
-		-- distance between the vehicle position and the end of the segment
-		d1 = courseplay:distance(vx, vz, x2, z2)
-		--courseplay.debugVehicle(12, self.vehicle, 'ix: %d, d1: %.4f, la: %.1f', ix, d1, self.lookAheadDistance) -- -----------------------
-		self.goalPointDiagText = string.format('ix: %d dToNext: %.4f', ix, d1) -- -----------------------
-		if d1 > self.lookAheadDistance then
-			-- far end of this segment is farther than lookAheadDistance so the goal point must be on
-			-- this segment
-			d2 = courseplay:distance(x1, z1, vx, vz)
-			self.goalPointDiagText = string.format('ix: %d dFromPrev: %.4f dToNext: %.4f', ix, d2, d1) -- -----------------------
-			if d2 > self.lookAheadDistance then
-				-- too far from either end of the relevant segment
-				if not self.isGoalPointValid then
-					-- If we weren't on track yet (after initialization, on our way to the first/initialized waypoint)
-					-- set the goal to the relevant WP
-					self.goalWpNode:setToWaypoint(self.course, self.relevantWpNode.ix)
-					-- and also the current waypoint is now at the relevant WP
-					self.currentWpNode:setToWaypointOrBeyond(self.course, self.relevantWpNode.ix, self.lookAheadDistance)
-					if courseplay.debugChannels[12] then
-						DebugUtil.drawDebugNode(self.goalWpNode.node, string.format('\n\n\n\ntoo far\ninitializing'))
-					end
-					self.goalPointDiagText = self.goalPointDiagText .. ' too far, initializing'
-					--courseplay.debugVehicle(12, self.vehicle, 'too far initializing ix: %d dFromPrev: %.4f dToNext: %.4f', ix, d2, d1) -- -----------------------
-					break
-				else
-					-- we already were tracking the path but now both points are too far.
-					-- this can be the case when ix and ix + 1 are more than lookAheadDistance away and
-					-- we are on the path between them
-					-- we can go ahead and find the goal point as usual, as we start approximating
-					-- from the front waypoint and will find the goal point in front of us.
-					-- isGoalPointValid = true
-					if courseplay.debugChannels[12] then
-						DebugUtil.drawDebugNode(self.goalWpNode.node, string.format('\n\n\n\ntoo far'))
-					end
-					self.goalPointDiagText = self.goalPointDiagText .. ' too far'
-					--courseplay.debugVehicle(12, self.vehicle, 'too far ix: %d dFromPrev: %.4f dToNext: %.4f', ix, d2, d1) -- -----------------------
-				end
-			end
-			-- this is the current waypoint for the rest of Courseplay code, the waypoint we are driving to
-			-- but never, ever go back. Instead just leave this loop and keep driving to the current goal node
-			if ix + 1 < self.currentWpNode.ix then
-				self.goalPointDiagText = self.goalPointDiagText .. ' no step back'
-				--courseplay.debugVehicle(12, self.vehicle, "PPC: Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix + 1)
-				isGoalPointValid = true
-				break 
-			end
-			self.currentWpNode:setToWaypointOrBeyond(self.course, ix + 1, self.lookAheadDistance)
+		-- distance between the vehicle position and the ends of the segment
+		local q1 = courseplay:distance(x1, z1, vx, vz) -- distance from node 1
+		local q2 = courseplay:distance(x2, z2, vx, vz) -- distance from node 2
+		local l = courseplay:distance(x1, z1, x2, z2)  -- length of path segment (distance between node 1 and 2
 
-			-- our goal point is now between ix and ix + 1, let's find it
-			-- distance between current and next waypoint
-			local dToNext = courseplay:distance(x1, z1, x2, z2)
-			local minDz, maxDz, currentDz, currentRange = 0, dToNext, dToNext / 2, dToNext
-
-			-- successive approximation of the intersection between this path segment and the
-			-- lookAheadDistance radius circle around the vehicle. That intersection point will be our goal point
-			-- starting from the far end makes sure we find the correct point even in the case when the
-			-- circle around the vehicle intersects with this section twice.
-			
-			local bits = 12  -- successive approximator (ADC) bits
-			local step = 0   -- current step
-			local gx, gy, gz
-			while step < bits do
-				-- point in currentDz distance from node1 on the section between node1 and node2
-				gx, gy, gz = localToWorld(node1.node, 0, 0, currentDz)
-				d1 = courseplay:distance(vx, vz, gx, gz)
-				
-				if d1 < self.lookAheadDistance then
-					minDz = currentDz
-				else
-					maxDz = currentDz
-				end
-				step = step + 1
-				currentRange = currentRange / 2
-				currentDz = minDz + currentRange
-			end
-			--courseplay.debugVehicle(12, self.vehicle,'*** range: %.4f d1: %.4f, dz: %.4f', currentRange, d1, currentDz) -- -----------------------------
-			gy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, gx, 0, gz)
-			setTranslation(self.goalWpNode.node, gx, gy, gz)
-			isGoalPointValid = true
-			self.wpBeforeGoalPointIx = ix
+		-- case i (first node outside virtual circle)
+		if ix == self.firstIx and q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
+			self:showGoalpointDiag(1, 'PPC: initializing, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+			-- If we weren't on track yet (after initialization, on our way to the first/initialized waypoint)
+			-- set the goal to the relevant WP
+			self.goalWpNode:setToWaypoint(self.course, self.relevantWpNode.ix)
+			-- and also the current waypoint is now at the relevant WP
+			self:setCurrentWaypoint(self.relevantWpNode.ix)
 			break
 		end
+
+		-- case ii (common case)
+		if q1 <= self.lookAheadDistance and q2 >= self.lookAheadDistance then
+			self:showGoalpointDiag(2, 'PPC: common case, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+			local cosGamma = ( q2 * q2 - q1 * q1 - l * l ) / (-2 * l * q1)
+			local p = q1 * cosGamma + math.sqrt(q1 * q1 * (cosGamma * cosGamma - 1) + self.lookAheadDistance * self.lookAheadDistance)
+			local gx, gy, gz = localToWorld(node1.node, 0, 0, p)
+			setTranslation(self.goalWpNode.node, gx, gy, gz)
+			self.wpBeforeGoalPointIx = ix
+			-- current waypoint is the waypoint at the end of the path segment
+			self:setCurrentWaypoint(ix + 1)
+			courseplay.debugVehicle(12, self.vehicle, "PPC: %d, p=%.1f", self.currentWpNode.ix, p)
+			break
+		end
+
+		-- cases iii, iv and v
+		if ix == self.relevantWpNode.ix and q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
+			if self.crossTrackError <= self.lookAheadDistance then
+				-- case iii (two intersection points)
+				self:showGoalpointDiag(3, 'PPC: two intersection points, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+				local p = math.sqrt(self.lookAheadDistance * self.lookAheadDistance - self.crossTrackError * self.crossTrackError)
+				local gx, gy, gz = localToWorld(self.projectedPosNode, 0, 0, p)
+				setTranslation(self.goalWpNode.node, gx, gy, gz)
+				self.wpBeforeGoalPointIx = ix
+				-- current waypoint is the waypoint at the end of the path segment
+				self:setCurrentWaypoint(ix + 1)
+			else
+				-- case iv (no intersection points)
+				-- case v ( goal point dead zone)
+				self:showGoalpointDiag(4, 'PPC: no intersection points, ix=%d, q1=%.1f, q2=%.1f', ix, q1, q2)
+				-- set the goal to the projected position
+				local gx, gy, gz = localToWorld(self.projectedPosNode, 0, 0, 0)
+				setTranslation(self.goalWpNode.node, gx, gy, gz)
+				self.wpBeforeGoalPointIx = ix
+				-- current waypoint is the waypoint at the end of the path segment
+				self:setCurrentWaypoint(ix + 1)
+			end
+		end
+		-- none of the above, continue search with the next path segment
 		ix = ix + 1
 	end
 	
 	node1:destroy()
 	node2:destroy()
 	
-	self:setGoalPointValid(isGoalPointValid)
-	
 	if courseplay.debugChannels[12] then
-		if self.isGoalPointValid then
-			local gx, gy, gz = localToWorld(self.goalWpNode.node, 0, 0, 0)
-			drawDebugLine(gx, gy + 3, gz, 0, 1, 0, gx, gy + 1, gz, 0, 1, 0);
-			DebugUtil.drawDebugNode(self.goalWpNode.node, string.format('ix = %d\nd = %.1f\ngoal\npoint', self.wpBeforeGoalPointIx, d1))
-		end
+		local gx, gy, gz = localToWorld(self.goalWpNode.node, 0, 0, 0)
+		drawDebugLine(gx, gy + 3, gz, 0, 1, 0, gx, gy + 1, gz, 0, 1, 0);
 		DebugUtil.drawDebugNode(self.currentWpNode.node, string.format('ix = %d\ncurrent\nwaypoint', self.currentWpNode.ix))
 	end
 end
 
-function PurePursuitController:setGoalPointValid(isGoalPointValid)
-	if self.isGoalPointValid ~= isGoalPointValid then
-		if isGoalPointValid then
-			courseplay.debugVehicle(12, self.vehicle, 'PPC: Goal point found.')
-		else
-			courseplay.debugVehicle(12, self.vehicle, 'PPC: Goal point lost: ' .. self.goalPointDiagText)
-		end
-		self.isGoalPointValid = isGoalPointValid
+-- set the current waypoint for the rest of Courseplay
+function PurePursuitController:setCurrentWaypoint(ix)
+	-- this is the current waypoint for the rest of Courseplay code, the waypoint we are driving to
+	-- but never, ever go back. Instead just leave this loop and keep driving to the current goal node
+	if ix < self.currentWpNode.ix then
+		courseplay.debugVehicle(12, self.vehicle, "PPC: Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix)
+	end
+	self.currentWpNode:setToWaypointOrBeyond(self.course, ix, self.lookAheadDistance)
+end
+
+function PurePursuitController:showGoalpointDiag(case, ...)
+	local diagText = string.format(...)
+	if courseplay.debugChannels[12] then
+		DebugUtil.drawDebugNode(self.goalWpNode.node, diagText)
+	end
+	if case ~= self.case then
+		courseplay.debugVehicle(12, self.vehicle, ...)
+		self.case = case
 	end
 end
 
