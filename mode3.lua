@@ -341,6 +341,7 @@ function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
 		-- Trailer we are unloading into is filled up. Stop until another trailer comes into range
 		elseif currentTipper.cp.isSugarCaneUnloading == true and (not trailerFound or trailerFull) then
 			courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
+			currentTipper.trailerFound = nil -- Force it to look for another Trailer
 			allowedToDrive = false
 			if vehicle.cp.prevFillLevelPct ~= nil then
 				if fillLevelPct > 0 and tipState == Trailer.TIPSTATE_CLOSING then

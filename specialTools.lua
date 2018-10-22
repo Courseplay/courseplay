@@ -422,7 +422,7 @@ function courseplay:setNameVariable(workTool)
 	--Cultiplow Platinum 8m [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'agrisemCultiplowPlatinum8m.xml' then
 		workTool.cp.isAgrisemCultiplowPlatinum8m = true;
-		--workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail
+		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail
 		workTool.cp.overwriteTurnRadius = 7;
 
 	-- PLOUGHS [Giants]

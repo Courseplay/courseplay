@@ -984,6 +984,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						end
 					else
 						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle))
+						vehicle.cp.ppc:initialize()
 					end
 
 				-------------------------------
@@ -1169,6 +1170,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 	end;
 	if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
 		courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+		vehicle.cp.ppc:initialize()
 	end;
 end;
 
@@ -1552,6 +1554,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 					vehicle.cp.takeOverSteering = false
 					if revUnload then
 						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+						vehicle.cp.ppc:initialize()
 					end				
 				end			
 				
