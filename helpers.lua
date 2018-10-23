@@ -573,6 +573,8 @@ end
 
 ---------------------------
 function courseplay.utils.angleDifference(a1, a2) 
+-- Needed for 5.03.00044 crossings update
+
 --function to calculate absolute difference between two arbitrary angles in degrees
 	local a = a1 - a2
 	a = a + 180 
