@@ -572,6 +572,15 @@ function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , value
 end
 
 ---------------------------
+function courseplay.utils.angleDifference(a1, a2) 
+--function to calculate absolute difference between two arbitrary angles in degrees
+	local a = a1 - a2
+	a = a + 180 
+	a = a - math.floor( a / 360) * 360
+	a = a - 180
+	a = math.abs(a) 
+	return a;
+end;
 
 function courseplay.utils.normalizeAngle(angle)
 	local newAngle = angle;
