@@ -150,7 +150,7 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 			vehicle.cp.shovelLastFillLevel = fillLevelPct;
 		end;
 						--vv TODO checkif its a Giants Bug the Shovel never gets 100%
-		if fillLevelPct >= 99 or vehicle.cp.isLoaded or vehicle.cp.slippingStage == 2 or heapEnd then
+		if fillLevelPct >= 97 or vehicle.cp.isLoaded or vehicle.cp.slippingStage == 2 or heapEnd then
 			if not vehicle.cp.isLoaded then
 				local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
 				local _,_,sfpZ = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cx , ty , vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cz);
