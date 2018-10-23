@@ -292,10 +292,10 @@ function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
 	--Select the trailer to fill
 	local currentTipper = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill]
 	local tipState = currentTipper.tipState
-	fillLevelPct = currentTipper.cp.fillLevelPercent
+	fillLevelPct = vehicle.cp.totalFillLevelPercent
 
-	-- Debug to show when next where trailer is looking for unloading trailer
-	if (tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING) and not currentTipper.cp.isSugarCaneUnloading then
+	-- Reset found trailer and look for a new one
+	if (tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING) and fillLevelPct > 0 then
 		currentTipper.trailerFound = nil
 		--the distance is 2.3m because if the trailer is further away, it will tip to the ground as well
 		local x,y,z = localToWorld(currentTipper.shovelTipReferenceNode,0,-2.3,0); 
@@ -341,7 +341,6 @@ function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
 		-- Trailer we are unloading into is filled up. Stop until another trailer comes into range
 		elseif currentTipper.cp.isSugarCaneUnloading == true and (not trailerFound or trailerFull) then
 			courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
-			currentTipper.trailerFound = nil -- Force it to look for another Trailer
 			allowedToDrive = false
 			if vehicle.cp.prevFillLevelPct ~= nil then
 				if fillLevelPct > 0 and tipState == Trailer.TIPSTATE_CLOSING then
@@ -374,6 +373,7 @@ function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
 			vehicle.cp.isMode3Unloading = false
 			vehicle.cp.currentTrailerToFill = nil
 			vehicle.cp.isUnloaded = true
+			currentTipper.trailerFound = nil
 		end;
 	end
 
