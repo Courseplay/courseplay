@@ -312,7 +312,7 @@ function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
 	local unloadDistance = courseplay:distance(tipperX, tipperZ, targetWaypoint.cx, targetWaypoint.cz)
 
 	local atWaitPoint = unloadDistance < 1
-	local trailerFound = currentTipper.trailerFound ~= nil									-- We only want to fill to 95% to ensure we don't dump on the ground
+	local trailerFound = currentTipper.trailerFound ~= nil									
 	local trailerFull = currentTipper.trailerFound and currentTipper.trailerFound:getFillLevel() >= currentTipper.trailerFound:getCapacity()
 	local driveOn = false
 
@@ -324,7 +324,7 @@ function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
 	end
 
 	if vehicle.cp.isUnloaded == false then
-		if fillLevelPct == 0 then
+		if  currentTipper.cp.fillLevelPercent == 0 then
 			-- Current Tipper is empty check to see if there is another and if so move onto that one
 			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 				courseplay:handleAugerWagon(vehicle, currentTipper, false, false, "stopUnload",dt)
