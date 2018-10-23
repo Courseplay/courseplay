@@ -92,6 +92,8 @@ function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay beca
 end
 
 function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is in courseplay because it's vehicle based
+-- changed in 5.03.00044 
+
 	-- global array for courses, no refreshing needed any more
 	courseplay.courses:reinitializeCourses();
 	
