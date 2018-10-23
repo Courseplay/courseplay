@@ -89,6 +89,7 @@ function PurePursuitController:new(vehicle)
 	-- index of the first node of the path (where PPC is initialized and starts driving
 	newPpc.firstIx = 1
 	newPpc.crossTrackError = 0
+	newPpc.lastPassedWaypointIx = nil
 	return newPpc
 end
 
@@ -105,17 +106,15 @@ end
 function PurePursuitController:initialize()
 	-- we rely on the code in start_stop.lua to select the first waypoint
 	self.course = Course:new(self.vehicle)
-	--local segment, ix = self.course:initializeSegments(self.vehicle.cp.waypointIndex)
-	--self.currentSegment = segment
 	-- relevantWpNode always points to the point where the relevant path segment starts
 	self.relevantWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex)
-	self.nextWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex + 1)
+	self.nextWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex)
 	self.wpBeforeGoalPointIx = self.nextWpNode.ix
 	self.currentWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex)
 	self.firstIx = self.vehicle.cp.waypointIndex
 	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d', self.vehicle.cp.waypointIndex)
 	self.isReverseActive = false
-	self.isGoalPointValid = false
+	self.lastPassedWaypointIx = nil
 end
 
 function PurePursuitController:getCurrentWaypointIx()
@@ -189,7 +188,9 @@ function PurePursuitController:findRelevantSegment()
 	self.lookAheadDistance = math.min(self.baseLookAheadDistance + math.abs(self.crossTrackError), self.baseLookAheadDistance * 2)
 	-- projected vehicle position/rotation	
 	local px, py, pz = localToWorld(self.relevantWpNode.node, 0, 0, dzFromRelevant)
-	local _, yRot, _ = getRotation(self.nextWpNode.node)
+	local _, yRot, _ = getRotation(self.relevantWpNode.node)
+	setTranslation(self.projectedPosNode, px, py, pz)
+	setRotation(self.projectedPosNode, 0, yRot, 0)
 	-- we check all waypoints between the relevant and the one before the goal point as the goal point
 	-- may have moved several waypoints up if there's a very sharp turn for example and in that case 
 	-- the vehicle may never reach some of the waypoint in between.
@@ -202,6 +203,7 @@ function PurePursuitController:findRelevantSegment()
 		passed, ix = self:havePassedAnyWaypointBetween(self.nextWpNode.ix, self.wpBeforeGoalPointIx)
 	end
 	if passed then
+		self.lastPassedWaypointIx = ix
 		self.relevantWpNode:setToWaypoint(self.course, ix)
 		self.nextWpNode:setToWaypoint(self.course, self.relevantWpNode.ix + 1)
 		if not self:atLastWaypoint() then
@@ -210,8 +212,6 @@ function PurePursuitController:findRelevantSegment()
 			courseplay.debugVehicle(12, self.vehicle, 'PPC: relevant waypoint: %d, crosstrack error: %.1f', self.relevantWpNode.ix, self.crossTrackError)
 		end
 	end
-	setTranslation(self.projectedPosNode, px, py, pz)
-	setRotation(self.projectedPosNode, 0, yRot, 0)
 	if courseplay.debugChannels[12] then
 		drawDebugLine(px, py + 3, pz, 1, 1, 0, px, py + 1, pz, 1, 1, 0);
 		DebugUtil.drawDebugNode(self.relevantWpNode.node, string.format('ix = %d\nrelevant\nnode', self.relevantWpNode.ix, dz))
@@ -295,6 +295,7 @@ function PurePursuitController:findGoalPoint()
 				-- current waypoint is the waypoint at the end of the path segment
 				self:setCurrentWaypoint(ix + 1)
 			end
+			break
 		end
 		-- none of the above, continue search with the next path segment
 		ix = ix + 1
@@ -361,6 +362,10 @@ function PurePursuitController:toggleEnable()
 	end
 end
 
+function PurePursuitController:isEnabled()
+	return self.enabled
+end
+
 function PurePursuitController:isActive()
 	-- Let the code in reverse.lua do its magic when reversing.
 	-- That code seems to be robust against circling anyway
@@ -383,11 +388,7 @@ end
 function PurePursuitController:getCurrentWaypointPosition()
 	local cx, cz
 	if self:isActive() then
-		if self.isGoalPointValid then
-			cx, _, cz = getWorldTranslation(self.goalWpNode.node)
-		else
-			cx, _, cz = getWorldTranslation(self.currentWpNode.node)
-		end
+		cx, _, cz = getWorldTranslation(self.goalWpNode.node)
 	else
 		cx, cz = self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cx, self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cz
 	end
@@ -425,4 +426,8 @@ function PurePursuitController:atLastWaypoint()
 		atLastWaypoint = self.vehicle.cp.waypointIndex >= self.vehicle.cp.numWaypoints			
 	end
 	return atLastWaypoint
+end
+
+function PurePursuitController:haveJustPassedWaypoint(ix)
+	return self.lastPassedWaypointIx and self.lastPassedWaypointIx == ix or false
 end

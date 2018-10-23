@@ -803,7 +803,7 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end
 
-			vehicle.cp.hud.content.pages[1][1][2].text = vehicle.cp.ppc:isActive() and
+			vehicle.cp.hud.content.pages[1][1][2].text = vehicle.cp.ppc:isEnabled() and
 				courseplay:loc('COURSEPLAY_PPC_ON') or
 				courseplay:loc('COURSEPLAY_PPC_OFF');
 

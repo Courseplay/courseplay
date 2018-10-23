@@ -722,14 +722,14 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 	
 	if vehicle.cp.tipperLoadMode == 0 and not driveOn then
-		if vehicle.cp.waypointIndex == 2 and currentTrailer.cp.currentSiloTrigger == nil then
+		if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then
 			--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
 			vehicle.cp.tipperLoadMode = 2;
 		elseif currentTrailer.cp.currentSiloTrigger then
 			--- We have an silo trigger, so we go load at silo trigger mode
 			vehicle.cp.tipperLoadMode = 1;
 		else
-			--- We were not able to determ what mode to set, so we move further forward until one is set.
+			--- We were not able to determine what mode to set, so we move further forward until one is set.
 			return allowedToDrive;
 		end;
 	end;
