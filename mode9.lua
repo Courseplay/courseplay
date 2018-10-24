@@ -158,7 +158,8 @@ function courseplay:handle_mode9(vehicle, fillLevelPct, allowedToDrive,lx,lz, dt
 					local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
 					if ((vehicle.cp.BunkerSiloMap == nil and z < -3 ) or z < sfpZ) and vehicle.Waypoints[i].rev  then
 						--print("z taken:  "..tostring(z));
-						courseplay:setWaypointIndex(vehicle, i);
+						courseplay:setWaypointIndex(vehicle, i)
+						vehicle.cp.ppc:initialize();
 						courseplay:setIsLoaded(vehicle, true);
 						break;
 					end;
