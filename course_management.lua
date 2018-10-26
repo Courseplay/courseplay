@@ -191,9 +191,10 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 							angleTurn = math.deg(angleTurn) -- now in degrees
 							--courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), 8);
 							if dist and dist ~= 0 and dist < wpDistMax then
-								courseplay:debug(string.format('wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f', 
-									wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist), 8);
 								
+								courseplay.debugVehicle(8, vehicle,'wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f', 
+									wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist)
+
 								local foundBetter = false
 							
 								--better is when totalAngle is significantly better than before (say 10 degrees)
