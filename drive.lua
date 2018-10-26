@@ -4,8 +4,13 @@ local abs, max, min, pow, sin , huge = math.abs, math.max, math.min, math.pow, m
 local _;
 local avoidWorkAreaType = {};
 
--- drives recored course
+-- drives recorded course
 function courseplay:drive(self, dt)
+
+	if self.cp.mode == 5 and courseplay.debugChannels[7] then
+		self.cp.driver:drive(dt)
+		return
+	end
 	-- Reset Character each 2 min to prevent glitching out.
 	if courseplay:timerIsThrough(self, "resetCharacter", false) then
 		if self.currentHelper == nil then
@@ -129,7 +134,7 @@ function courseplay:drive(self, dt)
 	-- === CURRENT WAYPOINT POSITION ===
 	-- cx, cz only used to get lx, lz (driving direction) unless we are using driveToPoint (which we don't at the moment)
 	if self.cp.mode ~= 7 or (self.cp.mode == 7 and self.cp.modeState ~= 5) then
-		cx, cz = self.cp.ppc:getCurrentWaypointPosition()
+		cx, _, cz = self.cp.ppc:getCurrentWaypointPosition()
 	end
 
 	-- FIELDWORK - HORIZONTAL/VERTICAL OFFSET

@@ -334,11 +334,10 @@ function courseplay:unload_combine(vehicle, dt)
 	local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine;
 	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
 	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
+	-- target coordinates to drive to
 	local currentX, currentY, currentZ;
 	local combineFillLevel, combineIsTurning = nil, false
 	local refSpeed;
-	local handleTurn = false
-	local isHarvester = false
 	local xt, yt, zt;
 	local dod;
 	local currentTipper = {};
@@ -1330,7 +1329,12 @@ function courseplay:unload_combine(vehicle, dt)
 		refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	end
-	
+
+	-- This is where the driving starts, using the following variables set somewhere above
+	-- currentX/currentZ target coordinates to drive to.
+	-- y vehicle's y coordinate
+	-- allowedToDrive
+	-- refSpeed
 	if g_server ~= nil then
 		local lx, lz
 		local moveForwards = true

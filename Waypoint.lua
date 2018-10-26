@@ -34,6 +34,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.z = cpWp.cz or 0
 	self.angle = cpWp.angle or 0
 	self.rev = cpWp.rev or false
+	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
 end
 
@@ -119,17 +120,15 @@ end
 Course = {}
 Course.__index = Course
 
-function Course:new(vehicle)
+function Course:new(waypoints)
 	local newCourse = {}
 	setmetatable(newCourse, self)
-	newCourse.vehicle = vehicle
 	-- add waypoints from current vehicle course
 	newCourse.waypoints = {}
-	for i = 1, #vehicle.Waypoints do
-		table.insert(newCourse.waypoints, Waypoint:new(vehicle.Waypoints[i], i))
+	for i = 1, #waypoints do
+		table.insert(newCourse.waypoints, Waypoint:new(waypoints[i], i))
 	end
-	newCourse.segments = {}
-
+	print('course ' .. tostring(#waypoints))
 	return newCourse
 end
 
@@ -161,21 +160,28 @@ function Course:getCurrentWaypointIx()
 	return self.currentWaypoint
 end
 
+function Course:isReverseAt(ix)
+	return self.waypoints[ix].rev
+end
+
 function Course:switchingDirectionAt(ix) 
 	return self:switchingToForwardAt(ix) or self:switchingToReverseAt(ix)
 end
 
 function Course:switchingToReverseAt(ix)
-	return (not self.waypoints[ix].rev) and self.waypoints[math.min(ix + 1, #self.waypoints)].rev
+	return (not self:isReverseAt(ix)) and self:isReverseAt(math.min(ix + 1, #self.waypoints))
 end
 
 function Course:switchingToForwardAt(ix)
-	return (self.waypoints[ix].rev) and not self.waypoints[math.min(ix + 1, #self.waypoints)].rev
+	return self:isReverseAt(ix) and not self:isReverseAt(math.min(ix + 1, #self.waypoints))
 end
 
 function Course:getWaypointPosition(ix)
 	local x, z = self.waypoints[ix].x, self.waypoints[ix].z
-	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+	local y = 0
+	if g_currentMission then
+		y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+	end
 	return x, y, z
 end
 

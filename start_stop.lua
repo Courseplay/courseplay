@@ -513,13 +513,19 @@ function courseplay:start(self)
 		courseplay:disableCropDestruction(self);
 	end;
 
-	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
+	--More Realistitic Mod. Temp fix until we can fix the breaking problem.
 	if self.mrUseMrTransmission and self.mrUseMrTransmission == true then
 		self.mrUseMrTransmission = false;
 		self.cp.changedMRMod = true;
 	end
-	-- Initialize pure pursuit controller
-	self.cp.ppc:initialize()
+	if self.cp.mode == 5 then
+		-- the driver handles the PPC
+		self.cp.driver = AIDriver:new(self)
+		self.cp.driver:start(self.cp.waypointIndex)
+	else
+		-- Initialize pure pursuit controller
+		self.cp.ppc:initialize()
+	end
 	--print("startStop "..debug.getinfo(1).currentline)
 
 end;

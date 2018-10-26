@@ -102,25 +102,32 @@ function PurePursuitController:delete()
 	self.goalWpNode:destroy();
 end
 
+function PurePursuitController:setCourse(course)
+	self.course = course
+end
+
 -- initialize controller before driving
-function PurePursuitController:initialize()
+function PurePursuitController:initialize(ix, aiDriver)
+	-- for now, if no course set, use the vehicle's current waypoints
+	if not self.course then
+		self.course = Course:new(self.vehicle.Waypoints)
+	end
 	-- we rely on the code in start_stop.lua to select the first waypoint
-	self.course = Course:new(self.vehicle)
+	self.firstIx = ix and ix or self.vehicle.cp.waypointIndex
 	-- relevantWpNode always points to the point where the relevant path segment starts
-	self.relevantWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex)
-	self.nextWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex)
+	self.relevantWpNode:setToWaypoint(self.course, self.firstIx )
+	self.nextWpNode:setToWaypoint(self.course, self.firstIx)
 	self.wpBeforeGoalPointIx = self.nextWpNode.ix
-	self.currentWpNode:setToWaypoint(self.course, self.vehicle.cp.waypointIndex)
-	self.firstIx = self.vehicle.cp.waypointIndex
-	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d', self.vehicle.cp.waypointIndex)
+	self.currentWpNode:setToWaypoint(self.course, self.firstIx )
+	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d', self.firstIx )
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
+	self.aiDriver = aiDriver
 end
 
 function PurePursuitController:getCurrentWaypointIx()
 	return self.currentWpNode.ix
 end
-
 
 function PurePursuitController:update()
 	self:findRelevantSegment()
@@ -319,6 +326,9 @@ function PurePursuitController:setCurrentWaypoint(ix)
 		courseplay.debugVehicle(12, self.vehicle, "PPC: Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix)
 	end
 	self.currentWpNode:setToWaypointOrBeyond(self.course, ix, self.lookAheadDistance)
+	if self.aiDriver then
+		self.aiDriver:onWaypointChange(self.currentWpNode.ix)
+	end
 end
 
 function PurePursuitController:showGoalpointDiag(case, ...)
@@ -386,13 +396,14 @@ function PurePursuitController:getDirection(lz)
 end
 
 function PurePursuitController:getCurrentWaypointPosition()
-	local cx, cz
+	local cx, cy, cz
 	if self:isActive() then
-		cx, _, cz = getWorldTranslation(self.goalWpNode.node)
+		cx, cy, cz = getWorldTranslation(self.goalWpNode.node)
 	else
+		cy = 0
 		cx, cz = self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cx, self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cz
 	end
-	return cx, cz
+	return cx, cy, cz
 end
 
 function PurePursuitController:switchToNextWaypoint()
@@ -411,6 +422,7 @@ function PurePursuitController:shouldChangeWaypoint(distToChange)
 		-- true when the current waypoint calculated by PPC does not match the CP waypoint anymore, or
 		-- true when at the last waypoint (to trigger the last waypoint processing in drive.lua (which was triggered by
 		-- the distToChange condition before PPC)
+		-- TODO: remove that atLastWaypoint() when not needed anymore for backward compatibility
 		shouldChangeWaypoint = self:getCurrentWaypointIx() ~= self.vehicle.cp.waypointIndex or self:atLastWaypoint()
 	else
 		shouldChangeWaypoint = self.vehicle.cp.distanceToTarget <= distToChange
