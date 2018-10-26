@@ -92,6 +92,8 @@ function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay beca
 end
 
 function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is in courseplay because it's vehicle based
+-- changed in 5.03.00044 
+
 	-- global array for courses, no refreshing needed any more
 	courseplay.courses:reinitializeCourses();
 	
@@ -150,9 +152,11 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			local numCourse1, numCourse2 = #course1, #course2;
 			local course1wp, course2wp = numCourse1, 1;
 
-			--find crossing points, merge at first pair where dist < 50
-			local firstMatchFound, closestMatchFound = false, false;
-			local useFirstMatch = false; --true: first match <50m is used to merge / false: match with closest distance <50m is used to merge;
+			local matchFound = false 
+			local wpDistMax = 50
+			-- may cause problems when intesections are too close to one another - think town @Golcrest 
+
+			--find crossing points, merge at first pair where dist < wpDistMax
 			if not addCourseAtEnd then
 				--find crossing points
 				local crossingPoints = { [1] = {}, [2] = {} };
@@ -170,17 +174,47 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				end;
 				courseplay:debug(string.format('course 1 has %d crossing points (excluding first point), course 2 has %d crossing points (excluding last point), useFirstMatch=%s', #crossingPoints[1], #crossingPoints[2], tostring(useFirstMatch)), 8);
 
-				--find < 50m match
-				local smallestDist = math.huge;
+				--find < wpDistMax match with lowest total turn angle
+				local smallestAngle, smallestDist = math.huge, math.huge;
 				if #crossingPoints[1] > 0 and #crossingPoints[2] > 0 then
 					for _,wpNum1 in pairs(crossingPoints[1]) do
 						local wp1 = course1[wpNum1];
 						for _,wpNum2 in pairs(crossingPoints[2]) do
 							local wp2 = course2[wpNum2];
 							local dist = courseplay:distance(wp1.cx, wp1.cz, wp2.cx, wp2.cz);
-							courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), 8);
-							if dist and dist ~= 0 and dist < 50 then
-								if useFirstMatch then
+							--Calculate actual turn direction between pair of crosspoints
+							local angleTurn = math.atan2(wp2.cx-wp1.cx,wp2.cz-wp1.cz) -- in radians 
+							--add direction change differences between original direction and turn direction and destination direction							
+							local totalAngle=math.deg(
+								   math.abs(getDeltaAngle(math.rad(wp1.angle),angleTurn)) + 
+								   math.abs(getDeltaAngle(angleTurn,math.rad(wp2.angle))))
+							angleTurn = math.deg(angleTurn) -- now in degrees
+							--courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), 8);
+							if dist and dist ~= 0 and dist < wpDistMax then
+								courseplay:debug(string.format('wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f', 
+									wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist), 8);
+								
+								local foundBetter = false
+							
+								--better is when totalAngle is significantly better than before (say 10 degrees)
+								if totalAngle + 10 < smallestAngle  then 
+									smallestAngle = totalAngle;
+									foundBetter = true
+									smallestDist = dist -- this is now the distance to beat
+								end
+
+								-- or when totalAngle is relatively the same - within 10 degrees - but distance is shorter 
+								if (totalAngle - 10 < smallestAngle)  and (dist < smallestDist) then 
+									foundBetter = true
+									smallestDist = dist --distance just got better
+								end
+
+								if foundBetter then 
+									matchFound = true
+									--remove previous 'merged' vars
+									course1[course1wp].merged = nil;
+									course2[course2wp].merged = nil;
+
 									course1wp = wpNum1;
 									course2wp = wpNum2;
 
@@ -188,41 +222,21 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 									course1[course1wp].merged = true;
 									course2[course2wp].merged = true;
 
-									firstMatchFound = true;
-									courseplay:debug(string.format('\tuseFirstMatch=true -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", break', course1wp, course2wp, dist, vehicle.cp.lastMergedWP), 8);
-								else
-									if dist < smallestDist then
-										smallestDist = dist;
-
-										--remove previous 'merged' vars
-										course1[course1wp].merged = nil;
-										course2[course2wp].merged = nil;
-
-										course1wp = wpNum1;
-										course2wp = wpNum2;
-
-										vehicle.cp.lastMergedWP = wpNum1;
-										course1[course1wp].merged = true;
-										course2[course2wp].merged = true;
-
-										closestMatchFound = true;
-										courseplay:debug(string.format('\tuseFirstMatch=false -> 2 valid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", continue', course1wp, course2wp, dist, vehicle.cp.lastMergedWP), 8);
-									end;
+									courseplay:debug(string.format(
+										'\tvalid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", continue',
+									 	course1wp, course2wp, dist, vehicle.cp.lastMergedWP), 8);
 								end;
 							end;
-							if firstMatchFound then break; end;
 						end;
-						if firstMatchFound then break; end;
 					end;
 				end;
-			end;
-
-			if not addCourseAtEnd then
-				if firstMatchFound or closestMatchFound then
-					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d', nameNum(vehicle), course1wp, course2wp), 8);
+				if matchFound then
+					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d', 
+						nameNum(vehicle), course1wp, course2wp), 8);
 				else
-					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end', nameNum(vehicle)), 8);
-				end;
+					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end', 
+						nameNum(vehicle)), 8);
+				end
 			end;
 
 			vehicle.Waypoints = {};
@@ -1637,4 +1651,3 @@ function courseplay:normalizeUTF8(str)
 
 	return str:lower();
 end;
-
