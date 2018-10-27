@@ -23,6 +23,8 @@ AIDriver.slowAngleLimit = 20
 AIDriver.slowAcceleration = 0.5
 AIDriver.slowDownFactor = 0.5
 
+--- Create a new driver
+-- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:new(vehicle)
 	local newAIDriver = {}
 	setmetatable( newAIDriver, self )
@@ -34,13 +36,18 @@ function AIDriver:new(vehicle)
 	return newAIDriver
 end
 
+--- Start driving
+-- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
 	self.vehicle.cp.ppc:setCourse(self.course)
 	self.vehicle.cp.ppc:initialize(ix)
 end
 
+--- Main driving function
+-- should be called from update()
 function AIDriver:drive(dt)
 
+	-- update current waypoint/goal point
 	self.vehicle.cp.ppc:update()
 
 	local allowedToDrive = true
@@ -56,15 +63,21 @@ function AIDriver:drive(dt)
 		end
 	else
 	end
+
 	-- goal point to drive to
 	local gx, gy, gz = self.vehicle.cp.ppc:getCurrentWaypointPosition()
+	-- direction to the goal point
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx, gy, gz);
+	-- take care of reversing
 	local moveForwards = not self:isReversing()
-	lx = moveForwards and lx or -lx
+	if not moveForwards then
+		lx = -lx
+		lz = -lz
+	end
 	self:driveVehicle(dt, allowedToDrive, not self:isReversing(), lx, lz, self:getSpeed())
-
 end
 
+---
 function AIDriver:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, maxSpeed)
 	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, self.acceleration,
 		self.slowAcceleration, self.slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, self.slowDownFactor);
@@ -74,12 +87,18 @@ function AIDriver:onWaypointChange(newIx)
 	-- implemented by the derived classes
 end
 
+--- Should we be driving in reverse based on the current position on course
 function AIDriver:isReversing()
 	local currentWpIx = self.vehicle.cp.ppc:getCurrentWaypointIx()
 	return self.course:isReverseAt(currentWpIx) or self.course:switchingToForwardAt(currentWpIx)
 end
 
+
 function AIDriver:getSpeed()
 	-- override by the derived classes
-	return 15
+	local speed
+	if self.vehicle.cp.speeds.useRecordingSpeed then
+		speed = self.course:getAverageSpeed(self.vehicle.cp.ppc:getCurrentWaypointIx(), 4)
+	end
+	return speed and speed or 15
 end

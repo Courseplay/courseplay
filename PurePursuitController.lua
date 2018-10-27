@@ -324,10 +324,11 @@ function PurePursuitController:setCurrentWaypoint(ix)
 	-- but never, ever go back. Instead just leave this loop and keep driving to the current goal node
 	if ix < self.currentWpNode.ix then
 		courseplay.debugVehicle(12, self.vehicle, "PPC: Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix)
-	end
-	self.currentWpNode:setToWaypointOrBeyond(self.course, ix, self.lookAheadDistance)
-	if self.aiDriver then
-		self.aiDriver:onWaypointChange(self.currentWpNode.ix)
+	else
+		self.currentWpNode:setToWaypointOrBeyond(self.course, ix, self.lookAheadDistance)
+		if self.aiDriver then
+			self.aiDriver:onWaypointChange(self.currentWpNode.ix)
+		end
 	end
 end
 
