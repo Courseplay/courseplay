@@ -58,12 +58,15 @@ HOW TO USE
 PurePursuitController = {}
 PurePursuitController.__index = PurePursuitController
 
+-- normal lookahead distance
+PurePursuitController.normalLookAheadDistance = 5
+PurePursuitController.shortLookaheadDistance = 2.5
+
 -- constructor
 function PurePursuitController:new(vehicle)
 	local newPpc = {}
 	setmetatable( newPpc, self )
-	-- base lookahead distance
-	newPpc.baseLookAheadDistance = 5
+	newPpc.baseLookAheadDistance = newPpc.normalLookAheadDistance
 	-- adapted look ahead distance 
 	newPpc.lookAheadDistance = newPpc.baseLookAheadDistance
 	-- when transitioning from forward to reverse, this close we have to be to the waypoint where we
@@ -123,6 +126,10 @@ function PurePursuitController:initialize(ix, aiDriver)
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
 	self.aiDriver = aiDriver
+end
+
+function PurePursuitController:setLookaheadDistance(d)
+	self.baseLookAheadDistance = d
 end
 
 function PurePursuitController:getCurrentWaypointIx()
@@ -434,7 +441,7 @@ end
 function PurePursuitController:atLastWaypoint()
 	local atLastWaypoint
 	if self:isActive() then
-		atLastWaypoint = self.relevantWpNode.ix >= self.vehicle.cp.numWaypoints
+		atLastWaypoint = self.relevantWpNode.ix >= #self.course.waypoints
 	else
 		atLastWaypoint = self.vehicle.cp.waypointIndex >= self.vehicle.cp.numWaypoints			
 	end

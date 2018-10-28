@@ -439,7 +439,8 @@ function courseplay:start(self)
 		else
 			courseplay:setWaypointIndex(self, 1);
 			local distToFirst = courseplay:distanceToPoint( self, self.Waypoints[ 1 ].cx, 0, self.Waypoints[ 1 ].cz )
-			if distToFirst > self.cp.turnDiameter then
+			-- TODO: use a proper switch to enable AIDriver instead of mode5
+			if self.cp.mode ~= 5 and distToFirst > self.cp.turnDiameter then
 				courseplay:startAlignmentCourse( self, self.Waypoints[ 1 ])
 			end
 		end

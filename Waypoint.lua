@@ -30,9 +30,10 @@ end
 function Waypoint:set(cpWp, cpIndex)
 	-- we initialize explicitly, no table copy as we want to have
 	-- full control over what is used in this object
-	self.x = cpWp.cx or 0
-	self.z = cpWp.cz or 0
-	self.angle = cpWp.angle or 0
+	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ
+	self.x = cpWp.cx or cpWp.posX or 0
+	self.z = cpWp.cz or cpWp.posZ or 0
+	self.angle = cpWp.angle or nil
 	self.rev = cpWp.rev or false
 	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
@@ -41,6 +42,15 @@ end
 function Waypoint:getPosition()
 	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.x, 0, self.z)
 	return self.x, y, self.z
+end
+
+function Waypoint:getDistanceFromPoint(x, z)
+	return courseplay:distance(x, z, self.x, self.z)
+end
+
+function Waypoint:getDistanceFromVehicle(vehicle)
+	local vx, vy, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
+	return self:getDistanceFromPoint(vx, vz)
 end
 
 -- a node related to a waypoint
@@ -63,8 +73,6 @@ end
 function WaypointNode:destroy()
 	courseplay.destroyNode(self.node)
 end
-
-
 
 function WaypointNode:setToWaypoint(course, ix, suppressLog)
 	local newIx = math.min(ix, #course.waypoints)
@@ -128,31 +136,31 @@ function Course:new(waypoints)
 	for i = 1, #waypoints do
 		table.insert(newCourse.waypoints, Waypoint:new(waypoints[i], i))
 	end
-	print('course ' .. tostring(#waypoints))
+	newCourse:addWaypointAngles()
+	print('course ' .. tostring(#newCourse.waypoints))
 	return newCourse
 end
 
-function Course:initializeSegments(startCpWaypointIx)
-	local currentSegmentIx = 1
-	local startSegment, startIx
-	self.segments[currentSegmentIx] = {}
-	for i = 1, #self.waypoints do
-		self.waypoints[i].segmentIx = currentSegmentIx
-		table.insert(self.segments[currentSegmentIx], self.waypoints[i])
-		if i == startCpWaypointIx then
-			startSegment = self.segments[currentSegmentIx]
-			startIx = #startSegment
-		end
-		if self:switchingToReverseAt(i) or self:switchingToForwardAt(i) then
-			-- start a new segment wherever there's a direction change
-			currentSegmentIx = currentSegmentIx + 1
-			self.segments[currentSegmentIx] = {}				
+-- add missing angles from one waypoint to the other
+-- PPC relies on waypoint angles, we need them
+function Course:addWaypointAngles()
+	for i = 1, #self.waypoints - 1 do
+		if not self.waypoints[i].angle then
+			local cx, _, cz = self:getWaypointPosition(i)
+			local nx, _, nz = self:getWaypointPosition( i + 1)
+			-- TODO: fix this weird coordinate system transformation from x/z to x/y
+			local dx, dz = nx - cx, -nz - (-cz)
+			local angle = toPolar(dx, dz)
+			-- and now back to x/z
+			self.waypoints[i].angle = courseGenerator.toCpAngle(angle)
 		end
 	end
-	return startSegment, startIx
+	if not self.waypoints[#self.waypoints].angle then
+		self.waypoints[#self.waypoints].angle = self.waypoints[#self.waypoints - 1].angle
+	end
 end
 
-function Course:setCurrentWaypointIx(ix) 
+function Course:setCurrentWaypointIx(ix)
 	self.currentWaypoint = ix
 end
 
@@ -186,9 +194,16 @@ function Course:getWaypointPosition(ix)
 end
 
 -- distance between (px,pz) and the ix waypoint
-function Course:getDistanceToWaypoint(px, pz, ix)
-	local x, z = self.waypoints[ix].x, self.waypoints[ix].z
-	return courseplay:distance(px, pz, x, z)
+function Course:getDistanceBetweenPointAndWaypoint(px, pz, ix)
+	return self.waypoints[ix]:getDistanceFromPoint(px, pz)
+end
+
+function Course:getDistanceBetweenVehicleAndWaypoint(vehicle, ix)
+	return self.waypoints[ix]:getDistanceFromVehicle(vehicle)
+end
+
+function Course:getWaypointAngleDeg(ix)
+	return self.waypoints[ix].angle
 end
 
 --- Get the average speed setting across n waypoints starting at ix
@@ -213,3 +228,9 @@ function Course:getIxRollover(ix)
 	return ix
 end
 
+function Course:print()
+	for i = 1, #self.waypoints do
+		local p = self.waypoints[i]
+		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s', i, p.x, p.z, p.angle, tostring(p.rev)))
+	end
+end
