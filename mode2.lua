@@ -1414,8 +1414,17 @@ function courseplay:unload_combine(vehicle, dt)
 				vehicle.nextMovingDirection = 1
 			end;
 		end;
+
+		-- MR needs braking assitance
+		local accelrator = 1 -- CP can go has fast it wants and use the inf engine breaking power
+		if vehicle.mrIsMrVehicle then
+			courseplay:mrProgressiveBreaking(vehicle, refSpeed)
+			if vehicle.cp.mrAccelrator then
+				accelrator = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
+			end
+		end
 		
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, accelrator, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 				
 		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 		if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then

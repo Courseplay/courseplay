@@ -1065,7 +1065,11 @@ function courseplay:drive(self, dt)
 			local acceleration = 1;
 			if self.cp.speedBrake then
 				-- We only need to brake slightly.
-				acceleration = (self.movingDirection == 1) == fwd and -0.25 or 0.25; -- Setting accelrator to a negative value will break the tractor.
+				local mrAccelrator = .25
+				if self.cp.useProgessiveBraking then
+					mrAccelrator = self.cp.mrAccelrator -- We need to actually break the tractor even more when using MR due to no engine break
+				end
+				acceleration = (self.movingDirection == 1) == fwd and -mrAccelrator or mrAccelrator; -- Setting accelrator to a negative value will break the tractor.
 			end;
 
 			local steeringAngle = self.cp.steeringAngle;
@@ -1270,18 +1274,44 @@ function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 
 	courseplay:handleSlipping(vehicle, refSpeed);
 
-	local tolerance = 2.5;
-
-	if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
-		tolerance = 1;
-	end;
-	if deltaMinus > tolerance then
-		vehicle.cp.speedBrake = true;
+	if vehicle.cp.useProgessiveBraking then
+		courseplay:mrProgressiveBreaking(vehicle, refSpeed)
+		if vehicle.cp.mrAccelrator then
+			vehicle.cp.speedBrake = true;
+		else
+			vehicle.cp.speedBrake = false;
+		end
 	else
-		vehicle.cp.speedBrake = false;
+		local tolerance = 2.5;
+
+		if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
+			tolerance = 1;
+		end;
+		if deltaMinus > tolerance then
+			vehicle.cp.speedBrake = true;
+		else
+			vehicle.cp.speedBrake = false;
+		end;
 	end;
 
 	return newSpeed;
+end
+
+function courseplay:mrProgressiveBreaking(vehicle, refSpeed)
+	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
+	if vehicle.cp.currentTipTrigger and vehicle.cp.currentTipTrigger.bunkerSilo then
+		deltaMinus = deltaMinus + .5
+	elseif  deltaMinus > 7.5 then
+		vehicle.cp.mrAccelrator = 1
+	elseif  deltaMinus > 5 then
+		vehicle.cp.mrAccelrator = .75
+	elseif  deltaMinus > 2.5 then
+		vehicle.cp.mrAccelrator = 0.5
+	elseif  deltaMinus > 1.5 then
+		vehicle.cp.mrAccelrator = 0.25
+	else 
+		vehicle.cp.mrAccelrator = nil
+	end
 end
 
 function courseplay:getSpeedWithLimiter(vehicle, refSpeed)
@@ -2088,7 +2118,16 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 			end;
 		end;
 	
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
+		-- MR needs braking assitance
+		local accelrator = 1
+		if vehicle.cp.useProgessiveBraking then
+			courseplay:mrProgressiveBreaking(vehicle, refSpeed)
+			if vehicle.cp.mrAccelrator then
+				accelrator = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
+			end
+		end
+
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, accelrator, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 
 		if courseplay.debugChannels[9] and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)

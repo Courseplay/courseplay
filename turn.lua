@@ -736,6 +736,13 @@ function courseplay:turn(vehicle, dt)
 		lz = -lz
 	end
 
+	if vehicle.cp.useProgessiveBraking then
+		courseplay:mrProgressiveBreaking(vehicle, refSpeed)
+		if vehicle.cp.mrAccelrator then
+			directionForce = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
+		end
+	end
+	
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 	if newTarget and ((newTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
@@ -745,7 +752,7 @@ function courseplay:turn(vehicle, dt)
 				vehicle.nextMovingDirection = 1
 			end
 		end
-
+	
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
 	else
 		dtpZ = dtpZ * 0.85;
