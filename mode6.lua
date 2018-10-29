@@ -575,9 +575,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end
 				elseif tool.cp.isChopper or courseplay:isSpecialChopper(workTool) then
 					-- resume driving
-					local ch, gr = FillUtil.FILLTYPE_CHAFF, FillUtil.FILLTYPE_GRASS_WINDROW;
+					local ch, gr, sc = FillUtil.FILLTYPE_CHAFF, FillUtil.FILLTYPE_GRASS_WINDROW, FillUtil.FILLTYPE_SUGARCANE;
 					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) 
-					or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting))) 
+					or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting)
+					or (tool.pipeParticleSystems[sc] and tool.pipeParticleSystems[sc].isEmitting))) 
 					or pipeState > 0 
 					or vehicle.cp.turnStage ~= 0 then
 						if tool.lastValidInputFruitType ~= FruitUtil.FRUITTYPE_UNKNOWN then
