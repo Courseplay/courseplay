@@ -221,10 +221,9 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 									vehicle.cp.lastMergedWP = wpNum1;
 									course1[course1wp].merged = true;
 									course2[course2wp].merged = true;
-
-									courseplay:debug(string.format(
-										'\tvalid crossing points found: (1)=#%d, (2)=#%d, dist=%.1f -> lastMergedWP=%d, set "merged" for both to "true", continue',
-									 	course1wp, course2wp, dist, vehicle.cp.lastMergedWP), 8);
+									courseplay.debugVehicle(8, vehicle,
+										'wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f', 
+										wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist)
 								end;
 							end;
 						end;
