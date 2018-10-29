@@ -391,8 +391,12 @@ function PurePursuitController:isActive()
 	return self.enabled and not self.isReverseActive
 end
 
-function PurePursuitController:getDirection(lz)
+--- Should we be driving in reverse based on the current position on course
+function PurePursuitController:isReversing()
+	return self.course:isReverseAt(self:getCurrentWaypointIx()) or self.course:switchingToForwardAt(self:getCurrentWaypointIx())
+end
 
+function PurePursuitController:getDirection(lz)
 	local ctx, cty, ctz = self:getClosestWaypointData()
 	if not ctx then return lz end
 	local dx, _, dz  = worldToLocal(self.vehicle.cp.DirectionNode, ctx, cty, ctz)

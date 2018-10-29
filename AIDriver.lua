@@ -88,14 +88,12 @@ function AIDriver:drive(dt)
 	-- direction to the goal point
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx, gy, gz);
 	-- take care of reversing
-	local moveForwards = not self:isReversing()
-	print(string.format('before lx %.1f lz %.1f', lx, lz))
+	local moveForwards = not self.vehicle.cp.ppc:isReversing()
 	if not moveForwards then
 		lx = -lx
 		lz = -lz
 	end
-	print(string.format('lx %.1f lz %.1f', lx, lz))
-	self:driveVehicle(dt, allowedToDrive, not self:isReversing(), lx, lz, self:getSpeed())
+	self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
 end
 
 ---
@@ -106,12 +104,6 @@ end
 
 function AIDriver:onWaypointChange(newIx)
 	-- implemented by the derived classes
-end
-
---- Should we be driving in reverse based on the current position on course
-function AIDriver:isReversing()
-	local currentWpIx = self.vehicle.cp.ppc:getCurrentWaypointIx()
-	return self.course:isReverseAt(currentWpIx) or self.course:switchingToForwardAt(currentWpIx)
 end
 
 
@@ -150,7 +142,7 @@ function AIDriver:setUpAlignmentCourse(ix)
 		return
 	end
 	if #alignmentWaypoints < 3 then
-		self:debug("Alignment course would be only %d waypoints, it isn't needed then.", #self.alignmentCourse )
+		self:debug("Alignment course would be only %d waypoints, it isn't needed then.", #alignmentWaypoints )
 		return
 	end
 	self:debug('Alignment course with %d started.', #alignmentWaypoints)

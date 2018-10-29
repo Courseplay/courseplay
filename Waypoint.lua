@@ -181,6 +181,7 @@ function Course:switchingToReverseAt(ix)
 end
 
 function Course:switchingToForwardAt(ix)
+	--print( tostring(self.waypoints[ix].rev) .. tostring(math.min(ix + 1, #self.waypoints)))
 	return self:isReverseAt(ix) and not self:isReverseAt(math.min(ix + 1, #self.waypoints))
 end
 
