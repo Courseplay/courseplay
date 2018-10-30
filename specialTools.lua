@@ -424,6 +424,10 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isAgrisemCultiplowPlatinum8m = true;
 		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail
 		workTool.cp.overwriteTurnRadius = 7;
+		
+	--Bednar SM 180000 [Giants Big Bud DLC]
+	elseif workTool.cp.xmlFileName == 'BednarSM18000.xml' then
+		workTool.cp.isBednarSM18000 = true
 
 	-- PLOUGHS [Giants]
 	-- Amazone Cayron 200 [Giants]
@@ -484,6 +488,10 @@ function courseplay:setNameVariable(workTool)
 	elseif	 workTool.cp.xmlFileName == 'seedHawkXLAirDrill84.xml' then
 		workTool.cp.isSeedHawkXLAirDrill84 = true;
 		workTool.cp.overwriteTurnRadius = 10;
+
+	--Great Plains YP2425A [Giants Big Bud DLC]
+	elseif workTool.cp.xmlFileName == 'greatPlainsYP2425A.xml' then
+		workTool.cp.notToBeReversed = true;
 
 	end;
 	-- ###########################################################
@@ -888,7 +896,7 @@ function courseplay:askForSpecialSettings(self, object)
 		self.cp.backMarkerOffset = 4.5;
 		self.isStrawEnabled = false;
 	elseif self.cp.isCaseIHA8800MR then
-		self.cp.changeDirAngle = 10;
+		self.cp.changeDirAngle = 1;
 	end;
 
 	-- OBJECTS

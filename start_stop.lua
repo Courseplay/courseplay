@@ -513,11 +513,6 @@ function courseplay:start(self)
 		courseplay:disableCropDestruction(self);
 	end;
 
-	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
-	if self.mrUseMrTransmission and self.mrUseMrTransmission == true then
-		self.mrUseMrTransmission = false;
-		self.cp.changedMRMod = true;
-	end
 	-- Initialize pure pursuit controller
 	self.cp.ppc:initialize()
 	--print("startStop "..debug.getinfo(1).currentline)
@@ -735,11 +730,10 @@ function courseplay:stop(self)
 		courseplay:enableCropDestruction(self);
 	end;
 
-	--More Realistlitic Mod. Temp fix until we can fix the breaking problem. 
-	if self.mrUseMrTransmission ~= nil and self.cp.changedMRMod == true then
-		self.mrUseMrTransmission = true;
-		self.cp.changedMRMod = false;
-	end;
+	-- MR and Real Fill Type Mass mod combatiablity 
+	if self.cp.useProgessiveBraking then
+		self.cp.mrAccelrator = nil
+	end
 
 	if self.cp.hasDriveControl then
 		local changed = false;
