@@ -7,10 +7,11 @@ local avoidWorkAreaType = {};
 -- drives recorded course
 function courseplay:drive(self, dt)
 
-	if self.cp.mode == 5 and courseplay.debugChannels[7] then
+	if self.cp.drivingMode == courseplay.DRIVING_MODE_AIDRIVER and self.cp.driver then
 		self.cp.driver:drive(dt)
 		return
 	end
+
 	-- Reset Character each 2 min to prevent glitching out.
 	if courseplay:timerIsThrough(self, "resetCharacter", false) then
 		if self.currentHelper == nil then

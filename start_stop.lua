@@ -519,7 +519,7 @@ function courseplay:start(self)
 		self.mrUseMrTransmission = false;
 		self.cp.changedMRMod = true;
 	end
-	if self.cp.mode == 5 then
+	if self.cp.drivingMode == courseplay.DRIVING_MODE_AIDRIVER then
 		-- the driver handles the PPC
 		self.cp.driver = AIDriver:new(self)
 		self.cp.driver:start(self.cp.waypointIndex)

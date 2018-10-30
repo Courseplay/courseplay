@@ -197,7 +197,8 @@ end
 function PurePursuitController:findRelevantSegment()
 	-- vehicle position
 	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
-	self.crossTrackError, _, dzFromRelevant = worldToLocal(self.relevantWpNode.node, vx, vy, vz);
+	local lx, _, dzFromRelevant = worldToLocal(self.relevantWpNode.node, vx, vy, vz);
+	self.crossTrackError = lx
 	-- adapt our lookahead distance based on the error
 	self.lookAheadDistance = math.min(self.baseLookAheadDistance + math.abs(self.crossTrackError), self.baseLookAheadDistance * 2)
 	-- projected vehicle position/rotation	
@@ -228,7 +229,7 @@ function PurePursuitController:findRelevantSegment()
 	end
 	if courseplay.debugChannels[12] then
 		drawDebugLine(px, py + 3, pz, 1, 1, 0, px, py + 1, pz, 1, 1, 0);
-		DebugUtil.drawDebugNode(self.relevantWpNode.node, string.format('ix = %d\nrelevant\nnode', self.relevantWpNode.ix, dz))
+		DebugUtil.drawDebugNode(self.relevantWpNode.node, string.format('ix = %d\nrelevant\nnode', self.relevantWpNode.ix))
 		DebugUtil.drawDebugNode(self.projectedPosNode, 'projected\nvehicle\nposition')
 	end
 end
@@ -238,7 +239,7 @@ end
 -- this is the algorithm described in Chapter 2 of the paper
 function PurePursuitController:findGoalPoint()
 
-	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode);
+	local vx, _, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode);
 	--local vx, vy, vz = getWorldTranslation(self.projectedPosNode);
 
 	-- create helper nodes at the relevant and the next wp. We'll move these up on the path until we reach the segment
@@ -253,8 +254,8 @@ function PurePursuitController:findGoalPoint()
 	while ix <= #self.vehicle.Waypoints do
 		node1:setToWaypoint(self.course, ix)
 		node2:setToWaypointOrBeyond(self.course, ix + 1, self.lookAheadDistance)
-		local x1, y1, z1 = getWorldTranslation(node1.node)
-		local x2, y2, z2 = getWorldTranslation(node2.node)
+		local x1, _, z1 = getWorldTranslation(node1.node)
+		local x2, _, z2 = getWorldTranslation(node2.node)
 		-- distance between the vehicle position and the ends of the segment
 		local q1 = courseplay:distance(x1, z1, vx, vz) -- distance from node 1
 		local q2 = courseplay:distance(x2, z2, vx, vz) -- distance from node 2
@@ -400,7 +401,6 @@ function PurePursuitController:getDirection(lz)
 	local ctx, cty, ctz = self:getClosestWaypointData()
 	if not ctx then return lz end
 	local dx, _, dz  = worldToLocal(self.vehicle.cp.DirectionNode, ctx, cty, ctz)
-	local x, _, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 0, 0)
 	local distance = math.sqrt(dx * dx + dz * dz)
 	local r = distance * distance / 2 / dx
 	local steeringAngle = math.atan(self.vehicle.cp.distances.frontWheelToRearWheel / r)

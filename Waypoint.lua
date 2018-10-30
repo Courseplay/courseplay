@@ -49,7 +49,7 @@ function Waypoint:getDistanceFromPoint(x, z)
 end
 
 function Waypoint:getDistanceFromVehicle(vehicle)
-	local vx, vy, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
+	local vx, _, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
 	return self:getDistanceFromPoint(vx, vz)
 end
 

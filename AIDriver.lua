@@ -80,18 +80,26 @@ function AIDriver:drive(dt)
 			-- continue at the first waypoint
 			self.vehicle.cp.ppc:initialize(1)
 		end
-	else
 	end
 
 	-- goal point to drive to
 	local gx, gy, gz = self.vehicle.cp.ppc:getCurrentWaypointPosition()
 	-- direction to the goal point
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx, gy, gz);
+	local moveForwards = true
+
 	-- take care of reversing
-	local moveForwards = not self.vehicle.cp.ppc:isReversing()
-	if not moveForwards then
-		lx = -lx
-		lz = -lz
+	if self.vehicle.cp.ppc:isReversing() then
+		local isReverseActive
+		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
+		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
+		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self, lx, lz)
+		if not isReverseActive then
+			-- goReverse is not driving, this is a simple case, use the direction calculated by our PPC.
+			lx = -lx
+			lz = -lz
+		end
+		-- otherwise we go wherever goReverse() told us to go
 	end
 	self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
 end

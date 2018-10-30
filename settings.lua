@@ -613,9 +613,14 @@ function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
 
-function courseplay:togglePpc(vehicle)
-	courseplay.debugVehicle(12, vehicle, 'PPC TOGGLE')
-	vehicle.cp.ppc:toggleEnable()
+function courseplay:toggleDrivingMode(vehicle)
+	vehicle.cp.drivingMode = (vehicle.cp.drivingMode + 1) % (courseplay.DRIVING_MODE_MAX + 1)
+	courseplay.debugVehicle(12, vehicle, 'Driving mode: %d', vehicle.cp.drivingMode)
+	if vehicle.cp.drivingMode == courseplay.DRIVING_MODE_NORMAL then
+		vehicle.cp.ppc:disable()
+	else
+		vehicle.cp.ppc:enable()
+	end
 end
 
 function courseplay:toggleAlignmentWaypoint( vehicle )

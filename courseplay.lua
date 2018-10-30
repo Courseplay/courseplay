@@ -179,6 +179,12 @@ local function setGlobalData()
 	courseplay.COURSE_2D_DISPLAY_DBGONLY = 2;
 	courseplay.COURSE_2D_DISPLAY_BOTH	 = 3;
 
+	-- Driving modes
+	courseplay.DRIVING_MODE_NORMAL   = 0  -- legacy
+	courseplay.DRIVING_MODE_PPC      = 1  -- legacy with pure pursuite controller
+	courseplay.DRIVING_MODE_AIDRIVER = 2  -- AI driver
+	courseplay.DRIVING_MODE_MAX	     = 2
+
 	-- number separators
 	local langNumData = {
 		br = { '.', ',' },
