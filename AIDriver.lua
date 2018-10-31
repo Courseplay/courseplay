@@ -30,8 +30,9 @@ function AIDriver:new(vehicle)
 	setmetatable( newAIDriver, self )
 	newAIDriver.vehicle = vehicle
 	-- for now, initialize the course with the vehicle's current course
-	newAIDriver.course = Course:new(vehicle.Waypoints)
+	newAIDriver.course = Course:new(vehicle, vehicle.Waypoints)
 	newAIDriver.firstWaypointIx = 1
+	newAIDriver.vehicle.cp.ppc:setAIDriver(newAIDriver)
 	newAIDriver.vehicle.cp.ppc:enable()
 	newAIDriver.acceleration = 1
 	return newAIDriver
@@ -47,11 +48,11 @@ function AIDriver:start(ix)
 	if self.alignmentCourse then
 		self.vehicle.cp.ppc:setCourse(self.alignmentCourse)
 		self.vehicle.cp.ppc:setLookaheadDistance(PurePursuitController.shortLookaheadDistance)
-		self.vehicle.cp.ppc:initialize(1)
+		self.vehicle.cp.ppc:initialize(1, self)
 	else
 		self.vehicle.cp.ppc:setCourse(self.course)
 		self.vehicle.cp.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-		self.vehicle.cp.ppc:initialize(ix)
+		self.vehicle.cp.ppc:initialize(ix, self)
 	end
 end
 
@@ -69,7 +70,7 @@ function AIDriver:drive(dt)
 			-- alignment course to the first waypoint ended, start the actual course now
 			self.vehicle.cp.ppc:setCourse(self.course)
 			self.vehicle.cp.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-			self.vehicle.cp.ppc:initialize(self.firstWaypointIx)
+			self.vehicle.cp.ppc:initialize(self.firstWaypointIx, self)
 			self.alignmentCourse = nil
 			self:debug('Alignment course finished, starting course at waypoint %d', self.firstWaypointIx)
 		elseif self.vehicle.cp.stopAtEnd then
@@ -78,7 +79,7 @@ function AIDriver:drive(dt)
 			CpManager:setGlobalInfoText(self.vehicle, 'END_POINT')
 		else
 			-- continue at the first waypoint
-			self.vehicle.cp.ppc:initialize(1)
+			self.vehicle.cp.ppc:initialize(1, self)
 		end
 	end
 
@@ -93,13 +94,13 @@ function AIDriver:drive(dt)
 		local isReverseActive
 		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
-		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self, lx, lz)
+		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz)
 		if not isReverseActive then
 			-- goReverse is not driving, this is a simple case, use the direction calculated by our PPC.
 			lx = -lx
 			lz = -lz
 		end
-		-- otherwise we go wherever goReverse() told us to go
+		-- otherwise we go wherever goReverse() is telling us to go
 	end
 	self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
 end
@@ -111,7 +112,9 @@ function AIDriver:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, maxSpee
 end
 
 function AIDriver:onWaypointChange(newIx)
-	-- implemented by the derived classes
+	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
+	courseplay:setWaypointIndex(self.vehicle, newIx);
+	-- rest is implemented by the derived classes
 end
 
 
@@ -120,6 +123,8 @@ function AIDriver:getSpeed()
 	local speed
 	if self.vehicle.cp.speeds.useRecordingSpeed then
 		speed = self.course:getAverageSpeed(self.vehicle.cp.ppc:getCurrentWaypointIx(), 4)
+	elseif self.vehicle.cp.ppc:isReversing() then
+		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	end
 	return speed and speed or 15
 end
@@ -154,7 +159,7 @@ function AIDriver:setUpAlignmentCourse(ix)
 		return
 	end
 	self:debug('Alignment course with %d started.', #alignmentWaypoints)
-	self.alignmentCourse = Course:new(alignmentWaypoints)
+	self.alignmentCourse = Course:new(self.vehicle, alignmentWaypoints)
 	self.alignmentCourse:print()
 end
 

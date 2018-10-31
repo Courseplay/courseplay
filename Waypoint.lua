@@ -128,7 +128,7 @@ end
 Course = {}
 Course.__index = Course
 
-function Course:new(waypoints)
+function Course:new(vehicle, waypoints)
 	local newCourse = {}
 	setmetatable(newCourse, self)
 	-- add waypoints from current vehicle course
@@ -137,7 +137,8 @@ function Course:new(waypoints)
 		table.insert(newCourse.waypoints, Waypoint:new(waypoints[i], i))
 	end
 	newCourse:addWaypointAngles()
-	print('course ' .. tostring(#newCourse.waypoints))
+	-- only for logging purposes
+	newCourse.vehicle = vehicle
 	return newCourse
 end
 

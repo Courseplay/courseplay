@@ -113,7 +113,7 @@ end
 function PurePursuitController:initialize(ix, aiDriver)
 	-- for now, if no course set, use the vehicle's current waypoints
 	if not self.course then
-		self.course = Course:new(self.vehicle.Waypoints)
+		self.course = Course:new(self.vehicle, self.vehicle.Waypoints)
 	end
 	-- we rely on the code in start_stop.lua to select the first waypoint
 	self.firstIx = ix and ix or self.vehicle.cp.waypointIndex
@@ -125,6 +125,12 @@ function PurePursuitController:initialize(ix, aiDriver)
 	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d', self.firstIx )
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
+	self.aiDriver = aiDriver
+end
+
+function PurePursuitController:setAIDriver(aiDriver)
+	-- for backwards compatibility, PPC currently is initialized by the legacy code so
+	-- by the time AIDriver takes over, it is already there. So let AIDriver tell PPC who's driving.
 	self.aiDriver = aiDriver
 end
 

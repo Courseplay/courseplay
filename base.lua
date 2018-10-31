@@ -589,7 +589,11 @@ function courseplay:load(savegame)
 	courseplay:validateCanSwitchMode(self);
 	courseplay.buttons:setActiveEnabled(self, 'all');
 
-	self.cp.drivingMode = courseplay.DRIVING_MODE_NORMAL
+	if CpManager.isDeveloper then
+		self.cp.drivingMode = courseplay.DRIVING_MODE_AIDRIVER
+	else
+		self.cp.drivingMode = courseplay.DRIVING_MODE_NORMAL
+	end
 	self.cp.ppc = PurePursuitController:new(self)
 end;
 
