@@ -16,40 +16,49 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-
 lu = require("luaunit")
 th = require("testhelper")
 package.path = package.path .. ";../?.lua"
 package.path = package.path .. ";../course-generator/?.lua"
+require("mock-GiantsEngine")
+require("mock-Courseplay")
+require("CpObject")
+require("AIDriver")
+require("GrainTransportAIDriver")
 require("Waypoint")
+require("PurePursuitController")
 require("geo")
 require("courseGenerator")
 
-TestCourse = {}
+TestAIDriver = {}
 
-function TestCourse:setUp()
-	self.waypoints = th.waypoints
+function TestAIDriver:setUp()
+	self.vehicle = {}
+	self.vehicle.Waypoints = th.waypoints
+	self.vehicle.cp = {}
+	self.vehicle.cp.ppc = PurePursuitController:new(self.vehicle)
+	self.vehicle.cp.ppc:initialize(1)
+
+	self.vehicle.cp.speeds = {}
+	self.vehicle.cp.turnDiameter = 5
+	function courseplay.distance()
+		return 1
+	end
 end
 
-function TestCourse:testAddWaypointAngles()
-	local course = Course:new(nil, self.waypoints)
-	lu.assertAlmostEquals(course.waypoints[1].angle, 90)
-	lu.assertAlmostEquals(course.waypoints[2].angle, 0)
-	lu.assertAlmostEquals(course.waypoints[3].angle, -90)
-	lu.assertAlmostEquals(course.waypoints[4].angle, 180)
-	lu.assertAlmostEquals(course.waypoints[5].angle, 180)
+-- This is not a functional test, the only purpose is to run as much of the AIDriver code as possible
+-- to find typos before restarting the game
+function TestAIDriver:testAIDriver()
+	local aiDriver = AIDriver(self.vehicle)
+	aiDriver:start(1)
+	aiDriver:drive(1)
 end
 
-function TestCourse:testGetAverageSpeed()
-	local course = Course:new(nil, self.waypoints)
-	lu.assertAlmostEquals(course:getAverageSpeed(1, 3), 2, 0.1)
-	lu.assertAlmostEquals(course:getAverageSpeed(2, 3), 3, 0.1)
-	lu.assertAlmostEquals(course:getAverageSpeed(4, 3), 3.33, 0.1)
-	lu.assertAlmostEquals(course:getAverageSpeed(5, 5), 3, 0.1)
+function TestAIDriver:testGrainTransportAIDrvier()
+	local aiDriver = GrainTransportAIDriver(self.vehicle)
+	aiDriver:start(1)
+	aiDriver:drive(1)
 end
 
-lu.LuaUnit.run()
-
-
-
-
+errors = lu.LuaUnit.run()
+os.exit(errors)

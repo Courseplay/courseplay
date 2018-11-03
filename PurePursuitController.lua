@@ -167,7 +167,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 		-- Also, when on the process of aligning to the course, like for example the vehicle just started
 		-- driving towards the first waypoint, we have to make sure we actually get close to the waypoint 
 		-- (as we may already be in front of it), so try get within the turn diameter.
-		if dz >= 0 and dFromNext < self.vehicle.cp.vehicleTurnRadius * 2 then
+		if dz >= 0 and dFromNext < self.vehicle.cp.turnDiameter then
 			result = true
 		end
 	end

@@ -211,7 +211,7 @@ end
 --- Get the average speed setting across n waypoints starting at ix
 function Course:getAverageSpeed(ix, n)
 	local total, count = 0, 0
-	for i = ix - 1, ix + n -1 do
+	for i = ix, ix + n - 1 do
 		local index = self:getIxRollover(i)
 		if self.waypoints[index].speed ~= nil then
 			total = total + self.waypoints[index].speed

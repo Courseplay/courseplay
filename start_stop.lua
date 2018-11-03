@@ -521,7 +521,7 @@ function courseplay:start(self)
 	end
 	if self.cp.drivingMode == courseplay.DRIVING_MODE_AIDRIVER then
 		-- the driver handles the PPC
-		self.cp.driver = AIDriver:new(self)
+		self.cp.driver = AIDriver(self)
 		self.cp.driver:start(self.cp.waypointIndex)
 	else
 		-- Initialize pure pursuit controller

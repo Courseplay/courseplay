@@ -16,26 +16,28 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-AIDriver = {}
-AIDriver.__index = AIDriver
+AIDriver = CpObject()
 
 AIDriver.slowAngleLimit = 20
 AIDriver.slowAcceleration = 0.5
 AIDriver.slowDownFactor = 0.5
 
---- Create a new driver
+--- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
-function AIDriver:new(vehicle)
-	local newAIDriver = {}
-	setmetatable( newAIDriver, self )
-	newAIDriver.vehicle = vehicle
+function AIDriver:init(vehicle)
+	self.vehicle = vehicle
 	-- for now, initialize the course with the vehicle's current course
-	newAIDriver.course = Course:new(vehicle, vehicle.Waypoints)
-	newAIDriver.firstWaypointIx = 1
-	newAIDriver.vehicle.cp.ppc:setAIDriver(newAIDriver)
-	newAIDriver.vehicle.cp.ppc:enable()
-	newAIDriver.acceleration = 1
-	return newAIDriver
+	self.course = Course:new(vehicle, vehicle.Waypoints)
+	self.firstWaypointIx = 1
+	self.ppc = self.vehicle.cp.ppc -- shortcut
+	self.ppc:setAIDriver(self)
+	self.ppc:enable()
+	self.acceleration = 1
+	self.mode = courseplay.MODE_TRANSPORT
+end
+
+function AIDriver:getMode()
+	return self.mode
 end
 
 --- Start driving
@@ -46,31 +48,52 @@ function AIDriver:start(ix)
 		self:setUpAlignmentCourse(ix)
 	end
 	if self.alignmentCourse then
-		self.vehicle.cp.ppc:setCourse(self.alignmentCourse)
-		self.vehicle.cp.ppc:setLookaheadDistance(PurePursuitController.shortLookaheadDistance)
-		self.vehicle.cp.ppc:initialize(1, self)
+		self.ppc:setCourse(self.alignmentCourse)
+		self.ppc:setLookaheadDistance(PurePursuitController.shortLookaheadDistance)
+		self.ppc:initialize(1, self)
 	else
-		self.vehicle.cp.ppc:setCourse(self.course)
-		self.vehicle.cp.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-		self.vehicle.cp.ppc:initialize(ix, self)
+		self.ppc:setCourse(self.course)
+		self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
+		self.ppc:initialize(ix, self)
 	end
 end
 
 --- Main driving function
 -- should be called from update()
+-- This base implementation just follows the waypoints, anything more than that
+-- should be implemented by the derived classes as needed.
 function AIDriver:drive(dt)
 
 	-- update current waypoint/goal point
-	self.vehicle.cp.ppc:update()
+	self.ppc:update()
 
+	-- get the direction to drive to
+	local lx, lz = self:getDirectionToNextWaypoint()
+
+	-- adjust direction in case we are driving reverse
+	local moveForwards
+	lx, lz, moveForwards = self:checkReverse(lx, lz)
+
+	-- should we keep driving?
+	local allowedToDrive = self:checkLastWaypoint()
+
+	self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+end
+
+---
+function AIDriver:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, maxSpeed)
+	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, self.acceleration,
+		self.slowAcceleration, self.slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, self.slowDownFactor);
+end
+
+function AIDriver:checkLastWaypoint()
 	local allowedToDrive = true
-
-	if self.vehicle.cp.ppc:atLastWaypoint() then
+	if self.ppc:atLastWaypoint() then
 		if self:onAlignmentCourse() then
 			-- alignment course to the first waypoint ended, start the actual course now
-			self.vehicle.cp.ppc:setCourse(self.course)
-			self.vehicle.cp.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-			self.vehicle.cp.ppc:initialize(self.firstWaypointIx, self)
+			self.ppc:setCourse(self.course)
+			self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
+			self.ppc:initialize(self.firstWaypointIx, self)
 			self.alignmentCourse = nil
 			self:debug('Alignment course finished, starting course at waypoint %d', self.firstWaypointIx)
 		elseif self.vehicle.cp.stopAtEnd then
@@ -79,18 +102,23 @@ function AIDriver:drive(dt)
 			CpManager:setGlobalInfoText(self.vehicle, 'END_POINT')
 		else
 			-- continue at the first waypoint
-			self.vehicle.cp.ppc:initialize(1, self)
+			self.ppc:initialize(1, self)
 		end
 	end
+	return allowedToDrive
+end
 
+function AIDriver:getDirectionToNextWaypoint()
 	-- goal point to drive to
-	local gx, gy, gz = self.vehicle.cp.ppc:getCurrentWaypointPosition()
+	local gx, gy, gz = self.ppc:getCurrentWaypointPosition()
 	-- direction to the goal point
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx, gy, gz);
-	local moveForwards = true
+	return AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx, gy, gz);
+end
 
+function AIDriver:checkReverse(lx, lz)
+	local moveForwards = true
 	-- take care of reversing
-	if self.vehicle.cp.ppc:isReversing() then
+	if self.ppc:isReversing() then
 		local isReverseActive
 		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
@@ -102,13 +130,7 @@ function AIDriver:drive(dt)
 		end
 		-- otherwise we go wherever goReverse() is telling us to go
 	end
-	self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
-end
-
----
-function AIDriver:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, maxSpeed)
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, self.acceleration,
-		self.slowAcceleration, self.slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, self.slowDownFactor);
+	return lx, lz, moveForwards
 end
 
 function AIDriver:onWaypointChange(newIx)
@@ -122,8 +144,8 @@ function AIDriver:getSpeed()
 	-- override by the derived classes
 	local speed
 	if self.vehicle.cp.speeds.useRecordingSpeed then
-		speed = self.course:getAverageSpeed(self.vehicle.cp.ppc:getCurrentWaypointIx(), 4)
-	elseif self.vehicle.cp.ppc:isReversing() then
+		speed = self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4)
+	elseif self.ppc:isReversing() then
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	end
 	return speed and speed or 15

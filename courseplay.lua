@@ -94,6 +94,7 @@ local function initialize()
 		'vehicles',
 		'PurePursuitController',
 		'Waypoint',
+		'CpObject',
 		'AIDriver',
     'course-generator/courseGenerator',
     'course-generator/CourseGeneratorScreen',
