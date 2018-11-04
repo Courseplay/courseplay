@@ -40,6 +40,8 @@ function TestAIDriver:setUp()
 	self.vehicle.cp.ppc:initialize(1)
 
 	self.vehicle.cp.speeds = {}
+	self.vehicle.cp.hasRunRaycastThisLoop = {}
+
 	self.vehicle.cp.turnDiameter = 5
 	function courseplay.distance()
 		return 1

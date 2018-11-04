@@ -170,7 +170,7 @@ function Course:getCurrentWaypointIx()
 end
 
 function Course:isReverseAt(ix)
-	return self.waypoints[ix].rev
+	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].rev
 end
 
 function Course:switchingDirectionAt(ix) 
@@ -178,12 +178,11 @@ function Course:switchingDirectionAt(ix)
 end
 
 function Course:switchingToReverseAt(ix)
-	return (not self:isReverseAt(ix)) and self:isReverseAt(math.min(ix + 1, #self.waypoints))
+	return not self:isReverseAt(ix) and self:isReverseAt(ix)
 end
 
 function Course:switchingToForwardAt(ix)
-	--print( tostring(self.waypoints[ix].rev) .. tostring(math.min(ix + 1, #self.waypoints)))
-	return self:isReverseAt(ix) and not self:isReverseAt(math.min(ix + 1, #self.waypoints))
+	return self:isReverseAt(ix) and not self:isReverseAt(ix)
 end
 
 function Course:getWaypointPosition(ix)

@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 GrainTransportAIDriver = CpObject(AIDriver)
 
+--- Constructor
 function GrainTransportAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
@@ -36,26 +37,29 @@ function GrainTransportAIDriver:drive(dt)
 	local allowedToDrive = self:checkLastWaypoint()
 
 	-- RESET TRIGGER RAYCASTS from drive.lua. 
-	-- TODO: Not sure how raycast can be called twice if everything is coded cleanly
-	self.vehicle.cp.hasRunRaycastThisLoop['tipTrigger'] = false;
-	self.vehicle.cp.hasRunRaycastThisLoop['specialTrigger'] = false;
+	-- TODO: Not sure how raycast can be called twice if everything is coded cleanly.
+	self.vehicle.cp.hasRunRaycastThisLoop['tipTrigger'] = false
+	self.vehicle.cp.hasRunRaycastThisLoop['specialTrigger'] = false
 
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 
 	local giveUpControl = false
 
+	-- TODO: are these checks really neccessary?
 	if self.vehicle.cp.totalFillLevel ~= nil
 		and self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
-		
-		self:searchForTipTrigger()
-	
-		allowedToDrive, giveUpControl = courseplay:handle_mode1(self.vehicle, allowedToDrive, dt)
 
+		self:searchForTipTrigger()
+
+		allowedToDrive = self:load(allowedToDrive)
+		allowedToDrive, giveUpControl = self:unLoad(allowedToDrive, dt)
+	else
+		self:debug('Safety check failed')
 	end
 
 	if giveUpControl then
-		-- handle_mode1 does the driving
+		-- unload_tippers does the driving
 		return
 	else
 		-- we drive
@@ -72,13 +76,18 @@ function GrainTransportAIDriver:onWaypointChange(newIx)
 	end
 end
 
-function GrainTransportAIDriver:isNearTipTrigger()
+function GrainTransportAIDriver:hasTipTrigger()
 	-- TODO: come up with something better?
 	return self.vehicle.cp.currentTipTrigger ~= nil
 end
 
+function GrainTransportAIDriver:isNearFillPoint()
+	-- TODO: like above, we may have some better indication of this
+	return self.ppc:getCurrentWaypointIx() >= 1 and self.ppc:getCurrentWaypointIx() <= 3
+end
+
 function GrainTransportAIDriver:getSpeed()
-	if self:isNearTipTrigger() then
+	if self:hasTipTrigger() then
 		return 10		
 	else
 		return AIDriver.getSpeed(self)
@@ -87,7 +96,7 @@ end
 
 function GrainTransportAIDriver:searchForTipTrigger()
 	if not self.vehicle.cp.hasAugerWagon
-		and self.vehicle.cp.currentTipTrigger == nil
+		and not self:hasTipTrigger()
 		and self.vehicle.cp.totalFillLevel > 0
 		and self.ppc:getCurrentWaypointIx() > 2
 		and not self.ppc:atLastWaypoint()
@@ -97,4 +106,84 @@ function GrainTransportAIDriver:searchForTipTrigger()
 		local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
 		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
 	end
+end
+
+function GrainTransportAIDriver:load(allowedToDrive)
+	-- Loading
+	-- tippers are not full TODO: this condition smells, should be refactored. Totally confusing isLoaded/isUnloaded?
+	if ((self.vehicle.cp.isLoaded and self.vehicle.cp.trailerFillDistance) or self.vehicle.cp.isLoaded ~= true)
+		and
+		((self:isNearFillPoint()
+			and self.vehicle.cp.totalFillLevel < self.vehicle.cp.totalCapacity
+			and self.vehicle.cp.isUnloaded == false)
+		or self.vehicle.cp.trailerFillDistance) then
+		allowedToDrive = courseplay:load_tippers(self.vehicle, allowedToDrive);
+		courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(self.vehicle.cp.totalFillLevel, 100),self.vehicle.cp.totalCapacity));
+	end
+	return allowedToDrive
+end
+
+function GrainTransportAIDriver:unLoad(allowedToDrive, dt)
+	-- Unloading
+	local takeOverSteering = false
+
+	-- If we are an auger wagon, we don't have an tip point, so handle it as an auger wagon in mode 3
+	-- This should be in drive.lua on line 305 IMO --pops64
+	if self.vehicle.cp.hasAugerWagon then
+		courseplay:handleMode3(self.vehicle, allowedToDrive, dt);
+	else
+		-- done tipping?
+		if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 then
+			courseplay:resetTipTrigger(self.vehicle, true);
+		end
+
+		self:cleanUpMissedTriggerExit()
+
+		-- tipper is not empty and tractor reaches TipTrigger
+		if self.vehicle.cp.totalFillLevel > 0
+			and self:hasTipTrigger()
+			and not self:isNearFillPoint() then
+			allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive, dt);
+			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+		end
+	end
+	return allowedToDrive, takeOverSteering;
+end;
+
+function GrainTransportAIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to be doing
+	-- damn, I missed the trigger!
+	if self:hasTipTrigger() then
+		local t = self.vehicle.cp.currentTipTrigger;
+		local trigger_id = t.triggerId;
+
+		if t.specialTriggerId ~= nil then
+			trigger_id = t.specialTriggerId;
+		end;
+		if t.isPlaceableHeapTrigger then
+			trigger_id = t.rootNode;
+		end;
+
+		if trigger_id ~= nil then
+			local trigger_x, _, trigger_z = getWorldTranslation(trigger_id)
+			local ctx, _, ctz = getWorldTranslation(self.vehicle.cp.DirectionNode)
+			local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
+
+			-- Start reversing value is to check if we have started to reverse
+			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
+			local startReversing = self.course:switchingToReverseAt(self.ppc:getCurrentWaypointIx() - 1)
+			if startReversing then
+				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self.vehicle)), 13);
+			end
+
+			local isBGA = t.bunkerSilo ~= nil
+			local triggerLength = Utils.getNoNil(self.vehicle.cp.currentTipTrigger.cpActualLength, 20)
+			local maxDist = isBGA and (self.vehicle.cp.totalLength + 55) or (self.vehicle.cp.totalLength + triggerLength);
+			if distToTrigger > maxDist or startReversing then --it's a backup, so we don't need to care about +/-10m
+				courseplay:resetTipTrigger(self.vehicle)
+				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(self.vehicle), distToTrigger, maxDist), 1);
+			end
+		else
+			courseplay:resetTipTrigger(self.vehicle)
+		end;
+	end;
 end
