@@ -29,7 +29,6 @@ function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
 end
 
 function GrainTransportAIDriver:drive(dt)
-
 	-- update current waypoint/goal point
 	self.ppc:update()
 	local lx, lz = self:getDirectionToNextWaypoint()
@@ -44,28 +43,22 @@ function GrainTransportAIDriver:drive(dt)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 
 	local giveUpControl = false
+
 	if self.vehicle.cp.totalFillLevel ~= nil
 		and self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
-
-		if not self.vehicle.cp.hasAugerWagon
-			and self.vehicle.cp.currentTipTrigger == nil
-			and self.vehicle.cp.totalFillLevel > 0
-			and self.ppc:getCurrentWaypointIx() > 2
-			and not self.ppc:atLastWaypoint()
-			and not self.ppc:isReversing() then
-			local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, lx, 0, lz)
-			-- raycast start point in front of vehicle
-			local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
-			courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
-		end
-
+		
+		self:searchForTipTrigger()
+	
 		allowedToDrive, giveUpControl = courseplay:handle_mode1(self.vehicle, allowedToDrive, dt)
 
 	end
+
 	if giveUpControl then
+		-- handle_mode1 does the driving
 		return
 	else
+		-- we drive
 		local moveForwards
 		lx, lz, moveForwards = self:checkReverse(lx, lz)
 		self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
@@ -89,5 +82,19 @@ function GrainTransportAIDriver:getSpeed()
 		return 10		
 	else
 		return AIDriver.getSpeed(self)
+	end
+end
+
+function GrainTransportAIDriver:searchForTipTrigger()
+	if not self.vehicle.cp.hasAugerWagon
+		and self.vehicle.cp.currentTipTrigger == nil
+		and self.vehicle.cp.totalFillLevel > 0
+		and self.ppc:getCurrentWaypointIx() > 2
+		and not self.ppc:atLastWaypoint()
+		and not self.ppc:isReversing() then
+		local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, lx, 0, lz)
+		-- raycast start point in front of vehicle
+		local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
+		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
 	end
 end
