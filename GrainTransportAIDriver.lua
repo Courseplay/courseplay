@@ -36,8 +36,14 @@ function GrainTransportAIDriver:drive(dt)
 	-- should we keep driving?
 	local allowedToDrive = self:checkLastWaypoint()
 
-	local giveUpControl = false
+	-- RESET TRIGGER RAYCASTS from drive.lua. 
+	-- TODO: Not sure how raycast can be called twice if everything is coded cleanly
+	self.vehicle.cp.hasRunRaycastThisLoop['tipTrigger'] = false;
+	self.vehicle.cp.hasRunRaycastThisLoop['specialTrigger'] = false;
 
+	courseplay:updateFillLevelsAndCapacities(self.vehicle)
+
+	local giveUpControl = false
 	if self.vehicle.cp.totalFillLevel ~= nil
 		and self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
@@ -51,7 +57,7 @@ function GrainTransportAIDriver:drive(dt)
 			local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, lx, 0, lz)
 			-- raycast start point in front of vehicle
 			local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
-			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
+			courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
 		end
 
 		allowedToDrive, giveUpControl = courseplay:handle_mode1(self.vehicle, allowedToDrive, dt)
@@ -63,5 +69,25 @@ function GrainTransportAIDriver:drive(dt)
 		local moveForwards
 		lx, lz, moveForwards = self:checkReverse(lx, lz)
 		self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+	end
+end
+
+function GrainTransportAIDriver:onWaypointChange(newIx)
+	AIDriver.onWaypointChange(self, newIx)
+	if self.ppc:atLastWaypoint() then
+		courseplay:changeRunCounter(self.vehicle, false)
+	end
+end
+
+function GrainTransportAIDriver:isNearTipTrigger()
+	-- TODO: come up with something better?
+	return self.vehicle.cp.currentTipTrigger ~= nil
+end
+
+function GrainTransportAIDriver:getSpeed()
+	if self:isNearTipTrigger() then
+		return 10		
+	else
+		return AIDriver.getSpeed(self)
 	end
 end

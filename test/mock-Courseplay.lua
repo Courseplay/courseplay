@@ -27,4 +27,7 @@ function courseplay.debugVehicle(channel, vehicle, ...)
 	print(string.format(...))
 end
 
+function courseplay.updateFillLevelsAndCapacities()
+end
+
 CpManager = {}

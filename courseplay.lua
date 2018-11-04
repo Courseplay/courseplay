@@ -96,6 +96,7 @@ local function initialize()
 		'Waypoint',
 		'CpObject',
 		'AIDriver',
+		'GrainTransportAIDriver',
     'course-generator/courseGenerator',
     'course-generator/CourseGeneratorScreen',
 	'course-generator/CoursePlot',
