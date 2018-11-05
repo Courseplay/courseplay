@@ -803,7 +803,7 @@ function courseplay.hud:loadPage(vehicle, page)
 				end;
 			end
 
-			vehicle.cp.hud.content.pages[1][1][2].text = tostring(vehicle.cp.drivingMode)
+			vehicle.cp.hud.content.pages[1][1][2].text = vehicle.cp.drivingMode:getText()
 
 			if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT) and #vehicle.cp.easyFillTypeList > 0 then
  				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');

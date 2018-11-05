@@ -23,12 +23,9 @@ package.path = package.path .. ";../course-generator/?.lua"
 require("mock-GiantsEngine")
 require("mock-Courseplay")
 require("CpObject")
-require("AIDriver")
-require("GrainTransportAIDriver")
 require("Waypoint")
 require("PurePursuitController")
-require("geo")
-require("courseGenerator")
+require("settings")
 
 TestSettings = {}
 
@@ -37,34 +34,37 @@ function TestSettings:setUp()
 	self.vehicle.Waypoints = th.waypoints
 	self.vehicle.cp = {}
 	self.vehicle.cp.ppc = PurePursuitController:new(self.vehicle)
-	self.vehicle.cp.ppc:initialize(1)
-
-	self.vehicle.cp.speeds = {}
-	self.vehicle.cp.hasRunRaycastThisLoop = {}
-
-	self.vehicle.cp.totalFillLevel = 99
-	self.vehicle.cp.totalCapacity = 100
-	self.vehicle.cp.tipRefOffset = 1 
-	self.vehicle.cp.workToolAttached = true
-
-	self.vehicle.cp.turnDiameter = 5
-	function courseplay.distance()
-		return 1
-	end
+	self.vehicle.cp.ppc:enable()
+	--self.vehicle.cp.ppc:initialize(1)
 end
 
 -- This is not a functional test, the only purpose is to run as much of the AIDriver code as possible
 -- to find typos before restarting the game
-function TestSettings:testAIDriver()
-	local aiDriver = AIDriver(self.vehicle)
-	aiDriver:start(1)
-	aiDriver:drive(1)
-end
+function TestSettings:testDrivingModeSettingList()
+	self.vehicle.cp.mode = courseplay.MODE_TRANSPORT
+	local drivingMode = DrivingModeSetting(self.vehicle)
+	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_NORMAL)
+	lu.assertIsTrue(drivingMode:is(DrivingModeSetting.DRIVING_MODE_NORMAL))
+	lu.assertIsFalse(self.vehicle.cp.ppc:isEnabled())
+	drivingMode:next()
+	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_PPC)
+	lu.assertIsTrue(self.vehicle.cp.ppc:isEnabled())
+	drivingMode:next()
+	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_AIDRIVER)
+	lu.assertIsTrue(self.vehicle.cp.ppc:isEnabled())
+	drivingMode:next()
+	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_NORMAL)
+	lu.assertIsFalse(self.vehicle.cp.ppc:isEnabled())
+	self.vehicle.cp.mode = courseplay.MODE_COMBI
+	drivingMode:next()
+	drivingMode:next()
+	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_NORMAL)
+	lu.assertIsFalse(self.vehicle.cp.ppc:isEnabled())
 
-function TestSettings:testGrainTransportAIDrvier()
-	local aiDriver = GrainTransportAIDriver(self.vehicle)
-	aiDriver:start(1)
-	aiDriver:drive(1)
+	drivingMode:set(DrivingModeSetting.DRIVING_MODE_PPC)
+	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_PPC)
+	lu.assertEquals(drivingMode:getText(), 'COURSEPLAY_PPC_ON')
+	lu.assertIsTrue(self.vehicle.cp.ppc:isEnabled())
 end
 
 errors = lu.LuaUnit.run()

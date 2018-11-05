@@ -86,6 +86,8 @@ function AIDriver:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, maxSpee
 		self.slowAcceleration, self.slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, self.slowDownFactor);
 end
 
+--- Check if we are at the last waypoint and should we continue with first waypoint of the course
+-- or stop.
 function AIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:atLastWaypoint() then
@@ -182,7 +184,6 @@ function AIDriver:setUpAlignmentCourse(ix)
 	end
 	self:debug('Alignment course with %d started.', #alignmentWaypoints)
 	self.alignmentCourse = Course:new(self.vehicle, alignmentWaypoints)
-	self.alignmentCourse:print()
 end
 
 function AIDriver:debug(...)

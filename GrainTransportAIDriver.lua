@@ -22,6 +22,12 @@ GrainTransportAIDriver = CpObject(AIDriver)
 function GrainTransportAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
+	self.runCounter = 0
+end
+
+function GrainTransportAIDriver:start(ix)
+	AIDriver.start(self, ix)
+	self.runCounter = 0
 end
 
 function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
@@ -98,6 +104,29 @@ function GrainTransportAIDriver:getSpeed()
 	end
 end
 
+function GrainTransportAIDriver:checkLastWaypoint()
+	local allowedToDrive = true
+	if self.ppc:atLastWaypoint() then
+		if self.vehicle.cp.stopAtEnd and self.runCounter >= self.vehicle.cp.runNumber then
+			-- stop at the last waypoint when the run counter expires
+			allowedToDrive = false
+			self.vehicle.cp.runReset = true;
+			CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1')
+			self:debug('Mode 1 has tried to stop')
+		else
+			-- continue at the first waypoint
+			self.ppc:initialize(1, self)
+			-- Don't make life too complicated. Whenever we restart the course, we just
+			-- increment the run counter
+			self.runCounter = self.runCounter + 1
+			-- .. and then brutally, just for backwards compatibility
+			self.vehicle.cp.runCounter = self.runCounter
+			self:debug('Finished run %d, continue with next.')
+		end
+	end
+	return allowedToDrive
+end
+
 function GrainTransportAIDriver:searchForTipTrigger(lx, lz)
 	if not self.vehicle.cp.hasAugerWagon
 		and not self:hasTipTrigger()
@@ -131,7 +160,7 @@ function GrainTransportAIDriver:unLoad(allowedToDrive, dt)
 	-- Unloading
 	local takeOverSteering = false
 
-	-- If we are an auger wagon, we don't have an tip point, so handle it as an auger wagon in mode 3
+	-- If we are an auger wagon, we don't have a tip point, so handle it as an auger wagon in mode 3
 	-- This should be in drive.lua on line 305 IMO --pops64
 	if self.vehicle.cp.hasAugerWagon then
 		courseplay:handleMode3(self.vehicle, allowedToDrive, dt);

@@ -23,11 +23,31 @@ function courseplay.destroyNode() end
 courseplay.debugChannels = {}
 courseplay.debugChannels[12] = true
 
+courseplay.settings = {}
+courseplay.hud = {}
+
 function courseplay.debugVehicle(channel, vehicle, ...)
 	print(string.format(...))
 end
 
+function courseplay:loc(text)
+	return text
+end
+
 function courseplay.updateFillLevelsAndCapacities()
 end
+
+-- this should be ok to redefine here, these won't change much
+courseplay.MODE_GRAIN_TRANSPORT = 1;
+courseplay.MODE_COMBI = 2;
+courseplay.MODE_OVERLOADER = 3;
+courseplay.MODE_SEED_FERTILIZE = 4;
+courseplay.MODE_TRANSPORT = 5;
+courseplay.MODE_FIELDWORK = 6;
+courseplay.MODE_COMBINE_SELF_UNLOADING = 7;
+courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
+courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
+courseplay.MODE_BUNKERSILO_COMPACTER = 10;
+courseplay.NUM_MODES = 10;
 
 CpManager = {}

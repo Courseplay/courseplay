@@ -7,7 +7,7 @@ local avoidWorkAreaType = {};
 -- drives recorded course
 function courseplay:drive(self, dt)
 
-	if self.cp.drivingMode == courseplay.DRIVING_MODE_AIDRIVER and self.cp.driver then
+	if self.cp.drivingMode:is(DrivingModeSetting.DRIVING_MODE_AIDRIVER) and self.cp.driver then
 		self.cp.driver:drive(dt)
 		return
 	end

@@ -614,13 +614,8 @@ function courseplay:toggleRealisticDriving(vehicle)
 end;
 
 function courseplay:toggleDrivingMode(vehicle)
-	vehicle.cp.drivingMode = (vehicle.cp.drivingMode + 1) % (courseplay.DRIVING_MODE_MAX + 1)
-	courseplay.debugVehicle(12, vehicle, 'Driving mode: %d', vehicle.cp.drivingMode)
-	if vehicle.cp.drivingMode == courseplay.DRIVING_MODE_NORMAL then
-		vehicle.cp.ppc:disable()
-	else
-		vehicle.cp.ppc:enable()
-	end
+	vehicle.cp.drivingMode:next()
+	courseplay.debugVehicle(12, vehicle, 'Driving mode: %d', vehicle.cp.drivingMode:get())
 end
 
 function courseplay:toggleAlignmentWaypoint( vehicle )
@@ -1886,6 +1881,125 @@ function courseplay:setCpVar(varName, value, noEventSend)
 		end
 	end
 end;
+
+
+SettingList = CpObject()
+
+--- A setting that can have a predefined set of values
+-- @param values table with the valid values
+-- @texts text name in the translation XML files describing the corresponding value
+function SettingList:init(values, texts)
+	self.values = values
+	self.texts = texts
+	-- index of the current value/text
+	self.current = 1
+	-- index of the previous value/text
+	self.previous = 1
+end
+
+-- Get the current value
+function SettingList:get()
+	return self.values[self.current]
+end
+
+-- Is the current value same as the param?
+function SettingList:is(value)
+	return self.values[self.current] == value
+end
+
+
+-- Get the current text
+function SettingList:getText()
+	return courseplay:loc(self.texts[self.current])
+end
+
+--- Set the next value
+function SettingList:next()
+	local new = self:checkAndSetValidValue(self.current + 1)
+	self:setToIx(new)
+end
+
+-- private function to set to the value at ix
+function SettingList:setToIx(ix)
+	if ix ~= self.current then
+		self.previous = self.current
+		self.current = ix
+		self:onChange()
+	end
+end
+
+--- Set to a specific value
+function SettingList:set(value)
+	local new
+	-- find the value requested
+	for i = 1, #self.values do
+		if self.values[i] == value then
+			new = self:checkAndSetValidValue(i)
+			self:setToIx(new)
+			return
+		end
+	end
+end
+
+function SettingList:checkAndSetValidValue(new)
+	if new > #self.values then
+		return 1
+	else
+		return new
+	end
+end
+
+function SettingList:onChange()
+	-- setting specific implementation in the derived classes
+end
+
+
+--- Driving mode setting
+DrivingModeSetting = CpObject(SettingList)
+
+-- Driving modes
+DrivingModeSetting.DRIVING_MODE_NORMAL   = 0  -- legacy
+DrivingModeSetting.DRIVING_MODE_PPC      = 1  -- legacy with pure pursuite controller
+DrivingModeSetting.DRIVING_MODE_AIDRIVER = 2  -- AI driver
+
+--- Constructor needs a vehicle to be able to check CP mode
+function DrivingModeSetting:init(vehicle)
+	SettingList.init(self,
+		{
+			DrivingModeSetting.DRIVING_MODE_NORMAL,
+			DrivingModeSetting.DRIVING_MODE_PPC,
+			DrivingModeSetting.DRIVING_MODE_AIDRIVER
+		},
+		{
+			'COURSEPLAY_PPC_OFF',
+			'COURSEPLAY_PPC_ON',
+			'COURSEPLAY_AIDRIVER'
+		})
+	self.vehicle = vehicle
+	-- make sure the vehicle's settings are in sync
+	self:onChange()
+end
+
+--- Until not all modes are available with AI Drive, we disable it for those modes
+function DrivingModeSetting:checkAndSetValidValue(new)
+	if self.vehicle.cp.mode ~= courseplay.MODE_GRAIN_TRANSPORT
+		and self.vehicle.cp.mode ~= courseplay.MODE_TRANSPORT
+		and new == #self.values then
+		-- enable AI Driver for mode 1 and 5 (grain transport and transport) only until it can handle other modes
+		return 1
+	else
+		return SettingList.checkAndSetValidValue(self, new)
+	end
+end
+
+--- Disable PPC for the legacy driving mode
+function DrivingModeSetting:onChange()
+	if self:get() == DrivingModeSetting.DRIVING_MODE_NORMAL then
+		self.vehicle.cp.ppc:disable()
+	else
+		self.vehicle.cp.ppc:enable()
+	end
+end
 
 -- do not remove this comment
 -- vim: set noexpandtab:

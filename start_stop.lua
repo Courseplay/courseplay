@@ -439,8 +439,7 @@ function courseplay:start(self)
 		else
 			courseplay:setWaypointIndex(self, 1);
 			local distToFirst = courseplay:distanceToPoint( self, self.Waypoints[ 1 ].cx, 0, self.Waypoints[ 1 ].cz )
-			-- TODO: use a proper switch to enable AIDriver instead of mode5
-			if self.cp.mode ~= 5 and distToFirst > self.cp.turnDiameter then
+			if not self.cp.drivingMode:is(DrivingModeSetting.DRIVING_MODE_AIDRIVER) and distToFirst > self.cp.turnDiameter then
 				courseplay:startAlignmentCourse( self, self.Waypoints[ 1 ])
 			end
 		end
@@ -519,7 +518,7 @@ function courseplay:start(self)
 		self.mrUseMrTransmission = false;
 		self.cp.changedMRMod = true;
 	end
-	if self.cp.drivingMode == courseplay.DRIVING_MODE_AIDRIVER then
+	if self.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
 		-- the driver handles the PPC
 		if self.cp.mode == courseplay.MODE_TRANSPORT then
 			self.cp.driver = AIDriver(self)
