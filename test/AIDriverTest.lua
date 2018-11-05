@@ -42,6 +42,11 @@ function TestAIDriver:setUp()
 	self.vehicle.cp.speeds = {}
 	self.vehicle.cp.hasRunRaycastThisLoop = {}
 
+	self.vehicle.cp.totalFillLevel = 99
+	self.vehicle.cp.totalCapacity = 100
+	self.vehicle.cp.tipRefOffset = 1 
+	self.vehicle.cp.workToolAttached = true
+
 	self.vehicle.cp.turnDiameter = 5
 	function courseplay.distance()
 		return 1

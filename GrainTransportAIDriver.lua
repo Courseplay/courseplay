@@ -45,12 +45,12 @@ function GrainTransportAIDriver:drive(dt)
 
 	local giveUpControl = false
 
-	-- TODO: are these checks really neccessary?
+	-- TODO: are these checks really necessary?
 	if self.vehicle.cp.totalFillLevel ~= nil
 		and self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
 
-		self:searchForTipTrigger()
+		self:searchForTipTrigger(lx, lz)
 
 		allowedToDrive = self:load(allowedToDrive)
 		allowedToDrive, giveUpControl = self:unLoad(allowedToDrive, dt)
@@ -72,6 +72,9 @@ end
 function GrainTransportAIDriver:onWaypointChange(newIx)
 	AIDriver.onWaypointChange(self, newIx)
 	if self.ppc:atLastWaypoint() then
+		-- this is needed to trigger the loading. No idea why. No idea what isLoaded specifically means,
+		-- no idea why start_stop.start sets it to true. frustrating
+		courseplay:setIsLoaded(self.vehicle, false);
 		courseplay:changeRunCounter(self.vehicle, false)
 	end
 end
@@ -88,13 +91,14 @@ end
 
 function GrainTransportAIDriver:getSpeed()
 	if self:hasTipTrigger() then
+		-- slow down around the tip trigger
 		return 10		
 	else
 		return AIDriver.getSpeed(self)
 	end
 end
 
-function GrainTransportAIDriver:searchForTipTrigger()
+function GrainTransportAIDriver:searchForTipTrigger(lx, lz)
 	if not self.vehicle.cp.hasAugerWagon
 		and not self:hasTipTrigger()
 		and self.vehicle.cp.totalFillLevel > 0
