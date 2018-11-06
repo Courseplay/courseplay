@@ -50,11 +50,11 @@ function AIDriver:start(ix)
 	if self.alignmentCourse then
 		self.ppc:setCourse(self.alignmentCourse)
 		self.ppc:setLookaheadDistance(PurePursuitController.shortLookaheadDistance)
-		self.ppc:initialize(1, self)
+		self.ppc:initialize(1)
 	else
 		self.ppc:setCourse(self.course)
 		self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-		self.ppc:initialize(ix, self)
+		self.ppc:initialize(ix)
 	end
 end
 
@@ -90,12 +90,12 @@ end
 -- or stop.
 function AIDriver:checkLastWaypoint()
 	local allowedToDrive = true
-	if self.ppc:atLastWaypoint() then
+	if self.ppc:reachedLastWaypoint() then
 		if self:onAlignmentCourse() then
 			-- alignment course to the first waypoint ended, start the actual course now
 			self.ppc:setCourse(self.course)
 			self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-			self.ppc:initialize(self.firstWaypointIx, self)
+			self.ppc:initialize(self.firstWaypointIx)
 			self.alignmentCourse = nil
 			self:debug('Alignment course finished, starting course at waypoint %d', self.firstWaypointIx)
 		elseif self.vehicle.cp.stopAtEnd then
@@ -104,7 +104,7 @@ function AIDriver:checkLastWaypoint()
 			CpManager:setGlobalInfoText(self.vehicle, 'END_POINT')
 		else
 			-- continue at the first waypoint
-			self.ppc:initialize(1, self)
+			self.ppc:initialize(1)
 		end
 	end
 	return allowedToDrive

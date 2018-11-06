@@ -608,7 +608,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- STOP AT END OR TRIGGER
-		if self.cp.stopAtEnd and (self.cp.ppc:atLastWaypoint() or self.cp.currentTipTrigger ~= nil or self.cp.fillTrigger ~= nil) then
+		if self.cp.stopAtEnd and (self.cp.ppc:reachedLastWaypoint() or self.cp.currentTipTrigger ~= nil or self.cp.fillTrigger ~= nil) then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self, 'END_POINT');
 		end;
@@ -1116,7 +1116,7 @@ function courseplay:drive(self, dt)
 	elseif not isWaitingThisLoop then
 		-- reset distance to waypoint
 		self.cp.shortestDistToWp = nil
-		if not self.cp.ppc:atLastWaypoint() then -- = New
+		if not self.cp.ppc:reachedLastWaypoint() then -- = New
 			if not self.cp.wait then
 				courseplay:setVehicleWait(self, true);
 			end

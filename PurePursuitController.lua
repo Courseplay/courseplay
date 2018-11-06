@@ -47,7 +47,7 @@ HOW TO USE
 4. this PPC can not reverse with a trailer (but it it fine without a trailer) We rely on the code in reverse.lua
    to do that. Therefore, use setReverseActive(true) to tell the PPC that now reverse is driving, so it
    can deactivate itself. When reverse is done, call initialize with the first forward waypoint and setReverseActive(false).waypoint
-5. use the convenience functions getCurrentWaypointPosition(), shouldChangeWaypoint(), atLastWaypoint() and switchToNextWaypoint()
+5. use the convenience functions getCurrentWaypointPosition(), shouldChangeWaypoint(), reachedLastWaypoint() and switchToNextWaypoint()
    in your code instead of directly checking and manipulating vehicle.Waypoints. These provide the legacy behavior when
    the PPC is not active (for example due to reverse driving) or when disabled
 6. you can use enable() and disable() to enable/disable the PPC. When disabled and you are using the above functions,
@@ -125,7 +125,9 @@ function PurePursuitController:initialize(ix, aiDriver)
 	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d', self.firstIx )
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
-	self.aiDriver = aiDriver
+	if aiDriver then
+		self.aiDriver = aiDriver			
+	end
 end
 
 function PurePursuitController:setAIDriver(aiDriver)
@@ -171,7 +173,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 			result = true
 		end
 	end
-	if result and not self:atLastWaypoint() then
+	if result and not self:reachedLastWaypoint() then
 		-- disable debugging once we reached the last waypoint. Otherwise we'd keep logging
 		-- until the user presses 'Stop driver'.
 		courseplay.debugVehicle(12, self.vehicle, 'PPC: waypoint %d passed, dz: %.1f %s %s', wpNode.ix, dz,
@@ -227,7 +229,7 @@ function PurePursuitController:findRelevantSegment()
 		self.lastPassedWaypointIx = ix
 		self.relevantWpNode:setToWaypoint(self.course, ix)
 		self.nextWpNode:setToWaypoint(self.course, self.relevantWpNode.ix + 1)
-		if not self:atLastWaypoint() then
+		if not self:reachedLastWaypoint() then
 			-- disable debugging once we reached the last waypoint. Otherwise we'd keep logging
 			-- until the user presses 'Stop driver'.
 			courseplay.debugVehicle(12, self.vehicle, 'PPC: relevant waypoint: %d, crosstrack error: %.1f', self.relevantWpNode.ix, self.crossTrackError)
@@ -338,10 +340,14 @@ function PurePursuitController:setCurrentWaypoint(ix)
 	-- but never, ever go back. Instead just leave this loop and keep driving to the current goal node
 	if ix < self.currentWpNode.ix then
 		courseplay.debugVehicle(12, self.vehicle, "PPC: Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix)
-	else
+	elseif ix > self.currentWpNode.ix then
 		self.currentWpNode:setToWaypointOrBeyond(self.course, ix, self.lookAheadDistance)
-		if self.aiDriver then
-			self.aiDriver:onWaypointChange(self.currentWpNode.ix)
+		-- if ix > #self.course, currentWpNode.ix will always be set to #self.course and the change detection won't work
+		-- therefore, only call listeners if ix <= #self.course
+		if ix <= #self.course.waypoints then
+			if self.aiDriver then
+				self.aiDriver:onWaypointChange(self.currentWpNode.ix)
+			end
 		end
 	end
 end
@@ -440,15 +446,15 @@ function PurePursuitController:shouldChangeWaypoint(distToChange)
 		-- true when the current waypoint calculated by PPC does not match the CP waypoint anymore, or
 		-- true when at the last waypoint (to trigger the last waypoint processing in drive.lua (which was triggered by
 		-- the distToChange condition before PPC)
-		-- TODO: remove that atLastWaypoint() when not needed anymore for backward compatibility
-		shouldChangeWaypoint = self:getCurrentWaypointIx() ~= self.vehicle.cp.waypointIndex or self:atLastWaypoint()
+		-- TODO: remove that reachedLastWaypoint() when not needed anymore for backward compatibility
+		shouldChangeWaypoint = self:getCurrentWaypointIx() ~= self.vehicle.cp.waypointIndex or self:reachedLastWaypoint()
 	else
 		shouldChangeWaypoint = self.vehicle.cp.distanceToTarget <= distToChange
 	end
 	return shouldChangeWaypoint
 end
 
-function PurePursuitController:atLastWaypoint()
+function PurePursuitController:reachedLastWaypoint()
 	local atLastWaypoint
 	if self:isActive() then
 		atLastWaypoint = self.relevantWpNode.ix >= #self.course.waypoints

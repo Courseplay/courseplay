@@ -1994,10 +1994,12 @@ end
 
 --- Disable PPC for the legacy driving mode
 function DrivingModeSetting:onChange()
-	if self:get() == DrivingModeSetting.DRIVING_MODE_NORMAL then
-		self.vehicle.cp.ppc:disable()
-	else
-		self.vehicle.cp.ppc:enable()
+	if self.vehicle.cp.ppc then
+		if self:get() == DrivingModeSetting.DRIVING_MODE_NORMAL then
+			self.vehicle.cp.ppc:disable()
+		else
+			self.vehicle.cp.ppc:enable()
+		end
 	end
 end
 

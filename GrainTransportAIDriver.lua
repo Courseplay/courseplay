@@ -76,8 +76,10 @@ function GrainTransportAIDriver:drive(dt)
 end
 
 function GrainTransportAIDriver:onWaypointChange(newIx)
+	self:debug('On waypoint change %d', newIx)
 	AIDriver.onWaypointChange(self, newIx)
-	if self.ppc:atLastWaypoint() then
+	if self.course:isLastWaypointIx(newIx) then
+		self:debug('Reaching last waypoint')
 		-- this is needed to trigger the loading. No idea why. No idea what isLoaded specifically means,
 		-- no idea why start_stop.start sets it to true. frustrating
 		courseplay:setIsLoaded(self.vehicle, false);
@@ -106,7 +108,7 @@ end
 
 function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
-	if self.ppc:atLastWaypoint() then
+	if self.ppc:reachedLastWaypoint() then
 		if self.vehicle.cp.stopAtEnd and self.runCounter >= self.vehicle.cp.runNumber then
 			-- stop at the last waypoint when the run counter expires
 			allowedToDrive = false
@@ -115,13 +117,13 @@ function GrainTransportAIDriver:checkLastWaypoint()
 			self:debug('Mode 1 has tried to stop')
 		else
 			-- continue at the first waypoint
-			self.ppc:initialize(1, self)
+			self.ppc:initialize(1)
 			-- Don't make life too complicated. Whenever we restart the course, we just
 			-- increment the run counter
 			self.runCounter = self.runCounter + 1
 			-- .. and then brutally, just for backwards compatibility
 			self.vehicle.cp.runCounter = self.runCounter
-			self:debug('Finished run %d, continue with next.')
+			self:debug('Finished run %d, continue with next.', self.runCounter)
 		end
 	end
 	return allowedToDrive
@@ -132,7 +134,7 @@ function GrainTransportAIDriver:searchForTipTrigger(lx, lz)
 		and not self:hasTipTrigger()
 		and self.vehicle.cp.totalFillLevel > 0
 		and self.ppc:getCurrentWaypointIx() > 2
-		and not self.ppc:atLastWaypoint()
+		and not self.ppc:reachedLastWaypoint()
 		and not self.ppc:isReversing() then
 		local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, lx, 0, lz)
 		-- raycast start point in front of vehicle

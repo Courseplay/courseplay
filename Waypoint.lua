@@ -229,6 +229,10 @@ function Course:getIxRollover(ix)
 	return ix
 end
 
+function Course:isLastWaypointIx(ix) 
+	return #self.waypoints == ix
+end
+
 function Course:print()
 	for i = 1, #self.waypoints do
 		local p = self.waypoints[i]
