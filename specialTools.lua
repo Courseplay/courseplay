@@ -139,6 +139,7 @@ function courseplay:setNameVariable(workTool)
 	-- workTool.cp.realTurnNodeOffsetZ:				(Distance in meters)	If real turning node is not calculated corectly, we can add an manual offset z to it.
 	--																		Positive value, moves it forward, Negative value moves it backwards.
 	-- workTool.cp.isTraileredChopper				(Boolean)				Allows Foragehavesters that are towed to be propely recoginzed by CP
+	-- workTool.cp.baleRowWidth						(Distance in meters)	Sets the width of the droped bales to allow for next row placement
 	-- TODO: Add description for all the special varialbes that is usable here.
 	-- ###########################################################
 
@@ -364,6 +365,7 @@ function courseplay:setNameVariable(workTool)
 	-- Ursus T127 (Bale Loader) [Giants]
 	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then
 		workTool.cp.isUrsusT127 = true;
+		workTool.cp.baleRowWidth = 1.5
 
 	-- Ursus Z586 (Bale Wrapper) [Giants]
 	elseif workTool.cp.xmlFileName == 'ursusZ586.xml' then
@@ -378,6 +380,7 @@ function courseplay:setNameVariable(workTool)
 	-- Arcusin FSX 63.72 (Bale Loader) [Giants]
 	elseif workTool.cp.xmlFileName == 'arcusinFSX6372.xml' then
 		workTool.cp.isArcusinFSX6372 = true;
+		workTool.cp.baleRowWidth = 3
 		
 	--Krone Premos5000 [strawHarvestAddon]
 	elseif 	workTool.cp.xmlFileName == 'premos5000.xml' then

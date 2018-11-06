@@ -671,8 +671,9 @@ function courseplay:unload_combine(vehicle, dt)
 				if vehicle.cp.isReversePossible and vehicle.cp.turnOnField then
 					local maxDiameter = max(20,turnDiameter);
 					local maxX,_,maxZ = localToWorld(vehicle.cp.DirectionNode,-sideMultiplier*maxDiameter,0,-(trailerOffset+(0.5*maxDiameter)));
+					local fieldX,_,fieldZ = localToWorld(vehicle.cp.DirectionNode,0,0,-(trailerOffset+(0.5*maxDiameter)));
 					courseplay:debug(string.format("%s: is reverse possible",nameNum(vehicle)),4)	
-					if courseplay:isField(maxX, maxZ, 1, 1) and courseplay:onWhichFieldAmI(vehicle) == courseplay:getFieldNumForPosition(maxX,maxZ) then --is the outside point of the course on the field and same field, the make a nice circle
+					if courseplay:isField(maxX, maxZ, 1, 1) and courseplay:getFieldNumForPosition(fieldX,fieldZ) == courseplay:getFieldNumForPosition(maxX,maxZ) then --is the outside point of the course on the field and same field, the make a nice circle
 						courseplay:debug(string.format("%s: points are on field -> turn",nameNum(vehicle)),4)	
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,-(trailerOffset+totalLength+(0.5*maxDiameter)));
 						vehicle.cp.curTarget.rev = true;

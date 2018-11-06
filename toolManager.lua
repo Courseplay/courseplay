@@ -284,6 +284,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			end;
 			if courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
 				vehicle.cp.hasBaleLoader = true;
+				if vehicle.cp.lastValidTipDistance == nil then
+					vehicle.cp.lastValidTipDistance = 0
+				end;
 			end;
 			if courseplay:isHarvesterAttachable(workTool) then
 				vehicle.cp.hasHarvesterAttachable = true;

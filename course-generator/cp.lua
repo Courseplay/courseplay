@@ -117,9 +117,10 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 	headlandSettings.mode = vehicle.cp.headland.mode
 	-- This is to adjust the turnradius to account for multiTools haveing more tracks than you would have with just one tool causing the innermost tool on the headland 
 	-- turn tighter than possible
-	local turnRadiusAdjustedForMultiTool = vehicle.cp.vehicleTurnRadius
+	-- Using vehicle.cp.turnDiameter has this is updated when the user changes the vaule
+	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter/2
 	if vehicle.cp.multiTools then
-		turnRadiusAdjustedForMultiTool = vehicle.cp.vehicleTurnRadius + vehicle.cp.workWidth*((vehicle.cp.multiTools-1)/2)
+		turnRadiusAdjustedForMultiTool = turnRadiusAdjustedForMultiTool + vehicle.cp.workWidth*((vehicle.cp.multiTools-1)/2)
 	end
 	local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end,
 		field, workWidth, headlandSettings,

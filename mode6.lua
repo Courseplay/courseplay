@@ -167,7 +167,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end;
 				end
 
-				if (fillLevelPct == 100 and vehicle.cp.hasUnloadingRefillingCourse or vehicle.cp.waypointIndex == vehicle.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying('rotatePlatform') and not workTool:getIsAnimationPlaying('emptyRotate') and not workTool:getIsAnimationPlaying(workTool:getBaleGrabberDropBaleAnimName()) then
+				if ((fillLevelPct == 100 or vehicle.cp.isLoaded) and vehicle.cp.hasUnloadingRefillingCourse or vehicle.cp.waypointIndex == vehicle.cp.stopWork) and workTool.isInWorkPosition and not workTool:getIsAnimationPlaying('rotatePlatform') and not workTool:getIsAnimationPlaying('emptyRotate') and not workTool:getIsAnimationPlaying(workTool:getBaleGrabberDropBaleAnimName()) then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil);
 					if not specialTool then
 						workTool.grabberIsMoving = true
@@ -175,9 +175,14 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						BaleLoader.moveToTransportPosition(workTool)
 						-- workTool:doStateChange(BaleLoader.CHANGE_MOVE_TO_TRANSPORT);
 					end;
+					-- Ensure we set the lastVaildTipDistance incase update tools doesn't work
+					if not vehicle.cp.lastValidTipDistance then
+						vehicle.cp.lastValidTipDistance = 0
+					end
 				end
 
 				if fillLevelPct == 100 and not vehicle.cp.hasUnloadingRefillingCourse then
+					vehicle.cp.lastValidTipDistance = nil
 					if vehicle.cp.automaticUnloadingOnField then
 						specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,true); 
 						if not specialTool then
@@ -197,10 +202,26 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					vehicle.cp.unloadOrder = true
 					vehicle.cp.delayFolding = nil
 				end
-				
-				if (not workArea and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait and (vehicle.cp.wait or fillLevelPct == 0)) or vehicle.cp.unloadOrder then
+				local distanceToUnload = math.huge
+				-- We only want to calc the distance to wait point when reverseing. To save on CPU
+				if vehicle.cp.waypointIndex > (vehicle.cp.stopWork + 1) and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+					if not workTool.cp.realUnloadOrFillNode then
+						workTool.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(workTool);
+					end;
+					local toolX, _,toolZ = getWorldTranslation(workTool.cp.realUnloadOrFillNode)
+					local targetWaypoint = vehicle.Waypoints[vehicle.cp.waitPoints[3]]
+					-- Figure out how far are we from the edge of the previous stack depth
+					distanceToUnload = courseplay:distance(toolX,toolZ,targetWaypoint.cx,targetWaypoint.cz) + vehicle.cp.lastValidTipDistance
+					courseplay.debugVehicle(17,vehicle,'distanceToUnload = %.2f vehicle.cp.lastValidTipDistance = %.2f',distanceToUnload,vehicle.cp.lastValidTipDistance or 0)
+				end
+				-- Once were with in 1 m stop and unload
+				if (not workArea and (distanceToUnload < 1  or fillLevelPct == 0)) or vehicle.cp.unloadOrder then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,true);
 					if not specialTool then
+						if fillLevelPct ~= 0 and not vehicle.cp.unloadOrder then
+							CpManager:setGlobalInfoText(vehicle, 'UNLOADING_BALE');
+							allowedToDrive = false
+						end;
 						if workTool.emptyState ~= BaleLoader.EMPTY_NONE then
 							if workTool.emptyState == BaleLoader.EMPTY_WAIT_TO_DROP then
 								-- (2) drop the bales
@@ -220,6 +241,18 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 								-- Change the direction to forward if we were reversing.
 								if vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+									-- Add the distance of 1 row of bales. TODO Adjust hud to make this a number of bales and check to see differnce between round and square
+									if not vehicle.cp.automaticUnloadingOnField and vehicle.cp.hasUnloadingRefillingCourse then
+										-- This is so if the bales are droped in a sell trigger there is no need to adjust where the drop point is case the bales will dissaper
+										local triggers = g_currentMission.trailerTipTriggers[workTool]
+										if triggers ~= nil and triggers[1].acceptedFillTypes ~= nil and triggers[1].acceptedFillTypes[workTool.cp.fillType] then
+											--Do nothing
+										else
+											-- Get the stack depth when droped set in special tools. The add it to the current stack depth
+											local baleRowWidth = workTool.cp.baleRowWidth or 5
+											vehicle.cp.lastValidTipDistance = vehicle.cp.lastValidTipDistance - baleRowWidth
+										end
+									end
 									print(('%s: set waypointIndex to next forward point'):format(nameNum(workTool)));
 									courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 									vehicle.cp.ppc:initialize()
