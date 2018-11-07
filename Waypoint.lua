@@ -178,11 +178,11 @@ function Course:switchingDirectionAt(ix)
 end
 
 function Course:switchingToReverseAt(ix)
-	return not self:isReverseAt(ix) and self:isReverseAt(ix)
+	return not self:isReverseAt(ix) and self:isReverseAt(ix + 1)
 end
 
 function Course:switchingToForwardAt(ix)
-	return self:isReverseAt(ix) and not self:isReverseAt(ix)
+	return self:isReverseAt(ix) and not self:isReverseAt(ix + 1)
 end
 
 function Course:getWaypointPosition(ix)

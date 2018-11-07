@@ -125,12 +125,6 @@ function AIDriver:checkReverse(lx, lz)
 		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
 		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz)
-		if not isReverseActive then
-			-- goReverse is not driving, this is a simple case, use the direction calculated by our PPC.
-			lx = -lx
-			lz = -lz
-		end
-		-- otherwise we go wherever goReverse() is telling us to go
 	end
 	return lx, lz, moveForwards
 end
@@ -138,7 +132,7 @@ end
 function AIDriver:onWaypointChange(newIx)
 	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
 	courseplay:setWaypointIndex(self.vehicle, newIx);
-	-- rest is implemented by the derived classes
+	-- rest is implemented by the derived classes	
 end
 
 
