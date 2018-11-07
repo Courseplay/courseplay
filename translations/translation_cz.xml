@@ -4,7 +4,7 @@
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Zapnout ukládání trasy" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Odvozce:" />
 		<text name="COURSEPLAY_PPC_OFF" 								 text="normal mode" />
-		<text name="COURSEPLAY_PPC_ON" 									 text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_PPC_ON" 									 text="experimentální mód" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Aktivovat odvozce" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Zastavit odvozce" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Čekat na posledním bodě nebo triggeru:" />
@@ -189,7 +189,7 @@
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Žádný" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Dokola" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Úzké pole" />
-		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Krátké okraje" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="sever" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="východ" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="jih" />
