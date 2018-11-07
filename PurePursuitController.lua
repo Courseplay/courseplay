@@ -186,7 +186,7 @@ end
 function PurePursuitController:havePassedAnyWaypointBetween(fromIx, toIx)
 	local node = WaypointNode:new( self.name .. '-node', false)
 	local result, passedWaypointIx = false, 0
-	courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
+	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
 	for ix = fromIx, toIx do
 		node:setToWaypoint(self.course, ix)
 		if self:havePassedWaypoint(node) then
@@ -340,11 +340,12 @@ function PurePursuitController:setCurrentWaypoint(ix)
 	-- but never, ever go back. Instead just leave this loop and keep driving to the current goal node
 	if ix < self.currentWpNode.ix then
 		courseplay.debugVehicle(12, self.vehicle, "PPC: Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix)
-	elseif ix > self.currentWpNode.ix then
+	elseif ix >= self.currentWpNode.ix then
+		local prevIx = self.currentWpNode.ix
 		self.currentWpNode:setToWaypointOrBeyond(self.course, ix, self.lookAheadDistance)
 		-- if ix > #self.course, currentWpNode.ix will always be set to #self.course and the change detection won't work
 		-- therefore, only call listeners if ix <= #self.course
-		if ix <= #self.course.waypoints then
+		if ix ~= prevIx and ix <= #self.course.waypoints then
 			if self.aiDriver then
 				self.aiDriver:onWaypointChange(self.currentWpNode.ix)
 			end
