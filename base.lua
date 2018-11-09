@@ -595,7 +595,7 @@ function courseplay:load(savegame)
 	else
 		self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
 	end
-	self.cp.ppc = PurePursuitController:new(self)
+	self.cp.ppc = PurePursuitController(self)
 end;
 
 function courseplay:postLoad(savegame)

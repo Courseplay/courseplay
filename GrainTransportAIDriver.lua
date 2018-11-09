@@ -100,7 +100,7 @@ end
 function GrainTransportAIDriver:getSpeed()
 	if self:hasTipTrigger() then
 		-- slow down around the tip trigger
-		return 10		
+		return 10
 	else
 		return AIDriver.getSpeed(self)
 	end

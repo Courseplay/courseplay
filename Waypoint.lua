@@ -16,15 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-Waypoint = {}
-Waypoint.__index = Waypoint
+Waypoint = CpObject()
 
 -- constructor from the legacy Courseplay waypoint
-function Waypoint:new(cpWp, cpIndex)
-	local newWp = {}
-	setmetatable( newWp, self )
-	newWp:set(cpWp, cpIndex)
-	return newWp
+function Waypoint:init(cpWp, cpIndex)
+	self:set(cpWp, cpIndex)
 end
 
 function Waypoint:set(cpWp, cpIndex)
@@ -54,20 +50,15 @@ function Waypoint:getDistanceFromVehicle(vehicle)
 end
 
 -- a node related to a waypoint
-WaypointNode = {}
+WaypointNode = CpObject()
 WaypointNode.MODE_NORMAL = 1
 WaypointNode.MODE_LAST_WP = 2
 WaypointNode.MODE_SWITCH_DIRECTION = 3
 WaypointNode.MODE_SWITCH_TO_FORWARD = 4
 
-WaypointNode.__index = WaypointNode
-
-function WaypointNode:new(name, logChanges)
-	local newWaypointNode = {}
-	setmetatable( newWaypointNode, self )
-	newWaypointNode.logChanges = logChanges
-	newWaypointNode.node = courseplay.createNode(name, 0, 0, 0)
-	return newWaypointNode
+function WaypointNode:init(name, logChanges)
+	self.logChanges = logChanges
+	self.node = courseplay.createNode(name, 0, 0, 0)
 end
 
 function WaypointNode:destroy()
@@ -125,21 +116,17 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 	end
 end
 
-Course = {}
-Course.__index = Course
+Course = CpObject()
 
-function Course:new(vehicle, waypoints)
-	local newCourse = {}
-	setmetatable(newCourse, self)
+function Course:init(vehicle, waypoints)
 	-- add waypoints from current vehicle course
-	newCourse.waypoints = {}
+	self.waypoints = {}
 	for i = 1, #waypoints do
-		table.insert(newCourse.waypoints, Waypoint:new(waypoints[i], i))
+		table.insert(self.waypoints, Waypoint(waypoints[i], i))
 	end
-	newCourse:addWaypointAngles()
+	self:addWaypointAngles()
 	-- only for logging purposes
-	newCourse.vehicle = vehicle
-	return newCourse
+	self.vehicle = vehicle
 end
 
 -- add missing angles from one waypoint to the other

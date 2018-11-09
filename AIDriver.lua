@@ -27,7 +27,7 @@ AIDriver.slowDownFactor = 0.5
 function AIDriver:init(vehicle)
 	self.vehicle = vehicle
 	-- for now, initialize the course with the vehicle's current course
-	self.course = Course:new(vehicle, vehicle.Waypoints)
+	self.course = Course(vehicle, vehicle.Waypoints)
 	self.firstWaypointIx = 1
 	self.ppc = self.vehicle.cp.ppc -- shortcut
 	self.ppc:setAIDriver(self)

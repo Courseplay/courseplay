@@ -21,6 +21,7 @@ lu = require("luaunit")
 th = require("testhelper")
 package.path = package.path .. ";../?.lua"
 package.path = package.path .. ";../course-generator/?.lua"
+require("CpObject")
 require("Waypoint")
 require("geo")
 require("courseGenerator")
@@ -32,7 +33,7 @@ function TestCourse:setUp()
 end
 
 function TestCourse:testAddWaypointAngles()
-	local course = Course:new(nil, self.waypoints)
+	local course = Course(nil, self.waypoints)
 	lu.assertAlmostEquals(course.waypoints[1].angle, 90)
 	lu.assertAlmostEquals(course.waypoints[2].angle, 0)
 	lu.assertAlmostEquals(course.waypoints[3].angle, -90)
@@ -41,7 +42,7 @@ function TestCourse:testAddWaypointAngles()
 end
 
 function TestCourse:testGetAverageSpeed()
-	local course = Course:new(nil, self.waypoints)
+	local course = Course(nil, self.waypoints)
 	lu.assertAlmostEquals(course:getAverageSpeed(1, 3), 2, 0.1)
 	lu.assertAlmostEquals(course:getAverageSpeed(2, 3), 3, 0.1)
 	lu.assertAlmostEquals(course:getAverageSpeed(4, 3), 3.33, 0.1)

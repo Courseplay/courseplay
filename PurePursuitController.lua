@@ -55,45 +55,41 @@ HOW TO USE
 
 ]]
 
-PurePursuitController = {}
-PurePursuitController.__index = PurePursuitController
+PurePursuitController = CpObject()
 
 -- normal lookahead distance
 PurePursuitController.normalLookAheadDistance = 5
 PurePursuitController.shortLookaheadDistance = 2.5
 
 -- constructor
-function PurePursuitController:new(vehicle)
-	local newPpc = {}
-	setmetatable( newPpc, self )
-	newPpc.baseLookAheadDistance = newPpc.normalLookAheadDistance
+function PurePursuitController:init(vehicle)
+	self.baseLookAheadDistance = self.normalLookAheadDistance
 	-- adapted look ahead distance 
-	newPpc.lookAheadDistance = newPpc.baseLookAheadDistance
+	self.lookAheadDistance = self.baseLookAheadDistance
 	-- when transitioning from forward to reverse, this close we have to be to the waypoint where we
 	-- change direction before we switch to the next waypoint
-	newPpc.distToSwitchWhenChangingToReverse = 1
-	newPpc.vehicle = vehicle
-	newPpc.name = nameNum(vehicle)
+	self.distToSwitchWhenChangingToReverse = 1
+	self.vehicle = vehicle
+	self.name = nameNum(vehicle)
 	-- node on the current waypoint
-	newPpc.currentWpNode = WaypointNode:new( newPpc.name .. '-currentWpNode', true)
+	self.currentWpNode = WaypointNode( self.name .. '-currentWpNode', true)
 	-- waypoint at the start of the relevant segment
-	newPpc.relevantWpNode = WaypointNode:new( newPpc.name .. '-relevantWpNode', true)
+	self.relevantWpNode = WaypointNode( self.name .. '-relevantWpNode', true)
 	-- waypoint at the end of the relevant segment
-	newPpc.nextWpNode = WaypointNode:new( newPpc.name .. '-nextWpNode', true)
+	self.nextWpNode = WaypointNode( self.name .. '-nextWpNode', true)
 	-- the current goal node
-	newPpc.goalWpNode = WaypointNode:new( newPpc.name .. '-goalWpNode', false)
+	self.goalWpNode = WaypointNode( self.name .. '-goalWpNode', false)
 	-- vehicle position projected on the path, not used for anything other than debug display
-	newPpc.projectedPosNode = courseplay.createNode( newPpc.name .. '-projectedPosNode', 0, 0, 0)
-	newPpc.isReverseActive = false
+	self.projectedPosNode = courseplay.createNode( self.name .. '-projectedPosNode', 0, 0, 0)
+	self.isReverseActive = false
 	-- enable PPC by default for developers only
-	newPpc.enabled = CpManager.isDeveloper
+	self.enabled = CpManager.isDeveloper
 	-- current goal point search case as described in the paper, for diagnostics only
-	newPpc.case = 0
+	self.case = 0
 	-- index of the first node of the path (where PPC is initialized and starts driving
-	newPpc.firstIx = 1
-	newPpc.crossTrackError = 0
-	newPpc.lastPassedWaypointIx = nil
-	return newPpc
+	self.firstIx = 1
+	self.crossTrackError = 0
+	self.lastPassedWaypointIx = nil
 end
 
 -- destructor
@@ -113,7 +109,7 @@ end
 function PurePursuitController:initialize(ix, aiDriver)
 	-- for now, if no course set, use the vehicle's current waypoints
 	if not self.course then
-		self.course = Course:new(self.vehicle, self.vehicle.Waypoints)
+		self.course = Course(self.vehicle, self.vehicle.Waypoints)
 	end
 	-- we rely on the code in start_stop.lua to select the first waypoint
 	self.firstIx = ix and ix or self.vehicle.cp.waypointIndex
@@ -184,7 +180,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 end
 
 function PurePursuitController:havePassedAnyWaypointBetween(fromIx, toIx)
-	local node = WaypointNode:new( self.name .. '-node', false)
+	local node = WaypointNode( self.name .. '-node', false)
 	local result, passedWaypointIx = false, 0
 	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
 	for ix = fromIx, toIx do
@@ -252,8 +248,8 @@ function PurePursuitController:findGoalPoint()
 
 	-- create helper nodes at the relevant and the next wp. We'll move these up on the path until we reach the segment
 	-- in lookAheadDistance
-	local node1 = WaypointNode:new( self.name .. '-node1', false)
-	local node2 = WaypointNode:new( self.name .. '-node2', false)
+	local node1 = WaypointNode( self.name .. '-node1', false)
+	local node2 = WaypointNode( self.name .. '-node2', false)
 
 	-- starting at the relevant segment walk up the path to find the segment on
 	-- which the goal point lies. This is the segment intersected by the circle with lookAheadDistance radius
