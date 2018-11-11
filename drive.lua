@@ -101,17 +101,6 @@ function courseplay:drive(self, dt)
 	self.cp.hasRunRaycastThisLoop['tipTrigger'] = false;
 	self.cp.hasRunRaycastThisLoop['specialTrigger'] = false;
 
-
-	-- combine self unloading
-	if self.cp.mode == 7 then
-		local continue;
-		continue, cx, cy, cz, refSpeed, allowedToDrive = courseplay:handleMode7(self, cx, cy, cz, refSpeed, allowedToDrive);
-		if not continue then
-			return;
-		end;
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-4).."): refSpeed = "..tostring(refSpeed))
-	end;
-
 	--[[ unregister at combine, if there is one
 	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
@@ -134,7 +123,7 @@ function courseplay:drive(self, dt)
 
 	-- === CURRENT WAYPOINT POSITION ===
 	-- cx, cz only used to get lx, lz (driving direction) unless we are using driveToPoint (which we don't at the moment)
-	if self.cp.mode ~= 7 or (self.cp.mode == 7 and self.cp.modeState ~= 5) then
+	if self.cp.mode ~= 7 then
 		cx, _, cz = self.cp.ppc:getCurrentWaypointPosition()
 	end
 
@@ -386,35 +375,9 @@ function courseplay:drive(self, dt)
 					courseplay:setVehicleWait(self, false);
 				end;
 			end;
-		elseif self.cp.mode == 7 then
-			if wayPointIsUnload and self.cp.makeHeaps then
-				stopForUnload = courseplay:handleHeapUnloading(self);
-			elseif wayPointIsWait then
-				if self.cp.totalFillLevel > 0 then
-					CpManager:setGlobalInfoText(self, 'OVERLOADING_POINT');
-
-					-- Set Timer if unloading pipe takes time before empty.
-					if self.getFirstEnabledFillType and self.pipeParticleSystems and self.cp.totalFillLevelPercent > 0 then
-						local filltype = self:getFirstEnabledFillType();
-						if filltype ~= FillUtil.FILLTYPE_UNKNOWN and self.pipeParticleSystems[filltype] then
-							local stopTime = self.pipeParticleSystems[filltype][1].stopTime;
-							if stopTime then
-								courseplay:setCustomTimer(self, "waitUntilPipeIsEmpty", stopTime);
-							end;
-						end;
-					end;
-				elseif courseplay:timerIsThrough(self, "waitUntilPipeIsEmpty") then
-					courseplay:resetCustomTimer(self, "waitUntilPipeIsEmpty", true);
-					courseplay:setVehicleWait(self, false);
-					self.cp.isUnloaded = true
-				end
-			end;
 		elseif self.cp.mode == 8 then
 			-- this call does not change lx or lz
 			allowedToDrive, lx, lz = courseplay:handleMode8(self, false, true, allowedToDrive, lx, lz, dt);
-		elseif self.cp.mode == 9 then
-			courseplay:setVehicleWait(self, false);
-
 		elseif self.cp.mode == 10 then
 			self.cp.mode10.newApproach = true
 			if #self.cp.mode10.stoppedCourseplayers > 0 then
@@ -525,7 +488,7 @@ function courseplay:drive(self, dt)
 			end;
 
 			-- MODE 6-7: HEAP UNLOADING
-		elseif (self.cp.mode == 6 or self.cp.mode == 7) and self.cp.makeHeaps then
+		elseif self.cp.mode == 6 and self.cp.makeHeaps then
 			courseplay:handleHeapUnloading(self);
 
 
@@ -705,11 +668,6 @@ function courseplay:drive(self, dt)
 			end;
 		end
 		
-	-- MODE 9
-	elseif self.cp.mode == 9 then
-		-- mode9 returns a new direction in lx, lz but does not use the ones passed in at all
-		allowedToDrive,lx,lz  = courseplay:handle_mode9(self,self.cp.totalFillLevelPercent, allowedToDrive,lx,lz, dt);
-		-- MODE 10
 	elseif self.cp.mode == 10 then
 		local continue = true ;
 		continue,allowedToDrive = courseplay:handleMode10(self,allowedToDrive,lx,lz, dt);
@@ -808,7 +766,7 @@ function courseplay:drive(self, dt)
 		self.cp.isTrafficBraking = false;
 
 		local moveForwards = true;
-		if self.cp.curSpeed > 1 and not self.cp.mode == 9 then
+		if self.cp.curSpeed > 1 then
 			allowedToDrive = true;
 			moveForwards = self.movingDirection == 1;
 		end;
@@ -866,7 +824,6 @@ function courseplay:drive(self, dt)
 	local isAtStart = self.cp.waypointIndex < 3;
 	if 	((self.cp.mode == 1 or self.cp.mode == 5 or self.cp.mode == 8) and (isAtStart or isAtEnd or self.cp.trailerFillDistance ~= nil))
 		or	((self.cp.mode == 2 or self.cp.mode == 3) and isAtEnd)
-		or	(self.cp.mode == 9 and self.cp.waypointIndex > self.cp.shovelFillStartPoint and self.cp.waypointIndex <= self.cp.shovelFillEndPoint)
 		or	(not workArea and self.cp.wait and ((isAtEnd and self.Waypoints[self.cp.waypointIndex].wait) or courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, 0, 2, "wait", true, false)))
 		or 	courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, 0, 2, "unload", true, false)
 		or 	(isAtEnd and self.Waypoints[self.cp.waypointIndex].rev)
@@ -992,7 +949,7 @@ function courseplay:drive(self, dt)
 	-- DISTANCE TO CHANGE WAYPOINT
 	if ( self.cp.waypointIndex == 1 and not self.cp.alignment.justFinished ) or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turnStart then
 		if self.cp.hasSpecializationArticulatedAxis then
-			distToChange = self.cp.mode == 9 and 2 or 1; -- ArticulatedAxis vehicles
+			distToChange = 1; -- ArticulatedAxis vehicles
 		else
 			distToChange = 0.5;
 		end;
@@ -1017,10 +974,8 @@ function courseplay:drive(self, dt)
 			else
 				distToChange = 2; --orig:1
 			end;
-		elseif self.cp.mode == 4 or self.cp.mode == 6 or self.cp.mode == 7 then
+		elseif self.cp.mode == 4 or self.cp.mode == 6 then
 			distToChange = 5
-		elseif self.cp.mode == 9 then
-			distToChange = 4;
 		else
 			if self.cp.hasSpecializationArticulatedAxis then
 				distToChange = 5; -- ArticulatedAxis vehicles
@@ -1116,49 +1071,47 @@ function courseplay:drive(self, dt)
 			if not self.cp.wait then
 				courseplay:setVehicleWait(self, true);
 			end
-			if self.cp.mode == 7 and self.cp.modeState == 5 then
-			else
-				-- Allows alignment course to be used to transition to up/down until some better fix for the transition can come about
-				if self.Waypoints[self.cp.waypointIndex].isConnectingTrack and (self.cp.mode == 4 or self.cp.mode == 6) then
-					local transitionWP = 0
-					-- Local for a turn start to ensure we don't override a turn transition, we only want a transition that as no help
-					-- Look 15 waypoints ahead, this may need adjustment if connecting track goes through a corner in headland this upsets this number
-					for i=1,15 do
-						if self.Waypoints[self.cp.waypointIndex + i] then
-							if self.Waypoints[self.cp.waypointIndex + i].turnStart and self.Waypoints[self.cp.waypointIndex + i].lane then -- turn found break
-								transitionWP = 0
-								courseplay.debugVehicle( 12, self, "Turn Start Found No Align Course Needed")
-								break
-							elseif not self.Waypoints[self.cp.waypointIndex + i].lane then --No turn found and we are coming up on up/down transition set trastionWP
-								transitionWP = i
-								courseplay.debugVehicle( 12, self, "No Turn Start Found Align Course Needed in %d", transitionWP)
-								break
-							end
-						else
-							-- No need to look for wapoints ahead when beyond maxnumber of waypoints
+			-- Allows alignment course to be used to transition to up/down until some better fix for the transition can come about
+			if self.Waypoints[self.cp.waypointIndex].isConnectingTrack and (self.cp.mode == 4 or self.cp.mode == 6) then
+				local transitionWP = 0
+				-- Local for a turn start to ensure we don't override a turn transition, we only want a transition that as no help
+				-- Look 15 waypoints ahead, this may need adjustment if connecting track goes through a corner in headland this upsets this number
+				for i=1,15 do
+					if self.Waypoints[self.cp.waypointIndex + i] then
+						if self.Waypoints[self.cp.waypointIndex + i].turnStart and self.Waypoints[self.cp.waypointIndex + i].lane then -- turn found break
+							transitionWP = 0
+							courseplay.debugVehicle( 12, self, "Turn Start Found No Align Course Needed")
+							break
+						elseif not self.Waypoints[self.cp.waypointIndex + i].lane then --No turn found and we are coming up on up/down transition set trastionWP
+							transitionWP = i
+							courseplay.debugVehicle( 12, self, "No Turn Start Found Align Course Needed in %d", transitionWP)
 							break
 						end
-					end
-					if not courseplay:onAlignmentCourse(self) and transitionWP > 0 then
-						courseplay:setWaypointIndex(self, self.cp.waypointIndex + transitionWP)
-						self.cp.ppc:initialize()
-						courseplay.debugVehicle( 12, self, "Setting Waypoint index to %d. Starting Alignement Course", self.cp.waypointIndex)
-						courseplay:startAlignmentCourse( self, self.Waypoints[self.cp.waypointIndex], true )
-						return
+					else
+						-- No need to look for wapoints ahead when beyond maxnumber of waypoints
+						break
 					end
 				end
-				-- SWITCH TO THE NEXT WAYPOINT
-				self.cp.ppc:switchToNextWaypoint()
-				courseplay.calculateTightTurnOffset( self )
-				local rev = ""
-				if beforeReverse then 
-					rev = "beforeReverse"
+				if not courseplay:onAlignmentCourse(self) and transitionWP > 0 then
+					courseplay:setWaypointIndex(self, self.cp.waypointIndex + transitionWP)
+					self.cp.ppc:initialize()
+					courseplay.debugVehicle( 12, self, "Setting Waypoint index to %d. Starting Alignement Course", self.cp.waypointIndex)
+					courseplay:startAlignmentCourse( self, self.Waypoints[self.cp.waypointIndex], true )
+					return
 				end
-				if afterReverse then
-					rev = rev .. " afterReverse"
-				end
-				courseplay:debug( string.format( "%s: Switch to next wp: %d, distToChange %.1f, %s", nameNum( self ), self.cp.waypointIndex, distToChange, rev ), 12 )
 			end
+			-- SWITCH TO THE NEXT WAYPOINT
+			self.cp.ppc:switchToNextWaypoint()
+			courseplay.calculateTightTurnOffset( self )
+			local rev = ""
+			if beforeReverse then 
+				rev = "beforeReverse"
+			end
+			if afterReverse then
+				rev = rev .. " afterReverse"
+			end
+			courseplay:debug( string.format( "%s: Switch to next wp: %d, distToChange %.1f, %s", nameNum( self ), self.cp.waypointIndex, distToChange, rev ), 12 )
+
 		else -- last waypoint: reset some variable
 			if (self.cp.mode == 4 or self.cp.mode == 6) and not self.cp.hasUnloadingRefillingCourse then
 				-- in a typical CP fashion we leave it to the reader to find out why there's a special
@@ -1362,8 +1315,6 @@ function courseplay:getIsVehicleOffsetValid(vehicle, isLoadUnloadWait)
 			return courseplay:isInWaitArea(vehicle, 6, 3, 2, 1);
 		elseif vehicle.cp.mode == courseplay.MODE_FIELDWORK then
 			return (vehicle.cp.makeHeaps and courseplay:isInUnloadArea(vehicle, 6, 3, 3, 1, 2)) or courseplay:isInUnloadArea(vehicle, 6, 3, 3);
-		elseif vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING then
-			return (courseplay:isInWaitArea(vehicle, 6, 3, 3, 1) or (vehicle.cp.makeHeaps and courseplay:isInUnloadArea(vehicle, 6, 3, 3, 1, 2)) ) and not vehicle.cp.mode7GoBackBeforeUnloading;
 		elseif vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
 			return courseplay:isInWaitArea(vehicle, 6, 3, nil, 1) or courseplay:isInUnloadArea(vehicle, 6, 3, nil, 1);
 		end;

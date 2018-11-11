@@ -30,8 +30,6 @@ function courseplay:register(secondTime)
 	end;
 end;
 
-AIVehicle.startAIVehicle = Utils.overwrittenFunction(AIVehicle.startAIVehicle,courseplay.startAIVehicle)
-
 function courseplay:attachablePostLoad(xmlFile)
 	if self.cp == nil then self.cp = {}; end;
 

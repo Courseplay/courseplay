@@ -81,7 +81,6 @@ local function initialize()
 		'mode3', 
 		'mode4', 
 		'mode6', 
-		'mode7', 
 		'mode8', 
 		'mode10',		
 		'recording', 
@@ -156,7 +155,7 @@ local function setGlobalData()
 	courseplay.MODE_SEED_FERTILIZE = 4;
 	courseplay.MODE_TRANSPORT = 5;
 	courseplay.MODE_FIELDWORK = 6;
-	courseplay.MODE_COMBINE_SELF_UNLOADING = 7;
+	courseplay.MODE_COMBINE_SELF_UNLOADING = 7; --removed by Tommi
 	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;

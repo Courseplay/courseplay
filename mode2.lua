@@ -324,7 +324,7 @@ function courseplay:handle_mode2(vehicle, dt)
 
 	-- Four wheel drive
 	if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasFourWD then
-		courseplay:setFourWheelDrive(vehicle);
+		--courseplay:setFourWheelDrive(vehicle); disabled, already moved to AIDriver
 	end;
 end
 

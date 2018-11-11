@@ -198,7 +198,6 @@ function courseplay.button:render()
 				canScrollUp   = vehicle.cp.mode == courseplay.MODE_OVERLOADER
 							 or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
 							 or vehicle.cp.mode == courseplay.MODE_FIELDWORK
-							 or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
 							 or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
 				canScrollDown = canScrollUp;
 			elseif fn == "changeLoadUnloadOffsetX" or fn == "changeLoadUnloadOffsetZ" then
@@ -206,7 +205,6 @@ function courseplay.button:render()
 							 or vehicle.cp.mode == courseplay.MODE_OVERLOADER
 							 or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
 							 or vehicle.cp.mode == courseplay.MODE_FIELDWORK
-							 or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
 							 or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
 				canScrollDown = canScrollUp;
 			end;
@@ -439,14 +437,12 @@ function courseplay.button:render()
 					show = vehicle.cp.mode == courseplay.MODE_OVERLOADER
 					or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
 					or vehicle.cp.mode == courseplay.MODE_FIELDWORK
-					or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
 					or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
 				elseif fn == "changeLoadUnloadOffsetX" or fn == "changeLoadUnloadOffsetZ" then
 					show = vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT
 					or vehicle.cp.mode == courseplay.MODE_OVERLOADER
 					or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE
 					or vehicle.cp.mode == courseplay.MODE_FIELDWORK
-					or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING
 					or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT;
 				elseif fn == "switchDriverCopy" and prm < 0 then
 					show = vehicle.cp.selectedDriverNumber > 0;
