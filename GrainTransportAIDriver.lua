@@ -37,6 +37,7 @@ end
 
 function GrainTransportAIDriver:drive(dt)
 	-- update current waypoint/goal point
+	--print("GrainTransportAIDriver:drive(dt)")
 	self.ppc:update()
 	local lx, lz = self:getDirectionToNextWaypoint()
 	-- should we keep driving?
