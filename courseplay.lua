@@ -56,6 +56,7 @@ end;
 
 local function initialize()
 	local fileList = {
+		'CpObject',
 		'AIDriver',
 		'base',
 		'button',
@@ -64,7 +65,6 @@ local function initialize()
 		'combines', 
 		'courseplay_event', 
 		'course_management',
-		'CpObject',
 		'debug', 
 		'distance', 
 		'drive', 
