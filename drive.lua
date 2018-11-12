@@ -944,6 +944,11 @@ function courseplay:drive(self, dt)
 
 	refSpeed = courseplay:setSpeed(self, refSpeed, forceTrueSpeed)
 
+	 -- Four wheel drive 
+	if self.cp.hasDriveControl and self.cp.driveControl.hasFourWD then 
+		courseplay:setFourWheelDrive(self, workArea); 
+	end; 
+	
 
 	local beforeReverse, afterReverse
 	-- DISTANCE TO CHANGE WAYPOINT
@@ -1627,7 +1632,43 @@ function courseplay:getAverageWpSpeed(vehicle, numWaypoints)
 	return refSpeed/divider
 end;
 
-
+function courseplay:setFourWheelDrive(vehicle, workArea) 
+  local changed = false; 
+ 
+  -- set 4WD 
+  local awdOn = workArea or vehicle.cp.isBGATipping or vehicle.cp.slippingStage ~= 0 or vehicle.cp.mode == 9 or vehicle.cp.mode == 10 or (vehicle.cp.mode == 2 and (vehicle.cp.modeState > 1 or vehicle.cp.waypointIndex < 3)); 
+  local awdOff = not vehicle.cp.driveControl.alwaysUseFourWD and not workArea and not vehicle.cp.isBGATipping and vehicle.cp.slippingStage == 0 and vehicle.cp.mode ~= 9 and not (vehicle.cp.mode == 2 and vehicle.cp.modeState > 1); 
+  if (awdOn or vehicle.cp.driveControl.mode > 0) and not vehicle.driveControl.fourWDandDifferentials.fourWheel then 
+    courseplay:debug(('%s: set fourWheel to true'):format(nameNum(vehicle)), 14); 
+    vehicle.driveControl.fourWDandDifferentials.fourWheel = true; 
+    courseplay:setCustomTimer(vehicle, '4WDminTime', 5); 
+    changed = true; 
+  elseif awdOff and vehicle.driveControl.fourWDandDifferentials.fourWheel and courseplay:timerIsThrough(vehicle, '4WDminTime') then 
+    courseplay:debug(('%s: set fourWheel to false'):format(nameNum(vehicle)), 14); 
+    vehicle.driveControl.fourWDandDifferentials.fourWheel = false; 
+    changed = true; 
+  end; 
+ 
+  -- set differential lock 
+  local targetLockStatus = vehicle.cp.slippingStage > 1 or (vehicle.cp.mode == 10 and vehicle.cp.waypointIndex == 1); 
+  local Front = targetLockStatus or (awdOn and (vehicle.cp.driveControl.mode == 2 or vehicle.cp.driveControl.mode == 4)); 
+  local Rear = targetLockStatus or (awdOn and (vehicle.cp.driveControl.mode == 3 or vehicle.cp.driveControl.mode == 4)); 
+ 
+  if vehicle.driveControl.fourWDandDifferentials.diffLockFront ~= Front then 
+    courseplay:debug(('%s: set diffLockFront to %s'):format(nameNum(vehicle), tostring(targetLockStatus)), 14); 
+    vehicle.driveControl.fourWDandDifferentials.diffLockFront = Front; 
+    changed = true; 
+  end; 
+  if vehicle.driveControl.fourWDandDifferentials.diffLockBack ~= Rear then 
+    courseplay:debug(('%s: set diffLockBack to %s'):format(nameNum(vehicle), tostring(targetLockStatus)), 14); 
+    vehicle.driveControl.fourWDandDifferentials.diffLockBack = Rear; 
+    changed = true; 
+  end; 
+ 
+  if changed and driveControlInputEvent ~= nil then 
+    driveControlInputEvent.sendEvent(vehicle); 
+  end; 
+end;
 
 function courseplay:handleSlipping(vehicle, refSpeed)
 	if vehicle.cp.inTraffic or vehicle.Waypoints[vehicle.cp.waypointIndex].wait then return end;
