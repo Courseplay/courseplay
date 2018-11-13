@@ -1017,6 +1017,8 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	local canTurnOnHeadland = false;
 	local center1, center2, startDir, stopDir = {}, {}, {}, {};
 
+	local isReverseingBaleLoader = turnInfo.reversingWorkTool and courseplay:isBaleLoader(turnInfo.reversingWorkTool)
+
 	--- Get the Triangle sides
 	local centerOffset = (turnInfo.targetDeltaX * turnInfo.direction) - turnInfo.turnRadius;
 	local sideC = turnInfo.turnDiameter;
@@ -1026,7 +1028,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 	--- Check if we can turn on the headlands
 	local spaceNeeded = 0;
-	if vehicle.cp.oppositeTurnMode then
+	if vehicle.cp.oppositeTurnMode or isReverseingBaleLoader then
 		spaceNeeded = -turnInfo.zOffset + centerHeight + turnInfo.turnRadius + turnInfo.halfVehicleWidth;
 	else
 		spaceNeeded = -turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth;
@@ -1076,7 +1078,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	end;
 
 	--- Do the oposite direction turns for bale loaders, so we avoide bales in the normal turn direction
-	if doNormalTurn and turnInfo.reversingWorkTool and courseplay:isBaleLoader(turnInfo.reversingWorkTool) then
+	if doNormalTurn and isReverseingBaleLoader then
 		doNormalTurn = false;
 	end;
 
