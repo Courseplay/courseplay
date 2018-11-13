@@ -494,15 +494,20 @@ function courseplay:turn(vehicle, dt)
 						courseplay:debug(("%s:(Turn) Change direction when anglediff(%.2f) <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
 						if angleDifference <= allowedAngle then
 							local changeToForward = newTarget.turnReverse;
-							for i = vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, 1 do
-								if changeToForward and not vehicle.cp.turnTargets[i].turnReverse then
-									courseplay:debug(("%s:(Turn) Changing to forward"):format(nameNum(vehicle)), 14);
-									vehicle.cp.curTurnIndex = i;
-									return;
-								elseif not changeToForward and vehicle.cp.turnTargets[i].turnReverse then
-									courseplay:debug(("%s:(Turn) Changing to reverse"):format(nameNum(vehicle)), 14);
-									vehicle.cp.curTurnIndex = i;
-									return;
+							if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle then
+								allowedToDrive = false -- This is to ensure MR brakes before changing directions to prevent runaway tractors on steep grades
+							else
+								local changeToForward = newTarget.turnReverse;
+								for i = vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, 1 do
+									if changeToForward and not vehicle.cp.turnTargets[i].turnReverse then
+										courseplay:debug(("%s:(Turn) Changing to forward"):format(nameNum(vehicle)), 14);
+										vehicle.cp.curTurnIndex = i;
+										return;
+									elseif not changeToForward and vehicle.cp.turnTargets[i].turnReverse then
+										courseplay:debug(("%s:(Turn) Changing to reverse"):format(nameNum(vehicle)), 14);
+										vehicle.cp.curTurnIndex = i;
+										return;
+									end;
 								end;
 							end;
 						end;
