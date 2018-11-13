@@ -464,7 +464,21 @@ function courseplay:turn(vehicle, dt)
 						courseplay:debug( string.format( "%s:(Turn) lowering implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
 						courseplay:lowerImplements( vehicle, true, true )
 					end
-					vehicle.cp.curTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
+					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
+					local changeDir = ((newTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not newTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
+					-- We are still moving and want to swicth directions STOP if using MR mod. And we haven't yet stoped
+					if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle and changeDir and not vehicle.cp.mrHasStopped then
+						allowedToDrive = false
+					-- We have finally stoped on direction. Set a flag to allow movement again
+					elseif math.abs(vehicle.lastSpeedReal) < 0.0001 and vehicle.mrIsMrVehicle and changeDir then
+						vehicle.cp.mrHasStopped = true;
+					else
+						-- We are now 1 index away from the direction clear the flag
+						if vehicle.cp.mrHasStopped then
+							vehicle.cp.mrHasStopped = nil
+						end;
+						vehicle.cp.curTurnIndex = nextCurTurnIndex;
+					end
 				end;
 
 
@@ -493,7 +507,6 @@ function courseplay:turn(vehicle, dt)
 					if angleDifference then
 						courseplay:debug(("%s:(Turn) Change direction when anglediff(%.2f) <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
 						if angleDifference <= allowedAngle then
-							local changeToForward = newTarget.turnReverse;
 							if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle then
 								allowedToDrive = false -- This is to ensure MR brakes before changing directions to prevent runaway tractors on steep grades
 							else
@@ -747,7 +760,6 @@ function courseplay:turn(vehicle, dt)
 			directionForce = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
 		end
 	end
-	
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 	if newTarget and ((newTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
