@@ -48,3 +48,7 @@ AIVehicleUtil = {}
 function AIVehicleUtil.getDriveDirection() return 0, 0 end
 AIVehicleUtil.driveInDirection = noOp
 AIVehicleUtil.driveToPoint = noOp
+
+function getDate(formatString)
+	return os.date('%H%M%S')
+end

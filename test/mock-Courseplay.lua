@@ -40,6 +40,11 @@ end
 function courseplay.updateFillLevelsAndCapacities()
 end
 
+function courseplay:distance(x1, z1, x2, z2)
+	local dx, dz = x2 - x1, z2 - z1
+	return math.sqrt(dx * dx + dz * dz)
+end
+
 -- this should be ok to redefine here, these won't change much
 courseplay.MODE_GRAIN_TRANSPORT = 1;
 courseplay.MODE_COMBI = 2;

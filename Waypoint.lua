@@ -232,3 +232,27 @@ function Course:print()
 		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s', i, p.x, p.z, p.angle, tostring(p.rev)))
 	end
 end
+
+function Course:getDistanceToNextWaypoint(ix)
+	local nx = math.min(#self.waypoints, ix + 1)
+	return self.waypoints[ix]:getDistanceFromPoint(self.waypoints[nx].x, self.waypoints[nx].y)
+end
+
+function Course:getWaypointsWithinDrivingTime(startIx, fwd, seconds, speed)
+	local waypoints = {}
+	local travelTimeSeconds = 0
+	local first, last, step = startIx, #self.waypoints - 1, 1
+	if not fwd then
+		first, last, step = startIx - 1, 1, -1
+	end
+	for i = startIx, #self.waypoints - 1 do
+		table.insert(waypoints, self.waypoints[i])
+		local v = speed or self.waypoints[i].speed or 10
+		local s = self:getDistanceToNextWaypoint(i)
+		travelTimeSeconds = travelTimeSeconds + s / (v * 3.6)
+		if travelTimeSeconds > seconds then
+			break
+		end
+	end
+	return waypoints
+end

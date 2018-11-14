@@ -21,6 +21,7 @@ lu = require("luaunit")
 th = require("testhelper")
 package.path = package.path .. ";../?.lua"
 package.path = package.path .. ";../course-generator/?.lua"
+require("test.mock-Courseplay")
 require("CpObject")
 require("Waypoint")
 require("geo")
@@ -47,6 +48,19 @@ function TestCourse:testGetAverageSpeed()
 	lu.assertAlmostEquals(course:getAverageSpeed(2, 3), 3, 0.1)
 	lu.assertAlmostEquals(course:getAverageSpeed(4, 3), 3.33, 0.1)
 	lu.assertAlmostEquals(course:getAverageSpeed(5, 5), 3, 0.1)
+end
+
+function TestCourse:testGetWaypointsWithinDrivingTime()
+	local waypoints = {
+		{posX = 0, 	posZ = 0,  speed = 3.6},
+		{posX = 10, posZ = 0,  speed = 3.6},
+		{posX = 20, posZ = 0,  speed = 3.6},
+		{posX = 30, posZ = 0,  speed = 3.6},
+		{posX = 40, posZ = 0,  speed = 3.6}
+	}
+	local course = Course(nil, self.waypoints)
+	local result = course:getWaypointsWithinDrivingTime(1, true, 10)
+	lu.assertEquals(#result, 2)
 end
 
 lu.LuaUnit.run()
