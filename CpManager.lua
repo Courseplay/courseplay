@@ -1,4 +1,4 @@
-﻿local curFile = 'CpManager.lua';
+local curFile = 'CpManager.lua';
 CpManager = {};
 local CpManager_mt = Class(CpManager);
 addModEventListener(CpManager);
@@ -66,8 +66,8 @@ function CpManager:loadMap(name)
 	self.numActiveCoursePlayers = 0;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- height for mouse text line in game's help menu
-	self.hudHelpMouseLineHeight = g_currentMission.helpBoxTextSize + g_currentMission.helpBoxTextLineSpacing*2;
+	-- height for mouse text line in game's help menu DISABLED HUD issue
+	--self.hudHelpMouseLineHeight = g_currentMission.helpBoxTextSize + g_currentMission.helpBoxTextLineSpacing*2;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- INPUT

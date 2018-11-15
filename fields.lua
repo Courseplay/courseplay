@@ -30,7 +30,7 @@ function courseplay.fields:setUpFieldsIngameData()
 	self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
 	self.lastChannel = g_currentMission.cultivatorChannel;
 
-	self.seedUsageCalculator.fruitTypes = self:getFruitTypes();
+	--self.seedUsageCalculator.fruitTypes = self:getFruitTypes();
 	self:setCustomFieldsSeedData();
 
 	self.ingameDataSetUp = true;
@@ -579,10 +579,10 @@ function courseplay.fields:getFruitTypes()
 	local hudH = courseplay.hud.suc.visibleArea.overlayHeight;
 	local hudX = courseplay.hud.suc.visibleArea.overlayPosX;
 	local hudY = courseplay.hud.suc.visibleArea.overlayPosY;
-	for name,fruitType in pairs(FruitUtil.fruitTypes) do
+	for name,fruitType in pairs(g_fruitTypeManager.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
-			local fillType = FruitUtil.fruitTypeToFillType[fruitType.index];
-			local fillTypeDesc = FillUtil.fillTypeIndexToDesc[ fillType ];
+			local fillType = g_fruitTypeManager.fruitTypeToFillType[fruitType.index];
+			local fillTypeDesc = g_fillTypeManager.fillTypeIndexToDesc[ fillType ];
 			if fillTypeDesc then
 				local fruitData = {
 					index = fruitType.index,

@@ -350,14 +350,14 @@ courseplay.inputBindings.mouse.mouseButtonOverlays = {
 courseplay.inputBindings.keyboard = {};
 
 -- Needs Reworked. Inputbindings have changed
---[[ function courseplay.inputBindings.updateInputButtonData()
+--[[  function courseplay.inputBindings.updateInputButtonData()
 	-- print('updateInputButtonData()')
 
 	-- MOUSE
 	for _,type in ipairs( { 'primary', 'secondary' } ) do
 		local inputName = 'COURSEPLAY_MOUSEACTION_' .. type:upper();
-		local action = InputBinding.actions[ InputBinding[inputName] ];
-		local mouseButtonId = action.mouseButtons[1]; -- can there be more than 1 mouseButton for 1 action?
+		local action = InputBinding.actionBinding[ actions[inputName] ];
+		local mouseButtonId = action.intput[1]; -- can there be more than 1 mouseButton for 1 action?
 
 		-- print(('\t%s: inputName=%q'):format(type, inputName));
 
@@ -379,13 +379,13 @@ courseplay.inputBindings.keyboard = {};
 
 	-- KEYBOARD
 	-- open/close hud (combined with modifier): get i18n text
-	local modifierAction = InputBinding.actions[InputBinding.COURSEPLAY_MODIFIER];
-	local modifierTextI18n = KeyboardHelper.getKeyNames(modifierAction.keys1);
+	local modifierAction = InputBinding.actionBinding[ actions.COURSEPLAY_MODIFIER];
+	local modifierTextI18n = KeyboardHelper.getKeyNames(modifierAction.input);
 
-	local openCloseHudAction = InputBinding.actions[InputBinding.COURSEPLAY_HUD];
-	local openCloseHudTextI18n = KeyboardHelper.getKeyNames(openCloseHudAction.keys1);
+	local openCloseHudAction =InputBinding.actionBinding[ actions.COURSEPLAY_HUD];
+	local openCloseHudTextI18n = KeyboardHelper.getKeyNames(openCloseHudAction.input);
 
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
-InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData); ]]
+InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData);  ]]

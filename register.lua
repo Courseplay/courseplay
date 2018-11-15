@@ -1,5 +1,6 @@
 --COURSEPLAY
-SpecializationUtil.registerSpecialization('courseplay', 'courseplay', g_currentModDirectory .. 'courseplay.lua');
+print_r(g_fruitTypeManager)
+print_r(g_fillTypeManager)
 g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
 if courseplay.houstonWeGotAProblem then
 	return;
@@ -13,21 +14,11 @@ function courseplay:register(secondTime)
 	if secondTime then
 		print('## Courseplay: register later loaded mods');
 	end
-	for typeName,vehicleType in pairs(VehicleTypeUtil.vehicleTypes) do
-		if vehicleType and not SpecializationUtil.hasSpecialization(courseplay, vehicleType.specializations) then 
-			for i,spec in pairs(vehicleType.specializations) do
-				if spec and spec == drivableSpec then
-					if courseplay.isDevVersion then
-						print(('  adding Courseplay to %q'):format(tostring(vehicleType.name)));
-					end
-					table.insert(vehicleType.specializations, courseplaySpec);
-					vehicleType.hasCourseplaySpec = true;
-					vehicleType.hasDrivableSpec = true;
-					numInstallationsVehicles = numInstallationsVehicles + 1;
-					break;
-				end;
-			end;
-		end;
+	for typeName,vehicleType in pairs(g_vehicleTypeManager:getVehicleTypes()) do
+		if SpecializationUtil.hasSpecialization(Driveable, vehicleType.specializations) then
+			g_vehicleTypeManager:addSpecialization(typeName, g_currentModName .. ".courseplay")
+			numInstallationsVehicles = numInstallationsVehicles + 1
+        end
 	end;
 end;
 

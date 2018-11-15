@@ -132,7 +132,7 @@ function courseplay.hud:setup()
 	self.suc.visibleArea.y2 = self.suc.y2 - self:pxToNormal(8, 'y');
 	self.suc.visibleArea.hPadding = self:pxToNormal(10, 'x');
 	self.suc.visibleArea.vPadding = self:pxToNormal(10, 'y');
-	self.suc.visibleArea.overlayWidth = g_currentMission.hudTipperOverlay.width * 2.75;
+	self.suc.visibleArea.overlayWidth = 50 -- To Do replace this with somthingg_currentMission.hudTipperOverlay.width * 2.75;
 	self.suc.visibleArea.overlayHeight = self.suc.visibleArea.overlayWidth * g_screenAspectRatio;
 	self.suc.visibleArea.overlayPosX = self.suc.visibleArea.x2 - self.suc.visibleArea.overlayWidth - self.suc.visibleArea.hPadding;
 	self.suc.visibleArea.overlayPosY = self.suc.visibleArea.y1 + self.suc.visibleArea.vPadding;
