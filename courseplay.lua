@@ -56,8 +56,11 @@ end;
 
 local function initialize()
 	local fileList = {
+		'CpObject',
+		'AIDriver',
 		'base',
-		'button', 
+		'button',
+		'bunkersilo_management',		
 		'bypass',
 		'combines', 
 		'courseplay_event', 
@@ -67,7 +70,8 @@ local function initialize()
 		'drive', 
 		'fields', 
 		'fruit', 
-		'generateCourse', 
+		'generateCourse',
+		'GrainTransportAIDriver',		
 		'helpers', 
 		'hud', 
 		'input', 
@@ -77,12 +81,11 @@ local function initialize()
 		'mode3', 
 		'mode4', 
 		'mode6', 
-		'mode7', 
 		'mode8', 
-		'mode9',
 		'mode10',		
 		'recording', 
 		'reverse',
+		'ShovelModeAIDriver',
 		'settings', 
 		'signs', 
 		'specialTools', 
@@ -94,7 +97,7 @@ local function initialize()
 		'vehicles',
 		'PurePursuitController',
 		'Waypoint',
-    'course-generator/courseGenerator',
+	'course-generator/courseGenerator',
     'course-generator/CourseGeneratorScreen',
 	'course-generator/CoursePlot',
     'course-generator/cp',
@@ -152,7 +155,7 @@ local function setGlobalData()
 	courseplay.MODE_SEED_FERTILIZE = 4;
 	courseplay.MODE_TRANSPORT = 5;
 	courseplay.MODE_FIELDWORK = 6;
-	courseplay.MODE_COMBINE_SELF_UNLOADING = 7;
+	courseplay.MODE_COMBINE_SELF_UNLOADING = 7; --removed by Tommi
 	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;

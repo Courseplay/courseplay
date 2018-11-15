@@ -4,7 +4,8 @@
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Útvonal rögzítés indítása" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Útvonal" />
 		<text name="COURSEPLAY_PPC_OFF" 								 text="normál mód" />
-		<text name="COURSEPLAY_PPC_ON" 									 text="kísérleti mód" /> 
+		<text name="COURSEPLAY_PPC_ON" 									 text="kísérleti mód" />
+		<text name="COURSEPLAY_AIDRIVER" 								 text="AI driver" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Szállító elindítása" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Szállító megállítása" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Állj az utolsó pontnál, következő triggernél" />
