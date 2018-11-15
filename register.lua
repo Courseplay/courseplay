@@ -1,7 +1,11 @@
 --COURSEPLAY
-print_r(g_fruitTypeManager)
-print_r(g_fillTypeManager)
+--print_r(g_fruitTypeManager)
+--print_r(g_vehicleTypeManager)
+--DebugUtil.printTableRecursively(g_fillTypeManager, '  ', 0, 10)
+
 g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
+
+
 if courseplay.houstonWeGotAProblem then
 	return;
 end;
@@ -14,11 +18,18 @@ function courseplay:register(secondTime)
 	if secondTime then
 		print('## Courseplay: register later loaded mods');
 	end
-	for typeName,vehicleType in pairs(g_vehicleTypeManager:getVehicleTypes()) do
-		if SpecializationUtil.hasSpecialization(Driveable, vehicleType.specializations) then
-			g_vehicleTypeManager:addSpecialization(typeName, g_currentModName .. ".courseplay")
-			numInstallationsVehicles = numInstallationsVehicles + 1
-        end
+	for typeName,vehicleType in pairs(g_vehicleTypeManager.vehicleTypes) do
+		--print(string.format("   typeName(%s),vehicleType(%s)",tostring(typeName),tostring(vehicleType)))
+		for i,specName in pairs(vehicleType.specializationNames) do
+			--print(string.format("   i(%s),specName(%s)",tostring(i),tostring(specName)))
+			if specName == 'drivable' and not vehicleType.hasCourseplaySpec then
+				--table.insert(vehicleType.specializations, courseplaySpec);
+				g_vehicleTypeManager:addSpecialization(typeName, g_currentModName .. ".courseplay")
+				vehicleType.hasCourseplaySpec = true;
+				vehicleType.hasDrivableSpec = true;
+				numInstallationsVehicles = numInstallationsVehicles + 1;
+			end
+		end;
 	end;
 end;
 
@@ -168,7 +179,7 @@ for n,t in pairs( g_i18n.texts ) do
 end
 
 courseplay:register();
-print(string.format('### Courseplay: installed into %d vehicles', numInstallationsVehicles));
+print(string.format('### Courseplay: installed into %d vehicle types', numInstallationsVehicles));
 
 -- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil)
 local originalDriveToPoint = AIVehicleUtil.driveToPoint;

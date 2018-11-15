@@ -88,11 +88,12 @@ end;
 
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
-	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+	return
+	--[[ Tommi if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local timestamp = getDate( "%H:%M:%S")
     	local seconds = courseplay.clock / 1000
 		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. timestamp .. '] ' .. str);
-	end;
+	end;]]
 end;
 
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 
@@ -134,7 +135,7 @@ end;
 
 function tableShow(t, name, channel, indent, maxDepth)
 	-- important performance backup: the channel is checked first before proceeding with the compilation of the table
-	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == false then
+	if channel ~= nil then --Tommi and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == false then
 		return;
 	end;
 
@@ -153,14 +154,15 @@ function tableShow(t, name, channel, indent, maxDepth)
 		local so = tostring(o);
 		local oType = type(o);
 		if oType == 'function' then
-			local info = debug.getinfo(o, 'S')
+			return ("function...")
+			--[[local info = debug.getinfo(o, 'S')
 			-- info.name is nil because o is not a calling level
 			if info.what == 'C' then
 				return ('"%s, C function"'):format(so);
 			else
 				-- the information is defined in a script
 				return ('"%s, defined in %s (lines %d-%d)"'):format(so, info.source, info.linedefined, info.lastlinedefined);
-			end
+			end]]
 		elseif oType == 'number' then
 			return so;
 		elseif oType == 'boolean' then

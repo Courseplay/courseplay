@@ -70,7 +70,7 @@ function courseplay:setNameVariable(workTool)
 	-- SPECIALIZATIONS BASED
 	-- [1] AUGER WAGONS
 	if workTool.typeName == 'augerWagon' or string.match( workTool.typeName, "FS17_kotteUniversalPack.kotteUniversal") then
-		if workTool:allowFillType(FillUtil.FILLTYPE_LIQUIDMANURE) then
+		if workTool:getFillUnitAllowsFillType(1,g_fillTypeManager.nameToIndex.LIQUIDMANURE) then
 			workTool.cp.isLiquidManureOverloader = true;
 		else
 			workTool.cp.isAugerWagon = true;
@@ -541,9 +541,10 @@ function courseplay:setNameVariable(workTool)
 	-- SPRAYER SETUP
 	-- ###########################################################
 	if courseplay:isSprayer(workTool) then
-		if workTool:allowFillType(FillUtil.FILLTYPE_LIQUIDMANURE) then
+		print(tableShow(g_vehicleTypeManager,"g_vehicleTypeManager",nil,nil,4))
+		if workTool:getFillUnitAllowsFillType(1,g_fillTypeManager.nameToIndex.LIQUIDMANURE) then
 			workTool.cp.isLiquidManureSprayer = true;
-		elseif workTool:allowFillType(FillUtil.FILLTYPE_MANURE) then
+		elseif workTool:getFillUnitAllowsFillType(1,g_fillTypeManager.nameToIndex.MANURE) then    
 			workTool.cp.isManureSprayer = true;
 		end;
 	end;

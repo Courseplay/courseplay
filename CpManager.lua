@@ -53,10 +53,10 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
-	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
-	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
+	--Tommi self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
+	--Tommi self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
-	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
+	--Tommi self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
 	courseplay:register(true)-- NOTE: running here again to check whether there were mods loaded after courseplay
 	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -83,7 +83,7 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- FIELDS
 	if courseplay.fields.automaticScan then
-		self:setupFieldScanInfo();
+		--Tommi self:setupFieldScanInfo();
 	end;
 	if g_server ~= nil then
 		courseplay.fields:loadCustomFields(fileExists(self.cpOldCustomFieldsXmlFilePath) and not fileExists(self.cpCustomFieldsXmlFilePath));
@@ -270,15 +270,15 @@ function CpManager:update(dt)
 	if g_gui.currentGui == nil and g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
 		if self.playerOnFootMouseEnabled then
 			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
-		elseif self.globalInfoText.hasContent then
-			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
+		--Tommi elseif self.globalInfoText.hasContent then
+			--Tommi g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 		end;
 	end;
 
 	-- add a debug marker to the log file when Left Alt-D pressed
-	if  InputBinding.hasEvent( InputBinding.COURSEPLAY_DEBUG_MARKER ) then
+	--[[Tommiif  InputBinding.hasEvent( InputBinding.COURSEPLAY_DEBUG_MARKER ) then
 		courseplay.logDebugMarker()
-	end
+	end]]
 
 end;
 
@@ -289,7 +289,7 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY GLOBALINFOTEXTS
-	local git = self.globalInfoText;
+	--[[Tommi local git = self.globalInfoText;
 	git.hasContent = false;
 	local numLinesRendered = 0;
 	local basePosY = git.posY;
@@ -302,7 +302,7 @@ function CpManager:draw()
 	end;
 	git.buttonsClickArea.y1 = basePosY;
 	git.buttonsClickArea.y2 = basePosY + (numLinesRendered  * (git.lineHeight + git.lineMargin));
-
+]]
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY FIELD SCAN MSG
 	if g_currentMission.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
@@ -313,7 +313,7 @@ end;
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	if g_currentMission.paused then return; end;
 
-	local area = self.globalInfoText.buttonsClickArea;
+	--Tommi local area = self.globalInfoText.buttonsClickArea;
 	if area == nil then
 		return;
 	end;
@@ -601,7 +601,7 @@ local nightStart, dayStart = 19 * 3600000, 7.5 * 3600000; -- from 7pm until 7:30
 function CpManager:minuteChanged()
 	-- WEATHER
 	local env = g_currentMission.environment;
-	self.lightsNeeded = env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
+	self.lightsNeeded = true --Tommi env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
 end;
 
 function CpManager:realTime10SecsChanged()
@@ -640,7 +640,7 @@ end;
 -- ####################################################################################################
 -- WAGES
 function CpManager:setupWages()
-	--self.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionInfo.difficulty - 1) / 2);
+	self.wageDifficultyMultiplier = 1 --Tommi Utils.lerp(0.5, 1, (g_currentMission.missionInfo.difficulty - 1) / 2);
 	self.wagesActive = true;
 	self.wagePerHour = 1500;
 	self.wagePer10Secs  = self.wagePerHour / 360;
