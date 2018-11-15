@@ -122,13 +122,13 @@ local function initialize()
 end;
 
 local function setVersionData()
-	local modItem = ModsUtil.findModItemByModName(courseplay.modName);
+	local modItem = g_modManager:getModByName(courseplay.modName)
 	if modItem and modItem.version then
 		courseplay.version = modItem.version;
 	end;
 
 	if courseplay.version then
-		local versionSplitStr = Utils.splitString('.', courseplay.version); -- split as strings
+		local versionSplitStr = StringUtil.splitString('.', courseplay.version); -- split as strings
 		versionSplitStr[3] = versionSplitStr[3] or '0000';
 		courseplay.versionDisplayStr = string.format('v%s.%s\n.%s', versionSplitStr[1], versionSplitStr[2], versionSplitStr[3]); --multiline display string
 		courseplay.isDevVersion = tonumber(versionSplitStr[3]) > 0;
@@ -357,7 +357,7 @@ setVersionData();
 
 initialize();
 
-courseplay.inputBindings.updateInputButtonData();
+--courseplay.inputBindings.updateInputButtonData();
 
 setGlobalData();
 

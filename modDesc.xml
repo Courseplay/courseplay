@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="39">
-	<version>5.03.00050</version>
+<modDesc descVersion="40">
+	<version>6.00.00000</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay 5</br>
@@ -96,23 +96,76 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 		<sourceFile filename="register.lua" />
 	</extraSourceFiles>
 
+	<actions>
+        <action name="COURSEPLAY_MOUSEACTION_PRIMARY" axisType="HALF" />
+		<action name="COURSEPLAY_MODIFIER"				axisType="HALF"					/>
+		<action name="COURSEPLAY_HUD"					axisType="HALF"					/>
+		<action name="COURSEPLAY_MENU_ACCEPT_SECONDARY"	axisType="HALF"				/>
+		<action name="COURSEPLAY_START_STOP"			axisType="HALF"				/>
+		<action name="COURSEPLAY_CANCELWAIT"			axisType="HALF"					/>
+		<action name="COURSEPLAY_DRIVENOW"				axisType="HALF"				/>
+		<action name="COURSEPLAY_STOP_AT_END"			axisType="HALF"					/>
+		<action name="COURSEPLAY_NEXTMODE"				axisType="HALF"				/>
+		<action name="COURSEPLAY_PREVMODE"				axisType="HALF"				/>
+		<action name="COURSEPLAY_MOUSEACTION_PRIMARY"	axisType="HALF"	/>
+		<action name="COURSEPLAY_MOUSEACTION_SECONDARY"	axisType="HALF"	/>
+		<action name="COURSEPLAY_DEBUG_MARKER"			axisType="HALF"					/>
+    	<action name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"	axisType="HALF"	/>
+		<action name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"	axisType="HALF"	/>
+		<action name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	axisType="HALF"	/>
+		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"	axisType="HALF"	/>
+    </actions>
+
 	<inputBindings>
-		<input name="COURSEPLAY_MODIFIER"				category="VEHICLE"	key1="KEY_lctrl"	key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_HUD"					category="VEHICLE"	key1="KEY_delete"	key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_MENU_ACCEPT_SECONDARY"	category="VEHICLE"	key1="KEY_KP_enter"	key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_START_STOP"				category="VEHICLE"	key1="KEY_KP_7"		key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_CANCELWAIT"				category="VEHICLE"	key1="KEY_KP_8"		key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_DRIVENOW"				category="VEHICLE"	key1="KEY_KP_9"		key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_STOP_AT_END"			category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_NEXTMODE"				category="VEHICLE"	key1="KEY_pageup"	key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_PREVMODE"				category="VEHICLE"	key1="KEY_pagedown"	key2="" button="" device="0" mouse=""					/>
-		<input name="COURSEPLAY_MOUSEACTION_PRIMARY"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_LEFT"	/>
-		<input name="COURSEPLAY_MOUSEACTION_SECONDARY"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse="MOUSE_BUTTON_RIGHT"	/>
-		<input name="COURSEPLAY_DEBUG_MARKER"			category="ONFOOT VEHICLE"	key1="KEY_lalt KEY_d" 		key2="" button="" device="0" mouse=""					/>
-    <input name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
-		<input name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
-		<input name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
-		<input name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"	category="VEHICLE"	key1=""				key2="" button="" device="0" mouse=""	/>
+		 <actionBinding action="COURSEPLAY_MODIFIER">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_HUD">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_delete" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_MENU_ACCEPT_SECONDARY">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_enter" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_START_STOP">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_7" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_CANCELWAIT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_8" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_DRIVENOW">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_9" />
+        </actionBinding>
+		<!-- Possible to delete blank input bindings -->
+		<actionBinding action="COURSEPLAY_STOP_AT_END">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_NEXTMODE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_pageup" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_PREVMODE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_pagedown" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_MOUSEACTION_PRIMARY">
+            <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_LEFT" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_MOUSEACTION_SECONDARY">
+            <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_RIGHT" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_DEBUG_MARKER">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_d" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
 </inputBindings>
 
 </modDesc>

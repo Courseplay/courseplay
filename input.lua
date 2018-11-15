@@ -349,7 +349,8 @@ courseplay.inputBindings.mouse.mouseButtonOverlays = {
 };
 courseplay.inputBindings.keyboard = {};
 
-function courseplay.inputBindings.updateInputButtonData()
+-- Needs Reworked. Inputbindings have changed
+--[[ function courseplay.inputBindings.updateInputButtonData()
 	-- print('updateInputButtonData()')
 
 	-- MOUSE
@@ -387,4 +388,4 @@ function courseplay.inputBindings.updateInputButtonData()
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
-InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData);
+InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData); ]]

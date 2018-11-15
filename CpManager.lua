@@ -24,9 +24,8 @@ function CpManager:loadMap(name)
 
 		self.cpXmlFilePath = self.savegameFolderPath .. '/courseplay.xml';
 		self.oldCPFileExists = fileExists(self.cpXmlFilePath);
-
 		-- Course save path
-		self.cpCoursesFolderPath = ("%s%s/%s"):format(getUserProfileAppPath(),"CoursePlay_Courses", g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId);
+		self.cpCoursesFolderPath = ("%s%s/%s"):format(getUserProfileAppPath(),"CoursePlay_Courses", g_currentMission.missionInfo.mapId);
 		self.cpCourseManagerXmlFilePath = self.cpCoursesFolderPath .. "/courseManager.xml";
 		self.cpCourseStorageXmlFileTemplate = "courseStorage%04d.xml";
 
@@ -641,7 +640,7 @@ end;
 -- ####################################################################################################
 -- WAGES
 function CpManager:setupWages()
-	self.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionInfo.difficulty - 1) / 2);
+	--self.wageDifficultyMultiplier = Utils.lerp(0.5, 1, (g_currentMission.missionInfo.difficulty - 1) / 2);
 	self.wagesActive = true;
 	self.wagePerHour = 1500;
 	self.wagePer10Secs  = self.wagePerHour / 360;

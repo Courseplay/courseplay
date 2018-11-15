@@ -60,7 +60,7 @@ function inputCourseNameDialogue.setModImages(element, xmlFile, key)
 	local fileNames = getXMLString(xmlFile, key .. '#MOD_imageFilename');
 
 	if fileNames ~= nil then
-		local split = Utils.splitString(",", fileNames);
+		local split = StringUtil.splitString(",", fileNames);
 		if #split == 1 then
 			inputCourseNameDialogue:setImageOverlay(element, element.modImgDir .. fileNames);
 		elseif #split == #inputCourseNameDialogue.types then

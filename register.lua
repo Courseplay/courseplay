@@ -1,11 +1,12 @@
 --COURSEPLAY
 SpecializationUtil.registerSpecialization('courseplay', 'courseplay', g_currentModDirectory .. 'courseplay.lua');
+g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
 if courseplay.houstonWeGotAProblem then
 	return;
 end;
 
-local drivableSpec = SpecializationUtil.getSpecialization('drivable');
-local courseplaySpec = SpecializationUtil.getSpecialization('courseplay');
+local drivableSpec = g_specializationManager:getSpecializationByName("drivable")
+local courseplaySpec = g_specializationManager:getSpecializationByName("courseplay")
 local numInstallationsVehicles = 0;
 
 function courseplay:register(secondTime)
@@ -173,7 +174,7 @@ courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 -- make l10n global so they can be used in GUI XML files directly (Thanks Mogli!)
 for n,t in pairs( g_i18n.texts ) do
 	if string.sub( n, 1, 10 ) == "COURSEPLAY" then
-		g_i18n.globalI18N.texts[n] = t
+		_G.g_i18n.texts[n] = t
 	end
 end
 

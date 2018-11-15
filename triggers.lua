@@ -755,7 +755,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 		end;
 	end;
 end;
-SiloTrigger.triggerCallback = Utils.appendedFunction(SiloTrigger.triggerCallback, SiloTrigger_TriggerCallback);
+LoadTrigger.triggerCallback = Utils.appendedFunction(LoadTrigger.triggerCallback, SiloTrigger_TriggerCallback);
 
 
 local oldBunkerSiloLoad = BunkerSilo.load;

@@ -36,7 +36,7 @@ function courseplay.signs:setup()
 		self.sections[signType] =  data[2];
 		self.heightPos[signType] = data[3];
 
-		local i3dNode = Utils.loadSharedI3DFile('img/signs/' .. signType .. '.i3d', courseplay.path);
+		local i3dNode =  g_i3DManager:loadSharedI3DFile( 'img/signs/' .. signType .. '.i3d' , courseplay.path);
 		local itemNode = getChildAt(i3dNode, 0);
 		link(globalRootNode, itemNode);
 		setRigidBodyType(itemNode, 'NoRigidBody');
