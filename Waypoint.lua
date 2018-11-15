@@ -16,24 +16,22 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-Waypoint = {}
-Waypoint.__index = Waypoint
+Waypoint = CpObject()
 
 -- constructor from the legacy Courseplay waypoint
-function Waypoint:new(cpWp, cpIndex)
-	local newWp = {}
-	setmetatable( newWp, self )
-	newWp:set(cpWp, cpIndex)
-	return newWp
+function Waypoint:init(cpWp, cpIndex)
+	self:set(cpWp, cpIndex)
 end
 
 function Waypoint:set(cpWp, cpIndex)
 	-- we initialize explicitly, no table copy as we want to have
 	-- full control over what is used in this object
-	self.x = cpWp.cx or 0
-	self.z = cpWp.cz or 0
-	self.angle = cpWp.angle or 0
+	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ
+	self.x = cpWp.cx or cpWp.posX or 0
+	self.z = cpWp.cz or cpWp.posZ or 0
+	self.angle = cpWp.angle or nil
 	self.rev = cpWp.rev or false
+	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
 end
 
@@ -42,28 +40,30 @@ function Waypoint:getPosition()
 	return self.x, y, self.z
 end
 
+function Waypoint:getDistanceFromPoint(x, z)
+	return courseplay:distance(x, z, self.x, self.z)
+end
+
+function Waypoint:getDistanceFromVehicle(vehicle)
+	local vx, _, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
+	return self:getDistanceFromPoint(vx, vz)
+end
+
 -- a node related to a waypoint
-WaypointNode = {}
+WaypointNode = CpObject()
 WaypointNode.MODE_NORMAL = 1
 WaypointNode.MODE_LAST_WP = 2
 WaypointNode.MODE_SWITCH_DIRECTION = 3
 WaypointNode.MODE_SWITCH_TO_FORWARD = 4
 
-WaypointNode.__index = WaypointNode
-
-function WaypointNode:new(name, logChanges)
-	local newWaypointNode = {}
-	setmetatable( newWaypointNode, self )
-	newWaypointNode.logChanges = logChanges
-	newWaypointNode.node = courseplay.createNode(name, 0, 0, 0)
-	return newWaypointNode
+function WaypointNode:init(name, logChanges)
+	self.logChanges = logChanges
+	self.node = courseplay.createNode(name, 0, 0, 0)
 end
 
 function WaypointNode:destroy()
 	courseplay.destroyNode(self.node)
 end
-
-
 
 function WaypointNode:setToWaypoint(course, ix, suppressLog)
 	local newIx = math.min(ix, #course.waypoints)
@@ -116,44 +116,39 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 	end
 end
 
-Course = {}
-Course.__index = Course
+Course = CpObject()
 
-function Course:new(vehicle)
-	local newCourse = {}
-	setmetatable(newCourse, self)
-	newCourse.vehicle = vehicle
+function Course:init(vehicle, waypoints)
 	-- add waypoints from current vehicle course
-	newCourse.waypoints = {}
-	for i = 1, #vehicle.Waypoints do
-		table.insert(newCourse.waypoints, Waypoint:new(vehicle.Waypoints[i], i))
+	self.waypoints = {}
+	for i = 1, #waypoints do
+		table.insert(self.waypoints, Waypoint(waypoints[i], i))
 	end
-	newCourse.segments = {}
-
-	return newCourse
+	self:addWaypointAngles()
+	-- only for logging purposes
+	self.vehicle = vehicle
 end
 
-function Course:initializeSegments(startCpWaypointIx)
-	local currentSegmentIx = 1
-	local startSegment, startIx
-	self.segments[currentSegmentIx] = {}
-	for i = 1, #self.waypoints do
-		self.waypoints[i].segmentIx = currentSegmentIx
-		table.insert(self.segments[currentSegmentIx], self.waypoints[i])
-		if i == startCpWaypointIx then
-			startSegment = self.segments[currentSegmentIx]
-			startIx = #startSegment
-		end
-		if self:switchingToReverseAt(i) or self:switchingToForwardAt(i) then
-			-- start a new segment wherever there's a direction change
-			currentSegmentIx = currentSegmentIx + 1
-			self.segments[currentSegmentIx] = {}				
+-- add missing angles from one waypoint to the other
+-- PPC relies on waypoint angles, we need them
+function Course:addWaypointAngles()
+	for i = 1, #self.waypoints - 1 do
+		if not self.waypoints[i].angle then
+			local cx, _, cz = self:getWaypointPosition(i)
+			local nx, _, nz = self:getWaypointPosition( i + 1)
+			-- TODO: fix this weird coordinate system transformation from x/z to x/y
+			local dx, dz = nx - cx, -nz - (-cz)
+			local angle = toPolar(dx, dz)
+			-- and now back to x/z
+			self.waypoints[i].angle = courseGenerator.toCpAngle(angle)
 		end
 	end
-	return startSegment, startIx
+	if not self.waypoints[#self.waypoints].angle then
+		self.waypoints[#self.waypoints].angle = self.waypoints[#self.waypoints - 1].angle
+	end
 end
 
-function Course:setCurrentWaypointIx(ix) 
+function Course:setCurrentWaypointIx(ix)
 	self.currentWaypoint = ix
 end
 
@@ -161,26 +156,73 @@ function Course:getCurrentWaypointIx()
 	return self.currentWaypoint
 end
 
+function Course:isReverseAt(ix)
+	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].rev
+end
+
 function Course:switchingDirectionAt(ix) 
 	return self:switchingToForwardAt(ix) or self:switchingToReverseAt(ix)
 end
 
 function Course:switchingToReverseAt(ix)
-	return (not self.waypoints[ix].rev) and self.waypoints[math.min(ix + 1, #self.waypoints)].rev
+	return not self:isReverseAt(ix) and self:isReverseAt(ix + 1)
 end
 
 function Course:switchingToForwardAt(ix)
-	return (self.waypoints[ix].rev) and not self.waypoints[math.min(ix + 1, #self.waypoints)].rev
+	return self:isReverseAt(ix) and not self:isReverseAt(ix + 1)
 end
 
 function Course:getWaypointPosition(ix)
 	local x, z = self.waypoints[ix].x, self.waypoints[ix].z
-	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+	local y = 0
+	if g_currentMission then
+		y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+	end
 	return x, y, z
 end
 
 -- distance between (px,pz) and the ix waypoint
-function Course:getDistanceToWaypoint(px, pz, ix)
-	local x, z = self.waypoints[ix].x, self.waypoints[ix].z
-	return courseplay:distance(px, pz, x, z)
+function Course:getDistanceBetweenPointAndWaypoint(px, pz, ix)
+	return self.waypoints[ix]:getDistanceFromPoint(px, pz)
+end
+
+function Course:getDistanceBetweenVehicleAndWaypoint(vehicle, ix)
+	return self.waypoints[ix]:getDistanceFromVehicle(vehicle)
+end
+
+function Course:getWaypointAngleDeg(ix)
+	return self.waypoints[ix].angle
+end
+
+--- Get the average speed setting across n waypoints starting at ix
+function Course:getAverageSpeed(ix, n)
+	local total, count = 0, 0
+	for i = ix, ix + n - 1 do
+		local index = self:getIxRollover(i)
+		if self.waypoints[index].speed ~= nil then
+			total = total + self.waypoints[index].speed
+			count = count + 1
+		end
+	end
+	return count > 0 and (total / count) or nil
+end
+
+function Course:getIxRollover(ix)
+	if ix > #self.waypoints then
+		return ix - #self.waypoints
+	elseif ix < 1 then
+		return #self.waypoints - ix
+	end
+	return ix
+end
+
+function Course:isLastWaypointIx(ix) 
+	return #self.waypoints == ix
+end
+
+function Course:print()
+	for i = 1, #self.waypoints do
+		local p = self.waypoints[i]
+		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s', i, p.x, p.z, p.angle, tostring(p.rev)))
+	end
 end

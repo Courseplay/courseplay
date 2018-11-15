@@ -2093,7 +2093,7 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
 	courseplay.destroyNode( t1Node )
 	courseplay.destroyNode( c1Node )
 	courseplay.destroyNode( wpNode )
-	return result 
+	return result
 end
 
 -- Start the vehicle on an alignment course towards targetWaypoint.

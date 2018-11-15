@@ -296,10 +296,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			end;
 		end;
 
-	-- MODE 7: COMBINE SELF UNLOADING
-	elseif vehicle.cp.mode == 7 then
-		-- DO NOTHING
-
 	-- MODE 8: LIQUID MANURE TRANSFER
 	elseif vehicle.cp.mode == 8 then
 		if workTool.cp.hasSpecializationFillable and ((workTool.overloading ~= nil or workTool.setIsReFilling ~= nil) or workTool.cp.isFuelTrailer or workTool.cp.isWaterTrailer) then

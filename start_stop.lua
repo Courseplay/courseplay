@@ -217,10 +217,6 @@ function courseplay:start(self)
 	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
 	self.cp.unloadPoints = {};
-	self.cp.shovelFillStartPoint = nil
-	self.cp.shovelFillEndPoint = nil
-	self.cp.shovelEmptyPoint = nil
-	self.cp.mode9SavedLastFillLevel = 0;
 	self.cp.workDistance = 0
 	self.cp.mediumWpDistance = 0
 	self.cp.mode10.alphaList = {}
@@ -336,15 +332,7 @@ function courseplay:start(self)
 
 		--work points for shovel
 		elseif self.cp.mode == 9 then
-			if numWaitPoints == 1 and self.cp.shovelFillStartPoint == nil then
-				self.cp.shovelFillStartPoint = i;
-			end;
-			if numWaitPoints == 2 and self.cp.shovelFillEndPoint == nil then
-				self.cp.shovelFillEndPoint = i;
-			end;
-			if numWaitPoints == 3 and self.cp.shovelEmptyPoint == nil then
-				self.cp.shovelEmptyPoint = i;
-			end;
+			--moved to ShovelModeAIDriver
 		end;
 
 		-- laneNumber (for seeders)
@@ -416,30 +404,14 @@ function courseplay:start(self)
 		courseplay:setIsLoaded(self, false);
 	end
 
-	if self.cp.mode == 9 then
-		courseplay:setWaypointIndex(self, 1);
-		self.cp.shovelState = 1;
-		for i,_ in pairs(self.attachedImplements) do
-			local object = self.attachedImplements[i].object
-			if object.ignoreVehicleDirectionOnLoad ~= nil then
-				object.ignoreVehicleDirectionOnLoad = true
-			end	
-			if object.attachedImplements ~= nil then
-				for k,_ in pairs(object.attachedImplements) do
-					if object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad ~= nil then
-						object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad = true
-					end
-				end
-			end				
-		end
-	elseif self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+	if self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
 		if self.cp.mode == 2 or self.cp.mode == 3 then
 			courseplay:setWaypointIndex(self, 3);
 			courseplay:setIsLoaded(self, true);
 		else
 			courseplay:setWaypointIndex(self, 1);
 			local distToFirst = courseplay:distanceToPoint( self, self.Waypoints[ 1 ].cx, 0, self.Waypoints[ 1 ].cz )
-			if distToFirst > self.cp.turnDiameter then
+			if not self.cp.drivingMode:is(DrivingModeSetting.DRIVING_MODE_AIDRIVER) and distToFirst > self.cp.turnDiameter then
 				courseplay:startAlignmentCourse( self, self.Waypoints[ 1 ])
 			end
 		end
@@ -513,8 +485,25 @@ function courseplay:start(self)
 		courseplay:disableCropDestruction(self);
 	end;
 
-	-- Initialize pure pursuit controller
-	self.cp.ppc:initialize()
+	--More Realistitic Mod. Temp fix until we can fix the breaking problem.
+	if self.mrUseMrTransmission and self.mrUseMrTransmission == true then
+		self.mrUseMrTransmission = false;
+		self.cp.changedMRMod = true;
+	end
+	if self.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
+		-- the driver handles the PPC
+		if self.cp.mode == courseplay.MODE_TRANSPORT then
+			self.cp.driver = AIDriver(self)
+		elseif self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
+			self.cp.driver = GrainTransportAIDriver(self)				
+		elseif self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
+			self.cp.driver = ShovelModeAIDriver(self)
+		end
+		self.cp.driver:start(self.cp.waypointIndex)
+	else
+		-- Initialize pure pursuit controller
+		self.cp.ppc:initialize()
+	end
 	--print("startStop "..debug.getinfo(1).currentline)
 
 end;

@@ -5,6 +5,7 @@
 		<text name="COURSEPLAY_DRIVER" 									 text="Autista" />
 		<text name="COURSEPLAY_PPC_OFF" 								 text="normal mode" />
 		<text name="COURSEPLAY_PPC_ON" 									 text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_AIDRIVER" 								 text="AI driver" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Avvia autista" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Ferma autista" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Ferma all'ultimo o al prossimo punto" />
