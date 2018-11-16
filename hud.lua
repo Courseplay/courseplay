@@ -1459,12 +1459,13 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud.courseListNext = false; -- will be updated after loading courses into the hud
 
 	--Camera backups: allowTranslation
+	--[[Tommi
 	vehicle.cp.camerasBackup = {};
 	for camIndex, camera in pairs(vehicle.cameras) do
 		if camera.allowTranslation then
 			vehicle.cp.camerasBackup[camIndex] = camera.allowTranslation;
 		end;
-	end;
+	end;]]
 
 	--default hud conditional variables
 	vehicle.cp.HUD0noCourseplayer = false;
@@ -1945,7 +1946,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.crossingPointsIcon, self.buttonUVsPx['recordingCross'], sizeX, sizeY);
 
 	-- toolTip icon
-	vehicle.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', self.iconSpritePath, self.toolTipIconPosX, self.toolTipIconPosY, self.toolTipIconWidth, self.toolTipIconHeight);
+	--Tommi vehicle.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', self.iconSpritePath, self.toolTipIconPosX, self.toolTipIconPosY, self.toolTipIconWidth, self.toolTipIconHeight);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.toolTipIcon, { 112, 180, 144, 148 }, sizeX, sizeY);
 end;
 -- do not remove this comment

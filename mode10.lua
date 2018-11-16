@@ -224,7 +224,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 				courseplay:moveShield(vehicle,"up",dt,vehicle.cp.mode10.alphaList[closestIndex])
 				
 				--[[local groundContact = true
-				for index, wheel in pairs(vehicle.wheels) do
+				for index, wheel in pairs(vehicle:getWheels()) do
 					print(" check Wheel "..tostring(index).." hasGroundContact: "..tostring(wheel.hasGroundContact))
 					if not wheel.hasGroundContact then
 						groundContact = false

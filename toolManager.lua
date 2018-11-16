@@ -134,7 +134,8 @@ function courseplay:isAttachedMixer(workTool)
 end;
 function courseplay:isAttacherModule(workTool)
 	if workTool.attacherJoint then
-		return (workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_SEMITRAILER and (not workTool.wheels or (workTool.wheels and #workTool.wheels == 0))) or workTool.cp.isAttacherModule == true;
+		local workToolsWheels = workTool:getWheels();
+		return (workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_SEMITRAILER and (not workToolsWheels or (workToolsWheels and #workToolsWheels == 0))) or workTool.cp.isAttacherModule == true;
 	end;
 	return false;
 end;

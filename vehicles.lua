@@ -136,7 +136,7 @@ function courseplay:getDistances(object)
 			-- Finde the front and rear distance from the direction node
 			local front, rear = 0, 0;
 			local haveRunnedOnce = false
-			for _, wheel in ipairs(object.wheels) do
+			for _, wheel in ipairs(object:getWheels()) do
 				local wdnrxTemp, wdnryTemp, wdnrzTemp = getRotation(wheel.driveNode);
 				setRotation(wheel.driveNode, 0, 0, 0);
 				local wreprxTemp, wrepryTemp, wreprzTemp = getRotation(wheel.repr);
@@ -234,9 +234,10 @@ function courseplay:getDistances(object)
 			setRotation(node, 0, 0, 0);
 
 			-- Find the distance from attacherJoint to rear wheel
-			if object.wheels and #object.wheels > 0 and not isHookLift then
+			local objectWheels =  object:getWheels();
+			if objectWheels and #objectWheels > 0 and not isHookLift then
 				local length = 0;
-				for _, wheel in ipairs(object.wheels) do
+				for _, wheel in ipairs(objectWheels) do
 					local nx, ny, nz = getWorldTranslation(wheel.driveNode);
 					local _,_,dis = worldToLocal(node, nx, ny, nz);
 
@@ -445,7 +446,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 				-- Check if it's actually an four wheel steering
 				if not object.crawlers or #object.crawlers == 0 then
-					for index, wheel in ipairs(object.wheels) do
+					for index, wheel in ipairs(object:getWheels()) do
 						-- Strait wheels
 						if wheel.rotMax == 0 and wheel.maxLatStiffness > 0 then
 							haveStraitWheels = true;
@@ -475,7 +476,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 					local rotMax = 0;
 
 					-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
-					for index, wheel in ipairs(object.wheels) do
+					for index, wheel in ipairs(object:getWheels()) do
 						local x,_,z = getWorldTranslation(wheel.repr);
 						local _,_,dis = worldToLocal(object.rootNode, x, y, z);
 
@@ -545,13 +546,14 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 			if not useNode and not nodeName then
 				-- Get the distance from root node to the wheels turning point.
-				if object.wheels and #object.wheels > 0 then
+				local objectWheels = object:getWheels();
+				if objectWheels and #objectWheels > 0 then
 					local steeringAxleScaleMin, steeringAxleScaleMax = 0, 0;
 
 					-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
-					for i = 1, #object.wheels do
-						if courseplay:isPartOfNode(object.wheels[i].node, componentNode) and object.wheels[i].isLeft ~= nil and object.wheels[i].maxLatStiffness > 0 then
-							local x,_,z = getWorldTranslation(object.wheels[i].driveNode);
+					for i = 1, #objectWheels do
+						if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffness > 0 then
+							local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
 							local _,_,dis = worldToLocal(componentNode, x, y, z);
 							dis = dis * invert;
 							courseplay:debug(('%s: getRealTurningNode(): wheel%d distance = %.2f'):format(nameNum(object), i, dis), 6);
@@ -565,10 +567,10 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 									haveStraitWheels = true;
 								end;
 							else
-								if object.wheels[i].steeringAxleScale < 0 and object.wheels[i].steeringAxleScale < steeringAxleScaleMin then
+								if objectWheels[i].steeringAxleScale < 0 and objectWheels[i].steeringAxleScale < steeringAxleScaleMin then
 									steeringAxleScaleMin = object.wheels[i].steeringAxleScale;
-								elseif object.wheels[i].steeringAxleScale > 0 and object.wheels[i].steeringAxleScale > steeringAxleScaleMax then
-									steeringAxleScaleMax = object.wheels[i].steeringAxleScale;
+								elseif objectWheels[i].steeringAxleScale > 0 and objectWheels[i].steeringAxleScale > steeringAxleScaleMax then
+									steeringAxleScaleMax = objectWheels[i].steeringAxleScale;
 								end;
 								if haveTurningWheels then
 									if dis < minDisRot then minDisRot = dis; end;
@@ -677,7 +679,8 @@ end;
 
 function courseplay:getLastComponentNodeWithWheels(workTool)
 	-- Check if there is more than 1 component
-	if workTool.wheels and #workTool.wheels > 0 and #workTool.components > 1 then
+	local workToolsWheels = workTool:getWheels();
+	if workToolsWheels and #workToolsWheels > 0 and #workTool.components > 1 then
 		-- Check if the tool has inverted nodes
 		local invert = courseplay:isInvertedToolNode(workTool) and -1 or 1;
 
@@ -689,10 +692,10 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 			-- Don't use the component that is the rootNode.
 			if component.node ~= node then
 				-- Loop through all the wheels and see if they are attached to this component.
-				for i = 1, #workTool.wheels do
+				for i = 1, #workToolsWheels do
 					-- isLeft is only set for real wheels and not dummy wheels, so we can use that to sort out the dummy wheels
-					if workTool.wheels[i].isLeft ~= nil then
-						if courseplay:isPartOfNode(workTool.wheels[i].node, component.node) then
+					if workToolsWheels[i].isLeft ~= nil then
+						if courseplay:isPartOfNode(workToolsWheels[i].node, component.node) then
 							-- Check if they are linked together
 							for _, joint in ipairs(workTool.componentJoints) do
 								if joint.componentIndices[2] == index then
@@ -1070,8 +1073,8 @@ function courseplay:getVehicleTurnRadius(vehicle)
 			steeringType = "4WS";
 
 		-- 2 Wheel Steering
-		elseif vehicle.wheels then
-			for _, wheel in ipairs(vehicle.wheels) do
+		elseif vehicle:getWheels() then
+			for _, wheel in ipairs(vehicle:getWheels()) do
 				if abs(wheel.rotMax) > rotMax then
 					rotMax = abs(wheel.rotMax);
 				end;
@@ -1186,7 +1189,7 @@ function courseplay:getWheelBase(vehicle, fromTurningNode)
 	if fromTurningNode then
 		local turningNode = courseplay:getRealTurningNode(vehicle);
 		local _, y, _ = getWorldTranslation(turningNode);
-		for _, wheel in ipairs(vehicle.wheels) do
+		for _, wheel in ipairs(vehicle:getWheels()) do
 			local x, _, z = getWorldTranslation(wheel.repr);
 			local _, _, dis = worldToLocal(turningNode, x, y, z);
 
@@ -1199,7 +1202,7 @@ function courseplay:getWheelBase(vehicle, fromTurningNode)
 	else
 		local minDis, maxDis = 0, 0;
 		local _, y, _ = getWorldTranslation(vehicle.rootNode);
-		for i, wheel in ipairs(vehicle.wheels) do
+		for i, wheel in ipairs(vehicle:getWheels()) do
 			local x,_,z = getWorldTranslation(wheel.repr);
 			local _,_,dis = worldToLocal(vehicle.rootNode, x, y, z);
 			if i > 1 then
@@ -1234,7 +1237,7 @@ function courseplay:getCenterPivotRatio(vehicle, wheelBase, frontLength)
 	else
 		local turningNode = courseplay:getRealTurningNode(vehicle);
 		local _, y, _ = getWorldTranslation(turningNode);
-		for _, wheel in ipairs(vehicle.wheels) do
+		for _, wheel in ipairs(vehicle:getWheels()) do
 			local x, _, z = getWorldTranslation(wheel.repr);
 			local _, _, dis = worldToLocal(turningNode, x, y, z);
 
