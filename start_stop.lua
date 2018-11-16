@@ -425,7 +425,7 @@ function courseplay:start(self)
 
 	courseplay:updateAllTriggers();
 
-	self.cp.cruiseControlSpeedBackup = self.cruiseControl.speed;
+	self.cp.cruiseControlSpeedBackup = self:getCruiseControlSpeed();
 
 	if self.cp.hasDriveControl then
 		local changed = false;

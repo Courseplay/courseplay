@@ -9,7 +9,8 @@ function courseplay:preLoad(xmlFile)
 end;
 ]]
 
-function courseplay:load(savegame)
+function courseplay:onLoad(savegame)
+	print("courseplay:load(savegame)")
 	local xmlFile = self.xmlFile;
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
@@ -155,7 +156,7 @@ function courseplay:load(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.tipperLoadMode = 0;
 	self.cp.easyFillTypeList = {};
-	self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
+	self.cp.siloSelectedFillType = 0 --FillUtil.FILLTYPE_UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
@@ -251,7 +252,7 @@ function courseplay:load(savegame)
 		reverse =  6;
 		turn =   10;
 		field =  24;
-		street = self.cruiseControl.maxSpeed or 50;
+		street = self:getCruiseControlMaxSpeed() or 50;
 		crawl = 3;
 		discharge = 8;
 		bunkerSilo = 20;
@@ -260,7 +261,7 @@ function courseplay:load(savegame)
 		minTurn = 3;
 		minField = 3;
 		minStreet = 3;
-		max = self.cruiseControl.maxSpeed or 60;
+		max = self:getCruiseControlMaxSpeed() or 60;
 	};
 
 	self.cp.tooIsDirty = false
@@ -652,7 +653,8 @@ function courseplay:onEnter()
 	courseplay.signs:setSignsVisibility(self);
 end
 
-function courseplay:draw()
+function courseplay:onDraw()
+	print("courseplay:draw()")
 	local isDriving = self:getIsCourseplayDriving();
 	--WORKWIDTH DISPLAY
 	if self.cp.mode ~= 7 and self.cp.timers.showWorkWidth and self.cp.timers.showWorkWidth > 0 then
@@ -766,6 +768,8 @@ function courseplay:draw()
 
 
 	-- HELP BUTTON TEXTS
+	renderText(0.2, 0.105, 0.02, string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(self.isEntered)));
+	print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(self.isEntered)))
 	if self:getIsActive() and self.isEntered then
 		local modifierPressed = InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
@@ -773,6 +777,7 @@ function courseplay:draw()
 		end;
 
 		if self.cp.hud.show then
+			print("self.cp.hud.show")
 			if self.cp.mouseCursorActive then
 				g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
 			else
@@ -854,7 +859,7 @@ function courseplay:draw()
 		end;
 		if self.cp.distanceCheck and self.cp.numWaypoints > 1 then 
 			courseplay:distanceCheck(self);
-		elseif self.cp.infoText ~= nil and Utils.startsWith(self.cp.infoText, 'COURSEPLAY_DISTANCE') then  
+		elseif self.cp.infoText ~= nil and StringUtil.startsWith(self.cp.infoText, 'COURSEPLAY_DISTANCE') then  
 			self.cp.infoText = nil
 			self.cp.infoTextNilSent = false
 		end;
@@ -941,7 +946,7 @@ function courseplay:drawWaypointsLines(vehicle)
 	end;
 end;
 
-function courseplay:update(dt)
+function courseplay:onUpdate(dt)
 	-- KEYBOARD EVENTS
 	if self:getIsActive() and self.isEntered and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
@@ -989,14 +994,14 @@ function courseplay:update(dt)
 	
 	if not self.cp.remoteIsEntered then
 		if self.cp.isEntered ~= self.isEntered then
-			CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",self.isEntered)
+			--Tommi CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",self.isEntered)
 		end
 		self:setCpVar('isEntered',self.isEntered)
 	end
 	
 	if not courseplay.isClient then -- and self.cp.infoText ~= nil then --(self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
 		if self.cp.infoText == nil and not self.cp.infoTextNilSent then
-			CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
+			--Tommi CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
 			self.cp.infoTextNilSent = true
 		elseif self.cp.infoText ~= nil then
 			self.cp.infoText = nil
@@ -1068,6 +1073,16 @@ function courseplay:update(dt)
 			]]
 		end;
 
+		--Tommi hack
+		
+			if self.cp.hud == nil then
+				self.cp.hud = {}
+				self.cp.hud["currentPage"] = 0
+			end				
+		
+		-- Hack End
+		
+		
 		if self.cp.hud.currentPage == 0 then
 			local combine = self;
 			if self.cp.attachedCombine then
@@ -1154,11 +1169,14 @@ function courseplay:postUpdate(dt)
 end;
 ]]
 
-function courseplay:updateTick(dt)
+function courseplay:onUpdateTick(dt)
+	print("base:courseplay:updateTick(dt)")
+	--[[Tommi
 	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
 		courseplay:createFieldEdgeButtons(self);
 	end;
-
+	]]
+	
 	--attached or detached implement?
 	if self.cp.tooIsDirty then
 		self.cpTrafficCollisionIgnoreList = {}
@@ -1270,7 +1288,7 @@ end;
 function courseplay:renderInfoText(vehicle)
 	if vehicle.isEntered and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
 		local text;
-		local what = Utils.splitString(";", vehicle.cp.infoText);
+		local what = StringUtil.splitString(";", vehicle.cp.infoText);
 		
 		if what[1] == "COURSEPLAY_LOADING_AMOUNT"
 		or what[1] == "COURSEPLAY_TURNING_TO_COORDS"
@@ -1362,7 +1380,7 @@ function courseplay:readStream(streamId, connection)
 	-- kurs daten
 	local courses = streamDebugReadString(streamId) -- 60.
 	if courses ~= nil then
-		self.cp.loadedCourses = Utils.splitString(",", courses);
+		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true)
 	end
 	
@@ -1415,7 +1433,7 @@ function courseplay:readStream(streamId, connection)
 
 	
 	local debugChannelsString = streamDebugReadString(streamId)
-	for k,v in pairs(Utils.splitString(",", debugChannelsString)) do
+	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
@@ -1507,7 +1525,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.drivingMode:set(Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#drivingMode'),			 0));
 	
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
-		self.cp.loadedCourses = Utils.splitString(",", courses);
+		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
 
 		local visualWaypointsStartEnd = getXMLBool(xmlFile, curKey .. '#visualWaypointsStartEnd');
@@ -1526,7 +1544,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay.signs:setSignsVisibility(self);
 
 		self.cp.siloSelectedFillType = FillUtil.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown')];
-		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN; end;
+		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = 0 end  --Tommi FillUtil.FILLTYPE_UNKNOWN; end;
 
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
@@ -1585,7 +1603,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		
 		self.cp.refillUntilPct = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#refillUntilPct'), 100);
 		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
-		offsetData = Utils.splitString(';', offsetData);
+		offsetData = StringUtil.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
 		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
@@ -1604,12 +1622,12 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (before loading)', 10), 10);
 		if shovelRots and shovelTrans then
 			self.cp.shovelStatePositions = {};
-			shovelRots = Utils.splitString(';', shovelRots);
-			shovelTrans = Utils.splitString(';', shovelTrans);
+			shovelRots = StringUtil.splitString(';', shovelRots);
+			shovelTrans = StringUtil.splitString(';', shovelTrans);
 			if #shovelRots == 4 and #shovelTrans == 4 then
 				for state=2, 5 do
-					local shovelRotsSplit = table.map(Utils.splitString(' ', shovelRots[state-1]), tonumber);
-					local shovelTransSplit = table.map(Utils.splitString(' ', shovelTrans[state-1]), tonumber);
+					local shovelRotsSplit = table.map(StringUtil.splitString(' ', shovelRots[state-1]), tonumber);
+					local shovelTransSplit = table.map(StringUtil.splitString(' ', shovelTrans[state-1]), tonumber);
 					if shovelRotsSplit and shovelTransSplit then
 						self.cp.shovelStatePositions[state] = {
 							rot = shovelRotsSplit,

@@ -126,7 +126,7 @@ end;
 
 function courseplay:setVarValueFromString(self, str, value)
 	--print(string.format("courseplay:setVarValueFromString(self, %s, %s)",str,tostring(value)))
-	local what = Utils.splitString(".", str);
+	local what = StringUtil.splitString(".", str);
 	local whatDepth = #what;
 	if whatDepth < 1 or whatDepth > 5 then
 		return;
@@ -168,7 +168,7 @@ function courseplay:setVarValueFromString(self, str, value)
 	what = nil;
 end;
 function courseplay:getVarValueFromString(self, str)
-	local what = Utils.splitString(".", str);
+	local what = StringUtil.splitString(".", str);
 	local whatDepth = #what;
 	local whatObj;
 	if what[1] == "self" then 
@@ -767,9 +767,9 @@ end;
 
 function courseplay:getObjectName(object, xmlFile)
 	-- if object.name ~= nil the return object.name; end;
-
+	
 	if object.configFileName then
-		local storeItem = StoreItemsUtil.storeItemsByXMLFilename[object.configFileName:lower()];
+		local storeItem = g_storeManager:getItemByXMLFilename(object.configFileName);
 		if storeItem and storeItem.name then
 			return storeItem.name;
 		end;

@@ -210,6 +210,7 @@ function CpManager:deleteMap()
 end;
 
 function CpManager:update(dt)
+  print("CpManager:update(dt)")
   -- UPDATE CLOCK
   courseplay.clock = courseplay.clock + dt
 

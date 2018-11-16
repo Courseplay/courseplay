@@ -65,7 +65,7 @@ function inputCourseNameDialogue.setModImages(element, xmlFile, key)
 			inputCourseNameDialogue:setImageOverlay(element, element.modImgDir .. fileNames);
 		elseif #split == #inputCourseNameDialogue.types then
 			for _,data in pairs(split) do
-				local kv = Utils.splitString(":", data);
+				local kv = StringUtil.splitString(":", data);
 				local type, filePath = unpack(kv);
 				local realFilePath = filePath;
 				if not Utils.startsWith(filePath, "$") then
@@ -106,7 +106,7 @@ function inputCourseNameDialogue:onOpen(element)
 	if self.firstTimeRun then
 		--SET GET TITLE TEXT
 		if self.titleTextElement.courseText == nil or self.titleTextElement.folderText == nil or self.titleTextElement.filterText == nil then
-			local cpTitleParts = Utils.splitString(",", self.titleTextElement.text);
+			local cpTitleParts = StringUtil.splitString(",", self.titleTextElement.text);
 			local courseTitle = string.sub(cpTitleParts[1], 5);
 			local folderTitle = string.sub(cpTitleParts[2], 5);
 			local filterTitle = string.sub(cpTitleParts[3], 5);
@@ -120,7 +120,7 @@ function inputCourseNameDialogue:onOpen(element)
 		self.cancelTextElement.text = courseplay.locales[cancelText]:format(courseplay.locales["COURSEPLAY_BUTTON_ESC"]) or "Cancel with Escape";
 
 		if self.saveTextElement.courseText == nil or self.saveTextElement.folderText == nil or self.saveTextElement.filterText == nil then
-			local cpSaveTextParts = Utils.splitString(",", self.saveTextElement.text);
+			local cpSaveTextParts = StringUtil.splitString(",", self.saveTextElement.text);
 			local courseSaveText = string.sub(cpSaveTextParts[1], 5);
 			local folderSaveText = string.sub(cpSaveTextParts[2], 5);
 			local filterSaveText = string.sub(cpSaveTextParts[3], 5);

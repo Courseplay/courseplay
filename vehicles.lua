@@ -1113,7 +1113,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 		local _, y, _ = getWorldTranslation(directionNode);
 
 		-- Check for starit and turning wheels
-		for index, wheel in ipairs(vehicle.wheels) do
+		for index, wheel in ipairs(vehicle:getWheels()) do
 			if wheel.rotMax == 0 and wheel.maxLatStiffness > 0 then
 				haveStraitWheels = true;
 			else
@@ -1128,7 +1128,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 		end;
 
 		-- Get the distance from the aiVehicleDirectionNode to the front wheels
-		for i, wheel in ipairs(vehicle.wheels) do
+		for i, wheel in ipairs(vehicle:getWheels()) do
 			local x,_,z = getWorldTranslation(wheel.repr);
 			local _,_,dis = worldToLocal(directionNode, x, y, z);
 			if i > 1 then
@@ -1149,7 +1149,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 		--print(("wheelBase is %.2fm"):format(wheelBase));
 
 		-- first check for specific attacher joints that normally only trucks have.
-		for index, attacherJoint in ipairs(vehicle.attacherJoints) do
+		for index, attacherJoint in ipairs(vehicle:getAttacherJoints()) do
 			if truckAttacherJoint[attacherJoint.jointType] then
 				--print("Is Truck Based on AttacherJoint");
 				isTruck = true;

@@ -541,7 +541,6 @@ function courseplay:setNameVariable(workTool)
 	-- SPRAYER SETUP
 	-- ###########################################################
 	if courseplay:isSprayer(workTool) then
-		print(tableShow(g_vehicleTypeManager,"g_vehicleTypeManager",nil,nil,4))
 		if workTool:getFillUnitAllowsFillType(1,g_fillTypeManager.nameToIndex.LIQUIDMANURE) then
 			workTool.cp.isLiquidManureSprayer = true;
 		elseif workTool:getFillUnitAllowsFillType(1,g_fillTypeManager.nameToIndex.MANURE) then    

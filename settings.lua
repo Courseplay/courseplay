@@ -5,6 +5,7 @@ local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 function courseplay:openCloseHud(vehicle, open)
 	courseplay:setMouseCursor(vehicle, open);
 	vehicle.cp.hud.show = open;
+	print(string.format("courseplay:openCloseHud set to %s",tostring(vehicle.cp.hud.show)))
 	if open then
 		courseplay.buttons:setActiveEnabled(vehicle, 'all');
 	else
@@ -1842,7 +1843,7 @@ end;
 ----------------------------------------------------------------------------------------------------
 
 function courseplay:setCpVar(varName, value, noEventSend)
-	local split = Utils.splitString(".", varName);
+	local split = StringUtil.splitString(".", varName);
 	if #split ==1 then
 		if self.cp[varName] ~= value then
 			local oldValue = self.cp[varName]; --TODO check wheter needed or not
@@ -1856,13 +1857,13 @@ function courseplay:setCpVar(varName, value, noEventSend)
 				courseplay:debug("reload page 1", 5);
 				courseplay.hud:setReloadPageOrder(self, 1, true);
 			elseif varName:sub(1, 3) == 'HUD' then
-				if Utils.startsWith(varName, 'HUD0') then
+				if StringUtil.startsWith(varName, 'HUD0') then
 					courseplay:debug("reload page 0", 5);
 					courseplay.hud:setReloadPageOrder(self, 0, true);
-				elseif Utils.startsWith(varName, 'HUD1') then
+				elseif StringUtil.startsWith(varName, 'HUD1') then
 					courseplay:debug("reload page 1", 5);
 					courseplay.hud:setReloadPageOrder(self, 1, true);
-				elseif Utils.startsWith(varName, 'HUD4') then
+				elseif StringUtil.startsWith(varName, 'HUD4') then
 					courseplay:debug("reload page 4", 5);
 					courseplay.hud:setReloadPageOrder(self, 4, true);
 				end;

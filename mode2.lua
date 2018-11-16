@@ -912,9 +912,9 @@ function courseplay:unload_combine(vehicle, dt)
 		--print("reset vehicle.cp.fieldEdgeTimeOutSet")
 	end	
 	
-	if combine.aiIsStarted and stopAICombine and combine.cruiseControl.speed > 0 then
-		combine.cp.lastCruiseControlSpeed = combine.cruiseControl.speed
-		combine.cruiseControl.speed = 0
+	if combine.aiIsStarted and stopAICombine and combine:getCruiseControlSpeed() > 0 then
+		combine.cp.lastCruiseControlSpeed = combine:getCruiseControlSpeed()
+		combine.cruiseControl.speed = 0 
 	end
 	
 	if combineIsTurning and distance < 20 then

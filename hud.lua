@@ -814,9 +814,9 @@ function courseplay.hud:loadPage(vehicle, page)
 				if vehicle.cp.convoyActive then
 					--[[ TODO find a description or new entry in translations for the currently loaded course
 					local currentLoadedCourse = courseplay:loc('COURSEPLAY_CURRENTLY_LOADED_COURSE')
-					if Utils.startsWith(currentLoadedCourse, "(") then
-						local split = Utils.splitString("(", currentLoadedCourse);
-						local split2 = Utils.splitString(")", split[2]);
+					if StringUtil.startsWith(currentLoadedCourse, "(") then
+						local split = StringUtil.splitString("(", currentLoadedCourse);
+						local split2 = StringUtil.splitString(")", split[2]);
 						currentLoadedCourse = split2[1]
 					end
 					if vehicle.cp.currentCourseName ~= nil then

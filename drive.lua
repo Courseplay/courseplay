@@ -807,7 +807,7 @@ function courseplay:drive(self, dt)
 	elseif isFieldWorking and self.cp.waypointIndex < self.cp.stopWork then
 		local distance = (self.cp.stopWork-self.cp.waypointIndex) *self.cp.mediumWpDistance -- m
 		local speed = math.max (courseplay:round(self.lastSpeedReal*3600)/3.6,0.1)  --m/s
-		--local speed = self.cruiseControl.speed/3.6   --m/s
+		--local speed = self:getCruiseControlSpeed()/3.6   --m/s
 		local turnTime = math.floor(self.cp.calculatedTurnTime or 5)
 		if self.cp.course.hasChangedTheWaypointIndex then
 			self.cp.course.hasChangedTheWaypointIndex = nil
@@ -1225,7 +1225,7 @@ function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	end
 	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
 	if not forceTrueSpeed then
-		if newSpeed < vehicle.cruiseControl.speed then
+		if newSpeed < vehicle:getCruiseControlSpeed() then
 			newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.1, math.min(deltaMinus * 0.5, 3)));
 		end;
 	end

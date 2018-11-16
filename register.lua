@@ -5,6 +5,13 @@
 
 g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
 
+function courseplay.registerEventListeners(vehicleType)
+	print(string.format( "courseplay:registerEventListeners(%s)",tostring(vehicleType)))
+	SpecializationUtil.registerEventListener(vehicleType, "onDraw", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onUpdate", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onUpdateTick", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onLoad", courseplay)
+end
 
 if courseplay.houstonWeGotAProblem then
 	return;
@@ -15,6 +22,7 @@ local courseplaySpec = g_specializationManager:getSpecializationByName("coursepl
 local numInstallationsVehicles = 0;
 
 function courseplay:register(secondTime)
+	print("courseplay:register()")
 	if secondTime then
 		print('## Courseplay: register later loaded mods');
 	end
@@ -182,8 +190,8 @@ courseplay:register();
 print(string.format('### Courseplay: installed into %d vehicle types', numInstallationsVehicles));
 
 -- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil)
-local originalDriveToPoint = AIVehicleUtil.driveToPoint;
-AIVehicleUtil.driveToPoint = function(self, dt, acceleration, allowedToDrive, moveForwards, tX, tZ, maxSpeed, doNotSteer)
+--local originalDriveToPoint = AIVehicleUtil.driveToPoint;
+--[[AIVehicleUtil.driveToPoint = function(self, dt, acceleration, allowedToDrive, moveForwards, tX, tZ, maxSpeed, doNotSteer)
 
 	if self.firstTimeRun then
 
@@ -253,4 +261,4 @@ AIVehicleUtil.driveToPoint = function(self, dt, acceleration, allowedToDrive, mo
 
 	end
 
-end
+end]]

@@ -440,7 +440,7 @@ function courseplay:updateAllTriggers()
 			
 				-- ManureLager
 			elseif object.triggerId ~= nil then
-				if object.isManureLager or object.ManureLagerDirtyFlag or Utils.endsWith(object.className, 'ManureLager') then
+				if object.isManureLager or object.ManureLagerDirtyFlag or StringUtil.endsWith(object.className, 'ManureLager') then
 					object.isManureLager = true;
 					object.isLiquidManureFillTrigger = true;
 					courseplay:cpAddTrigger(object.triggerId, object, 'liquidManure', 'nonUpdateable');
@@ -481,7 +481,7 @@ function courseplay:updateAllTriggers()
 			counter = counter +1 
 			for k, trigger in pairs(placeable) do
 				--	FermentingSilo
-				if (Utils.endsWith(xml, 'ermentingsilo_low.xml') or Utils.endsWith(xml, 'ermentingsilo_high.xml')) and trigger.silagePerHour ~= nil then
+				if (StringUtil.endsWith(xml, 'ermentingsilo_low.xml') or StringUtil.endsWith(xml, 'ermentingsilo_high.xml')) and trigger.silagePerHour ~= nil then
 					trigger.isFermentingSiloTrigger = true;
 					local triggerId = trigger.TipTrigger.triggerId;
 					if triggerId ~= nil then
@@ -523,7 +523,7 @@ function courseplay:updateAllTriggers()
 					courseplay:debug('\t\tadd DamageModTrigger [mod]', 1);
 
 				-- mixing station (placeable)
-				elseif Utils.endsWith(xml, 'mischstation.xml') then
+				elseif StringUtil.endsWith(xml, 'mischstation.xml') then
 					for i,triggerData in pairs(trigger.TipTriggers) do
 						local triggerId = triggerData.triggerId;
 						if triggerId then
@@ -539,7 +539,7 @@ function courseplay:updateAllTriggers()
 					courseplay:debug('\t\tadd BioHeatPlant / WoodChop storage trigger [forest mod]', 1);
 
 				-- manureLager (placeable)
-				elseif trigger.ManureLagerPlaceableDirtyFlag or Utils.endsWith(xml, 'placeablemanurelager.xml') then
+				elseif trigger.ManureLagerPlaceableDirtyFlag or StringUtil.endsWith(xml, 'placeablemanurelager.xml') then
 					trigger.isManureLager = true;
 					trigger.isLiquidManureFillTrigger = true;
 					local triggerId = trigger.manureTrigger
@@ -624,7 +624,7 @@ function courseplay:updateAllTriggers()
 				-- Extended tipTriggers (AlternativeTipTrigger)
 				--print(tableShow(trigger,"tiptriggers",nil,nil,4))
 				if trigger.isExtendedTrigger then
-					trigger.isAlternativeTipTrigger = Utils.endsWith(trigger.className, 'ExtendedTipTrigger');
+					trigger.isAlternativeTipTrigger = StringUtil.endsWith(trigger.className, 'ExtendedTipTrigger');
 				end;
 				if triggerId ~= nil then
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
@@ -709,7 +709,7 @@ function courseplay:cpAddTrigger(triggerId, trigger, triggerType, groupType)
 end;
 
 function courseplay:isValidTipTrigger(trigger)
-	local isValid = trigger.className and (trigger.className == 'SiloTrigger' or trigger.isAlternativeTipTrigger or Utils.endsWith(trigger.className, 'TipTrigger'));
+	local isValid = trigger.className and (trigger.className == 'SiloTrigger' or trigger.isAlternativeTipTrigger or StringUtil.endsWith(trigger.className, 'TipTrigger'));
 
 
 	return isValid;

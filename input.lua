@@ -207,7 +207,7 @@ function courseplay:executeFunction(self, func, value, page)
 		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
 		return
-	elseif Utils.startsWith(func,"self") or Utils.startsWith(func,"courseplay") then
+	elseif StringUtil.startsWith(func,"self") or StringUtil.startsWith(func,"courseplay") then
 		courseplay:debug("					setting value",5)
 		courseplay:setVarValueFromString(self, func, value)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)

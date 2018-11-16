@@ -594,7 +594,7 @@ function courseplay.fields:getFruitTypes()
 				if fillType and g_currentMission.fillTypeOverlays[fillType] then
 					local hudOverlayPath = g_currentMission.fillTypeOverlays[fillType].filename;
 					if hudOverlayPath and hudOverlayPath ~= '' then
-						if Utils.startsWith(hudOverlayPath, 'dataS2') or fileExists(hudOverlayPath) then
+						if StringUtil.startsWith(hudOverlayPath, 'dataS2') or fileExists(hudOverlayPath) then
 							fruitData.overlay = Overlay:new('suc_fruit_' .. fruitType.name, hudOverlayPath, hudX, hudY, hudW, hudH);
 							fruitData.overlay:setColor(1, 1, 1, 0.25);
 							-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
