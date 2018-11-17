@@ -360,7 +360,7 @@ setVersionData();
 
 initialize();
 
---courseplay.inputBindings.updateInputButtonData();
+-- Ryan courseplay.inputBindings.updateInputButtonData();
 
 setGlobalData();
 

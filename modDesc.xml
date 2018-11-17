@@ -97,7 +97,6 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 	</extraSourceFiles>
 
 	<actions>
-        <action name="COURSEPLAY_MOUSEACTION_PRIMARY" axisType="HALF" />
 		<action name="COURSEPLAY_MODIFIER"				axisType="HALF"					/>
 		<action name="COURSEPLAY_HUD"					axisType="HALF"					/>
 		<action name="COURSEPLAY_MENU_ACCEPT_SECONDARY"	axisType="HALF"				/>
