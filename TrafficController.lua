@@ -17,14 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 --- A reservation we put in the reservation table.
--- currently only includes the vehicleId and the index of the waypoint. This can later be extended with
--- an estimated time of arrival
 Reservation = CpObject()
 
-function Reservation:init(vehicleId, ix, timeStamp)
+function Reservation:init(vehicleId, timeStamp, previousTile)
 	self.vehicleId = vehicleId
-	self.ix = ix
 	self.timeStamp = timeStamp
+	-- link to the previous tile for easy clean up after the vehicle
+	self.previousTile = previousTile
 end
 
 
@@ -63,52 +62,64 @@ end
 -- @param speed expected speed of the vehicle in km/h. If not given will use the speed in the course.
 -- @return true if successfully reserved (no other vehicle reserved
 function TrafficController:reserve(vehicleId, course, fromIx, speed)
-	self:freePassedSection(vehicleId, course, fromIx)
-	local ok = self:reserveNextSection(vehicleId, course, fromIx, speed)
+	self:freePreviousTiles(vehicleId, course.waypoints[fromIx])
+	local ok = self:reserveNextTiles(vehicleId, course, fromIx, speed)
 	return ok
 end
 
 --- Free waypoints already passed
-function TrafficController:freePassedSection(vehicleId, course, fromIx)
-	local ok = true
-	for i = math.min(fromIx - 1, 2), math.max(fromIx - self.lookBackIx, 1), -1 do
-		local x, z = self:getGridCoordinates(course.waypoints[i])
-		self:freeTile(x, z, vehicleId)
+-- use the link to the previous tile to walk back until the oldest one is reached.
+function TrafficController:freePreviousTiles(vehicleId, point)
+	local function getPreviousTile(x, z)
+		return self.reservations[x] and self.reservations[x][z] and self.reservations[x][z].previousTile
+	end
+	local x, z = self:getGridCoordinates(point)
+	local tile = getPreviousTile(x, z)
+	while tile do
+		local previousTile = getPreviousTile(tile.x, tile.z)
+		self:freeTile(tile, vehicleId)
+		tile = previousTile
 	end
 end
 
-function TrafficController:reserveNextSection(vehicleId, course, fromIx, speed)
+function TrafficController:reserveNextTiles(vehicleId, course, fromIx, speed)
 	local ok = true
 	local tiles = self:getTiles(course, fromIx, speed)
-	for i = fromIx, #course.waypoints - 1 do
-		local x, z = self:getGridCoordinates(course.waypoints[i])
-		ok = ok and self:reserveTile(x, z, Reservation(vehicleId, i, self.clock))
+	for i = 1, #tiles do
+		ok = ok and self:reserveTile(tiles[i], Reservation(vehicleId, self.clock, tiles[i - 1]))
 	end
 	return ok
 end
 
-function TrafficController:getTiles(course, fromIx, speed)
+--- Get the list of tiles the course is passing through starting at startIx index, using the
+-- speed in the course or the one supplied here. Will find the tiles reached in lookaheadTimeSeconds only
+-- (based on the speed and the waypoint distance)
+function TrafficController:getTiles(course, startIx, speed)
 	local tiles = {}
 	local travelTimeSeconds = 0
-	for i = fromIx, #course.waypoints - 1 do
+	for i = startIx, #course.waypoints - 1 do
 		local v = speed or course.waypoints[i].speed or 10
 		local s = course:getDistanceToNextWaypoint(i)
 		local x, z = self:getGridCoordinates(course.waypoints[i])
-		table.insert(tiles, {x = x, z = z})
-		-- if waypoints are futher apart than our grid spacing then we need to add points
+		table.insert(tiles, Point(x, z))
+		-- if waypoints are further apart than our grid spacing then we need to add points
 		-- in between to not miss a tile
 		if s > self.gridSpacing then
 			local ips = self:getIntermediatePoints(course.waypoints[i], course.waypoints[i + 1])
 			for _, wp in ipairs(ips) do
 				x, z = self:getGridCoordinates(wp)
-				table.insert(tiles, {x = x, z = z})
+				table.insert(tiles, Point(x, z))
 			end
 		end
-		travelTimeSeconds = travelTimeSeconds + s / (v * 3.6)
+		travelTimeSeconds = travelTimeSeconds + s / (v / 3.6)
 		if travelTimeSeconds > self.lookaheadTimeSeconds then
-			break
+			return tiles
 		end
 	end
+	-- if we ended up here then we went all the way to the waypoint before the last, so
+	-- add the last one here
+	local x, z = self:getGridCoordinates(course.waypoints[#course.waypoints])
+	table.insert(tiles, Point(x, z))
 	return tiles
 end
 
@@ -118,7 +129,7 @@ function TrafficController:getIntermediatePoints(a, b)
 	local dx, dz = b.x - a.x, b.z - a.z
 	local d = math.sqrt(dx * dx + dz * dz)
 	local nx, nz = dx / d, dz / d
-	local nPoints = math.floor(d / self.gridSpacing)
+	local nPoints = math.floor((d - 0.001) / self.gridSpacing) -- 0.001 makes sure we have only one wp even if a and b are exactly on the grid
 	local x, z = a.x, a.z
 	local intermediatePoints = {}
 	for i = 1, nPoints do
@@ -128,40 +139,50 @@ function TrafficController:getIntermediatePoints(a, b)
 	return intermediatePoints
 end
 
-function TrafficController:freeTile(x, z, vehicleId)
-	if not self.reservations[x] then
+function TrafficController:freeTile(point, vehicleId)
+	if not self.reservations[point.x] then
 		return
 	end
-	if not self.reservations[x][z] then
+	if not self.reservations[point.x][point.z] then
 		return
 	end
-	if self.reservations[x][z][vehicleId] then
-		self.reservations[x][z][vehicleId] = nil
-	end
-	if #self.reservations[x][z] < 1 then
+	if self.reservations[point.x][point.z].vehicleId == vehicleId then
 		-- no more reservations left, remove entry
-		self.reservations[x][z] = nil
-		if #self.reservations[x] < 1 then
-			-- and the entire row if it is now empty
-			self.reservations[x] = nil
-		end
+		self.reservations[point.x][point.z] = nil
 	end
 end
 
-function TrafficController:reserveTile(x, z, reservation)
-	if not self.reservations[x] then
-		self.reservations[x] = {}
+function TrafficController:reserveTile(point, reservation)
+	if not self.reservations[point.x] then
+		self.reservations[point.x] = {}
 	end
-	if not self.reservations[x][z] then
-		self.reservations[x][z] = {}
+	if self.reservations[point.x][point.z] then
+		if self.reservations[point.x][point.z].vehicleId == reservation.vehicleId then
+			-- already reserved for this vehicle
+			return true
+		else
+			-- reserved for another vehicle
+			return false
+		end
 	end
-	self.reservation[x][z][reservation.vehicleId] = reservation
-	-- return true if no one reserved this tile yet
-	return #self.reservation[x][z] == 1
+	self.reservations[point.x][point.z] = reservation
+	return true
 end
 
 function TrafficController:getGridCoordinates(wp)
 	local gridX = math.floor(wp.x / self.gridSpacing)
 	local gridZ = math.floor(wp.z / self.gridSpacing)
 	return gridX, gridZ
+end
+
+--- Cancel all reservations for a vehicle
+function TrafficController:cancel(vehicleId)
+	for row in pairs(self.reservations) do
+		for col in pairs(self.reservations[row]) do
+			local reservation = self.reservations[row][col]
+			if reservation and reservation.vehicleId == vehicleId then
+				self.reservations[row][col] = nil
+			end
+		end
+	end
 end

@@ -16,7 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-Waypoint = CpObject()
+Point = CpObject()
+function Point:init(x, z)
+	self.x = x
+	self.z = z
+end
+
+Waypoint = CpObject(Point)
 
 -- constructor from the legacy Courseplay waypoint
 function Waypoint:init(cpWp, cpIndex)
@@ -27,8 +33,8 @@ function Waypoint:set(cpWp, cpIndex)
 	-- we initialize explicitly, no table copy as we want to have
 	-- full control over what is used in this object
 	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ
-	self.x = cpWp.cx or cpWp.posX or 0
-	self.z = cpWp.cz or cpWp.posZ or 0
+	self.x = cpWp.cx or cpWp.posX or cpWp.x or 0
+	self.z = cpWp.cz or cpWp.posZ or cpWp.z or 0
 	self.angle = cpWp.angle or nil
 	self.rev = cpWp.rev or false
 	self.speed = cpWp.speed
@@ -235,7 +241,7 @@ end
 
 function Course:getDistanceToNextWaypoint(ix)
 	local nx = math.min(#self.waypoints, ix + 1)
-	return self.waypoints[ix]:getDistanceFromPoint(self.waypoints[nx].x, self.waypoints[nx].y)
+	return self.waypoints[ix]:getDistanceFromPoint(self.waypoints[nx].x, self.waypoints[nx].z)
 end
 
 function Course:getWaypointsWithinDrivingTime(startIx, fwd, seconds, speed)
@@ -249,7 +255,7 @@ function Course:getWaypointsWithinDrivingTime(startIx, fwd, seconds, speed)
 		table.insert(waypoints, self.waypoints[i])
 		local v = speed or self.waypoints[i].speed or 10
 		local s = self:getDistanceToNextWaypoint(i)
-		travelTimeSeconds = travelTimeSeconds + s / (v * 3.6)
+		travelTimeSeconds = travelTimeSeconds + s / (v / 3.6)
 		if travelTimeSeconds > seconds then
 			break
 		end

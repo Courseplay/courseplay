@@ -58,7 +58,7 @@ function TestCourse:testGetWaypointsWithinDrivingTime()
 		{posX = 30, posZ = 0,  speed = 3.6},
 		{posX = 40, posZ = 0,  speed = 3.6}
 	}
-	local course = Course(nil, self.waypoints)
+	local course = Course(nil, waypoints)
 	local result = course:getWaypointsWithinDrivingTime(1, true, 10)
 	lu.assertEquals(#result, 2)
 end

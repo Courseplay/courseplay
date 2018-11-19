@@ -24,4 +24,13 @@ TestHelper.waypoints = {{posX = 0, posZ = 0,  speed = 1},
 					  {posX = 0, posZ = 2,  speed = 4},
 					  {posX = 0, posZ = -2, speed = 5}}
 
+--- Build a course, every three elements in the table define a waypoint: first element is, second is z, third is speed
+function TestHelper.courseBuilder(wps)
+	local result = {}
+	for i = 1, #wps, 3 do
+		table.insert(result, { x = wps[i], z = wps[i + 1], speed = wps[i + 2]})
+	end
+	return result
+end
+
 return TestHelper
