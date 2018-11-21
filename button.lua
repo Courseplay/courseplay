@@ -10,11 +10,11 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	if img then
 		if type(img) == 'table' then
 			if img[1] == 'iconSprite.png' then
-				self.overlay = Overlay:new(img, courseplay.hud.iconSpritePath, x, y, width, height);
+				self.overlay = Overlay:new( courseplay.hud.iconSpritePath, x, y, width, height);
 				self.spriteSection = img[2];
 			end;
 		else
-			self.overlay = Overlay:new(img, Utils.getFilename('img/' .. img, courseplay.path), x, y, width, height);
+			self.overlay = Overlay:new(Utils.getFilename('img/' .. img, courseplay.path), x, y, width, height);
 		end;
 	end;
 

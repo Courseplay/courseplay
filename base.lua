@@ -582,7 +582,7 @@ function courseplay:onLoad(savegame)
 	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
 	-- 2D pda map background -- TODO: MP?
 	if g_currentMission.ingameMap and g_currentMission.ingameMap.mapOverlay and g_currentMission.ingameMap.mapOverlay.filename then
-	self.cp.course2dPdaMapOverlay = Overlay:new('cpPdaMap', g_currentMission.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
+	self.cp.course2dPdaMapOverlay = Overlay:new(g_currentMission.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
 	self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
 	end;
 

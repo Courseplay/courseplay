@@ -701,7 +701,7 @@ function CpManager:setupGlobalInfoText()
 	self.globalInfoText.buttons = {};
 	for i=1, self.globalInfoText.maxNum do
 		local posY = self.globalInfoText.backgroundPosY + (i - 1) * self.globalInfoText.lineHeight;
-		self.globalInfoText.overlays[i] = Overlay:new('globalInfoTextOverlay' .. i, self.globalInfoText.backgroundImg, self.globalInfoText.backgroundPosX, posY, 0.1, self.globalInfoText.buttonHeight);
+		self.globalInfoText.overlays[i] = Overlay:new(self.globalInfoText.backgroundImg, self.globalInfoText.backgroundPosX, posY, 0.1, self.globalInfoText.buttonHeight);
 		courseplay.button:new(self, 'globalInfoText', 'iconSprite.png', 'goToVehicle', i, self.globalInfoText.buttonPosX, posY, self.globalInfoText.buttonWidth, self.globalInfoText.buttonHeight);
 	end;
 	self.globalInfoText.buttonsClickArea = {
@@ -888,7 +888,7 @@ function CpManager:setup2dCourseData(createOverlays)
 	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
 
 	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
-	self.course2dTractorOverlay = Overlay:new('cpTractorIndicator', courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
+	self.course2dTractorOverlay = Overlay:new( courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
 	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 	self.course2dTractorOverlay:setColor(0,0.8,1,1);
 end;

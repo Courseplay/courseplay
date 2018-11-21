@@ -1350,10 +1350,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	local w32pxConstant, h32pxConstant = self:getPxToNormalConstant(32, 32);
 
 	local gfxPath = Utils.getFilename('img/hud.png', courseplay.path);
+	print(gfxPath)
 	vehicle.cp.hud = {
-		bg				  = Overlay:new('cpHud1', gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
-		bgWithModeButtons = Overlay:new('cpHud2', gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
-		suc				  = Overlay:new('cpHud3', gfxPath, self.suc.x1,	  self.suc.y1,	 self.suc.width, self.suc.height);
+		bg				  = Overlay:new(gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
+		bgWithModeButtons = Overlay:new(gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
+		suc				  = Overlay:new(gfxPath, self.suc.x1,	  self.suc.y1,	 self.suc.width, self.suc.height);
 		currentPage = 1;
 		show = false;
 		openWithMouse = true;
@@ -1363,7 +1364,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 			pages = {};
 		};
 		mouseWheel = {
-			icon = Overlay:new('cpMouseWheelIcon', courseplay.path .. 'img/mouseIcons/mouseMMB.png', 0, 0, w32pxConstant, h32pxConstant); -- FS15
+			icon = Overlay:new(courseplay.path .. 'img/mouseIcons/mouseMMB.png', 0, 0, w32pxConstant, h32pxConstant); -- FS15
 			--icon = InputBinding.controllerSymbols["mouse_MOUSE_BUTTON_MIDDLE"].overlay;
 			--width = w32pxConstant;
 			--height = h32pxConstant;
@@ -1377,7 +1378,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 
 	-- direction arrow to the first/last waypoint (during paused recording)
-	vehicle.cp.directionArrowOverlay = Overlay:new('cpDistArrow_' .. tostring(self.rootNode), Utils.getFilename('img/arrow.png', courseplay.path), self.directionArrowPosX, self.directionArrowPosY, self.directionArrowWidth, self.directionArrowHeight);
+	vehicle.cp.directionArrowOverlay = Overlay:new(Utils.getFilename('img/arrow.png', courseplay.path), self.directionArrowPosX, self.directionArrowPosY, self.directionArrowWidth, self.directionArrowHeight);
 
 	-- clickable buttons
 	vehicle.cp.buttons = {};
@@ -1930,23 +1931,23 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	local h = bi.iconHeight;
 	local sizeX,sizeY = self.iconSpriteSize.x, self.iconSpriteSize.y;
 	-- current mode icon
-	vehicle.cp.hud.currentModeIcon = Overlay:new('cpCurrentModeIcon', self.iconSpritePath, bi.modeIconX, bi.iconPosY, w, h);
+	vehicle.cp.hud.currentModeIcon = Overlay:new( self.iconSpritePath, bi.modeIconX, bi.iconPosY, w, h);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, bi.modeUVsPx[vehicle.cp.mode], sizeX, sizeY);
 
 	-- waypoint icon
-	vehicle.cp.hud.currentWaypointIcon = Overlay:new('cpCurrentWaypointIcon', self.iconSpritePath, bi.waypointIconX, bi.iconPosY, w, h);
+	vehicle.cp.hud.currentWaypointIcon = Overlay:new( self.iconSpritePath, bi.waypointIconX, bi.iconPosY, w, h);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentWaypointIcon, { 4, 180, 36, 148 }, sizeX, sizeY);
 
 	-- waitPoints icon
-	vehicle.cp.hud.waitPointsIcon = Overlay:new('cpWaitPointsIcon', self.iconSpritePath, bi.waitPointsIconX, bi.iconPosY, w, h);
+	vehicle.cp.hud.waitPointsIcon = Overlay:new( self.iconSpritePath, bi.waitPointsIconX, bi.iconPosY, w, h);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.waitPointsIcon, self.buttonUVsPx['recordingWait'], sizeX, sizeY);
 
 	-- crossingPoints icon
-	vehicle.cp.hud.crossingPointsIcon = Overlay:new('cpCrossingPointsIcon', self.iconSpritePath, bi.crossingPointsIconX, bi.iconPosY, w, h);
+	vehicle.cp.hud.crossingPointsIcon = Overlay:new( self.iconSpritePath, bi.crossingPointsIconX, bi.iconPosY, w, h);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.crossingPointsIcon, self.buttonUVsPx['recordingCross'], sizeX, sizeY);
 
 	-- toolTip icon
-	--Tommi vehicle.cp.hud.toolTipIcon = Overlay:new('cpToolTipIcon', self.iconSpritePath, self.toolTipIconPosX, self.toolTipIconPosY, self.toolTipIconWidth, self.toolTipIconHeight);
+	vehicle.cp.hud.toolTipIcon = Overlay:new(self.iconSpritePath, self.toolTipIconPosX, self.toolTipIconPosY, self.toolTipIconWidth, self.toolTipIconHeight);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.toolTipIcon, { 112, 180, 144, 148 }, sizeX, sizeY);
 end;
 -- do not remove this comment
