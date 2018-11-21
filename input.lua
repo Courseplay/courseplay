@@ -1,7 +1,7 @@
 function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
 	-- Input binding debug
-	print(string.format('isUp, mouseButton, courseplay.inputBindings.mouse.secondaryButtonId, self.isEntered', tostring(isUp), tostring(mouseButton), tostring(courseplay.inputBindings.mouse.secondaryButtonId), tostring(self.isEntered)))
+	print(string.format('Courseplay isUp = %s, mouseButton = %s, courseplay.inputBindings.mouse.secondaryButtonId = %s, self.isEntered = NA', tostring(isUp), tostring(mouseButton), tostring(courseplay.inputBindings.mouse.secondaryButtonId) ))
 	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and self.isEntered then
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);

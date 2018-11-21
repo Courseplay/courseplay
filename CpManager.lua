@@ -314,6 +314,7 @@ end;
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	if g_currentMission.paused then return; end;
 
+	print(string.format('CPManager isUp = %s, mouseKey = %s, courseplay.inputBindings.mouse.secondaryButtonId = %s, self.isEntered = NA', tostring(isUp), tostring(mouseKey), tostring(courseplay.inputBindings.mouse.secondaryButtonId) ))
 	--Tommi local area = self.globalInfoText.buttonsClickArea;
 	if area == nil then
 		return;
