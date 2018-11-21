@@ -1,5 +1,7 @@
 function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
+	-- Input binding debug
+	print(string.format('isUp, mouseButton, courseplay.inputBindings.mouse.secondaryButtonId, self.isEntered', tostring(isUp), tostring(mouseButton), tostring(courseplay.inputBindings.mouse.secondaryButtonId), tostring(self.isEntered)))
 	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and self.isEntered then
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
@@ -377,7 +379,7 @@ function courseplay.inputBindings.updateInputButtonData()
 			if courseplay.inputBindings.mouse.overlaySecondary then
 				courseplay.inputBindings.mouse.overlaySecondary:delete();
 			end;
-			courseplay.inputBindings.mouse.overlaySecondary = Overlay:new('cpMouseIPB', courseplay.path .. 'img/mouseIcons/' .. fileName, 0, 0, 0.0, 0.0);
+			courseplay.inputBindings.mouse.overlaySecondary = Overlay:new(courseplay.path .. 'img/mouseIcons/' .. fileName, 0, 0, 0.0, 0.0);
 		end;
 	end;
 
