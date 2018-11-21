@@ -392,4 +392,4 @@ function courseplay.inputBindings.updateInputButtonData()
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
-InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData); 
+-- InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData); 
