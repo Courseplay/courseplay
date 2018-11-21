@@ -339,7 +339,10 @@ function courseplay:keyEvent(unicode, sym, modifier, isDown) end;
 
 
 courseplay.inputBindings = {};
-courseplay.inputBindings.mouse = {};
+courseplay.inputBindings.mouse = {
+	primaryButtonId =Input.MOUSE_BUTTON_LEFT,
+	secondaryButtonId = Input.MOUSE_BUTTON_RIGHT
+};
 courseplay.inputBindings.mouse.mouseButtonOverlays = {
 	MOUSE_BUTTON_NONE	   = 'mouseNMB.png',
 	MOUSE_BUTTON_LEFT	   = 'mouseLMB.png',
@@ -349,31 +352,9 @@ courseplay.inputBindings.mouse.mouseButtonOverlays = {
 };
 courseplay.inputBindings.keyboard = {};
 
+
+-- Needs Reworked. Inputbindings have changed Or deteleted turned off in courseplay line 360
 function courseplay.inputBindings.updateInputButtonData()
-	for _,type in ipairs( { 'primary', 'secondary' } ) do
-		local inputName = 'COURSEPLAY_MOUSEACTION_' .. type:upper();
-		-- TODO g_inputManager is nill, what is Target? This is the function provided by Jos to replace Input. Re enable by uncommenting line 360 in Courseplay.lua courseplay.inputBindings.updateInputButtonData();
-		local _, eventId =  g_inputManager:registerActionEvent(InputAction.inputName, courseplay, courseplay.mouseEvent, false, true, false, true)
-		-- TODO courseplay.inputBindings.mouse[type .. 'TextI18n'] = txt; replacemnt
-		-- local txt = ('%s %s'):format(g_i18n:getText('ui_mouse'), MouseHelper.getButtonNames(action.mouseButtons));
-		g_inputManager:setActionEventTextVisibility(eventId, true)
-		courseplay.inputBindings.mouse[type .. 'ButtonId'] = eventId;
-
-		--[[ TODO This is overylay stuff Ryan
-			if type == 'secondary' then
-			local mouseButtonIdName = Input.mouseButtonIdToIdName[eventId];
-			local fileName = courseplay.inputBindings.mouse.mouseButtonOverlays[mouseButtonIdName] or 'mouseRMB.png';
-			 --print(('\t\tmouseButtonIdName=%q, fileName=%q'):format(tostring(mouseButtonIdName), tostring(fileName)));
-			if courseplay.inputBindings.mouse.overlaySecondary then
-				courseplay.inputBindings.mouse.overlaySecondary:delete();
-			end;
-			Overlay Replacemnt courseplay.inputBindings.mouse.overlaySecondary = Overlay:new('cpMouseIPB', courseplay.path .. 'img/mouseIcons/' .. fileName, 0, 0, 0.0, 0.0);
-		end;]]
-	end
-end
-
--- Needs Reworked. Inputbindings have changed
---[[  function courseplay.inputBindings.updateInputButtonData()
 	-- print('updateInputButtonData()')
 
 	-- MOUSE
@@ -411,4 +392,4 @@ end
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
-InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData);  ]]
+InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData); 
