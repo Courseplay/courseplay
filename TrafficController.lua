@@ -62,42 +62,36 @@ end
 -- @param speed expected speed of the vehicle in km/h. If not given will use the speed in the course.
 -- @return true if successfully reserved (no other vehicle reserved
 function TrafficController:reserve(vehicleId, course, fromIx, speed)
-	self:freePreviousTiles(vehicleId, course.waypoints[fromIx])
+	self:freePreviousTiles(vehicleId, course, fromIx, speed)
 	local ok = self:reserveNextTiles(vehicleId, course, fromIx, speed)
 	return ok
 end
 
 --- Free waypoints already passed
 -- use the link to the previous tile to walk back until the oldest one is reached.
-function TrafficController:freePreviousTiles(vehicleId, point)
-	local function getPreviousTile(x, z)
-		return self.reservations[x] and self.reservations[x][z] and self.reservations[x][z].previousTile
-	end
-	local x, z = self:getGridCoordinates(point)
-	local tile = getPreviousTile(x, z)
-	while tile do
-		local previousTile = getPreviousTile(tile.x, tile.z)
-		self:freeTile(tile, vehicleId)
-		tile = previousTile
+function TrafficController:freePreviousTiles(vehicleId, course, fromIx, speed)
+	local tiles = self:getTiles(course, self:backwardIterator(fromIx), speed)
+	for i = 1, #tiles do
+		self:freeTile(tiles[i], vehicleId)
 	end
 end
 
 function TrafficController:reserveNextTiles(vehicleId, course, fromIx, speed)
 	local ok = true
-	local tiles = self:getTiles(course, fromIx, speed)
+	local tiles = self:getTiles(course, self:forwardIterator(fromIx, #course.waypoints - 1), speed)
 	for i = 1, #tiles do
 		ok = ok and self:reserveTile(tiles[i], Reservation(vehicleId, self.clock, tiles[i - 1]))
 	end
 	return ok
 end
 
---- Get the list of tiles the course is passing through starting at startIx index, using the
+--- Get the list of tiles the segment of the course defined by the iterator is passing through, using the
 -- speed in the course or the one supplied here. Will find the tiles reached in lookaheadTimeSeconds only
 -- (based on the speed and the waypoint distance)
-function TrafficController:getTiles(course, startIx, speed)
+function TrafficController:getTiles(course, iterator, speed)
 	local tiles = {}
 	local travelTimeSeconds = 0
-	for i = startIx, #course.waypoints - 1 do
+	for i in iterator() do
 		local v = speed or course.waypoints[i].speed or 10
 		local s = course:getDistanceToNextWaypoint(i)
 		local x, z = self:getGridCoordinates(course.waypoints[i])
@@ -185,4 +179,41 @@ function TrafficController:cancel(vehicleId)
 			end
 		end
 	end
+end
+
+function TrafficController:forwardIterator(from, to)
+	return  function()
+		local i, n = from - 1, to
+		return function()
+			i = i + 1
+			if i <= n then return i end
+		end
+	end
+end
+
+function TrafficController:backwardIterator(from)
+	return  function()
+		local i = from
+		return function()
+			i = i - 1
+			if i >= 1 then return i end
+		end
+	end
+end
+
+--- Cancel all reservations for a vehicle
+function TrafficController:__tostring()
+	local result = ''
+	for row = 0, 9 do
+		for col = 0, 9 do
+			local reservation = self.reservations[row] and self.reservations[row][col]
+			if reservation then
+				result = result .. reservation.vehicleId
+			else
+				result = result .. '.'
+			end
+		end
+		result = result .. '\n'
+	end
+	return result
 end

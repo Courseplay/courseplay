@@ -98,7 +98,7 @@ function TestTrafficController:testGetTiles()
 	local course = Course(self.vehicle, wps)
 	self.tc.lookaheadTimeSeconds = 10
 	self.tc.gridSpacing = 10
-	local tiles = self.tc:getTiles(course, 1, 1 * 3.6)
+	local tiles = self.tc:getTiles(course, self.tc:forwardIterator(1, #course.waypoints - 1), 1 * 3.6)
 	lu.assertEquals(#tiles, 3)
 	lu.assertAlmostEquals(tiles[1].x, 0)
 	lu.assertAlmostEquals(tiles[1].z, 0)
@@ -107,7 +107,7 @@ function TestTrafficController:testGetTiles()
 
 	self.tc.lookaheadTimeSeconds = 9
 	self.tc.gridSpacing = 10
-	tiles = self.tc:getTiles(course, 1, 1 * 3.6)
+	tiles = self.tc:getTiles(course, self.tc:forwardIterator(1, #course.waypoints - 1), 1 * 3.6)
 	lu.assertEquals(#tiles, 2)
 	lu.assertAlmostEquals(tiles[1].x, 0)
 	lu.assertAlmostEquals(tiles[1].z, 0)
@@ -115,7 +115,7 @@ function TestTrafficController:testGetTiles()
 
 	self.tc.lookaheadTimeSeconds = 30
 	self.tc.gridSpacing = 10
-	tiles = self.tc:getTiles(course, 3, 1 * 3.6)
+	tiles = self.tc:getTiles(course, self.tc:forwardIterator(3, #course.waypoints - 1), 1 * 3.6)
 	lu.assertEquals(#tiles, 7)
 	lu.assertAlmostEquals(tiles[1].x, 1)
 	lu.assertAlmostEquals(tiles[1].z, 0)
@@ -139,7 +139,7 @@ function TestTrafficController:testGetTiles()
 	course = Course(self.vehicle, wps)
 	self.tc.lookaheadTimeSeconds = 35
 	self.tc.gridSpacing = 10
-	tiles = self.tc:getTiles(course, 1, 1 * 3.6)
+	tiles = self.tc:getTiles(course, self.tc:forwardIterator(1, #course.waypoints - 1), 1 * 3.6)
 	lu.assertEquals(#tiles, 8)
 	lu.assertAlmostEquals(tiles[1].x, 0)
 	lu.assertAlmostEquals(tiles[1].z, 0)
@@ -165,7 +165,7 @@ function TestTrafficController:testGetTiles()
 	course = Course(self.vehicle, wps)
 	self.tc.lookaheadTimeSeconds = 10
 	self.tc.gridSpacing = 10
-	tiles = self.tc:getTiles(course, 1)
+	tiles = self.tc:getTiles(course, self.tc:forwardIterator(1, #course.waypoints - 1))
 	-- speed zero, reserve first tile only
 	lu.assertEquals(#tiles, 1)
 
@@ -184,7 +184,8 @@ function TestTrafficController:testGetTilesWithIntermediatePoints()
 	local course = Course(self.vehicle, wps)
 	self.tc.lookaheadTimeSeconds = 10
 	self.tc.gridSpacing = 5
-	local tiles = self.tc:getTiles(course, 1, 1 * 3.6)
+
+	local tiles = self.tc:getTiles(course, self.tc:forwardIterator(1, #course.waypoints - 1), 1 * 3.6)
 	lu.assertEquals(#tiles, 4)
 	lu.assertAlmostEquals(tiles[1].x, 0)
 	lu.assertAlmostEquals(tiles[1].z, 0)
@@ -219,24 +220,6 @@ function TestTrafficController:testReserveFree()
 	lu.assertTrue(ok)
 end
 
-function TestTrafficController:testFreePreviousTiles()
-	local g1 = Point(1, 0)
-	local g2 = Point(2, 0)
-	local g3 = Point(3, 0)
-	self.tc.reservations = {}
-	self.tc:reserveTile(g1, Reservation(1, 1, nil))
-	self.tc:reserveTile(g2, Reservation(1, 1, g1))
-	self.tc:reserveTile(g3, Reservation(1, 1, g2))
-	lu.assertNotIsNil(self.tc.reservations[g1.x][g1.z])
-	lu.assertNotIsNil(self.tc.reservations[g2.x][g2.z])
-	lu.assertNotIsNil(self.tc.reservations[g3.x][g3.z])
-
-	self.tc.gridSpacing = 10
-	self.tc:freePreviousTiles(1, Point(35, 0))
-	lu.assertIsNil(self.tc.reservations[g1.x][g1.z])
-	lu.assertIsNil(self.tc.reservations[g2.x][g2.z])
-	lu.assertNotIsNil(self.tc.reservations[g3.x][g3.z])
-end
 
 -- This isn't really a unit test, more like a module test so may be too fragile
 function TestTrafficController:testReserve()
@@ -262,12 +245,20 @@ function TestTrafficController:testReserve()
 	local vehicleId1 = 1
 	local ok = self.tc:reserve(vehicleId1, course1, 1)
 	lu.assertTrue(ok)
-	lu.assertNotIsNil(self.tc.reservations[0][0])
-	lu.assertNotIsNil(self.tc.reservations[1][0])
-	lu.assertNotIsNil(self.tc.reservations[2][0])
-	lu.assertNotIsNil(self.tc.reservations[3][0])
-	lu.assertNotIsNil(self.tc.reservations[4][0])
-	lu.assertNotIsNil(self.tc.reservations[5][0])
+
+	lu.assertEquals(tostring(self.tc),
+[[
+1.........
+1.........
+1.........
+1.........
+1.........
+1.........
+..........
+..........
+..........
+..........
+]])
 
 	local wps2 = th.courseBuilder(
 		{ 18, -10, 10,
@@ -293,12 +284,19 @@ function TestTrafficController:testReserve()
 	-- move first vehicle
 	ok = self.tc:reserve(vehicleId1, course1, 3)
 	lu.assertTrue(ok)
-	lu.assertIsNil(self.tc.reservations[0][0])
-	lu.assertNotIsNil(self.tc.reservations[1][0])
-	lu.assertNotIsNil(self.tc.reservations[2][0])
-	lu.assertNotIsNil(self.tc.reservations[3][0])
-	lu.assertNotIsNil(self.tc.reservations[4][0])
-	lu.assertNotIsNil(self.tc.reservations[5][0])
+	lu.assertEquals(tostring(self.tc),
+[[
+..........
+1.........
+1.........
+1.........
+1.........
+1.........
+..........
+..........
+..........
+..........
+]])
 
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- still conflicting
@@ -306,6 +304,7 @@ function TestTrafficController:testReserve()
 
 	ok = self.tc:reserve(vehicleId1, course1, 4)
 	lu.assertTrue(ok)
+	print(self.tc)
 
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- still conflicting
@@ -317,6 +316,33 @@ function TestTrafficController:testReserve()
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- no more conflicts
 	lu.assertTrue(ok)
+	print(self.tc)
+
+	self.tc:cancel(vehicleId1)
+	lu.assertIsNil(self.tc.reservations[0][0])
+	lu.assertNotIsNil(self.tc.reservations[1][0]) -- vehicle2 has it
+	lu.assertIsNil(self.tc.reservations[2][0])
+	lu.assertIsNil(self.tc.reservations[3][0])
+	lu.assertIsNil(self.tc.reservations[4][0])
+	lu.assertIsNil(self.tc.reservations[5][0])
+
+	-- vehicle 2 is still there
+	lu.assertNotIsNil(self.tc.reservations[1][0])
+	lu.assertNotIsNil(self.tc.reservations[1][1])
+	lu.assertNotIsNil(self.tc.reservations[1][2])
+	lu.assertNotIsNil(self.tc.reservations[1][3])
+	lu.assertNotIsNil(self.tc.reservations[1][4])
+	lu.assertIsNil(self.tc.reservations[1][5])
+	print(self.tc)
+
+	self.tc:cancel(vehicleId2)
+	lu.assertIsNil(self.tc.reservations[1][0])
+	lu.assertIsNil(self.tc.reservations[1][1])
+	lu.assertIsNil(self.tc.reservations[1][2])
+	lu.assertIsNil(self.tc.reservations[1][3])
+	lu.assertIsNil(self.tc.reservations[1][4])
+	lu.assertIsNil(self.tc.reservations[1][5])
+	print(self.tc)
 
 end
 
