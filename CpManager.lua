@@ -139,7 +139,7 @@ function CpManager:deleteMap()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete vehicles' button overlays
-	for i,vehicle in pairs(g_currentMission.steerables) do
+	for i,vehicle in pairs(g_currentMission.vehicles) do
 		if vehicle.cp ~= nil and vehicle.hasCourseplaySpec and vehicle.cp.buttons ~= nil then
 			courseplay.buttons:deleteButtonOverlays(vehicle);
 		end;

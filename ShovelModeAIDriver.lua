@@ -204,10 +204,10 @@ function ShovelModeAIDriver:drive(dt)
 					local takenFromGround = TipUtil.removeFromGroundByArea(targetUnit.sx, targetUnit.sz, targetUnit.wx, targetUnit.wz, targetUnit.hx, targetUnit.hz,fillType )
 					if takenFromGround > 0 then
 						vehicle.cp.shovel:setUnitFillLevel(1, takenFromGround + vehicle.cp.shovel:getFillLevel(fillType), 0, true)
-						self:debug('%s couldnt get the material %s[%i]-> remove %s fromArea',nameNum(vehicle),FillUtil.fillTypeIndexToDesc[fillType].name,fillType,tostring(takenFromGround))
+						self:debug('%s couldnt get the material %s[%i]-> remove %s fromArea',nameNum(vehicle),g_fillTypeManager.indexToFillType[fillType].name,fillType,tostring(takenFromGround))
 					end
 				else
-					self:debug('%s couldnt get the material %s[%i] but its too much for the shovel-> not remove fromArea',nameNum(vehicle),FillUtil.fillTypeIndexToDesc[fillType].name,fillType)
+					self:debug('%s couldnt get the material %s[%i] but its too much for the shovel-> not remove fromArea',nameNum(vehicle),g_fillTypeManager.indexToFillType[fillType].name,fillType)
 				end
 			end
 			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, cx, targetUnit.y, cz);

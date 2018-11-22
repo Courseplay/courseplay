@@ -756,7 +756,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 				if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0 then
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
-					vehicle.cp.hud.content.pages[1][6][2].text = FillUtil.fillTypeIndexToDesc[vehicle.cp.siloSelectedFillType].nameI18N;
+					vehicle.cp.hud.content.pages[1][6][2].text = g_fillTypeManager.indexToFillType[vehicle.cp.siloSelectedFillType].nameI18N;
 				end
 				
 				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE and vehicle.cp.hasFertilizerSowingMachine then
