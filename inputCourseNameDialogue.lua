@@ -101,7 +101,7 @@ end; --END onCreateTextInput()
 
 function inputCourseNameDialogue:onOpen(element)
 	g_currentMission.isPlayerFrozen = true;
-	InputBinding.setShowMouseCursor(true);
+	setShowMouseCursor(true);
 
 	if self.firstTimeRun then
 		--SET GET TITLE TEXT
@@ -151,7 +151,7 @@ function inputCourseNameDialogue:onOpen(element)
 end; --END onOpen()
 
 function inputCourseNameDialogue:onClose(element)
-	InputBinding.setShowMouseCursor(false);
+	setShowMouseCursor(false);
 	g_currentMission.isPlayerFrozen = false;
 end; --END onClose()
 

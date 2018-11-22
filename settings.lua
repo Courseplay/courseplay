@@ -1401,7 +1401,7 @@ function courseplay:goToVehicle(curVehicle, targetVehicle)
 	--g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
 	CpManager.playerOnFootMouseEnabled = false;
-	InputBinding.setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
+	setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
 end;
 
 

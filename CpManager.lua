@@ -55,7 +55,7 @@ function CpManager:loadMap(name)
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
-	--Tommi self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
+	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
 	--Tommi self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
 	courseplay:register(true)-- NOTE: running here again to check whether there were mods loaded after courseplay
@@ -291,20 +291,20 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY GLOBALINFOTEXTS
-	--[[Tommi local git = self.globalInfoText;
+	local git = self.globalInfoText;
 	git.hasContent = false;
 	local numLinesRendered = 0;
 	local basePosY = git.posY;
-	if not (g_currentMission.ingameMap.isVisible and g_currentMission.ingameMap:getIsFullSize()) and next(git.content) ~= nil then
+	--[[Tommiif not (g_currentMission.ingameMap.isVisible and g_currentMission.ingameMap:getIsFullSize()) and next(git.content) ~= nil then
 		git.hasContent = true;
 		if g_currentMission.ingameMap.isVisible then
 			basePosY = git.posYAboveMap;
 		end;
 		numLinesRendered = self:renderGlobalInfoTexts(basePosY);
-	end;
+	end;]]
 	git.buttonsClickArea.y1 = basePosY;
 	git.buttonsClickArea.y2 = basePosY + (numLinesRendered  * (git.lineHeight + git.lineMargin));
-]]
+
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY FIELD SCAN MSG
 	if g_currentMission.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
@@ -361,7 +361,7 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 				g_currentMission.isPlayerFrozen = false;
 			end;
 		end;
-		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
+		setShowMouseCursor(self.playerOnFootMouseEnabled);
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- HOVER
