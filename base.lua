@@ -855,8 +855,8 @@ function courseplay:onDraw()
 				courseplay:toggleFindFirstWaypoint(self);
 			end;
 
-			if self.cp.mouseCursorActive then
-				setShowMouseCursor(self.cp.mouseCursorActive);
+			if self.cp.mouseCursorActive and not InputBinding.getShowMouseCursor(self) then
+				InputBinding.setShowMouseCursor(self,self.cp.mouseCursorActive);
 			end;
 		end;
 		if self.cp.distanceCheck and self.cp.numWaypoints > 1 then 

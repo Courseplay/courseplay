@@ -1328,7 +1328,7 @@ end;
 
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
-	setShowMouseCursor(show);
+	InputBinding.setShowMouseCursor(self,show);
 
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
 	--[[Tommi
@@ -1401,7 +1401,7 @@ function courseplay:goToVehicle(curVehicle, targetVehicle)
 	--g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
 	CpManager.playerOnFootMouseEnabled = false;
-	setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
+	InputBinding.setShowMouseCursorsetShowMouseCursor(targetVehicle.cp.mouseCursorActive);
 end;
 
 

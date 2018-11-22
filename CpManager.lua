@@ -3,7 +3,6 @@ CpManager = {};
 local CpManager_mt = Class(CpManager);
 addModEventListener(CpManager);
 
-
 local modDirectory = g_currentModDirectory
 
 function CpManager:loadMap(name)
@@ -361,7 +360,7 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 				g_currentMission.isPlayerFrozen = false;
 			end;
 		end;
-		setShowMouseCursor(self.playerOnFootMouseEnabled);
+		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- HOVER
