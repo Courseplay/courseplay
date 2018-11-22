@@ -1,11 +1,17 @@
-function courseplay:mouseEvent(posX, posY, isDown, isUp, mouseButton)
+function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
 	-- Input binding debug
-	print(string.format('Courseplay isUp = %s, mouseButton = %s, courseplay.inputBindings.mouse.secondaryButtonId = %s, self.isEntered = NA', tostring(isUp), tostring(mouseButton), tostring(courseplay.inputBindings.mouse.secondaryButtonId) ))
-	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and self.isEntered then
+	local self = g_currentMission.controlledVehicle
+	if self == nil then return end
+	
+	--print(string.format('courseplay:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseButton(%s))', tostring(posX), tostring(posY), tostring(isDown), tostring(isUp), tostring(mouseButton) ))
+	--print(string.format("if isUp(%s) and mouseButton(%s) == courseplay.inputBindings.mouse.secondaryButtonId(%s) and Enterable.getIsEntered(self)(%s) then"
+	--,tostring(isUp),tostring(mouseButton),tostring(courseplay.inputBindings.mouse.secondaryButtonId),tostring(Enterable.getIsEntered(self))))
+	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and Enterable.getIsEntered(self) then
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
 		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then
+			print("call openCloseHud")
 			courseplay:openCloseHud(self, true)
 		end;
 	end;

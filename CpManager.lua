@@ -3,6 +3,7 @@ CpManager = {};
 local CpManager_mt = Class(CpManager);
 addModEventListener(CpManager);
 
+
 local modDirectory = g_currentModDirectory
 
 function CpManager:loadMap(name)
@@ -210,7 +211,7 @@ function CpManager:deleteMap()
 end;
 
 function CpManager:update(dt)
-  print("CpManager:update(dt)")
+  --print("CpManager:update(dt)")
   -- UPDATE CLOCK
   courseplay.clock = courseplay.clock + dt
 
@@ -314,7 +315,12 @@ end;
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	if g_currentMission.paused then return; end;
 
-	print(string.format('CPManager isUp = %s, mouseKey = %s, courseplay.inputBindings.mouse.secondaryButtonId = %s, self.isEntered = NA', tostring(isUp), tostring(mouseKey), tostring(courseplay.inputBindings.mouse.secondaryButtonId) ))
+	--print(string.format('CpManager:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseKey(%s))',
+	--tostring(posX),tostring(posY),tostring(isDown),tostring(isUp),tostring(mouseKey) ))
+	
+	if mouseKey~= 0 then
+		courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseKey)
+	end
 	--Tommi local area = self.globalInfoText.buttonsClickArea;
 	if area == nil then
 		return;

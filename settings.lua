@@ -1328,13 +1328,14 @@ end;
 
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
-	InputBinding.setShowMouseCursor(show);
+	setShowMouseCursor(show);
 
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
+	--[[Tommi
 	for camIndex,_ in pairs(self.cp.camerasBackup) do
 		self.cameras[camIndex].allowTranslation = not show;
 		--print(string.format("%s: right mouse key (mouse cursor=%s): camera %d allowTranslation=%s", nameNum(self), tostring(self.cp.mouseCursorActive), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
-	end;
+	end;]]
 
 	if not show then
 		for i,button in pairs(self.cp.buttons.global) do

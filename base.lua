@@ -654,8 +654,9 @@ function courseplay:onEnter()
 end
 
 function courseplay:onDraw()
-	print("courseplay:draw()")
+	--print("courseplay:draw()")
 	local isDriving = self:getIsCourseplayDriving();
+	
 	--WORKWIDTH DISPLAY
 	if self.cp.mode ~= 7 and self.cp.timers.showWorkWidth and self.cp.timers.showWorkWidth > 0 then
 		if courseplay:timerIsThrough(self, 'showWorkWidth') then -- stop showing, reset timer
@@ -768,10 +769,11 @@ function courseplay:onDraw()
 
 
 	-- HELP BUTTON TEXTS
-	renderText(0.2, 0.105, 0.02, string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(self.isEntered)));
-	print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(self.isEntered)))
-	if self:getIsActive() and self.isEntered then
-		local modifierPressed = InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
+	renderText(0.2, 0.105, 0.02, string.format("if self:getIsActive(%s) and Enterable.getIsEntered(self)(%s) then",tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))));
+	--print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(self.isEntered)))
+															-- VVVV Tommi
+	if self:getIsActive() and Enterable.getIsEntered(self) and false then
+		local modifierPressed = false --Tommi InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
 			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER);
 		end;
@@ -854,7 +856,7 @@ function courseplay:onDraw()
 			end;
 
 			if self.cp.mouseCursorActive then
-				InputBinding.setShowMouseCursor(self.cp.mouseCursorActive);
+				setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
 		end;
 		if self.cp.distanceCheck and self.cp.numWaypoints > 1 then 
@@ -948,7 +950,7 @@ end;
 
 function courseplay:onUpdate(dt)
 	-- KEYBOARD EVENTS
-	if self:getIsActive() and self.isEntered and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
+	if self:getIsActive() and Enterable.getIsEntered(self) and false then--Tommi and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
 			if self.cp.canDrive then
 				if self.cp.isDriving then
@@ -990,13 +992,13 @@ function courseplay:onUpdate(dt)
 		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then
 			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
 		end;
-	end; -- self:getIsActive() and self.isEntered and modifierPressed
+	end; -- self:getIsActive() and Enterable.getIsEntered(self) and modifierPressed
 	
 	if not self.cp.remoteIsEntered then
-		if self.cp.isEntered ~= self.isEntered then
-			--Tommi CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",self.isEntered)
+		if self.cp.isEntered ~= Enterable.getIsEntered(self) then
+			--Tommi CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",Enterable.getIsEntered(self))
 		end
-		self:setCpVar('isEntered',self.isEntered)
+		self:setCpVar('isEntered',Enterable.getIsEntered(self))
 	end
 	
 	if not courseplay.isClient then -- and self.cp.infoText ~= nil then --(self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
@@ -1170,7 +1172,7 @@ end;
 ]]
 
 function courseplay:onUpdateTick(dt)
-	print("base:courseplay:updateTick(dt)")
+	--print("base:courseplay:updateTick(dt)")
 	--[[Tommi
 	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
 		courseplay:createFieldEdgeButtons(self);
@@ -1286,7 +1288,7 @@ function courseplay:setInfoText(vehicle, text)
 end;
 
 function courseplay:renderInfoText(vehicle)
-	if vehicle.isEntered and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
+	if Enterable.getIsEntered(vehicle)and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
 		local text;
 		local what = StringUtil.splitString(";", vehicle.cp.infoText);
 		
