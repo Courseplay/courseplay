@@ -3,8 +3,8 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="Start route vastleggen" />
 		<text name="COURSEPLAY_DRIVER" 									 text="Bestuurder" />
-		<text name="COURSEPLAY_PPC_OFF" 								 text="normal mode" />
-		<text name="COURSEPLAY_PPC_ON" 									 text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_PPC_OFF" 								 text="Normaal" />
+		<text name="COURSEPLAY_PPC_ON" 									 text="Experimenteel" /> 
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="Start bestuurder" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="Stop bestuurder" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="Stop bij laatste punt of volgende trigger" />
@@ -142,7 +142,7 @@
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 				 text="Te veel los punten! %d toegestaan." />   
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"				 text="Te weinig los punten! %d nodig." />           
 		<text name="COURSEPLAY_WRONG_TRAILER" 							 text="Verkeerde trailer voor deze modus" />
-		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Verkeerde gereedschap voor deze modus" />
+		<text name="COURSEPLAY_WRONG_TOOL" 								 text="Verkeerd gereedschap voor deze modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 		 text="Dit voertuig wordt nu niet ondersteund" />
 		<text name="COURSEPLAY_WEATHER_WARNING" 						 text="wacht op beter weer" />
 		<text name="COURSEPLAY_LANE_OFFSET" 							 text="Baan uit lijn" />
@@ -173,19 +173,19 @@
 		<text name="COURSEPLAY_CORNER_9" 								 text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 								 text="South-East (new)" />
 		<text name="COURSEPLAY_CORNER_11" 								 text="Select position on map" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(click map to select field)" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(click map to select starting position)" />
-		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start working on" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Skip rows" />
-		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Up/down rows" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Headland passes" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="Headland corners" />
-		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Clockwise" />
-		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Counterclockwise" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="None" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Around" />
-		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Narrow field" />
-		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Short edges" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 			 text="(Klik op kaart om veld te kiezen)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 	 text="(Klik op kaart om startpositie te kiezen)" />
+		<text name="COURSEPLAY_START_WORKING_ON" 			             text="Start het werk" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                 text="Rijen overslaan" />
+		<text name="COURSEPLAY_UP_DOWN_ROWS"     			             text="Op/neer rijen" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				         text="Landeinde passages" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				         text="landeinde hoeken" />
+		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				         text="Met de klok mee" />
+		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 				 text="Tegen de klok in" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				     text="Geen" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				     text="Omheen" />
+		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 				 text="Smal veld" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 	 text="Korte hoeken" />
 		<text name="COURSEPLAY_DIRECTION_1" 							 text="Noord" />
 		<text name="COURSEPLAY_DIRECTION_2" 							 text="Oost" />
 		<text name="COURSEPLAY_DIRECTION_3" 							 text="Zuid" />
