@@ -148,7 +148,7 @@ end
 function PurePursuitController:havePassedWaypoint(wpNode)
 	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
 	local dx, _, dz = worldToLocal(wpNode.node, vx, vy, vz);
-	local dFromNext = Utils.vector2Length(dx, dz)
+	local dFromNext = MathUtil.vector2Length(dx, dz)
 	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking %d, dz: %.1f', wpNode.ix, dz)
 	local result = false
 	if self.course:switchingDirectionAt(wpNode.ix) then

@@ -630,7 +630,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			end
 
 			local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1);
-			local length = Utils.vector2Length(dx,dz);
+			local length = MathUtil.vector2Length(dx,dz);
 			if vehicle.cp.turnStage == 0 then
 				vehicle.aiThreshingDirectionX = dx/length;
 				vehicle.aiThreshingDirectionZ = dz/length;

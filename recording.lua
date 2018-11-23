@@ -171,14 +171,14 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 		local vx1,vz1 = turnStartPoint.cx - preTurnStartPoint.cx, turnStartPoint.cz - preTurnStartPoint.cz;
 		local vx2,vz2 = cx - turnStartPoint.cx, cz - turnStartPoint.cz;
 		local vx3,vz3 = cx - preTurnStartPoint.cx, cz - preTurnStartPoint.cz;
-		local vl1,vl2,vl3 = Utils.vector2Length(vx1,vz1), Utils.vector2Length(vx2,vz2), Utils.vector2Length(vx3,vz3);
+		local vl1,vl2,vl3 = MathUtil.vector2Length(vx1,vz1), MathUtil.vector2Length(vx2,vz2), MathUtil.vector2Length(vx3,vz3);
 		local dir1X, dir1Z = vx1/vl1, vz1/vl1;
 		local dir2X, dir2Z = vx2/vl2, vz2/vl2;
 
 		--local relativeDirX = (dir1Z * dir2X) - (dir1X * dir2Z); --usually: z: upwards positive, downwards negative
 		local relativeDirX =  (dir1X * dir2Z) - (dir1Z * dir2X); --GIANTS: z: downwards positive, upwards negative --> inverse calcuation
 
-		local minUpVerticalHypotenuse = Utils.vector2Length(vl1, vl2);
+		local minUpVerticalHypotenuse = MathUtil.vector2Length(vl1, vl2);
 		local turnVerticalDirStr = 'level';
 		if vl3 > minUpVerticalHypotenuse then
 			turnVerticalDirStr = 'up';
@@ -248,9 +248,9 @@ end;
 
 function courseplay:currentVehAngle(vehicle)
 	local x, y, z = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1);
-	local length = Utils.vector2Length(x, z);
+	local length = MathUtil.vector2Length(x, z);
 	local dx, dz = x/length, z/length;
-	local angleRad = Utils.getYRotationFromDirection(dx, dz);
+	local angleRad = MathUtil.getYRotationFromDirection(dx, dz);
 	local angleDeg = deg(angleRad);
 	return angleDeg, angleRad;
 end;
@@ -281,7 +281,7 @@ function courseplay:addSplitRecordingPoints(vehicle)
 	local dist = courseplay:distance(cx, cz, prevCx, prevCz);
 	local numPointsNeeded = ceil(dist / 5) - 1;
 	local dx, dz = (cx - prevCx) / dist, (cz - prevCz) / dist;
-	local angle = deg(Utils.getYRotationFromDirection(dx, dz));
+	local angle = deg(MathUtil.getYRotationFromDirection(dx, dz));
 	local speed = prevPoint.speed;
 	courseplay:debug(('%s: addSplitRecordingPoints: dist=%.1f, numPointsNeeded=%d, angle=%.1f, speed=%.1f'):format(nameNum(vehicle), dist, numPointsNeeded, angle, speed), 16);
 

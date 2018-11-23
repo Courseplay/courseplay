@@ -57,7 +57,7 @@ function courseplay:getLineHxHz(node, x1, z1, x2, z2)
 
 		-- set rotation
 		local dx, _, dz, _ = courseplay:getWorldDirection(x1, 0, z1, x2, 0, z2);
-		local rot = Utils.getYRotationFromDirection(dx, dz);
+		local rot = MathUtil.getYRotationFromDirection(dx, dz);
 		setRotation(node, 0, rot, 0);
 	end;
 
@@ -141,7 +141,7 @@ end;
 function courseplay:check_for_fruit(vehicle, distance) --TODO (Jakob): this function isn't used anywhere anymore
 	local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
 
-	local length = Utils.vector2Length(x, z);
+	local length = MathUtil.vector2Length(x, z);
 	local aiThreshingDirectionX = x / length;
 	local aiThreshingDirectionZ = z / length;
 
@@ -195,7 +195,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance);
 	local node = combine.cp.DirectionNode or combine.rootNode;
 	local dx,_,dz = localDirectionToWorld(node, 0, 0, 2);
-	local length = Utils.vector2Length(dx,dz);
+	local length = MathUtil.vector2Length(dx,dz);
 	local dirX = dx/length;
 	local dirZ = dz/length;
 	local sideX, sideZ = -dirZ, dirX;

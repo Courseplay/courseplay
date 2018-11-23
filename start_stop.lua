@@ -2,7 +2,7 @@ local curFile = 'start_stop.lua';
 
 -- starts driving the course
 function courseplay:start(self)
-	self.currentHelper = HelperUtil.getRandomHelper()
+	self.currentHelper = g_helperManager:getRandomHelper()
 
 	self.isHired = true;
 	self.isHirableBlocked = true;

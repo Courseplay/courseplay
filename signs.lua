@@ -175,12 +175,12 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 					local pp = vehicle.Waypoints[i - 1];
 					wp.dirX, wp.dirY, wp.dirZ = pp.dirX, pp.dirY, pp.dirZ;
 				end;
-				wp.rotY = Utils.getYRotationFromDirection(wp.dirX, wp.dirZ);
+				wp.rotY = MathUtil.getYRotationFromDirection(wp.dirX, wp.dirZ);
 				wp.angle = deg(wp.rotY);
 
 				local dy = np.cy - wp.cy;
-				local dist2D = Utils.vector2Length(np.cx - wp.cx, np.cz - wp.cz);
-				wp.rotX = -Utils.getYRotationFromDirection(dy, dist2D);
+				local dist2D = MathUtil.vector2Length(np.cx - wp.cx, np.cz - wp.cz);
+				wp.rotX = -MathUtil.getYRotationFromDirection(dy, dist2D);
 			else
 				local pp = vehicle.Waypoints[i - 1];
 				wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = pp.dirX, pp.dirY, pp.dirZ, 0;

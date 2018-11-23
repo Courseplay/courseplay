@@ -288,7 +288,7 @@ function ShovelModeAIDriver:drive(dt)
 		end;
 
 		local ox, _, oz = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, ry, vehicle.Waypoints[p].cz);
-		local distance = Utils.vector2Length(ox, oz);
+		local distance = MathUtil.vector2Length(ox, oz);
 		if vehicle.cp.shovel.trailerFound == nil and vehicle.cp.shovel.objectFound == nil and distance < 10 then
 			allowedToDrive = false;
 		elseif distance < 10 then

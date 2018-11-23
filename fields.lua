@@ -224,7 +224,7 @@ function courseplay.fields:getSingleFieldEdge(initObject, scanStep, maxN, random
 				setTranslation(tg, getWorldTranslation(probe1));
 
 				if numPoints > 5 then
-					local dis0 = Utils.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz)
+					local dis0 = MathUtil.vector2Length(px-coordinates[1].cx, pz-coordinates[1].cz)
 					--print(dis0)
 					if dis0 < scanAt*1.25 then --otherwise start and end points can be very close together
 						self:dbg(string.format('\tdistance to first point [%.2f] < scanStep*1.25 [%.2f] -> break', dis0, scanStep * 1.25), 'scan');

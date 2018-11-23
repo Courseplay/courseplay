@@ -1575,7 +1575,7 @@ function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 		vehToCenterX, _, vehToCenterZ = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
 
 		-- make sure to abort in case we somehow missed the stopping point
-		if vehToCenterZ <= -45 or Utils.vector2Length(vehToCenterX, vehToCenterZ) > 45 then
+		if vehToCenterZ <= -45 or MathUtil.vector2Length(vehToCenterX, vehToCenterZ) > 45 then
 			vehicle.cp.curMapWeightStation = nil;
 			courseplay:debug(('%s: station=%s, vehToCenterZ=%.1f -> set curMapWeightStation to nil, allowedToDrive=%s'):format(nameNum(vehicle), name, vehToCenterZ, tostring(allowedToDrive)), 20);
 			return allowedToDrive;
@@ -2063,7 +2063,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 			tx, tz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z 
 		end
 
-		dod = Utils.vector2Length(lx, lz)
+		dod = MathUtil.vector2Length(lx, lz)
 		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
 	
 		courseplay:setTrafficCollision(vehicle, lx, lz,true)

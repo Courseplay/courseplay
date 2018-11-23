@@ -607,7 +607,7 @@ end;
 
 function courseplay:getDriveDirection(node, x, y, z)
 	local lx, ly, lz = worldToLocal(node, x, y, z)
-	local length = Utils.vector3Length(lx,ly,lz)
+	local length = MathUtil.vector3Length(lx,ly,lz)
 	if length > 0 then
 		lx = lx / length
 		lz = lz / length
@@ -757,8 +757,8 @@ function courseplay:getRelativePointDirection(pp, cp, np, useC)
 	local dx1, dz1 = courseplay.generation:getPointDirection(pp, cp, useC);
 	local dx2, dz2 = courseplay.generation:getPointDirection(cp, np, useC);
 
-	local rot1 = Utils.getYRotationFromDirection(dx1, dz1);
-	local rot2 = Utils.getYRotationFromDirection(dx2, dz2);
+	local rot1 = MathUtil.getYRotationFromDirection(dx1, dz1);
+	local rot2 = MathUtil.getYRotationFromDirection(dx2, dz2);
 
 	local rotDelta = rot1 - rot2; --TODO: rot2 - rot1 ?
 	
@@ -792,13 +792,13 @@ end;
 function courseplay:getRealWorldRotation(node, direction)
 	if not direction then direction = 1 end;
 	local x,_,z = localDirectionToWorld(node, 0, 0, direction);
-	return Utils.getYRotationFromDirection(x, z);
+	return MathUtil.getYRotationFromDirection(x, z);
 end;
 
 function courseplay:getWorldDirection(fromX, fromY, fromZ, toX, toY, toZ)
 	-- NOTE: if only 2D is needed, pass fromY and toY as 0
 	local wdx, wdy, wdz = toX - fromX, toY - fromY, toZ - fromZ;
-	local dist = Utils.vector3Length(wdx, wdy, wdz); -- length of vector
+	local dist = MathUtil.vector3Length(wdx, wdy, wdz); -- length of vector
 	if dist and dist > 0.01 then
 		wdx, wdy, wdz = wdx/dist, wdy/dist, wdz/dist; -- if not too short: normalize
 		return wdx, wdy, wdz, dist;
@@ -1008,11 +1008,11 @@ function courseplay:setupCourse2dData(vehicle)
 
 		dx2D = endX - startX;
 		dy2D = (endY - startY) / g_screenAspectRatio;
-		width = Utils.vector2Length(dx2D, dy2D);
+		width = MathUtil.vector2Length(dx2D, dy2D);
 
 		dx = np.cx - wp.cx;
 		dz = np.cz - wp.cz;
-		rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+		rotation = MathUtil.getYRotationFromDirection(dx, dz) - pi * 0.5;
 
 		r, g, b = courseplay.utils:getColorFromPct(100 * wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep);
 
@@ -1093,7 +1093,7 @@ function courseplay:drawCourse2D(vehicle, doLoop)
 	if dx ~= vehicle.cp.course2dDirectionX or dz ~= vehicle.cp.course2dDirectionZ then
 		vehicle.cp.course2dDirectionX = dx;
 		vehicle.cp.course2dDirectionZ = dz;
-		local rotation = Utils.getYRotationFromDirection(dx, dz) - pi * 0.5;
+		local rotation = MathUtil.getYRotationFromDirection(dx, dz) - pi * 0.5;
 		ovl:setRotation(rotation, ovl.width * 0.5, ovl.height * 0.5);
 	end;
 

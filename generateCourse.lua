@@ -275,7 +275,7 @@ function courseplay:generateCourse(vehicle, silent)
 
 							--set and rotate tg
 							setTranslation(vehicle.cp.headland.tg, cp.cx, cp.cy, cp.cz);
-							local rot = Utils.getYRotationFromDirection(cp.dirX, cp.dirZ);
+							local rot = MathUtil.getYRotationFromDirection(cp.dirX, cp.dirZ);
 							setRotation(vehicle.cp.headland.tg, 0, rot, 0);
 							-- courseplay:debug(string.format('\ttg setTranslation(%s, [x] %.1f, [y] %.1f, [z] %.1f), setRotation() [y] %.1f', tostring(vehicle.cp.headland.tg), cp.cx, cp.cy, cp.cz, rot), 7);
 
@@ -330,7 +330,7 @@ function courseplay:generateCourse(vehicle, silent)
 				local np1Idx, np1 = next(lane, i);
 				local pp = finalPoints[pointsInserted - 1];
 				if np1 then
-					local dist = Utils.vector2Length(np1.cx - offsP.cx, np1.cz - offsP.cz);
+					local dist = MathUtil.vector2Length(np1.cx - offsP.cx, np1.cz - offsP.cz);
 					-- courseplay:debug(string.format('\t%d: dist to next=%.1f', i, dist), 7);
 
 					-- check min distance, if less: delete cur point
@@ -397,7 +397,7 @@ function courseplay:generateCourse(vehicle, silent)
 					end;
 					local dirX,dirZ = self:getPointDirection(cp, np);
 
-					cp.angle = Utils.getYRotationFromDirection(dirX, dirZ);
+					cp.angle = MathUtil.getYRotationFromDirection(dirX, dirZ);
 					cp.wait = nil;
 					cp.rev = nil;
 					cp.crossing = nil;
@@ -1039,7 +1039,7 @@ function courseplay.generation:getPointDirection(cp, np, useC)
 	end;
 
 	local dx, dz = np[x] - cp[x], np[z] - cp[z];
-	local vl = Utils.vector2Length(dx, dz);
+	local vl = MathUtil.vector2Length(dx, dz);
 	if vl and vl > 0.0001 then
 		dx = dx / vl;
 		dz = dz / vl;

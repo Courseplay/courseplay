@@ -349,7 +349,7 @@ function courseplay:getMode9HeapsMinMaxCoords(vehicle,heapFillType,p1x,p1y,p1z,p
 	local dx,_,dz, distance = courseplay:getWorldDirection(p1x,p1y,p1z,p2x,p2y,p2z);
 	
 	setTranslation(point,p1x,p1y,p1z);
-	local yRot = Utils.getYRotationFromDirection(dx, dz);
+	local yRot = MathUtil.getYRotationFromDirection(dx, dz);
 	setRotation(point, 0, yRot, 0);
 
 	--debug line vor search area to be sure, the point is set correctly

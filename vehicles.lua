@@ -1346,7 +1346,7 @@ function courseplay:setPathVehiclesSpeed(vehicle,dt)
 		else
 		  pathVehicle.movingDirection = 0;
 		end;
-		pathVehicle.lastMovedDistance = Utils.vector3Length(dx, dy, dz);
+		pathVehicle.lastMovedDistance = MathUtil.vector3Length(dx, dy, dz);
 		local lastLastSpeedReal = pathVehicle.lastSpeedReal;
 		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01;
 		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01;

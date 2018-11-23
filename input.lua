@@ -220,7 +220,7 @@ function courseplay:executeFunction(self, func, value, page)
 		return
 	end
 	if Enterable.getIsEntered(self) then
-		playSample(courseplay.hud.clickSound, 1, 1, 0);
+		--Tommi playSample(courseplay.hud.clickSound, 1, 1, 0);
 	end
 	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
 

@@ -23,7 +23,7 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 		local targetY = getTerrainHeightAtWorldPos( g_currentMission.terrainRootNode, targetX, 0, targetZ )
 		local dx, dy, dz = targetX - tx, targetY - ty, targetZ - tz
 		-- this is the distance from the front of the vehicle to the target  
-		distance = Utils.vector3Length( dx, dy, dz )
+		distance = MathUtil.vector3Length( dx, dy, dz )
 		if distance > 0 then
 		  -- normal direction from the front of the vehicle to the target
 		  nx, ny, nz = dx / distance, dy / distance, dz / distance

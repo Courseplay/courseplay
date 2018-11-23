@@ -961,8 +961,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 				trailerInTipRange = Utils.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z)
 				local sx, sy, sz = worldToLocal(ctt.triggerStartId, x, y, z);
 				local ex, ey, ez = worldToLocal(ctt.triggerEndId, x, y, z);
-				local startDistance = Utils.vector2Length(sx, sz);
-				local endDistance = Utils.vector2Length(ex, ez);
+				local startDistance = MathUtil.vector2Length(sx, sz);
+				local endDistance = MathUtil.vector2Length(ex, ez);
 				courseplay:debug(('%s: startDistance=%s, endDistance=%s -> trailerInTipRange=%s'):format(nameNum(tipper), tostring(startDistance), tostring(endDistance), tostring(trailerInTipRange)), 2);
 				--stop if we are not empty but near the end of the trigger
 				if 	tipper.cp.isTipping and (endDistance <1 or startDistance <1) then

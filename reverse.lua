@@ -292,7 +292,7 @@ function courseplay:getLocalYRotationToPoint(node, x, y, z, direction)
 	local dx, _, dz = worldToLocal(node, x, y, z);
 	dx = dx * direction;
 	dz = dz * direction;
-	return Utils.getYRotationFromDirection(dx, dz);
+	return MathUtil.getYRotationFromDirection(dx, dz);
 end;
 
 function courseplay:showDirection(node,lx,lz)

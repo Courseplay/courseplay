@@ -216,7 +216,7 @@ function courseplay:turn(vehicle, dt)
 
 			-- Rotate it's direction to the next wp.
 			local dx, dz = courseplay.generation:getPointDirection(vehicle.Waypoints[vehicle.cp.waypointIndex+1], vehicle.Waypoints[vehicle.cp.waypointIndex+2]);
-			local yRot = Utils.getYRotationFromDirection(dx, dz);
+			local yRot = MathUtil.getYRotationFromDirection(dx, dz);
 			setRotation(turnInfo.targetNode, 0, yRot, 0);
 
 			-- Retranslate it again to the correct position if there is offsets.
@@ -486,7 +486,7 @@ function courseplay:turn(vehicle, dt)
 				if newTarget.changeWhenPosible then
 					-- Get the world rotation of the next lane
 					local dx, dz = courseplay.generation:getPointDirection(vehicle.Waypoints[vehicle.cp.waypointIndex+1], vehicle.Waypoints[vehicle.cp.waypointIndex+2]);
-					local laneRot = Utils.getYRotationFromDirection(dx, dz);
+					local laneRot = MathUtil.getYRotationFromDirection(dx, dz);
 					laneRot = deg(laneRot);
 
 					if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
@@ -496,7 +496,7 @@ function courseplay:turn(vehicle, dt)
 						-- Get the world rotation of the vehicle
 						dx, _, dz = localDirectionToWorld(realDirectionNode, 0, 0, 1);
 					end;
-					local toolRot = Utils.getYRotationFromDirection(dx, dz);
+					local toolRot = MathUtil.getYRotationFromDirection(dx, dz);
 					toolRot = deg(toolRot);
 					--courseplay:debug(("%s:(Turn) laneRot=%.2f, toolRot=%.2f"):format(nameNum(vehicle), laneRot, toolRot), 14);
 
@@ -1327,7 +1327,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 
 		--- Move a little bit more forward, so we can reverse properly
 		local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
-		local rotationDeg = deg(Utils.getYRotationFromDirection(dx, dz));
+		local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 		rotationDeg = rotationDeg + (90 * turnInfo.direction);
 		dx, dz = Utils.getDirectionFromYRotation(rad(rotationDeg));
 		local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
@@ -1443,7 +1443,7 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 
 	--- Move a little bit more back, so we can align better when going forward
 	local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
-	local rotationDeg = deg(Utils.getYRotationFromDirection(dx, dz));
+	local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 	rotationDeg = rotationDeg + (90 * turnInfo.direction);
 	dx, dz = Utils.getDirectionFromYRotation(rad(rotationDeg));
 	local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
@@ -1755,7 +1755,7 @@ function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftT
 
 	-- Rotate it in the right direction
 	local dx, dz = courseplay.generation:getPointDirection(cp, np, false);
-	local yRot = Utils.getYRotationFromDirection(dx, dz);
+	local yRot = MathUtil.getYRotationFromDirection(dx, dz);
 	setRotation(point, 0, yRot, 0);
 
 	if leftTurn then
@@ -1863,9 +1863,9 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 
 	-- Get the start and end rotation
 	local dx, dz = courseplay.generation:getPointDirection(center, startDir, false);
-	startRot = deg(Utils.getYRotationFromDirection(dx, dz));
+	startRot = deg(MathUtil.getYRotationFromDirection(dx, dz));
 	dx, dz = courseplay.generation:getPointDirection(center, stopDir, false);
-	endRot = deg(Utils.getYRotationFromDirection(dx, dz));
+	endRot = deg(MathUtil.getYRotationFromDirection(dx, dz));
 
 	-- Create new transformGroupe to use for placing waypoints
 	local point = createTransformGroup("cpTempGenerateTurnCircle");

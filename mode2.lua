@@ -459,7 +459,7 @@ function courseplay:unload_combine(vehicle, dt)
 	
 	x1,z1 = x1*reverser,z1*reverser;
 	
-	local distance = Utils.vector2Length(x1, z1)
+	local distance = MathUtil.vector2Length(x1, z1)
 	local safetyDistance = courseplay:getSafetyDistanceFromCombine( combine )
 	
 	-- STATE 2 (drive to combine)
@@ -490,10 +490,10 @@ function courseplay:unload_combine(vehicle, dt)
 
 			local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx_left, y, cz_left)
 			-- distance to left position
-			local disL = Utils.vector2Length(lx, lz)
+			local disL = MathUtil.vector2Length(lx, lz)
 			local rx, ry, rz = worldToLocal(vehicle.cp.DirectionNode, cx_right, y, cz_right)
 			-- distance to right position
-			local disR = Utils.vector2Length(rx, rz)
+			local disR = MathUtil.vector2Length(rx, rz)
 
 			-- prefer the one closest to the combine
 			if disL < disR then
@@ -513,7 +513,7 @@ function courseplay:unload_combine(vehicle, dt)
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
 		lx,lz = lx*reverser,lz*reverser
 		
-		dod = Utils.vector2Length(lx, lz)
+		dod = MathUtil.vector2Length(lx, lz)
    
 		-- PATHFINDING / REALISTIC DRIVING -
 		-- if it is enabled and we are not too close to the combine, we abort STATE_DRIVE_TO_COMBINE mode and 
@@ -588,9 +588,9 @@ function courseplay:unload_combine(vehicle, dt)
 
 		if currentX ~= nil and currentZ ~= nil then
 			local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, y, currentZ)
-			dod = Utils.vector2Length(lx, lz)
+			dod = MathUtil.vector2Length(lx, lz)
 		else
-			dod = Utils.vector2Length(lx, lz)
+			dod = MathUtil.vector2Length(lx, lz)
 		end
 
 
@@ -745,7 +745,7 @@ function courseplay:unload_combine(vehicle, dt)
 		local ttX, ttZ = courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ);
 		
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, ttX, y, ttZ)
-		dod = Utils.vector2Length(lx, lz)
+		dod = MathUtil.vector2Length(lx, lz)
 		if dod > 40 or vehicle.cp.chopperIsTurning == true then
 			courseplay:setModeState(vehicle, STATE_DRIVE_TO_COMBINE);
 		end
@@ -1220,7 +1220,7 @@ function courseplay:unload_combine(vehicle, dt)
 		local backDistance = max(10,(turnDiameter + safetyDistance))
 		local dx,dz = AIVehicleUtil.getDriveDirection(frontTractor.cp.DirectionNode, x, y, z);
 		local x1, y1, z1 = worldToLocal(frontTractor.cp.DirectionNode, x, y, z)
-		local distance = Utils.vector2Length(x1, z1)
+		local distance = MathUtil.vector2Length(x1, z1)
 		local debugText = ""
 		local waypointIsBehind = false
 		if z1 > -backDistance and dz > 0.6 then
@@ -1276,7 +1276,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
-		dod = Utils.vector2Length(lx, lz)
+		dod = MathUtil.vector2Length(lx, lz)
 		
 		-- stop if target is out of field
 		if dod < 2 or (vehicle.cp.positionWithCombine == 2 and combine.courseplayers[1].cp.modeState ~= STATE_DRIVE_TO_PIPE and dod < 100 ) or (not courseplay:isField(currentX, currentZ, 1, 1)and waypointIsBehind ) then
@@ -1761,7 +1761,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
   local pointFarEnoughIx = 1
   for _, point in ipairs( path ) do 
 		local lx, ly, lz = worldToLocal( vehicle.cp.DirectionNode, point.x, point.y, point.z )
-		local d = Utils.vector2Length(lx, lz)
+		local d = MathUtil.vector2Length(lx, lz)
     if d > Utils.getNoNil( vehicle.cp.turnDiameter, 5 ) then break end
     pointFarEnoughIx = pointFarEnoughIx + 1
   end
@@ -1773,7 +1773,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
   local pointFarEnoughIx = #path
   for i = #path, 1, -1 do
     local point = path[ i ]
-    local d = Utils.vector2Length( cx - point.x, cz - point.z )
+    local d = MathUtil.vector2Length( cx - point.x, cz - point.z )
     if d > Utils.getNoNil( endBeforeTargetDistance, 0 ) then break end
     pointFarEnoughIx = pointFarEnoughIx - 1
   end
