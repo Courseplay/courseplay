@@ -8,7 +8,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 
 	local density = 0;
 	if fruitType ~= nil then
-		density = Utils.getFruitArea(fruitType, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true,true);
+		density = FieldUtil.getFruitArea(fruitType, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true,true);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			return true;
@@ -16,7 +16,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	else
 		for i = 1, FruitUtil.NUM_FRUITTYPES do
 			if i ~= FruitUtil.FRUITTYPE_GRASS then
-				density = Utils.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true,true);
+				density = FieldUtil.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true,true);
 				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 					return true,i;
@@ -37,7 +37,7 @@ function courseplay:isField(x, z, widthX, widthZ)
 	local heightWorldX, heightWorldZ = x + widthX, z + widthZ;
 
 	local detailId = g_currentMission.terrainDetailId;
-	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
+	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = MathUtil.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
 	setDensityCompareParams(detailId, 'greater', 0, 0, 0, 0);
 	local _,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
 	setDensityCompareParams(detailId, 'greater', -1);
@@ -92,7 +92,7 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	-- print(string.format('hasLineFruit(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)));
 
 	if fixedFruitType then
-		local density, total = Utils.getFruitArea(fixedFruitType, x1,z1, x2,z2, hx,hz, true,true);
+		local density, total = FieldUtil.getFruitArea(fixedFruitType, x1,z1, x2,z2, hx,hz, true,true);
 		if density > 0 then
 			return true, density, fixedFruitType, FruitUtil.fruitIndexToDesc[fixedFruitType].name;
 		end;
@@ -101,7 +101,7 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 
 	for i = 1, FruitUtil.NUM_FRUITTYPES do
 		if i ~= FruitUtil.FRUITTYPE_GRASS then
-			local density, total = Utils.getFruitArea(i, x1,z1, x2,z2, hx,hz, true,true);
+			local density, total = FieldUtil.getFruitArea(i, x1,z1, x2,z2, hx,hz, true,true);
 			if density > 0 then
 				local fruitName = FruitUtil.fruitIndexToDesc[i].name;
 				courseplay:debug(string.format('hasLineFruit(): fruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
@@ -175,9 +175,9 @@ function courseplay:check_for_fruit(vehicle, distance) --TODO (Jakob): this func
 
 	for i = 1, FruitUtil.NUM_FRUITTYPES do
 		if i ~= FruitUtil.FRUITTYPE_GRASS then
-			leftFruit = leftFruit + Utils.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ,true,true); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?
+			leftFruit = leftFruit + FieldUtil.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ,true,true); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?
 
-			rightFruit = rightFruit + Utils.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ,true,true); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?
+			rightFruit = rightFruit + FieldUtil.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ,true,true); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?
 		end
 	end
 
@@ -219,8 +219,8 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 		_,fruitType = courseplay:areaHasFruit(x, z, nil, threshWidth, threshWidth)
 	end
 	-- TODO (Jakob): the last "true" means we're also including preparing fruit. Should this only be done if the combine has indeed a fruit preparer?
-	local leftFruit = Utils.getFruitArea(fruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true,true);
-	local rightFruit = Utils.getFruitArea(fruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true,true);
+	local leftFruit = FieldUtil.getFruitArea(fruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true,true);
+	local rightFruit = FieldUtil.getFruitArea(fruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true,true);
 
 	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit(%s): left %f, right %f", nameNum(combine),tostring(fruitType), leftFruit, rightFruit), 4);
 	

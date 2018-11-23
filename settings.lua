@@ -5,7 +5,7 @@ local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 function courseplay:openCloseHud(vehicle, open)
 	courseplay:setMouseCursor(vehicle, open);
 	vehicle.cp.hud.show = open;
-	print(string.format("courseplay:openCloseHud set to %s",tostring(vehicle.cp.hud.show)))
+	--print(string.format("courseplay:openCloseHud set to %s",tostring(vehicle.cp.hud.show)))
 	if open then
 		courseplay.buttons:setActiveEnabled(vehicle, 'all');
 	else
@@ -1328,14 +1328,13 @@ end;
 
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
-	InputBinding.setShowMouseCursor(self,show);
+	g_inputBinding:setShowMouseCursor(show);
 
 	--Cameras: deactivate/reactivate zoom function in order to allow CP mouse wheel
-	--[[Tommi
 	for camIndex,_ in pairs(self.cp.camerasBackup) do
-		self.cameras[camIndex].allowTranslation = not show;
+		self.spec_enterable.cameras[camIndex].allowTranslation = not show;
 		--print(string.format("%s: right mouse key (mouse cursor=%s): camera %d allowTranslation=%s", nameNum(self), tostring(self.cp.mouseCursorActive), camIndex, tostring(self.cameras[camIndex].allowTranslation)));
-	end;]]
+	end;
 
 	if not show then
 		for i,button in pairs(self.cp.buttons.global) do
@@ -1401,7 +1400,7 @@ function courseplay:goToVehicle(curVehicle, targetVehicle)
 	--g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_settingsNickname));
 	g_currentMission.isPlayerFrozen = false;
 	CpManager.playerOnFootMouseEnabled = false;
-	InputBinding.setShowMouseCursorsetShowMouseCursor(targetVehicle.cp.mouseCursorActive);
+	g_inputBinding:setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
 end;
 
 

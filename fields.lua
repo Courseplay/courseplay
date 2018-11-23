@@ -27,11 +27,10 @@ end;
 function courseplay.fields:setUpFieldsIngameData()
 	--self = courseplay.fields
 	self:dbg("call setUpIngameData()", 'scan');
-	self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
-	self.lastChannel = g_currentMission.cultivatorChannel;
+	--Tommi:still needed ?  self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
+	--Tommi: still needed ?  self.lastChannel = g_currentMission.cultivatorChannel;
 
 	self.seedUsageCalculator.fruitTypes = self:getFruitTypes();
-	print(string.format("courseplay.fields:setUpFieldsIngameData(): self.seedUsageCalculator.fruitTypes = %s",tostring(self.seedUsageCalculator.fruitTypes)))
 	self:setCustomFieldsSeedData();
 
 	self.ingameDataSetUp = true;
@@ -41,7 +40,7 @@ function courseplay.fields:setAllFieldEdges()
 	--self = courseplay.fields
 
 	self.curFieldScanIndex = self.curFieldScanIndex + 1;
-	if self.curFieldScanIndex > g_currentMission.fieldDefinitionBase.numberOfFields then
+	if self.curFieldScanIndex > #courseplay.fields.fieldDefinitionBase then --Tommi g_currentMission.fieldDefinitionBase.numberOfFields then
 		self.allFieldsScanned = true;
 		self.numAvailableFields = table.maxn(self.fieldData);
 		self:dbg(string.format('%d fields scanned - done', self.curFieldScanIndex - 1), 'scan');
@@ -53,12 +52,13 @@ function courseplay.fields:setAllFieldEdges()
 	local maxN = 2000;
 	local numDirectionTries = 10;
 
-	local fieldDef = g_currentMission.fieldDefinitionBase.fieldDefs[self.curFieldScanIndex];
+	local fieldDef = courseplay.fields.fieldDefinitionBase[self.curFieldScanIndex] --Tommi g_currentMission.fieldDefinitionBase.fieldDefs[self.curFieldScanIndex];
 	if fieldDef ~= nil then
-		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.ownedByPlayer) then
-			local fieldNum = fieldDef.fieldNumber;
+		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.farmland.isOwned) then  --TODO: Check, whether I'm the owner
+		--if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.ownedByPlayer) then
+			local fieldNum = fieldDef.fieldId;
 			if self.fieldData[fieldNum] == nil then
-				local initObject = fieldDef.fieldMapIndicator;
+				local initObject = fieldDef.nameIndicator;
 				local x,_,z = getWorldTranslation(initObject);
 				if fieldNum and initObject and x and z then
 					local isField = courseplay:isField(x, z, 0.1, 0.1);

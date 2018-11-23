@@ -700,7 +700,7 @@ function courseplay:loc(key)
 end;
 
 function courseplay:getSpeedMeasuringUnit()
-	return g_i18n.globalI18N.useMiles and g_i18n:getText('unit_mph') or g_i18n:getText('unit_kmh');
+	return g_i18n:getSpeedMeasuringUnit()
 end
 
 function courseplay:getMeasuringUnit()

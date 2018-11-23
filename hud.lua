@@ -1460,13 +1460,12 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud.courseListNext = false; -- will be updated after loading courses into the hud
 
 	--Camera backups: allowTranslation
-	--[[Tommi
 	vehicle.cp.camerasBackup = {};
-	for camIndex, camera in pairs(vehicle.cameras) do
+	for camIndex, camera in pairs(vehicle.spec_enterable.cameras) do
 		if camera.allowTranslation then
 			vehicle.cp.camerasBackup[camIndex] = camera.allowTranslation;
 		end;
-	end;]]
+	end;
 
 	--default hud conditional variables
 	vehicle.cp.HUD0noCourseplayer = false;

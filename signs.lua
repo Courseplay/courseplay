@@ -297,7 +297,7 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 
 		if vehicle.cp.isRecording then
 			vis = true;
-		elseif forceHide or not vehicle.isEntered then
+		elseif forceHide or not Enterable.getIsEntered(vehicle) then
 			vis = false;
 		end;
 
@@ -306,7 +306,7 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 
 	for k,signData in pairs(vehicle.cp.signs.crossing) do
 		local vis = vehicle.cp.visualWaypointsCrossing;
-		if forceHide or not vehicle.isEntered then
+		if forceHide or not Enterable.getIsEntered(vehicle) then
 			vis = false;
 		end;
 

@@ -19,7 +19,7 @@ function courseplay:start(self)
 	if self.vehicleCharacter ~= nil and not g_currentMission.missionDynamicInfo.isMultiplayer then --disabled for MP for further investigation (Nil errors in ingame(draw))
 		self.vehicleCharacter:delete();
 		self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name))
-		if self.isEntered then
+		if Enterable.getIsEntered(self) then
 			self.vehicleCharacter:setCharacterVisibility(false)
 		end
 	end
@@ -680,7 +680,7 @@ function courseplay:stop(self)
 			----------------------------------
 
 			self.vehicleCharacter:loadCharacter(PlayerUtil.playerIndexToDesc[playerIndex].xmlFilename, playerColorIndex)
-			self.vehicleCharacter:setCharacterVisibility(not self.isEntered)
+			self.vehicleCharacter:setCharacterVisibility(not Enterable.getIsEntered(self))
 		end
 	end;
 	self.currentHelper = nil

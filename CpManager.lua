@@ -6,6 +6,7 @@ addModEventListener(CpManager);
 local modDirectory = g_currentModDirectory
 
 function CpManager:loadMap(name)
+	print("CpManager:loadMap(name)")
 	self.isCourseplayManager = true;
 	self.firstRun = true;
 
@@ -82,8 +83,9 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- FIELDS
+	print(string.format("courseplay.fields.automaticScan",tostring(courseplay.fields.automaticScan)))
 	if courseplay.fields.automaticScan then
-		--Tommi self:setupFieldScanInfo();
+		self:setupFieldScanInfo();
 	end;
 	if g_server ~= nil then
 		courseplay.fields:loadCustomFields(fileExists(self.cpOldCustomFieldsXmlFilePath) and not fileExists(self.cpCustomFieldsXmlFilePath));
@@ -221,6 +223,10 @@ function CpManager:update(dt)
 	if self.firstRun then
 		courseplay:addCpNilTempFillLevelFunction();
 		self.firstRun = false;
+		courseplay.fields.fieldDefinitionBase = g_fieldManager:getFields()
+		--print("FieldManager.getFields:"..tostring(courseplay.fields.fieldDefinitionBase))
+		--print(tableShow(courseplay.fields.fieldDefinitionBase,"courseplay.fields.fieldDefinitionBase",nil,nil,4))
+		
 	end;
 
 	if g_gui.currentGui == nil then
@@ -233,7 +239,9 @@ function CpManager:update(dt)
 		if self.startFieldScanAfter > 0 then
 			self.startFieldScanAfter = self.startFieldScanAfter - dt;
 		end;
-		if g_currentMission.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+		
+		if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+		--Tommi if g_currentMission.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 			courseplay.fields:setAllFieldEdges();
 		end;
 
@@ -317,9 +325,9 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	--print(string.format('CpManager:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseKey(%s))',
 	--tostring(posX),tostring(posY),tostring(isDown),tostring(isUp),tostring(mouseKey) ))
 	
-	if mouseKey~= 0 then
-		courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseKey)
-	end
+	courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseKey)
+
+	
 	--Tommi local area = self.globalInfoText.buttonsClickArea;
 	if area == nil then
 		return;
@@ -360,7 +368,7 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 				g_currentMission.isPlayerFrozen = false;
 			end;
 		end;
-		InputBinding.setShowMouseCursor(self.playerOnFootMouseEnabled);
+		g_inputBinding:setShowMouseCursor(self.playerOnFootMouseEnabled);
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- HOVER
@@ -476,6 +484,7 @@ function CpManager:devSaveAllFields()
 end
 
 function CpManager:setupFieldScanInfo()
+	print("CpManager:setupFieldScanInfo()")
 	-- FIELD SCAN INFO DISPLAY
 	self.fieldScanInfo = {};
 
@@ -489,7 +498,7 @@ function CpManager:setupFieldScanInfo()
 	local bgH = courseplay.hud:pxToNormal(bgUVs[2] - bgUVs[4], 'y');
 	local bgX = 0.5 - bgW * 0.5;
 	local bgY = 0.5 - bgH * 0.5;
-	self.fieldScanInfo.bgOverlay = Overlay:new('fieldScanInfoBackground', gfxPath, bgX, bgY, bgW, bgH);
+	self.fieldScanInfo.bgOverlay = Overlay:new(gfxPath, bgX, bgY, bgW, bgH);
 	courseplay.utils:setOverlayUVsPx(self.fieldScanInfo.bgOverlay, bgUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
 
 	self.fieldScanInfo.textPosX  = bgX + courseplay.hud:pxToNormal(10, 'x');
@@ -505,7 +514,7 @@ function CpManager:setupFieldScanInfo()
 	self.fieldScanInfo.progressBarUVs = { 53,246, 459,220 };
 	local pbX = bgX + courseplay.hud:pxToNormal(12, 'x');
 	local pbY = bgY + courseplay.hud:pxToNormal(12, 'y');
-	self.fieldScanInfo.progressBarOverlay = Overlay:new('fieldScanInfoProgressBar', gfxPath, pbX, pbY, self.fieldScanInfo.progressBarMaxWidth, pbH);
+	self.fieldScanInfo.progressBarOverlay = Overlay:new(gfxPath, pbX, pbY, self.fieldScanInfo.progressBarMaxWidth, pbH);
 	courseplay.utils:setOverlayUVsPx(self.fieldScanInfo.progressBarOverlay, self.fieldScanInfo.progressBarUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
 
 	self.fieldScanInfo.percentColors = {
@@ -521,7 +530,7 @@ function CpManager:renderFieldScanInfo()
 
 	fsi.bgOverlay:render();
 
-	local pct = courseplay.fields.curFieldScanIndex / g_currentMission.fieldDefinitionBase.numberOfFields;
+	local pct = courseplay.fields.curFieldScanIndex / #courseplay.fields.fieldDefinitionBase; --Tommi g_currentMission.fieldDefinitionBase.numberOfFields;
 
 	local r, g, b = courseplay.utils:getColorFromPct(pct * 100, fsi.percentColors, fsi.colorMapStep);
 	fsi.progressBarOverlay:setColor(r, g, b, 1);
@@ -535,7 +544,7 @@ function CpManager:renderFieldScanInfo()
 	courseplay:setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.titlePosY,         fsi.titleFontSize, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
-	local text = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, g_currentMission.fieldDefinitionBase.numberOfFields);
+	local text = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, #courseplay.fields.fieldDefinitionBase);--Tommi g_currentMission.fieldDefinitionBase.numberOfFields);
 	courseplay:setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.textPosY,         fsi.textFontSize, text);
 
@@ -638,6 +647,7 @@ end;
 -- ####################################################################################################
 -- FIELD SCAN Y/N DIALOGUE
 function CpManager:fieldScanDialogueCallback(setActive)
+	--print(string.format("CpManager:fieldScanDialogueCallback(setActive(%s))",tostring(setActive)))
 	courseplay.fields.automaticScan = setActive;
 
 	g_gui:showGui('');

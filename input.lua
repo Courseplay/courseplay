@@ -11,18 +11,16 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if self.cp.hud.show then
 			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
 		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then
-			print("call openCloseHud")
 			courseplay:openCloseHud(self, true)
 		end;
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
 	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
-
 	-- if not mouseIsInHudArea then return; end;
 
 	--LEFT CLICK
-	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.cp.hud.show and self.isEntered and mouseIsInHudArea then
+	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.cp.hud.show and Enterable.getIsEntered(self) and mouseIsInHudArea then
 		local buttonToHandle;
 
 		if self.cp.suc.active then
@@ -77,7 +75,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 
 	--HOVER
-	elseif self.cp.mouseCursorActive and not isDown and self.cp.hud.show and self.isEntered then
+	elseif self.cp.mouseCursorActive and not isDown and self.cp.hud.show and Enterable.getIsEntered(self) then
 		-- local currentHoveredButton;
 		if self.cp.suc.active then
 			for _,button in pairs(self.cp.buttons.suc) do
@@ -151,7 +149,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	-- 2D COURSE WINDOW: DRAG + DROP MOVE
 	if self.cp.course2dDrawData and (self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
 		local plot = CpManager.course2dPlotField;
-		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.isEntered and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
+		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and Enterable.getIsEntered(self) and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
 			CpManager.course2dDragDropMouseDown = { posX, posY };
 			if self.cp.course2dPdaMapOverlay then
 				self.cp.course2dPdaMapOverlay.origPos = { self.cp.course2dPdaMapOverlay.x, self.cp.course2dPdaMapOverlay.y };
@@ -173,10 +171,10 @@ end;
 function courseplay.button:handleMouseClick(vehicle)
 	vehicle = vehicle or self.vehicle;
 	local parameter = self.parameter;
-	if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and self.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
+	--[[Tommi if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and self.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
 		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
 		parameter = self.modifiedParameter;
-	end;
+	end;]]
 
 	if self.show and not self.isHidden and self.canBeClicked and not self.isDisabled then
 		if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
@@ -199,7 +197,7 @@ end;
 function courseplay:setCourseplayFunc(func, value, noEventSend, page)
 	--print(string.format("courseplay:setCourseplayFunc( %s, %s, %s, %s)",tostring(func), tostring(value), tostring(noEventSend), tostring(page)))
 	if noEventSend ~= true then
-		CourseplayEvent.sendEvent(self, func, value,noEventSend,page); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
+		--Tommi CourseplayEvent.sendEvent(self, func, value,noEventSend,page); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	if value == "nil" then
 		value = nil
@@ -221,7 +219,7 @@ function courseplay:executeFunction(self, func, value, page)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
 		return
 	end
-	if self.isEntered then
+	if Enterable.getIsEntered(self) then
 		playSample(courseplay.hud.clickSound, 1, 1, 0);
 	end
 	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);

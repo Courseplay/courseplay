@@ -769,8 +769,9 @@ function courseplay:onDraw()
 
 
 	-- HELP BUTTON TEXTS
-	renderText(0.2, 0.105, 0.02, string.format("if self:getIsActive(%s) and Enterable.getIsEntered(self)(%s) then",tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))));
-	--print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(self.isEntered)))
+	--renderText(0.2, 0.5, 0.02, string.format("InputBinding.wrapMousePositionEnabled(%s),g_currentMission.isPlayerFrozen(%s) self:getIsActive(%s) and Enterable.getIsEntered(self)(%s) then"
+	--,tostring(InputBinding.wrapMousePositionEnabled),tostring(g_currentMission.isPlayerFrozen),tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))));
+	--print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))))
 															-- VVVV Tommi
 	if self:getIsActive() and Enterable.getIsEntered(self) and false then
 		local modifierPressed = false --Tommi InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
@@ -855,8 +856,8 @@ function courseplay:onDraw()
 				courseplay:toggleFindFirstWaypoint(self);
 			end;
 
-			if self.cp.mouseCursorActive and not InputBinding.getShowMouseCursor(self) then
-				InputBinding.setShowMouseCursor(self,self.cp.mouseCursorActive);
+			if self.cp.mouseCursorActive then --Tommi and not InputBinding:getShowMouseCursor() then
+				g_inputBinding:setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
 		end;
 		if self.cp.distanceCheck and self.cp.numWaypoints > 1 then 
@@ -866,7 +867,7 @@ function courseplay:onDraw()
 			self.cp.infoTextNilSent = false
 		end;
 		
-		if self.isEntered and self.cp.toolTip ~= nil then
+		if Enterable.getIsEntered(self) and self.cp.toolTip ~= nil then
 			courseplay:renderToolTip(self);
 		end;
 	end;
