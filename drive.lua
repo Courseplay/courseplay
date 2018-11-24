@@ -169,7 +169,6 @@ function courseplay:drive(self, dt)
 	-- coordinates of coli
 	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- local direction of from DirectionNode to waypoint
-	print('broken 172')
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 	
 	-- at this point, we used the current waypoint position and the current vehicle position to calculate 
@@ -1050,7 +1049,7 @@ function courseplay:drive(self, dt)
 			-- Using false to disable the driveToPoint. This could be made into an setting option later on.
 			local useDriveToPoint = false --and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
 			local disableLongCollisionCheck = workArea;
-			if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
+			--[[ if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
 				if self.Waypoints[self.cp.waypointIndex].rev then
 					if self.cp.revSteeringAngle then
 						steeringAngle = self.cp.revSteeringAngle;
@@ -1066,17 +1065,20 @@ function courseplay:drive(self, dt)
 				end;
 	
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
+				--AIVehicleUtil.driveInDirection=function(...) log(...) end
 				print(string.format('self = %s dt = %d acceleration = %.1f self.cp.steeringAngle = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = %.2f',tostring(self),dt,acceleration,tostring(self.cp.steeringAngle),tostring(fwd),lx,lz,refSpeed))
 				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
-			else
+			else ]]
 				local directionNode = self.aiVehicleDirectionNode or self.cp.DirectionNode;
 				local tX,_,tZ = worldToLocal(directionNode, cx, cty, cz);
 				if courseplay:isWheelloader(self) then
 					tZ = tZ * 0.5; -- wheel loaders need to turn more
 				end;
 				print('broken 1077')
-				AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
-			end;
+				print(string.format(' acceleration = %.1f fwd =%s lx = %.2f lz = %.2f refSpeed = %.2f',acceleration,tostring(fwd),tX,tZ,refSpeed))
+				-- This works but does not steer correctly
+				AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed, false);
+			--end;
 
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, disableLongCollisionCheck);
