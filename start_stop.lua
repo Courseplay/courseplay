@@ -740,10 +740,10 @@ function courseplay:stop(self)
 		end;
 	end;
 
-	if self.cp.cruiseControlSpeedBackup then
+	--[[ if self.cp.cruiseControlSpeedBackup then
 		self.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;
-	end;
+	end; ]]
 
 	if self.cp.takeOverSteering then
 		self.cp.takeOverSteering = false

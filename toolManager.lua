@@ -133,9 +133,9 @@ function courseplay:isAttachedMixer(workTool)
 	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
 end;
 function courseplay:isAttacherModule(workTool)
-	if workTool.attacherJoint then
+	if workTool.spec_attacherJoints.attacherJoint then
 		local workToolsWheels = workTool:getWheels();
-		return (workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_SEMITRAILER and (not workToolsWheels or (workToolsWheels and #workToolsWheels == 0))) or workTool.cp.isAttacherModule == true;
+		return (workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_SEMITRAILER and (not workToolsWheels or (workToolsWheels and #workToolsWheels == 0))) or workTool.cp.isAttacherModule == true;
 	end;
 	return false;
 end;
@@ -167,8 +167,8 @@ function courseplay:isHarvesterAttachable(workTool)
 	return Utils.getNoNil(workTool.cp.isHarvesterAttachable, false);
 end;
 function courseplay:isHookLift(workTool)
-	if workTool.attacherJoint then
-		return workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_HOOKLIFT;
+	if workTool.spec_attacherJoints.attacherJoint then
+		return workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_HOOKLIFT;
 	end;
 	return false;
 end
@@ -506,9 +506,9 @@ function courseplay:setMarkers(vehicle, object)
 
 	local tableLength = #(area)
 	if tableLength == 0 then
-		if courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] then
+		if courseplay:isWheeledWorkTool(object) and object.spec_attacherJoints.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] then
 			-- Calculate the offset based on the distances
-			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] * -1;
+			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] * -1;
 
 			local backMarkerCorrection = Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
 			if vehicle.cp.backMarkerOffset == nil or (abs(backMarkerCorrection) > 0 and  ztt + backMarkerCorrection > vehicle.cp.backMarkerOffset) then
@@ -548,7 +548,7 @@ function courseplay:setMarkers(vehicle, object)
 					local ztt = 0;
 					local type;
 
-					if pivotJointNode and object.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] then
+					if pivotJointNode and object.spec_attacherJoints.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] then
 						type = "Pivot Trailer";
 						x, y, z = getWorldTranslation(pivotJointNode);
 
@@ -556,17 +556,17 @@ function courseplay:setMarkers(vehicle, object)
 						_, _, ztt = worldToLocal(node, x, y, z);
 
 						-- Calculate the offset based on the distances
-						ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt;
+						ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt;
 
-					elseif courseplay:isWheeledWorkTool(object) and object.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] then
+					elseif courseplay:isWheeledWorkTool(object) and object.spec_attacherJoints.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] then
 						type = "Trailer";
-						x, y, z = getWorldTranslation(object.attacherJoint.node)
+						x, y, z = getWorldTranslation(object.spec_attacherJoints.attacherJoint.node)
 
 						-- Get the marker offset from the pivot node.
 						_, _, ztt = worldToLocal(node, x, y, z);
 
 						-- Calculate the offset based on the distances
-						ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.attacherJoint.jointType] * -1) - ztt;
+						ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] * -1) - ztt;
 
 					else
 						type = "Vehicle";

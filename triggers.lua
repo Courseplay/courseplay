@@ -440,6 +440,7 @@ function courseplay:updateAllTriggers()
 			
 				-- ManureLager
 			elseif object.triggerId ~= nil then
+				print('triggers broken 443')
 				if object.isManureLager or object.ManureLagerDirtyFlag or StringUtil.endsWith(object.className, 'ManureLager') then
 					object.isManureLager = true;
 					object.isLiquidManureFillTrigger = true;
@@ -481,7 +482,8 @@ function courseplay:updateAllTriggers()
 			counter = counter +1 
 			for k, trigger in pairs(placeable) do
 				--	FermentingSilo
-				if (StringUtil.endsWith(xml, 'ermentingsilo_low.xml') or StringUtil.endsWith(xml, 'ermentingsilo_high.xml')) and trigger.silagePerHour ~= nil then
+				--print('triggers broken 485')
+				--[[ Ryan one of these stringutil doesn't work if (StringUtil.endsWith(xml, 'ermentingsilo_low.xml') or StringUtil.endsWith(xml, 'ermentingsilo_high.xml')) and trigger.silagePerHour ~= nil then
 					trigger.isFermentingSiloTrigger = true;
 					local triggerId = trigger.TipTrigger.triggerId;
 					if triggerId ~= nil then
@@ -552,7 +554,7 @@ function courseplay:updateAllTriggers()
 					local triggerId = trigger.waterTankTriggerNode;
 					courseplay:cpAddTrigger(triggerId, trigger, 'waterReceiver', 'onCreateLoadedObjects');
 					courseplay:debug('\t\tadd greenhouse water trigger [placeable]', 1);
-				end;
+				end; ]]
 			end;
 		end
 		courseplay:debug(('\t%i found'):format(counter), 1);
@@ -624,6 +626,7 @@ function courseplay:updateAllTriggers()
 				-- Extended tipTriggers (AlternativeTipTrigger)
 				--print(tableShow(trigger,"tiptriggers",nil,nil,4))
 				if trigger.isExtendedTrigger then
+					print('triggers broken 629')
 					trigger.isAlternativeTipTrigger = StringUtil.endsWith(trigger.className, 'ExtendedTipTrigger');
 				end;
 				if triggerId ~= nil then
@@ -709,6 +712,7 @@ function courseplay:cpAddTrigger(triggerId, trigger, triggerType, groupType)
 end;
 
 function courseplay:isValidTipTrigger(trigger)
+	print('triggers broken 715')
 	local isValid = trigger.className and (trigger.className == 'SiloTrigger' or trigger.isAlternativeTipTrigger or StringUtil.endsWith(trigger.className, 'TipTrigger'));
 
 

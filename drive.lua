@@ -2085,6 +2085,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 			end
 		end
 
+		print(string.format('accelrator = %.1f allowedToDrive = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = $.2f',accelrator,tostring(allowedToDrive),tostring(moveForwards),lx,lz,refSpeed))
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, accelrator, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 
 		if courseplay.debugChannels[9] and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then

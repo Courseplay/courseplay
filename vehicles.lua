@@ -51,7 +51,7 @@ function courseplay:disableCropDestruction(vehicle)
 	end;
 
 	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle.attachedImplements) do
+	for _,impl in pairs(vehicle.spec_attacherJoints.attachedImplements) do
 		courseplay:disableCropDestruction(impl.object);
 	end;
 end;
@@ -64,7 +64,7 @@ function courseplay:enableCropDestruction(vehicle)
 	end;
 
 	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle.attachedImplements) do
+	for _,impl in pairs(vehicle.spec_attacherJoints.attachedImplements) do
 		courseplay:enableCropDestruction(impl.object);
 	end;
 end;
@@ -160,7 +160,7 @@ function courseplay:getDistances(object)
 			courseplay:debug(('%s: frontWheelToDirectionNodeOffset=%.2f, frontWheelToRearWheel=%.2f'):format(nameNum(object), distances.frontWheelToDirectionNodeOffset, distances.frontWheelToRearWheel), 6);
 
 			-- Finde the attacherJoints distance from the direction node
-			for _, attacherJoint in ipairs(object.attacherJoints) do
+			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 				local xj, yj, zj = getWorldTranslation(attacherJoint.jointTransform);
 				local _,_,dis = worldToLocal(object.cp.DirectionNode, xj, yj, zj);
 				if dis < front then
@@ -174,7 +174,7 @@ function courseplay:getDistances(object)
 
 			-- Finde the attacherJoints distance from the turning node
 			local turningNode = courseplay:getRealTurningNode(object);
-			for _, attacherJoint in ipairs(object.attacherJoints) do
+			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 				local xj, yj, zj = getWorldTranslation(attacherJoint.jointTransform);
 				local _, _, deltaZ = worldToLocal(object.cp.DirectionNode, xj, yj, zj);
 
@@ -192,16 +192,16 @@ function courseplay:getDistances(object)
 
 		-- IMPLEMENTS OR TRAILERS
 		else
-			local node = object.attacherJoint.node;
+			local node = object.spec_attacherJoints.attacherJoint.node;
 			local isHookLift = courseplay:isHookLift(object);
 			local lastNode = courseplay:getLastComponentNodeWithWheels(object)
 
-			if object.attacherJoint.rootNode ~= lastNode and not isHookLift then
-				local tempNode, backTrack, rotLimits = courseplay:findJointNodeConnectingToNode(object, object.attacherJoint.rootNode, lastNode);
+			if object.spec_attacherJoints.attacherJoint.rootNode ~= lastNode and not isHookLift then
+				local tempNode, backTrack, rotLimits = courseplay:findJointNodeConnectingToNode(object, object.spec_attacherJoints.attacherJoint.rootNode, lastNode);
 				if tempNode and backTrack then
 					node = tempNode;
 					local tnx, tny, tnz = getWorldTranslation(tempNode);
-					local xdis,ydis,dis = worldToLocal(object.attacherJoint.node, tnx, tny, tnz);
+					local xdis,ydis,dis = worldToLocal(object.spec_attacherJoints.attacherJoint.node, tnx, tny, tnz);
 					local nodeLength = 0;
 					local isPivoted = false;
 					for i = 1, #backTrack do
@@ -210,7 +210,7 @@ function courseplay:getDistances(object)
 						end;
 
 						if i == 1 then
-							tempNode = object.attacherJoint.node;
+							tempNode = object.spec_attacherJoints.attacherJoint.node;
 						else
 							tempNode = backTrack[i-1];
 						end;
@@ -257,7 +257,7 @@ function courseplay:getDistances(object)
 			end;
 
 			-- Finde the attacherJoints distance from the direction node
-			for _, attacherJoint in ipairs(object.attacherJoints) do
+			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 				local nx, ny, nz = getWorldTranslation(attacherJoint.jointTransform);
 				local _,_,dis = worldToLocal(node, nx, ny, nz);
 				dis = dis * -1;
@@ -284,7 +284,7 @@ function courseplay:getDistances(object)
 			if distances.attacherJointToRearWheel then
 				local turningNode = courseplay:getRealTurningNode(object);
 				-- Finde the attacherJoints distance from the turning node
-				for _, attacherJoint in ipairs(object.attacherJoints) do
+				for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 					local nx, ny, nz = getWorldTranslation(attacherJoint.jointTransform);
 					local _,_,dis = worldToLocal(turningNode, nx, ny, nz);
 					dis = dis * -1;
@@ -319,7 +319,7 @@ end;
 function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 	local distances = vehicle.cp.distances;
 	local totalDistance = 0;
-	for _, imp in ipairs(vehicle.attachedImplements) do
+	for _, imp in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
 		if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 			local workTool = imp.object;
 			if courseplay:isWheeledWorkTool(workTool) then
@@ -341,7 +341,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 	end;
 
 	if vehicle.cp.DirectionNode and totalDistance > 0 then
-		for _, imp in ipairs(vehicle.attachedImplements) do
+		for _, imp in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
 			if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 				local workTool = imp.object;
 				totalDistance = totalDistance + distances.turningNodeToRearTrailerAttacherJoints[workTool.attacherJoint.jointType];
@@ -391,7 +391,7 @@ end;
 function courseplay:getRealTrailerFrontNode(workTool)
 	if not workTool.cp.realFrontNode then
 		local jointNode, backtrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
-		if jointNode and backtrack and workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT then
+		if jointNode and backtrack and workTool.spec_attacherJoints.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT then
 			local rootNode;
 			for _, joint in ipairs(workTool.componentJoints) do
 				if joint.jointNode == jointNode and joint.rotLimit~= nil and joint.rotLimit[2] ~= nil and joint.rotLimit[2] > rad(15) then
@@ -768,7 +768,7 @@ function courseplay:getHighestToolTurnDiameter(object)
 	local turnDiameter = 0;
 
 	-- Tool attached to Steerable
-	for _, implement in ipairs(object.attachedImplements) do
+	for _, implement in ipairs(object.spec_attacherJoints.attachedImplements) do
 		local workTool = implement.object;
 
 		if courseplay:isRearAttached(object, implement.jointDescIndex) then
@@ -777,7 +777,7 @@ function courseplay:getHighestToolTurnDiameter(object)
 			courseplay:debug(('%s: toolTurnDiameter=%.2fm'):format(nameNum(workTool), turnDiameter), 6);
 
 			-- Check rear attached tools for turnDiameters
-			if workTool.attachedImplements and workTool.attachedImplements ~= {} then
+			if workTool.spec_attacherJoints.attachedImplements and workTool.spec_attacherJoints.attachedImplements ~= {} then
 				local ttd = courseplay:getHighestToolTurnDiameter(workTool);
 				if ttd > turnDiameter then
 					turnDiameter = ttd;
@@ -808,7 +808,7 @@ function courseplay:getToolTurnRadius(workTool)
 		local attacherVehicle			= workTool.attacherVehicle;
 		local workToolDistances			= workTool.cp.distances or courseplay:getDistances(workTool);
 
-		for i, attachedImplement in pairs(attacherVehicle.attachedImplements) do
+		for i, attachedImplement in pairs(attacherVehicle.spec_attacherJoints.attachedImplements) do
 			if attachedImplement.object == workTool then
 				-- Check if AIVehicleUtil can calculate it for us
 				local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
@@ -879,7 +879,7 @@ function courseplay:getToolTurnRadius(workTool)
 				courseplay:debug(('%s -> TurnRadius: pivotRotMax=%d° (Pivot trailer/implement)'):format(nameNum(workTool), deg(pivotRotMax)), 6);
 
 				-- We are an implement and should be handled a bit different
-				if workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT then
+				if workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT then
 					-- We have a valid pivotRotMax, so calculate it normally.
 					if pivotRotMax > rad(15) then
 						frontLength = frontLength + workToolDistances.attacherJointToPivot;
@@ -967,7 +967,7 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 		local hasRearAttach = false;
 		local jointType = 0;
 
-		for _, implement in ipairs(vehicle.attachedImplements) do
+		for _, implement in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
 			-- Check if it's rear attached
 			if courseplay:isRearAttached(vehicle, implement.jointDescIndex) then
 				hasRearAttach = true;
@@ -1004,7 +1004,7 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 		local hasRearAttach = false;
 		local jointType = 0;
 
-		for _, implement in ipairs(vehicle.attachedImplements) do
+		for _, implement in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
 			-- Check if it's rear attached
 			if courseplay:isRearAttached(vehicle, implement.jointDescIndex) then
 				hasRearAttach = true;
@@ -1280,7 +1280,7 @@ end;
 function courseplay:isRearAttached(object, jointDescIndex)
 	local turningNode = object.cp.DirectionNode or courseplay:getRealTurningNode(object);
 	local x, y, z = localToWorld(turningNode, 0, 0, 50);
-	local deltaX, _, _ = worldToLocal(object.attacherJoints[jointDescIndex].jointTransform, x, y, z);
+	local deltaX, _, _ = worldToLocal(object.spec_attacherJoints.attacherJoints[jointDescIndex].jointTransform, x, y, z);
 
 	if courseplay:isInvertedToolNode(object) then
 		deltaX = deltaX * -1;

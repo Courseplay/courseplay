@@ -1736,7 +1736,7 @@ function courseplay:createMapHotspot(vehicle)
 	local _, textOffsetY = getNormalizedScreenValues(0, 9.5);
 	local width, height = getNormalizedScreenValues(11,11);
 	local colour = Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]);
-	vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(
+	--[[ Ryan ingameMap no longer exists vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(
 		"cpHelper",                                 -- name: 				mapHotspot Name
 		"CP\n"..name,                               -- fullName: 			Text shown in icon
 		nil,                                        -- imageFilename:		Image path for custome images (If nil, then it will use Giants default image file)
@@ -1759,7 +1759,7 @@ function courseplay:createMapHotspot(vehicle)
 		getNormalizedUVs({768, 768, 256, 256}),     -- bgImageUVs:			UVs location of the background icon in the image file. Use getNormalizedUVs to get an correct UVs array
 		Overlay.ALIGN_VERTICAL_MIDDLE,              -- verticalAlignment:	The alignment of the image based on the attached node
 		0.8                                         -- overlayBgScale:		Background icon scale, like making an border. (smaller is bigger border)
-	)
+	) ]]
 	--- Do not delete this. This is for reference to what the arguments are.
 	-- IngameMap:createMapHotspot(name, fullName, imageFilename, imageUVs, baseColor, xMapPos, zMapPos, width, height, blinking, persistent, showName, objectId, renderLast, category, textSize, textOffsetY, textColor, bgImageFilename, bgImageUVs, verticalAlignment, overlayBgScale)
 end;
@@ -1857,6 +1857,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 				courseplay:debug("reload page 1", 5);
 				courseplay.hud:setReloadPageOrder(self, 1, true);
 			elseif varName:sub(1, 3) == 'HUD' then
+				print('broken settings 1860')
 				if StringUtil.startsWith(varName, 'HUD0') then
 					courseplay:debug("reload page 0", 5);
 					courseplay.hud:setReloadPageOrder(self, 0, true);
