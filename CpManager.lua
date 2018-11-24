@@ -108,7 +108,8 @@ function CpManager:loadMap(name)
 	end;
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
-	addConsoleCommand( 'cpPrintVariable', 'Save all fields', 'printVariable', self )
+	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
+	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -502,6 +503,34 @@ function CpManager:printVariable(variableName, maxDepth)
 		return(variableName .. ' is nil')
 	end
 	return('Printed variable ' .. variableName)
+end
+
+function CpManager.installTraceFunction(name)
+	return function(self, superFunc, ...)
+		print(name ..  ' called with: ')
+		for n= 1, select('#',...) do
+			local v = select(n,...)
+			if type(v) == 'table' then
+				print(string.format(' arg %d: ', n))
+				DebugUtil.printTableRecursively(v, '  ', 1, 1)
+			else
+				print(string.format(' arg %d: %s', n, tostring(v)))
+			end
+		end
+		return superFunc(self, ...)
+	end
+end
+
+function CpManager:traceOn(variableName)
+	-- split the name into the function and table containing it
+	local _, _, tabName, funcName = string.find(variableName, '(.*)%.(%w+)$')
+	local tab = self:getVariable(tabName)
+	if tab and type(tab[funcName]) == 'function' then
+		tab[funcName] = Utils.overwrittenFunction(tab[funcName], CpManager.installTraceFunction(variableName))
+	else
+		return(variableName .. ' is not a function.')
+	end
+	return('argument tracing is on for ' .. tabName .. '.' .. funcName)
 end
 
 --- get a reference pointing to the global variable 'variableName'
