@@ -1837,7 +1837,7 @@ function courseplay:setAttachedCombine(vehicle)
 end;
 
 function courseplay:getIsEngineReady(vehicle)
-	return (vehicle.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.motorStartTime == nil or vehicle.motorStartTime < g_currentMission.time);
+	return (vehicle.spec_motorized.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.spec_motorized.motorStartTime == nil or vehicle.spec_motorized.motorStartTime < g_currentMission.time);
 end;
 
 ----------------------------------------------------------------------------------------------------

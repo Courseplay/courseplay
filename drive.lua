@@ -37,10 +37,12 @@ function courseplay:drive(self, dt)
 		courseplay:setEngineState(self, true);
 		--("start Order")
 	elseif not courseplay:getIsEngineReady(self) then
+		print('broken 40')
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
 	end;
 
 	if not courseplay:getCanUseCpMode(self) then
+		print('Can Use CP mode is false I dont want to drive')
 		return;
 	end;
 
@@ -114,7 +116,7 @@ function courseplay:drive(self, dt)
 		ctx, cty, ctz = getWorldTranslation(self.cp.oldDirectionNode);
 	end;
 	if self.cp.waypointIndex > self.cp.numWaypoints then
-		courseplay:debug(string.format("drive %d: %s: self.cp.waypointIndex (%s) > self.cp.numWaypoints (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.waypointIndex), tostring(self.cp.numWaypoints)), 12); --this should never happen
+		--courseplay:debug(string.format("drive %d: %s: self.cp.waypointIndex (%s) > self.cp.numWaypoints (%s)", debug.getinfo(1).currentline, nameNum(self), tostring(self.cp.waypointIndex), tostring(self.cp.numWaypoints)), 12); --this should never happen
 		courseplay:setWaypointIndex(self, self.cp.numWaypoints);
 	end;
 
@@ -167,6 +169,7 @@ function courseplay:drive(self, dt)
 	-- coordinates of coli
 	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- local direction of from DirectionNode to waypoint
+	print('broken 172')
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
 	
 	-- at this point, we used the current waypoint position and the current vehicle position to calculate 
@@ -536,8 +539,11 @@ function courseplay:drive(self, dt)
 		end;
 
 		--FUEL LEVEL + REFILLING
-		if self.fuelCapacity > 0 then
-			local currentFuelPercentage = (self.fuelFillLevel / self.fuelCapacity + 0.0001) * 100;
+		-- DO NOT DELETE fuelFillLevel is gone. This variable may be a replacment 
+		print(self.spec_motorized.lastFuelUsage)
+		if self.spec_motorized.fuelCapacity > 0 then
+											-- Formely fuelFillLevel. No longer avaiable in the vehicle
+			local currentFuelPercentage = ((self.spec_motorized.fuelCapacity-self.spec_motorized.lastFuelUsage) / self.spec_motorized.fuelCapacity + 0.0001) * 100;
 			local searchForFuel = (self.cp.allwaysSearchFuel and (currentFuelPercentage < 99) and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
 			if searchForFuel then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
@@ -558,10 +564,10 @@ function courseplay:drive(self, dt)
 				allowedToDrive = false;
 				CpManager:setGlobalInfoText(self, 'FUEL_IS');
 			end;
-			if self.fuelFillTriggers[1] and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
+			--[[ Ryan if self.fuelFillTriggers[1] and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
 				courseplay:debug(nameNum(self) .. ': self.fuelFillTriggers[1] ~= nil -> resetting "self.cp.fillTrigger"', 1);
 				self.cp.fillTrigger = nil;
-			end;
+			end; ]]
 		end;
 
 		-- WATER WARNING
@@ -620,7 +626,7 @@ function courseplay:drive(self, dt)
 	if self.cp.mode == 4 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workToolAttached then
 
 		allowedToDrive, workArea, workSpeed, isFinishingWork, refSpeed = courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed);
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 
 		if not workArea and self.cp.totalFillLevelPercent < self.cp.refillUntilPct then
 			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
@@ -644,7 +650,7 @@ function courseplay:drive(self, dt)
 	elseif self.cp.mode == 6 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil then
 
 		allowedToDrive, workArea, workSpeed, breakCode, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, lx, lz,refSpeed,dt);
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 
 		if not workArea and self.cp.currentTipTrigger == nil and self.cp.totalFillLevel and self.cp.totalFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.cp.waypointIndex].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
@@ -682,7 +688,7 @@ function courseplay:drive(self, dt)
 			courseplay:checkSaveFuel(self,allowedToDrive)
 			return;
 		end;
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-4).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-4).."): refSpeed = "..tostring(refSpeed))
 	end;
 
 
@@ -712,7 +718,7 @@ function courseplay:drive(self, dt)
 	end;
 
 	-- CHECK TRAFFIC
-	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
+	-- Ryan missing gcurrent_mission variable in this function allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 
 	if self.cp.waitForTurnTime > self.timer or self.cp.isNotAllowedToDrive then
 		allowedToDrive = false
@@ -770,8 +776,9 @@ function courseplay:drive(self, dt)
 			allowedToDrive = true;
 			moveForwards = self.movingDirection == 1;
 		end;
+		print('broken 779')
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
-		self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+		--self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 		return;
 	end;
 
@@ -834,28 +841,28 @@ function courseplay:drive(self, dt)
 		or isTightTurn
 	then
 		refSpeed = math.min(self.cp.speeds.turn,refSpeed);              -- we are on the field, go field speed
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--debug nil speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	elseif ((self.cp.mode == 2 or self.cp.mode == 3) and isAtStart)
 		or (workSpeed ~= nil and workSpeed == 1)
 		or isFinishingWork then
 		refSpeed = math.min(self.cp.speeds.field,refSpeed);
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--debug nil speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	else
 		local mode7onCourse = true
 		self.cp.speedDebugStreet = true
 		if self.cp.mode ~= 7 then
 			refSpeed = self.cp.speeds.street;
-			speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+			--debug nil speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		elseif self.cp.modeState == 5 then
 			mode7onCourse = false
 		end
 		if self.cp.speeds.useRecordingSpeed and self.Waypoints[self.cp.waypointIndex].speed ~= nil and mode7onCourse then
 			if self.Waypoints[self.cp.waypointIndex].speed < self.cp.speeds.crawl then
 				refSpeed = courseplay:getAverageWpSpeed(self , 4)
-				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+				--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
 				refSpeed = MathUtil.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.cp.waypointIndex].speed); --normaly use speed from waypoint, but  maximum street speed
-				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+				--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		end;
 	end;
@@ -863,20 +870,20 @@ function courseplay:drive(self, dt)
 
 	if self.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	end
 
 	if self.cp.currentTipTrigger ~= nil then
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 			refSpeed = Utils.getNoNil(self.cp.speeds.reverse, self.cp.speeds.crawl);
-			speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+			--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		else
 			refSpeed = self.cp.speeds.turn;
-			speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+			--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		end;
 	elseif self.cp.isInFilltrigger then
 		refSpeed = self.cp.speeds.turn;
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		self.cp.isInFilltrigger = false;
 	end;
 
@@ -894,7 +901,7 @@ function courseplay:drive(self, dt)
 		-- let the PPC know if goReverse is the driving.
 		self.cp.ppc:setReverseActive(isReverseActive)
 		refSpeed = Utils.getNoNil(self.cp.speeds.reverse, self.cp.speeds.crawl)
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	else
 		-- goReverse is not driving
 		self.cp.ppc:setReverseActive(false)
@@ -921,7 +928,7 @@ function courseplay:drive(self, dt)
 				lx = 0
 				lz = 1
 				refSpeed = self.cp.speeds.crawl
-				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+				--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
 				self.cp.reverseBackToPoint = nil;
 			end;
@@ -931,13 +938,13 @@ function courseplay:drive(self, dt)
 	end
 	if self.cp.makeHeaps and self.cp.waypointIndex >= self.cp.heapStart - 1	and self.cp.waypointIndex <= self.cp.heapStop and self.cp.totalFillLevel > 0 then
 		refSpeed = self.cp.speeds.discharge
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		forceTrueSpeed = true
 	end
 
 	if abs(lx) > 0.5 then
 		refSpeed = min(refSpeed, self.cp.speeds.turn)
-		speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	end
 
 	self.cp.speedDebugLine = speedDebugLine
@@ -1059,6 +1066,7 @@ function courseplay:drive(self, dt)
 				end;
 	
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
+				print(string.format('self = %s dt = %d acceleration = %.1f self.cp.steeringAngle = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = %.2f',tostring(self),dt,acceleration,tostring(self.cp.steeringAngle),tostring(fwd),lx,lz,refSpeed))
 				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			else
 				local directionNode = self.aiVehicleDirectionNode or self.cp.DirectionNode;
@@ -1066,6 +1074,7 @@ function courseplay:drive(self, dt)
 				if courseplay:isWheelloader(self) then
 					tZ = tZ * 0.5; -- wheel loaders need to turn more
 				end;
+				print('broken 1077')
 				AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed);
 			end;
 
@@ -1220,9 +1229,9 @@ end;
 
 function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	local newSpeed = math.max(refSpeed,3)
-	if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
+	--[[ if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
 		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
-	end
+	end ]]
 	local deltaMinus = vehicle.cp.curSpeed - refSpeed;
 	if not forceTrueSpeed then
 		if newSpeed < vehicle:getCruiseControlSpeed() then
@@ -1952,7 +1961,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 		currentY = vehicle.cp.curTarget.y
 		currentZ = vehicle.cp.curTarget.z
 		refSpeed = vehicle.cp.speeds.field
-		speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		local distance_to_wp = courseplay:distanceToPoint(vehicle, currentX, currentY, currentZ);	
 
 		-- avoid circling
@@ -2016,21 +2025,23 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 	allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
 	if vehicle.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
-		speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+		--speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 	end
 
 	if g_server ~= nil then
 		local lx, lz
 		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
+			print('broken 2030')
 			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
 		else
 			allowedToDrive = false
 		end
 			
 		if not allowedToDrive then
+			print('broken 2037')
 			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, true, 0, 1)
-			vehicle.cp.speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+			--vehicle.cp.speedDebugLine = ("navigatePathToUnloadCourse("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 			courseplay:resetSlippingTimers(vehicle)
 			return;
 		end
@@ -2043,7 +2054,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 
 		if abs(lx) > 0.5 then
 			refSpeed = min(refSpeed, vehicle.cp.speeds.turn)
-			speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
+			--speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		end
 					
 		if allowedToDrive then
@@ -2085,7 +2096,8 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 			end
 		end
 
-		print(string.format('accelrator = %.1f allowedToDrive = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = $.2f',accelrator,tostring(allowedToDrive),tostring(moveForwards),lx,lz,refSpeed))
+		--print(string.format('accelrator = %.1f allowedToDrive = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = $.2f',accelrator,tostring(allowedToDrive),tostring(moveForwards),lx,lz,refSpeed))
+		print('broken 2095')
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, accelrator, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 
 		if courseplay.debugChannels[9] and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then

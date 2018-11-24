@@ -506,13 +506,14 @@ function courseplay:start(self)
 		-- Initialize pure pursuit controller
 		self.cp.ppc:initialize()
 	end
-	--print("startStop "..debug.getinfo(1).currentline)
+	print('startStop 509')
 
 end;
 
 function courseplay:getCanUseCpMode(vehicle)
 	-- check engine running state
 	if not courseplay:getIsEngineReady(vehicle) then
+		print('engine not ready')
 		return false;
 	end;
 
@@ -522,6 +523,7 @@ function courseplay:getCanUseCpMode(vehicle)
 	or ((mode == 1 or mode == 2 or mode == 3 or mode == 4 or mode == 8 or mode == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
 	or ((mode ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder)) then
 		courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE');
+		print('Not Supported Vehicle Type')
 		return false;
 	end;
 
@@ -574,6 +576,7 @@ function courseplay:getCanUseCpMode(vehicle)
 			end;
 		end;
 	elseif mode == 7 then
+		-- DELETE ME MODE 7 Crap
 		minWait, maxWait = 1, 1;
 		if vehicle.cp.numUnloadPoints == 0 and vehicle.cp.numWaitPoints < minWait then
 			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
