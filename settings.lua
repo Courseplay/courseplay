@@ -232,7 +232,7 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 				changeBy = -2
 			end
 		end
-		vehicle.cp.laneNumber = Utils.clamp(vehicle.cp.laneNumber + changeBy, math.floor(vehicle.cp.multiTools/2)*-1, math.floor(vehicle.cp.multiTools/2));
+		vehicle.cp.laneNumber = MathUtil.clamp(vehicle.cp.laneNumber + changeBy, math.floor(vehicle.cp.multiTools/2)*-1, math.floor(vehicle.cp.multiTools/2));
 		local newOffset = 0
 		if toolsIsEven then
 			if vehicle.cp.laneNumber > 0 then
@@ -459,9 +459,9 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	else
 		if vehicle.cp.workWidth + changeBy > 10 then
 			if abs(changeBy) == 0.1 and not (Input.keyPressedState[Input.KEY_lalt]) then -- pressing left Alt key enables to have small 0.1 steps even over 10.0 
-				changeBy = 0.5 * Utils.sign(changeBy);
+				changeBy = 0.5 * MathUtil.sign(changeBy);
 			elseif abs(changeBy) == 0.5 then
-				changeBy = 2 * Utils.sign(changeBy);
+				changeBy = 2 * MathUtil.sign(changeBy);
 			end;
 		end;
 
@@ -521,16 +521,16 @@ function courseplay:changeMode10Radius (vehicle, changeBy)
 end
 
 function courseplay:changeShieldHeight (vehicle, changeBy)
-	vehicle.cp.mode10.shieldHeight = Utils.clamp(vehicle.cp.mode10.shieldHeight + changeBy,0,1.5)
+	vehicle.cp.mode10.shieldHeight = MathUtil.clamp(vehicle.cp.mode10.shieldHeight + changeBy,0,1.5)
 end
 
 function courseplay:changeDriveOnAtFillLevel(vehicle, changeBy)
-	vehicle.cp.driveOnAtFillLevel = Utils.clamp(vehicle.cp.driveOnAtFillLevel + changeBy, 0, 100);
+	vehicle.cp.driveOnAtFillLevel = MathUtil.clamp(vehicle.cp.driveOnAtFillLevel + changeBy, 0, 100);
 end
 
 
 function courseplay:changeFollowAtFillLevel(vehicle, changeBy)
-	vehicle.cp.followAtFillLevel = Utils.clamp(vehicle.cp.followAtFillLevel + changeBy, 0, 100);
+	vehicle.cp.followAtFillLevel = MathUtil.clamp(vehicle.cp.followAtFillLevel + changeBy, 0, 100);
 end
 
 
@@ -559,20 +559,20 @@ end;
 
 function courseplay:changeTurnSpeed(vehicle, changeBy)
 	local speed = vehicle.cp.speeds.turn;
-	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minTurn, vehicle.cp.speeds.max);
+	speed = MathUtil.clamp(speed + changeBy, vehicle.cp.speeds.minTurn, vehicle.cp.speeds.max);
 	vehicle.cp.speeds.turn = speed ;
 end
 
 function courseplay:changeFieldSpeed(vehicle, changeBy)
 	local speed = vehicle.cp.speeds.field;
-	speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minField, vehicle.cp.speeds.max);
+	speed = MathUtil.clamp(speed + changeBy, vehicle.cp.speeds.minField, vehicle.cp.speeds.max);
 	vehicle.cp.speeds.field = speed;
 end
 
 function courseplay:changeMaxSpeed(vehicle, changeBy)
 	if not vehicle.cp.speeds.useRecordingSpeed then
 		local speed = vehicle.cp.speeds.street;
-		speed = Utils.clamp(speed + changeBy, vehicle.cp.speeds.minStreet, vehicle.cp.speeds.max);
+		speed = MathUtil.clamp(speed + changeBy, vehicle.cp.speeds.minStreet, vehicle.cp.speeds.max);
 		vehicle.cp.speeds.street = speed;
 	end;
 end
@@ -580,7 +580,7 @@ end
 function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage)
 	local speed = force or (vehicle.cp.speeds.reverse + changeBy);
 	if not force then
-		speed = Utils.clamp(speed, vehicle.cp.speeds.minReverse, vehicle.cp.speeds.max);
+		speed = MathUtil.clamp(speed, vehicle.cp.speeds.minReverse, vehicle.cp.speeds.max);
 	end;
 	vehicle.cp.speeds.reverse = speed;
 
@@ -594,7 +594,7 @@ function courseplay:changeBunkerSpeed(vehicle, changeBy)
 	if vehicle.cp.mode10.leveling then
 		upperLimit = 15
 	end
-	speed = Utils.clamp(speed + changeBy, 3, upperLimit);
+	speed = MathUtil.clamp(speed + changeBy, 3, upperLimit);
 	vehicle.cp.speeds.bunkerSilo = speed;
 end
 
@@ -603,7 +603,7 @@ function courseplay:toggleUseRecordingSpeed(vehicle)
 end;
 
 function courseplay:changeWarningLightsMode(vehicle, changeBy)
-	vehicle.cp.warningLightsMode = Utils.clamp(vehicle.cp.warningLightsMode + changeBy, courseplay.WARNING_LIGHTS_NEVER, courseplay.WARNING_LIGHTS_BEACON_ALWAYS);
+	vehicle.cp.warningLightsMode = MathUtil.clamp(vehicle.cp.warningLightsMode + changeBy, courseplay.WARNING_LIGHTS_NEVER, courseplay.WARNING_LIGHTS_BEACON_ALWAYS);
 end;
 
 function courseplay:toggleOpenHudWithMouse(vehicle)
@@ -655,7 +655,7 @@ function courseplay:setSearchCombineOnField(vehicle, changeDir, force)
 			vehicle.cp.searchCombineOnField = newFieldNum;
 			return;
 		end;
-		newFieldNum = Utils.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
+		newFieldNum = MathUtil.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
 	end;
 
 	vehicle.cp.searchCombineOnField = newFieldNum;
@@ -663,7 +663,7 @@ end;
 
 function courseplay:selectAssignedCombine(vehicle, changeBy)
 	local combines = courseplay:getAllCombines();
-	vehicle.cp.selectedCombineNumber = Utils.clamp(vehicle.cp.selectedCombineNumber + changeBy, 0, #combines);
+	vehicle.cp.selectedCombineNumber = MathUtil.clamp(vehicle.cp.selectedCombineNumber + changeBy, 0, #combines);
 
 	if vehicle.cp.selectedCombineNumber == 0 then
 		vehicle.cp.savedCombine = nil;
@@ -700,7 +700,7 @@ function courseplay:switchDriverCopy(vehicle, changeBy)
 	local drivers = courseplay:findDrivers(vehicle);
 
 	if drivers ~= nil then
-		vehicle.cp.selectedDriverNumber = Utils.clamp(vehicle.cp.selectedDriverNumber + changeBy, 0, #(drivers));
+		vehicle.cp.selectedDriverNumber = MathUtil.clamp(vehicle.cp.selectedDriverNumber + changeBy, 0, #(drivers));
 
 		if vehicle.cp.selectedDriverNumber == 0 then
 			vehicle.cp.copyCourseFromDriver = nil;
@@ -1141,7 +1141,7 @@ function courseplay:toggleReturnToFirstPoint(vehicle)
 end;
 
 function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
-	vehicle.cp.headland.numLanes = Utils.clamp(vehicle.cp.headland.numLanes + changeBy,
+	vehicle.cp.headland.numLanes = MathUtil.clamp(vehicle.cp.headland.numLanes + changeBy,
 		vehicle.cp.headland.getMinNumLanes(), vehicle.cp.headland.getMaxNumLanes());
 	if vehicle.cp.headland.numLanes < 0 then
 		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NARROW_FIELD
@@ -1189,7 +1189,7 @@ function courseplay:changeHeadlandReverseManeuverType( vehicle )
 end
 
 function courseplay:changeByMultiTools(vehicle, changeBy)
-	courseplay:setMultiTools(vehicle, Utils.clamp(vehicle.cp.multiTools + changeBy, 1, 8))
+	courseplay:setMultiTools(vehicle, MathUtil.clamp(vehicle.cp.multiTools + changeBy, 1, 8))
 end;
 function courseplay:setMultiTools(vehicle, set)
 	vehicle:setCpVar('multiTools',set,courseplay.isClient)
@@ -1360,7 +1360,7 @@ function courseplay:setMouseCursor(self, show)
 end;
 
 function courseplay:changeDebugChannelSection(vehicle, changeBy)
-	courseplay.debugChannelSection = Utils.clamp(courseplay.debugChannelSection + changeBy, 1, ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
+	courseplay.debugChannelSection = MathUtil.clamp(courseplay.debugChannelSection + changeBy, 1, ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
 	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine * courseplay.debugChannelSection;
 	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
 
@@ -1441,7 +1441,7 @@ function courseplay:setFieldEdgePath(vehicle, changeDir, force)
 			end;
 			return;
 		end;
-		newFieldNum = Utils.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
+		newFieldNum = MathUtil.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
 	end;
 
 	vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
@@ -1499,7 +1499,7 @@ function courseplay:toggleCustomFieldEdgePathShow(vehicle, force)
 end;
 
 function courseplay:setCustomFieldEdgePathNumber(vehicle, changeBy, force)
-	vehicle.cp.fieldEdge.customField.fieldNum = force or Utils.clamp(vehicle.cp.fieldEdge.customField.fieldNum + changeBy, 0, courseplay.fields.customFieldMaxNum);
+	vehicle.cp.fieldEdge.customField.fieldNum = force or MathUtil.clamp(vehicle.cp.fieldEdge.customField.fieldNum + changeBy, 0, courseplay.fields.customFieldMaxNum);
 	vehicle.cp.fieldEdge.customField.selectedFieldNumExists = courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum] ~= nil;
 	--print(string.format("%s: customField.fieldNum=%d, selectedFieldNumExists=%s", nameNum(vehicle), vehicle.cp.fieldEdge.customField.fieldNum, tostring(vehicle.cp.fieldEdge.customField.selectedFieldNumExists)));
 end;
@@ -1630,16 +1630,16 @@ function courseplay:addNewTargetVector(vehicle, x, z, trailer,node,rev)
 end;
 
 function courseplay:changeRefillUntilPct(vehicle, changeBy)
-	vehicle.cp.refillUntilPct = Utils.clamp(vehicle.cp.refillUntilPct + changeBy, 1, 100);
+	vehicle.cp.refillUntilPct = MathUtil.clamp(vehicle.cp.refillUntilPct + changeBy, 1, 100);
 end;
 
 function courseplay:changeLastValidTipDistance(vehicle, changeBy)
-	vehicle.cp.lastValidTipDistance = Utils.clamp(vehicle.cp.lastValidTipDistance + changeBy, -500, 0);
+	vehicle.cp.lastValidTipDistance = MathUtil.clamp(vehicle.cp.lastValidTipDistance + changeBy, -500, 0);
 end;
 
 
 function courseplay:changeRunNumber(vehicle, changeBy)
- 	vehicle.cp.runNumber = Utils.clamp(vehicle.cp.runNumber + changeBy, 1, 11);
+ 	vehicle.cp.runNumber = MathUtil.clamp(vehicle.cp.runNumber + changeBy, 1, 11);
 end;
 
 function courseplay:changeRunCounter(vehicle, bool)
@@ -1791,7 +1791,7 @@ function courseplay:toggleIngameMapIconShowText()
 end;
 
 function courseplay:changeDriveControlMode(vehicle, changeBy)
-	vehicle.cp.driveControl.mode = Utils.clamp(vehicle.cp.driveControl.mode + changeBy, vehicle.cp.driveControl.OFF, vehicle.cp.driveControl.AWD_BOTH_DIFF);
+	vehicle.cp.driveControl.mode = MathUtil.clamp(vehicle.cp.driveControl.mode + changeBy, vehicle.cp.driveControl.OFF, vehicle.cp.driveControl.AWD_BOTH_DIFF);
 end;
 
 function courseplay:getAndSetFixedWorldPosition(object, recursive)

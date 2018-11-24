@@ -179,7 +179,7 @@ Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
 
 courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 
--- make l10n global so they can be used in GUI XML files directly (Thanks Mogli!)
+-- make l10n global so they can be used in GUI XML files directly (Thanks `Mogli!)
 for n,t in pairs( g_i18n.texts ) do
 	if string.sub( n, 1, 10 ) == "COURSEPLAY" then
 		getfenv(0).g_i18n.texts[n] = t

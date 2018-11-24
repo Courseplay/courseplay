@@ -1290,7 +1290,7 @@ function courseplay:unload_combine(vehicle, dt)
 				refSpeed = vehicle.cp.speeds.street
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
-				refSpeed = Utils.clamp(frontTractor.lastSpeedReal*3600, vehicle.cp.speeds.turn, vehicle.cp.speeds.field)
+				refSpeed = MathUtil.clamp(frontTractor.lastSpeedReal*3600, vehicle.cp.speeds.turn, vehicle.cp.speeds.field)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		else

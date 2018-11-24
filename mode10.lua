@@ -157,7 +157,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 					if vehicle.cp.mode10.drivingThroughtLoading and vehicle.cp.actualTarget.line == #vehicle.cp.BunkerSiloMap and tempHeight < 2 then --1.2 then
 						shouldBHeight = tempHeight + 0.3
 					elseif vehicle.cp.actualTarget.line < 2 then
-						shouldBHeight = Utils.clamp(tempHeight,0.3,0.5)
+						shouldBHeight = MathUtil.clamp(tempHeight,0.3,0.5)
 					elseif vehicle.cp.actualTarget.line == 2 and tempHeight > 0.5 then
 						shouldBHeight =  ((tempHeight - 0.5) /distance2Target)+ 0.5
 					else
@@ -488,7 +488,7 @@ function courseplay:moveShield(vehicle,moveUp,dt,fixAlpha)
 						control.moveAlpha = fixAlpha
 					else
 						local moveAlpha = control.moveAlpha + (0.001 * dt * move);
-						moveAlpha = Utils.clamp(moveAlpha, jointDesc.upperAlpha, jointDesc.lowerAlpha);
+						moveAlpha = MathUtil.clamp(moveAlpha, jointDesc.upperAlpha, jointDesc.lowerAlpha);
 						if moveAlpha == jointDesc.upperAlpha 
 						or moveAlpha == jointDesc.lowerAlpha 
 						then
