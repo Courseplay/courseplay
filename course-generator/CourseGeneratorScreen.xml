@@ -3,15 +3,14 @@
 	<!--GuiElement type="bitmap" profile="backgroundImageIngame" /-->
 
 
-	<GuiElement type="bitmap" profile="uiElementBg">
-		<GuiElement type="bitmap" profile="uiElementMainBg">
+	<GuiElement type="bitmap" profile="uiFullBlurBG">
 			<GuiElement type="bitmap" profile="uiElementBaseHeader">
 				<GuiElement type="text" profile="headerText" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 			</GuiElement>
 
-			<GuiElement type="empty" id="mapOverview" profile="ingameMapOverview" position="0px 140px" size="460px 460px">
-				<GuiElement type="empty" profile="ingameMapOverviewOverlay" id="dynamicMapImage" onDraw="drawDynamicMapImage" />
-			</GuiElement>
+			<!--GuiElement type="empty" id="mapOverview" profile="ingameMapOverview" position="0px 140px" size="460px 460px">
+				<GuiElement type="empty" profile="ingameMapOverview" id="dynamicMapImage" onDraw="drawDynamicMapImage" />
+			</GuiElement-->
 			<GuiElement type="empty" profile="cpMapBox" id="mapButtons" position="0px 140px" 	size="460px 30px">
 				<GuiElement type="text" profile="cpHintText" id="hintText" text="$l10n_COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" position="0px 15px"/>
 				<GuiElement type="button" profile="cpResetButton"  position="460px 30px"
@@ -153,10 +152,10 @@
 
 			<GuiElement type="flowLayout" profile="buttonBox" id="buttonsPC" >
 				<GuiElement type="button" profile="buttonBack"   size="333px 40px" text="$l10n_button_back" onClick="onClickBack"  focusId="101" focusChangeTop="35"  focusChangeBottom="102" />
-				<GuiElement type="button" profile="buttonReload" size="333px 40px" text="$l10n_COURSEPLAY_GENERATE_FIELD_COURSE"  onClick="onClickGenerate" focusId="102" focusChangeTop="101" focusChangeBottom="103" />
+				<GuiElement type="button" profile="buttonCircle" size="333px 40px" text="$l10n_COURSEPLAY_GENERATE_FIELD_COURSE"  onClick="onClickGenerate" focusId="102" focusChangeTop="101" focusChangeBottom="103" />
 				<GuiElement type="button" profile="buttonSave"   size="334px 40px" text="$l10n_button_ok"   onClick="onClickOk"    focusId="103" focusChangeTop="102" focusChangeBottom="21" />
 			</GuiElement>
 
-		</GuiElement>
+
 	</GuiElement>
 </GUI>

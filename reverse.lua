@@ -221,20 +221,20 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 		local rotDelta = (workTool.cp.nodeDistance * (0.5 - (0.023 * workTool.cp.nodeDistance - 0.073)));
 		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
-		trailerToWaypointAngle = Utils.clamp(trailerToWaypointAngle, -rad(90), rad(90));
+		trailerToWaypointAngle = MathUtil.clamp(trailerToWaypointAngle, -rad(90), rad(90));
 
 		local dollyToTrailerAngle = courseplay:getLocalYRotationToPoint(frontNode, xTipper, yTipper, zTipper, -1);
 
 		local tractorToDollyAngle = courseplay:getLocalYRotationToPoint(vehicle.cp.DirectionNode, xFrontNode, yFrontNode, zFrontNode, -1);
 
 		local rearAngleDiff	= (dollyToTrailerAngle - trailerToWaypointAngle);
-		rearAngleDiff = Utils.clamp(rearAngleDiff, -rad(45), rad(45));
+		rearAngleDiff = MathUtil.clamp(rearAngleDiff, -rad(45), rad(45));
 
 		local frontAngleDiff = (tractorToDollyAngle - dollyToTrailerAngle);
-		frontAngleDiff = Utils.clamp(frontAngleDiff, -rad(45), rad(45));
+		frontAngleDiff = MathUtil.clamp(frontAngleDiff, -rad(45), rad(45));
 
 		local angleDiff = (frontAngleDiff - rearAngleDiff) * (1.5 - (workTool.cp.nodeDistance * 0.4 - 0.9) + rotDelta);
-		angleDiff = Utils.clamp(angleDiff, -rad(45), rad(45));
+		angleDiff = MathUtil.clamp(angleDiff, -rad(45), rad(45));
 
 		lx, lz = Utils.getDirectionFromYRotation(angleDiff);
 	else
@@ -243,7 +243,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 		local rotDelta = workTool.cp.nodeDistance * 0.3;
 		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
-		trailerToWaypointAngle = Utils.clamp(trailerToWaypointAngle, -math.rad(90), math.rad(90));
+		trailerToWaypointAngle = MathUtil.clamp(trailerToWaypointAngle, -math.rad(90), math.rad(90));
 		local tractorToTrailerAngle = courseplay:getLocalYRotationToPoint(vehicle.cp.DirectionNode, xTipper, yTipper, zTipper, -1);
 
 		local angleDiff = (tractorToTrailerAngle - trailerToWaypointAngle) * (1 + rotDelta);
@@ -253,7 +253,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			angleDiff = angleDiff * 4;
 		end;
 
-		angleDiff = Utils.clamp(angleDiff, -maxTractorAngle, maxTractorAngle);
+		angleDiff = MathUtil.clamp(angleDiff, -maxTractorAngle, maxTractorAngle);
 
 		lx, lz = Utils.getDirectionFromYRotation(angleDiff);
 	end;

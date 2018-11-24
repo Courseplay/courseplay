@@ -854,7 +854,7 @@ function courseplay:drive(self, dt)
 				refSpeed = courseplay:getAverageWpSpeed(self , 4)
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
-				refSpeed = Utils.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.cp.waypointIndex].speed); --normaly use speed from waypoint, but  maximum street speed
+				refSpeed = MathUtil.clamp(refSpeed, self.cp.speeds.crawl, self.Waypoints[self.cp.waypointIndex].speed); --normaly use speed from waypoint, but  maximum street speed
 				speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			end
 		end;

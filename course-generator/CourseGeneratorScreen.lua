@@ -52,13 +52,13 @@ end
 function CourseGeneratorScreen:onOpen()
 	g_currentMission.isPlayerFrozen = true
 	CourseGeneratorScreen:superClass().onOpen(self)
-	if not self.coursePlot then
-		self.coursePlot = CoursePlot:new(
-			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
-			self.mapOverview.size[1], self.mapOverview.size[2])
-		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
-		self.coursePlot:setVisible(true)
-	end
+--	if not self.coursePlot then
+--		self.coursePlot = CoursePlot:new(
+--			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
+--			self.mapOverview.size[1], self.mapOverview.size[2])
+--		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
+--		self.coursePlot:setVisible(true)
+--	end
 	if self.vehicle.Waypoints then
 		self:showCourse()
 	else
@@ -150,8 +150,10 @@ end
 -- Field selector
 function CourseGeneratorScreen:onOpenFieldSelector( element, parameter )
 	local texts = {}
-	for _, field in ipairs( self.fields ) do
-		table.insert( texts, field.name )
+	if self.fields then
+		for _, field in ipairs( self.fields ) do
+			table.insert( texts, field.name )
+		end
 	end
 	element:setTexts( texts )
 	element:setState( self.fieldToState[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ])
@@ -186,9 +188,9 @@ end
 
 function CourseGeneratorScreen:onClickWidth( state )
 	if state == 1 then
-		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
+		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
 	else
-		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
+		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
 	end
 	self:onOpenWidth(self.width)
 end
@@ -197,12 +199,12 @@ function CourseGeneratorScreen:onScrollWidth(element, isDown, isUp, button)
 	local eventUsed = false
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
 		eventUsed = true
-		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
+		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
 		self:onOpenWidth(self.width)
 	end
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
 		eventUsed = true
-		self.vehicle.cp.workWidth = Utils.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
+		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
 		self:onOpenWidth(self.width)
 	end
 	return eventUsed
@@ -395,7 +397,7 @@ end
 function CourseGeneratorScreen:setHeadlandFields()
 	local headlandFieldsVisible = self.vehicle.cp.headland.mode ==
 		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE
-	self.headlandDirection:setVisible( headlandFieldsVisible )
+  self.headlandDirection:setVisible( headlandFieldsVisible )
 	self.headlandPasses:setVisible( headlandFieldsVisible )
 	self.headlandFirst:setVisible( headlandFieldsVisible )
 	-- force headland turn maneuver for two side mode
@@ -504,8 +506,8 @@ function CourseGeneratorScreen:drawDynamicMapImage(element)
 			-- figure out view (center and zoom) for ingame map, normalized
 			ingameMap.mapVisWidthMin = 1 / ingameMap.worldSizeX * width
 			-- ingame map uses normalized coordinates, the map corners are (0,0) and (1,1)
-			ingameMap.centerXPos = Utils.clamp(( centerX + ingameMap.worldCenterOffsetX)/ingameMap.worldSizeX, 0, 1)
-			ingameMap.centerZPos = Utils.clamp(( centerY + ingameMap.worldCenterOffsetZ)/ingameMap.worldSizeZ, 0, 1)
+			ingameMap.centerXPos = MathUtil.clamp(( centerX + ingameMap.worldCenterOffsetX)/ingameMap.worldSizeX, 0, 1)
+			ingameMap.centerZPos = MathUtil.clamp(( centerY + ingameMap.worldCenterOffsetZ)/ingameMap.worldSizeZ, 0, 1)
 		end
 
 		ingameMap:setPosition(self.mapOverview.absPosition[1], self.mapOverview.absPosition[2])

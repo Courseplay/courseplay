@@ -517,7 +517,7 @@ function courseplay:generateCourse(vehicle, silent)
 				end;
 
 				--last lane
-				curPoint.x = Utils.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
+				curPoint.x = MathUtil.clamp(curPoint.x, dimensions.minX + (workWidth/2), dimensions.maxX - (workWidth/2));
 
 				--is point in field?
 				local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);
@@ -599,7 +599,7 @@ function courseplay:generateCourse(vehicle, silent)
 				end;
 
 				--last lane
-				curPoint.z = Utils.clamp(curPoint.z, dimensions.minZ + (workWidth/2), dimensions.maxZ - (workWidth/2));
+				curPoint.z = MathUtil.clamp(curPoint.z, dimensions.minZ + (workWidth/2), dimensions.maxZ - (workWidth/2));
 
 				--is point in field?
 				local _, pointInPoly = courseplay.fields:getPolygonData(poly.points, curPoint.x, curPoint.z, true, true, true);

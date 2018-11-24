@@ -740,7 +740,7 @@ function courseplay.utils:crossProductQuery(a, b, c, useC)
 
 	local delta = (b[x] - a[x]) * (c[z] - a[z]) - (b[z] - a[z]) * (c[x] - a[x]);
 
-	-- possible to use Utils.sign(): return Utils.sign(delta) * -1;
+	-- possible to use MathUtil.sign(): return MathUtil.sign(delta) * -1;
 	if delta > 0 then
 		return -1;
 	elseif delta < 0 then
@@ -936,8 +936,8 @@ function courseplay.utils:move2dCoursePlotField(vehicle, mouseX, mouseY)
 
 	-- update plot position
 	if dx ~= 0 or dy ~= 0 then
-		local newX = Utils.clamp(CpManager.course2dPlotPosX + dx, 0 + CpManager.course2dPlotField.width  * 0.05, 1 - CpManager.course2dPlotField.width  * 1.05); -- 5% padding
-		local newY = Utils.clamp(CpManager.course2dPlotPosY + dy, 0 + CpManager.course2dPlotField.height * 0.05, 1 - CpManager.course2dPlotField.height * 1.05); -- 5% padding
+		local newX = MathUtil.clamp(CpManager.course2dPlotPosX + dx, 0 + CpManager.course2dPlotField.width  * 0.05, 1 - CpManager.course2dPlotField.width  * 1.05); -- 5% padding
+		local newY = MathUtil.clamp(CpManager.course2dPlotPosY + dy, 0 + CpManager.course2dPlotField.height * 0.05, 1 - CpManager.course2dPlotField.height * 1.05); -- 5% padding
 		-- print(('move2dCoursePlotField(): dx=%.3f, dy=%.3f -> newX=%.3f, newY=%.3f'):format(dx, dy, newX, newY));
 
 		CpManager.course2dPlotPosX = newX;

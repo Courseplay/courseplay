@@ -1060,7 +1060,7 @@ function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z, dt)
 		dir = math.abs(dir)/dir;
 
 		if tool.node ~= nil and tool.rotMin ~= nil and tool.rotMax ~= nil and dir ~= nil and dir ~= 0 then
-			newRot = Utils.clamp(oldRot + (rotSpeed * dir), tool.rotMin, tool.rotMax);
+			newRot = MathUtil.clamp(oldRot + (rotSpeed * dir), tool.rotMin, tool.rotMax);
 			if (dir == 1 and newRot > targetRot[i]) or (dir == -1 and newRot < targetRot[i]) then
 				newRot = targetRot[i];
 			end;
@@ -1106,7 +1106,7 @@ function courseplay:rotateSingleTool(vehicle, activeTool, toolIndex, rotatePos, 
 			targetRot = mt.invertAxis and mt.rotMin or mt.rotMax;
 		end;
 	elseif type(rotatePos) == 'number' then
-		targetRot = Utils.clamp(math.rad(rotatePos), mt.rotMin, mt.rotMax);
+		targetRot = MathUtil.clamp(math.rad(rotatePos), mt.rotMin, mt.rotMax);
 	else
 		-- Unsupported rotatePos format, so we returns.
 		return;
@@ -1115,11 +1115,11 @@ function courseplay:rotateSingleTool(vehicle, activeTool, toolIndex, rotatePos, 
 	if courseplay:round(curRot, 4) ~= courseplay:round(targetRot, 4) then
 		local newRot;
 
-		local rotDir = Utils.sign(targetRot - curRot);
+		local rotDir = MathUtil.sign(targetRot - curRot);
 
 		if mt.node and mt.rotMin and mt.rotMax and rotDir ~= 0 then
 			local rotChange = mt.rotSpeed ~= nil and (mt.rotSpeed * dt) or (0.2/dt);
-			newRot = Utils.clamp(curRot + (rotChange * rotDir), mt.rotMin, mt.rotMax);
+			newRot = MathUtil.clamp(curRot + (rotChange * rotDir), mt.rotMin, mt.rotMax);
 			if (rotDir == 1 and newRot > targetRot) or (rotDir == -1 and newRot < targetRot) then
 				newRot = targetRot;
 			end;

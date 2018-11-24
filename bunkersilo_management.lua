@@ -71,7 +71,7 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			local newRot, newTrans;
 
 			-- ROTATION
-			local rotDir = Utils.sign(targetRot - curRot);
+			local rotDir = MathUtil.sign(targetRot - curRot);
 			if mt.node and rotDir and rotDir ~= 0 then
 				local rotChange = mt.rotSpeed ~= nil and (mt.rotSpeed * dt) or (0.2/dt);
 				newRot = curRot + (rotChange * rotDir)
@@ -93,10 +93,10 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 			-- TRANSLATION
 			if mt.transSpeed ~= nil then --only change values if transSpeed actually exists
 				-- local transSpeed = mt.transSpeed * dt;
-				local transDir = Utils.sign(targetTrans - curTrans);
+				local transDir = MathUtil.sign(targetTrans - curTrans);
 				if mt.node and mt.transMin and mt.transMax and transDir and transDir ~= 0 then
 					local transChange = math.min(mt.transSpeed, 0.001) * dt; -- maximum: 1mm/ms (1m/s)
-					newTrans = Utils.clamp(curTrans + (transChange * transDir), mt.transMin, mt.transMax);
+					newTrans = MathUtil.clamp(curTrans + (transChange * transDir), mt.transMin, mt.transMax);
 					if (transDir == 1 and newTrans > targetTrans) or (transDir == -1 and newTrans < targetTrans) then
 						newTrans = targetTrans;
 					end;
