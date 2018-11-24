@@ -812,7 +812,7 @@ function courseplay:stop(self)
 
 	self.cp.curSpeed = 0;
 
-	self.motor.maxRpmOverride = nil;
+	self.spec_motorized.motor.maxRpmOverride = nil;
 	self.cp.heapStart = nil
 	self.cp.heapStop = nil
 	self.cp.startWork = nil
