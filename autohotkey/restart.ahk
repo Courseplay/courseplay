@@ -3,6 +3,6 @@
 
 WinActivate, %targetWin% ahk_class SDL_app
 quitGame()
-Sleep 2000
+Sleep 6000
 startGame(2)
 
