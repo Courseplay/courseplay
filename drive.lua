@@ -258,14 +258,14 @@ function courseplay:drive(self, dt)
 		end;
 	end;
 
-	-- lights
-	if CpManager.lightsNeeded then
+	-- lights Ryan Disabled the Giants Helper sets its own lights TODO figure out a way around this has currently it will flash the headlights with this on
+	--[[ if CpManager.lightsNeeded then
 		if self.lightsTypesMask ~= lightMask then
 			self:setLightsTypesMask(lightMask)
 		end
 	elseif 	self.lightsTypesMask ~= 0 then
 		self:setLightsTypesMask(0)
-	end;
+	end; ]]
 
 
 
@@ -539,20 +539,23 @@ function courseplay:drive(self, dt)
 
 		--FUEL LEVEL + REFILLING
 		-- DO NOT DELETE fuelFillLevel is gone. This variable may be a replacment 
-		print(self.spec_motorized.lastFuelUsage)
 		if self.spec_motorized.fuelCapacity > 0 then
 											-- Formely fuelFillLevel. No longer avaiable in the vehicle
-			local currentFuelPercentage = ((self.spec_motorized.fuelCapacity-self.spec_motorized.lastFuelUsage) / self.spec_motorized.fuelCapacity + 0.0001) * 100;
+			--local currentFuelPercentage = ((self.fuelFillLevel) / self.spec_motorized.fuelCapacity + 0.0001) * 100;
+			local currentFuelPercentage = self:getFillUnitFillLevelPercentage(g_fillTypeManager.DIESEL) or 100
+			print('Fuel Percent')
+			--print_r(g_fillTypeManager)
+			print(self:getFillUnitFillLevelPercentage(g_fillTypeManager.DIESEL))
 			local searchForFuel = (self.cp.allwaysSearchFuel and (currentFuelPercentage < 99) and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
 			if searchForFuel then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 				if self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
 					self.cp.isInFilltrigger = true;
 				end;
-				if self.fuelFillTriggers[1] then
+				--[[ if self.fuelFillTriggers[1] then
 					allowedToDrive = false;
 					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
-				end;
+				end; ]]
 			end
 			if currentFuelPercentage < 5 then
 				allowedToDrive = false;
@@ -1049,7 +1052,7 @@ function courseplay:drive(self, dt)
 			-- Using false to disable the driveToPoint. This could be made into an setting option later on.
 			local useDriveToPoint = false --and self.cp.mode == 1 or self.cp.mode == 5 or (self.cp.waypointIndex > 4 and (self.cp.mode == 2 or self.cp.mode == 3));
 			local disableLongCollisionCheck = workArea;
-			--[[ if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
+			if self.Waypoints[self.cp.waypointIndex].rev or not useDriveToPoint then
 				if self.Waypoints[self.cp.waypointIndex].rev then
 					if self.cp.revSteeringAngle then
 						steeringAngle = self.cp.revSteeringAngle;
@@ -1068,7 +1071,7 @@ function courseplay:drive(self, dt)
 				--AIVehicleUtil.driveInDirection=function(...) log(...) end
 				print(string.format('self = %s dt = %d acceleration = %.1f self.cp.steeringAngle = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = %.2f',tostring(self),dt,acceleration,tostring(self.cp.steeringAngle),tostring(fwd),lx,lz,refSpeed))
 				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
-			else ]]
+			else 
 				local directionNode = self.aiVehicleDirectionNode or self.cp.DirectionNode;
 				local tX,_,tZ = worldToLocal(directionNode, cx, cty, cz);
 				if courseplay:isWheelloader(self) then
@@ -1078,7 +1081,7 @@ function courseplay:drive(self, dt)
 				print(string.format(' acceleration = %.1f fwd =%s lx = %.2f lz = %.2f refSpeed = %.2f',acceleration,tostring(fwd),tX,tZ,refSpeed))
 				-- This works but does not steer correctly
 				AIVehicleUtil.driveToPoint(self, dt, acceleration, allowedToDrive, fwd, tX, tZ, refSpeed, false);
-			--end;
+			end;
 
 			if not isBypassing then
 				courseplay:setTrafficCollision(self, lx, lz, disableLongCollisionCheck);

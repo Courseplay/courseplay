@@ -6,6 +6,7 @@ function courseplay:start(self)
 
 	self.isHired = true;
 	self.isHirableBlocked = true;
+	self.spec_aiVehicle.isActive = true
 
 	self.cp.savedLightsMask  =  self.aiLightsTypesMask;
 	self.aiLightsTypesMask = nil; 
@@ -20,7 +21,7 @@ function courseplay:start(self)
 		self.vehicleCharacter:delete();
 		self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name))
 		if Enterable.getIsEntered(self) then
-			self.vehicleCharacter:setCharacterVisibility(false)
+			self.spec_enterable.vehicleCharacter:setCharacterVisibility(false)
 		end
 	end
     -- Start the reset character timer.
@@ -644,6 +645,7 @@ end;
 function courseplay:stop(self)
 	self.isHired = false;
 	self.isHirableBlocked = false;
+	self.spec_aiVehicle.isActive = false
 	
 	self.aiLightsTypesMask = self.cp.savedLightsMask;
 	self.forceIsActive = self.cp.forceIsActiveBackup;

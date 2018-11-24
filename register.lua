@@ -190,11 +190,67 @@ courseplay:register();
 print(string.format('### Courseplay: installed into %d vehicle types', numInstallationsVehicles));
 
 -- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil)
---local originalDriveToPoint = AIVehicleUtil.driveToPoint;
---[[AIVehicleUtil.driveToPoint = function(self, dt, acceleration, allowedToDrive, moveForwards, tX, tZ, maxSpeed, doNotSteer)
+
+-- This fixes the problems with driveInDirection motor and curise control. There is a bug some where that is setting self.rotatedTime to 0
+local originaldriveInDirection = AIVehicleUtil.driveInDirection;
+AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceleration, slowAcceleration, slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, slowDownFactor)
+
+	local angle = 0;
+    if lx ~= nil and lz ~= nil then
+        local dot = lz;
+		angle = math.deg(math.acos(dot));
+		print('angle')
+		print(angle)
+        if angle < 0 then
+            angle = angle+180;
+        end
+        local turnLeft = lx > 0.00001;
+        if not moveForwards then
+            turnLeft = not turnLeft;
+        end
+        local targetRotTime = 0;
+        if turnLeft then
+            --rotate to the left
+			targetRotTime = self.maxRotTime*math.min(angle/steeringAngleLimit, 1);
+        else
+            --rotate to the right
+			targetRotTime = self.minRotTime*math.min(angle/steeringAngleLimit, 1);
+        end
+		if targetRotTime > self.rotatedTime then
+			self.rotatedTime = math.min(self.rotatedTime + dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
+		else
+			self.rotatedTime = math.max(self.rotatedTime - dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
+        end
+    end
+    if self.firstTimeRun then
+        local acc = acceleration;
+        if maxSpeed ~= nil and maxSpeed ~= 0 then
+            if math.abs(angle) >= slowAngleLimit then
+                maxSpeed = maxSpeed * slowDownFactor;
+            end
+            self.spec_motorized.motor:setSpeedLimit(maxSpeed);
+            if self.spec_drivable.cruiseControl.state ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
+                self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE);
+            end
+        else
+            if math.abs(angle) >= slowAngleLimit then
+                acc = slowAcceleration;
+            end
+        end
+        if not allowedToDrive then
+            acc = 0;
+        end
+        if not moveForwards then
+            acc = -acc;
+        end
+        WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal, acc, not allowedToDrive, self.requiredDriveMode);
+    end
+end
+
+--[[ local originaldriveToPoint = AIVehicleUtil.driveToPoint;
+AIVehicleUtil.driveToPoint = function(self, dt, acceleration, allowedToDrive, moveForwards, tX, tZ, maxSpeed, doNotSteer)
 
 	if self.firstTimeRun then
-
 		if allowedToDrive then
 
 			local tX_2 = tX * 0.5;
@@ -223,9 +279,9 @@ print(string.format('### Courseplay: installed into %d vehicle types', numInstal
 				end
 
 				if targetRotTime > self.rotatedTime then
-					self.rotatedTime = math.min(self.rotatedTime + dt*self.aiSteeringSpeed, targetRotTime);
+					self.rotatedTime = math.min(self.rotatedTime + dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
 				else
-					self.rotatedTime = math.max(self.rotatedTime - dt*self.aiSteeringSpeed, targetRotTime);
+					self.rotatedTime = math.max(self.rotatedTime - dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
 				end
 
 				-- adjust maxSpeed
@@ -235,8 +291,8 @@ print(string.format('### Courseplay: installed into %d vehicle types', numInstal
 			end;
 		end
 
-		self.motor:setSpeedLimit(maxSpeed);
-		if self.cruiseControl.state ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
+		self.spec_motorized.motor:setSpeedLimit(maxSpeed);
+		if self.spec_drivable.cruiseControl.state ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
 			self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE);
 		end
 
@@ -260,5 +316,4 @@ print(string.format('### Courseplay: installed into %d vehicle types', numInstal
 		WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal, acceleration, not allowedToDrive, self.requiredDriveMode);
 
 	end
-
-end]]
+end ]]
