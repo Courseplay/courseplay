@@ -33,14 +33,14 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.hasSugarCaneTrailer = false
 	vehicle.cp.hasFertilizerSowingMachine = nil;
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
-
+	-- Ryan prints fillTypeManager table. Nice cause it prints out all the fillTypes print_r(g_fillTypeManager)
 	-- Reset fill type.
 	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
-		if vehicle.cp.siloSelectedFillType == FillUtil.FILLTYPE_UNKNOWN or (vehicle.cp.siloSelectedFillType ~= FillUtil.FILLTYPE_UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
+		if vehicle.cp.siloSelectedFillType ==  g_fillTypeManager.UNKNOWN or (vehicle.cp.siloSelectedFillType ~=  g_fillTypeManager.UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
 			vehicle.cp.siloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
 		end;
 	else
-		vehicle.cp.siloSelectedFillType = FillUtil.FILLTYPE_UNKNOWN;
+		vehicle.cp.siloSelectedFillType =  g_fillTypeManager.UNKNOWN;
 	end;
 	if vehicle.cp.hud.currentPage == 1 then
 		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
@@ -381,7 +381,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	end;
 
 	-- CHECK ATTACHED IMPLEMENTS
-	for k,impl in pairs(workTool.attachedImplements) do
+	for k,impl in pairs(workTool.spec_attacherJoints.attachedImplements) do
 		local implIsWorkTool = courseplay:updateWorkTools(vehicle, impl.object, true);
 		if implIsWorkTool then
 			hasWorkTool = true;

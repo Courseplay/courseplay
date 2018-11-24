@@ -81,7 +81,7 @@ end
 
 function CourseplayEvent:run(connection) -- wir fuehren das empfangene event aus
 	courseplay:debug("\t\t\trun",5)
-	courseplay:debug(('\t\t\t\tid=%s, function=%s, value=%s'):format(tostring(networkGetObjectId(self.vehicle)), tostring(self.func), tostring(self.value)), 5);
+	-- Ryan networkGetObjectId no longer exists courseplay:debug(('\t\t\t\tid=%s, function=%s, value=%s'):format(tostring(networkGetObjectId(self.vehicle)), tostring(self.func), tostring(self.value)), 5);
 	self.vehicle:setCourseplayFunc(self.func, self.value, true, self.page);
 	if not connection:getIsServer() then
 		courseplay:debug("broadcast event feedback",5)
@@ -93,11 +93,11 @@ function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend, page) -- h
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then
 			courseplay:debug("broadcast event",5)
-			courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
+			-- Ryan networkGetObjectId no longer exists courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
 			g_server:broadcastEvent(CourseplayEvent:new(vehicle, func, value, page), nil, nil, vehicle);
 		else
 			courseplay:debug("send event",5)
-			courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
+			--courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
 			g_client:getServerConnection():sendEvent(CourseplayEvent:new(vehicle, func, value, page));
 		end;
 	end;

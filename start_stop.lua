@@ -37,6 +37,8 @@ function courseplay:start(self)
 	end
 	courseplay:setEngineState(self, true);
 	self.cp.saveFuel = false
+
+	--print_r(self)
 	
 	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
@@ -44,9 +46,9 @@ function courseplay:start(self)
 
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
-		self.cp.orgRpm[1] = self.motor.maxRpm
-		self.cp.orgRpm[2] = self.motor.maxRpm
-		self.cp.orgRpm[3] = self.motor.maxRpm
+		self.cp.orgRpm[1] = self.spec_motorized.motor.maxRpm
+		self.cp.orgRpm[2] = self.spec_motorized.motor.maxRpm
+		self.cp.orgRpm[3] = self.spec_motorized.motor.maxRpm
 	end
 	
 	self.cpTrafficCollisionIgnoreList = {}
