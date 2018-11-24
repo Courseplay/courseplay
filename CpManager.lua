@@ -107,8 +107,9 @@ function CpManager:loadMap(name)
 		addConsoleCommand('cpAddFillLevels', 'Add 500\'000 l to all of your silos', 'devAddFillLevels', self);
 	end;
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
-  addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
-	
+	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
+	addConsoleCommand( 'cpPrintVariable', 'Save all fields', 'printVariable', self )
+
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
 	self.confirmedNoneTipTriggers = {};
@@ -481,6 +482,43 @@ end;
 function CpManager:devSaveAllFields()
   courseplay.fields.saveAllFields()
   return( 'All fields saved' )
+end
+
+--- Print a global variable
+-- @param variableName name of the variable, can be multiple levels
+-- @param depth maximum depth, 1 by default
+function CpManager:printVariable(variableName, maxDepth)
+	local depth = maxDepth and math.max(1, tonumber(maxDepth)) or 1
+	local value = self:getVariable(variableName)
+	local type = type(value)
+	if value then
+		print(string.format('Printing %s (%s), depth %d', variableName, type, depth))
+		if type == 'table' then
+			DebugUtil.printTableRecursively(value, '  ', 1, depth)
+		else
+			print(variableName .. ': ' .. tostring(value))
+		end
+	else
+		return(variableName .. ' is nil')
+	end
+	return('Printed variable ' .. variableName)
+end
+
+--- get a reference pointing to the global variable 'variableName'
+-- can handle multiple levels (but not arrays, yet) like foo.bar
+function CpManager:getVariable(variableName)
+	local i = 0
+	local v
+	for w in string.gmatch(variableName, '[%w_]+') do
+		if i == 0 then
+			v = getfenv(0)[w]
+		else
+			v = v[w]
+		end
+		i = i + 1
+		if not v then return nil end
+	end
+	return v
 end
 
 function CpManager:setupFieldScanInfo()

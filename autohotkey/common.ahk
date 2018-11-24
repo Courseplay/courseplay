@@ -38,6 +38,7 @@ quitGame()
   Send, {Escape}
   Click, %gameMenuX%, %gameMenuY% Left, Down
   Click, %gameMenuX%, %gameMenuY% Left, Up
+	Sleep 2000
   Send, {Backspace}
   Send, {Enter}
 }
