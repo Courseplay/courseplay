@@ -300,7 +300,6 @@ function CourseGeneratorScreen:onScrollManualDirectionAngle(element, isDown, isU
 		eventUsed = true
 		local newState = currentState + 1
 		newState = newState <= #self.directions and newState or 1
-		print( newState, currentState)
 		self.manualDirectionAngle:setState(newState)
 		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
 	end
@@ -308,7 +307,6 @@ function CourseGeneratorScreen:onScrollManualDirectionAngle(element, isDown, isU
 		eventUsed = true
 		local newState = currentState - 1
 		newState = newState > 0 and newState or #self.directions
-		print( newState, currentState)
 		self.manualDirectionAngle:setState(newState)
 		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
 	end
@@ -398,12 +396,14 @@ end
 function CourseGeneratorScreen:setHeadlandFields()
 	local headlandFieldsVisible = self.vehicle.cp.headland.mode ==
 		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE
+	--[[
   self.headlandDirection:setVisible( headlandFieldsVisible )
 	self.headlandPasses:setVisible( headlandFieldsVisible )
 	self.headlandFirst:setVisible( headlandFieldsVisible )
 	-- force headland turn maneuver for two side mode
 	self.headlandCorners:setVisible( headlandFieldsVisible and self.vehicle.cp.headland.mode ==
 		courseGenerator.HEADLAND_MODE_NORMAL)
+	]]--
 end
 
 function CourseGeneratorScreen:onOpenHeadlandMode( element, parameter )
@@ -535,6 +535,7 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
 		eventUsed = true
 	end
+	--[[
 	if self:isOverElement(posX, posY, self.width) then
 		return self:onScrollWidth(self.width, isDown, isUp, button)
 	end
@@ -572,5 +573,6 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 			self.startingLocation:setState( getStartingLocationState( self.vehicle.cp.startingCorner ))
 		end
 	end
+	]]--
 	return eventUsed
 end

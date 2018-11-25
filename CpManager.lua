@@ -489,6 +489,7 @@ end
 -- @param variableName name of the variable, can be multiple levels
 -- @param depth maximum depth, 1 by default
 function CpManager:printVariable(variableName, maxDepth)
+	print(string.format('%s - %s', tostring(variableName), tostring(maxDepth)))
 	local depth = maxDepth and math.max(1, tonumber(maxDepth)) or 1
 	local value = self:getVariable(variableName)
 	local type = type(value)
@@ -505,6 +506,8 @@ function CpManager:printVariable(variableName, maxDepth)
 	return('Printed variable ' .. variableName)
 end
 
+--- Install a wrapper around a function. The wrapper will print the function name
+-- and the arguments every time the function is called and then call the function
 function CpManager.installTraceFunction(name)
 	return function(self, superFunc, ...)
 		print(name ..  ' called with: ')
@@ -521,14 +524,16 @@ function CpManager.installTraceFunction(name)
 	end
 end
 
-function CpManager:traceOn(variableName)
+--- Enable trace for a function. This is to reverse engineer the signature of undocumented functions
+-- by tracing the arguments at every call. The original function is still executed.
+function CpManager:traceOn(functionName)
 	-- split the name into the function and table containing it
-	local _, _, tabName, funcName = string.find(variableName, '(.*)%.(%w+)$')
+	local _, _, tabName, funcName = string.find(functionName, '(.*)%.(%w+)$')
 	local tab = self:getVariable(tabName)
 	if tab and type(tab[funcName]) == 'function' then
-		tab[funcName] = Utils.overwrittenFunction(tab[funcName], CpManager.installTraceFunction(variableName))
+		tab[funcName] = Utils.overwrittenFunction(tab[funcName], CpManager.installTraceFunction(functionName))
 	else
-		return(variableName .. ' is not a function.')
+		return(functionName .. ' is not a function.')
 	end
 	return('argument tracing is on for ' .. tabName .. '.' .. funcName)
 end
@@ -541,7 +546,6 @@ function CpManager:getVariable(variableName)
 	for w in string.gmatch(variableName, '[%w_%[%]]+') do
 		-- we are so smart that we can even handle numeric indices (just one though, no multi dimension arrays)
 		local _, _, name, number = string.find(w, '(%w+)%[(%d+)%]')
-		print(string.format('name %s number %s word %s', tostring(name), tostring(number), w))
 		name = name or w
 		if i == 0 then
 			v = getfenv(0)[name]
