@@ -5,7 +5,7 @@ function courseplay:start(self)
 	self.currentHelper = g_helperManager:getRandomHelper()
 
 	self.isHired = true;
-	self.isHirableBlocked = true;
+	--self.isHirableBlocked = true; Removed
 	self.spec_aiVehicle.isActive = true
 
 	self.cp.savedLightsMask  =  self.aiLightsTypesMask;
@@ -644,7 +644,7 @@ end;
 -- stops driving the course
 function courseplay:stop(self)
 	self.isHired = false;
-	self.isHirableBlocked = false;
+	--self.isHirableBlocked = false; Removed by giants per Thomas
 	self.spec_aiVehicle.isActive = false
 	
 	self.aiLightsTypesMask = self.cp.savedLightsMask;
@@ -745,10 +745,10 @@ function courseplay:stop(self)
 		end;
 	end;
 
-	--[[ if self.cp.cruiseControlSpeedBackup then
-		self.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
+	if self.cp.cruiseControlSpeedBackup then
+		self.self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;
-	end; ]]
+	end; 
 
 	if self.cp.takeOverSteering then
 		self.cp.takeOverSteering = false
@@ -760,8 +760,8 @@ function courseplay:stop(self)
 	self.cp.mode10.lowestAlpha = 99
 	
 	
-	--[[ self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
-	self.cruiseControl.minSpeed = 1 ]]
+	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
+	self.self.spec_drivable.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
 	self.cp.waitingForTrailerToUnload = false
 	courseplay:setIsRecording(self, false);

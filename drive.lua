@@ -1069,7 +1069,7 @@ function courseplay:drive(self, dt)
 	
 				--self,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 				--AIVehicleUtil.driveInDirection=function(...) log(...) end
-				print(string.format('self = %s dt = %d acceleration = %.1f self.cp.steeringAngle = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = %.2f',tostring(self),dt,acceleration,tostring(self.cp.steeringAngle),tostring(fwd),lx,lz,refSpeed))
+				--print(string.format('self = %s dt = %d acceleration = %.1f self.cp.steeringAngle = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = %.2f',tostring(self),dt,acceleration,tostring(self.cp.steeringAngle),tostring(fwd),lx,lz,refSpeed))
 				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			else 
 				local directionNode = self.aiVehicleDirectionNode or self.cp.DirectionNode;
@@ -1234,7 +1234,7 @@ end;
 
 function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	local newSpeed = math.max(refSpeed,3)
-	--[[ if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
+	--[[This is no longer neccessary handled by Giants if vehicle.cruiseControl.state == Drivable.CRUISECONTROL_STATE_OFF then
 		vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
 	end ]]
 	local deltaMinus = vehicle.cp.curSpeed - refSpeed;

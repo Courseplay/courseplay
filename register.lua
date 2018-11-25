@@ -199,8 +199,6 @@ AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceler
     if lx ~= nil and lz ~= nil then
         local dot = lz;
 		angle = math.deg(math.acos(dot));
-		print('angle')
-		print(angle)
         if angle < 0 then
             angle = angle+180;
         end
