@@ -59,6 +59,7 @@ function CourseGeneratorScreen:onOpen()
 --		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
 --		self.coursePlot:setVisible(true)
 --	end
+	print('onOpen!')
 	if self.vehicle.Waypoints then
 		self:showCourse()
 	else
@@ -142,7 +143,7 @@ function CourseGeneratorScreen:onClose()
 		self.coursePlot:delete()
 		self.coursePlot = nil
 	end
-	g_currentMission.ingameMap:resetSettings()
+	--g_currentMission.ingameMap:resetSettings()
 	CourseGeneratorScreen:superClass().onClose(self)
 end
 
@@ -156,7 +157,7 @@ function CourseGeneratorScreen:onOpenFieldSelector( element, parameter )
 		end
 	end
 	element:setTexts( texts )
-	element:setState( self.fieldToState[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ])
+	--element:setState( self.fieldToState[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ])
 end
 
 function CourseGeneratorScreen:onClickFieldSelector( state )
