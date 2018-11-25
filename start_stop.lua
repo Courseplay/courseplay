@@ -746,7 +746,7 @@ function courseplay:stop(self)
 	end;
 
 	if self.cp.cruiseControlSpeedBackup then
-		self.self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
+		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;
 	end; 
 
@@ -761,7 +761,7 @@ function courseplay:stop(self)
 	
 	
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
-	self.self.spec_drivable.cruiseControl.minSpeed = 1
+	self.spec_drivable.cruiseControl.minSpeed = 1
 	self.cp.forcedToStop = false
 	self.cp.waitingForTrailerToUnload = false
 	courseplay:setIsRecording(self, false);
