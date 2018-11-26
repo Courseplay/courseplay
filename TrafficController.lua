@@ -25,6 +25,35 @@ function Reservation:init(vehicleId, timeStamp)
 end
 
 
+--- TrafficController provides a cooperative collision avoidance facility for all Courseplay driven vehicles.
+--
+-- The TrafficController is a singleton object and should be initialized once after CP is loaded and
+-- then call update() to update its clock (the clock is needed to remove stale reservations)
+--
+-- Vehicles should call reserve() when they reach a waypoint to reserve the next section of their path and to make sure
+-- their path is not in conflict with another vehicle's future path.
+--
+-- Reservations are per tile in a grid representing the map. When a vehicle asks for a reservation, TrafficController
+-- reserves the tiles under the future path of the vehicle (based on the course it is driving).
+--
+-- TrafficController looks into the future for lookaheadTimeSeconds (30 by default) only. So when a vehicle calls
+-- reserve() with a waypoint index, only the part of the course lying within lookaheadTimeSeconds from that waypoint
+-- is actually reserved.
+--
+-- The calculation is based on the speed stored in the course, or if that does not exist, the speed passed in to
+-- reserve() or if none, it defaults to 10 km/h.
+--
+-- When reserve() is called, TrafficController also frees all tiles reserved for the waypoints behind the passed
+-- in waypoint index.
+--
+-- When the course of the vehicle is updated or multiple waypoints are skipped, the vehicle should call cancel()
+-- to cancel all existing reservations and then reserve() again from the current waypoint index.
+--
+-- TrafficController also periodically cleans up all stale reservations based on the timestamp recorded at
+-- the time of the reservation and on the internal clock value. This is to make sure that forgotten reservations
+-- don't block other vehicles forever.
+--
+
 TrafficController = CpObject()
 
 function TrafficController:init()
@@ -34,6 +63,9 @@ function TrafficController:init()
 	self.lookaheadTimeSeconds = 30
 	-- the reservation table grid size in meters. This should be less than the maximum waypoint distance
 	self.gridSpacing = 2.5
+	-- every so often we clean up stale reservations
+	self.cleanUpIntervalSeconds = 30
+	self.staleReservationTimeoutSeconds = 3 * self.lookaheadTimeSeconds
 	-- this holds all the reservations
 	self.reservations = {}
 	self.dateFormatString = '%H%M%S'
@@ -47,6 +79,9 @@ function TrafficController:update(dt)
 	if self.prevTimeString ~= currentTimeString then
 		self.prevTimeString = currentTimeString
 		self.clock = self.clock + 1
+	end
+	if self.clock % self.cleanUpIntervalSeconds == 0 then
+		self:cleanUp()
 	end
 end
 
@@ -140,6 +175,8 @@ function TrafficController:getTilesAroundPoint(point)
 	}
 end
 
+--- Reserve a grid point. This will reserve the tile the point is on and the adjacent tiles (above, below, left and right,
+-- but not diagonally) as well to make sure the vehicle has enough clearance from all sides.
 function TrafficController:reserveGridPoint(point, reservation)
 	-- reserve tiles around point
 	for _, tile in ipairs(self:getTilesAroundPoint(point)) do
@@ -199,6 +236,18 @@ function TrafficController:cancel(vehicleId)
 		for col in pairs(self.reservations[row]) do
 			local reservation = self.reservations[row][col]
 			if reservation and reservation.vehicleId == vehicleId then
+				self.reservations[row][col] = nil
+			end
+		end
+	end
+end
+
+--- Clean up all stale reservations
+function TrafficController:cleanUp(vehicleId)
+	for row in pairs(self.reservations) do
+		for col in pairs(self.reservations[row]) do
+			local reservation = self.reservations[row][col]
+			if reservation and reservation.timeStamp <= (self.clock - self.staleReservationTimeoutSeconds) then
 				self.reservations[row][col] = nil
 			end
 		end

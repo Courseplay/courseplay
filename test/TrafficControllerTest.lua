@@ -223,22 +223,25 @@ end
 
 -- This isn't really a unit test, more like a module test so may be too fragile
 function TestTrafficController:testReserve()
-
+	print()
 	self.tc.lookaheadTimeSeconds = 30
 	self.tc.gridSpacing = 10
 	-- at 10 km/h we move about 83 meters in 30 seconds so the entire course will be reserved
 	local wps1 = th.courseBuilder(
 		{
-
-		  10, 35, 10,
-		  15, 35, 10,
-		  20, 35, 10,
-		  25, 35, 10,
-		  30, 35, 10,
-		  35, 35, 10,
-		  40, 35, 10,
-		  45, 35, 10,
-		  55, 35, 10,
+		  10, 35, 5,
+		  15, 35, 5,
+		  20, 35, 5,
+		  25, 35, 5,
+		  30, 35, 5,
+		  35, 35, 5,
+		  40, 35, 5,
+		  45, 35, 5,
+		  55, 35, 5,
+		  60, 35, 5,
+		  65, 35, 5,
+		  70, 35, 5,
+		  75, 35, 5,
 		}
 	)
 	local course1 = Course(self.vehicle, wps1)
@@ -253,8 +256,8 @@ function TestTrafficController:testReserve()
 ..111.....
 ..111.....
 ..111.....
-..111.....
 ...1......
+..........
 ..........
 ..........
 ..........
@@ -280,7 +283,6 @@ function TestTrafficController:testReserve()
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- conflicting course, will reserve only part of the course
 	lu.assertFalse(ok)
-	print(tostring(self.tc))
 
 	-- move first vehicle
 	ok = self.tc:reserve(vehicleId1, course1, 3)
@@ -293,8 +295,8 @@ function TestTrafficController:testReserve()
 ..111.....
 ..111.....
 ..111.....
+..111.....
 ...1......
-..........
 ..........
 ..........
 ]])
@@ -302,8 +304,9 @@ function TestTrafficController:testReserve()
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- still conflicting
 	lu.assertFalse(ok)
+	print(self.tc)
 
-	ok = self.tc:reserve(vehicleId1, course1, 4)
+	ok = self.tc:reserve(vehicleId1, course1, 5)
 	lu.assertTrue(ok)
 	print(self.tc)
 
@@ -311,39 +314,71 @@ function TestTrafficController:testReserve()
 	-- still conflicting
 	lu.assertFalse(ok)
 
-	ok = self.tc:reserve(vehicleId1, course1, 5)
+	ok = self.tc:reserve(vehicleId1, course1, 7)
 	lu.assertTrue(ok)
 
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- no more conflicts
 	lu.assertTrue(ok)
-	print(self.tc)
 
 	self.tc:cancel(vehicleId1)
-	lu.assertIsNil(self.tc.reservations[0][0])
-	lu.assertNotIsNil(self.tc.reservations[1][0]) -- vehicle2 has it
-	lu.assertIsNil(self.tc.reservations[2][0])
-	lu.assertIsNil(self.tc.reservations[3][0])
-	lu.assertIsNil(self.tc.reservations[4][0])
-	lu.assertIsNil(self.tc.reservations[5][0])
-
-	-- vehicle 2 is still there
-	lu.assertNotIsNil(self.tc.reservations[1][0])
-	lu.assertNotIsNil(self.tc.reservations[1][1])
-	lu.assertNotIsNil(self.tc.reservations[1][2])
-	lu.assertNotIsNil(self.tc.reservations[1][3])
-	lu.assertNotIsNil(self.tc.reservations[1][4])
-	lu.assertIsNil(self.tc.reservations[1][5])
 	print(self.tc)
+	lu.assertEquals(tostring(self.tc),
+[[
+22222.....
+222222....
+22222.....
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+]])
+
+	local empty =
+[[
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+..........
+]]
 
 	self.tc:cancel(vehicleId2)
-	lu.assertIsNil(self.tc.reservations[1][0])
-	lu.assertIsNil(self.tc.reservations[1][1])
-	lu.assertIsNil(self.tc.reservations[1][2])
-	lu.assertIsNil(self.tc.reservations[1][3])
-	lu.assertIsNil(self.tc.reservations[1][4])
-	lu.assertIsNil(self.tc.reservations[1][5])
-	print(self.tc)
+	lu.assertEquals(tostring(self.tc), empty)
+
+	ok = self.tc:reserve(vehicleId1, course1, 1)
+	lu.assertTrue(ok)
+	ok = self.tc:reserve(vehicleId2, course2, 1)
+	lu.assertFalse(ok)
+local reserved =
+	[[
+22.1......
+22111.....
+22111.....
+..111.....
+..111.....
+...1......
+..........
+..........
+..........
+..........
+]]
+	lu.assertEquals(tostring(self.tc), reserved)
+	self.tc:cleanUp()
+	-- no clean up as clock not advanced yet
+	lu.assertEquals(tostring(self.tc), reserved)
+	self.tc.clock = self.tc.lookaheadTimeSeconds * 3 - 1
+	self.tc:cleanUp()
+	-- still reserved as not reached the clean up time
+	lu.assertEquals(tostring(self.tc), reserved)
 
 end
 
