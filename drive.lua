@@ -540,12 +540,12 @@ function courseplay:drive(self, dt)
 		--FUEL LEVEL + REFILLING
 		-- DO NOT DELETE fuelFillLevel is gone. This variable may be a replacment 
 		if self.spec_motorized.fuelCapacity > 0 then
-											-- Formely fuelFillLevel. No longer avaiable in the vehicle
-			--local currentFuelPercentage = ((self.fuelFillLevel) / self.spec_motorized.fuelCapacity + 0.0001) * 100;
-			local currentFuelPercentage = self:getFillUnitFillLevelPercentage(g_fillTypeManager.DIESEL) or 100
-			print('Fuel Percent')
-			--print_r(g_fillTypeManager)
-			print(self:getFillUnitFillLevelPercentage(g_fillTypeManager.DIESEL))
+			local spec = self.spec_motorized
+			local consumer = spec.consumersByFillTypeName.diesel			
+											-- Formely fuelFillLevel. No longer avaiable in the vehicle, fuelCapacity was returning double the amount aviable update to this to return a true vaule mabye?
+			--local currentFuelPercentage = ( self:getFillUnitFillLevel(consumer.fillUnitIndex)/ self:getFillUnitCapacity(consumer.fillUnitIndex) + 0.0001) * 100;
+			local currentFuelPercentage = self:getFillUnitFillLevelPercentage(consumer.fillUnitIndex) * 100;
+			
 			local searchForFuel = (self.cp.allwaysSearchFuel and (currentFuelPercentage < 99) and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
 			if searchForFuel then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);

@@ -215,9 +215,9 @@ AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceler
 			targetRotTime = self.minRotTime*math.min(angle/steeringAngleLimit, 1);
         end
 		if targetRotTime > self.rotatedTime then
-			self.rotatedTime = math.min(self.rotatedTime + dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
+			self.rotatedTime = math.min(self.rotatedTime + dt*self:getAISteeringSpeed(), targetRotTime);
 		else
-			self.rotatedTime = math.max(self.rotatedTime - dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
+			self.rotatedTime = math.max(self.rotatedTime - dt*self:getAISteeringSpeed(), targetRotTime);
         end
     end
     if self.firstTimeRun then
@@ -241,7 +241,8 @@ AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceler
         if not moveForwards then
             acc = -acc;
         end
-        WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal, acc, not allowedToDrive, self.requiredDriveMode);
+		--FS 17 Version WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal, acc, not allowedToDrive, self.requiredDriveMode);
+		WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal*self.movingDirection, acc, not allowedToDrive, true)
     end
 end
 
