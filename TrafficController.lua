@@ -19,11 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --- A reservation we put in the reservation table.
 Reservation = CpObject()
 
-function Reservation:init(vehicleId, timeStamp, previousTile)
+function Reservation:init(vehicleId, timeStamp)
 	self.vehicleId = vehicleId
 	self.timeStamp = timeStamp
-	-- link to the previous tile for easy clean up after the vehicle
-	self.previousTile = previousTile
 end
 
 
@@ -35,10 +33,7 @@ function TrafficController:init()
 	-- this is our window of traffic awareness, we only plan for the next 30 seconds
 	self.lookaheadTimeSeconds = 30
 	-- the reservation table grid size in meters. This should be less than the maximum waypoint distance
-	self.gridSpacing = 6
-	-- look back distance: when cleaning up waypoints travelled, go back so many steps to check if there's
-	-- something left to clean up. Theoretically, 1 should work fine here.
-	self.lookBackIx = 5
+	self.gridSpacing = 2.5
 	-- this holds all the reservations
 	self.reservations = {}
 	self.dateFormatString = '%H%M%S'
@@ -60,7 +55,8 @@ end
 -- @param course vehicle course
 -- @param fromIx index of the course waypoint where we start the reservation
 -- @param speed expected speed of the vehicle in km/h. If not given will use the speed in the course.
--- @return true if successfully reserved (no other vehicle reserved
+-- @return true if successfully reserved _all_ tiles. When returning false it may
+-- reserve some of the tiles though.
 function TrafficController:reserve(vehicleId, course, fromIx, speed)
 	self:freePreviousTiles(vehicleId, course, fromIx, speed)
 	local ok = self:reserveNextTiles(vehicleId, course, fromIx, speed)
@@ -70,17 +66,17 @@ end
 --- Free waypoints already passed
 -- use the link to the previous tile to walk back until the oldest one is reached.
 function TrafficController:freePreviousTiles(vehicleId, course, fromIx, speed)
-	local tiles = self:getTiles(course, self:backwardIterator(fromIx), speed)
+	local tiles = self:getGridPointsUnderCourse(course, self:backwardIterator(fromIx), speed)
 	for i = 1, #tiles do
-		self:freeTile(tiles[i], vehicleId)
+		self:freeGridPoint(tiles[i], vehicleId)
 	end
 end
 
 function TrafficController:reserveNextTiles(vehicleId, course, fromIx, speed)
 	local ok = true
-	local tiles = self:getTiles(course, self:forwardIterator(fromIx, #course.waypoints - 1), speed)
-	for i = 1, #tiles do
-		ok = ok and self:reserveTile(tiles[i], Reservation(vehicleId, self.clock, tiles[i - 1]))
+	local gridPoints = self:getGridPointsUnderCourse(course, self:forwardIterator(fromIx, #course.waypoints - 1), speed)
+	for i = 1, #gridPoints do
+		ok = ok and self:reserveGridPoint(gridPoints[i], Reservation(vehicleId, self.clock))
 	end
 	return ok
 end
@@ -88,7 +84,7 @@ end
 --- Get the list of tiles the segment of the course defined by the iterator is passing through, using the
 -- speed in the course or the one supplied here. Will find the tiles reached in lookaheadTimeSeconds only
 -- (based on the speed and the waypoint distance)
-function TrafficController:getTiles(course, iterator, speed)
+function TrafficController:getGridPointsUnderCourse(course, iterator, speed)
 	local tiles = {}
 	local travelTimeSeconds = 0
 	for i in iterator() do
@@ -131,6 +127,34 @@ function TrafficController:getIntermediatePoints(a, b)
 		table.insert(intermediatePoints, {x = x, z = z})
 	end
 	return intermediatePoints
+end
+
+--- Add tiles around x, z to the list of tiles.
+function TrafficController:getTilesAroundPoint(point)
+	return {
+		point,
+		Point(point.x - 1, point.z),
+		Point(point.x + 1, point.z),
+		Point(point.x, point.z - 1),
+		Point(point.x, point.z + 1)
+	}
+end
+
+function TrafficController:reserveGridPoint(point, reservation)
+	-- reserve tiles around point
+	for _, tile in ipairs(self:getTilesAroundPoint(point)) do
+		if not self:reserveTile(tile, reservation) then
+			return false
+		end
+	end
+	return true
+end
+
+function TrafficController:freeGridPoint(point, vehicleId)
+	-- free tiles around point
+	for _, tile in ipairs(self:getTilesAroundPoint(point)) do
+		self:freeTile(tile, vehicleId)
+	end
 end
 
 function TrafficController:freeTile(point, vehicleId)

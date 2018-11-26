@@ -34,7 +34,7 @@ TestSettings = {}
 
 function TestSettings:setUp()
 	self.vehicle = {}
-	self.vehicle.lastSpeedReal = 1
+	self.vehicle.lastSpeedReal = 10
 	self.vehicle.Waypoints = th.waypoints
 	self.vehicle.cp = {}
 	self.vehicle.cp.speeds = {}
