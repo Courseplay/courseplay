@@ -242,10 +242,11 @@ function CpManager:update(dt)
 			self.startFieldScanAfter = self.startFieldScanAfter - dt;
 		end;
 		
+		if courseplay.fieldMod == nil then 
+			courseplay:initailzeFieldMod()
+		end	
+		
 		if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
-			if courseplay.fieldMod == nil then 
-				courseplay:initailzeFieldMod()
-			end			
 			courseplay.fields:setAllFieldEdges();
 		end;
 
