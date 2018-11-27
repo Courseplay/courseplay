@@ -183,7 +183,7 @@ local modDirectory = g_currentModDirectory
 -- It is ugly to have a courseplay member function in this file but button.lua seems to be able to
 -- use callbacks only if they are in the courseplay class.
 function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
-	if g_CourseGeneratorScreen == nil or true then
+	if g_CourseGeneratorScreen == nil then
 		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
 		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
 		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)

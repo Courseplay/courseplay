@@ -541,23 +541,8 @@ end
 --- get a reference pointing to the global variable 'variableName'
 -- can handle multiple levels (but not arrays, yet) like foo.bar
 function CpManager:getVariable(variableName)
-	local i = 0
-	local v
-	for w in string.gmatch(variableName, '[%w_%[%]]+') do
-		-- we are so smart that we can even handle numeric indices (just one though, no multi dimension arrays)
-		local _, _, name, number = string.find(w, '(%w+)%[(%d+)%]')
-		name = name or w
-		if i == 0 then
-			v = getfenv(0)[name]
-		else
-			v = v[name]
-		end
-		i = i + 1
-		-- v is v[number] if this is an array index
-		if number then v = v[tonumber(number)] end
-		if not v then return nil end
-	end
-	return v
+	local f = loadstring('return ' .. variableName)
+	return f and f() or nil
 end
 
 function CpManager:setupFieldScanInfo()
