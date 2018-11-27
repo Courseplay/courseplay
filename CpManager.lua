@@ -5,6 +5,7 @@ addModEventListener(CpManager);
 
 local modDirectory = g_currentModDirectory
 
+
 function CpManager:loadMap(name)
 	--print("CpManager:loadMap(name)")
 	self.isCourseplayManager = true;
@@ -243,7 +244,7 @@ function CpManager:update(dt)
 		
 		if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 			if courseplay.fieldMod == nil then 
-				courseplay:initButAfterTerrainCreation()
+				courseplay:initailzeFieldMod()
 			end			
 			courseplay.fields:setAllFieldEdges();
 		end;

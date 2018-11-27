@@ -402,9 +402,9 @@ function courseplay.button:render()
 					show = vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
 				elseif fn == 'changeWarningLightsMode' then
 					if prm < 0 then
-						show = vehicle.cp.warningLightsMode > courseplay.WARNING_LIGHTS_NEVER;
+						show = vehicle.cp.warningLightsMode > courseplay.lights.WARNING_LIGHTS_NEVER;
 					else
-						show = vehicle.cp.warningLightsMode < courseplay.WARNING_LIGHTS_BEACON_ALWAYS;
+						show = vehicle.cp.warningLightsMode < courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS;
 					end;
 				elseif fn == "changeWaitTime" then
 					show = courseplay:getCanHaveWaitTime(vehicle);

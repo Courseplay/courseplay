@@ -34,6 +34,7 @@ courseplay.hud = {};
 courseplay.buttons = {};
 courseplay.fields = {};
 courseplay.generation = {};
+courseplay.lights = {};
 courseplay.clock = 0;
 
 local sonOfaBangSonOfaBoom = {
@@ -170,11 +171,15 @@ local function setGlobalData()
 	courseplay.START_AT_NEXT_POINT = 4;
 
 	-- warning lights options
-	courseplay.WARNING_LIGHTS_NEVER = 0;
-	courseplay.WARNING_LIGHTS_BEACON_ON_STREET = 1;
-	courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET = 2;
-	courseplay.WARNING_LIGHTS_BEACON_ALWAYS = 3;
+	courseplay.lights.WARNING_LIGHTS_NEVER = 0;
+	courseplay.lights.WARNING_LIGHTS_BEACON_ON_STREET = 1;
+	courseplay.lights.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET = 2;
+	courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS = 3;
 
+	courseplay.lights.HEADLIGHT_OFF = 0;
+	courseplay.lights.HEADLIGHT_STREET = 1;
+	courseplay.lights.HEADLIGHT_FULL = 7;
+	
 	-- 2D/debug lines display options
 	courseplay.COURSE_2D_DISPLAY_OFF	 = 0;
 	courseplay.COURSE_2D_DISPLAY_2DONLY	 = 1;

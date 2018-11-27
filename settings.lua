@@ -603,7 +603,7 @@ function courseplay:toggleUseRecordingSpeed(vehicle)
 end;
 
 function courseplay:changeWarningLightsMode(vehicle, changeBy)
-	vehicle.cp.warningLightsMode = MathUtil.clamp(vehicle.cp.warningLightsMode + changeBy, courseplay.WARNING_LIGHTS_NEVER, courseplay.WARNING_LIGHTS_BEACON_ALWAYS);
+	vehicle.cp.warningLightsMode = MathUtil.clamp(vehicle.cp.warningLightsMode + changeBy, courseplay.lights.WARNING_LIGHTS_NEVER, courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS);
 end;
 
 function courseplay:toggleOpenHudWithMouse(vehicle)

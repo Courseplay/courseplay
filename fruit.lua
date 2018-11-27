@@ -29,8 +29,8 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	return false;
 end;
 
-function courseplay:initButAfterTerrainCreation()
-    --print("courseplay:initButAfterTerrainCreation()")
+function courseplay:initailzeFieldMod()
+    --print("courseplay:initailzeFieldMod()")
 	self.fieldMod = {}
     self.fieldMod.modifier = DensityMapModifier:new(g_currentMission.terrainDetailId, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels)
     self.fieldMod.filter = DensityMapFilter:new(self.fieldMod.modifier)

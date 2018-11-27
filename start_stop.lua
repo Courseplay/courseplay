@@ -8,8 +8,6 @@ function courseplay:start(self)
 	--self.isHirableBlocked = true; Removed
 	self.spec_aiVehicle.isActive = true
 
-	self.cp.savedLightsMask  =  self.aiLightsTypesMask;
-	self.aiLightsTypesMask = nil; 
 	self.cp.forceIsActiveBackup = self.forceIsActive;
 	self.forceIsActive = true;
 	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
@@ -428,6 +426,7 @@ function courseplay:start(self)
 
 	courseplay:updateAllTriggers();
 
+	self.cp.aiLightsTypesMaskBackup  = self.spec_lights.aiLightsTypesMask
 	self.cp.cruiseControlSpeedBackup = self:getCruiseControlSpeed();
 
 	if self.cp.hasDriveControl then
@@ -647,7 +646,6 @@ function courseplay:stop(self)
 	--self.isHirableBlocked = false; Removed by giants per Thomas
 	self.spec_aiVehicle.isActive = false
 	
-	self.aiLightsTypesMask = self.cp.savedLightsMask;
 	self.forceIsActive = self.cp.forceIsActiveBackup;
 	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.steeringEnabled = true;
@@ -750,6 +748,8 @@ function courseplay:stop(self)
 		self.cp.cruiseControlSpeedBackup = nil;
 	end; 
 
+	self.spec_lights.aiLightsTypesMask = self.cp.aiLightsTypesMaskBackup
+	
 	if self.cp.takeOverSteering then
 		self.cp.takeOverSteering = false
 	end
@@ -788,7 +788,7 @@ function courseplay:stop(self)
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);
 	end;
-	if self.turnLightState and self.turnLightState ~= Lights.TURNLIGHT_OFF then
+	if self.spec_lights.turnLightState and self.spec_lights.turnLightState ~= Lights.TURNLIGHT_OFF then
 		self:setTurnLightState(Lights.TURNLIGHT_OFF);
 	end;
 

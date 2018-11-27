@@ -111,7 +111,7 @@ function courseplay:onLoad(savegame)
 	self.cp.visualWaypointsAll = false;
 	self.cp.visualWaypointsCrossing = false;
 	self.cp.warningLightsMode = 1;
-	self.cp.hasHazardLights = self.turnLightState ~= nil and self.setTurnLightState ~= nil;
+	self.cp.hasHazardLights = self.spec_lights.turnLightState ~= nil and self.setTurnLightState ~= nil;
 
 
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
@@ -601,7 +601,7 @@ function courseplay:onLoad(savegame)
 	self.cp.ppc = PurePursuitController(self)
 end;
 
-function courseplay:postLoad(savegame)
+function courseplay:onPostLoad(savegame)
 	if savegame ~= nil and savegame.key ~= nil and not savegame.resetVehicles then
 		courseplay.loadVehicleCPSettings(self, savegame.xmlFile, savegame.key, savegame.resetVehicles)
 	end
@@ -1546,7 +1546,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
 		courseplay.signs:setSignsVisibility(self);
 
-		self.cp.siloSelectedFillType = FillUtil.fillTypeNameToInt[Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown')];
+		self.cp.siloSelectedFillType = FillTypeManager.getFillTypeIndexByName(Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown'));
 		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = 0 end  --Tommi FillUtil.FILLTYPE_UNKNOWN; end;
 
 		-- SPEEDS

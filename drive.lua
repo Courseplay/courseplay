@@ -224,52 +224,40 @@ function courseplay:drive(self, dt)
 
 
 	-- LIGHTS
-	local lightMask = 0  --Lights off
 	local combineBeaconOn = self.cp.isCombine and self.cp.totalFillLevelPercent > 80;
 	local onStreet = (((self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 3 or self.cp.mode == 5) and self.cp.waypointIndex > 2 and self.cp.trailerFillDistance == nil)
 		or ((self.cp.mode == 4 or self.cp.mode == 6) and self.cp.waypointIndex > self.cp.stopWork)
 		or (self.cp.mode == 10 and (self.cp.waypointIndex > 1 or #self.cp.mode10.stoppedCourseplayers >0) )
 	) or false;
 	if onStreet then
-		lightMask = 1 --Headlights only
+		self.spec_lights.aiLightsTypesMask = courseplay.lights.HEADLIGHT_STREET
 	else
-		lightMask = 7 -- full working lights
+		self.spec_lights.aiLightsTypesMask = courseplay.lights.HEADLIGHT_FULL
 	end
 
-	if self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_NEVER then -- never
+	if self.cp.warningLightsMode == courseplay.lights.WARNING_LIGHTS_NEVER then -- never
 		if self.beaconLightsActive then
 			self:setBeaconLightsVisibility(false);
 		end;
-		if self.cp.hasHazardLights and self.turnLightState ~= Lights.TURNSIGNAL_OFF then
+		if self.cp.hasHazardLights and self.spec_lights.turnLightState ~= Lights.TURNSIGNAL_OFF then
 			self:setTurnLightState(Lights.TURNLIGHT_OFF);
 		end;
 	else -- on street/always
-		local beaconOn = onStreet or combineBeaconOn or self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_ALWAYS;
+		local beaconOn = onStreet or combineBeaconOn or self.cp.warningLightsMode == courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS;
 		if self.beaconLightsActive ~= beaconOn then
 			self:setBeaconLightsVisibility(beaconOn);
 		end;
 		if self.cp.hasHazardLights then
-			local hazardOn = self.cp.warningLightsMode == courseplay.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and onStreet and not combineBeaconOn;
-			if not hazardOn and self.turnLightState ~= Lights.TURNLIGHT_OFF then
+			local hazardOn = self.cp.warningLightsMode == courseplay.lights.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET and onStreet and not combineBeaconOn;
+			if not hazardOn and self.spec_lights.turnLightState ~= Lights.TURNLIGHT_OFF then
 				self:setTurnLightState(Lights.TURNLIGHT_OFF);
-			elseif hazardOn and self.turnLightState ~= Lights.TURNLIGHT_HAZARD then
+			elseif hazardOn and self.spec_lights.turnLightState ~= Lights.TURNLIGHT_HAZARD then
 				self:setTurnLightState(Lights.TURNLIGHT_HAZARD);
 			end;
 		end;
 	end;
 
-	-- lights Ryan Disabled the Giants Helper sets its own lights TODO figure out a way around this has currently it will flash the headlights with this on
-	--[[ if CpManager.lightsNeeded then
-		if self.lightsTypesMask ~= lightMask then
-			self:setLightsTypesMask(lightMask)
-		end
-	elseif 	self.lightsTypesMask ~= 0 then
-		self:setLightsTypesMask(0)
-	end; ]]
-
-
-
-
+	
 	-- the tipper that is currently loaded/unloaded
 	local isBypassing = false
 	local isCrawlingToWait = false

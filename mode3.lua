@@ -151,7 +151,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 			if unfold and not workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].animDuration, false);
 				if workTool.cp.hasPipeLight and workTool.cp.pipeLight.a ~= CpManager.lightsNeeded then
-					workTool:setState("work:1", CpManager.lightsNeeded);
+					--Tommi workTool:setState("work:1", CpManager.lightsNeeded);
 				end;
 			elseif not unfold and workTool.pipe.out then
 				workTool:setAnimationTime(1, workTool.animationParts[1].offSet, false);
@@ -219,9 +219,9 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 
 				if workTool.pipeLight ~= nil and getVisibility(workTool.pipeLight) ~= (unfold and CpManager.lightsNeeded) then
 					if workTool.togglePipeLight then
-						workTool:togglePipeLight(unfold and CpManager.lightsNeeded);
+						--Tommi workTool:togglePipeLight(unfold and CpManager.lightsNeeded);
 					else
-						setVisibility(workTool.pipeLight, unfold and CpManager.lightsNeeded);
+						--Tommi setVisibility(workTool.pipeLight, unfold and CpManager.lightsNeeded);
 					end;
 				end;
 			end;
