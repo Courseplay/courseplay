@@ -29,20 +29,27 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	return false;
 end;
 
+function courseplay:initButAfterTerrainCreation()
+    --print("courseplay:initButAfterTerrainCreation()")
+	self.fieldMod = {}
+    self.fieldMod.modifier = DensityMapModifier:new(g_currentMission.terrainDetailId, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels)
+    self.fieldMod.filter = DensityMapFilter:new(self.fieldMod.modifier)
+end
+
 function courseplay:isField(x, z, widthX, widthZ)
-	widthX = widthX or 0.5;
-	widthZ = widthZ or 0.5;
-	local startWorldX, startWorldZ   = x, z;
-	local widthWorldX, widthWorldZ   = x - widthX, z - widthZ;
-	local heightWorldX, heightWorldZ = x + widthX, z + widthZ;
+    --print(string.format("running courseplay:isField(%s, %s, %s, %s)",tostring(x),tostring(z),tostring(widthX),tostring(widthZ)))
+	widthX = widthX or 0.5
+    widthZ = widthZ or 0.5
+    local startWorldX, startWorldZ   = x, z
+    local widthWorldX, widthWorldZ   = x - widthX, z - widthZ
+    local heightWorldX, heightWorldZ = x + widthX, z + widthZ
 
-	local detailId = g_currentMission.terrainDetailId;
-	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = MathUtil.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
-	setDensityCompareParams(detailId, 'greater', 0, 0, 0, 0);
-	local _,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
-	setDensityCompareParams(detailId, 'greater', -1);
+    self.fieldMod.modifier:setParallelogramWorldCoords(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, "ppp")
+    self.fieldMod.filter:setValueCompareParams("greater", 0)
 
-	return area > 0;
+    local _, area, totalArea = self.fieldMod.modifier:executeGet( self.fieldMod.filter)
+	local isField = area > 0
+	return  isField
 end
 
 

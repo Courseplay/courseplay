@@ -107,9 +107,9 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 						--action
 						local parameter = button.parameter;
-						if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then
+						--[[Tommi if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then
 							parameter = button.modifiedParameter;
-						end;
+						end;]]
 
 						local upParameter = parameter;
 						local downParameter = upParameter * -1;

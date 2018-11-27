@@ -37,10 +37,9 @@ function courseplay.fields:setUpFieldsIngameData()
 end;
 
 function courseplay.fields:setAllFieldEdges()
-	--self = courseplay.fields
-
 	self.curFieldScanIndex = self.curFieldScanIndex + 1;
-	if self.curFieldScanIndex > #courseplay.fields.fieldDefinitionBase then --Tommi g_currentMission.fieldDefinitionBase.numberOfFields then
+	
+	if self.curFieldScanIndex > #courseplay.fields.fieldDefinitionBase then
 		self.allFieldsScanned = true;
 		self.numAvailableFields = table.maxn(self.fieldData);
 		self:dbg(string.format('%d fields scanned - done', self.curFieldScanIndex - 1), 'scan');
@@ -52,7 +51,7 @@ function courseplay.fields:setAllFieldEdges()
 	local maxN = 2000;
 	local numDirectionTries = 10;
 
-	local fieldDef = courseplay.fields.fieldDefinitionBase[self.curFieldScanIndex] --Tommi g_currentMission.fieldDefinitionBase.fieldDefs[self.curFieldScanIndex];
+	local fieldDef = courseplay.fields.fieldDefinitionBase[self.curFieldScanIndex];
 	if fieldDef ~= nil then
 		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.farmland.isOwned) then  --TODO: Check, whether I'm the owner
 		--if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.ownedByPlayer) then

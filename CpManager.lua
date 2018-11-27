@@ -6,7 +6,7 @@ addModEventListener(CpManager);
 local modDirectory = g_currentModDirectory
 
 function CpManager:loadMap(name)
-	print("CpManager:loadMap(name)")
+	--print("CpManager:loadMap(name)")
 	self.isCourseplayManager = true;
 	self.firstRun = true;
 
@@ -226,7 +226,6 @@ function CpManager:update(dt)
 		courseplay:addCpNilTempFillLevelFunction();
 		self.firstRun = false;
 		courseplay.fields.fieldDefinitionBase = g_fieldManager:getFields()
-		--print("FieldManager.getFields:"..tostring(courseplay.fields.fieldDefinitionBase))
 		--print(tableShow(courseplay.fields.fieldDefinitionBase,"courseplay.fields.fieldDefinitionBase",nil,nil,4))
 		
 	end;
@@ -243,7 +242,9 @@ function CpManager:update(dt)
 		end;
 		
 		if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
-		--Tommi if g_currentMission.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+			if courseplay.fieldMod == nil then 
+				courseplay:initButAfterTerrainCreation()
+			end			
 			courseplay.fields:setAllFieldEdges();
 		end;
 
@@ -316,7 +317,7 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY FIELD SCAN MSG
-	if g_currentMission.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+	if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 		self:renderFieldScanInfo();
 	end;
 end;
@@ -488,7 +489,7 @@ end
 --- Print a global variable
 -- @param variableName name of the variable, can be multiple levels
 -- @param depth maximum depth, 1 by default
-function CpManager:printVariable(variableName, maxDepth)
+function CpManager:printVariable(variableName, maxDepth,printShortVersion)
 	print(string.format('%s - %s', tostring(variableName), tostring(maxDepth)))
 	local depth = maxDepth and math.max(1, tonumber(maxDepth)) or 1
 	local value = self:getVariable(variableName)
@@ -496,7 +497,13 @@ function CpManager:printVariable(variableName, maxDepth)
 	if value then
 		print(string.format('Printing %s (%s), depth %d', variableName, type, depth))
 		if type == 'table' then
-			DebugUtil.printTableRecursively(value, '  ', 1, depth)
+			if not printShortVersion then
+				DebugUtil.printTableRecursively(value, '  ', 1, depth)
+			else
+				--courseplay:printMeThisTable(table,level,maxlevel,upperPath)
+				courseplay.alreadyPrinted = {}
+				courseplay:printMeThisTable(value,0,depth,variableName)
+			end
 		else
 			print(variableName .. ': ' .. tostring(value))
 		end
@@ -546,10 +553,11 @@ function CpManager:getVariable(variableName)
 end
 
 function CpManager:setupFieldScanInfo()
-	print("CpManager:setupFieldScanInfo()")
+	--print("CpManager:setupFieldScanInfo()")
 	-- FIELD SCAN INFO DISPLAY
 	self.fieldScanInfo = {};
 
+	
 	local gfxPath = Utils.getFilename('img/fieldScanInfo.png', courseplay.path);
 
 	self.fieldScanInfo.fileWidth  = 512;
@@ -592,7 +600,7 @@ function CpManager:renderFieldScanInfo()
 
 	fsi.bgOverlay:render();
 
-	local pct = courseplay.fields.curFieldScanIndex / #courseplay.fields.fieldDefinitionBase; --Tommi g_currentMission.fieldDefinitionBase.numberOfFields;
+	local pct = courseplay.fields.curFieldScanIndex / #courseplay.fields.fieldDefinitionBase;
 
 	local r, g, b = courseplay.utils:getColorFromPct(pct * 100, fsi.percentColors, fsi.colorMapStep);
 	fsi.progressBarOverlay:setColor(r, g, b, 1);
@@ -606,7 +614,7 @@ function CpManager:renderFieldScanInfo()
 	courseplay:setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.titlePosY,         fsi.titleFontSize, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
-	local text = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, #courseplay.fields.fieldDefinitionBase);--Tommi g_currentMission.fieldDefinitionBase.numberOfFields);
+	local text = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, #courseplay.fields.fieldDefinitionBase);
 	courseplay:setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.textPosY,         fsi.textFontSize, text);
 

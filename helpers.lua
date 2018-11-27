@@ -855,7 +855,7 @@ function courseplay.utils:getColorFromPct(pct, colorMap, step)
 	local upper = self:roundToUpperInterval(pct, step);
 
 	local alpha = (pct - lower) / step;
-	return Utils.vector3ArrayLerp(colorMap[lower], colorMap[upper], alpha);
+	return MathUtil.vector3ArrayLerp(colorMap[lower], colorMap[upper], alpha);
 end;
 
 -- 2D course
@@ -1131,3 +1131,42 @@ function courseplay:sekToTimeFormat(numSec)
 	return timeTable	
 end
 
+function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
+	local stepWidth = 4
+	local spacer = math.max(1,level*stepWidth)
+	local lowSpacer = math.max(1,spacer-stepWidth)
+	local printSpace =""
+	local printLowSpace = ""
+	local nextLevel = level+1;
+	for i=1,spacer do
+		printSpace = printSpace.." ";
+	end
+	for i=1,lowSpacer do
+		printLowSpace = printLowSpace.." ";
+	end
+	if level == 0 then
+		print(upperPath..":")
+		print("[")
+	else
+		print(printLowSpace.."[")
+	end
+	if courseplay.alreadyPrinted[t] then
+		print(printSpace.."allready printed")
+	else
+		for index,value in pairs(t)do
+			local newPath = upperPath.."."..tostring(index)
+			if type(value) =='table' and nextLevel<=maxlevel then
+				print(string.format("%s%s:(%s)",printSpace,tostring(newPath),tostring(value)))
+				courseplay:printMeThisTable(value,nextLevel,maxlevel,newPath)	
+			else
+				print(printSpace..string.format("%s:%s",tostring(index),tostring(value)))
+			end
+		end
+	end
+	courseplay.alreadyPrinted[t] = true;
+	if level == 0 then
+		print("]")
+	else
+		print(printLowSpace.."]")
+	end
+end
