@@ -130,7 +130,7 @@ function courseplay:vehicleDelete()
 		end;
 
 		if courseplay.combines[self.rootNode] then
-			for _, courseplayer in pairs(g_currentMission.steerables) do
+			for _, courseplayer in pairs(g_currentMission.enterables) do
 				if courseplayer.cp then
 					if courseplayer.cp.activeCombine and courseplayer.cp.activeCombine == self then
 						courseplay:unregisterFromCombine(courseplayer, self)

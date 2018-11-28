@@ -718,7 +718,7 @@ end;
 
 function courseplay:findDrivers(vehicle)
 	local foundDrivers = {}; -- resetting all drivers
-	for _,otherVehicle in pairs(g_currentMission.steerables) do
+	for _,otherVehicle in pairs(g_currentMission.enterables) do
 		if otherVehicle.Waypoints ~= nil and otherVehicle.hasCourseplaySpec  then
 			if otherVehicle.rootNode ~= vehicle.rootNode and #(otherVehicle.Waypoints) > 0 then
 				table.insert(foundDrivers, otherVehicle);
@@ -750,7 +750,7 @@ function courseplay.settings.add_folder(input1, input2)
 	
 	if vehicle == false then
 	-- no vehicle given -> add folder to all vehicles
-		for k,v in pairs(g_currentMission.steerables) do
+		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.folder_settings[id] = {}
 				courseplay.settings.add_folder_settings(v.cp.folder_settings[id])
@@ -768,7 +768,7 @@ function courseplay.settings.update_folders(vehicle)
 	
 	if vehicle == nil then
 	-- no vehicle given -> update all folders in all vehicles
-		for k,v in pairs(g_currentMission.steerables) do
+		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				old_settings = v.cp.folder_settings
 				v.cp.folder_settings = {}
@@ -804,7 +804,7 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 		vehicle.cp.reloadCourseItems = true
 		courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 	else
-		for k,v in pairs(g_currentMission.steerables) do
+		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
 				--print(string.format("courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName))
@@ -885,7 +885,7 @@ function courseplay.hud.reloadCourses(vehicle)
 		end
 		courseplay.hud.setCourses(vehicle, index)
 	else
-		for k,v in pairs(g_currentMission.steerables) do
+		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				i = 1
 				-- course/folder in the hud might have been deleted -> info no longer available				
@@ -995,7 +995,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 		vehicle.cp.hud.courseListNext = next
 	else
 		-- update all vehicles
-		for k,v in pairs(g_currentMission.steerables) do
+		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				prev = true
 				next = true
@@ -1022,7 +1022,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 				v.cp.hud.courseListPrev = prev
 				v.cp.hud.courseListNext = next
 			end -- if hasSpecialization
-		end -- in pairs(steerables)
+		end -- in pairs(enterables)
 	end -- if vehicle
 end;
 
@@ -1780,7 +1780,7 @@ function courseplay:toggleIngameMapIconShowText()
 	end
 	--TODO broadcast change to other Multiplayers
 	
-	-- for _,vehicle in pairs(g_currentMission.steerables) do
+	-- for _,vehicle in pairs(g_currentMission.enterables) do
 	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
 		if vehicle.cp.ingameMapHotSpot then
 			courseplay:deleteMapHotspot(vehicle);

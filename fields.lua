@@ -525,7 +525,7 @@ function courseplay.fields:loadCustomFields(importFromOldFile)
 				for j=1,numPoints do
 					local pointKey = key .. '.point' .. j;
 					if hasXMLProperty(cpCFXml, pointKey) then
-						local x,y,z = Utils.getVectorFromString(getXMLString(cpCFXml, pointKey .. '#pos'));
+						local x,y,z = StringUtil.getVectorFromString(getXMLString(cpCFXml, pointKey .. '#pos'));
 						if x and y and z then
 							table.insert(fieldData.points, { cx = x, cy = y, cz = z });
 						end;

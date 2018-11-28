@@ -59,7 +59,7 @@ function CourseGeneratorScreen:onOpen()
 --		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
 --		self.coursePlot:setVisible(true)
 --	end
-	print('onOpen!')
+	print('CourseGeneratorScreen:onOpen()')
 	if self.vehicle.Waypoints then
 		self:showCourse()
 	else

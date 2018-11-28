@@ -10,13 +10,15 @@ local modDir = g_currentModDirectory;
 
 inputCourseNameDialogue = {};
 inputCourseNameDialogue.firstTimeRun = true;
-local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue)
+local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue, ScreenElement)
 inputCourseNameDialogue.types = { "course", "folder", "filter" };
 
-function inputCourseNameDialogue:new()
-	local instance = {};
-	instance = setmetatable(instance, inputCourseNameDialogue_mt);
-	return instance;
+function inputCourseNameDialogue:new(target, custom_mt)
+	if custom_mt == nil then
+		custom_mt = inputCourseNameDialogue_mt
+	end
+	local self = ScreenElement:new(target, custom_mt)
+	return self
 end; --END new()
 
 local elementOverlayExists = function(element)
@@ -286,19 +288,6 @@ end;
 function inputCourseNameDialogue:setCallbacks(onCourseNameEntered, target)
 	self.target = target;
 end; --END setCallbacks()
-
-function inputCourseNameDialogue:update(dt)
-	if InputBinding.hasEvent(InputBinding.MENU_ACCEPT) or InputBinding.hasEvent(InputBinding.COURSEPLAY_MENU_ACCEPT_SECONDARY) then
-		-- InputBinding.hasEvent(InputBinding.MENU_ACCEPT);
-		self:onEnterPressed();
-	elseif InputBinding.hasEvent(InputBinding.MENU, true) or InputBinding.hasEvent(InputBinding.MENU_CANCEL, true) then
-		-- InputBinding.hasEvent(InputBinding.MENU_CANCEL);
-		-- InputBinding.hasEvent(InputBinding.MENU);
-		self:onCancelClick();
-	end;
-end; --END update()
-
-
 
 
 g_inputCourseNameDialogue = inputCourseNameDialogue:new();

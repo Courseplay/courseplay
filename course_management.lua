@@ -139,7 +139,8 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			course.multiTools = course.multiTools or 1
 			courseplay:setMultiTools(vehicle, course.multiTools)
 			
-			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
+			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s",
+				debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
 		else -- add new course to old course
 			if vehicle.cp.currentCourseName == nil then --recorded but not saved course
@@ -1382,7 +1383,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					if not hasXMLProperty(courseXml, key .. '#pos') then
 						break;
 					end;
-					local x, z = Utils.getVectorFromString(getXMLString(courseXml, key .. '#pos'));
+					local x, z = StringUtil.getVectorFromString(getXMLString(courseXml, key .. '#pos'));
 					if x == nil or z == nil then
 						break;
 					end;

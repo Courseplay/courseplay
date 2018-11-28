@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<GUI onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
+<GUI name="inputCourseNameDialogue" onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
 	<GuiElement name="background" type="bitmap" position="0px 300px" size="512px 128px" screenAlign="middleCenter" positionOrigin="middleCenter" imageFilename="shared/splash.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
 		<!-- Title text -->
 		<GuiElement 
@@ -22,6 +22,7 @@
 			size="432px 40px"
 
 			onCreate="onCreateTextInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" onIsUnicodeAllowed="onIsUnicodeAllowed" 
+			onEscPressed="onCancelClick"
 
 			maxInputTextWidth="432px"
 			maxCharacters="25" 

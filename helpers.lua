@@ -946,7 +946,7 @@ function courseplay.utils:move2dCoursePlotField(vehicle, mouseX, mouseY)
 		CpManager.course2dPlotField.y = CpManager.course2dPlotPosY;
 
 		-- update 2D data for all vehicles
-		for k,veh in pairs(g_currentMission.steerables) do
+		for k,veh in pairs(g_currentMission.enterables) do
 			if veh.hasCourseplaySpec then
 				veh.cp.course2dUpdateDrawData = true;
 			end;

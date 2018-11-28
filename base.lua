@@ -951,7 +951,7 @@ end;
 
 function courseplay:onUpdate(dt)
 	-- KEYBOARD EVENTS
-	if self:getIsActive() and Enterable.getIsEntered(self) and false then--Tommi and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
+	if self:getIsActive() and self:getIsEntered() and false then--Tommi and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
 		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
 			if self.cp.canDrive then
 				if self.cp.isDriving then

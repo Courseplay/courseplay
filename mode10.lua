@@ -44,7 +44,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			end
 		end
 	else
-		for _,steerable in pairs(g_currentMission.steerables) do
+		for _,steerable in pairs(g_currentMission.enterables) do
 			local x,y,z = getWorldTranslation(steerable.rootNode)
 			local distance = courseplay:distance(x,z,vehicle.Waypoints[1].cx,vehicle.Waypoints[1].cz) 
 			if distance  < vehicle.cp.mode10.searchRadius and steerable ~= vehicle and steerable.isMotorStarted then

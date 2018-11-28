@@ -431,3 +431,12 @@ function courseplay:findInMatchingValues(index, value1, value2)
 	end
 	return false
 end
+
+--- Ugly hack until we figure out why there's no global debug available in FS19
+debug = {}
+function debug.getinfo()
+	local result = {}
+	result.name = 'debug.getinfo() not implemented'
+	result.currentline = 0
+	return result
+end

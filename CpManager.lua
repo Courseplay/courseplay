@@ -557,7 +557,7 @@ end
 
 function CpManager:loadFile(fileName)
 	local path = courseplay.path .. fileName
-	local f = getfenv(0).source(path)
+	local f = source(path)
 	if not f then
 		return 'Could not load ' .. path
 	else
@@ -664,7 +664,7 @@ function CpManager:severCombineTractorConnection(vehicle, callDelete)
 			courseplay:debug(('BaseMission:removeVehicle() -> severCombineTractorConnection(%q, %s) [VEHICLE IS COMBINE]'):format(nameNum(vehicle), tostring(callDelete)), 4);
 			local combine = vehicle;
 			-- remove this combine as savedCombine from all tractors
-			for i,tractor in pairs(g_currentMission.steerables) do
+			for i,tractor in pairs(g_currentMission.enterables) do
 				if tractor.hasCourseplaySpec and tractor.cp.savedCombine and tractor.cp.savedCombine == combine then
 					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
 					courseplay:removeSavedCombineFromTractor(tractor);
@@ -678,7 +678,7 @@ function CpManager:severCombineTractorConnection(vehicle, callDelete)
 					for i,tractor in pairs(combine.courseplayers) do
 						courseplay:debug(('\t\t%q: removeActiveCombineFromTractor(), removeSavedCombineFromTractor()'):format(nameNum(tractor)), 4);
 						courseplay:removeActiveCombineFromTractor(tractor);
-						courseplay:removeSavedCombineFromTractor(tractor); --TODO (Jakob): unnecessary, as done above in steerables table already?
+						courseplay:removeSavedCombineFromTractor(tractor); --TODO (Jakob): unnecessary, as done above in enterables table already?
 						tractor.cp.reachableCombines = nil;
 					end;
 					courseplay:debug(('\t-> now has %d courseplayers'):format(#combine.courseplayers), 4);
@@ -1299,7 +1299,7 @@ function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
 					if not hasXMLProperty(cpFile, key .. '#pos') then
 						break;
 					end;
-					local x, z = Utils.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
+					local x, z = StringUtil.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
 					if x == nil or z == nil then
 						break;
 					end;
