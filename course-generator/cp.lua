@@ -191,6 +191,6 @@ function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
 	g_CourseGeneratorScreen:setVehicle( vehicle )
 	g_gui:showGui( 'CourseGeneratorScreen' )
 	-- force reload screen so changes in XML do not require the entire game to be restarted, just reselect the screen
-	g_CourseGeneratorScreen = nil
+	--g_CourseGeneratorScreen = nil
 end
 

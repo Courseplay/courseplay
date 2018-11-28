@@ -81,8 +81,9 @@ end
 
 ---
 function AIDriver:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, maxSpeed)
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, self.acceleration,
-		self.slowAcceleration, self.slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, self.slowDownFactor);
+	-- TODO: this lx/lz * 10 works fine now, but investigate if it makes sense to use the goal point coordinates.
+	-- not sure how to do this when reversing though
+	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, lx * 10, lz * 10, maxSpeed, false)
 end
 
 --- Check if we are at the last waypoint and should we continue with first waypoint of the course
@@ -177,7 +178,7 @@ function AIDriver:setUpAlignmentCourse(ix)
 		return
 	end
 	self:debug('Alignment course with %d started.', #alignmentWaypoints)
-	self.alignmentCourse = Course:new(self.vehicle, alignmentWaypoints)
+	self.alignmentCourse = Course(self.vehicle, alignmentWaypoints)
 end
 
 function AIDriver:debug(...)

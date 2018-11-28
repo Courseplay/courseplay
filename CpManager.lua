@@ -111,6 +111,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
+	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -550,8 +551,19 @@ end
 --- get a reference pointing to the global variable 'variableName'
 -- can handle multiple levels (but not arrays, yet) like foo.bar
 function CpManager:getVariable(variableName)
-	local f = loadstring('return ' .. variableName)
+	local f = getfenv(0).loadstring('return ' .. variableName)
 	return f and f() or nil
+end
+
+function CpManager:loadFile(fileName)
+	local path = courseplay.path .. fileName
+	local f = getfenv(0).source(path)
+	if not f then
+		return 'Could not load ' .. path
+	else
+		f()
+		return path .. ' loaded.'
+	end
 end
 
 function CpManager:setupFieldScanInfo()
