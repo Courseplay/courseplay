@@ -145,38 +145,40 @@ end;
 function courseplay:getMovingTools(vehicle)
 	local primaryMovingTools, secondaryMovingTools;
 	local frontLoader, shovel ,pipe = 0, 0;
-	for i=1, #(vehicle.attachedImplements) do
-		if vehicle.attachedImplements[i].object.cp.hasSpecializationShovel then
+	local vAI = vehicle:getAttachedImplements()
+	for i=1, #(vAI) do
+		if vAI[i].object.cp.hasSpecializationShovel then
 			shovel = i;
-		elseif courseplay:isFrontloader(vehicle.attachedImplements[i].object) then
+		elseif courseplay:isFrontloader(vAI[i].object) then
 			frontLoader = i;
 		else
 			pipe = i;
 		end;
 	end;
-
+	
 	courseplay:debug(('%s: getMovingTools(): frontLoader index=%d, shovel index=%d'):format(nameNum(vehicle), frontLoader, shovel), 10);
 
 	if shovel ~= 0 then
-		primaryMovingTools = vehicle.movingTools;
-		secondaryMovingTools = vehicle.attachedImplements[shovel].object.movingTools;
-		vehicle.cp.shovel = vehicle.attachedImplements[shovel].object;
+		primaryMovingTools = vehicle.spec_cylindered.movingTools;
+		secondaryMovingTools = vAI[shovel].object.spec_cylindered.movingTools;
+		vehicle.cp.shovel = vAI[shovel].object;
 
-		courseplay:debug(('    [1] primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(vehicle), nameNum(vehicle.attachedImplements[shovel].object), nameNum(vehicle.cp.shovel)), 10);
+		courseplay:debug(('    [1] primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(vehicle), nameNum(vAI[shovel].object), nameNum(vehicle.cp.shovel)), 10);
 	elseif frontLoader ~= 0 then
-		local object = vehicle.attachedImplements[frontLoader].object;
+		local object = vAI[frontLoader].object;
 		vehicle.cp.attachedFrontLoader = object
-		primaryMovingTools = object.movingTools;
-		if object.attachedImplements[1] ~= nil then
-			secondaryMovingTools = object.attachedImplements[1].object.movingTools;
-			vehicle.cp.shovel = object.attachedImplements[1].object;
+		primaryMovingTools = object.spec_cylindered.movingTools;
+		local oAI = object:getAttachedImplements()
+		if oAI[1] ~= nil then
+			secondaryMovingTools = oAI[1].object.spec_cylindered.movingTools;
+			vehicle.cp.shovel = oAI[1].object;
 			courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
 		end;
 		
 	elseif pipe ~= 0 then
-		primaryMovingTools = vehicle.attachedImplements[i].object.movingTools;
+		primaryMovingTools = vAI[i].object.spec_cylindered.movingTools;
 	else
-		primaryMovingTools = vehicle.movingTools;
+		primaryMovingTools = vehicle.spec_cylindered.movingTools;
 		vehicle.cp.shovel = vehicle;
 
 		courseplay:debug(('    [3] primaryMt=%s, shovel=%s'):format(nameNum(vehicle), nameNum(vehicle.cp.shovel)), 10);

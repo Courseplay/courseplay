@@ -1039,8 +1039,8 @@ function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn
 end
 
 function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z, dt)
-	--local toolRot = activeTool.movingTools[9].curRot[3]
-	local tool = activeTool.movingTools[toolIndex];
+	--local toolRot = activeTool.spec_cylindered.movingTools[9].curRot[3]
+	local tool = activeTool.spec_cylindered.movingTools[toolIndex];
 	local rotSpeed = 0.0033;
 	local targetRot = {x,y,z}
 	local done = true;
@@ -1095,7 +1095,7 @@ function courseplay:rotateSingleTool(vehicle, activeTool, toolIndex, rotatePos, 
 
 	dt = dt or g_physicsDt;
 
-	local mt = activeTool.movingTools[toolIndex];
+	local mt = activeTool.spec_cylindered.movingTools[toolIndex];
 	local changed = false;
 
 	local curRot = mt.curRot[mt.rotationAxis];

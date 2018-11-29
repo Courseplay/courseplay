@@ -10,7 +10,6 @@ end;
 ]]
 
 function courseplay:onLoad(savegame)
-	print("courseplay:load(savegame)")
 	local xmlFile = self.xmlFile;
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
@@ -1157,7 +1156,7 @@ function courseplay:onUpdate(dt)
 	-- MODE 3: move pipe to positions (manually)
 	if (self.cp.mode == courseplay.MODE_OVERLOADER or self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) and self.cp.manualPipePositionOrder ~= nil and self.cp.pipeWorkToolIndex then
 		local workTool = self.attachedImplements[self.cp.pipeWorkToolIndex].object
-		if courseplay:checkAndSetMovingToolsPosition(self, workTool.movingTools, nil, self.cp.pipePositions, dt , self.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
+		if courseplay:checkAndSetMovingToolsPosition(self, workTool.spec_cylindered.movingTools, nil, self.cp.pipePositions, dt , self.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
 			courseplay:resetManualPipePositionOrder(self);
 		end;
 	end;	
@@ -1187,6 +1186,7 @@ function courseplay:onUpdateTick(dt)
 	end
 
 	--get the combines filling rate in l/second
+	--[[Tommi overloading doesnt exist anymore
 	if self.cp.isCombine then
 		if courseplay:timerIsThrough(self, 'combineFillLevel') then 
 			courseplay:setCustomTimer(self, "combineFillLevel", 2);
@@ -1206,7 +1206,7 @@ function courseplay:onUpdateTick(dt)
 			end	
 		end
 	end
-	
+	]]
 	self.timer = self.timer + dt;
 end
 
@@ -1513,9 +1513,10 @@ end
 
 
 function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
+	
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
-		local curKey = key .. '.courseplay';
+		local curKey = key .. '.courseplay.basics';
 		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'),			 self.cp.mode));
 		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
 		self.cp.warningLightsMode  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#lights'),			 1);
@@ -1570,12 +1571,15 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.combineOffsetAutoMode = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#combineOffsetAutoMode'), true);
 		self.cp.followAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillFollow'),			 50);
 		self.cp.driveOnAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillDriveOn'),			 90);
+		self.cp.searchCombineOnField  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#searchCombineOnField'),	 0);
+		
+		curKey = key .. '.courseplay.driving';
 		self.cp.turnDiameter		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 self.cp.vehicleTurnRadius * 2);
 		self.cp.realisticDriving 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#realisticDriving'),		 true);
 		self.cp.allwaysSearchFuel 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#allwaysSearchFuel'),	 false);
 		self.cp.alignment.enabled 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#alignment'),	 		 true);
-		self.cp.searchCombineOnField  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#searchCombineOnField'),	 0);
-		
+	
+	
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
 		self.cp.turnOnField  		  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnOnField'), 			 true);
@@ -1687,7 +1691,144 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 end
 
 
+function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
+	--cut the key to configure it for our needs 
+	local keySplit = StringUtil.splitString(".", key);
+	local newKey = keySplit[1]
+	for i=2,#keySplit-1 do
+		newKey = newKey..'.'..keySplit[i]
+	end
+	
+	--CP basics
+	local runCounter = self.cp.runCounter
+	if self.cp.runReset == true then
+		runCounter = 0;
+	end;
+	setXMLInt(xmlFile, newKey..".basics #aiMode", self.cp.mode)
+	setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
+	setXMLBool(xmlFile, newKey..".basics #openHudWithMouse", self.cp.hud.openWithMouse)
+	setXMLString(xmlFile, newKey..".basics #lights", tostring(self.cp.warningLightsMode))
+	setXMLBool(xmlFile, newKey..".basics #visualWaypointsStartEnd", self.cp.visualWaypointsStartEnd)
+	setXMLBool(xmlFile, newKey..".basics #visualWaypointsAll", self.cp.visualWaypointsAll)
+	setXMLBool(xmlFile, newKey..".basics #visualWaypointsCrossing", self.cp.visualWaypointsCrossing)
+	setXMLInt(xmlFile, newKey..".basics #waitTime", self.cp.waitTime)
+	setXMLString(xmlFile, newKey..".basics #siloSelectedFillType", tostring(FillTypeManager.getFillTypeNameByIndex(self.cp.siloSelectedFillType)))
+	setXMLInt(xmlFile, newKey..".basics #runNumber", self.cp.runNumber)
+	setXMLInt(xmlFile, newKey..".basics #runCounter", runCounter)
+	setXMLBool(xmlFile, newKey..".basics #runCounterBool", self.cp.runCounterBool)
+	setXMLBool(xmlFile, newKey..".basics #saveFuelOption", self.cp.saveFuelOptionActive)
+	setXMLInt(xmlFile, newKey..".basics #drivingMode", self.cp.drivingMode:get())
+	
+	--speeds
+	setXMLBool(xmlFile, newKey..".speeds #useRecordingSpeed", self.cp.speeds.useRecordingSpeed)
+	setXMLInt(xmlFile, newKey..".speeds #reverse", self.cp.speeds.reverse)
+	setXMLInt(xmlFile, newKey..".speeds #turn", self.cp.speeds.turn)
+	setXMLInt(xmlFile, newKey..".speeds #field", self.cp.speeds.field)
+	setXMLInt(xmlFile, newKey..".speeds #max", self.cp.speeds.street)
+	
+	--combineMode
+	setXMLString(xmlFile, newKey..".combi #tipperOffset", string.format("%.1f",self.cp.tipperOffset))
+	setXMLString(xmlFile, newKey..".combi #combineOffset", string.format("%.1f",self.cp.combineOffset))
+	setXMLString(xmlFile, newKey..".combi #combineOffsetAutoMode", tostring(self.cp.combineOffsetAutoMode))
+	setXMLInt(xmlFile, newKey..".combi #fillFollow", self.cp.followAtFillLevel)
+	setXMLInt(xmlFile, newKey..".combi #fillDriveOn", self.cp.driveOnAtFillLevel)
+	setXMLInt(xmlFile, newKey..".combi #searchCombineOnField", self.cp.searchCombineOnField)
+	
+	--driving settings
+	setXMLInt(xmlFile, newKey..".driving #turnDiameter", self.cp.turnDiameter)
+	setXMLString(xmlFile, newKey..".driving #realisticDriving", tostring(self.cp.realisticDriving))
+	setXMLBool(xmlFile, newKey..".driving #allwaysSearchFuel", self.cp.allwaysSearchFuel)
+	setXMLString(xmlFile, newKey..".driving #alignment", tostring(self.cp.alignment.enabled))
+	
+	--field work settings
+	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange), self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
+	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
+	setXMLBool(xmlFile, newKey..".fieldWork #ridgeMarkersAutomatic", self.cp.ridgeMarkersAutomatic)
+	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
+	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
+	setXMLInt(xmlFile, newKey..".fieldWork #refillUntilPct", self.cp.refillUntilPct)
+	setXMLBool(xmlFile, newKey..".fieldWork #turnOnField", self.cp.turnOnField)
+	setXMLBool(xmlFile, newKey..".fieldWork #oppositeTurnMode", self.cp.oppositeTurnMode)
+	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
+	setXMLBool(xmlFile, newKey..".fieldWork #ploughFieldEdge", self.cp.ploughFieldEdge)
+	setXMLString(xmlFile, newKey..".fieldWork #lastValidTipDistance", string.format("%.1f",Utils.getNoNil(self.cp.lastValidTipDistance,0)))
+	setXMLBool(xmlFile, newKey..".fieldWork #hasSavedPosition", self.cp.generationPosition.hasSavedPosition)
+	setXMLString(xmlFile, newKey..".fieldWork #savedPositionX", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.x,0)))
+	setXMLString(xmlFile, newKey..".fieldWork #savedPositionZ", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.z,0)))
+	setXMLString(xmlFile, newKey..".fieldWork #savedFieldNum", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.fieldNum,0)))
+	setXMLBool(xmlFile, newKey..".fieldWork #fertilizerOption", self.cp.fertilizerOption)
+	setXMLBool(xmlFile, newKey..".fieldWork #convoyActive", self.cp.convoyActive)
+	
+	--LevlingAndCompactingSettings
+	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
+	setXMLBool(xmlFile, newKey..".mode10 #CourseplayersOnly", self.cp.mode10.searchCourseplayersOnly)
+	setXMLInt(xmlFile, newKey..".mode10 #searchRadius", self.cp.mode10.searchRadius)
+	setXMLInt(xmlFile, newKey..".mode10 #maxSiloSpeed", self.cp.speeds.bunkerSilo)
+	setXMLString(xmlFile, newKey..".mode10 #shieldHeight", string.format("%.1f",self.cp.mode10.shieldHeight))
+	setXMLBool(xmlFile, newKey..".mode10 #automaticSpeed", self.cp.mode10.automaticSpeed)
+	setXMLBool(xmlFile, newKey..".mode10 #automaticHeight", self.cp.mode10.automaticHeigth)
+	setXMLString(xmlFile, newKey..".mode10 #bladeOffset", string.format("%.1f",self.cp.mode10.bladeOffset))
+	setXMLBool(xmlFile, newKey..".mode10 #drivingThroughtLoading", self.cp.mode10.drivingThroughtLoading)
+	
+	--shovelMode positions
+	--Shovel positions (<shovel rot="1;2;3;4" trans="1;2;3;4" />)
+	local shovelRotsAttrNodes, shovelTransAttrNodes;
+	local shovelRotsTmp, shovelTransTmp = {}, {};
+	if self.cp.shovelStatePositions and self.cp.shovelStatePositions[2] and self.cp.shovelStatePositions[3] and self.cp.shovelStatePositions[4] and self.cp.shovelStatePositions[5] then
+		if self.cp.shovelStatePositions[2].rot and self.cp.shovelStatePositions[3].rot and self.cp.shovelStatePositions[4].rot and self.cp.shovelStatePositions[5].rot then
+			local shovelStateRotSaveTable = {};
+			for a=1,4 do
+				shovelStateRotSaveTable[a] = {};
+				local rotTable = self.cp.shovelStatePositions[a+1].rot;
+				for i=1,#rotTable do
+					shovelStateRotSaveTable[a][i] = courseplay:round(rotTable[i], 4);
+				end;
+				table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], ' ')));
+			end;
+			if #shovelRotsTmp > 0 then
+				shovelRotsAttrNodes = tostring(table.concat(shovelRotsTmp, ';'));
+				courseplay:debug(nameNum(self) .. ": shovelRotsAttrNodes=" .. shovelRotsAttrNodes, 10);
+			end;
+		end;
+		if self.cp.shovelStatePositions[2].trans and self.cp.shovelStatePositions[3].trans and self.cp.shovelStatePositions[4].trans and self.cp.shovelStatePositions[5].trans then
+			local shovelStateTransSaveTable = {};
+			for a=1,4 do
+				shovelStateTransSaveTable[a] = {};
+				local transTable = self.cp.shovelStatePositions[a+1].trans;
+				for i=1,#transTable do
+					shovelStateTransSaveTable[a][i] = courseplay:round(transTable[i], 4);
+				end;
+				table.insert(shovelTransTmp, tostring(table.concat(shovelStateTransSaveTable[a], ' ')));
+			end;
+			if #shovelTransTmp > 0 then
+				shovelTransAttrNodes = tostring(table.concat(shovelTransTmp, ';'));
+				courseplay:debug(nameNum(self) .. ": shovelTransAttrNodes=" .. shovelTransAttrNodes, 10);
+			end;
+		end;
+		if shovelRotsAttrNodes or shovelTransAttrNodes then
+			setXMLBool(xmlFile, newKey..".shovel #shovelStopAndGo", self.cp.shovelStopAndGo)
+			setXMLString(xmlFile, newKey..".shovel #rot", shovelRotsAttrNodes)
+			setXMLString(xmlFile, newKey..".shovel #trans",  shovelTransAttrNodes)
+		end;
+	end;
+		
+	--overloaderPipe
+	if self.cp.pipeWorkToolIndex ~= nil then
+		setXMLString(xmlFile, newKey..".overLoaderPipe #rot", tostring(table.concat(self.cp.pipePositions.rot)))
+		setXMLString(xmlFile, newKey..".overLoaderPipe #trans", tostring(table.concat(self.cp.pipePositions.trans)))
+		setXMLInt(xmlFile, newKey..".overLoaderPipe #pipeIndex", self.cp.pipeIndex)
+		setXMLInt(xmlFile, newKey..".overLoaderPipe #pipeWorkToolIndex", self.cp.pipeWorkToolIndex)
+	end
+
+	--combine 
+	if self.cp.isCombine then
+		setXMLBool(xmlFile, newKey..".combine #driverPriorityUseFillLevel", self.cp.driverPriorityUseFillLevel)
+		setXMLBool(xmlFile, newKey..".combine #stopWhenUnloading", self.cp.stopWhenUnloading)
+	end;
+end
+
 function courseplay:getSaveAttributesAndNodes(nodeIdent)
+	print("courseplay:getSaveAttributesAndNodes(nodeIdent)")
 	local attributes = '';
 
 	--Shovel positions (<shovel rot="1;2;3;4" trans="1;2;3;4" />)
@@ -1750,6 +1891,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q oppositeTurnMode=%q manualWorkWidth="%.1f" ploughFieldEdge=%q lastValidTipDistance="%.1f" hasSavedPosition=%q savedPositionX="%f" savedPositionZ="%f" savedFieldNum="%d" fertilizerOption=%q convoyActive=%q /> ', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField), tostring(self.cp.oppositeTurnMode),Utils.getNoNil(self.cp.manualWorkWidth,0),tostring(self.cp.ploughFieldEdge),Utils.getNoNil(self.cp.lastValidTipDistance,0),tostring(self.cp.generationPosition.hasSavedPosition),Utils.getNoNil(self.cp.generationPosition.x,0),Utils.getNoNil(self.cp.generationPosition.z,0),Utils.getNoNil(self.cp.generationPosition.fieldNum,0), tostring(self.cp.fertilizerOption),tostring(self.cp.convoyActive));
 	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q bladeOffset="%.1f" drivingThroughtLoading=%q />', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth), self.cp.mode10.bladeOffset, tostring(self.cp.mode10.drivingThroughtLoading));
 	local shovels, combine = '', '';
+	
 	if shovelRotsAttrNodes or shovelTransAttrNodes then
 		shovels = string.format('<shovel rot=%q trans=%q shovelStopAndGo=%q />', shovelRotsAttrNodes, shovelTransAttrNodes,tostring(self.cp.shovelStopAndGo));
 	end;

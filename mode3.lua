@@ -85,7 +85,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 	local unloadOrderExists = unload ~= nil;
 
 	if workTool.cp.isSugarCaneAugerWagon then 
-		local movingTools = workTool.movingTools
+		local movingTools = workTool.spec_cylindered.movingTools
 		local tipState = workTool.tipState
 
 		--force the correct tipState 
@@ -261,10 +261,10 @@ function courseplay:getPipesRotation(vehicle)
 	vehicle.cp.pipeWorkToolIndex = nil
 	vehicle.cp.pipeIndex = nil
 	vehicle.cp.pipePositions = nil
-	for i,implement in pairs(vehicle.attachedImplements) do
+	for i,implement in pairs(vehicle:getAttachedImplements()) do
 		local workTool = implement.object;
-		if workTool.movingTools and workTool.pipeCurrentState and workTool.pipeCurrentState == 2 then
-			for index,tool in pairs(workTool.movingTools) do
+		if workTool.spec_cylindered.movingTools and workTool.pipeCurrentState and workTool.pipeCurrentState == 2 then
+			for index,tool in pairs(workTool.spec_cylindered.movingTools) do
 				if tool.axis and tool.axis == "AXIS_PIPE" then
 					vehicle.cp.pipeIndex =  index 				--index of movingTools
 					vehicle.cp.pipeWorkToolIndex = i			--index of attachedImplements
@@ -272,7 +272,7 @@ function courseplay:getPipesRotation(vehicle)
 			end
 		end
 		if vehicle.cp.pipeIndex ~= nil then
-			local rotation, translation = courseplay:getCurrentMovingToolsPosition(self, workTool.movingTools, nil, vehicle.cp.pipeIndex)
+			local rotation, translation = courseplay:getCurrentMovingToolsPosition(self, workTool.spec_cylindered.movingTools, nil, vehicle.cp.pipeIndex)
 			vehicle.cp.pipePositions = {  
 							rot = rotation ;
 							trans = translation;

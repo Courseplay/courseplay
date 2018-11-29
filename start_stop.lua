@@ -25,7 +25,6 @@ function courseplay:start(self)
     -- Start the reset character timer.
 	courseplay:setCustomTimer(self, "resetCharacter", 300);
 
-		
 	if courseplay.isClient then
 		return
 	end
@@ -42,7 +41,10 @@ function courseplay:start(self)
 	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
-
+	--courseplay.alreadyPrinted = {}
+	--courseplay:printMeThisTable(self:getAttachedImplements(),0,5,"self")
+	
+	
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.spec_motorized.motor.maxRpm
