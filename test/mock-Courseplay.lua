@@ -45,6 +45,10 @@ function courseplay:distance(x1, z1, x2, z2)
 	return math.sqrt(dx * dx + dz * dz)
 end
 
+function courseplay:debug(str, channel)
+	print(str)
+end
+
 -- this should be ok to redefine here, these won't change much
 courseplay.MODE_GRAIN_TRANSPORT = 1;
 courseplay.MODE_COMBI = 2;

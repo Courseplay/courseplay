@@ -304,11 +304,9 @@ function TestTrafficController:testReserve()
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- still conflicting
 	lu.assertFalse(ok)
-	print(self.tc)
 
 	ok = self.tc:reserve(vehicleId1, course1, 5)
 	lu.assertTrue(ok)
-	print(self.tc)
 
 	ok = self.tc:reserve(vehicleId2, course2, 1)
 	-- still conflicting
@@ -322,7 +320,6 @@ function TestTrafficController:testReserve()
 	lu.assertTrue(ok)
 
 	self.tc:cancel(vehicleId1)
-	print(self.tc)
 	lu.assertEquals(tostring(self.tc),
 [[
 22222.....
@@ -379,6 +376,9 @@ local reserved =
 	self.tc:cleanUp()
 	-- still reserved as not reached the clean up time
 	lu.assertEquals(tostring(self.tc), reserved)
+	self.tc.clock = self.tc.clock + 1
+	self.tc:cleanUp()
+	lu.assertEquals(tostring(self.tc), empty)
 
 end
 

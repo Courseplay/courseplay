@@ -53,6 +53,17 @@ end
 -- the time of the reservation and on the internal clock value. This is to make sure that forgotten reservations
 -- don't block other vehicles forever.
 --
+-- Usage:
+---------
+-- After init() is called once to initialize the TrafficController singleton, call update()
+-- periodically to update the internal clock and trigger the cleanup when necessary.
+--
+-- Vehicles should be calling reserve() once start moving with the current waypoint index and
+-- check the return value.
+-- If reserve returns false it means it could not reserve all the tiles for the next lookaheadTimeSeconds
+-- and the vehicle should stop as its path is conflicting with another vehicles's path. The stopped
+-- vehicle keeps calling reserve() until it returns true, at that point the path should be clear.
+--
 
 TrafficController = CpObject()
 
@@ -244,14 +255,22 @@ end
 
 --- Clean up all stale reservations
 function TrafficController:cleanUp(vehicleId)
+	local nTotalReservedTiles = 0
+	local nFreedTiles = 0
 	for row in pairs(self.reservations) do
 		for col in pairs(self.reservations[row]) do
 			local reservation = self.reservations[row][col]
-			if reservation and reservation.timeStamp <= (self.clock - self.staleReservationTimeoutSeconds) then
-				self.reservations[row][col] = nil
+			if reservation then
+				nTotalReservedTiles = nTotalReservedTiles + 1
+				if reservation.timeStamp <= (self.clock - self.staleReservationTimeoutSeconds) then
+					self.reservations[row][col] = nil
+					nFreedTiles = nFreedTiles + 1
+					nTotalReservedTiles = nTotalReservedTiles - 1
+				end
 			end
 		end
 	end
+	self:debug('Clean up: freed %d tiles, total %d reserved tiles remaining.', nFreedTiles, nTotalReservedTiles)
 end
 
 function TrafficController:forwardIterator(from, to)
@@ -289,4 +308,8 @@ function TrafficController:__tostring()
 		result = result .. '\n'
 	end
 	return result
+end
+
+function TrafficController:debug(...)
+	courseplay:debug(string.format(...), 12)
 end
