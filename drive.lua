@@ -1846,10 +1846,11 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 	local fillLevel,capacity = 0,0
 	local fillLevelPercent = 0;
 	local fillType = 0;
-	local fillUnits = workTool:getFillUnits()
-	if fillUnits == nil then
+	if workTool.getFillUnits == nil then
 		return false
 	end
+	
+	local fillUnits = workTool:getFillUnits()
 	for index,fillUnit in pairs(fillUnits) do
 		if mode == 10 and workTool.cp.hasSpecializationLeveler then
 			if not workTool.cp.originalCapacities then

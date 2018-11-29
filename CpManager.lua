@@ -442,7 +442,7 @@ function CpManager.saveXmlSettings(self)
 		print(("COURSEPLAY ERROR: unable to load or create file -> %s"):format(CpManager.cpSettingsXmlFilePath));
 	end;
 end;
-g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, CpManager.saveXmlSettings);
+FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, CpManager.saveXmlSettings);
 
 -- adds courseplayer to global table, so that the system knows all of them
 function CpManager:addToTotalCoursePlayers(vehicle)
