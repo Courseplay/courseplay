@@ -215,7 +215,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	local hasWaterTrailer = false
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if workTool.allowTipDischarge and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
+		if workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
