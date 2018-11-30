@@ -9,9 +9,14 @@
 			<GuiElement type="bitmap" profile="ingameMenuGameSettingsHeaderIcon" position="0px 0px"/>
 			<GuiElement type="text" profile="ingameMenuFrameHeaderText" position="80px 0px" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 		</GuiElement>
-
 		<!-- Layouted settings box -->
 		<GuiElement type="empty" profile="ingameMenuSettingsBox" position="130px -124px" id="settingsContainer">
+			<!--GuiElement type="frameReference" ref="ingameMenuMapOverview" name="ingameMenuMapOverview" id="pageMapOverview"/-->
+
+			<GuiElement type="ingameMap" id="ingameMap" profile="ingameMapOverview" cursorId="mapCursor" onClickMap="onClickMap"
+									onDrawPostIngameMap="onDrawPostIngameMap" onClickHotspot="onClickHotspot"/>
+									<!--position="0px 140px" size="460px 460px"/>-->
+			<GuiElement type="bitmap" profile="ingameMapCursor" id="mapCursor" visible="false" />
 			<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px -50px" id="boxLayout">
 
 
@@ -29,7 +34,8 @@
 					<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 					<GuiElement type="button" profile="multiTextOptionSettingsRight"/>
 					<GuiElement type="text" profile="multiTextOptionSettingsText" />
-					<GuiElement type="text" profile="multiTextOptionSettingsTitle" text="$l10n_COURSEPLAY_FIELD_EDGE_PATH"/>
+					<GuiElement type="text" profile="multiTextOptionSettingsTitle" text="$l10n_COURSEPLAY_FIELD_EDGE_PATH
+"/>
 					<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 				</GuiElement>
 
@@ -143,7 +149,6 @@
 	</GuiElement>
 	<GuiElement type="flowLayout" profile="buttonBoxDocked" screenAlign="bottomLeft" positionOrigin="bottomLeft" position="130px 77px" id="buttonsPanel">
 		<GuiElement type="button" profile="buttonBack"   size="333px 40px" text="$l10n_button_back" onClick="onClickBack"/>
-		<GuiElement type="button" profile="buttonCircle" size="333px 40px" text="$l10n_COURSEPLAY_GENERATE_FIELD_COURSE"/>
-		<GuiElement type="button" profile="buttonSave"   size="334px 40px" text="$l10n_button_ok"   onClick="onClickOk"/>
+		<GuiElement type="button" profile="buttonSave"   size="334px 40px" text="$l10n_COURSEPLAY_GENERATE_FIELD_COURSE" onClick="onClickOk"/>
 	</GuiElement>
 </GUI>

@@ -110,6 +110,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
+	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
 
@@ -492,7 +493,7 @@ end
 --- Print a global variable
 -- @param variableName name of the variable, can be multiple levels
 -- @param depth maximum depth, 1 by default
-function CpManager:printVariable(variableName, maxDepth,printShortVersion)
+function CpManager:printVariable(variableName, maxDepth, printShortVersion)
 	print(string.format('%s - %s', tostring(variableName), tostring(maxDepth)))
 	local depth = maxDepth and math.max(1, tonumber(maxDepth)) or 1
 	local value = self:getVariable(variableName)
@@ -502,6 +503,8 @@ function CpManager:printVariable(variableName, maxDepth,printShortVersion)
 		if type == 'table' then
 			if not printShortVersion then
 				DebugUtil.printTableRecursively(value, '  ', 1, depth)
+				print('-- metatable -->')
+				DebugUtil.printTableRecursively(getmetatable(value), '  ', 1, depth)
 			else
 				--courseplay:printMeThisTable(table,level,maxlevel,upperPath)
 				courseplay.alreadyPrinted = {}
@@ -539,9 +542,9 @@ end
 function CpManager:traceOn(functionName)
 	-- split the name into the function and table containing it
 	local _, _, tabName, funcName = string.find(functionName, '(.*)%.(%w+)$')
-	local tab = self:getVariable(tabName)
-	if tab and type(tab[funcName]) == 'function' then
-		tab[funcName] = Utils.overwrittenFunction(tab[funcName], CpManager.installTraceFunction(functionName))
+	local func = self:getVariable(functionName)
+	if func and type(func) == 'function' then
+		func = Utils.overwrittenFunction(func, CpManager.installTraceFunction(functionName))
 	else
 		return(functionName .. ' is not a function.')
 	end

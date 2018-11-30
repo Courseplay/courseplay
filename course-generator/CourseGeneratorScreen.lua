@@ -18,7 +18,9 @@ CourseGeneratorScreen.CONTROLS = {
 	headlandDirection = 'headlandDirection',
 	headlandCorners = 'headlandCorners',
 	headlandPasses = 'headlandPasses',
-	headlandFirst = 'headlandFirst'
+	headlandFirst = 'headlandFirst',
+	ingameMap = 'ingameMap',
+	mapCursor = 'mapCursor'
 }
 
 function CourseGeneratorScreen:new(target, custom_mt)
@@ -52,7 +54,7 @@ end
 
 function CourseGeneratorScreen:showSelectedField()
 	self.state = CourseGeneratorScreen.SHOW_SELECTED_FIELD
-	self.hintText:setText(courseplay:loc('COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION'))
+--	self.hintText:setText(courseplay:loc('COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION'))
 end
 
 function CourseGeneratorScreen:showCourse()
@@ -95,6 +97,9 @@ end
 
 function CourseGeneratorScreen:onOpen()
 	g_currentMission.isPlayerFrozen = true
+	self.ingameMap:setIngameMap(g_currentMission.inGameMenu.baseIngameMap)
+	self.ingameMap.ingameMap:setZoomScale(1)
+
 	CourseGeneratorScreen:superClass().onOpen(self)
 --	if not self.coursePlot then
 --		self.coursePlot = CoursePlot:new(
