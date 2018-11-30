@@ -58,7 +58,7 @@ function CpManager:loadMap(name)
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
-	--Tommi self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
+	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays
 	courseplay:register(true)-- NOTE: running here again to check whether there were mods loaded after courseplay
 	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -557,6 +557,8 @@ end
 
 function CpManager:loadFile(fileName)
 	local path = courseplay.path .. fileName
+	local file = getfenv(0).io.open(path, 'r')
+	io.copy(path, path .. '.x')
 	local f = source(path)
 	if not f then
 		return 'Could not load ' .. path
@@ -986,6 +988,7 @@ function CpManager:setup2dCourseData(createOverlays)
 	end;
 
 	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
+	print('Overlay: ' .. tostring(self.course2dPolyOverlayId))
 
 	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
 	self.course2dTractorOverlay = Overlay:new( courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);

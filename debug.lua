@@ -434,6 +434,10 @@ end
 
 --- Ugly hack until we figure out why there's no global debug available in FS19
 debug = {}
+function debug.traceback()
+	return 'debug.traceback() not implemented'
+end
+
 function debug.getinfo()
 	local result = {}
 	result.name = 'debug.getinfo() not implemented'

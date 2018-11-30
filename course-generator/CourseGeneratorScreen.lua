@@ -7,6 +7,20 @@ CourseGeneratorScreen.SHOW_NOTHING = 0
 CourseGeneratorScreen.SHOW_FULL_MAP = 1
 CourseGeneratorScreen.SHOW_SELECTED_FIELD = 2
 
+-- these are needed to be able to access those screen elements with self.<id>
+CourseGeneratorScreen.CONTROLS = {
+	fieldSelector = 'fieldSelector',
+	startingLocation = 'startingLocation',
+	rowDirectionMode = 'rowDirectionMode',
+	manualDirectionAngle = 'manualDirectionAngle',
+	width = 'width',
+	islandBypassMode = 'islandBypassMode',
+	headlandDirection = 'headlandDirection',
+	headlandCorners = 'headlandCorners',
+	headlandPasses = 'headlandPasses',
+	headlandFirst = 'headlandFirst'
+}
+
 function CourseGeneratorScreen:new(target, custom_mt)
 	if custom_mt == nil then
 		custom_mt = CourseGeneratorScreen_mt
@@ -28,7 +42,7 @@ function CourseGeneratorScreen:new(target, custom_mt)
 		self.directionToState[ gameAngleDeg ] = i
 		i = i + 1
 	end
-
+	self:registerControls(CourseGeneratorScreen.CONTROLS)
 	return self
 end
 
@@ -42,12 +56,42 @@ function CourseGeneratorScreen:showSelectedField()
 end
 
 function CourseGeneratorScreen:showCourse()
-	if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
+	if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 and self.coursePlot then
 		self.coursePlot:setWaypoints( self.vehicle.Waypoints )
 		self.coursePlot:setStartPosition(self.vehicle.Waypoints[1].cx, self.vehicle.Waypoints[1].cz)
 		self.coursePlot:setStopPosition(self.vehicle.Waypoints[#self.vehicle.Waypoints].cx, self.vehicle.Waypoints[#self.vehicle.Waypoints].cz)
 	end
 end
+
+function CourseGeneratorScreen:onCreate()
+	--	if not self.coursePlot then
+	--		self.coursePlot = CoursePlot:new(
+	--			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
+	--			self.mapOverview.size[1], self.mapOverview.size[2])
+	--		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
+	--		self.coursePlot:setVisible(true)
+	--	end
+	print('CourseGeneratorScreen:onCreate()')
+	-- Make sure we always load the most up to date field data
+	-- List of fields
+	self.fields = {}
+	for key, field in pairs( courseplay.fields.fieldData ) do
+		table.insert( self.fields, { name = field.name, number = key })
+	end
+	table.sort( self.fields, function( a, b ) return a.number < b.number end )
+
+	-- set up a reverse lookup table
+	self.fieldToState = {}
+	for i, f in ipairs( self.fields ) do
+		self.fieldToState[ f.number ] = i
+		i = i + 1
+	end
+
+	-- add the 'currently loaded course' option
+	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
+	self.fieldToState[ 0 ] = #self.fields
+end
+
 
 function CourseGeneratorScreen:onOpen()
 	g_currentMission.isPlayerFrozen = true
@@ -67,25 +111,6 @@ function CourseGeneratorScreen:onOpen()
 		self.coursePlot:setStartPosition(x, z)
 	end
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
-
-	-- Make sure we always load the most up to date field data
-	-- List of fields
-	self.fields = {}
-	for key, field in pairs( courseplay.fields.fieldData ) do
-		table.insert( self.fields, { name = field.name, number = key })
-	end
-	table.sort( self.fields, function( a, b ) return a.number < b.number end )
-
-	-- set up a reverse lookup table
-	self.fieldToState = {}
-	for i, f in ipairs( self.fields ) do
-		self.fieldToState[ f.number ] = i
-		i = i + 1
-	end
-
-	-- add the 'currently loaded course' option
-	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
-	self.fieldToState[ 0 ] = #self.fields
 end
 
 function CourseGeneratorScreen:onClickResetMap(element)
@@ -157,8 +182,8 @@ function CourseGeneratorScreen:onOpenFieldSelector( element, parameter )
 		end
 	end
 	element:setTexts( texts )
-	--element:setState( self.fieldToState[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ])
-end
+	element:setState( self.fieldToState[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ])
+	end
 
 function CourseGeneratorScreen:onClickFieldSelector( state )
 	self:selectField( self.fields[ state ].number )
@@ -396,14 +421,12 @@ end
 function CourseGeneratorScreen:setHeadlandFields()
 	local headlandFieldsVisible = self.vehicle.cp.headland.mode ==
 		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE
-	--[[
   self.headlandDirection:setVisible( headlandFieldsVisible )
 	self.headlandPasses:setVisible( headlandFieldsVisible )
 	self.headlandFirst:setVisible( headlandFieldsVisible )
 	-- force headland turn maneuver for two side mode
 	self.headlandCorners:setVisible( headlandFieldsVisible and self.vehicle.cp.headland.mode ==
 		courseGenerator.HEADLAND_MODE_NORMAL)
-	]]--
 end
 
 function CourseGeneratorScreen:onOpenHeadlandMode( element, parameter )

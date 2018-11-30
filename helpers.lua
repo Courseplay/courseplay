@@ -682,6 +682,7 @@ function courseplay.utils:getFnCallPath(numPathSteps)
 end;
 
 function courseplay.utils:getFileNameFromPath(filePath)
+	if not filePath then return 'N/A' end
 	local fileName = filePath;
 
 	local idx = filePath:match('^.*()/'); -- check for last forward slash
