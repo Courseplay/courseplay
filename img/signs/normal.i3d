@@ -2,20 +2,20 @@
 
 <i3D name="CourseplayWaypointSign" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
   <Asset>
-    <Export program="GIANTS Editor 64bit" version="7.0.2"/>
+    <Export program="GIANTS Editor 64bit" version="8.1.0"/>
   </Asset>
 
   <Files>
-    <File fileId="2" filename="colorShader.xml" relativePath="true"/>
-    <File fileId="1" filename="normal.png" relativePath="true"/>
+    <File fileId="2" filename="colorShader.xml"/>
+    <File fileId="1" filename="normal.png"/>
   </Files>
 
 
   <Materials>
-    <Material name="line" materialId="8" ambientColor="1 1 1">
+    <Material name="line" materialId="4">
       <Emissivemap fileId="1"/>
     </Material>
-    <Material name="diamond" materialId="7" ambientColor="1 1 1" customShaderId="2">
+    <Material name="diamond" materialId="5" customShaderId="2">
       <Emissivemap fileId="1"/>
       <CustomParameter name="diffuseColor" value="1 0.212 0 1"/>
     </Material>
@@ -30,8 +30,8 @@
   </Dynamics>
 
   <Scene>
-    <Shape shapeId="1" name="Waypoint" clipDistance="100" nodeId="12" materialIds="7" castsShadows="true">
-      <Shape shapeId="2" name="Line" nodeId="13" materialIds="8" castsShadows="true"/>
+    <Shape shapeId="1" name="Waypoint" clipDistance="100" nodeId="9" materialIds="5" castsShadows="true">
+      <Shape shapeId="2" name="Line" nodeId="10" materialIds="4" castsShadows="true"/>
     </Shape>
   </Scene>
 

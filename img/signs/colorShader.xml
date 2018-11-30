@@ -3,7 +3,7 @@
 	Simple rgb color shader for emissiveMap materials
 	by Jakob Tischler, 26 December 2014
 -->
-<CustomShader version="3">
+<CustomShader version="4">
 	<Parameters>
 		<Parameter name="diffuseColor" target="diffuseColor" type="float3" defaultValue="1 0.212 0.0 1.0" minValue="0.0 0.0 0.0 1.0" maxValue="1.0 1.0 1.0 1.0" />
 	</Parameters>

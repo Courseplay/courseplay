@@ -303,25 +303,29 @@ function courseplay:onLoad(savegame)
 
 	-- DIRECTION NODE SETUP
 	local DirectionNode;
-	if self.aiVehicleDirectionNode ~= nil then
+	if self.getAIVehicleDirectionNode ~= nil then -- Check if function exist before trying to use it
 		if self.cp.componentNumAsDirectionNode then
+			-- If we have specified a component node as the derection node in the special tools section, then use it.
 			DirectionNode = self.components[self.cp.componentNumAsDirectionNode].node;
 		else
-			DirectionNode = self.aiVehicleDirectionNode;
+			DirectionNode = self:getAIVehicleDirectionNode();
 		end;
 	else
-		if courseplay:isWheelloader(self)then
-			if self.cp.hasSpecializationArticulatedAxis then
-				local nodeIndex = Utils.getNoNil(self.cp.componentNumAsDirectionNode, 2)
-				if self.components[nodeIndex] ~= nil then
-					DirectionNode = self.components[nodeIndex].node;
-				end
-			end;
-		end
-		if DirectionNode == nil then
-			DirectionNode = self.rootNode;
-		end
+		-- TODO: (Claus) Check Wheel Loaders Direction node a bit later.
+		--if courseplay:isWheelloader(self)then
+		--	if self.cp.hasSpecializationArticulatedAxis then
+		--		local nodeIndex = Utils.getNoNil(self.cp.componentNumAsDirectionNode, 2)
+		--		if self.components[nodeIndex] ~= nil then
+		--			DirectionNode = self.components[nodeIndex].node;
+		--		end
+		--	end;
+		--end
 	end;
+
+	-- If we cant get any valid direction node, then use the rootNode
+	if DirectionNode == nil then
+		DirectionNode = self.rootNode;
+	end
 
 	local directionNodeOffset, isTruck = courseplay:getVehicleDirectionNodeOffset(self, DirectionNode);
 	if directionNodeOffset ~= 0 then
