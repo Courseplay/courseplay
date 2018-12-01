@@ -1321,7 +1321,7 @@ function courseplay:isWheeledWorkTool(workTool)
 end;
 
 function courseplay:setPathVehiclesSpeed(vehicle,dt)
-	local pathVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId];
+	local pathVehicle = g_currentMission.nodeToObject[vehicle.cp.collidingVehicleId];
 	--print("update speed")
 	if pathVehicle.speedDisplayDt == nil then
 		pathVehicle.speedDisplayDt = 0;

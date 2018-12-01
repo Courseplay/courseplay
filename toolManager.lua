@@ -400,8 +400,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			cpPrintLine(6);
 			courseplay:debug(('%s cpTrafficCollisionIgnoreList'):format(nameNum(vehicle)), 3);
 			for a,b in pairs(vehicle.cpTrafficCollisionIgnoreList) do
-        if g_currentMission.nodeToVehicle[ a ] then
-          local name = g_currentMission.nodeToVehicle[a].name;
+        if g_currentMission.nodeToObject[ a ] then
+          local name = g_currentMission.nodeToObject[a].name;
           courseplay:debug(('\\___ [%s] = %s (%q)'):format(tostring(a), tostring(name), tostring(getName(a))), 3);
         end
 			end;

@@ -1146,7 +1146,7 @@ function courseplay:onUpdate(dt)
 	end;]]
 	
 	
-	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId] ~= nil and g_currentMission.nodeToVehicle[self.cp.collidingVehicleId].isCpPathvehicle then
+	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToObject[self.cp.collidingVehicleId] ~= nil and g_currentMission.nodeToObject[self.cp.collidingVehicleId].isCpPathvehicle then
 		courseplay:setPathVehiclesSpeed(self,dt)
 	end
 

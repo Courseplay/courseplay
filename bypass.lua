@@ -36,12 +36,12 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 
 	if self.cp.foundColli ~= nil and #(self.cp.foundColli) > 0  then
     -- but first take care of any previously found obstacles
-		local vehicle = g_currentMission.nodeToVehicle[self.cp.foundColli[1].id];
+		local vehicle = g_currentMission.nodeToObject[self.cp.foundColli[1].id];
 		local vehicleSpeed = 0
 		local xC,yC,zC = 0,0,0
 		if vehicle == nil then
 			local parent = getParent(self.cp.foundColli[1].id)
-			vehicle = g_currentMission.nodeToVehicle[parent]
+			vehicle = g_currentMission.nodeToObject[parent]
 		end
     -- this is where the obstacle is in local coordinates
 		local x,y,z = worldToLocal(self.cp.DirectionNode,self.cp.foundColli[1].x, self.cp.foundColli[1].y, self.cp.foundColli[1].z)
@@ -125,18 +125,18 @@ function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, dista
 	end;
 	local parent = getParent(transformId)
 	local parentParent = getParent(parent)
-	local vehicle = g_currentMission.nodeToVehicle[transformId];
+	local vehicle = g_currentMission.nodeToObject[transformId];
 	
 	-- if Id is not found, try a level higher
 	if vehicle == nil then
-		vehicle = g_currentMission.nodeToVehicle[parent]
+		vehicle = g_currentMission.nodeToObject[parent]
 	end
 	
 	--look whether the id is somewhere else in a vehicle (for cutters)
   -- TODO: disabled to see if this is causing #2441. If yes, we need to 
   -- find a way to make this more efficient.
 	if vehicle == nil and false then
-		for id, foundVehicle in pairs(g_currentMission.nodeToVehicle) do
+		for id, foundVehicle in pairs(g_currentMission.nodeToObject) do
 			for triggerName, TriggerId in pairs(foundVehicle) do
 				if TriggerId == transformId then
 					vehicle = foundVehicle

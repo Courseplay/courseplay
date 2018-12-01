@@ -110,7 +110,7 @@ function courseplay:updateCollisionVehicle(vehicle)
 				courseplay:debug(string.format("  parent is on local list ->ignore"), 3);	
 			else
 				courseplay:debug(string.format("  is not on CollisionIgnoreList"), 3);
-				local collisionVehicle = g_currentMission.nodeToVehicle[otherId];
+				local collisionVehicle = g_currentMission.nodeToObject[otherId];
 				if (collisionVehicle ~= nil and collisionVehicle.isTrafficLightStopper) --we already had it and marked it
 				or getName(otherId) == "AITrafficStopCanBeMoved"  -- Traffic Light System by Blacky_BPG (WasselMap)
 				or (collisionVehicle ~= nil and collisionVehicle.rootNode == nil) then
@@ -121,7 +121,7 @@ function courseplay:updateCollisionVehicle(vehicle)
 						trafficLight.isTrafficLightStopper = true;
 						trafficLight.name = TrafficLightStopper;
 						trafficLight.lastSpeedReal = 0;
-						g_currentMission.nodeToVehicle[otherId] = trafficLight;
+						g_currentMission.nodeToObject[otherId] = trafficLight;
 					elseif not collisionVehicle.isTrafficLightStopper then
 						collisionVehicle.isTrafficLightStopper = true;
 					end				
@@ -155,14 +155,14 @@ function courseplay:updateCollisionVehicle(vehicle)
 					-- is this a traffic vehicle?
 					local cm = getCollisionMask(otherId);
 					if collisionVehicle == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(otherId),'Trigger') and not string.match(getName(otherId),'trigger') then -- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
-						courseplay:debug(string.format("   g_currentMission.nodeToVehicle[%s] == nil -> setting %s as aPath vehicle",otherId,tostring(getName(otherId))), 3);
+						courseplay:debug(string.format("   g_currentMission.nodeToObject[%s] == nil -> setting %s as aPath vehicle",otherId,tostring(getName(otherId))), 3);
 						local pathVehicle = {}
 						pathVehicle.rootNode = otherId
 						pathVehicle.isCpPathvehicle = true
 						pathVehicle.name = "PathVehicle"
 						pathVehicle.sizeLength = 7
 						pathVehicle.sizeWidth = 3
-						g_currentMission.nodeToVehicle[otherId] = pathVehicle
+						g_currentMission.nodeToObject[otherId] = pathVehicle
 						local distance = courseplay:distanceToObject(vehicle, pathVehicle)
 						if distanceToCollisionVehicle > distance then
 							courseplay:debug(string.format("   %d is closer (%.2f m)",otherId,distance), 3);
@@ -187,7 +187,7 @@ end
 function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	local ahead = false
 	local inQueue = false
-	local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId]
+	local collisionVehicle = g_currentMission.nodeToObject[vehicle.cp.collidingVehicleId]
 	if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
 		local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId);
 		local tx, _, tz = worldToLocal(vehicle.cp.trafficCollisionTriggers[1], vx, vy, vz);
@@ -240,7 +240,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 		return refSpeed
 	end
 	if vehicle.cp.collidingVehicleId ~= nil then
-		local collisionVehicle = g_currentMission.nodeToVehicle[vehicle.cp.collidingVehicleId];
+		local collisionVehicle = g_currentMission.nodeToObject[vehicle.cp.collidingVehicleId];
 		local vehicleBehind = false
 		if collisionVehicle == nil then
 			--courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed:	setting vehicle.cp.collidingVehicleId nil",3)
