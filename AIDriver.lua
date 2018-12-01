@@ -65,26 +65,37 @@ end
 function AIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
-
-	-- get the direction to drive to
-	local lx, lz = self:getDirectionToNextWaypoint()
-
-	-- adjust direction in case we are driving reverse
-	local moveForwards
-	lx, lz, moveForwards = self:checkReverse(lx, lz)
-
 	-- should we keep driving?
 	local allowedToDrive = self:checkLastWaypoint()
-
-	self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+	self:driveCourse(dt, allowedToDrive)
 end
 
----
-function AIDriver:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, maxSpeed)
-	-- TODO: this lx/lz * 10 works fine now, but investigate if it makes sense to use the goal point coordinates.
-	-- not sure how to do this when reversing though
-	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, lx * 10, lz * 10, maxSpeed, false)
+--- Normal driving according to the course waypoints, using courseplay:goReverse() when needed
+-- to reverse with trailer.
+function AIDriver:driveCourse(dt, allowedToDrive)
+	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
+	if isReverseActive then
+		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+	else
+		-- use the PPC goal point when forward driving or reversing without trailer
+		local gx, _, gz = self.ppc:getGoalPointLocalPosition()
+		self:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, self:getSpeed())
+	end
 end
+
+--- Drive to a local position. This is the simplest driving mode towards the goal point
+function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
+	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, gx, gz, maxSpeed, false)
+end
+
+-- many courseplay modes control the vehicle through the lx/lz normalized local directions.
+-- this is an interface for those modes to drive the vehicle.
+function AIDriver:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, maxSpeed)
+	-- construct an artificial goal point to drive to
+	local gx, gz = lx * self.ppc:getLookaheadDistance(), lz * self.ppc:getLookaheadDistance()
+	self:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
+end
+
 
 --- Check if we are at the last waypoint and should we continue with first waypoint of the course
 -- or stop.
@@ -110,23 +121,29 @@ function AIDriver:checkLastWaypoint()
 	return allowedToDrive
 end
 
-function AIDriver:getDirectionToNextWaypoint()
+function AIDriver:getDirectionToGoalPoint()
 	-- goal point to drive to
-	local gx, gy, gz = self.ppc:getCurrentWaypointPosition()
+	local gx, gy, gz = self.ppc:getGoalPointPosition()
 	-- direction to the goal point
 	return AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx, gy, gz);
 end
 
-function AIDriver:checkReverse(lx, lz)
+
+--- Get the goal point when courseplay:goReverse is driving.
+-- if isReverseActive is false, use the returned gx, gz for driveToPoint, otherwise get them
+-- from PPC
+function AIDriver:getReverseDrivingDirection()
 	local moveForwards = true
+	local isReverseActive = false
+	-- get the direction to drive to
+	local lx, lz = self:getDirectionToGoalPoint()
 	-- take care of reversing
 	if self.ppc:isReversing() then
-		local isReverseActive
 		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
 		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz)
 	end
-	return lx, lz, moveForwards
+	return lx, lz, moveForwards, isReverseActive
 end
 
 function AIDriver:onWaypointChange(newIx)

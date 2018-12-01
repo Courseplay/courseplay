@@ -34,6 +34,7 @@ TestSettings = {}
 
 function TestSettings:setUp()
 	self.vehicle = {}
+	self.vehicle.lastSpeedReal = 1
 	self.vehicle.Waypoints = th.waypoints
 	self.vehicle.cp = {}
 	self.vehicle.cp.ppc = PurePursuitController(self.vehicle)

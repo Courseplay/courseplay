@@ -136,6 +136,10 @@ function PurePursuitController:setLookaheadDistance(d)
 	self.baseLookAheadDistance = d
 end
 
+function PurePursuitController:getLookaheadDistance()
+	return self.baseLookAheadDistance
+end
+
 function PurePursuitController:getCurrentWaypointIx()
 	return self.currentWpNode.ix
 end
@@ -416,10 +420,20 @@ function PurePursuitController:getDirection(lz)
 	return math.cos(steeringAngle)
 end
 
+-- goal point local position in the vehicle's coordinate system
+function PurePursuitController:getGoalPointLocalPosition()
+	return localToLocal(self.goalWpNode.node, self.vehicle.cp.DirectionNode, 0, 0, 0)
+end
+
+
+function PurePursuitController:getGoalPointPosition()
+	return getWorldTranslation(self.goalWpNode.node)
+end
+
 function PurePursuitController:getCurrentWaypointPosition()
 	local cx, cy, cz
 	if self:isActive() then
-		cx, cy, cz = getWorldTranslation(self.goalWpNode.node)
+		cx, cy, cz = self:getGoalPointPosition()
 	else
 		cy = 0
 		cx, cz = self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cx, self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cz

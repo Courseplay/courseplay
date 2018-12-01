@@ -32,11 +32,12 @@ function getRotation() return 0 end
 
 function getWorldTranslation() return 0, 0, 0 end
 function worldToLocal() return 0, 0, 0 end
+function localToLocal() return 0, 0, 0 end
 localToWorld = worldToLocal
 function localDirectionToWorld() return 0, 0, 0 end
 
-Utils = {}
-function Utils.vector2Length() return 0 end
+MathUtil = {}
+function MathUtil.vector2Length() return 0 end
 
 DebugUtil = {}
 DebugUtil.drawDebugNode = noOp
@@ -45,3 +46,4 @@ drawDebugLine = noOp
 AIVehicleUtil = {}
 function AIVehicleUtil.getDriveDirection() return 0, 0 end
 AIVehicleUtil.driveInDirection = noOp
+AIVehicleUtil.driveToPoint = noOp

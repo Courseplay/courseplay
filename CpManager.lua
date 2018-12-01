@@ -463,7 +463,8 @@ end;
 
 function CpManager:devAddMoney()
 	if g_server ~= nil then
-		g_currentMission:addSharedMoney(5000000, 'other');
+		-- no addSharedMoney in FS19
+--		g_currentMission:addSharedMoney(5000000, 'other');
 		return ('Added %s to your bank account'):format(g_i18n:formatMoney(5000000));
 	end;
 end;
@@ -552,7 +553,7 @@ function CpManager:traceOn(functionName)
 	else
 		return(functionName .. ' is not a function.')
 	end
-	return('argument tracing is on for ' .. tabName .. '.' .. funcName)
+	return('argument tracing is on for ' .. functionName)
 end
 
 --- get a reference pointing to the global variable 'variableName'
@@ -723,7 +724,7 @@ function CpManager:realTime10SecsChanged()
 			end;
 		end;
 		if totalWages > 0 then
-			g_currentMission:addSharedMoney(-totalWages * self.wageDifficultyMultiplier, 'wagePayment');
+			--g_currentMission:addSharedMoney(-totalWages * self.wageDifficultyMultiplier, 'wagePayment');
 		end;
 	end;
 end;

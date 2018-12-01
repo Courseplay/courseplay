@@ -39,7 +39,7 @@ function GrainTransportAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	--print("GrainTransportAIDriver:drive(dt)")
 	self.ppc:update()
-	local lx, lz = self:getDirectionToNextWaypoint()
+	local lx, lz = self:getDirectionToGoalPoint()
 	-- should we keep driving?
 	local allowedToDrive = self:checkLastWaypoint()
 
@@ -69,10 +69,8 @@ function GrainTransportAIDriver:drive(dt)
 		-- unload_tippers does the driving
 		return
 	else
-		-- we drive
-		local moveForwards
-		lx, lz, moveForwards = self:checkReverse(lx, lz)
-		self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+		-- we drive the course as usual
+		self:driveCourse(dt, allowedToDrive)
 	end
 end
 

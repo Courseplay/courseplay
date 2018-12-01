@@ -763,7 +763,7 @@ function courseplay:getRelativePointDirection(pp, cp, np, useC)
 
 	local rotDelta = rot1 - rot2; --TODO: rot2 - rot1 ?
 	
-	return Utils.getDirectionFromYRotation(rotDelta);
+	return MathUtil.getDirectionFromYRotation(rotDelta);
 end;
 
 function courseplay:getObjectName(object, xmlFile)

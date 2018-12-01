@@ -371,7 +371,7 @@ function ShovelModeAIDriver:drive(dt)
 	end
 	
 	lx, lz, moveForwards = self:checkReverse(lx, lz)
-	self:driveVehicle(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+	self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
 		
 end
 

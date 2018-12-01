@@ -1328,7 +1328,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
 		local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 		rotationDeg = rotationDeg + (90 * turnInfo.direction);
-		dx, dz = Utils.getDirectionFromYRotation(rad(rotationDeg));
+		dx, dz = MathUtil.getDirectionFromYRotation(rad(rotationDeg));
 		local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
 		fromPoint.x = wp.posX;
 		fromPoint.z = wp.posZ;
@@ -1444,7 +1444,7 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
 	local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 	rotationDeg = rotationDeg + (90 * turnInfo.direction);
-	dx, dz = Utils.getDirectionFromYRotation(rad(rotationDeg));
+	dx, dz = MathUtil.getDirectionFromYRotation(rad(rotationDeg));
 	local wp = vehicle.cp.turnTargets[#vehicle.cp.turnTargets];
 	fromPoint.x = wp.posX;
 	fromPoint.z = wp.posZ;

@@ -236,7 +236,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		local angleDiff = (frontAngleDiff - rearAngleDiff) * (1.5 - (workTool.cp.nodeDistance * 0.4 - 0.9) + rotDelta);
 		angleDiff = MathUtil.clamp(angleDiff, -rad(45), rad(45));
 
-		lx, lz = Utils.getDirectionFromYRotation(angleDiff);
+		lx, lz = MathUtil.getDirectionFromYRotation(angleDiff);
 	else
 		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, xTipper,yTipper,zTipper);
 		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor);
@@ -255,7 +255,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 		angleDiff = MathUtil.clamp(angleDiff, -maxTractorAngle, maxTractorAngle);
 
-		lx, lz = Utils.getDirectionFromYRotation(angleDiff);
+		lx, lz = MathUtil.getDirectionFromYRotation(angleDiff);
 	end;
 
 	if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and (vehicle.cp.totalFillLevel ~= nil and vehicle.cp.totalFillLevel > 0) then
