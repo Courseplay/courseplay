@@ -113,6 +113,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
+	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -574,6 +575,17 @@ function CpManager:loadFile(fileName)
 		f()
 		return path .. ' loaded.'
 	end
+end 
+
+function CpManager:setLookaheadDistance(d)
+	local vehicle = g_currentMission.controlledVehicle
+	if vehicle and vehicle.cp and vehicle.cp.ppc then
+		vehicle.cp.ppc:setLookaheadDistance(d)
+		print('Look ahead distance for ' .. vehicle.name .. ' changed to ' .. tostring(d))
+	else
+		print('No vehicle or has no PPC.')	
+	end
+	
 end
 
 function CpManager:setupFieldScanInfo()
