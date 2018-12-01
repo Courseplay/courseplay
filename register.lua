@@ -28,14 +28,11 @@ function courseplay:register(secondTime)
 		print('## Courseplay: register later loaded mods');
 	end
 	for typeName,vehicleType in pairs(g_vehicleTypeManager.vehicleTypes) do
-		--print(string.format("   typeName(%s),vehicleType(%s)",tostring(typeName),tostring(vehicleType)))
 		for i,specName in pairs(vehicleType.specializationNames) do
-			--print(string.format("   i(%s),specName(%s)",tostring(i),tostring(specName)))
-			if specName == 'drivable' and not vehicleType.hasCourseplaySpec then
+			if specName == 'aiVehicle' and not vehicleType.hasCourseplaySpec then
 				--table.insert(vehicleType.specializations, courseplaySpec);
 				g_vehicleTypeManager:addSpecialization(typeName, g_currentModName .. ".courseplay")
 				vehicleType.hasCourseplaySpec = true;
-				vehicleType.hasDrivableSpec = true;
 				numInstallationsVehicles = numInstallationsVehicles + 1;
 			end
 		end;
@@ -192,7 +189,7 @@ print(string.format('### Courseplay: installed into %d vehicle types', numInstal
 
 -- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil)
 
--- This fixes the problems with driveInDirection motor and curise control. There is a bug some where that is setting self.rotatedTime to 0
+-- This fixes the problems with driveInDirection motor and cruise control. There is a bug some where that is setting self.rotatedTime to 0
 local originaldriveInDirection = AIVehicleUtil.driveInDirection;
 AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceleration, slowAcceleration, slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, slowDownFactor)
 

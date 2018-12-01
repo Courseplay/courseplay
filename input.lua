@@ -1,30 +1,30 @@
 function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
 	-- Input binding debug
-	local self = g_currentMission.controlledVehicle
-	if self == nil then return end
+	local vehicle = g_currentMission.controlledVehicle		
+	if not vehicle or not vehicle.hasCourseplaySpec then return end
 	
 	--print(string.format('courseplay:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseButton(%s))', tostring(posX), tostring(posY), tostring(isDown), tostring(isUp), tostring(mouseButton) ))
 	--print(string.format("if isUp(%s) and mouseButton(%s) == courseplay.inputBindings.mouse.secondaryButtonId(%s) and Enterable.getIsEntered(self)(%s) then"
 	--,tostring(isUp),tostring(mouseButton),tostring(courseplay.inputBindings.mouse.secondaryButtonId),tostring(Enterable.getIsEntered(self))))
-	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and Enterable.getIsEntered(self) then
-		if self.cp.hud.show then
-			courseplay:setMouseCursor(self, not self.cp.mouseCursorActive);
-		elseif not self.cp.hud.show and self.cp.hud.openWithMouse then
-			courseplay:openCloseHud(self, true)
+	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and vehicle:getIsEntered() then
+		if vehicle.cp.hud.show then
+			courseplay:setMouseCursor(vehicle, not vehicle.cp.mouseCursorActive);
+		elseif not vehicle.cp.hud.show and vehicle.cp.hud.openWithMouse then
+			courseplay:openCloseHud(vehicle, true)
 		end;
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = self.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, self.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
+	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, vehicle.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
 
 	--LEFT CLICK
-	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and self.cp.hud.show and Enterable.getIsEntered(self) and mouseIsInHudArea then
+	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and mouseIsInHudArea then
 		local buttonToHandle;
 
-		if self.cp.suc.active then
-			for _,button in pairs(self.cp.buttons.suc) do
+		if vehicle.cp.suc.active then
+			for _,button in pairs(vehicle.cp.buttons.suc) do
 				if button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
@@ -33,7 +33,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if buttonToHandle == nil then
-			for _,button in pairs(self.cp.buttons.global) do
+			for _,button in pairs(vehicle.cp.buttons.global) do
 				if button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
@@ -42,7 +42,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if buttonToHandle == nil then
-			for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
+			for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
 				if button.canBeClicked and button.show and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
@@ -51,8 +51,8 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if buttonToHandle == nil then
-			if self.cp.hud.currentPage == 2 then
-				for _,button in pairs(self.cp.buttons[-2]) do
+			if vehicle.cp.hud.currentPage == 2 then
+				for _,button in pairs(vehicle.cp.buttons[-2]) do
 					if button.show and button:getHasMouse(posX, posY) then
 						buttonToHandle = button;
 						break;
@@ -64,7 +64,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if buttonToHandle then
 			buttonToHandle:setClicked(isDown);
 			if not buttonToHandle.isDisabled and buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
-				self.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
+				vehicle.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
 			end;
 			if isUp then
 				buttonToHandle:handleMouseClick();
@@ -75,10 +75,10 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 
 	--HOVER
-	elseif self.cp.mouseCursorActive and not isDown and self.cp.hud.show and Enterable.getIsEntered(self) then
+	elseif vehicle.cp.mouseCursorActive and not isDown and vehicle.cp.hud.show and vehicle:getIsEntered() then
 		-- local currentHoveredButton;
-		if self.cp.suc.active then
-			for _,button in pairs(self.cp.buttons.suc) do
+		if vehicle.cp.suc.active then
+			for _,button in pairs(vehicle.cp.buttons.suc) do
 				if button.show and not button.isHidden then
 					button:setClicked(false);
 					button:setHovered(button:getHasMouse(posX, posY));
@@ -86,7 +86,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 			end;
 		end;
 
-		for _,button in pairs(self.cp.buttons.global) do
+		for _,button in pairs(vehicle.cp.buttons.global) do
 			button:setClicked(false);
 			if button.show and not button.isHidden then
 				button:setClicked(false);
@@ -94,16 +94,16 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 			end;
 		end;
 
-		self.cp.hud.mouseWheel.render = false;
-		for _,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
+		vehicle.cp.hud.mouseWheel.render = false;
+		for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
 			button:setClicked(false);
 			if button.show and not button.isHidden then
 				button:setHovered(button:getHasMouse(posX, posY));
 				if button.isHovered then
 					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
 						--Mouse wheel icon
-						self.cp.hud.mouseWheel.render = true;
-						self.cp.hud.mouseWheel.icon:setPosition(posX + 3/g_screenWidth, posY - 16/g_screenHeight);
+						vehicle.cp.hud.mouseWheel.render = true;
+						vehicle.cp.hud.mouseWheel.icon:setPosition(posX + 3/g_screenWidth, posY - 16/g_screenHeight);
 
 						--action
 						local parameter = button.parameter;
@@ -115,29 +115,29 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 						local downParameter = upParameter * -1;
 
 						if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
-							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(self), tostring(button.functionToCall), tostring(upParameter)), 18);
-							self:setCourseplayFunc(button.functionToCall, upParameter, false, button.page);
+							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(upParameter)), 18);
+							vehicle:setCourseplayFunc(button.functionToCall, upParameter, false, button.page);
 						elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
-							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(self), tostring(button.functionToCall), tostring(downParameter)), 18);
-							self:setCourseplayFunc(button.functionToCall, downParameter, false, button.page);
+							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(downParameter)), 18);
+							vehicle:setCourseplayFunc(button.functionToCall, downParameter, false, button.page);
 						end;
 					end;
 				end;
 
 				if button.hoverText and not button.isDisabled then
-					self.cp.hud.content.pages[button.page][button.row][1].isHovered = button.isHovered;
+					vehicle.cp.hud.content.pages[button.page][button.row][1].isHovered = button.isHovered;
 				end;
 			end;
 		end;
 
-		if self.cp.hud.currentPage == 2 then
-			for _,button in pairs(self.cp.buttons[-2]) do
+		if vehicle.cp.hud.currentPage == 2 then
+			for _,button in pairs(vehicle.cp.buttons[-2]) do
 				button:setClicked(false);
 				if button.show and not button.isHidden then
 					button:setHovered(button:getHasMouse(posX, posY));
 
 					if button.hoverText then
-						self.cp.hud.content.pages[2][button.row][1].isHovered = button.isHovered;
+						vehicle.cp.hud.content.pages[2][button.row][1].isHovered = button.isHovered;
 					end;
 				end;
 			end;
@@ -147,19 +147,19 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 	-- ##################################################
 	-- 2D COURSE WINDOW: DRAG + DROP MOVE
-	if self.cp.course2dDrawData and (self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
+	if vehicle.cp.course2dDrawData and (vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
 		local plot = CpManager.course2dPlotField;
-		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.cp.mouseCursorActive and Enterable.getIsEntered(self) and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
+		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle:getIsEntered() and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
 			CpManager.course2dDragDropMouseDown = { posX, posY };
-			if self.cp.course2dPdaMapOverlay then
-				self.cp.course2dPdaMapOverlay.origPos = { self.cp.course2dPdaMapOverlay.x, self.cp.course2dPdaMapOverlay.y };
+			if vehicle.cp.course2dPdaMapOverlay then
+				vehicle.cp.course2dPdaMapOverlay.origPos = { vehicle.cp.course2dPdaMapOverlay.x, vehicle.cp.course2dPdaMapOverlay.y };
 			else
-				self.cp.course2dBackground.origPos = { self.cp.course2dBackground.x, self.cp.course2dBackground.y };
+				vehicle.cp.course2dBackground.origPos = { vehicle.cp.course2dBackground.x, vehicle.cp.course2dBackground.y };
 			end;
 		elseif isUp and CpManager.course2dDragDropMouseDown ~= nil then
-			courseplay.utils:move2dCoursePlotField(self, posX, posY);
+			courseplay.utils:move2dCoursePlotField(vehicle, posX, posY);
 		elseif not isUp and not isDown and CpManager.course2dDragDropMouseDown ~= nil then
-			courseplay.utils:update2dCourseBackgroundPos(self, posX, posY);
+			courseplay.utils:update2dCourseBackgroundPos(vehicle, posX, posY);
 		end;
 	end;
 end; --END mouseEvent()
