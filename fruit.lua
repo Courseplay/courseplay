@@ -14,8 +14,8 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 			return true;
 		end;
 	else
-		for i = 1, FruitUtil.NUM_FRUITTYPES do
-			if i ~= FruitUtil.FRUITTYPE_GRASS then
+		for i = 1, g_fruitTypeManager.numCategories do
+			if i ~= g_fruitTypeManager.GRASS then
 				density = FieldUtil.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true,true);
 				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
@@ -101,16 +101,16 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	if fixedFruitType then
 		local density, total = FieldUtil.getFruitArea(fixedFruitType, x1,z1, x2,z2, hx,hz, true,true);
 		if density > 0 then
-			return true, density, fixedFruitType, FruitUtil.fruitIndexToDesc[fixedFruitType].name;
+			return true, density, fixedFruitType, g_fruitTypeManager.indexToFruitType[fixedFruitType].name --IndexToDesc[fixedFruitType].name; this might wrong conversion
 		end;
 		return false;
 	end;
 
-	for i = 1, FruitUtil.NUM_FRUITTYPES do
-		if i ~= FruitUtil.FRUITTYPE_GRASS then
+	for i = 1, g_fruitTypeManager.numCategories do
+		if i ~= g_fruitTypeManager.GRASS then
 			local density, total = FieldUtil.getFruitArea(i, x1,z1, x2,z2, hx,hz, true,true);
 			if density > 0 then
-				local fruitName = FruitUtil.fruitIndexToDesc[i].name;
+				local fruitName = g_fruitTypeManager.indexToFruitType[fixedFruitType].name -- FruitUtil.fruitIndexToDesc[i].name;  this might wrong conversion
 				courseplay:debug(string.format('hasLineFruit(): fruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
 				return true, density, i, fruitName;
 			end;
@@ -180,8 +180,8 @@ function courseplay:check_for_fruit(vehicle, distance) --TODO (Jakob): this func
 	local leftFruit = 0
 	local rightFruit = 0
 
-	for i = 1, FruitUtil.NUM_FRUITTYPES do
-		if i ~= FruitUtil.FRUITTYPE_GRASS then
+	for i = 1, g_fruitTypeManager.numCategories do
+		if i ~= g_fruitTypeManager.GRASS then
 			leftFruit = leftFruit + FieldUtil.getFruitArea(i, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ,true,true); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?
 
 			rightFruit = rightFruit + FieldUtil.getFruitArea(i, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ,true,true); -- TODO: add "true" to allow preparingFruit (potatoes, sugarBeet) ?

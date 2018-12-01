@@ -468,7 +468,7 @@ function CpManager:devAddMoney()
 	end;
 end;
 function CpManager:devAddFillLevels()
-	--[[ Ryan TODO FillUtil.NUM_FILLTYPES doesn't have exist in g_fillTypeManager
+	--[[ Ryan TODO FillUtil.NUM_FILLTYPES doesn't have exist in g_fillTypeManager. Also the set and get functions might not exist there any more 
 	if g_server ~= nil then
 		for fillType=1,FillUtil.NUM_FILLTYPES do
 			g_currentMission:setSiloAmount(fillType, g_currentMission:getSiloAmount(fillType) + 500000);
