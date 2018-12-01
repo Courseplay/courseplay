@@ -112,7 +112,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					courseplay:debug('    trigger is PlaceableHeap', 1);
 				end;
 
-				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and FillUtil.fillTypeIntToName[trailerFillType] or ''), 1);
+				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and g_fillTypeManager.indexToName[trailerFillType] or ''), 1);
 				if trailerFillType and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[trailerFillType] then
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
 
@@ -287,13 +287,13 @@ function courseplay:updateAllTriggers()
 						courseplay:debug('\t\tadd WeightStationTrigger', 1);
 
 					-- SowingMachineFillTriggers
-					elseif trigger.fillType and trigger.fillType == FillUtil.FILLTYPE_SEEDS then
+					elseif trigger.fillType and trigger.fillType == g_fillTypeManager.SEEDS then
 						trigger.isSowingMachineFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'sowingMachine', 'nonUpdateable');
 						courseplay:debug('\t\tadd SowingMachineFillTrigger', 1);
 
 					-- SprayerFillTriggers
-					elseif trigger.fillType and (trigger.fillType == FillUtil.FILLTYPE_FERTILIZER or trigger.fillType == FillUtil.FILLTYPE_LIQUIDFERTILIZER) then
+					elseif trigger.fillType and (trigger.fillType == g_fillTypeManager.FERTILIZER or trigger.fillType == g_fillTypeManager.LIQUIDFERTILIZER) then
 						trigger.isSprayerFillTrigger = true;
 						courseplay:cpAddTrigger(triggerId, trigger, 'sprayer', 'nonUpdateable');
 						courseplay:debug('\t\tadd SprayerFillTrigger', 1);
@@ -329,13 +329,13 @@ function courseplay:updateAllTriggers()
 							courseplay:debug('\t\tadd GasStationTrigger', 1);
 
 						-- SowingMachineFillTriggers
-						elseif trigger.fillType and trigger.fillType == FillUtil.FILLTYPE_SEEDS then
+						elseif trigger.fillType and trigger.fillType == g_fillTypeManager.SEEDS then
 							trigger.isSowingMachineFillTrigger = true;
 							courseplay:cpAddTrigger(triggerId, trigger, 'sowingMachine', 'nonUpdateable');
 							courseplay:debug('\t\tadd SowingMachineFillTrigger', 1);
 
 						-- SprayerFillTriggers
-						elseif trigger.fillType and (trigger.fillType == FillUtil.FILLTYPE_FERTILIZER or trigger.fillType == FillUtil.FILLTYPE_LIQUIDFERTILIZER) then
+						elseif trigger.fillType and (trigger.fillType == g_fillTypeManager.FERTILIZER or trigger.fillType == g_fillTypeManager.LIQUIDFERTILIZER) then
 							trigger.isSprayerFillTrigger = true;
 							courseplay:cpAddTrigger(triggerId, trigger, 'sprayer', 'nonUpdateable');
 							courseplay:debug('\t\tadd SprayerFillTrigger', 1);
@@ -414,7 +414,7 @@ function courseplay:updateAllTriggers()
 				--print(string.format('object.Produkte.fillTypes =%s FillUtil.FILLTYPE_SEEDS = %s, FillUtil.FILLTYPE_FERTILIZER =%s',tostring(object.Produkte.fillTypes),tostring(FillUtil.FILLTYPE_SEEDS),tostring(FillUtil.FILLTYPE_FERTILIZER)))
 				if object.Produkte.seedsOUT then
 					local trigger = object.Produkte.seedsOUT.LiquideTrigger
-					trigger.fillType = FillUtil.FILLTYPE_SEEDS
+					trigger.fillType = g_fillTypeManager.SEEDS
 					trigger.isSowingMachineFillTrigger = true;
 					trigger.FrabikScript = true;
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sowingMachine', 'nonUpdateable');
@@ -423,7 +423,7 @@ function courseplay:updateAllTriggers()
 				-- SprayerFillTriggers
 				elseif object.Produkte.liquidFertilizerOUT then
 					local trigger = object.Produkte.liquidFertilizerOUT.LiquideTrigger
-					trigger.fillType = FillUtil.FILLTYPE_LIQUIDFERTILIZER
+					trigger.fillType = g_fillTypeManager.LIQUIDFERTILIZER
 					trigger.isSprayerFillTrigger = true;
 					trigger.FrabikScript = true;
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sprayer', 'nonUpdateable');
@@ -431,7 +431,7 @@ function courseplay:updateAllTriggers()
 
 				elseif object.Produkte.fertilizerOUT then
 					local trigger = object.Produkte.fertilizerOUT.LiquideTrigger
-					trigger.fillType = FillUtil.FILLTYPE_FERTILIZER
+					trigger.fillType = g_fillTypeManager.FERTILIZER
 					trigger.isSprayerFillTrigger = true;
 					trigger.FrabikScript = true;
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'sprayer', 'nonUpdateable');
@@ -722,7 +722,7 @@ end;
 
 function courseplay:printTipTriggersFruits(trigger)
 	for k,_ in pairs(trigger.acceptedFillTypes) do
-		print(('    %s: %s'):format(tostring(k), tostring(FillUtil.fillTypeIntToName[k])));
+		print(('    %s: %s'):format(tostring(k), tostring(g_fillTypeManager.indexToName[k])));
 	end
 end;
 

@@ -352,7 +352,7 @@ function courseplay:drive(self, dt)
 					-- Set Timer if unloading pipe takes time before empty.
 					if self.getFirstEnabledFillType and self.pipeParticleSystems and self.cp.totalFillLevelPercent > 0 then
 						local filltype = self:getFirstEnabledFillType();
-						if filltype ~= FillUtil.FILLTYPE_UNKNOWN and self.pipeParticleSystems[filltype] then
+						if filltype ~= g_fillTypeManager.UNKNOWN and self.pipeParticleSystems[filltype] then
 							local stopTime = self.pipeParticleSystems[filltype][1].stopTime;
 							if stopTime then
 								courseplay:setCustomTimer(self, "waitUntilPipeIsEmpty", stopTime);

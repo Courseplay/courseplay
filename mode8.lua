@@ -50,7 +50,7 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 				--Liquid Manure Sell Triggers and BGA Extension Mod
 				elseif workTool.cp.isLiquidManureOverloader then
 					local triggers = g_currentMission.trailerTipTriggers[workTool]
-					if triggers ~= nil and triggers[1].acceptedFillTypes ~= nil and triggers[1].acceptedFillTypes[workTool.cp.fillType] and workTool.cp.fillType == FillUtil.fillTypeNameToInt.liquidManure then
+					if triggers ~= nil and triggers[1].acceptedFillTypes ~= nil and triggers[1].acceptedFillTypes[workTool.cp.fillType] and workTool.cp.fillType == g_fillTypeManager.nameToIndex.liquidManure then
 
 						local inBGAExtensionTrigger = triggers[1].bga and triggers[1].bga.fermenter_bioOK
 						local goForUnloading = workTool.cp.fillLevel > 0 and workTool.tipState == Trailer.TIPSTATE_CLOSED 

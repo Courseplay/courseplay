@@ -155,7 +155,7 @@ function courseplay:onLoad(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.tipperLoadMode = 0;
 	self.cp.easyFillTypeList = {};
-	self.cp.siloSelectedFillType = 0 --FillUtil.FILLTYPE_UNKNOWN;
+	self.cp.siloSelectedFillType = g_fillTypeManager.UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
@@ -1552,7 +1552,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay.signs:setSignsVisibility(self);
 
 		self.cp.siloSelectedFillType = FillTypeManager.getFillTypeIndexByName(Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown'));
-		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = 0 end  --Tommi FillUtil.FILLTYPE_UNKNOWN; end;
+		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = g_fillTypeManager.UNKNOWN end 
 
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
@@ -1888,7 +1888,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	end;
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q runNumber="%d" runCounter="%d" runCounterBool=%q saveFuelOption=%q drivingMode=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), FillUtil.fillTypeIntToName[self.cp.siloSelectedFillType], self.cp.runNumber, runCounter, tostring(self.cp.runCounterBool), tostring(self.cp.saveFuelOptionActive), tostring(self.cp.drivingMode:get()));
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q runNumber="%d" runCounter="%d" runCounterBool=%q saveFuelOption=%q drivingMode=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), g_fillTypeManager.indexToName[self.cp.siloSelectedFillType], self.cp.runNumber, runCounter, tostring(self.cp.runCounterBool), tostring(self.cp.saveFuelOptionActive), tostring(self.cp.drivingMode:get()));
 	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q alignment=%q searchCombineOnField="%d" />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel),tostring(self.cp.alignment.enabled),self.cp.searchCombineOnField);

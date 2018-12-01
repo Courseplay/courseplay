@@ -60,7 +60,7 @@ end;
 function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
 	local eftl = vehicle.cp.easyFillTypeList;
 	local newVal = 1;
-	if currentSelectedFilltype and currentSelectedFilltype ~= FillUtil.FILLTYPE_UNKNOWN then
+	if currentSelectedFilltype and currentSelectedFilltype ~= g_fillTypeManager.UNKNOWN then
 		for index, fillType in ipairs(eftl) do
 			if currentSelectedFilltype == fillType then
 				newVal = index;
@@ -89,7 +89,7 @@ function courseplay:getAvalibleFillTypes(object, fillUnitIndex)
 		if object.fillUnits then
 			for _, fillUnit in pairs(object.fillUnits) do
 				for fillType, enabled in pairs(fillUnit.fillTypes) do
-					if fillType ~= FillUtil.FILLTYPE_UNKNOWN and enabled then
+					if fillType ~= g_fillTypeManager.UNKNOWN and enabled then
 						fillTypes[fillType] = enabled;
 					end;
 				end;
@@ -106,7 +106,7 @@ function courseplay:getAllAvalibleFillTypes(vehicle)
 	    for _, workTool in pairs(vehicle.cp.workTools) do
 		    local toolFillTypes = courseplay:getAvalibleFillTypes(workTool);
 			for fillType, enabled in pairs(toolFillTypes) do
-				if fillType ~= FillUtil.FILLTYPE_UNKNOWN and enabled then
+				if fillType ~= g_fillTypeManager.UNKNOWN and enabled then
 					fillTypes[fillType] = enabled;
 				end;
 			end
@@ -779,7 +779,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			if not siloTrigger.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) and unloadDistance < vehicle.cp.trailerFillDistance then
 				siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
-				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(FillUtil.fillTypeIntToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);
+				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(g_fillTypeManager.indexToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);
 			elseif siloTrigger.isFilling then
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
 			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.driveOnAtFillLevel and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then
@@ -1202,7 +1202,7 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 		end;
 
 		-- Sprayer / liquid manure transporters
-		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool:allowFillType(FillUtil.FILLTYPE_MANURE) then
+		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool:allowFillType(g_fillTypeManager.MANURE) then
 			-- print(('\tworkTool %d (%q)'):format(i, nameNum(workTool)));
 			local fillTrigger;
 			if vehicle.cp.fillTrigger ~= nil then
@@ -1455,7 +1455,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 						end;
 						if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 							local filltype = vehicle:getFirstEnabledFillType();
-							if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+							if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 								local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 								if stopTime then
 									courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
@@ -1480,7 +1480,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				end
 				if goForTipping and vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 					local filltype = vehicle:getFirstEnabledFillType();
-					if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+					if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 						local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 						if stopTime then
 							courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
@@ -1628,7 +1628,7 @@ function courseplay:handleHeapUnloading(vehicle)
 					-- Set Timer if unloading pipe takes time before empty.
 					if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 						local filltype = vehicle:getFirstEnabledFillType();
-						if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+						if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 							local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 							if stopTime then
 								courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
@@ -1642,7 +1642,7 @@ function courseplay:handleHeapUnloading(vehicle)
 						-- Set Timer if unloading pipe takes time before empty.
 						if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 							local filltype = vehicle:getFirstEnabledFillType();
-							if filltype ~= FillUtil.FILLTYPE_UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+							if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 								local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 								if stopTime then
 									courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
