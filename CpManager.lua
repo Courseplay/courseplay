@@ -498,14 +498,17 @@ function CpManager:printVariable(variableName, maxDepth, printShortVersion)
 	print(string.format('%s - %s', tostring(variableName), tostring(maxDepth)))
 	local depth = maxDepth and math.max(1, tonumber(maxDepth)) or 1
 	local value = self:getVariable(variableName)
-	local type = type(value)
+	local valueType = type(value)
 	if value then
 		print(string.format('Printing %s (%s), depth %d', variableName, type, depth))
-		if type == 'table' then
+		if valueType == 'table' then
 			if not printShortVersion then
 				DebugUtil.printTableRecursively(value, '  ', 1, depth)
-				print('-- metatable -->')
-				DebugUtil.printTableRecursively(getmetatable(value), '  ', 1, depth)
+				local mt = getmetatable(value)
+				if mt and type(mt) == 'table' then
+					print('-- metatable -->')
+					DebugUtil.printTableRecursively(mt, '  ', 1, depth)
+				end
 			else
 				--courseplay:printMeThisTable(table,level,maxlevel,upperPath)
 				courseplay.alreadyPrinted = {}

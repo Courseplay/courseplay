@@ -6,150 +6,46 @@
 @date:    31 Oct 2014
 --]]
 
-local modDir = g_currentModDirectory;
-
 inputCourseNameDialogue = {};
 inputCourseNameDialogue.firstTimeRun = true;
 local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue, ScreenElement)
 inputCourseNameDialogue.types = { "course", "folder", "filter" };
+
+inputCourseNameDialogue.CONTROLS = {
+	titleTextElement = 'titleTextElement',
+	textInputElement = 'textInputElement',
+	buttonSave = 'buttonSave'
+}
 
 function inputCourseNameDialogue:new(target, custom_mt)
 	if custom_mt == nil then
 		custom_mt = inputCourseNameDialogue_mt
 	end
 	local self = ScreenElement:new(target, custom_mt)
+	self:registerControls(inputCourseNameDialogue.CONTROLS)
+	-- needed for onClickBack to work.
+	self.returnScreenName = "";
 	return self
 end; --END new()
 
-local elementOverlayExists = function(element)
-	return element.overlay ~= nil and element.overlay.overlay ~= nil and element.overlay.overlay ~= 0;
-end;
-
-function inputCourseNameDialogue:setImageOverlay(element, filePath, type)
-	-- print(('\t\tsetImageOverlay(): element=%q, filePath=%q, type=%q'):format(tostring(element), tostring(filePath), tostring(type)));
-
-	if type == nil then
-		if elementOverlayExists(element) then
-			delete(element.overlay.overlay);
-		end;
-
-		element.overlay.overlay = createImageOverlay(filePath);
-		element.overlay.filePath = filePath;
-	else
-		type = type:sub(2);
-		if element.courseplayTypes == nil then
-			element.courseplayTypes = {};
-		end;
-		if element.courseplayTypes[type] == nil then
-			element.courseplayTypes[type] = {};
-		end;
-
-		element.courseplayTypes[type].overlayId = createImageOverlay(filePath);
-		element.courseplayTypes[type].filePath = filePath;
-		if type == 'course' then -- set the default overlay - ONLY DO THIS ONCE (for the course)
-			if elementOverlayExists(element) then
-				delete(element.overlay.overlay);
-			end;
-			element.overlay.overlay = element.courseplayTypes[type].overlayId;
-			element.overlay.filePath = element.courseplayTypes[type].filePath;
-		end;
-
-		-- print(tableShow(element, 'element "' .. filePath .. '"'));
-	end;
-end;
-function inputCourseNameDialogue.setModImages(element, xmlFile, key)
-	element.modImgDir = modDir .. (getXMLString(xmlFile, key .. "#MOD_imageDir") or "");
-	local fileNames = getXMLString(xmlFile, key .. '#MOD_imageFilename');
-
-	if fileNames ~= nil then
-		local split = StringUtil.splitString(",", fileNames);
-		if #split == 1 then
-			inputCourseNameDialogue:setImageOverlay(element, element.modImgDir .. fileNames);
-		elseif #split == #inputCourseNameDialogue.types then
-			for _,data in pairs(split) do
-				local kv = StringUtil.splitString(":", data);
-				local type, filePath = unpack(kv);
-				local realFilePath = filePath;
-				if not Utils.startsWith(filePath, "$") then
-					realFilePath = element.modImgDir .. filePath;
-				end;
-
-				inputCourseNameDialogue:setImageOverlay(element, realFilePath, type);
-			end;
-		else
-			--ERROR
-		end;
-	end;
-end; --END setModImages()
-BitmapElement.loadFromXML =    Utils.appendedFunction(BitmapElement.loadFromXML,    inputCourseNameDialogue.setModImages);
--- TextInputElement.loadFromXML = Utils.appendedFunction(TextInputElement.loadFromXML, inputCourseNameDialogue.setModImages);
-ButtonElement.loadFromXML =    Utils.appendedFunction(ButtonElement.loadFromXML,    inputCourseNameDialogue.setModImages);
-
-function inputCourseNameDialogue:onCreateTitleText(element)
-	self.titleTextElement = element;
-end; --END onCreateTitleText()
-
-function inputCourseNameDialogue:onCreateSaveText(element)
-	self.saveTextElement = element;
-end; --END onCreateSaveButton()
-
-function inputCourseNameDialogue:onCreateCancelText(element)
-	self.cancelTextElement = element;
-end; --END onCreateCancelButton()
-
-function inputCourseNameDialogue:onCreateTextInput(element)
-	self.textInputElement = element;
-end; --END onCreateTextInput()
 
 function inputCourseNameDialogue:onOpen(element)
 	g_currentMission.isPlayerFrozen = true;
 	g_inputBinding:setShowMouseCursor(true);
 
-	if self.firstTimeRun then
-		--SET GET TITLE TEXT
-		if self.titleTextElement.courseText == nil or self.titleTextElement.folderText == nil or self.titleTextElement.filterText == nil then
-			local cpTitleParts = StringUtil.splitString(",", self.titleTextElement.text);
-			local courseTitle = string.sub(cpTitleParts[1], 5);
-			local folderTitle = string.sub(cpTitleParts[2], 5);
-			local filterTitle = string.sub(cpTitleParts[3], 5);
-			self.titleTextElement.courseText =  courseplay.locales[courseTitle] or "Course name:";
-			self.titleTextElement.folderText =  courseplay.locales[folderTitle] or "Folder name:";
-			self.titleTextElement.filterText =  courseplay.locales[filterTitle] or "Filter courses:";
-		end;
-
-		--SET CANCLE TEXT
-		local cancelText = string.sub(self.cancelTextElement.text, 5);
-		self.cancelTextElement.text = courseplay.locales[cancelText]:format(courseplay.locales["COURSEPLAY_BUTTON_ESC"]) or "Cancel with Escape";
-
-		if self.saveTextElement.courseText == nil or self.saveTextElement.folderText == nil or self.saveTextElement.filterText == nil then
-			local cpSaveTextParts = StringUtil.splitString(",", self.saveTextElement.text);
-			local courseSaveText = string.sub(cpSaveTextParts[1], 5);
-			local folderSaveText = string.sub(cpSaveTextParts[2], 5);
-			local filterSaveText = string.sub(cpSaveTextParts[3], 5);
-			local saveButton = courseplay.locales["COURSEPLAY_BUTTON_RETURN"];
-			self.saveTextElement.courseSaveText = courseplay.locales[courseSaveText]:format(saveButton) or "Return to Save Course";
-			self.saveTextElement.folderSaveText = courseplay.locales[folderSaveText]:format(saveButton) or "Return to Save Folder";
-			self.saveTextElement.filterSaveText = courseplay.locales[filterSaveText]:format(saveButton) or "Return to Filter Courses";
-		end;
-
-		self.firstTimeRun = false;
-	end;
-
-	local saveWhat = courseplay.vehicleToSaveCourseIn.cp.saveWhat;
-
-	--SET TITLE TEXT
-	self.titleTextElement.text = self.titleTextElement[saveWhat .. "Text"];
-
-	--SET SAVE TEXT
-	self.saveTextElement.text = self.saveTextElement[saveWhat .. "SaveText"];
+	local saveWhat = courseplay.vehicleToSaveCourseIn.cp.saveWhat
+	if saveWhat == 'course' then
+		self.titleTextElement.text = courseplay:loc('COURSEPLAY_COURSE_NAME')
+	elseif saveWhat == 'folder' then
+		self.titleTextElement.text = courseplay:loc('COURSEPLAY_FOLDER_NAME')
+	elseif saveWhat == 'filter' then
+		self.titleTextElement.text = courseplay:loc('COURSEPLAY_FILTER_COURSES')
+	end
 
 	self:validateCourseName();
 
 	--SET FOCUS
 	FocusManager:setFocus(self.textInputElement);
-	self.textInputElement.mouseDown = false;
-	self.textInputElement.state = TextInputElement.STATE_PRESSED;
-	self.textInputElement:setForcePressed(true);
 end; --END onOpen()
 
 function inputCourseNameDialogue:onClose(element)
@@ -162,20 +58,15 @@ function inputCourseNameDialogue:onIsUnicodeAllowed(unicode)
 end; --END onIsUnicodeAllowed()
 
 function inputCourseNameDialogue:onSaveClick()
-	--print("inputCourseNameDialogue:onSaveClick()");
 	local vehicle = courseplay.vehicleToSaveCourseIn
 	if vehicle.cp.saveWhat == 'course' then
 		if self.textInputElement ~= nil then
-			--print("self.textInputElement.text= "..tostring(self.textInputElement.text).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 			vehicle:setCpVar('currentCourseName',self.textInputElement.text);
-			--CourseplayEvent.sendEvent(vehicle, "self.cp.currentCourseName", self.textInputElement.text)
 			vehicle.cp.doNotOnSaveClick = true
-		else
-			--print("self.textInputElement= "..tostring(self.textInputElement).."  courseplay.vehicleToSaveCourseIn.cp.currentCourseName= "..tostring(courseplay.vehicleToSaveCourseIn.cp.currentCourseName));
 		end
 
-		local maxID = courseplay.courses:getMaxCourseID() -- horoman: made maxID local, should not make a difference as it is used nowhere (at least Eclipse file search doesn't find it in any of the courseplay files)
+		local maxID = courseplay.courses:getMaxCourseID()
 		if maxID == nil then
 			g_currentMission.cp_courses = {};
 			maxID = 0
@@ -200,7 +91,7 @@ function inputCourseNameDialogue:onSaveClick()
 
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
 		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
-		
+
 		g_currentMission.cp_sorted = courseplay.courses:sort()
 		if not courseplay.isClient then
 			courseplay.courses:saveCourseToXml(vehicle.cp.currentCourseId, nil, true)
@@ -214,7 +105,7 @@ function inputCourseNameDialogue:onSaveClick()
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
 		end
-	
+
 		local maxID = courseplay.courses:getMaxFolderID()
 		if maxID == nil then
 			g_currentMission.cp_folders = {}
@@ -258,37 +149,32 @@ function inputCourseNameDialogue:onCancelClick()
 	self.textInputElement.visibleTextPart1 = "";
 	self.textInputElement.cursorPosition = 1;
 	self.textInputElement.cursorBlinkTime = 0;
-	self.saveTextElement.text = "";
 
-	g_gui:showGui("");
 	courseplay.vehicleToSaveCourseIn.cp.saveFolderName = nil
 	courseplay.vehicleToSaveCourseIn = nil;
-	self:onClose();
-end; --END onCancelClick()
+	-- call the stock back handling
+	self:onClickBack()
+end;
 
 function inputCourseNameDialogue:onTextChanged()
 	self:validateCourseName();
-end; --END onTextChanged()
+end
 
 function inputCourseNameDialogue:onEnterPressed()
 	if self:validateCourseName() then
 		self:onSaveClick();
 	end;
-end; --END onEnterPressed()
+end
+
+function inputCourseNameDialogue:onEscPressed()
+	self:onCancelClick()
+end
 
 function inputCourseNameDialogue:validateCourseName()
-	self.saveTextElement.disabled = self.textInputElement.text == nil or self.textInputElement.text:len() < 1;
-
-	return not self.saveTextElement.disabled;
-end; --END validateCourseName()
-
-function inputCourseNameDialogue:setTextInputFocus(element)
-end;
-
-function inputCourseNameDialogue:setCallbacks(onCourseNameEntered, target)
-	self.target = target;
-end; --END setCallbacks()
-
+	local disabled = self.textInputElement.text == nil or self.textInputElement.text:len() < 1
+	self.buttonSave:setDisabled(disabled)
+	return not disabled;
+end
 
 g_inputCourseNameDialogue = inputCourseNameDialogue:new();
 g_gui:loadGui(courseplay.path .. 'inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);

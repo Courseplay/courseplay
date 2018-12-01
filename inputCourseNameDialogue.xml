@@ -1,76 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<GUI name="inputCourseNameDialogue" onOpen="onOpen" onClose="onClose" onEnterPressed="onEnterPressed">
-	<GuiElement name="background" type="bitmap" position="0px 300px" size="512px 128px" screenAlign="middleCenter" positionOrigin="middleCenter" imageFilename="shared/splash.png" MOD_imageDir="img/inputCourseNameGUI/" MOD_imageFilename="inputCourseName_bg.png" imageColor="1 1 1 1">
-		<!-- Title text -->
-		<GuiElement 
-			name="titleText" 
-			type="text" 
-			onCreate="onCreateTitleText"
-			textSize="10px"
-			textBold="false" 
-			textColor="0.95 0.95 0.95 1" 
-			text="$CP_COURSEPLAY_COURSE_NAME,$CP_COURSEPLAY_FOLDER_NAME,$CP_COURSEPLAY_FILTER_COURSES" 
+<GUI name="inputCourseNameDialogue" onOpen="onOpen" onClose="onClose">
+	<GuiElement type="empty" profile="newLayer" />
+	<GuiElement type="bitmap" profile="dialogFullscreenBg" />
 
-			screenAlign="topLeft" positionOrigin="topLeft" position="8px+10px -8px"
-			profile="textDefault"
-		/>
+	<GuiElement type="bitmap" profile="dialogBg" id="dialogElement">
+		<GuiElement type="text" profile="dialogTitle" text="$l10n_COURSEPLAY_COURSE_NAME" id="titleTextElement" position="0px -50px" />
 
-		<GuiElement 
-			name="textInput" type="textInput" text="" 
+		<!-- not sure if the onFocus onLeave is needed -->
+		<GuiElement type="textInput" profile="dialogTextInput" id="textInputElement" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" onEscPressed="onEscPressed" onFocus="onInputFocus" onLeave="onInputLeave"/>
 
-			screenAlign="topLeft" positionOrigin="topLeft" position="8px+32px -8px-13px"
-			size="432px 40px"
-
-			onCreate="onCreateTextInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" onIsUnicodeAllowed="onIsUnicodeAllowed" 
-			onEscPressed="onCancelClick"
-
-			maxInputTextWidth="432px"
-			maxCharacters="25" 
-
-			focusId="1" 
-			focusChangeRight="2" 
-			focusChangeBottom="2" 
-			focusInit="onOpen"
-
-			textColor="0.12 0.12 0.12 1" 
-			textSelectedColor="0.12 0.12 0.12 1" 
-			textSize="20px"
-			textBold="false"
-			textAlignment="left"
-
-			cursorFilename="g_baseUIFilename" 
-			cursorUVs="176px 457px 208px 489px"
-			cursorOffset="4px 0px"
-		/>
-
-		<!-- Cancel With ESC -->
-		<GuiElement
-				name="titleText"
-				type="text"
-				onCreate="onCreateCancelText"
-				textSize="10px"
-				textBold="false"
-				textAlignment="left"
-				textColor="0.95 0.95 0.95 1"
-				text="$CP_COURSEPLAY_CANCEL_WITH"
-
-				screenAlign="bottomLeft" positionOrigin="bottomLeft" position="8px+10px 12px"
-				profile="textDefault"
-		/>
-
-		<!-- Save With Return -->
-		<GuiElement
-				name="titleText"
-				type="text"
-				onCreate="onCreateSaveText"
-				textSize="10px"
-				textBold="false"
-				textAlignment="right"
-				textColor="0.95 0.95 0.95 1"
-				text="$CP_COURSEPLAY_SAVE_COURSE_WITH,$CP_COURSEPLAY_SAVE_FOLDER_NAME_WITH,$CP_COURSEPLAY_FILTER_COURSE_WITH"
-
-				screenAlign="bottomRight" positionOrigin="bottomRight" position="-8px-10px 12px"
-				profile="textDefault"
-		/>
-</GuiElement>
+		<GuiElement type="flowLayout" profile="buttonBoxDialog">
+			<GuiElement type="button" profile="buttonBack" text="$l10n_button_back" onClick="onCancelClick"/>
+			<GuiElement type="button" profile="buttonOK" text="$l10n_button_save" onClick="onClickOk" id="buttonSave"/>
+		</GuiElement>
+	</GuiElement>
 </GUI>
