@@ -1132,7 +1132,7 @@ function courseplay:sekToTimeFormat(numSec)
 	return timeTable	
 end
 
-function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
+function courseplay:printMeThisTable(t,level,maxlevel,upperPath,includeSelectionObject)
 	local stepWidth = 4
 	local spacer = math.max(1,level*stepWidth)
 	local lowSpacer = math.max(1,spacer-stepWidth)
@@ -1157,8 +1157,12 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
 		for index,value in pairs(t)do
 			local newPath = upperPath.."."..tostring(index)
 			if type(value) =='table' and nextLevel<=maxlevel then
-				print(string.format("%s%s:(%s)",printSpace,tostring(newPath),tostring(value)))
-				courseplay:printMeThisTable(value,nextLevel,maxlevel,newPath)	
+				if not includeSelectionObject and tostring(index) == "selectionObject" then
+					print(string.format("%s%s:(%s -> Table Excluded)",printSpace,tostring(newPath),tostring(value)));
+				else
+					print(string.format("%s%s:(%s)",printSpace,tostring(newPath),tostring(value)))
+					courseplay:printMeThisTable(value,nextLevel,maxlevel,newPath,includeSelectionObject)
+				end;
 			else
 				print(printSpace..string.format("%s:%s",tostring(index),tostring(value)))
 			end
