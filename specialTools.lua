@@ -26,7 +26,8 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Cultivator 		   then workTool.cp.hasSpecializationCultivator 		 = true;
 		elseif spec == Cutter 			   then workTool.cp.hasSpecializationCutter 			 = true;
 		elseif spec == Cylindered 		   then workTool.cp.hasSpecializationCylindered 		 = true;
-		elseif spec == Fillable 		   then workTool.cp.hasSpecializationFillable 			 = true;
+		elseif spec == FillUnit 		   then workTool.cp.hasSpecializationFillUnit 			 = true;
+		elseif spec == FillVolume 		   then workTool.cp.hasSpecializationFillVolume			 = true;
 		elseif spec == Foldable 		   then workTool.cp.hasSpecializationFoldable 			 = true;
 		elseif spec == FruitPreparer 	   then workTool.cp.hasSpecializationFruitPreparer 		 = true;
 		elseif spec == FuelTrailer		   then workTool.cp.hasSpecializationFuelTrailer		 = true;
@@ -45,6 +46,10 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Overloading 		   then workTool.cp.hasSpecializationOverloader			 = true;
 		elseif spec == Trailer	 		   then workTool.cp.hasSpecializationTrailer			 = true;		
 		end;
+	end;
+
+    if workTool.cp.hasSpecializationFillUnit and workTool.cp.hasSpecializationFillVolume then
+		workTool.cp.hasSpecializationFillable = true;
 	end;
 
 	if workTool.cp.hasSpecializationFillable then
