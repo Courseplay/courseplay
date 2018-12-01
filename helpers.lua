@@ -1132,7 +1132,15 @@ function courseplay:sekToTimeFormat(numSec)
 	return timeTable	
 end
 
-function courseplay:printMeThisTable(t,level,maxlevel,upperPath,includeSelectionObject)
+
+local excludeTables = {
+	["selectionObject"] 		= true,
+	["modifierTargetObject"] 	= true
+}
+function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
+	-- If alreadyPrinted is not defined, define it.
+	if not courseplay.alreadyPrinted then courseplay.alreadyPrinted = {} end;
+
 	local stepWidth = 4
 	local spacer = math.max(1,level*stepWidth)
 	local lowSpacer = math.max(1,spacer-stepWidth)
@@ -1157,11 +1165,11 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath,includeSelection
 		for index,value in pairs(t)do
 			local newPath = upperPath.."."..tostring(index)
 			if type(value) =='table' and nextLevel<=maxlevel then
-				if not includeSelectionObject and tostring(index) == "selectionObject" then
+				if excludeTables[tostring(index)] then
 					print(string.format("%s%s:(%s -> Table Excluded)",printSpace,tostring(newPath),tostring(value)));
 				else
 					print(string.format("%s%s:(%s)",printSpace,tostring(newPath),tostring(value)))
-					courseplay:printMeThisTable(value,nextLevel,maxlevel,newPath,includeSelectionObject)
+					courseplay:printMeThisTable(value,nextLevel,maxlevel,newPath)
 				end;
 			else
 				print(printSpace..string.format("%s:%s",tostring(index),tostring(value)))
@@ -1174,4 +1182,9 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath,includeSelection
 	else
 		print(printLowSpace.."]")
 	end
+
+	-- We are done printing, so clear the alreadyPrinted table.
+	if level == 0 then
+		courseplay.alreadyPrinted = {};
+	end;
 end
