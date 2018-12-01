@@ -996,7 +996,6 @@ function CpManager:setup2dCourseData(createOverlays)
 	end;
 
 	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
-	print('Overlay: ' .. tostring(self.course2dPolyOverlayId))
 
 	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
 	self.course2dTractorOverlay = Overlay:new( courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);

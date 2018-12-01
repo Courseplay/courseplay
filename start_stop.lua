@@ -42,7 +42,7 @@ function courseplay:start(self)
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 	courseplay.alreadyPrinted = {}
-	courseplay:printMeThisTable(self,0,5,"self")
+	--courseplay:printMeThisTable(self,0,5,"self")
 	
 	
 	if self.cp.orgRpm == nil then
