@@ -1567,7 +1567,7 @@ function courseplay:changeDrawCourseMode(vehicle, changeBy)
 end;
 
 function courseplay:setEngineState(vehicle, on)
-	if vehicle == nil or on == nil or vehicle.isMotorStarted == on then
+	if vehicle == nil or on == nil or vehicle.spec_motorized.isMotorStarted == on then
 		return;
 	end;
 

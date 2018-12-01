@@ -653,7 +653,7 @@ function courseplay:stop(self)
 	self.steeringEnabled = true;
 	self.disableCharacterOnLeave = true;
 
-	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.isMotorStarted then
+	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
 		self.cp.saveFuel = false;		
 	end

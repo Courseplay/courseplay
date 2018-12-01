@@ -29,11 +29,11 @@ function courseplay:drive(self, dt)
 	end;
 
 	if self.cp.saveFuel then
-		if self.isMotorStarted then
+		if self.spec_motorized.isMotorStarted then
 			--print("stop Order")
 			courseplay:setEngineState(self, false);
 		end
-	elseif not self.isMotorStarted then
+	elseif not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
 		--("start Order")
 	elseif not courseplay:getIsEngineReady(self) then
