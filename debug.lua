@@ -88,12 +88,12 @@ end;
 
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
-	return
-	--[[ Tommi if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
-		local timestamp = getDate( "%H:%M:%S")
-    	local seconds = courseplay.clock / 1000
-		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. timestamp .. '] ' .. str);
-	end;]]
+	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+		--local timestamp = getDate( "%H:%M:%S")
+    	--local seconds = courseplay.clock / 1000
+		--print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. timestamp .. '] ' .. str);
+		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. str);
+	end;
 end;
 
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 

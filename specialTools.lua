@@ -309,7 +309,7 @@ function courseplay:setNameVariable(workTool)
 			workTool.toggleTipState = courseplay.sugarCaneTrailerToggleTipstate
 			workTool.tipState = Trailer.TIPSTATE_CLOSED
 		end
-	elseif workTool.cp.xmlFileName ==  'randonCanavieiroSemi.xml' or workTool.cp.xmlFileName ==  'randonCanavieiro.xml' then
+	--[[ Tommi elseif workTool.cp.xmlFileName ==  'randonCanavieiroSemi.xml' or workTool.cp.xmlFileName ==  'randonCanavieiro.xml' then
 		workTool.cp.isSugarCaneTrailer = true
 		if workTool.tipReferencePoints == nil then
 			workTool.tipReferencePoints = {[1]= {["zOffset"] = 0,
@@ -322,7 +322,7 @@ function courseplay:setNameVariable(workTool)
 			workTool.tipState = Trailer.TIPSTATE_CLOSED
 			workTool.couldNotDropTimer = 0 --TODO add couldNotDropTimer function in :updateSugarCaneTrailerTipping()
 			workTool.allowTipDischarge = true
-		end
+		end]]
 	-- ###########################################################
 	-- [4] FERTILIZER EQUIPMENT
 	-- Zunhammer TV [Giants Mod: Holmer Pack]

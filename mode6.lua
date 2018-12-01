@@ -77,8 +77,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
 		local needsLowering = false
 		
-		if workTool.attacherJoint ~= nil then
-			needsLowering = workTool.attacherJoint.needsLowering
+		if workTool.spec_aiImplement ~= nil then
+			needsLowering = workTool.spec_aiImplement.needsLowering
 		end
 		
 		--speedlimits
@@ -106,7 +106,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							--print(string.format("if courseplay:isRoundbaler(workTool)(%s) and fillLevel(%s) > capacity(%s) * 0.9 and fillLevel < capacity and workTool.baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
 							--tostring(courseplay:isRoundbaler(workTool)),tostring(fillLevel),tostring(capacity),tostring(workTool.baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
 							if courseplay:isRoundbaler(workTool) and fillLevel > capacity * 0.9 and fillLevel < capacity and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
-								if not workTool.turnOnVehicle.isTurnedOn and not stoppedForReason then
+								if not workTool.spec_turnOnVehicle.isTurnedOn and not stoppedForReason then
 									workTool:setIsTurnedOn(true, false);
 								end;
 								workSpeed = 0.5;
@@ -120,7 +120,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								if workTool.baler.unloadingState == Baler.UNLOADING_OPEN then
 									workTool:setIsUnloadingBale(false)
 								end
-							elseif fillLevel >= 0 and not workTool.turnOnVehicle.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
+							elseif fillLevel >= 0 and not workTool.spec_turnOnVehicle.isTurnedOn and workTool.baler.unloadingState == Baler.UNLOADING_CLOSED then
 								workTool:setIsTurnedOn(true, false);
 							end
 							if workTool.baleWrapperState and workTool.baleWrapperState == 4 then --Unloads the baler wrapper combo
@@ -306,25 +306,26 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 							if not isFolding and isUnfolded then
 								--lower
-								if (needsLowering or workTool.aiNeedsLowering) and not workTool:isLowered() then
-									workTool:aiLower()
+								if (needsLowering or workTool:getAiNeedsLowering()) and not workTool:getIsLowered() then
+									workTool:setLoweredAll(true)
 									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
 
 								--turn on
-								if workTool.setIsTurnedOn ~= nil and not workTool.turnOnVehicle.isTurnedOn then
+								if workTool.setIsTurnedOn ~= nil and not workTool.spec_turnOnVehicle.isTurnedOn then
 									workTool:setIsTurnedOn(true, false);
 									courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
 									vehicle.cp.runOnceStartCourse = false
 									courseplay:setMarkers(vehicle, workTool);
 								end;
-
+								--[[ Tommi Pickup stuff still needed ?
 								if workTool.setPickupState ~= nil then
 									if workTool.isPickupLowered ~= nil and not workTool.isPickupLowered then
 										workTool:setPickupState(true, false);
 										courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
 									end;
 								end;
+								]]
 							end;
 						end;
 					end
@@ -333,20 +334,21 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					if not specialTool then
 						if not isFolding then
 							--turn off
-							if workTool.setIsTurnedOn ~= nil and workTool.turnOnVehicle.isTurnedOn then
+							if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
 								workTool:setIsTurnedOn(false, false);
 								courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 							end;
+							--[[ Tommi Pickup stuff still needed ?
 							if workTool.setPickupState ~= nil then
 								if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
 									workTool:setPickupState(false, false);
 									courseplay:debug(string.format('%s: raise pickup order', nameNum(workTool)), 17);
 								end;
-							end;
+							end;]]
 
 							--raise
-							if (needsLowering or workTool.aiNeedsLowering) and vehicle.cp.turnStage == 0 and workTool:isLowered() then
-								workTool:aiRaise();
+							if (needsLowering or workTool:getAiNeedsLowering()) and vehicle.cp.turnStage == 0 and workTool:getIsLowered() then
+								workTool:setLowered(false);
 								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
 							end;
 						end;
@@ -517,7 +519,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							if isTurnedOn then
 								tool:setIsTurnedOn(false);
 							end;
-							if workTool:isLowered() then
+							if workTool:getIsLowered() then
 									courseplay:lowerImplements(vehicle, false, false);
 							end;
 							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.cp.fillLevel == 0) or (tool.courseplayers and tool.courseplayers[1] == nil) then

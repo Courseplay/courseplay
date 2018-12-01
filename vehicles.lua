@@ -51,7 +51,7 @@ function courseplay:disableCropDestruction(vehicle)
 	end;
 
 	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle.spec_attacherJoints.attachedImplements) do
+	for _,impl in pairs(vehicle:getAttachedImplements()) do
 		courseplay:disableCropDestruction(impl.object);
 	end;
 end;
@@ -64,7 +64,7 @@ function courseplay:enableCropDestruction(vehicle)
 	end;
 
 	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle.spec_attacherJoints.attachedImplements) do
+	for _,impl in pairs(vehicle:getAttachedImplements()) do
 		courseplay:enableCropDestruction(impl.object);
 	end;
 end;
@@ -320,7 +320,7 @@ end;
 function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 	local distances = vehicle.cp.distances;
 	local totalDistance = 0;
-	for _, imp in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
+	for _, imp in ipairs(vehicle:getAttachedImplements()) do
 		if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 			local workTool = imp.object;
 			if courseplay:isWheeledWorkTool(workTool) then
@@ -342,7 +342,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 	end;
 
 	if vehicle.cp.DirectionNode and totalDistance > 0 then
-		for _, imp in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
+		for _, imp in ipairs(vehicle:getAttachedImplements()) do
 			if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 				local workTool = imp.object;
 				totalDistance = totalDistance + distances.turningNodeToRearTrailerAttacherJoints[workTool.attacherJoint.jointType];
@@ -778,7 +778,7 @@ function courseplay:getHighestToolTurnDiameter(object)
 			courseplay:debug(('%s: toolTurnDiameter=%.2fm'):format(nameNum(workTool), turnDiameter), 6);
 
 			-- Check rear attached tools for turnDiameters
-			if workTool.spec_attacherJoints.attachedImplements and workTool.spec_attacherJoints.attachedImplements ~= {} then
+			if workTool.getAttachedImplements and workTool:getAttachedImplements() ~= {} then
 				local ttd = courseplay:getHighestToolTurnDiameter(workTool);
 				if ttd > turnDiameter then
 					turnDiameter = ttd;
@@ -809,7 +809,7 @@ function courseplay:getToolTurnRadius(workTool)
 		local attacherVehicle			= workTool.attacherVehicle;
 		local workToolDistances			= workTool.cp.distances or courseplay:getDistances(workTool);
 
-		for i, attachedImplement in pairs(attacherVehicle.spec_attacherJoints.attachedImplements) do
+		for i, attachedImplement in pairs(attacherVehicle:getAttachedImplements()) do
 			if attachedImplement.object == workTool then
 				-- Check if AIVehicleUtil can calculate it for us
 				local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
@@ -968,7 +968,7 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 		local hasRearAttach = false;
 		local jointType = 0;
 
-		for _, implement in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
+		for _, implement in ipairs(vehicle:getAttachedImplements()) do
 			-- Check if it's rear attached
 			if courseplay:isRearAttached(vehicle, implement.jointDescIndex) then
 				hasRearAttach = true;
@@ -1006,7 +1006,7 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 		local hasRearAttach = false;
 		local jointType = 0;
 
-		for _, implement in ipairs(vehicle.spec_attacherJoints.attachedImplements) do
+		for _, implement in ipairs(vehicle:getAttachedImplements()) do
 			-- Check if it's rear attached
 			if courseplay:isRearAttached(vehicle, implement.jointDescIndex) then
 				hasRearAttach = true;

@@ -270,7 +270,7 @@ end;
 
 function courseplay:getFirstReversingWheeledWorkTool(vehicle)
 	-- Checl all attached implements if we are an wheeled workTool behind the tractor
-	for _, imp in ipairs(vehicle.attachedImplements) do
+	for _, imp in ipairs(vehicle:getAttachedImplements()) do
 		-- Check if the implement is behind
 		if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 			if courseplay:isWheeledWorkTool(imp.object) then

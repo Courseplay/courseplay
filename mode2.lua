@@ -571,8 +571,8 @@ function courseplay:unload_combine(vehicle, dt)
 			tX, tY, tZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, -5*reverser);
 		end
 
-		if combine.attachedImplements ~= nil then
-			for k, i in pairs(combine.attachedImplements) do
+		if combine.getAttachedImplements ~= nil then
+			for k, i in pairs(combine:getAttachedImplements()) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
 					tX, tY, tZ = localToWorld(implement.rootNode, vehicle.cp.combineOffset, 0, trailerOffset)
@@ -1564,8 +1564,8 @@ function courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, pr
 		prnToCombineZ = 0;
 
 		-- check for chopper dolly trailer ('Häcksel-Dolly')
-		if combine.attachedImplements ~= nil and combine.haeckseldolly then
-			for k, i in pairs(combine.attachedImplements) do
+		if combine.getAttachedImplements ~= nil and combine.haeckseldolly then
+			for k, i in pairs(combine:getAttachedImplements()) do
 				local implement = i.object;
 				if implement.haeckseldolly == true then
 					sourceRootNode = implement.rootNode;

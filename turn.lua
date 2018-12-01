@@ -14,11 +14,10 @@ function courseplay:turn(vehicle, dt)
 	-- 0:	Raise implements
 	-- 1:	Create Turn maneuver (Creating waypoints to follow)
 	-- 2:	Drive Turn maneuver
-
-  -- abort turn if loaded and heading back to the silo except when on an alignment course
+-- abort turn if loaded and heading back to the silo except when on an alignment course
   -- (which is a turn manuever) to the first course waypoint
-  if vehicle.cp.isLoaded and not courseplay:onAlignmentCourse( vehicle ) then
-    vehicle.cp.isTurning = nil;
+	if vehicle.cp.isLoaded and not courseplay:onAlignmentCourse( vehicle ) then
+		vehicle.cp.isTurning = nil;
 		courseplay:clearTurnTargets(vehicle);
 		return;
 	end
@@ -1953,6 +1952,7 @@ function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
 end
 
 function courseplay:lowerImplements(self, moveDown, workToolonOff)
+	print(string.format("courseplay:lowerImplements(self, moveDown(%s), workToolonOff(%s)))",tostring(moveDown),tostring(workToolonOff)))
 	--moveDown true= lower,  false = raise , workToolonOff true = switch on worktool,  false = switch off worktool
 	if moveDown == nil then 
 		moveDown = false; 
@@ -1969,21 +1969,22 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
 		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
 		
 		if not specialTool then
+			--[[Tommi pisckup stuff still needed ?
 			if workTool.setPickupState ~= nil then
 				if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
 					workTool:setPickupState(moveDown, false);
 				end;
-			end;
+			end;]]
 			if moveDown then
-				if workTool.aiLower ~= nil and not workTool:isLowered() then
-					workTool:aiLower();
+				if workTool.setLowered ~= nil and not workTool:getIsLowered() then
+					workTool:setLowered(true);
 				end
-			elseif workTool.aiRaise ~= nil and workTool:isLowered() then
-					workTool:aiRaise()
+			elseif workTool.setLowered ~= nil and workTool:getIsLowered() then
+					workTool:setLowered(false);
 			end;		
 			if self.cp.mode == 4 then
 																						 --vvTODO (Tom) why is this here vv?
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.turnOnVehicle.isTurnedOn ~= workToolonOff then
+				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.spec_turnOnVehicle.isTurnedOn ~= workToolonOff then
 					workTool:setIsTurnedOn(workToolonOff, false);                          -- disabled for Pantera
 				end;
 			end;

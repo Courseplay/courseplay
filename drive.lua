@@ -62,12 +62,12 @@ function courseplay:drive(self, dt)
 			drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0)
 		end;
 
-		if #avoidWorkAreaType == 0 then
+		--[[Tommi if #avoidWorkAreaType == 0 then
 			avoidWorkAreaType[WorkArea.AREATYPE_RIDGEMARKER] = true;
 			avoidWorkAreaType[WorkArea.AREATYPE_MOWERDROP] = true;
 			avoidWorkAreaType[WorkArea.AREATYPE_WINDROWERDROP] = true;
 			avoidWorkAreaType[WorkArea.AREATYPE_TEDDERDROP] = true;
-		end;
+		end;]]
 		for _,workTool in pairs(self.cp.workTools) do
 			if workTool.workAreas then
 				for k = 1, #workTool.workAreas do
@@ -766,7 +766,7 @@ function courseplay:drive(self, dt)
 			allowedToDrive = true;
 			moveForwards = self.movingDirection == 1;
 		end;
-		print('broken 779')
+		--print('broken 779')
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
 		--self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 		return;

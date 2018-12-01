@@ -190,9 +190,9 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 						--lower/raise
 						if (needsLowering or workTool.aiNeedsLowering) and not courseplay:onAlignmentCourse( vehicle ) then
 							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", vehicle.cp.waypointIndex, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
-							if not workTool:isLowered() then
+							if not workTool:getIsLowered() then
 								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
-								workTool:aiLower();
+								workTool:setLowered(true);
 								courseplay:setCustomTimer(vehicle, "lowerTimeOut" , 5 )
 							elseif not speedLimitActive and not courseplay:timerIsThrough(vehicle, "lowerTimeOut") then 
 								allowedToDrive = false;
@@ -200,7 +200,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 							end;
 						end;
 						--turn on
-						if workTool.setIsTurnedOn ~= nil and not workTool.turnOnVehicle.isTurnedOn then
+						if workTool.setIsTurnedOn ~= nil and not workTool.spec_turnOnVehicle.isTurnedOn then
 							courseplay:setMarkers(vehicle, workTool);
 							if courseplay:isSowingMachine(workTool) then
 								workTool:setIsTurnedOn(true,false);
@@ -246,7 +246,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 		elseif workArea and vehicle.cp.abortWork == nil and vehicle.cp.inTraffic then
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle, workTool, true, true, false, allowedToDrive, nil, nil, ridgeMarker);
 			if not specialTool then
-				if workTool.setIsTurnedOn ~= nil and workTool.turnOnVehicle.isTurnedOn then
+				if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
 				end;
 				courseplay:debug(string.format('%s: [TRAFFIC] turn off order', nameNum(workTool)), 17);
@@ -257,7 +257,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 			--turn off
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
-				if workTool.setIsTurnedOn ~= nil and workTool.turnOnVehicle.isTurnedOn then
+				if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
 					courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
 				end;

@@ -77,16 +77,17 @@ function ShovelModeAIDriver:start(ix)
 	end;
 	
 	
-	
-	for i,_ in pairs(vehicle.attachedImplements) do
-		local object = vehicle.attachedImplements[i].object
+	local vAI = vehicle:getAattachedImplements()
+	for i,_ in pairs(vAI) do
+		local object = vAI[i].object
 		if object.ignoreVehicleDirectionOnLoad ~= nil then
 			object.ignoreVehicleDirectionOnLoad = true
 		end	
-		if object.attachedImplements ~= nil then
-			for k,_ in pairs(object.attachedImplements) do
-				if object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad ~= nil then
-					object.attachedImplements[k].object.ignoreVehicleDirectionOnLoad = true
+		local oAI = object:getAttachedImplements()
+		if oAI ~= nil then
+			for k,_ in pairs(oAI) do
+				if oAI[k].object.ignoreVehicleDirectionOnLoad ~= nil then
+					oAI[k].object.ignoreVehicleDirectionOnLoad = true
 				end
 			end
 		end				

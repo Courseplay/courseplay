@@ -300,8 +300,8 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 	local shouldBWorkWidth = 0
 	
 	local implL,implR = -9999,9999;
-	if vehicle.attachedImplements then
-		for i,implement in pairs(vehicle.attachedImplements) do
+	if vehicle.getAttachedImplements then
+		for i,implement in pairs(vehicle:getAttachedImplements()) do
 			local tool = implement.object
 			--print("checking "..tostring(tool.name))
 			local workWidth = courseplay:getSpecialWorkWidth(tool);
@@ -324,8 +324,8 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 				courseplay:debug(('\t-> implL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
 			end;
 			
-			if tool.attachedImplements then
-				for j,subImplement in pairs(tool.attachedImplements) do
+			if tool.getAttachedImplements then
+				for j,subImplement in pairs(tool:getAttachedImplements()) do
 					local tool = subImplement.object;
 					if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
 						workWidth = tool.sizeWidth
@@ -1803,8 +1803,8 @@ function courseplay:getAndSetFixedWorldPosition(object, recursive)
 	local fwp = object.cp.fixedWorldPosition;
 	object:setWorldPosition(fwp.px,fwp.py,fwp.pz, fwp.rx,fwp.ry,fwp.rz, 1);
 
-	if recursive and object.attachedImplements then
-		for _,impl in pairs(object.attachedImplements) do
+	if recursive and object.getAttachedImplements then
+		for _,impl in pairs(object:getAttachedImplements()) do
 			courseplay:getAndSetFixedWorldPosition(impl.object);
 		end;
 	end;
@@ -1813,8 +1813,8 @@ end;
 function courseplay:deleteFixedWorldPosition(object, recursive)
 	object.cp.fixedWorldPosition = nil;
 
-	if recursive and object.attachedImplements then
-		for _,impl in pairs(object.attachedImplements) do
+	if recursive and object.getAttachedImplements then
+		for _,impl in pairs(object:getAttachedImplements()) do
 			courseplay:deleteFixedWorldPosition(impl.object);
 		end;
 	end;
@@ -1824,7 +1824,7 @@ function courseplay:setAttachedCombine(vehicle)
 	courseplay:debug(('%s: setAttachedCombine()'):format(nameNum(vehicle)), 6);
 	vehicle.cp.attachedCombine = nil;
 	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) and vehicle.attachedImplements then
-		for _,impl in pairs(vehicle.attachedImplements) do
+		for _,impl in pairs(vehicle:getAttachedImplements()) do
 			if impl.object and courseplay:isAttachedCombine(impl.object) then
 				vehicle.cp.attachedCombine = impl.object;
 				courseplay:debug(('    attachedCombine=%s, attachedCombine .cp=%s'):format(nameNum(impl.object), tostring(impl.object.cp)), 6);

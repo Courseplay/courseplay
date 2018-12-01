@@ -41,8 +41,8 @@ function courseplay:start(self)
 	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
-	--courseplay.alreadyPrinted = {}
-	--courseplay:printMeThisTable(self:getAttachedImplements(),0,5,"self")
+	courseplay.alreadyPrinted = {}
+	courseplay:printMeThisTable(self,0,5,"self")
 	
 	
 	if self.cp.orgRpm == nil then
@@ -98,8 +98,8 @@ function courseplay:start(self)
 		local height = 0;
 		local step = (self.sizeLength/2)+1 ;
 		local stepBehind, stepFront = step, step;
-		if self.attachedImplements ~= nil then
-			for index, implement in pairs(self.attachedImplements) do
+		if self.getAttachedImplements ~= nil then
+			for index, implement in pairs(self:getAttachedImplements()) do
 				local tool = implement.object
 				local x,y,z = getWorldTranslation(tool.rootNode);
 			    local _,_,nz =  worldToLocal(self.cp.DirectionNode, x, y, z);
@@ -165,8 +165,8 @@ function courseplay:start(self)
 	local tailerCount = 0;
 	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
 		if courseplay:isFolding(workTool) then
-			if  self.aiLower ~= nil then
-				workTool:aiLower(true)
+			if  self.setLowered ~= nil then
+				workTool:setLowered(true)
 			elseif self.setFoldState ~= nil then
 				self:setFoldState(-1, true)
 			end

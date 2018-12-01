@@ -17,7 +17,8 @@ AIVehicle.onAttachImplement = Utils.appendedFunction(AIVehicle.onAttachImplement
 function courseplay:detachImplement(implementIndex)
 	--- Update Vehicle
 	self.cp.tooIsDirty = true;
-	if self.attachedImplements[implementIndex].object == self.cp.attachedCombine then
+	local sAI= self:getAttachedImplements()
+	if sAI[implementIndex].object == self.cp.attachedCombine then
 		self.cp.attachedCombine = nil;
 		courseplay:setMinHudPage(self);
 	end
@@ -155,7 +156,7 @@ function courseplay:isChopper(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity == 0 or courseplay:isSpecialChopper(workTool);
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
-	return workTool.cp.hasSpecializationFoldable and  workTool.foldingParts ~= nil and #workTool.foldingParts > 0;
+	return workTool.cp.hasSpecializationFoldable and  workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
 end;
 function courseplay:isFrontloader(workTool)
 	return workTool.cp.hasSpecializationCylindered and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel and workTool.cp.capacity == nil;
@@ -260,12 +261,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or courseplay:isBaleLoader(workTool) 
 		or courseplay:isSpecialBaleLoader(workTool) 
 		or workTool.cp.hasSpecializationCultivator
-		or workTool.cp.hasSpecializationCutter
+		or courseplay:isCombine(workTool)
 		or workTool.cp.hasSpecializationFruitPreparer 
 		or workTool.cp.hasSpecializationPlough
 		or workTool.cp.hasSpecializationTedder
 		or workTool.cp.hasSpecializationWindrower
-		or workTool.allowTipDischarge 
+		or workTool.spec_dischargeable
 		or courseplay:isMower(workTool)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
@@ -381,7 +382,9 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	end;
 
 	-- CHECK ATTACHED IMPLEMENTS
-	for k,impl in pairs(workTool.spec_attacherJoints.attachedImplements) do
+	for k,impl in pairs(workTool:getAttachedImplements()) do
+		print("checking impl.object"..tostring(impl.object))
+		
 		local implIsWorkTool = courseplay:updateWorkTools(vehicle, impl.object, true);
 		if implIsWorkTool then
 			hasWorkTool = true;
@@ -600,13 +603,13 @@ function courseplay:setMarkers(vehicle, object)
 end;
 
 function courseplay:setFoldedStates(object)
-	if courseplay:isFoldable(object) and object.turnOnFoldDirection then
+	if courseplay:isFoldable(object) and object.spec_foldable.turnOnFoldDirection then
 		cpPrintLine(17);
 		courseplay:debug(nameNum(object) .. ': setFoldedStates()', 17);
 
-		object.cp.realUnfoldDirection = object.turnOnFoldDirection;
-		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 and object.cp.foldingPartsStartMoveDirection ~= object.turnOnFoldDirection then
-			object.cp.realUnfoldDirection = object.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
+		object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection;
+		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 and object.cp.foldingPartsStartMoveDirection ~= object.spec_foldable.turnOnFoldDirection then
+			object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
 		end;
 
 		if object.cp.realUnfoldDirectionIsReversed then
@@ -615,7 +618,7 @@ function courseplay:setFoldedStates(object)
 
 		courseplay:debug(string.format('startAnimTime=%s, turnOnFoldDirection=%s, foldingPartsStartMoveDirection=%s --> realUnfoldDirection=%s', tostring(object.startAnimTime), tostring(object.turnOnFoldDirection), tostring(object.cp.foldingPartsStartMoveDirection), tostring(object.cp.realUnfoldDirection)), 17);
 
-		for i,foldingPart in pairs(object.foldingParts) do
+		for i,foldingPart in pairs(object.spec_foldable.foldingParts) do
 			foldingPart.isFoldedAnimTime = 0;
 			foldingPart.isFoldedAnimTimeNormal = 0;
 			foldingPart.isUnfoldedAnimTime = foldingPart.animDuration;
