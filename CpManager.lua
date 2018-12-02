@@ -114,6 +114,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
+	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -502,7 +503,7 @@ function CpManager:printVariable(variableName, maxDepth, printShortVersion)
 	local value = self:getVariable(variableName)
 	local valueType = type(value)
 	if value then
-		print(string.format('Printing %s (%s), depth %d', variableName, type, depth))
+		print(string.format('Printing %s (%s), depth %d', variableName, valueType, depth))
 		if valueType == 'table' then
 			if not printShortVersion then
 				DebugUtil.printTableRecursively(value, '  ', 1, depth)
@@ -566,8 +567,6 @@ end
 
 function CpManager:loadFile(fileName)
 	local path = courseplay.path .. fileName
-	local file = getfenv(0).io.open(path, 'r')
-	io.copy(path, path .. '.x')
 	local f = source(path)
 	if not f then
 		return 'Could not load ' .. path
@@ -585,7 +584,20 @@ function CpManager:setLookaheadDistance(d)
 	else
 		print('No vehicle or has no PPC.')	
 	end
-	
+end
+
+-- call vehicle:funcName(...) for the current vehicle
+function CpManager:callVehicleFunction(funcName, ...)
+	if g_currentMission.controlledVehicle then
+		local f = loadstring('return g_currentMission.controlledVehicle.' .. funcName)
+		if f then
+			local result = f()(g_currentMission.controlledVehicle, ...)
+			print('vehicle:' .. funcName .. ' returned:')
+			DebugUtil.printTableRecursively(result, '  ', 1, 1)
+			return
+		end		 
+	end
+	return 'Error when calling vehicle:' .. funcName
 end
 
 function CpManager:setupFieldScanInfo()
