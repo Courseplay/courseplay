@@ -104,13 +104,13 @@ function nameNum(vehicle, hideNum)
 
 	if vehicle.cp ~= nil and vehicle.cp.coursePlayerNum ~= nil then
 		if hideNum then
-			return tostring(vehicle.name);
+			return tostring(vehicle:getName());
 		end;
-		return tostring(vehicle.name) .. ' (#' .. tostring(vehicle.cp.coursePlayerNum) .. ')';
+		return tostring(vehicle:getName()) .. ' (#' .. tostring(vehicle.cp.coursePlayerNum) .. ')';
 	elseif vehicle.isHired then
-		return tostring(vehicle.name) .. ' (helper)';
+		return tostring(vehicle:getName()) .. ' (helper)';
 	end;
-	return tostring(vehicle.name);
+	return vehicle:getName()
 end;
 
 function courseplay:isBetween(n, num1, num2, include)

@@ -49,7 +49,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		if not vehicle.cp.isReverseBackToPoint then
 			allowedToDrive = false;
 		end;
-		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_STARTING_UP_TOOL;%s",tostring(vehicle.name)));
+		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_STARTING_UP_TOOL;%s",tostring(vehicle:getName())));
 	end;
 
 	local vehicleIsFolding, vehicleIsFolded, vehicleIsUnfolded = courseplay:isFolding(vehicle);
@@ -306,8 +306,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 							if not isFolding and isUnfolded then
 								--lower
+								
 								if (needsLowering or workTool:getAiNeedsLowering()) and not workTool:getIsLowered() then
-									workTool:setLoweredAll(true)
+										workTool:setLowered(true)
 									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
 								end;
 

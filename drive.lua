@@ -1811,8 +1811,8 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
 		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity;
 	end
-	--print(string.format("vehicle itself(%s): vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.name),tostring(vehicle.cp.totalFillLevel)))
-	--print(string.format("vehicle itself(%s): vehicle.cp.totalCapacity:(%s)",tostring(vehicle.name),tostring(vehicle.cp.totalCapacity)))
+	--print(string.format("vehicle itself(%s): vehicle.cp.totalFillLevel:(%s)",tostring(vehicle:getName()),tostring(vehicle.cp.totalFillLevel)))
+	--print(string.format("vehicle itself(%s): vehicle.cp.totalCapacity:(%s)",tostring(vehicle:getName()),tostring(vehicle.cp.totalCapacity)))
 	if vehicle.cp.workTools ~= nil then
 		for _,tool in pairs(vehicle.cp.workTools) do
 			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool,vehicle.cp.mode)
@@ -1820,21 +1820,21 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 				vehicle.cp.totalFillLevel = (vehicle.cp.totalFillLevel or 0) + tool.cp.fillLevel
 				vehicle.cp.totalCapacity = (vehicle.cp.totalCapacity or 0 ) + tool.cp.capacity
 				vehicle.cp.totalFillLevelPercent = (vehicle.cp.totalFillLevel*100)/vehicle.cp.totalCapacity;
-				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool.name),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
-				--print(string.format("%s: adding %s to vehicle.cp.totalCapacity = %s",tostring(tool.name),tostring(tool.cp.capacity), tostring(vehicle.cp.totalCapacity)))
+				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool:getName()),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
+				--print(string.format("%s: adding %s to vehicle.cp.totalCapacity = %s",tostring(tool:getName()),tostring(tool.cp.capacity), tostring(vehicle.cp.totalCapacity)))
 				if tool.sowingMachine ~= nil or tool.cp.isTreePlanter then
 					vehicle.cp.totalSeederFillLevel = (vehicle.cp.totalSeederFillLevel or 0) + tool.cp.seederFillLevel
 					vehicle.cp.totalSeederCapacity = (vehicle.cp.totalSeederCapacity or 0) + tool.cp.seederCapacity
 					vehicle.cp.totalSeederFillLevelPercent = (vehicle.cp.totalSeederFillLevel*100)/vehicle.cp.totalSeederCapacity
-					--print(string.format("%s:  vehicle.cp.totalSeederFillLevel:%s",tostring(vehicle.name),tostring(vehicle.cp.totalSeederFillLevel)))
-					--print(string.format("%s:  vehicle.cp.totalSeederCapacity:%s",tostring(vehicle.name),tostring(vehicle.cp.totalSeederCapacity)))
+					--print(string.format("%s:  vehicle.cp.totalSeederFillLevel:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSeederFillLevel)))
+					--print(string.format("%s:  vehicle.cp.totalSeederCapacity:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSeederCapacity)))
 				end
 				if tool.sprayer ~= nil then
 					vehicle.cp.totalSprayerFillLevel = (vehicle.cp.totalSprayerFillLevel or 0) + tool.cp.sprayerFillLevel
 					vehicle.cp.totalSprayerCapacity = (vehicle.cp.totalSprayerCapacity or 0) + tool.cp.sprayerCapacity
 					vehicle.cp.totalSprayerFillLevelPercent = (vehicle.cp.totalSprayerFillLevel*100)/vehicle.cp.totalSprayerCapacity
-					--print(string.format("%s:  vehicle.cp.totalSprayerFillLevel:%s",tostring(vehicle.name),tostring(vehicle.cp.totalSprayerFillLevel)))
-					--print(string.format("%s:  vehicle.cp.totalSprayerCapacity:%s",tostring(vehicle.name),tostring(vehicle.cp.totalSprayerCapacity)))
+					--print(string.format("%s:  vehicle.cp.totalSprayerFillLevel:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSprayerFillLevel)))
+					--print(string.format("%s:  vehicle.cp.totalSprayerCapacity:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSprayerCapacity)))
 				end
 			end
 		end
@@ -1864,9 +1864,9 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 
 		else
 			fillLevel = fillLevel + fillUnit.fillLevel
-			--print(string.format("%s: adding %s to fillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
+			--print(string.format("%s: adding %s to fillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
 			capacity = capacity + fillUnit.capacity
-			--print(string.format("%s: adding %s to capacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+			--print(string.format("%s: adding %s to capacity",tostring(workTool:getName()),tostring(fillUnit.capacity)))
 			if fillLevel ~= nil and capacity ~= nil then
 				fillLevelPercent = (fillLevel*100)/capacity;
 			else
@@ -1889,9 +1889,9 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			end
 			if workTool.sowingMachine ~= nil and index == workTool.sowingMachine.fillUnitIndex then
 				workTool.cp.seederFillLevel = fillUnit.fillLevel
-				--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
+				--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
 				workTool.cp.seederCapacity = fillUnit.capacity
-				--print(string.format("%s: adding %s to workTool.cp.seederCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+				--print(string.format("%s: adding %s to workTool.cp.seederCapacity",tostring(workTool:getName()),tostring(fillUnit.capacity)))
 				if g_currentMission.missionInfo.helperBuySeeds then
 					workTool.cp.seederFillLevel = 100
 					workTool.cp.seederCapacity = 100
@@ -1900,9 +1900,9 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			end
 			if workTool.sprayer ~= nil and index == workTool.sprayer.fillUnitIndex then
 				workTool.cp.sprayerFillLevel = fillUnit.fillLevel
-				--print(string.format("%s: adding %s to workTool.cp.sprayerFillLevel",tostring(workTool.name),tostring(fillUnit.fillLevel)))
+				--print(string.format("%s: adding %s to workTool.cp.sprayerFillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
 				workTool.cp.sprayerCapacity = fillUnit.capacity
-				--print(string.format("%s: adding %s to workTool.cp.sprayerCapacity",tostring(workTool.name),tostring(fillUnit.capacity)))
+				--print(string.format("%s: adding %s to workTool.cp.sprayerCapacity",tostring(workTool:getName()),tostring(fillUnit.capacity)))
 
 				if courseplay:isSprayer(workTool) then
 					if (workTool.cp.isLiquidManureSprayer and g_currentMission.missionInfo.helperSlurrySource == 2)
@@ -1922,8 +1922,8 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 	workTool.cp.capacity = capacity
 	workTool.cp.fillLevelPercent = fillLevelPercent
 	workTool.cp.fillType = fillType
-	--print(string.format("%s: adding %s to workTool.cp.fillLevel",tostring(workTool.name),tostring(workTool.cp.fillLevel)))
-	--print(string.format("%s: adding %s to workTool.cp.capacity",tostring(workTool.name),tostring(workTool.cp.capacity)))
+	--print(string.format("%s: adding %s to workTool.cp.fillLevel",tostring(workTool:getName()),tostring(workTool.cp.fillLevel)))
+	--print(string.format("%s: adding %s to workTool.cp.capacity",tostring(workTool:getName()),tostring(workTool.cp.capacity)))
 	return true
 end
 
