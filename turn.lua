@@ -1951,8 +1951,8 @@ function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
   vehicle.cp.headlandTurn = nil 
 end
 
-function courseplay:lowerImplements(self, moveDown, workToolonOff)
-	print(string.format("courseplay:lowerImplements(self, moveDown(%s), workToolonOff(%s)))",tostring(moveDown),tostring(workToolonOff)))
+function courseplay:lowerImplements(vehicle, moveDown, workToolonOff)
+	--print(string.format("courseplay:lowerImplements(vehicle, moveDown(%s), workToolonOff(%s)))",tostring(moveDown),tostring(workToolonOff)))
 	--moveDown true= lower,  false = raise , workToolonOff true = switch on worktool,  false = switch off worktool
 	if moveDown == nil then 
 		moveDown = false; 
@@ -1964,29 +1964,40 @@ function courseplay:lowerImplements(self, moveDown, workToolonOff)
     end;
 
     local specialTool;
-	for _,workTool in pairs(self.cp.workTools) do
-					--courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-		specialTool = courseplay:handleSpecialTools(self,workTool,true,moveDown,workToolonOff,nil,nil,nil);
+	--[[
+	local jointDesc = spec.attacherVehicle:getAttacherJointDescFromObject(vehicle)
+	if jointDesc.allowsLowering then
+		if vehicle:getIsLowered(false) ~= moveDown then
+			local jointDescIndex = spec.attacherVehicle:getAttacherJointIndexFromObject(vehicle)
+			vehicle.spec_attacherVehicle:setJointMoveDown(jointDescIndex, moveDown, false)
+		end
+	end]]
+	
+	for _,workTool in pairs(vehicle.cp.workTools) do
+					--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
+		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,moveDown,workToolonOff,nil,nil,nil);
 		
 		if not specialTool then
-			--[[Tommi pisckup stuff still needed ?
-			if workTool.setPickupState ~= nil then
-				if workTool.isPickupLowered ~= nil and workTool.isPickupLowered ~= moveDown then
-					workTool:setPickupState(moveDown, false);
-				end;
-			end;]]
-			if moveDown then
-				if workTool.setLowered ~= nil and not workTool:getIsLowered() then
-					workTool:setLowered(true);
+			if workTool.spec_pickup ~= nil and workTool.spec_pickup.isLowered ~= moveDown then
+				workTool:setPickupState(moveDown, false);
+			end;
+			if courseplay:isFoldable(workTool) then
+				if moveDown then
+					workTool:setFoldState(-workTool.spec_foldable.foldMiddleAIRaiseDirection, false, true)
+				else
+					workTool:setFoldState(workTool.spec_foldable.foldMiddleAIRaiseDirection, false, true)
 				end
-			elseif workTool.setLowered ~= nil and workTool:getIsLowered() then
-					workTool:setLowered(false);
-			end;		
-			if self.cp.mode == 4 then
-																						 --vvTODO (Tom) why is this here vv?
-				if workTool.setIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and (true or workTool ~= self) and workTool.spec_turnOnVehicle.isTurnedOn ~= workToolonOff then
-					workTool:setIsTurnedOn(workToolonOff, false);                          -- disabled for Pantera
-				end;
+			end
+			local jointDesc = vehicle:getAttacherJointDescFromObject(workTool)
+			if jointDesc.allowsLowering then
+				if workTool:getIsLowered(false) ~= moveDown  then
+					local jointDescIndex = vehicle:getAttacherJointIndexFromObject(workTool)
+					vehicle:setJointMoveDown(jointDescIndex, moveDown, false)
+				end
+			end
+		
+			if workTool.getIsTurnedOn ~= nil and not courseplay:isFolding(workTool) and workTool:getIsTurnedOn() ~= workToolonOff then
+				workTool:setIsTurnedOn(workToolonOff, false);
 			end;
 		end;
 	end;

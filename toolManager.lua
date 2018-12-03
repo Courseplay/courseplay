@@ -813,8 +813,8 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	if currentTrailer.cp.realUnloadOrFillNode and vehicle.cp.trailerFillDistance then
-		if currentTrailer:getFreeCapacity(vehicle.cp.siloSelectedFillType) == 0
-		or currentTrailer.cp.currentSiloTrigger ~= nil and not (currentTrailer:getFreeCapacity(vehicle.cp.siloSelectedFillType) > 0 and #currentTrailer:getFillUnitsWithFillType(vehicle.cp.siloSelectedFillType) > 0) then
+		if courseplay:getFreeCapacity(currentTrailer,vehicle.cp.siloSelectedFillType) == 0
+		or currentTrailer.cp.currentSiloTrigger ~= nil and not (courseplay:getFreeCapacity(currentTrailer,vehicle.cp.siloSelectedFillType) > 0 and #currentTrailer:getFillUnitsWithFillType(vehicle.cp.siloSelectedFillType) > 0) then
 			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else

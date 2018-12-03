@@ -1418,3 +1418,13 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 end;
 
 -- vim: set noexpandtab:
+
+function courseplay:getFreeCapacity(vehicle,fillType)
+    local freeCapacity = 0;
+    for i,fillUnit in pairs(vehicle:getFillUnits()) do
+        if fillType == nil or fillType == FillUtil.FILLTYPE_UNKNOWN or fillUnit.fillTypes[fillType] then
+            freeCapacity = freeCapacity + (fillUnit.capacity - fillUnit.fillLevel);
+        end
+    end
+    return freeCapacity;
+end

@@ -93,6 +93,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		-- implements, no combine or chopper
 		if workTool ~= nil and tool.attachedCutters == nil then
 			-- balers
+			
 			if courseplay:isBaler(workTool) then
 				if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
 																									  --  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit,workSpeed)
@@ -305,28 +306,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								end
 							end;
 							if not isFolding and isUnfolded then
-								--lower
-								
-								if (needsLowering or workTool:getAiNeedsLowering()) and not workTool:getIsLowered() then
-										workTool:setLowered(true)
-									courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
-								end;
-
-								--turn on
-								if workTool.setIsTurnedOn ~= nil and not workTool.spec_turnOnVehicle.isTurnedOn then
-									workTool:setIsTurnedOn(true, false);
-									courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
-									vehicle.cp.runOnceStartCourse = false
-									courseplay:setMarkers(vehicle, workTool);
-								end;
-								--[[ Tommi Pickup stuff still needed ?
-								if workTool.setPickupState ~= nil then
-									if workTool.isPickupLowered ~= nil and not workTool.isPickupLowered then
-										workTool:setPickupState(true, false);
-										courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
-									end;
-								end;
-								]]
+								courseplay:lowerImplements(vehicle, true, true)
 							end;
 						end;
 					end
@@ -334,24 +314,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
 						if not isFolding then
-							--turn off
-							if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
-								workTool:setIsTurnedOn(false, false);
-								courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
-							end;
-							--[[ Tommi Pickup stuff still needed ?
-							if workTool.setPickupState ~= nil then
-								if workTool.isPickupLowered ~= nil and workTool.isPickupLowered then
-									workTool:setPickupState(false, false);
-									courseplay:debug(string.format('%s: raise pickup order', nameNum(workTool)), 17);
-								end;
-							end;]]
-
-							--raise
-							if (needsLowering or workTool:getAiNeedsLowering()) and vehicle.cp.turnStage == 0 and workTool:getIsLowered() then
-								workTool:setLowered(false);
-								courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
-							end;
+							courseplay:lowerImplements(vehicle, false, false)
 						end;
 
 						--fold

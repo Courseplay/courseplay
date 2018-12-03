@@ -1857,7 +1857,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 				courseplay:debug("reload page 1", 5);
 				courseplay.hud:setReloadPageOrder(self, 1, true);
 			elseif varName:sub(1, 3) == 'HUD' then
-				print('broken settings 1860')
+				--print('broken settings 1860')
 				if StringUtil.startsWith(varName, 'HUD0') then
 					courseplay:debug("reload page 0", 5);
 					courseplay.hud:setReloadPageOrder(self, 0, true);
