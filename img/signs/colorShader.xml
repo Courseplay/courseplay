@@ -5,18 +5,18 @@
 -->
 <CustomShader version="4">
 	<Parameters>
-		<Parameter name="diffuseColor" target="diffuseColor" type="float3" defaultValue="1 0.212 0.0 1.0" minValue="0.0 0.0 0.0 1.0" maxValue="1.0 1.0 1.0 1.0" />
+		<Parameter name="waypointColor" target="waypointColor" type="float3" defaultValue="1 0.212 0.0 1.0" minValue="0.0 0.0 0.0 1.0" maxValue="1.0 1.0 1.0 1.0" />
 	</Parameters>
 	<LodLevel startDistance="0">
 		<CodeInjections>
 			<CodeInjection position="MATERIALINFO">
 <![CDATA[
-uniform float3 diffuseColor;
+uniform float3 waypointColor;
 ]]>
 			</CodeInjection>
 			<CodeInjection position="EMISSIVE_FS">
 <![CDATA[
-emissiveColor.rgb *= diffuseColor.rgb;
+emissiveColor.rgb *= waypointColor.rgb;
 ]]>
 			</CodeInjection>
 		</CodeInjections>

@@ -13,7 +13,7 @@ local signData = {
 	unload = {  2000, 'current', 4.0 },
 	cross =  {  2000, 'crossing', 4.0 }
 };
-local diamondColors = {
+local waypointColors = {
 	regular   = { 1.000, 0.212, 0.000, 1.000 }; -- orange
 	turnStart = { 0.200, 0.900, 0.000, 1.000 }; -- green
 	turnEnd   = { 0.896, 0.000, 0.000, 1.000 }; -- red
@@ -240,8 +240,8 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 				end;
 			end;
 
-			for i,course in pairs(g_currentMission.cp_courses) do
-				for j,wp in pairs(course.waypoints) do
+			for _,course in pairs(g_currentMission.cp_courses) do
+				for _,wp in pairs(course.waypoints) do
 					if wp.crossing then
 						self:addSign(vehicle, 'cross', wp.cx, wp.cz, nil, wp.angle);
 					end;
@@ -255,9 +255,9 @@ end;
 
 function courseplay.signs:setSignColor(signData, colorName)
 	if signData.type ~= 'cross' and (signData.color == nil or signData.color ~= colorName) then
-		local x,y,z,w = unpack(diamondColors[colorName]);
+		local x,y,z,w = unpack(waypointColors[colorName]);
 		-- print(('setSignColor (%q): sign=%s, x=%.3f, y=%.3f, z=%.3f, w=%d'):format(colorName, tostring(signData.sign), x, y, z, w));
-		setShaderParameter(signData.sign, 'diffuseColor', x,y,z,w, false);
+		setShaderParameter(signData.sign, 'waypointColor', x,y,z,w, false);
 		signData.color = colorName;
 	end;
 end;
@@ -304,7 +304,7 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 		setVisibility(signData.sign, vis);
 	end;
 
-	for k,signData in pairs(vehicle.cp.signs.crossing) do
+	for _,signData in pairs(vehicle.cp.signs.crossing) do
 		local vis = vehicle.cp.visualWaypointsCrossing;
 		if forceHide or not Enterable.getIsEntered(vehicle) then
 			vis = false;
