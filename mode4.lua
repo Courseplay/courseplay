@@ -167,6 +167,8 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 					end
 															--vv  used for foldables, which are not folding before start Strautmann manure spreader 
 					if not isFolding and (isUnfolded or hasSetUnfoldOrderThisLoop) then 
+						courseplay:lowerImplements(vehicle, true, true)
+						--[[ 
 						--set or stow ridge markers
 						if (courseplay:isSowingMachine(workTool) or workTool.cp.isKuhnHR4004) and vehicle.cp.ridgeMarkersAutomatic then
 							if ridgeMarker ~= nil then
@@ -211,7 +213,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 								workTool:setIsTurnedOn(true,false);
 							end;
 							courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
-						end;
+						end; ]]
 					end; --END if not isFolding
 				end
 				
@@ -257,17 +259,18 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 			--turn off
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
-				if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
+				--[[ if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
 					courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
-				end;
+				end; ]]
 
 				--raise
 				if not isFolding and isUnfolded then
-					if (needsLowering or workTool.aiNeedsLowering) and workTool:isLowered() then
+					courseplay:lowerImplements(vehicle, false, false)
+					--[[ if (needsLowering or workTool.aiNeedsLowering) and workTool:isLowered() then
 						workTool:aiRaise();
 						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
-					end;
+					end; ]]
 				end;
 
 				--retract ridgemarker

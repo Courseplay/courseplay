@@ -1989,7 +1989,7 @@ function courseplay:lowerImplements(vehicle, moveDown, workToolonOff)
 				end
 			end
 			local jointDesc = vehicle:getAttacherJointDescFromObject(workTool)
-			if jointDesc.allowsLowering then
+			if jointDesc and jointDesc.allowsLowering then
 				if workTool:getIsLowered(false) ~= moveDown  then
 					local jointDescIndex = vehicle:getAttacherJointIndexFromObject(workTool)
 					vehicle:setJointMoveDown(jointDescIndex, moveDown, false)
