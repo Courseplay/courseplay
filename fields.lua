@@ -438,18 +438,44 @@ function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDime
 end;
 
 --
-function courseplay.fields.buyField(self, fieldDef, isOwned) -- scan field when it's bought
+function courseplay.fields.buyField(self, farmId) -- scan field when it's bought
 	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));
-	if g_currentMission.time > 0 and isOwned and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[fieldDef.fieldNumber] == nil then
+	if g_currentMission.time > 0 and farmId ~= FarmlandManager.NO_OWNER_FARM_ID and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.fieldId] == nil then
 		-- print(string.format('\tisOwned=true, automaticScan=true, onlyScanOwnedFields=true, fieldData[%d]=nil', fieldDef.fieldNumber));
-		local initObject = field.nameIndicator;
-		if initObject then
+		local initObject = self.nameIndicator;
+		if initObject then	
 			local x,_,z = getWorldTranslation(initObject);
-			courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, fieldDef.fieldId, false, 'scan');
+			print('scanning')
+			courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, self.fieldId, false, 'scan');
+		end
+	elseif g_currentMission.time > 0 and farmId == FarmlandManager.NO_OWNER_FARM_ID and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.fieldId] then
+		print('deleting')
+		courseplay.fields.fieldData[self.fieldId] = nil
+	end;
+end;
+Field.setFieldOwned = Utils.appendedFunction(Field.setFieldOwned, courseplay.fields.buyField);
+
+function courseplay.fields.addContractField(self) -- scan field when we take a contract
+	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));
+	if g_currentMission.time > 0 and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.field.fieldId] == nil then
+		-- print(string.format('\tisOwned=true, automaticScan=true, onlyScanOwnedFields=true, fieldData[%d]=nil', fieldDef.fieldNumber));
+		local initObject = self.field.nameIndicator;
+		if initObject then	
+			print('scanning')
+			local x,_,z = getWorldTranslation(initObject);
+			courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, self.field.fieldId, false, 'scan');
 		end
 	end;
 end;
-Field.setFieldOwned = Utils.prependedFunction(Field.setFieldOwned, courseplay.fields.buyField);
+AbstractFieldMission.addToMissionMap = Utils.appendedFunction(AbstractFieldMission.addToMissionMap, courseplay.fields.addContractField);
+
+
+function courseplay.fields.removeContractField(self, success) -- scan field when we take a contract
+	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));
+	print('deleting')
+	courseplay.fields.fieldData[self.field.fieldId] = nil 
+end;
+AbstractFieldMission.finish = Utils.appendedFunction(AbstractFieldMission.finish, courseplay.fields.removeContractField);
 
 --XML SAVING
 function courseplay.fields.saveCustomFields(self)
