@@ -52,9 +52,12 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		courseplay:setInfoText(vehicle, string.format("COURSEPLAY_STARTING_UP_TOOL;%s",tostring(vehicle:getName())));
 	end;
 
+
 	local vehicleIsFolding, vehicleIsFolded, vehicleIsUnfolded = courseplay:isFolding(vehicle);
 	for i=1, #(vehicle.cp.workTools) do
 		workTool = vehicle.cp.workTools[i];
+
+		-- Why is this here????? Very Confusing Ryan
 		local tool = vehicle
 		if courseplay:isAttachedCombine(workTool) then
 			tool = workTool
@@ -91,7 +94,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		end;
 
 		-- implements, no combine or chopper
-		if workTool ~= nil and tool.attachedCutters == nil then
+		if workTool ~= nil and not workTool.cp.hasSpecializationCutter then
 			-- balers
 			
 			if courseplay:isBaler(workTool) then
@@ -392,6 +395,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 		--COMBINES
 		elseif workTool.cp.hasSpecializationCutter then
+			--print('I AM A COMBINE or CHOPPER')
 			--Start combine
 			local isTurnedOn = tool:getIsTurnedOn();
 			local pipeState = 0;
@@ -451,9 +455,12 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 
 							if not isFolding and isUnfolded and not vehicleIsFolding and vehicleIsUnfolded and tankFillLevelPct < 100 and not tool.waitingForDischarge and not isTurnedOn and not weatherStop then
+								print("tool:setIsTurnedOn(true);")
 								tool:setIsTurnedOn(true);
 							end
 						end
+						
+						--[[
 						if tool.overloading ~= nil and tool.overloading.isActive and (tool.courseplayers == nil or tool.courseplayers[1] == nil) and tool.cp.stopWhenUnloading and tankFillLevelPct >= 1 then
 							tool.stopForManualUnloader = true
 						end
@@ -473,7 +480,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								courseplay:setCustomTimer(vehicle, 'emptyStrawBox', strawTimer);
 							end
 						end						
-							
+						]]	
 						if tankFillLevelPct >= 100 
 						or tool.waitingForDischarge 
 						or (tool.cp.stopWhenUnloading and tool.overloading ~= nil and  tool.overloading.isActive and tool.courseplayers and tool.courseplayers[1] ~= nil and tool.courseplayers[1].cp.modeState ~= 9) 
@@ -506,8 +513,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end
 
 					-- Make sure we are lowered when working the field.
-					if allowedToDrive and isTurnedOn and not workTool:isLowered() and not vehicle.cp.isReverseBackToPoint then
-						courseplay:lowerImplements(vehicle, true, false);
+					if allowedToDrive and isTurnedOn and not workTool:getIsLowered() and not vehicle.cp.isReverseBackToPoint then
+						courseplay:lowerImplements(vehicle, true, true);
 					end;
 				end
 			 --Stop combine

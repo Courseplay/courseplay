@@ -445,7 +445,7 @@ function courseplay.fields.buyField(self, fieldDef, isOwned) -- scan field when 
 		local initObject = field.nameIndicator;
 		if initObject then
 			local x,_,z = getWorldTranslation(initObject);
-			courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, fieldDef.fieldNumber, false, 'scan');
+			courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, fieldDef.fieldId, false, 'scan');
 		end
 	end;
 end;

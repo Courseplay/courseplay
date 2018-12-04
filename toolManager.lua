@@ -266,6 +266,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or workTool.cp.hasSpecializationPlough
 		or workTool.cp.hasSpecializationTedder
 		or workTool.cp.hasSpecializationWindrower
+		or workTool.cp.hasSpecializationCutter
 		or workTool.spec_dischargeable
 		or courseplay:isMower(workTool)
 		or courseplay:isAttachedCombine(workTool) 
@@ -276,8 +277,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool);
-			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
-			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or vehicle.attachedCutters ~= nil;
+			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
+			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
 			if workTool.cp.hasSpecializationPlough then 
 				vehicle.cp.hasPlough = true;
 				if workTool.rotationPart.turnAnimation ~= nil then
