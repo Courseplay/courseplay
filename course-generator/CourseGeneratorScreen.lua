@@ -97,6 +97,25 @@ end
 
 
 function CourseGeneratorScreen:onOpen()
+	
+	-- TODO is onCreate really necassry any more when it needs to be updated ever onOpen
+	self.fields = {}
+	for key, field in pairs( courseplay.fields.fieldData ) do
+		table.insert( self.fields, { name = field.name, number = key })
+	end
+	table.sort( self.fields, function( a, b ) return a.number < b.number end )
+
+	-- set up a reverse lookup table
+	self.fieldToState = {}
+	for i, f in ipairs( self.fields ) do
+		self.fieldToState[ f.number ] = i
+		i = i + 1
+	end
+
+	-- add the 'currently loaded course' option
+	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
+	self.fieldToState[ 0 ] = #self.fields
+
 	g_currentMission.isPlayerFrozen = true
 	self.ingameMap:setIngameMap(g_currentMission.hud.ingameMap)
 	self.ingameMap:registerActionEvents()
