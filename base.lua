@@ -1177,11 +1177,11 @@ end;
 
 function courseplay:onUpdateTick(dt)
 	--print("base:courseplay:updateTick(dt)")
-	--[[Tommi
+
 	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
 		courseplay:createFieldEdgeButtons(self);
 	end;
-	]]
+
 	
 	--attached or detached implement?
 	if self.cp.tooIsDirty then
