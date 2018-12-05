@@ -220,7 +220,9 @@ function courseplay:executeFunction(self, func, value, page)
 		return
 	end
 	if Enterable.getIsEntered(self) then
-		--Tommi playSample(courseplay.hud.clickSound, 1, 1, 0);
+		--The old sound playSample(courseplay.hud.clickSound, 1, 1, 0, 0, 0);
+		-- The new gui click sound
+		g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
 	end
 	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
 
