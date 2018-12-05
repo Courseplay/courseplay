@@ -97,8 +97,13 @@ end
 
 function CourseGeneratorScreen:onOpen()
 	g_currentMission.isPlayerFrozen = true
-	self.ingameMap:setIngameMap(g_currentMission.inGameMenu.baseIngameMap)
-	self.ingameMap.ingameMap:setZoomScale(1)
+	self.ingameMap:setIngameMap(g_currentMission.hud.ingameMap)
+	self.ingameMap:registerActionEvents()
+	self.ingameMap:setTerrainSize(g_currentMission.terrainSize)
+	self.ingameMap:setPosition(-0.3, 0)
+	self.ingameMap.mapZoom = 0.4
+	self.ingameMap:zoom(0)
+--	self.ingameMap:setSize(1, 1.777)
 
 	CourseGeneratorScreen:superClass().onOpen(self)
 --	if not self.coursePlot then
@@ -173,6 +178,7 @@ function CourseGeneratorScreen:onClose()
 		self.coursePlot:delete()
 		self.coursePlot = nil
 	end
+	self.ingameMap:onClose()
 	--g_currentMission.ingameMap:resetSettings()
 	CourseGeneratorScreen:superClass().onClose(self)
 end
@@ -559,6 +565,10 @@ function CourseGeneratorScreen:isOverElement( x, y, element )
 	end
 end
 
+function CourseGeneratorScreen:onClickMap(element, posX, posY)
+	print(string.format('OnClickMap %.1f %1.f', posX, posY))
+end
+
 function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
 		eventUsed = true
@@ -576,7 +586,7 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 		eventUsed = true
 		-- find world coordinates from the mouse cursor position
 		local viewX, viewY = posX - self.mapOverview.absPosition[ 1 ], posY - self.mapOverview.absPosition[ 2 ]
-		local viewW, viewH = self.mapOverview.size[ 1 ], self.mapOverview.size[ 2 ]
+		local viewW, viewH = self.mapOverview.size[ 1 ], self.mapOverview.sdo yize[ 2 ]
 		local x, z = self.coursePlot:screenToWorld(posX, posY)
 		if self.state == CourseGeneratorScreen.SHOW_FULL_MAP then
 			-- find the field under the cursor

@@ -112,6 +112,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
+	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
@@ -494,6 +495,13 @@ function CpManager:devSaveAllFields()
   return( 'All fields saved' )
 end
 
+
+function CpManager:loadFile(fileName)
+	local path = courseplay.path .. fileName
+	getfenv(0).dofile(path)
+	return path .. ' loaded.'
+end
+
 --- Print a global variable
 -- @param variableName name of the variable, can be multiple levels
 -- @param depth maximum depth, 1 by default
@@ -558,6 +566,34 @@ function CpManager:traceOn(functionName)
 	return('argument tracing is on for ' .. functionName)
 end
 
+--- Enable trace for all functions of the table
+-- by tracing the arguments at every call. The original function is still executed.
+function CpManager:traceOnForAll(tableName)
+	local t = self:getVariable(tableName)
+	if not t then
+		return 'Could not read ' .. tableName
+	else
+		self:traceOnForTable(t, tableName)
+		local mt = getmetatable(t)
+		if mt then
+			self:traceOnForTable(mt, tableName .. ' metatable')
+			if mt.__index then
+				self:traceOnForTable(mt, tableName .. ' metatable.__index')
+			end
+		end
+	end
+	return('argument tracing is on for all functions of ' .. tableName)
+end
+
+function CpManager:traceOnForTable(t, tableName)
+	for key, value in pairs(t) do
+		if type(value) == 'function' then
+			t[key] = Utils.overwrittenFunction(value, CpManager.installTraceFunction(tableName .. '.' .. key))
+			print('argument tracing is on for ' .. tableName .. '.' .. key)
+		end
+	end
+end
+
 --- get a reference pointing to the global variable 'variableName'
 -- can handle multiple levels (but not arrays, yet) like foo.bar
 function CpManager:getVariable(variableName)
@@ -586,7 +622,7 @@ function CpManager:setLookaheadDistance(d)
 	end
 end
 
--- call vehicle:funcName(...) for the current vehicle
+-- call vehicle:funcName(...) for the current vehicle and print the result
 function CpManager:callVehicleFunction(funcName, ...)
 	if g_currentMission.controlledVehicle then
 		local f = loadstring('return g_currentMission.controlledVehicle.' .. funcName)
