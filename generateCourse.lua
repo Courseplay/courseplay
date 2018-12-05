@@ -673,8 +673,8 @@ function courseplay:generateCourse(vehicle, silent)
 		if cp.firstInLane then
 			local projectionAngle = courseplay:invertAngleDeg(point.angle);
 			local testPoint, testLength = {}, 20;
-			testPoint.x = cp.x + testLength * math.cos(Utils.degToRad(projectionAngle));
-			testPoint.z = cp.z + testLength * math.sin(Utils.degToRad(projectionAngle));
+			testPoint.x = cp.x + testLength * math.cos(MathUtil.degToRad(projectionAngle));
+			testPoint.z = cp.z + testLength * math.sin(MathUtil.degToRad(projectionAngle));
 			newFirstInLane = self:lineIntersectsPoly(cp, testPoint, poly);
 
 			if newFirstInLane ~= nil then
@@ -705,8 +705,8 @@ function courseplay:generateCourse(vehicle, silent)
 			angleDeg = courseplay:positiveAngleDeg(angleDeg);
 
 			local testPoint, testLength = {}, 20;
-			testPoint.x = cp.x + testLength * math.cos(Utils.degToRad(angleDeg));
-			testPoint.z = cp.z + testLength * math.sin(Utils.degToRad(angleDeg));
+			testPoint.x = cp.x + testLength * math.cos(MathUtil.degToRad(angleDeg));
+			testPoint.z = cp.z + testLength * math.sin(MathUtil.degToRad(angleDeg));
 			--courseplay:debug(string.format("x=%f, z=%f, testPoint: x=%f, z=%f", cp.x, cp.z, testPoint.x, testPoint.z), 7);
 
 			newLastInLane = self:lineIntersectsPoly(cp, testPoint, poly);
