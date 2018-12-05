@@ -44,6 +44,7 @@ function CourseGeneratorScreen:new(target, custom_mt)
 		self.directionToState[ gameAngleDeg ] = i
 		i = i + 1
 	end
+	self.zoomStep = 1
 	self:registerControls(CourseGeneratorScreen.CONTROLS)
 	return self
 end
@@ -101,18 +102,18 @@ function CourseGeneratorScreen:onOpen()
 	self.ingameMap:registerActionEvents()
 	self.ingameMap:setTerrainSize(g_currentMission.terrainSize)
 	self.ingameMap:setPosition(-0.3, 0)
-	self.ingameMap.mapZoom = 0.4
+	self.ingameMap.mapZoom = 1
 	self.ingameMap:zoom(0)
 --	self.ingameMap:setSize(1, 1.777)
 
 	CourseGeneratorScreen:superClass().onOpen(self)
---	if not self.coursePlot then
---		self.coursePlot = CoursePlot:new(
---			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
---			self.mapOverview.size[1], self.mapOverview.size[2])
---		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
---		self.coursePlot:setVisible(true)
---	end
+	if not self.coursePlot then
+			self.coursePlot = CoursePlot:new(
+				self.ingameMap.absPosition[ 1 ], self.ingameMap.absPosition[ 2 ],
+				self.ingameMap.size[1], self.ingameMap.size[2])
+			self.coursePlot:setView( 0, 0, g_currentMission.terrainSize)
+			self.coursePlot:setVisible(true)
+	end
 	print('CourseGeneratorScreen:onOpen()')
 	if self.vehicle.Waypoints then
 		self:showCourse()
@@ -160,7 +161,7 @@ end
 
 function CourseGeneratorScreen:onClickOk()
 	self:generate()
-	self:onClickBack()
+	--self:onClickBack()
 end
 
 function CourseGeneratorScreen:onClickGenerate()
@@ -522,36 +523,30 @@ function CourseGeneratorScreen:onClickHeadlandCorners( state )
 end
 
 -- this is called when the dynamic map gui element is rendered
-function CourseGeneratorScreen:drawDynamicMapImage(element)
-	if g_currentMission and g_currentMission.ingameMap and g_currentMission.ingameMap.mapOverlay and
-		g_currentMission.ingameMap.mapOverlay.filename and not self.mapOverlay then
+function CourseGeneratorScreen:draw()
+	CourseGeneratorScreen:superClass().draw(self)
 
-		local ingameMap = g_currentMission.ingameMap
-		-- zoom out completely by default
-		ingameMap.mapVisWidthMin = 1
-
-		if self.state == CourseGeneratorScreen.SHOW_SELECTED_FIELD and self.boundingBox then
-			local padding = 10
-			local centerX = ( self.boundingBox.xMin + self.boundingBox.xMax ) / 2
-			local centerY = ( self.boundingBox.yMin + self.boundingBox.yMax ) / 2
-			local width = self.boundingBox.span + 2 * padding
-			if self.coursePlot then
-				self.coursePlot:setView( centerX, centerY, width )
-			end
-			-- figure out view (center and zoom) for ingame map, normalized
-			ingameMap.mapVisWidthMin = 1 / ingameMap.worldSizeX * width
-			-- ingame map uses normalized coordinates, the map corners are (0,0) and (1,1)
-			ingameMap.centerXPos = MathUtil.clamp(( centerX + ingameMap.worldCenterOffsetX)/ingameMap.worldSizeX, 0, 1)
-			ingameMap.centerZPos = MathUtil.clamp(( centerY + ingameMap.worldCenterOffsetZ)/ingameMap.worldSizeZ, 0, 1)
-		end
-
-		ingameMap:setPosition(self.mapOverview.absPosition[1], self.mapOverview.absPosition[2])
-		ingameMap:setSize(self.mapOverview.size[1], self.mapOverview.size[2])
-		local leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached = ingameMap:drawMap(1)
-		ingameMap:renderHotspots(leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached, false, true);
+	if self.state == CourseGeneratorScreen.SHOW_SELECTED_FIELD and self.boundingBox then
+		local padding = 10
+		local centerX = ( self.boundingBox.xMin + self.boundingBox.xMax ) / 2
+		local centerY = ( self.boundingBox.yMin + self.boundingBox.yMax ) / 2
+		local width = self.boundingBox.span + 2 * padding
 		if self.coursePlot then
-			self.coursePlot:draw()
+			self.coursePlot:setView( centerX, centerY, width )
 		end
+		-- figure out view (center and zoom) for ingame map, normalized
+		--		self.ingameMap.mapVisWidthMin = 1 / self.ingameMap.worldSizeX * width
+		-- ingame map uses normalized coordinates, the map corners are (0,0) and (1,1)
+		--		self.ingameMap.centerXPos = MathUtil.clamp(( centerX + self.ingameMap.worldCenterOffsetX)/self.ingameMap.worldSizeX, 0, 1)
+		--		self.ingameMap.centerZPos = MathUtil.clamp(( centerY + self.ingameMap.worldCenterOffsetZ)/self.ingameMap.worldSizeZ, 0, 1)
+	end
+
+	--self.ingameMap:setPosition(self.mapOverview.absPosition[1], self.mapOverview.absPosition[2])
+	--self.ingameMap:setSize(self.mapOverview.size[1], self.mapOverview.size[2])
+	--local leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached = self.ingameMap:drawMap(1)
+	--self.ingameMap:renderHotspots(leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached, false, true);
+	if self.coursePlot then
+		self.coursePlot:draw()
 	end
 end
 
@@ -565,21 +560,50 @@ function CourseGeneratorScreen:isOverElement( x, y, element )
 	end
 end
 
-function CourseGeneratorScreen:onClickMap(element, posX, posY)
-	print(string.format('OnClickMap %.1f %1.f', posX, posY))
+function CourseGeneratorScreen:onClickMap(element, posX, posZ)
+	print(string.format('OnClickMap %.1f %1.f', posX, posZ))
+	local fieldNum = courseplay:getFieldNumForPosition(posX, posZ)
+	if fieldNum > 0 and self.fields then
+		-- clicked on a field, set it as selected
+		for i, field in ipairs(self.fields) do
+			if field.number == fieldNum then
+				-- field found
+				self.fieldSelector:setState(i)
+				self:selectField( fieldNum )
+			end
+		end
+	end
+end
+
+function CourseGeneratorScreen:zoom(isDown, isUp, button, eventUsed)
+	local eventUsed = false
+	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
+		eventUsed = true
+		self.ingameMap:zoom(self.zoomStep)
+	end
+	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
+		eventUsed = true
+		self.ingameMap:zoom(-self.zoomStep)
+	end
+	return eventUsed
 end
 
 function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
 		eventUsed = true
 	end
-	--[[
+
 	if self:isOverElement(posX, posY, self.width) then
 		return self:onScrollWidth(self.width, isDown, isUp, button)
 	end
 	if self:isOverElement(posX, posY, self.manualDirectionAngle) then
 		return self:onScrollManualDirectionAngle(self.width, isDown, isUp, button)
 	end
+
+	if button == Input.MOUSE_BUTTON_WHEEL_UP or button == Input.MOUSE_BUTTON_WHEEL_DOWN then
+		self:zoom(isDown, isUp, button, eventUsed)
+	end
+	--[[
 	if not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
 		-- ignore clicks off the map
 		if not self:isOverElement(posX, posY, self.mapOverview) then return eventUsed end

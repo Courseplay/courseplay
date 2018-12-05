@@ -122,11 +122,11 @@ function CoursePlot:draw()
 			if startX and startY and endX and endY then
 				dx2D = endX - startX;
 				dy2D = ( endY - startY ) / g_screenAspectRatio;
-				width = Utils.vector2Length(dx2D, dy2D);
+				width = MathUtil.vector2Length(dx2D, dy2D);
 
 				dx = np.cx - wp.cx;
 				dz = np.cz - wp.cz;
-				rotation = Utils.getYRotationFromDirection(dx, dz) - math.pi * 0.5;
+				rotation = MathUtil.getYRotationFromDirection(dx, dz) - math.pi * 0.5;
 
 				r, g, b = courseplay.utils:getColorFromPct( 100 * wp.origIndex / #self.waypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep )
 
