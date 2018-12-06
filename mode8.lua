@@ -53,10 +53,10 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 					if triggers ~= nil and triggers[1].acceptedFillTypes ~= nil and triggers[1].acceptedFillTypes[workTool.cp.fillType] and workTool.cp.fillType == g_fillTypeManager.nameToIndex.liquidManure then
 
 						local inBGAExtensionTrigger = triggers[1].bga and triggers[1].bga.fermenter_bioOK
-						local goForUnloading = workTool.cp.fillLevel > 0 and workTool.tipState == Trailer.TIPSTATE_CLOSED 
+						local goForUnloading = workTool.cp.fillLevel > 0 and workTool:getDischargeState() == Trailer.TIPSTATE_CLOSED 
 
 						--Stop Unloading to BGA Extension
-						if inBGAExtensionTrigger and not goForUnloading and triggers[1].bga.BGA_Bonus >= triggers[1].bga.BGA_Bonus_Capacity*0.99 and (workTool.tipState == Trailer.TIPSTATE_OPENING or workTool.tipState == Trailer.TIPSTATE_OPEN) then
+						if inBGAExtensionTrigger and not goForUnloading and triggers[1].bga.BGA_Bonus >= triggers[1].bga.BGA_Bonus_Capacity*0.99 and (workTool:getDischargeState() == Trailer.TIPSTATE_OPENING or workTool:getDischargeState() == Trailer.TIPSTATE_OPEN) then
 							workTool:toggleTipState(triggers[1],1);	
 							courseplay:debug('                BGA Extension Mod is full resuming course', 23);
 
@@ -134,12 +134,12 @@ function courseplay:handleMode8(vehicle, load, unload, allowedToDrive, lx, lz, d
 				if not workTool.cp.waterReceiverTrigger then	
 					local triggers = g_currentMission.trailerTipTriggers[workTool]
 					if triggers ~= nil then
-						if workTool.tipState == Trailer.TIPSTATE_OPENING or workTool.tipState == Trailer.TIPSTATE_OPEN then
+						if workTool:getDischargeState() == Trailer.TIPSTATE_OPENING or workTool:getDischargeState() == Trailer.TIPSTATE_OPEN then
 							vehicle.cp.isUnloading = true
 						else
-							if workTool.tipState == Trailer.TIPSTATE_CLOSED then
+							if workTool:getDischargeState() == Trailer.TIPSTATE_CLOSED then
 								workTool:toggleTipState(triggers[1],1);
-							elseif workTool.tipState == Trailer.TIPSTATE_CLOSING then
+							elseif workTool:getDischargeState() == Trailer.TIPSTATE_CLOSING then
 								vehicle.cp.isUnloading = false
 								tankIsFull = true
 							end							

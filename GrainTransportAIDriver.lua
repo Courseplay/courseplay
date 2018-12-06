@@ -135,7 +135,7 @@ function GrainTransportAIDriver:searchForTipTrigger(lx, lz)
 		and self.ppc:getCurrentWaypointIx() > 2
 		and not self.ppc:reachedLastWaypoint()
 		and not self.ppc:isReversing() then
-		local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, lx, 0, lz)
+		local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, lx, -0.1, lz)
 		-- raycast start point in front of vehicle
 		local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
 		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)

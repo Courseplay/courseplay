@@ -86,7 +86,7 @@ function courseplay:handleAugerWagon(vehicle, workTool, unfold, unload, orderNam
 
 	if workTool.cp.isSugarCaneAugerWagon then 
 		local movingTools = workTool.spec_cylindered.movingTools
-		local tipState = workTool.tipState
+		local tipState = workTool:getDischargeState()
 
 		--force the correct tipState 
 		if unload then

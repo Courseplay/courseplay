@@ -85,8 +85,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			end
 		end
 		if transformId ~= nil then
-			local trigger = tipTriggers[transformId];
-
+			local trigger = tipTriggers[transformId]
 			if trigger ~= nil then
 				if trigger.bunkerSilo ~= nil and trigger.state ~= 0 then 
 					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), trigger.state), 1);
@@ -117,7 +116,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
 
 					-- check trigger fillLevel / capacity
-					if trigger.fillLevel and trigger.capacity and trigger.fillLevel >= trigger.capacity then
+					if trigger.fillLevels ~= nil and trigger.fillLevels[trailerFillType] and trigger.capacity and trigger.fillLevels[trailerFillType] >= trigger.capacity then
 						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d -> abort'):format(tostring(triggerId), trigger.fillLevel, trigger.capacity), 1);
 						return true;
 					end;
@@ -135,7 +134,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.DirectionNode or self.rootNode, trigger.rootNode)*2
+						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.DirectionNode or self.rootNode, trigger.triggerId)*2
 						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
 					end;
@@ -151,6 +150,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				end;
 				return true;
 			end;
+
 		end;
 	end;
 
@@ -269,7 +269,7 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for k,v in pairs(g_currentMission.nonUpdateables) do
 			counter = counter +1;
-			if g_currentMission.nonUpdateables[k] ~= nil then
+			--[[if g_currentMission.nonUpdateables[k] ~= nil then
 				local trigger = g_currentMission.nonUpdateables[k];
 				local triggerId = trigger.triggerId;
 				--print(tableShow(trigger,"nonUpdateables",nil,nil,4))
@@ -305,7 +305,7 @@ function courseplay:updateAllTriggers()
 						courseplay:debug('\t\tadd waterTrailerFillTrigger', 1);
 					end;
 				end;
-			end;
+			end;]]
 		end;
 		courseplay:debug(('\t%i in list'):format(counter), 1);
 	end;
@@ -317,7 +317,7 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for _,valueTable in pairs (g_currentMission.itemsToSave) do
 			counter = counter +1;
-			if valueTable.item ~= nil then
+			--[[if valueTable.item ~= nil then
 				if valueTable.item.fillTrigger ~= nil then
 					local trigger = valueTable.item.fillTrigger
 					local triggerId = trigger.triggerId
@@ -353,7 +353,7 @@ function courseplay:updateAllTriggers()
 					courseplay:cpAddTrigger(triggerId, valueTable.item, 'waterReceiver', 'nonUpdateable');
 					courseplay:debug('\t\tadd Greenhouse receiver trigger (placeable)', 1);
 				end;				
-			end
+			end]]
 		end
 		courseplay:debug(('\t%i in list'):format(counter), 1);		
 	end
@@ -362,7 +362,7 @@ function courseplay:updateAllTriggers()
 	if g_currentMission.updateables ~= nil then
 		courseplay:debug('\tcheck updateables', 1);
 		-- weight station
-		if g_currentMission.WeightStation ~= nil and #g_currentMission.WeightStation > 0 then
+		--[[if g_currentMission.WeightStation ~= nil and #g_currentMission.WeightStation > 0 then
 			for t,object in pairs(g_currentMission.updateables) do
 				if object.isWeightStation or (object.stationId and object.stationId ~= 0 and g_currentMission.WeightStation[object.stationId]) and object.isEnabled and object.requestTimer and object.triggerId then
 					local station = g_currentMission.WeightStation[object.stationId];
@@ -372,7 +372,7 @@ function courseplay:updateAllTriggers()
 					courseplay:debug('\t\tadd weightStation [mod]', 1);
 				end;
 			end;
-		end;
+		end;]]
 	end;
 
 	-- onCreate objects
@@ -385,6 +385,7 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for k, object in pairs(g_currentMission.onCreateLoadedObjects) do
 			counter = counter +1;
+			--[[
 			--print(tableShow(object,"onCreate",nil,nil,4))
 			--newBGA DigestateSiloTrigger
 			if object.tipTriggerTargets ~= nil then
@@ -460,7 +461,7 @@ function courseplay:updateAllTriggers()
 				end;
 			
 			
-			end;
+			end;]]
 		end;
 		courseplay:debug(('\t%i in list'):format(counter), 1);
 	end;
@@ -478,9 +479,42 @@ function courseplay:updateAllTriggers()
 	if g_currentMission.placeables ~= nil then
 		courseplay:debug('\tcheck placeables', 1);
 		local counter = 0
-		for xml, placeable in pairs(g_currentMission.placeables) do
+		for placeableIndex, placeable in pairs(g_currentMission.placeables) do
 			counter = counter +1 
-			for k, trigger in pairs(placeable) do
+
+			if placeable.unloadingStation ~= nil then
+				local trigger = {}
+				for _,unloadTrigger in pairs(placeable.unloadingStation.unloadTriggers) do
+					local triggerId = unloadTrigger.exactFillRootNode;
+					trigger = {
+								triggerId = triggerId;
+								acceptedFillTypes = placeable.storages[1].fillTypes;
+								capacity = placeable.storages[1].capacityPerFillType;
+								fillLevels = placeable.storages[1].fillLevels;
+					
+							}
+					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+					courseplay:debug(string.format('\t\tadd %s to tipTriggers',placeable.unloadingStation.stationName), 1);
+				end
+			end
+			
+			
+			if placeable.sellingStation ~= nil then
+				local trigger = {}
+				for _,unloadTrigger in pairs(placeable.sellingStation.unloadTriggers) do
+					local triggerId = unloadTrigger.exactFillRootNode;
+					trigger = {
+								triggerId = triggerId;
+								acceptedFillTypes = placeable.sellingStation.acceptedFillTypes;
+												
+							}
+					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+					courseplay:debug(string.format('\t\tadd %s to tipTriggers',placeable.sellingStation.stationName), 1);
+				end
+			end
+			
+			
+			
 				--	FermentingSilo
 				--print('triggers broken 485')
 				--[[ Ryan one of these stringutil doesn't work if (StringUtil.endsWith(xml, 'ermentingsilo_low.xml') or StringUtil.endsWith(xml, 'ermentingsilo_high.xml')) and trigger.silagePerHour ~= nil then
@@ -555,7 +589,7 @@ function courseplay:updateAllTriggers()
 					courseplay:cpAddTrigger(triggerId, trigger, 'waterReceiver', 'onCreateLoadedObjects');
 					courseplay:debug('\t\tadd greenhouse water trigger [placeable]', 1);
 				end; ]]
-			end;
+
 		end
 		courseplay:debug(('\t%i found'):format(counter), 1);
 	end;
@@ -619,7 +653,7 @@ function courseplay:updateAllTriggers()
 	-- tipTriggers objects
 	if g_currentMission.tipTriggers ~= nil then
 		courseplay:debug('\tcheck tipTriggers', 1);
-		for k, trigger in pairs(g_currentMission.tipTriggers) do
+		--[[for k, trigger in pairs(g_currentMission.tipTriggers) do
 			-- Regular and Extended tipTriggers
 			if courseplay:isValidTipTrigger(trigger) then
 				local triggerId = trigger.triggerId;
@@ -644,7 +678,7 @@ function courseplay:updateAllTriggers()
 					end;
 				end;
 			end;
-		end
+		end]]
 	end;
 
 	if courseplay.liquidManureOverloaders ~= nil then
@@ -662,27 +696,31 @@ function courseplay:updateAllTriggers()
 	end
 end;
 
-
-function courseplay:cpAddTrigger(triggerId, trigger, triggerType, groupType)
+	   --courseplay:cpAddTrigger(triggerId, 'placeable',placeableIndex ,'unloadingStation', unloadingTriggerIndex ,'tipTrigger');
+function courseplay:cpAddTrigger(triggerId, trigger, groupType)
 	--courseplay:debug(('%s: courseplay:cpAddTrigger: TriggerId: %s,trigger: %s, triggerType: %s,groupType: %s'):format(nameNum(self), tostring(triggerId), tostring(trigger), tostring(triggerType), tostring(groupType)), 1);
 	local t = courseplay.triggers;
 	if t.all[triggerId] ~= nil then return; end;
 
 	t.all[triggerId] = trigger;
 	t.allCount = t.allCount + 1;
-
+--[[
 	if groupType then
 		if groupType == 'nonUpdateable' then
 			t.allNonUpdateables[triggerId] = trigger;
 			t.allNonUpdateablesCount = t.allNonUpdateablesCount + 1;
 		end;
 	end;
-
+]]
 	-- tipTriggers
-	if triggerType == 'tipTrigger' then
+	if groupType == 'tipTrigger' then
 		t.tipTriggers[triggerId] = trigger;
 		t.tipTriggersCount = t.tipTriggersCount + 1;
-
+		
+		
+		
+		
+--[[
 	-- other triggers
 	elseif triggerType == 'damageMod' then
 		t.damageModTriggers[triggerId] = trigger;
@@ -707,7 +745,7 @@ function courseplay:cpAddTrigger(triggerId, trigger, triggerType, groupType)
 		t.weightStationsCount = t.weightStationsCount + 1;
 	elseif triggerType == 'waterReceiver' then
 		t.waterReceivers[triggerId] = trigger;
-		t.waterReceiversCount = t.waterReceiversCount + 1;
+		t.waterReceiversCount = t.waterReceiversCount + 1;]]
 	end;
 end;
 

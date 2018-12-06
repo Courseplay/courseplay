@@ -74,6 +74,7 @@ end
 -- to reverse with trailer.
 function AIDriver:driveCourse(dt, allowedToDrive)
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
+	allowedToDrive = courseplay:checkFuel(self.vehicle, allowedToDrive)
 	if isReverseActive then
 		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
 	else

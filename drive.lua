@@ -434,10 +434,10 @@ function courseplay:drive(self, dt)
 		--resetTrailer when empty after unloading in Bunkersilo
 		if self.cp.totalFillLevel == 0 then
 			for _,tipper in pairs (self.cp.workTools) do
-				if tipper.tipState ~= nil and (tipper.tipState == Trailer.TIPSTATE_OPENING or tipper.tipState == Trailer.TIPSTATE_OPEN) then
+				if tipper:getDischargeState() ~= nil and (tipper:getDischargeState() == Trailer.TIPSTATE_OPENING or tipper:getDischargeState() == Trailer.TIPSTATE_OPEN) then
 					tipper:toggleTipState();
 				end
-				if (tipper.tipState == Trailer.TIPSTATE_CLOSED or tipper.tipState == Trailer.TIPSTATE_CLOSING) and self.cp.keepOnTipping then
+				if (tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED or tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING) and self.cp.keepOnTipping then
 					self.cp.keepOnTipping = false
 					--print("reset vehicle.cp.keepOnTipping")
 				end
@@ -527,39 +527,10 @@ function courseplay:drive(self, dt)
 
 		--FUEL LEVEL + REFILLING
 		-- DO NOT DELETE fuelFillLevel is gone. This variable may be a replacment 
-		if self.spec_motorized.fuelCapacity > 0 then
-			local spec = self.spec_motorized
-			local consumer = spec.consumersByFillTypeName.diesel			
-											-- Formely fuelFillLevel. No longer avaiable in the vehicle, fuelCapacity was returning double the amount aviable update to this to return a true vaule mabye?
-			--local currentFuelPercentage = ( self:getFillUnitFillLevel(consumer.fillUnitIndex)/ self:getFillUnitCapacity(consumer.fillUnitIndex) + 0.0001) * 100;
-			local currentFuelPercentage = self:getFillUnitFillLevelPercentage(consumer.fillUnitIndex) * 100;
-			
-			local searchForFuel = (self.cp.allwaysSearchFuel and (currentFuelPercentage < 99) and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
-			if searchForFuel then
-				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
-				if self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
-					self.cp.isInFilltrigger = true;
-				end;
-				--[[ if self.fuelFillTriggers[1] then
-					allowedToDrive = false;
-					self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
-				end; ]]
-			end
-			if currentFuelPercentage < 5 then
-				allowedToDrive = false;
-				CpManager:setGlobalInfoText(self, 'FUEL_MUST');
-			elseif currentFuelPercentage < 20 and not self.isFuelFilling then
-				CpManager:setGlobalInfoText(self, 'FUEL_SHOULD');
-			elseif self.isFuelFilling and currentFuelPercentage < 99.9 then
-				allowedToDrive = false;
-				CpManager:setGlobalInfoText(self, 'FUEL_IS');
-			end;
-			--[[ Ryan if self.fuelFillTriggers[1] and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
-				courseplay:debug(nameNum(self) .. ': self.fuelFillTriggers[1] ~= nil -> resetting "self.cp.fillTrigger"', 1);
-				self.cp.fillTrigger = nil;
-			end; ]]
-		end;
-
+		
+		allowedToDrive = courseplay:checkFuel(self,allowedToDrive)
+		
+		
 		-- WATER WARNING
 		if self.showWaterWarning then
 			allowedToDrive = false;
@@ -1859,9 +1830,11 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 				fillUnit.capacity = fillUnit.capacity *3
 			end
 		end
-		if (workTool.cp.isKronePremos5000 and index ~= workTool.pelletizer.fillUnitIndex)
-			or (workTool.cp.isStrawHarvestAddonBaler and index == workTool.supplies.fillUnitIndex)  then
-
+		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL) 
+		or index == workTool:getConsumerFillUnitIndex(FillType.DEF)
+		or index == workTool:getConsumerFillUnitIndex(FillType.AIR)) then
+			
+			
 		else
 			fillLevel = fillLevel + fillUnit.fillLevel
 			--print(string.format("%s: adding %s to fillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
@@ -2114,3 +2087,37 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 end;
 -- do not delete this line
 -- vim: set noexpandtab:
+function courseplay:checkFuel(vehicle, allowedToDrive)
+	if vehicle.getConsumerFillUnitIndex ~= nil then
+		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
+		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
+		local searchForFuel = (vehicle.cp.allwaysSearchFuel and (currentFuelPercentage < 99) and vehicle.cp.waypointIndex > 2 and vehicle.cp.waypointIndex < vehicle.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
+		if searchForFuel then
+			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
+			if vehicle.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
+				vehicle.cp.isInFilltrigger = true;
+			end;
+			--[[ if self.fuelFillTriggers[1] then
+				allowedToDrive = false;
+				self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
+			end; ]]
+		end
+		if currentFuelPercentage < 5 then
+			allowedToDrive = false;
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST');
+		elseif currentFuelPercentage < 20 and not vehicle.isFuelFilling then
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD');
+		elseif vehicle.isFuelFilling and currentFuelPercentage < 99.9 then
+			allowedToDrive = false;
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
+		end;
+		--[[ Ryan if self.fuelFillTriggers[1] and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
+			courseplay:debug(nameNum(self) .. ': self.fuelFillTriggers[1] ~= nil -> resetting "self.cp.fillTrigger"', 1);
+			self.cp.fillTrigger = nil;
+		end; ]]
+		
+		return allowedToDrive;
+	else
+		return allowedToDrive;
+	end;
+end

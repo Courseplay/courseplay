@@ -758,7 +758,7 @@ function courseplay.hud:loadPage(vehicle, page)
 					vehicle.cp.hud.content.pages[1][6][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
 					--nameI18N isn't aviable todo figure out how to convert it to text instead of the fill type name
 					--vehicle.cp.hud.content.pages[1][6][2].text = g_fillTypeManager.indexToName[vehicle.cp.siloSelectedFillType].nameI18N;
-					vehicle.cp.hud.content.pages[1][6][2].text = string.format('%s',tostring(g_fillTypeManager.indexToName[vehicle.cp.siloSelectedFillType]));
+					vehicle.cp.hud.content.pages[1][6][2].text = string.format('%s',tostring(g_fillTypeManager.fillTypes[vehicle.cp.siloSelectedFillType].title)); --g_fillTypeManager.indexToName[vehicle.cp.siloSelectedFillType]));
 				end
 				
 				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE and vehicle.cp.hasFertilizerSowingMachine then
