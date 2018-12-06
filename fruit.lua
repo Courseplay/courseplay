@@ -134,7 +134,7 @@ function courseplay:isLineField(node, x1, z1, x2, z2)
 	local heightWorldX, heightWorldZ = hx, hz;
 
 	local detailId = g_currentMission.terrainDetailId;
-	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
+	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = MathUtil.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
 	setDensityCompareParams(detailId, 'greater', 0, 0, 0, 0);
 	local n,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
 	setDensityCompareParams(detailId, 'greater', -1);
