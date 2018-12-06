@@ -85,7 +85,20 @@ function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltyp
 end;
 
 function courseplay:getAvalibleFillTypes(object, fillUnitIndex)
-	if fillUnitIndex == nil then
+	-- We really should be using getFillUnitSupportedFillTypes() but usure of input or how it works. Tried multiple times but kept returning nil. Will ask Jos later
+	if object.spec_fillUnit.fillUnits then
+		for index, fillUnit in ipairs(object.spec_fillUnit.fillUnits) do
+			if object.spec_fillUnit.fillUnits[index].supportedFillTypes then
+				if fillUnitIndex == nil then
+					return object.spec_fillUnit.fillUnits[index].supportedFillTypes
+				else
+					return object.spec_fillUnit.fillUnits[index].supportedFillTypes[fillUnitIndex]
+				end
+			end
+		end;
+	end;
+	-- Old Stuff incase the above method doesn't work like old
+	--[[ if fillUnitIndex == nil then
 		local fillTypes = {}
 		if object.fillUnits then
 			for _, fillUnit in pairs(object.fillUnits) do
@@ -96,16 +109,14 @@ function courseplay:getAvalibleFillTypes(object, fillUnitIndex)
 				end;
 			end;
 		end;
-		return fillTypes;
-	end;
-    return object.fillUnits[fillUnitIndex].fillTypes;
+	end; ]]
 end;
 
 function courseplay:getAllAvalibleFillTypes(vehicle)
 	local fillTypes = {};
 	if #vehicle.cp.workTools > 0 then
 	    for _, workTool in pairs(vehicle.cp.workTools) do
-		    local toolFillTypes = courseplay:getAvalibleFillTypes(workTool);
+			local toolFillTypes = courseplay:getAvalibleFillTypes(workTool);
 			for fillType, enabled in pairs(toolFillTypes) do
 				if fillType ~= g_fillTypeManager.UNKNOWN and enabled then
 					fillTypes[fillType] = enabled;
