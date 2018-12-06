@@ -3,8 +3,8 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 						 text="开始录制任务" />
 		<text name="COURSEPLAY_DRIVER" 									 text="任务车辆" />
-		<text name="COURSEPLAY_PPC_OFF" 								 text="normal mode" />
-		<text name="COURSEPLAY_PPC_ON" 									 text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_PPC_OFF" 								 text="普通模式" />
+		<text name="COURSEPLAY_PPC_ON" 									 text="高级模式" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 					 text="开始卸载" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 					 text="停止卸载" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 						 text="停在最后或下一个起点" />
