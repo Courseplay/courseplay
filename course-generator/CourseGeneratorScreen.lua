@@ -67,38 +67,13 @@ function CourseGeneratorScreen:showCourse()
 end
 
 function CourseGeneratorScreen:onCreate()
-	--	if not self.coursePlot then
-	--		self.coursePlot = CoursePlot:new(
-	--			self.mapOverview.absPosition[ 1 ], self.mapOverview.absPosition[ 2 ],
-	--			self.mapOverview.size[1], self.mapOverview.size[2])
-	--		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
-	--		self.coursePlot:setVisible(true)
-	--	end
 	print('CourseGeneratorScreen:onCreate()')
-	-- Make sure we always load the most up to date field data
-	-- List of fields
-	self.fields = {}
-	for key, field in pairs( courseplay.fields.fieldData ) do
-		table.insert( self.fields, { name = field.name, number = key })
-	end
-	table.sort( self.fields, function( a, b ) return a.number < b.number end )
-
-	-- set up a reverse lookup table
-	self.fieldToState = {}
-	for i, f in ipairs( self.fields ) do
-		self.fieldToState[ f.number ] = i
-		i = i + 1
-	end
-
-	-- add the 'currently loaded course' option
-	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
-	self.fieldToState[ 0 ] = #self.fields
 end
 
 
 function CourseGeneratorScreen:onOpen()
-	
-	-- TODO is onCreate really necassry any more when it needs to be updated ever onOpen
+	-- Make sure we always load the most up to date field data
+	-- List of fields
 	self.fields = {}
 	for key, field in pairs( courseplay.fields.fieldData ) do
 		table.insert( self.fields, { name = field.name, number = key })
@@ -120,17 +95,17 @@ function CourseGeneratorScreen:onOpen()
 	self.ingameMap:setIngameMap(g_currentMission.hud.ingameMap)
 	self.ingameMap:registerActionEvents()
 	self.ingameMap:setTerrainSize(g_currentMission.terrainSize)
-	self.ingameMap:setPosition(-0.3, 0)
-	self.ingameMap.mapZoom = 1
+	self.ingameMap:setPosition(-0.4, 0)
+	self.ingameMap.zoomMax = 4
+	self.ingameMap.mapZoom = 0.5
 	self.ingameMap:zoom(0)
---	self.ingameMap:setSize(1, 1.777)
 
 	CourseGeneratorScreen:superClass().onOpen(self)
 	if not self.coursePlot then
 			self.coursePlot = CoursePlot:new(
 				self.ingameMap.absPosition[ 1 ], self.ingameMap.absPosition[ 2 ],
-				self.ingameMap.size[1], self.ingameMap.size[2])
-			self.coursePlot:setView( 0, 0, g_currentMission.terrainSize)
+				self.ingameMap.size[1], self.ingameMap.size[2],
+				g_currentMission.terrainSize)
 			self.coursePlot:setVisible(true)
 	end
 	print('CourseGeneratorScreen:onOpen()')
@@ -145,7 +120,7 @@ end
 
 function CourseGeneratorScreen:onClickResetMap(element)
 	if self.coursePlot then
-		self.coursePlot:setView( 0, 0, g_currentMission.ingameMap.worldSizeX)
+		self.coursePlot:setView( 0, 0, self.ingameMap.worldSizeX)
 		self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 	end
 end
@@ -160,7 +135,6 @@ function CourseGeneratorScreen:generate()
 	if not status then
 		-- show message if there was an exception
 		g_gui:showInfoDialog({text=courseplay:loc('COURSEPLAY_COULDNT_GENERATE_COURSE')})
-		self:onClickResetMap()
 		return
 	end
 
@@ -545,6 +519,7 @@ end
 function CourseGeneratorScreen:draw()
 	CourseGeneratorScreen:superClass().draw(self)
 
+	--[[
 	if self.state == CourseGeneratorScreen.SHOW_SELECTED_FIELD and self.boundingBox then
 		local padding = 10
 		local centerX = ( self.boundingBox.xMin + self.boundingBox.xMax ) / 2
@@ -564,7 +539,10 @@ function CourseGeneratorScreen:draw()
 	--self.ingameMap:setSize(self.mapOverview.size[1], self.mapOverview.size[2])
 	--local leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached = self.ingameMap:drawMap(1)
 	--self.ingameMap:renderHotspots(leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached, false, true);
+	]]--
 	if self.coursePlot then
+		self.coursePlot:setPosition(self.ingameMap.absPosition[ 1 ], self.ingameMap.absPosition[ 2 ])
+		self.coursePlot:setSize(self.ingameMap.size[1], self.ingameMap.size[2])
 		self.coursePlot:draw()
 	end
 end

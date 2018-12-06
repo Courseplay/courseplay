@@ -1,73 +1,76 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUIProfiles>
 
-	<Profile name="cpSettingsBox" parent="settingsBox">
-		<Value name="size" value="253px 400px"/>
+	<Profile name="cpMenuFrame" extends="emptyPanel">
+		<Value name="screenAlign" value="middleCenter"/>
+		<Value name="positionOrigin" value="middleCenter"/>
+		<Value name="position" value="0px 0px"/>
+		<Value name="size" value="1920px 1080px"/>
 	</Profile>
 
-	<Profile name="cpMapBox" parent="settingsBox">
-		<Value name="size" value="640px 640px"/>
-		<Value name="alignmentY" value="middle" />
+	<Profile name="cpHeader" extends="ingameMenuMapFilter">
+		<Value name="screenAlign" value="topLeft"/>
+		<Value name="position" value="10px -20px"/>
+		<Value name="positionOrigin" value="topLeft"/>
 	</Profile>
 
-	<Profile name="cpHintText" parent="textDefault">
+	<Profile name="cpSettingsBox" extends="ingameMenuMapFilterBox">
+		<Value name="position" value="10px 10px"/>
+		<Value name="size" value="600px 800px"/>
+	</Profile>
+
+	<Profile name="cpHintText" extends="textDefault">
 		<Value name="positionOrigin" value="bottomLeft" />
 		<Value name="textAlignment" value="left" />
 		<Value name="textSize" value="12px"/>
 		<Value name="textMaxWidth" value="430px"/>
 	</Profile>
 
-	<Profile name="cpMultiTextOption" parent="multiTextOption">
+	<Profile name="cpMultiTextOption" extends="multiTextOption">
 		<Value name="doLockingOnFocus" value="true" />
 		<Value name="position" value="0px 20px" />
-		<Value name="size" value="253px 24px" />
-		<Value name="margin" value="0px 25px 0px 14px" />
+		<Value name="size" value="200px 24px" />
+		<Value name="margin" value="25px 25px 14px 14px" />
 	</Profile>
 
-	<Profile name="cpSmallMultiTextOption" parent="cpMultiTextOption">
+	<Profile name="cpSmallMultiTextOption" extends="cpMultiTextOption">
 		<Value name="size" value="123px 24px" />
 	</Profile>
 
-	<Profile name="cpMultiTextOptionTitle" parent="multiTextOptionTitle">
-		<Value name="textSize" value="16px"/>
+	<Profile name="cpMultiTextOptionTitle" extends="multiTextOptionTitle">
+		<Value name="textSize" value="14px"/>
 	</Profile>
 
-	<Profile name="cpMultiTextOptionLeft" parent="multiTextOptionLeft">
+	<Profile name="cpMultiTextOptionLeft" extends="multiTextOptionLeft">
 		<Value name="size" value="24px 24px" />
-		<Value name="position" value="0px 0px" />
-		<Value name="iconUVs" value="535px 989px 27px 27px" />
-		<Value name="iconSize" value="14px 14px"/>
-		<Value name="iconTextOffset" value="28px -10px"/>
-		<Value name="iconRotation" value="180"/>
 	</Profile>
 
-	<Profile name="cpMultiTextOptionRight" parent="cpMultiTextOptionLeft">
+	<Profile name="cpMultiTextOptionRight" extends="cpMultiTextOptionLeft">
 		<Value name="screenAlign" value="bottomRight" />
 		<Value name="positionOrigin" value="bottomRight" />
 		<Value name="iconRotation" value="0"/>
-		<Value name="iconTextOffset" value="27px -10px"/>
 	</Profile>
 
-	<Profile name="cpMultiTextOptionBg" parent="multiTextOptionBg">
+	<Profile name="cpMultiTextOptionBg" extends="multiTextOptionBg">
 		<Value name="position" value="24px 0px" />
-		<Value name="size" value="205px 24px" />
+		<Value name="size" value="152px 24px" />
 	</Profile>
 	
-	<Profile name="cpMultiTextOptionText" parent="multiTextOptionText">
-		<Value name="textSize" value="14px"/>
+	<Profile name="cpMultiTextOptionText" extends="multiTextOptionText">
+		<Value name="textSize" value="12px"/>
 		<Value name="position" value="0px 6px" />
-		<Value name="textMaxWidth" value="205px"/>
+		<Value name="textMaxWidth" value="152px"/>
 	</Profile>
 
-	<Profile name="cpSmallMultiTextOptionBg" parent="cpMultiTextOptionBg">
+	<Profile name="cpSmallMultiTextOptionBg" extends="cpMultiTextOptionBg">
 		<Value name="size" value="75px 24px" />
 	</Profile>
 
-	<Profile name="cpSmallMultiTextOptionText" parent="cpMultiTextOptionText">
+	<Profile name="cpSmallMultiTextOptionText" extends="cpMultiTextOptionText">
 		<Value name="textMaxWidth" value="75px"/>
 	</Profile>
 
-	<Profile name="cpResetButton" parent="pcButton">
+	<Profile name="cpResetButton" extends="pcButton">
 		<Value name="size" value="28px 28px"/>
 		<Value name="iconUVs" value="605px 989px 27px 27px"/>
 		<Value name="iconTextOffset" value="35px -10.5px"/>

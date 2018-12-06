@@ -20,8 +20,8 @@ CoursePlot = {}
 CoursePlot.__index = CoursePlot
 
 -- Position and size of the course plot as normalized screen coordinates
--- x = 0, y = 0 is the bottom left corner of the screen
-function CoursePlot:new( x, y, width, height )
+-- x = 0, y = 0 is the bottom left corner of the screen, terrainSize is in meters
+function CoursePlot:new(x, y, width, height, terrainSize)
 	newCoursePlot = {}
 	setmetatable( newCoursePlot, self )
 	self.courseOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds')
@@ -32,6 +32,9 @@ function CoursePlot:new( x, y, width, height )
 	self.startPosition = {}
 	self.stopPosition = {}
 	self.isVisible = false
+	self.terrainSize = terrainSize
+	self:setScale( self.width / self.terrainSize, self.height / self.terrainSize )
+	self.worldOffsetX, self.worldOffsetZ = self.terrainSize / 2, self.terrainSize / 2
 	return newCoursePlot
 end
 
@@ -42,6 +45,17 @@ function CoursePlot:delete()
 	if self.startSignOverlayId ~= 0 then
 		delete(self.startSignOverlayId);
 	end;
+end
+
+-- normalized screen coordinates
+function CoursePlot:setPosition(x, y)
+	self.x, self.y = x, y
+end
+
+-- normalized screen coordinates
+function CoursePlot:setSize(width, height)
+	self.width, self.height = width, height
+	self:setScale( self.width / self.terrainSize, self.height / self.terrainSize )
 end
 
 function CoursePlot:setVisible( isVisible )
@@ -63,9 +77,8 @@ function CoursePlot:setStopPosition( x, z )
 	self.stopPosition.x, self.stopPosition.z = x, z
 end
 
-
 --- Set scale of the course plot. 1 m * scale = 1 m on plot in normalized screen coordinates
-function CoursePlot:setScale( scaleX, scaleZ )
+function CoursePlot:setScale(scaleX, scaleZ)
 	self.scaleX = scaleX
 	self.scaleZ = scaleZ
 end
@@ -138,9 +151,11 @@ function CoursePlot:draw()
 		setOverlayRotation( self.courseOverlayId, 0, 0, 0 ) -- reset overlay rotation
 	end
 
+	local signSizeMeters = 20
+	local signWidth, signHeight = signSizeMeters * self.scaleX, signSizeMeters * self.scaleZ
+
 	-- render a sign marking the end of the course
 	if self.stopPosition.x and self.stopPosition.z then
-		local signWidth, signHeight = self.width / 15, self.height / 15
 		local x, y = self:worldToScreen( self.stopPosition.x, self.stopPosition.z )
 		if x and y then
 			setOverlayColor( self.stopSignOverlayId, 1, 1, 1, 0.8 )
@@ -153,7 +168,6 @@ function CoursePlot:draw()
 
 	-- render a sign marking the current position used as a starting location for the course
 	if self.startPosition.x and self.startPosition.z then
-		local signWidth, signHeight = self.width / 15, self.height / 15
 		local x, y = self:worldToScreen( self.startPosition.x, self.startPosition.z )
 		if x and y then
 			setOverlayColor( self.startSignOverlayId, 1, 1, 1, 0.8 )

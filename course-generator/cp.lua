@@ -186,8 +186,10 @@ function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
 	if g_CourseGeneratorScreen == nil then
 		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
 		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
+--		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
 		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
 	end
+	g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
 	g_CourseGeneratorScreen:setVehicle( vehicle )
 	g_gui:showGui( 'CourseGeneratorScreen' )
 	-- force reload screen so changes in XML do not require the entire game to be restarted, just reselect the screen
