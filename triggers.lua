@@ -117,7 +117,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					-- check trigger fillLevel / capacity
 					if trigger.fillLevels ~= nil and trigger.fillLevels[trailerFillType] and trigger.capacity and trigger.fillLevels[trailerFillType] >= trigger.capacity then
-						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d -> abort'):format(tostring(triggerId), trigger.fillLevel, trigger.capacity), 1);
+						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d -> abort'):format(tostring(triggerId), trigger.fillLevels[trailerFillType], trigger.capacity), 1);
 						return true;
 					end;
 
@@ -317,6 +317,9 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for _,valueTable in pairs (g_currentMission.itemsToSave) do
 			counter = counter +1;
+				for index,value in pairs (valueTable) do
+					print(string.format("     %s:%s",tostring(index),tostring(value)))
+				end
 			--[[if valueTable.item ~= nil then
 				if valueTable.item.fillTrigger ~= nil then
 					local trigger = valueTable.item.fillTrigger
@@ -385,6 +388,11 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for k, object in pairs(g_currentMission.onCreateLoadedObjects) do
 			counter = counter +1;
+			
+			for index,value in pairs (object) do
+					print(string.format("     %s:%s",tostring(index),tostring(value)))
+				end
+			
 			--[[
 			--print(tableShow(object,"onCreate",nil,nil,4))
 			--newBGA DigestateSiloTrigger
@@ -513,8 +521,38 @@ function courseplay:updateAllTriggers()
 				end
 			end
 			
-			
-			
+			if placeable.modulesById ~= nil then
+				for i=1,#placeable.modulesById do
+					local myModule = placeable.modulesById[i]
+					--[[print(string.format("myModule[%i]:",i))
+					for index,value in pairs (myModule) do
+						print(string.format("__%s:%s",tostring(index),tostring(value)))
+					end]]
+					if myModule.unloadPlace ~= nil then
+							local triggerId = myModule.unloadPlace.target.unloadPlace.exactFillRootNode;
+							local trigger = {	
+												triggerId = triggerId;
+												acceptedFillTypes = myModule.unloadPlace.fillTypes;
+												--capacity = myModule.fillCapacity;
+												--fillLevels = myModule.fillLevels;
+											}
+							courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+							courseplay:debug(string.format('\t\tadd %s to tipTriggers',myModule.moduleName), 1);				
+					end
+										
+					if myModule.feedingTrough ~= nil then
+						local triggerId = myModule.feedingTrough.target.feedingTrough.exactFillRootNode;
+						local trigger = {	
+											triggerId = triggerId;
+											acceptedFillTypes = myModule.feedingTrough.fillTypes;
+											--capacity = myModule.fillCapacity;
+											--fillLevels = myModule.fillLevels;
+										}
+						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+						courseplay:debug(string.format('\t\tadd %s to tipTriggers',myModule.moduleName), 1);
+					end
+				end
+			end
 				--	FermentingSilo
 				--print('triggers broken 485')
 				--[[ Ryan one of these stringutil doesn't work if (StringUtil.endsWith(xml, 'ermentingsilo_low.xml') or StringUtil.endsWith(xml, 'ermentingsilo_high.xml')) and trigger.silagePerHour ~= nil then
@@ -696,7 +734,6 @@ function courseplay:updateAllTriggers()
 	end
 end;
 
-	   --courseplay:cpAddTrigger(triggerId, 'placeable',placeableIndex ,'unloadingStation', unloadingTriggerIndex ,'tipTrigger');
 function courseplay:cpAddTrigger(triggerId, trigger, groupType)
 	--courseplay:debug(('%s: courseplay:cpAddTrigger: TriggerId: %s,trigger: %s, triggerType: %s,groupType: %s'):format(nameNum(self), tostring(triggerId), tostring(trigger), tostring(triggerType), tostring(groupType)), 1);
 	local t = courseplay.triggers;
