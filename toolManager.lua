@@ -86,14 +86,12 @@ end;
 
 function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 	-- We really should be using getFillUnitSupportedFillTypes(fillUnitIndex) TODO Make a loop to go through it. 
-	if object.spec_fillUnit.fillUnits then
-		if object.spec_fillUnit.fillUnits[1].supportedFillTypes then
+	if object.spec_fillUnit and object.spec_fillUnit.fillUnits and object.spec_fillUnit.fillUnits[1].supportedFillTypes then
 			if fillUnitIndex == nil then
 				return object.spec_fillUnit.fillUnits[1].supportedFillTypes
 			else
 				return object.spec_fillUnit.fillUnits[1].supportedFillTypes[fillUnitIndex]
 			end
-		end
 	end;
 	-- Old Stuff incase the above method doesn't work like old
 	--[[ if fillUnitIndex == nil then
