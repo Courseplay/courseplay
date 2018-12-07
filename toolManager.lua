@@ -86,13 +86,20 @@ end;
 
 function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 	-- We really should be using getFillUnitSupportedFillTypes(fillUnitIndex) TODO Make a loop to go through it. 
-	if object.spec_fillUnit and object.spec_fillUnit.fillUnits and object.spec_fillUnit.fillUnits[1].supportedFillTypes then
-			if fillUnitIndex == nil then
-				return object.spec_fillUnit.fillUnits[1].supportedFillTypes
-			else
-				return object.spec_fillUnit.fillUnits[1].supportedFillTypes[fillUnitIndex]
-			end
-	end;
+	if fillUnitIndex == nil then
+		local fillTypes = {}
+		if object.spec_fillUnit and object.spec_fillUnit.fillUnits then
+			for fillUnitIndex, fillUnit in ipairs(object.spec_fillUnit.fillUnits) do
+				for fillType, enabled in pairs(object:getFillUnitSupportedFillTypes(fillUnitIndex)) do
+					if fillType ~= g_fillTypeManager.UNKNOWN and enabled then
+						fillTypes[fillType] = enabled;
+					end;
+				end;
+			end;
+		end;
+		return fillTypes
+	end
+	return object:getFillUnitSupportedFillTypes(fillUnitIndex)
 	-- Old Stuff incase the above method doesn't work like old
 	--[[ if fillUnitIndex == nil then
 		local fillTypes = {}
