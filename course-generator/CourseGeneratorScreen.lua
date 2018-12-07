@@ -53,6 +53,12 @@ function CourseGeneratorScreen:setVehicle( vehicle )
 	self.vehicle = vehicle
 end
 
+--- function to override the standard icon sizes so map symbols like field numbers don't look too big
+-- when the maximum zoom level is higher than the standard one.
+function CourseGeneratorScreen:updateMap()
+	self.ingameMap.iconZoom = 0.3 + (self.zoomMax / 2 - self.zoomMin) * self.mapZoom
+end
+
 function CourseGeneratorScreen:showSelectedField()
 	self.state = CourseGeneratorScreen.SHOW_SELECTED_FIELD
 --	self.hintText:setText(courseplay:loc('COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION'))
@@ -68,8 +74,17 @@ end
 
 function CourseGeneratorScreen:onCreate()
 	print('CourseGeneratorScreen:onCreate()')
+	self.ingameMap:setIngameMap(g_currentMission.hud.ingameMap)
+	-- fix icon sizes at higher zoom level
+	self.ingameMap.updateMap = Utils.appendedFunction(self.ingameMap.updateMap, self.updateMap)
+	self.ingameMap:registerActionEvents()
+	self.ingameMap:setTerrainSize(g_currentMission.terrainSize)
+	self.ingameMap.mapCenterX = -0.15
+	self.ingameMap.mapCenterY = 0
+	self.ingameMap.zoomMax = 4
+	self.ingameMap.mapZoom = 0.6
+	self.ingameMap:zoom(0)
 end
-
 
 function CourseGeneratorScreen:onOpen()
 	-- Make sure we always load the most up to date field data
@@ -92,13 +107,7 @@ function CourseGeneratorScreen:onOpen()
 	self.fieldToState[ 0 ] = #self.fields
 
 	g_currentMission.isPlayerFrozen = true
-	self.ingameMap:setIngameMap(g_currentMission.hud.ingameMap)
-	self.ingameMap:registerActionEvents()
-	self.ingameMap:setTerrainSize(g_currentMission.terrainSize)
-	self.ingameMap:setPosition(-0.4, 0)
-	self.ingameMap.zoomMax = 4
-	self.ingameMap.mapZoom = 0.5
-	self.ingameMap:zoom(0)
+
 
 	CourseGeneratorScreen:superClass().onOpen(self)
 	if not self.coursePlot then
@@ -108,7 +117,6 @@ function CourseGeneratorScreen:onOpen()
 				g_currentMission.terrainSize)
 			self.coursePlot:setVisible(true)
 	end
-	print('CourseGeneratorScreen:onOpen()')
 	if self.vehicle.Waypoints then
 		self:showCourse()
 	else
@@ -173,7 +181,6 @@ function CourseGeneratorScreen:onClose()
 		self.coursePlot = nil
 	end
 	self.ingameMap:onClose()
-	--g_currentMission.ingameMap:resetSettings()
 	CourseGeneratorScreen:superClass().onClose(self)
 end
 

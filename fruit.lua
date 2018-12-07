@@ -8,20 +8,21 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 
 	local density = 0;
 	if fruitType ~= nil then
-		density = FieldUtil.getFruitArea(fruitType, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true,true);
+		density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,true);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			return true;
 		end;
 	else
 		for i = 1, g_fruitTypeManager.numCategories do
-			if i ~= g_fruitTypeManager.GRASS then
-				density = FieldUtil.getFruitArea(i, x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, true,true);
+			--if i ~= g_fruitTypeManager.GRASS then this is now an option in getFruitArea
+				--function FieldUtil.getFruitArea(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, terrainDetailRequiredValueRanges, terrainDetailProhibitValueRanges, requiredFruitType, requiredMinGrowthState, requiredMaxGrowthState, prohibitedFruitType, prohibitedMinGrowthState, prohibitedMaxGrowthState, useWindrowed
+				density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, i, minHarvestable , maxHarvestable, g_fruitTypeManager.GRASS, 0, 0,true);
 				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 					return true,i;
 				end;
-			end;
+			--end;
 		end;
 	end;
 
@@ -99,7 +100,7 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	-- print(string.format('hasLineFruit(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)));
 
 	if fixedFruitType then
-		local density, total = FieldUtil.getFruitArea(fixedFruitType, x1,z1, x2,z2, hx,hz, true,true);
+		local density, total = FieldUtil.getFruitArea( x1,z1, x2,z2, hx,hz, {}, {}, fixedFruitType, minHarvestable , maxHarvestable, 0, 0, 0,true);
 		if density > 0 then
 			return true, density, fixedFruitType, g_fruitTypeManager.indexToFruitType[fixedFruitType].name --IndexToDesc[fixedFruitType].name; this might wrong conversion
 		end;
@@ -107,14 +108,14 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	end;
 
 	for i = 1, g_fruitTypeManager.numCategories do
-		if i ~= g_fruitTypeManager.GRASS then
-			local density, total = FieldUtil.getFruitArea(i, x1,z1, x2,z2, hx,hz, true,true);
+		--if i ~= g_fruitTypeManager.GRASS then
+			local density, total = FieldUtil.getFruitArea(x1,z1, x2,z2, hx,hz, i, minHarvestable , maxHarvestable, g_fruitTypeManager.GRASS, 0, 0,true);
 			if density > 0 then
 				local fruitName = g_fruitTypeManager.indexToFruitType[fixedFruitType].name -- FruitUtil.fruitIndexToDesc[i].name;  this might wrong conversion
 				courseplay:debug(string.format('hasLineFruit(): fruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
 				return true, density, i, fruitName;
 			end;
-		end;
+		--end;
 	end;
 
 	return false;
@@ -133,7 +134,7 @@ function courseplay:isLineField(node, x1, z1, x2, z2)
 	local heightWorldX, heightWorldZ = hx, hz;
 
 	local detailId = g_currentMission.terrainDetailId;
-	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
+	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = MathUtil.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
 	setDensityCompareParams(detailId, 'greater', 0, 0, 0, 0);
 	local n,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
 	setDensityCompareParams(detailId, 'greater', -1);
@@ -145,7 +146,7 @@ function courseplay:isLineField(node, x1, z1, x2, z2)
 end;
 
 
-function courseplay:check_for_fruit(vehicle, distance) --TODO (Jakob): this function isn't used anywhere anymore
+--[[ function courseplay:check_for_fruit(vehicle, distance) --TODO (Jakob): this function isn't used anywhere anymore. Well lets delete this then Ryan
 	local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 0, distance) --getWorldTranslation(combine.aiTreshingDirectionNode);
 
 	local length = MathUtil.vector2Length(x, z);
@@ -189,7 +190,7 @@ function courseplay:check_for_fruit(vehicle, distance) --TODO (Jakob): this func
 	end
 
 	return leftFruit, rightFruit;
-end
+end ]]
 
 
 function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
@@ -226,8 +227,8 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 		_,fruitType = courseplay:areaHasFruit(x, z, nil, threshWidth, threshWidth)
 	end
 	-- TODO (Jakob): the last "true" means we're also including preparing fruit. Should this only be done if the combine has indeed a fruit preparer?
-	local leftFruit = FieldUtil.getFruitArea(fruitType, lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, true,true);
-	local rightFruit = FieldUtil.getFruitArea(fruitType, rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, true,true);
+	local leftFruit = FieldUtil.getFruitArea(lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,true);
+	local rightFruit = FieldUtil.getFruitArea(rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,true);
 
 	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit(%s): left %f, right %f", nameNum(combine),tostring(fruitType), leftFruit, rightFruit), 4);
 	

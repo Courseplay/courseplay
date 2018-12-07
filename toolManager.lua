@@ -85,17 +85,13 @@ function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltyp
 end;
 
 function courseplay:getAvailableFillTypes(object, fillUnitIndex)
-	-- We really should be using getFillUnitSupportedFillTypes() but usure of input or how it works. Tried multiple times but kept returning nil. Will ask Jos later
-	if object.spec_fillUnit.fillUnits then
-		for index, fillUnit in ipairs(object.spec_fillUnit.fillUnits) do
-			if object.spec_fillUnit.fillUnits[index].supportedFillTypes then
-				if fillUnitIndex == nil then
-					return object.spec_fillUnit.fillUnits[index].supportedFillTypes
-				else
-					return object.spec_fillUnit.fillUnits[index].supportedFillTypes[fillUnitIndex]
-				end
+	-- We really should be using getFillUnitSupportedFillTypes(fillUnitIndex) TODO Make a loop to go through it. 
+	if object.spec_fillUnit and object.spec_fillUnit.fillUnits and object.spec_fillUnit.fillUnits[1].supportedFillTypes then
+			if fillUnitIndex == nil then
+				return object.spec_fillUnit.fillUnits[1].supportedFillTypes
+			else
+				return object.spec_fillUnit.fillUnits[1].supportedFillTypes[fillUnitIndex]
 			end
-		end;
 	end;
 	-- Old Stuff incase the above method doesn't work like old
 	--[[ if fillUnitIndex == nil then
