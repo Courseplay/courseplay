@@ -88,8 +88,8 @@ function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 	-- We really should be using getFillUnitSupportedFillTypes(fillUnitIndex) TODO Make a loop to go through it. 
 	if fillUnitIndex == nil then
 		local fillTypes = {}
-		if object.spec_fillUnit and object.spec_fillUnit.fillUnits then
-			for fillUnitIndex, fillUnit in ipairs(object.spec_fillUnit.fillUnits) do
+		if object.spec_fillUnit then
+			for fillUnitIndex, fillUnit in ipairs(object:getFillUnits()) do
 				for fillType, enabled in pairs(object:getFillUnitSupportedFillTypes(fillUnitIndex)) do
 					if fillType ~= g_fillTypeManager.UNKNOWN and enabled then
 						fillTypes[fillType] = enabled;
