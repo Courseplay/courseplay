@@ -1,5 +1,82 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUIProfiles>
+	<!-- This is just a copy of the standard presets as those are not shared across profiles -->
+	<Presets>
+		<Preset name="colorTransparent" value="0 0 0 0"/>
+
+		<Preset name="colorGlass" value="0.018 0.016 0.015 0.6"/>
+		<Preset name="colorGlass_50" value="0.018 0.016 0.015 0.25"/>
+
+		<Preset name="colorGlassVeryLight" value="0.718 0.716 0.715 0.04"/>
+		<Preset name="colorGlassExtremelyLight" value="0.918 0.916 0.915 0.15"/>
+		<Preset name="colorGlassMedium" value="0.118 0.116 0.115 0.20"/>
+		<Preset name="colorGlassDark" value="0.018 0.016 0.015 0.65"/>
+		<Preset name="colorGlassLight" value="0.718 0.716 0.715 0.25"/>
+		<Preset name="colorGlassLight_50" value="0.718 0.716 0.715 0.0625"/>
+		<Preset name="colorGlassLight_75" value="0.718 0.716 0.715 0.09375"/>
+
+		<Preset name="colorMainUI" value="0.9910 0.3865 0.0100 1"/>
+		<!-- <Preset name="colorMainUI" value="0.0260 0.3944 0.7373 1"/> -->
+		<Preset name="colorMainUIAlt" value="0.9900 0.4640 0.0010 1"/>
+		<Preset name="colorDisabled" value="0.4 0.4 0.4 1"/>
+
+		<Preset name="colorWhite" value="1 1 1 1"/>
+		<Preset name="colorWhite_50" value="1 1 1 0.5"/>
+		<Preset name="colorWhite_25" value="1 1 1 0.25"/>
+		<Preset name="colorRed" value="0.8069 0.0097 0.0097 1"/>
+		<Preset name="colorDarkRed" value="0.2832 0.0091 0.0091 1"/>
+		<Preset name="colorBlue" value="0.0742 0.4341 0.6939 1"/>
+		<Preset name="colorGreen" value="0.3763 0.6038 0.0782 1"/>
+		<Preset name="colorGreen2" value="0.2122 0.5271 0.0307 1" />
+
+		<Preset name="colorBlack" value="0 0 0 1"/>
+		<Preset name="colorBlack2" value="0.0075 0.0075 0.0075 1"/>
+		<Preset name="colorBlack3" value="0.013 0.013 0.013 1"/>
+		<Preset name="colorBlack3_97" value="0.013 0.013 0.013 0.97"/>
+		<Preset name="colorBlack3_70" value="0.013 0.013 0.013 0.7"/>
+		<Preset name="colorBlack3_0" value="0.013 0.013 0.013 0"/>
+
+		<Preset name="colorDarkGrey" value="0.0284 0.0284 0.0284 1"/>
+		<Preset name="colorDarkGrey_0" value="0.0284 0.0284 0.0284 0"/>
+		<Preset name="colorDarkGrey2" value="0.0630 0.0630 0.0630 1"/>
+		<Preset name="colorDarkGrey2_50" value="0.0630 0.0630 0.0630 0.5"/>
+		<Preset name="colorDarkGrey2_70" value="0.0630 0.0630 0.0630 0.7"/>
+		<Preset name="colorDarkGrey3" value="0.0194 0.0194 0.0194 1"/>
+		<Preset name="colorDarkGrey4" value="0.0723 0.0723 0.0723 1"/>
+		<Preset name="colorDarkGrey5" value="0.1356 0.1356 0.1356 1"/>
+		<Preset name="colorDarkGrey6" value="0.03 0.03 0.03 1"/>
+		<Preset name="colorDarkGrey7" value="0.0212 0.0212 0.0212 1"/>
+
+		<Preset name="colorLightGrey" value="0.0482 0.0482 0.0482 1"/>
+		<Preset name="colorDescriptionText" value="0.2918 0.2918 0.2918 1"/>
+		<Preset name="colorDescriptionText2" value="0.6 0.6 0.6 1"/>
+		<Preset name="colorDescriptionText3" value="0.1845 0.1845 0.1845 1"/>
+		<Preset name="colorDescriptionText4" value="0.6307 0.6307 0.6307 1"/>
+
+		<!-- Content based presets -->
+		<Preset name="colorListRowBackground" value="$preset_colorGlassLight_50" />
+		<Preset name="colorListRowAlternateBackground" value="$preset_colorGlassMedium" />
+		<Preset name="colorListHeaderBackground" value="$preset_colorGlassLight_75" />
+		<Preset name="colorSliderBackground" value="$preset_colorGlassLight_50" />
+		<Preset name="colorSlider" value="$preset_colorGlassLight" />
+		<Preset name="colorSliderHighlight" value="$preset_colorGlassMedium" />
+		<Preset name="colorSliderKnob" value="$preset_colorWhite" />
+		<Preset name="colorDialogBackdrop" value="$preset_colorBlack3_70" />
+
+		<!-- UVs -->
+		<Preset name="colorUVs" value="10px 1010px 4px 4px"/> <!-- small 4 pixel box in D:\code\lsim2019\bin\dataS2\menu\hud\ui_elements_1080p.png -->
+		<Preset name="glassEdgeIconUVs" value="5px 53px 4px 8px"/>
+
+		<Preset name="colorTextShadow" value="0.0630 0.0630 0.0630 0.7"/>
+
+		<Preset name="keyBoardKeyUVs" value="96px 96px 48px 48px"/> <!-- the empty keyboard key -->
+		<Preset name="xbox_A_ButtonUVs" value="537px 345px 29px 29px"/> <!-- default XBOX key -->
+		<Preset name="ps4_X_ButtonUVs" value="586px 345px 29px 29px"/> <!-- default PS4 key -->
+		<Preset name="ps4_O_ButtonUVs" value="922px 393px 29px 29px"/> <!-- default PS4 JP key -->
+		<Preset name="arrowIconUVs" value="294px 342px 24px 36px"/>
+		<Preset name="diskIconUVs" value="48px 96px 48px 48px"/>
+		<Preset name="achievementIconUVs" value="0px 96px 48px 48px"/>
+	</Presets>
 
 	<Profile name="cpMenuFrame" extends="emptyPanel">
 		<Value name="screenAlign" value="middleCenter"/>
@@ -8,15 +85,36 @@
 		<Value name="size" value="1920px 1080px"/>
 	</Profile>
 
-	<Profile name="cpHeader" extends="ingameMenuMapFilter">
-		<Value name="screenAlign" value="topLeft"/>
-		<Value name="position" value="10px -20px"/>
-		<Value name="positionOrigin" value="topLeft"/>
+	<Profile name="cpSettingsFrame" extends="emptyPanel" with="lightFrame">
+		<Value name="screenAlign" value="topRight"/>
+		<Value name="positionOrigin" value="topRight"/>
+		<Value name="position" value="10px -40px"/>
+		<Value name="size" value="600px 780px"/>
+
+		<Value name="imageColor" value="$preset_colorGlass"/>
+		<Value name="frameThickness" value="1dp 1dp 0px 1dp"/>
 	</Profile>
 
-	<Profile name="cpSettingsBox" extends="ingameMenuMapFilterBox">
-		<Value name="position" value="10px 10px"/>
-		<Value name="size" value="600px 800px"/>
+	<Profile name="cpHeader" extends="textDefault">
+		<Value name="screenAlign" value="topLeft"/>
+		<Value name="positionOrigin" value="topLeft"/>
+		<Value name="textSize" value="22px"/>
+		<Value name="textColor" value="$preset_colorWhite"/>
+		<Value name="textUpperCase" value="true"/>
+	</Profile>
+
+	<Profile name="cpSettingsBg" extends="emptyPanel">
+		<Value name="screenAlign" value="topLeft"/>
+		<Value name="positionOrigin" value="topLeft"/>
+		<Value name="size" value="580px 650px"/>
+		<Value name="imageColor" value="$preset_colorGlass"/>
+	</Profile>
+
+	<Profile name="cpSettingsLayout" extends="settingsBox" with="anchorTopLeft">
+		<Value name="size" value="600px 600px"/>
+		<Value name="fitFlowToElements" value="true"/>
+		<Value name="wrapAround" value="true"/>
+		<Value name="flowMargin" value="0px 0px 0px 0px"/>
 	</Profile>
 
 	<Profile name="cpHintText" extends="textDefault">

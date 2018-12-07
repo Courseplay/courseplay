@@ -122,7 +122,18 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 	if vehicle.cp.multiTools then
 		turnRadiusAdjustedForMultiTool = turnRadiusAdjustedForMultiTool + vehicle.cp.workWidth*((vehicle.cp.multiTools-1)/2)
 	end
+	--[[ commented out as there's not debug.traceback in FS19 so we don't know where we fail if we use xpcall
 	local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end,
+		field, workWidth, headlandSettings,
+		extendTracks, minDistanceBetweenPoints,
+		minSmoothAngle, maxSmoothAngle, doSmooth,
+		roundCorners, turnRadiusAdjustedForMultiTool,
+		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
+		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
+	)
+	]]--
+	local status = true
+	local ok = generateCourseForField(
 		field, workWidth, headlandSettings,
 		extendTracks, minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,
@@ -186,10 +197,8 @@ function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
 	if g_CourseGeneratorScreen == nil then
 		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
 		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
---		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
 		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
 	end
-	g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
 	g_CourseGeneratorScreen:setVehicle( vehicle )
 	g_gui:showGui( 'CourseGeneratorScreen' )
 	-- force reload screen so changes in XML do not require the entire game to be restarted, just reselect the screen
