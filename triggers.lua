@@ -5,10 +5,9 @@ local _;
 -- FIND TRIGGERS
 function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x, y, z, nx, ny, nz, distance)
 	local numIntendedRaycasts = sides and 3 or 1;
-	if vehicle.cp.hasRunRaycastThisLoop[triggerType] and vehicle.cp.hasRunRaycastThisLoop[triggerType] >= numIntendedRaycasts then
+	--[[if vehicle.cp.hasRunRaycastThisLoop[triggerType] and vehicle.cp.hasRunRaycastThisLoop[triggerType] >= numIntendedRaycasts then
 		return;
-	end;
-
+	end;]]
 	local callBack, debugChannel, r, g, b;
 	if triggerType == 'tipTrigger' then
 		callBack = 'findTipTriggerCallback';
@@ -166,7 +165,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	if CpManager.confirmedNoneSpecialTriggers[transformId] then
 		return true;
 	end;
-
+		
 	if courseplay.debugChannels[19] then
 		drawDebugPoint(x, y, z, 1, 1, 0, 1);
 	end;
@@ -180,6 +179,15 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 		end
 	end	
 	
+	print("findSpecialTriggerCallback found "..tostring(transformId).." "..getName(transformId))
+	if courseplay.triggers.fillTriggers[transformId] then
+		print(transformId.." is in fillTrigers")
+		self.cp.fillTrigger = transformId;
+	end
+	
+	
+	
+	--[[
 	-- OTHER TRIGGERS
 	if courseplay.triggers.allNonUpdateables[transformId] then
 		local trigger = courseplay.triggers.allNonUpdateables[transformId];
@@ -217,7 +225,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 			courseplay:debug(('%s: trigger %s is valid-> set self.cp.fillTrigger'):format(nameNum(self), tostring(transformId)), 19);
 		end;
 		return true;
-	end;
+	end;]]
 
 	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
 	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1;
@@ -238,6 +246,7 @@ function courseplay:updateAllTriggers()
 	end;
 	courseplay.triggers = {
 		tipTriggers = {};
+		fillTriggers = {};
 		damageModTriggers = {};
 		gasStationTriggers = {};
 		liquidManureFillTriggers = {};
@@ -250,6 +259,8 @@ function courseplay:updateAllTriggers()
 		all = {};
 	};
 	courseplay.triggers.tipTriggersCount = 0;
+	courseplay.triggers.fillTriggersCount = 0;
+	
 	courseplay.triggers.damageModTriggersCount = 0;
 	courseplay.triggers.gasStationTriggersCount = 0;
 	courseplay.triggers.liquidManureFillTriggersCount = 0;
@@ -553,6 +564,16 @@ function courseplay:updateAllTriggers()
 					end
 				end
 			end
+			
+			
+			
+			if placeable.buyingStation ~= nil then
+				for _,loadTrigger in pairs (placeable.buyingStation.loadTriggers) do
+					local triggerId = loadTrigger.triggerNode;
+					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
+					courseplay:debug(string.format('\t\tadd %s to fillTriggers', placeable.buyingStation.stationName), 1);
+				end
+			end
 				--	FermentingSilo
 				--print('triggers broken 485')
 				--[[ Ryan one of these stringutil doesn't work if (StringUtil.endsWith(xml, 'ermentingsilo_low.xml') or StringUtil.endsWith(xml, 'ermentingsilo_high.xml')) and trigger.silagePerHour ~= nil then
@@ -752,9 +773,10 @@ function courseplay:cpAddTrigger(triggerId, trigger, groupType)
 	-- tipTriggers
 	if groupType == 'tipTrigger' then
 		t.tipTriggers[triggerId] = trigger;
-		t.tipTriggersCount = t.tipTriggersCount + 1;
-		
-		
+		t.tipTriggersCount = t.fillTriggersCount + 1;
+	elseif groupType == 'fillTrigger' then	
+		t.fillTriggers[triggerId] = trigger;
+		t.fillTriggersCount = t.fillTriggersCount + 1;
 		
 		
 --[[

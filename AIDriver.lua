@@ -74,7 +74,7 @@ end
 -- to reverse with trailer.
 function AIDriver:driveCourse(dt, allowedToDrive)
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
-	allowedToDrive = courseplay:checkFuel(self.vehicle, allowedToDrive)
+	allowedToDrive = courseplay:checkFuel(self.vehicle, allowedToDrive,lx,lz)
 	if isReverseActive then
 		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
 	else
@@ -163,9 +163,16 @@ function AIDriver:getSpeed()
 	elseif self.ppc:isReversing() then
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	end
+	if self:getisInFilltrigger() then
+		speed = self.vehicle.cp.speeds.turn
+	end
+	
 	return speed and speed or 15
 end
 
+function AIDriver:getisInFilltrigger()
+	return self.vehicle.cp.fillTrigger ~= nil;
+end
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed
 function AIDriver:isAlignmentCourseNeeded(ix)

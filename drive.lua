@@ -528,7 +528,7 @@ function courseplay:drive(self, dt)
 		--FUEL LEVEL + REFILLING
 		-- DO NOT DELETE fuelFillLevel is gone. This variable may be a replacment 
 		
-		allowedToDrive = courseplay:checkFuel(self,allowedToDrive)
+		allowedToDrive = courseplay:checkFuel(self,allowedToDrive,lx,lz)
 		
 		
 		-- WATER WARNING
@@ -2087,34 +2087,39 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 end;
 -- do not delete this line
 -- vim: set noexpandtab:
-function courseplay:checkFuel(vehicle, allowedToDrive)
+function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
 	if vehicle.getConsumerFillUnitIndex ~= nil then
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
 		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
-		local searchForFuel = (vehicle.cp.allwaysSearchFuel and (currentFuelPercentage < 99) and vehicle.cp.waypointIndex > 2 and vehicle.cp.waypointIndex < vehicle.cp.numWaypoints) or (currentFuelPercentage < 20) and not self.isFuelFilling
+		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.allwaysSearchFuel and currentFuelPercentage < 99 or currentFuelPercentage < 20); 
+		local trigger ={}
 		if searchForFuel then
-			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
-			if vehicle.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
-				vehicle.cp.isInFilltrigger = true;
-			end;
-			--[[ if self.fuelFillTriggers[1] then
-				allowedToDrive = false;
-				self:setIsFuelFilling(true, self.fuelFillTriggers[1].isEnabled, false);
-			end; ]]
+			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
+			local tx, ty, tz = getWorldTranslation(vehicle.cp.DirectionNode)
+			courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 		end
+		if vehicle.cp.fillTrigger then
+			trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
+			if trigger:getIsActivatable(vehicle) and not vehicle.isFuelFilling then
+				trigger:onActivateObject() 
+				allowedToDrive = false;
+				vehicle.isFuelFilling = true
+			end
+			if vehicle.isFuelFilling and not trigger.isLoading then
+				vehicle.isFuelFilling = nil
+				vehicle.cp.fillTrigger = nil
+			end
+		end
+		
 		if currentFuelPercentage < 5 then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST');
 		elseif currentFuelPercentage < 20 and not vehicle.isFuelFilling then
 			CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD');
-		elseif vehicle.isFuelFilling and currentFuelPercentage < 99.9 then
+		elseif trigger.isLoading and currentFuelPercentage < 99.99 then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
 		end;
-		--[[ Ryan if self.fuelFillTriggers[1] and self.cp.fillTrigger and courseplay.triggers.all[self.cp.fillTrigger].isGasStationTrigger then
-			courseplay:debug(nameNum(self) .. ': self.fuelFillTriggers[1] ~= nil -> resetting "self.cp.fillTrigger"', 1);
-			self.cp.fillTrigger = nil;
-		end; ]]
 		
 		return allowedToDrive;
 	else
