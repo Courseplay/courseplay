@@ -251,11 +251,13 @@ end
 -----------------------------------------------------------------------------------------------------
 -- Starting location
 -- Mappings between the textbox option number and the setting
-local function getStartingLocationState( startingCorner )
-	return startingCorner - courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN + 1
+-- get the textbox option from the starting location
+local function getStartingLocationState( startingLocation )
+	return startingLocation - courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN + 1
 end
 
-local function getStartingCorner( startingLocationState )
+-- get the starting location from the textbox state
+local function getStartingLocation(startingLocationState )
 	return startingLocationState + courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN - 1
 end
 
@@ -277,7 +279,7 @@ function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
 end
 
 function CourseGeneratorScreen:onClickStartingLocation( state )
-	courseplay:setStartingCorner( self.vehicle, getStartingCorner(state))
+	courseplay:setStartingCorner( self.vehicle, getStartingLocation(state))
 	if self.vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_SELECT_ON_MAP and
 		not self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos then
 		if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
@@ -565,7 +567,12 @@ function CourseGeneratorScreen:isOverElement( x, y, element )
 end
 
 function CourseGeneratorScreen:onClickMap(element, posX, posZ)
-	print(string.format('OnClickMap %.1f %1.f', posX, posZ))
+
+	if courseGenerator.STARTING_LOCATION_SELECT_ON_MAP == getStartingLocation(self.startingLocation:getState()) then
+		self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = {x = posX, z = posZ }
+		self.coursePlot:setStartPosition(posX, posZ)
+	end
+
 	local fieldNum = courseplay:getFieldNumForPosition(posX, posZ)
 	if fieldNum > 0 and self.fields then
 		-- clicked on a field, set it as selected
@@ -592,6 +599,13 @@ function CourseGeneratorScreen:zoom(isDown, isUp, button, eventUsed)
 	return eventUsed
 end
 
+function CourseGeneratorScreen:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	if isDown and sym == Input.KEY_space then
+		--self:onClickGenerate()
+	end
+	print('Key event')
+end
+
 function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
 	if CourseGeneratorScreen:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed) then
 		eventUsed = true
@@ -607,6 +621,7 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	if button == Input.MOUSE_BUTTON_WHEEL_UP or button == Input.MOUSE_BUTTON_WHEEL_DOWN then
 		self:zoom(isDown, isUp, button, eventUsed)
 	end
+
 	--[[
 	if not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
 		-- ignore clicks off the map
