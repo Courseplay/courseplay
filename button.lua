@@ -122,8 +122,8 @@ function courseplay.button:render()
 				canScrollUp   = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
 				canScrollDown = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0;
 			elseif fn == "changeSiloFillType" then
-				canScrollUp   = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
-				canScrollDown = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
+				canScrollUp   = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE)and #vehicle.cp.easyFillTypeList > 0;
+				canScrollDown = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE)and #vehicle.cp.easyFillTypeList > 0;
 			elseif fn == 'changeRunNumber' then
  				local canChange = true
 				if ((vehicle.cp.fillTrigger or vehicle.cp.isInFilltrigger) or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) and not vehicle.cp.runCounterBool then
@@ -283,7 +283,7 @@ function courseplay.button:render()
 				elseif fn == 'clearCurrentLoadedCourse' then
 					show = vehicle.cp.canDrive and not vehicle.cp.isDriving;
 				elseif fn == 'changeSiloFillType' then
-					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT and #vehicle.cp.easyFillTypeList > 0;
+					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE) and #vehicle.cp.easyFillTypeList > 0;
 				elseif fn == 'movePipeToPosition' then
 					show = vehicle.cp.canDrive and not vehicle:getIsCourseplayDriving() and vehicle.cp.hasAugerWagon and not vehicle.cp.hasSugarCaneAugerWagon and (vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT);
 				elseif fn == 'changeRunNumber' then

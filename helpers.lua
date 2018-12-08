@@ -256,17 +256,43 @@ function courseplay:varLoop(var, changeBy, maxVar, minVar)
 	return var;
 end;
 
-function courseplay:fillTypesMatch(fillTrigger, workTool)
+function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool)
 	if fillTrigger ~= nil then
-		if fillTrigger.fillType then   --replaced rawget(fillTrigger, 'fillType') 
-			return workTool:allowFillType(fillTrigger.fillType, false);
-		elseif fillTrigger.currentFillType then
-			return workTool:allowFillType(fillTrigger.currentFillType, false);
-		elseif fillTrigger.getFillType then
-			return workTool:allowFillType(fillTrigger:getFillType(), false);
-		end;
-	end;
-
+		local typesMatch = false
+		local fillUnits = workTool:getFillUnits()
+		for i=1,#fillUnits do
+			for index,_ in pairs(workTool:getFillUnitSupportedFillTypes(i))do 
+				--loadTriggers
+				if fillTrigger.source ~= nil and fillTrigger.source.providedFillTypes[index] then
+					typesMatch = true
+					break;
+				end
+				--fillTriggers
+				if fillTrigger.sourceObject ~= nil then
+					local fillTypes = fillTrigger.sourceObject:getFillUnitSupportedFillTypes(1)  
+					if fillTypes[index] then 
+						typesMatch = true
+						break;
+					end
+				end
+			end
+		end	
+		
+		if typesMatch then
+			if vehicle.cp.siloSelectedFillType == nil or vehicle.cp.siloSelectedFillType == FillType.UNKNOWN then
+				return true;
+			else
+				if fillTrigger.source then
+					print("return fillTrigger.source.providedFillTypes[vehicle.cp.siloSelectedFillType] or false; :"..tostring(fillTrigger.source.providedFillTypes[vehicle.cp.siloSelectedFillType] or false))
+					return fillTrigger.source.providedFillTypes[vehicle.cp.siloSelectedFillType] or false;
+				elseif fillTrigger.sourceObject ~= nil then
+					local fillType = fillTrigger.sourceObject:getFillUnitFillType(1)  
+					print(string.format("return fillType(%s) == vehicle.cp.siloSelectedFillType(%s); :",tostring(fillType),tostring(vehicle.cp.siloSelectedFillType)))
+					return fillType == vehicle.cp.siloSelectedFillType;
+				end
+			end		
+		end
+	end
 	return false;
 end;
 

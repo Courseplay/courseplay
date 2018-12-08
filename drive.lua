@@ -352,7 +352,7 @@ function courseplay:drive(self, dt)
 					-- Set Timer if unloading pipe takes time before empty.
 					if self.getFirstEnabledFillType and self.pipeParticleSystems and self.cp.totalFillLevelPercent > 0 then
 						local filltype = self:getFirstEnabledFillType();
-						if filltype ~= g_fillTypeManager.UNKNOWN and self.pipeParticleSystems[filltype] then
+						if filltype ~= FillType.UNKNOWN and self.pipeParticleSystems[filltype] then
 							local stopTime = self.pipeParticleSystems[filltype][1].stopTime;
 							if stopTime then
 								courseplay:setCustomTimer(self, "waitUntilPipeIsEmpty", stopTime);
@@ -434,12 +434,14 @@ function courseplay:drive(self, dt)
 		--resetTrailer when empty after unloading in Bunkersilo
 		if self.cp.totalFillLevel == 0 then
 			for _,tipper in pairs (self.cp.workTools) do
-				if tipper:getDischargeState() ~= nil and (tipper:getDischargeState() == Trailer.TIPSTATE_OPENING or tipper:getDischargeState() == Trailer.TIPSTATE_OPEN) then
-					tipper:toggleTipState();
-				end
-				if (tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED or tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING) and self.cp.keepOnTipping then
-					self.cp.keepOnTipping = false
-					--print("reset vehicle.cp.keepOnTipping")
+				if tipper.getDischargeState ~= nil then
+					if tipper:getDischargeState() == Trailer.TIPSTATE_OPENING or tipper:getDischargeState() == Trailer.TIPSTATE_OPEN then
+						tipper:toggleTipState();
+					end
+					if (tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED or tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING) and self.cp.keepOnTipping then
+						self.cp.keepOnTipping = false
+						--print("reset vehicle.cp.keepOnTipping")
+					end
 				end
 			end
 		end
@@ -585,10 +587,10 @@ function courseplay:drive(self, dt)
 	local isFinishingWork = false;
 	-- MODE 4
 	if self.cp.mode == 4 and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workToolAttached then
-
+		
 		allowedToDrive, workArea, workSpeed, isFinishingWork, refSpeed = courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed);
 		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-
+		
 		if not workArea and self.cp.totalFillLevelPercent < self.cp.refillUntilPct then
 			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
@@ -612,7 +614,8 @@ function courseplay:drive(self, dt)
 
 		allowedToDrive, workArea, workSpeed, breakCode, isFinishingWork,refSpeed = courseplay:handle_mode6(self, allowedToDrive, workSpeed, lx, lz,refSpeed,dt);
 		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-
+	
+		
 		if not workArea and self.cp.currentTipTrigger == nil and self.cp.totalFillLevel and self.cp.totalFillLevel > 0 and self.capacity == nil and self.cp.tipRefOffset ~= nil and not self.Waypoints[self.cp.waypointIndex].rev then
 			courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
@@ -655,6 +658,7 @@ function courseplay:drive(self, dt)
 
 	self.cp.inTraffic = false;
 
+	--[[Tommi
 	-- HANDLE TIPPER COVER
 	if self.cp.tipperHasCover and self.cp.automaticCoverHandling and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 4 or self.cp.mode == 5 or self.cp.mode == 6) then
 		local showCover = false;
@@ -677,7 +681,7 @@ function courseplay:drive(self, dt)
 	elseif self.cp.tipperHasCover then
 		courseplay:openCloseCover(self, dt, false);
 	end;
-
+	]]
 	-- CHECK TRAFFIC
 	-- Ryan missing gcurrent_mission variable in this function allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 
@@ -842,7 +846,7 @@ function courseplay:drive(self, dt)
 			refSpeed = self.cp.speeds.turn;
 			--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		end;
-	elseif self.cp.isInFilltrigger then
+	elseif self.cp.fillTrigger ~= nil then
 		refSpeed = self.cp.speeds.turn;
 		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		self.cp.isInFilltrigger = false;
@@ -2089,38 +2093,33 @@ end;
 -- vim: set noexpandtab:
 function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
 	if vehicle.getConsumerFillUnitIndex ~= nil then
+		local isFilling = false
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
 		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
 		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.allwaysSearchFuel and currentFuelPercentage < 99 or currentFuelPercentage < 20); 
-		local trigger ={}
 		if searchForFuel then
 			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
 			local tx, ty, tz = getWorldTranslation(vehicle.cp.DirectionNode)
 			courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 		end
-		if vehicle.cp.fillTrigger then
-			trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
-			if trigger:getIsActivatable(vehicle) and not vehicle.isFuelFilling then
-				trigger:onActivateObject() 
-				allowedToDrive = false;
-				vehicle.isFuelFilling = true
-			end
-			if vehicle.isFuelFilling and not trigger.isLoading then
-				vehicle.isFuelFilling = nil
-				vehicle.cp.fillTrigger = nil
-			end
-		end
 		
+		if vehicle.cp.fillTrigger then
+			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
+			--print(tostring(vehicle)..":checkFuel -> call  fillTypesMatch")
+			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, vehicle) then
+				print(tostring(vehicle)..":checkFuel -> call  fillOnTrigger")
+				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle,allowedToDrive)
+			end			
+		end
 		if currentFuelPercentage < 5 then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST');
 		elseif currentFuelPercentage < 20 and not vehicle.isFuelFilling then
 			CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD');
-		elseif trigger.isLoading and currentFuelPercentage < 99.99 then
+		elseif isFilling and currentFuelPercentage < 99.99 then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
 		end;
-		
 		return allowedToDrive;
 	else
 		return allowedToDrive;

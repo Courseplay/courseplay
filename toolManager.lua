@@ -37,11 +37,11 @@ function courseplay:resetTools(vehicle)
 	-- Ryan prints fillTypeManager table. Nice cause it prints out all the fillTypes print_r(g_fillTypeManager)
 	-- Reset fill type.
 	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
-		if vehicle.cp.siloSelectedFillType ==  g_fillTypeManager.UNKNOWN or (vehicle.cp.siloSelectedFillType ~=  g_fillTypeManager.UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
+		if vehicle.cp.siloSelectedFillType ==  FillType.UNKNOWN or (vehicle.cp.siloSelectedFillType ~=  FillType.UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
 			vehicle.cp.siloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
 		end;
 	else
-		vehicle.cp.siloSelectedFillType =  g_fillTypeManager.UNKNOWN;
+		vehicle.cp.siloSelectedFillType =  FillType.UNKNOWN;
 	end;
 	if vehicle.cp.hud.currentPage == 1 then
 		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
@@ -61,7 +61,7 @@ end;
 function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
 	local eftl = vehicle.cp.easyFillTypeList;
 	local newVal = 1;
-	if currentSelectedFilltype and currentSelectedFilltype ~= g_fillTypeManager.UNKNOWN then
+	if currentSelectedFilltype and currentSelectedFilltype ~= FillType.UNKNOWN then
 		for index, fillType in ipairs(eftl) do
 			if currentSelectedFilltype == fillType then
 				newVal = index;
@@ -106,7 +106,7 @@ function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 		if object.fillUnits then
 			for _, fillUnit in pairs(object.fillUnits) do
 				for fillType, enabled in pairs(fillUnit.fillTypes) do
-					if fillType ~= g_fillTypeManager.UNKNOWN and enabled then
+					if fillType ~= FillType.UNKNOWN and enabled then
 						fillTypes[fillType] = enabled;
 					end;
 				end;
@@ -121,7 +121,7 @@ function courseplay:getAllAvailableFillTypes(vehicle)
 	    for _, workTool in pairs(vehicle.cp.workTools) do
 			local toolFillTypes = courseplay:getAvailableFillTypes(workTool);
 			for fillType, enabled in pairs(toolFillTypes) do
-				if fillType ~= g_fillTypeManager.UNKNOWN and enabled then
+				if fillType ~= FillType.UNKNOWN and enabled then
 					fillTypes[fillType] = enabled;
 				end;
 			end
@@ -1232,9 +1232,11 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 end;
 
 -- this does not change lx/lz (direction), only allowedToDrive
-function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt)
+function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, lx, lz, dt)
 	for _,workTool in ipairs(vehicle.cp.workTools) do
-		if workTool.cp.fillLevel == nil or workTool.cp.capacity == nil then
+		--print("refillWorkTools using "..tostring(workTool))
+		
+		--[[if workTool.cp.fillLevel == nil or workTool.cp.capacity == nil then
 			return allowedToDrive, lx, lz;
 		end;
 		local workToolSeederFillLevelPct = workTool.cp.seederFillLevelPercent;
@@ -1245,9 +1247,109 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 		local fillLevelPct = vehicle.cp.totalFillLevelPercent;
 		if vehicle.cp.hasFertilizerSowingMachine and not vehicle.cp.fertilizerOption then
 			workToolSprayerFillLevelPct = 100
+		end]]
+		
+		local isFilling = false
+		
+		if vehicle.cp.fillTrigger then
+			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
+			local targetNOde = trigger:getCurrentFillType()
+			if not printonce then
+				printonce = true
+				courseplay.alreadyPrinted = {}
+				--courseplay:printMeThisTable(trigger,0,4,"trigger")
+			end
+			--print(tostring(workTool)..":refillWorkTools -> call  fillTypesMatch")
+			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, workTool) then
+				print(tostring(workTool)..":refillWorkTools -> call  fillOnTrigger")
+				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle,allowedToDrive, workTool)
+			end
+			
+			if driveOnAtPercent < 100 and isFilling then
+				local triggerFilltype = trigger:getCurrentFillType()
+				local fillUnits = workTool:getFillUnits()
+				for i=1,#fillUnits do
+					if triggerFilltype == workTool:getFillUnitFillType(i) then
+						if workTool:getFillUnitFillLevelPercentage(i)*100 > driveOnAtPercent then
+							if trigger.onActivateObject then 
+								trigger:onActivateObject()
+							end
+						end
+					end				
+				end
+			end
+
+			
 		end
 		
 		
+	end;
+	return allowedToDrive, lx, lz;
+end;		
+		
+function courseplay:fillOnTrigger(vehicle,allowedToDrive, workTool)
+	local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
+	local objectToFill = workTool or vehicle; 
+	if trigger.onActivateObject then
+		--loadTriggers:placeables,silos
+		if trigger:getIsActivatable(objectToFill) and not vehicle.isFuelFilling then
+			if trigger.autoStart then
+				trigger:onActivateObject() 
+			else
+				trigger.autoStart = true
+				trigger.selectedFillType = vehicle.cp.siloSelectedFillType
+				trigger:onActivateObject() 
+				trigger.autoStart = false
+			end
+			allowedToDrive = false;
+			vehicle.isFuelFilling = true
+		end
+		if vehicle.isFuelFilling then 
+			allowedToDrive = false;
+			if not trigger.isLoading then
+				vehicle.isFuelFilling = nil
+				vehicle.cp.fillTrigger = nil
+			end
+		end
+	elseif trigger.sourceObject ~= nil then
+		--fillTriggers(Paletts,Vehicles)
+		for _, fillTrigger in ipairs(objectToFill.spec_fillUnit.fillTrigger.triggers) do
+			if fillTrigger:getIsActivatable(objectToFill) and not vehicle.isFuelFilling then 
+				
+				local triggerFilltype = trigger:getCurrentFillType()
+				local fillUnits = objectToFill:getFillUnits()
+				
+				for i=1,#fillUnits do
+					local supportedFillTypes = objectToFill:getFillUnitSupportedFillTypes(i) 
+					print(string.format("triggerFilltype: %s,objectToFill.UnitFillType:%s supported: %s",tostring(triggerFilltype),tostring(objectToFill:getFillUnitFillType(i)),tostring(supportedFillTypes[triggerFilltype])))
+					if (triggerFilltype == objectToFill:getFillUnitFillType(i) or objectToFill:getFillUnitFillType(i) == FillType.UNKNOWN) and supportedFillTypes[triggerFilltype]  then
+						if objectToFill:getFillUnitFillLevelPercentage(i)*100 < 100 then
+							print("objectToFill:setFillUnitIsFilling(true)")
+							objectToFill:setFillUnitIsFilling(true)
+							allowedToDrive = false;
+							vehicle.isFuelFilling = true
+							break;
+						end
+					end
+				end
+			end
+		end
+		if vehicle.isFuelFilling then
+			allowedToDrive = false;
+			print(tostring(objectToFill.spec_fillUnit.fillTrigger).."objectToFill.spec_fillUnit.fillTrigger.isFilling: "..tostring(objectToFill.spec_fillUnit.fillTrigger.isFilling))
+			if not objectToFill.spec_fillUnit.fillTrigger.isFilling then
+				print("reset vehicle.isFuelFilling")
+				vehicle.isFuelFilling = nil
+				vehicle.cp.fillTrigger = nil
+			end		
+		end	
+	end
+	
+	
+	return allowedToDrive, vehicle.isFuelFilling ;
+end
+		
+		--[[
 		local isSprayer = courseplay:isSprayer(workTool);
 
 		if isSprayer then
@@ -1258,6 +1360,8 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 			end;
 		end;
 
+		
+		
 		-- Sprayer / liquid manure transporters
 		if (isSprayer or workTool.cp.isLiquidManureOverloader) and not workTool:allowFillType(g_fillTypeManager.MANURE) then
 			-- print(('\tworkTool %d (%q)'):format(i, nameNum(workTool)));
@@ -1316,6 +1420,8 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 
 			local fillTypesMatch = courseplay:fillTypesMatch(fillTrigger, workTool);
 			local canRefill = workToolSprayerFillLevelPct < driveOn and fillTypesMatch and not vehicle.cp.isLoaded;
+			
+			
 			courseplay:debug(('%s: canRefill:%s; fillTypesMatch:%s'):format(nameNum(vehicle),tostring(canRefill),tostring(fillTypesMatch)), 19);
 
 			if canRefill and vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
@@ -1476,11 +1582,8 @@ function courseplay:refillWorkTools(vehicle, driveOn, allowedToDrive, lx, lz, dt
 				vehicle.cp.fillTrigger = nil;
 				courseplay:changeRunCounter(vehicle, true)
 			end;
-		end;
-	end;
+		end;]]
 
-	return allowedToDrive, lx, lz;
-end;
 
 function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoint)
 	local tipRefpoint = 0
@@ -1512,7 +1615,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 						end;
 						if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 							local filltype = vehicle:getFirstEnabledFillType();
-							if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+							if filltype ~= FillType.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 								local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 								if stopTime then
 									courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
@@ -1537,7 +1640,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				end
 				if goForTipping and vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 					local filltype = vehicle:getFirstEnabledFillType();
-					if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+					if filltype ~= FillType.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 						local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 						if stopTime then
 							courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
@@ -1685,7 +1788,7 @@ function courseplay:handleHeapUnloading(vehicle)
 					-- Set Timer if unloading pipe takes time before empty.
 					if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 						local filltype = vehicle:getFirstEnabledFillType();
-						if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+						if filltype ~= FillType.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 							local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 							if stopTime then
 								courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);
@@ -1699,7 +1802,7 @@ function courseplay:handleHeapUnloading(vehicle)
 						-- Set Timer if unloading pipe takes time before empty.
 						if vehicle.getFirstEnabledFillType and vehicle.pipeParticleSystems and vehicle.cp.totalFillLevelPercent > 0 then
 							local filltype = vehicle:getFirstEnabledFillType();
-							if filltype ~= g_fillTypeManager.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
+							if filltype ~= FillType.UNKNOWN and vehicle.pipeParticleSystems[filltype] then
 								local stopTime = vehicle.pipeParticleSystems[filltype][1].stopTime;
 								if stopTime then
 									courseplay:setCustomTimer(vehicle, "waitUntilPipeIsEmpty", stopTime);

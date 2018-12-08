@@ -155,7 +155,7 @@ function courseplay:onLoad(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.tipperLoadMode = 0;
 	self.cp.easyFillTypeList = {};
-	self.cp.siloSelectedFillType = g_fillTypeManager.UNKNOWN;
+	self.cp.siloSelectedFillType = FillType.UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
@@ -1552,7 +1552,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay.signs:setSignsVisibility(self);
 
 		self.cp.siloSelectedFillType = FillTypeManager.getFillTypeIndexByName(Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown'));
-		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = g_fillTypeManager.UNKNOWN end 
+		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = FillType.UNKNOWN end 
 
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';

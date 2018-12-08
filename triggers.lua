@@ -30,12 +30,14 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
-			local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.tipRefOffset, 0, 0);
+			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
 
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
-			local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.tipRefOffset, 0, 0);
+			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
 		end;
 	end;
@@ -183,6 +185,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	if courseplay.triggers.fillTriggers[transformId] then
 		print(transformId.." is in fillTrigers")
 		self.cp.fillTrigger = transformId;
+		return true;
 	end
 	
 	
@@ -328,9 +331,6 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for _,valueTable in pairs (g_currentMission.itemsToSave) do
 			counter = counter +1;
-				for index,value in pairs (valueTable) do
-					print(string.format("     %s:%s",tostring(index),tostring(value)))
-				end
 			--[[if valueTable.item ~= nil then
 				if valueTable.item.fillTrigger ~= nil then
 					local trigger = valueTable.item.fillTrigger
@@ -399,11 +399,7 @@ function courseplay:updateAllTriggers()
 		local counter = 0;
 		for k, object in pairs(g_currentMission.onCreateLoadedObjects) do
 			counter = counter +1;
-			
-			for index,value in pairs (object) do
-					print(string.format("     %s:%s",tostring(index),tostring(value)))
-				end
-			
+		
 			--[[
 			--print(tableShow(object,"onCreate",nil,nil,4))
 			--newBGA DigestateSiloTrigger
@@ -652,6 +648,26 @@ function courseplay:updateAllTriggers()
 		end
 		courseplay:debug(('\t%i found'):format(counter), 1);
 	end;
+	
+	if g_currentMission.vehicles ~= nil then
+		courseplay:debug('\tcheck fillTriggerVehicles', 1);
+		local counter = 0
+		for vehicleIndex, vehicle in pairs(g_currentMission.vehicles) do
+			if vehicle.spec_fillTriggerVehicle then
+				counter = counter +1
+				local trigger = vehicle.spec_fillTriggerVehicle.fillTrigger
+				local triggerId = trigger.triggerId
+				
+				courseplay:cpAddTrigger(triggerId, trigger, 'fillTrigger');
+				courseplay:debug(string.format('\t\tadd %s to fillTriggers', vehicle:getName()), 1);
+			end
+		end
+		courseplay:debug(('\t%i found'):format(counter), 1);
+	end;
+		
+	
+		
+		
 
 	-- UPK triggers
 	if g_upkTrigger then

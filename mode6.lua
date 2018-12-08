@@ -426,7 +426,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 						-- stop when there's no trailer to fill - courtesy of upsidedown
 						local chopperWaitForTrailer = false;
-						if tool.cp.isChopper and tool.lastValidInputFruitType ~= g_fruitTypeManager.UNKNOWN then
+						if tool.cp.isChopper and tool.lastValidInputFruitType ~= FruitType.UNKNOWN then
 							if not tool.pipeFoundTrailer then
 								chopperWaitForTrailer = true;
 							end								
@@ -587,7 +587,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					or (tool.pipeParticleSystems[sc] and tool.pipeParticleSystems[sc].isEmitting))) 
 					or pipeState > 0 
 					or vehicle.cp.turnStage ~= 0 then
-						if tool.lastValidInputFruitType ~= g_fruitTypeManager.UNKNOWN then
+						if tool.lastValidInputFruitType ~= FruitType.UNKNOWN then
 							if tool.pipeFoundTrailer then
 								tool.cp.waitingForTrailerToUnload = false;
 							end
