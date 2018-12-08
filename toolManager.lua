@@ -36,23 +36,28 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 	-- Ryan prints fillTypeManager table. Nice cause it prints out all the fillTypes print_r(g_fillTypeManager)
 	-- Reset fill type.
+	--[[
 	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
 		if vehicle.cp.siloSelectedFillType ==  FillType.UNKNOWN or (vehicle.cp.siloSelectedFillType ~=  FillType.UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
 			vehicle.cp.siloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
+			print("toolManager(41): setting siloSelectedFillType to "..tostring(vehicle.cp.siloSelectedFillType))
 		end;
 	else
 		vehicle.cp.siloSelectedFillType =  FillType.UNKNOWN;
-	end;
-	if vehicle.cp.hud.currentPage == 1 then
-		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
-	end;
+		print("toolManager(45): setting siloSelectedFillType to "..tostring(vehicle.cp.siloSelectedFillType))
+	end;]]
+	
 
-	vehicle.cp.easyFillTypeList = courseplay:getEasyFillTypeList(courseplay:getAllAvailableFillTypes(vehicle));
+	vehicle.cp.easyFillTypeList = courseplay:getEasyFillTypeList(vehicle);
 	vehicle.cp.siloSelectedEasyFillType = 0;
 	courseplay:changeSiloFillType(vehicle, 1, vehicle.cp.siloSelectedFillType);
 
+	if vehicle.cp.hud.currentPage == 1 then
+		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
+	end;
+	
 	courseplay:calculateWorkWidth(vehicle, true);
-
+	
 	vehicle.cp.currentTrailerToFill = nil;
 	vehicle.cp.trailerFillDistance = nil;
 	vehicle.cp.tooIsDirty = false;
@@ -84,6 +89,8 @@ function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltyp
 	vehicle.cp.siloSelectedFillType = eftl[newVal];
 end;
 
+
+--TODO Tommi Remove if not used anymore
 function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 	-- We really should be using getFillUnitSupportedFillTypes(fillUnitIndex) TODO Make a loop to go through it. 
 	if fillUnitIndex == nil then
@@ -115,6 +122,7 @@ function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 	end; ]]
 end;
 
+--TODO Tommi Remove if not used anymore
 function courseplay:getAllAvailableFillTypes(vehicle)
 	local fillTypes = {};
 	if #vehicle.cp.workTools > 0 then
@@ -130,13 +138,50 @@ function courseplay:getAllAvailableFillTypes(vehicle)
 	return fillTypes;
 end;
 
-function courseplay:getEasyFillTypeList(fillTypes)
+
+
+function courseplay:getEasyFillTypeList(vehicle)
 	local easyFillTypeList = {};
-	for fillType, _ in pairs(fillTypes) do
-		table.insert(easyFillTypeList, fillType);
-	end;
+	local fillUnitHasMoreFillTypes = false
+	local filltypes ={}
+	local tempList = {}
+	if #vehicle.cp.workTools > 0 then
+		for _, workTool in pairs(vehicle.cp.workTools) do
+			local fillUnits = workTool:getFillUnits()
+			for i=1,#fillUnits do
+				fillUnitHasMoreFillTypes, filltypes = courseplay:getFillUnitHasMoreFillTypes(workTool,i)
+				if fillUnitHasMoreFillTypes then
+		 			for index,fillType in pairs(filltypes) do
+						if not tempList[fillType] then
+							tempList[fillType] = true;
+						end	
+					end
+				end
+			end
+		end
+	end
+
+	for FillType,_ in pairs (tempList) do
+		table.insert(easyFillTypeList,FillType)
+	end
+
 	return easyFillTypeList;
 end;
+
+function courseplay:getFillUnitHasMoreFillTypes(workTool, index)
+	local unitsFillTypes = workTool:getFillUnitSupportedFillTypes(index)
+	local counter = 0
+	local fillTypesList = {}
+	for fillType,enabled in pairs(unitsFillTypes) do
+		counter = counter+1;
+		table.insert(fillTypesList, fillType)
+	end
+	if counter > 1 then
+		return true,fillTypesList;
+	else
+		return false
+	end
+end
 
 function courseplay:isAttachedCombine(workTool)
 	return (workTool.typeName~= nil and (workTool.typeName == 'attachableCombine' or workTool.typeName == 'attachableCombine_mouseControlled')) 

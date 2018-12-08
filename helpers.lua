@@ -259,36 +259,40 @@ end;
 function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool)
 	if fillTrigger ~= nil then
 		local typesMatch = false
+		local selectedFillType = vehicle.cp.siloSelectedFillType or FillType.UNKNOWN;
 		local fillUnits = workTool:getFillUnits()
 		for i=1,#fillUnits do
+			local selectedFillTypeIsNotInMyFillUnit = true
 			for index,_ in pairs(workTool:getFillUnitSupportedFillTypes(i))do 
 				--loadTriggers
 				if fillTrigger.source ~= nil and fillTrigger.source.providedFillTypes[index] then
 					typesMatch = true
-					break;
 				end
 				--fillTriggers
 				if fillTrigger.sourceObject ~= nil then
 					local fillTypes = fillTrigger.sourceObject:getFillUnitSupportedFillTypes(1)  
 					if fillTypes[index] then 
 						typesMatch = true
-						break;
 					end
 				end
+				if index == selectedFillType and selectedFillType ~= FillType.UNKNOWN then
+					selectedFillTypeIsNotInMyFillUnit = false;
+				end
 			end
+			if typesMatch and selectedFillTypeIsNotInMyFillUnit then
+				return true;
+			end			
 		end	
 		
 		if typesMatch then
-			if vehicle.cp.siloSelectedFillType == nil or vehicle.cp.siloSelectedFillType == FillType.UNKNOWN then
+			if selectedFillType == FillType.UNKNOWN then
 				return true;
 			else
 				if fillTrigger.source then
-					print("return fillTrigger.source.providedFillTypes[vehicle.cp.siloSelectedFillType] or false; :"..tostring(fillTrigger.source.providedFillTypes[vehicle.cp.siloSelectedFillType] or false))
-					return fillTrigger.source.providedFillTypes[vehicle.cp.siloSelectedFillType] or false;
+					return fillTrigger.source.providedFillTypes[selectedFillType] or false;
 				elseif fillTrigger.sourceObject ~= nil then
 					local fillType = fillTrigger.sourceObject:getFillUnitFillType(1)  
-					print(string.format("return fillType(%s) == vehicle.cp.siloSelectedFillType(%s); :",tostring(fillType),tostring(vehicle.cp.siloSelectedFillType)))
-					return fillType == vehicle.cp.siloSelectedFillType;
+					return fillType == selectedFillType;
 				end
 			end		
 		end
