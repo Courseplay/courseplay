@@ -591,7 +591,7 @@ function courseplay:drive(self, dt)
 		allowedToDrive, workArea, workSpeed, isFinishingWork, refSpeed = courseplay:handle_mode4(self, allowedToDrive, workSpeed, refSpeed);
 		--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		
-		if not workArea and self.cp.totalFillLevelPercent < self.cp.refillUntilPct then
+		if not workArea and self.cp.totalFillLevelPercent < self.cp.refillUntilPct and not self.cp.fillTrigger then
 			courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end;
 
@@ -2097,7 +2097,7 @@ function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
 		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
 		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.allwaysSearchFuel and currentFuelPercentage < 99 or currentFuelPercentage < 20); 
-		if searchForFuel then
+		if searchForFuel and not vehicle.cp.fillTrigger then
 			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
 			local tx, ty, tz = getWorldTranslation(vehicle.cp.DirectionNode)
 			courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
@@ -2105,9 +2105,7 @@ function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
 		
 		if vehicle.cp.fillTrigger then
 			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
-			--print(tostring(vehicle)..":checkFuel -> call  fillTypesMatch")
-			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, vehicle) then
-				print(tostring(vehicle)..":checkFuel -> call  fillOnTrigger")
+			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, vehicle, dieselIndex) then
 				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle,allowedToDrive)
 			end			
 		end

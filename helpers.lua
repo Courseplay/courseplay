@@ -256,32 +256,42 @@ function courseplay:varLoop(var, changeBy, maxVar, minVar)
 	return var;
 end;
 
-function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool)
+function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisFillUnit)
 	if fillTrigger ~= nil then
 		local typesMatch = false
 		local selectedFillType = vehicle.cp.siloSelectedFillType or FillType.UNKNOWN;
 		local fillUnits = workTool:getFillUnits()
+		local checkOnly = onlyCheckThisFillUnit or 0;
+		-- go throught the single fillUnits and check:
+		-- does the trigger support the tools filltype ?
+		-- does the trigger support the single fillUnits filltype ?
+		-- does the trigger and the fillUnit match the selectedFilltype or do they ignore it ?
 		for i=1,#fillUnits do
-			local selectedFillTypeIsNotInMyFillUnit = true
-			for index,_ in pairs(workTool:getFillUnitSupportedFillTypes(i))do 
-				--loadTriggers
-				if fillTrigger.source ~= nil and fillTrigger.source.providedFillTypes[index] then
-					typesMatch = true
-				end
-				--fillTriggers
-				if fillTrigger.sourceObject ~= nil then
-					local fillTypes = fillTrigger.sourceObject:getFillUnitSupportedFillTypes(1)  
-					if fillTypes[index] then 
+			if checkOnly == 0 or i == checkOnly then
+				local selectedFillTypeIsNotInMyFillUnit = true
+				local matchInThisUnit = false
+				for index,_ in pairs(workTool:getFillUnitSupportedFillTypes(i))do 
+					--loadTriggers
+					if fillTrigger.source ~= nil and fillTrigger.source.providedFillTypes[index] then
 						typesMatch = true
+						matchInThisUnit =true
+					end
+					--fillTriggers
+					if fillTrigger.sourceObject ~= nil then
+						local fillTypes = fillTrigger.sourceObject:getFillUnitSupportedFillTypes(1)  
+						if fillTypes[index] then 
+							typesMatch = true
+							matchInThisUnit =true
+						end
+					end
+					if index == selectedFillType and selectedFillType ~= FillType.UNKNOWN then
+						selectedFillTypeIsNotInMyFillUnit = false;
 					end
 				end
-				if index == selectedFillType and selectedFillType ~= FillType.UNKNOWN then
-					selectedFillTypeIsNotInMyFillUnit = false;
+				if matchInThisUnit and selectedFillTypeIsNotInMyFillUnit then
+					return true;
 				end
 			end
-			if typesMatch and selectedFillTypeIsNotInMyFillUnit then
-				return true;
-			end			
 		end	
 		
 		if typesMatch then

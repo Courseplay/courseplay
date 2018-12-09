@@ -11,6 +11,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 		sprayerFillLevelPct = 100
 	end
 	local refillMessage = ""
+	--TODO Tommi remove this variabes and do it via fillUnitsFillTypes
 	if seederFillLevelPct == 0 and sprayerFillLevelPct == 0 then
 		refillMessage = g_i18n:getText("fillType_seeds")..", "..g_i18n:getText("fillType_fertilizer");
 	elseif sprayerFillLevelPct == 0 then
