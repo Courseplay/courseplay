@@ -187,6 +187,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	if courseplay.triggers.fillTriggers[transformId] then
 		--print(transformId.." is in fillTrigers")
 		self.cp.fillTrigger = transformId;
+		courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
 		return false;
 	end
 			

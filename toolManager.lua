@@ -855,6 +855,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	-- drive on when required fill level is reached
+	--Tommi TODO use isFilling instead
 	if not driveOn and (courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil) then
 		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent > vehicle.cp.driveOnAtFillLevel then
 			driveOn = true;
@@ -1281,6 +1282,10 @@ end;
 
 -- this does not change lx/lz (direction), only allowedToDrive
 function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, lx, lz, dt)
+	--if the trigger is not used by me, reset it after 10s
+	if courseplay:timerIsThrough(vehicle, "triggerFailBackup", false) then
+		 vehicle.cp.fillTrigger = nil
+	end
 	for _,workTool in ipairs(vehicle.cp.workTools) do
 		local isFilling = false
 		if vehicle.cp.fillTrigger then
@@ -1382,6 +1387,7 @@ function courseplay:fillOnTrigger(vehicle,allowedToDrive, workTool)
 end
 	
 function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerIndex)
+	courseplay:resetCustomTimer(vehicle, "triggerFailBackup", true)
 	if fillOrder then
 		--start filling
 		if trigger.onActivateObject then
