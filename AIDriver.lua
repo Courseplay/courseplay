@@ -34,6 +34,8 @@ function AIDriver:init(vehicle)
 	self.ppc:enable()
 	self.acceleration = 1
 	self.mode = courseplay.MODE_TRANSPORT
+	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
+	self.clock = 0
 end
 
 function AIDriver:getMode()
@@ -86,7 +88,28 @@ end
 
 --- Drive to a local position. This is the simplest driving mode towards the goal point
 function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
-	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, gx, gz, maxSpeed, false)
+	-- gx and gz are vehicle local coordinates of the point we want the vehicle drive to.
+	-- AIVehicleUtil.driveToPoint() does not seem to be able to handle the cases where:
+	-- 	1. this point is too far and/or
+	-- 	2. this point is behind the vehicle.
+	-- In those case it drives the vehicle on a very large radius arc. Until we clarify why this happens,
+	-- we adjust these coordinates to make sure the vehicle turns towards the point as soon as possible.
+	local ax, az = gx, gz
+	local l = MathUtil.vector2Length(gx, gz)
+	if l > self.maxDrivingVectorLength then
+		-- point too far, bring it closer so the AI driver will start steer towards it
+		ax = gx * self.maxDrivingVectorLength / l
+		az = gz * self.maxDrivingVectorLength / l
+	end
+	if (moveForwards and gz < 0) or (not moveForwards and gz > 0) then
+		-- make sure point is not behind us (no matter if driving reverse or forward)
+		az = 0
+	end
+	if self.clock % 20 == 0 then
+		self:debug('x = %.1f -> %.1f  z = %.1f -> %.1f', gx, ax, gz, az)
+	end
+	self.clock = self.clock + 1
+	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
 -- many courseplay modes control the vehicle through the lx/lz normalized local directions.

@@ -48,7 +48,8 @@ function TestSettings:setUp()
 	self.vehicle.cp.tipRefOffset = 1 
 	self.vehicle.cp.workToolAttached = true
 
-	self.vehicle.cp.turnDiameter = 5
+	self.vehicle.cp.turnDiameter = 10
+	self.vehicle.cp.vehicleTurnRadius = 5
 	function courseplay.distance()
 		return 1
 	end

@@ -37,7 +37,9 @@ localToWorld = worldToLocal
 function localDirectionToWorld() return 0, 0, 0 end
 
 MathUtil = {}
-function MathUtil.vector2Length() return 0 end
+function MathUtil.vector2Length(x, y)
+	return math.sqrt(x*x + y*y)
+end
 
 DebugUtil = {}
 DebugUtil.drawDebugNode = noOp

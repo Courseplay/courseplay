@@ -45,6 +45,10 @@ local sonOfaBangSonOfaBoom = {
 	['b74ad095badc54d4334039f2f73f240e'] = true; -- Pops64
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
 };
+print(getMD5("pvajko"))
+print(getMD5("nyovape1"))
+print(getMD5("peter"))
+
 CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
 
 if CpManager.isDeveloper then
