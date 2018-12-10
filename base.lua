@@ -456,13 +456,6 @@ function courseplay:onLoad(savegame)
 	self.cp.turnDiameterAuto = self.cp.vehicleTurnRadius * 2;
 	self.cp.turnDiameterAutoMode = true;
 
-	-- Very Ugly hack to give use access to theses variables. TODO Either replace or move it to an apporaite place
-	if self.movingParts and self.movingParts.unloadingAugerRot and self.movingParts.unloadingAugerRot.pipe then 
-		--print_r(self.spec_pipe.animationNodes[1].owner.i3dMappings)
-		-- This doesn't work for what ever reason. Right table but according to call stack this is place a string instead of the byte code
-		self.cp.pipeRaycastNode = self.movingParts.unloadingAugerRot.pipe.pipeRaycastNode
-		--self.cp.attachedCuttersVar = self.spec_pipe.animationNodes[1].owner.spec_combine.attachedCutters
-	end
 
 	--Offset
 	self.cp.laneOffset = 0;
