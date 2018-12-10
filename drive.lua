@@ -1797,14 +1797,14 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 				vehicle.cp.totalFillLevelPercent = (vehicle.cp.totalFillLevel*100)/vehicle.cp.totalCapacity;
 				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool:getName()),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
 				--print(string.format("%s: adding %s to vehicle.cp.totalCapacity = %s",tostring(tool:getName()),tostring(tool.cp.capacity), tostring(vehicle.cp.totalCapacity)))
-				if tool.sowingMachine ~= nil or tool.cp.isTreePlanter then
+				if tool.spec_sowingMachine ~= nil or tool.cp.isTreePlanter then
 					vehicle.cp.totalSeederFillLevel = (vehicle.cp.totalSeederFillLevel or 0) + tool.cp.seederFillLevel
 					vehicle.cp.totalSeederCapacity = (vehicle.cp.totalSeederCapacity or 0) + tool.cp.seederCapacity
 					vehicle.cp.totalSeederFillLevelPercent = (vehicle.cp.totalSeederFillLevel*100)/vehicle.cp.totalSeederCapacity
 					--print(string.format("%s:  vehicle.cp.totalSeederFillLevel:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSeederFillLevel)))
 					--print(string.format("%s:  vehicle.cp.totalSeederCapacity:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSeederCapacity)))
 				end
-				if tool.sprayer ~= nil then
+				if tool.spec_sprayer ~= nil then
 					vehicle.cp.totalSprayerFillLevel = (vehicle.cp.totalSprayerFillLevel or 0) + tool.cp.sprayerFillLevel
 					vehicle.cp.totalSprayerCapacity = (vehicle.cp.totalSprayerCapacity or 0) + tool.cp.sprayerCapacity
 					vehicle.cp.totalSprayerFillLevelPercent = (vehicle.cp.totalSprayerFillLevel*100)/vehicle.cp.totalSprayerCapacity
@@ -1837,8 +1837,6 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL) 
 		or index == workTool:getConsumerFillUnitIndex(FillType.DEF)
 		or index == workTool:getConsumerFillUnitIndex(FillType.AIR)) then
-			
-			
 		else
 			fillLevel = fillLevel + fillUnit.fillLevel
 			--print(string.format("%s: adding %s to fillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
@@ -1864,7 +1862,7 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 				workTool.cp.seederCapacity = fillUnit.capacity
 				workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
 			end
-			if workTool.sowingMachine ~= nil and index == workTool.sowingMachine.fillUnitIndex then
+			if workTool.spec_sowingMachine ~= nil and index == workTool.spec_sowingMachine.fillUnitIndex then
 				workTool.cp.seederFillLevel = fillUnit.fillLevel
 				--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
 				workTool.cp.seederCapacity = fillUnit.capacity
@@ -1875,7 +1873,7 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 				end
 				workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
 			end
-			if workTool.sprayer ~= nil and index == workTool.sprayer.fillUnitIndex then
+			if workTool.spec_sprayer ~= nil and index == workTool.spec_sprayer.fillUnitIndex then
 				workTool.cp.sprayerFillLevel = fillUnit.fillLevel
 				--print(string.format("%s: adding %s to workTool.cp.sprayerFillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
 				workTool.cp.sprayerCapacity = fillUnit.capacity
