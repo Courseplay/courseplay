@@ -321,9 +321,11 @@ function courseplay:getWorkAreaWidth(object)
 		local i = 1
 		local wa = object:getWorkAreaByIndex(i)
 		while wa do
-			local x, y, z = localToLocal(wa.width, wa.start, 0, 0, 0)
-			courseplay.debugVehicle(7, object, 'working area %d: x = %.1f, y = %.1f, z = %.1f', i, x, y, z)
+			local x, _, _ = localToLocal(wa.width, wa.start, 0, 0, 0)
 			width = math.max(width, math.abs(x))
+			local _, _, z = localToLocal(wa.height, wa.start, 0, 0, 0)
+			courseplay.debugVehicle(7, object, 'working area %d is %s, %.1f by %.1f m',
+				i, g_workAreaTypeManager.workAreaTypes[wa.type].name, width, math.abs(z))
 			i = i + 1
 			wa = object:getWorkAreaByIndex(i)
 		end
