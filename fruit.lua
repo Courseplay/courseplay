@@ -15,14 +15,14 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 		end;
 	else
 		for i = 1, g_fruitTypeManager.numCategories do
-			--if i ~= g_fruitTypeManager.GRASS then this is now an option in getFruitArea
+			if i ~= g_fruitTypeManager.GRASS then 
 				--function FieldUtil.getFruitArea(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, terrainDetailRequiredValueRanges, terrainDetailProhibitValueRanges, requiredFruitType, requiredMinGrowthState, requiredMaxGrowthState, prohibitedFruitType, prohibitedMinGrowthState, prohibitedMaxGrowthState, useWindrowed
-				density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, i, minHarvestable , maxHarvestable, g_fruitTypeManager.GRASS, 0, 0,true);
+				density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, i, minHarvestable , maxHarvestable, 0, 0, 0,true);
 				if density > 0 then
 					--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 					return true,i;
 				end;
-			--end;
+			end;
 		end;
 	end;
 
@@ -108,14 +108,14 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	end;
 
 	for i = 1, g_fruitTypeManager.numCategories do
-		--if i ~= g_fruitTypeManager.GRASS then
-			local density, total = FieldUtil.getFruitArea(x1,z1, x2,z2, hx,hz, i, minHarvestable , maxHarvestable, g_fruitTypeManager.GRASS, 0, 0,true);
+		if i ~= g_fruitTypeManager.GRASS then
+			local density, total = FieldUtil.getFruitArea(x1,z1, x2,z2, hx,hz, i, minHarvestable , maxHarvestable, 0, 0, 0,true);
 			if density > 0 then
 				local fruitName = g_fruitTypeManager.indexToFruitType[fixedFruitType].name -- FruitUtil.fruitIndexToDesc[i].name;  this might wrong conversion
 				courseplay:debug(string.format('hasLineFruit(): fruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
 				return true, density, i, fruitName;
 			end;
-		--end;
+		end;
 	end;
 
 	return false;

@@ -557,8 +557,8 @@ function courseplay:setMarkers(vehicle, object)
 	local objectDistances = object.cp.distances or courseplay:getDistances(object);
 
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
-	local area = object.workAreas
-	if object.attachedCutters ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
+	local area = object:getWorkAreaByIndex(1)
+	if object.cp.attachedCuttersVar ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
 		courseplay:debug(('%s: setMarkers(): %s is a combine -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
 		return;
 	end
@@ -569,10 +569,11 @@ function courseplay:setMarkers(vehicle, object)
 	end;
 
 	local tableLength = #(area)
+	local activeInputAttacherJoint = object:getActiveInputAttacherJoint();
 	if tableLength == 0 then
-		if courseplay:isWheeledWorkTool(object) and object.spec_attacherJoints.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] then
+		if courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then
 			-- Calculate the offset based on the distances
-			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] * -1;
+			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1;
 
 			local backMarkerCorrection = Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
 			if vehicle.cp.backMarkerOffset == nil or (abs(backMarkerCorrection) > 0 and  ztt + backMarkerCorrection > vehicle.cp.backMarkerOffset) then
@@ -612,7 +613,7 @@ function courseplay:setMarkers(vehicle, object)
 					local ztt = 0;
 					local type;
 
-					if pivotJointNode and object.spec_attacherJoints.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] then
+					if pivotJointNode and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then
 						type = "Pivot Trailer";
 						x, y, z = getWorldTranslation(pivotJointNode);
 
@@ -620,17 +621,17 @@ function courseplay:setMarkers(vehicle, object)
 						_, _, ztt = worldToLocal(node, x, y, z);
 
 						-- Calculate the offset based on the distances
-						ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt;
+						ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt;
 
-					elseif courseplay:isWheeledWorkTool(object) and object.spec_attacherJoints.attacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] then
+					elseif courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then
 						type = "Trailer";
-						x, y, z = getWorldTranslation(object.spec_attacherJoints.attacherJoint.node)
+						x, y, z = getWorldTranslation(activeInputAttacherJoint.node)
 
 						-- Get the marker offset from the pivot node.
 						_, _, ztt = worldToLocal(node, x, y, z);
 
 						-- Calculate the offset based on the distances
-						ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[object.spec_attacherJoints.attacherJoint.jointType] * -1) - ztt;
+						ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1) - ztt;
 
 					else
 						type = "Vehicle";

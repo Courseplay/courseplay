@@ -15,6 +15,12 @@ function courseplay:start(self)
 	self.steeringEnabled = false;
 	self.disableCharacterOnLeave = false;
 
+	-- Very Ugly hack to give use access to theses variables. TODO Either replace or move it to an apporaitoe place
+	if self.spec_pipe and self.spec_pipe.animationNodes and self.spec_pipe.animationNodes[1].owner and self.spec_pipe.animationNodes[1].owner.spec_combine then 
+	self.cp.pipeRaycastNode = self.spec_pipe.animationNodes[1].owner.i3dMappings.pipeRaycastNode or nil
+	self.cp.attachedCuttersVar = self.spec_pipe.animationNodes[1].owner.spec_combine.attachedCutters or nil
+	end
+
 	if self.vehicleCharacter ~= nil and not g_currentMission.missionDynamicInfo.isMultiplayer then --disabled for MP for further investigation (Nil errors in ingame(draw))
 		self.vehicleCharacter:delete();
 		self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name))

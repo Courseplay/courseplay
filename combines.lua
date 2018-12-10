@@ -323,9 +323,9 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 	end;
 	
 	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
-	if combine.pipeRaycastNode ~= nil then
-		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
+	if combine.cp.pipeRaycastNode ~= nil then
+		prnwX, prnwY, prnwZ = getWorldTranslation(combine.cp.pipeRaycastNode)
+		prnX, prnY, prnZ = getTranslation(combine.cp.pipeRaycastNode)
 		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 		if combine.cp.pipeSide == nil then
 			courseplay:getCombinesPipeSide(combine)
@@ -341,11 +341,11 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 		end;
 
 	-- combine // combine_offset is in auto mode
-	elseif not combine.cp.isChopper and combine.pipeCurrentState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
+	elseif not combine.cp.isChopper and combine.pipeCurrentState == 2 and combine.cp.pipeRaycastNode ~= nil then -- pipe is extended
 		vehicle.cp.combineOffset = combineToPrnX;
 		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, vehicle.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name), combineToPrnX, vehicle.cp.combineOffset), 4)
-	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then -- pipe is closed
-		local raycastNodeParent = getParent(combine.pipeRaycastNode);
+	elseif not combine.cp.isChopper and combine.cp.pipeRaycastNode ~= nil then -- pipe is closed
+		local raycastNodeParent = getParent(combine.cp.pipeRaycastNode);
 		if raycastNodeParent == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			vehicle.cp.combineOffset = prnX;
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / vehicle.cp.combineOffset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name), vehicle.cp.combineOffset), 4)
@@ -440,7 +440,7 @@ function courseplay:getSpecialCombineOffset(combine)
  	end
 	
 	if combine.cp.isSugarBeetLoader and combine.cp.isHolmerTerraFelis2 then
-		local utwX,utwY,utwZ = getWorldTranslation(combine.pipeRaycastNode);
+		local utwX,utwY,utwZ = getWorldTranslation(combine.cp.pipeRaycastNode);
 		local combineToUtwX,_,_ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, utwX,utwY,utwZ);
 		return combineToUtwX;
 	end;
@@ -449,7 +449,7 @@ function courseplay:getSpecialCombineOffset(combine)
 end;
 
 function courseplay:getCombinesPipeSide(combine)
-	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.cp.pipeRaycastNode)
 	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 	
 	if combineToPrnX >= 0 then
