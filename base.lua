@@ -1700,10 +1700,10 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	--cut the key to configure it for our needs 
 	local keySplit = StringUtil.splitString(".", key);
 	local newKey = keySplit[1]
-	for i=2,#keySplit-1 do
+	for i=2,#keySplit-2 do
 		newKey = newKey..'.'..keySplit[i]
 	end
-	
+	newKey = newKey..'.courseplay'
 	--CP basics
 	local runCounter = self.cp.runCounter
 	if self.cp.runReset == true then
