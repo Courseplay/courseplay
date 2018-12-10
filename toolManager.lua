@@ -1,26 +1,23 @@
 local abs, cos, sin, min, max, deg = math.abs, math.cos, math.sin, math.min, math.max, math.deg;
 local _;
 -- ##### MANAGING TOOLS ##### --
-
 function courseplay:attachImplement(implement) 
 	-- Update Vehicle
-	print("courseplay:attachImplement")
-	if implement ~= nil then
-		local attacherVehicle = implement:getAttacherVehicle()
-		if attacherVehicle.cp.hasSpecializationDrivable and implement.className ~= 'RailroadVehicle' then 
-			attacherVehicle.cp.tooIsDirty = true; 
-		end;
+	if implement.className ~= 'RailroadVehicle' then
+		if implement ~= nil then
+			local attacherVehicle = implement:getAttacherVehicle()
+			if attacherVehicle.spec_aiVehicle then 
+				attacherVehicle.cp.tooIsDirty = true; 
+			end;
+		end
+		courseplay:setAttachedCombine(self);
 	end
-		
-	courseplay:setAttachedCombine(self);
 end;
 
-AttacherJoints.onAttachImplement = Utils.appendedFunction(AttacherJoints.onAttachImplement, courseplay.attachImplement);
+AttacherJoints.attachImplement = Utils.appendedFunction(AttacherJoints.attachImplement, courseplay.attachImplement);
 
-
-function courseplay:detachImplement(implementIndex)
+function courseplay:onPostDetachImplement(implementIndex)
 	--- Update Vehicle
-	print("courseplay:detachImplement")
 	self.cp.tooIsDirty = true;
 	local sAI= self:getAttachedImplements()
 	if sAI[implementIndex].object == self.cp.attachedCombine then
@@ -28,8 +25,8 @@ function courseplay:detachImplement(implementIndex)
 		courseplay:setMinHudPage(self);
 	end
 end;
-AttacherJoints.onDetachImplement = Utils.appendedFunction(AttacherJoints.onDetachImplement, courseplay.detachImplement);
-
+--AttacherJoints.detachImplement = Utils.appendedFunction(AttacherJoints.detachImplement, courseplay.detachImplement);
+--Tommi disabled it self is allways nil
 
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
