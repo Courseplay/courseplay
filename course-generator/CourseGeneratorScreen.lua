@@ -126,13 +126,6 @@ function CourseGeneratorScreen:onOpen()
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 end
 
-function CourseGeneratorScreen:onClickResetMap(element)
-	if self.coursePlot then
-		self.coursePlot:setView( 0, 0, self.ingameMap.worldSizeX)
-		self.state = CourseGeneratorScreen.SHOW_FULL_MAP
-	end
-end
-
 function CourseGeneratorScreen:generate()
 	-- save the selected field as generateCourse will reset it.
 	-- this way we can regenerate the course with different settings without
@@ -160,12 +153,7 @@ function CourseGeneratorScreen:generate()
 	self.boundingBox = courseplay.utils:getCourseDimensions(self.vehicle.Waypoints)
 end
 
-function CourseGeneratorScreen:onClickOk()
-	self:generate()
-	--self:onClickBack()
-end
-
-function CourseGeneratorScreen:onClickGenerate()
+function CourseGeneratorScreen:onClickActivate()
 	self:generate()
 end
 
@@ -579,10 +567,6 @@ function CourseGeneratorScreen:zoom(isDown, isUp, button, eventUsed)
 end
 
 function CourseGeneratorScreen:keyEvent(unicode, sym, modifier, isDown, eventUsed)
-	if isDown and sym == Input.KEY_space then
-		--self:onClickGenerate()
-	end
-	print('Key event')
 end
 
 function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)

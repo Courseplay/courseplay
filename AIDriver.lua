@@ -51,11 +51,11 @@ function AIDriver:start(ix)
 	end
 	if self.alignmentCourse then
 		self.ppc:setCourse(self.alignmentCourse)
-		self.ppc:setLookaheadDistance(PurePursuitController.shortLookaheadDistance)
+		self.ppc:setLookaheadDistance(self.ppc.shortLookaheadDistance)
 		self.ppc:initialize(1)
 	else
 		self.ppc:setCourse(self.course)
-		self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
+		self.ppc:setLookaheadDistance(self.ppc.normalLookAheadDistance)
 		self.ppc:initialize(ix)
 	end
 end

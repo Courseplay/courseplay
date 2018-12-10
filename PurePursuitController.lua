@@ -63,6 +63,9 @@ PurePursuitController.shortLookaheadDistance = 2.5
 
 -- constructor
 function PurePursuitController:init(vehicle)
+	self.normalLookAheadDistance = vehicle.cp.turnDiameter / 2
+	self.shortLookaheadDistance = self.normalLookAheadDistance / 2
+	-- normal lookahead distance
 	self.baseLookAheadDistance = self.normalLookAheadDistance
 	-- adapted look ahead distance 
 	self.lookAheadDistance = self.baseLookAheadDistance
