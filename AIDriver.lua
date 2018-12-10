@@ -194,7 +194,7 @@ function AIDriver:getSpeed()
 end
 
 function AIDriver:getIsInFilltrigger()
-	return self.vehicle.cp.fillTrigger ~= nil;
+	return self.vehicle.cp.fillTrigger ~= nil or self.vehicle.cp.tipperLoadMode>0 ;
 end
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed

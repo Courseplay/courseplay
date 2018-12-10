@@ -549,7 +549,7 @@ end;
 -- Adding easy access to SiloTrigger
 --------------------------------------------------
 local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
-	local trailer = g_currentMission.objectToTrailer[otherShapeId];
+	local trailer = g_currentMission.nodeToObject[otherShapeId];
 	if trailer ~= nil then
 		-- Make sure cp table is present in the trailer.
 		if not trailer.cp then
@@ -559,7 +559,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 			trailer.cp.siloTriggerHits = 0;
 		end;
 		-- self.Schnecke is only set for MischStation and that one is not an real SiloTrigger and should not be used as one.
-		if onEnter and not self.Schnecke and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
+		if onEnter then --and not self.Schnecke and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
 			-- Add the current SiloTrigger to the cp table, for easier access.
 			if not trailer.cp.currentSiloTrigger then
 				trailer.cp.currentSiloTrigger = self;
@@ -576,7 +576,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 		end;
 	end;
 end;
-LoadTrigger.triggerCallback = Utils.appendedFunction(LoadTrigger.triggerCallback, SiloTrigger_TriggerCallback);
+LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, SiloTrigger_TriggerCallback);
 
 
 local oldBunkerSiloLoad = BunkerSilo.load;

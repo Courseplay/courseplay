@@ -825,26 +825,53 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 	end;
 
-	-- SiloTrigger (Giants)
 	if vehicle.cp.tipperLoadMode == 1 and currentTrailer.cp.currentSiloTrigger ~= nil and not driveOn then
         local acceptedFillType = false;
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
 
-		for _, fillType in pairs(siloTrigger.fillTypes) do
+		--[[for _, fillType in pairs(siloTrigger.fillTypes) do
 			if fillType == vehicle.cp.siloSelectedFillType then
 				acceptedFillType = true;
 				break;
 			end;
 		end;
 
-		if acceptedFillType then
-			local siloIsEmpty = siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
-
-			if not siloTrigger.isFilling and not siloIsEmpty and currentTrailer:allowFillType(vehicle.cp.siloSelectedFillType, false) and unloadDistance < vehicle.cp.trailerFillDistance then
-				siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
+		if acceptedFillType then]]
+		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
+			if not orintOnce then
+				orintOnce = true
+				courseplay.alreadyPrinted = {}
+				courseplay:printMeThisTable(siloTrigger,0,4,"siloTrigger")
+				
+			end
+			--siloTrigger.source
+			
+			local siloIsEmpty = false --siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
+			if not siloTrigger.isLoading and not siloIsEmpty and unloadDistance < vehicle.cp.trailerFillDistance then
+				print("startFill")
+				
+				if siloTrigger:getIsActivatable(currentTrailer) then
+					courseplay:setFillOnTrigger(vehicle,currentTrailer,true,siloTrigger)
+				end 
+				
+				--[[	if siloTrigger.autoStart then
+						siloTrigger:onActivateObject() 
+					else
+						--force the selected fillType and force the trigger to autoload
+						siloTrigger.autoStart = true
+						siloTrigger:onActivateObject() 
+						siloTrigger.selectedFillType = vehicle.cp.siloSelectedFillType
+						g_effectManager:setFillType(siloTrigger.effects, siloTrigger.selectedFillType)
+						siloTrigger.autoStart = false
+					end
+				end]]
+				
+				
+				
+				--siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
-				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isFilling = %s'):format(nameNum(vehicle), tostring(g_fillTypeManager.indexToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isFilling)), 2);
-			elseif siloTrigger.isFilling then
+				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isLoading = %s'):format(nameNum(vehicle), tostring(g_fillTypeManager.indexToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isLoading)), 2);
+			elseif siloTrigger.isLoading then
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
 			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.driveOnAtFillLevel and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then
 				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
@@ -855,7 +882,6 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	-- drive on when required fill level is reached
-	--Tommi TODO use isFilling instead
 	if not driveOn and (courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil) then
 		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent > vehicle.cp.driveOnAtFillLevel then
 			driveOn = true;
@@ -875,8 +901,8 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	if currentTrailer.cp.realUnloadOrFillNode and vehicle.cp.trailerFillDistance then
-		if courseplay:getFreeCapacity(currentTrailer,vehicle.cp.siloSelectedFillType) == 0
-		or currentTrailer.cp.currentSiloTrigger ~= nil and not (courseplay:getFreeCapacity(currentTrailer,vehicle.cp.siloSelectedFillType) > 0 and #currentTrailer:getFillUnitsWithFillType(vehicle.cp.siloSelectedFillType) > 0) then
+		if courseplay:getFreeCapacity(currentTrailer,vehicle.cp.siloSelectedFillType) == 0 then
+		--or currentTrailer.cp.currentSiloTrigger ~= nil and not (courseplay:getFreeCapacity(currentTrailer,vehicle.cp.siloSelectedFillType) > 0 and #currentTrailer:getFillUnitsWithFillType(vehicle.cp.siloSelectedFillType) > 0) then
 			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else
@@ -1396,8 +1422,9 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 			else
 				--force the selected fillType and force the trigger to autoload
 				trigger.autoStart = true
-				trigger.selectedFillType = vehicle.cp.siloSelectedFillType
 				trigger:onActivateObject() 
+				trigger.selectedFillType = vehicle.cp.siloSelectedFillType
+				g_effectManager:setFillType(trigger.effects, trigger.selectedFillType)
 				trigger.autoStart = false
 			end
 		elseif trigger.sourceObject ~= nil then
