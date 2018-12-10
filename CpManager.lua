@@ -312,13 +312,13 @@ function CpManager:draw()
 	git.hasContent = false;
 	local numLinesRendered = 0;
 	local basePosY = git.posY;
-	--[[Tommiif not (g_currentMission.ingameMap.isVisible and g_currentMission.ingameMap:getIsFullSize()) and next(git.content) ~= nil then
+	if not (g_currentMission.hud.ingameMap.isVisible and g_currentMission.hud.ingameMap:getIsFullSize()) and next(git.content) ~= nil then
 		git.hasContent = true;
-		if g_currentMission.ingameMap.isVisible then
+		if g_currentMission.hud.ingameMap.isVisible then
 			basePosY = git.posYAboveMap;
 		end;
 		numLinesRendered = self:renderGlobalInfoTexts(basePosY);
-	end;]]
+	end;
 	git.buttonsClickArea.y1 = basePosY;
 	git.buttonsClickArea.y2 = basePosY + (numLinesRendered  * (git.lineHeight + git.lineMargin));
 
@@ -338,7 +338,7 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseKey)
 
 	
-	--Tommi local area = self.globalInfoText.buttonsClickArea;
+	local area = self.globalInfoText.buttonsClickArea;
 	if area == nil then
 		return;
 	end;
@@ -994,7 +994,6 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 			-- text
 			local textPosY = gfxPosY + (git.lineHeight - git.fontSize) * 1.2; -- should be (lineHeight-fontSize)*0.5, but there seems to be some pixel/sub-pixel rendering error
 			renderText(git.textPosX, textPosY, git.fontSize, data.text);
-
 			-- button
 			local button = self.globalInfoText.buttons[line];
 			if button ~= nil then

@@ -219,7 +219,7 @@ function courseplay:executeFunction(self, func, value, page)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
 		return
 	end
-	if Enterable.getIsEntered(self) then
+	if self:getIsEntered() then
 		--The old sound playSample(courseplay.hud.clickSound, 1, 1, 0, 0, 0);
 		-- The new gui click sound
 		g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)

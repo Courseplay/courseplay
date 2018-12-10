@@ -829,14 +829,6 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
         local acceptedFillType = false;
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
 
-		--[[for _, fillType in pairs(siloTrigger.fillTypes) do
-			if fillType == vehicle.cp.siloSelectedFillType then
-				acceptedFillType = true;
-				break;
-			end;
-		end;
-
-		if acceptedFillType then]]
 		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
 			if not orintOnce then
 				orintOnce = true
@@ -848,25 +840,9 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			
 			local siloIsEmpty = false --siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
 			if not siloTrigger.isLoading and not siloIsEmpty and unloadDistance < vehicle.cp.trailerFillDistance then
-				print("startFill")
-				
 				if siloTrigger:getIsActivatable(currentTrailer) then
 					courseplay:setFillOnTrigger(vehicle,currentTrailer,true,siloTrigger)
 				end 
-				
-				--[[	if siloTrigger.autoStart then
-						siloTrigger:onActivateObject() 
-					else
-						--force the selected fillType and force the trigger to autoload
-						siloTrigger.autoStart = true
-						siloTrigger:onActivateObject() 
-						siloTrigger.selectedFillType = vehicle.cp.siloSelectedFillType
-						g_effectManager:setFillType(siloTrigger.effects, siloTrigger.selectedFillType)
-						siloTrigger.autoStart = false
-					end
-				end]]
-				
-				
 				
 				--siloTrigger:startFill(vehicle.cp.siloSelectedFillType);
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);

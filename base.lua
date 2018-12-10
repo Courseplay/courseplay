@@ -776,7 +776,7 @@ function courseplay:onDraw()
 	--,tostring(InputBinding.wrapMousePositionEnabled),tostring(g_currentMission.isPlayerFrozen),tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))));
 	--print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))))
 															-- VVVV Tommi
-	if self:getIsActive() and Enterable.getIsEntered(self) and false then
+	if self:getIsActive() and self:getIsEntered() and false then
 		local modifierPressed = false --Tommi InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
 			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER);
@@ -870,7 +870,7 @@ function courseplay:onDraw()
 			self.cp.infoTextNilSent = false
 		end;
 		
-		if Enterable.getIsEntered(self) and self.cp.toolTip ~= nil then
+		if self:getIsEntered() and self.cp.toolTip ~= nil then
 			courseplay:renderToolTip(self);
 		end;
 	end;
@@ -1293,7 +1293,7 @@ function courseplay:setInfoText(vehicle, text)
 end;
 
 function courseplay:renderInfoText(vehicle)
-	if Enterable.getIsEntered(vehicle)and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
+	if vehicle:getIsEntered()and vehicle.cp.infoText ~= nil and vehicle.cp.toolTip == nil then
 		local text;
 		local what = StringUtil.splitString(";", vehicle.cp.infoText);
 		

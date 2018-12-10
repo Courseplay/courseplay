@@ -20,7 +20,7 @@ function courseplay:drive(self, dt)
 		if self.vehicleCharacter ~= nil then
 			self.vehicleCharacter:delete();
 			self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name));
-			if Enterable.getIsEntered(self) then
+			if self:getIsEntered() then
 				self.vehicleCharacter:setCharacterVisibility(false);
 			end;
 		end;
