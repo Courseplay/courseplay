@@ -323,6 +323,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 	for _, imp in ipairs(vehicle:getAttachedImplements()) do
 		if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 			local workTool = imp.object;
+			local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
 			if courseplay:isWheeledWorkTool(workTool) then
 				local workToolDistances = workTool.cp.distances;
 
@@ -333,7 +334,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 				totalDistance = totalDistance + workToolDistances.attacherJointOrPivotToTurningNode;
 			else
 				if not distances.attacherJointOrPivotToTurningNode and distances.attacherJointToRearTrailerAttacherJoints then
-					totalDistance = totalDistance + distances.attacherJointToRearTrailerAttacherJoints[workTool.attacherJoint.jointType];
+					totalDistance = totalDistance + distances.attacherJointToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
 				end;
 				totalDistance = totalDistance + courseplay:getDirectionNodeToTurnNodeLength(workTool);
 			end;
@@ -345,7 +346,8 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 		for _, imp in ipairs(vehicle:getAttachedImplements()) do
 			if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 				local workTool = imp.object;
-				totalDistance = totalDistance + distances.turningNodeToRearTrailerAttacherJoints[workTool.attacherJoint.jointType];
+				local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
+				totalDistance = totalDistance + distances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
 				break;
 			end;
 		end;
@@ -356,12 +358,13 @@ end;
 
 function courseplay:getRealDollyFrontNode(dolly)
 	if dolly.cp.realDollyFrontNode == nil then
-		local node, _ = courseplay:findJointNodeConnectingToNode(dolly, dolly.attacherJoint.rootNode, dolly.rootNode);
+		local activeInputAttacherJoint = dolly:getActiveInputAttacherJoint();
+		local node, _ = courseplay:findJointNodeConnectingToNode(dolly, activeInputAttacherJoint.rootNode, dolly.rootNode);
 		if node then
 			-- Trailers without pivote
-			if (node == dolly.rootNode and dolly.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT)
+			if (node == dolly.rootNode and activeInputAttacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT)
 					-- Implements with pivot and wheels that do not lift the wheels from the ground.
-					or (node ~= dolly.rootNode and dolly.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and not dolly.attacherJoint.topReferenceNode) then
+					or (node ~= dolly.rootNode and activeInputAttacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and not activeInputAttacherJoint.topReferenceNode) then
 				dolly.cp.realDollyFrontNode = courseplay:getRealTurningNode(dolly);
 			else
 				dolly.cp.realDollyFrontNode = false;
@@ -374,11 +377,12 @@ end;
 
 function courseplay:getRealTrailerDistanceToPivot(workTool)
 	-- Attempt to find the pivot node.
-	local node, backTrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, courseplay:getLastComponentNodeWithWheels(workTool));
+	local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
+	local node, backTrack = courseplay:findJointNodeConnectingToNode(workTool, activeInputAttacherJoint.rootNode, courseplay:getLastComponentNodeWithWheels(workTool));
 	if node then
 		local x,y,z;
 		if node == workTool.rootNode then
-			x,y,z = getWorldTranslation(workTool.attacherJoint.node);
+			x,y,z = getWorldTranslation(activeInputAttacherJoint.node);
 		else
 			x,y,z = getWorldTranslation(node);
 		end;
@@ -391,8 +395,9 @@ end;
 
 function courseplay:getRealTrailerFrontNode(workTool)
 	if not workTool.cp.realFrontNode then
-		local jointNode, backtrack = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
-		if jointNode and backtrack and workTool.spec_attacherJoints.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT then
+		local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
+		local jointNode, backtrack = courseplay:findJointNodeConnectingToNode(workTool, activeInputAttacherJoint.rootNode, workTool.rootNode);
+		if jointNode and backtrack and activeInputAttacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT then
 			local rootNode;
 			for _, joint in ipairs(workTool.componentJoints) do
 				if joint.jointNode == jointNode and joint.rotLimit~= nil and joint.rotLimit[2] ~= nil and joint.rotLimit[2] > rad(15) then
@@ -628,11 +633,12 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 			end;
 
 			if not haveStraitWheels and object.steeringAxleUpdateBackwards and steeringAxleScale < 0 then
-				local tempNode, _ = courseplay:findJointNodeConnectingToNode(object, object.attacherJoint.rootNode, componentNode);
+				local activeInputAttacherJoint = object:getActiveInputAttacherJoint();
+				local tempNode, _ = courseplay:findJointNodeConnectingToNode(object, activeInputAttacherJoint.rootNode, componentNode);
 				if tempNode then
 					local x, y, z;
 					if tempNode == object.rootNode then
-						x, y, z = getWorldTranslation(object.attacherJoint.node);
+						x, y, z = getWorldTranslation(activeInputAttacherJoint.node);
 					else
 						x, y, z = getWorldTranslation(tempNode);
 					end;
@@ -809,7 +815,7 @@ function courseplay:getToolTurnRadius(workTool)
 		local TR			= 0;
 		local frontLength	= 0;
 		--attacherJointOrPivotToTurningNode
-		local attacherVehicle			= workTool.attacherVehicle;
+		local attacherVehicle			= workTool:getAttacherVehicle();
 		local workToolDistances			= workTool.cp.distances or courseplay:getDistances(workTool);
 
 		for i, attachedImplement in pairs(attacherVehicle:getAttachedImplements()) do
@@ -832,23 +838,25 @@ function courseplay:getToolTurnRadius(workTool)
 
 		local attacherVehicleDistances	= attacherVehicle.cp.distances or courseplay:getDistances(attacherVehicle);
 
+		local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
+
 		if deg(rotMax) >= 30 and deg(rotMax) < 90 then
 			-- We have turningNodeToRearTrailerAttacherJoints value
 			if attacherVehicleDistances.turningNodeToRearTrailerAttacherJoints then
-				frontLength = attacherVehicleDistances.turningNodeToRearTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
+				frontLength = attacherVehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] or 0;
 
 			-- We have turningNodeToTrailerAttacherJoints value
 			elseif attacherVehicleDistances.turningNodeToTrailerAttacherJoints then
-				frontLength = attacherVehicleDistances.turningNodeToTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
+				frontLength = attacherVehicleDistances.turningNodeToTrailerAttacherJoints[activeInputAttacherJoint.jointType] or 0;
 
 			-- We have to go backwards to find the real front distance (attacherVehicle dont have wheels and might be a weight or something else)
 			else
-				frontLength = attacherVehicleDistances.attacherJointToRearTrailerAttacherJoints[workTool.attacherJoint.jointType] or 0;
+				frontLength = attacherVehicleDistances.attacherJointToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] or 0;
 				local backTrackVehicle = attacherVehicle;
 				local oldBackTrackVehicle;
 				while true do
 					oldBackTrackVehicle = backTrackVehicle;
-					backTrackVehicle = oldBackTrackVehicle.attacherVehicle;
+					backTrackVehicle = oldBackTrackVehicle.getAttacherVehicle and oldBackTrackVehicle:getAttacherVehicle() or false;
 					if backTrackVehicle and backTrackVehicle ~= {} then
 						local distances = backTrackVehicle.cp.distances or courseplay:getDistances(backTrackVehicle);
 						local jointType = oldBackTrackVehicle.attacherJoint.jointType;
@@ -872,7 +880,7 @@ function courseplay:getToolTurnRadius(workTool)
 			if workToolDistances.attacherJointToPivot then
 				local pivotRotMax = 0;
 				local lastNode = courseplay:getLastComponentNodeWithWheels(workTool)
-				local _, _, rotLimits = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, lastNode);
+				local _, _, rotLimits = courseplay:findJointNodeConnectingToNode(workTool, activeInputAttacherJoint.rootNode, lastNode);
 				if rotLimits then
 					for _, rotLimit in pairs(rotLimits) do
 						if rotLimit[2] > pivotRotMax and rotLimit[2] > rad(15) then
@@ -940,7 +948,7 @@ function courseplay:getToolTurnRadius(workTool)
 		end;
 
 		-- If we are not an implement then check if half trailer length is bigger than the turnRadius and set it, if it is.
-		if ((deg(rotMax) < 30 and deg(rotMax) >= 90) or workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT) and workToolDistances.attacherJointToRearWheel then
+		if ((deg(rotMax) < 30 and deg(rotMax) >= 90) or activeInputAttacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT) and workToolDistances.attacherJointToRearWheel then
 			if (workToolDistances.attacherJointToRearWheel / 2) > turnRadius then
 				turnRadius = ceil(workToolDistances.attacherJointToRearWheel / 2 * radiusMultiplier);
 				courseplay:debug(('%s -> TurnRadius: Using half tool length = %.2fm'):format(nameNum(workTool), turnRadius), 6);
@@ -1306,14 +1314,16 @@ function courseplay:isWheeledWorkTool(workTool)
 		end;
 	end;
 
-	if workTool.attacherJoint and allowedJointType[workTool.attacherJoint.jointType] and workTool.spec_wheels and workTool.spec_wheels.wheels and #workTool.spec_wheels.wheels > 0 then
+	local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
+
+	if activeInputAttacherJoint and allowedJointType[activeInputAttacherJoint.jointType] and workTool.spec_wheels and workTool.spec_wheels.wheels and #workTool.spec_wheels.wheels > 0 then
 		-- Attempt to find the pivot node.
-		local node, _ = courseplay:findJointNodeConnectingToNode(workTool, workTool.attacherJoint.rootNode, workTool.rootNode);
+		local node, _ = courseplay:findJointNodeConnectingToNode(workTool, activeInputAttacherJoint.rootNode, workTool.rootNode);
 		if node then
 			-- Trailers
-			if (workTool.attacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT)
+			if (activeInputAttacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT)
 			-- Implements with pivot and wheels that do not lift the wheels from the ground.
-			or (node ~= workTool.rootNode and workTool.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and (not workTool.attacherJoint.topReferenceNode or workTool.cp.implementWheelAlwaysOnGround))
+			or (node ~= workTool.rootNode and activeInputAttacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and (not activeInputAttacherJoint.topReferenceNode or workTool.cp.implementWheelAlwaysOnGround))
 			then
 				return true;
 			end;

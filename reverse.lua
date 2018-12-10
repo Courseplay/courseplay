@@ -4,19 +4,21 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	local fwd = false;
 	local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle) or vehicle.cp.workTools[1];
 	local newTarget;
+	local attacherVehicle;
 	if vehicle.cp.turnTargets and vehicle.cp.curTurnIndex then
 		newTarget = vehicle.cp.turnTargets[vehicle.cp.curTurnIndex];
 	end;
 
 	if workTool then
+		attacherVehicle = workTool.getAttacherVehicle and workTool:getAttacherVehicle() or vehicle;
 		-- Attacher modules and HookLift modules that needs the hookLiftTrailer
 		if courseplay:isHookLift(workTool) or courseplay:isAttacherModule(workTool) then
-			workTool = workTool.attacherVehicle;
+			workTool = attacherVehicle;
 
 			if workTool == vehicle and vehicle.cp.workTools[2] ~= nil then
 				workTool = vehicle.cp.workTools[2];
 				if courseplay:isAttacherModule(workTool) then
-					workTool = workTool.attacherVehicle;
+					workTool = attacherVehicle;
 				end;
 			end;
 		end;
@@ -395,6 +397,8 @@ function courseplay:getReverseProperties(vehicle, workTool)
 
 	--------------------------------------------------
 
+	local attacherVehicle = workTool:getAttacherVehicle();
+
 	if not workTool.cp.distances then
 		workTool.cp.distances = courseplay:getDistances(workTool);
 	end;
@@ -403,10 +407,10 @@ function courseplay:getReverseProperties(vehicle, workTool)
 
 	workTool.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(workTool);
 
-	if workTool.attacherVehicle == vehicle or vehicle.cp.isHookLiftTrailer or workTool.attacherVehicle.cp.isAttacherModule then
+	if attacherVehicle == vehicle or vehicle.cp.isHookLiftTrailer or attacherVehicle.cp.isAttacherModule then
 		workTool.cp.frontNode = courseplay:getRealTrailerFrontNode(workTool);
 	else
-		workTool.cp.frontNode = courseplay:getRealDollyFrontNode(workTool.attacherVehicle);
+		workTool.cp.frontNode = courseplay:getRealDollyFrontNode(attacherVehicle);
 		if workTool.cp.frontNode then
 			courseplay:debug(string.format('--> workTool %q has dolly', nameNum(workTool)), 13);
 		else
