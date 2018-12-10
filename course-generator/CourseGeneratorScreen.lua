@@ -528,27 +528,6 @@ end
 function CourseGeneratorScreen:draw()
 	CourseGeneratorScreen:superClass().draw(self)
 
-	--[[
-	if self.state == CourseGeneratorScreen.SHOW_SELECTED_FIELD and self.boundingBox then
-		local padding = 10
-		local centerX = ( self.boundingBox.xMin + self.boundingBox.xMax ) / 2
-		local centerY = ( self.boundingBox.yMin + self.boundingBox.yMax ) / 2
-		local width = self.boundingBox.span + 2 * padding
-		if self.coursePlot then
-			self.coursePlot:setView( centerX, centerY, width )
-		end
-		-- figure out view (center and zoom) for ingame map, normalized
-		--		self.ingameMap.mapVisWidthMin = 1 / self.ingameMap.worldSizeX * width
-		-- ingame map uses normalized coordinates, the map corners are (0,0) and (1,1)
-		--		self.ingameMap.centerXPos = MathUtil.clamp(( centerX + self.ingameMap.worldCenterOffsetX)/self.ingameMap.worldSizeX, 0, 1)
-		--		self.ingameMap.centerZPos = MathUtil.clamp(( centerY + self.ingameMap.worldCenterOffsetZ)/self.ingameMap.worldSizeZ, 0, 1)
-	end
-
-	--self.ingameMap:setPosition(self.mapOverview.absPosition[1], self.mapOverview.absPosition[2])
-	--self.ingameMap:setSize(self.mapOverview.size[1], self.mapOverview.size[2])
-	--local leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached = self.ingameMap:drawMap(1)
-	--self.ingameMap:renderHotspots(leftBorderReached, rightBorderReached, topBorderReached, bottomBorderReached, false, true);
-	]]--
 	if self.coursePlot then
 		self.coursePlot:setPosition(self.ingameMap.absPosition[ 1 ], self.ingameMap.absPosition[ 2 ])
 		self.coursePlot:setSize(self.ingameMap.size[1], self.ingameMap.size[2])

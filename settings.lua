@@ -321,6 +321,9 @@ function courseplay:getWorkAreaWidth(object)
 		local i = 1
 		local wa = object:getWorkAreaByIndex(i)
 		while wa do
+			-- work areas are defined by three nodes: start, width and height. These nodes
+			-- define a rectangular work area which you can make visible with the
+			-- gsVehicleDebugAttributes console command and then pressing F5
 			local x, _, _ = localToLocal(wa.width, wa.start, 0, 0, 0)
 			width = math.max(width, math.abs(x))
 			local _, _, z = localToLocal(wa.height, wa.start, 0, 0, 0)
