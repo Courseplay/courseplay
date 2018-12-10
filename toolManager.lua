@@ -568,8 +568,15 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end;
 
+	local activeInputAttacherJoint
+	if object.getActiveInputAttacherJoint then 
+		local activeInputAttacherJoint = object:getActiveInputAttacherJoint();
+	else 
+		print('No attacher Joints')
+		return 
+	end
 	local tableLength = #(area)
-	local activeInputAttacherJoint = object:getActiveInputAttacherJoint();
+	
 	if tableLength == 0 then
 		if courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then
 			-- Calculate the offset based on the distances
