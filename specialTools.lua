@@ -26,6 +26,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Cultivator 		   then workTool.cp.hasSpecializationCultivator 		 = true;
 		elseif spec == Cutter 			   then workTool.cp.hasSpecializationCutter 			 = true;
 		elseif spec == Cylindered 		   then workTool.cp.hasSpecializationCylindered 		 = true;
+		elseif spec == Drivable 		   then workTool.cp.hasSpecializationDrivable 			 = true;
 		elseif spec == FillUnit 		   then workTool.cp.hasSpecializationFillUnit 			 = true;
 		elseif spec == FillVolume 		   then workTool.cp.hasSpecializationFillVolume			 = true;
 		elseif spec == Foldable 		   then workTool.cp.hasSpecializationFoldable 			 = true;
@@ -38,7 +39,6 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == Shovel 			   then workTool.cp.hasSpecializationShovel 			 = true;
 		elseif spec == SowingMachine 	   then workTool.cp.hasSpecializationSowingMachine 		 = true;
 		elseif spec == Sprayer 			   then workTool.cp.hasSpecializationSprayer 			 = true;
-		elseif spec == Steerable 		   then workTool.cp.hasSpecializationSteerable 			 = true;
 		elseif spec == Tedder 			   then workTool.cp.hasSpecializationTedder 			 = true;
 		elseif spec == WaterTrailer		   then workTool.cp.hasSpecializationWaterTrailer		 = true;
 		elseif spec == Windrower 		   then workTool.cp.hasSpecializationWindrower 			 = true;

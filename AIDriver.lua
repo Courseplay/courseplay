@@ -106,7 +106,7 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		az = 0
 	end
 	if self.clock % 20 == 0 then
-		self:debug('x = %.1f -> %.1f  z = %.1f -> %.1f', gx, ax, gz, az)
+		self:debug('x = %.1f -> %.1f  z = %.1f -> %.1f, speed = %.1f', gx, ax, gz, az, maxSpeed)
 	end
 	self.clock = self.clock + 1
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
@@ -186,14 +186,14 @@ function AIDriver:getSpeed()
 	elseif self.ppc:isReversing() then
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	end
-	if self:getisInFilltrigger() then
+	if self:getIsInFilltrigger() then
 		speed = self.vehicle.cp.speeds.turn
 	end
 	
 	return speed and speed or 15
 end
 
-function AIDriver:getisInFilltrigger()
+function AIDriver:getIsInFilltrigger()
 	return self.vehicle.cp.fillTrigger ~= nil;
 end
 --- Is an alignment course needed to reach waypoint ix in the current course?

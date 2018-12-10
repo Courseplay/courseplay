@@ -292,146 +292,44 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 		--courseplay:changeWorkWidth(vehicle, nil, vehicle.cp.manualWorkWidth, noDraw); 
 		return
 	end
-	
-	local l,r;
-	courseplay:debug(('%s: calculateWorkWidth()'):format(nameNum(vehicle)), 7);
-	local vehL,vehR = courseplay:getCuttingAreaValuesX(vehicle);
-	courseplay:debug(('\tvehL=%s, vehR=%s'):format(tostring(vehL), tostring(vehR)), 7);
-	local shouldBWorkWidth = 0
-	
-	local implL,implR = -9999,9999;
-	if vehicle.getAttachedImplements then
-		for i,implement in pairs(vehicle:getAttachedImplements()) do
-			local tool = implement.object
-			--print("checking "..tostring(tool.name))
-			local workWidth = courseplay:getSpecialWorkWidth(tool);
-			if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
-				workWidth = tool.sizeWidth
-			end
-			if vehicle.cp.mode == 10 then
-				return
-			end
-			if workWidth then
-				courseplay:debug(('\tSpecial workWidth found: %.1fm'):format(workWidth), 7);
-				shouldBWorkWidth = workWidth
-				--courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
-			else
-				local left, right = courseplay:getCuttingAreaValuesX(implement.object);
-				if left and right then
-					implL = max(implL, left);
-					implR = min(implR, right);
-				end;
-				courseplay:debug(('\t-> implL=%s, implR=%s'):format(tostring(implL), tostring(implR)), 7);
-			end;
-			
-			if tool.getAttachedImplements then
-				for j,subImplement in pairs(tool:getAttachedImplements()) do
-					local tool = subImplement.object;
-					if vehicle.cp.mode == 9 and tool.cp.hasSpecializationShovel then   
-						workWidth = tool.sizeWidth
-					end
-					local workWidth = courseplay:getSpecialWorkWidth(tool);
-					if workWidth then
-						courseplay:debug(('\tSpecial workWidth found in attachedImplement: %.1fm'):format(workWidth), 7);
-						shouldBWorkWidth = max(shouldBWorkWidth,workWidth)
-						--courseplay:changeWorkWidth(vehicle, nil, workWidth, noDraw);
-					else			
-						local subLeft, subRight = courseplay:getCuttingAreaValuesX(subImplement.object);
-						if subLeft and subRight then
-							implL = max(implL, subLeft);
-							implR = min(implR, subRight);
-						end;
-						courseplay:debug(('\t-> implL=%s, implR=%s'):format(j, tostring(implL), tostring(implR)), 7);
-					end;
-				end;
-			end;
-		end;
-	end;
-	
-	if implL == -9999 or implR == 9999 then
-		implL, implR = nil, nil;
-		courseplay:debug('\timplL=nil, implR=nil', 7);
-	end;
 
-	if vehL and vehR then
-		if implL and implR then
-			l = max(vehL, implL);
-			r = min(vehR, implR);
-		else
-			l = vehL;
-			r = vehR;
-		end;
-	else
-		if implL and implR then
-			l = implL;
-			r = implR;
-		else
-			l =  1.5;
-			r = -1.5;
-		end;
-	end;
-
-	local workWidth = l - r;
-	
-	shouldBWorkWidth = max(shouldBWorkWidth,workWidth)
-
-	if shouldBWorkWidth == 0 then
-		shouldBWorkWidth = 3;
-	end;
-	
-	courseplay:debug(('\tl=%s, r=%s -> workWidth=l-r=%s'):format(tostring(l), tostring(r), tostring(shouldBWorkWidth)), 7);
-	
-	courseplay:changeWorkWidth(vehicle, nil, shouldBWorkWidth, noDraw);
+	courseplay:changeWorkWidth(vehicle, nil, courseplay:getWorkWidth(vehicle), noDraw);
 
 end;
 
-function courseplay:getCuttingAreaValuesX(object)
-	courseplay:debug(('\tgetCuttingAreaValuesX(%s)'):format(nameNum(object)), 7);
+--- Get the working width of thing. Will return the maximum of the working width of thing and
+-- all of its implements
+function courseplay:getWorkWidth(thing)
+	-- our own width
+	local width = courseplay:getWorkAreaWidth(thing)
+	local implements = thing:getAttachedImplements()
+	if implements then
+		-- get width of all implements
+		for _, implement in ipairs(implements) do
+			courseplay.debugVehicle(7, implement.object, 'checking width...')
+			width = math.max( width, courseplay:getWorkWidth(implement.object))
+		end
+	end
+	courseplay.debugVehicle(7, thing, 'working width is %.1f', width)
+	return width
+end
 
-	if object.aiLeftMarker and object.aiRightMarker then
-		local x, y, z = getWorldTranslation(object.aiLeftMarker);
-		local left, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
-		x, y, z = getWorldTranslation(object.aiRightMarker);
-		local right, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
-
-		courseplay:debug(('\t\taiMarkers: left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
-
-		if left < right then
-			local rightBackup = right;
-			right = left;
-			left = rightBackup;
-			courseplay:debug(('\t\tleft < right -> switch -> left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
-		end;
-
-		return left, right;
-	end;
-
-
-	local areas = object.workAreas;
-
-	local min, max = math.min, math.max;
-	local left, right = -9999, 9999;
-	if areas and #areas > 0 then
-		for i=1,#areas do
-			for caType,node in pairs(areas[i]) do
-				if caType == 'start' or caType == 'height' or caType == 'width' then
-					local x, y, z = getWorldTranslation(node);
-					local caX, _, _ = worldToLocal(object.cp.DirectionNode or object.rootNode, x, y, z);
-					left = max(left, caX);
-					right = min(right, caX);
-					courseplay:debug(('\t\t\tarea %d, type=%s, caX=%s -> left=%s, right=%s'):format(i, tostring(caType), tostring(caX), tostring(left), tostring(right)), 7);
-				end;
-			end;
-		end;
-	end;
-	if left == -9999 or right == 9999 then
-		left, right = nil, nil;
-		courseplay:debug('\t\t\tareas=nil -> left=nil, right=nil', 7);
-	end;
-
-	courseplay:debug(('\t\tareas: left=%s, right=%s'):format(tostring(left), tostring(right)), 7);
-	return left, right;
-end;
+function courseplay:getWorkAreaWidth(object)
+	-- TODO: check if there's a better way to find out if the implement has a work area
+	local width = 0
+	if object and object.getWorkAreaByIndex then
+		local i = 1
+		local wa = object:getWorkAreaByIndex(i)
+		while wa do
+			local x, y, z = localToLocal(wa.width, wa.start, 0, 0, 0)
+			courseplay.debugVehicle(7, object, 'working area %d: x = %.1f, y = %.1f, z = %.1f', i, x, y, z)
+			width = math.max(width, math.abs(x))
+			i = i + 1
+			wa = object:getWorkAreaByIndex(i)
+		end
+	end
+	return width
+end
 
 function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	local isSetManually = false

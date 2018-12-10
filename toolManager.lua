@@ -5,7 +5,7 @@ local _;
 function courseplay:attachImplement(implement)
 	--- Update Vehicle
 	local workTool = implement.object;
-	if workTool.attacherVehicle.cp.hasSpecializationSteerable then
+	if workTool.attacherVehicle.cp.hasSpecializationDrivable then
 		workTool.attacherVehicle.cp.tooIsDirty = true;
 	end;
 	courseplay:setAttachedCombine(self);
@@ -188,12 +188,12 @@ end
 
 function courseplay:isAttachedCombine(workTool)
 	return (workTool.typeName~= nil and (workTool.typeName == 'attachableCombine' or workTool.typeName == 'attachableCombine_mouseControlled')) 
-			or (not workTool.cp.hasSpecializationSteerable and workTool.hasPipe and not workTool.cp.isAugerWagon and not workTool.cp.isLiquidManureOverloader) 
+			or (not workTool.cp.hasSpecializationDrivable and workTool.hasPipe and not workTool.cp.isAugerWagon and not workTool.cp.isLiquidManureOverloader)
 			or courseplay:isSpecialChopper(workTool)
 			or workTool.cp.isAttachedCombine
 end;
 function courseplay:isAttachedMixer(workTool)
-	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
+	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
 function courseplay:isAttacherModule(workTool)
 	if workTool.spec_attacherJoints.attacherJoint then
@@ -209,7 +209,7 @@ function courseplay:isBaler(workTool) -- is the tool a baler?
 	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
 function courseplay:isBigM(workTool)
-	return workTool.cp.hasSpecializationSteerable and courseplay:isMower(workTool);
+	return workTool.cp.hasSpecializationDrivable and courseplay:isMower(workTool);
 end;
 function courseplay:isCombine(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
@@ -236,7 +236,7 @@ function courseplay:isHookLift(workTool)
 	return false;
 end
 function courseplay:isMixer(workTool)
-	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationSteerable and  workTool.cp.hasSpecializationMixerWagon)
+	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
 function courseplay:isMower(workTool)
 	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
