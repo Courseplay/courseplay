@@ -285,8 +285,15 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil)
 					if allowedToDrive then
 						if not specialTool then
+							
 							vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-							vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
+							
+							
+							if not isFolding and isUnfolded then
+								courseplay:lowerImplements(vehicle, true)
+							end;
+
+							--vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
 							--[[ --unfold
 							local recordnumber = min(vehicle.cp.waypointIndex + 2, vehicle.cp.numWaypoints);
 							local forecast = Utils.getNoNil(vehicle.Waypoints[recordnumber].ridgeMarker,0)
@@ -318,7 +325,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				elseif not workArea or vehicle.cp.abortWork ~= nil or vehicle.cp.isLoaded or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
+						courseplay:lowerImplements(vehicle, false)
 						vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
+						
+						
 						--[[ if not isFolding then
 							courseplay:manageImplements(vehicle, false, false, false)
 						end;
