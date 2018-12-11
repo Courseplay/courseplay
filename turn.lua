@@ -458,10 +458,12 @@ function courseplay:turn(vehicle, dt)
 					-- See if we have to raise/lower implements at this point
 					if vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].raiseImplement then
 						courseplay:debug( string.format( "%s:(Turn) raising implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						courseplay:lowerImplements(vehicle, false, false )
+						--courseplay:manageImplements(vehicle, true, false, true )
+						vehicle:raiseAIEvent("onAIStartTurn", "onAIImplementStartTurn", left)
 					elseif vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].lowerImplement then
 						courseplay:debug( string.format( "%s:(Turn) lowering implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						courseplay:lowerImplements( vehicle, true, true )
+						--courseplay:manageImplements( vehicle, true, true, true )
+						vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
 					end
 					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 					local changeDir = ((newTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not newTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
@@ -556,7 +558,8 @@ function courseplay:turn(vehicle, dt)
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
-					courseplay:lowerImplements(vehicle, true, true);
+					--courseplay:manageImplements(vehicle, true, true, true);
+					vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
 				end;
 
 				vehicle.cp.isTurning = nil;
@@ -612,7 +615,8 @@ function courseplay:turn(vehicle, dt)
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
-					courseplay:lowerImplements(vehicle, true, true);
+					--courseplay:manageImplements(vehicle, true, true, true);
+					vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
 				end;
 
 				vehicle.cp.isTurning = nil;
@@ -651,10 +655,12 @@ function courseplay:turn(vehicle, dt)
 		end;
 
 		if vehicle.cp.lowerToolThisTurnLoop then
-			if vehicle.getIsTurnedOn ~= nil and not vehicle:getIsTurnedOn() then
+			--[[  TODO REmove not needed handled in mangeImplements
+				if vehicle.getIsTurnedOn ~= nil and not vehicle:getIsTurnedOn() then
 				vehicle:setIsTurnedOn(true, false);
-			end;
-			courseplay:lowerImplements(vehicle, true, true);
+			end; ]]
+			--courseplay:manageImplements(vehicle, true, true, true);
+			vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
 			vehicle.cp.lowerToolThisTurnLoop = false;
 		end;
 
@@ -683,7 +689,8 @@ function courseplay:turn(vehicle, dt)
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attributs will control when to raise/lower implements
       if not isHeadlandCorner then
-        courseplay:lowerImplements(vehicle, false, false);
+		--courseplay:manageImplements(vehicle, true, false, true);
+		vehicle:raiseAIEvent("onAIStartTurn", "onAIImplementStartTurn", left)
       end
       vehicle.cp.turnStage = 1;
 		end;
@@ -1951,15 +1958,15 @@ function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
   vehicle.cp.headlandTurn = nil 
 end
 
-function courseplay:lowerImplements(vehicle, moveDown, workToolonOff)
+function courseplay:manageImplements(vehicle, unfold, lower, workToolonOff)
 	--print(string.format("courseplay:lowerImplements(vehicle, moveDown(%s), workToolonOff(%s)))",tostring(moveDown),tostring(workToolonOff)))
 	--moveDown true= lower,  false = raise , workToolonOff true = switch on worktool,  false = switch off worktool
-	if moveDown == nil then 
-		moveDown = false; 
+	if lower == nil then 
+		lower = false; 
 	end;
 
 	local state  = 1;
-	if moveDown then
+	if lower then
 		state  = -1;
     end;
 
@@ -1975,14 +1982,14 @@ function courseplay:lowerImplements(vehicle, moveDown, workToolonOff)
 	
 	for _,workTool in pairs(vehicle.cp.workTools) do
 					--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
-		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,moveDown,workToolonOff,nil,nil,nil);
+		specialTool = courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,workToolonOff,nil,nil,nil);
 		
 		if not specialTool then
-			if workTool.spec_pickup ~= nil and workTool.spec_pickup.isLowered ~= moveDown then
-				workTool:setPickupState(moveDown, false);
+			if workTool.spec_pickup ~= nil and workTool.spec_pickup.isLowered ~= lower then
+				workTool:setPickupState(lower, false);
 			end;
 			if courseplay:isFoldable(workTool) then
-				if moveDown then
+				if unfold then
 					workTool:setFoldState(-workTool.spec_foldable.foldMiddleAIRaiseDirection, false, true)
 				else
 					workTool:setFoldState(workTool.spec_foldable.foldMiddleAIRaiseDirection, false, true)
@@ -1990,9 +1997,9 @@ function courseplay:lowerImplements(vehicle, moveDown, workToolonOff)
 			end
 			local jointDesc = vehicle:getAttacherJointDescFromObject(workTool)
 			if jointDesc and jointDesc.allowsLowering then
-				if workTool:getIsLowered(false) ~= moveDown  then
+				if workTool:getIsLowered(false) ~= lower  then
 					local jointDescIndex = vehicle:getAttacherJointIndexFromObject(workTool)
-					vehicle:setJointMoveDown(jointDescIndex, moveDown, false)
+					vehicle:setJointMoveDown(jointDescIndex, lower, false)
 				end
 			end
 		
