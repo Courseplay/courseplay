@@ -287,14 +287,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						if not specialTool then
 							
 							vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-							
-							
-							if not isFolding and isUnfolded then
-								courseplay:lowerImplements(vehicle, true)
-							end;
 
 							--vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
-							--[[ --unfold
+														--unfold
 							local recordnumber = min(vehicle.cp.waypointIndex + 2, vehicle.cp.numWaypoints);
 							local forecast = Utils.getNoNil(vehicle.Waypoints[recordnumber].ridgeMarker,0)
 							local marker = Utils.getNoNil(vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker,0)
@@ -318,22 +313,23 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								end
 							end;
 							if not isFolding and isUnfolded then
-								courseplay:manageImplements(vehicle, true, true, true)
-							end; ]]
+								courseplay:lowerImplements(vehicle, true)
+							end;
 						end;
 					end
 				elseif not workArea or vehicle.cp.abortWork ~= nil or vehicle.cp.isLoaded or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
 						courseplay:lowerImplements(vehicle, false)
+						
 						vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 						
 						
 						--[[ if not isFolding then
 							courseplay:manageImplements(vehicle, false, false, false)
-						end;
+						end;]]
 
-						--fold
+						 --fold
 						if courseplay:isFoldable(workTool) and not isFolding and not isFolded then
 							if workTool:getIsFoldAllowed() then
 								courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
@@ -342,7 +338,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								workTool:setRotationMax(not workTool.rotateLeftToMax);
 								courseplay:debug(string.format('%s: rotate plough before folding', nameNum(workTool)), 17);
 							end;
-						end; ]]
+						end; 
 					end;
 				end;
 
@@ -424,7 +420,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					-- Choppers
 					if tool.cp.capacity == 0 then
 						vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-						vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
+						courseplay:lowerImplements(vehicle, true)
 						--[[ if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
@@ -456,7 +452,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						local tankFillLevelPct = tool.cp.fillLevelPercent;
 						if not vehicle.cp.isReverseBackToPoint then
 							vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-							vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
+							courseplay:lowerImplements(vehicle, true)
 							-- WorkTool Unfolding.
 							--[[ if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
 								courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
@@ -504,14 +500,10 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						or tool.stopForManualUnloader then
 							tool.waitingForDischarge = true;
 							allowedToDrive = false;
-							--[[  this is now in manageImplemts
-							if isTurnedOn then
-								tool:setIsTurnedOn(false);
-							end;
+							vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 							if workTool:getIsLowered() then
-									courseplay:manageImplements(vehicle, false, false, false);
-							end; ]]
-							tool:raiseAIEvent("onAIStartTurn", "onAIImplementStartTurn", left)
+								courseplay:lowerImplements(tool, false)
+							end; 
 							if (tankFillLevelPct < 80 and not tool.cp.stopWhenUnloading) or (tool.cp.stopWhenUnloading and tool.cp.fillLevel == 0) or (tool.courseplayers and tool.courseplayers[1] == nil) then
 								courseplay:setReverseBackDistance(vehicle, 2);
 								tool.waitingForDischarge = false;
@@ -523,9 +515,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 						if weatherStop then
 							allowedToDrive = false;
-							if isTurnedOn then
-								tool:setIsTurnedOn(false);
-							end;
+							vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 							CpManager:setGlobalInfoText(vehicle, 'WEATHER');
 						end
 
@@ -533,8 +523,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 					-- Make sure we are lowered when working the field.
 					if allowedToDrive and isTurnedOn and not workTool:getIsLowered() and not vehicle.cp.isReverseBackToPoint then
-						--[[ courseplay:manageImplements(vehicle, true, true, true); ]]
-						vehicle:raiseAIEvent("onAIEndTurn", "onAIImplementEndTurn", left)
+						courseplay:lowerImplements(vehicle, true)
 					end;
 				end
 			 --Stop combine
@@ -549,26 +538,27 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,true,false,false,allowedToDrive,nil)
 				end
 				if not specialTool then
-					if isTurnedOn then
+					--[[ if isTurnedOn then
 						tool:setIsTurnedOn(false);
 						if tool.aiRaise ~= nil then
 							tool:aiRaise()
 							tool:setPipeState(1)
 						end
-					end	
+					end	 ]]
 					if vehicle.cp.waypointIndex == vehicle.cp.stopWork or (vehicle.cp.abortWork ~= nil and tool.cp.capacity == 0 ) then
 						if  pipeState == 0 and tool.cp.isCombine then
 							tool:setPipeState(1)
 						end
 						vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
-						--[[ if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
+						courseplay:lowerImplements(vehicle, false)
+						if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
 							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
 						end;
 						if courseplay:isFoldable(tool) and isEmpty and not isFolding and not isFolded then
 							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(tool), -tool.cp.realUnfoldDirection), 17);
 							tool:setFoldDirection(-tool.cp.realUnfoldDirection);
-						end; ]]
+						end;
 					end
 				end
 				if tool.cp.isCombine and not tool.cp.wantsCourseplayer and tool.cp.fillLevel > 0.1 and tool.courseplayers and #(tool.courseplayers) == 0 and vehicle.cp.waypointIndex == vehicle.cp.stopWork then

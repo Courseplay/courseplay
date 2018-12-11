@@ -166,12 +166,12 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 					end;
 					if hasSetUnfoldOrderThisLoop then
 						isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
-					end
+					end]]
 															--vv  used for foldables, which are not folding before start Strautmann manure spreader 
 					if not isFolding and (isUnfolded or hasSetUnfoldOrderThisLoop) then 
-						courseplay:manageImplements(vehicle, true, true, true)
+						courseplay:lowerImplements(vehicle, true)
 						
-						--set or stow ridge markers
+						--[[ --set or stow ridge markers
 						if (courseplay:isSowingMachine(workTool) or workTool.cp.isKuhnHR4004) and vehicle.cp.ridgeMarkersAutomatic then
 							if ridgeMarker ~= nil then
 								if workTool.cp.haveInversedRidgeMarkerState then
@@ -215,8 +215,8 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 								workTool:setIsTurnedOn(true,false);
 							end;
 							courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
-						end;
-					end; --END if not isFolding ]]
+						end; ]]
+					end; --END if not isFolding 
 				end
 				
 				--Sprayer Addon Support
@@ -261,31 +261,27 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 			--turn off
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
-				vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 				--[[ if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
 					workTool:setIsTurnedOn(false, false);
 					courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
-				end; 
+				end;  ]]
 
 				--raise
 				if not isFolding and isUnfolded then
-					courseplay:manageImplements(vehicle, false, false, false)
-					-if (needsLowering or workTool.aiNeedsLowering) and workTool:isLowered() then
-						workTool:aiRaise();
-						courseplay:debug(string.format('%s: raise order', nameNum(workTool)), 17);
-					end; 
+					courseplay:lowerImplements(vehicle, false)
+					self:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 				end;
 
 				--retract ridgemarker
-				if workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
+				--[[ if workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
 					workTool:setRidgeMarkerState(0);
-				end;
+				end; ]]
 				
 				--fold
 				if courseplay:isFoldable(workTool) and not isFolding and not isFolded then
 					courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 					workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
-				end; ]]
+				end; 
 			end
 		end
 
