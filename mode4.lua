@@ -269,7 +269,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 				--raise
 				if not isFolding and isUnfolded then
 					courseplay:lowerImplements(vehicle, false)
-					self:raiseAIEvent("onAIEnd", "onAIImplementEnd")
+					vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 				end;
 
 				--retract ridgemarker
