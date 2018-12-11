@@ -53,7 +53,7 @@ function courseplay.fields:setAllFieldEdges()
 
 	local fieldDef = courseplay.fields.fieldDefinitionBase[self.curFieldScanIndex];
 	if fieldDef ~= nil then
-		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.farmland.isOwned) then  --TODO: Check, whether I'm the owner
+		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and (fieldDef.farmland.isOwned or fieldDef.currentMission)) then  --TODO: Check, whether I'm the owner
 		--if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.ownedByPlayer) then
 			local fieldNum = fieldDef.fieldId;
 			if self.fieldData[fieldNum] == nil then
