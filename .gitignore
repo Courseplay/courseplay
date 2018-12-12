@@ -3,6 +3,10 @@
 *.gitattributes
 *.idea
 *.iml
+out
+reload/venv
+reload.xml
+
 
 # Windows image file caches
 Thumbs.db
