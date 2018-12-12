@@ -603,14 +603,22 @@ end
 
 function CpManager:loadFile(fileName)
 	local path = courseplay.path .. fileName
-	local f = source(path)
-	if not f then
+	if fileExists(path) then
+		g_xmlFile = loadXMLFile('loadFile', path)
+	end
+	if not g_xmlFile then
 		return 'Could not load ' .. path
 	else
-		f()
-		return path .. ' loaded.'
+		local code = getXMLString(g_xmlFile, 'code')
+		local f = getfenv(0).loadstring('setfenv(1, courseplay); ' .. code)
+		if f then
+			f()
+			return path .. ' loaded.'
+		else
+			return path .. ' could not be compiled.'
+		end
 	end
-end 
+end
 
 function CpManager:setLookaheadDistance(d)
 	local vehicle = g_currentMission.controlledVehicle
