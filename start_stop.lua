@@ -3,16 +3,16 @@ local curFile = 'start_stop.lua';
 -- starts driving the course
 function courseplay:start(self)
 	self.currentHelper = g_helperManager:getRandomHelper()
-	self.isHired = true;
+	--self.isHired = true;
 	--self.isHirableBlocked = true; Removed
 	self.spec_aiVehicle.isActive = true
 
-	self.cp.forceIsActiveBackup = self.forceIsActive;
-	self.forceIsActive = true;
-	self.cp.stopMotorOnLeaveBackup = self.stopMotorOnLeave;
-	self.stopMotorOnLeave = false;
-	self.steeringEnabled = false;
-	self.disableCharacterOnLeave = false;
+	--self.cp.forceIsActiveBackup = self.forceIsActive;
+	--self.forceIsActive = true;
+	self.cp.stopMotorOnLeaveBackup = self.spec_motorized.stopMotorOnLeave;
+	self.spec_motorized.stopMotorOnLeave = false;
+	--self.steeringEnabled = false;
+	self.spec_enterable.disableCharacterOnLeave = false;
 
 
 	if self.vehicleCharacter ~= nil and not g_currentMission.missionDynamicInfo.isMultiplayer then --disabled for MP for further investigation (Nil errors in ingame(draw))
@@ -44,12 +44,13 @@ function courseplay:start(self)
 	courseplay.alreadyPrinted = {}
 	--courseplay:printMeThisTable(g_currentMission,0,5,"g_currentMission")
 	
+	--[[Tommi Todo Whx is this here ???
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
 		self.cp.orgRpm[1] = self.spec_motorized.motor.maxRpm
 		self.cp.orgRpm[2] = self.spec_motorized.motor.maxRpm
 		self.cp.orgRpm[3] = self.spec_motorized.motor.maxRpm
-	end
+	end]]
 	
 	self.cpTrafficCollisionIgnoreList = {}
 	self.CPnumCollidingVehicles = 0;
@@ -66,6 +67,7 @@ function courseplay:start(self)
 	self.cp.aiFrontMarker = nil
 	courseplay:resetTools(self)	
 	
+	--TODO when checking the Collision triggers, check whetehr we stil need this 
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
 			--remove cutter atTrafficCollisionTrigger in case of having changed or removed it while not in CP
@@ -647,10 +649,10 @@ function courseplay:stop(self)
 	--self.isHirableBlocked = false; Removed by giants per Thomas
 	self.spec_aiVehicle.isActive = false
 	
-	self.forceIsActive = self.cp.forceIsActiveBackup;
-	self.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
-	self.steeringEnabled = true;
-	self.disableCharacterOnLeave = true;
+	--self.forceIsActive = self.cp.forceIsActiveBackup;
+	self.spec_motorized.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
+	--self.steeringEnabled = true;
+	self.spec_enterable.disableCharacterOnLeave = true;
 
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
