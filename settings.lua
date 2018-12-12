@@ -297,44 +297,6 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 
 end;
 
---- Get the working width of thing. Will return the maximum of the working width of thing and
--- all of its implements
-function courseplay:getWorkWidth(thing)
-	-- our own width
-	local width = courseplay:getWorkAreaWidth(thing)
-	local implements = thing:getAttachedImplements()
-	if implements then
-		-- get width of all implements
-		for _, implement in ipairs(implements) do
-			courseplay.debugVehicle(7, implement.object, 'checking width...')
-			width = math.max( width, courseplay:getWorkWidth(implement.object))
-		end
-	end
-	courseplay.debugVehicle(7, thing, 'working width is %.1f', width)
-	return width
-end
-
-function courseplay:getWorkAreaWidth(object)
-	-- TODO: check if there's a better way to find out if the implement has a work area
-	local width = 0
-	if object and object.getWorkAreaByIndex then
-		local i = 1
-		local wa = object:getWorkAreaByIndex(i)
-		while wa do
-			-- work areas are defined by three nodes: start, width and height. These nodes
-			-- define a rectangular work area which you can make visible with the
-			-- gsVehicleDebugAttributes console command and then pressing F5
-			local x, _, _ = localToLocal(wa.width, wa.start, 0, 0, 0)
-			width = math.max(width, math.abs(x))
-			local _, _, z = localToLocal(wa.height, wa.start, 0, 0, 0)
-			courseplay.debugVehicle(7, object, 'working area %d is %s, %.1f by %.1f m',
-				i, g_workAreaTypeManager.workAreaTypes[wa.type].name, math.abs(x), math.abs(z))
-			i = i + 1
-			wa = object:getWorkAreaByIndex(i)
-		end
-	end
-	return width
-end
 
 function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	local isSetManually = false

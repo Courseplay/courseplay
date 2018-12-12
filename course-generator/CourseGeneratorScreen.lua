@@ -32,7 +32,6 @@ function CourseGeneratorScreen:new(target, custom_mt)
 	self.returnScreenName = "";
 	self.state = CourseGeneratorScreen.SHOW_NOTHING
 	self.vehicle = nil
-	self.boundingBox = nil
 
 	self.directions = {}
 	-- map to look up gui element state from angle
@@ -57,11 +56,6 @@ end
 -- when the maximum zoom level is higher than the standard one.
 function CourseGeneratorScreen:updateMap()
 	self.ingameMap.iconZoom = 0.3 + (self.zoomMax / 2 - self.zoomMin) * self.mapZoom
-end
-
-function CourseGeneratorScreen:showSelectedField()
-	self.state = CourseGeneratorScreen.SHOW_SELECTED_FIELD
---	self.hintText:setText(courseplay:loc('COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION'))
 end
 
 function CourseGeneratorScreen:showCourse()
@@ -148,9 +142,6 @@ function CourseGeneratorScreen:generate()
 	-- update number of headland passes in case we ended up generating less 
 	self:setHeadlandProperties()
 	self:showCourse()
-	self:showSelectedField()
-	-- if we have course generated, zoom in on the course
-	self.boundingBox = courseplay.utils:getCourseDimensions(self.vehicle.Waypoints)
 end
 
 function CourseGeneratorScreen:onClickActivate()
@@ -163,7 +154,6 @@ function CourseGeneratorScreen:onClose()
 		self.vehicle.cp.hud.reloadPage[ 8 ] = true
 		self.vehicle = nil
 	end
-	if self.boundingBox then self.boundingBox = nil end
 	if self.coursePlot then
 		self.coursePlot:delete()
 		self.coursePlot = nil
@@ -191,7 +181,6 @@ end
 
 function CourseGeneratorScreen:selectField( fieldNum )
 	self.vehicle.cp.fieldEdge.selectedField.fieldNum = fieldNum
-	self.boundingBox = courseplay.utils:getCourseDimensions(courseplay.fields.fieldData[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ].points)
 end
 -----------------------------------------------------------------------------------------------------
 -- Working width
@@ -585,38 +574,5 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 		self:zoom(isDown, isUp, button, eventUsed)
 	end
 
-	--[[
-	if not eventUsed and isDown and button == Input.MOUSE_BUTTON_LEFT then
-		-- ignore clicks off the map
-		if not self:isOverElement(posX, posY, self.mapOverview) then return eventUsed end
-		eventUsed = true
-		-- find world coordinates from the mouse cursor position
-		local viewX, viewY = posX - self.mapOverview.absPosition[ 1 ], posY - self.mapOverview.absPosition[ 2 ]
-		local viewW, viewH = self.mapOverview.size[ 1 ], self.mapOverview.sdo yize[ 2 ]
-		local x, z = self.coursePlot:screenToWorld(posX, posY)
-		if self.state == CourseGeneratorScreen.SHOW_FULL_MAP then
-			-- find the field under the cursor
-			local fieldNum = courseplay:getFieldNumForPosition( x, z )
-			if fieldNum > 0 and self.fields then
-				-- clicked on a field, set it as selected
-				for i, field in ipairs( self.fields ) do
-					if field.number == fieldNum then
-						-- field found
-						self.fieldSelector:setState( i )
-						self:selectField( fieldNum )
-						-- zoom in on the selected field
-						self:showSelectedField()
-						return eventUsed
-					end
-				end
-			end
-		elseif self.state == CourseGeneratorScreen.SHOW_SELECTED_FIELD then--and		  then
-			self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = { x=x, z=z }
-			self.coursePlot:setStartPosition(x, z)
-			self.vehicle.cp.startingCorner = courseGenerator.STARTING_LOCATION_SELECT_ON_MAP
-			self.startingLocation:setState( getStartingLocationState( self.vehicle.cp.startingCorner ))
-		end
-	end
-	]]--
 	return eventUsed
 end

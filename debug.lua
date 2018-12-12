@@ -88,23 +88,26 @@ end;
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
-		--local timestamp = getDate( "%H:%M:%S")
-    	--local seconds = courseplay.clock / 1000
-		--print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. timestamp .. '] ' .. str);
-		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. ' ' .. str);
+		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
 	end;
 end;
 
+-- convenience debug function that expects string.format() arguments,
+-- courseplay.debugVehicle( 14, "fill level is %.1f, mode = %d", fillLevel, mode )
+function courseplay.debugFormat(channel, ...)
+	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
+		print(string.format('[dbg%d lp%d] %s', channel, updateLoopIndex, string.format( ... )))
+	end
+end
+
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 
 -- courseplay.debugVehicle( 14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
-	function courseplay.debugVehicle( channel, vehicle, ... )
+function courseplay.debugVehicle(channel, vehicle, ...)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
-		local seconds = courseplay.clock / 1000
-		local timestamp = getDate( "%H:%M:%S")
-		local vehicleName = vehicle and nameNum( vehicle ) or "Unknown vehicle"
+		local vehicleName = vehicle and nameNum(vehicle) or "Unknown vehicle"
 		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
-		print( string.format( '[dbg%d lp%d %s] %s: ', 
-			tostring( channel ), updateLoopIndex, timestamp,vehicleName ) .. string.format( ... ))
+		print(string.format('[dbg%d lp%d] %s: %s', channel, updateLoopIndex, vehicleName, string.format( ... )))
 	end
 end
 
@@ -442,4 +445,31 @@ function debug.getinfo()
 	result.name = 'debug.getinfo() not implemented'
 	result.currentline = 0
 	return result
+end
+
+
+function courseplay:showAIMarkers(vehicle)
+
+	if not courseplay.debugChannels[6] then return end
+
+	-- draw the Giant's supplied AI markers for all implements
+	local implements = vehicle:getAttachedImplements()
+	if implements then
+		for _, implement in ipairs(implements) do
+			local object = implement.object
+			if object.getAIMarkers then
+				local aiLeftMarker, aiRightMarker = object:getAIMarkers()
+				if aiLeftMarker then
+					DebugUtil.drawDebugNode(aiLeftMarker, object:getName() .. ' AI Left')
+				end
+				if aiRightMarker then
+					DebugUtil.drawDebugNode(aiRightMarker, object:getName() .. ' AI Right')
+				end
+				DebugUtil.drawDebugNode(object.cp.DirectionNode or object.rootNode, object:getName() .. ' root')
+			end
+		end
+	end
+
+	-- draw our calculated front and back markers and work width
+	courseplay:showWorkWidth(vehicle)
 end

@@ -547,6 +547,17 @@ function courseplay:setTipRefOffset(vehicle)
 end;
 
 function courseplay:setMarkers(vehicle, object)
+
+	if object.cp.attachedCuttersVar ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
+		courseplay.debugVehicle(6, vehicle, 'setMarkers(): %s is a combine -> not setting work areas', tostring(object.name))
+		return;
+	end
+
+	if object.cp.noWorkArea then
+		courseplay.debugVehicle(6, vehicle, 'setMarkers(): %s is special tool configured for no work areas', tostring(object.name))
+		return;
+	end;
+
 	local realDirectionNode		= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
 	local aLittleBitMore 		= 1;
 	local pivotJointNode 		= courseplay:getPivotJointNode(object);
@@ -560,28 +571,14 @@ function courseplay:setMarkers(vehicle, object)
 
 	-- get the behindest and the frontest  points :-) ( as offset to root node)
 	 
-	-- TODO THIS IS NO LONGER CORRECT object.workAreas no longer exists 
-	local area = object.workAreas
-	if object.cp.attachedCuttersVar ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
-		courseplay:debug(('%s: setMarkers(): %s is a combine -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		return;
-	end
-	
-	if not area or object.cp.noWorkArea then
-		courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		return;
-	end;
 
-	local activeInputAttacherJoint = {}
-	if object.getActiveInputAttacherJoint then 
-		local activeInputAttacherJoint = object:getActiveInputAttacherJoint();
-	else 
+	local activeInputAttacherJoint = object.getActiveInputAttacherJoint and object:getActiveInputAttacherJoint()
+	if not activeInputAttacherJoint then
 		print('No attacher Joints')
 		return 
 	end
-	local tableLength = #(area)
-	
-	if tableLength == 0 then
+
+	if not courseplay:hasWorkAreas(object) then
 		if courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
 			-- Calculate the offset based on the distances
 			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1;
@@ -610,15 +607,13 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end
 
+	-- TODO: figure out what other types to avoid, the FS17 types ending with DROP do not seem exist anymore
 	local avoidType = {
-		[WorkArea.AREATYPE_RIDGEMARKER] = true;
-		[WorkArea.AREATYPE_MOWERDROP] = true;
-		[WorkArea.AREATYPE_WINDROWERDROP] = true;
-		[WorkArea.AREATYPE_TEDDERDROP] = true;
+		[WorkAreaType.RIDGEMARKER] = true
 	}
-	for k = 1, tableLength do
-		if not avoidType[area[k].type] then
-			for j,node in pairs(area[k]) do
+	for k, area in courseplay:workAreaIterator(object) do
+		if not avoidType[area.type] then
+			for j,node in pairs(area) do
 				if j == "start" or j == "height" or j == "width" then
 					local x, y, z;
 					local ztt = 0;
@@ -626,6 +621,7 @@ function courseplay:setMarkers(vehicle, object)
 
 					if pivotJointNode and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
 						type = "Pivot Trailer";
+						-- TODO: use localToLocal instead of a getWorldTranslation and a worldToLocal
 						x, y, z = getWorldTranslation(pivotJointNode);
 
 						-- Get the marker offset from the pivot node.
@@ -650,7 +646,8 @@ function courseplay:setMarkers(vehicle, object)
 						_, _, ztt = worldToLocal(realDirectionNode, x, y, z);
 					end;
 
-					courseplay:debug(('%s: %s %s Point(%s) %s: ztt = %s'):format(nameNum(vehicle), tostring(object.name), type, tostring(k), tostring(j), tostring(ztt)), 6);
+					courseplay.debugVehicle(6, vehicle, '%s %s (%s) %s: ztt = %.2f',
+						object:getName(), type, g_workAreaTypeManager.workAreaTypes[area.type].name, tostring(j), ztt)
 					if object.cp.backMarkerOffset == nil or ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0) > object.cp.backMarkerOffset then
 						object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
 					end
@@ -660,7 +657,7 @@ function courseplay:setMarkers(vehicle, object)
 				end
 			end
 		else
-			courseplay:debug(("%s: Avoiding workArea Type %s"):format(nameNum(vehicle), WorkArea.areaTypeIntToName[area[k].type]), 6);
+			courseplay.debugVehicle(6, vehicle, "Avoiding workArea Type %s", g_workAreaTypeManager.workAreaTypes[area.type].name)
 		end;
 	end
 
@@ -1764,4 +1761,78 @@ function courseplay:updateSugarCaneTrailerTipping(vehicle,dt)
 			end
 		end
 	end	
+end
+
+--- Iterator for all work areas of an object
+function courseplay:workAreaIterator(object)
+	local i = 0
+	return function()
+		i = i + 1
+		local wa = object and object.getWorkAreaByIndex and object:getWorkAreaByIndex(i)
+		if wa then return i, wa end
+	end
+end
+
+function courseplay:hasWorkAreas(object) 
+	return object and object.getWorkAreaByIndex and object:getWorkAreaByIndex(1)
+end
+
+--- Get the working width of thing. Will return the maximum of the working width of thing and
+-- all of its implements
+function courseplay:getWorkWidth(thing, logPrefix)
+	logPrefix = logPrefix and logPrefix .. '  ' or ''
+	courseplay.debugFormat(6,'%s%s: getting working width...', logPrefix, nameNum(thing))
+	-- our own width
+	local width = courseplay:getAIMarkerWidth(thing, logPrefix)
+	if not width then
+		width = courseplay:getWorkAreaWidth(thing, logPrefix)
+	end
+	local implements = thing:getAttachedImplements()
+	if implements then
+		-- get width of all implements
+		for _, implement in ipairs(implements) do
+			width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
+		end
+	end
+	courseplay.debugFormat(6, '%s%s: working width is %.1f', logPrefix, nameNum(thing), width)
+	return width
+end
+
+function courseplay:getWorkAreaWidth(object, logPrefix)
+	logPrefix = logPrefix or ''
+	-- TODO: check if there's a better way to find out if the implement has a work area
+	local width = 0
+	for i, wa in courseplay:workAreaIterator(object) do
+		-- work areas are defined by three nodes: start, width and height. These nodes
+		-- define a rectangular work area which you can make visible with the
+		-- gsVehicleDebugAttributes console command and then pressing F5
+		local x, _, _ = localToLocal(wa.width, wa.start, 0, 0, 0)
+		width = math.max(width, math.abs(x))
+		local _, _, z = localToLocal(wa.height, wa.start, 0, 0, 0)
+		courseplay.debugFormat(6, '%s%s: work area %d is %s, %.1f by %.1f m',
+			logPrefix, nameNum(object), i, g_workAreaTypeManager.workAreaTypes[wa.type].name, math.abs(x), math.abs(z))
+	end
+	if width == 0 then
+		courseplay.debugFormat(6, '%s%s: has NO work area', logPrefix, nameNum(object))
+	end
+	return width
+end
+
+function courseplay:getAIMarkerWidth(object, logPrefix)
+	logPrefix = logPrefix or ''
+	if object.getAIMarkers then
+		local aiLeftMarker, aiRightMarker = object:getAIMarkers()
+		if aiLeftMarker and aiRightMarker then
+			local left, _, _ = localToLocal(aiLeftMarker, object.cp.DirectionNode or object.rootNode, 0, 0, 0);
+			local right, _, _ = localToLocal(aiRightMarker, object.cp.DirectionNode or object.rootNode, 0, 0, 0);
+
+			courseplay.debugFormat( 6, '%s%s aiMarkers: left=%.2f, right=%.2f', logPrefix, nameNum(object), left, right)
+
+			if left < right then
+				left, right = right, left -- yes, lua can do thie!
+				courseplay.debugFormat(6, '%s%s left < right -> switch -> left=%.2f, right=%.2f', logPrefix, nameNum(object), left, right)
+			end
+			return left - right;
+		end
+	end
 end

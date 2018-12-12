@@ -658,6 +658,9 @@ function courseplay:onEnter()
 end
 
 function courseplay:onDraw()
+
+	courseplay:showAIMarkers(self)
+
 	--print("courseplay:draw()")
 	local isDriving = self:getIsCourseplayDriving();
 	
