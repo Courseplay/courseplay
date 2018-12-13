@@ -12,6 +12,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 	end
 	local refillMessage = ""
 	--TODO Tommi remove this variabes and do it via fillUnitsFillTypes
+	
 	if seederFillLevelPct == 0 and sprayerFillLevelPct == 0 then
 		refillMessage = g_i18n:getText("fillType_seeds")..", "..g_i18n:getText("fillType_fertilizer");
 	elseif sprayerFillLevelPct == 0 then
@@ -131,15 +132,9 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 	for i=1, #(vehicle.cp.workTools) do
 		workTool = vehicle.cp.workTools[i];
 		local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
-		local needsLowering = false
-
-		if workTool.attacherJoint ~= nil then
-			needsLowering = workTool.attacherJoint.needsLowering
-		end
 		
 		--speedlimits
 		local speedLimitActive = false
-		
 		forceSpeedLimit, speedLimitActive = courseplay:getSpeedWithLimiter(workTool, forceSpeedLimit);
 
 		-- stop while folding
@@ -150,6 +145,8 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 			end;
 			--courseplay:debug(string.format("%s: unfold: turnOnFoldDirection=%s, foldMoveDirection=%s", workTool.name, tostring(workTool.turnOnFoldDirection), tostring(workTool.foldMoveDirection)), 12);
 		end;
+		
+		--I'm on the field
 		if workArea and seederFillLevelPct ~= 0 and sprayerFillLevelPct ~= 0 and (vehicle.cp.abortWork == nil or vehicle.cp.runOnceStartCourse) and vehicle.cp.turnStage == 0 and not vehicle.cp.inTraffic then
 			vehicle.cp.runOnceStartCourse = false;
 			--turn On                     courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker)
@@ -157,66 +154,14 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 			local hasSetUnfoldOrderThisLoop = false
 			if allowedToDrive then
 				if not specialTool then
-					vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-					--[[ --unfold																									-- Why has this been comments out? Mode6 uses a similar line 
-					if courseplay:isFoldable(workTool) and workTool:getIsFoldAllowed() and not isFolding and not isUnfolded then -- and ((vehicle.cp.abortWork ~= nil and vehicle.cp.waypointIndex == vehicle.cp.abortWork - 2) or (vehicle.cp.abortWork == nil and vehicle.cp.waypointIndex == 2)) then
-						courseplay:debug(string.format('%s: unfold order (foldDir %d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
-						workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
-						hasSetUnfoldOrderThisLoop = true
-					end;
-					if hasSetUnfoldOrderThisLoop then
-						isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool);
-					end]]
-															--vv  used for foldables, which are not folding before start Strautmann manure spreader 
-					if not isFolding and (isUnfolded or hasSetUnfoldOrderThisLoop) then 
+					if not workTool:getIsUnfolded() then
+						print("unfold and start order")
+						vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
+						courseplay:setFoldedStates(workTool)
+					elseif not workTool:getIsTurnedOn() then
+						print("restart order")
 						courseplay:lowerImplements(vehicle, true)
-						
-						--[[ --set or stow ridge markers
-						if (courseplay:isSowingMachine(workTool) or workTool.cp.isKuhnHR4004) and vehicle.cp.ridgeMarkersAutomatic then
-							if ridgeMarker ~= nil then
-								if workTool.cp.haveInversedRidgeMarkerState then
-									if ridgeMarker == 1 then
-										ridgeMarker = 2;
-									elseif ridgeMarker == 2 then
-										ridgeMarker = 1;
-									end;
-									-- Skip 0 state, since that is the closed state.
-								end;
-
-								if workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= ridgeMarker then
-									workTool:setRidgeMarkerState(ridgeMarker);
-								end;
-							end;
-						elseif workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
-							workTool:setRidgeMarkerState(0);
-						end;
-
-						--lower/raise
-						if (needsLowering or workTool.aiNeedsLowering) and not courseplay:onAlignmentCourse( vehicle ) then
-							--courseplay:debug(string.format("WP%d: isLowered() = %s, hasGroundContact = %s", vehicle.cp.waypointIndex, tostring(workTool:isLowered()), tostring(workTool.hasGroundContact)),12);
-							if not workTool:getIsLowered() then
-								courseplay:debug(string.format('%s: lower order', nameNum(workTool)), 17);
-								workTool:setLowered(true);
-								courseplay:setCustomTimer(vehicle, "lowerTimeOut" , 5 )
-							elseif not speedLimitActive and not courseplay:timerIsThrough(vehicle, "lowerTimeOut") then 
-								allowedToDrive = false;
-								courseplay:debug(string.format('%s: wait for lowering', nameNum(workTool)), 17);
-							end;
-						end;
-						--turn on
-						if workTool.setIsTurnedOn ~= nil and not workTool.spec_turnOnVehicle.isTurnedOn then
-							courseplay:setMarkers(vehicle, workTool);
-							if courseplay:isSowingMachine(workTool) then
-								workTool:setIsTurnedOn(true,false);
-							else
-								if workTool.lastTurnedOn then
-									workTool.lastTurnedOn = false
-								end
-								workTool:setIsTurnedOn(true,false);
-							end;
-							courseplay:debug(string.format('%s: turn on order', nameNum(workTool)), 17);
-						end; ]]
-					end; --END if not isFolding 
+					end
 				end
 				
 				--Sprayer Addon Support
@@ -250,44 +195,30 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 		elseif workArea and vehicle.cp.abortWork == nil and vehicle.cp.inTraffic then
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle, workTool, true, true, false, allowedToDrive, nil, nil, ridgeMarker);
 			if not specialTool then
-				if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
-					workTool:setIsTurnedOn(false, false);
-				end;
+				if workTool:getIsTurnedOn() then
+					print("TrafficStop order")
+					courseplay:lowerImplements(vehicle, false)
+				end
 				courseplay:debug(string.format('%s: [TRAFFIC] turn off order', nameNum(workTool)), 17);
 			end;
 
-		--TURN OFF AND FOLD
+		--work is finished
 		elseif vehicle.cp.turnStage == 0 then
 			--turn off
 			specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil, ridgeMarker)
 			if not specialTool then
-				--[[ if workTool.setIsTurnedOn ~= nil and workTool.spec_turnOnVehicle.isTurnedOn then
-					workTool:setIsTurnedOn(false, false);
-					courseplay:debug(string.format('%s: turn off order', nameNum(workTool)), 17);
-				end;  ]]
-
-				--raise
+				--stop
 				if not isFolding and isUnfolded then
-					courseplay:lowerImplements(vehicle, false)
+					print("214: stop and fold order")
 					vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 				end;
-
-				--retract ridgemarker
-				--[[ if workTool.ridgeMarkers and #workTool.ridgeMarkers > 0 and workTool.setRidgeMarkerState ~= nil and workTool.ridgeMarkerState ~= nil and workTool.ridgeMarkerState ~= 0 then
-					workTool:setRidgeMarkerState(0);
-				end; ]]
-				
 				--fold
 				if courseplay:isFoldable(workTool) and not isFolding and not isFolded then
 					courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 					workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
-				end; 
+				end;
 			end
 		end
-
-		--[[if not allowedToDrive then
-			workTool:setIsTurnedOn(false, false)
-		end]] --?? why am i here ??
 	end; --END for i in vehicle.cp.workTools
 	if hasFinishedWork then
 		isFinishingWork = true
