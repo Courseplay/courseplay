@@ -129,10 +129,10 @@
 				</GuiElement>
 				<GuiElement type="flowLayout" profile="buttonBoxDocked" screenAlign="bottomLeft" positionOrigin="bottomLeft" id="buttonsPanel">
 					<!-- these are standard buttons with standard callbacks according to the action assigned to them in inputActions.xml and
-					 bound to the key as in inputBinding.xml. So buttonBack will have create an onClickBack, buttonSave an onClickActivate callback, no need to
-					 define those here -->
-					<GuiElement type="button" profile="buttonBack"   size="333px 40px" text="$l10n_button_back"/>
-					<GuiElement type="button" profile="buttonSave"   size="334px 40px" text="$l10n_COURSEPLAY_GENERATE_FIELD_COURSE"/>
+					 bound to the key as in inputBinding.xml. So buttonBack will have create an onClickBack, buttonSave an onClickActivate callback,
+					 but these still need to be defined here to be able to click on them using the mouse -->
+					<GuiElement type="button" profile="buttonBack" size="333px 40px" text="$l10n_button_back" onClick="onClickBack"/>
+					<GuiElement type="button" profile="buttonSave" size="334px 40px" text="$l10n_COURSEPLAY_GENERATE_FIELD_COURSE" onClick="onClickActivate"/>
 				</GuiElement>
 			</GuiElement>
 		</GuiElement>
