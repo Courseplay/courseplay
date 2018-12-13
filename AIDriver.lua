@@ -166,7 +166,8 @@ function AIDriver:getReverseDrivingDirection()
 		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
 		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz)
-		courseplay.debugFormat(12, 'lx = %.1f, lz = %.1f', lx, lz)
+		-- as of now we need to invert the direction from goReverse to work correctly with
+		-- AI Driver, it seems to have a different reference
 		lx, lz = -lx, -lz
 	end
 	return lx, lz, moveForwards, isReverseActive
