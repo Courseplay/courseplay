@@ -631,7 +631,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 				if vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart or vehicle.Waypoints[vehicle.cp.waypointIndex+1].turnStart  then
 					--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
 					if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
-						courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart and true or false)), 12);
+						courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWorks lane', nameNum(vehicle), i-1, tostring(vehicle.Waypoints[vehicle.cp.waypointIndex].turnStart and true or false)), 12);
 						courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
 						vehicle.cp.switchLaneOffset = true;
 					end;

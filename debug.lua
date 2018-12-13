@@ -88,7 +88,7 @@ end;
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
-		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
+		print('[dbg xxxxxx' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
 	end;
 end;
 
