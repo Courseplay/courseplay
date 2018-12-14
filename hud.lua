@@ -1,4 +1,4 @@
-﻿courseplay.hud = {};
+courseplay.hud = {};
 
 local abs, ceil, floor, max = math.abs, math.ceil, math.floor, math.max;
 local function round(num)

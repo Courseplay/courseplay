@@ -7,7 +7,7 @@
 		<GuiElement type="text" profile="dialogTitle" text="$l10n_COURSEPLAY_COURSE_NAME" id="titleTextElement" position="0px -50px" />
 
 		<!-- not sure if the onFocus onLeave is needed -->
-		<GuiElement type="textInput" profile="dialogTextInput" id="textInputElement" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" onEscPressed="onEscPressed" onFocus="onInputFocus" onLeave="onInputLeave"/>
+		<GuiElement type="textInput" profile="dialogTextInput" id="textInputElement" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" onEscPressed="onEscPressed" onLeave="onInputLeave" focusInit="onOpen"/>
 
 		<GuiElement type="flowLayout" profile="buttonBoxDialog">
 			<GuiElement type="button" profile="buttonBack" text="$l10n_button_back" onClick="onCancelClick"/>

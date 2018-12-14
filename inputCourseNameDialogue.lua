@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 @name:    inputCourseNameDialogue
 @desc:    Dialogue settings for the Courseplay course saving form
 @author:  Jakob Tischler
@@ -42,10 +42,9 @@ function inputCourseNameDialogue:onOpen(element)
 		self.titleTextElement.text = courseplay:loc('COURSEPLAY_FILTER_COURSES')
 	end
 
-	self:validateCourseName();
+	self.textInputElement:onClick()
 
-	--SET FOCUS
-	FocusManager:setFocus(self.textInputElement);
+	self:validateCourseName();
 end; --END onOpen()
 
 function inputCourseNameDialogue:onClose(element)
