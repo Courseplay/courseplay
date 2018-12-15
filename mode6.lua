@@ -65,6 +65,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 		end
 				
 		fillLevelPct = workTool.cp.fillLevelPercent
+		local fillUnits = tool:getFillUnits()
 		
 		local ridgeMarker = vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker
 		local nextRidgeMarker = vehicle.Waypoints[min(vehicle.cp.waypointIndex+4,vehicle.cp.numWaypoints)].ridgeMarker
@@ -148,11 +149,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					end
 				end
 
-			-- baleloader, copied original code parts
+			-- baleloader
 			elseif courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
 				local spec = workTool.spec_baleLoader
-				renderText(0.2, 0.045, 0.02, string.format("workTool:getIsBaleGrabbingAllowed()(%s)"
-				,tostring(workTool:getIsBaleGrabbingAllowed())));
 				if workArea and fillLevelPct ~= 100 then
 					specialTool, allowedToDrive, forceSpeedLimit = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,allowedToDrive,nil,nil,nil,forceSpeedLimit);
 					if not specialTool then
@@ -435,15 +434,26 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 					-- Choppers
 					if tool.cp.capacity == 0 then
-						vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-						courseplay:lowerImplements(vehicle, true)
+						if not workTool:getIsUnfolded() then
+							--print("unfold and start order")
+							vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
+							courseplay:setFoldedStates(workTool)
+						elseif not workTool:getIsTurnedOn() then
+							--print("restart order")
+							courseplay:lowerImplements(vehicle, true)
+						end
+						
+						--vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
+						--courseplay:lowerImplements(vehicle, true)
 						--[[ if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
 							courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 						end; ]]
+						
 						if not isFolding and isUnfolded and not isTurnedOn and not vehicle.cp.saveFuel  then
 							--[[ courseplay:debug(string.format('%s: Start Treshing', nameNum(tool)), 12);
 							tool:setIsTurnedOn(true); ]]
+							
 							if pipeState > 0 then
 								tool:setPipeState(pipeState);
 							else
@@ -451,18 +461,23 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							end;
 						end
 
-						-- stop when there's no trailer to fill - courtesy of upsidedown
+						-- stop when there's no trailer to fill
 						local chopperWaitForTrailer = false;
-						if tool.cp.isChopper and tool.lastValidInputFruitType ~= FruitType.UNKNOWN then
-							if not tool.pipeFoundTrailer then
+						if tool.cp.isChopper and tool.spec_combine.lastValidInputFruitType ~= FruitType.UNKNOWN and fillUnits[tool.spec_combine.fillUnitIndex].fillLevel > 0 then
+							if tool.spec_pipe.numObjectsInTriggers == 0 then
+								--print("set chopperWaitForTrailer true ")
 								chopperWaitForTrailer = true;
 							end								
 						end;
 
-						if (pipeState == 0 and vehicle.cp.turnStage == 0) or chopperWaitForTrailer then
+						if (tool.spec_pipe.numObjectsInTriggers == 0 and vehicle.cp.turnStage == 0) or chopperWaitForTrailer then
 							tool.cp.waitingForTrailerToUnload = true;
+							--print("set waitingForTrailerToUnload true")
 						end;
 
+						
+						
+						
 					-- Combines
 					else
 						local tankFillLevelPct = tool.cp.fillLevelPercent;
@@ -570,7 +585,8 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							tool:setPipeState(1)
 						end
 						vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
-						courseplay:lowerImplements(vehicle, false)
+						--courseplay:lowerImplements(vehicle, false)
+						
 						if courseplay:isFoldable(workTool) and isEmpty and not isFolding and not isFolded then
 							courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 							workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
@@ -601,22 +617,20 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 			end
 			if tool.cp.waitingForTrailerToUnload then
 				local mayIDrive = false;
+				
 				if tool.cp.isCombine or (courseplay:isAttachedCombine(workTool) and not courseplay:isSpecialChopper(workTool)) then
 					if tool.cp.isCheckedIn == nil or (pipeState == 0 and tool.cp.fillLevel == 0) then
+						--print("618 reset waitingForTrailerToUnload ")
 						tool.cp.waitingForTrailerToUnload = false
 					end
 				elseif tool.cp.isChopper or courseplay:isSpecialChopper(workTool) then
 					-- resume driving
-					local ch, gr, sc = g_fillTypeManager.CHAFF, g_fillTypeManager.GRASS_WINDROW, g_fillTypeManager.SUGARCANE;
-					if (tool.pipeParticleSystems and ((tool.pipeParticleSystems[ch] and tool.pipeParticleSystems[ch].isEmitting) 
-					or (tool.pipeParticleSystems[gr] and tool.pipeParticleSystems[gr].isEmitting)
-					or (tool.pipeParticleSystems[sc] and tool.pipeParticleSystems[sc].isEmitting))) 
-					or pipeState > 0 
+					if tool:getDischargeState() > 0  
 					or vehicle.cp.turnStage ~= 0 then
-						if tool.lastValidInputFruitType ~= FruitType.UNKNOWN then
-							if tool.pipeFoundTrailer then
-								tool.cp.waitingForTrailerToUnload = false;
-							end
+						
+						if tool.spec_combine.lastValidInputFruitType ~= FruitType.UNKNOWN then
+							--print("627 reset waitingForTrailerToUnload ")
+							tool.cp.waitingForTrailerToUnload = false;
 						else
 							mayIDrive = allowedToDrive;
 						end;

@@ -433,6 +433,7 @@ function courseplay:drive(self, dt)
 		end
 
 		--resetTrailer when empty after unloading in Bunkersilo
+		--[[Tommi : not used anymore ? tippers reset them self now
 		if self.cp.totalFillLevel == 0 then
 			for _,tipper in pairs (self.cp.workTools) do
 				if tipper.getDischargeState ~= nil then
@@ -445,7 +446,7 @@ function courseplay:drive(self, dt)
 					end
 				end
 			end
-		end
+		end]]
 
 		-- COMBI MODE / BYPASSING
 		if (((self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 2) or self.cp.activeCombine) and self.cp.workToolAttached then
@@ -1825,7 +1826,6 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 	if workTool.getFillUnits == nil then
 		return false
 	end
-	
 	local fillUnits = workTool:getFillUnits()
 	for index,fillUnit in pairs(fillUnits) do
 		if mode == 10 and workTool.cp.hasSpecializationLeveler then
@@ -1837,12 +1837,12 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 		end
 		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL) 
 		or index == workTool:getConsumerFillUnitIndex(FillType.DEF)
-		or index == workTool:getConsumerFillUnitIndex(FillType.AIR)) then
+		or index == workTool:getConsumerFillUnitIndex(FillType.AIR))
+		or fillUnit.capacity > 99999 then
 		else
+			
 			fillLevel = fillLevel + fillUnit.fillLevel
-			--print(string.format("%s: adding %s to fillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
 			capacity = capacity + fillUnit.capacity
-			--print(string.format("%s: adding %s to capacity",tostring(workTool:getName()),tostring(fillUnit.capacity)))
 			if fillLevel ~= nil and capacity ~= nil then
 				fillLevelPercent = (fillLevel*100)/capacity;
 			else
