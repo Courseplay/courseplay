@@ -244,7 +244,7 @@ function courseplay:isMower(workTool)
 	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
 end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
-	return courseplay:isBaler(workTool) and workTool.baler ~= nil and (workTool.baler.baleCloseAnimationName ~= nil and workTool.baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
+	return courseplay:isBaler(workTool) and workTool.spec_baler ~= nil and (workTool.spec_baler.baleCloseAnimationName ~= nil and workTool.spec_baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
 function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
 	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);

@@ -389,9 +389,9 @@ function courseplay:turn(vehicle, dt)
 			-- Rotate tools if needed.
 			if vehicle.cp.toolOffsetX ~= 0 and turnInfo.isHeadlandCorner == false then
 				if vehicle.cp.toolOffsetX < 0 then
-					AIVehicle.aiRotateLeft(vehicle);
+					--AIVehicle.aiRotateLeft(vehicle);
 				else
-					AIVehicle.aiRotateRight(vehicle);
+					--AIVehicle.aiRotateRight(vehicle);
 				end;
 			end;
 
@@ -1954,8 +1954,14 @@ function courseplay:lowerImplements(vehicle, lower)
 		if not specialTool then
 			if lower then
 				workTool:aiImplementStartLine()
+				if workTool.spec_pickup and not workTool.spec_pickup.isLowered then
+					 workTool:setPickupState(lower)
+				end
 			else
 				workTool:aiImplementEndLine()
+				if workTool.spec_pickup and workTool.spec_pickup.isLowered then
+					 workTool:setPickupState(lower)
+				end
 			end
 		end
 	end

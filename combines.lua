@@ -463,17 +463,23 @@ end
 
 function courseplay:getTrailerInPipeRangeState(combine)
         local validPipeState = 0;
-        for trailer,value in pairs(combine.overloading.trailersInRange) do
-            if value > 0 then
+		local canLoad = false
+		for trailer,value in pairs(combine.spec_pipe.objectsInTriggers) do
+			if value > 0 then
 				local fillType = combine.cp.fillType
-                if trailer:allowFillType(combine.cp.fillType) then
-					if trailer:getFillLevel(fillType) < trailer:getCapacity(fillType) then
-						validPipeState = 2;
-						break;
+                local fillUnits = trailer:getFillUnits();
+				
+				for i=1,#fillUnits do
+					local supportedFillTypes = trailer:getFillUnitSupportedFillTypes(i)
+					if supportedFillTypes[fillType] and trailer:getFillUnitFreeCapacity(i) > 0 then
+						canLoad = true
 					end
-                end
-            end
+				end
+			end
         end
+		if canLoad then	
+			validPipeState = 2;
+		end
 		return validPipeState 
 end		
 		

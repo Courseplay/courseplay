@@ -175,7 +175,7 @@ function courseplay:drive(self, dt)
 	-- lx, lz, that is, the direction we want to drive.
 	
 	-- world direction of from DirectionNode to waypoint
-	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz);
+	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, -0.1, lz);
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
 		if self.Waypoints[self.cp.waypointIndex].turnStart then
