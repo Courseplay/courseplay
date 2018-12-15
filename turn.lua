@@ -562,12 +562,15 @@ function courseplay:turn(vehicle, dt)
 				vehicle.cp.isTurning = nil;
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
-        -- move on to the turnEnd (targetNode)
-        courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
-        -- and then to the next wp in front of us.
-        courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
+				-- move on to the turnEnd (targetNode)
+				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
+				-- and then to the next wp in front of us.
+				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
 				vehicle.cp.ppc:initialize()
-        courseplay:clearTurnTargets(vehicle);
+				if vehicle.cp.driver then
+					vehicle.cp.driver:onTurnEnd()
+				end
+				courseplay:clearTurnTargets(vehicle);
 				return;
 			end;
 
@@ -621,6 +624,9 @@ function courseplay:turn(vehicle, dt)
 				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1);
 				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
 				vehicle.cp.ppc:initialize()
+				if vehicle.cp.driver then
+					vehicle.cp.driver:onTurnEnd()
+				end
 				courseplay:clearTurnTargets(vehicle);
 
 				return;
@@ -635,7 +641,7 @@ function courseplay:turn(vehicle, dt)
 
 
 	----------------------------------------------------------
-	-- TURN STAGES 0 - Finish lane and raice implement and togo turn stage 1
+	-- TURN STAGES 0 - Finish lane and raise implement and togo turn stage 1
 	----------------------------------------------------------
 	else
 		--- Add WP to follow while doing last bit before raising Implement
@@ -1967,25 +1973,25 @@ function courseplay:lowerImplements(vehicle, lower)
 	end
 end
 
-function courseplay:turnWithOffset(self)
+function courseplay:turnWithOffset(vehicle)
 	--SYMMETRIC LANE CHANGE
-	if self.cp.symmetricLaneChange then
-		if self.cp.switchLaneOffset then
-			if self.cp.multiTools == 1 then
-				courseplay:changeLaneOffset(self, nil, -self.cp.laneOffset);
+	if vehicle.cp.symmetricLaneChange then
+		if vehicle.cp.switchLaneOffset then
+			if vehicle.cp.multiTools == 1 then
+				courseplay:changeLaneOffset(vehicle, nil, -vehicle.cp.laneOffset);
 			else
-				courseplay:changeLaneNumber(self, -2*self.cp.laneNumber)
+				courseplay:changeLaneNumber(vehicle, -2*vehicle.cp.laneNumber)
 			end;
-			self.cp.switchLaneOffset = false;
-			courseplay:debug(string.format("%s: cp.turnStage == 1, switchLaneOffset=true -> new laneOffset=%.1f, new totalOffset=%.1f, set switchLaneOffset to false", nameNum(self), self.cp.laneOffset, self.cp.totalOffsetX), 12);
+			vehicle.cp.switchLaneOffset = false;
+			courseplay:debug(string.format("%s: cp.turnStage == 1, switchLaneOffset=true -> new laneOffset=%.1f, new totalOffset=%.1f, set switchLaneOffset to false", nameNum(vehicle), vehicle.cp.laneOffset, vehicle.cp.totalOffsetX), 12);
 		end;
 	end;
 	--TOOL OFFSET TOGGLE
-	if self.cp.hasPlough then
-		if self.cp.switchToolOffset then
-			courseplay:changeToolOffsetX(self, nil, self.cp.toolOffsetX * -1, true);
-			self.cp.switchToolOffset = false;
-			courseplay:debug(string.format("%s: cp.turnStage == 1, switchToolOffset=true -> new toolOffset=%.1f, new totalOffset=%.1f, set switchToolOffset to false", nameNum(self), self.cp.toolOffsetX, self.cp.totalOffsetX), 12);
+	if vehicle.cp.hasPlough then
+		if vehicle.cp.switchToolOffset then
+			courseplay:changeToolOffsetX(vehicle, nil, vehicle.cp.toolOffsetX * -1, true);
+			vehicle.cp.switchToolOffset = false;
+			courseplay:debug(string.format("%s: cp.turnStage == 1, switchToolOffset=true -> new toolOffset=%.1f, new totalOffset=%.1f, set switchToolOffset to false", nameNum(vehicle), vehicle.cp.toolOffsetX, vehicle.cp.totalOffsetX), 12);
 		end;
 	end;
 end;

@@ -500,9 +500,15 @@ function courseplay:start(self)
 		if self.cp.mode == courseplay.MODE_TRANSPORT then
 			self.cp.driver = AIDriver(self)
 		elseif self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
-			self.cp.driver = GrainTransportAIDriver(self)				
+			self.cp.driver = GrainTransportAIDriver(self)
 		elseif self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 			self.cp.driver = ShovelModeAIDriver(self)
+		elseif self.cp.mode == courseplay.MODE_SEED_FERTILIZE then
+			-- for tests until we have a real one
+			self.cp.driver = AIDriver(self)
+		elseif self.cp.mode == courseplay.MODE_FIELDWORK then
+			-- for tests until we have a real one
+			self.cp.driver = AIDriver(self)
 		end
 		self.cp.driver:start(self.cp.waypointIndex)
 	else

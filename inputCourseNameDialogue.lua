@@ -42,8 +42,6 @@ function inputCourseNameDialogue:onOpen(element)
 		self.titleTextElement.text = courseplay:loc('COURSEPLAY_FILTER_COURSES')
 	end
 
-	self.textInputElement:onClick()
-
 	self:validateCourseName();
 end; --END onOpen()
 

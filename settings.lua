@@ -1852,8 +1852,10 @@ function DrivingModeSetting:checkAndSetValidValue(new)
 	if self.vehicle.cp.mode ~= courseplay.MODE_GRAIN_TRANSPORT
 		and self.vehicle.cp.mode ~= courseplay.MODE_TRANSPORT
 		and self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
+		and self.vehicle.cp.mode ~= courseplay.MODE_SEED_FERTILIZE
+		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
 		and new == #self.values then
-		-- enable AI Driver for mode 1,5 and 9 only until it can handle other modes
+		-- enable AI Driver for mode 1, 4, 5, 6 and 9 only until it can handle other modes
 		return 1
 	else
 		return SettingList.checkAndSetValidValue(self, new)

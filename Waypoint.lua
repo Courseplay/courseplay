@@ -33,6 +33,8 @@ function Waypoint:set(cpWp, cpIndex)
 	self.rev = cpWp.rev or false
 	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
+	self.turnStart = cpWp.turnStart
+	self.turnEnd = cpWp.turnEnd
 end
 
 function Waypoint:getPosition()
@@ -158,6 +160,10 @@ end
 
 function Course:isReverseAt(ix)
 	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].rev
+end
+
+function Course:isTurnStartAtIx(ix)
+	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].turnStart
 end
 
 function Course:switchingDirectionAt(ix) 

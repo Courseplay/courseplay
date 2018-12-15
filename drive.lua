@@ -2087,8 +2087,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 		end;
 	end
 end;
--- do not delete this line
--- vim: set noexpandtab:
+
 function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
 	if vehicle.getConsumerFillUnitIndex ~= nil then
 		local isFilling = false
@@ -2121,3 +2120,6 @@ function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
 		return allowedToDrive;
 	end;
 end
+
+-- do not delete this line
+-- vim: set noexpandtab:

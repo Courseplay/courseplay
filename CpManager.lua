@@ -495,13 +495,6 @@ function CpManager:devSaveAllFields()
   return( 'All fields saved' )
 end
 
-
-function CpManager:loadFile(fileName)
-	local path = courseplay.path .. fileName
-	getfenv(0).dofile(path)
-	return path .. ' loaded.'
-end
-
 --- Print a global variable
 -- @param variableName name of the variable, can be multiple levels
 -- @param depth maximum depth, 1 by default

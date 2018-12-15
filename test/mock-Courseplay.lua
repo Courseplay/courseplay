@@ -21,6 +21,8 @@ courseplay = {}
 function courseplay.createNode() return 1 end
 function courseplay.destroyNode() end
 function courseplay.checkFuel() return true end
+function courseplay.turn() end
+
 courseplay.debugChannels = {}
 courseplay.debugChannels[12] = true
 
