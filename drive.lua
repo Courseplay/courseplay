@@ -58,8 +58,8 @@ function courseplay:drive(self, dt)
 			local tx2, ty2, tz2 = localToWorld(directionNode,3,1,self.cp.backMarkerOffset)
 			local nx, ny, nz = localDirectionToWorld(directionNode, -1, 0, 0)
 			local distance = 6
-			drawDebugLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance), 1, 0, 0)
-			drawDebugLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance), 1, 0, 0)
+			cpDebug:drawLine(tx1, ty1, tz1, 1, 0, 0, tx1+(nx*distance), ty1+(ny*distance), tz1+(nz*distance))
+			cpDebug:drawLine(tx2, ty2, tz2, 1, 0, 0, tx2+(nx*distance), ty2+(ny*distance), tz2+(nz*distance))
 		end;
 
 		--[[Tommi if #avoidWorkAreaType == 0 then
@@ -74,11 +74,11 @@ function courseplay:drive(self, dt)
 					if not avoidWorkAreaType[workTool.workAreas[k].type] then
 						for _, workArea in ipairs(workTool.workAreas) do
 							local sx, sy, sz = getWorldTranslation(workArea["start"]);
-							drawDebugLine(sx, sy, sz, 1, 0, 0, sx, sy+3, sz, 1, 0, 0);
+							cpDebug:drawLine(sx, sy, sz, 1, 0, 0, sx, sy+3, sz);
 							local wx, wy, wz = getWorldTranslation(workArea["width"]);
-							drawDebugLine(wx, wy, wz, 1, 0, 0, wx, wy+3, wz, 1, 0, 0);
+							cpDebug:drawLine(wx, wy, wz, 1, 0, 0, wx, wy+3, wz);
 							local hx, hy, hz = getWorldTranslation(workArea["height"]);
-							drawDebugLine(hx, hy, hz, 1, 0, 0, hx, hy+3, hz, 1, 0, 0);
+							cpDebug:drawLine(hx, hy, hz, 1, 0, 0, hx, hy+3, hz);
 						end;
 					end;
 				end;
@@ -133,7 +133,7 @@ function courseplay:drive(self, dt)
 	if courseplay:getIsVehicleOffsetValid(self) then
 		cx, cz = courseplay:getVehicleOffsettedCoords(self, cx, cz);
 		if courseplay.debugChannels[12] and self.cp.isTurning == nil then
-			drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+			cpDebug:drawPoint(cx, cty+3, cz, 0, 1, 1);
 		end;
 	end;
 
@@ -141,7 +141,7 @@ function courseplay:drive(self, dt)
 	if courseplay:getIsVehicleOffsetValid(self, true) then
 		cx, cz = courseplay:getVehicleOffsettedCoords(self, cx, cz, true);
 		if courseplay.debugChannels[12] and self.cp.isTurning == nil then
-			drawDebugPoint(cx, cty+3, cz, 0, 1 , 1, 1);
+			cpDebug:drawPoint(cx, cty+3, cz, 0, 1 , 1);
 		end;
 	end;
 
@@ -150,13 +150,14 @@ function courseplay:drive(self, dt)
 
 	if courseplay.debugChannels[12] and self.cp.isTurning == nil then
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
-		drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz, 0, 0, 1)
+		--drawDebugLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz, 0, 0, 1)
+		cpDebug:drawLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz);
 		if self.drawDebugLine then self.drawDebugLine() end
 	end;
 	if CpManager.isDeveloper and self.cp.hasSpecializationArticulatedAxis and courseplay.debugChannels[12] then
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
 		local desX, _, desZ = localToWorld(self.cp.DirectionNode, 0, 0, 5);
-		drawDebugLine(ctx, cty + 3.5, ctz, 0, 0, 1, desX, cty + 3.5, desZ, 0, 0, 1);
+		cpDebug:drawLine(ctx, cty + 3.5, ctz, 0, 0, 1, desX, cty + 3.5, desZ);
 	end;
 
 	self.cp.distanceToTarget = courseplay:distance(cx, cz, ctx, ctz);
@@ -2072,16 +2073,16 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 
 		if courseplay.debugChannels[9] and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
-			drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
-			
+			cpDebug:drawPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0);
+
 			for i,tp in pairs(vehicle.cp.nextTargets) do
 				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
-				drawDebugPoint(tp.x, y +2, tp.z, 1, 0.65, 0, 1);
+				cpDebug:drawPoint(tp.x, y +2, tp.z, 1, 0.65, 0);
 				if i == 1 then
-					drawDebugLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+					cpDebug:drawLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z);
 				else
 					local pp = vehicle.cp.nextTargets[i-1];
-					drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+					cpDebug:drawLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z);
 				end;
 			end;
 		end;

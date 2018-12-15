@@ -64,14 +64,14 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 				zC = self.cp.bypassWaypoints.z
 			end
 		else
-			if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*distance), ty+(ny*distance), tz+(nz*distance), 1, 0, 0) end;
+			if courseplay.debugChannels[3] then cpDebug:drawLine(tx, ty, tz, 1, 0, 0, tx+(nx*distance), ty+(ny*distance), tz+(nz*distance)) end;
 			if self.cp.foundColli[1].s > 0 then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findBlockingObjectCallbackRight", distance, self)
 			elseif self.cp.foundColli[1].s < 0 then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findBlockingObjectCallbackLeft", distance, self)
 			end
 		end
-		if courseplay.debugChannels[3] then drawDebugPoint(xC,yC,zC, 1, 1, 1, 1) end;
+		if courseplay.debugChannels[3] then cpDebug:drawPoint(xC,yC,zC, 1, 1, 1) end;
 		local lxC, lzC = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode,xC,yC,zC );
 		if z < 0 then
 			--reset current because we passed some points already and don't want to go back there
@@ -96,7 +96,7 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 		for i = -2 ,2,0.5 do
             -- from a world position 4 m ahead, 0.5 m higher, right, left and middle ...
 			local tx, ty, tz = localToWorld(self.cp.DirectionNode,i,heigth,4)
-			if courseplay.debugChannels[3] then drawDebugLine(tx, ty, tz, 1, 0, 0, tx+(nx*distance), ty+(ny*distance), tz+(nz*distance), 1, 0, 0) end ;
+			if courseplay.debugChannels[3] then cpDebug:drawLine(tx, ty, tz, 1, 0, 0, tx+(nx*distance), ty+(ny*distance), tz+(nz*distance)) end ;
             -- ... look forward into the driving direction (taking into account the terrain height)
 			if i < 0 then
 				raycastAll(tx, ty, tz, nx, ny, nz, "findBlockingObjectCallbackRight", distance, self)
@@ -119,10 +119,9 @@ end
 
 function courseplay:AnalyseRaycastResponse(self,side,transformId, x, y, z, distance)
 	if courseplay.debugChannels[3] then 
-		drawDebugPoint(x, y, z, 1, 1, 1, 1) 
-		
-	
+		cpDebug:drawPoint(x, y, z, 1, 1, 1)
 	end;
+
 	local parent = getParent(transformId)
 	local parentParent = getParent(parent)
 	local vehicle = g_currentMission.nodeToObject[transformId];

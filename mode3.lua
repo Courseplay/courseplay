@@ -302,8 +302,8 @@ function courseplay:handleSugarCaneTrailer(vehicle, allowedToDrive, dt)
 		raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", currentTipper.shovelTipRaycastDistance, currentTipper);
 		if courseplay.debugChannels[15] then
 			local nx, ny, nz = localDirectionToWorld(currentTipper.shovelTipReferenceNode, 0, 0, -1)
-			local dist =  currentTipper.shovelTipRaycastDistance 
-			drawDebugLine(x,y,z, 1, 0, 0, x+(nx*dist),y+(ny*dist),z+(nz*dist), 1, 0, 0);
+			local dist =  currentTipper.shovelTipRaycastDistance
+			cpDebug:drawLine(x,y,z, 1, 0, 0, x+(nx*dist),y+(ny*dist),z+(nz*dist));
 		end
 	end
 

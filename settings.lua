@@ -1412,15 +1412,15 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 		for i,point in pairs(points) do
 			if i < numPoints then
 				local nextPoint = points[i + 1];
-				drawDebugLine(point.cx,point.cy+pointHeight,point.cz, 0,0,1, nextPoint.cx,nextPoint.cy+pointHeight,nextPoint.cz, 0,0,1);
+				cpDebug:drawLine(point.cx,point.cy+pointHeight,point.cz, 0,0,1, nextPoint.cx,nextPoint.cy+pointHeight,nextPoint.cz);
 
 				if i == 1 then
-					drawDebugPoint(point.cx, point.cy + pointHeight, point.cz, 0,1,0,1);
+					cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 0,1,0);
 				else
-					drawDebugPoint(point.cx, point.cy + pointHeight, point.cz, 1,1,0,1);
+					cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 1,1,0);
 				end;
 			else
-				drawDebugPoint(point.cx, point.cy + pointHeight, point.cz, 1,0,0,1);
+				cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 1,0,0);
 			end;
 		end;
 	end;

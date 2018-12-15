@@ -169,12 +169,16 @@ function CpManager:deleteMap()
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- delete waypoint signs
+	-- delete waypoint signs and protoTypes
 	for section,signDatas in pairs(courseplay.signs.buffer) do
 		for k,signData in pairs(signDatas) do
 			courseplay.signs:deleteSign(signData.sign);
 		end;
 		courseplay.signs.buffer[section] = {};
+	end;
+
+	for _,itemNode in pairs(courseplay.signs.protoTypes) do
+		courseplay.signs:deleteSign(itemNode);
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

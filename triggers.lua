@@ -54,7 +54,7 @@ function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x
 		if num > 0 then
 			--courseplay:debug(('%s: %s raycast (%s) #%d: object found'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 		end;
-		drawDebugLine(x,y,z, r,g,b, x+(nx*distance),y+(ny*distance),z+(nz*distance), r,g,b);
+		cpDebug:drawLine(x,y,z, r,g,b, x+(nx*distance),y+(ny*distance),z+(nz*distance));
 	end;
 end;
 
@@ -65,7 +65,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	end;
 
 	if courseplay.debugChannels[1] then
-		drawDebugPoint( x, y, z, 1, 1, 0, 1);
+		cpDebug:drawPoint( x, y, z, 1, 1, 0);
 	end;
 
 	local name = tostring(getName(transformId));
@@ -169,7 +169,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	end;
 		
 	if courseplay.debugChannels[19] then
-		drawDebugPoint(x, y, z, 1, 1, 0, 1);
+		cpDebug:drawPoint(x, y, z, 1, 1, 0);
 	end;
 	
 	--[[Tommi TODO check if its still nessesary (mode8) 

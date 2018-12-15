@@ -867,8 +867,8 @@ function courseplay:unload_combine(vehicle, dt)
 			--[[for i=1, #combine.acDirectionBeforeTurn.trace do
 				local px,pz = combine.acDirectionBeforeTurn.trace[i].px,combine.acDirectionBeforeTurn.trace[i].pz
 				local dirX,dirZ = combine.acDirectionBeforeTurn.trace[i].dx,combine.acDirectionBeforeTurn.trace[i].dz
-				drawDebugPoint(px+(-dirX*100),cy+10,pz+(-dirZ*100), 1, 1, 1, 1);
-				drawDebugLine(px,cy+3,pz, 1, 0, 1, px+(-dirX*100), cy+10,pz+(-dirZ*100), 1, 0, 1);
+				cpDebug:drawPoint(px+(-dirX*100),cy+10,pz+(-dirZ*100), 1, 1, 1);
+				cpDebug:drawLine(px,cy+3,pz, 1, 0, 1, px+(-dirX*100), cy+10,pz+(-dirZ*100));
 			end
 			local index = combine.acDirectionBeforeTurn.traceIndex+1
 			if index > #combine.acDirectionBeforeTurn.trace then
@@ -876,8 +876,8 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 			local px,pz = combine.acDirectionBeforeTurn.trace[index].px,combine.acDirectionBeforeTurn.trace[index].pz
 			local dirX,dirZ = combine.acDirectionBeforeTurn.trace[index].dx,combine.acDirectionBeforeTurn.trace[index].dz
-			drawDebugPoint(px+(-dirX*100),cy+10,pz+(-dirZ*100), 1, 1, 1, 1);
-			drawDebugLine(px,cy+3,pz, 1, 1, 1, px+(-dirX*100), cy+10,pz+(-dirZ*100), 1, 1, 1);]]
+			cpDebug:drawPoint(px+(-dirX*100),cy+10,pz+(-dirZ*100), 1, 1, 1);
+			cpDebug:drawLine(px,cy+3,pz, 1, 1, 1, px+(-dirX*100), cy+10,pz+(-dirZ*100));]]
 			--courseplay:setCustomTimer(vehicle, 'fieldEdgeTimeOut', 15);
 			--courseplay:resetCustomTimer(vehicle, 'fieldEdgeTimeOut');
 			if not courseplay:timerIsThrough(vehicle, 'fieldEdgeTimeOut') or vehicle.cp.modeState > STATE_DRIVE_TO_COMBINE then
@@ -1272,7 +1272,7 @@ function courseplay:unload_combine(vehicle, dt)
 		if courseplay.debugChannels[4] then
 			renderText(0.2, 0.045, 0.02, string.format("%s,dx= %.2f dz= %.2f",debugText,dx,dz));
 			local yy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, currentX, 0, currentZ)
-			drawDebugLine(sx, sy+3, sz, 1, 0, 1, currentX, yy+3, currentZ, 1, 0, 1);
+			cpDebug:drawLine(sx, sy+3, sz, 1, 0, 1, currentX, yy+3, currentZ);
 		end
 		
 		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
@@ -1434,16 +1434,16 @@ function courseplay:unload_combine(vehicle, dt)
 		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 		if (courseplay.debugChannels[4] or courseplay.debugChannels[9]) and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then
 			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.curTarget.x, 0, vehicle.cp.curTarget.z)
-			drawDebugPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0, 1);
-			
+			cpDebug:drawPoint(vehicle.cp.curTarget.x, y +2, vehicle.cp.curTarget.z, 1, 0.65, 0);
+
 			for i,tp in pairs(vehicle.cp.nextTargets) do
 				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
-				drawDebugPoint(tp.x, y +2, tp.z, 1, 0.65, 0, 1);
+				cpDebug:drawPoint(tp.x, y +2, tp.z, 1, 0.65, 0);
 				if i == 1 then
-					drawDebugLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+					cpDebug:drawLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z);
 				else
 					local pp = vehicle.cp.nextTargets[i-1];
-					drawDebugLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z, 1, 0, 1); 
+					cpDebug:drawLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z);
 				end;
 			end;
 		end;

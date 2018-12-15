@@ -284,7 +284,7 @@ function ShovelModeAIDriver:drive(dt)
 			local x,y,z = localToWorld(vehicle.cp.DirectionNode,0,4,i);
 			raycastAll(x, y, z, lx7, -1, lz7, "findTrailerRaycastCallback", 10, vehicle.cp.shovel);
 			if courseplay.debugChannels[10] then
-				drawDebugLine(x, y, z, 1, 0, 0, x+lx7*10, y-10, z+lz7*10, 1, 0, 0);
+				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx7*10, y-10, z+lz7*10);
 			end;
 		end;
 

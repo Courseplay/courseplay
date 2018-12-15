@@ -448,7 +448,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			lz = -lz
 		end
 
-		--drawDebugLine(x, y, z, 1, 0, 0, cx, cy+5, cz, 1, 1, 0);
+		--cpDebug:drawLine(x, y, z, 1, 0, 0, cx, cy+5, cz);
 		courseplay:handleSlipping(vehicle, refSpeed);
 		AIVehicleUtil.driveInDirection(vehicle, dt, steeringAngle, 1, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			

@@ -120,7 +120,7 @@ function courseplay:start(self)
 			local x,y,z = localToWorld(self.rootNode, 0, distance, i);
 			raycastAll(x, y, z, nx, ny, nz, "findVehicleHeights", distance, self);
 			--print("drive raycast "..tostring(i).." end");
-			--drawDebugLine(x, y, z, 1, 0, 0, x+(nx*distance), y+(ny*distance), z+(nz*distance), 1, 0, 0);
+			--cpDebug:drawLine(x, y, z, 1, 0, 0, x+(nx*distance), y+(ny*distance), z+(nz*distance));
 		end
 		local difference = self.cp.HeightsFound - self.cp.HeightsFoundColli;
 		local trigger = self.cp.trafficCollisionTriggers[1];

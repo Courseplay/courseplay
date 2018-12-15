@@ -102,22 +102,22 @@ function courseplay:turn(vehicle, dt)
 						--if not nextTurnTarget.turnReverse then
 						--	color["r"], color["g"], color["b"] = 0, 1, 1; -- Light Blue Line
 						--end
-						drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ, color["r"], color["g"], color["b"]); -- Green Line
+						cpDebug:drawLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ); -- Green Line
 						if turnTarget.revPosX and turnTarget.revPosZ then
 							nextPosY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.revPosX, 300, turnTarget.revPosZ);
-							drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, 1, 0, 0, turnTarget.revPosX, nextPosY + 3, turnTarget.revPosZ, 1, 0, 0);  -- Red Line
+							cpDebug:drawLine(turnTarget.posX, posY + 3, turnTarget.posZ, 1, 0, 0, turnTarget.revPosX, nextPosY + 3, turnTarget.revPosZ);  -- Red Line
 						end;
 					else
 						local color = { r = 0, g = 1, b = 1}; -- Light Blue Line
 						if nextTurnTarget.changeWhenPosible then
 							color["r"], color["g"], color["b"] = 1, 0.706, 0; -- Orange Line
 						end
-						drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ, color["r"], color["g"], color["b"]);  -- Light Blue Line
+						cpDebug:drawLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ);  -- Light Blue Line
 					end;
 				elseif turnTarget.turnReverse and turnTarget.revPosX and turnTarget.revPosZ then
 					local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.posX, 300, turnTarget.posZ);
 					local nextPosY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, turnTarget.revPosX, 300, turnTarget.revPosZ);
-					drawDebugLine(turnTarget.posX, posY + 3, turnTarget.posZ, 1, 0, 0, turnTarget.revPosX, nextPosY + 3, turnTarget.revPosZ, 1, 0, 0);  -- Red Line
+					cpDebug:drawLine(turnTarget.posX, posY + 3, turnTarget.posZ, 1, 0, 0, turnTarget.revPosX, nextPosY + 3, turnTarget.revPosZ);  -- Red Line
 				end;
 			end;
 		end;
@@ -237,7 +237,8 @@ function courseplay:turn(vehicle, dt)
 			if courseplay.debugChannels[14] then
 				local x,y,z = getWorldTranslation(turnInfo.targetNode);
 				local ctx,_,ctz = localToWorld(turnInfo.targetNode, 0, 0, 20);
-				drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 0, 1, 0);
+				--drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 0, 1, 0);
+				cpDebug:drawLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz);
 				-- this is an test
 				courseplay:debug(("%s:(Turn) wp%d=%.1f°, wp%d=%.1f°, directionChangeDeg = %.1f° halfAngle = %.1f"):format(nameNum(vehicle), vehicle.cp.waypointIndex-1, vehicle.Waypoints[vehicle.cp.waypointIndex-1].angle, vehicle.cp.waypointIndex+1, vehicle.Waypoints[vehicle.cp.waypointIndex+1].angle, turnInfo.directionChangeDeg, turnInfo.halfAngle), 14);
 			end;
@@ -422,10 +423,10 @@ function courseplay:turn(vehicle, dt)
 					local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, frontMarker )
 					local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, frontMarker )
 					local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x1, 0, z1 );
-					drawDebugLine(x1, y + 5, z1, 1, 1, 0, x2, y + 5, z2, 1, 1, 0); 
+					cpDebug:drawLine(x1, y + 5, z1, 1, 1, 0, x2, y + 5, z2);
 					local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, backMarker )
 					local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, backMarker )
-					drawDebugLine(x1, y + 5, z1, 1, 0, 0, x2, y + 5, z2, 1, 0, 0); 
+					cpDebug:drawLine(x1, y + 5, z1, 1, 0, 0, x2, y + 5, z2);
 				end
 
 				local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
@@ -442,7 +443,7 @@ function courseplay:turn(vehicle, dt)
 					
 						if courseplay.debugChannels[14] then
 							local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, workToolX, 300, workToolZ);
-							drawDebugLine(vehicleX, posY + 5, vehicleZ, 1, 1, 0, workToolX, posY + 5, workToolZ, 1, 1, 0);
+							cpDebug:drawLine(vehicleX, posY + 5, vehicleZ, 1, 1, 0, workToolX, posY + 5, workToolZ);
 						end
 					end;
 
@@ -716,7 +717,7 @@ function courseplay:turn(vehicle, dt)
 	if courseplay.debugChannels[12] and newTarget then
 		local posX, posZ = newTarget.revPosX or newTarget.posX, newTarget.revPosZ or newTarget.posZ;
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, posX, 300, posZ);
-		drawDebugLine(posX, posY + 3, posZ, 0, 0, 1, posX, posY + 4, posZ, 0, 0, 1);  -- Blue Line
+		cpDebug:drawLine(posX, posY + 3, posZ, 0, 0, 1, posX, posY + 4, posZ);  -- Blue Line
 	end;
 
 	----------------------------------------------------------

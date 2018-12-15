@@ -720,11 +720,12 @@ function courseplay:onDraw()
 		else
 			y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz) + 0.5;
 		end
-		drawDebugLine(sx, y, sz, 1, 0, 0, wx, y, wz, 1, 0, 0);
-		drawDebugLine(wx, y, wz, 1, 0, 0, hx, y, hz, 1, 0, 0);
-		drawDebugLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz, 1, 0, 0);
-		drawDebugLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz, 1, 0, 0);
-		drawDebugPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1, 1);
+		cpDebug:drawLine(sx, y, sz, 1, 0, 0, wx, y, wz);
+		cpDebug:drawLine(wx, y, wz, 1, 0, 0, hx, y, hz);
+		cpDebug:drawLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz);
+		--drawDebugLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz, 1, 0, 0); -- Have gradiant color. new draw line cant do that
+		cpDebug:drawLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz);
+		cpDebug:drawPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1);
 		if self.cp.mode == 9 then
 			renderText(0.2,0.225,0.02,"unit.fillLevel: "..tostring(fillUnit.fillLevel))
 			if self.cp.mode9SavedLastFillLevel ~= nil then
@@ -749,15 +750,17 @@ function courseplay:onDraw()
 	
 	if courseplay.debugChannels[10] and self.cp.tempMOde9PointX ~= nil then
 		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
-		drawDebugLine(self.cp.tempMOde9PointX2,self.cp.tempMOde9PointY2+2,self.cp.tempMOde9PointZ2, 1, 0, 0, self.cp.tempMOde9PointX,self.cp.tempMOde9PointY+2,self.cp.tempMOde9PointZ, 1, 0, 0);
+		cpDebug:drawLine(self.cp.tempMOde9PointX2,self.cp.tempMOde9PointY2+2,self.cp.tempMOde9PointZ2, 1, 0, 0, self.cp.tempMOde9PointX,self.cp.tempMOde9PointY+2,self.cp.tempMOde9PointZ);
 		local bunker = self.cp.mode9TargetSilo
 		if bunker ~= nil then
 			local sx,sz = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
 			local wx,wz = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
 			local hx,hz = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
-			drawDebugLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz, 0, 0, 1);
-			drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
-			drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz);
+			--drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+			--drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz);
+			cpDebug:drawLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz);
 		end
 	end
 	
@@ -767,11 +770,11 @@ function courseplay:onDraw()
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)
 		if self.cp.oldDirectionNode then
 			local ox,oy,oz = getWorldTranslation(self.cp.oldDirectionNode);
-			drawDebugPoint(ox, oy+4, oz, 0.9098, 0.6902 , 0.2706, 1);
+			cpDebug:drawPoint(ox, oy+4, oz, 0.9098, 0.6902 , 0.2706);
 		end;
 
 		local nx,ny,nz = getWorldTranslation(self.cp.DirectionNode);
-		drawDebugPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0, 1);
+		cpDebug:drawPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0);
 	end;
 
 
@@ -901,23 +904,23 @@ function courseplay:showWorkWidth(vehicle)
 		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
 		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
 
-		drawDebugPoint(p1x, p1y, p1z, 1, 1, 0, 1);
-		drawDebugPoint(p2x, p2y, p2z, 1, 1, 0, 1);
-		drawDebugPoint(p3x, p3y, p3z, 1, 1, 0, 1);
-		drawDebugPoint(p4x, p4y, p4z, 1, 1, 0, 1);
+		cpDebug:drawPoint(p1x, p1y, p1z, 1, 1, 0);
+		cpDebug:drawPoint(p2x, p2y, p2z, 1, 1, 0);
+		cpDebug:drawPoint(p3x, p3y, p3z, 1, 1, 0);
+		cpDebug:drawPoint(p4x, p4y, p4z, 1, 1, 0);
 
-		drawDebugLine(p1x, p1y, p1z, 1, 0, 0, p2x, p2y, p2z, 1, 0, 0);
-		drawDebugLine(p2x, p2y, p2z, 1, 0, 0, p3x, p3y, p3z, 1, 0, 0);
-		drawDebugLine(p3x, p3y, p3z, 1, 0, 0, p4x, p4y, p4z, 1, 0, 0);
-		drawDebugLine(p4x, p4y, p4z, 1, 0, 0, p1x, p1y, p1z, 1, 0, 0);
+		cpDebug:drawLine(p1x, p1y, p1z, 1, 0, 0, p2x, p2y, p2z);
+		cpDebug:drawLine(p2x, p2y, p2z, 1, 0, 0, p3x, p3y, p3z);
+		cpDebug:drawLine(p3x, p3y, p3z, 1, 0, 0, p4x, p4y, p4z);
+		cpDebug:drawLine(p4x, p4y, p4z, 1, 0, 0, p1x, p1y, p1z);
 	else
 		local lX, lY, lZ = localToWorld(vehicle.rootNode, left,  1.6, -6 - offsZ);
 		local rX, rY, rZ = localToWorld(vehicle.rootNode, right, 1.6, -6 - offsZ);
 
-		drawDebugPoint(lX, lY, lZ, 1, 1, 0, 1);
-		drawDebugPoint(rX, rY, rZ, 1, 1, 0, 1);
+		cpDebug:drawPoint(lX, lY, lZ, 1, 1, 0);
+		cpDebug:drawPoint(rX, rY, rZ, 1, 1, 0);
 
-		drawDebugLine(lX, lY, lZ, 1, 0, 0, rX, rY, rZ, 1, 0, 0);
+		cpDebug:drawLine(lX, lY, lZ, 1, 0, 0, rX, rY, rZ);
 	end;
 end;
 
@@ -944,13 +947,14 @@ function courseplay:drawWaypointsLines(vehicle)
 		else
 			r,g,b,a = 1, 1, 0, 1;
 		end;
-		drawDebugPoint(wp.cx, wp.cy + height, wp.cz, r,g,b,a);
+		cpDebug:drawPoint(wp.cx, wp.cy + height, wp.cz, r,g,b);
 
 		if i < vehicle.cp.numWaypoints then
 			if i + 1 == vehicle.cp.waypointIndex then
-				drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0.9, 0, 0.6, np.cx, np.cy + height, np.cz, 1, 0.4, 0.05);
+				--drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0.9, 0, 0.6, np.cx, np.cy + height, np.cz, 1, 0.4, 0.05);
+				cpDebug:drawLine(wp.cx, wp.cy + height, wp.cz, 0.9, 0, 0.6, np.cx, np.cy + height, np.cz);
 			else
-				drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0, 1, 1, np.cx, np.cy + height, np.cz, 0, 1, 1);
+				cpDebug:drawLine(wp.cx, wp.cy + height, wp.cz, 0, 1, 1, np.cx, np.cy + height, np.cz);
 			end;
 		end;
 	end;

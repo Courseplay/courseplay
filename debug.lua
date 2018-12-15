@@ -473,3 +473,354 @@ function courseplay:showAIMarkers(vehicle)
 	-- draw our calculated front and back markers and work width
 	courseplay:showWorkWidth(vehicle)
 end
+
+--------------------------------------------------
+--- Courseplay Debug Class
+--------------------------------------------------
+cpDebug = {};
+local cpDebug_mt = Class(cpDebug);
+addModEventListener(cpDebug);
+local modDirectory = g_currentModDirectory;
+
+local colorDelta = 1/255; -- Used to convert RGB color code into 0-1 float color code
+
+--- Define debug draw types
+local drawTypes = {
+	Point = "Sphere", -- Reference to img/debug/Sphere.i3d
+	Line  = "Line"    -- Reference to img/debug/Line.i3d
+}
+
+--- setup debug items
+function cpDebug:setup()
+	--- Get the main rootNode
+	local globalRootNode = getRootNode();
+
+	--- Preset variables
+	self.activeDrawData			= {};	-- Holds the active visible drawItems
+	self.drawBuffer 			= {};   -- Holds drawItems for later use
+	self.drawBufferMax 			= 50;	-- Max size of the buffer for each draw type
+	self.drawPrototypes 		= {};	-- Holds a object prototype of each draw type
+	self.itemsToDraw	 		= {};	-- Holds a list of items to draw in the next draw update
+	self.nextUpdateLoopIndex 	= 0;	-- This is when last update was done
+	self.oldDrawData		= {};   -- Holds the left over drawItems that needs to be put in the buffer.
+
+	--- Setup drawTypes as prototypes to be cloned from when needed
+	for drawType, i3dFile in pairs(drawTypes) do
+		self.activeDrawData[drawType]	= {};	-- Define the draw type in the activeDrawData table
+		self.drawBuffer[drawType]		= {};	-- Define the draw type in the drawBuffer table
+		self.oldDrawData[drawType]	= {};	-- Define the draw type in the oldDrawData table
+
+		-- Load the i3d file for the draw type and set it's default settings.
+		local i3dNode =  g_i3DManager:loadSharedI3DFile( 'img/debug/' .. i3dFile .. '.i3d' , modDirectory);
+		local itemNode = getChildAt(i3dNode, 0);
+		link(globalRootNode, itemNode);
+		setRigidBodyType(itemNode, 'NoRigidBody');
+		setTranslation(itemNode, 0, 0, 0);
+		setVisibility(itemNode, false);
+		delete(i3dNode);
+
+		-- Store the draw type node as a prototype for later use
+		self.drawPrototypes[drawType] = itemNode;
+	end;
+end;
+
+--- setup debug items on map load
+function cpDebug:loadMap(name)
+	self:setup();
+end
+
+--- Cleanup on exit map
+function cpDebug:deleteMap()
+	--- Delete activeDrawData itemNodes
+	for drawType,drawDatas in pairs(self.activeDrawData) do
+		for _,drawData in pairs(drawDatas) do
+			self:deleteDrawItem(drawData.itemNode);
+		end;
+		self.drawBuffer[drawType] = {};
+	end;
+
+	--- Delete drawBuffer itemNodes
+	for drawType,drawDatas in pairs(self.drawBuffer) do
+		for _,drawData in pairs(drawDatas) do
+			self:deleteDrawItem(drawData.itemNode);
+		end;
+		self.drawBuffer[drawType] = {};
+	end;
+
+	--- Deleting oldDrawData itemNodes is not needed since it's set and reset on each draw
+
+	--- Delete draw prototypes itemNodes
+	for _,itemNode in pairs(self.drawPrototypes) do
+		self:deleteDrawItem(itemNode);
+	end;
+end;
+
+function cpDebug:update(dt) end; -- TODO: might not be used at all, so we can delete it when sure
+
+--- Draw debug items if there is any to show
+function cpDebug:draw()
+	if g_currentMission.paused then
+		return;
+	end;
+
+	--- Clean active drawData
+	for drawType,_ in pairs(drawTypes) do
+		if #self.activeDrawData[drawType] > 0 then
+			self.oldDrawData[drawType] = self.activeDrawData[drawType];
+			self.activeDrawData[drawType] = {};
+		end
+	end
+
+	--- Draw requested items
+	for _, drawInfo in ipairs(self.itemsToDraw) do
+		-- Get draw data from draw info
+		local drawData = self:getDrawData(drawInfo);
+
+		-- Continue if we have drawData
+		if drawData then
+			if drawData.drawType == "Point" then
+				-- Update position and color of point
+				self:updatePointDrawData(drawData);
+			elseif drawData.drawType == "Line" then
+				-- Update position, direction, length and color of line
+				self:updateLineDrawData(drawData);
+			end;
+
+			-- Store the drawData so we can access them later
+			table.insert(self.activeDrawData[drawData.drawType], drawData);
+		end
+	end
+	--- Clear items to draw so it's ready for next update
+	self.itemsToDraw = {};
+
+	--- Cleanup leftover drawData
+	self:storeInBuffer();
+
+	--- set next loop to run so we don't double draw
+	self.nextUpdateLoopIndex = g_updateLoopIndex + 1;
+
+	--for drawType,_ in pairs(drawTypes) do
+	--	print("numDrawBuffer[\""..drawType.."\"] = " .. tostring(#self.drawBuffer[drawType]));
+	--end
+
+end;
+
+--- Get draw data based on info
+-- @param	drawInfo	(table)	Contains info to generate drawData
+-- @return	nil if drawType do not excist in prototypes
+-- @return	active drawData table
+function cpDebug:getDrawData(drawInfo)
+	--- Make sure the draw type excist and if not then return nothing.
+	if not self.drawPrototypes[drawInfo.drawType] then
+		return;
+	end
+
+	local drawData = {};
+
+	--- Pull drawData from an excisting active drawdata if there is one to use
+	if #self.oldDrawData[drawInfo.drawType] > 0 then
+		-- Pull drawData from active list. No need to set visibility here since they are already visible!
+		drawData = table.remove(self.oldDrawData[drawInfo.drawType]);
+
+	--- Pull drawData from drawBuffer if there is one to use
+	elseif #self.drawBuffer[drawInfo.drawType] > 0 then
+		-- Pull buffer drawData
+		drawData = table.remove(self.drawBuffer[drawInfo.drawType]);
+		-- Show the object
+		setVisibility(drawData.itemNode, true);
+
+	--- Create a new itemNode from the prototype if none of the above was valid
+	else
+		-- Clone prototype to get new object
+		drawData.itemNode = clone(self.drawPrototypes[drawInfo.drawType], true);
+        -- Set the draw type
+		drawData.drawType = drawInfo.drawType;
+		-- Show the object
+		setVisibility(drawData.itemNode, true);
+	end
+
+	--- Define new color
+	drawData.r = drawInfo.r;
+	drawData.g = drawInfo.g;
+	drawData.b = drawInfo.b;
+
+	--- Set new position based on drawType
+	if drawInfo.drawType == "Point" then
+		-- Set draw data for a point
+		drawData.posX		= drawInfo.posX
+		drawData.posY		= drawInfo.posY
+		drawData.posZ		= drawInfo.posZ
+	elseif drawInfo.drawType == "Line" then
+		-- Set draw data for a line
+		drawData.posX1		= drawInfo.posX1
+		drawData.posY1		= drawInfo.posY1
+		drawData.posZ1		= drawInfo.posZ1
+		drawData.posX2		= drawInfo.posX2
+		drawData.posY2		= drawInfo.posY2
+		drawData.posZ2		= drawInfo.posZ2
+	end
+
+	return drawData;
+end
+
+--- Update color of object
+function cpDebug:updateObjectColor(drawData)
+	setShaderParameter(drawData.itemNode, 'shapeColor', drawData.r, drawData.g, drawData.b, 1, false);
+end
+
+--- Update position and color of point
+function cpDebug:updatePointDrawData(drawData)
+	--- Update point position
+	setTranslation(drawData.itemNode, drawData.posX, drawData.posY, drawData.posZ);
+	--- Update point color
+	self:updateObjectColor(drawData);
+end
+
+--- Update position, direction, length and color of line
+function cpDebug:updateLineDrawData(drawData)
+	--- Update line start position
+	setTranslation(drawData.itemNode, drawData.posX1, drawData.posY1, drawData.posZ1);
+
+	--- Get the direction to the end point
+	local dirX, _, dirZ, distToNextPoint = courseplay:getWorldDirection(drawData.posX1, drawData.posY1, drawData.posZ1, drawData.posX2, drawData.posY2, drawData.posZ2);
+	--- Get Y rotation
+	local rotY = MathUtil.getYRotationFromDirection(dirX, dirZ);
+	--- Get X rotation
+	local dy = drawData.posY2 - drawData.posY1;
+	local dist2D = MathUtil.vector2Length(drawData.posX2 - drawData.posX1, drawData.posZ2 - drawData.posZ1);
+	local rotX = -MathUtil.getYRotationFromDirection(dy, dist2D);
+
+	--- Set the direction of the line
+	setRotation(drawData.itemNode, rotX, rotY, 0);
+	--- Set the length if the line
+	setScale(drawData.itemNode, 1, 1, distToNextPoint);
+
+	--- Update line color
+	self:updateObjectColor(drawData);
+end
+
+--- Draw a line from point a to b with 0-1 float color
+-- @param	posXa	(float)	From point x (world location)
+-- @param	posYa	(float)	From point y (world location)
+-- @param	posZa	(float)	From point z (world location)
+-- @param	r		(float)	Line color Red
+-- @param	g		(float)	Line color Green
+-- @param	b		(float)	Line color Blue
+-- @param	posXb	(float)	To point x (world location)
+-- @param	posYb	(float)	To point y (world location)
+-- @param	posZb	(float)	To point z (world location)
+function cpDebug:drawLine(posXa, posYa, posZa, r, g, b, posXb, posYb, posZb)
+	self:addDrawItem("Line", posXa, posYa, posZa, r, g, b, posXb, posYb, posZb);
+end
+
+--- Draw a line from point a to b with 0-255 RGB color code
+-- @param	posXa	(float)		From point x (world location)
+-- @param	posYa	(float)		From point y (world location)
+-- @param	posZa	(float)		From point z (world location)
+-- @param	r		(RGB color)	Line color Red
+-- @param	g		(RGB color)	Line color Green
+-- @param	b		(RGB color)	Line color Blue
+-- @param	posXb	(float)		To point x (world location)
+-- @param	posYb	(float)		To point y (world location)
+-- @param	posZb	(float)		To point z (world location)
+function cpDebug:drawLineRGB(posXa, posYa, posZa, r, g, b, posXb, posYb, posZb)
+	self:addDrawItem("Line", posXa, posYa, posZa, colorDelta*r, colorDelta*g, colorDelta*b, posXb, posYb, posZb);
+end
+
+--- Draw a point with 0-1 float color
+-- @param	posX	(float)	From point x (world location)
+-- @param	posY	(float)	From point y (world location)
+-- @param	posZ	(float)	From point z (world location)
+-- @param	r		(float)	Point color Red
+-- @param	g		(float)	Point color Green
+-- @param	b		(float)	Point color Blue
+function cpDebug:drawPoint(posX, posY, posZ, r, g, b)
+	self:addDrawItem("Point", posX, posY, posZ, r, g, b);
+end
+
+--- Draw a point with 0-255 RGB color code
+-- @param	posX	(float)		From point x (world location)
+-- @param	posY	(float)		From point y (world location)
+-- @param	posZ	(float)		From point z (world location)
+-- @param	r		(RGB color)	Point color Red
+-- @param	g		(RGB color)	Point color Green
+-- @param	b		(RGB color)	Point color Blue
+function cpDebug:drawPointRGB(posX, posY, posZ, r, g, b)
+	self:addDrawItem("Point", posX, posY, posZ, colorDelta*r, colorDelta*g, colorDelta*b);
+end
+
+--- Add draw item to the next draw update
+-- @param	drawType	(string)	From point x (world location)
+-- @param	posX1		(float)		From point x (world location)
+-- @param	posY1		(float)		From point y (world location)
+-- @param	posZ1		(float)		From point z (world location)
+-- @param	r			(float)		Object color Red
+-- @param	g			(float)		Object color Green
+-- @param	b			(float)		Object color Blue
+-- @param	posX2		(float)		To point x (world location)
+-- @param	posY2		(float)		To point y (world location)
+-- @param	posZ2		(float)		To point z (world location)
+function cpDebug:addDrawItem(drawType, posX1, posY1, posZ1, r, g, b, posX2, posY2, posZ2)
+	--- If we are in a new update loop and we haven't drawn the previous once, clear the previous draws since we don't want to double draw
+	if self.nextUpdateLoopIndex < g_updateLoopIndex then
+		self.nextUpdateLoopIndex = g_updateLoopIndex;
+		self.itemsToDraw = {};
+	end
+
+	local drawInfo = {};
+
+	if drawType == "Point" then
+		-- Set draw data for a point
+		drawInfo.posX		= posX1
+		drawInfo.posY		= posY1
+		drawInfo.posZ		= posZ1
+	elseif drawType == "Line" then
+		-- Set draw data for a line
+		drawInfo.posX1		= posX1
+		drawInfo.posY1		= posY1
+		drawInfo.posZ1		= posZ1
+		drawInfo.posX2		= posX2
+		drawInfo.posY2		= posY2
+		drawInfo.posZ2		= posZ2
+	else
+		-- Skip adding an items if they are not defined
+		return
+	end
+
+	drawInfo.drawType	= drawType
+	drawInfo.r			= r
+	drawInfo.g			= g
+	drawInfo.b			= b
+
+	--- Add drawData to itemsToDraw table to be drawn in the next draw update
+	table.insert(self.itemsToDraw, drawInfo);
+end
+
+--- Store leftover draw data table into the buffer for later use
+function cpDebug:storeInBuffer()
+	--- Store leftovers in the buffer by drawType
+	for drawType, drawDatas in pairs(self.oldDrawData) do
+		for _, drawData in ipairs(drawDatas) do
+			if #self.drawBuffer[drawType] < self.drawBufferMax then
+				-- Hide the object
+				setVisibility(drawData.itemNode, false);
+
+				-- Store leftover items in the buffer
+				table.insert(self.drawBuffer[drawType], drawData);
+			else
+				-- Delete leftover items since the buffer is full
+				self:deleteDrawItem(drawData.itemNode);
+			end
+		end
+
+		-- Clean the oldDrawData table of the drawType
+		self.oldDrawData[drawType] = {};
+	end
+end;
+
+--- Delete draw item
+function cpDebug:deleteDrawItem(itemNode)
+	setVisibility(itemNode, false);
+	unlink(itemNode);
+	delete(itemNode);
+end

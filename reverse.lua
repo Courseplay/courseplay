@@ -50,13 +50,13 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	end
 	local isPivot = workTool.cp.isPivot;
 	local xTipper,yTipper,zTipper = getWorldTranslation(node);
-	if debugActive then drawDebugPoint(xTipper, yTipper+5, zTipper, 1, 0 , 0, 1) end;
+	if debugActive then cpDebug:drawPoint(xTipper, yTipper+5, zTipper, 1, 0 , 0) end;
 	local frontNode = workTool.cp.frontNode;
 	local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode);
 	local tcx,tcy,tcz =0,0,0;
 	local index = vehicle.cp.waypointIndex + 1;
 	if debugActive and not newTarget then
-		drawDebugPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0, 1);
+		cpDebug:drawPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0);
 		if not vehicle.cp.checkReverseValdityPrinted then
 			local checkValdity = false;
 			for i=index, vehicle.cp.numWaypoints do
@@ -199,10 +199,10 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	end;
 
 	if debugActive then
-		drawDebugPoint(tcx, yTipper+3, tcz, 1, 1 , 1, 1)
+		cpDebug:drawPoint(tcx, yTipper+3, tcz, 1, 1 , 1)
 		if workTool.cp.realUnloadOrFillNode then
 			local xUOFNode,yUOFNode,zUOFNode = getWorldTranslation(workTool.cp.realUnloadOrFillNode);
-			drawDebugPoint(xUOFNode,yUOFNode+5,zUOFNode, 0, 1 , 0.5, 1);
+			cpDebug:drawPoint(xUOFNode,yUOFNode+5,zUOFNode, 0, 1 , 0.5);
 		end;
 	end;
 
@@ -301,7 +301,7 @@ function courseplay:showDirection(node,lx,lz)
 	if courseplay.debugChannels[13] then
 		local x,y,z = getWorldTranslation(node);
 		local ctx,_,ctz = localToWorld(node,lx*5,y,lz*5);
-		drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 1, 0, 0);
+		cpDebug:drawLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz);
 	end
 end
 
