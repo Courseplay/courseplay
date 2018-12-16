@@ -43,7 +43,6 @@ end
 
 DebugUtil = {}
 DebugUtil.drawDebugNode = noOp
-drawDebugLine = noOp
 
 AIVehicleUtil = {}
 function AIVehicleUtil.getDriveDirection() return 0, 0 end

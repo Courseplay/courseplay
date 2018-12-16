@@ -54,3 +54,6 @@ courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 courseplay.NUM_MODES = 10;
 
 CpManager = {}
+
+cpDebug = {}
+cpDebug.drawLine = noOp
