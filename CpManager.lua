@@ -554,9 +554,10 @@ end
 function CpManager:traceOn(functionName)
 	-- split the name into the function and table containing it
 	local _, _, tabName, funcName = string.find(functionName, '(.*)%.(%w+)$')
-	local func = self:getVariable(functionName)
-	if func and type(func) == 'function' then
-		func = Utils.overwrittenFunction(func, CpManager.installTraceFunction(functionName))
+	-- can't use func directly as we need to rewrite the reference to the function in the containing table
+	local tab = self:getVariable(tabName)
+	if tab and type(tab[funcName]) == 'function' then
+		tab[funcName] = Utils.overwrittenFunction(tab[funcName], CpManager.installTraceFunction(functionName))
 	else
 		return(functionName .. ' is not a function.')
 	end

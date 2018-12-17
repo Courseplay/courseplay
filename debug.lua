@@ -88,7 +88,8 @@ end;
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
-		print('[dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
+		local timestamp = getDate( ":%S")
+		print(timestamp .. ' [dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
 	end;
 end;
 
@@ -97,7 +98,8 @@ end;
 function courseplay.debugFormat(channel, ...)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
-		print(string.format('[dbg%d lp%d] %s', channel, updateLoopIndex, string.format( ... )))
+		local timestamp = getDate( ":%S")
+		print(string.format('%s [dbg%d lp%d] %s', timestamp, channel, updateLoopIndex, string.format( ... )))
 	end
 end
 
@@ -107,7 +109,8 @@ function courseplay.debugVehicle(channel, vehicle, ...)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local vehicleName = vehicle and nameNum(vehicle) or "Unknown vehicle"
 		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
-		print(string.format('[dbg%d lp%d] %s: %s', channel, updateLoopIndex, vehicleName, string.format( ... )))
+		local timestamp = getDate( ":%S")
+		print(string.format('%s [dbg%d lp%d] %s: %s', timestamp, channel, updateLoopIndex, vehicleName, string.format( ... )))
 	end
 end
 

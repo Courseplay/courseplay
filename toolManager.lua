@@ -1825,11 +1825,11 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 		if aiLeftMarker and aiRightMarker then
 			local left, _, _ = localToLocal(aiLeftMarker, object.cp.DirectionNode or object.rootNode, 0, 0, 0);
 			local right, _, _ = localToLocal(aiRightMarker, object.cp.DirectionNode or object.rootNode, 0, 0, 0);
-
-			courseplay.debugFormat( 6, '%s%s aiMarkers: left=%.2f, right=%.2f', logPrefix, nameNum(object), left, right)
+			local width, _, _ = localToLocal(aiLeftMarker, aiRightMarker, 0, 0, 0)
+			courseplay.debugFormat( 6, '%s%s aiMarkers: left=%.2f, right=%.2f (width %.2f)', logPrefix, nameNum(object), left, right, width)
 
 			if left < right then
-				left, right = right, left -- yes, lua can do thie!
+				left, right = right, left -- yes, lua can do this!
 				courseplay.debugFormat(6, '%s%s left < right -> switch -> left=%.2f, right=%.2f', logPrefix, nameNum(object), left, right)
 			end
 			return left - right;

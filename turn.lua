@@ -469,7 +469,7 @@ function courseplay:turn(vehicle, dt)
 					-- We are still moving and want to swicth directions STOP if using MR mod. And we haven't yet stoped
 					if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle and changeDir and not vehicle.cp.mrHasStopped then
 						allowedToDrive = false
-					-- We have finally stoped on direction. Set a flag to allow movement again
+					-- We have finally stopped on direction. Set a flag to allow movement again
 					elseif math.abs(vehicle.lastSpeedReal) < 0.0001 and vehicle.mrIsMrVehicle and changeDir then
 						vehicle.cp.mrHasStopped = true;
 					else
@@ -1364,7 +1364,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength - turnInfo.zOffset + 5);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
 	else
-		--- Get the 2 circle center cordinate
+		--- Get the 2 circle center coordinate
 		local center1ZOffset = turnInfo.targetDeltaZ + turnInfo.zOffset + frontOffset;
 		local center2ZOffset = turnInfo.zOffset + frontOffset;
 
@@ -1400,6 +1400,9 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	    --- Finish the turn
 		toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, abs(turnInfo.frontMarker) + 5);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
+		-- make sure implement is lowered by the time we get to the up/down row, so start lowering 5 m before
+		--local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, 5)
+		--vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
 	end;
 end;
 
@@ -1436,7 +1439,7 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 		turnInfo.direction = turnInfo.direction * -1;
 	end;
 
-	--- Get the 2 circle center cordinate
+	--- Get the 2 circle center coordinate
 	center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, 1 + targetDeltaZ);
 	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction * -1, 0, 1 + turnInfo.centerHeight + targetDeltaZ);
 
@@ -1461,12 +1464,12 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition);
 	courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, turnInfo.turnRadius, turnInfo.direction * -1, true);
 
-	--- Move a bit furthen forward
+	--- Move a bit further forward
 	fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2);
 	toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2 - turnInfo.zOffset + turnInfo.wpChangeDistance);
 	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 
-	--- Move furthen forward depending on the frontmarker
+	--- Move further forward depending on the frontmarker
 	if turnInfo.frontMarker + zPossition + turnInfo.zOffset < 0 then
 		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + (turnInfo.wpChangeDistance * 2));
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2 + turnInfo.zOffset + abs(turnInfo.frontMarker) + (turnInfo.wpChangeDistance * 2));
@@ -2012,12 +2015,32 @@ function courseplay.createNodeFromNode( name, otherNode )
 	courseplay.createNode(name, x, z, yRot)
 end
 
-
 function courseplay.destroyNode( node )
 	if node then
 		unlink( node )
 		delete( node )
 	end
+end
+
+--- Find the waypoint at the given distance from the end of the turn path.
+-- Used when we need to lower the implement before reaching the start of the
+-- up/down row in order to reach its working position by the time we get there
+-- @param turnTargets list of (turn target) waypoints
+-- @param d distance
+-- @return index of first waypoint in d or greater distance from the last waypoint,
+--         will return 1 if all waypoints are within d.
+-- TODO: this (or an even more generalized version) should be part of the Course class.
+-- TODO: if the time needed to lower the implement this could be made time based (if the speed is known)
+function courseplay.getWpIxInDistanceFromEnd(turnTargets, d)
+	local currentD = 0
+	for i = #turnTargets, 2, -1 do
+		currentD = currentD + courseplay:distance(
+			turnTargets[i].posX, turnTargets[i].posZ, turnTargets[i - 1].posX, turnTargets[i - 1].posZ)
+		if currentD >= d then
+			return i - 1
+		end
+	end
+	return 1
 end
 
 function getDirectionChangeOfTurn( vehicle )

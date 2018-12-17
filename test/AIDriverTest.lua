@@ -37,15 +37,14 @@ function TestSettings:setUp()
 	self.vehicle.lastSpeedReal = 1
 	self.vehicle.Waypoints = th.waypoints
 	self.vehicle.cp = {}
-	self.vehicle.cp.ppc = PurePursuitController(self.vehicle)
-	self.vehicle.cp.ppc:initialize(1)
-
 	self.vehicle.cp.speeds = {}
 	self.vehicle.cp.hasRunRaycastThisLoop = {}
 
 	self.vehicle.cp.totalFillLevel = 99
 	self.vehicle.cp.totalCapacity = 100
 	self.vehicle.cp.tipRefOffset = 1 
+	self.vehicle.cp.tipperNodeMode = 1
+	self.vehicle.cp.fillTrigger = 1
 	self.vehicle.cp.workToolAttached = true
 
 	self.vehicle.cp.turnDiameter = 10
@@ -53,6 +52,8 @@ function TestSettings:setUp()
 	function courseplay.distance()
 		return 1
 	end
+	self.vehicle.cp.ppc = PurePursuitController(self.vehicle)
+	self.vehicle.cp.ppc:initialize(1)
 end
 
 -- This is not a functional test, the only purpose is to run as much of the AIDriver code as possible
