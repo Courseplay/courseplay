@@ -540,6 +540,8 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 		-- IMPLEMENTS OR TRAILERS
 		else
+			local AIReverseNode = object:getAIToolReverserDirectionNode();
+
 			local invert = courseplay:isInvertedToolNode(object) and -1 or 1;
 			local steeringAxleScale = 0;
 
@@ -551,64 +553,75 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 			node = courseplay:createNewLinkedNode(object, transformGroupName, componentNode);
 
 			if not useNode and not nodeName then
-				-- Get the distance from root node to the wheels turning point.
-				local objectWheels = object:getWheels();
-				if objectWheels and #objectWheels > 0 then
-					local steeringAxleScaleMin, steeringAxleScaleMax = 0, 0;
+				if AIReverseNode then
+					local x,_,z = getWorldTranslation(AIReverseNode);
+					local _,_,Distance = worldToLocal(componentNode, x, y, z);
+					Distance = Distance * invert;
+					print("Distance = " .. tostring(Distance))
+					courseplay:debug(('%s: getRealTurningNode(): Using getAIToolReverserDirectionNode() -> distance = %.2f'):format(nameNum(object), Distance), 6);
+					--node = AIReverseNode;  workTool.rootNode
+					print("Distance = " .. tostring(Distance))
+				else
+					-- Get the distance from root node to the wheels turning point.
+					local objectWheels = object:getWheels();
+					if objectWheels and #objectWheels > 0 then
+						local steeringAxleScaleMin, steeringAxleScaleMax = 0, 0;
 
-					-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
-					for i = 1, #objectWheels do
-						if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffness > 0 then
-							local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
-							local _,_,dis = worldToLocal(componentNode, x, y, z);
-							dis = dis * invert;
-							courseplay:debug(('%s: getRealTurningNode(): wheel%d distance = %.2f'):format(nameNum(object), i, dis), 6);
-							if object.steeringAxleUpdateBackwards == false or object.spec_wheels.wheels[i].steeringAxleScale == 0 then
-								if haveStraitWheels then
-									if dis < minDis then minDis = dis; end;
-									if dis > maxDis then maxDis = dis; end;
+						-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
+						for i = 1, #objectWheels do
+							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffness > 0 then
+								local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
+								local _,_,dis = worldToLocal(componentNode, x, y, z);
+								dis = dis * invert;
+								courseplay:debug(('%s: getRealTurningNode(): wheel%d distance = %.2f'):format(nameNum(object), i, dis), 6);
+								if object.steeringAxleUpdateBackwards == false or object.spec_wheels.wheels[i].steeringAxleScale == 0 then
+									if haveStraitWheels then
+										if dis < minDis then minDis = dis; end;
+										if dis > maxDis then maxDis = dis; end;
+									else
+										minDis = dis;
+										maxDis = dis;
+										haveStraitWheels = true;
+									end;
 								else
-									minDis = dis;
-									maxDis = dis;
-									haveStraitWheels = true;
-								end;
-							else
-								if objectWheels[i].steeringAxleScale < 0 and objectWheels[i].steeringAxleScale < steeringAxleScaleMin then
-									steeringAxleScaleMin = object.spec_wheels.wheels[i].steeringAxleScale;
-								elseif objectWheels[i].steeringAxleScale > 0 and objectWheels[i].steeringAxleScale > steeringAxleScaleMax then
-									steeringAxleScaleMax = objectWheels[i].steeringAxleScale;
-								end;
-								if haveTurningWheels then
-									if dis < minDisRot then minDisRot = dis; end;
-									if dis > maxDisRot then maxDisRot = dis; end;
-								else
-									minDisRot = dis;
-									maxDisRot = dis;
-									haveTurningWheels = true;
+									if objectWheels[i].steeringAxleScale < 0 and objectWheels[i].steeringAxleScale < steeringAxleScaleMin then
+										steeringAxleScaleMin = object.spec_wheels.wheels[i].steeringAxleScale;
+									elseif objectWheels[i].steeringAxleScale > 0 and objectWheels[i].steeringAxleScale > steeringAxleScaleMax then
+										steeringAxleScaleMax = objectWheels[i].steeringAxleScale;
+									end;
+									if haveTurningWheels then
+										if dis < minDisRot then minDisRot = dis; end;
+										if dis > maxDisRot then maxDisRot = dis; end;
+									else
+										minDisRot = dis;
+										maxDisRot = dis;
+										haveTurningWheels = true;
+									end;
 								end;
 							end;
 						end;
-					end;
 
-					-- Calculate strait wheel median distance
-					if haveStraitWheels then
-						if minDis == maxDis then
-							Distance = minDis;
-						else
-							Distance = (minDis + maxDis) * 0.5;
-						end;
+						-- Calculate strait wheel median distance
+						if haveStraitWheels then
+							if minDis == maxDis then
+								Distance = minDis;
+							else
+								Distance = (minDis + maxDis) * 0.5;
+							end;
 
-						-- Calculate turning wheel median distance if there are no strait wheels.
-					elseif haveTurningWheels then
-						steeringAxleScale = steeringAxleScaleMin + steeringAxleScaleMax;
-						if minDisRot == maxDisRot then
-							Distance = minDisRot;
-						else
-							Distance = (minDisRot + maxDisRot) * 0.5;
+							-- Calculate turning wheel median distance if there are no strait wheels.
+						elseif haveTurningWheels then
+							steeringAxleScale = steeringAxleScaleMin + steeringAxleScaleMax;
+							if minDisRot == maxDisRot then
+								Distance = minDisRot;
+							else
+								Distance = (minDisRot + maxDisRot) * 0.5;
+							end;
 						end;
+						courseplay:debug(('%s: getRealTurningNode(): haveStraitWheels=%q, haveTurningWheels=%q, Distance=%2f'):format(nameNum(object), tostring(haveStraitWheels), tostring(haveTurningWheels), Distance), 6);
 					end;
-					courseplay:debug(('%s: getRealTurningNode(): haveStraitWheels=%q, haveTurningWheels=%q, Distance=%2f'):format(nameNum(object), tostring(haveStraitWheels), tostring(haveTurningWheels), Distance), 6);
 				end;
+				print("Distance = " .. tostring(Distance))
 			else
 				local jointNode = courseplay:getPivotJointNode(object);
 
@@ -620,12 +633,15 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 				courseplay:debug(('%s: getRealTurningNode(): useNode=%q, nodeName=%q, Distance=%2f'):format(nameNum(object), tostring(useNode ~= nil), tostring(transformGroupName), Distance), 6);
 			end;
 
+			print("Distance = " .. tostring(Distance))
 			if object.cp.realTurnNodeOffsetZ and type(object.cp.realTurnNodeOffsetZ) == "number" then
 				Distance = Distance + object.cp.realTurnNodeOffsetZ;
 				courseplay:debug(('%s: getRealTurningNode(): Special turn node offset set: realTurnNodeOffsetZ=%2f, New Distance=%2f'):format(nameNum(object), object.cp.realTurnNodeOffsetZ, Distance), 6);
 			end;
 
+			print("Before setTranslation -> distance = " .. tostring(Distance))
 			if Distance ~= 0 then
+				print("setTranslation")
 				setTranslation(node, 0, 0, Distance);
 			end;
 			if courseplay:isInvertedToolNode(object, node) then
