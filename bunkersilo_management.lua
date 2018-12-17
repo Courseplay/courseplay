@@ -80,12 +80,10 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 				end;
 				if newRot ~= curRot  then
 					--courseplay:debug(string.format('%s: movingTool %d: curRot=%.5f, targetRot=%.5f -> newRot=%.5f', nameNum(vehicle), i, curRot, targetRot, newRot), 10);
+					
 					mt.curRot[rotAxis] = newRot;
 					setRotation(mt.node, unpack(mt.curRot));
-					if mt.delayedNode ~= nil then
-						mt.delayedUpdates = 2;
-						Cylindered.setDelayedNodeRotation(vehicle, mt);
-					end
+					SpecializationUtil.raiseEvent(vehicle, "onMovingToolChanged", mt, mt.rotSpeed, dt)
 					changed = true;
 				end;
 			end;
@@ -104,10 +102,7 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 						--courseplay:debug(string.format('%s: movingTool %d: curTrans=%.5f, targetTrans=%.5f -> newTrans=%.5f', nameNum(vehicle), i, curTrans, targetTrans, newTrans), 10);
 						mt.curTrans[transAxis] = newTrans;
 						setTranslation(mt.node, unpack(mt.curTrans));
-						if mt.delayedNode ~= nil then
-							mt.delayedUpdates = 2;
-							Cylindered.setDelayedNodeTranslation(vehicle, mt);
-						end
+						SpecializationUtil.raiseEvent(vehicle, "onMovingToolChanged", mt, mt.transSpeed, dt)
 						changed = true;
 					end;
 				end;
@@ -121,20 +116,20 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 				else
 					Cylindered.setDirty(mtMainObject, mt);
 				end	
-				vehicle:raiseDirtyFlags(mtMainObject.cylinderedDirtyFlag);
+				vehicle:raiseDirtyFlags(mtMainObject.spec_cylindered.cylinderedDirtyFlag);
 			end;
 		end;
 	end;
 
 	-- DIRTY FLAGS (movingParts)
 	if changed then
-		if vehicle.activeDirtyMovingParts then
-			for _, part in pairs(vehicle.activeDirtyMovingParts) do
+		if vehicle.spec_cylindered.activeDirtyMovingParts then
+			for _, part in pairs(vehicle.spec_cylindered.activeDirtyMovingParts) do
 				Cylindered.setDirty(vehicle, part);
 			end;
 		end;
-		if vehicle.cp.shovel and vehicle.cp.shovel.activeDirtyMovingParts then
-			for _, part in pairs(vehicle.cp.shovel.activeDirtyMovingParts) do
+		if vehicle.cp.shovel and vehicle.cp.shovel.spec_cylindered.activeDirtyMovingParts then
+			for _, part in pairs(vehicle.cp.shovel.spec_cylindered.activeDirtyMovingParts) do
 				Cylindered.setDirty(vehicle.cp.shovel, part);
 			end;
 		end;

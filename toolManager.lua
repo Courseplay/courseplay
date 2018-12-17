@@ -382,7 +382,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		elseif isImplement and (courseplay:isFrontloader(workTool) or workTool.cp.hasSpecializationShovel) then 
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			workTool.attacherVehicle.cp.shovelState = 1
+			workTool.spec_attachable.attacherVehicle.cp.shovelState = 1
 		end;
 	-- MODE 10:Leveler
 	elseif vehicle.cp.mode == 10 then
