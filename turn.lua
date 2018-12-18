@@ -1400,9 +1400,9 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	    --- Finish the turn
 		toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, abs(turnInfo.frontMarker) + 5);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
-		-- make sure implement is lowered by the time we get to the up/down row, so start lowering 5 m before
-		--local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, 5)
-		--vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
+		-- make sure implement is lowered by the time we get to the up/down row, so start lowering well before
+		local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, turnInfo.frontMarker + 6)
+		vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
 	end;
 end;
 
