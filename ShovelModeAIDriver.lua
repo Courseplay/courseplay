@@ -367,7 +367,7 @@ function ShovelModeAIDriver:drive(dt)
 	
 	if allowedToDrive then
 		courseplay:handleSlipping(vehicle, self:getSpeed())
-		self:setFourWheelDrive(vehicle, true)
+		--Tommi implement it if drivecontrol is out self:setFourWheelDrive(vehicle, true)
 	end
 	
 	lx, lz, moveForwards = self:checkReverse(lx, lz)
