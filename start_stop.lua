@@ -15,13 +15,18 @@ function courseplay:start(self)
 	self.spec_enterable.disableCharacterOnLeave = false;
 
 
+
+	if self.setRandomVehicleCharacter ~= nil then
+		self:setRandomVehicleCharacter()
+	end
+	--[[ This is FS17 code
 	if self.vehicleCharacter ~= nil and not g_currentMission.missionDynamicInfo.isMultiplayer then --disabled for MP for further investigation (Nil errors in ingame(draw))
 		self.vehicleCharacter:delete();
 		self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name))
 		if self:getIsEntered() then
 			self.spec_enterable.vehicleCharacter:setCharacterVisibility(false)
 		end
-	end
+	end ]]
     -- Start the reset character timer.
 	courseplay:setCustomTimer(self, "resetCharacter", 300);
 
@@ -678,12 +683,15 @@ function courseplay:stop(self)
 	-- Reset the reset character timer.
 	courseplay:resetCustomTimer(self, "resetCharacter", true);
 
-	if self.vehicleCharacter ~= nil then
-		self.vehicleCharacter:delete();
+	if self.restoreVehicleCharacter ~= nil then
+		self:restoreVehicleCharacter()
 	end
 
 	courseplay:endAlignmentCourse( self )
-
+--[[ This is FS17 code
+	if self.vehicleCharacter ~= nil then
+		self.vehicleCharacter:delete();
+	end
 	if self.isEntered or self.isControlled then
 		if self.vehicleCharacter ~= nil then
 			----------------------------------
@@ -698,7 +706,7 @@ function courseplay:stop(self)
 		end
 	end;
 	self.currentHelper = nil
-
+-]]
 	--stop special tools
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)

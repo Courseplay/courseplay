@@ -12,7 +12,7 @@ function courseplay:drive(self, dt)
 		return
 	end
 
-	-- Reset Character each 2 min to prevent glitching out.
+--[[ This is FS17 code	-- Reset Character each 2 min to prevent glitching out.
 	if courseplay:timerIsThrough(self, "resetCharacter", false) then
 		if self.currentHelper == nil then
 			self.currentHelper = HelperUtil.getRandomHelper()
@@ -27,7 +27,7 @@ function courseplay:drive(self, dt)
 		--print("Character have been reset!");
 		courseplay:setCustomTimer(self, "resetCharacter", 300);
 	end;
-
+]]
 	if self.cp.saveFuel then
 		if self.spec_motorized.isMotorStarted then
 			--print("stop Order")
