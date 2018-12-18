@@ -197,15 +197,16 @@ function AIDriver:getSpeed()
 	local speed
 	if self.vehicle.cp.speeds.useRecordingSpeed then
 		speed = self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4)
-	elseif self.ppc:isReversing() then
+	end
+	if self.ppc:isReversing() then
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	end
 	if self:getIsInFilltrigger() then
 		speed = self.vehicle.cp.speeds.turn
 	end
-	
 	return speed and speed or 15
 end
+
 
 function AIDriver:getIsInFilltrigger()
 	return self.vehicle.cp.fillTrigger ~= nil or self.vehicle.cp.tipperLoadMode>0 ;

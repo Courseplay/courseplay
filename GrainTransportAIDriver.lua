@@ -99,10 +99,18 @@ end
 function GrainTransportAIDriver:getSpeed()
 	if self:hasTipTrigger() then
 		-- slow down around the tip trigger
-		return 10
+		if self:getIsInBunksiloTrigger() then
+			return self.vehicle.cp.speeds.reverse
+		else
+			return 10
+		end
 	else
 		return AIDriver.getSpeed(self)
 	end
+end
+
+function GrainTransportAIDriver:getIsInBunksiloTrigger()
+	return self.vehicle.cp.backupUnloadSpeed ~= nil
 end
 
 function GrainTransportAIDriver:checkLastWaypoint()

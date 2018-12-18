@@ -437,7 +437,7 @@ function courseplay:updateAllTriggers()
 			end;
 		end;
 	end;
-	
+	]]
 	if g_currentMission.bunkerSilos ~= nil then
 		courseplay:debug('\tcheck bunkerSilos', 1);
 		for _, trigger in pairs(g_currentMission.bunkerSilos) do
@@ -446,16 +446,17 @@ function courseplay:updateAllTriggers()
 				local name = tostring(getName(triggerId));
 				local className = tostring(trigger.className);
 				local detailId = g_currentMission.terrainDetailId
-				local area = trigger.bunkerSiloArea
-				local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, area.sx,area.sz, area.wx, area.wz, area.hx, area.hz);
-				local _ ,_,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
-				trigger.capacity = TipUtil.volumePerPixel*totalArea*800 ;
+				--local area = trigger.bunkerSiloArea
+				--local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, area.sx,area.sz, area.wx, area.wz, area.hx, area.hz);
+				--local _ ,_,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
+				trigger.capacity = 1000000 --TipUtil.volumePerPixel*totalArea*800 ;
 				--print(string.format("capacity= %s  fillLevel= %s ",tostring(trigger.capacity),tostring(trigger.fillLevel)))
 				courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				courseplay:debug(('\t\tadd tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(triggerId, name, className), 1);
 			end
 		end
 	end
+	--[[
 	-- tipTriggers objects
 	if g_currentMission.tipTriggers ~= nil then
 		courseplay:debug('\tcheck tipTriggers', 1);
@@ -531,7 +532,6 @@ end;
 
 --Tommi TODO check if its still needed
 function courseplay:isValidTipTrigger(trigger)
-	print('triggers broken 715')
 	local isValid = trigger.className and (trigger.className == 'SiloTrigger' or trigger.isAlternativeTipTrigger or StringUtil.endsWith(trigger.className, 'TipTrigger'));
 	return isValid;
 end;
@@ -580,26 +580,26 @@ LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTrigger
 
 
 local oldBunkerSiloLoad = BunkerSilo.load;
-function BunkerSilo:load(nodeId)
-	local old = oldBunkerSiloLoad(self,nodeId);
+function BunkerSilo:load(...)
+	local old = oldBunkerSiloLoad(self,...);
 	local trigger = self
 	
-	trigger.triggerId = trigger.interactionTriggerId
+	trigger.triggerId = trigger.interactionTriggerNode
 	trigger.bunkerSilo = true
 	trigger.className = "BunkerSiloTipTrigger"
-	trigger.rootNode = nodeId
+	trigger.rootNode = self.nodeId
 	trigger.triggerStartId = trigger.bunkerSiloArea.start
 	trigger.triggerEndId = trigger.bunkerSiloArea.height
 	trigger.triggerWidth = courseplay:nodeToNodeDistance(trigger.bunkerSiloArea.start, trigger.bunkerSiloArea.width)
-	trigger.getTipDistanceFromTrailer = TipTrigger.getTipDistanceFromTrailer
-	trigger.getTipInfoForTrailer = TipTrigger.getTipInfoForTrailer
-	trigger.getAllowFillTypeFromTool = TipTrigger.getAllowFillTypeFromTool
-	trigger.allowedToolTypes = 	{
+	--trigger.getTipDistanceFromTrailer = TipTrigger.getTipDistanceFromTrailer
+	--trigger.getTipInfoForTrailer = TipTrigger.getTipInfoForTrailer
+	--trigger.getAllowFillTypeFromTool = TipTrigger.getAllowFillTypeFromTool
+	--[[trigger.allowedToolTypes = 	{
 								[trigger.inputFillType] = 	{
 															[TipTrigger.TOOL_TYPE_TRAILER] = true
 															}
 								}
-	
+	]]
 	if g_currentMission.bunkerSilos == nil then
 		g_currentMission.bunkerSilos = {}
 	end

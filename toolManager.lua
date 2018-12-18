@@ -1068,13 +1068,12 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 				end;
 				]]
 				-- Local values used in both normal and reverse direction
-
-				local x,y,z = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node)
+				local x,y,z = getWorldTranslation(currentDischargeNode.node)
 				local tx,ty,tz = x,y,z+0.50
 				local x1,z1 = ctt.bunkerSiloArea.sx,ctt.bunkerSiloArea.sz
 				local x2,z2 = ctt.bunkerSiloArea.wx,ctt.bunkerSiloArea.wz
 				local x3,z3 = ctt.bunkerSiloArea.hx,ctt.bunkerSiloArea.hz
-				trailerInTipRange = Utils.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z)
+				trailerInTipRange = MathUtil.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z)
 				local sx, sy, sz = worldToLocal(ctt.triggerStartId, x, y, z);
 				local ex, ey, ez = worldToLocal(ctt.triggerEndId, x, y, z);
 				local startDistance = MathUtil.vector2Length(sx, sz);
@@ -1112,10 +1111,10 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 					end
 
 					-- Get the animation
-					local animation = tipper.tipAnimations[bestTipReferencePoint];
+					local animation = tipper.spec_animatedVehicle.animations['tipAnimationBack']
 					local totalLength = abs(endDistance - startDistance)*0.9;
 					local fillDelta = vehicle.cp.totalFillLevel / vehicle.cp.totalCapacity;
-					local totalTipDuration = ((animation.dischargeEndTime - animation.dischargeStartTime) / animation.animationOpenSpeedScale) * fillDelta / 1000;
+					local totalTipDuration = (animation.duration- animation.currentTime)/1*fillDelta / 1000;
 					local meterPrSeconds = totalLength / totalTipDuration;
 					if stopAndGo then
 						meterPrSeconds = vehicle.cp.speeds.reverse * 1000;
@@ -1184,8 +1183,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 					else
 						courseplay:debug(nameNum(tipper) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
 					end;
-
-					if tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED or tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING then
+					local dischargeState = tipper:getDischargeState()
+					if dischargeState == Trailer.TIPSTATE_CLOSED or dischargeState == Trailer.TIPSTATE_CLOSING then
 						local isNearestPoint = false
 						if courseplay:round(distanceToTrigger, 1) > courseplay:round(tipper.cp.closestTipDistance, 1) then
 							isNearestPoint = true
@@ -1196,10 +1195,10 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						if distanceToTrigger == 0 or isBGA or isNearestPoint then
 							if isBGA then
 								--tip to ground or existing heap
-								tipper:toggleTipState(nil, bestTipReferencePoint);
+								tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 							elseif ctt.animalHusbandry then
 								if ctt.animalHusbandry:getHasSpaceForTipping(tipper.cp.fillType) then
-									tipper:toggleTipState(ctt, bestTipReferencePoint);
+									tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
 								end
 							else	
 								tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT) --tipper:toggleTipState(ctt, bestTipReferencePoint);
@@ -1212,7 +1211,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						allowedToDrive = false;
 					end;
 				else
-					if tipper:getDischargeState() ~= Trailer.TIPSTATE_CLOSING and tipper:getDischargeState() ~= Trailer.TIPSTATE_CLOSED then
+					local dischargeState = tipper:getDischargeState()
+					if dischargeState ~= Trailer.TIPSTATE_CLOSING and dischargeState ~= Trailer.TIPSTATE_CLOSED then
 						tipper.cp.closestTipDistance = math.huge
 						allowedToDrive = false;
 					end;
