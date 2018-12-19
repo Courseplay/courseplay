@@ -195,11 +195,13 @@ function AIDriver:getSpeed()
 	-- override by the derived classes
 	self.vehicle.cp.curSpeed = self.vehicle.lastSpeedReal * 3600
 	local speed
-	if self.vehicle.cp.speeds.useRecordingSpeed then
-		speed = self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4)
+	if self.ppc:isReversing() then
+		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	else
-		if self.ppc:isReversing() then
-			speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
+		if self.vehicle.cp.speeds.useRecordingSpeed then
+			speed = math.max(
+				self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4),
+				self.vehicle.cp.speeds.street)
 		else
 			speed = self.vehicle.cp.speeds.street
 		end
