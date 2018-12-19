@@ -193,13 +193,16 @@ end
 
 function AIDriver:getSpeed()
 	-- override by the derived classes
-	self.vehicle.cp.curSpeed = self.vehicle.lastSpeedReal * 3600;
+	self.vehicle.cp.curSpeed = self.vehicle.lastSpeedReal * 3600
 	local speed
 	if self.vehicle.cp.speeds.useRecordingSpeed then
 		speed = self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4)
-	end
-	if self.ppc:isReversing() then
-		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
+	else
+		if self.ppc:isReversing() then
+			speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
+		else
+			speed = self.vehicle.cp.speeds.street
+		end
 	end
 	if self:getIsInFilltrigger() then
 		speed = self.vehicle.cp.speeds.turn
@@ -209,7 +212,7 @@ end
 
 
 function AIDriver:getIsInFilltrigger()
-	return self.vehicle.cp.fillTrigger ~= nil or self.vehicle.cp.tipperLoadMode>0 ;
+	return self.vehicle.cp.fillTrigger ~= nil or self.vehicle.cp.tipperLoadMode > 0
 end
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed
