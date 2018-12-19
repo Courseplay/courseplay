@@ -14,7 +14,19 @@ function courseplay:start(self)
 	--self.steeringEnabled = false;
 	self.spec_enterable.disableCharacterOnLeave = false;
 
-
+	-- Peter: temporary band aid for the nil errors from setTranslation/setRotation. Looks like
+	-- AIVehicle deletes the node but leaves its id in aiTrafficCollision
+	-- This does not fix the problem causing stopAIVehicle to be called, just removes the nil errors.
+	local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
+	if collisionRoot ~= nil and collisionRoot ~= 0 then
+		local collision = getChildAt(collisionRoot, 0)
+		link(self.components[1].node, collision)
+		setTranslation(collision, unpack(self.spec_aiVehicle.aiTrafficCollisionTranslation))
+		-- this used to be unpack(self.spec_aiVehicle.aiTrafficCollisionScale) but that is for whaterver reason nil
+		setScale(collision, 40, 30, 40)
+		self.spec_aiVehicle.aiTrafficCollision = collision
+		delete(collisionRoot)
+	end
 
 	if self.setRandomVehicleCharacter ~= nil then
 		self:setRandomVehicleCharacter()
