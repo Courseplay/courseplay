@@ -655,6 +655,10 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
+	-- Stop AI Driver
+	if self.cp.driver then
+		self.cp.driver:stop()
+	end
 	self.isHired = false;
 	--self.isHirableBlocked = false; Removed by giants per Thomas
 	self.spec_aiVehicle.isActive = false

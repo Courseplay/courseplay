@@ -38,8 +38,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		vehicle.cp.driver = ShovelModeAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
-		-- for tests until we have a real one
-		vehicle.cp.driver = AIDriver(vehicle)
+		vehicle.cp.driver = FieldworkAIDriver(vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
 		-- for tests until we have a real one
 		vehicle.cp.driver = AIDriver(vehicle)

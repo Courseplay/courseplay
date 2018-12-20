@@ -44,23 +44,37 @@ end
 --- Start driving
 -- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
-
 	self.firstWaypointIx = ix
 	-- for now, initialize the course with the vehicle's current course
-	self.course = Course(self.vehicle, self.vehicle.Waypoints)
+	-- main course is the one generated/loaded/recorded
+	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	self.turnIsDriving = false
+
+	-- current course is the one we are currently driving (main, alignment, etc...)
+
 	if self:isAlignmentCourseNeeded(ix) then
 		self:setUpAlignmentCourse(ix)
+		self.course = self.alignmentCourse
+	else
+		self.course = self.mainCourse
 	end
+
+	self.ppc:setCourse(self.course)
+
+	self:debug('AI driver in mode %d starting with %d waypoints', self:getMode(), #self.course.waypoints)
+
 	if self.alignmentCourse then
-		self.ppc:setCourse(self.alignmentCourse)
 		self.ppc:setLookaheadDistance(self.ppc.shortLookaheadDistance)
 		self.ppc:initialize(1)
 	else
-		self.ppc:setCourse(self.course)
 		self.ppc:setLookaheadDistance(self.ppc.normalLookAheadDistance)
 		self.ppc:initialize(ix)
 	end
+end
+
+--- Stop the driver
+function AIDriver:stop()
+	-- not much to do here, see the derived classes
 end
 
 --- Main driving function
@@ -85,13 +99,13 @@ function AIDriver:driveCourse(dt, allowedToDrive)
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
 		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
-	elseif self.course:isTurnStartAtIx(self.ppc:getCurrentWaypointIx()) then
-		-- a turn is coming up, relinquish control to turn.lua
-		self:onTurnStart()
 	elseif self.turnIsDriving then
 		-- let the code in turn drive the turn maneuvers
 		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
 		courseplay:turn(self.vehicle, dt)
+	elseif self.course:isTurnStartAtIx(self.ppc:getCurrentWaypointIx()) then
+		-- a turn is coming up, relinquish control to turn.lua
+		self:onTurnStart()
 	else
 		-- use the PPC goal point when forward driving or reversing without trailer
 		local gx, _, gz = self.ppc:getGoalPointLocalPosition()
@@ -142,11 +156,13 @@ function AIDriver:checkLastWaypoint()
 	if self.ppc:reachedLastWaypoint() then
 		if self:onAlignmentCourse() then
 			-- alignment course to the first waypoint ended, start the actual course now
+			self.course = self.mainCourse
 			self.ppc:setCourse(self.course)
 			self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
 			self.ppc:initialize(self.firstWaypointIx)
 			self.alignmentCourse = nil
 			self:debug('Alignment course finished, starting course at waypoint %d', self.firstWaypointIx)
+			self:onEndAlignmentCourse()
 		elseif self.vehicle.cp.stopAtEnd then
 			-- stop at the last waypoint
 			allowedToDrive = false
@@ -157,6 +173,11 @@ function AIDriver:checkLastWaypoint()
 		end
 	end
 	return allowedToDrive
+end
+
+--- Do whatever is needed after the alignment course is ended
+function AIDriver:onEndAlignmentCourse()
+	-- nothing in general, derived classes will implement when needed
 end
 
 function AIDriver:getDirectionToGoalPoint()
@@ -199,7 +220,6 @@ end
 
 function AIDriver:getSpeed()
 	-- override by the derived classes
-	self.vehicle.cp.curSpeed = self.vehicle.lastSpeedReal * 3600
 	local speed
 	if self.ppc:isReversing() then
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
@@ -225,7 +245,7 @@ end
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed
 function AIDriver:isAlignmentCourseNeeded(ix)
-	local d = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
+	local d = self.mainCourse:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
 	return d > self.vehicle.cp.turnDiameter and self.vehicle.cp.alignment.enabled
 end
 
@@ -235,6 +255,9 @@ end
 
 function AIDriver:onTurnStart()
 	self.turnIsDriving = true
+	-- make sure turn has the current waypoint set to the the turn start wp
+	-- TODO: refactor turn.lua so it does not assume the waypoint ix won't change
+	courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentWaypointIx())
 	self:debug('Starting a turn.')
 end
 
@@ -246,7 +269,7 @@ function AIDriver:onTurnEnd()
 end
 
 function AIDriver:setUpAlignmentCourse(ix)
-	local x, _, z = self.course:getWaypointPosition(ix)
+	local x, _, z = self.mainCourse:getWaypointPosition(ix)
 	--Readjust x and z for offset being used
 	-- TODO: offset should be an attribute of the course and handled by the course itself.
 	if courseplay:getIsVehicleOffsetValid(self.vehicle) then
@@ -254,7 +277,7 @@ function AIDriver:setUpAlignmentCourse(ix)
 	end;
 	-- TODO: maybe the course itself should return an alignment course to its own waypoint ix as we don't want
 	-- to work with individual course waypoints here.
-	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, math.rad( self.course:getWaypointAngleDeg(ix)))
+	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, math.rad( self.mainCourse:getWaypointAngleDeg(ix)))
 	if not alignmentWaypoints then
 		self:debug("Can't find an alignment course, may be too close to target wp?" )
 		return

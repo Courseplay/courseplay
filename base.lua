@@ -1172,6 +1172,8 @@ function courseplay:onUpdate(dt)
 	if self.cp.hasSugarCaneTrailer then
 		courseplay:updateSugarCaneTrailerTipping(self,dt)
 	end
+	-- this really should be only done in one place.
+	self.cp.curSpeed = self.lastSpeedReal * 3600;
 end; --END update()
 
 --[[
