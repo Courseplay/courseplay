@@ -221,7 +221,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	callerVehicle.cp.activeCombine = combine
 	callerVehicle.cp.reachableCombines = {}
 	
-	courseplay:askForSpecialSettings(combine:getRootAttacherVehicle(), combine)
+	courseplay:askForSpecialSettings(combine:getRootVehicle(), combine)
 
 	--OFFSET
 	if callerVehicle.cp.combineOffsetAutoMode == true or callerVehicle.cp.combineOffset == 0 then
@@ -235,7 +235,6 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	end;
 	--END OFFSET
 
-	
 	courseplay:addToCombinesIgnoreList(callerVehicle, combine);
 	return true;
 end

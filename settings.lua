@@ -32,7 +32,9 @@ function courseplay:setAIDriver(vehicle, mode)
 	if mode == courseplay.MODE_TRANSPORT then
 		vehicle.cp.driver = AIDriver(vehicle)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
-		vehicle.cp.driver = GrainTransportAIDriver(vehicle)
+		vehicle.cp.driver = GrainTransportAIDriver(vehicle)	
+	elseif mode == courseplay.MODE_COMBI then
+		vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		vehicle.cp.driver = ShovelModeAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
@@ -1873,6 +1875,7 @@ function DrivingModeSetting:checkAndSetValidValue(new)
 		and self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 		and self.vehicle.cp.mode ~= courseplay.MODE_SEED_FERTILIZE
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
+		and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
 		and new == #self.values then
 		-- enable AI Driver for mode 1, 4, 5, 6 and 9 only until it can handle other modes
 		return 1
