@@ -459,10 +459,10 @@ function courseplay:turn(vehicle, dt)
 					-- See if we have to raise/lower implements at this point
 					if vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].raiseImplement then
 						courseplay:debug( string.format( "%s:(Turn) raising implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						courseplay:lowerImplements(vehicle, false)
+						courseplay:raiseImplements(vehicle)
 					elseif vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].lowerImplement then
 						courseplay:debug( string.format( "%s:(Turn) lowering implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						courseplay:lowerImplements(vehicle, true)
+						courseplay:lowerImplements(vehicle)
 					end
 					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 					local changeDir = ((newTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not newTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
@@ -557,7 +557,7 @@ function courseplay:turn(vehicle, dt)
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
-					courseplay:lowerImplements(vehicle, true)
+					courseplay:lowerImplements(vehicle)
 				end;
 
 				vehicle.cp.isTurning = nil;
@@ -616,7 +616,7 @@ function courseplay:turn(vehicle, dt)
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
-					courseplay:lowerImplements(vehicle, true)
+					courseplay:lowerImplements(vehicle)
 				end;
 
 				vehicle.cp.isTurning = nil;
@@ -658,7 +658,7 @@ function courseplay:turn(vehicle, dt)
 		end;
 
 		if vehicle.cp.lowerToolThisTurnLoop then
-			courseplay:lowerImplements(vehicle, true)
+			courseplay:lowerImplements(vehicle)
 			vehicle.cp.lowerToolThisTurnLoop = false;
 		end;
 
@@ -687,7 +687,7 @@ function courseplay:turn(vehicle, dt)
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attributs will control when to raise/lower implements
       if not isHeadlandCorner then
-		courseplay:lowerImplements(vehicle, false)
+		courseplay:raiseImplements(vehicle)
       end
       vehicle.cp.turnStage = 1;
 		end;
@@ -1958,20 +1958,25 @@ function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
   vehicle.cp.headlandTurn = nil 
 end
 
-function courseplay:lowerImplements(vehicle, lower)
+function courseplay:raiseImplements(vehicle)
 	for _,workTool in pairs(vehicle.cp.workTools) do
-		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,lower,true,nil,nil,nil);
+		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true, false,true,nil,nil,nil);
 		if not specialTool then
-			if lower then
-				workTool:aiImplementStartLine()
-				if workTool.spec_pickup and not workTool.spec_pickup.isLowered then
-					 workTool:setPickupState(lower)
-				end
-			else
-				workTool:aiImplementEndLine()
-				if workTool.spec_pickup and workTool.spec_pickup.isLowered then
-					 workTool:setPickupState(lower)
-				end
+			workTool:aiImplementEndLine()
+			if workTool.spec_pickup and workTool.spec_pickup.isLowered then
+				workTool:setPickupState(false)
+			end
+		end
+	end
+end
+
+function courseplay:lowerImplements(vehicle)
+	for _,workTool in pairs(vehicle.cp.workTools) do
+		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,nil,nil,nil);
+		if not specialTool then
+			workTool:aiImplementStartLine()
+			if workTool.spec_pickup and not workTool.spec_pickup.isLowered then
+				workTool:setPickupState(true)
 			end
 		end
 	end

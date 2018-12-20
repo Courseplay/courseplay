@@ -299,7 +299,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 					if allowedToDrive then
 						if not specialTool then
 							--print("282 startOrder")
-							courseplay:lowerImplements(vehicle, true)
+							courseplay:lowerImplements(vehicle)
 							vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
 							vehicle.cp.runOnceStartCourse = false;
 							
@@ -328,14 +328,14 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 								end
 							end;
 							if not isFolding and isUnfolded then
-								courseplay:lowerImplements(vehicle, true)
+								courseplay:lowerImplements(vehicle)
 							end;
 						end;
 					end
 				elseif not workArea or vehicle.cp.abortWork ~= nil or vehicle.cp.isLoaded or vehicle.cp.previousWaypointIndex == vehicle.cp.stopWork then
 					specialTool, allowedToDrive = courseplay:handleSpecialTools(vehicle,workTool,false,false,false,allowedToDrive,nil,nil)
 					if not specialTool then
-						courseplay:lowerImplements(vehicle, false)
+						courseplay:raiseImplements(vehicle)
 						
 						vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 						
@@ -440,7 +440,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							courseplay:setFoldedStates(workTool)
 						elseif not workTool:getIsTurnedOn() then
 							--print("restart order")
-							courseplay:lowerImplements(vehicle, true)
+							courseplay:lowerImplements(vehicle)
 						end
 						
 						--vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
@@ -483,7 +483,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 						local tankFillLevelPct = tool.cp.fillLevelPercent;
 						if not vehicle.cp.isReverseBackToPoint then
 							vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-							courseplay:lowerImplements(vehicle, true)
+							courseplay:lowerImplements(vehicle)
 							-- WorkTool Unfolding.
 							--[[ if courseplay:isFoldable(workTool) and not isTurnedOn and not isFolding and not isUnfolded then
 								courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
@@ -558,7 +558,7 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 
 					-- Make sure we are lowered when working the field.
 					if allowedToDrive and isTurnedOn and not workTool:getIsLowered() and not vehicle.cp.isReverseBackToPoint then
-						courseplay:lowerImplements(vehicle, true)
+						courseplay:lowerImplements(vehicle)
 					end;
 				end
 			 --Stop combine

@@ -160,7 +160,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 						courseplay:setFoldedStates(workTool)
 					elseif not workTool:getIsTurnedOn() then
 						print("restart order")
-						courseplay:lowerImplements(vehicle, true)
+						courseplay:lowerImplements(vehicle)
 					end
 				end
 				
@@ -197,7 +197,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 			if not specialTool then
 				if workTool:getIsTurnedOn() then
 					print("TrafficStop order")
-					courseplay:lowerImplements(vehicle, false)
+					courseplay:raiseImplements(vehicle)
 				end
 				courseplay:debug(string.format('%s: [TRAFFIC] turn off order', nameNum(workTool)), 17);
 			end;

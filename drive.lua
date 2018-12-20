@@ -598,7 +598,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.Waypoints[self.cp.waypointIndex].isConnectingTrack then
-			courseplay:lowerImplements(self, false, false)
+			courseplay:raiseImplements(self)
 		end;
 
 		if self.cp.abortWork then
@@ -623,7 +623,7 @@ function courseplay:drive(self, dt)
 		end;
 
 		if self.Waypoints[self.cp.waypointIndex].isConnectingTrack then
-			courseplay:lowerImplements(self, false, false)
+			courseplay:raiseImplements(self)
 		end;
 
 		if breakCode then
