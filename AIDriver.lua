@@ -84,8 +84,12 @@ function AIDriver:driveCourse(dt, allowedToDrive)
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
 		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
-	elseif self:isTurning() then
+	elseif self.course:isTurnStartAtIx(self.ppc:getCurrentWaypointIx()) then
+		-- a turn is coming up, relinquish control to turn.lua
+		self:onTurnStart()
+	elseif self.turnIsDriving then
 		-- let the code in turn drive the turn maneuvers
+		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
 		courseplay:turn(self.vehicle, dt)
 	else
 		-- use the PPC goal point when forward driving or reversing without trailer
@@ -93,6 +97,7 @@ function AIDriver:driveCourse(dt, allowedToDrive)
 		self:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, self:getSpeed())
 	end
 end
+
 
 --- Drive to a local position. This is the simplest driving mode towards the goal point
 function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
@@ -227,19 +232,9 @@ function AIDriver:onAlignmentCourse()
 	return self.alignmentCourse ~= nil
 end
 
-function AIDriver:isTurning()
-	if self.turnIsDriving then
-		-- already in a turn
-		return true
-	elseif self.course:isTurnStartAtIx(self.ppc:getCurrentWaypointIx()) then
-		-- a turn is coming up, relinquish control to turn.lua
-		self.turnIsDriving = true
-		self:debug('Starting a turn.')
-		return true
-	else
-		-- not in a turn
-		return false
-	end
+function AIDriver:onTurnStart()
+	self.turnIsDriving = true
+	self:debug('Starting a turn.')
 end
 
 function AIDriver:onTurnEnd()

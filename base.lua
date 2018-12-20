@@ -4,11 +4,6 @@ function courseplay.prerequisitesPresent(specializations)
 	return true;
 end
 
---[[
-function courseplay:preLoad(xmlFile)
-end;
-]]
-
 function courseplay:onLoad(savegame)
 	local xmlFile = self.xmlFile;
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
@@ -1947,5 +1942,15 @@ function courseplay.setIsTurnedOn(self, originalFunction, isTurnedOn, noEventSen
 	originalFunction(self, isTurnedOn, noEventSend);
 end;
 TurnOnVehicle.setIsTurnedOn = Utils.overwrittenFunction(TurnOnVehicle.setIsTurnedOn, courseplay.setIsTurnedOn);
+
+-- Workaround: onEndWorkAreaProcessing seems to cause Cutter to call stopAIVehicle when
+-- driving on an already worked field. This will suppress that call as long as Courseplay is driving
+function courseplay:stopAIVehicle(superFunc, reason, noEventSend)
+	if superFunc ~= nil and not self:getIsCourseplayDriving() then
+		superFunc(self, reason, noEventSend)
+	end
+end
+AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, courseplay.stopAIVehicle)
+
 -- do not remove this comment
 -- vim: set noexpandtab:
