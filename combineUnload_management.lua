@@ -1,7 +1,6 @@
 -- temp file to copy out the parts needed for CombineUnlaodAIDriver
 local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 local _;
---[[
 function courseplay:handle_mode2(vehicle, dt)
 	local frontTractor;
 
@@ -1290,7 +1289,6 @@ function courseplay:unload_combine(vehicle, dt)
 		end;
 	end
 end
-]]
 
 function courseplay:calculateCombineOffset(vehicle, combine)
 	local curFile = "mode2.lua";
