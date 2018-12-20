@@ -128,7 +128,7 @@ function courseplay:onLoad(savegame)
 	
 
 	-- CP mode
-	self.cp.mode = 5;
+	self.cp.mode = courseplay.MODE_TRANSPORT;
 	courseplay:setNextPrevModeVars(self);
 	self.cp.modeState = 0
 	self.cp.mode2nextState = nil;
@@ -598,6 +598,7 @@ function courseplay:onLoad(savegame)
 		self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
 	end
 	self.cp.ppc = PurePursuitController(self)
+	courseplay:setAIDriver(self, self.cp.mode)
 end;
 
 function courseplay:onPostLoad(savegame)

@@ -26,15 +26,13 @@ AIDriver.slowDownFactor = 0.5
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
 	self.vehicle = vehicle
-	-- for now, initialize the course with the vehicle's current course
-	self.course = Course(vehicle, vehicle.Waypoints)
-	self.firstWaypointIx = 1
+	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	self.ppc = self.vehicle.cp.ppc -- shortcut
 	self.ppc:setAIDriver(self)
 	self.ppc:enable()
+	self.firstWaypointIx = 1
 	self.acceleration = 1
 	self.mode = courseplay.MODE_TRANSPORT
-	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	self.clock = 0
 	self.turnIsDriving = false -- code in turn.lua is driving
 end
@@ -46,7 +44,10 @@ end
 --- Start driving
 -- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
+
 	self.firstWaypointIx = ix
+	-- for now, initialize the course with the vehicle's current course
+	self.course = Course(self.vehicle, self.vehicle.Waypoints)
 	self.turnIsDriving = false
 	if self:isAlignmentCourseNeeded(ix) then
 		self:setUpAlignmentCourse(ix)
