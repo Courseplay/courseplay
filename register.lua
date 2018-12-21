@@ -12,6 +12,8 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onUpdateTick", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onLoad", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onPostLoad", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onEnterVehicle", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onLeaveVehicle", courseplay)
 end
 
 if courseplay.houstonWeGotAProblem then

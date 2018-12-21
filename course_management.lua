@@ -1540,7 +1540,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 
 		g_currentMission.cp_sorted = self:sort(courses_by_id, folders_by_id, 0, 0)
 
-		courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
+		--courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
 
 		return g_currentMission.cp_courses;
 	elseif CpManager.cpCourseManagerXmlFilePath then

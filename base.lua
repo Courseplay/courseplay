@@ -631,7 +631,7 @@ function courseplay:onPostLoad(savegame)
 	end;
 end;
 
-function courseplay:onLeave()
+function courseplay:onLeaveVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, false);
 	end
@@ -640,7 +640,7 @@ function courseplay:onLeave()
 	courseplay.signs:setSignsVisibility(self, true);
 end
 
-function courseplay:onEnter()
+function courseplay:onEnterVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
 	end;
