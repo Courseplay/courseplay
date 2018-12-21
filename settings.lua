@@ -1602,26 +1602,48 @@ function courseplay:setSlippingStage(vehicle, stage)
 end;
 
 -- INGAME MAP ICONS
+
+function courseplay:getMapHotspotText(vehicle)
+	local text = '';
+	if CpManager.ingameMapIconShowText then
+		if CpManager.ingameMapIconShowName then
+			text = nameNum(vehicle, true) .. '\n';
+		end;
+		if CpManager.ingameMapIconShowCourse then
+			text = text .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
+		end;
+	end
+	return text
+end
+
+
 function courseplay:createMapHotspot(vehicle)
 	if vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING then
 		return
 	end
-	local name = '';
-	if CpManager.ingameMapIconShowText then
-		if CpManager.ingameMapIconShowName then
-			name = nameNum(vehicle, true) .. '\n';
-		end;
-		if CpManager.ingameMapIconShowCourse then
-			name = name .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-		end;
-	end;
-
+	--[[
 	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode);
 	local _, textSize = getNormalizedScreenValues(0, 6);
 	local _, textOffsetY = getNormalizedScreenValues(0, 9.5);
 	local width, height = getNormalizedScreenValues(11,11);
-	local colour = Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]);
-	--[[ Ryan ingameMap no longer exists vehicle.cp.ingameMapHotSpot = g_currentMission.ingameMap:createMapHotspot(
+]]
+	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode)
+	local _, textSize = getNormalizedScreenValues(0, 9)
+	local _, textOffsetY = getNormalizedScreenValues(0, 18)
+	local width, height = getNormalizedScreenValues(24, 24)
+	vehicle.cp.mapHotspot = MapHotspot:new("cpHelper", MapHotspot.CATEGORY_AI)
+	vehicle.cp.mapHotspot:setSize(width, height)
+	vehicle.cp.mapHotspot:setLinkedNode(vehicle.components[1].node)											-- objectId to what the hotspot is attached to
+	vehicle.cp.mapHotspot:setText('CP\n' .. courseplay:getMapHotspotText(vehicle))
+	vehicle.cp.mapHotspot:setImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER), {0.052, 0.1248, 0.672, 1})
+	vehicle.cp.mapHotspot:setBackgroundImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER))
+	vehicle.cp.mapHotspot:setIconScale(0.7)
+	vehicle.cp.mapHotspot:setTextOptions(textSize, nil, textOffsetY, {1, 1, 1, 1}, Overlay.ALIGN_VERTICAL_MIDDLE)
+	vehicle.cp.mapHotspot:setColor(Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]))
+	g_currentMission:addMapHotspot(vehicle.cp.mapHotspot)
+
+
+	--[[ FS17 doc, left here for later reference only
 		"cpHelper",                                 -- name: 				mapHotspot Name
 		"CP\n"..name,                               -- fullName: 			Text shown in icon
 		nil,                                        -- imageFilename:		Image path for custome images (If nil, then it will use Giants default image file)
@@ -1645,15 +1667,16 @@ function courseplay:createMapHotspot(vehicle)
 		Overlay.ALIGN_VERTICAL_MIDDLE,              -- verticalAlignment:	The alignment of the image based on the attached node
 		0.8                                         -- overlayBgScale:		Background icon scale, like making an border. (smaller is bigger border)
 	) ]]
-	--- Do not delete this. This is for reference to what the arguments are.
-	-- IngameMap:createMapHotspot(name, fullName, imageFilename, imageUVs, baseColor, xMapPos, zMapPos, width, height, blinking, persistent, showName, objectId, renderLast, category, textSize, textOffsetY, textColor, bgImageFilename, bgImageUVs, verticalAlignment, overlayBgScale)
-end;
+end
+
 function courseplay:deleteMapHotspot(vehicle)
-	if vehicle.cp.ingameMapHotSpot then
-		g_currentMission.ingameMap:deleteMapHotspot(vehicle.cp.ingameMapHotSpot);
-		vehicle.cp.ingameMapHotSpot = nil;
-	end;
-end;
+	if vehicle.cp.mapHotspot then
+		g_currentMission:removeMapHotspot(vehicle.cp.mapHotspot)
+		vehicle.cp.mapHotspot:delete()
+		vehicle.cp.mapHotspot = nil
+	end
+end
+
 function courseplay:toggleIngameMapIconShowText()
 	if not CpManager.ingameMapIconShowName and not CpManager.ingameMapIconShowCourse then
 		CpManager.ingameMapIconShowName = true;
@@ -1667,9 +1690,8 @@ function courseplay:toggleIngameMapIconShowText()
 	
 	-- for _,vehicle in pairs(g_currentMission.enterables) do
 	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
-		if vehicle.cp.ingameMapHotSpot then
-			courseplay:deleteMapHotspot(vehicle);
-			courseplay:createMapHotspot(vehicle);
+		if vehicle.cp.mapHotspot then
+			vehicle.cp.mapHotspot:setText('CP\n' .. courseplay:getMapHotspotText(vehicle))
 			courseplay.hud:setReloadPageOrder(vehicle, 7, true);
 		end;
 	end;

@@ -48,9 +48,9 @@ function AIDriver:start(ix)
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	self.turnIsDriving = false
+	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, #self.mainCourse.waypoints)
 
-	-- current course is the one we are currently driving (main, alignment, etc...)
-
+	-- self.course is the one we are currently driving (main, alignment, etc...)
 	if self:isAlignmentCourseNeeded(ix) then
 		self:setUpAlignmentCourse(ix)
 		self.course = self.alignmentCourse
@@ -59,8 +59,6 @@ function AIDriver:start(ix)
 	end
 
 	self.ppc:setCourse(self.course)
-
-	self:debug('AI driver in mode %d starting with %d waypoints', self:getMode(), #self.course.waypoints)
 
 	if self.alignmentCourse then
 		self.ppc:setLookaheadDistance(self.ppc.shortLookaheadDistance)
