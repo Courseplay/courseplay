@@ -50,7 +50,8 @@ function FieldworkAIDriver:onEndAlignmentCourse()
 end
 
 function FieldworkAIDriver:getSpeed()
-	return math.min(self.vehicle.cp.speeds.field, self.vehicle:getSpeedLimit())
+	local speedLimit = self.vehicle:getSpeedLimit() or math.huge
+	return math.min(self.vehicle.cp.speeds.field, speedLimit)
 end
 
 --- Start the actual work. Lower and turn on implements
