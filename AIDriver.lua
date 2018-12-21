@@ -33,7 +33,6 @@ function AIDriver:init(vehicle)
 	self.firstWaypointIx = 1
 	self.acceleration = 1
 	self.mode = courseplay.MODE_TRANSPORT
-	self.clock = 0
 	self.turnIsDriving = false -- code in turn.lua is driving
 end
 
@@ -133,10 +132,6 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	if self.clock % 20 == 0 then
-		self:debug('x = %.1f -> %.1f  z = %.1f -> %.1f, speed = %.1f', gx, ax, gz, az, maxSpeed)
-	end
-	self.clock = self.clock + 1
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
@@ -166,6 +161,7 @@ function AIDriver:checkLastWaypoint()
 		elseif self.vehicle.cp.stopAtEnd then
 			-- stop at the last waypoint
 			allowedToDrive = false
+			self:onEndCourse()
 			CpManager:setGlobalInfoText(self.vehicle, 'END_POINT')
 		else
 			-- continue at the first waypoint
@@ -177,6 +173,11 @@ end
 
 --- Do whatever is needed after the alignment course is ended
 function AIDriver:onEndAlignmentCourse()
+	-- nothing in general, derived classes will implement when needed
+end
+
+--- Course ended
+function AIDriver:onEndCourse()
 	-- nothing in general, derived classes will implement when needed
 end
 
@@ -226,7 +227,7 @@ function AIDriver:getSpeed()
 	else
 		if self.vehicle.cp.speeds.useRecordingSpeed then
 			speed = math.max(
-				self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4),
+				self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or 0,
 				self.vehicle.cp.speeds.street)
 		else
 			speed = self.vehicle.cp.speeds.street

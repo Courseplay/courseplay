@@ -33,9 +33,10 @@ end
 
 function FieldworkAIDriver:start(ix)
 	AIDriver.start(self, ix)
+	self.vehicle.cp.stopAtEnd = true
 	if not self.alignmentCourse then
 		-- if there's no alignment course, start work immediately
-		-- TODO: should probably better start it when the initialized waypoint (ix) is reached
+		-- TODO: should probably better start it when the ini``tialized waypoint (ix) is reached
 		-- as we may start the vehicle outside of the field?
 		self:startWork()
 	end
@@ -49,9 +50,17 @@ function FieldworkAIDriver:onEndAlignmentCourse()
 	self:startWork()
 end
 
+function FieldworkAIDriver:onEndCourse()
+	self:stopWork()
+end
+
 function FieldworkAIDriver:getSpeed()
-	local speedLimit = self.vehicle:getSpeedLimit() or math.huge
-	return math.min(self.vehicle.cp.speeds.field, speedLimit)
+	if self.alignmentCourse then
+		return self.vehicle.cp.speeds.field
+	else
+		local speedLimit = self.vehicle:getSpeedLimit() or math.huge
+		return math.min(self.vehicle.cp.speeds.field, speedLimit)
+	end
 end
 
 --- Start the actual work. Lower and turn on implements
@@ -63,7 +72,7 @@ end
 
 --- Stop working. Raise and stop implements
 function FieldworkAIDriver:stopWork()
-	self:debug('Starting work: turn off and raise implements.')
+	self:debug('Ending work: turn off and raise implements.')
 	courseplay:raiseImplements(self.vehicle)
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 end
