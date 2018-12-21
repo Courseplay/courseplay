@@ -151,9 +151,10 @@ function Course:addWaypointAngles()
 			self.waypoints[i].angle = courseGenerator.toCpAngle(angle)
 		end
 	end
-	if not self.waypoints[#self.waypoints].angle then
-		self.waypoints[#self.waypoints].angle = self.waypoints[#self.waypoints - 1].angle
-	end
+	-- make the last waypoint point to the same direction as the previous so we don't
+	-- turn towards the first when ending the course. (the course generator points the last
+	-- one to the first, should probably be changed there)
+	self.waypoints[#self.waypoints].angle = self.waypoints[#self.waypoints - 1].angle
 end
 
 function Course:setCurrentWaypointIx(ix)

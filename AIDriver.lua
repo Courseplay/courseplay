@@ -48,6 +48,7 @@ function AIDriver:start(ix)
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	self.turnIsDriving = false
+	self.hasCalledOnEndCourse = false
 	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, #self.mainCourse.waypoints)
 
 	-- self.course is the one we are currently driving (main, alignment, etc...)
@@ -148,7 +149,7 @@ function AIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:reachedLastWaypoint() then
 		if self:onAlignmentCourse() then
-			-- alignment course to the first waypoint ended, start the actual course now
+			-- alignment course to the first waypoint ended, start the main course now
 			self.course = self.mainCourse
 			self.ppc:setCourse(self.course)
 			self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
@@ -159,7 +160,12 @@ function AIDriver:checkLastWaypoint()
 		elseif self.vehicle.cp.stopAtEnd then
 			-- stop at the last waypoint
 			allowedToDrive = false
-			self:onEndCourse()
+			-- TODO: abstract this into some generic notifier?
+			if not self.hasCalledOnEndCourse then
+				self:onEndCourse()
+				self.hasCalledOnEndCourse = true
+			end
+			-- looks like this needs to be called in every update cycle.
 			CpManager:setGlobalInfoText(self.vehicle, 'END_POINT')
 		else
 			-- continue at the first waypoint

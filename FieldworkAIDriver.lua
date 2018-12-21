@@ -36,7 +36,7 @@ function FieldworkAIDriver:start(ix)
 	self.vehicle.cp.stopAtEnd = true
 	if not self.alignmentCourse then
 		-- if there's no alignment course, start work immediately
-		-- TODO: should probably better start it when the ini``tialized waypoint (ix) is reached
+		-- TODO: should probably better start it when the initialized waypoint (ix) is reached
 		-- as we may start the vehicle outside of the field?
 		self:startWork()
 	end
