@@ -448,7 +448,7 @@ function courseplay:getSpecialCombineOffset(combine)
 end;
 
 function courseplay:getCombinesPipeSide(combine)
-	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.spec_dischargeable.currentDischargeNode.node)
 	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 	
 	if combineToPrnX >= 0 then

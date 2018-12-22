@@ -36,7 +36,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_COMBI
 	if not self.modeState then
-		self.modeState = self.STATE_DEFAULT
+		self:setModeState(self.STATE_DEFAULT)
 	end
 end
 
@@ -50,7 +50,6 @@ function CombineUnloadAIDriver:isAlignmentCourseNeeded(ix)
 end
 
 function CombineUnloadAIDriver:drive(dt)
-	print("CombineUnloadAIDriver:drive")
 	--we are on the way to unload
 	local modeState = self:getModeState() 
 	if modeState == self.STATE_DEFAULT then
@@ -61,6 +60,7 @@ function CombineUnloadAIDriver:drive(dt)
 		renderText(0.2, 0.105, 0.02, "CombineUnloadAIDriver:searchForCombines");
 		self:searchForCombines(dt)
 		courseplay:setIsLoaded(self.vehicle, false);
+		courseplay:setWaypointIndex(self.vehicle, 1);
 	--drive to the combine
 	elseif modeState == self.STATE_DRIVE_TO_COMBINE then
 		renderText(0.2, 0.105, 0.02, "CombineUnloadAIDriver:DRIVE_TO_COMBINE");
@@ -92,10 +92,10 @@ function CombineUnloadAIDriver:checkFillLevels(dt)
 	local currentTrailerToFill = vehicle.cp.currentTrailerToFill or 1
 	local currentTipper = vehicle.cp.workTools[currentTrailerToFill]
 	if currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.isLoaded then
+		print("currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.isLoaded: "..tostring(vehicle.cp.isLoaded))
 		self:setModeState(self.STATE_DEFAULT);
 		self.ppc:setCourse(self.course)
 		self.ppc:initialize(1)
-		courseplay:setWaypointIndex(vehicle, 1);
 		courseplay:setIsLoaded(vehicle, true);
 		courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
@@ -152,7 +152,7 @@ function CombineUnloadAIDriver:followPipe(dt)
 	if combine.cp.offset == nil and not combine.cp.isChopper then
 		courseplay:calculateCombineOffset(vehicle, combine);
 	end
-	currentX, currentY, currentZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, trailerOffset + 5)
+	currentX, currentY, currentZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, trailerOffset + 20)
 
 	--CALCULATE VERTICAL OFFSET (tipper offset)
 	local prnToCombineZ = courseplay:calculateVerticalOffset(vehicle, combine);
@@ -235,6 +235,8 @@ function CombineUnloadAIDriver:followPipe(dt)
 			end
 		end
 	end
+	
+	cpDebug:drawLine(x, y, z, 1, 0, 0, ttX, y, ttZ);
 	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, ttX, currentY, ttZ)
 	AIDriver.driveVehicleInDirection(self,dt, allowedToDrive, true, lx, lz, refSpeed)
 	
@@ -278,7 +280,8 @@ function CombineUnloadAIDriver:driveNextToCombine(dt)
 		self:setModeState(self.STATE_FOLLOW_PIPE);
 		vehicle.cp.chopperIsTurning = false
 	end
-	
+	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
+	cpDebug:drawLine(x, y, z, 1, 0, 0, currentX,currentY, currentZ);
 	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
 	AIDriver.driveVehicleInDirection(self,dt, allowedToDrive, true, lx, lz, refSpeed)
 end
@@ -346,6 +349,7 @@ function CombineUnloadAIDriver:driveToCombine(dt)
 		if vehicle.cp.realisticDriving and dod > 20 then 
 			-- if there's fruit between me and the combine, calculate a path around it to a point 
 			-- behind the combine.
+			print("call calculateAstarPathToCoords")
 			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind, nil ) then
 			  -- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay.debugVehicle( 4, vehicle, "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
@@ -358,6 +362,8 @@ function CombineUnloadAIDriver:driveToCombine(dt)
 		else
 			--AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
 			--AIDriver.driveVehicleToLocalPosition(self,dt, true, true, currentX, currentZ, refSpeed)
+			
+			cpDebug:drawLine(x, y, z, 1, 0, 0, currentX,currentY, currentZ);
 			AIDriver.driveVehicleInDirection(self,dt, true, true, lx, lz, refSpeed)
 		end;
 		

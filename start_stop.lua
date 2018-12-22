@@ -786,9 +786,6 @@ function courseplay:stop(self)
 	self.cp.waitingForTrailerToUnload = false
 	courseplay:setIsRecording(self, false);
 	courseplay:setRecordingIsPaused(self, false);
-	if self.cp.modeState > 4 then
-		courseplay:setModeState(self, 1);
-	end
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
 	self.cp.backMarkerOffset = nil

@@ -106,11 +106,11 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	end;
 	local hx, hz = courseplay:getLineHxHz(node, x1,z1, x2,z2);
 	if hx == nil or hz == nil then return; end;
-	-- print(string.format('hasLineFruit(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)));
+	print(string.format('hasLineFruit(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)));
 
 	if fixedFruitType then
 		local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fixedFruitType].maxHarvestingGrowthState
-		local density, total = FieldUtil.getFruitArea( x1,z1, x2,z2, hx,hz, {}, {}, fixedFruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
+		local density, total = FieldUtil.getFruitArea(x1, z1, x2, z2, hx, hz, {}, {}, fixedFruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
 			return true, density, fixedFruitType, g_fruitTypeManager.indexToFruitType[fixedFruitType].name --IndexToDesc[fixedFruitType].name; this might wrong conversion
 		end;
@@ -120,9 +120,9 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	for i = 1, #g_fruitTypeManager.fruitTypes do
 		if i ~= g_fruitTypeManager.nameToIndex['GRASS'] and i ~= g_fruitTypeManager.nameToIndex['DRYGRASS'] then 
 			local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[i].maxHarvestingGrowthState
-			local density, total = FieldUtil.getFruitArea(x1,z1, x2,z2, hx,hz, i, minHarvestable , maxHarvestable, 0, 0, 0,false);
+			local density, total = FieldUtil.getFruitArea(x1, z1, x2, z2, hx, hz, {}, {},  i, minHarvestable , maxHarvestable, 0, 0, 0,false);
 			if density > 0 then
-				local fruitName = g_fruitTypeManager.indexToFruitType[fixedFruitType].name -- FruitUtil.fruitIndexToDesc[i].name;  this might wrong conversion
+				local fruitName = 'test' --FruitTypeManager:getFruitTypeNameByIndex(i) -- FruitUtil.fruitIndexToDesc[i].name;  this might wrong conversion
 				courseplay:debug(string.format('hasLineFruit(): fruitType %d (%s): density=%s (total=%s)', i, tostring(fruitName), tostring(density), tostring(total)), 4);
 				return true, density, i, fruitName;
 			end;
@@ -156,7 +156,7 @@ function courseplay:isLineField(node, x1, z1, x2, z2)
 	courseplay:debug(string.format('isLineField(): x1,z1=%.2f,%.2f, x2,z2=%.2f,%.2f, hx,hz=%.2f,%.2f -> n=%s, area=%s, totalArea=%s -> return %s', x1, z1, x2, z2, hx, hz, tostring(n), tostring(area), tostring(totalArea), tostring(isField)), 4);
 
 	return isField; ]]
-	return false
+	return true
 end;
 
 function courseplay:sideToDrive(vehicle, combine, distance, switchSide)

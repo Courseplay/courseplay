@@ -692,7 +692,7 @@ function courseplay:onDraw()
 		end	
 	end
 	if self.cp.isCombine and courseplay.debugChannels[4] then
-		renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getUnitCapacity(self.overloading.fillUnitIndex) - self:getUnitFillLevel(self.overloading.fillUnitIndex))/self.cp.fillLitersPerSecond))
+		renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getFillUnitCapacity(self.spec_combine.fillUnitIndex) - self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex))/self.cp.fillLitersPerSecond))
 		renderText(0.2,0.135,0.02,"self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
 	end
 	
