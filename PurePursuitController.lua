@@ -65,6 +65,7 @@ PurePursuitController.shortLookaheadDistance = 2.5
 function PurePursuitController:init(vehicle)
 	self.normalLookAheadDistance = vehicle.cp.turnDiameter / 2
 	self.shortLookaheadDistance = self.normalLookAheadDistance / 2
+	self.veryShortLookaheadDistance = 2
 	-- normal lookahead distance
 	self.baseLookAheadDistance = self.normalLookAheadDistance
 	-- adapted look ahead distance 
@@ -262,7 +263,8 @@ function PurePursuitController:findGoalPoint()
 	-- which the goal point lies. This is the segment intersected by the circle with lookAheadDistance radius
 	-- around the vehicle.
 	local ix = self.relevantWpNode.ix
-	while ix <= #self.vehicle.Waypoints do
+	while ix <= #self.course.waypoints do
+	--while ix <= #self.vehicle.Waypoints do
 		node1:setToWaypoint(self.course, ix)
 		node2:setToWaypointOrBeyond(self.course, ix + 1, self.lookAheadDistance)
 		local x1, _, z1 = getWorldTranslation(node1.node)

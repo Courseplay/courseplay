@@ -99,6 +99,7 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 		if self.logChanges and self.mode and self.mode ~= WaypointNode.MODE_LAST_WP then
 			courseplay.debugVehicle(12, course.vehicle, 'PPC: last waypoint reached, moving node beyond last: %s', getName(self.node))
 		end
+		
 		self.mode = WaypointNode.MODE_LAST_WP
 	elseif course:switchingToReverseAt(ix) or course:switchingToForwardAt(ix) then
 		-- just like at the last waypoint, if there's a direction switch, we want to drive up

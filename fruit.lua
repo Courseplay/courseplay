@@ -188,11 +188,10 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local rWidthZ = rStartZ + sideZ * 0.7 * threshWidth;
 	local rHeightX = rStartX + dirX * 0.5 * threshWidth;
 	local rHeightZ = rStartZ + dirZ * 0.5 * threshWidth;
-	local fruitType = combine.lastValidInputFruitType
+	local fruitType = combine.spec_combine.lastValidInputFruitType
 	if fruitType == nil or fruitType == 0 then
 		_,fruitType = courseplay:areaHasFruit(x, z, nil, threshWidth, threshWidth)
 	end
-	
 	local minHarvestable , maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fruitType].maxHarvestingGrowthState
 	local leftFruit, totalArealeft = FieldUtil.getFruitArea(lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 	local rightFruit, totalArearight = FieldUtil.getFruitArea(rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);

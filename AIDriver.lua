@@ -41,6 +41,10 @@ function AIDriver:getMode()
 	return self.mode
 end
 
+function AIDriver:getCpMode()
+	return self.vehicle.cp.mode
+end
+
 --- Start driving
 -- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
@@ -210,13 +214,14 @@ end
 function AIDriver:getReverseDrivingDirection()
 	local moveForwards = true
 	local isReverseActive = false
+	local isMode2 = self:getCpMode() == courseplay.MODE_COMBI
 	-- get the direction to drive to
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- take care of reversing
 	if self.ppc:isReversing() then
 		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
-		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz)
+		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz, isMode2)
 		-- as of now we need to invert the direction from goReverse to work correctly with
 		-- AI Driver, it seems to have a different reference
 		lx, lz = -lx, -lz

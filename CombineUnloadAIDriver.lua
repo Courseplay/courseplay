@@ -23,7 +23,7 @@ CombineUnloadAIDriver.STATE_WAIT_AT_START = 1
 CombineUnloadAIDriver.STATE_DRIVE_TO_COMBINE = 2
 CombineUnloadAIDriver.STATE_DRIVE_NEXT_TO_COMBINE = 3
 CombineUnloadAIDriver.STATE_FOLLOW_PIPE = 4 
-CombineUnloadAIDriver.STATE_FOLLOW_TARGET_WPS = 5 
+CombineUnloadAIDriver.STATE_DRIVE_COURSE_ON_FIELD = 5 
 CombineUnloadAIDriver.STATE_FOLLOW_TRACTOR = 6 
 CombineUnloadAIDriver.STATE_WAIT_FOR_PIPE = 7 
 CombineUnloadAIDriver.STATE_WAIT_FOR_COMBINE_TO_GET_OUT_OF_WAY = 9 
@@ -35,9 +35,8 @@ CombineUnloadAIDriver.STATE_SWITCH_SIDE = 11
 function CombineUnloadAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_COMBI
-	if not self.modeState then
-		self:setModeState(self.STATE_DEFAULT)
-	end
+	self:setModeState(self.STATE_DEFAULT)
+	self.onTurnAwayCourse = false
 end
 
 function CombineUnloadAIDriver:start(ix)
@@ -73,8 +72,9 @@ function CombineUnloadAIDriver:drive(dt)
 	elseif modeState == self.STATE_FOLLOW_PIPE then
 		renderText(0.2, 0.105, 0.02, "CombineUnloadAIDriver:FOLLOW_PIPE");
 		self:followPipe(dt)
-		self:checkTurns(dt)
-		
+	elseif modeState == self.STATE_DRIVE_COURSE_ON_FIELD then
+		renderText(0.2, 0.105, 0.02, "CombineUnloadAIDriver:STATE_DRIVE_COURSE_ON_FIELD");
+		self:driveCourseOnField(dt)
 	else 
 		renderText(0.2, 0.105, 0.02, "Häää?? modeState: "..tostring(modeState));
 	end
@@ -82,9 +82,39 @@ function CombineUnloadAIDriver:drive(dt)
 	if modeState > self.STATE_DEFAULT then
 		self:checkFillLevels(dt)
 	end
-
-	
+	if self.vehicle.cp.activeCombine then
+		renderText(0.2, 0.045, 0.02, string.format("combine turns %s",mode,tostring(self.vehicle.cp.activeCombine.spec_aiVehicle.isTurning)));
+	end
 end
+
+function CombineUnloadAIDriver:setOnTurnAwayCourse(onTurnAwayCourse)
+	if self.onTurnAwayCourse ~= onTurnAwayCourse then
+		self.onTurnAwayCourse = onTurnAwayCourse
+	end
+end
+
+function CombineUnloadAIDriver:driveCourseOnField(dt)
+	local vehicle = self.vehicle
+	local allowedToDrive = true
+	self.ppc:update()
+	self:driveCourse(dt, allowedToDrive)
+	self:checkLastWaypoint()
+	
+	if (courseplay.debugChannels[4] or courseplay.debugChannels[9])then
+		for i,tp in pairs(vehicle.cp.nextTargets) do
+			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tp.x, 0, tp.z)
+			cpDebug:drawPoint(tp.x, y +2, tp.z, 1, 0.65, 0);
+			if i == 1 then
+				--cpDebug:drawLine(vehicle.cp.curTarget.x, y + 2, vehicle.cp.curTarget.z, 1, 0, 1, tp.x, y + 2, tp.z);
+			else
+				local pp = vehicle.cp.nextTargets[i-1];
+				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, pp.x, 0, pp.z)
+				cpDebug:drawLine(pp.x, y+2, pp.z, 1, 0, 1, tp.x, y + 2, tp.z);
+			end;
+		end;		
+	end
+end
+
 
 function CombineUnloadAIDriver:checkFillLevels(dt)
 	local vehicle = self.vehicle
@@ -102,10 +132,154 @@ function CombineUnloadAIDriver:checkFillLevels(dt)
 	end
 end
 
-function CombineUnloadAIDriver:checkTurns(dt)
+function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
+	local vehicle = self.vehicle
+	local combine = vehicle.cp.activeCombine
+	local trailerOffset = vehicle.cp.tipperOffset
+	local totalLength = vehicle.cp.totalLength+2
+	local turnDiameter = vehicle.cp.turnDiameter+2
+	local aiTurn = combine.spec_aiVehicle.isTurning --false	
+	
+	--[[for index,strategy in pairs(combine.spec_aiVehicle.driveStrategies) do
+		if strategy.activeTurnStrategy ~= nil then
+			combine.cp.turnStrategyIndex = index
+			strategy.activeTurnStrategy.didNotMoveTimer = strategy.activeTurnStrategy.didNotMoveTimeout;
+			aiTurn = true
+		end
+	end	]]
+	
+	if combine ~= nil and (aiTurn or combine.cp.turnStage > 0) then
+		--courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_IS_TURNING");
+		combineIsTurning = true
+		print(('%s: cp.turnStage=%d -> combineIsTurning=true'):format(nameNum(combine), combine.cp.turnStage));
+	end
+	if combineIsTurning then
+		if combine.cp.isChopper then
+			local fruitSide = courseplay:sideToDrive(vehicle, combine, -10,true);
+			local maxDiameter = math.max(totalLength,turnDiameter)
+			local extraAlignLength = 9
+			if vehicle.cp.distances ~= nil and vehicle.cp.distances.frontWheelToRearWheel ~=nil then
+				extraAlignLength = vehicle.cp.distances.frontWheelToRearWheel*3;
+			end
+			--local extraAlignLength = courseplay:getDirectionNodeToTurnNodeLength(vehicle)*2+6;	
+			
+			--another new chopper turn maneuver by Thomas Gärtner  
+			if fruitSide == "left" then -- chopper will turn left
+
+				if vehicle.cp.combineOffset > 0 then -- I'm left of chopper
+					courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+					vehicle.cp.curTarget.rev = false
+					courseplay:addNewTargetVector(vehicle, 2*turnDiameter*-1 ,  turnDiameter);
+					vehicle.cp.chopperIsTurning = true
+
+				else --i'm right of choppper
+					if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 and vehicle.cp.turnOnField then
+						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right. Turning the New Way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
+						local maxDiameter = math.max(20,vehicle.cp.turnDiameter)
+						local verticalWaypointShift = courseplay:getWaypointShift(vehicle,combine)
+						combine.cp.verticalWaypointShift = verticalWaypointShift
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
+						vehicle.cp.curTarget.rev = false
+						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-1,maxDiameter,combine.cp.workWidth)
+									
+						courseplay:addNewTargetVector(vehicle,combine.cp.workWidth,-(math.max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength +extraAlignLength -verticalWaypointShift)))
+						courseplay:addNewTargetVector(vehicle,combine.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
+					else
+						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right. Turning the Old Way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter*-1, 0, turnDiameter);
+						vehicle.cp.chopperIsTurning = true
+					end
+				end
+				
+			else -- chopper will turn right
+				if vehicle.cp.combineOffset < 0 then -- I'm right of chopper
+					courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+					vehicle.cp.curTarget.rev = false
+					courseplay:addNewTargetVector(vehicle, 2*turnDiameter,     turnDiameter);
+					vehicle.cp.chopperIsTurning = true
+				else -- I'm left of chopper
+					if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 and vehicle.cp.turnOnField then
+						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left. Turning the new way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
+						local maxDiameter = math.max(20,vehicle.cp.turnDiameter)
+						local verticalWaypointShift = courseplay:getWaypointShift(vehicle,combine)
+						combine.cp.verticalWaypointShift = verticalWaypointShift
+						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
+						--vehicle.cp.curTarget.rev = false
+						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,1,maxDiameter,combine.cp.workWidth)
+
+						courseplay:addNewTargetVector(vehicle,-combine.cp.workWidth,-(math.max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength +extraAlignLength -verticalWaypointShift)))
+						courseplay:addNewTargetVector(vehicle,-combine.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
+					else
+						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left. Turning the old way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter, 0, turnDiameter);
+						vehicle.cp.chopperIsTurning = true
+					end
+				end
+			end
+
+			if vehicle.cp.combineOffsetAutoMode then
+				if vehicle.sideToDrive == "right" then
+					vehicle.cp.combineOffset = combine.cp.offset * -1;
+				elseif vehicle.sideToDrive == "left" then
+					vehicle.cp.combineOffset = combine.cp.offset;
+				end;
+			else
+				if vehicle.sideToDrive == "right" then
+					vehicle.cp.combineOffset = math.abs(vehicle.cp.combineOffset) * -1;
+				elseif vehicle.sideToDrive == "left" then
+					vehicle.cp.combineOffset = math.abs(vehicle.cp.combineOffset);
+				end;
+			end;
+			
+			print("vehicle.cp.nextTargets: "..tostring(vehicle.cp.nextTargets).." call ppc")
+		
+			self.tempCourse = Course(self.vehicle, self.vehicle.cp.nextTargets)
+			self.ppc:setCourse(self.tempCourse)
+			self.ppc:setLookaheadDistance(self.ppc.shortLookaheadDistance)
+			self.ppc:initialize(1)
+			self:setOnTurnAwayCourse(true)
+			self:setModeState(self.STATE_DRIVE_COURSE_ON_FIELD);
+
+		
+		end
+	end
+end
+
+function CombineUnloadAIDriver:onWaypointChange(newIx)
+	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
+		if not self.onTurnAwayCourse then
+		courseplay:setWaypointIndex(self.vehicle, newIx)
+	else
+		--still needed in reverse(198) till we got rid of vehicle.waypoints everywhere
+		local point = self.ppc.course.waypoints[newIx]
+		self.vehicle.cp.curTarget.x, self.vehicle.cp.curTarget.z = point.x, point.z
+	end
+end
+
+function CombineUnloadAIDriver:checkLastWaypoint()
+	local hasReachedLastWaypoint = false
+	
+	
+	
+	
+	if self.ppc:reachedLastWaypoint() or hasReachedLastWaypoint then
+		print("self.ppc:reachedLastWaypoint: self.onTurnAwayCourse= "..tostring(self.onTurnAwayCourse))
+		if self.onTurnAwayCourse then
+			print("setModeState(self.STATE_FOLLOW_PIPE)")
+			self:setModeState(self.STATE_FOLLOW_PIPE);
+			self:setOnTurnAwayCourse(false)
+		else
+			print("setModeState(self.STATE_WAIT_AT_START)")
+			self:setModeState(self.STATE_WAIT_AT_START)
+			courseplay:setIsLoaded(self.vehicle, false);
+		end
+	end
 end
 
 function CombineUnloadAIDriver:followPipe(dt)
+	self:checkTurnOnFieldEdge(dt)
 	local vehicle = self.vehicle
 	local combine = vehicle.cp.activeCombine
 	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
@@ -519,8 +693,8 @@ function CombineUnloadAIDriver:driveUnloadCourse(dt)
 	self.ppc:update()
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- should we keep driving?
-	local allowedToDrive = self:checkLastWaypoint()
-
+	local allowedToDrive = true
+	self:checkLastWaypoint()
 	-- RESET TRIGGER RAYCASTS from drive.lua. 
 	-- TODO: Not sure how raycast can be called twice if everything is coded cleanly.
 	self.vehicle.cp.hasRunRaycastThisLoop['tipTrigger'] = false
@@ -549,13 +723,6 @@ function CombineUnloadAIDriver:driveUnloadCourse(dt)
 	end
 end
 
-
-
-function CombineUnloadAIDriver:onWaypointChange(newIx)
-	self:debug('On waypoint change %d', newIx)
-	AIDriver.onWaypointChange(self, newIx)
-end
-
 function CombineUnloadAIDriver:hasTipTrigger()
 	-- TODO: come up with something better?
 	return self.vehicle.cp.currentTipTrigger ~= nil
@@ -569,6 +736,8 @@ function CombineUnloadAIDriver:getSpeed()
 		else
 			return 10
 		end
+	elseif self.onTurnAwayCourse then
+		return self.vehicle.cp.speeds.turn
 	else
 		return AIDriver.getSpeed(self)
 	end
@@ -576,15 +745,6 @@ end
 
 function CombineUnloadAIDriver:getIsInBunksiloTrigger()
 	return self.vehicle.cp.backupUnloadSpeed ~= nil
-end
-
-function CombineUnloadAIDriver:checkLastWaypoint()
-	local allowedToDrive = true
-	if self.ppc:reachedLastWaypoint() then
-		self:setModeState(self.STATE_WAIT_AT_START)
-		courseplay:setIsLoaded(self.vehicle, false);		
-	end
-	return allowedToDrive
 end
 
 function CombineUnloadAIDriver:searchForTipTrigger(lx, lz)
@@ -671,6 +831,7 @@ end
 
 function CombineUnloadAIDriver:setModeState(newState)
 	if self.modeState ~= newState then
+		print("CombineUnloadAIDriver:setModeState:"..tostring(self.modeState))
 		self.modeState = newState;
 	end
 end
