@@ -34,6 +34,7 @@ function AIDriver:init(vehicle)
 	self.acceleration = 1
 	self.mode = courseplay.MODE_TRANSPORT
 	self.turnIsDriving = false -- code in turn.lua is driving
+	self.isStopped = true
 end
 
 function AIDriver:getMode()
@@ -44,11 +45,11 @@ end
 -- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
 	self.firstWaypointIx = ix
+	self.isStopped = false
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	self.turnIsDriving = false
-	self.hasCalledOnEndCourse = false
 	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, #self.mainCourse.waypoints)
 
 	-- self.course is the one we are currently driving (main, alignment, etc...)
@@ -71,8 +72,20 @@ function AIDriver:start(ix)
 end
 
 --- Stop the driver
-function AIDriver:stop()
+-- @param reason as defined in globalInfoText.msgReference
+function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
+	self.msgReference = msgReference
+	self.isStopped = true
+end
+
+--- Just hang around after we stopped and make sure a message is displayed when there is one.
+function AIDriver:idle(dt)
+	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, false, true, 0, 1, 0, false)
+	if self.msgReference then
+		-- looks like this needs to be called in every update cycle.
+		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
+	end
 end
 
 --- Main driving function
@@ -82,9 +95,13 @@ end
 function AIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
+
+	if self.isStopped then self:idle(dt) return end
+
 	-- should we keep driving?
 	local allowedToDrive = self:checkLastWaypoint()
 	self:driveCourse(dt, allowedToDrive)
+
 end
 
 --- Normal driving according to the course waypoints, using courseplay:goReverse() when needed
@@ -93,7 +110,7 @@ function AIDriver:driveCourse(dt, allowedToDrive)
 	-- check if reversing
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
 	-- stop for fuel if needed
-	allowedToDrive = courseplay:checkFuel(self.vehicle, allowedToDrive,lx,lz)
+	allowedToDrive = courseplay:checkFuel(self.vehicle, lx, lz)
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
 		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
@@ -160,13 +177,7 @@ function AIDriver:checkLastWaypoint()
 		elseif self.vehicle.cp.stopAtEnd then
 			-- stop at the last waypoint
 			allowedToDrive = false
-			-- TODO: abstract this into some generic notifier?
-			if not self.hasCalledOnEndCourse then
-				self:onEndCourse()
-				self.hasCalledOnEndCourse = true
-			end
-			-- looks like this needs to be called in every update cycle.
-			CpManager:setGlobalInfoText(self.vehicle, 'END_POINT')
+			self:onEndCourse()
 		else
 			-- continue at the first waypoint
 			self.ppc:initialize(1)
@@ -182,7 +193,7 @@ end
 
 --- Course ended
 function AIDriver:onEndCourse()
-	-- nothing in general, derived classes will implement when needed
+	self:stop('END_POINT')
 end
 
 function AIDriver:getDirectionToGoalPoint()

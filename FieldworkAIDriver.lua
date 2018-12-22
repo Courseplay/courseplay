@@ -42,8 +42,14 @@ function FieldworkAIDriver:start(ix)
 	end
 end
 
-function FieldworkAIDriver:stop()
+function FieldworkAIDriver:drive(dt)
+	AIDriver.drive(self, dt)
+	self:checkCapacities()
+end
+
+function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
+	AIDriver.stop(self, msgReference)
 end
 
 function FieldworkAIDriver:onEndAlignmentCourse()
@@ -51,7 +57,7 @@ function FieldworkAIDriver:onEndAlignmentCourse()
 end
 
 function FieldworkAIDriver:onEndCourse()
-	self:stopWork()
+	self:stop('END_POINT')
 end
 
 function FieldworkAIDriver:getSpeed()
@@ -75,4 +81,19 @@ function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
 	courseplay:raiseImplements(self.vehicle)
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
+end
+
+function FieldworkAIDriver:checkCapacities()
+	-- really no need to do this on every update()
+	if g_updateLoopIndex % 100 ~= 0 then return end
+	if not self.vehicle.cp.workTools then return end
+	for _, workTool in pairs(self.vehicle.cp.workTools) do
+		if workTool.getFillUnits then
+			for index, fillUnit in pairs(workTool:getFillUnits()) do
+				local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
+				local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
+				self:debug('Fill levels: %s: %d', fillTypeName, pc )
+			end
+		end
+	end
 end

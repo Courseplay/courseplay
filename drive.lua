@@ -532,7 +532,7 @@ function courseplay:drive(self, dt)
 		--FUEL LEVEL + REFILLING
 		-- DO NOT DELETE fuelFillLevel is gone. This variable may be a replacment 
 		
-		allowedToDrive = courseplay:checkFuel(self,allowedToDrive,lx,lz)
+		allowedToDrive = courseplay:checkFuel(self,lx,lz)
 		
 		
 		-- WATER WARNING
@@ -1835,6 +1835,7 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 				fillUnit.capacity = fillUnit.capacity *3
 			end
 		end
+		-- TODO: why not fillUnit.fillType == FillType.DIESEL?
 		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL) 
 		or index == workTool:getConsumerFillUnitIndex(FillType.DEF)
 		or index == workTool:getConsumerFillUnitIndex(FillType.AIR))
@@ -2089,7 +2090,8 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 	end
 end;
 
-function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
+function courseplay:checkFuel(vehicle, lx, lz)
+	local allowedToDrive = true
 	if vehicle.getConsumerFillUnitIndex ~= nil then
 		local isFilling = false
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
@@ -2104,7 +2106,7 @@ function courseplay:checkFuel(vehicle, allowedToDrive,lx, lz)
 		if vehicle.cp.fillTrigger then
 			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
 			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, vehicle, dieselIndex) then
-				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle,allowedToDrive)
+				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle)
 			end			
 		end
 		if currentFuelPercentage < 5 then

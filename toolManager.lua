@@ -1303,7 +1303,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
 			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
 			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, workTool) then
-				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle,allowedToDrive, workTool)
+				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle, workTool)
 			end
 			
 			--check whether vehicle.cp.refillUntilPct is set 
@@ -1333,7 +1333,8 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 	return allowedToDrive, lx, lz;
 end;		
 		
-function courseplay:fillOnTrigger(vehicle,allowedToDrive, workTool)
+function courseplay:fillOnTrigger(vehicle, workTool)
+	local allowedToDrive = true
 	local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
 	local objectToFill = workTool or vehicle; 
 	if trigger.onActivateObject then

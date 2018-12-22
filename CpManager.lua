@@ -111,6 +111,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
+	addConsoleCommand( 'printVehicleVariable', 'Print a variable', 'printVehicleVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
@@ -529,6 +530,17 @@ function CpManager:printVariable(variableName, maxDepth, printShortVersion)
 		return(variableName .. ' is nil')
 	end
 	return('Printed variable ' .. variableName)
+end
+
+--- Print the variable in the selected vehicle's namespace
+-- You can omit the dot for data members but if you want to call a function, you must start the variable name with a colon
+function CpManager:printVehicleVariable(variableName, maxDepth)
+	local vehiclePrefix = 'g_currentMission.controlledVehicle'
+	if not StringUtil.startsWith(variableName, ':') and not StringUtil.startsWith(variableName, '.') then
+		-- allow to omit the . at the beginning of the variable name.
+		vehiclePrefix = vehiclePrefix .. '.'
+	end
+	self:printVariable(vehiclePrefix .. variableName, maxDepth)
 end
 
 --- Install a wrapper around a function. The wrapper will print the function name

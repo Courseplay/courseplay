@@ -39,6 +39,9 @@ function GrainTransportAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	--print("GrainTransportAIDriver:drive(dt)")
 	self.ppc:update()
+
+	if self.isStopped then self:idle() return end
+
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- should we keep driving?
 	local allowedToDrive = self:checkLastWaypoint()
@@ -120,7 +123,7 @@ function GrainTransportAIDriver:checkLastWaypoint()
 			-- stop at the last waypoint when the run counter expires
 			allowedToDrive = false
 			self.vehicle.cp.runReset = true;
-			CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1')
+			self:stop('END_POINT_MODE_1')
 			self:debug('Mode 1 has tried to stop')
 		else
 			-- continue at the first waypoint
