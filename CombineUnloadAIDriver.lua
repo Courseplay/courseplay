@@ -82,9 +82,6 @@ function CombineUnloadAIDriver:drive(dt)
 	if modeState > self.STATE_DEFAULT then
 		self:checkFillLevels(dt)
 	end
-	if self.vehicle.cp.activeCombine then
-		renderText(0.2, 0.045, 0.02, string.format("combine turns %s",mode,tostring(self.vehicle.cp.activeCombine.spec_aiVehicle.isTurning)));
-	end
 end
 
 function CombineUnloadAIDriver:setOnTurnAwayCourse(onTurnAwayCourse)
@@ -138,8 +135,8 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 	local trailerOffset = vehicle.cp.tipperOffset
 	local totalLength = vehicle.cp.totalLength+2
 	local turnDiameter = vehicle.cp.turnDiameter+2
-	local aiTurn = combine.spec_aiVehicle.isTurning --false	
-	
+	local aiTurn = combine.spec_aiVehicle.isTurning
+	local combineIsTurning = false
 	--[[for index,strategy in pairs(combine.spec_aiVehicle.driveStrategies) do
 		if strategy.activeTurnStrategy ~= nil then
 			combine.cp.turnStrategyIndex = index
@@ -179,8 +176,8 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 						local maxDiameter = math.max(20,vehicle.cp.turnDiameter)
 						local verticalWaypointShift = courseplay:getWaypointShift(vehicle,combine)
 						combine.cp.verticalWaypointShift = verticalWaypointShift
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
-						vehicle.cp.curTarget.rev = false
+						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
+						--vehicle.cp.curTarget.rev = false
 						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-1,maxDiameter,combine.cp.workWidth)
 									
 						courseplay:addNewTargetVector(vehicle,combine.cp.workWidth,-(math.max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength +extraAlignLength -verticalWaypointShift)))
@@ -260,11 +257,7 @@ end
 
 function CombineUnloadAIDriver:checkLastWaypoint()
 	local hasReachedLastWaypoint = false
-	
-	
-	
-	
-	if self.ppc:reachedLastWaypoint() or hasReachedLastWaypoint then
+	if self.ppc:reachedLastWaypoint() then
 		print("self.ppc:reachedLastWaypoint: self.onTurnAwayCourse= "..tostring(self.onTurnAwayCourse))
 		if self.onTurnAwayCourse then
 			print("setModeState(self.STATE_FOLLOW_PIPE)")
