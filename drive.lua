@@ -660,7 +660,7 @@ function courseplay:drive(self, dt)
 
 	self.cp.inTraffic = false;
 
-	--[[Tommi
+	
 	-- HANDLE TIPPER COVER
 	if self.cp.tipperHasCover and self.cp.automaticCoverHandling and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 4 or self.cp.mode == 5 or self.cp.mode == 6) then
 		local showCover = false;
@@ -683,7 +683,7 @@ function courseplay:drive(self, dt)
 	elseif self.cp.tipperHasCover then
 		courseplay:openCloseCover(self, dt, false);
 	end;
-	]]
+
 	-- CHECK TRAFFIC
 	-- Ryan missing gcurrent_mission variable in this function allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
 
@@ -1272,9 +1272,9 @@ function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger,stopOr
 				or (stopOrder and (isSprayer or isSowingMachine)) then
 				return
 			end
-
-			if tipper.isCoverOpen == showCover then
-				tipper:setCoverState(not showCover);
+			local newState = showCover and 0 or 1         
+			if tipper.spec_cover.state ~= newState then
+				tipper:setCoverState(newState);
 			end;
 
 

@@ -174,11 +174,11 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 					if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 and vehicle.cp.turnOnField then
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right. Turning the New Way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						local maxDiameter = math.max(20,vehicle.cp.turnDiameter)
-						local verticalWaypointShift = courseplay:getWaypointShift(vehicle,combine)
+						local verticalWaypointShift = self:getWaypointShift(vehicle,combine)
 						combine.cp.verticalWaypointShift = verticalWaypointShift
 						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 						--vehicle.cp.curTarget.rev = false
-						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,-1,maxDiameter,combine.cp.workWidth)
+						vehicle.cp.nextTargets  = self:createTurnAwayCourse(vehicle,-1,maxDiameter,combine.cp.workWidth)
 									
 						courseplay:addNewTargetVector(vehicle,combine.cp.workWidth,-(math.max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength +extraAlignLength -verticalWaypointShift)))
 						courseplay:addNewTargetVector(vehicle,combine.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
@@ -200,11 +200,11 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 					if vehicle.cp.isReversePossible and not autoCombineCircleMode and combine.cp.forcedSide == nil and combine.cp.multiTools == 1 and vehicle.cp.turnOnField then
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left. Turning the new way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
 						local maxDiameter = math.max(20,vehicle.cp.turnDiameter)
-						local verticalWaypointShift = courseplay:getWaypointShift(vehicle,combine)
+						local verticalWaypointShift = self:getWaypointShift(vehicle,combine)
 						combine.cp.verticalWaypointShift = verticalWaypointShift
 						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
 						--vehicle.cp.curTarget.rev = false
-						vehicle.cp.nextTargets  = courseplay:createTurnAwayCourse(vehicle,1,maxDiameter,combine.cp.workWidth)
+						vehicle.cp.nextTargets  = self:createTurnAwayCourse(vehicle,1,maxDiameter,combine.cp.workWidth)
 
 						courseplay:addNewTargetVector(vehicle,-combine.cp.workWidth,-(math.max(maxDiameter +vehicle.cp.totalLength+extraAlignLength,maxDiameter +vehicle.cp.totalLength +extraAlignLength -verticalWaypointShift)))
 						courseplay:addNewTargetVector(vehicle,-combine.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
@@ -317,15 +317,15 @@ function CombineUnloadAIDriver:followPipe(dt)
 
 	--CALCULATE HORIZONTAL OFFSET (side offset)
 	if combine.cp.offset == nil and not combine.cp.isChopper then
-		courseplay:calculateCombineOffset(vehicle, combine);
+		self:calculateCombineOffset(vehicle, combine);
 	end
 	currentX, currentY, currentZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, trailerOffset + 20)
 
 	--CALCULATE VERTICAL OFFSET (tipper offset)
-	local prnToCombineZ = courseplay:calculateVerticalOffset(vehicle, combine);
+	local prnToCombineZ = self:calculateVerticalOffset(vehicle, combine);
 
 	--SET TARGET UNLOADING COORDINATES @ COMBINE
-	local ttX, ttZ = courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ);
+	local ttX, ttZ = self:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ);
 
 	local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, ttX, y, ttZ)
 	dod = MathUtil.vector2Length(lx, lz)
@@ -419,7 +419,7 @@ function CombineUnloadAIDriver:driveNextToCombine(dt)
 	
 	if combine.cp.offset == nil or vehicle.cp.combineOffset == 0 then
 		--print("offset not saved - calculate")
-		courseplay:calculateCombineOffset(vehicle, combine);
+		self:calculateCombineOffset(vehicle, combine);
 	elseif not combine.cp.isChopper and not combine.cp.isSugarBeetLoader and vehicle.cp.combineOffsetAutoMode and vehicle.cp.combineOffset ~= combine.cp.offset then
 		--print("set saved offset")
 		vehicle.cp.combineOffset = combine.cp.offset			
@@ -458,7 +458,7 @@ function CombineUnloadAIDriver:driveToCombine(dt)
 		local combine = vehicle.cp.activeCombine
 		local refSpeed = vehicle.cp.speeds.field
 		local turnDiameter = vehicle.cp.turnDiameter+2
-		local safetyDistance = courseplay:getSafetyDistanceFromCombine( combine )
+		local safetyDistance = self:getSafetyDistanceFromCombine( combine )
 		courseplay:setInfoText(vehicle, "COURSEPLAY_DRIVE_BEHIND_COMBINE");
 
 		-- calculate a world position (currentX/Y/Z) and a vector (lx/lz) to a point near the combine (which is sometimes called 'tractor')
@@ -517,7 +517,7 @@ function CombineUnloadAIDriver:driveToCombine(dt)
 			-- if there's fruit between me and the combine, calculate a path around it to a point 
 			-- behind the combine.
 			print("call calculateAstarPathToCoords")
-			if courseplay:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind, nil ) then
+			if self:calculateAstarPathToCoords(vehicle, nil, cx_behind, cz_behind, nil ) then
 			  -- there's fruit and a path could be calculated, switch to waypoint mode
 				courseplay.debugVehicle( 4, vehicle, "Combine is %.1f meters away, switching to pathfinding, drive to a point %.1f (%.1f safety distance and %.1f turn diameter) behind to combine",
 													dod, safetyDistance + turnDiameter, safetyDistance, turnDiameter )

@@ -651,10 +651,12 @@ function courseplay:setMinHudPage(vehicle)
 	if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.attachedCombine ~= nil then
 		vehicle.cp.minHudPage = courseplay.hud.PAGE_COMBINE_CONTROLS;
 	end;
-
-	courseplay:setHudPage(vehicle, max(vehicle.cp.hud.currentPage, vehicle.cp.minHudPage));
-	courseplay:debug(('%s: setMinHudPage(): minHudPage=%d, currentPage=%d'):format(nameNum(vehicle), vehicle.cp.minHudPage, vehicle.cp.hud.currentPage), 18);
-	courseplay.buttons:setActiveEnabled(vehicle, 'pageNav');
+	if vehicle.cp.hud ~= nil then
+		courseplay:setHudPage(vehicle, max(vehicle.cp.hud.currentPage, vehicle.cp.minHudPage));
+		courseplay:debug(('%s: setMinHudPage(): minHudPage=%d, currentPage=%d'):format(nameNum(vehicle), vehicle.cp.minHudPage, vehicle.cp.hud.currentPage), 18);
+		courseplay.buttons:setActiveEnabled(vehicle, 'pageNav');
+	end
+	
 end;
 
 function courseplay.hud:loadPage(vehicle, page)

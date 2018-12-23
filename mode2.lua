@@ -426,15 +426,8 @@ function courseplay:unload_combine(vehicle, dt)
 	elseif combine.turnStage ~= 3 then
 		vehicle.cp.choppersTurnHasEnded = false
 	end
-	local aiTurn = false	
-	for index,strategy in pairs(tractor.driveStrategies) do
-		if strategy.activeTurnStrategy ~= nil then
-			combine.cp.turnStrategyIndex = index
-			strategy.activeTurnStrategy.didNotMoveTimer = strategy.activeTurnStrategy.didNotMoveTimeout;
-			aiTurn = true
-		end
-	end	
-	
+	local aiTurn = tractor.spec_aiVehicle and tractor.spec_aiVehicle.isTurning	
+
 	--local aiTurn = combine.isAIThreshing and combine.turnStage > 0 and not (combine.turnStage == 3 and vehicle.cp.choppersTurnHasEnded)
 	if tractor ~= nil and (aiTurn or tractor.cp.turnStage > 0) then
 		--courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_IS_TURNING");
@@ -804,7 +797,7 @@ function courseplay:unload_combine(vehicle, dt)
 			elseif lz < -0.5 then
 				refSpeed = max(combine_speed - vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-			elseif lz > 1 or not combine.overloading.isActive then  
+			elseif lz > 1 or combine:getDischargeState() == 0 then  
 				refSpeed = max(combine_speed + vehicle.cp.speeds.crawl,vehicle.cp.speeds.crawl)
 				speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 			else
@@ -884,7 +877,7 @@ function courseplay:unload_combine(vehicle, dt)
 				if AutoCombineIsTurning and tractor.acIsCPStopped ~= nil then
 					 courseplay:debug(nameNum(tractor) .. ': distance < 50 -> set acIsCPStopped to true', 4); --TODO: 140308 AutoTractor
 					tractor.acIsCPStopped = true
-				elseif combine.aiIsStarted then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
+				elseif combine.getIsActive and combine:getIsActive() then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
 					stopAICombine = true
 					--combine.waitForTurnTime = combine.timer + 100
 				elseif tractor:getIsCourseplayDriving() then --and not (combineFillLevel == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
@@ -912,9 +905,10 @@ function courseplay:unload_combine(vehicle, dt)
 		--print("reset vehicle.cp.fieldEdgeTimeOutSet")
 	end	
 	
-	if combine.aiIsStarted and stopAICombine and combine:getCruiseControlSpeed() > 0 then
+	if combine:getIsActive() and stopAICombine and combine:getCruiseControlSpeed() > 0 then
 		combine.cp.lastCruiseControlSpeed = combine:getCruiseControlSpeed()
-		combine.cruiseControl.speed = 0 
+		combine.spec_drivable.cruiseControl.speed = 0 
+		--print("stopAICombine")
 	end
 	
 	if combineIsTurning and distance < 20 then
@@ -1456,11 +1450,11 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 	local offs = vehicle.cp.combineOffset
 	local offsPos = abs(vehicle.cp.combineOffset)
 	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
-	
+	local dischargeNode = combine:getCurrentDischargeNode()
 	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
-	if combine.pipeRaycastNode ~= nil then
-		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
-		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	if combine.spec_dischargeable ~= nil then
+		prnX, prnY, prnZ = getTranslation(dischargeNode.node)
+		prnwX, prnwY, prnwZ = getWorldTranslation(dischargeNode.node)
 		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combineDirNode, prnwX, prnwY, prnwZ)
 
 		if combine.cp.pipeSide == nil then
@@ -1475,13 +1469,13 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 	
 	--Sugarbeet Loaders (e.g. Ropa Euro Maus, Holmer Terra Felis) --TODO (Jakob): theoretically not needed, as it's being dealt with in getSpecialCombineOffset()
 	elseif vehicle.cp.combineOffsetAutoMode and combine.cp.isSugarBeetLoader then
-		local utwX,utwY,utwZ = getWorldTranslation(combine.pipeRaycastNode or combine.unloadingTrigger.node);
+		local utwX,utwY,utwZ = getWorldTranslation(combine.spec_dischargeable.currentRaycastDischargeNode.node or combine.unloadingTrigger.node);
 		local combineToUtwX,_,combineToUtwZ = worldToLocal(combineDirNode, utwX,utwY,utwZ);
 		offs = combineToUtwX;
 
 	--combine // combine_offset is in auto mode, pipe is open
-	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and combine.pipeCurrentState == 2 and combine.pipeRaycastNode ~= nil then --pipe is open
-		local raycastNodeParent = getParent(combine.pipeRaycastNode);
+	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and combine.pipeCurrentState == 2 and combine.spec_dischargeable ~= nil then --pipe is open
+		local raycastNodeParent = getParent(combine.spec_dischargeable.currentRaycastDischargeNode.node);
 		if raycastNodeParent == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--safety distance so the trailer doesn't crash into the pipe (sidearm)
 			local additionalSafetyDistance = 0;
@@ -1499,7 +1493,7 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 				offs = pipeX - prnY;
 			end;
 			--courseplay:debug(string.format("%s(%i): %s @ %s: root > pipe > pipeRaycastNode // offs = %f", curFile, debug.getinfo(1).currentline, vehicle.name, combine.name, offs), 4)
-		elseif combine.pipeRaycastNode ~= nil then --BACKUP pipeRaycastNode isn't direct child of pipe
+		elseif dischargeNode ~= nil then --BACKUP pipeRaycastNode isn't direct child of pipe
 			offs = combineToPrnX + 0.5;
 			--courseplay:debug(string.format("%s(%i): %s @ %s: combineToPrnX // offs = %f", curFile, debug.getinfo(1).currentline, vehicle.name, combine.name, offs), 4)
 		elseif combine.cp.lmX ~= nil then --user leftMarker
@@ -1509,12 +1503,12 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 		end;
 
 	--combine // combine_offset is in manual mode
-	elseif not combine.cp.isChopper and not vehicle.cp.combineOffsetAutoMode and combine.pipeRaycastNode ~= nil then
+	elseif not combine.cp.isChopper and not vehicle.cp.combineOffsetAutoMode and dischargeNode ~= nil then
 		offs = offsPos * combine.cp.pipeSide;
 		--courseplay:debug(string.format("%s(%i): %s @ %s: [manual] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, vehicle.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 4);
 	
 	--combine // combine_offset is in auto mode
-	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and combine.pipeRaycastNode ~= nil then
+	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and dischargeNode ~= nil then
 		offs = offsPos * combine.cp.pipeSide;
 		--courseplay:debug(string.format("%s(%i): %s @ %s: [auto] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, vehicle.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 4);
 
@@ -1551,7 +1545,8 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 end;
 
 function courseplay:calculateVerticalOffset(vehicle, combine)
-	local cwX, cwY, cwZ = getWorldTranslation(combine.pipeRaycastNode);
+	local dischargeNode = combine:getCurrentDischargeNode()
+	local cwX, cwY, cwZ = getWorldTranslation(dischargeNode.node);
 	local _, _, prnToCombineZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, cwX, cwY, cwZ);
 	
 	return prnToCombineZ;

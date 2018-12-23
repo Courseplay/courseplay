@@ -1,18 +1,15 @@
 -- temp file to copy out the parts needed for CombineUnlaodAIDriver
-local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
-local _;
 
-
-function courseplay:calculateCombineOffset(vehicle, combine)
+function CombineUnloadAIDriver:calculateCombineOffset(vehicle, combine)
 	local curFile = "mode2.lua";
 	local offs = vehicle.cp.combineOffset
-	local offsPos = abs(vehicle.cp.combineOffset)
+	local offsPos = math.abs(vehicle.cp.combineOffset)
 	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
 	
 	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
-	if combine.pipeRaycastNode ~= nil then
-		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
-		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
+	if combine.spec_dischargeable ~= nil then
+		prnX, prnY, prnZ = getTranslation(combine.spec_dischargeable.currentRaycastDischargeNode.node)
+		prnwX, prnwY, prnwZ = getWorldTranslation(combine.spec_dischargeable.currentRaycastDischargeNode.node)
 		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combineDirNode, prnwX, prnwY, prnwZ)
 
 		if combine.cp.pipeSide == nil then
@@ -32,8 +29,8 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 		offs = combineToUtwX;
 
 	--combine // combine_offset is in auto mode, pipe is open
-	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and combine.pipeCurrentState == 2 and combine.pipeRaycastNode ~= nil then --pipe is open
-		local raycastNodeParent = getParent(combine.pipeRaycastNode);
+	elseif not combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode and combine.pipeCurrentState == 2 and combine.spec_dischargeable.currentRaycastDischargeNode.node ~= nil then --pipe is open
+		local raycastNodeParent = getParent(combine.spec_dischargeable.currentRaycastDischargeNode.node);
 		if raycastNodeParent == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			--safety distance so the trailer doesn't crash into the pipe (sidearm)
 			local additionalSafetyDistance = 0;
@@ -61,7 +58,7 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 		end;
 
 	--combine // combine_offset is in manual mode
-	elseif not combine.cp.isChopper and not vehicle.cp.combineOffsetAutoMode and combine.pipeRaycastNode ~= nil then
+	elseif not combine.cp.isChopper and not vehicle.cp.combineOffsetAutoMode and combine.spec_dischargeable.currentRaycastDischargeNode.node ~= nil then
 		offs = offsPos * combine.cp.pipeSide;
 		--courseplay:debug(string.format("%s(%i): %s @ %s: [manual] offs = offsPos * pipeSide = %s * %s = %s", curFile, debug.getinfo(1).currentline, vehicle.name, combine.name, tostring(offsPos), tostring(combine.cp.pipeSide), tostring(offs)), 4);
 	
@@ -73,7 +70,7 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 	--chopper // combine_offset is in auto mode
 	elseif combine.cp.isChopper and vehicle.cp.combineOffsetAutoMode then
 		if combine.cp.lmX ~= nil then
-			offs = max(combine.cp.lmX + 2.5, 7);
+			offs = math.max(combine.cp.lmX + 2.5, 7);
 		else
 			offs = 8;
 		end;
@@ -81,9 +78,9 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 			
 		if vehicle.sideToDrive ~= nil then
 			if vehicle.sideToDrive == "left" then
-				offs = abs(offs);
+				offs = math.abs(offs);
 			elseif vehicle.sideToDrive == "right" then
-				offs = abs(offs) * -1;
+				offs = math.abs(offs) * -1;
 			end;
 		end;
 	end;
@@ -91,9 +88,9 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 	--cornChopper forced side offset
 	if combine.cp.isChopper and combine.cp.forcedSide ~= nil then
 		if combine.cp.forcedSide == "left" then
-			offs = abs(offs);
+			offs = math.abs(offs);
 		elseif combine.cp.forcedSide == "right" then
-			offs = abs(offs) * -1;
+			offs = math.abs(offs) * -1;
 		end
 		--courseplay:debug(string.format("%s(%i): %s @ %s: cp.forcedSide=%s => offs=%f", curFile, debug.getinfo(1).currentline, vehicle.name, combine.name, combine.cp.forcedSide, offs), 4)
 	end
@@ -102,14 +99,14 @@ function courseplay:calculateCombineOffset(vehicle, combine)
 	vehicle.cp.combineOffset = offs;
 end;
 
-function courseplay:calculateVerticalOffset(vehicle, combine)
+function CombineUnloadAIDriver:calculateVerticalOffset(vehicle, combine)
 	local cwX, cwY, cwZ = getWorldTranslation( combine.spec_dischargeable.currentRaycastDischargeNode.node);
 	local _, _, prnToCombineZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, cwX, cwY, cwZ);
 	
 	return prnToCombineZ;
 end;
 
-function courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ)
+function CombineUnloadAIDriver:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ)
 	local sourceRootNode = combine.cp.DirectionNode or combine.rootNode;
 
 	if combine.cp.isChopper then
@@ -121,37 +118,7 @@ function courseplay:getTargetUnloadingCoords(vehicle, combine, trailerOffset, pr
 	return ttX, ttZ;
 end;
 
--- MODE STATE FUNCTIONS
-function courseplay:setModeState(vehicle, state, debugLevel)
-	debugLevel = debugLevel or 2;
- 	if vehicle.cp.modeState ~= state then
-		courseplay:debug( string.format( "%s: Switching state: %d -> %d", nameNum( vehicle ), vehicle.cp.modeState, Utils.getNoNil( state, -1 )), 9 )
-		vehicle.cp.modeState = state;
-	end;
-	if vehicle.cp.isParking and state == STATE_WAIT_AT_START then
-		vehicle.cp.isParking = nil	
-	end
-end;
-
-function courseplay:setMode2NextState(vehicle, nextState)
-	if nextState == nil then return; end;
-  local oldNextState = vehicle.cp.mode2nextState or 0 
-  courseplay:debug( string.format( "%s: Setting next state: %d -> %d", nameNum( vehicle ), oldNextState, nextState ), 9 )
-	if vehicle.cp.mode2nextState ~= nextState then
-		vehicle.cp.mode2nextState = nextState;
-	end;
-end;
-
-function courseplay:switchToNextMode2State(vehicle)
-	if vehicle.cp.mode2nextState == nil then return; end;
-
-	courseplay:setModeState(vehicle, vehicle.cp.mode2nextState, 3);
-end;
-
-function courseplay:onModeStateChange(vehicle, oldState, newState)
-end;
-
-function courseplay:convertTable(turnTargets)
+function CombineUnloadAIDriver:convertTable(turnTargets)
 	local newTable = {}
 	for i=1,#turnTargets do
 		newTable[i] = {}
@@ -164,7 +131,7 @@ function courseplay:convertTable(turnTargets)
 	return  newTable
 end
 
-function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidth,zOffset)
+function CombineUnloadAIDriver:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidth,zOffset)
 		--inspired by Satis :-)
 		local additionalZOffset = zOffset or 0;
 		local targets = {}
@@ -174,7 +141,7 @@ function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidt
 		local center1SideOffset = radius*direction
 		local center2SideOffset = -(workwidth-radius)*direction
 		local sideC = diameter;
-		local sideB = abs(center1SideOffset-center2SideOffset);
+		local sideB = math.abs(center1SideOffset-center2SideOffset);
 		
 		local centerHeight = math.sqrt(sideC^2 - sideB^2);
 				
@@ -192,7 +159,7 @@ function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidt
 		stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.DirectionNode, -centerHeight*direction, 0, -centerHeight+radius-additionalZOffset);
 		courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, radius, -direction, true);
 		
-		targets = courseplay:convertTable(vehicle.cp.turnTargets)
+		targets = self:convertTable(vehicle.cp.turnTargets)
 		vehicle.cp.turnTargets = {}
 		
 		return targets
@@ -200,7 +167,7 @@ end
 
 -- if there's fruit between me and the combine, calculate a path around it and return true.
 -- if there's no fruit or no path around it or couldn't calculate path, return false				
-function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance, mode4_6)
+function CombineUnloadAIDriver:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance, mode4_6)
 	local cx, cz = 0, 0
 	local fruitType = 0
 
@@ -239,14 +206,14 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		return false
 	end
 
-	local fieldNum = courseplay:onWhichFieldAmI( vehicle ); 
+	local fieldNum = self:onWhichFieldAmI(vehicle); 
 		
 	if fieldNum == 0 then														-- No combines are aviable use us again
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine or vehicle;
-		fieldNum = courseplay:onWhichFieldAmI( combine );
+		fieldNum = self:onWhichFieldAmI( combine );
 		if fieldNum == 0 and mode4_6 then
 			-- My unloading course doesn't end on a field so I need to know on which field I am returning to by using the waypoint x and z
-			fieldNum = courseplay:getFieldNumForPosition( tx, tz )
+			fieldNum = self:getFieldNumForPosition( tx, tz )
 		end
 		if fieldNum == 0 then
 			courseplay.debugVehicle( 9, vehicle, "I'm not on field, my combine isn't either" )
@@ -333,15 +300,15 @@ end
 
 
 
-function courseplay:onWhichFieldAmI(vehicle)
+function CombineUnloadAIDriver:onWhichFieldAmI(vehicle)
 	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
-	return courseplay:getFieldNumForPosition( positionX, positionZ )
+	return self:getFieldNumForPosition( positionX, positionZ )
 end
 
-function courseplay:getFieldNumForPosition( positionX, positionZ )
+function CombineUnloadAIDriver:getFieldNumForPosition( positionX, positionZ )
 	local fieldNum = 0;
 	for index, field in pairs(courseplay.fields.fieldData) do
-		if positionX >= field.dimensions.minX and positionX <= field.dimensions.maxX and positionZ >= field.dimensions.minZ and positionZ <= field.dimensions.maxZ then
+		if positionX >= field.dimensions.math.minX and positionX <= field.dimensions.math.maxX and positionZ >= field.dimensions.math.minZ and positionZ <= field.dimensions.math.maxZ then
 			local _, pointInPoly, _, _ = courseplay.fields:getPolygonData(field.points, positionX, positionZ, true, true, true);
 			if pointInPoly then
 				fieldNum = index
@@ -352,7 +319,7 @@ function courseplay:getFieldNumForPosition( positionX, positionZ )
 	return fieldNum
 end
 
-function courseplay:getWaypointShift(vehicle,tractor)
+function CombineUnloadAIDriver:getWaypointShift(vehicle,tractor)
 	if not tractor:getIsCourseplayDriving() then
 		return 0;
 	else
@@ -367,7 +334,7 @@ function courseplay:getWaypointShift(vehicle,tractor)
 	end
 end
 
-function courseplay:getSafetyDistanceFromCombine( combine )
+function CombineUnloadAIDriver:getSafetyDistanceFromCombine( combine )
 	local safetyDistance = 11;
 	if combine.cp.isHarvesterSteerable or combine.cp.isSugarBeetLoader or combine.cp.isWoodChipper or combine.cp.isPoettingerMex5 then
 		safetyDistance = 24;

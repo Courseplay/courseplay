@@ -299,32 +299,26 @@ end
 
 function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jakob): combine this fn and calculateCombineOffset() into one single function
 	local curFile = "combines.lua";
-	local leftMarker, rightMarker;
-	local currentCutter;
+	local dischargeNode = combine:getCurrentDischargeNode()
 	combine.cp.lmX, combine.cp.rmX = 1.5, -1.5;
-	--print("run initial offset")
-	if combine.attachedCutters ~= nil then
-		for cutter, implement in pairs(combine.attachedCutters) do
-			if cutter.aiLeftMarker ~= nil then
-				if leftMarker == nil then
-					leftMarker = cutter.aiLeftMarker;
-					rightMarker = cutter.aiRightMarker;
-					currentCutter = cutter;
-					if leftMarker ~= nil and rightMarker ~= nil then
-						local x, y, z = getWorldTranslation(leftMarker);
-						combine.cp.lmX, _, _ = worldToLocal(currentCutter.rootNode, x, y, z);
-						x, y, z = getWorldTranslation(rightMarker)						
-						combine.cp.rmX, _, _ = worldToLocal(currentCutter.rootNode, x, y, z);
-					end;
+	if combine.spec_combine ~= nil then
+		for cutter, _ in pairs(combine.spec_combine.attachedCutters) do
+			local aiLeftMarker, aiRightMarker = cutter:getAIMarkers()
+			if aiLeftMarker ~= nil then
+				if aiLeftMarker ~= nil and aiRightMarker ~= nil then
+					local x, y, z = getWorldTranslation(aiLeftMarker);
+					combine.cp.lmX, _, _ = worldToLocal(cutter.rootNode, x, y, z);
+					x, y, z = getWorldTranslation(aiRightMarker)						
+					combine.cp.rmX, _, _ = worldToLocal(cutter.rootNode, x, y, z);
 				end;
 			end;
 		end;
 	end;
 	
 	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
-	if combine.pipeRaycastNode ~= nil then
-		prnwX, prnwY, prnwZ = getWorldTranslation(combine.pipeRaycastNode)
-		prnX, prnY, prnZ = getTranslation(combine.pipeRaycastNode)
+	if dischargeNode ~= nil then
+		prnwX, prnwY, prnwZ = getWorldTranslation(dischargeNode.node)
+		prnX, prnY, prnZ = getTranslation(dischargeNode.node)
 		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 		if combine.cp.pipeSide == nil then
 			courseplay:getCombinesPipeSide(combine)
@@ -340,11 +334,11 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 		end;
 
 	-- combine // combine_offset is in auto mode
-	elseif not combine.cp.isChopper and combine.pipeCurrentState == 2 and combine.pipeRaycastNode ~= nil then -- pipe is extended
+	elseif not combine.cp.isChopper and combine.spec_pipe.currentState == 2 and dischargeNode ~= nil then -- pipe is extended
 		vehicle.cp.combineOffset = combineToPrnX;
 		courseplay:debug(string.format("%s(%i): %s @ %s: using combineToPrnX=%f, vehicle.cp.combineOffset=%f", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name), combineToPrnX, vehicle.cp.combineOffset), 4)
-	elseif not combine.cp.isChopper and combine.pipeRaycastNode ~= nil then -- pipe is closed
-		local raycastNodeParent = getParent(combine.pipeRaycastNode);
+	elseif not combine.cp.isChopper and dischargeNode ~= nil then -- pipe is closed
+		local raycastNodeParent = getParent(dischargeNode.node);
 		if raycastNodeParent == combine.rootNode then -- pipeRaycastNode is direct child of combine.root
 			vehicle.cp.combineOffset = prnX;
 			courseplay:debug(string.format("%s(%i): %s @ %s: combine.root > pipeRaycastNode / vehicle.cp.combineOffset=prnX=%f", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name), vehicle.cp.combineOffset), 4)
@@ -448,15 +442,16 @@ function courseplay:getSpecialCombineOffset(combine)
 end;
 
 function courseplay:getCombinesPipeSide(combine)
-	local prnwX, prnwY, prnwZ = getWorldTranslation(combine.spec_dischargeable.currentDischargeNode.node)
+	local dischargeNode = combine:getCurrentDischargeNode()
+	local prnwX, prnwY, prnwZ = getWorldTranslation(dischargeNode.node)
 	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 	
 	if combineToPrnX >= 0 then
 		combine.cp.pipeSide = 1; --left
-		--print("pipe is left")
+		print("pipe is left")
 	else
 		combine.cp.pipeSide = -1; --right
-		--print("pipe is right")
+		print("pipe is right")
 	end;
 end
 
@@ -487,7 +482,7 @@ function courseplay:releaseCombineStop(vehicle,combine)
 		return 
 	end
 	local combineToStart = combine or vehicle.cp.activeCombine
-	if combineToStart.aiIsStarted and combineToStart.cruiseControl.speed == 0 then
-		combineToStart.cruiseControl.speed = combineToStart.cp.lastCruiseControlSpeed
+	if combineToStart:getIsActive() and combineToStart.spec_drivable.cruiseControl.speed == 0 then
+		combineToStart.spec_drivable.cruiseControl.speed = combineToStart.cp.lastCruiseControlSpeed
 	end
 end
