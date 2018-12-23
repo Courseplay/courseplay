@@ -34,6 +34,7 @@ function AIDriver:init(vehicle)
 	self.acceleration = 1
 	self.mode = courseplay.MODE_TRANSPORT
 	self.turnIsDriving = false -- code in turn.lua is driving
+	self.alignmentCourse = nil
 	self.isStopped = true
 end
 
@@ -57,9 +58,10 @@ function AIDriver:start(ix)
 	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, #self.mainCourse.waypoints)
 
 	-- self.course is the one we are currently driving (main, alignment, etc...)
+	self.alignmentCourse = nil
 	if self:isAlignmentCourseNeeded(ix) then
-		self:setUpAlignmentCourse(ix)
-		self.course = self.alignmentCourse
+		self.alignmentCourse = self:setUpAlignmentCourse(ix)
+		self.course = self.alignmentCourse or self.mainCourse
 	else
 		self.course = self.mainCourse
 	end
@@ -151,6 +153,9 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 	if (moveForwards and gz < 0) or (not moveForwards and gz > 0) then
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
+	end
+	if g_updateLoopIndex % 100 == 0 then
+		self:debug('Speed = %.1f', maxSpeed)
 	end
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
@@ -301,14 +306,14 @@ function AIDriver:setUpAlignmentCourse(ix)
 	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, math.rad( self.mainCourse:getWaypointAngleDeg(ix)))
 	if not alignmentWaypoints then
 		self:debug("Can't find an alignment course, may be too close to target wp?" )
-		return
+		return nil
 	end
 	if #alignmentWaypoints < 3 then
 		self:debug("Alignment course would be only %d waypoints, it isn't needed then.", #alignmentWaypoints )
-		return
+		return nil
 	end
 	self:debug('Alignment course with %d started.', #alignmentWaypoints)
-	self.alignmentCourse = Course(self.vehicle, alignmentWaypoints)
+	return Course(self.vehicle, alignmentWaypoints)
 end
 
 function AIDriver:debug(...)

@@ -1208,7 +1208,7 @@ function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 			newSpeed = math.max(newSpeed, vehicle.cp.curSpeed - math.max(0.1, math.min(deltaMinus * 0.5, 3)));
 		end;
 	end
-
+	-- TODO: is this really necessary
 	vehicle:setCruiseControlMaxSpeed(newSpeed)
 
 	courseplay:handleSlipping(vehicle, refSpeed);

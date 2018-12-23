@@ -61,12 +61,17 @@ function FieldworkAIDriver:onEndCourse()
 end
 
 function FieldworkAIDriver:getSpeed()
+	local speed = 10
 	if self.alignmentCourse then
-		return self.vehicle.cp.speeds.field
+		speed = self.vehicle.cp.speeds.field
 	else
 		local speedLimit = self.vehicle:getSpeedLimit() or math.huge
-		return math.min(self.vehicle.cp.speeds.field, speedLimit)
+		speed = math.min(self.vehicle.cp.speeds.field, speedLimit)
 	end
+	-- as long as other CP components mess with the cruise control we need to reset this, for example after
+	-- a turn
+	self.vehicle:setCruiseControlMaxSpeed(speed)
+	return speed
 end
 
 --- Start the actual work. Lower and turn on implements
@@ -93,6 +98,10 @@ function FieldworkAIDriver:checkCapacities()
 				local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 				local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
 				self:debug('Fill levels: %s: %d', fillTypeName, pc )
+				if pc < 1 then
+					self:stop('NEEDS_REFILLING')
+					return
+				end
 			end
 		end
 	end
