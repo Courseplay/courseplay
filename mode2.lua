@@ -1652,18 +1652,19 @@ function courseplay:createTurnAwayCourse(vehicle,direction,sentDiameter,workwidt
 end
 
 -- if there's fruit between me and the combine, calculate a path around it and return true.
--- if there's no fruit or no path around it or couldn't calculate path, return false				
-function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance, mode4_6)
+-- if there's no fruit or no path around it or couldn't calculate path, return false
+-- @param checkForFruit if true, run pathfinding only if there's fruit between the vehicle and the combine
+function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBeforeTargetDistance, checkForFruit)
 	local cx, cz = 0, 0
 	local fruitType = 0
 
-  -- if a combine was passed, use it's location
+	-- if a combine was passed, use it's location
 	if combine ~= nil then
 		cx, _, cz = getWorldTranslation( combine.rootNode )
 	else
 		cx, cz = tx, tz
 	end
-  --
+
 	-- pathfinding is expensive and we don't want it happen in every update cycle
 	if not courseplay:timerIsThrough( vehicle, 'pathfinder', true ) then
 		courseplay.debugVehicle( 9, vehicle, "Pathfinding: has been called too many times exiting" )
@@ -1671,19 +1672,19 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	end
 	courseplay:setCustomTimer( vehicle, 'pathfinder', 5 )
 
-	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode,nil, nil, cx, cz, fixedFruitType )
-	--Ingore this condintal if I am being used by Mode4/6
-	if not hasFruit and not mode4_6 then
-		-- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
-		-- and drive directly to the combine.
-		courseplay.debugVehicle( 9, vehicle, "Pathfinding: no fruit between tractor and combine" )	
-		return false
-	elseif not mode4_6 then
-		courseplay.debugVehicle( 9, vehicle, "there is %.1f %s(%d) in my way -> create path around it",density,fruitName,fruitType)
+	if checkForFruit then
+		local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit(vehicle.cp.DirectionNode,nil, nil, cx, cz, nil)
+		if not hasFruit then
+			-- no fruit between me and my target, can reach it directly
+			courseplay.debugVehicle( 9, vehicle, "Pathfinding: no fruit between tractor and combine" )
+			return false
+		else
+			courseplay.debugVehicle( 9, vehicle, "there is %.1f %s(%d) in my way -> create path around it",density, fruitName, fruitType)
+		end
 	end
   
 	-- tractor coordinates
-	local vx,vy,vz =	getWorldTranslation( vehicle.cp.DirectionNode )
+	local vx, _, vz = getWorldTranslation( vehicle.cp.DirectionNode )
 
 	-- where am I ?
 	if courseplay.fields == nil then
