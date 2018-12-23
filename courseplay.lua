@@ -77,6 +77,8 @@ local function initialize()
 		'generateCourse',
 		'GrainTransportAIDriver',		
 		'FieldworkAIDriver',
+		'FillableFieldworkAIDriver',
+		'UnloadableFieldworkAIDriver',
 		'helpers',
 		'hud', 
 		'input', 

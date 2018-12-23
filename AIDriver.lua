@@ -25,6 +25,7 @@ AIDriver.slowDownFactor = 0.5
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
+	self.mode = courseplay.MODE_TRANSPORT
 	self.vehicle = vehicle
 	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	self.ppc = self.vehicle.cp.ppc -- shortcut
@@ -32,7 +33,6 @@ function AIDriver:init(vehicle)
 	self.ppc:enable()
 	self.firstWaypointIx = 1
 	self.acceleration = 1
-	self.mode = courseplay.MODE_TRANSPORT
 	self.turnIsDriving = false -- code in turn.lua is driving
 	self.alignmentCourse = nil
 	self.isStopped = true

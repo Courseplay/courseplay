@@ -25,12 +25,14 @@ add adjustment course if needed.
 
 FieldworkAIDriver = CpObject(AIDriver)
 
---- Constructor
+-- Our class implementation does not call the constructor of base classes
+-- through multiple level of inheritances therefore we must explicitly call
+-- the base class ctr.
 function FieldworkAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
-	self.mode = courseplay.MODE_SEED_FERTILIZE
 end
 
+--- Start the oourse and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	AIDriver.start(self, ix)
 	self.vehicle.cp.stopAtEnd = true
@@ -44,7 +46,7 @@ end
 
 function FieldworkAIDriver:drive(dt)
 	AIDriver.drive(self, dt)
-	self:checkCapacities()
+	self:checkFillLevels()
 end
 
 function FieldworkAIDriver:stop(msgReference)
@@ -63,8 +65,10 @@ end
 function FieldworkAIDriver:getSpeed()
 	local speed = 10
 	if self.alignmentCourse then
+		-- use the courseplay speed limit for fields
 		speed = self.vehicle.cp.speeds.field
 	else
+		-- use the speed limit supplied by Giants for fieldwork
 		local speedLimit = self.vehicle:getSpeedLimit() or math.huge
 		speed = math.min(self.vehicle.cp.speeds.field, speedLimit)
 	end
@@ -77,8 +81,8 @@ end
 --- Start the actual work. Lower and turn on implements
 function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')
-	courseplay:lowerImplements(self.vehicle)
 	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
+	courseplay:lowerImplements(self.vehicle)
 end
 
 --- Stop working. Raise and stop implements
@@ -88,21 +92,32 @@ function FieldworkAIDriver:stopWork()
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 end
 
-function FieldworkAIDriver:checkCapacities()
-	-- really no need to do this on every update()
+--- Check fill levels in all tools and stop when one of them isn't
+-- ok (empty or full, depending on the derived class)
+function FieldworkAIDriver:checkFillLevels()
+	-- really no need to do this on every update()x
 	if g_updateLoopIndex % 100 ~= 0 then return end
 	if not self.vehicle.cp.workTools then return end
 	for _, workTool in pairs(self.vehicle.cp.workTools) do
 		if workTool.getFillUnits then
 			for index, fillUnit in pairs(workTool:getFillUnits()) do
-				local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
-				local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-				self:debug('Fill levels: %s: %d', fillTypeName, pc )
-				if pc < 1 then
-					self:stop('NEEDS_REFILLING')
+				-- let's see if we can get by this abstraction for all kinds of tools
+				local ok, msgReference = self:isLevelOk(workTool, index, fillUnit)
+				if not ok then
+					self:stop(msgReference)
 					return
 				end
 			end
 		end
 	end
+end
+
+-- is the fill level ok to continue?
+function FieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
+	-- implement specifics in the derived classes
+	return true
+end
+
+function FieldworkAIDriver:debug(...)
+	courseplay.debugVehicle(17, self.vehicle, ...)
 end

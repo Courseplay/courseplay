@@ -52,3 +52,18 @@ AIVehicleUtil.driveToPoint = noOp
 function getDate(formatString)
 	return os.date('%H%M%S')
 end
+
+g_updateLoopIndex = 1
+
+giantsVehicle = {}
+giantsVehicle.lastSpeedReal = 10
+
+function giantsVehicle.raiseAIEvent(vehicleEvent, otherEvent)
+	print(vehicleEvent, otherEvent)
+end
+
+function giantsVehicle.getSpeedLimit()
+	return 10
+end
+
+function giantsVehicle.setCruiseControlMaxSpeed() end

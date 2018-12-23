@@ -22,6 +22,8 @@ function courseplay.createNode() return 1 end
 function courseplay.destroyNode() end
 function courseplay.checkFuel() return true end
 function courseplay.turn() end
+function courseplay.lowerImplements() end
+function courseplay.raiseImplements() end
 
 courseplay.debugChannels = {}
 courseplay.debugChannels[12] = true
@@ -66,3 +68,18 @@ CpManager = {}
 
 cpDebug = {}
 cpDebug.drawLine = noOp
+
+
+cpVehicle = {}
+cpVehicle.speeds = {}
+cpVehicle.hasRunRaycastThisLoop = {}
+cpVehicle.totalFillLevel = 99
+cpVehicle.totalCapacity = 100
+cpVehicle.tipRefOffset = 1
+cpVehicle.tipperNodeMode = 1
+cpVehicle.fillTrigger = 1
+cpVehicle.workToolAttached = true
+cpVehicle.turnDiameter = 10
+cpVehicle.vehicleTurnRadius = 5
+cpVehicle.speeds = {}
+cpVehicle.speeds.field =10

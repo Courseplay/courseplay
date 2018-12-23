@@ -25,30 +25,20 @@ require("mock-Courseplay")
 require("CpObject")
 require("AIDriver")
 require("GrainTransportAIDriver")
+require("FieldworkAIDriver")
+require("UnloadableFieldworkAIDriver")
+require("FillableFieldworkAIDriver")
 require("Waypoint")
 require("PurePursuitController")
 require("geo")
 require("courseGenerator")
 
-TestSettings = {}
+TestAIDriver = {}
 
-function TestSettings:setUp()
-	self.vehicle = {}
-	self.vehicle.lastSpeedReal = 10
+function TestAIDriver:setUp()
+	self.vehicle = giantsVehicle
 	self.vehicle.Waypoints = th.waypoints
-	self.vehicle.cp = {}
-	self.vehicle.cp.speeds = {}
-	self.vehicle.cp.hasRunRaycastThisLoop = {}
-
-	self.vehicle.cp.totalFillLevel = 99
-	self.vehicle.cp.totalCapacity = 100
-	self.vehicle.cp.tipRefOffset = 1 
-	self.vehicle.cp.tipperNodeMode = 1
-	self.vehicle.cp.fillTrigger = 1
-	self.vehicle.cp.workToolAttached = true
-
-	self.vehicle.cp.turnDiameter = 10
-	self.vehicle.cp.vehicleTurnRadius = 5
+	self.vehicle.cp = cpVehicle
 	function courseplay.distance()
 		return 1
 	end
@@ -58,16 +48,22 @@ end
 
 -- This is not a functional test, the only purpose is to run as much of the AIDriver code as possible
 -- to find typos before restarting the game
-function TestSettings:testAIDriver()
+function TestAIDriver:testAIDriver()
 	local aiDriver = AIDriver(self.vehicle)
 	aiDriver:start(1)
 	aiDriver:drive(1)
 end
 
-function TestSettings:testGrainTransportAIDrvier()
+function TestAIDriver:testGrainTransportAIDrvier()
 	local aiDriver = GrainTransportAIDriver(self.vehicle)
 	aiDriver:start(1)
 	aiDriver:drive(1)
+end
+
+function TestAIDriver:testUnloadableFieldworkAIDriver()
+	local driver = UnloadableFieldworkAIDriver(self.vehicle)
+	driver:start(1)
+	driver:drive(1)
 end
 
 errors = lu.LuaUnit.run()
