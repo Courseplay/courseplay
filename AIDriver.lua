@@ -217,6 +217,7 @@ end
 -- if isReverseActive is false, use the returned gx, gz for driveToPoint, otherwise get them
 -- from PPC
 function AIDriver:getReverseDrivingDirection()
+
 	local moveForwards = true
 	local isReverseActive = false
 	local isMode2 = self:getCpMode() == courseplay.MODE_COMBI

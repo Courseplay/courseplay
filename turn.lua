@@ -721,6 +721,11 @@ function courseplay:turn(vehicle, dt)
 	end;
 
 	----------------------------------------------------------
+	-- Need to wait for tools to lower?
+	----------------------------------------------------------
+	allowedToDrive = not courseplay:needToWaitForTools(vehicle)
+
+	----------------------------------------------------------
 	-- allowedToDrive false -> SLOW DOWN TO STOP
 	----------------------------------------------------------
 	if not allowedToDrive then
@@ -1981,6 +1986,21 @@ function courseplay:lowerImplements(vehicle)
 		end
 	end
 end
+
+-- @return true if all implements which have been started lowering are still moving, false if they are in their
+-- final position or have not been started lowering
+function courseplay:needToWaitForTools(vehicle)
+	local wait = false
+	for _,workTool in pairs(vehicle.cp.workTools) do
+		-- the stock Giants getIsLowered() returns true from the moment the tool starts lowering
+		if workTool.getIsLowered and workTool:getIsLowered() then
+			-- started lowering, is it now really lowered? if not, must wait
+			wait = not courseplay:isLowered(workTool) or wait
+		end
+	end
+	return wait
+end
+
 
 function courseplay:turnWithOffset(vehicle)
 	--SYMMETRIC LANE CHANGE

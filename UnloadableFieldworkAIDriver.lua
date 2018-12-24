@@ -69,9 +69,13 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
 	self:debug('Fill levels: %s: %d', fillTypeName, pc )
 	if pc > self.fillLevelFullPercentage then
-		return false, 'NEEDS_UNLOADING'
+		return false
 	end
-	return true, nil
+	return true
+end
+
+function UnloadableFieldworkAIDriver:getFillLevelWarningText()
+	return 'NEEDS_UNLOADING'
 end
 
 function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()

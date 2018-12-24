@@ -25,6 +25,7 @@ function tableConcat(...)
 	return t;
 end;
 
+-- TODO: This and isLowered() should be in an AIDriverUtil class or at least in a different file, like toolManager.lua
 function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
 	if not courseplay:isFoldable(workTool) then
 		return false, false, true;
@@ -48,6 +49,28 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 	courseplay:debug(string.format('\treturn isFolding=%s, isFolded=%s, isUnfolded=%s', tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), 17);
 	return isFolding, isFolded, isUnfolded;
 end;
+
+-- TODO: Giants question: this is copied from Attachable.getCanAIImplementContinueWork() but when calling it with spec_attachable, it blows up with
+-- dataS/scripts/vehicles/specializations/Attachable.lua(1026) : attempt to index local 'jointDesc' (a nil value)
+-- The stock Giants getIsLowered() returns true the moment the tool starts moving. What we need however is when
+-- the tool is in the final lowered position.
+function courseplay:isLowered(workTool)
+	local spec = workTool.spec_attachable
+	if not workTool:getAINeedsLowering() or not spec then return true end
+	local isLowered = true
+	if spec.lowerAnimation ~= nil then
+		local time = workTool:getAnimationTime(spec.lowerAnimation)
+		isLowered = time == 1 or time == 0
+	end
+	local jointDesc = spec.attacherVehicle:getAttacherJointDescFromObject(workTool)
+	if jointDesc.allowsLowering and workTool:getAINeedsLowering() then
+		if jointDesc.moveDown then
+			isLowered = (jointDesc.moveAlpha == jointDesc.lowerAlpha or jointDesc.moveAlpha == jointDesc.upperAlpha) and isLowered
+		end
+	end
+	courseplay.debugVehicle(8, workTool, 'isLowered: %s', isLowered)
+	return isLowered
+end
 
 function courseplay:isAnimationPartPlaying(workTool, index)
 	if type(index) == "number" then

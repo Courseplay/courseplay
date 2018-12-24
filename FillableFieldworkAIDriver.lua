@@ -38,7 +38,11 @@ function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
 	self:debug('Fill levels: %s: %d', fillTypeName, pc )
 	if pc < 1 then
-		return false, 'NEEDS_REFILLING'
+		return false
 	end
-	return true, nil
+	return true
+end
+
+function FillableFieldworkAIDriver:getFillLevelWarningText()
+	return 'NEEDS_REFILLING'
 end

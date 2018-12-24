@@ -88,8 +88,8 @@ end
 --- Start the actual work. Lower and turn on implements
 function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')
-	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
 	courseplay:lowerImplements(self.vehicle)
+	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
 end
 
 --- Stop working. Raise and stop implements
@@ -102,9 +102,14 @@ end
 --- Check all worktools to see if we are ready to go or need to stop
 function FieldworkAIDriver:checkWorkTools()
 	if not self.vehicle.cp.workTools then return end
+	local allToolsReady, allFillLevelsOk = true, true
 	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		self:isReady(workTool)
-		self:checkFillLevels(workTool)
+		allToolsReady = self:isWorktoolReady(workTool) and allToolsReady
+		allFillLevelsOk = self:checkFillLevels(workTool) and allFillLevelsOk
+	end
+	self.waitingForTools = not allToolsReady
+	if not allFillLevelsOk then
+		self:stop(self:getFillLevelWarningText())
 	end
 end
 
@@ -112,37 +117,35 @@ end
 -- ok (empty or full, depending on the derived class)
 function FieldworkAIDriver:checkFillLevels(workTool)
 	-- really no need to do this on every update()x
-	if g_updateLoopIndex % 100 ~= 0 then return end
+	if g_updateLoopIndex % 100 ~= 0 then return true end
 	if workTool.getFillUnits then
 		for index, fillUnit in pairs(workTool:getFillUnits()) do
 			-- let's see if we can get by this abstraction for all kinds of tools
-			local ok, msgReference = self:isLevelOk(workTool, index, fillUnit)
+			local ok = self:isLevelOk(workTool, index, fillUnit)
 			if not ok then
-				self:stop(msgReference)
-				return
+				return false
 			end
 		end
 	end
+	-- all fill levels ok
+	return true
 end
 
 --- Check if worktool is ready for work
-function FieldworkAIDriver:isReady(workTool)
+function FieldworkAIDriver:isWorktoolReady(workTool)
 	local _, _, isUnfolded = courseplay:isFolding(workTool)
-	-- TODO: make these a generic helper?
+
+	-- TODO: move these to a generic helper?
 	local isTurnedOn = true
 	if workTool.spec_turnOnVehicle then
 		isTurnedOn = workTool:getAIRequiresTurnOn() and workTool:getIsTurnedOn()
 	end
 
-	local isLowered = self:getCanAIImplementContinueWork(workTool)
+	local isLowered = courseplay:isLowered(workTool)
 
 	courseplay.debugVehicle(12, workTool, 'lowered=%s turnedon=%s unfolded=%s', isLowered, isTurnedOn, isUnfolded)
 
-	if isLowered and isTurnedOn and isUnfolded then
-		self.waitingForTools = false
-	else
-		self.waitingForTools = true
-	end
+	return isLowered and isTurnedOn and isUnfolded
 end
 
 -- is the fill level ok to continue?
@@ -151,25 +154,12 @@ function FieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	return true
 end
 
+-- Text for AIDriver.stop(msgReference) to display as the reason why we stopped
+function FillableFieldworkAIDriver:getFillLevelWarningText()
+	return nil
+end
+
 function FieldworkAIDriver:debug(...)
 	courseplay.debugVehicle(17, self.vehicle, ...)
 end
 
--- Giants question: this is copied from Attachable but when calling it with spec_attachable, it blows up with
--- dataS/scripts/vehicles/specializations/Attachable.lua(1026) : attempt to index local 'jointDesc' (a nil value)
-function FieldworkAIDriver:getCanAIImplementContinueWork(workTool)
-	local spec = workTool.spec_attachable
-	if not workTool:getAINeedsLowering() or not spec then return true end
-	local isReady = true
-	if spec.lowerAnimation ~= nil then
-		local time = workTool:getAnimationTime(spec.lowerAnimation)
-		isReady = time == 1 or time == 0
-	end
-	local jointDesc = spec.attacherVehicle:getAttacherJointDescFromObject(workTool)
-	if jointDesc.allowsLowering and workTool:getAINeedsLowering() then
-		if jointDesc.moveDown then
-			isReady = (jointDesc.moveAlpha == jointDesc.lowerAlpha or jointDesc.moveAlpha == jointDesc.upperAlpha) and isReady
-		end
-	end
-	return isReady
-end
