@@ -33,21 +33,15 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 	local isFolding, isFolded, isUnfolded = false, true, true;
 	courseplay:debug(string.format('%s: isFolding(): realUnfoldDirection=%s, turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s', nameNum(workTool), tostring(workTool.cp.realUnfoldDirection), tostring(workTool.turnOnFoldDirection), tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), 17);
 	
-	for k,foldingPart in pairs(workTool.spec_foldable.foldingParts) do
-		--isFolding
-		if workTool.spec_foldable.oldFoldAnimTime == nil then workTool.spec_foldable.oldFoldAnimTime = 0; end;
-		if workTool.spec_foldable.foldAnimTime ~= workTool.spec_foldable.oldFoldAnimTime then
-			--if workTool.foldMoveDirection > 0 and animTime < foldingPart.animDuration then
-			if workTool.spec_foldable.foldMoveDirection > 0 and workTool.spec_foldable.foldAnimTime < 1 then
-				isFolding = true;
-			--elseif workTool.foldMoveDirection < 0 and animTime > 0 then
-			elseif workTool.spec_foldable.foldMoveDirection < 0 and workTool.spec_foldable.foldAnimTime > 0 then
-				isFolding = true;
-			end;
-			workTool.spec_foldable.oldFoldAnimTime = workTool.spec_foldable.foldAnimTime;
+	if workTool.spec_foldable.foldAnimTime ~= (workTool.spec_foldable.oldFoldAnimTime or 0) then
+		if workTool.spec_foldable.foldMoveDirection > 0 and workTool.spec_foldable.foldAnimTime < 1 then
+			isFolding = true;
+		elseif workTool.spec_foldable.foldMoveDirection < 0 and workTool.spec_foldable.foldAnimTime > 0 then
+			isFolding = true;
 		end;
+		workTool.spec_foldable.oldFoldAnimTime = workTool.spec_foldable.foldAnimTime;
 	end;
-	
+
 	isUnfolded = workTool:getIsUnfolded();
 	isFolded = not isUnfolded and not isFolding;
 	
