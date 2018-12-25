@@ -97,28 +97,28 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 	</extraSourceFiles>
 
 	<actions>
-		<action name="COURSEPLAY_MODIFIER"				axisType="HALF"					/>
-		<action name="COURSEPLAY_HUD"					axisType="HALF"					/>
-		<action name="COURSEPLAY_MENU_ACCEPT_SECONDARY"	axisType="HALF"				/>
-		<action name="COURSEPLAY_START_STOP"			axisType="HALF"				/>
-		<action name="COURSEPLAY_CANCELWAIT"			axisType="HALF"					/>
-		<action name="COURSEPLAY_DRIVENOW"				axisType="HALF"				/>
-		<action name="COURSEPLAY_STOP_AT_END"			axisType="HALF"					/>
-		<action name="COURSEPLAY_NEXTMODE"				axisType="HALF"				/>
-		<action name="COURSEPLAY_PREVMODE"				axisType="HALF"				/>
-		<action name="COURSEPLAY_MOUSEACTION_PRIMARY"	axisType="HALF"	/>
-		<action name="COURSEPLAY_MOUSEACTION_SECONDARY"	axisType="HALF"	/>
-		<action name="COURSEPLAY_DEBUG_MARKER"			axisType="HALF"					/>
-    	<action name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"	axisType="HALF"	/>
-		<action name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"	axisType="HALF"	/>
-		<action name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	axisType="HALF"	/>
-		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"	axisType="HALF"	/>
+		<action name="COURSEPLAY_MODIFIER"/>
+		<action name="COURSEPLAY_HUD"/>
+		<action name="COURSEPLAY_MENU_ACCEPT_SECONDARY"/>
+		<action name="COURSEPLAY_START_STOP"/>
+		<action name="COURSEPLAY_CANCELWAIT"/>
+		<action name="COURSEPLAY_DRIVENOW"/>
+		<action name="COURSEPLAY_STOP_AT_END"/>
+		<action name="COURSEPLAY_NEXTMODE"/>
+		<action name="COURSEPLAY_PREVMODE"/>
+		<action name="COURSEPLAY_MOUSEACTION_PRIMARY"/>
+		<action name="COURSEPLAY_MOUSEACTION_SECONDARY"/>
+		<action name="COURSEPLAY_DEBUG_MARKER"/>
+    	<action name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"/>
+		<action name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"/>
+		<action name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"/>
+		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"/>
     </actions>
 
 	<inputBindings>
-		 <actionBinding action="COURSEPLAY_MODIFIER">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" />
-        </actionBinding>
+		<actionBinding action="COURSEPLAY_MODIFIER">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" axisComponent="+" neutralInput="0" index="1"/>
+		</actionBinding>
 		<actionBinding action="COURSEPLAY_HUD">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_delete" />
         </actionBinding>

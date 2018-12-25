@@ -155,7 +155,7 @@ function FieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 end
 
 -- Text for AIDriver.stop(msgReference) to display as the reason why we stopped
-function FillableFieldworkAIDriver:getFillLevelWarningText()
+function FieldworkAIDriver:getFillLevelWarningText()
 	return nil
 end
 

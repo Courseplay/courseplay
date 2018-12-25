@@ -371,7 +371,7 @@ setVersionData();
 
 initialize();
 
--- Ryan courseplay.inputBindings.updateInputButtonData();
+courseplay.inputBindings.updateInputButtonData();
 
 setGlobalData();
 

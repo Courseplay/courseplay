@@ -780,7 +780,7 @@ function courseplay:onDraw()
 	--print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))))
 															-- VVVV Tommi
 	if self:getIsActive() and self:getIsEntered() and false then
-		local modifierPressed = false --Tommi InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER);
+		local modifierPressed = courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed;
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
 			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER);
 		end;
@@ -958,8 +958,8 @@ end;
 
 function courseplay:onUpdate(dt)
 	-- KEYBOARD EVENTS
-	if self:getIsActive() and self:getIsEntered() and false then--Tommi and InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) then
-		if InputBinding.hasEvent(InputBinding.COURSEPLAY_START_STOP) then
+	if self:getIsActive() and self:getIsEntered() and courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed then
+		if courseplay.inputActions.COURSEPLAY_START_STOP.isPressed then
 			if self.cp.canDrive then
 				if self.cp.isDriving then
 					self:setCourseplayFunc('stop', nil, false, 1);
@@ -973,31 +973,31 @@ function courseplay:onUpdate(dt)
 					self:setCourseplayFunc('stop_record', nil, false, 1);
 				end;
 			end;
-		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_CANCELWAIT) and self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving then
+		elseif courseplay.inputActions.COURSEPLAY_CANCELWAIT.isPressed and self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('cancelWait', true, false, 1);
-		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_DRIVENOW) and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
+		elseif courseplay.inputActions.COURSEPLAY_DRIVENOW.isPressed and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('setIsLoaded', true, false, 1);
-		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_STOP_AT_END) and self.cp.canDrive and self.cp.isDriving then
+		elseif courseplay.inputActions.COURSEPLAY_STOP_AT_END.isPressed and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('setStopAtEnd', not self.cp.stopAtEnd, false, 1);
-		elseif self.cp.canSwitchMode and self.cp.nextMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_NEXTMODE) then
+		elseif self.cp.canSwitchMode and self.cp.nextMode and courseplay.inputActions.COURSEPLAY_NEXTMODE.isPressed then
 			self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
-		elseif self.cp.canSwitchMode and self.cp.prevMode and InputBinding.hasEvent(InputBinding.COURSEPLAY_PREVMODE) then
+		elseif self.cp.canSwitchMode and self.cp.prevMode and courseplay.inputActions.COURSEPLAY_PREVMODE.isPressed then
 			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
-		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION) then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION.isPressed then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 2);
-		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION) then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION.isPressed then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 3);
-		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION) then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION.isPressed then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 4);
-		elseif InputBinding.hasEvent(InputBinding.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION) then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION.isPressed then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 5);
 		end;
 
-		if not self.cp.openHudWithMouse and InputBinding.hasEvent(InputBinding.COURSEPLAY_HUD) then
+		if not self.cp.openHudWithMouse and courseplay.inputActions.COURSEPLAY_HUD.isPressed then
 			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
 		end;
 	end; -- self:getIsActive() and Enterable.getIsEntered(self) and modifierPressed

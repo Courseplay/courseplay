@@ -397,7 +397,9 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	end;
 end;
 
-function CpManager:keyEvent() end;
+function CpManager:keyEvent(unicode, sym, modifier, isDown) 
+	courseplay:onKeyEvent(unicode, sym, modifier, isDown)
+end;
 
 
 -- ####################################################################################################

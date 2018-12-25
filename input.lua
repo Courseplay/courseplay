@@ -107,9 +107,9 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 						--action
 						local parameter = button.parameter;
-						--[[Tommi if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and button.modifiedParameter ~= nil then
+						if courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed and button.modifiedParameter ~= nil then
 							parameter = button.modifiedParameter;
-						end;]]
+						end;
 
 						local upParameter = parameter;
 						local downParameter = upParameter * -1;
@@ -343,9 +343,6 @@ function courseplay:executeFunction(self, func, value, page)
 	end; --END isRowFunction
 end;
 
-function courseplay:keyEvent(unicode, sym, modifier, isDown) end;
-
-
 courseplay.inputBindings = {};
 courseplay.inputBindings.mouse = {
 	primaryButtonId =Input.MOUSE_BUTTON_LEFT,
@@ -360,12 +357,21 @@ courseplay.inputBindings.mouse.mouseButtonOverlays = {
 };
 courseplay.inputBindings.keyboard = {};
 
+function courseplay:onKeyEvent(unicode, sym, modifier, isDown) 
+	--print(string.format("%s: unicode(%s), sym(%s), modifier(%s), isDown(%s)",tostring(Input.keyIdToIdName[sym]),tostring(unicode),tostring(sym),tostring(modifier),tostring(isDown)))
+	for name,action in pairs (courseplay.inputActions) do
+		if sym == action.bindingSym then
+			--print("set "..tostring(name)..' to '..tostring(isDown))
+			action.isPressed = isDown
+		end
+	end	
+end;
 
--- Needs Reworked. Inputbindings have changed Or deteleted turned off in courseplay line 360
 function courseplay.inputBindings.updateInputButtonData()
 	-- print('updateInputButtonData()')
 
 	-- MOUSE
+	--[[
 	for _,type in ipairs( { 'primary', 'secondary' } ) do
 		local inputName = 'COURSEPLAY_MOUSEACTION_' .. type:upper();
 		local action = InputBinding.actionBinding[ actions[inputName] ];
@@ -387,17 +393,38 @@ function courseplay.inputBindings.updateInputButtonData()
 			end;
 			courseplay.inputBindings.mouse.overlaySecondary = Overlay:new(courseplay.path .. 'img/mouseIcons/' .. fileName, 0, 0, 0.0, 0.0);
 		end;
-	end;
+	end;]]
+	courseplay.inputActions = {}
+	--print("set up courseplay.inputActions:")
+	for index, action in pairs (g_gui.inputManager.nameActions) do
+		if string.match(index,'COURSEPLAY_') then
+			--print(string.format("%s: (%s) %s",tostring(index),type(action),tostring(action)))
+			local actionTable = {
+					binding = '',
+					bindingSym = '',
+					hasBinding = false,
+					isPressed = false}
+			if action.primaryKeyboardInput then
+				--print("  primaryKeyboardInput:"..tostring(action.primaryKeyboardInput))
+				actionTable.hasBinding = true
+				actionTable.binding = action.primaryKeyboardInput
+				actionTable.bindingSym = Input[actionTable.binding]
+				
+			end	
+			courseplay.inputActions[index]= actionTable
+		end
+	end
 
 	-- KEYBOARD
 	-- open/close hud (combined with modifier): get i18n text
-	local modifierAction = InputBinding.actionBinding[ actions.COURSEPLAY_MODIFIER];
-	local modifierTextI18n = KeyboardHelper.getKeyNames(modifierAction.input);
+	--local modifierAction = InputBinding.actionBinding[ actions.COURSEPLAY_MODIFIER];
+	--local modifierTextI18n = KeyboardHelper.getKeyNames(modifierAction.input);
 
-	local openCloseHudAction =InputBinding.actionBinding[ actions.COURSEPLAY_HUD];
-	local openCloseHudTextI18n = KeyboardHelper.getKeyNames(openCloseHudAction.input);
-
+	--local openCloseHudAction =InputBinding.actionBinding[ actions.COURSEPLAY_HUD];
+	--local openCloseHudTextI18n = KeyboardHelper.getKeyNames(openCloseHudAction.input);
+	local modifierTextI18n = 'CTRL'
+	local openCloseHudTextI18n = '7'
+	
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
--- InputBinding.storeBindings = Utils.appendedFunction(InputBinding.storeBindings, courseplay.inputBindings.updateInputButtonData); 
