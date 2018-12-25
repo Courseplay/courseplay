@@ -116,7 +116,7 @@ function AIDriver:driveCourse(dt, allowedToDrive)
 	-- check if reversing
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
 	-- stop for fuel if needed
-	allowedToDrive = courseplay:checkFuel(self.vehicle, lx, lz)
+	allowedToDrive = courseplay:checkFuel(self.vehicle, lx, lz,allowedToDrive)
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
 		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())

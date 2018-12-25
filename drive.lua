@@ -532,7 +532,7 @@ function courseplay:drive(self, dt)
 		--FUEL LEVEL + REFILLING
 		-- DO NOT DELETE fuelFillLevel is gone. This variable may be a replacment 
 		
-		allowedToDrive = courseplay:checkFuel(self,lx,lz)
+		allowedToDrive = courseplay:checkFuel(self,lx,lz,allowedToDrive)
 		
 		
 		-- WATER WARNING
@@ -2090,8 +2090,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 	end
 end;
 
-function courseplay:checkFuel(vehicle, lx, lz)
-	local allowedToDrive = true
+function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
 	if vehicle.getConsumerFillUnitIndex ~= nil then
 		local isFilling = false
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
@@ -2118,10 +2117,8 @@ function courseplay:checkFuel(vehicle, lx, lz)
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
 		end;
-		return allowedToDrive;
-	else
-		return allowedToDrive;
-	end;
+	end
+	return allowedToDrive;
 end
 
 -- do not delete this line

@@ -988,18 +988,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 			local allowedToDriveBackup = allowedToDrive;
 			local fillType = tipper.cp.fillType;
 
-			--[[
-			if tipper:getCanDischargeToObject(tipper.spec_dischargeable.currentDischargeNode) and tipper:getCanToggleDischargeToObject() then
-				tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
-				courseplay:debug("tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)",2)
-			end
-			
-			if tipper:getDischargeState() < Trailer.TIPSTATE_CLOSING and  tipper:getDischargeState() > Trailer.TIPSTATE_CLOSED then
-				allowedToDrive = false
-			end
-			]]
-			
-			local currentDischargeNode = tipper.spec_dischargeable.currentDischargeNode
+			local currentDischargeNode = tipper:getCurrentDischargeNode()
 			local distanceToTrigger, bestTipReferencePoint = 0, currentDischargeNode;
 			
 			
@@ -1008,7 +997,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 				for i=1,#tipper.spec_dischargeable.dischargeNodes do
 					if tipper:getCanDischargeToObject(tipper.spec_dischargeable.dischargeNodes[i])then
 						tipper:setCurrentDischargeNodeIndex(tipper.spec_dischargeable.dischargeNodes[i]);
-						currentDischargeNode = tipper.spec_dischargeable.currentDischargeNode
+						currentDischargeNode = tipper:getCurrentDischargeNode()
 						break
 					end
 				end
