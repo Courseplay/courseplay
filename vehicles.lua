@@ -900,7 +900,7 @@ function courseplay:getToolTurnRadius(workTool)
 				courseplay:debug(('%s -> TurnRadius: pivotRotMax=%d° (Pivot trailer/implement)'):format(nameNum(workTool), deg(pivotRotMax)), 6);
 
 				-- We are an implement and should be handled a bit different
-				if workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT then
+				if workTool.spec_attacherJoints and workTool.spec_attacherJoints.attacherJoint and workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT then
 					-- We have a valid pivotRotMax, so calculate it normally.
 					if pivotRotMax > rad(15) then
 						frontLength = frontLength + workToolDistances.attacherJointToPivot;

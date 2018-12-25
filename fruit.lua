@@ -9,7 +9,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	local density = 0;
 	local maxDensity = 0;
 	local maxFruitType = 0
-	if fruitType ~= nil then
+	if fruitType ~= nil and fruitType ~= FruitType.UNKNOWN then
 		local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fruitType].maxHarvestingGrowthState
 		density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
