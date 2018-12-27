@@ -100,7 +100,7 @@ end
 function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self.msgReference = msgReference
-	self.state = self.states.RUNNING
+	self.state = self.states.STOPPED
 end
 
 --- Just hang around after we stopped and make sure a message is displayed when there is one.
