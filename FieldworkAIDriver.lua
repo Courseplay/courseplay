@@ -28,6 +28,7 @@ FieldworkAIDriver = CpObject(AIDriver)
 
 FieldworkAIDriver.myStates = {
 	FIELDWORK = {},
+	UNLOAD_OR_REFILL = {},
 	HELD = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_RAISE = {}
@@ -48,6 +49,7 @@ end
 --- Start the oourse and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	AIDriver.start(self, ix)
+	self:setUpCourses()
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
 	self.waitingForTools = true
@@ -70,6 +72,9 @@ end
 function FieldworkAIDriver:drive(dt)
 	if self.state == self.states.FIELDWORK then
 		self:driveFieldwork()
+	elseif self.state == self.states.UNLOAD_OR_REFILL then
+		-- just drive normally
+		self.speed = self.vehicle.cp.speeds.street
 	elseif self.state == self.states.ALIGNMENT then
 		-- use the courseplay speed limit for fields
 		self.speed = self.vehicle.cp.speeds.field
@@ -83,6 +88,15 @@ function FieldworkAIDriver:changeToFieldwork()
 	self.state = self.states.FIELDWORK
 	self.fieldWorkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
+end
+
+function FieldworkAIDriver:changeToUnloadOrRefill()
+	self:stopWork()
+	self.state = self.states.UNLOAD_OR_REFILL
+	self.course = self.unloadRefillCourse
+	self.ppc:setCourse(self.course)
+	self:debug('changing to unload/refill course (%d waypoints)', #self.course.waypoints)
+	self.ppc:initialize(1)
 end
 
 function FieldworkAIDriver:onEndAlignmentCourse()
@@ -183,3 +197,31 @@ function FieldworkAIDriver:getFillLevelWarningText()
 	return nil
 end
 
+--- Set up the main (fieldwork) course and the unload/refill course
+-- Currently, the legacy CP code just dumps all loaded courses to vehicle.Waypoints so
+-- now we have to figure out which of that is the actual fieldwork course and which is the
+-- refill/unload part.
+-- This should better be handled by the course management though and should be refactored.
+function FieldworkAIDriver:setUpCourses()
+	local nWaits = 0
+	local endFieldCourseIx = 0
+	for i, wp in ipairs(self.vehicle.Waypoints) do
+		if wp.wait then
+			nWaits = nWaits + 1
+			-- the second wp with the wait attribute is the end of the field course (assuming
+			-- the field course has been loaded first.
+			if nWaits == 2 then
+				endFieldCourseIx = i
+				break
+			end
+		end
+	end
+	if #self.vehicle.Waypoints > endFieldCourseIx then
+		self:debug('There seems to be an unload/refill course starting at waypoint %d', endFieldCourseIx + 1)
+		self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, endFieldCourseIx)
+		self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, endFieldCourseIx + 1, #self.vehicle.Waypoints)
+	else
+		self:debug('There seems to be no unload/refill course')
+		self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, #self.vehicle.Waypoints)
+	end
+end

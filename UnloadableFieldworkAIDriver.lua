@@ -86,7 +86,7 @@ function UnloadableFieldworkAIDriver:driveFieldworkUnload()
 			self.fieldWorkUnloadState = self.states.WAITING_FOR_UNLOAD
 		end
 	elseif self.fieldWorkUnloadState == self.states.WAITING_FOR_UNLOAD then
-		if not self:allFillLevelsOk() then
+		if self:allFillLevelsOk() then
 			self:debug('not full anymore, continue working')
 			-- not full anymore, maybe because unloading to a trailer, go back to work
 			self:clearInfoText()
@@ -118,7 +118,7 @@ end
 function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	self:debugSparse('Fill levels: %s: %d', fillTypeName, pc )
+	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
 
 	if pc > self.fillLevelFullPercentage then
 		return false

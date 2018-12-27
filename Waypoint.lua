@@ -16,12 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+---@class Point
 Point = CpObject()
 function Point:init(x, z)
 	self.x = x
 	self.z = z
 end
 
+---@class Waypoint : Point
 Waypoint = CpObject(Point)
 
 -- constructor from the legacy Courseplay waypoint
@@ -126,13 +128,20 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 	end
 end
 
+---@class Course
 Course = CpObject()
 
-function Course:init(vehicle, waypoints)
+--- Course constructor
+-- @param waypoints table of waypoints of the course
+-- @param first optional, index of first waypoint to use
+-- @param last optional, index of last waypoint to use to construct of the course
+function Course:init(vehicle, waypoints, first, last)
 	-- add waypoints from current vehicle course
 	self.waypoints = {}
-	for i = 1, #waypoints do
-		table.insert(self.waypoints, Waypoint(waypoints[i], i))
+	local n = 1
+	for i = first or 1, last or #waypoints do
+		table.insert(self.waypoints, Waypoint(waypoints[i], n))
+		n = n + 1
 	end
 	self:addWaypointAngles()
 	-- only for logging purposes
