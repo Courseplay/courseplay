@@ -23,9 +23,12 @@ Also known as mode 6.
 
 ]]
 
+---@class UnloadableFieldworkAIDriver : FieldworkAIDriver
 UnloadableFieldworkAIDriver = CpObject(FieldworkAIDriver)
--- at which fill level we need to unload
-UnloadableFieldworkAIDriver.fillLevelFullPercentage = 99.99
+-- at which fill level we need to unload. We want to have a little buffer there
+-- as we won't raise our implements until we stopped and during that time we keep
+-- harvesting
+UnloadableFieldworkAIDriver.fillLevelFullPercentage = 99.5
 
 -- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
 UnloadableFieldworkAIDriver.PIPE_STATE_MOVING = 0
@@ -33,15 +36,74 @@ UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED = 1
 UnloadableFieldworkAIDriver.PIPE_STATE_OPEN = 2
 
 
+FieldworkAIDriver.myStates = {
+	WAITING_FOR_UNLOAD = {}
+}
+
 function UnloadableFieldworkAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
+	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
+	self.waitingForUnloading = true
 end
 
-
 function UnloadableFieldworkAIDriver:drive(dt)
-	FieldworkAIDriver.drive(self, dt)
+	if self.state == self.states.FIELDWORK then
+		self:driveFieldwork()
+	elseif self.state == self.states.ALIGNMENT then
+		-- use the courseplay speed limit for fields
+		self.speed = self.vehicle.cp.speeds.field
+	end
+
+	AIDriver.drive(self, dt)
+end
+
+--- Doing the fieldwork (headlands or up/down rows, including the turns)
+function UnloadableFieldworkAIDriver:driveFieldwork()
 	self:handlePipe()
+	if self.fieldWorkState == self.states.WAITING_FOR_LOWER then
+		if self:areAllWorkToolsReady() then
+			self:debug('all tools ready, start working')
+			self.fieldWorkState = self.states.WORKING
+			self.speed = self:getFieldSpeed()
+		else
+			self.speed = 0
+		end
+	elseif self.fieldWorkState == self.states.WORKING then
+		if self:isFull() then
+			self:changeToFieldworkUnload()
+		end
+	elseif self.fieldWorkState == self.states.UNLOAD then
+		self:driveFieldworkUnload()
+	end
+end
+
+--- Grain tank full during fieldwork
+function UnloadableFieldworkAIDriver:changeToFieldworkUnload()
+	self:debug('change to fieldwork unload')
+	self:setInfoText('NEEDS_UNLOADING')
+	self.fieldWorkState = self.states.UNLOAD
+	self.fieldWorkUnloadState = self.states.WAITING_FOR_RAISE
+end
+
+function UnloadableFieldworkAIDriver:driveFieldworkUnload()
+	-- don't move while full
+	self.speed = 0
+	if self.fieldWorkUnloadState == self.states.WAITING_FOR_RAISE then
+		-- wait until we stopped before raising the implements
+		if self:isStopped() then
+			self:debug('implements raised, stop')
+			self:stopWork()
+			self.fieldWorkUnloadState = self.states.WAITING_FOR_UNLOAD
+		end
+	elseif self.fieldWorkUnloadState == self.states.WAITING_FOR_UNLOAD then
+		if not self:isFull() then
+			self:debug('not full anymore, continue working')
+			-- not full anymore, maybe because unloading to a trailer, go back to work
+			self:clearInfoText()
+			self:changeToFieldwork()
+		end
+	end
 end
 
 function UnloadableFieldworkAIDriver:handlePipe()
@@ -67,15 +129,13 @@ end
 function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	self:debug('Fill levels: %s: %d', fillTypeName, pc )
+	if g_updateLoopIndex % self.debugTicks == 0 then
+		self:debug('Fill levels: %s: %d', fillTypeName, pc )
+	end
 	if pc > self.fillLevelFullPercentage then
 		return false
 	end
 	return true
-end
-
-function UnloadableFieldworkAIDriver:getFillLevelWarningText()
-	return 'NEEDS_UNLOADING'
 end
 
 function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()
@@ -118,3 +178,17 @@ end
 function UnloadableFieldworkAIDriver:isValidFillType(fillType)
 	return fillType ~= FillType.DIESEL and fillType ~= FillType.DEF	and fillType ~= FillType.AIR
 end
+
+--- Check if need to unload
+function UnloadableFieldworkAIDriver:isFull()
+	if not self.vehicle.cp.workTools then return true end
+	local nothingToUnload = true
+	for _, workTool in pairs(self.vehicle.cp.workTools) do
+		nothingToUnload = self:checkFillLevels(workTool) and nothingToUnload
+	end
+	return not nothingToUnload
+end
+
+
+
+

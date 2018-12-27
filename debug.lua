@@ -18,7 +18,6 @@ function CpManager:setUpDebugChannels()
 			defaultActive[14] = true;
 			defaultActive[6] = true;
 			defaultActive[7] = true;
-			defaultActive[17] = true;
 			defaultActive[9] = true;
 		end;
 	end;
@@ -38,15 +37,15 @@ function CpManager:setUpDebugChannels()
 
 	-- Debug channels legend:
 	courseplay.debugChannelsDesc = {
-		 [1] = 'Debug: Raycast (drive + tipTriggers)';
-		 [2] = 'Debug: Load and unload tippers';
-		 [3] = 'Debug: Traffic collision';
-		 [4] = 'Debug: Combines/mode2, register and unload combines';
-		 [5] = 'Debug: Multiplayer';
-		 [6] = 'Debug: implements (updateWorkTools etc.)';
-		 [7] = 'Debug: course generation';
-		 [8] = 'Debug: course management';
-		 [9] = 'Debug: path finding';
+		[1] = 'Debug: Raycast (drive + tipTriggers)';
+		[2] = 'Debug: Load and unload tippers';
+		[3] = 'Debug: Traffic collision';
+		[4] = 'Debug: Combines/mode2, register and unload combines';
+		[5] = 'Debug: Multiplayer';
+		[6] = 'Debug: implements (updateWorkTools etc.)';
+		[7] = 'Debug: course generation';
+		[8] = 'Debug: course management';
+		[9] = 'Debug: path finding';
 		[10] = 'Debug: mode9: shovel loading/unloading';
 		[11] = 'Debug: Combine self-unloading and heaps';
 		[12] = 'Debug: all other debugs (uncategorized)';
@@ -81,7 +80,7 @@ function CpManager:setUpDebugChannels()
 
 		courseplay.debugButtonPosData[i] = data;
 	end;
-	
+
 end;
 
 --------------------------------------------------
@@ -120,7 +119,7 @@ end
 function courseplay.logDebugMarker()
 	local timestamp = getDate( "%H:%M:%S")
 	if g_server ~= nil then
-		print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp, 
+		print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp,
 			g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
 	else
 		print( string.format( '[dbg lp%d %s] Debug Marker', g_updateLoopIndex, timestamp))
@@ -312,7 +311,7 @@ function streamDebugWriteBool(streamId, value)
 	end
 
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing bool: %s",stream_debug_counter, tostring(value) ),5)	
+	courseplay:debug(string.format("%d: writing bool: %s",stream_debug_counter, tostring(value) ),5)
 	streamWriteBool(streamId, value)
 end
 
@@ -361,10 +360,10 @@ function streamDebugReadString(streamId)
 end
 
 
-	--e.g. courseplay:findInTables(g_currentMission ,"g_currentMission", otherId)
+--e.g. courseplay:findInTables(g_currentMission ,"g_currentMission", otherId)
 function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToSearch)
-	
-	if courseplay.lastSearchedValue == nil then 
+
+	if courseplay.lastSearchedValue == nil then
 		courseplay.lastSearchedValue = "empty"
 	end
 	if courseplay.lastSearchedValue == valueToSearch then --prevent loops in searching
@@ -373,10 +372,10 @@ function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToS
 		print("courseplay:findInTables -> searching "..type(valueToSearch).." "..tostring(valueToSearch).." in "..tableToSearchString)
 		--courseplay.lastSearchedValue = valueToSearch
 	end
-	
+
 	if type(tableToSearchIn) == "table" then
 		--Level 0
-		for index, value in pairs(tableToSearchIn) do	
+		for index, value in pairs(tableToSearchIn) do
 			if courseplay:findInMatchingValues(index,value,valueToSearch)  then
 				print(string.format("courseplay:findInTables -> %s.%s = %s",tableToSearchString,tostring(index),tostring(value)))
 			elseif type(value) == "table" then
@@ -388,13 +387,13 @@ function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToS
 						local table2 = table1[index1]
 						for index2, value2 in pairs(table2) do
 							if courseplay:findInMatchingValues(index2,value2,valueToSearch) then
-							print(string.format("courseplay:findInTables -> %s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(value2)))
+								print(string.format("courseplay:findInTables -> %s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(value2)))
 							elseif type(value2) == "table" then
 								local table3 = table2[index2]
 								for index3, value3 in pairs(table3) do
 									if courseplay:findInMatchingValues(index3,value3 ,valueToSearch) then
 										print(string.format("courseplay:findInTables -> %s.%s.%s.%s.%s = %s",tableToSearchString,tostring(index),tostring(index1),tostring(index2),tostring(index3),tostring(value3)))
-									elseif type(value3) == "table" then					
+									elseif type(value3) == "table" then
 										local table4 = table3[index3]
 										for index4, value4 in pairs(table3) do
 											if courseplay:findInMatchingValues(index4,value4,valueToSearch) then
@@ -410,16 +409,16 @@ function courseplay:findInTables(tableToSearchIn , tableToSearchString, valueToS
 											end
 										end
 									end
-								end							
+								end
 							end
 						end
 					end
 				end
 			end
-		end		
+		end
 	else
 		print("courseplay:findInTables -> "..tableToSearchString.." is not a table")
-	return
+		return
 	end
 	print("courseplay:findInTables -> searching finished")
 end
@@ -429,7 +428,7 @@ function courseplay:findInMatchingValues(index, value1, value2)
 	--print("checking "..type1..tostring(value1).."vs "..type2.." "..tostring(value2))
 	if type1 == type2 and value1 == value2 then
 		return true
-	end		
+	end
 	if type2 == "string" then
 		if tostring(index) == value2 then
 			return true
@@ -451,6 +450,29 @@ function debug.getinfo()
 	return result
 end
 
+-- TODO: there could be a drawTemporaryLine in cpDebug that already has a buffer for all draw data, there's no need to
+-- create a separate one
+function courseplay:showTemporaryMarkers(vehicle)
+	if not courseplay.debugChannels[14] then return end
+	if vehicle.cp.showMarkers then
+		if vehicle.cp.showMarkers.timer < vehicle.timer then
+			-- time is up, remove markers
+			vehicle.cp.showMarkers = nil
+		else
+			cpDebug:drawLine(vehicle.cp.showMarkers.x1, vehicle.cp.showMarkers.y + 1, vehicle.cp.showMarkers.z1, 0.5, 0, 0.5,
+				vehicle.cp.showMarkers.x2, vehicle.cp.showMarkers.y + 1, vehicle.cp.showMarkers.z2);
+		end
+	end
+end
+
+--- start showing a temporary marker line
+function courseplay:addTemporaryMarker(vehicle, offset)
+	vehicle.cp.showMarkers = {}
+	vehicle.cp.showMarkers.timer = vehicle.timer + 15000
+	vehicle.cp.showMarkers.x1, _, vehicle.cp.showMarkers.z1 = localToWorld( vehicle.cp.DirectionNode, -1, 0, offset )
+	vehicle.cp.showMarkers.x2, _, vehicle.cp.showMarkers.z2 = localToWorld( vehicle.cp.DirectionNode, 1, 0, offset )
+	vehicle.cp.showMarkers.y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.showMarkers.x1, 0, vehicle.cp.showMarkers.z1 );
+end
 
 function courseplay:showAIMarkers(vehicle)
 
@@ -626,18 +648,18 @@ function cpDebug:getDrawData(drawInfo)
 		-- Pull drawData from active list. No need to set visibility here since they are already visible!
 		drawData = table.remove(self.oldDrawData[drawInfo.drawType]);
 
-	--- Pull drawData from drawBuffer if there is one to use
+		--- Pull drawData from drawBuffer if there is one to use
 	elseif #self.drawBuffer[drawInfo.drawType] > 0 then
 		-- Pull buffer drawData
 		drawData = table.remove(self.drawBuffer[drawInfo.drawType]);
 		-- Show the object
 		setVisibility(drawData.itemNode, true);
 
-	--- Create a new itemNode from the prototype if none of the above was valid
+		--- Create a new itemNode from the prototype if none of the above was valid
 	else
 		-- Clone prototype to get new object
 		drawData.itemNode = clone(self.drawPrototypes[drawInfo.drawType], true);
-        -- Set the draw type
+		-- Set the draw type
 		drawData.drawType = drawInfo.drawType;
 		-- Show the object
 		setVisibility(drawData.itemNode, true);

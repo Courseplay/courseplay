@@ -419,15 +419,6 @@ function courseplay:turn(vehicle, dt)
 					return;
 				end;
 
-				if courseplay.debugChannels[14] then
-					local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, frontMarker )
-					local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, frontMarker )
-					local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x1, 0, z1 );
-					cpDebug:drawLine(x1, y + 5, z1, 1, 1, 0, x2, y + 5, z2);
-					local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, backMarker )
-					local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, backMarker )
-					cpDebug:drawLine(x1, y + 5, z1, 1, 0, 0, x2, y + 5, z2);
-				end
 
 				local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
 				local distOrig = dist
@@ -538,7 +529,7 @@ function courseplay:turn(vehicle, dt)
 			local deltaZ, lowerImplements
 			if courseplay:onAlignmentCourse( vehicle ) then
 				-- on alignment course to the waypoint, ignore front marker, we want to get the vehicle itself to get to the waypoint
-				-- Why are we evening do this? lowerImplements doesn't occur till later in this elseif statement and we are returning out of the function before we even get there
+				-- Why are we even do this? lowerImplements doesn't occur till later in this elseif statement and we are returning out of the function before we even get there
 				_, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz)
 				lowerImplements = deltaZ < 3
 				courseplay:endAlignmentCourse( vehicle )
@@ -546,18 +537,18 @@ function courseplay:turn(vehicle, dt)
 				return
 			else
 				_, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
-				lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
+				lowerImplements = deltaZ < frontMarker + 1
 			end
 
 			if newTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
-
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
 					courseplay:lowerImplements(vehicle)
+					courseplay:addTemporaryMarker(vehicle, frontMarker)
 				end;
 
 				vehicle.cp.isTurning = nil;
@@ -607,16 +598,17 @@ function courseplay:turn(vehicle, dt)
 			--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			local _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
 
-			local lowerImplements = deltaZ < (isHarvester and frontMarker + 0.5 or frontMarker);
+			local lowerImplements = deltaZ < frontMarker + 1
 			if newTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
-
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
 					courseplay:lowerImplements(vehicle)
+					courseplay.debugVehicle(14, vehicle, 'dz=%.1f', deltaZ)
+					courseplay:addTemporaryMarker(vehicle, frontMarker)
 				end;
 
 				vehicle.cp.isTurning = nil;
@@ -685,7 +677,7 @@ function courseplay:turn(vehicle, dt)
 				vehicle.cp.waitForTurnTime = vehicle.timer + turnTimer;
 			end;
 			-- raise implements only if this is not a headland turn; in headland
-			-- turns the turn waypoint attributs will control when to raise/lower implements
+			-- turns the turn waypoint attribute will control when to raise/lower implements
 			if not isHeadlandCorner then
 				courseplay:raiseImplements(vehicle)
 			end
@@ -720,10 +712,20 @@ function courseplay:turn(vehicle, dt)
 		cpDebug:drawLine(posX, posY + 3, posZ, 0, 0, 1, posX, posY + 4, posZ);  -- Blue Line
 	end;
 
+	if courseplay.debugChannels[14] then
+		local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, frontMarker )
+		local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, frontMarker )
+		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x1, 0, z1 );
+		cpDebug:drawLine(x1, y + 5, z1, 0, 1, 0, x2, y + 5, z2);
+		local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, backMarker )
+		local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, backMarker )
+		cpDebug:drawLine(x1, y + 5, z1, 1, 0, 0, x2, y + 5, z2);
+	end
+
 	----------------------------------------------------------
-	-- Need to wait for tools to lower?
+	-- Need to wait for tools to lower? (this is now handled in the turn generation by getWpIxInDistanceFromEnd
 	----------------------------------------------------------
-	allowedToDrive = not courseplay:needToWaitForTools(vehicle)
+	--allowedToDrive = allowedToDrive and not courseplay:needToWaitForTools(vehicle)
 
 	----------------------------------------------------------
 	-- allowedToDrive false -> SLOW DOWN TO STOP
@@ -768,6 +770,7 @@ function courseplay:turn(vehicle, dt)
 			directionForce = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
 		end
 	end
+	--courseplay.debugVehicle(14, vehicle, 'turn speed = %.1f, allowedToDrive %s', refSpeed, allowedToDrive)
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
 	if newTarget and ((newTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
@@ -1402,12 +1405,14 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, center2ZOffset);
 		courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
 
+		local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, turnInfo.frontMarker + 2)
+		courseplay:debug(string.format("%s:(Turn) will lower implements at waypoint %d", nameNum(vehicle), lowerImplementAt), 14);
+		vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
+
 		--- Finish the turn
 		toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, abs(turnInfo.frontMarker) + 5);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
 		-- make sure implement is lowered by the time we get to the up/down row, so start lowering well before
-		local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, turnInfo.frontMarker + 6)
-		vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
 	end;
 end;
 
@@ -1465,21 +1470,25 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, true);
 
 	--- Generate second turn circle (Forward)
-	local zPossition = 1 + turnInfo.centerHeight + targetDeltaZ;
-	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition);
+	local zPosition = 1 + turnInfo.centerHeight + targetDeltaZ;
+	stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition);
 	courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, turnInfo.turnRadius, turnInfo.direction * -1, true);
 
 	--- Move a bit further forward
-	fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2);
-	toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2 - turnInfo.zOffset + turnInfo.wpChangeDistance);
+	fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition + 2);
+	toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition + 2 - turnInfo.zOffset + turnInfo.wpChangeDistance);
 	courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 
 	--- Move further forward depending on the frontmarker
-	if turnInfo.frontMarker + zPossition + turnInfo.zOffset < 0 then
-		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + (turnInfo.wpChangeDistance * 2));
-		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition + 2 + turnInfo.zOffset + abs(turnInfo.frontMarker) + (turnInfo.wpChangeDistance * 2));
+	if turnInfo.frontMarker + zPosition + turnInfo.zOffset < 0 then
+		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition + (turnInfo.wpChangeDistance * 2));
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition + 2 + turnInfo.zOffset + abs(turnInfo.frontMarker) + (turnInfo.wpChangeDistance * 2));
 		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 	end;
+
+	local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, turnInfo.frontMarker + 2)
+	courseplay:debug(string.format("%s:(Turn) will lower implements at waypoint %d", nameNum(vehicle), lowerImplementAt), 14);
+	vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
 
 	--- Finish the turn
 	local x, z = toPoint.x, toPoint.z;
@@ -1967,6 +1976,7 @@ function courseplay:raiseImplements(vehicle)
 	for _,workTool in pairs(vehicle.cp.workTools) do
 		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true, false,true,nil,nil,nil);
 		if not specialTool then
+			courseplay.debugVehicle(12, workTool, 'raising.')
 			workTool:aiImplementEndLine()
 			if workTool.spec_pickup and workTool.spec_pickup.isLowered then
 				workTool:setPickupState(false)
@@ -1979,6 +1989,7 @@ function courseplay:lowerImplements(vehicle)
 	for _,workTool in pairs(vehicle.cp.workTools) do
 		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,nil,nil,nil);
 		if not specialTool then
+			courseplay.debugVehicle(12, workTool, 'lowering.')
 			workTool:aiImplementStartLine()
 			if workTool.spec_pickup and not workTool.spec_pickup.isLowered then
 				workTool:setPickupState(true)

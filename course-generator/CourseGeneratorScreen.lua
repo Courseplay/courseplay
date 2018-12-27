@@ -243,6 +243,7 @@ function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
 	-- allow for the new course generator only
 	for i = courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN, courseGenerator.STARTING_LOCATION_MAX do
 		-- enable last position only if the vehicle has one
+		-- TODO: this is buggy, the mapping won't work!
 		if i ~= courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION or self.vehicle.cp.generationPosition.hasSavedPosition then
 			table.insert( texts, courseplay:loc(string.format('COURSEPLAY_CORNER_%d', i )))
 		end

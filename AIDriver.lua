@@ -16,16 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+---@class AIDriver
 AIDriver = CpObject()
 
 AIDriver.slowAngleLimit = 20
 AIDriver.slowAcceleration = 0.5
 AIDriver.slowDownFactor = 0.5
 
+-- we use this as an enum
+AIDriver.myStates = {
+	ALIGNMENT = {},
+	RUNNING = {},
+	STOPPED = {}
+}
+
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
 	self.mode = courseplay.MODE_TRANSPORT
+	self.states = {}
+	self:initStates(AIDriver.myStates)
 	self.vehicle = vehicle
 	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	self.ppc = self.vehicle.cp.ppc -- shortcut
@@ -35,7 +45,15 @@ function AIDriver:init(vehicle)
 	self.acceleration = 1
 	self.turnIsDriving = false -- code in turn.lua is driving
 	self.alignmentCourse = nil
-	self.isStopped = true
+	self.state = self.states.STOPPED
+	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
+end
+
+--- Aggregation of states from this and all descendant classes
+function AIDriver:initStates(states)
+	for key, state in pairs(states) do
+		self.states[key] = state
+	end
 end
 
 function AIDriver:getMode()
@@ -50,7 +68,7 @@ end
 -- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
 	self.firstWaypointIx = ix
-	self.isStopped = false
+	self.state = self.states.RUNNING
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
@@ -82,7 +100,7 @@ end
 function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self.msgReference = msgReference
-	self.isStopped = true
+	self.state = self.states.RUNNING
 end
 
 --- Just hang around after we stopped and make sure a message is displayed when there is one.
@@ -94,32 +112,53 @@ function AIDriver:idle(dt)
 	end
 end
 
+--- Anyone wants to temporarily stop driving for whatever reason, call this with true
+function AIDriver:hold(msgReference)
+	self:setInfoText(msgReference)
+	self.allowedToDrive = false
+end
+
+function AIDriver:setInfoText(msgReference)
+	self.msgReference = msgReference
+end
+
+function AIDriver:clearInfoText()
+	self.msgReference = nil
+end
+
 --- Main driving function
 -- should be called from update()
 -- This base implementation just follows the waypoints, anything more than that
 -- should be implemented by the derived classes as needed.
 function AIDriver:drive(dt)
+	-- This is reset once at the beginning of each loop
+	self.allowedToDrive = true
 	-- update current waypoint/goal point
 	self.ppc:update()
 
-	if self.isStopped then self:idle(dt) return end
+	if self.state == self.states.STOPPED then self:idle(dt) return end
 
-	-- should we keep driving?
-	local allowedToDrive = self:checkLastWaypoint()
-	self:driveCourse(dt, allowedToDrive)
+	self:checkLastWaypoint()
+	self:driveCourse(dt)
 
+	if self.msgReference then
+		-- looks like this needs to be called in every update cycle.
+		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
+	end
 end
 
 --- Normal driving according to the course waypoints, using courseplay:goReverse() when needed
 -- to reverse with trailer.
-function AIDriver:driveCourse(dt, allowedToDrive)
+function AIDriver:driveCourse(dt)
 	-- check if reversing
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
 	-- stop for fuel if needed
-	allowedToDrive = courseplay:checkFuel(self.vehicle, lx, lz,allowedToDrive)
+	if not courseplay:checkFuel(self.vehicle, lx, lz, true) then
+		self:hold()
+	end
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
-		self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+		self:driveVehicleInDirection(dt, self.allowedToDrive, moveForwards, lx, lz, self:getSpeed())
 	elseif self.turnIsDriving then
 		-- let the code in turn drive the turn maneuvers
 		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
@@ -130,7 +169,7 @@ function AIDriver:driveCourse(dt, allowedToDrive)
 	else
 		-- use the PPC goal point when forward driving or reversing without trailer
 		local gx, _, gz = self.ppc:getGoalPointLocalPosition()
-		self:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, self:getSpeed())
+		self:driveVehicleToLocalPosition(dt, self.allowedToDrive, moveForwards, gx, gz, self:getSpeed())
 	end
 end
 
@@ -154,7 +193,7 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	if g_updateLoopIndex % 100 == 0 then
+	if g_updateLoopIndex % self.debugTicks == 0 then
 		self:debug('Speed = %.1f', maxSpeed)
 	end
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
@@ -172,7 +211,6 @@ end
 --- Check if we are at the last waypoint and should we continue with first waypoint of the course
 -- or stop.
 function AIDriver:checkLastWaypoint()
-	local allowedToDrive = true
 	if self.ppc:reachedLastWaypoint() then
 		if self:onAlignmentCourse() then
 			-- alignment course to the first waypoint ended, start the main course now
@@ -184,15 +222,12 @@ function AIDriver:checkLastWaypoint()
 			self:debug('Alignment course finished, starting course at waypoint %d', self.firstWaypointIx)
 			self:onEndAlignmentCourse()
 		elseif self.vehicle.cp.stopAtEnd then
-			-- stop at the last waypoint
-			allowedToDrive = false
 			self:onEndCourse()
 		else
 			-- continue at the first waypoint
 			self.ppc:initialize(1)
 		end
 	end
-	return allowedToDrive
 end
 
 --- Do whatever is needed after the alignment course is ended
@@ -220,6 +255,7 @@ function AIDriver:getReverseDrivingDirection()
 
 	local moveForwards = true
 	local isReverseActive = false
+	-- TODO: refactor this! No dependencies on modes here!
 	local isMode2 = self:getCpMode() == courseplay.MODE_COMBI
 	-- get the direction to drive to
 	local lx, lz = self:getDirectionToGoalPoint()
@@ -319,4 +355,9 @@ end
 
 function AIDriver:debug(...)
 	courseplay.debugVehicle(12, self.vehicle, ...)
+end
+
+function AIDriver:isStopped()
+	-- giants supplied last speed is in mm/s
+	return math.abs(self.vehicle.lastSpeedReal) < 0.0001
 end

@@ -656,8 +656,8 @@ end
 function courseplay:onDraw()
 
 	courseplay:showAIMarkers(self)
+	courseplay:showTemporaryMarkers(self)
 
-	--print("courseplay:draw()")
 	local isDriving = self:getIsCourseplayDriving();
 	
 	--WORKWIDTH DISPLAY

@@ -40,7 +40,7 @@ function GrainTransportAIDriver:drive(dt)
 	--print("GrainTransportAIDriver:drive(dt)")
 	self.ppc:update()
 
-	if self.isStopped then self:idle() return end
+	if self.state == self.states.STOPPED then self:idle(dt) return end
 
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- should we keep driving?

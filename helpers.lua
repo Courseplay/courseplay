@@ -68,7 +68,6 @@ function courseplay:isLowered(workTool)
 			isLowered = (jointDesc.moveAlpha == jointDesc.lowerAlpha or jointDesc.moveAlpha == jointDesc.upperAlpha) and isLowered
 		end
 	end
-	courseplay.debugVehicle(8, workTool, 'isLowered: %s', isLowered)
 	return isLowered
 end
 

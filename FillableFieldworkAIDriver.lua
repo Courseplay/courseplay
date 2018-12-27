@@ -24,12 +24,25 @@ Also known as mode 4
 
 ]]
 
+---@class FillableFieldworkAIDriver : FieldworkAIDriver
 FillableFieldworkAIDriver = CpObject(FieldworkAIDriver)
+
+
+FillableFieldworkAIDriver.myStates = {
+	WAITING_FOR_FILL = {}
+}
 
 function FillableFieldworkAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
+	self:initStates(FillableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
 end
+
+function FillableFieldworkAIDriver:drive(dt)
+	FillableFieldworkAIDriver:checkRefillStatus()
+	FieldworkAIDriver.drive(self, dt)
+end
+
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)
@@ -43,6 +56,16 @@ function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	return true
 end
 
-function FillableFieldworkAIDriver:getFillLevelWarningText()
-	return 'NEEDS_REFILLING'
+--- Check if need to refill anything
+function FillableFieldworkAIDriver:checkRefillStatus()
+	if not self.vehicle.cp.workTools then return end
+	if g_updateLoopIndex % 100 ~= 0 then return end
+	local nothingToRefill = true
+	for _, workTool in pairs(self.vehicle.cp.workTools) do
+		nothingToRefill = self:checkFillLevels(workTool) and nothingToRefill
+	end
+	if not nothingToRefill then
+		self:stopWork()
+		self:hold('NEEDS_REFILLING')
+	end
 end

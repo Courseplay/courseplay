@@ -23,33 +23,43 @@ Can follow a fieldworking course, perform turn maneuvers, turn on/off and raise/
 add adjustment course if needed.
 ]]
 
+---@class FieldworkAIDriver : AIDriver
 FieldworkAIDriver = CpObject(AIDriver)
+
+FieldworkAIDriver.myStates = {
+	FIELDWORK = {},
+	UNLOAD = {},
+	HELD = {},
+	WAITING_FOR_LOWER = {},
+	WAITING_FOR_RAISE = {}
+}
 
 -- Our class implementation does not call the constructor of base classes
 -- through multiple level of inheritances therefore we must explicitly call
 -- the base class ctr.
 function FieldworkAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
+	self:initStates(FieldworkAIDriver.myStates)
 	-- waiting for tools to turn on, unfold and lower
 	self.waitingForTools = true
+	self.speed = 0
 end
 
 --- Start the oourse and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	AIDriver.start(self, ix)
+	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
 	self.waitingForTools = true
 	if not self.alignmentCourse then
 		-- if there's no alignment course, start work immediately
 		-- TODO: should probably better start it when the initialized waypoint (ix) is reached
 		-- as we may start the vehicle outside of the field?
-		self:startWork()
+		self:changeToFieldwork()
+	else
+		self.state = self.states.ALIGNMENT
 	end
-end
 
-function FieldworkAIDriver:drive(dt)
-	AIDriver.drive(self, dt)
-	self:checkWorkTools()
 end
 
 function FieldworkAIDriver:stop(msgReference)
@@ -57,31 +67,32 @@ function FieldworkAIDriver:stop(msgReference)
 	AIDriver.stop(self, msgReference)
 end
 
-function FieldworkAIDriver:onEndAlignmentCourse()
+function FieldworkAIDriver:changeToFieldwork()
+	self:debug('change to fieldwork')
+	self.state = self.states.FIELDWORK
+	self.fieldWorkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
+end
+
+function FieldworkAIDriver:onEndAlignmentCourse()
+	self:changeToFieldwork()
 end
 
 function FieldworkAIDriver:onEndCourse()
 	self:stop('END_POINT')
 end
 
+function FieldworkAIDriver:getFieldSpeed()
+	-- use the speed limit supplied by Giants for fieldwork
+	local speedLimit = self.vehicle:getSpeedLimit() or math.huge
+	return math.min(self.vehicle.cp.speeds.field, speedLimit)
+end
+
 function FieldworkAIDriver:getSpeed()
-	local speed = 10
-	if self.alignmentCourse then
-		-- use the courseplay speed limit for fields
-		speed = self.vehicle.cp.speeds.field
-	else
-		-- use the speed limit supplied by Giants for fieldwork
-		local speedLimit = self.vehicle:getSpeedLimit() or math.huge
-		speed = math.min(self.vehicle.cp.speeds.field, speedLimit)
-	end
+	local speed = self.speed or 10
 	-- as long as other CP components mess with the cruise control we need to reset this, for example after
 	-- a turn
 	self.vehicle:setCruiseControlMaxSpeed(speed)
-	if self.course == self.mainCourse and self.waitingForTools then
-		-- don't go anywhere until everything is ready to work
-		speed = 0
-	end
 	return speed
 end
 
@@ -99,25 +110,19 @@ function FieldworkAIDriver:stopWork()
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 end
 
---- Check all worktools to see if we are ready to go or need to stop
-function FieldworkAIDriver:checkWorkTools()
-	if not self.vehicle.cp.workTools then return end
-	local allToolsReady, allFillLevelsOk = true, true
+--- Check all worktools to see if we are ready
+function FieldworkAIDriver:areAllWorkToolsReady()
+	if not self.vehicle.cp.workTools then return true end
+	local allToolsReady = true
 	for _, workTool in pairs(self.vehicle.cp.workTools) do
 		allToolsReady = self:isWorktoolReady(workTool) and allToolsReady
-		allFillLevelsOk = self:checkFillLevels(workTool) and allFillLevelsOk
 	end
-	self.waitingForTools = not allToolsReady
-	if not allFillLevelsOk then
-		self:stop(self:getFillLevelWarningText())
-	end
+	return allToolsReady
 end
 
 --- Check fill levels in all tools and stop when one of them isn't
 -- ok (empty or full, depending on the derived class)
 function FieldworkAIDriver:checkFillLevels(workTool)
-	-- really no need to do this on every update()x
-	if g_updateLoopIndex % 100 ~= 0 then return true end
 	if workTool.getFillUnits then
 		for index, fillUnit in pairs(workTool:getFillUnits()) do
 			-- let's see if we can get by this abstraction for all kinds of tools
@@ -142,9 +147,7 @@ function FieldworkAIDriver:isWorktoolReady(workTool)
 	end
 
 	local isLowered = courseplay:isLowered(workTool)
-
-	courseplay.debugVehicle(12, workTool, 'lowered=%s turnedon=%s unfolded=%s', isLowered, isTurnedOn, isUnfolded)
-
+	courseplay.debugVehicle(12, workTool, 'islowered=%s isturnedon=%s unfolded=%s', isLowered, isTurnedOn, isUnfolded)
 	return isLowered and isTurnedOn and isUnfolded
 end
 
@@ -160,6 +163,6 @@ function FieldworkAIDriver:getFillLevelWarningText()
 end
 
 function FieldworkAIDriver:debug(...)
-	courseplay.debugVehicle(17, self.vehicle, ...)
+	courseplay.debugVehicle(12, self.vehicle, ...)
 end
 
