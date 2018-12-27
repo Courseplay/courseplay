@@ -33,6 +33,7 @@ AIDriver.myStates = {
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
+	self.debugChannel = 14
 	self.mode = courseplay.MODE_TRANSPORT
 	self.states = {}
 	self:initStates(AIDriver.myStates)
@@ -194,9 +195,7 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	if g_updateLoopIndex % self.debugTicks == 0 then
-		self:debug('Speed = %.1f', maxSpeed)
-	end
+	self:debugSparse('Speed = %.1f', maxSpeed)
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
@@ -355,7 +354,14 @@ function AIDriver:setUpAlignmentCourse(ix)
 end
 
 function AIDriver:debug(...)
-	courseplay.debugVehicle(12, self.vehicle, ...)
+	courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
+end
+
+--- output debug message only at every debugTicks loop
+function AIDriver:debugSparse(...)
+	if g_updateLoopIndex % self.debugTicks == 0 then
+		courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
+	end
 end
 
 function AIDriver:isStopped()

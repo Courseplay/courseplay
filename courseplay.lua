@@ -14,6 +14,7 @@
 local globalEnvironment = getfenv (0);
 globalEnvironment["g_courseplay"] = globalEnvironment[g_currentModName];
 
+---@class courseplay
 courseplay = {};
 courseplay.path = g_currentModDirectory;
 if courseplay.path:sub(-1) ~= '/' then

@@ -36,7 +36,8 @@ UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED = 1
 UnloadableFieldworkAIDriver.PIPE_STATE_OPEN = 2
 
 
-FieldworkAIDriver.myStates = {
+UnloadableFieldworkAIDriver.myStates = {
+	UNLOAD = {},
 	WAITING_FOR_UNLOAD = {}
 }
 
@@ -44,18 +45,6 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
-	self.waitingForUnloading = true
-end
-
-function UnloadableFieldworkAIDriver:drive(dt)
-	if self.state == self.states.FIELDWORK then
-		self:driveFieldwork()
-	elseif self.state == self.states.ALIGNMENT then
-		-- use the courseplay speed limit for fields
-		self.speed = self.vehicle.cp.speeds.field
-	end
-
-	AIDriver.drive(self, dt)
 end
 
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
@@ -70,7 +59,7 @@ function UnloadableFieldworkAIDriver:driveFieldwork()
 			self.speed = 0
 		end
 	elseif self.fieldWorkState == self.states.WORKING then
-		if self:isFull() then
+		if not self:allFillLevelsOk() then
 			self:changeToFieldworkUnload()
 		end
 	elseif self.fieldWorkState == self.states.UNLOAD then
@@ -97,7 +86,7 @@ function UnloadableFieldworkAIDriver:driveFieldworkUnload()
 			self.fieldWorkUnloadState = self.states.WAITING_FOR_UNLOAD
 		end
 	elseif self.fieldWorkUnloadState == self.states.WAITING_FOR_UNLOAD then
-		if not self:isFull() then
+		if not self:allFillLevelsOk() then
 			self:debug('not full anymore, continue working')
 			-- not full anymore, maybe because unloading to a trailer, go back to work
 			self:clearInfoText()
@@ -129,9 +118,8 @@ end
 function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if g_updateLoopIndex % self.debugTicks == 0 then
-		self:debug('Fill levels: %s: %d', fillTypeName, pc )
-	end
+	self:debugSparse('Fill levels: %s: %d', fillTypeName, pc )
+
 	if pc > self.fillLevelFullPercentage then
 		return false
 	end
@@ -177,16 +165,6 @@ end
 
 function UnloadableFieldworkAIDriver:isValidFillType(fillType)
 	return fillType ~= FillType.DIESEL and fillType ~= FillType.DEF	and fillType ~= FillType.AIR
-end
-
---- Check if need to unload
-function UnloadableFieldworkAIDriver:isFull()
-	if not self.vehicle.cp.workTools then return true end
-	local nothingToUnload = true
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		nothingToUnload = self:checkFillLevels(workTool) and nothingToUnload
-	end
-	return not nothingToUnload
 end
 
 

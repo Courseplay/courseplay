@@ -28,7 +28,6 @@ FieldworkAIDriver = CpObject(AIDriver)
 
 FieldworkAIDriver.myStates = {
 	FIELDWORK = {},
-	UNLOAD = {},
 	HELD = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_RAISE = {}
@@ -43,6 +42,7 @@ function FieldworkAIDriver:init(vehicle)
 	-- waiting for tools to turn on, unfold and lower
 	self.waitingForTools = true
 	self.speed = 0
+	self.debugChannel = 14
 end
 
 --- Start the oourse and turn on all implements when needed
@@ -65,6 +65,17 @@ end
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
 	AIDriver.stop(self, msgReference)
+end
+
+function FieldworkAIDriver:drive(dt)
+	if self.state == self.states.FIELDWORK then
+		self:driveFieldwork()
+	elseif self.state == self.states.ALIGNMENT then
+		-- use the courseplay speed limit for fields
+		self.speed = self.vehicle.cp.speeds.field
+	end
+
+	AIDriver.drive(self, dt)
 end
 
 function FieldworkAIDriver:changeToFieldwork()
@@ -120,9 +131,19 @@ function FieldworkAIDriver:areAllWorkToolsReady()
 	return allToolsReady
 end
 
+--- Check if need to refill anything
+function FieldworkAIDriver:allFillLevelsOk()
+	if not self.vehicle.cp.workTools then return false end
+	local allOk = true
+	for _, workTool in pairs(self.vehicle.cp.workTools) do
+		allOk = self:fillLevelsOk(workTool) and allOk
+	end
+	return allOk
+end
+
 --- Check fill levels in all tools and stop when one of them isn't
 -- ok (empty or full, depending on the derived class)
-function FieldworkAIDriver:checkFillLevels(workTool)
+function FieldworkAIDriver:fillLevelsOk(workTool)
 	if workTool.getFillUnits then
 		for index, fillUnit in pairs(workTool:getFillUnits()) do
 			-- let's see if we can get by this abstraction for all kinds of tools
@@ -160,9 +181,5 @@ end
 -- Text for AIDriver.stop(msgReference) to display as the reason why we stopped
 function FieldworkAIDriver:getFillLevelWarningText()
 	return nil
-end
-
-function FieldworkAIDriver:debug(...)
-	courseplay.debugVehicle(12, self.vehicle, ...)
 end
 

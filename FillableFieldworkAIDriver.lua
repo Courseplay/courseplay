@@ -29,6 +29,7 @@ FillableFieldworkAIDriver = CpObject(FieldworkAIDriver)
 
 
 FillableFieldworkAIDriver.myStates = {
+	REFILL = {},
 	WAITING_FOR_FILL = {}
 }
 
@@ -38,34 +39,61 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
 end
 
-function FillableFieldworkAIDriver:drive(dt)
-	FillableFieldworkAIDriver:checkRefillStatus()
-	FieldworkAIDriver.drive(self, dt)
+--- Doing the fieldwork (headlands or up/down rows, including the turns)
+function FillableFieldworkAIDriver:driveFieldwork()
+	if self.fieldWorkState == self.states.WAITING_FOR_LOWER then
+		if self:areAllWorkToolsReady() then
+			self:debug('all tools ready, start working')
+			self.fieldWorkState = self.states.WORKING
+			self.speed = self:getFieldSpeed()
+		else
+			self.speed = 0
+		end
+	elseif self.fieldWorkState == self.states.WORKING then
+		if not self:allFillLevelsOk() then
+			self:changeToFieldworkRefill()
+		end
+	elseif self.fieldWorkState == self.states.UNLOAD then
+		self:driveFieldworkRefill()
+	end
 end
 
+--- Out of seeds/fertilizer/whatever
+function FillableFieldworkAIDriver:changeToFieldworkRefill()
+	self:debug('change to fieldwork refilling')
+	self:setInfoText('NEEDS_REFILLING')
+	self.fieldWorkState = self.states.REFILL
+	self.fieldWorkRefillState = self.states.WAITING_FOR_RAISE
+end
+
+function FillableFieldworkAIDriver:driveFieldworkRefill()
+	-- don't move while empty
+	self.speed = 0
+	if self.fieldWorkRefillState == self.states.WAITING_FOR_RAISE then
+		-- wait until we stopped before raising the implements
+		if self:isStopped() then
+			self:debug('implements raised, stop')
+			self:stopWork()
+			self.fieldWorkRefillState = self.states.WAITING_FOR_REFILL
+		end
+	elseif self.fieldWorkRefillState == self.states.WAITING_FOR_REFILL then
+		if self:allFillLevelsOk() then
+			self:debug('refilled, continue working')
+			-- not full anymore, maybe because Refilling to a trailer, go back to work
+			self:clearInfoText()
+			self:changeToFieldwork()
+		end
+	end
+end
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)
 function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	self:debug('Fill levels: %s: %d', fillTypeName, pc )
+	self:debugSparse('Fill levels: %s: %d', fillTypeName, pc )
 	if pc < 1 then
 		return false
 	end
 	return true
-end
-
---- Check if need to refill anything
-function FillableFieldworkAIDriver:checkRefillStatus()
-	if not self.vehicle.cp.workTools then return end
-	if g_updateLoopIndex % 100 ~= 0 then return end
-	local nothingToRefill = true
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		nothingToRefill = self:checkFillLevels(workTool) and nothingToRefill
-	end
-	if not nothingToRefill then
-		self:stopWork()
-		self:hold('NEEDS_REFILLING')
-	end
 end
