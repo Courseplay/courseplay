@@ -93,7 +93,6 @@ function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltyp
 end;
 
 
---TODO Tommi Remove if not used anymore
 function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 	-- We really should be using getFillUnitSupportedFillTypes(fillUnitIndex) TODO Make a loop to go through it. 
 	if fillUnitIndex == nil then

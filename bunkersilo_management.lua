@@ -220,11 +220,11 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 			
 			local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newWx, 1, newWz); 
 			local hY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newHx, 1, newHz);
-			local fillType = TipUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
+			local fillType = DensityMapHeightUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
 			if lastValidfillType ~= fillType and fillType ~= 0 then
 				lastValidfillType = fillType
 			end
-			local newFillLevel = TipUtil.getFillLevelAtArea(fillType, sx, sz, newWx, newWz, newHx, newHz )
+			local newFillLevel = DensityMapHeightUtil.getFillLevelAtArea(fillType, sx, sz, newWx, newWz, newHx, newHz )
 			local bx = sx + (widthLengthX/2) + (heightLengthX/2)  
 			local bz = sz + (widthLengthZ/2) + (heightLengthZ/2)
 			local offset = 0
@@ -271,7 +271,7 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 		sz = map[heightIndex][1].hz
 	end
 	if lastValidfillType > 0 then
-		courseplay:debug(('%s: Bunkersilo filled with %s(%i) will be devided in %d lines and %d columns'):format(nameNum(vehicle),g_fillTypeManager.indexToFillType[lastValidfillType].name ,lastValidfillType, heightCount, widthCount), 10);   
+		courseplay:debug(('%s: Bunkersilo filled with %s(%i) will be devided in %d lines and %d columns'):format(nameNum(vehicle),g_fillTypeManager.indexToName[lastValidfillType], lastValidfillType, heightCount, widthCount), 10);   
 	else
 		courseplay:debug(('%s: empty Bunkersilo will be devided in %d lines and %d columns'):format(nameNum(vehicle), heightCount, widthCount), 10);   
 	end
@@ -311,7 +311,7 @@ function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
 			local x2,z2 = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
 			local x3,z3 = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
 			bunker.type = "silo"
-			if Utils.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z) then
+			if MathUtil.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z) then
 				return bunker
 			end
 		end
@@ -324,7 +324,7 @@ function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
 		p2x,p2z = vehicle.Waypoints[vehicle.cp.shovelFillEndPoint].cx,vehicle.Waypoints[vehicle.cp.shovelFillEndPoint].cz;
 		p1y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p1x, 1, p1z);
 		p2y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p2x, 1, p2z);
-		heapFillType = TipUtil.getFillTypeAtLine(p1x, p1y, p1z, p2x, p2y, p2z, 5)
+		heapFillType = DensityMapHeightUtil.getFillTypeAtLine(p1x, p1y, p1z, p2x, p2y, p2z, 5)
 	end
 	
 	if heapFillType ~= 0 then
@@ -363,7 +363,7 @@ function courseplay:getMode9HeapsMinMaxCoords(vehicle,heapFillType,p1x,p1y,p1z,p
 	for i=stepSize,250,stepSize do
 		tempStartX,tempStartY,tempStartZ = localToWorld(point,i,0,0)
 		tempHeightX,tempHeightY,tempHeightZ= localToWorld(point,i,0,distance*2)
-		local fillType = TipUtil.getFillTypeAtLine(tempStartX, tempStartY, tempStartZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
+		local fillType = DensityMapHeightUtil.getFillTypeAtLine(tempStartX, tempStartY, tempStartZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
 		--print(string.format("fillType:%s distance: %.1f",tostring(fillType),i))	
 		if fillType ~= heapFillType then
 			maxX = i-stepSize
@@ -378,7 +378,7 @@ function courseplay:getMode9HeapsMinMaxCoords(vehicle,heapFillType,p1x,p1y,p1z,p
 	for i=stepSize,250,stepSize do
 		tempStartX,tempStartY,tempStartZ = localToWorld(point,-i,0,0)
 		tempHeightX,tempHeightY,tempHeightZ= localToWorld(point,-i,0,distance*2)
-		local fillType = TipUtil.getFillTypeAtLine(tempStartX,tempStartY, tempStartZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
+		local fillType = DensityMapHeightUtil.getFillTypeAtLine(tempStartX,tempStartY, tempStartZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
 		--print(string.format("fillType:%s distance: %.1f",tostring(fillType),i))	
 		if fillType ~= heapFillType then
 			minX = i-stepSize
@@ -393,7 +393,7 @@ function courseplay:getMode9HeapsMinMaxCoords(vehicle,heapFillType,p1x,p1y,p1z,p
 	for i=0,250,stepSize do
 		tempStartX,tempStartY,tempStartZ = localToWorld(point,maxX,0,i)
 		tempHeightX,tempHeightY,tempHeightZ= localToWorld(point,-minX,0,i)
-		local fillType = TipUtil.getFillTypeAtLine(tempStartX, tempStartY, tempStartZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
+		local fillType = DensityMapHeightUtil.getFillTypeAtLine(tempStartX, tempStartY, tempStartZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
 		if not foundHeap then
 			if fillType == heapFillType then
 				foundHeap = true

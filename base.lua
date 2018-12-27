@@ -337,6 +337,7 @@ function courseplay:onLoad(savegame)
 	end;
 
 	-- TRIGGERS
+	self.findTrailerRaycastCallback = courseplay.findTrailerRaycastCallback;
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
 	self.findSpecialTriggerCallback = courseplay.findSpecialTriggerCallback;
 	self.cp.hasRunRaycastThisLoop = {};
@@ -959,7 +960,7 @@ end;
 function courseplay:onUpdate(dt)
 	-- KEYBOARD EVENTS
 	if self:getIsActive() and self:getIsEntered() and courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed then
-		if courseplay.inputActions.COURSEPLAY_START_STOP.isPressed then
+		if courseplay.inputActions.COURSEPLAY_START_STOP.hasEvent then
 			if self.cp.canDrive then
 				if self.cp.isDriving then
 					self:setCourseplayFunc('stop', nil, false, 1);
@@ -973,31 +974,31 @@ function courseplay:onUpdate(dt)
 					self:setCourseplayFunc('stop_record', nil, false, 1);
 				end;
 			end;
-		elseif courseplay.inputActions.COURSEPLAY_CANCELWAIT.isPressed and self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving then
+		elseif courseplay.inputActions.COURSEPLAY_CANCELWAIT.hasEvent and self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('cancelWait', true, false, 1);
-		elseif courseplay.inputActions.COURSEPLAY_DRIVENOW.isPressed and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
+		elseif courseplay.inputActions.COURSEPLAY_DRIVENOW.hasEvent and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('setIsLoaded', true, false, 1);
-		elseif courseplay.inputActions.COURSEPLAY_STOP_AT_END.isPressed and self.cp.canDrive and self.cp.isDriving then
+		elseif courseplay.inputActions.COURSEPLAY_STOP_AT_END.hasEvent and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('setStopAtEnd', not self.cp.stopAtEnd, false, 1);
-		elseif self.cp.canSwitchMode and self.cp.nextMode and courseplay.inputActions.COURSEPLAY_NEXTMODE.isPressed then
+		elseif self.cp.canSwitchMode and self.cp.nextMode and courseplay.inputActions.COURSEPLAY_NEXTMODE.hasEvent then
 			self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
-		elseif self.cp.canSwitchMode and self.cp.prevMode and courseplay.inputActions.COURSEPLAY_PREVMODE.isPressed then
+		elseif self.cp.canSwitchMode and self.cp.prevMode and courseplay.inputActions.COURSEPLAY_PREVMODE.hasEvent then
 			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION.isPressed then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION.hasEvent then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 2);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION.isPressed then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION.hasEvent then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 3);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION.isPressed then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION.hasEvent then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 4);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION.isPressed then
+		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION.hasEvent then
 				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
 				courseplay:moveShovelToPosition(self, 5);
 		end;
 
-		if not self.cp.openHudWithMouse and courseplay.inputActions.COURSEPLAY_HUD.isPressed then
+		if not self.cp.openHudWithMouse and courseplay.inputActions.COURSEPLAY_HUD.hasEvent then
 			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
 		end;
 	end; -- self:getIsActive() and Enterable.getIsEntered(self) and modifierPressed
@@ -1174,6 +1175,12 @@ function courseplay:onUpdate(dt)
 	end
 	-- this really should be only done in one place.
 	self.cp.curSpeed = self.lastSpeedReal * 3600;
+	
+	
+	--reset actionEvents
+	for name,action in pairs (courseplay.inputActions) do
+		action.hasEvent = false	
+	end
 end; --END update()
 
 --[[

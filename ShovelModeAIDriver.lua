@@ -59,6 +59,8 @@ function ShovelModeAIDriver:start(ix)
 	vehicle.cp.shovelEmptyPoint = nil
 	vehicle.cp.mode9SavedLastFillLevel = 0;
 	local numWaitPoints = 0
+	
+	
 	for i,wp in pairs(vehicle.Waypoints) do
 		if wp.wait then
 			numWaitPoints = numWaitPoints + 1;
@@ -77,7 +79,7 @@ function ShovelModeAIDriver:start(ix)
 	end;
 	
 	
-	local vAI = vehicle:getAattachedImplements()
+	local vAI = vehicle:getAttachedImplements()
 	for i,_ in pairs(vAI) do
 		local object = vAI[i].object
 		if object.ignoreVehicleDirectionOnLoad ~= nil then
@@ -93,7 +95,9 @@ function ShovelModeAIDriver:start(ix)
 		end				
 	end
 	self:setShovelState(vehicle, 1, 'backup');
-	courseplay:setWaypointIndex(vehicle, 1);
+	--courseplay:setWaypointIndex(vehicle, 1);
+	self.course = Course(self.vehicle , self.vehicle.Waypoints)
+	self.course:print()
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize(1)
 	--get moving tools (only once after starting)
@@ -105,17 +109,16 @@ end
 function ShovelModeAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
-	local lx, lz = self:getDirectionToNextWaypoint()
+	local lx, lz = 0,0
 	local allowedToDrive = true
 	local moveForwards
 	local vehicle = self.vehicle;
 	courseplay:updateFillLevelsAndCapacities(vehicle)
-	local fillLevelPct= vehicle.cp.totalFillLevelPercent
+	local fillLevelPct = vehicle.cp.totalFillLevelPercent
 	local mt, secondary = vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary;
 
 	
-	
-	if vehicle.cp.waypointIndex == 1 and vehicle.cp.shovelState ~= 6 then  --backup for missed approach
+	if self.ppc:getCurrentWaypointIx() == 1 and vehicle.cp.shovelState ~= 6 then  --backup for missed approach
 		self:setShovelState(vehicle, 1, 'backup');
 		courseplay:setIsLoaded(vehicle, false);
 	end;
@@ -123,14 +126,14 @@ function ShovelModeAIDriver:drive(dt)
 	
 	-- STATE 1: DRIVE TO BUNKER SILO (1st waiting point)
 	if vehicle.cp.shovelState == 1 then
-		if vehicle.cp.waypointIndex + 1 > vehicle.cp.shovelFillStartPoint then
+		if self.ppc:getCurrentWaypointIx() + 1 > vehicle.cp.shovelFillStartPoint then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[2], dt) then
 				self:setShovelState(vehicle, 2);
 			elseif vehicle.cp.shovelStopAndGo then
 				allowedToDrive = false
 			end;
 			if fillLevelPct >= 98 then
-				vehicle.cp.shovel:setFillLevel(vehicle.cp.shovel.cp.capacity * 0.97, vehicle.cp.shovel.cp.fillType);
+				vehicle.cp.shovel:setFillUnitFillLevelToDisplay(1 ,vehicle.cp.shovel.cp.capacity * 0.97, vehicle.cp.shovel.cp.fillType);
 			end;
 			if vehicle.cp.mode9TargetSilo == nil then
 				self:debug('%s: vehicle.cp.mode9TargetSilo = nil call getTargetBunkerSilo',nameNum(vehicle));
@@ -188,7 +191,8 @@ function ShovelModeAIDriver:drive(dt)
 		if vehicle.cp.mode9TargetSilo and vehicle.cp.BunkerSiloMap and vehicle.cp.actualTarget then
 			local targetUnit = vehicle.cp.BunkerSiloMap[vehicle.cp.actualTarget.line][vehicle.cp.actualTarget.column]
 			local cx , cz = targetUnit.cx, targetUnit.cz
-			local nx,ny,nz = getWorldTranslation(vehicle.cp.shovel.shovelTipReferenceNode)
+			local dischargeNode = vehicle.cp.shovel:getCurrentDischargeNode()
+			local nx,ny,nz = getWorldTranslation(dischargeNode.node)
 			local _,_,backUpZ = worldToLocal(vehicle.cp.DirectionNode, cx , targetUnit.y , cz); -- its the savety switch in case I miss the point 
 			local distanceToTarget =  courseplay:distance(nx, nz, cx, cz) --distance from shovel to target
 			
@@ -227,7 +231,7 @@ function ShovelModeAIDriver:drive(dt)
 		if fillLevelPct >= 99 or vehicle.cp.isLoaded or vehicle.cp.slippingStage == 2 or heapEnd then
 			if not vehicle.cp.isLoaded then
 				local newWP = self:findNextRevWaypoint(self.ppc:getCurrentWaypointIx())
-				courseplay:setWaypointIndex(vehicle, newWP)
+				--courseplay:setWaypointIndex(vehicle, newWP)
 				self.ppc:initialize(newWP);
 				self.ppc:update()
 				courseplay:setIsLoaded(vehicle, true);
@@ -254,62 +258,69 @@ function ShovelModeAIDriver:drive(dt)
 		local p = vehicle.cp.shovelFillStartPoint
 		local _,y,_ = getWorldTranslation(vehicle.cp.DirectionNode);
 		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx ,y, vehicle.Waypoints[p].cz); 
-		if vehicle.cp.BunkerSiloMap ~= nil and vehicle.Waypoints[vehicle.cp.waypointIndex].rev and z < -5 then
+		if vehicle.cp.BunkerSiloMap ~= nil and self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) and z < -5 then
 			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, y, vehicle.Waypoints[p].cz);
 		end
-		if vehicle.cp.slippingStageBreak and not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+		if vehicle.cp.slippingStageBreak and not self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) then
 			vehicle.cp.slippingStageBreak = nil
 			if fillLevelPct < 75 then
 				courseplay:setIsLoaded(vehicle, false);
 				self:setShovelState(vehicle, 1,'try again');
-				courseplay:setWaypointIndex(vehicle, vehicle.cp.shovelFillStartPoint - 1);
+				--courseplay:setWaypointIndex(vehicle, vehicle.cp.shovelFillStartPoint - 1);
 				vehicle.cp.BunkerSiloMap = nil
 			end
 		end
 		
-		if vehicle.cp.previousWaypointIndex + 4 > vehicle.cp.shovelEmptyPoint then
-			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
-				vehicle.cp.shovel.trailerFound = nil;
-				vehicle.cp.shovel.objectFound = nil;
-				self:setShovelState(vehicle, 7);
-			end;
+		local distanceToEmptyPoint = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, vehicle.cp.shovelEmptyPoint)
+		if distanceToEmptyPoint < 15 then
+			self:setShovelState(vehicle, 7);
+
 		end;
 	-- STATE 7: WAIT FOR TRAILER 10m BEFORE EMPTYING POINT
 	elseif vehicle.cp.shovelState == 7 then
-		local p = vehicle.cp.shovelEmptyPoint;
-		local _,ry,_ = getWorldTranslation(vehicle.cp.DirectionNode);
-		local nx, nz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, ry, vehicle.Waypoints[p].cz);
-		local lx7,ly7,lz7 = localDirectionToWorld(vehicle.cp.DirectionNode, nx, 0, nz);
-		for i=6,12 do
-			local x,y,z = localToWorld(vehicle.cp.DirectionNode,0,4,i);
-			raycastAll(x, y, z, lx7, -1, lz7, "findTrailerRaycastCallback", 10, vehicle.cp.shovel);
+		if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
+			vehicle.cp.shovel.trailerFound = nil;
+			vehicle.cp.shovel.trailerFoundSupported = nil
+			vehicle.cp.shovel.objectFound = nil;
+			local rx, ry, rz = self.course:getWaypointPosition(vehicle.cp.shovelEmptyPoint)
+			local nx, nz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, rx, ry, rz);
+			local lx7,ly7,lz7 = localDirectionToWorld(vehicle.cp.DirectionNode, nx, -1, nz);
+			for i=6,12 do
+				local x,y,z = localToWorld(vehicle.cp.DirectionNode,0,4,i);
+				raycastAll(x, y, z, lx7, ly7, lz7, "findTrailerRaycastCallback", 10, vehicle);
+				if courseplay.debugChannels[10] then
+					cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx7*10, y+ly7*10, z+lz7*10);
+				end;
+			end;
+			local distanceToEmptyPoint = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, vehicle.cp.shovelEmptyPoint)
+			if vehicle.cp.shovel.trailerFound == nil and vehicle.cp.shovel.objectFound == nil and distanceToEmptyPoint < 10 then
+				allowedToDrive = false;
+			elseif distanceToEmptyPoint < 10 then
+				vehicle.cp.shovel.trailerFound = nil;
+				vehicle.cp.shovel.trailerFoundSupported = nil 
+				vehicle.cp.shovel.objectFound = nil;
+				self:setShovelState(vehicle, 4);
+			end;
+		end
+	-- STATE 4: PREPARE UNLOADING
+	elseif vehicle.cp.shovelState == 4 then
+		local dischargeNode = vehicle.cp.shovel:getCurrentDischargeNode()
+		local x,y,z = localToWorld(dischargeNode.node,0,0,0);
+		local dischargeState = vehicle.cp.shovel:getDischargeState();
+		local lx7,ly7,lz7 = localDirectionToWorld(vehicle.cp.DirectionNode, 0, -1, 0);
+		print("dischargeState:"..tostring(dischargeState))
+		if dischargeState < 2 then
+			raycastAll(x, y, z, lx7, ly7, lz7, "findTrailerRaycastCallback", 10, vehicle);
 			if courseplay.debugChannels[10] then
-				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx7*10, y-10, z+lz7*10);
+				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx7*10, y+ly7*10, z+lz7*10);
 			end;
 		end;
 
-		local ox, _, oz = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx, ry, vehicle.Waypoints[p].cz);
-		local distance = MathUtil.vector2Length(ox, oz);
-		if vehicle.cp.shovel.trailerFound == nil and vehicle.cp.shovel.objectFound == nil and distance < 10 then
-			allowedToDrive = false;
-		elseif distance < 10 then
-			vehicle.cp.shovel.trailerFound = nil;
-			vehicle.cp.shovel.objectFound = nil;
-			self:setShovelState(vehicle, 4);
-		end;
-
-	-- STATE 4: PREPARE UNLOADING
-	elseif vehicle.cp.shovelState == 4 then
-		local x,y,z = localToWorld(vehicle.cp.shovel.shovelTipReferenceNode,0,0,-1);
-		local emptySpeed = vehicle.cp.shovel:getShovelEmptyingSpeed();
-		if emptySpeed == 0 then
-			raycastAll(x, y, z, 0, -1, 0, "findTrailerRaycastCallback", 10, vehicle.cp.shovel);
-		end;
-
-		if vehicle.cp.shovel.trailerFound ~= nil or vehicle.cp.shovel.objectFound ~= nil or emptySpeed > 0 then
-			--print("trailer/object found");
+		if vehicle.cp.shovel.trailerFound ~= nil or vehicle.cp.shovel.objectFound ~= nil or dischargeState == 2 then
+			print("trailer/object found");
 			local unloadAllowed = vehicle.cp.shovel.trailerFoundSupported or vehicle.cp.shovel.objectFoundSupported;
 			if unloadAllowed then
+				print("start unloading")
 				if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[5], dt) then
 					self:setShovelState(vehicle, 5);
 				else
@@ -332,12 +343,12 @@ function ShovelModeAIDriver:drive(dt)
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
 				if vehicle.cp.isLoaded then
 					local newWP = self:findNextRevWaypoint(self.ppc:getCurrentWaypointIx())
-					courseplay:setWaypointIndex(vehicle, newWP);
+					--courseplay:setWaypointIndex(vehicle, newWP);
 					vehicle.cp.ppc:initialize(newWP);
 					self.ppc:update()
 					courseplay:setIsLoaded(vehicle, false);
 				end;
-				if not vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+				if not self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) then
 					self:setShovelState(vehicle, 6);
 				end
 			else
@@ -354,36 +365,28 @@ function ShovelModeAIDriver:drive(dt)
 	-- STATE 6: RETURN FROM BGA TO START POINT
 	elseif vehicle.cp.shovelState == 6 then
 		courseplay:handleSpecialTools(vehicle,vehicle,false,nil,nil,nil,nil,nil);
-
 		courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[3], dt);
-	
-		if vehicle.cp.waypointIndex == 1 then
-			vehicle.cp.BunkerSiloMap = nil
-			vehicle.cp.actualTarget = nil
-			self:setShovelState(vehicle, 1);
-		end;
 	end;
 	
-	
 	if allowedToDrive then
-		courseplay:handleSlipping(vehicle, self:getSpeed())
+		--courseplay:handleSlipping(vehicle, self:getSpeed())
 		--Tommi implement it if drivecontrol is out self:setFourWheelDrive(vehicle, true)
 	end
-	
-	lx, lz, moveForwards = self:checkReverse(lx, lz)
-	self:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, lz, self:getSpeed())
+	self:checkLastWaypoint()
+	AIDriver.driveCourse(self, dt, allowedToDrive)
 		
 end
 
-function ShovelModeAIDriver:onWaypointChange(newIx)
-	self:debug('On waypoint change %d', newIx)
-	if self.course:isLastWaypointIx(newIx) then
+function ShovelModeAIDriver:checkLastWaypoint()
+	if self.ppc:reachedLastWaypoint() then
 		self.ppc:initialize(1)
-		AIDriver.onWaypointChange(self, 1)
-	else
-		AIDriver.onWaypointChange(self, newIx)
+		self.vehicle.cp.BunkerSiloMap = nil
+		self.vehicle.cp.actualTarget = nil
+		self:setShovelState(self.vehicle, 1);
 	end
 end
+
+
 
 function ShovelModeAIDriver:findNextRevWaypoint(currentPoint)
 	local vehicle = self.vehicle;
@@ -402,8 +405,9 @@ function ShovelModeAIDriver:getSpeed()
 	local refSpeed = 3
 	local currWP = self.ppc:getCurrentWaypointIx()
 	if self.vehicle.cp.shovelState <3 or self.vehicle.cp.shovelState ==4 then
-		self.vehicle.cp.curSpeed = self.vehicle.lastSpeedReal * 3600;
 		refSpeed = self.vehicle.cp.speeds.turn
+	elseif self.vehicle.cp.shovelState == 7 then
+		refSpeed = self.vehicle.cp.speeds.crawl
 	else
 		refSpeed = AIDriver.getSpeed(self)
 	end

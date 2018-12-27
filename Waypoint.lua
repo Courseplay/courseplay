@@ -41,6 +41,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.cpIndex = cpIndex or 0
 	self.turnStart = cpWp.turnStart
 	self.turnEnd = cpWp.turnEnd
+	self.interact = cpWp.wait or false
 end
 
 function Waypoint:getPosition()
@@ -237,7 +238,7 @@ end
 function Course:print()
 	for i = 1, #self.waypoints do
 		local p = self.waypoints[i]
-		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s', i, p.x, p.z, p.angle, tostring(p.rev)))
+		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s i=%s', i, p.x, p.z, p.angle, tostring(p.rev), tostring(p.interact)))
 	end
 end
 

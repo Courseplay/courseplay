@@ -198,6 +198,17 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	return true;
 end;
 
+--FIND Trailer CALLBACK
+function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
+	local trailer = g_currentMission.nodeToObject[transformId];
+	if trailer~= nil then
+        self.cp.shovel.trailerFound = trailer;
+        self.cp.shovel.trailerFoundSupported = true;
+	
+	end
+	return true
+end
+
 function courseplay:updateAllTriggers()
 	courseplay:debug('updateAllTriggers()', 1);
 

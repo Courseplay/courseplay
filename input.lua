@@ -171,10 +171,10 @@ end;
 function courseplay.button:handleMouseClick(vehicle)
 	vehicle = vehicle or self.vehicle;
 	local parameter = self.parameter;
-	--[[Tommi if InputBinding.isPressed(InputBinding.COURSEPLAY_MODIFIER) and self.modifiedParameter ~= nil then --for some reason InputBinding works in :mouseEvent
+	if courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed and self.modifiedParameter ~= nil then
 		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
 		parameter = self.modifiedParameter;
-	end;]]
+	end;
 
 	if self.show and not self.isHidden and self.canBeClicked and not self.isDisabled then
 		if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
@@ -363,6 +363,7 @@ function courseplay:onKeyEvent(unicode, sym, modifier, isDown)
 		if sym == action.bindingSym then
 			--print("set "..tostring(name)..' to '..tostring(isDown))
 			action.isPressed = isDown
+			action.hasEvent = isDown
 		end
 	end	
 end;
@@ -404,6 +405,7 @@ function courseplay.inputBindings.updateInputButtonData()
 					bindingSym = '',
 					hasBinding = false,
 					isPressed = false}
+					hasEvent = false
 			if action.primaryKeyboardInput then
 				--print("  primaryKeyboardInput:"..tostring(action.primaryKeyboardInput))
 				actionTable.hasBinding = true
