@@ -202,9 +202,20 @@ end;
 function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 	local trailer = g_currentMission.nodeToObject[transformId];
 	if trailer~= nil then
-        self.cp.shovel.trailerFound = trailer;
-        self.cp.shovel.trailerFoundSupported = true;
-	
+		local shovelFillUnits =  self.cp.shovel:getFillUnits()
+		local shovelFillType = shovelFillUnits[1].fillType
+		local fillUnits = trailer:getFillUnits()
+		--print(string.format("trailer found; shovelFillType=%s ",tostring(shovelFillType)))
+		for i=1,#fillUnits do
+			local fillTypes = trailer:getFillUnitSupportedFillTypes(i)
+			--print(string.format("fillUnit%s: supported:%s; fillType:%s; fillLevel:%s capacity:%s"
+			--,tostring(i),tostring(fillTypes[shovelFillType]),tostring(fillUnits[i].fillType),tostring(fillUnits[i].fillLevel),tostring(fillUnits[i].capacity)))
+			if fillTypes[shovelFillType]	
+			and (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN)
+			and fillUnits[i].fillLevel < fillUnits[i].capacity then
+				self.cp.shovel.targetFound = trailer;
+			end
+		end
 	end
 	return true
 end
