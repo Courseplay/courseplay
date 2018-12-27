@@ -53,7 +53,7 @@ function FillableFieldworkAIDriver:driveFieldwork()
 		if not self:allFillLevelsOk() then
 			self:changeToFieldworkRefill()
 		end
-	elseif self.fieldWorkState == self.states.UNLOAD then
+	elseif self.fieldWorkState == self.states.REFILL then
 		self:driveFieldworkRefill()
 	end
 end
