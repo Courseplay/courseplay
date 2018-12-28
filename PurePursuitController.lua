@@ -55,6 +55,7 @@ HOW TO USE
 
 ]]
 
+---@class PurePursuitController
 PurePursuitController = CpObject()
 
 -- normal lookahead distance
@@ -102,9 +103,10 @@ function PurePursuitController:delete()
 	self.relevantWpNode:destroy()
 	self.nextWpNode:destroy()
 	courseplay.destroyNode(self.projectedPosNode)
-	self.goalWpNode:destroy();
+	self.goalWpNode:destroy()
 end
 
+---@param course Course
 function PurePursuitController:setCourse(course)
 	self.course = course
 end
@@ -263,8 +265,7 @@ function PurePursuitController:findGoalPoint()
 	-- which the goal point lies. This is the segment intersected by the circle with lookAheadDistance radius
 	-- around the vehicle.
 	local ix = self.relevantWpNode.ix
-	while ix <= #self.course.waypoints do
-	--while ix <= #self.vehicle.Waypoints do
+	while ix <= self.course:getNumberOfWaypoints() do
 		node1:setToWaypoint(self.course, ix)
 		node2:setToWaypointOrBeyond(self.course, ix + 1, self.lookAheadDistance)
 		local x1, _, z1 = getWorldTranslation(node1.node)
@@ -274,8 +275,9 @@ function PurePursuitController:findGoalPoint()
 		local q2 = courseplay:distance(x2, z2, vx, vz) -- distance from node 2
 		local l = courseplay:distance(x1, z1, x2, z2)  -- length of path segment (distance between node 1 and 2
 
-		-- case i (first node outside virtual circle)
-		if ix == self.firstIx and q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
+		-- case i (first node outside virtual circle or not the first node but we are way off the track)
+		if (ix == self.firstIx or (q1 + q2) > 5 * self.lookAheadDistance) and
+			q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
 			self:showGoalpointDiag(1, 'PPC: initializing, ix=%d, q1=%.1f, q2=%.1f, la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			-- If we weren't on track yet (after initialization, on our way to the first/initialized waypoint)
 			-- set the goal to the relevant WP
@@ -300,6 +302,8 @@ function PurePursuitController:findGoalPoint()
 		end
 
 		-- cases iii, iv and v
+		-- these two may have a problem and actually prevent the vehicle go back to the waypoint
+		-- when wandering way off track, therefore we try to catch this case in case i
 		if ix == self.relevantWpNode.ix and q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
 			if math.abs(self.crossTrackError) <= self.lookAheadDistance then
 				-- case iii (two intersection points)
@@ -352,7 +356,7 @@ function PurePursuitController:setCurrentWaypoint(ix)
 		self.currentWpNode:setToWaypointOrBeyond(self.course, ix, self.lookAheadDistance)
 		-- if ix > #self.course, currentWpNode.ix will always be set to #self.course and the change detection won't work
 		-- therefore, only call listeners if ix <= #self.course
-		if ix ~= prevIx and ix <= #self.course.waypoints then
+		if ix ~= prevIx and ix <= self.course:getNumberOfWaypoints() then
 			if self.aiDriver then
 				self.aiDriver:onWaypointChange(self.currentWpNode.ix)
 			end
@@ -475,7 +479,7 @@ end
 function PurePursuitController:reachedLastWaypoint()
 	local atLastWaypoint
 	if self:isActive() then
-		atLastWaypoint = self.relevantWpNode.ix >= #self.course.waypoints
+		atLastWaypoint = self.relevantWpNode.ix >= self.course:getNumberOfWaypoints()
 	else
 		atLastWaypoint = self.vehicle.cp.waypointIndex >= self.vehicle.cp.numWaypoints			
 	end

@@ -81,7 +81,7 @@ function UnloadableFieldworkAIDriver:driveFieldworkUnload()
 	if self.fieldWorkUnloadState == self.states.WAITING_FOR_RAISE then
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
-			self:debug('implements raised, stop')
+			self:debug('vehicle stopped, raise implements')
 			self:stopWork()
 			self.fieldWorkUnloadState = self.states.WAITING_FOR_UNLOAD
 		end

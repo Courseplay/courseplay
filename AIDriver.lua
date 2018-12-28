@@ -39,10 +39,11 @@ function AIDriver:init(vehicle)
 	self:initStates(AIDriver.myStates)
 	self.vehicle = vehicle
 	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
+	---@type PurePursuitController
 	self.ppc = self.vehicle.cp.ppc -- shortcut
 	self.ppc:setAIDriver(self)
 	self.ppc:enable()
-	self.firstWaypointIx = 1
+	self.waypointIxAfterAlignment = 1
 	self.acceleration = 1
 	self.turnIsDriving = false -- code in turn.lua is driving
 	self.alignmentCourse = nil
@@ -68,39 +69,20 @@ end
 --- Start driving
 -- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
-	self.firstWaypointIx = ix
 	self.state = self.states.RUNNING
+	self.turnIsDriving = false
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
-	self.turnIsDriving = false
-	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, #self.mainCourse.waypoints)
-
-	-- self.course is the one we are currently driving (main, alignment, etc...)
-	self.alignmentCourse = nil
-	if self:isAlignmentCourseNeeded(ix) then
-		self.alignmentCourse = self:setUpAlignmentCourse(ix)
-		self.course = self.alignmentCourse or self.mainCourse
-	else
-		self.course = self.mainCourse
-	end
-
-	self.ppc:setCourse(self.course)
-
-	if self.alignmentCourse then
-		self.ppc:setLookaheadDistance(self.ppc.shortLookaheadDistance)
-		self.ppc:initialize(1)
-	else
-		self.ppc:setLookaheadDistance(self.ppc.normalLookAheadDistance)
-		self.ppc:initialize(ix)
-	end
+	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, self.mainCourse:getNumberOfWaypoints())
+	self:startCourseWithAlignment(self.mainCourse, ix)
 end
 
 --- Stop the driver
 -- @param reason as defined in globalInfoText.msgReference
 function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
-	self.msgReference = msgReference
+	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
 end
 
@@ -113,17 +95,18 @@ function AIDriver:idle(dt)
 	end
 end
 
---- Anyone wants to temporarily stop driving for whatever reason, call this with true
-function AIDriver:hold(msgReference)
-	self:setInfoText(msgReference)
+--- Anyone wants to temporarily stop driving for whatever reason, call this
+function AIDriver:hold()
 	self.allowedToDrive = false
 end
 
 function AIDriver:setInfoText(msgReference)
+	self:debug('set info text to %s', msgReference)
 	self.msgReference = msgReference
 end
 
 function AIDriver:clearInfoText()
+	self:debug('info text cleared')
 	self.msgReference = nil
 end
 
@@ -195,7 +178,7 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	self:debugSparse('Speed = %.1f', maxSpeed)
+	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f', maxSpeed, gx, gz, l, ax, az)
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
@@ -207,6 +190,41 @@ function AIDriver:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, 
 	self:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
 end
 
+--- Start course and set course as the current one
+---@param course Course
+---@param ix number
+function AIDriver:startCourse(course, ix)
+	self.course = course
+	self.ppc:setCourse(self.course)
+	self.ppc:initialize(ix)
+end
+
+--- Start course (with alignment if needed) and set course as the current one
+---@param course Course
+---@param ix number
+---@return boolean true when an alignment course was added
+function AIDriver:startCourseWithAlignment(course, ix)
+	self.alignmentCourse = nil
+	self.waypointIxAfterAlignment = ix
+	self.courseAfterAlignment = course
+	if self.vehicle.cp.alignment.enabled and self:isAlignmentCourseNeeded(course, ix) then
+		self.alignmentCourse = self:setUpAlignmentCourse(course, ix)
+		---@type Course
+		self.course = self.alignmentCourse or course
+	else
+		self.course = course
+	end
+
+	self.ppc:setCourse(self.course)
+
+	if self.alignmentCourse then
+		self.ppc:setLookaheadDistance(self.ppc.shortLookaheadDistance)
+		self.ppc:initialize(1)
+	else
+		self.ppc:setLookaheadDistance(self.ppc.normalLookAheadDistance)
+		self.ppc:initialize(ix)
+	end
+end
 
 --- Check if we are at the last waypoint and should we continue with first waypoint of the course
 -- or stop.
@@ -214,18 +232,13 @@ function AIDriver:checkLastWaypoint()
 	if self.ppc:reachedLastWaypoint() then
 		if self:onAlignmentCourse() then
 			-- alignment course to the first waypoint ended, start the main course now
-			self.course = self.mainCourse
-			self.ppc:setCourse(self.course)
 			self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-			self.ppc:initialize(self.firstWaypointIx)
+			self:startCourse(self.courseAfterAlignment, self.waypointIxAfterAlignment)
 			self.alignmentCourse = nil
-			self:debug('Alignment course finished, starting course at waypoint %d', self.firstWaypointIx)
+			self:debug('Alignment course finished, starting course at waypoint %d', self.waypointIxAfterAlignment)
 			self:onEndAlignmentCourse()
-		elseif self.vehicle.cp.stopAtEnd then
-			self:onEndCourse()
 		else
-			-- continue at the first waypoint
-			self.ppc:initialize(1)
+			self:onEndCourse()
 		end
 	end
 end
@@ -237,7 +250,12 @@ end
 
 --- Course ended
 function AIDriver:onEndCourse()
-	self:stop('END_POINT')
+	if self.vehicle.cp.stopAtEnd then
+		self:stop('END_POINT')
+	else
+		-- continue at the first waypoint
+		self.ppc:initialize(1)
+	end
 end
 
 function AIDriver:getDirectionToGoalPoint()
@@ -307,8 +325,9 @@ function AIDriver:getIsInFilltrigger()
 end
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed
-function AIDriver:isAlignmentCourseNeeded(ix)
-	local d = self.mainCourse:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
+---@param course Course
+function AIDriver:isAlignmentCourseNeeded(course, ix)
+	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
 	return d > self.vehicle.cp.turnDiameter and self.vehicle.cp.alignment.enabled
 end
 
@@ -331,8 +350,9 @@ function AIDriver:onTurnEnd()
 	self:debug('Turn ended, continue at waypoint %d.', self.ppc:getCurrentWaypointIx())
 end
 
-function AIDriver:setUpAlignmentCourse(ix)
-	local x, _, z = self.mainCourse:getWaypointPosition(ix)
+---@param course Course
+function AIDriver:setUpAlignmentCourse(course, ix)
+	local x, _, z = course:getWaypointPosition(ix)
 	--Readjust x and z for offset being used
 	-- TODO: offset should be an attribute of the course and handled by the course itself.
 	if courseplay:getIsVehicleOffsetValid(self.vehicle) then
@@ -340,7 +360,7 @@ function AIDriver:setUpAlignmentCourse(ix)
 	end;
 	-- TODO: maybe the course itself should return an alignment course to its own waypoint ix as we don't want
 	-- to work with individual course waypoints here.
-	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, math.rad( self.mainCourse:getWaypointAngleDeg(ix)))
+	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, math.rad( course:getWaypointAngleDeg(ix)))
 	if not alignmentWaypoints then
 		self:debug("Can't find an alignment course, may be too close to target wp?" )
 		return nil

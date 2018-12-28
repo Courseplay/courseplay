@@ -44,24 +44,31 @@ function FieldworkAIDriver:init(vehicle)
 	self.waitingForTools = true
 	self.speed = 0
 	self.debugChannel = 14
+	-- waypoint index on main (fieldwork) course where we aborted the work before going on
+	-- an unload/refill course
+	self.fieldworkAbortedAtWaypoint = 1
 end
 
---- Start the oourse and turn on all implements when needed
+--- Start the course and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
-	AIDriver.start(self, ix)
-	self:setUpCourses()
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
-	self.waitingForTools = true
-	if not self.alignmentCourse then
-		-- if there's no alignment course, start work immediately
-		-- TODO: should probably better start it when the initialized waypoint (ix) is reached
-		-- as we may start the vehicle outside of the field?
-		self:changeToFieldwork()
-	else
-		self.state = self.states.ALIGNMENT
-	end
 
+	self:setUpCourses()
+
+	self.waitingForTools = true
+	-- on which course are we starting?
+	-- the ix we receive here is the waypoint index in the fieldwork course and the unload/fill
+	-- course concatenated.
+	if ix > self.fieldworkCourse:getNumberOfWaypoints() then
+		-- beyond the first, fieldwork course: we are on the unload/refill part
+		self:changeToUnloadOrRefill()
+		self:startCourseWithAlignment(self.unloadRefillCourse, ix - self.fieldworkCourse:getNumberOfWaypoints())
+	else
+		-- we are on the fieldwork part
+		self:changeToFieldwork()
+		self:startCourseWithAlignment(self.fieldworkCourse, ix)
+	end
 end
 
 function FieldworkAIDriver:stop(msgReference)
@@ -73,11 +80,13 @@ function FieldworkAIDriver:drive(dt)
 	if self.state == self.states.FIELDWORK then
 		self:driveFieldwork()
 	elseif self.state == self.states.UNLOAD_OR_REFILL then
-		-- just drive normally
-		self.speed = self.vehicle.cp.speeds.street
-	elseif self.state == self.states.ALIGNMENT then
-		-- use the courseplay speed limit for fields
-		self.speed = self.vehicle.cp.speeds.field
+		if self.alignmentCourse then
+			-- use the courseplay speed limit for fields
+			self.speed = self.vehicle.cp.speeds.field
+		else
+			-- just drive normally
+			self.speed = self.vehicle.cp.speeds.street
+		end
 	end
 
 	AIDriver.drive(self, dt)
@@ -93,18 +102,18 @@ end
 function FieldworkAIDriver:changeToUnloadOrRefill()
 	self:stopWork()
 	self.state = self.states.UNLOAD_OR_REFILL
-	self.course = self.unloadRefillCourse
-	self.ppc:setCourse(self.course)
-	self:debug('changing to unload/refill course (%d waypoints)', #self.course.waypoints)
-	self.ppc:initialize(1)
-end
-
-function FieldworkAIDriver:onEndAlignmentCourse()
-	self:changeToFieldwork()
+	self:debug('changing to unload/refill course (%d waypoints)', self.unloadRefillCourse:getNumberOfWaypoints())
 end
 
 function FieldworkAIDriver:onEndCourse()
-	self:stop('END_POINT')
+	if self.state == self.states.UNLOAD_OR_REFILL then
+		-- unload/refill course ended, return to fieldwork
+		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.fieldworkAbortedAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
+		self:changeToFieldwork()
+		self:startCourseWithAlignment(self.fieldworkCourse, self.vehicle.cp.fieldworkAbortedAtWaypoint or self.fieldworkAbortedAtWaypoint)
+	else
+		AIDriver.onEndCourse(self)
+	end
 end
 
 function FieldworkAIDriver:getFieldSpeed()
@@ -192,12 +201,7 @@ function FieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	return true
 end
 
--- Text for AIDriver.stop(msgReference) to display as the reason why we stopped
-function FieldworkAIDriver:getFillLevelWarningText()
-	return nil
-end
-
---- Set up the main (fieldwork) course and the unload/refill course
+--- Set up the main (fieldwork) course and the unload/refill course and initial state
 -- Currently, the legacy CP code just dumps all loaded courses to vehicle.Waypoints so
 -- now we have to figure out which of that is the actual fieldwork course and which is the
 -- refill/unload part.
@@ -218,10 +222,12 @@ function FieldworkAIDriver:setUpCourses()
 	end
 	if #self.vehicle.Waypoints > endFieldCourseIx then
 		self:debug('There seems to be an unload/refill course starting at waypoint %d', endFieldCourseIx + 1)
-		self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, endFieldCourseIx)
+		---@type Course
+		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, endFieldCourseIx)
+		---@type Course
 		self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, endFieldCourseIx + 1, #self.vehicle.Waypoints)
 	else
 		self:debug('There seems to be no unload/refill course')
-		self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, #self.vehicle.Waypoints)
+		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, #self.vehicle.Waypoints)
 	end
 end

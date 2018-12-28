@@ -545,6 +545,9 @@ function courseplay:setTipRefOffset(vehicle)
 	end;
 end;
 
+--- Create two markers (offset distances from the root/direction node of the vehicle):
+-- frontMarker: distance of the outermost work area limit from the root/direction node.
+-- backMarker: distance of the innermost work area limit from the root/direction node.
 function courseplay:setMarkers(vehicle, object)
 
 	if object.cp.attachedCuttersVar ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then

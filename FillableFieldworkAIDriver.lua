@@ -52,7 +52,13 @@ function FillableFieldworkAIDriver:driveFieldwork()
 	elseif self.fieldWorkState == self.states.WORKING then
 		if not self:allFillLevelsOk() then
 			if self.unloadRefillCourse then
+				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
+				-- TODO: also, this should be persisted through stop/start cycles (maybe on the vehicle?)
+				self.fieldworkAbortedAtWaypoint = self.ppc:getCurrentWaypointIx()
+				self.vehicle.cp.fieldworkAbortedAtWaypoint = self.fieldworkAbortedAtWaypoint
+				self:debug('at least one tool is empty.')
 				self:changeToUnloadOrRefill()
+				self:startCourseWithAlignment(self.unloadRefillCourse, 1 )
 			else
 				self:changeToFieldworkRefill()
 			end

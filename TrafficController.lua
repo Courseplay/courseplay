@@ -120,7 +120,7 @@ end
 
 function TrafficController:reserveNextTiles(vehicleId, course, fromIx, speed)
 	local ok = true
-	local gridPoints = self:getGridPointsUnderCourse(course, self:forwardIterator(fromIx, #course.waypoints - 1), speed)
+	local gridPoints = self:getGridPointsUnderCourse(course, self:forwardIterator(fromIx, course:getNumberOfWaypoints() - 1), speed)
 	for i = 1, #gridPoints do
 		ok = ok and self:reserveGridPoint(gridPoints[i], Reservation(vehicleId, self.clock))
 	end
@@ -154,7 +154,7 @@ function TrafficController:getGridPointsUnderCourse(course, iterator, speed)
 	end
 	-- if we ended up here then we went all the way to the waypoint before the last, so
 	-- add the last one here
-	local x, z = self:getGridCoordinates(course.waypoints[#course.waypoints])
+	local x, z = self:getGridCoordinates(course.waypoints[course:getNumberOfWaypoints()])
 	table.insert(tiles, Point(x, z))
 	return tiles
 end

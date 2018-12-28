@@ -77,7 +77,7 @@ function WaypointNode:destroy()
 end
 
 function WaypointNode:setToWaypoint(course, ix, suppressLog)
-	local newIx = math.min(ix, #course.waypoints)
+	local newIx = math.min(ix, course:getNumberOfWaypoints())
 	if newIx ~= self.ix and self.logChanges and not suppressLog then
 		courseplay.debugVehicle(12, course.vehicle, 'PPC: %s waypoint index %d', getName(self.node), ix)
 	end
@@ -91,11 +91,11 @@ end
 -- Allow ix > #Waypoints, in that case move the node lookAheadDistance beyond the last WP
 function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 	--if self.ix and self.ix > ix then return end
-	if ix > #course.waypoints then
+	if ix > course:getNumberOfWaypoints() then
 		-- beyond the last, so put it on the last for now
 		-- but use the direction of the one before the last as the last one's is bogus
-		self:setToWaypoint(course, #course.waypoints)
-		setRotation(self.node, 0, math.rad(course.waypoints[#course.waypoints - 1].angle), 0)
+		self:setToWaypoint(course, course:getNumberOfWaypoints())
+		setRotation(self.node, 0, math.rad(course.waypoints[course:getNumberOfWaypoints() - 1].angle), 0)
 		-- And now, move ahead a bit.
 		local nx, ny, nz = localToWorld(self.node, 0, 0, distance)
 		setTranslation(self.node, nx, ny, nz)
@@ -146,6 +146,11 @@ function Course:init(vehicle, waypoints, first, last)
 	self:addWaypointAngles()
 	-- only for logging purposes
 	self.vehicle = vehicle
+end
+
+--- get number of waypoints in course
+function Course:getNumberOfWaypoints()
+	return #self.waypoints
 end
 
 -- add missing angles from one waypoint to the other
