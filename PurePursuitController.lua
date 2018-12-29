@@ -132,6 +132,8 @@ function PurePursuitController:initialize(ix, aiDriver)
 	end
 end
 
+-- TODO: make this more generic and allow registering multiple listeners?
+-- could also implement listeners for events like notify me when within x meters of a waypoint, etc.
 function PurePursuitController:setAIDriver(aiDriver)
 	-- for backwards compatibility, PPC currently is initialized by the legacy code so
 	-- by the time AIDriver takes over, it is already there. So let AIDriver tell PPC who's driving.
@@ -180,12 +182,17 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 		end
 	end
 	if result and not self:reachedLastWaypoint() then
-		-- disable debugging once we reached the last waypoint. Otherwise we'd keep logging
-		-- until the user presses 'Stop driver'.
-		courseplay.debugVehicle(12, self.vehicle, 'PPC: waypoint %d passed, dz: %.1f %s %s', wpNode.ix, dz,
-			self.course.waypoints[wpNode.ix].rev and 'reversed' or '',
-			self.course:switchingDirectionAt(wpNode.ix) and 'switching direction' or '')
-	end	
+		if not self.lastPassedWaypointIx or (self.lastPassedWaypointIx ~= wpNode.ix) then
+			self.lastPassedWaypointIx = wpNode.ix
+			courseplay.debugVehicle(12, self.vehicle, 'PPC: waypoint %d passed, dz: %.1f %s %s', wpNode.ix, dz,
+				self.course.waypoints[wpNode.ix].rev and 'reversed' or '',
+				self.course:switchingDirectionAt(wpNode.ix) and 'switching direction' or '')
+			-- notify listeners about the passed waypoint
+			if self.aiDriver and self.aiDriver.onWaypointPassed then
+				self.aiDriver:onWaypointPassed(self.lastPassedWaypointIx)
+			end
+		end
+	end
 	return result
 end
 
@@ -232,7 +239,6 @@ function PurePursuitController:findRelevantSegment()
 		passed, ix = self:havePassedAnyWaypointBetween(self.nextWpNode.ix, self.wpBeforeGoalPointIx)
 	end
 	if passed then
-		self.lastPassedWaypointIx = ix
 		self.relevantWpNode:setToWaypoint(self.course, ix)
 		self.nextWpNode:setToWaypoint(self.course, self.relevantWpNode.ix + 1)
 		if not self:reachedLastWaypoint() then
@@ -275,8 +281,8 @@ function PurePursuitController:findGoalPoint()
 		local q2 = courseplay:distance(x2, z2, vx, vz) -- distance from node 2
 		local l = courseplay:distance(x1, z1, x2, z2)  -- length of path segment (distance between node 1 and 2
 
-		-- case i (first node outside virtual circle or not the first node but we are way off the track)
-		if (ix == self.firstIx or (q1 + q2) > 5 * self.lookAheadDistance) and
+		-- case i (first node outside virtual circle but not yet reached) or (not the first node but we are way off the track)
+		if ((ix == self.firstIx and ix ~= self.lastPassedWaypointIx) or (q1 + q2) > 5 * self.lookAheadDistance) and
 			q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
 			self:showGoalpointDiag(1, 'PPC: initializing, ix=%d, q1=%.1f, q2=%.1f, la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			-- If we weren't on track yet (after initialization, on our way to the first/initialized waypoint)
@@ -343,7 +349,7 @@ function PurePursuitController:findGoalPoint()
 	end
 end
 
--- set the current waypoint for the rest of Courseplay
+-- set the current waypoint for the rest of Courseplay and to notify listeners
 function PurePursuitController:setCurrentWaypoint(ix)
 	-- this is the current waypoint for the rest of Courseplay code, the waypoint we are driving to
 	-- but never, ever go back. Instead just leave this loop and keep driving to the current goal node
