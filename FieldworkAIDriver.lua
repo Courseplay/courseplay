@@ -29,6 +29,7 @@ FieldworkAIDriver = CpObject(AIDriver)
 FieldworkAIDriver.myStates = {
 	FIELDWORK = {},
 	UNLOAD_OR_REFILL = {},
+	ON_CONNECTING_TRACK = {},
 	HELD = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_RAISE = {}
@@ -114,6 +115,35 @@ function FieldworkAIDriver:onEndCourse()
 	else
 		AIDriver.onEndCourse(self)
 	end
+end
+
+function FieldworkAIDriver:onWaypointPassed(ix)
+	self:debug('onWaypointPassed %d', ix)
+	if self.state == self.states.FIELDWORK then
+		if self.fieldworkState == self.states.WORKING then
+			if self.course:isOnConnectingTrack(ix) then
+				-- reached a connecting track (done with the headland, move to the up/down row or vice versa),
+				-- raise all implements while moving
+				self:stopWork()
+				self.fieldworkState = self.states.ON_CONNECTING_TRACK
+				self:debug('on a connecting track now, raising implements.')
+			end
+		end
+	end
+end
+
+function FieldworkAIDriver:onWaypointChange(ix)
+	self:debug('onWaypointChange %d', ix)
+	if self.state == self.states.FIELDWORK then
+		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
+			if not self.course:isOnConnectingTrack(ix) then
+				-- reached the end of the connecting track, back to work
+				self:debug('connecting track ended, back to work, first lowering implements.')
+				self:changeToFieldwork()
+			end
+		end
+	end
+	AIDriver.onWaypointChange(self, ix)
 end
 
 function FieldworkAIDriver:getFieldSpeed()

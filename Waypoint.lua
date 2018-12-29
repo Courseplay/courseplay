@@ -44,6 +44,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.turnStart = cpWp.turnStart
 	self.turnEnd = cpWp.turnEnd
 	self.interact = cpWp.wait or false
+	self.isConnectingTrack = cpWp.isConnectingTrack or nil
 end
 
 function Waypoint:getPosition()
@@ -188,6 +189,13 @@ end
 function Course:isTurnStartAtIx(ix)
 	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].turnStart
 end
+
+--- Is this waypoint on a connecting track, that is, a transfer path between
+-- a headland and the up/down rows where there's no fieldwork to do.
+function Course:isOnConnectingTrack(ix)
+	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].isConnectingTrack
+end
+
 
 function Course:switchingDirectionAt(ix) 
 	return self:switchingToForwardAt(ix) or self:switchingToReverseAt(ix)

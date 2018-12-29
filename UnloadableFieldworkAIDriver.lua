@@ -47,9 +47,15 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_FIELDWORK
 end
 
+function UnloadableFieldworkAIDriver:drive(dt)
+	-- handle the pipe in any state
+	self:handlePipe()
+	-- the rest is the same as the parent class
+	FieldworkAIDriver.drive(self, dt)
+end
+
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
 function UnloadableFieldworkAIDriver:driveFieldwork()
-	self:handlePipe()
 	if self.fieldWorkState == self.states.WAITING_FOR_LOWER then
 		if self:areAllWorkToolsReady() then
 			self:debug('all tools ready, start working')
