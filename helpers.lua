@@ -1216,7 +1216,7 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
 		print(printLowSpace.."[")
 	end
 	if courseplay.alreadyPrinted[t] then
-		print(printSpace.."allready printed")
+		print(printSpace.."already printed")
 	else
 		for index,value in pairs(t)do
 			local newPath = upperPath.."."..tostring(index)

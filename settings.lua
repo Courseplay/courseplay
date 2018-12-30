@@ -1527,7 +1527,7 @@ function courseplay:changeRunNumber(vehicle, changeBy)
 end;
 
 function courseplay:changeRunCounter(vehicle, bool)
-	courseplay:debug(string.format('%s: bool = %s vehicle.cp.runCounterBool = %s (called from %s)', nameNum(vehicle), tostring(bool), tostring(vehicle.cp.runCounterBool), courseplay.utils:getFnCallPath(2)), 12);
+	--courseplay:debug(string.format('%s: bool = %s vehicle.cp.runCounterBool = %s (called from %s)', nameNum(vehicle), tostring(bool), tostring(vehicle.cp.runCounterBool), courseplay.utils:getFnCallPath(2)), 12);
 	if vehicle.cp.runCounterBool ~= bool then
 		if bool == true and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -3, 3, 'wait', true, false) then
 			if vehicle.cp.runNumber < 11 then

@@ -841,8 +841,8 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
 
 		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
-			if not orintOnce then
-				orintOnce = true
+			if not printOnce then
+				printOnce = true
 				courseplay.alreadyPrinted = {}
 				courseplay:printMeThisTable(siloTrigger,0,4,"siloTrigger")
 				

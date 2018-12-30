@@ -95,6 +95,7 @@ end;
 
 -- convenience debug function that expects string.format() arguments,
 -- courseplay.debugVehicle( 14, "fill level is %.1f, mode = %d", fillLevel, mode )
+---@param channel number
 function courseplay.debugFormat(channel, ...)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
@@ -105,6 +106,7 @@ end
 
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 
 -- courseplay.debugVehicle( 14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
+---@param channel number
 function courseplay.debugVehicle(channel, vehicle, ...)
 	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local vehicleName = vehicle and nameNum(vehicle) or "Unknown vehicle"

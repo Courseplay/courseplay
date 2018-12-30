@@ -24,12 +24,17 @@ function GrainTransportAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
 	self.runCounter = 0
+	-- just for backwards compatibility
+	self.vehicle.cp.runCounter = self.runCounter
 end
 
 function GrainTransportAIDriver:start(ix)
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, ix)
 	self.runCounter = 0
+	-- due to lack of understanding what exactly isLoaded means and where is it set to false in mode 1,
+	-- we just set it to false here so load_tippers() will actually attempt to load the tippers...
+	courseplay:setIsLoaded(self.vehicle, false);
 end
 
 function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
@@ -121,22 +126,23 @@ end
 function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:reachedLastWaypoint() then
-		if self.vehicle.cp.stopAtEnd and self.runCounter >= self.vehicle.cp.runNumber then
+		-- Don't make life too complicated. Whenever we restart the course, we just
+		-- increment the run counter
+		-- TODO: check if it makes sense to use the totalFillLevel changing to 0 as a trigger.
+		self.runCounter = self.runCounter + 1
+		if self.runCounter >= self.vehicle.cp.runNumber then
 			-- stop at the last waypoint when the run counter expires
 			allowedToDrive = false
-			self.vehicle.cp.runReset = true;
 			self:stop('END_POINT_MODE_1')
-			self:debug('Mode 1 has tried to stop')
+			self:debug('Last run (%d) finished, stopping.', self.runCounter)
+			self.runCounter = 0
 		else
 			-- continue at the first waypoint
 			self.ppc:initialize(1)
-			-- Don't make life too complicated. Whenever we restart the course, we just
-			-- increment the run counter
-			self.runCounter = self.runCounter + 1
-			-- .. and then brutally, just for backwards compatibility
-			self.vehicle.cp.runCounter = self.runCounter
 			self:debug('Finished run %d, continue with next.', self.runCounter)
 		end
+		-- just for backwards compatibility
+		self.vehicle.cp.runCounter = self.runCounter
 	end
 	return allowedToDrive
 end
@@ -157,13 +163,8 @@ end
 
 function GrainTransportAIDriver:load(allowedToDrive)
 	-- Loading
-	-- tippers are not full TODO: this condition smells, should be refactored. Totally confusing isLoaded/isUnloaded?
-	if ((self.vehicle.cp.isLoaded and self.vehicle.cp.trailerFillDistance) or self.vehicle.cp.isLoaded ~= true)
-		and
-		((self:isNearFillPoint()
-			and self.vehicle.cp.totalFillLevel < self.vehicle.cp.totalCapacity
-			and self.vehicle.cp.isUnloaded == false)
-		or self.vehicle.cp.trailerFillDistance) then
+	-- tippers are not full
+	if self:isNearFillPoint() and self.vehicle.cp.totalFillLevel <= self.vehicle.cp.totalCapacity then
 		allowedToDrive = courseplay:load_tippers(self.vehicle, allowedToDrive);
 		courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(self.vehicle.cp.totalFillLevel, 100),self.vehicle.cp.totalCapacity));
 	end
