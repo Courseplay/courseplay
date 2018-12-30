@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+---@class GrainTransportAIDriver : AIDriver
 GrainTransportAIDriver = CpObject(AIDriver)
 
 --- Constructor
@@ -44,7 +45,7 @@ function GrainTransportAIDriver:drive(dt)
 
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- should we keep driving?
-	local allowedToDrive = self:checkLastWaypoint()
+	self.allowedToDrive = self:checkLastWaypoint()
 
 	-- RESET TRIGGER RAYCASTS from drive.lua. 
 	-- TODO: Not sure how raycast can be called twice if everything is coded cleanly.
@@ -62,8 +63,8 @@ function GrainTransportAIDriver:drive(dt)
 
 		self:searchForTipTrigger(lx, lz)
 
-		allowedToDrive = self:load(allowedToDrive)
-		allowedToDrive, giveUpControl = self:unLoad(allowedToDrive, dt)
+		self.allowedToDrive = self:load(self.allowedToDrive)
+		self.allowedToDrive, giveUpControl = self:unLoad(self.allowedToDrive, dt)
 	else
 		self:debug('Safety check failed')
 	end
@@ -73,7 +74,7 @@ function GrainTransportAIDriver:drive(dt)
 		return
 	else
 		-- we drive the course as usual
-		self:driveCourse(dt, allowedToDrive)
+		self:driveCourse(dt)
 	end
 end
 
