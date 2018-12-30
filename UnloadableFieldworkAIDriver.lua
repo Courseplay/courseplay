@@ -122,11 +122,12 @@ end
 -- is the fill level ok to continue? With unloadable tools we need to stop working when the tool is full
 -- with fruit
 function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
+
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
 	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
 
-	if pc > self.fillLevelFullPercentage then
+	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
 		return false
 	end
 	return true
