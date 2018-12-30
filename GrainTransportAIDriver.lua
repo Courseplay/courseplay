@@ -27,6 +27,7 @@ function GrainTransportAIDriver:init(vehicle)
 end
 
 function GrainTransportAIDriver:start(ix)
+	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, ix)
 	self.runCounter = 0
 end

@@ -306,7 +306,7 @@ function AIDriver:getSpeed()
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	else
 		if self.vehicle.cp.speeds.useRecordingSpeed then
-			speed = math.max(
+			speed = math.min(
 				self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or 0,
 				self.vehicle.cp.speeds.street)
 		else
