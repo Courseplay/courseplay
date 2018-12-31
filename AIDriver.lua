@@ -224,6 +224,7 @@ function AIDriver:startCourseWithAlignment(course, ix)
 		self.ppc:setLookaheadDistance(self.ppc.normalLookAheadDistance)
 		self.ppc:initialize(ix)
 	end
+	return self.alignmentCourse
 end
 
 --- Check if we are at the last waypoint and should we continue with first waypoint of the course

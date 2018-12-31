@@ -65,6 +65,8 @@ function FillableFieldworkAIDriver:driveFieldwork()
 		end
 	elseif self.fieldWorkState == self.states.REFILL then
 		self:driveFieldworkRefill()
+	elseif self.fieldWorkState == self.states.ALIGNMENT then
+		self.speed = self:getFieldSpeed()
 	end
 end
 

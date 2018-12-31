@@ -70,6 +70,8 @@ function UnloadableFieldworkAIDriver:driveFieldwork()
 		end
 	elseif self.fieldWorkState == self.states.UNLOAD then
 		self:driveFieldworkUnload()
+	elseif self.fieldWorkState == self.states.ALIGNMENT then
+		self.speed = self:getFieldSpeed()
 	end
 end
 

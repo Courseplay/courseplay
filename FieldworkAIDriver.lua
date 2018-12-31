@@ -67,8 +67,13 @@ function FieldworkAIDriver:start(ix)
 		self:startCourseWithAlignment(self.unloadRefillCourse, ix - self.fieldworkCourse:getNumberOfWaypoints())
 	else
 		-- we are on the fieldwork part
-		self:changeToFieldwork()
-		self:startCourseWithAlignment(self.fieldworkCourse, ix)
+		if self:startCourseWithAlignment(self.fieldworkCourse, ix) then
+			self.state = self.states.FIELDWORK
+			self.fieldWorkState = self.states.ALIGNMENT
+		else
+			self:changeToFieldwork()
+		end
+
 	end
 end
 
@@ -104,6 +109,14 @@ function FieldworkAIDriver:changeToUnloadOrRefill()
 	self:stopWork()
 	self.state = self.states.UNLOAD_OR_REFILL
 	self:debug('changing to unload/refill course (%d waypoints)', self.unloadRefillCourse:getNumberOfWaypoints())
+end
+
+function FieldworkAIDriver:onEndAlignmentCourse()
+	if self.state == self.states.FIELDWORK then
+		self:debug('starting fieldwork')
+		self.fieldWorkState = self.states.WAITING_FOR_LOWER
+		self:startWork()
+	end
 end
 
 function FieldworkAIDriver:onEndCourse()
