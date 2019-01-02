@@ -91,14 +91,15 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		-- use smoothing instead
 		minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 150 )
 	elseif vehicle.cp.headland.turnType == courseplay.HEADLAND_CORNER_TYPE_ROUND then
-		-- do not generate turns on headland
-		headlandSettings.minHeadlandTurnAngleDeg = 150
-		minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 150 )
+		-- generate turns for whatever is left after rounding the corners, for example
+		-- the transitions between headland and up/down rows.
+		headlandSettings.minHeadlandTurnAngleDeg = 50
+		minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 50 )
 		-- round all corners to the turn radius	
 		roundCorners = true
 	else
 		-- generate turns over 60 degrees
-		headlandSettings.minHeadlandTurnAngleDeg = 60
+		headlandSettings.minHeadlandTurnAngleDeg = 50
 		-- smooth only below 60 degrees
 		minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 60 )
 	end

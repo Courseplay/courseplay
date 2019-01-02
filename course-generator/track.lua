@@ -162,12 +162,12 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 	-- assemble complete course now
 	field.course = Polygon:new()
 	if field.headlandPath and headlandSettings.nPasses > 0 then
-		for i, point in field.headlandPath:iterator() do
+		for _, point in field.headlandPath:iterator() do
 			table.insert( field.course, point )
 		end
 	end
 	if field.track then
-		for i, point in field.track:iterator() do
+		for _, point in field.track:iterator() do
 			table.insert( field.course, point )
 		end
 	end

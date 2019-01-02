@@ -220,12 +220,9 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 			-- do not add connecting tracks to the first block if there's no headland
 			if nHeadlandPasses > 0 then
 				table.insert( track, block.trackToThisBlock[ j ])
-				if j > 3 and j < #block.trackToThisBlock - 1 then
-					-- mark this section as a connecting track where implements should be raised as we are
-					-- driving on a previously worked headland track.
-					-- don't mark the first few waypoints to prevent a too early raise and too late lowering
-					track[ #track ].isConnectingTrack = true
-				end
+				-- mark this section as a connecting track where implements should be raised as we are
+				-- driving on a previously worked headland track.
+				track[ #track ].isConnectingTrack = true
 			end
 		end
 		courseGenerator.debug( '%d. block %d, entry corner %d, direction to next = %d, on the bottom = %s, on the left = %s', i, block.id, block.entryCorner,

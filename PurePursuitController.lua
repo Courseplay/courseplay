@@ -130,6 +130,8 @@ function PurePursuitController:initialize(ix, aiDriver)
 	if aiDriver then
 		self.aiDriver = aiDriver			
 	end
+	self.sendWaypointChange = nil
+	self.sendWaypointPassed = nil
 end
 
 -- TODO: make this more generic and allow registering multiple listeners?
@@ -155,7 +157,22 @@ end
 function PurePursuitController:update()
 	self:findRelevantSegment()
 	self:findGoalPoint()
+	self:notifyListeners()
 end
+
+function PurePursuitController:notifyListeners()
+	if self.aiDriver then
+		if self.sendWaypointChange and self.aiDriver.onWaypointChange then
+			self.aiDriver:onWaypointChange(self.sendWaypointChange)
+		end
+		if self.sendWaypointPassed and self.aiDriver.onWaypointPassed then
+			self.aiDriver:onWaypointPassed(self.sendWaypointPassed)
+		end
+	end
+	self.sendWaypointChange = nil
+	self.sendWaypointPassed = nil
+end
+
 
 function PurePursuitController:havePassedWaypoint(wpNode)
 	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
@@ -188,9 +205,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 				self.course.waypoints[wpNode.ix].rev and 'reversed' or '',
 				self.course:switchingDirectionAt(wpNode.ix) and 'switching direction' or '')
 			-- notify listeners about the passed waypoint
-			if self.aiDriver and self.aiDriver.onWaypointPassed then
-				self.aiDriver:onWaypointPassed(self.lastPassedWaypointIx)
-			end
+			self.sendWaypointPassed = self.lastPassedWaypointIx
 		end
 	end
 	return result
@@ -363,9 +378,8 @@ function PurePursuitController:setCurrentWaypoint(ix)
 		-- if ix > #self.course, currentWpNode.ix will always be set to #self.course and the change detection won't work
 		-- therefore, only call listeners if ix <= #self.course
 		if ix ~= prevIx and ix <= self.course:getNumberOfWaypoints() then
-			if self.aiDriver then
-				self.aiDriver:onWaypointChange(self.currentWpNode.ix)
-			end
+			-- remember to send notification at the end of the loop
+			self.sendWaypointChange = self.currentWpNode.ix
 		end
 	end
 end

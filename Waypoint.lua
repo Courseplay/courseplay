@@ -45,6 +45,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.turnEnd = cpWp.turnEnd
 	self.interact = cpWp.wait or false
 	self.isConnectingTrack = cpWp.isConnectingTrack or nil
+	self.lane = cpWp.lane
 end
 
 function Waypoint:getPosition()
@@ -286,4 +287,24 @@ function Course:getWaypointsWithinDrivingTime(startIx, fwd, seconds, speed)
 		end
 	end
 	return waypoints
+end
+
+--- How far are we from the waypoint marked as the beginning of the up/down rows?
+---@param ix number start searching from this index. Will stop searching after 100 m
+---@return number of meters or math.huge if no start up/down row waypoint found within 100 meters and the index of the first up/down waypoint
+function Course:getDistanceToFirstUpDownRowWaypoint(ix)
+	local d = 0
+	local isConnectingTrack = false
+	for i = ix, #self.waypoints - 1 do
+		isConnectingTrack = isConnectingTrack or self.waypoints[i].isConnectingTrack
+		d = d + courseplay:distance(self.waypoints[i].x, self.waypoints[i].z, self.waypoints[i + 1].x, self.waypoints[i + 1].z)
+		courseplay.debugFormat(12, 'd = %.1f i = %d, lane = %s', d, i, tostring(self.waypoints[i].lane))
+		if self.waypoints[i].lane and not self.waypoints[i + 1].lane and isConnectingTrack then
+			return d, i + 1
+		end
+		if d > 100 then
+			return math.huge, nil
+		end
+	end
+	return math.huge, nil
 end

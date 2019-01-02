@@ -56,21 +56,21 @@ end
 
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
 function UnloadableFieldworkAIDriver:driveFieldwork()
-	if self.fieldWorkState == self.states.WAITING_FOR_LOWER then
+	if self.fieldworkState == self.states.WAITING_FOR_LOWER then
 		if self:areAllWorkToolsReady() then
 			self:debug('all tools ready, start working')
-			self.fieldWorkState = self.states.WORKING
+			self.fieldworkState = self.states.WORKING
 			self.speed = self:getFieldSpeed()
 		else
 			self.speed = 0
 		end
-	elseif self.fieldWorkState == self.states.WORKING then
+	elseif self.fieldworkState == self.states.WORKING then
 		if not self:allFillLevelsOk() then
 			self:changeToFieldworkUnload()
 		end
-	elseif self.fieldWorkState == self.states.UNLOAD then
+	elseif self.fieldworkState == self.states.UNLOAD then
 		self:driveFieldworkUnload()
-	elseif self.fieldWorkState == self.states.ALIGNMENT then
+	elseif self.fieldworkState == self.states.ALIGNMENT then
 		self.speed = self:getFieldSpeed()
 	end
 end
@@ -79,7 +79,7 @@ end
 function UnloadableFieldworkAIDriver:changeToFieldworkUnload()
 	self:debug('change to fieldwork unload')
 	self:setInfoText('NEEDS_UNLOADING')
-	self.fieldWorkState = self.states.UNLOAD
+	self.fieldworkState = self.states.UNLOAD
 	self.fieldWorkUnloadState = self.states.WAITING_FOR_RAISE
 end
 

@@ -67,13 +67,16 @@ function FieldworkAIDriver:start(ix)
 		self:startCourseWithAlignment(self.unloadRefillCourse, ix - self.fieldworkCourse:getNumberOfWaypoints())
 	else
 		-- we are on the fieldwork part
-		if self:startCourseWithAlignment(self.fieldworkCourse, ix) then
-			self.state = self.states.FIELDWORK
-			self.fieldWorkState = self.states.ALIGNMENT
-		else
-			self:changeToFieldwork()
-		end
+		self:startFieldworkWithAlignment(ix)
+	end
+end
 
+function FieldworkAIDriver:startFieldworkWithAlignment(ix)
+	if self:startCourseWithAlignment(self.fieldworkCourse, ix) then
+		self.state = self.states.FIELDWORK
+		self.fieldworkState = self.states.ALIGNMENT
+	else
+		self:changeToFieldwork()
 	end
 end
 
@@ -101,7 +104,7 @@ end
 function FieldworkAIDriver:changeToFieldwork()
 	self:debug('change to fieldwork')
 	self.state = self.states.FIELDWORK
-	self.fieldWorkState = self.states.WAITING_FOR_LOWER
+	self.fieldworkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
 end
 
@@ -114,7 +117,7 @@ end
 function FieldworkAIDriver:onEndAlignmentCourse()
 	if self.state == self.states.FIELDWORK then
 		self:debug('starting fieldwork')
-		self.fieldWorkState = self.states.WAITING_FOR_LOWER
+		self.fieldworkState = self.states.WAITING_FOR_LOWER
 		self:startWork()
 	end
 end
@@ -134,12 +137,25 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
 	if self.state == self.states.FIELDWORK then
 		if self.fieldworkState == self.states.WORKING then
+			-- check for transition to connecting track
 			if self.course:isOnConnectingTrack(ix) then
 				-- reached a connecting track (done with the headland, move to the up/down row or vice versa),
 				-- raise all implements while moving
+				self:debug('on a connecting track now, raising implements.')
 				self:stopWork()
 				self.fieldworkState = self.states.ON_CONNECTING_TRACK
-				self:debug('on a connecting track now, raising implements.')
+			end
+		end
+		if self.fieldworkState ~= self.states.ALIGNMENT and self.course:isOnConnectingTrack(ix) then
+			-- passed a connecting track waypoint
+			-- check transition from connecting track to the up/down rows
+			-- we are close to the end of the connecting track, transition back to the up/down rows with
+			-- an alignment course
+			local d, firstUpDownWpIx = self.course:getDistanceToFirstUpDownRowWaypoint(ix)
+			self:debug('up/down rows start in %s meters.', tostring(d))
+			if d < self.vehicle.cp.turnDiameter * 2 and firstUpDownWpIx then
+				self:debug('start working on up/down rows (waypoint %d) with alignment course if needed.', firstUpDownWpIx)
+				self:startFieldworkWithAlignment(firstUpDownWpIx)
 			end
 		end
 	end

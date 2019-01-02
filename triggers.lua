@@ -600,6 +600,15 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 end;
 LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, SiloTrigger_TriggerCallback);
 
+-- this could be used to fill sowing machines, but better may be a better way to find out what Vehicle.addFillUnitTrigger() does.
+local cpFillTriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+	if onEnter then
+		courseplay.debugFormat(2, 'fillTrigger onEnter')
+	elseif onLeave then
+		courseplay.debugFormat(2, 'fillTrigger onLeave')
+	end
+end
+FillTrigger.fillTriggerCallback = Utils.appendedFunction(FillTrigger.fillTriggerCallback, cpFillTriggerCallback)
 
 local oldBunkerSiloLoad = BunkerSilo.load;
 function BunkerSilo:load(...)

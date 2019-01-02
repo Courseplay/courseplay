@@ -307,8 +307,9 @@ function AIDriver:getSpeed()
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	else
 		if self.vehicle.cp.speeds.useRecordingSpeed then
+			-- use maximum street speed if there's no recorded speed.
 			speed = math.min(
-				self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or 0,
+				self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or self.vehicle.cp.speeds.street,
 				self.vehicle.cp.speeds.street)
 		else
 			speed = self.vehicle.cp.speeds.street
@@ -370,7 +371,7 @@ function AIDriver:setUpAlignmentCourse(course, ix)
 		self:debug("Alignment course would be only %d waypoints, it isn't needed then.", #alignmentWaypoints )
 		return nil
 	end
-	self:debug('Alignment course with %d started.', #alignmentWaypoints)
+	self:debug('Alignment course with %d waypoints started.', #alignmentWaypoints)
 	return Course(self.vehicle, alignmentWaypoints)
 end
 
