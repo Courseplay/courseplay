@@ -306,14 +306,7 @@ function AIDriver:getSpeed()
 	if self.ppc:isReversing() then
 		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
 	else
-		if self.vehicle.cp.speeds.useRecordingSpeed then
-			-- use maximum street speed if there's no recorded speed.
-			speed = math.min(
-				self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or self.vehicle.cp.speeds.street,
-				self.vehicle.cp.speeds.street)
-		else
-			speed = self.vehicle.cp.speeds.street
-		end
+		speed = self:getRecordedSpeed()
 	end
 	if self:getIsInFilltrigger() then
 		speed = self.vehicle.cp.speeds.turn
@@ -321,6 +314,18 @@ function AIDriver:getSpeed()
 	return speed and speed or 15
 end
 
+function AIDriver:getRecordedSpeed()
+	local speed
+	if self.vehicle.cp.speeds.useRecordingSpeed then
+		-- use maximum street speed if there's no recorded speed.
+		speed = math.min(
+			self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or self.vehicle.cp.speeds.street,
+			self.vehicle.cp.speeds.street)
+	else
+		speed = self.vehicle.cp.speeds.street
+	end
+	return speed
+end
 
 function AIDriver:getIsInFilltrigger()
 	return self.vehicle.cp.fillTrigger ~= nil or self.vehicle.cp.tipperLoadMode > 0

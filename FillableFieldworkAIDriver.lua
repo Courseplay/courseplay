@@ -105,21 +105,21 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	if self.alignmentCourse then
 		-- use the courseplay speed limit for fields
 		self.speed = self.vehicle.cp.speeds.field
-	elseif self.vehicle.cp.fillTrigger then
+	elseif self:getIsInFilltrigger() then
 		-- our raycast in searchForRefillTriggers found a fill trigger
 		local allowedToDrive = true
 		-- lx, lz is not used by refillWorkTools, allowedToDrive is returned, should be refactored, but use it for now as it is
 		allowedToDrive, _, _ = courseplay:refillWorkTools(self.vehicle, self.vehicle.cp.refillUntilPct, allowedToDrive, 0, 1)
 		if allowedToDrive then
 			-- slow down to field speed around fill triggers
-			self.speed = self.vehicle.cp.speeds.field
+			self.speed = math.min(self.vehicle.cp.speeds.turn, self:getRecordedSpeed())
 		else
 			-- stop for refill when refillWorkTools tells us
 			self.speed = 0
 		end
 	else
 		-- just drive normally
-		self.speed = self.vehicle.cp.speeds.street
+		self.speed = self:getRecordedSpeed()
 	end
 end
 
@@ -144,4 +144,4 @@ function FillableFieldworkAIDriver:searchForRefillTriggers()
 	-- raycast start point in front of vehicle
 	local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
 	courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', true, x, y, z, nx, ny, nz)
-end
+end
