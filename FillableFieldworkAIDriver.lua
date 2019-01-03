@@ -78,6 +78,7 @@ function FillableFieldworkAIDriver:changeToFieldworkRefill()
 	self.fieldWorkRefillState = self.states.WAITING_FOR_RAISE
 end
 
+--- Stop for refill while driving the fieldwork course
 function FillableFieldworkAIDriver:driveFieldworkRefill()
 	-- don't move while empty
 	self.speed = 0
@@ -98,6 +99,31 @@ function FillableFieldworkAIDriver:driveFieldworkRefill()
 	end
 end
 
+--- Drive the refill part of the course
+function FillableFieldworkAIDriver:driveUnloadOrRefill()
+	self:searchForRefillTriggers()
+	if self.alignmentCourse then
+		-- use the courseplay speed limit for fields
+		self.speed = self.vehicle.cp.speeds.field
+	elseif self.vehicle.cp.fillTrigger then
+		-- our raycast in searchForRefillTriggers found a fill trigger
+		local allowedToDrive = true
+		-- lx, lz is not used by refillWorkTools, allowedToDrive is returned, should be refactored, but use it for now as it is
+		allowedToDrive, _, _ = courseplay:refillWorkTools(self.vehicle, self.vehicle.cp.refillUntilPct, allowedToDrive, 0, 1)
+		if allowedToDrive then
+			-- slow down to field speed around fill triggers
+			self.speed = self.vehicle.cp.speeds.field
+		else
+			-- stop for refill when refillWorkTools tells us
+			self.speed = 0
+		end
+	else
+		-- just drive normally
+		self.speed = self.vehicle.cp.speeds.street
+	end
+end
+
+
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)
 function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
@@ -109,3 +135,13 @@ function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	end
 	return true
 end
+
+function FillableFieldworkAIDriver:searchForRefillTriggers()
+	-- look straight ahead for now. The rest of CP looks into the direction of the 'current waypoint'
+	-- but we don't have that information (lx/lz) here. See if we can get away with this, should only
+	-- be a problem if we have a sharp curve around the trigger
+	local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, 0, -0.1, 1)
+	-- raycast start point in front of vehicle
+	local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
+	courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', true, x, y, z, nx, ny, nz)
+end

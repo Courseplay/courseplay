@@ -609,7 +609,7 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end
 
-	-- TODO: figure out what other types to avoid, the FS17 types ending with DROP do not seem exist anymore
+	-- TODO: figure out what other types to avoid, the FS17 types ending with DROP do not seem to exist anymore
 	local avoidType = {
 		[WorkAreaType.RIDGEMARKER] = true
 	}
@@ -1283,7 +1283,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 end;
 
 -- this does not change lx/lz (direction), only allowedToDrive
-function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, lx, lz, dt)
+function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, lx, lz)
 	--if the trigger is not used by me, reset it after 10s
 	if courseplay:timerIsThrough(vehicle, "triggerFailBackup", false) then
 		 vehicle.cp.fillTrigger = nil
@@ -1315,11 +1315,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 					end				
 				end
 			end
-
-			
 		end
-		
-		
 	end;
 	return allowedToDrive, lx, lz;
 end;		

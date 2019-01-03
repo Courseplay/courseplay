@@ -89,16 +89,20 @@ function FieldworkAIDriver:drive(dt)
 	if self.state == self.states.FIELDWORK then
 		self:driveFieldwork()
 	elseif self.state == self.states.UNLOAD_OR_REFILL then
-		if self.alignmentCourse then
-			-- use the courseplay speed limit for fields
-			self.speed = self.vehicle.cp.speeds.field
-		else
-			-- just drive normally
-			self.speed = self.vehicle.cp.speeds.street
-		end
+		self:driveUnloadOrRefill()
 	end
 
 	AIDriver.drive(self, dt)
+end
+
+function FieldworkAIDriver:driveUnloadOrRefill()
+	if self.alignmentCourse then
+		-- use the courseplay speed limit for fields
+		self.speed = self.vehicle.cp.speeds.field
+	else
+		-- just drive normally
+		self.speed = self.vehicle.cp.speeds.street
+	end
 end
 
 function FieldworkAIDriver:changeToFieldwork()
@@ -289,4 +293,9 @@ function FieldworkAIDriver:setUpCourses()
 		self:debug('There seems to be no unload/refill course')
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, #self.vehicle.Waypoints)
 	end
+end
+
+--- Search for fill or unload triggers
+function FieldworkAIDriver:searchForTriggers()
+	-- implement in the derived classes
 end

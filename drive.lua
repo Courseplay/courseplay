@@ -318,7 +318,7 @@ function courseplay:drive(self, dt)
 				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workToolAttached and self.cp.startWork ~= nil and self.cp.stopWork ~= nil and self.cp.workTools ~= nil and not isInWorkArea then
 					-- this call never changes lx or lz
-					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.refillUntilPct, allowedToDrive, lx, lz);
 				end;
 				if courseplay:timerIsThrough(self, "fillLevelChange") or self.cp.prevFillLevelPct == nil then
 					if self.cp.prevFillLevelPct ~= nil and self.cp.totalFillLevelPercent == self.cp.prevFillLevelPct and self.cp.totalFillLevelPercent >= self.cp.refillUntilPct then
@@ -477,7 +477,7 @@ function courseplay:drive(self, dt)
 				local isInWorkArea = self.cp.waypointIndex > self.cp.startWork and self.cp.waypointIndex <= self.cp.stopWork;
 				if self.cp.workTools ~= nil and not isInWorkArea then
 					-- lx, lz not changed by this call
-					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.refillUntilPct, allowedToDrive, lx, lz, dt);
+					allowedToDrive,lx,lz = courseplay:refillWorkTools(self, self.cp.refillUntilPct, allowedToDrive, lx, lz);
 				end
 			end;
 
