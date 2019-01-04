@@ -27,7 +27,6 @@ Also known as mode 4
 ---@class FillableFieldworkAIDriver : FieldworkAIDriver
 FillableFieldworkAIDriver = CpObject(FieldworkAIDriver)
 
-
 FillableFieldworkAIDriver.myStates = {
 	REFILL = {},
 	WAITING_FOR_FILL = {}
@@ -145,3 +144,4 @@ function FillableFieldworkAIDriver:searchForRefillTriggers()
 	local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
 	courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', true, x, y, z, nx, ny, nz)
 end
+

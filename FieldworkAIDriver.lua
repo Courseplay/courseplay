@@ -91,7 +91,7 @@ function FieldworkAIDriver:drive(dt)
 	elseif self.state == self.states.UNLOAD_OR_REFILL then
 		self:driveUnloadOrRefill()
 	end
-
+	self:setRidgeMarkers()
 	AIDriver.drive(self, dt)
 end
 
@@ -295,7 +295,16 @@ function FieldworkAIDriver:setUpCourses()
 	end
 end
 
---- Search for fill or unload triggers
-function FieldworkAIDriver:searchForTriggers()
-	-- implement in the derived classes
+function FieldworkAIDriver:setRidgeMarkers()
+	if not self.vehicle.cp.ridgeMarkersAutomatic then return end
+	local active = self.state == self.states.FIELDWORK and not self.turnIsDriving
+	for _, workTool in ipairs(self.vehicle.cp.workTools) do
+		if workTool.spec_ridgeMarker then
+			local state = active and self.course:getRidgeMarkerState(self.ppc:getCurrentWaypointIx()) or 0
+			if workTool.spec_ridgeMarker.ridgeMarkerState ~= state then
+				self:debug('Setting ridge markers to %d', state)
+				workTool:setRidgeMarkerState(state)
+			end
+		end
+	end
 end

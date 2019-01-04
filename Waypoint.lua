@@ -46,6 +46,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.interact = cpWp.wait or false
 	self.isConnectingTrack = cpWp.isConnectingTrack or nil
 	self.lane = cpWp.lane
+	self.ridgeMarker = cpWp.ridgeMarker
 end
 
 function Waypoint:getPosition()
@@ -230,6 +231,10 @@ end
 
 function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[ix].angle
+end
+
+function Course:getRidgeMarkerState(ix)
+	return self.waypoints[ix].ridgeMarker or 0
 end
 
 --- Get the average speed setting across n waypoints starting at ix
