@@ -344,7 +344,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
 			if workTool.cp.hasSpecializationPlough then 
 				vehicle.cp.hasPlough = true;
-				if workTool.rotationPart.turnAnimation ~= nil then
+				if workTool.spec_plow.rotationPart.turnAnimation ~= nil then
 					vehicle.cp.hasRotateablePlough = true;
 				end;
 			end;

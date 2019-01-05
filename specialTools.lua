@@ -13,7 +13,7 @@ function courseplay:setNameVariable(workTool)
 
 	courseplay:updateFillLevelsAndCapacities(workTool)
 
-
+	-- TODO: is this even needed? Why not use the workTool.spec_* directly? Do we really need our own table?
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
 		if     spec == AnimatedVehicle 	   then workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
@@ -34,7 +34,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == FuelTrailer		   then workTool.cp.hasSpecializationFuelTrailer		 = true;
 		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
 		elseif spec == Mower 			   then workTool.cp.hasSpecializationMower 				 = true;
-		elseif spec == Plough 			   then workTool.cp.hasSpecializationPlough 			 = true;
+		elseif spec == Plow 			   then workTool.cp.hasSpecializationPlough 			 = true;
 		elseif spec == ReverseDriving	   then workTool.cp.hasSpecializationReverseDriving		 = true;
 		elseif spec == Shovel 			   then workTool.cp.hasSpecializationShovel 			 = true;
 		elseif spec == SowingMachine 	   then workTool.cp.hasSpecializationSowingMachine 		 = true;
