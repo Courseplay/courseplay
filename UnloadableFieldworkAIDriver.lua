@@ -35,12 +35,6 @@ UnloadableFieldworkAIDriver.PIPE_STATE_MOVING = 0
 UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED = 1
 UnloadableFieldworkAIDriver.PIPE_STATE_OPEN = 2
 
-
-UnloadableFieldworkAIDriver.myStates = {
-	UNLOAD = {},
-	WAITING_FOR_UNLOAD = {}
-}
-
 function UnloadableFieldworkAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
@@ -54,53 +48,11 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	FieldworkAIDriver.drive(self, dt)
 end
 
---- Doing the fieldwork (headlands or up/down rows, including the turns)
-function UnloadableFieldworkAIDriver:driveFieldwork()
-	if self.fieldworkState == self.states.WAITING_FOR_LOWER then
-		if self:areAllWorkToolsReady() then
-			self:debug('all tools ready, start working')
-			self.fieldworkState = self.states.WORKING
-			self.speed = self:getFieldSpeed()
-		else
-			self.speed = 0
-		end
-	elseif self.fieldworkState == self.states.WORKING then
-		if not self:allFillLevelsOk() then
-			self:changeToFieldworkUnload()
-		end
-	elseif self.fieldworkState == self.states.UNLOAD then
-		self:driveFieldworkUnload()
-	elseif self.fieldworkState == self.states.ALIGNMENT then
-		self.speed = self:getFieldSpeed()
-	end
-end
-
 --- Grain tank full during fieldwork
-function UnloadableFieldworkAIDriver:changeToFieldworkUnload()
+function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
 	self:setInfoText('NEEDS_UNLOADING')
-	self.fieldworkState = self.states.UNLOAD
-	self.fieldWorkUnloadState = self.states.WAITING_FOR_RAISE
-end
-
-function UnloadableFieldworkAIDriver:driveFieldworkUnload()
-	-- don't move while full
-	self.speed = 0
-	if self.fieldWorkUnloadState == self.states.WAITING_FOR_RAISE then
-		-- wait until we stopped before raising the implements
-		if self:isStopped() then
-			self:debug('vehicle stopped, raise implements')
-			self:stopWork()
-			self.fieldWorkUnloadState = self.states.WAITING_FOR_UNLOAD
-		end
-	elseif self.fieldWorkUnloadState == self.states.WAITING_FOR_UNLOAD then
-		if self:allFillLevelsOk() then
-			self:debug('not full anymore, continue working')
-			-- not full anymore, maybe because unloading to a trailer, go back to work
-			self:clearInfoText()
-			self:changeToFieldwork()
-		end
-	end
+	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 end
 
 function UnloadableFieldworkAIDriver:handlePipe()

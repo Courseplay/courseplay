@@ -135,11 +135,12 @@ end
 Course = CpObject()
 
 --- Course constructor
--- @param waypoints table of waypoints of the course
+---@param waypoints Waypoint[] table of waypoints of the course
 -- @param first optional, index of first waypoint to use
 -- @param last optional, index of last waypoint to use to construct of the course
 function Course:init(vehicle, waypoints, first, last)
 	-- add waypoints from current vehicle course
+	---@type Waypoint[]
 	self.waypoints = {}
 	local n = 1
 	for i = first or 1, last or #waypoints do
@@ -212,12 +213,7 @@ function Course:switchingToForwardAt(ix)
 end
 
 function Course:getWaypointPosition(ix)
-	local x, z = self.waypoints[ix].x, self.waypoints[ix].z
-	local y = 0
-	if g_currentMission then
-		y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
-	end
-	return x, y, z
+	return self.waypoints[ix]:getPosition()
 end
 
 -- distance between (px,pz) and the ix waypoint

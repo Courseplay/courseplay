@@ -25,7 +25,7 @@ AIDriver.slowDownFactor = 0.5
 
 -- we use this as an enum
 AIDriver.myStates = {
-	ALIGNMENT = {},
+	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
 	RUNNING = {},
 	STOPPED = {}
 }
@@ -43,10 +43,10 @@ function AIDriver:init(vehicle)
 	self.ppc = self.vehicle.cp.ppc -- shortcut
 	self.ppc:setAIDriver(self)
 	self.ppc:enable()
-	self.waypointIxAfterAlignment = 1
+	self.waypointIxAfterTemporary = 1
 	self.acceleration = 1
 	self.turnIsDriving = false -- code in turn.lua is driving
-	self.alignmentCourse = nil
+	self.temporaryCourse = nil
 	self.state = self.states.STOPPED
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
 end
@@ -204,48 +204,54 @@ end
 ---@param ix number
 ---@return boolean true when an alignment course was added
 function AIDriver:startCourseWithAlignment(course, ix)
-	self.alignmentCourse = nil
-	self.waypointIxAfterAlignment = ix
-	self.courseAfterAlignment = course
+	local alignmentCourse = nil
 	if self.vehicle.cp.alignment.enabled and self:isAlignmentCourseNeeded(course, ix) then
-		self.alignmentCourse = self:setUpAlignmentCourse(course, ix)
-		---@type Course
-		self.course = self.alignmentCourse or course
-	else
-		self.course = course
+		alignmentCourse = self:setUpAlignmentCourse(course, ix)
 	end
-
-	self.ppc:setCourse(self.course)
-
-	if self.alignmentCourse then
-		self.ppc:setLookaheadDistance(self.ppc.shortLookaheadDistance)
-		self.ppc:initialize(1)
+	if alignmentCourse then
+		self:startTemporaryCourse(alignmentCourse, course, ix)
 	else
-		self.ppc:setLookaheadDistance(self.ppc.normalLookAheadDistance)
+		-- alignment course not enabled/needed/cannot be generated,
+		-- start the main course then
+		self.course = course
+		self.ppc:setCourse(self.course)
 		self.ppc:initialize(ix)
 	end
-	return self.alignmentCourse
+	return alignmentCourse
+end
+
+--- Start a temporary course and continue with nextCourse at ix when done
+---@param tempCourse Course
+---@param nextCourse Course
+---@param ix number
+function AIDriver:startTemporaryCourse(tempCourse, nextCourse, ix)
+	self.temporaryCourse = tempCourse
+	self.waypointIxAfterTemporary = ix
+	self.courseAfterTemporary = nextCourse
+	self.course = self.temporaryCourse
+	self.ppc:setCourse(self.course)
+	self.ppc:initialize(1)
 end
 
 --- Check if we are at the last waypoint and should we continue with first waypoint of the course
 -- or stop.
 function AIDriver:checkLastWaypoint()
 	if self.ppc:reachedLastWaypoint() then
-		if self:onAlignmentCourse() then
+		if self:onTemporaryCourse() then
 			-- alignment course to the first waypoint ended, start the main course now
 			self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-			self:startCourse(self.courseAfterAlignment, self.waypointIxAfterAlignment)
-			self.alignmentCourse = nil
-			self:debug('Alignment course finished, starting course at waypoint %d', self.waypointIxAfterAlignment)
-			self:onEndAlignmentCourse()
+			self:startCourse(self.courseAfterTemporary, self.waypointIxAfterTemporary)
+			self.temporaryCourse = nil
+			self:debug('Temporary course finished, starting next course at waypoint %d', self.waypointIxAfterTemporary)
+			self:onEndTemporaryCourse()
 		else
 			self:onEndCourse()
 		end
 	end
 end
 
---- Do whatever is needed after the alignment course is ended
-function AIDriver:onEndAlignmentCourse()
+--- Do whatever is needed after the temporary course is ended
+function AIDriver:onEndTemporaryCourse()
 	-- nothing in general, derived classes will implement when needed
 end
 
@@ -338,8 +344,8 @@ function AIDriver:isAlignmentCourseNeeded(course, ix)
 	return d > self.vehicle.cp.turnDiameter and self.vehicle.cp.alignment.enabled
 end
 
-function AIDriver:onAlignmentCourse()
-	return self.alignmentCourse ~= nil
+function AIDriver:onTemporaryCourse()
+	return self.temporaryCourse ~= nil
 end
 
 function AIDriver:onTurnStart()
@@ -362,6 +368,7 @@ function AIDriver:setUpAlignmentCourse(course, ix)
 	local x, _, z = course:getWaypointPosition(ix)
 	--Readjust x and z for offset being used
 	-- TODO: offset should be an attribute of the course and handled by the course itself.
+	-- TODO: isn't this only needed when starting a fieldwork course? offset does not make sense otherwise, does it?
 	if courseplay:getIsVehicleOffsetValid(self.vehicle) then
 		x, z = courseplay:getVehicleOffsettedCoords(self.vehicle, x, z);
 	end;

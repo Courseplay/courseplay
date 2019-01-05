@@ -27,10 +27,11 @@ add adjustment course if needed.
 FieldworkAIDriver = CpObject(AIDriver)
 
 FieldworkAIDriver.myStates = {
-	FIELDWORK = {},
-	UNLOAD_OR_REFILL = {},
+	ON_FIELDWORK_COURSE = {},
+	ON_UNLOAD_OR_REFILL_COURSE = {},
+	UNLOAD_OR_REFILL_ON_FIELD = {},
+	WAITING_FOR_UNLOAD_OR_REFILL ={}, -- while on the field
 	ON_CONNECTING_TRACK = {},
-	HELD = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_RAISE = {}
 }
@@ -73,8 +74,8 @@ end
 
 function FieldworkAIDriver:startFieldworkWithAlignment(ix)
 	if self:startCourseWithAlignment(self.fieldworkCourse, ix) then
-		self.state = self.states.FIELDWORK
-		self.fieldworkState = self.states.ALIGNMENT
+		self.state = self.states.ON_FIELDWORK_COURSE
+		self.fieldworkState = self.states.TEMPORARY
 	else
 		self:changeToFieldwork()
 	end
@@ -86,40 +87,98 @@ function FieldworkAIDriver:stop(msgReference)
 end
 
 function FieldworkAIDriver:drive(dt)
-	if self.state == self.states.FIELDWORK then
+	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:driveFieldwork()
-	elseif self.state == self.states.UNLOAD_OR_REFILL then
+	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		self:driveUnloadOrRefill()
 	end
 	self:setRidgeMarkers()
 	AIDriver.drive(self, dt)
 end
 
+--- Doing the fieldwork (headlands or up/down rows, including the turns)
+function FieldworkAIDriver:driveFieldwork()
+	if self.fieldworkState == self.states.WAITING_FOR_LOWER then
+		if self:areAllWorkToolsReady() then
+			self:debug('all tools ready, start working')
+			self.fieldworkState = self.states.WORKING
+			self.speed = self:getFieldSpeed()
+		else
+			self.speed = 0
+		end
+	elseif self.fieldworkState == self.states.WORKING then
+		if not self:allFillLevelsOk() then
+			if self.unloadRefillCourse then
+				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
+				-- TODO: also, this should be persisted through stop/start cycles (maybe on the vehicle?)
+				self.fieldworkAbortedAtWaypoint = self.ppc:getCurrentWaypointIx()
+				self.vehicle.cp.fieldworkAbortedAtWaypoint = self.fieldworkAbortedAtWaypoint
+				self:debug('at least one tool is empty.')
+				self:changeToUnloadOrRefill()
+				self:startCourseWithAlignment(self.unloadRefillCourse, 1 )
+			else
+				self:changeToFieldworkUnloadOrRefill()
+			end
+		end
+	elseif self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
+		self:driveFieldworkUnloadOrRefill()
+	elseif self.fieldworkState == self.states.TEMPORARY then
+		self.speed = self:getFieldSpeed()
+	end
+end
+
 function FieldworkAIDriver:driveUnloadOrRefill()
-	if self.alignmentCourse then
+	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
 		self.speed = self.vehicle.cp.speeds.field
 	else
 		-- just drive normally
-		self.speed = self.vehicle.cp.speeds.street
+		self.speed = self:getRecordedSpeed()
+	end
+end
+
+--- Grain tank full during fieldwork
+function FieldworkAIDriver:changeToFieldworkUnloadOrRefill()
+	self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
+	self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_RAISE
+end
+
+--- Stop for unload/refill while driving the fieldwork course
+function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
+	-- don't move while empty
+	self.speed = 0
+	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_RAISE then
+		-- wait until we stopped before raising the implements
+		if self:isStopped() then
+			self:debug('implements raised, stop')
+			self:stopWork()
+			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
+		end
+	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
+		if self:allFillLevelsOk() then
+			self:debug('unloaded/refilled, continue working')
+			-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
+			self:clearInfoText()
+			self:changeToFieldwork()
+		end
 	end
 end
 
 function FieldworkAIDriver:changeToFieldwork()
 	self:debug('change to fieldwork')
-	self.state = self.states.FIELDWORK
+	self.state = self.states.ON_FIELDWORK_COURSE
 	self.fieldworkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
 end
 
 function FieldworkAIDriver:changeToUnloadOrRefill()
 	self:stopWork()
-	self.state = self.states.UNLOAD_OR_REFILL
+	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
 	self:debug('changing to unload/refill course (%d waypoints)', self.unloadRefillCourse:getNumberOfWaypoints())
 end
 
-function FieldworkAIDriver:onEndAlignmentCourse()
-	if self.state == self.states.FIELDWORK then
+function FieldworkAIDriver:onEndTemporaryCourse()
+	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:debug('starting fieldwork')
 		self.fieldworkState = self.states.WAITING_FOR_LOWER
 		self:startWork()
@@ -127,7 +186,7 @@ function FieldworkAIDriver:onEndAlignmentCourse()
 end
 
 function FieldworkAIDriver:onEndCourse()
-	if self.state == self.states.UNLOAD_OR_REFILL then
+	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		-- unload/refill course ended, return to fieldwork
 		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.fieldworkAbortedAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
 		self:changeToFieldwork()
@@ -139,7 +198,7 @@ end
 
 function FieldworkAIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
-	if self.state == self.states.FIELDWORK then
+	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.WORKING then
 			-- check for transition to connecting track
 			if self.course:isOnConnectingTrack(ix) then
@@ -150,7 +209,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 				self.fieldworkState = self.states.ON_CONNECTING_TRACK
 			end
 		end
-		if self.fieldworkState ~= self.states.ALIGNMENT and self.course:isOnConnectingTrack(ix) then
+		if self.fieldworkState ~= self.states.TEMPORARY and self.course:isOnConnectingTrack(ix) then
 			-- passed a connecting track waypoint
 			-- check transition from connecting track to the up/down rows
 			-- we are close to the end of the connecting track, transition back to the up/down rows with
@@ -167,7 +226,7 @@ end
 
 function FieldworkAIDriver:onWaypointChange(ix)
 	self:debug('onWaypointChange %d', ix)
-	if self.state == self.states.FIELDWORK then
+	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 			if not self.course:isOnConnectingTrack(ix) then
 				-- reached the end of the connecting track, back to work
