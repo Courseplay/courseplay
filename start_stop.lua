@@ -3,17 +3,12 @@ local curFile = 'start_stop.lua';
 -- starts driving the course
 function courseplay:start(self)
 	self.currentHelper = g_helperManager:getRandomHelper()
-	--self.isHired = true;
-	--self.isHirableBlocked = true; Removed
 	self.spec_aiVehicle.isActive = true
-
-	--self.cp.forceIsActiveBackup = self.forceIsActive;
-	--self.forceIsActive = true;
 	self.cp.stopMotorOnLeaveBackup = self.spec_motorized.stopMotorOnLeave;
 	self.spec_motorized.stopMotorOnLeave = false;
-	--self.steeringEnabled = false;
 	self.spec_enterable.disableCharacterOnLeave = false;
 
+	
 	-- Peter: temporary band aid for the nil errors from setTranslation/setRotation. Looks like
 	-- AIVehicle deletes the node but leaves its id in aiTrafficCollision
 	-- This does not fix the problem causing stopAIVehicle to be called, just removes the nil errors.
@@ -660,13 +655,9 @@ function courseplay:stop(self)
 	if self.cp.driver then
 		self.cp.driver:stop()
 	end
-	self.isHired = false;
-	--self.isHirableBlocked = false; Removed by giants per Thomas
-	self.spec_aiVehicle.isActive = false
 	
-	--self.forceIsActive = self.cp.forceIsActiveBackup;
+	self.spec_aiVehicle.isActive = false
 	self.spec_motorized.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
-	--self.steeringEnabled = true;
 	self.spec_enterable.disableCharacterOnLeave = true;
 
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
@@ -823,7 +814,6 @@ function courseplay:stop(self)
 	self:setIsCourseplayDriving(false);
 	self:setCpVar('canDrive',true,courseplay.isClient)
 	self:setCpVar('distanceCheck',false,courseplay.isClient);
-	self.cp.mode7GoBackBeforeUnloading = false
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
 
@@ -889,19 +879,13 @@ function courseplay:stop(self)
 		end;
 	end
 	
-	--restart helper in mode7 after stopping CP
-	--vehicle works now in pure helper mode
-	if self.cp.mode == 7 then
-		if self.aiIsStarted then
-			self:startAIVehicle();
-		end
-	end
-	
 	-- remove ingame map hotspot
 	if CpManager.ingameMapIconActive then
 		courseplay:deleteMapHotspot(self);
 	end;
 
+	self:requestActionEventUpdate() 
+	
 	--remove from activeCoursePlayers
 	CpManager:removeFromActiveCoursePlayers(self);
 
