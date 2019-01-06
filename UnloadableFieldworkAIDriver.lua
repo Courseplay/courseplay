@@ -65,12 +65,17 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill()
 		self:searchForTipTriggers()
 	end
 	local takeOverSteering = FieldworkAIDriver.driveUnloadOrRefill(self)
-	if self.vehicle.cp.totalFillLevel > 0 and self:hasTipTrigger() then
+	if self.vehicle.cp.totalFillLevel > 0 then
 		local allowedToDrive = true
-		allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive);
-		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
-		if not allowedToDrive then
-			self.speed = 0
+		if self:hasTipTrigger() then
+			-- unload at tip trigger
+			allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive);
+			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+			if not allowedToDrive then
+				self.speed = 0
+			end
+		elseif self:atUnloadWaypoint() then
+			-- unload at unload waypoint
 		end
 	end
 	return takeOverSteering
@@ -163,5 +168,7 @@ function UnloadableFieldworkAIDriver:searchForTipTriggers()
 	courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
 end
 
-
+function UnloadableFieldworkAIDriver:atUnloadWaypoint()
+	return self.course:isUnloadAt(self.ppc:getCurrentWaypointIx())
+end
 

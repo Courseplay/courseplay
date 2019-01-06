@@ -47,6 +47,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.isConnectingTrack = cpWp.isConnectingTrack or nil
 	self.lane = cpWp.lane
 	self.ridgeMarker = cpWp.ridgeMarker
+	self.unload = cpWp.unload
 end
 
 function Waypoint:getPosition()
@@ -211,6 +212,10 @@ end
 
 function Course:switchingToForwardAt(ix)
 	return self:isReverseAt(ix) and not self:isReverseAt(ix + 1)
+end
+
+function Course:isUnloadAt(ix)
+	return self.waypoints[ix].unload
 end
 
 function Course:getWaypointPosition(ix)

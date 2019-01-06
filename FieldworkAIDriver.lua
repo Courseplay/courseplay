@@ -139,6 +139,10 @@ function FieldworkAIDriver:driveUnloadOrRefill()
 		-- just drive normally
 		self.speed = self:getRecordedSpeed()
 	end
+	-- except when in reversing, then always use reverse speed
+	if self.ppc:isReversing() then
+		self.speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
+	end
 	return false
 end
 
