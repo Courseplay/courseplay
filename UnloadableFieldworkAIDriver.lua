@@ -42,6 +42,9 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 end
 
 function UnloadableFieldworkAIDriver:drive(dt)
+	-- only reason we need this is to update the totalFillLevel for reverse.lua so it will
+	-- do a raycast for tip triggers
+	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	-- handle the pipe in any state
 	self:handlePipe()
 	-- the rest is the same as the parent class
@@ -53,6 +56,28 @@ function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
 	self:setInfoText('NEEDS_UNLOADING')
 	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
+end
+
+---@return boolean true if unload took over the driving
+function UnloadableFieldworkAIDriver:driveUnloadOrRefill()
+	if not self.ppc:isReversing() then
+		-- 'cause reverse does the raycasting for us
+		self:searchForTipTriggers()
+	end
+	local takeOverSteering = FieldworkAIDriver.driveUnloadOrRefill(self)
+	if self.vehicle.cp.totalFillLevel > 0 and self:hasTipTrigger() then
+		local allowedToDrive = true
+		allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive);
+		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+		if not allowedToDrive then
+			self.speed = 0
+		end
+	end
+	return takeOverSteering
+end
+
+function UnloadableFieldworkAIDriver:hasTipTrigger()
+	return self.vehicle.cp.currentTipTrigger ~= nil
 end
 
 function UnloadableFieldworkAIDriver:handlePipe()
@@ -128,6 +153,15 @@ function UnloadableFieldworkAIDriver:isValidFillType(fillType)
 	return fillType ~= FillType.DIESEL and fillType ~= FillType.DEF	and fillType ~= FillType.AIR
 end
 
+function UnloadableFieldworkAIDriver:searchForTipTriggers()
+	-- look straight ahead for now. The rest of CP looks into the direction of the 'current waypoint'
+	-- but we don't have that information (lx/lz) here. See if we can get away with this, should only
+	-- be a problem if we have a sharp curve around the trigger
+	local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, 0, -0.1, 1)
+	-- raycast start point in front of vehicle
+	local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
+	courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
+end
 
 
 

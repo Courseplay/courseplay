@@ -145,7 +145,7 @@ function Course:init(vehicle, waypoints, first, last)
 	local n = 0
 	for i = first or 1, last or #waypoints do
 		-- make sure we pass in the original vehicle.Waypoints index with n+first
-		table.insert(self.waypoints, Waypoint(waypoints[i], n + first or 1))
+		table.insert(self.waypoints, Waypoint(waypoints[i], n + (first or 1)))
 		n = n + 1
 	end
 	self:addWaypointAngles()

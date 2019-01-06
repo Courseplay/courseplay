@@ -90,7 +90,10 @@ function FieldworkAIDriver:drive(dt)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:driveFieldwork()
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
-		self:driveUnloadOrRefill()
+		if self:driveUnloadOrRefill() then
+			-- someone else is driving, no need to call AIDriver.drive()
+			return
+		end
 	end
 	self:setRidgeMarkers()
 	AIDriver.drive(self, dt)
@@ -127,6 +130,7 @@ function FieldworkAIDriver:driveFieldwork()
 	end
 end
 
+---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
 	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
@@ -135,6 +139,7 @@ function FieldworkAIDriver:driveUnloadOrRefill()
 		-- just drive normally
 		self.speed = self:getRecordedSpeed()
 	end
+	return false
 end
 
 --- Grain tank full during fieldwork

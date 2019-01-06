@@ -43,7 +43,7 @@ end
 --- Drive the refill part of the course
 function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	self:searchForRefillTriggers()
-	if self.alignmentCourse then
+	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
 		self.speed = self.vehicle.cp.speeds.field
 	elseif self:getIsInFilltrigger() then
@@ -62,6 +62,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 		-- just drive normally
 		self.speed = self:getRecordedSpeed()
 	end
+	return false
 end
 
 
