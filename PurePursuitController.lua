@@ -154,6 +154,15 @@ function PurePursuitController:getCurrentWaypointIx()
 	return self.currentWpNode.ix
 end
 
+--- Compatibility function to return the original waypoint index as in vehicle.Waypoints. This
+-- is the same as self.currentWpNode.ix unless we have combined courses where the legacy CP code
+-- concatenates all courses into one Waypoints array (as opposed to the AIDriver which splits these
+-- combined courses into its parts). The rest of the CP code however (HUD, reverse, etc.) works with
+-- vehicle.Waypoints and vehicle.cp.waypointIndex and therefore expects the combined index
+function PurePursuitController:getCurrentOriginalWaypointIx()
+	return self.course.waypoints[self:getCurrentWaypointIx()].cpIndex
+end
+
 function PurePursuitController:update()
 	self:findRelevantSegment()
 	self:findGoalPoint()
@@ -474,7 +483,7 @@ end
 
 function PurePursuitController:switchToNextWaypoint()
 	if self:isActive() then
-		courseplay:setWaypointIndex(self.vehicle, self:getCurrentWaypointIx());
+		courseplay:setWaypointIndex(self.vehicle, self:getCurrentOriginalWaypointIx());
 	else
 		courseplay:setWaypointIndex(self.vehicle, self.vehicle.cp.waypointIndex + 1);
 	end

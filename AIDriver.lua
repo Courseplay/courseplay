@@ -40,7 +40,8 @@ function AIDriver:init(vehicle)
 	self.vehicle = vehicle
 	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	---@type PurePursuitController
-	self.ppc = self.vehicle.cp.ppc -- shortcut
+	self.ppc = PurePursuitController(self.vehicle)
+	self.vehicle.cp.ppc = self.ppc
 	self.ppc:setAIDriver(self)
 	self.ppc:enable()
 	self.waypointIxAfterTemporary = 1
@@ -98,6 +99,13 @@ end
 --- Anyone wants to temporarily stop driving for whatever reason, call this
 function AIDriver:hold()
 	self.allowedToDrive = false
+end
+
+--- Compatibility function for the legacy CP code so the course can be resumed
+-- at the index as originally was in vehicle.Waypoints.
+function AIDriver:resumeAt(cpIx)
+	local i = self.course:findOriginalIx(cpIx)
+	self.ppc:initialize(i)
 end
 
 function AIDriver:setInfoText(msgReference)
@@ -300,7 +308,7 @@ function AIDriver:onWaypointChange(newIx)
 	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
 	-- except while turn is driving as that does not like changing the waypoint during the turn
 	if not self.turnIsDriving then
-		courseplay:setWaypointIndex(self.vehicle, newIx)
+		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
 	end
 	-- rest is implemented by the derived classes	
 end
@@ -352,7 +360,7 @@ function AIDriver:onTurnStart()
 	self.turnIsDriving = true
 	-- make sure turn has the current waypoint set to the the turn start wp
 	-- TODO: refactor turn.lua so it does not assume the waypoint ix won't change
-	courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentWaypointIx())
+	courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
 	self:debug('Starting a turn.')
 end
 

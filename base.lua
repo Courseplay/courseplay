@@ -598,7 +598,6 @@ function courseplay:onLoad(savegame)
 	else
 		self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
 	end
-	self.cp.ppc = PurePursuitController(self)
 	courseplay:setAIDriver(self, self.cp.mode)
 end;
 

@@ -142,9 +142,10 @@ function Course:init(vehicle, waypoints, first, last)
 	-- add waypoints from current vehicle course
 	---@type Waypoint[]
 	self.waypoints = {}
-	local n = 1
+	local n = 0
 	for i = first or 1, last or #waypoints do
-		table.insert(self.waypoints, Waypoint(waypoints[i], n))
+		-- make sure we pass in the original vehicle.Waypoints index with n+first
+		table.insert(self.waypoints, Waypoint(waypoints[i], n + first or 1))
 		n = n + 1
 	end
 	self:addWaypointAngles()
@@ -308,4 +309,17 @@ function Course:getDistanceToFirstUpDownRowWaypoint(ix)
 		end
 	end
 	return math.huge, nil
+end
+
+--- Find the waypoint with the original index cpIx in vehicle.Waypoints
+-- This is needed when legacy code like turn or reverse finishes and continues the
+-- course at at given waypoint. The index of that waypoint may be different when
+-- we have combined courses, so here find the correct one.
+function Course:findOriginalIx(cpIx)
+	for i = 1, #self.waypoints do
+		if self.waypoints[i].cpIndex == cpIx then
+			return i
+		end
+	end
+	return 1
 end

@@ -517,6 +517,7 @@ function courseplay:start(self)
 		self.cp.driver:start(self.cp.waypointIndex)
 	else
 		-- Initialize pure pursuit controller
+		self.cp.ppc = PurePursuitController(self)
 		self.cp.ppc:initialize()
 	end
 	--print('startStop 509')

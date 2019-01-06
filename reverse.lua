@@ -167,7 +167,11 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			elseif vehicle.Waypoints[i-1].rev and not vehicle.Waypoints[i].rev then
 				if distance <= 2 then
 					courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
-					vehicle.cp.ppc:initialize()
+					if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
+						vehicle.cp.driver:resumeAt(vehicle.cp.waypointIndex)
+					else
+						vehicle.cp.ppc:initialize()
+					end
 					courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), 13);
 				end;
 				break;
@@ -208,7 +212,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 	local lxTipper, lzTipper = AIVehicleUtil.getDriveDirection(node, tcx, yTipper, tcz);
 
-	courseplay:showDirection(node,lxTipper, lzTipper);
+	courseplay:showDirection(node,lxTipper, lzTipper, 1, 0, 0);
 
 	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(frontNode, xTipper,yTipper,zTipper);
 
@@ -217,9 +221,10 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	local maxTractorAngle = rad(60);
 
 	if isPivot then
-		courseplay:showDirection(frontNode,lxFrontNode, lzFrontNode);
+		courseplay:showDirection(frontNode,lxFrontNode, lzFrontNode, 0, 1, 0);
+
 		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, xFrontNode,yFrontNode,zFrontNode);
-		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor);
+		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor, 0, 0.7, 0);
 
 		local rotDelta = (workTool.cp.nodeDistance * (0.5 - (0.023 * workTool.cp.nodeDistance - 0.073)));
 		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
@@ -241,7 +246,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		lx, lz = MathUtil.getDirectionFromYRotation(angleDiff);
 	else
 		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, xTipper,yTipper,zTipper);
-		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor);
+		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor, 1, 1, 0);
 
 		local rotDelta = workTool.cp.nodeDistance * 0.3;
 		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
@@ -264,8 +269,9 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;
-	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz);
-    -- true means this code is taking care of the reversing as this is not a trivial case
+	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz, 0.7, 0, 1);
+
+	-- true means this code is taking care of the reversing as this is not a trivial case
 	-- for instance because of a trailer
 	return lx,lz,fwd, true;
 end;
@@ -297,11 +303,11 @@ function courseplay:getLocalYRotationToPoint(node, x, y, z, direction)
 	return MathUtil.getYRotationFromDirection(dx, dz);
 end;
 
-function courseplay:showDirection(node,lx,lz)
+function courseplay:showDirection(node,lx,lz, r, g, b)
 	if courseplay.debugChannels[13] then
 		local x,y,z = getWorldTranslation(node);
 		local ctx,_,ctz = localToWorld(node,lx*5,y,lz*5);
-		cpDebug:drawLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz);
+		cpDebug:drawLine(x, y+5, z, r or 1, g or 0, b or 0, ctx, y+5, ctz);
 	end
 end
 
