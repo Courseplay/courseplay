@@ -65,6 +65,7 @@ function Waypoint:getDistanceFromVehicle(vehicle)
 end
 
 -- a node related to a waypoint
+---@class WaypointNode
 WaypointNode = CpObject()
 WaypointNode.MODE_NORMAL = 1
 WaypointNode.MODE_LAST_WP = 2

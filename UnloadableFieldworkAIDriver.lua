@@ -59,7 +59,7 @@ function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 end
 
 ---@return boolean true if unload took over the driving
-function UnloadableFieldworkAIDriver:driveUnloadOrRefill()
+function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	if not self.ppc:isReversing() then
 		-- 'cause reverse does the raycasting for us
 		self:searchForTipTriggers()
@@ -71,11 +71,16 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill()
 			-- unload at tip trigger
 			allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive);
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
-			if not allowedToDrive then
-				self.speed = 0
-			end
+
 		elseif self:atUnloadWaypoint() then
 			-- unload at unload waypoint
+			-- TODO: does not work due to #163009151, for now, just stop
+			allowedToDrive = false
+--			allowedToDrive, takeOverSteering =
+--			courseplay:handleUnloading(self.vehicle, self.course:isReverseAt(self.ppc:getCurrentWaypointIx()),dt);
+		end
+		if not allowedToDrive then
+			self.speed = 0
 		end
 	end
 	return takeOverSteering
@@ -109,11 +114,11 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
-
 	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
+		self:debug('Full: %s: %.1f', fillTypeName, pc )
 		return false
 	end
+	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
 	return true
 end
 

@@ -71,10 +71,11 @@ end
 function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	self:debugSparse('Fill levels: %s: %d', fillTypeName, pc )
 	if pc < 1 then
+		self:debug('Empty: %s: %d', fillTypeName, pc )
 		return false
 	end
+	self:debugSparse('Fill levels: %s: %d', fillTypeName, pc )
 	return true
 end
 

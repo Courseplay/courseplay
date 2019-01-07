@@ -72,6 +72,8 @@ end
 function AIDriver:start(ix)
 	self.state = self.states.RUNNING
 	self.turnIsDriving = false
+	self.temporaryCourse = nil
+
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
@@ -233,6 +235,7 @@ end
 ---@param nextCourse Course
 ---@param ix number
 function AIDriver:startTemporaryCourse(tempCourse, nextCourse, ix)
+	self:debug('Starting a temporary course, will continue at waypoint %d afterwards.', ix)
 	self.temporaryCourse = tempCourse
 	self.waypointIxAfterTemporary = ix
 	self.courseAfterTemporary = nextCourse

@@ -154,6 +154,11 @@ function PurePursuitController:getCurrentWaypointIx()
 	return self.currentWpNode.ix
 end
 
+function PurePursuitController:getLastPassedWaypointIx()
+
+	return self.lastPassedWaypointIx
+end
+
 --- Compatibility function to return the original waypoint index as in vehicle.Waypoints. This
 -- is the same as self.currentWpNode.ix unless we have combined courses where the legacy CP code
 -- concatenates all courses into one Waypoints array (as opposed to the AIDriver which splits these

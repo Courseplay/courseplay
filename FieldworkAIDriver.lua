@@ -55,6 +55,7 @@ end
 function FieldworkAIDriver:start(ix)
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
+	self.temporaryCourse = nil
 
 	self:setUpCourses()
 
@@ -90,7 +91,7 @@ function FieldworkAIDriver:drive(dt)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:driveFieldwork()
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
-		if self:driveUnloadOrRefill() then
+		if self:driveUnloadOrRefill(dt) then
 			-- someone else is driving, no need to call AIDriver.drive()
 			return
 		end
@@ -113,10 +114,10 @@ function FieldworkAIDriver:driveFieldwork()
 		if not self:allFillLevelsOk() then
 			if self.unloadRefillCourse then
 				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
-				-- TODO: also, this should be persisted through stop/start cycles (maybe on the vehicle?)
-				self.fieldworkAbortedAtWaypoint = self.ppc:getCurrentWaypointIx()
+				-- last wp may not be available shortly after a ppc initialization like after a turn
+				self.fieldworkAbortedAtWaypoint = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
 				self.vehicle.cp.fieldworkAbortedAtWaypoint = self.fieldworkAbortedAtWaypoint
-				self:debug('at least one tool is empty.')
+				self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.fieldworkAbortedAtWaypoint or -1)
 				self:changeToUnloadOrRefill()
 				self:startCourseWithAlignment(self.unloadRefillCourse, 1 )
 			else
@@ -198,8 +199,7 @@ function FieldworkAIDriver:onEndCourse()
 	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		-- unload/refill course ended, return to fieldwork
 		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.fieldworkAbortedAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
-		self:changeToFieldwork()
-		self:startCourseWithAlignment(self.fieldworkCourse, self.vehicle.cp.fieldworkAbortedAtWaypoint or self.fieldworkAbortedAtWaypoint)
+		self:startFieldworkWithAlignment(self.vehicle.cp.fieldworkAbortedAtWaypoint or self.fieldworkAbortedAtWaypoint)
 	else
 		AIDriver.onEndCourse(self)
 	end
