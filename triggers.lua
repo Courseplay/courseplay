@@ -70,10 +70,11 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 	local name = tostring(getName(transformId));
 
+	
 	-- TIPTRIGGERS
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
 	courseplay:debug(('%s: found %s'):format(nameNum(self), name), 1);
-	
+
 	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
 		local trailerFillType = self.cp.workTools[1].cp.fillType;
@@ -274,18 +275,35 @@ function courseplay:updateAllTriggers()
 		courseplay:debug(('\t%i in list'):format(counter), 1);
 	end;
 	
+	]]
 	--itemsToSave (BigPacks)
 	--print("g_currentMission.itemsToSave:"..tostring(g_currentMission.itemsToSave))
 	if g_currentMission.itemsToSave ~= nil then
 		courseplay:debug('\tcheck itemsToSave', 1);
+		
 		local counter = 0;
-		for _,valueTable in pairs (g_currentMission.itemsToSave) do
+		for index,itemToSave in pairs (g_currentMission.itemsToSave) do
 			counter = counter +1;
-			
+			local item = itemToSave.item
+			if item.sellingStation ~= nil then
+				local trigger = {}
+				for _,unloadTrigger in pairs(item.sellingStation.unloadTriggers) do
+					if unloadTrigger.baleTriggerNode then
+						local triggerId = unloadTrigger.baleTriggerNode;
+						trigger = {
+									triggerId = triggerId;
+									acceptedFillTypes = item.sellingStation.acceptedFillTypes;
+													
+								}
+						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+						courseplay:debug(string.format('\t\tadd %s(%i) to tipTriggers',item.sellingStation.stationName,triggerId), 1);
+					end
+				end
+			end
 		end
 		courseplay:debug(('\t%i in list'):format(counter), 1);		
 	end
-	
+	--[[
 	-- updateable objects
 	if g_currentMission.updateables ~= nil then
 		courseplay:debug('\tcheck updateables', 1);
@@ -334,7 +352,7 @@ function courseplay:updateAllTriggers()
 					
 							}
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-					courseplay:debug(string.format('\t\tadd %s to tipTriggers',placeable.unloadingStation.stationName), 1);
+					courseplay:debug(string.format('\t\tadd %s(%i) to tipTriggers',placeable.unloadingStation.stationName,triggerId), 1);
 				end
 			end
 			
@@ -349,7 +367,7 @@ function courseplay:updateAllTriggers()
 												
 							}
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-					courseplay:debug(string.format('\t\tadd %s to tipTriggers',placeable.sellingStation.stationName), 1);
+					courseplay:debug(string.format('\t\tadd %s(%i) to tipTriggers',placeable.sellingStation.stationName,triggerId), 1);
 				end
 			end
 			
@@ -369,7 +387,7 @@ function courseplay:updateAllTriggers()
 												--fillLevels = myModule.fillLevels;
 											}
 							courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-							courseplay:debug(string.format('\t\tadd %s to tipTriggers',myModule.moduleName), 1);				
+							courseplay:debug(string.format('\t\tadd %s(%i) to tipTriggers',myModule.moduleName,triggerId), 1);				
 					end
 										
 					if myModule.feedingTrough ~= nil then
@@ -381,7 +399,7 @@ function courseplay:updateAllTriggers()
 											--fillLevels = myModule.fillLevels;
 										}
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-						courseplay:debug(string.format('\t\tadd %s to tipTriggers',myModule.moduleName), 1);
+						courseplay:debug(string.format('\t\tadd %s(%i) to tipTriggers',myModule.moduleName,triggerId), 1);
 					end
 				end
 			end
@@ -392,7 +410,7 @@ function courseplay:updateAllTriggers()
 				for _,loadTrigger in pairs (placeable.buyingStation.loadTriggers) do
 					local triggerId = loadTrigger.triggerNode;
 					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
-					courseplay:debug(string.format('\t\tadd %s to fillTriggers', placeable.buyingStation.stationName), 1);
+					courseplay:debug(string.format('\t\tadd %s(%i) to fillTriggers', placeable.buyingStation.stationName,triggerId), 1);
 				end
 			end
 
@@ -411,7 +429,7 @@ function courseplay:updateAllTriggers()
 				local triggerId = trigger.triggerId
 				
 				courseplay:cpAddTrigger(triggerId, trigger, 'fillTrigger');
-				courseplay:debug(string.format('\t\tadd %s to fillTriggers', vehicle:getName()), 1);
+				courseplay:debug(string.format('\t\tadd %s(%i) to fillTriggers', vehicle:getName(),triggerId), 1);
 			end
 		end
 		courseplay:debug(('\t%i found'):format(counter), 1);
