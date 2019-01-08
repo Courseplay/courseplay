@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
 courseplay = {}
-
+courseplay.utils = {}
 function courseplay.createNode() return 1 end
 function courseplay.destroyNode() end
 function courseplay.checkFuel() return true end

@@ -44,6 +44,8 @@ function FieldworkAIDriver:init(vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
 	-- waiting for tools to turn on, unfold and lower
 	self.waitingForTools = true
+	-- FieldworkAIDriver and its derived classes set the self.speed in various locations in
+	-- the code and then getSpeed() will pass that on to the AIDriver.
 	self.speed = 0
 	self.debugChannel = 14
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
@@ -102,6 +104,7 @@ end
 
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
 function FieldworkAIDriver:driveFieldwork()
+	self:updateFieldworkOffsetFromSettings()
 	if self.fieldworkState == self.states.WAITING_FOR_LOWER then
 		if self:areAllWorkToolsReady() then
 			self:debug('all tools ready, start working')
@@ -253,6 +256,7 @@ function FieldworkAIDriver:getFieldSpeed()
 	return math.min(self.vehicle.cp.speeds.field, speedLimit)
 end
 
+--- Pass on self.speed set elsewhere to the AIDriver.
 function FieldworkAIDriver:getSpeed()
 	local speed = self.speed or 10
 	-- as long as other CP components mess with the cruise control we need to reset this, for example after
@@ -351,10 +355,12 @@ function FieldworkAIDriver:setUpCourses()
 			end
 		end
 	end
-	if #self.vehicle.Waypoints > endFieldCourseIx then
+	if #self.vehicle.Waypoints > endFieldCourseIx and endFieldCourseIx ~= 0 then
 		self:debug('There seems to be an unload/refill course starting at waypoint %d', endFieldCourseIx + 1)
 		---@type Course
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, endFieldCourseIx)
+		-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
+		self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
 		---@type Course
 		self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, endFieldCourseIx + 1, #self.vehicle.Waypoints)
 	else
@@ -375,4 +381,12 @@ function FieldworkAIDriver:setRidgeMarkers()
 			end
 		end
 	end
+end
+
+--- We already set the offsets on the course at start, this is to update those values
+-- if the user changed them during the run
+function FieldworkAIDriver:updateFieldworkOffsetFromSettings()
+	-- pass this in through the PPC instead of setting it on the course directly as we don't know what
+	-- course it is running at the moment
+	self.ppc:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
 end

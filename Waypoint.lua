@@ -50,9 +50,24 @@ function Waypoint:set(cpWp, cpIndex)
 	self.unload = cpWp.unload
 end
 
+--- Get the (original, non-offset) position of a waypoint
+---@return number, number, number x, y, z
 function Waypoint:getPosition()
 	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.x, 0, self.z)
 	return self.x, y, self.z
+end
+
+--- Get the offset position of a waypoint
+---@param offsetX number left/right offset (right +, left -)
+---@param offsetZ number forward/backward offset (forward +)
+---@return number, number, number x, y, z
+function Waypoint:getOffsetPosition(offsetX, offsetZ)
+	local x, y, z = self:getPosition()
+	if self.dx and self.dz then
+		x = x - self.dz * offsetX + self.dx * offsetZ
+		z = z + self.dx * offsetX + self.dz * offsetZ
+	end
+	return x, y, z
 end
 
 function Waypoint:getDistanceFromPoint(x, z)
@@ -81,6 +96,7 @@ function WaypointNode:destroy()
 	courseplay.destroyNode(self.node)
 end
 
+---@param course Course
 function WaypointNode:setToWaypoint(course, ix, suppressLog)
 	local newIx = math.min(ix, course:getNumberOfWaypoints())
 	if newIx ~= self.ix and self.logChanges and not suppressLog then
@@ -150,9 +166,19 @@ function Course:init(vehicle, waypoints, first, last)
 		table.insert(self.waypoints, Waypoint(waypoints[i], n + (first or 1)))
 		n = n + 1
 	end
-	self:addWaypointAngles()
+	self:enrichWaypointData()
 	-- only for logging purposes
 	self.vehicle = vehicle
+	-- offset to apply to every position
+	self.offsetX, self.offsetZ = 0, 0
+end
+
+--- Current offset to apply. getWaypointPosition() will always return the position adjusted by the
+-- offset. The x and z offset are in the waypoint's coordinate system, waypoints are directed towards
+-- the next waypoint, so a z = 1 offset will move the waypoint 1m forward, x = 1 1 m to the left (when
+-- looking in the drive direction)
+function Course:setOffset(x, z)
+	self.offsetX, self.offsetZ = x, z
 end
 
 --- get number of waypoints in course
@@ -160,13 +186,16 @@ function Course:getNumberOfWaypoints()
 	return #self.waypoints
 end
 
--- add missing angles from one waypoint to the other
--- PPC relies on waypoint angles, we need them
-function Course:addWaypointAngles()
+-- add missing angles and world directions from one waypoint to the other
+-- PPC relies on waypoint angles, the world direction is needed to calculate offsets
+function Course:enrichWaypointData()
 	for i = 1, #self.waypoints - 1 do
+		local cx, _, cz = self:getWaypointPosition(i)
+		local nx, _, nz = self:getWaypointPosition( i + 1)
+		self.waypoints[i].dx, _, self.waypoints[i].dz, _ =
+			courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
+		courseplay:debugFormat(12, '%d %s %s', i, tostring(self.waypoints[i].dx), tostring(self.waypoints[i].dz))
 		if not self.waypoints[i].angle then
-			local cx, _, cz = self:getWaypointPosition(i)
-			local nx, _, nz = self:getWaypointPosition( i + 1)
 			-- TODO: fix this weird coordinate system transformation from x/z to x/y
 			local dx, dz = nx - cx, -nz - (-cz)
 			local angle = toPolar(dx, dz)
@@ -178,6 +207,8 @@ function Course:addWaypointAngles()
 	-- turn towards the first when ending the course. (the course generator points the last
 	-- one to the first, should probably be changed there)
 	self.waypoints[#self.waypoints].angle = self.waypoints[#self.waypoints - 1].angle
+	self.waypoints[#self.waypoints].dx = self.waypoints[#self.waypoints - 1].dx
+	self.waypoints[#self.waypoints].dz = self.waypoints[#self.waypoints - 1].dz
 end
 
 function Course:setCurrentWaypointIx(ix)
@@ -219,8 +250,9 @@ function Course:isUnloadAt(ix)
 	return self.waypoints[ix].unload
 end
 
+--- Returns the position of the waypoint at ix with the current offset applied.
 function Course:getWaypointPosition(ix)
-	return self.waypoints[ix]:getPosition()
+	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
 end
 
 -- distance between (px,pz) and the ix waypoint
@@ -328,4 +360,33 @@ function Course:findOriginalIx(cpIx)
 		end
 	end
 	return 1
+end
+
+--- Is any of the waypoints around ix an unload point?
+---@param ix number waypoint index to look around
+---@param forward number look forward this number of waypoints when searching
+---@param backward number look back this number of waypoints when searching
+---@return boolean true if any of the waypoints are unload points
+function Course:hasUnloadPointAround(ix, forward, backward)
+	return self:hasWaypointWithPropertyAround(ix, forward, backward, function(p) return p.unload end)
+end
+
+--- Is any of the waypoints around ix a wait point?
+---@param ix number waypoint index to look around
+---@param forward number look forward this number of waypoints when searching
+---@param backward number look back this number of waypoints when searching
+---@return boolean true if any of the waypoints are wait points
+function Course:hasWaitPointAround(ix, forward, backward)
+	-- TODO: clarify if we use interact or wait or both?
+	return self:hasWaypointWithPropertyAround(ix, forward, backward, function(p) return p.wait or p.interact end)
+end
+
+function Course:hasWaypointWithPropertyAround(ix, forward, backward, hasProperty)
+	for i = math.max(ix - backward + 1, 1), math.min(ix + forward - 1, #self.waypoints) do
+		if hasProperty(self.waypoints[i]) then
+			-- one of the waypoints around ix has this property
+			return true
+		end
+	end
+	return false
 end

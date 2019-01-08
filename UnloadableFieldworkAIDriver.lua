@@ -60,6 +60,7 @@ end
 
 ---@return boolean true if unload took over the driving
 function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
+	self:updateOffset()
 	if not self.ppc:isReversing() then
 		-- 'cause reverse does the raycasting for us
 		self:searchForTipTriggers()
@@ -177,3 +178,15 @@ function UnloadableFieldworkAIDriver:atUnloadWaypoint()
 	return self.course:isUnloadAt(self.ppc:getCurrentWaypointIx())
 end
 
+--- Update the unload offset from the current settings and apply it when needed
+function UnloadableFieldworkAIDriver:updateOffset()
+	local currentWaypointIx = self.ppc:getCurrentWaypointIx()
+	local useOffset = false
+
+	if self.course:hasUnloadPointAround(currentWaypointIx, 6, 3) then
+		-- around unload points
+		self.ppc:setOffset(self.vehicle.cp.loadUnloadOffsetX, self.vehicle.cp.loadUnloadOffsetZ)
+	else
+		self.ppc:setOffset(0, 0)
+	end
+end

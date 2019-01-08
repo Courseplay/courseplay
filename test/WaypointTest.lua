@@ -22,10 +22,12 @@ th = require("testhelper")
 package.path = package.path .. ";../?.lua"
 package.path = package.path .. ";../course-generator/?.lua"
 require("test.mock-Courseplay")
+require("test.mock-GiantsEngine")
 require("CpObject")
 require("Waypoint")
 require("geo")
 require("courseGenerator")
+require("helpers")
 
 TestCourse = {}
 
@@ -33,13 +35,23 @@ function TestCourse:setUp()
 	self.waypoints = th.waypoints
 end
 
-function TestCourse:testAddWaypointAngles()
+function TestCourse:testEnrichWaypointData()
 	local course = Course(nil, self.waypoints)
 	lu.assertAlmostEquals(course.waypoints[1].angle, 90)
+	lu.assertAlmostEquals(course.waypoints[1].dx, 1)
+	lu.assertAlmostEquals(course.waypoints[1].dz, 0)
 	lu.assertAlmostEquals(course.waypoints[2].angle, 0)
+	lu.assertAlmostEquals(course.waypoints[2].dx, 0)
+	lu.assertAlmostEquals(course.waypoints[2].dz, 1)
 	lu.assertAlmostEquals(course.waypoints[3].angle, -90)
+	lu.assertAlmostEquals(course.waypoints[3].dx, -1)
+	lu.assertAlmostEquals(course.waypoints[3].dz, 0)
 	lu.assertAlmostEquals(course.waypoints[4].angle, 180)
+	lu.assertAlmostEquals(course.waypoints[4].dx, 0)
+	lu.assertAlmostEquals(course.waypoints[4].dz, -1)
 	lu.assertAlmostEquals(course.waypoints[5].angle, 180)
+	lu.assertAlmostEquals(course.waypoints[5].dx, 0)
+	lu.assertAlmostEquals(course.waypoints[5].dz, -1)
 end
 
 function TestCourse:testGetAverageSpeed()

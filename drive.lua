@@ -1337,7 +1337,7 @@ function courseplay:getIsVehicleOffsetValid(vehicle, isLoadUnloadWait)
 	return false;
 end;
 
-function courseplay:getVehicleOffsettedCoords(vehicle, x, z, isLoadUnloadWait, skipXOffset)
+function courseplay:getVehicleOffsettedCoords(vehicle, x, z, isLoadUnloadWait)
 	--courseplay:debug(string.format('%s: waypoint before offset: cx=%.2f, cz=%.2f', nameNum(vehicle), cx, cz), 2);
 	local fromX, fromZ, toX, toZ;
 	if vehicle.cp.waypointIndex == 1 then

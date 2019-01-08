@@ -43,8 +43,9 @@ function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
 end
 
 function GrainTransportAIDriver:drive(dt)
+	-- make sure we apply the unload offset when needed
+	self:updateOffset()
 	-- update current waypoint/goal point
-	--print("GrainTransportAIDriver:drive(dt)")
 	self.ppc:update()
 
 	if self.state == self.states.STOPPED then self:idle(dt) return end
@@ -234,4 +235,27 @@ function GrainTransportAIDriver:cleanUpMissedTriggerExit() -- at least that's wh
 			courseplay:resetTipTrigger(self.vehicle)
 		end;
 	end;
+end
+
+--- Update the unload offset from the current settings and apply it when needed
+function GrainTransportAIDriver:updateOffset()
+	local currentWaypointIx = self.ppc:getCurrentWaypointIx()
+	local useOffset = false
+
+	if not self.vehicle.cp.hasAugerWagon and (currentWaypointIx > self.course:getNumberOfWaypoints() - 6 or currentWaypointIx <= 4) then
+		-- around the fill trigger (don't understand the auger wagon part though)
+		useOffset = true
+	elseif self.course:hasWaitPointAround(currentWaypointIx, 6, 3) then
+		-- around wait points
+		useOffset = true
+	elseif self.course:hasUnloadPointAround(currentWaypointIx, 6, 3) then
+		-- around unload points
+		useOffset = true
+	end
+
+	if useOffset then
+		self.ppc:setOffset(self.vehicle.cp.loadUnloadOffsetX, self.vehicle.cp.loadUnloadOffsetZ)
+	else
+		self.ppc:setOffset(0, 0)
+	end
 end

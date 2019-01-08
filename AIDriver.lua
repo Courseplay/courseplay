@@ -316,7 +316,8 @@ function AIDriver:onWaypointChange(newIx)
 	-- rest is implemented by the derived classes	
 end
 
-
+--- Function used by the driver to get the speed it is supposed to drive at
+-- This is a default implementation, derived classes should deliver their own version.
 function AIDriver:getSpeed()
 	-- override by the derived classes
 	local speed

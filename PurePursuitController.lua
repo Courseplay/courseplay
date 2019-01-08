@@ -111,6 +111,11 @@ function PurePursuitController:setCourse(course)
 	self.course = course
 end
 
+--- Set an offset for the current course.
+function PurePursuitController:setOffset(x, z)
+	self.course:setOffset(x, z)
+end
+
 -- initialize controller before driving
 function PurePursuitController:initialize(ix, aiDriver)
 	-- for now, if no course set, use the vehicle's current waypoints

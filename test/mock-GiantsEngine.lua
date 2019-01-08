@@ -29,7 +29,7 @@ function noOp() end
 setTranslation = noOp
 setRotation = noOp
 function getRotation() return 0 end
-
+function getTerrainHeightAtWorldPos() return 0 end
 function getWorldTranslation() return 0, 0, 0 end
 function worldToLocal() return 0, 0, 0 end
 function localToLocal() return 0, 0, 0 end
@@ -39,6 +39,10 @@ function localDirectionToWorld() return 0, 0, 0 end
 MathUtil = {}
 function MathUtil.vector2Length(x, y)
 	return math.sqrt(x*x + y*y)
+end
+
+function MathUtil.vector3Length(x, y, z)
+	return math.sqrt(x*x + z*z)
 end
 
 DebugUtil = {}
@@ -54,6 +58,7 @@ function getDate(formatString)
 end
 
 g_updateLoopIndex = 1
+g_currentMission = {}
 
 giantsVehicle = {}
 giantsVehicle.lastSpeedReal = 10
