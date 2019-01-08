@@ -593,11 +593,12 @@ function courseplay:onLoad(savegame)
 	courseplay.buttons:setActiveEnabled(self, 'all');
 
 	self.cp.drivingMode = DrivingModeSetting(self)
-	if CpManager.isDeveloper then
-		self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
-	else
+	
+	--if CpManager.isDeveloper then
+	self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
+	--[[else
 		self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
-	end
+	end]]
 	courseplay:setAIDriver(self, self.cp.mode)
 end;
 

@@ -24,6 +24,13 @@ function courseplay:setCpMode(vehicle, modeNum)
 		if modeNum == 1 then
 			courseplay:resetTools(vehicle);
 		end;
+		if not CpManager.isDeveloper then
+			if modeNum == courseplay.MODE_COMBI then
+				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
+			else
+				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
+			end
+		end
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
 end;
@@ -33,8 +40,8 @@ function courseplay:setAIDriver(vehicle, mode)
 		vehicle.cp.driver = AIDriver(vehicle)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
 		vehicle.cp.driver = GrainTransportAIDriver(vehicle)	
-	elseif mode == courseplay.MODE_COMBI then
-		vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
+	--elseif mode == courseplay.MODE_COMBI then
+	--	vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		vehicle.cp.driver = ShovelModeAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
@@ -76,6 +83,15 @@ function courseplay:setNextPrevModeVars(vehicle)
 end;
 
 function courseplay:getCanVehicleUseMode(vehicle, mode)
+	if not CpManager.isDeveloper then
+		if mode == courseplay.MODE_OVERLOADER
+		or mode == courseplay.MODE_COMBINE_SELF_UNLOADING
+		or mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT
+		or mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY
+		or mode == courseplay.MODE_BUNKERSILO_COMPACTER then
+		return false;
+		end
+	end	
 	if mode == courseplay.MODE_COMBINE_SELF_UNLOADING and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable then
 		return false;
 	elseif (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable) and (mode ~= courseplay.MODE_TRANSPORT and mode ~= courseplay.MODE_FIELDWORK ) then -- and mode ~= courseplay.MODE_COMBINE_SELF_UNLOADING) then
@@ -1895,7 +1911,7 @@ function DrivingModeSetting:checkAndSetValidValue(new)
 		and self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 		and self.vehicle.cp.mode ~= courseplay.MODE_SEED_FERTILIZE
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
-		and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
+		--and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
 		and new == #self.values then
 		-- enable AI Driver for mode 1, 4, 5, 6 and 9 only until it can handle other modes
 		return 1

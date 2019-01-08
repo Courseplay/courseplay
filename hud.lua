@@ -1585,7 +1585,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	for i=1, self.numLines do
 		if i == 1 then
 			courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], self.col2posX[self.PAGE_CP_CONTROL] - self.col1posX, self.lineHeight, i, nil, true);
-			courseplay.button:new(vehicle, 1, nil, 'toggleDrivingMode', nil,  self.col2posX[self.PAGE_CP_CONTROL], self.linesPosY[1], self.contentMaxWidth, self.lineHeight, i, nil, true);
+			if CpManager.isDeveloper then courseplay.button:new(vehicle, 1, nil, 'toggleDrivingMode', nil,  self.col2posX[self.PAGE_CP_CONTROL], self.linesPosY[1], self.contentMaxWidth, self.lineHeight, i, nil, true)end;
 		else
 			courseplay.button:new(vehicle, 1, nil, 'rowButton', i, self.col1posX, self.linesPosY[i], w, self.lineHeight, i, nil, true);
 		end
