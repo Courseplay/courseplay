@@ -522,7 +522,6 @@ end;
 function courseplay:getCanUseCpMode(vehicle)
 	-- check engine running state
 	if not courseplay:getIsEngineReady(vehicle) then
-		print('engine not ready')
 		return false;
 	end;
 

@@ -37,12 +37,11 @@ function courseplay:drive(self, dt)
 		courseplay:setEngineState(self, true);
 		--("start Order")
 	elseif not courseplay:getIsEngineReady(self) then
-		print('broken 40')
 		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
 	end;
 
 	if not courseplay:getCanUseCpMode(self) then
-		print('Can Use CP mode is false I dont want to drive')
+		--print('Can Use CP mode is false I dont want to drive')
 		return;
 	end;
 

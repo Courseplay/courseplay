@@ -10,7 +10,8 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	local maxDensity = 0;
 	local maxFruitType = 0
 	if fruitType ~= nil and fruitType ~= FruitType.UNKNOWN then
-		local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fruitType].maxHarvestingGrowthState
+		local minHarvestable, maxHarvestable = 1, FieldUtil:getMaxGrowthState(fruitType) or 1
+	
 		density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
@@ -19,7 +20,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	else
 		for i = 1, #g_fruitTypeManager.fruitTypes do
 			if i ~= g_fruitTypeManager.nameToIndex['GRASS'] and i ~= g_fruitTypeManager.nameToIndex['DRYGRASS'] then 
-				local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[i].maxHarvestingGrowthState 
+				local minHarvestable, maxHarvestable = 1, FieldUtil:getMaxGrowthState(fruitType) or 1
 				--function FieldUtil.getFruitArea(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, terrainDetailRequiredValueRanges, terrainDetailProhibitValueRanges, requiredFruitType, requiredMinGrowthState, requiredMaxGrowthState, prohibitedFruitType, prohibitedMinGrowthState, prohibitedMaxGrowthState, useWindrowed
 				density,totalArea = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, i, minHarvestable , maxHarvestable, 0, 0, 0,false);
 				if density > maxDensity then
@@ -192,7 +193,8 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	if fruitType == nil or fruitType == 0 then
 		_,fruitType = courseplay:areaHasFruit(x, z, nil, threshWidth, threshWidth)
 	end
-	local minHarvestable , maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fruitType].maxHarvestingGrowthState
+	if fruitType == nil then fruitType = 0 end
+	local minHarvestable , maxHarvestable = 1, FieldUtil:getMaxGrowthState(fruitType) or 1
 	local leftFruit, totalArealeft = FieldUtil.getFruitArea(lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 	local rightFruit, totalArearight = FieldUtil.getFruitArea(rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit(%s): left %f, right %f", nameNum(combine),tostring(fruitType), leftFruit, rightFruit), 4);
