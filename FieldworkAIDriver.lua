@@ -268,8 +268,9 @@ end
 --- Start the actual work. Lower and turn on implements
 function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')
-	courseplay:lowerImplements(self.vehicle)
+	-- send the event first and _then_ lower otherwise it sometimes does not turn it on
 	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
+	courseplay:lowerImplements(self.vehicle)
 end
 
 --- Stop working. Raise and stop implements
