@@ -262,10 +262,10 @@ function CpManager:update(dt)
 
 		-- Field scan, wages yes/no dialogue
 		if self.showFieldScanYesNoDialogue then
-			self:showYesNoDialogue('Courseplay', courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'), self.fieldScanDialogueCallback, 'showFieldScanYesNoDialogue');
+			self:showYesNoDialogue('Courseplay', courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'), self.fieldScanDialogueCallback);
 		elseif self.showWagesYesNoDialogue then
 			local txt = courseplay:loc('COURSEPLAY_YES_NO_WAGES'):format(g_i18n:formatMoney(g_i18n:getCurrency(self.wagePerHour * self.wageDifficultyMultiplier), 2));
-			self:showYesNoDialogue('Courseplay', txt, self.wagesDialogueCallback, 'showWagesYesNoDialogue');
+			self:showYesNoDialogue('Courseplay', txt, self.wagesDialogueCallback);
 		end;
 	end;
 
@@ -809,12 +809,12 @@ function CpManager:realTime10SecsChanged()
 	end;
 end;
 
-function CpManager:showYesNoDialogue(title, text, callbackFn, showBoolVar)
-	local yesNoDialogue = g_gui:showGui('YesNoDialog');
-    yesNoDialogue.target:setTitle(title);
-	yesNoDialogue.target:setText(text);
- 	yesNoDialogue.target:setCallback(callbackFn, self);
-	self[showBoolVar] = false;
+function CpManager:showYesNoDialogue(title, text, callbackFn)
+	-- don't show anything if the tutorial dialog is open (it takes a while until is isOpen shows true after startup, hence the clock)
+	if courseplay.clock < 1000 or (g_gui.guis.YesNoDialog.target and g_gui.guis.YesNoDialog.target.isOpen) then
+		return
+	end
+	g_gui:showYesNoDialog({text=text, title=title, callback=callbackFn, target=self})
 end;
 
 
@@ -823,8 +823,7 @@ end;
 function CpManager:fieldScanDialogueCallback(setActive)
 	--print(string.format("CpManager:fieldScanDialogueCallback(setActive(%s))",tostring(setActive)))
 	courseplay.fields.automaticScan = setActive;
-
-	g_gui:showGui('');
+	self.showFieldScanYesNoDialogue = false
 end;
 
 
@@ -840,8 +839,7 @@ end;
 
 function CpManager:wagesDialogueCallback(setActive)
 	self.wagesActive = setActive;
-
-	g_gui:showGui('');
+	self.showWagesYesNoDialogue = false
 end;
 
 
