@@ -10,7 +10,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	local maxDensity = 0;
 	local maxFruitType = 0
 	if fruitType ~= nil and fruitType ~= FruitType.UNKNOWN then
-		local minHarvestable, maxHarvestable = 1, FieldUtil:getMaxGrowthState(fruitType) or 1
+		local minHarvestable, maxHarvestable = 1, fruitType.numGrowthStates
 	
 		density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
@@ -20,7 +20,8 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	else
 		for i = 1, #g_fruitTypeManager.fruitTypes do
 			if i ~= g_fruitTypeManager.nameToIndex['GRASS'] and i ~= g_fruitTypeManager.nameToIndex['DRYGRASS'] then 
-				local minHarvestable, maxHarvestable = 1, FieldUtil:getMaxGrowthState(fruitType) or 1
+				local fruitType = g_fruitTypeManager.fruitTypes[i]
+				local minHarvestable, maxHarvestable = 1, fruitType.numGrowthStates
 				--function FieldUtil.getFruitArea(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, terrainDetailRequiredValueRanges, terrainDetailProhibitValueRanges, requiredFruitType, requiredMinGrowthState, requiredMaxGrowthState, prohibitedFruitType, prohibitedMinGrowthState, prohibitedMaxGrowthState, useWindrowed
 				density,totalArea = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, i, minHarvestable , maxHarvestable, 0, 0, 0,false);
 				if density > maxDensity then
@@ -110,7 +111,7 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 	print(string.format('hasLineFruit(): x1,z1=%s,%s, x2,z2=%s,%s, hx,hz=%s,%s', tostring(x1), tostring(z1), tostring(x2), tostring(z2), tostring(hx), tostring(hz)));
 
 	if fixedFruitType then
-		local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fixedFruitType].maxHarvestingGrowthState
+		local minHarvestable, maxHarvestable = 1, fruitType.numGrowthStates
 		local density, total = FieldUtil.getFruitArea(x1, z1, x2, z2, hx, hz, {}, {}, fixedFruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
 			return true, density, fixedFruitType, g_fruitTypeManager.indexToFruitType[fixedFruitType].name --IndexToDesc[fixedFruitType].name; this might wrong conversion
@@ -120,7 +121,8 @@ function courseplay:hasLineFruit(node, x1, z1, x2, z2, fixedFruitType)
 
 	for i = 1, #g_fruitTypeManager.fruitTypes do
 		if i ~= g_fruitTypeManager.nameToIndex['GRASS'] and i ~= g_fruitTypeManager.nameToIndex['DRYGRASS'] then 
-			local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[i].maxHarvestingGrowthState
+			local fruitType = g_fruitTypeManager.fruitTypes[i]
+			local minHarvestable, maxHarvestable = 1, fruitType.numGrowthStates
 			local density, total = FieldUtil.getFruitArea(x1, z1, x2, z2, hx, hz, {}, {},  i, minHarvestable , maxHarvestable, 0, 0, 0,false);
 			if density > 0 then
 				local fruitName = 'test' --FruitTypeManager:getFruitTypeNameByIndex(i) -- FruitUtil.fruitIndexToDesc[i].name;  this might wrong conversion
@@ -188,7 +190,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 		_,fruitType = courseplay:areaHasFruit(x, z, nil, threshWidth, threshWidth)
 	end
 	if fruitType == nil then fruitType = 0 end
-	local minHarvestable , maxHarvestable = 1, FieldUtil:getMaxGrowthState(fruitType) or 1
+	local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fruitType].numGrowthStates
 	local leftFruit, totalArealeft = FieldUtil.getFruitArea(lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 	local rightFruit, totalArearight = FieldUtil.getFruitArea(rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit(%s): left %f, right %f", nameNum(combine),tostring(fruitType), leftFruit, rightFruit), 4);
