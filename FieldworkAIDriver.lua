@@ -53,6 +53,7 @@ function FieldworkAIDriver:init(vehicle)
 	self.fieldworkAbortedAtWaypoint = 1
 	-- force stop for unload/refill, for example by a tractor, otherwise the same as stopping because full or empty
 	self.heldForUnloadRefill = false
+	self.heldForUnloadRefillTimestamp = 0
 end
 
 --- Start the course and turn on all implements when needed
@@ -101,15 +102,26 @@ function FieldworkAIDriver:drive(dt)
 		end
 	end
 	self:setRidgeMarkers()
+	self:resetUnloadOrRefillHold()
 	AIDriver.drive(self, dt)
 end
 
+-- Hold for unload (or refill) for example a combine can be asked by a an unloading tractor
+-- to stop and wait. Must be called in every loop to keep waiting because it will automatically be
+-- reset and the vehicle restarted. This way the users don't explicitly need to call resumeAfterUnloadOrRefill()
 function FieldworkAIDriver:holdForUnloadOrRefill()
 	self.heldForUnloadRefill = true
+	self.heldForUnloadRefillTimestamp = g_updateLoopIndex
 end
 
 function FieldworkAIDriver:resumeAfterUnloadOrRefill()
 	self.heldForUnloadRefill = false
+end
+
+function FieldworkAIDriver:resetUnloadOrRefillHold()
+	if g_updateLoopIndex > self.heldForUnloadRefillTimestamp + 10 then
+		self:resumeAfterUnloadOrRefill()
+	end
 end
 
 
