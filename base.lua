@@ -1962,5 +1962,11 @@ function courseplay:stopAIVehicle(superFunc, reason, noEventSend)
 end
 AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, courseplay.stopAIVehicle)
 
+-- Tour dialog messes up the CP yes no dialogs.
+function courseplay:showTourDialog()
+	print('Tour dialog is disabled by Courseplay.')
+end
+TourIcons.showTourDialog = Utils.overwrittenFunction(TourIcons.showTourDialog, courseplay.showTourDialog)
+
 -- do not remove this comment
 -- vim: set noexpandtab:
