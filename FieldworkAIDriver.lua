@@ -273,6 +273,7 @@ function FieldworkAIDriver:startWork()
 	courseplay:lowerImplements(self.vehicle)
 end
 
+
 --- Stop working. Raise and stop implements
 function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
