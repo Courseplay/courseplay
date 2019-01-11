@@ -54,7 +54,9 @@ end
 --- Grain tank full during fieldwork
 function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
-	self:setInfoText('NEEDS_UNLOADING')
+	if not self.heldForUnloadRefill then
+		self:setInfoText('NEEDS_UNLOADING')
+	end
 	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 end
 
@@ -189,4 +191,4 @@ function UnloadableFieldworkAIDriver:updateOffset()
 	else
 		self.ppc:setOffset(0, 0)
 	end
-end
+end

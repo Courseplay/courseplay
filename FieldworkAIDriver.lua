@@ -51,6 +51,8 @@ function FieldworkAIDriver:init(vehicle)
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
 	-- an unload/refill course
 	self.fieldworkAbortedAtWaypoint = 1
+	-- force stop for unload/refill, for example by a tractor, otherwise the same as stopping because full or empty
+	self.heldForUnloadRefill = false
 end
 
 --- Start the course and turn on all implements when needed
@@ -102,6 +104,15 @@ function FieldworkAIDriver:drive(dt)
 	AIDriver.drive(self, dt)
 end
 
+function FieldworkAIDriver:holdForUnloadOrRefill()
+	self.heldForUnloadRefill = true
+end
+
+function FieldworkAIDriver:resumeAfterUnloadOrRefill()
+	self.heldForUnloadRefill = false
+end
+
+
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
 function FieldworkAIDriver:driveFieldwork()
 	self:updateFieldworkOffsetFromSettings()
@@ -114,8 +125,8 @@ function FieldworkAIDriver:driveFieldwork()
 			self.speed = 0
 		end
 	elseif self.fieldworkState == self.states.WORKING then
-		if not self:allFillLevelsOk() then
-			if self.unloadRefillCourse then
+		if not self:allFillLevelsOk() or self.heldForUnloadRefill then
+			if self.unloadRefillCourse and not self.heldForUnloadRefill then
 				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
 				-- last wp may not be available shortly after a ppc initialization like after a turn
 				self.fieldworkAbortedAtWaypoint = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
@@ -168,7 +179,7 @@ function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
 		end
 	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
-		if self:allFillLevelsOk() then
+		if self:allFillLevelsOk() and not self.heldForUnloadRefill then
 			self:debug('unloaded/refilled, continue working')
 			-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
 			self:clearInfoText()
