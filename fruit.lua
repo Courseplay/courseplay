@@ -135,8 +135,7 @@ end;
 
 function courseplay:isLineField(node, x1, z1, x2, z2)
 	
-	-- TODO setDensityCompareParams getDensityParallelogram have been removed
-	--[[ if node and (x1 == nil or z1 == nil) then
+	if node and (x1 == nil or z1 == nil) then
 		x1, _, z1 = getWorldTranslation(node);
 	end;
 	local hx, hz = courseplay:getLineHxHz(node, x1, z1, x2, z2);
@@ -147,17 +146,12 @@ function courseplay:isLineField(node, x1, z1, x2, z2)
 	local widthWorldX, widthWorldZ   = x2, z2;
 	local heightWorldX, heightWorldZ = hx, hz;
 
-	local detailId = g_currentMission.terrainDetailId;
-	local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = MathUtil.getXZWidthAndHeight(detailId, startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ);
-	setDensityCompareParams(detailId, 'greater', 0, 0, 0, 0);
-	local n,area,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
-	setDensityCompareParams(detailId, 'greater', -1);
-
+	courseplay.fields.modifier:setParallelogramWorldCoords(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, "ppp")
+	local n,area,totalArea = courseplay.fields.modifier:executeGet(courseplay.fields.filter) -- get all where is field
 	local isField = area > 0 and area >= totalArea;
 	courseplay:debug(string.format('isLineField(): x1,z1=%.2f,%.2f, x2,z2=%.2f,%.2f, hx,hz=%.2f,%.2f -> n=%s, area=%s, totalArea=%s -> return %s', x1, z1, x2, z2, hx, hz, tostring(n), tostring(area), tostring(totalArea), tostring(isField)), 4);
 
-	return isField; ]]
-	return true
+	return isField;
 end;
 
 function courseplay:sideToDrive(vehicle, combine, distance, switchSide)

@@ -299,6 +299,11 @@ function CpManager:update(dt)
 		end;
 	end;
 
+	if not courseplay.fields.modifier then
+		courseplay.fields.modifier = DensityMapModifier:new(g_currentMission.terrainDetailId, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels) -- terrain type modifier
+		courseplay.fields.filter = DensityMapFilter:new(courseplay.fields.modifier) -- filter on terrain type
+		courseplay.fields.filter:setValueCompareParams("greater", 0) -- more than 0, so it is a field
+	end
 	-- add a debug marker to the log file when Left Alt-D pressed
 	--[[Tommiif  InputBinding.hasEvent( InputBinding.COURSEPLAY_DEBUG_MARKER ) then
 		courseplay.logDebugMarker()
