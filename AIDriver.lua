@@ -386,7 +386,7 @@ function AIDriver:setUpAlignmentCourse(course, ix)
 	end;
 	-- TODO: maybe the course itself should return an alignment course to its own waypoint ix as we don't want
 	-- to work with individual course waypoints here.
-	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, math.rad( course:getWaypointAngleDeg(ix)))
+	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, math.rad( course:getWaypointAngleDeg(ix)), true)
 	if not alignmentWaypoints then
 		self:debug("Can't find an alignment course, may be too close to target wp?" )
 		return nil

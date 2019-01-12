@@ -2096,7 +2096,7 @@ Then we add waypoints on a circle from T1 to WP.
 see https://ggbm.at/RN3cawGc
 --]]
 
-function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
+function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection, generateStraightWaypoints )
 	-- make the radius a bit bigger to make sure we can make the turn
 	local turnRadius = 1.2 * vehicle.cp.turnDiameter / 2
 	-- target waypoint we want to reach
@@ -2129,6 +2129,11 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection )
 	t1.x, _, t1.z = localToWorld( t1Node, 0, 0, turnRadius )
 	local wp = { x = tx, z = tz }
 
+
+	-- add waypoints to the straight section from the vehicle to T1 (the start of the arc)
+	if generateStraightWaypoints then
+		courseplay:generateTurnStraitPoints(vehicle, {x = vx, z = vz}, t1, false)
+	end
 	-- leverage Claus' nice turn generator
 	courseplay:generateTurnCircle( vehicle, c1, t1, wp, turnRadius, leftOrRight, false, false )
 	local result = vehicle.cp.turnTargets
