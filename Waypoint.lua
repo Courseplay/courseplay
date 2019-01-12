@@ -338,7 +338,7 @@ function Course:getDistanceToFirstUpDownRowWaypoint(ix)
 	for i = ix, #self.waypoints - 1 do
 		isConnectingTrack = isConnectingTrack or self.waypoints[i].isConnectingTrack
 		d = d + courseplay:distance(self.waypoints[i].x, self.waypoints[i].z, self.waypoints[i + 1].x, self.waypoints[i + 1].z)
-		courseplay.debugFormat(12, 'd = %.1f i = %d, lane = %s', d, i, tostring(self.waypoints[i].lane))
+		--courseplay.debugFormat(12, 'd = %.1f i = %d, lane = %s', d, i, tostring(self.waypoints[i].lane))
 		if self.waypoints[i].lane and not self.waypoints[i + 1].lane and isConnectingTrack then
 			return d, i + 1
 		end
