@@ -60,6 +60,7 @@ end
 function FieldworkAIDriver:start(ix)
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
+	self.turnIsDriving = false
 	self.temporaryCourse = nil
 
 	self:setUpCourses()
