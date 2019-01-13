@@ -458,14 +458,14 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.overwriteTurnRadius = 9;
 
 	-- Lemken Titan 11 [Giants]
-	elseif workTool.cp.xmlFileName == 'lemkenTitan11.xml' then
+	elseif workTool.cp.xmlFileName == 'titan11.xml' then
 		workTool.cp.isLemkenTitan11 = true;
 		workTool.cp.implementWheelAlwaysOnGround = true;
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 4.5;
 
 	-- Gregoire Besson SPSL 9 [Giants Big Bud DLC]
-	elseif workTool.cp.xmlFileName == 'gregoireBessonSPSL9.xml' then
+	elseif workTool.cp.xmlFileName == 'SPSL9.xml' then
 		workTool.cp.isGregoireBessonSPSL9 = true;
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.implementWheelAlwaysOnGround = true;
