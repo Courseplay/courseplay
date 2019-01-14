@@ -138,6 +138,7 @@ function FieldworkAIDriver:driveFieldwork()
 			self.speed = 0
 		end
 	elseif self.fieldworkState == self.states.WORKING then
+		self.speed = self:getFieldSpeed()
 		if not self:allFillLevelsOk() or self.heldForUnloadRefill then
 			if self.unloadRefillCourse and not self.heldForUnloadRefill then
 				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
