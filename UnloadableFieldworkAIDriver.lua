@@ -118,7 +118,7 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
 	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
-		self:debug('Full: %s: %.1f', fillTypeName, pc )
+		self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
 		return false
 	end
 	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
@@ -190,5 +190,60 @@ function UnloadableFieldworkAIDriver:updateOffset()
 		self.ppc:setOffset(self.vehicle.cp.loadUnloadOffsetX, self.vehicle.cp.loadUnloadOffsetZ)
 	else
 		self.ppc:setOffset(0, 0)
+	end
+end
+
+function UnloadableFieldworkAIDriver:handleBalers()
+	local workTool
+	-- check if we have a baler
+	for _, wt in self.vehicle.cp.workTools do
+		if courseplay:isBaler(wt) then
+			workTool = wt
+		end
+	end
+
+	-- no baler, return
+	if not workTool then return end
+
+	--if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
+	--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit,workSpeed)
+	local specialTool, allowedToDrive, stoppedForReason = courseplay:handleSpecialTools(self.vehicle, workTool, true, true, true, true, nil, nil, nil);
+	if not specialTool then
+		-- automatic opening for balers
+		local fillLevelPct = courseplay:round(workTool.cp.fillLevelPercent, 3);
+		local capacity = workTool.cp.capacity
+		local fillLevel = workTool.cp.fillLevel
+		if workTool.spec_baler ~= nil then
+
+			--print(string.format("if courseplay:isRoundbaler(workTool)(%s) and fillLevel(%s) > capacity(%s) * 0.9 and fillLevel < capacity and workTool.spec_baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
+			--tostring(courseplay:isRoundbaler(workTool)),tostring(fillLevel),tostring(capacity),tostring(workTool.spec_baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
+			if courseplay:isRoundbaler(workTool) and fillLevel > capacity * 0.9 and fillLevel < capacity and workTool.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
+				if not workTool.spec_turnOnVehicle.isTurnedOn and not stoppedForReason then
+					workTool:setIsTurnedOn(true, false);
+				end;
+				workSpeed = 0.5;
+			elseif fillLevel >= capacity and workTool.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
+				allowedToDrive = false;
+				if #(workTool.spec_baler.bales) > 0 and workTool.spec_baleWrapper == nil then --Ensures the baler wrapper combo is empty before unloading
+					workTool:setIsUnloadingBale(true, false)
+				end
+			elseif workTool.spec_baler.unloadingState ~= Baler.UNLOADING_CLOSED then
+				allowedToDrive = false
+				if workTool.spec_baler.unloadingState == Baler.UNLOADING_OPEN then
+					workTool:setIsUnloadingBale(false)
+				end
+			elseif fillLevel >= 0 and not workTool:getIsTurnedOn() and workTool.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
+				workTool:setIsTurnedOn(true, false);
+			end
+			if workTool.spec_baleWrapper and workTool.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_WRAPPER_FINSIHED then --Unloads the baler wrapper combo
+				workTool:doStateChange(BaleWrapper.CHANGE_WRAPPER_START_DROP_BALE)
+			end
+		end
+		if workTool.setPickupState ~= nil then
+			if workTool.spec_pickup ~= nil and not workTool.spec_pickup.isLowered then
+				workTool:setPickupState(true, false);
+				courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
+			end;
+		end;
 	end
 end

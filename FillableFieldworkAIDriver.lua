@@ -69,14 +69,40 @@ end
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)
 function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
+	if self:helperBuysThisFillUnit(fillUnit) then return true end
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
-	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if pc < 1 then
-		self:debug('Empty: %s: %d', fillTypeName, pc )
+	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.lastValidFillType or fillUnit.fillType)
+	if pc == 0 then
+		self:debugSparse('Empty: %s: %d', fillTypeName, pc )
 		return false
 	end
 	self:debugSparse('Fill levels: %s: %d', fillTypeName, pc )
 	return true
+end
+
+--- Does the helper buy this fill unit (according to the game settings)? If yes, we don't have to stop or refill when empty.
+function FillableFieldworkAIDriver:helperBuysThisFillUnit(fillUnit)
+	for fillType, _ in pairs(fillUnit.supportedFillTypes) do
+		print(fillType)
+		if g_currentMission.missionInfo.helperBuySeeds and fillType == FillType.SEEDS then
+			return true
+		end
+		if g_currentMission.missionInfo.helperBuyFertilizer and
+			(fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER) then
+			return true
+		end
+		if g_currentMission.missionInfo.helperManureSource == 2 and fillType == FillType.MANURE then
+			return true
+		end
+		if g_currentMission.missionInfo.helperSlurrySource == 2 and fillType == FillType.LIQUIDMANURE then
+			return true
+		end
+		if g_currentMission.missionInfo.helperBuyFuel and
+			(fillType == FillType.DIESEL or fillType == FillType.FUEL) then
+			return true
+		end
+	end
+	return false
 end
 
 function FillableFieldworkAIDriver:searchForRefillTriggers()

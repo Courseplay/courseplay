@@ -645,8 +645,7 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	return false;
 end
 
-function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload,ridgeMarker,forceSpeedLimit,workSpeed)
-	local forcedStop = not unfold and not lower and not turnOn and not allowedToDrive and not cover and not unload and not ridgeMarker and forceSpeedLimit ==0;
+function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowedToDrive)
 	local implementsDown = lower and turnOn
 	if workTool.PTOId then
 		workTool:setPTO(false)
@@ -670,7 +669,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				end;
 			end;
 		end;
-		return false ,allowedToDrive,forceSpeedLimit;
+		return false ,allowedToDrive;
 	end;
 
 	--Ursus Z586 BaleWrapper or Kuhn SW4014 BaleWrapper
@@ -682,7 +681,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			allowedToDrive = false
 		end
 
-		return false ,allowedToDrive,forceSpeedLimit;
+		return false ,allowedToDrive;
 	
 	elseif 	workTool.cp.isKroneUltimaCF155XC then
 		
@@ -779,7 +778,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			end;
 		end;
 		
-		return true ,allowedToDrive,forceSpeedLimit,workSpeed;
+		return true ,allowedToDrive;
 	elseif 	workTool.cp.isKronePremos5000 then
 		local wayPointIsUnload = self.Waypoints[self.cp.previousWaypointIndex].unload -- self unloading with unloading course and unload point
 		--set pipe while working or unloading
@@ -822,7 +821,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
  			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
 		end
 		
-		return false ,allowedToDrive,forceSpeedLimit,workSpeed;	
+		return false ,allowedToDrive;
 	
 	elseif workTool.cp.isStrawHarvestAddonBaler then
 		local supplyFillLevel = workTool.supplies.active and workTool:getUnitFillLevel(workTool.supplies.fillUnitIndex) or 100;
@@ -856,15 +855,15 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
 		end
 		
-		return false ,allowedToDrive,forceSpeedLimit,workSpeed,stoppedForReason;	
+		return false ,allowedToDrive,stoppedForReason;
 	end;
 
 	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence
 	if workTool.cp.isSeedHawk980AirCart or workTool.cp.isHatzenbichlerTH1400 then
-		return true ,allowedToDrive,forceSpeedLimit,workSpeed;
+		return true ,allowedToDrive;
 	end;
 
-	return false, allowedToDrive,forceSpeedLimit,workSpeed;
+	return false, allowedToDrive;
 end
 
 function courseplay:askForSpecialSettings(self, object)
