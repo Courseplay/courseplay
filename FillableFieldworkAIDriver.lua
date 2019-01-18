@@ -45,7 +45,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	self:searchForRefillTriggers()
 	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
-		self.speed = self.vehicle.cp.speeds.field
+		self:setSpeed(self.vehicle.cp.speeds.field)
 	elseif self:getIsInFilltrigger() then
 		-- our raycast in searchForRefillTriggers found a fill trigger
 		local allowedToDrive = true
@@ -53,14 +53,14 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 		allowedToDrive, _, _ = courseplay:refillWorkTools(self.vehicle, self.vehicle.cp.refillUntilPct, allowedToDrive, 0, 1)
 		if allowedToDrive then
 			-- slow down to field speed around fill triggers
-			self.speed = math.min(self.vehicle.cp.speeds.turn, self:getRecordedSpeed())
+			self:setSpeed(math.min(self.vehicle.cp.speeds.turn, self:getRecordedSpeed()))
 		else
 			-- stop for refill when refillWorkTools tells us
-			self.speed = 0
+			self:setSpeed( 0)
 		end
 	else
 		-- just drive normally
-		self.speed = self:getRecordedSpeed()
+		self:setSpeed(self:getRecordedSpeed())
 	end
 	return false
 end
@@ -83,7 +83,6 @@ end
 --- Does the helper buy this fill unit (according to the game settings)? If yes, we don't have to stop or refill when empty.
 function FillableFieldworkAIDriver:helperBuysThisFillUnit(fillUnit)
 	for fillType, _ in pairs(fillUnit.supportedFillTypes) do
-		print(fillType)
 		if g_currentMission.missionInfo.helperBuySeeds and fillType == FillType.SEEDS then
 			return true
 		end

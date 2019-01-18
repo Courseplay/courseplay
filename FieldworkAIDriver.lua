@@ -94,6 +94,8 @@ function FieldworkAIDriver:stop(msgReference)
 end
 
 function FieldworkAIDriver:drive(dt)
+	-- reset speed limit
+	self.speed = math.huge
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:driveFieldwork()
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
@@ -133,12 +135,12 @@ function FieldworkAIDriver:driveFieldwork()
 		if self:areAllWorkToolsReady() then
 			self:debug('all tools ready, start working')
 			self.fieldworkState = self.states.WORKING
-			self.speed = self:getFieldSpeed()
+			self:setSpeed(self:getFieldSpeed())
 		else
-			self.speed = 0
+			self:setSpeed(0)
 		end
 	elseif self.fieldworkState == self.states.WORKING then
-		self.speed = self:getFieldSpeed()
+		self:setSpeed(self:getFieldSpeed())
 		if not self:allFillLevelsOk() or self.heldForUnloadRefill then
 			if self.unloadRefillCourse and not self.heldForUnloadRefill then
 				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
@@ -155,7 +157,7 @@ function FieldworkAIDriver:driveFieldwork()
 	elseif self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
-		self.speed = self:getFieldSpeed()
+		self:setSpeed(self:getFieldSpeed())
 	end
 end
 
@@ -163,14 +165,14 @@ end
 function FieldworkAIDriver:driveUnloadOrRefill()
 	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
-		self.speed = self.vehicle.cp.speeds.field
+		self:setSpeed(self.vehicle.cp.speeds.field)
 	else
 		-- just drive normally
-		self.speed = self:getRecordedSpeed()
+		self:setSpeed(self:getRecordedSpeed())
 	end
 	-- except when in reversing, then always use reverse speed
 	if self.ppc:isReversing() then
-		self.speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
+		self:setSpeed(self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl)
 	end
 	return false
 end
@@ -184,7 +186,7 @@ end
 --- Stop for unload/refill while driving the fieldwork course
 function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 	-- don't move while empty
-	self.speed = 0
+	self:setSpeed(0)
 	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_RAISE then
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
@@ -281,6 +283,13 @@ function FieldworkAIDriver:getFieldSpeed()
 	return math.min(self.vehicle.cp.speeds.field, speedLimit)
 end
 
+--- Set the speed. The idea is that self.speed is reset at the beginning of every loop and
+-- every function calls setSpeed() and the speed will be set to the minimum
+-- speed set in this loop.
+function FieldworkAIDriver:setSpeed(speed)
+	self.speed = math.min(self.speed, speed)
+end
+
 --- Pass on self.speed set elsewhere to the AIDriver.
 function FieldworkAIDriver:getSpeed()
 	local speed = self.speed or 10
@@ -353,7 +362,9 @@ function FieldworkAIDriver:isWorktoolReady(workTool)
 	end
 
 	local isLowered = courseplay:isLowered(workTool)
-	courseplay.debugVehicle(12, workTool, 'islowered=%s isturnedon=%s unfolded=%s', isLowered, isTurnedOn, isUnfolded)
+	local isAiImplementReady = self.vehicle:getCanAIImplementContinueWork()
+	courseplay.debugVehicle(12, workTool, 'islowered=%s isAiReady=%s isturnedon=%s unfolded=%s',
+		isLowered, isAiImplementReady, isTurnedOn, isUnfolded)
 	return isLowered and isTurnedOn and isUnfolded
 end
 

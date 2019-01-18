@@ -51,6 +51,10 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	FieldworkAIDriver.drive(self, dt)
 end
 
+function UnloadableFieldworkAIDriver:driveFieldwork()
+	FieldworkAIDriver.driveFieldwork(self)
+end
+
 --- Grain tank full during fieldwork
 function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
@@ -83,7 +87,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 --			courseplay:handleUnloading(self.vehicle, self.course:isReverseAt(self.ppc:getCurrentWaypointIx()),dt);
 		end
 		if not allowedToDrive then
-			self.speed = 0
+			self:setSpeed(0)
 		end
 	end
 	return takeOverSteering
@@ -114,8 +118,11 @@ end
 -- is the fill level ok to continue? With unloadable tools we need to stop working when the tool is full
 -- with fruit
 function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
-
 	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
+	if courseplay:isBaler(workTool) then
+		self:handleBalers(workTool)
+		return true
+	end
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
 	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
 		self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
@@ -193,15 +200,7 @@ function UnloadableFieldworkAIDriver:updateOffset()
 	end
 end
 
-function UnloadableFieldworkAIDriver:handleBalers()
-	local workTool
-	-- check if we have a baler
-	for _, wt in self.vehicle.cp.workTools do
-		if courseplay:isBaler(wt) then
-			workTool = wt
-		end
-	end
-
+function UnloadableFieldworkAIDriver:handleBalers(workTool)
 	-- no baler, return
 	if not workTool then return end
 
@@ -210,7 +209,6 @@ function UnloadableFieldworkAIDriver:handleBalers()
 	local specialTool, allowedToDrive, stoppedForReason = courseplay:handleSpecialTools(self.vehicle, workTool, true, true, true, true, nil, nil, nil);
 	if not specialTool then
 		-- automatic opening for balers
-		local fillLevelPct = courseplay:round(workTool.cp.fillLevelPercent, 3);
 		local capacity = workTool.cp.capacity
 		local fillLevel = workTool.cp.fillLevel
 		if workTool.spec_baler ~= nil then
@@ -221,7 +219,7 @@ function UnloadableFieldworkAIDriver:handleBalers()
 				if not workTool.spec_turnOnVehicle.isTurnedOn and not stoppedForReason then
 					workTool:setIsTurnedOn(true, false);
 				end;
-				workSpeed = 0.5;
+				self:setSpeed(self.vehicle.cp.speeds.turn)
 			elseif fillLevel >= capacity and workTool.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
 				allowedToDrive = false;
 				if #(workTool.spec_baler.bales) > 0 and workTool.spec_baleWrapper == nil then --Ensures the baler wrapper combo is empty before unloading
@@ -245,5 +243,8 @@ function UnloadableFieldworkAIDriver:handleBalers()
 				courseplay:debug(string.format('%s: lower pickup order', nameNum(workTool)), 17);
 			end;
 		end;
+	end
+	if not allowedToDrive then
+		self:setSpeed(0)
 	end
 end
