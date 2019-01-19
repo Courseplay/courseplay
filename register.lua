@@ -20,23 +20,20 @@ if courseplay.houstonWeGotAProblem then
 	return;
 end;
 
-local drivableSpec = g_specializationManager:getSpecializationByName("drivable")
-local courseplaySpec = g_specializationManager:getSpecializationByName("courseplay")
 local numInstallationsVehicles = 0;
 
 function courseplay:register(secondTime)
-	print("courseplay:register()")
 	if secondTime then
-		print('## Courseplay: register later loaded mods');
+		print('## Courseplay: register later loaded mods:');
+	else
+		print('## Courseplay: register into vehicle types:');
 	end
 	for typeName,vehicleType in pairs(g_vehicleTypeManager.vehicleTypes) do
-		for i,specName in pairs(vehicleType.specializationNames) do
-			if specName == 'aiVehicle' and not vehicleType.hasCourseplaySpec then
-				--table.insert(vehicleType.specializations, courseplaySpec);
+		if SpecializationUtil.hasSpecialization(AIVehicle, vehicleType.specializations) and not vehicleType.hasCourseplaySpec then
+				print("  install courseplay into "..typeName)
 				g_vehicleTypeManager:addSpecialization(typeName, g_currentModName .. ".courseplay")
 				vehicleType.hasCourseplaySpec = true;
 				numInstallationsVehicles = numInstallationsVehicles + 1;
-			end
 		end;
 	end;
 end;

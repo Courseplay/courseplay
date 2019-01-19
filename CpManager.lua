@@ -84,7 +84,7 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- FIELDS
-	print(string.format("courseplay.fields.automaticScan",tostring(courseplay.fields.automaticScan)))
+	print(string.format("courseplay.fields.automaticScan: %s",tostring(courseplay.fields.automaticScan)))
 	if courseplay.fields.automaticScan then
 		self:setupFieldScanInfo();
 	end;
