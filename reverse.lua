@@ -277,7 +277,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 end;
 
 function courseplay:getFirstReversingWheeledWorkTool(vehicle)
-	-- Checl all attached implements if we are an wheeled workTool behind the tractor
+	-- Check all attached implements if we are an wheeled workTool behind the tractor
 	for _, imp in ipairs(vehicle:getAttachedImplements()) do
 		-- Check if the implement is behind
 		if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then

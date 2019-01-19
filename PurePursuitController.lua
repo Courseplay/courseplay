@@ -75,6 +75,7 @@ function PurePursuitController:init(vehicle)
 	-- change direction before we switch to the next waypoint
 	self.distToSwitchWhenChangingToReverse = 1
 	self.vehicle = vehicle
+	self:resetControlledNode()
 	self.name = nameNum(vehicle)
 	-- node on the current waypoint
 	self.currentWpNode = WaypointNode( self.name .. '-currentWpNode', true)
@@ -114,6 +115,18 @@ end
 --- Set an offset for the current course.
 function PurePursuitController:setOffset(x, z)
 	self.course:setOffset(x, z)
+end
+
+--- Use a different node to track/control, for example the root node of a trailed implement
+-- instead of the tractor's root node.
+function PurePursuitController:setControlledNode(node)
+	self.controlledNode = node
+end
+
+--- reset controlled node to the default (vehicle's own root node)
+function PurePursuitController:resetControlledNode()
+	-- our reference node we are tracking/controlling, by default it is the vehicle's root/direction node
+	self.controlledNode = self.vehicle.cp.DirectionNode or self.vehicle.rootNode
 end
 
 -- initialize controller before driving
@@ -194,7 +207,7 @@ end
 
 
 function PurePursuitController:havePassedWaypoint(wpNode)
-	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
+	local vx, vy, vz = getWorldTranslation(self.controlledNode)
 	local dx, _, dz = worldToLocal(wpNode.node, vx, vy, vz);
 	local dFromNext = MathUtil.vector2Length(dx, dz)
 	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking %d, dz: %.1f', wpNode.ix, dz)
@@ -251,7 +264,7 @@ end
 -- Sets the vehicle's projected position on the path.
 function PurePursuitController:findRelevantSegment()
 	-- vehicle position
-	local vx, vy, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
+	local vx, vy, vz = getWorldTranslation(self.controlledNode)
 	local lx, _, dzFromRelevant = worldToLocal(self.relevantWpNode.node, vx, vy, vz);
 	self.crossTrackError = lx
 	-- adapt our lookahead distance based on the error
@@ -293,7 +306,7 @@ end
 -- this is the algorithm described in Chapter 2 of the paper
 function PurePursuitController:findGoalPoint()
 
-	local vx, _, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode);
+	local vx, _, vz = getWorldTranslation(self.controlledNode)
 	--local vx, vy, vz = getWorldTranslation(self.projectedPosNode);
 
 	-- create helper nodes at the relevant and the next wp. We'll move these up on the path until we reach the segment
@@ -463,7 +476,7 @@ end
 function PurePursuitController:getDirection(lz)
 	local ctx, cty, ctz = self:getClosestWaypointData()
 	if not ctx then return lz end
-	local dx, _, dz  = worldToLocal(self.vehicle.cp.DirectionNode, ctx, cty, ctz)
+	local dx, _, dz  = worldToLocal(self.controlledNode, ctx, cty, ctz)
 	local distance = math.sqrt(dx * dx + dz * dz)
 	local r = distance * distance / 2 / dx
 	local steeringAngle = math.atan(self.vehicle.cp.distances.frontWheelToRearWheel / r)
@@ -472,7 +485,7 @@ end
 
 -- goal point local position in the vehicle's coordinate system
 function PurePursuitController:getGoalPointLocalPosition()
-	return localToLocal(self.goalWpNode.node, self.vehicle.cp.DirectionNode, 0, 0, 0)
+	return localToLocal(self.goalWpNode.node, self.controlledNode, 0, 0, 0)
 end
 
 

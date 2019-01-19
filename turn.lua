@@ -1502,9 +1502,9 @@ end;
 
 ------------------------------------------------------------------------
 -- Turns for headland corners (direction change way less than 180) to not
--- miss fuit in the corner.
+-- miss fruit in the corner.
 --
--- We don't use turnStart in this manouver
+-- We don't use turnStart in this maneuver
 -- 
 -- We assume the following:
 --
@@ -2050,7 +2050,7 @@ end
 function courseplay.createNodeFromNode( name, otherNode )
 	local x, y, z = getWorldTranslation(otherNode)
 	local _, yRot, _ = getRotation(otherNode)
-	courseplay.createNode(name, x, z, yRot)
+	return courseplay.createNode(name, x, z, yRot, otherNode)
 end
 
 function courseplay.destroyNode( node )

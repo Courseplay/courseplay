@@ -62,6 +62,10 @@ function FieldworkAIDriver:start(ix)
 	self.vehicle.cp.stopAtEnd = true
 	self.turnIsDriving = false
 	self.temporaryCourse = nil
+	-- any offset imposed by the driver itself (tight turns, end of course, etc.), addtional to any
+	-- tool offsets
+	self.aiDriverOffsetX = 0
+	self.aiDriverOffsetZ = 0
 
 	self:setUpCourses()
 
@@ -130,7 +134,7 @@ end
 
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
 function FieldworkAIDriver:driveFieldwork()
-	self:updateFieldworkOffsetFromSettings()
+	self:updateFieldworkOffset()
 	if self.fieldworkState == self.states.WAITING_FOR_LOWER then
 		if self:areAllWorkToolsReady() then
 			self:debug('all tools ready, start working')
@@ -271,6 +275,13 @@ function FieldworkAIDriver:onWaypointChange(ix)
 				-- reached the end of the connecting track, back to work
 				self:debug('connecting track ended, back to work, first lowering implements.')
 				self:changeToFieldwork()
+			end
+		end
+		-- towards the end of the field course make sure the implement reaches the last waypoint
+		if ix > self.course:getNumberOfWaypoints() - 3 then
+			if self.vehicle.cp.aiFrontMarker then
+				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.vehicle.cp.aiFrontMarker)
+				self.aiDriverOffsetZ = -self.vehicle.cp.aiFrontMarker
 			end
 		end
 	end
@@ -422,9 +433,9 @@ function FieldworkAIDriver:setRidgeMarkers()
 end
 
 --- We already set the offsets on the course at start, this is to update those values
--- if the user changed them during the run
-function FieldworkAIDriver:updateFieldworkOffsetFromSettings()
+-- if the user changed them during the run or the AI driver wants to add an offset
+function FieldworkAIDriver:updateFieldworkOffset()
 	-- pass this in through the PPC instead of setting it on the course directly as we don't know what
 	-- course it is running at the moment
-	self.ppc:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
+	self.ppc:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX, self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
 end
