@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
-<i3D name="untitled" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
+<i3D name="Signs.blend" version="1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://i3d.giants.ch/schema/i3d-1.6.xsd">
   <Asset>
     <Export program="GIANTS Editor 64bit" version="8.1.0"/>
   </Asset>
 
   <Files>
-    <File fileId="3" filename="emissiveMap.dds"/>
-    <File fileId="4" filename="../signs/colorShader.xml"/>
+    <File fileId="2" filename="emissiveMap.dds"/>
+    <File fileId="3" filename="../signs/colorShader.xml"/>
   </Files>
 
 
   <Materials>
-    <Material name="Sphere" materialId="4" diffuseColor="0 0 0 1" specularColor="1 1 0" customShaderId="4">
-      <Emissivemap fileId="3"/>
+    <Material name="Sphere" materialId="4" diffuseColor="0 0 0 1" customShaderId="3">
+      <Emissivemap fileId="2"/>
       <CustomParameter name="shapeColor" value="1 0.212 0 1"/>
     </Material>
   </Materials>
