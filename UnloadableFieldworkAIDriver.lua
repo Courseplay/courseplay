@@ -78,7 +78,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 			-- unload at tip trigger
 			allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive);
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
-
+			self:setSpeed(self.vehicle.cp.speeds.turn)
 		elseif self:atUnloadWaypoint() then
 			-- unload at unload waypoint
 			-- TODO: does not work due to #163009151, for now, just stop
