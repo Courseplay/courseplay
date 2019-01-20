@@ -1798,6 +1798,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 		if self.cp[split[1]][split[2]] ~= value then
 			self.cp[split[1]][split[2]] = value
 		end
+		-- TODO: this is unclear, shouldn't this be only called when the value changed?
 		if CpManager.isMP and not noEventSend then
 			--print(courseplay.utils:getFnCallPath(2))
 			courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), 5);

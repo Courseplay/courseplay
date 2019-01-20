@@ -211,6 +211,17 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dz = self.waypoints[#self.waypoints - 1].dz
 end
 
+--- Is this the same course as otherCourse?
+-- TODO: is there a hash we could use instead?
+function Course:equals(other)
+	if #self.waypoints ~= #other.waypoints then return false end
+	-- for now just check the coordinates of the first waypoint
+	if self.waypoints[1].x - other.waypoints[1].x > 0.01 then return false end
+	if self.waypoints[1].z - other.waypoints[1].z > 0.01 then return false end
+	-- same number of waypoints, first waypoint same coordinates, equals!
+	return true
+end
+
 function Course:setCurrentWaypointIx(ix)
 	self.currentWaypoint = ix
 end

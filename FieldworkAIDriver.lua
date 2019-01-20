@@ -145,6 +145,7 @@ function FieldworkAIDriver:driveFieldwork()
 		end
 	elseif self.fieldworkState == self.states.WORKING then
 		self:setSpeed(self:getFieldSpeed())
+		self:manageConvoy()
 		if not self:allFillLevelsOk() or self.heldForUnloadRefill then
 			if self.unloadRefillCourse and not self.heldForUnloadRefill then
 				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
@@ -438,4 +439,59 @@ function FieldworkAIDriver:updateFieldworkOffset()
 	-- pass this in through the PPC instead of setting it on the course directly as we don't know what
 	-- course it is running at the moment
 	self.ppc:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX, self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
+end
+
+function FieldworkAIDriver:hasSameCourse(otherVehicle)
+	if otherVehicle.cp.driver and otherVehicle.cp.driver.fieldworkCourse then
+		return self.fieldworkCourse:equals(otherVehicle.cp.driver.fieldworkCourse)
+	else
+		return false
+	end
+end
+
+--- When working in a group (convoy), do I have to hold so I don't get too close to the
+-- other vehicles in front of me?
+function FieldworkAIDriver:manageConvoy()
+	if not self.vehicle.cp.convoyActive then return false end
+	--get my position in convoy and look for the closest combine
+	local position = 1
+	local total = 1
+	local closestDistance = math.huge
+	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
+		if otherVehicle ~= self.vehicle and otherVehicle.cp.convoyActive and self:hasSameCourse(otherVehicle) then
+			local myWpIndex = self.ppc:getCurrentWaypointIx()
+			local otherVehicleWpIndex = otherVehicle.cp.ppc:getCurrentWaypointIx()
+			total = total + 1
+			if myWpIndex < otherVehicleWpIndex then
+				position = position + 1
+				local distance = (otherVehicleWpIndex - myWpIndex) * courseGenerator.waypointDistance
+				if distance < closestDistance then
+					closestDistance = distance
+				end
+			end
+		end
+	end
+
+	--when I'm too close to the combine before me, then stop
+	if position > 1 then
+		if closestDistance < 100 then
+			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
+			self:setSpeed(0)
+		end
+	else
+		closestDistance = 0
+	end
+
+	-- TODO: check for change should be handled by setCpVar()
+	if self.vehicle.cp.convoy.distance ~= closestDistance then
+		self.vehicle:setCpVar('convoy.distance',closestDistance)
+	end
+	if self.vehicle.cp.convoy.number ~= position then
+		self.vehicle:setCpVar('convoy.number',position)
+	end
+	if self.vehicle.cp.convoy.members ~= total then
+		self.vehicle:setCpVar('convoy.members',total)
+	end
+
+	return hold
 end
