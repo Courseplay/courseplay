@@ -814,11 +814,11 @@ function courseplay:unload_combine(vehicle, dt)
 			--courseplay:setCustomTimer(vehicle, 'fieldEdgeTimeOut', 15);
 			--courseplay:resetCustomTimer(vehicle, 'fieldEdgeTimeOut');
 			if not courseplay:timerIsThrough(vehicle, 'fieldEdgeTimeOut') or vehicle.cp.modeState > STATE_DRIVE_TO_COMBINE then
-				if combine.getIsAIActive and combine:getIsAIActive() then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
+				if tractor:getIsCourseplayDriving() then --and not (combineFillLevel == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
+					tractor.cp.driver:holdForUnloadOrRefill()
+				elseif combine.getIsAIActive and combine:getIsAIActive() then --and not (combineFillLevel == 0 and combine.currentPipeState ~= 2) then
 					stopAICombine = true
 					--combine.waitForTurnTime = combine.timer + 100
-				elseif tractor:getIsCourseplayDriving() then --and not (combineFillLevel == 0 and combine:getOverloadingTrailerInRangePipeState()==0) then
-					tractor.cp.driver:holdForUnloadOrRefill()
 				end
 			elseif vehicle.cp.fieldEdgeTimeOutSet ~= true then
 				--print("set timer")
