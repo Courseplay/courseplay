@@ -445,8 +445,8 @@ function courseplay:turn(vehicle, dt)
 
 				-- Change turn waypoint
 				if dist < wpChangeDistance then
-					courseplay:debug( string.format( "%s:(Turn) @( %.1f, %.1f) ix = %d, distOrig = %.1f, dist = %.1f, wpChangeDistance = %.1f",
-						nameNum( vehicle ), vehicleX, vehicleZ, vehicle.cp.curTurnIndex, distOrig, dist, wpChangeDistance ), 14)
+					courseplay:debug( string.format( "%s:(Turn) @( %.1f, %.1f) ix = %d/%d, distOrig = %.1f, dist = %.1f, wpChangeDistance = %.1f",
+						nameNum( vehicle ), vehicleX, vehicleZ, vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, distOrig, dist, wpChangeDistance ), 14)
 					-- See if we have to raise/lower implements at this point
 					if vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].raiseImplement then
 						courseplay:debug( string.format( "%s:(Turn) raising implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
@@ -598,6 +598,7 @@ function courseplay:turn(vehicle, dt)
 			--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			local _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
 
+			--courseplay.debugVehicle(14, vehicle, 'ix=%d dz=%.1f', vehicle.cp.waypointIndex+1, deltaZ)
 			local lowerImplements = deltaZ < frontMarker + 1
 			if newTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
@@ -607,7 +608,6 @@ function courseplay:turn(vehicle, dt)
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
 					courseplay:lowerImplements(vehicle)
-					courseplay.debugVehicle(14, vehicle, 'dz=%.1f', deltaZ)
 					courseplay:addTemporaryMarker(vehicle, frontMarker)
 				end;
 
@@ -867,6 +867,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	else
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, nil, true);
+		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker + 2, turnInfo.targetNode)
 	end;
 end;
 
@@ -986,6 +987,7 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 	else
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, nil, true);
+		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker + 2, turnInfo.targetNode)
 	end;
 end;
 
@@ -1035,6 +1037,7 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 	--- Extra WP - End Turn turnInfo.frontMarker
 	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.zOffset + (turnInfo.frontMarker < 0 and -turnInfo.frontMarker or 0) + 5);
 	courseplay:addTurnTarget(vehicle, posX, posZ, true);
+	courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker + 2, turnInfo.targetNode)
 end;
 
 function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
@@ -1407,14 +1410,12 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, center2ZOffset);
 		courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
 
-		local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, turnInfo.frontMarker + 2)
-		courseplay:debug(string.format("%s:(Turn) will lower implements at waypoint %d", nameNum(vehicle), lowerImplementAt), 14);
-		vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
+		-- make sure implement is lowered by the time we get to the up/down row, so start lowering well before
+		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker + 2, turnInfo.targetNode)
 
 		--- Finish the turn
 		toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, abs(turnInfo.frontMarker) + 5);
 		courseplay:generateTurnStraitPoints(vehicle, stopDir, toPoint, false, true);
-		-- make sure implement is lowered by the time we get to the up/down row, so start lowering well before
 	end;
 end;
 
@@ -1487,10 +1488,6 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition + 2 + turnInfo.zOffset + abs(turnInfo.frontMarker) + (turnInfo.wpChangeDistance * 2));
 		courseplay:generateTurnStraitPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 	end;
-
-	local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, turnInfo.frontMarker + 2)
-	courseplay:debug(string.format("%s:(Turn) will lower implements at waypoint %d", nameNum(vehicle), lowerImplementAt), 14);
-	vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
 
 	--- Finish the turn
 	local x, z = toPoint.x, toPoint.z;
@@ -2069,16 +2066,33 @@ end
 --         will return 1 if all waypoints are within d.
 -- TODO: this (or an even more generalized version) should be part of the Course class.
 -- TODO: if the time needed to lower the implement this could be made time based (if the speed is known)
-function courseplay.getWpIxInDistanceFromEnd(turnTargets, d)
+function courseplay.getWpIxInDistanceFromEnd(turnTargets, d, turnEndNode)
 	local currentD = 0
 	for i = #turnTargets, 2, -1 do
-		currentD = currentD + courseplay:distance(
-			turnTargets[i].posX, turnTargets[i].posZ, turnTargets[i - 1].posX, turnTargets[i - 1].posZ)
-		if currentD >= d then
+		-- only start counting when we are behind the turn end node (as the generated turn often
+		-- extends way into the next row, beyond the turn end node
+		local _, _, z = worldToLocal(turnEndNode, turnTargets[i].posX, 0, turnTargets[i].posZ)
+		if z < 0 then
+			-- we are now behind the turn end node, so start adding distances
+			currentD = currentD + courseplay:distance(
+				turnTargets[i].posX, turnTargets[i].posZ, turnTargets[i - 1].posX, turnTargets[i - 1].posZ)
+		end
+		-- keep going until we are far enough _and_ not in a turnEnd section (as a turn is practically ended
+		-- after the first turnEnd turn waypoint is reached and will only lower implements when the deltaZ in the
+		-- stage 4 part triggers it which may be too late
+		if not turnTargets[i].turnEnd and currentD >= d then
 			return i - 1
 		end
 	end
-	return 1
+	return nil
+end
+
+function courseplay.setLowerImplementsPoint(vehicle, d, turnEndNode)
+	local lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, d, turnEndNode)
+	if lowerImplementAt then
+		courseplay:debug(string.format("%s:(Turn) will lower implements at waypoint %d", nameNum(vehicle), lowerImplementAt), 14);
+		vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
+	end
 end
 
 function getDirectionChangeOfTurn( vehicle )
