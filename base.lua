@@ -1954,13 +1954,13 @@ end;
 TurnOnVehicle.setIsTurnedOn = Utils.overwrittenFunction(TurnOnVehicle.setIsTurnedOn, courseplay.setIsTurnedOn);
 
 -- Workaround: onEndWorkAreaProcessing seems to cause Cutter to call stopAIVehicle when
--- driving on an already worked field. This will suppress that call as long as Courseplay is driving
-function courseplay:stopAIVehicle(superFunc, reason, noEventSend)
-	if superFunc ~= nil and not self:getIsCourseplayDriving() then
-		superFunc(self, reason, noEventSend)
-	end
+-- driving on an already worked field, or a field where the fruit type is different than the one being processed.
+-- This changes that behavior.
+function courseplay:getAllowCutterAIFruitRequirements(superFunc)
+	return superFunc(self) and not self:getIsCourseplayDriving()
 end
-AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, courseplay.stopAIVehicle)
+Cutter.getAllowCutterAIFruitRequirements = Utils.overwrittenFunction(Cutter.getAllowCutterAIFruitRequirements, courseplay.getAllowCutterAIFruitRequirements)
+
 
 -- Tour dialog messes up the CP yes no dialogs.
 function courseplay:showTourDialog()
