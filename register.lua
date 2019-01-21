@@ -44,7 +44,7 @@ function courseplay:attachablePostLoad(xmlFile)
 	if self.cp.xmlFileName == nil then
 		self.cp.xmlFileName = courseplay.utils:getFileNameFromPath(self.configFileName);
 	end;
-	
+
 	--SET SPECIALIZATION VARIABLE
 	courseplay:setNameVariable(self);
 	courseplay:setCustomSpecVariables(self);
@@ -55,7 +55,7 @@ function courseplay:attachablePostLoad(xmlFile)
 	if self.cp.isLiquidManureOverloader then
 		courseplay.liquidManureOverloaders[self.rootNode] = self
 	end
-	
+
 
 	--SEARCH AND SET OBJECT'S self.name IF NOT EXISTING
 	if self.name == nil then
@@ -73,7 +73,13 @@ function courseplay:attachableDelete()
 end;
 Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
-function courseplay.vehiclePostLoadFinished(self)
+function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
+	local loadingState = superFunc(self, ...);
+	if loadingState ~= BaseMission.VEHICLE_LOAD_OK then
+		-- something failed. Probably handle this: do not do anything else
+		-- return loadingState;
+	end
+
 	if self.cp == nil then self.cp = {}; end;
 
 	-- XML FILE NAME VARIABLE
@@ -85,9 +91,9 @@ function courseplay.vehiclePostLoadFinished(self)
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
 	self.setCpVar = courseplay.setCpVar;
-	
+
 	courseplay:setNameVariable(self);
-	
+
 	-- combines table
 	if courseplay.combines == nil then
 		courseplay.combines = {};
@@ -95,8 +101,10 @@ function courseplay.vehiclePostLoadFinished(self)
 	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or courseplay:isAttachedCombine(self) then
 		courseplay.combines[self.rootNode] = self;
 	end;
+
+	return loadingState;
 end;
-Vehicle.loadFinished = Utils.appendedFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
+Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
 
@@ -113,8 +121,8 @@ function courseplay:vehicleDelete()
 		--if vehicle is a courseplayer, delete the vehicle from activeCourseplayers
 		if CpManager.activeCoursePlayers[self.rootNode] then
 			CpManager:removeFromActiveCoursePlayers(self);
-		end 
-		
+		end
+
 		-- Remove created nodes
 		if self.cp.notesToDelete and #self.cp.notesToDelete > 0 then
 			for _, nodeId in ipairs(self.cp.notesToDelete) do
