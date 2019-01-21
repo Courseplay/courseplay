@@ -20,7 +20,7 @@
 		<sl>CoursePlay SIX</sl>
 	</title>
 
-	
+
 	<description>
 		<de>
 <![CDATA[
@@ -30,7 +30,7 @@ Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es 
 	- neuer Kurs-Generator GUI
 	- support für Ropa Addon
 	- neues Kollisions-Erkennungssystem
-	- Feldarbeitsrichtung kann nun auch manuell vorgegeben werden  
+	- Feldarbeitsrichtung kann nun auch manuell vorgegeben werden
 	- Erkennung und Umfahrung von Feldinseln
 	- multiplayer aktiviert
 	- support für straw harvest addon
@@ -39,7 +39,7 @@ Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es 
 	- neue Wendemanöver im Vorgwende
 	- Ausrichtung am ersten Wegpunkt in allen Feldmodi
 	- Unterstützung für mehrere Geräte auf dem selben Feldkurs
-	- support für Plantium Edition 
+	- support für Plantium Edition
 	- bugfixes
 ]]>
 		</de>
@@ -51,7 +51,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 	- course generator setting GUI
 	- added support for RO
 	- new traffic recognition system
-	- fieldwork row direction can also be selected manually now  
+	- fieldwork row direction can also be selected manually now
 	- support for big islands
  	- multiplayer enabled
 	- support for straw harvest addon
@@ -63,7 +63,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 	- added easy setup for multiple tools  on one field work course
 	- support for Plantium Edition(Still Work In Progress)
 	- bugfixes
-]]>		
+]]>
 		</en>
 		<fr>
 <![CDATA[Courseplay est une modification pour Farm Simulator 17, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
@@ -72,7 +72,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 	- course generator setting GUI
 	- added support for RO
 	- new traffic recognition system
-	- fieldwork row direction can also be selected manually now  
+	- fieldwork row direction can also be selected manually now
 	- support for big islands
  	- multiplayer enabled
 	- support for straw harvest addon
@@ -84,7 +84,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 	- added easy setup for multiple tools  on one field work course
 	- support for Plantium Edition(Still Work In Progress)
 	- bugfixes
-]]>	
+]]>
 		</fr>
 	</description>
 
@@ -115,7 +115,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" axisType="HALF"  />
     </actions>
 
-	<inputBindings>
+	<inputBinding>
 		<actionBinding action="COURSEPLAY_MODIFIER">
 			<binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" axisComponent="+" neutralInput="0" index="1"/>
 		</actionBinding>
@@ -165,6 +165,6 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
-</inputBindings>
+    </inputBinding>
 
 </modDesc>
