@@ -941,9 +941,9 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[3][6][2].text = ('%.1fm'):format(vehicle.cp.lastValidTipDistance);
 		end;
 
-		if vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.cp.hasPlough then
-			vehicle.cp.hud.content.pages[3][7][1].text = courseplay:loc('COURSEPLAY_PLOUGH_FIELD_EDGE');
-			vehicle.cp.hud.content.pages[3][7][2].text = vehicle.cp.ploughFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+		if vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.cp.hasPlow then
+			vehicle.cp.hud.content.pages[3][7][1].text = courseplay:loc('COURSEPLAY_PLOW_FIELD_EDGE');
+			vehicle.cp.hud.content.pages[3][7][2].text = vehicle.cp.plowFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
 		
 		vehicle.cp.hud.content.pages[3][8][1].text = courseplay:loc('COURSEPLAY_ALIGNMENT_WAYPOINT');
@@ -1688,8 +1688,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeLastValidTipDistance',  0.5, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  2, false);
 	courseplay.button:new(vehicle, 3, nil, 'changeLastValidTipDistance', 0.5, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 2, true, true);
 
-	-- Plough to Field Edge
-	courseplay.button:new(vehicle, 3, nil, 'togglePloughFieldEdge', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
+	-- Plow to Field Edge
+	courseplay.button:new(vehicle, 3, nil, 'togglePlowFieldEdge', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
 	courseplay.button:new(vehicle, 3, nil, 'toggleAlignmentWaypoint', nil,  self.contentMinX, self.linesPosY[8], self.contentMaxWidth, self.lineHeight, 8, nil, true);
 
 

@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Wird beladen: %d von %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Wegpunkte anzeigen" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Fruchtumfahrung" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Pflüge über Feldbegrenzung" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Pflüge über Feldbegrenzung" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="1.Punkt gerade anfahren" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="seitl. Abstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bei:" />

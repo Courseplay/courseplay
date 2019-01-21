@@ -80,7 +80,7 @@
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 	 text="Montrer les points" />
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evite les cultures" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distance latéral:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Labour des fourrières:" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Labour des fourrières:" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Alignt. sur 1er point:" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Démarrer à:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 		 text="Tourne dans le champ:" />

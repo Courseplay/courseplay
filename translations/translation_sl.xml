@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Nalaganje: %d od %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Prikaži smerne točke" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Iskanje poti" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plug je čez rob polja" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Plug je čez rob polja" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" /> <!-- TRANSLATE THIS: attempt to reach the first waypoint of the course in the right direction to avoid circling -->
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Stranski odmik:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Začni ob:" />

@@ -146,7 +146,7 @@ function courseplay:onLoad(savegame)
 	self.cp.wait = true;
 	self.cp.waitTimer = nil;
 	self.cp.realisticDriving = true;
-	self.cp.ploughFieldEdge = false;
+	self.cp.plowFieldEdge = false;
 	self.cp.canSwitchMode = false;
 	self.cp.tipperLoadMode = 0;
 	self.cp.easyFillTypeList = {};
@@ -154,8 +154,8 @@ function courseplay:onLoad(savegame)
 	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
-	self.cp.hasPlough = false;
-	self.cp.hasRotateablePlough = false;
+	self.cp.hasPlow = false;
+	self.cp.rotateablePlow = nil;
 	self.cp.isNotAllowedToDrive = false;
 	self.cp.allwaysSearchFuel = false;
 	self.cp.saveFuel = false;
@@ -1599,21 +1599,21 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
-		self.cp.turnOnField  		  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnOnField'), 			 true);
-		self.cp.oppositeTurnMode  	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#oppositeTurnMode'), 		 false);
-		self.cp.workWidth 			  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),			 3);
-		self.cp.ridgeMarkersAutomatic = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'), true);
-		self.cp.abortWork 			  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),			 0);
-		self.cp.manualWorkWidth		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),	     0);
-		self.cp.ploughFieldEdge 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ploughFieldEdge'),		 false);
-		self.cp.lastValidTipDistance  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#lastValidTipDistance'),	     0);
-		self.cp.generationPosition.hasSavedPosition = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#hasSavedPosition'),		 false);
-		self.cp.generationPosition.x = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionX'),	     0);
-		self.cp.generationPosition.z = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionZ'),	     0);
-		self.cp.generationPosition.fieldNum = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#savedFieldNum'),			 0);
-		self.cp.fertilizerOption	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#fertilizerOption'),		 true);
-		self.cp.convoyActive		 =	Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#convoyActive'),		 false);
-		if self.cp.abortWork 		  == 0 then
+		self.cp.turnOnField							= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnOnField'),			true);
+		self.cp.oppositeTurnMode					= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#oppositeTurnMode'),		false);
+		self.cp.workWidth 							= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),				3);
+		self.cp.ridgeMarkersAutomatic				= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'),	true);
+		self.cp.abortWork							= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),				0);
+		self.cp.manualWorkWidth						= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),		0);
+		self.cp.plowFieldEdge						= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#plowFieldEdge'),			false);
+		self.cp.lastValidTipDistance				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#lastValidTipDistance'),	0);
+		self.cp.generationPosition.hasSavedPosition	= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#hasSavedPosition'),		false);
+		self.cp.generationPosition.x				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionX'),			0);
+		self.cp.generationPosition.z				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionZ'),			0);
+		self.cp.generationPosition.fieldNum 		= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#savedFieldNum'),			0);
+		self.cp.fertilizerOption					= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#fertilizerOption'),		true);
+		self.cp.convoyActive						= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#convoyActive'),			false);
+		if self.cp.abortWork == 0 then
 			self.cp.abortWork = nil;
 		end;
 		if self.cp.manualWorkWidth ~= 0 then
@@ -1767,7 +1767,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".fieldWork #turnOnField", self.cp.turnOnField)
 	setXMLBool(xmlFile, newKey..".fieldWork #oppositeTurnMode", self.cp.oppositeTurnMode)
 	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
-	setXMLBool(xmlFile, newKey..".fieldWork #ploughFieldEdge", self.cp.ploughFieldEdge)
+	setXMLBool(xmlFile, newKey..".fieldWork #plowFieldEdge", self.cp.plowFieldEdge)
 	setXMLString(xmlFile, newKey..".fieldWork #lastValidTipDistance", string.format("%.1f",Utils.getNoNil(self.cp.lastValidTipDistance,0)))
 	setXMLBool(xmlFile, newKey..".fieldWork #hasSavedPosition", self.cp.generationPosition.hasSavedPosition)
 	setXMLString(xmlFile, newKey..".fieldWork #savedPositionX", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.x,0)))
@@ -1905,7 +1905,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q alignment=%q searchCombineOnField="%d" />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel),tostring(self.cp.alignment.enabled),self.cp.searchCombineOnField);
-	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q oppositeTurnMode=%q manualWorkWidth="%.1f" ploughFieldEdge=%q lastValidTipDistance="%.1f" hasSavedPosition=%q savedPositionX="%f" savedPositionZ="%f" savedFieldNum="%d" fertilizerOption=%q convoyActive=%q /> ', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField), tostring(self.cp.oppositeTurnMode),Utils.getNoNil(self.cp.manualWorkWidth,0),tostring(self.cp.ploughFieldEdge),Utils.getNoNil(self.cp.lastValidTipDistance,0),tostring(self.cp.generationPosition.hasSavedPosition),Utils.getNoNil(self.cp.generationPosition.x,0),Utils.getNoNil(self.cp.generationPosition.z,0),Utils.getNoNil(self.cp.generationPosition.fieldNum,0), tostring(self.cp.fertilizerOption),tostring(self.cp.convoyActive));
+	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q oppositeTurnMode=%q manualWorkWidth="%.1f" plowFieldEdge=%q lastValidTipDistance="%.1f" hasSavedPosition=%q savedPositionX="%f" savedPositionZ="%f" savedFieldNum="%d" fertilizerOption=%q convoyActive=%q /> ', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField), tostring(self.cp.oppositeTurnMode),Utils.getNoNil(self.cp.manualWorkWidth,0),tostring(self.cp.plowFieldEdge),Utils.getNoNil(self.cp.lastValidTipDistance,0),tostring(self.cp.generationPosition.hasSavedPosition),Utils.getNoNil(self.cp.generationPosition.x,0),Utils.getNoNil(self.cp.generationPosition.z,0),Utils.getNoNil(self.cp.generationPosition.fieldNum,0), tostring(self.cp.fertilizerOption),tostring(self.cp.convoyActive));
 	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q bladeOffset="%.1f" drivingThroughtLoading=%q />', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth), self.cp.mode10.bladeOffset, tostring(self.cp.mode10.drivingThroughtLoading));
 	local shovels, combine = '', '';
 	

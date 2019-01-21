@@ -75,7 +75,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 	 text="A carregar: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 	 text="Mostrar pontos" />
 		<text name="COURSEPLAY_PATHFINDING" 						 	 text="Evitar as plantações" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar borda do campo" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Arar borda do campo" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Alinhar com 1ºponto" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distânçia lateral" />
 		<text name="COURSEPLAY_START_AT" 						 		 text="Iniciar a:" />

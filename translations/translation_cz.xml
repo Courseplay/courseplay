@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Bude naloženo: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Zobrazit orientační body:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Vjíždění do porostu:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Oborat okraj pole" /> 
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Oborat okraj pole" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Navedení na první bod" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Boční odstup:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Přijet při:" />

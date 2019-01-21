@@ -75,7 +75,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carga: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostrar los puntos" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evitar los cultivos" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Arar hasta el borde" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Arar hasta el borde" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Ir 1º Punto espera sin rodeos" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distancia lateral:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Iniciar en:" />

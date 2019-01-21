@@ -209,17 +209,6 @@ function courseplay:drive(self, dt)
 			end;
 		end
 
-		--RESET OFFSET TOGGLES
-		if not self.cp.isTurning then
-			if self.cp.symmetricLaneChange and not self.cp.switchLaneOffset then
-				self.cp.switchLaneOffset = true;
-				courseplay:debug(string.format("%s: isTurning=false, switchLaneOffset=false -> set switchLaneOffset to true", nameNum(self)), 12);
-			end;
-			if self.cp.hasPlough and self.cp.hasRotateablePlough and not self.cp.switchToolOffset then
-				self.cp.switchToolOffset = true;
-				courseplay:debug(string.format("%s: isTurning=false, switchToolOffset=false -> set switchToolOffset to true", nameNum(self)), 12);
-			end;
-		end;
 	end;
 
 

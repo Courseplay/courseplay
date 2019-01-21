@@ -71,7 +71,7 @@ function courseplay:turn(vehicle, dt)
 		end;
 		local frontMarker2 = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
 		local backMarker2 = Utils.getNoNil(vehicle.cp.backMarkerOffset,0);
-		if vehicle.cp.hasPlough and (vehicle.cp.ploughFieldEdge or math.abs(frontMarker2 - backMarker2) < vehicle.cp.headlandHeight) then
+		if vehicle.cp.hasPlow and (vehicle.cp.plowFieldEdge or math.abs(frontMarker2 - backMarker2) < vehicle.cp.headlandHeight) then
 			vehicle.cp.aiFrontMarker = backMarker2;
 			vehicle.cp.backMarkerOffset = frontMarker2
 		end
@@ -387,12 +387,12 @@ function courseplay:turn(vehicle, dt)
 			courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), 14);
 			cpPrintLine(14, 3);
 
-			-- Rotate tools if needed.
-			if vehicle.cp.toolOffsetX ~= 0 and turnInfo.isHeadlandCorner == false then
+			-- Rotate plow on lane change.
+			if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and vehicle.cp.toolOffsetX ~= 0 and turnInfo.isHeadlandCorner == false then
 				if vehicle.cp.toolOffsetX < 0 then
-					--AIVehicle.aiRotateLeft(vehicle);
+					vehicle.cp.rotateablePlow:setRotationMax(true);
 				else
-					--AIVehicle.aiRotateRight(vehicle);
+					vehicle.cp.rotateablePlow:setRotationMax(false);
 				end;
 			end;
 
@@ -1969,11 +1969,21 @@ function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
 	vehicle.cp.curTurnIndex = 1;
 	vehicle.cp.haveCheckedMarkersThisTurn = false;
 	vehicle.cp.headlandTurn = nil
+
+	--- RESET OFFSET TOGGLES
+	if vehicle.cp.symmetricLaneChange and not vehicle.cp.switchLaneOffset then
+		vehicle.cp.switchLaneOffset = true;
+		courseplay:debug(string.format("%s: isTurning=false, switchLaneOffset=false -> set switchLaneOffset to true", nameNum(vehicle)), 12);
+	end;
+	if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and not vehicle.cp.switchToolOffset then
+		vehicle.cp.switchToolOffset = true;
+		courseplay:debug(string.format("%s: isTurning=false, switchToolOffset=false -> set switchToolOffset to true", nameNum(vehicle)), 12);
+	end;
 end
 
 function courseplay:raiseImplements(vehicle)
 	for _,workTool in pairs(vehicle.cp.workTools) do
-		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true, false,true,nil,nil,nil);
+		local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true, false,true,nil,nil,nil);
 		if not specialTool then
 			courseplay.debugVehicle(12, workTool, 'raising.')
 			workTool:aiImplementEndLine()
@@ -1986,7 +1996,7 @@ end
 
 function courseplay:lowerImplements(vehicle)
 	for _,workTool in pairs(vehicle.cp.workTools) do
-		specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,nil,nil,nil);
+		local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,nil,nil,nil);
 		if not specialTool then
 			courseplay.debugVehicle(12, workTool, 'lowering.')
 			workTool:aiImplementStartLine()
@@ -2026,7 +2036,7 @@ function courseplay:turnWithOffset(vehicle)
 		end;
 	end;
 	--TOOL OFFSET TOGGLE
-	if vehicle.cp.hasPlough then
+	if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil then
 		if vehicle.cp.switchToolOffset then
 			courseplay:changeToolOffsetX(vehicle, nil, vehicle.cp.toolOffsetX * -1, true);
 			vehicle.cp.switchToolOffset = false;

@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Carico: %d di %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Mostra punti di passaggio" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Evita la coltura" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Ara oltre i confini" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Ara oltre i confini" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Allinea al primo punto" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Distanza laterale:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Inizia a:" />

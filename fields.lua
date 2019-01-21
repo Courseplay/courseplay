@@ -27,7 +27,7 @@ end;
 function courseplay.fields:setUpFieldsIngameData()
 	--self = courseplay.fields
 	self:dbg("call setUpIngameData()", 'scan');
-	--Tommi:still needed ?  self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.ploughChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
+	--Tommi:still needed ?  self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.plowChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
 	--Tommi: still needed ?  self.lastChannel = g_currentMission.cultivatorChannel;
 
 	self.seedUsageCalculator.fruitTypes = self:getFruitTypes();

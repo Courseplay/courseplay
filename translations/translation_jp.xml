@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="ローディング: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="ウェイポイントを表示" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="経路サーチ" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="境界を超えて耕す" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="境界を超えて耕す" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="開始位置合わせ" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="左右オフセット" />
 		<text name="COURSEPLAY_START_AT" 								 text="スタート" />

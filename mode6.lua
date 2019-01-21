@@ -310,14 +310,14 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							local marker = Utils.getNoNil(vehicle.Waypoints[vehicle.cp.waypointIndex].ridgeMarker,0)
 							local waypoint = max(marker,forecast)
 							if courseplay:isFoldable(workTool) and not isFolding and not isUnfolded then
-								if not workTool.cp.hasSpecializationPlough then
+								if not workTool.cp.hasSpecializationPlow then
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
 									vehicle.cp.runOnceStartCourse = false;
 								elseif waypoint == 2 and vehicle.cp.runOnceStartCourse then --find waypoints and set directions...
 									courseplay:debug(string.format('%s: unfold order (foldDir=%d)', nameNum(workTool), workTool.cp.realUnfoldDirection), 17);
 									workTool:setFoldDirection(workTool.cp.realUnfoldDirection);
-									if workTool:getIsPloughRotationAllowed() then
+									if workTool:getIsPlowRotationAllowed() then
 										AIVehicle.aiRotateLeft(vehicle);
 										vehicle.cp.runOnceStartCourse = false;
 									end
@@ -349,9 +349,9 @@ function courseplay:handle_mode6(vehicle, allowedToDrive, workSpeed, lx , lz, re
 							if workTool:getIsFoldAllowed() then
 								courseplay:debug(string.format('%s: fold order (foldDir=%d)', nameNum(workTool), -workTool.cp.realUnfoldDirection), 17);
 								workTool:setFoldDirection(-workTool.cp.realUnfoldDirection);
-							elseif workTool.getIsPloughRotationAllowed ~= nil and workTool:getIsPloughRotationAllowed() and workTool.rotationMax == workTool.rotateLeftToMax then
+							elseif workTool.getIsPlowRotationAllowed ~= nil and workTool:getIsPlowRotationAllowed() and workTool.rotationMax == workTool.rotateLeftToMax then
 								workTool:setRotationMax(not workTool.rotateLeftToMax);
-								courseplay:debug(string.format('%s: rotate plough before folding', nameNum(workTool)), 17);
+								courseplay:debug(string.format('%s: rotate plow before folding', nameNum(workTool)), 17);
 							end;
 						end; 
 					end;

@@ -523,8 +523,8 @@ function courseplay:toggleAlignmentWaypoint( vehicle )
 	vehicle.cp.alignment.enabled = not vehicle.cp.alignment.enabled
 end
 
-function courseplay:togglePloughFieldEdge(self)
-	self.cp.ploughFieldEdge = not self.cp.ploughFieldEdge;
+function courseplay:togglePlowFieldEdge(self)
+	self.cp.plowFieldEdge = not self.cp.plowFieldEdge;
 end;
 
 function courseplay:toggleSearchCombineMode(vehicle)

@@ -75,7 +75,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Töltés: %d -ból %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Útpontok megjelenítése" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Útvonal keresése" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Eke ráhagyás a tábla szélén" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Eke ráhagyás a tábla szélén" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Igazodás első ponthoz" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Oldaltávolság:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Tölteni indul:" />

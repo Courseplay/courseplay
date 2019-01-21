@@ -75,7 +75,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="装载: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="路径点显示选择：" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="禁止碾压生长的农作物:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="地块边缘" /> 
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="地块边缘" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="与第一个路径点对齐" /> 
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="横向距离调整:" />
 		<text name="COURSEPLAY_START_AT" 								 text="车辆启动的值:" />

@@ -75,7 +75,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Laden: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Toon markeringen" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Om gewas rijden" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Ploegen voorbij veldrand" /> 
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Ploegen voorbij veldrand" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Centreer met eerste routemarkering" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Zijwaardse afstand:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start bij:" />		

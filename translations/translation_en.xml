@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Loading: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Show waypoints" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Pathfinding" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Plough past field edge" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Plow past field edge" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Align w/first waypoint" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Side offset:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Start at:" />

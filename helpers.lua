@@ -1190,7 +1190,10 @@ end
 
 
 local excludeTables = {
+	["attacherVehicle"] 		= true,
+	["currentSelection"] 		= true,
 	["selectionObject"] 		= true,
+	["selectableObjects"] 		= true,
 	["modifierTargetObject"] 	= true
 }
 function courseplay:printMeThisTable(t,level,maxlevel,upperPath)

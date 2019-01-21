@@ -34,7 +34,7 @@ function courseplay:setNameVariable(workTool)
 		elseif spec == FuelTrailer		   then workTool.cp.hasSpecializationFuelTrailer		 = true;
 		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
 		elseif spec == Mower 			   then workTool.cp.hasSpecializationMower 				 = true;
-		elseif spec == Plow 			   then workTool.cp.hasSpecializationPlough 			 = true;
+		elseif spec == Plow 			   then workTool.cp.hasSpecializationPlow 			 = true;
 		elseif spec == ReverseDriving	   then workTool.cp.hasSpecializationReverseDriving		 = true;
 		elseif spec == Shovel 			   then workTool.cp.hasSpecializationShovel 			 = true;
 		elseif spec == SowingMachine 	   then workTool.cp.hasSpecializationSowingMachine 		 = true;
@@ -437,18 +437,15 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'BednarSM18000.xml' then
 		workTool.cp.isBednarSM18000 = true
 
-	-- PLOUGHS [Giants]
-	-- Amazone Cayron 200 [Giants]
-	elseif workTool.cp.xmlFileName == 'amazoneCayron200.xml' then
-		workTool.cp.isAmazoneCayron200 = true;
-
-	-- Kuhn Vari-Master 153 [Giants]
-	elseif workTool.cp.xmlFileName == 'kuhnVariMaster153.xml' then
-		workTool.cp.isKuhnVariMaster153 = true;
+	-- PLOWS [Giants]
+		-- Agromasz POH 5 [Giants]
+	elseif workTool.cp.xmlFileName == 'agromaszPOH5.xml' then
+		workTool.cp.isAgromaszPOH5 = true;
 
 	-- Salford 4204 [Giants]
 	elseif workTool.cp.xmlFileName == 'salford4204.xml' then
 		workTool.cp.isSalford4204 = true;
+		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 3;
 
 	-- Salford 8312 [Giants]
@@ -457,19 +454,19 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 9;
 
-	-- Lemken Titan 11 [Giants]
+	-- Lemken Titan 18 [Giants]
 	elseif workTool.cp.xmlFileName == 'titan11.xml' then
-		workTool.cp.isLemkenTitan11 = true;
+		workTool.cp.isLemkenTitan18 = true;
 		workTool.cp.implementWheelAlwaysOnGround = true;
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 4.5;
 
-	-- Gregoire Besson SPSL 9 [Giants Big Bud DLC]
+	-- Gregoire Besson SPSL 9 [Giants]
 	elseif workTool.cp.xmlFileName == 'SPSL9.xml' then
 		workTool.cp.isGregoireBessonSPSL9 = true;
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.implementWheelAlwaysOnGround = true;
-		workTool.cp.overwriteTurnRadius = 6;
+		workTool.cp.overwriteTurnRadius = 10;
 		workTool.cp.specialWorkWidth = 10.5
 
 	-- Kuhn Discolander XM52 [Giants Kuhn DLC]
@@ -922,11 +919,8 @@ function courseplay:askForSpecialSettings(self, object)
 		object.cp.specialUnloadDistance = -3.8;
 		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
 
-	elseif object.cp.isAmazoneCayron200 then
-		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
-
-	elseif object.cp.isKuhnVariMaster153 then
-		automaticToolOffsetX = 0.1; -- ToolOffsetX is 0.1 meters to the right
+	elseif object.cp.isAgromaszPOH5 then
+		automaticToolOffsetX = 0.5; -- ToolOffsetX is 0.5 -- meters to the right
 
 	elseif object.cp.isSalford4204 then
 		automaticToolOffsetX = -0.2; -- ToolOffsetX is 0.2 meters to the left
@@ -936,7 +930,7 @@ function courseplay:askForSpecialSettings(self, object)
 		object.cp.backMarkerOffsetCorection = -7.5;
 		object.cp.frontMarkerOffsetCorection = -10;
 
-	elseif object.cp.isLemkenTitan11 then
+	elseif object.cp.isLemkenTitan18 then
 		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
 
 	elseif object.cp.isAugerWagon then

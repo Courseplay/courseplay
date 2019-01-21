@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT"							 		text="Ładowanie: %d z %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE"							 		text="Punkty trasy:" />
 		<text name="COURSEPLAY_PATHFINDING"								 		text="Znalezienie drogi" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 		text="Pług przy krawędzi pola:" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 		text="Pług przy krawędzi pola:" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 		text="Wyrównaj do 1 pkt trasy:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL"				 		text="Korekcja boczna:" />
 		<text name="COURSEPLAY_START_AT"								 		text="Podjedź przy:" />

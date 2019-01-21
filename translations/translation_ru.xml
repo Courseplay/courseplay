@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LOADING_AMOUNT" 							 text="Заполнение %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 							 text="Режим отображения:" />
 		<text name="COURSEPLAY_PATHFINDING" 							 text="Избегать движения по посевам:" />
-		<text name="COURSEPLAY_PLOUGH_FIELD_EDGE" 						 text="Плуг за границы поля" />
+		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 						 text="Плуг за границы поля" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 						 text="Выровнять по 1-й точке:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 				 text="Поперечное смещение:" />
 		<text name="COURSEPLAY_START_AT" 								 text="Загрузка при:" />

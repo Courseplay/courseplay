@@ -844,8 +844,8 @@ function courseplay:stop(self)
 	courseplay:resetCustomTimer(self, 'foldBaleLoader', true);
 
 	self.cp.hasBaleLoader = false;
-	self.cp.hasPlough = false;
-	self.cp.hasRotateablePlough = false;
+	self.cp.hasPlow = false;
+	self.cp.rotateablePlow = nil;
 	self.cp.hasSowingMachine = false;
 	self.cp.hasSprayer = false;
 	if self.cp.tempToolOffsetX ~= nil then

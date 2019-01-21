@@ -326,7 +326,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or workTool.cp.hasSpecializationCultivator
 		or courseplay:isCombine(workTool)
 		or workTool.cp.hasSpecializationFruitPreparer 
-		or workTool.cp.hasSpecializationPlough
+		or workTool.cp.hasSpecializationPlow
 		or workTool.cp.hasSpecializationTedder
 		or workTool.cp.hasSpecializationWindrower
 		or workTool.cp.hasSpecializationCutter
@@ -342,10 +342,10 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			courseplay:setMarkers(vehicle, workTool);
 			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
-			if workTool.cp.hasSpecializationPlough then 
-				vehicle.cp.hasPlough = true;
+			if workTool.cp.hasSpecializationPlow then
+				vehicle.cp.hasPlow = true;
 				if workTool.spec_plow.rotationPart.turnAnimation ~= nil then
-					vehicle.cp.hasRotateablePlough = true;
+					vehicle.cp.rotateablePlow = workTool;
 				end;
 			end;
 			if courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
@@ -1779,7 +1779,12 @@ function courseplay:getWorkWidth(thing, logPrefix)
 	if implements then
 		-- get width of all implements
 		for _, implement in ipairs(implements) do
-			width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
+			local specialWorkWidth = courseplay:getSpecialWorkWidth(implement.object);
+			if specialWorkWidth and type(specialWorkWidth) == "number" then
+				width = math.max( width, specialWorkWidth);
+			else
+				width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
+			end;
 		end
 	end
 	courseplay.debugFormat(6, '%s%s: working width is %.1f', logPrefix, nameNum(thing), width)
