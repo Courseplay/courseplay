@@ -19,6 +19,9 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, vehicle.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
 
+	--- Prevent mouse from zooming when mouse cursor is inside the CP Hud
+	self:lockContext(mouseIsInHudArea);
+
 	--LEFT CLICK
 	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and mouseIsInHudArea then
 		local buttonToHandle;
@@ -343,6 +346,16 @@ function courseplay:executeFunction(self, func, value, page)
 	end; --END isRowFunction
 end;
 
+--- Lock/Unlock mouse and keyboard form any interaction outside the courseplay hud
+function courseplay:lockContext(lockIt)
+	local lockIt = lockIt ~= false;
+	if lockIt and g_inputBinding:getContextName() ~= courseplay.INPUT_CONTEXT_NAME then
+		g_inputBinding:setContext(courseplay.INPUT_CONTEXT_NAME, true, false);
+	elseif not lockIt and g_inputBinding:getContextName() == courseplay.INPUT_CONTEXT_NAME then
+		g_inputBinding:revertContext(true);
+	end
+end;
+
 courseplay.inputBindings = {};
 courseplay.inputBindings.mouse = {
 	primaryButtonId =Input.MOUSE_BUTTON_LEFT,
@@ -404,8 +417,9 @@ function courseplay.inputBindings.updateInputButtonData()
 					binding = '',
 					bindingSym = '',
 					hasBinding = false,
-					isPressed = false}
+					isPressed = false,
 					hasEvent = false
+			}
 			if action.primaryKeyboardInput then
 				--print("  primaryKeyboardInput:"..tostring(action.primaryKeyboardInput))
 				actionTable.hasBinding = true

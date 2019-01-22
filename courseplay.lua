@@ -22,6 +22,9 @@ if courseplay.path:sub(-1) ~= '/' then
 end;
 courseplay.modName = g_currentModName;
 
+--- CoursePlay Input Context name for locking keys and mouse to the hud
+courseplay.INPUT_CONTEXT_NAME = "COURSEPLAY_HUD";
+
 -- initiate CpManager
 local filePath = courseplay.path .. 'CpManager.lua';
 assert(fileExists(filePath), ('COURSEPLAY ERROR: "CpManager.lua" can\'t be found at %q'):format(filePath));

@@ -195,6 +195,9 @@ local modDirectory = g_currentModDirectory
 -- It is ugly to have a courseplay member function in this file but button.lua seems to be able to
 -- use callbacks only if they are in the courseplay class.
 function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
+	--- Prevent Dialog from locking up mouse and keyboard when closing it.
+	courseplay:lockContext(false);
+
 	if g_CourseGeneratorScreen == nil then
 		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
 		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )

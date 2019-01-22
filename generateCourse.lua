@@ -87,6 +87,9 @@ function courseplay:generateCourse(vehicle, silent)
 		if silent then return status, ok end
 
 		if not status then
+			--- Prevent Dialog from locking up mouse and keyboard when closing it.
+			courseplay:lockContext(false);
+
 			-- show message if there was an exception
 			local messageDialog = g_gui:showGui('InfoDialog');
 			messageDialog.target:setText(courseplay:loc('COURSEPLAY_COULDNT_GENERATE_COURSE'));
@@ -95,6 +98,9 @@ function courseplay:generateCourse(vehicle, silent)
 		end
 
 		if not ok then
+			--- Prevent Dialog from locking up mouse and keyboard when closing it.
+			courseplay:lockContext(false);
+
 			-- show message if the generated course may have issues due to the selected track direction
 			local messageDialog = g_gui:showGui('InfoDialog');
 			messageDialog.target:setText(courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL'));
