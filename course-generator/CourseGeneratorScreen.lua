@@ -102,7 +102,6 @@ function CourseGeneratorScreen:onOpen()
 
 	g_currentMission.isPlayerFrozen = true
 
-
 	CourseGeneratorScreen:superClass().onOpen(self)
 	if not self.coursePlot then
 			self.coursePlot = CoursePlot:new(
@@ -118,7 +117,9 @@ function CourseGeneratorScreen:onOpen()
 		self.coursePlot:setStartPosition(x, z)
 	end
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
+
 end
+
 
 function CourseGeneratorScreen:generate()
 	-- save the selected field as generateCourse will reset it.
@@ -227,37 +228,20 @@ end
 
 -----------------------------------------------------------------------------------------------------
 -- Starting location
--- Mappings between the textbox option number and the setting
--- get the textbox option from the starting location
-local function getStartingLocationState( startingLocation )
-	return startingLocation - courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN + 1
-end
-
--- get the starting location from the textbox state
-local function getStartingLocation(startingLocationState )
-	return startingLocationState + courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN - 1
-end
-
 function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
-	local texts = {}
-	-- allow for the new course generator only
-	for i = courseGenerator.STARTING_LOCATION_NEW_COURSEGEN_MIN, courseGenerator.STARTING_LOCATION_MAX do
-		-- enable last position only if the vehicle has one
-		-- TODO: this is buggy, the mapping won't work!
-		if i ~= courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION or self.vehicle.cp.generationPosition.hasSavedPosition then
-			table.insert( texts, courseplay:loc(string.format('COURSEPLAY_CORNER_%d', i )))
-		end
-	end
-	element:setTexts( texts )
+	self.startingLocationSetting = StartingLocationSetting(self.vehicle)
+	element:setTexts(self.startingLocationSetting:getGuiElementTexts())
+
 	-- force new course gen settings.
 	if not self.vehicle.cp.isNewCourseGenSelected() or not self.vehicle.cp.hasStartingCorner then
 		courseplay:setStartingCorner( self.vehicle, courseGenerator.STARTING_LOCATION_VEHICLE_POSITION )
+		self.startingLocationSetting:set(courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION)
 	end
-	element:setState( getStartingLocationState( self.vehicle.cp.startingCorner ))
+	element:setState(self.startingLocationSetting:getGuiElementStateFromValue(self.vehicle.cp.startingCorner))
 end
 
 function CourseGeneratorScreen:onClickStartingLocation( state )
-	courseplay:setStartingCorner( self.vehicle, getStartingLocation(state))
+	courseplay:setStartingCorner(self.vehicle, self.startingLocationSetting:getValueFromGuiElementState(state))
 	if self.vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_SELECT_ON_MAP and
 		not self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos then
 		if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
@@ -525,7 +509,7 @@ end
 
 function CourseGeneratorScreen:onClickMap(element, posX, posZ)
 
-	if courseGenerator.STARTING_LOCATION_SELECT_ON_MAP == getStartingLocation(self.startingLocation:getState()) then
+	if courseGenerator.STARTING_LOCATION_SELECT_ON_MAP == self.startingLocationSetting:getValueFromGuiElementState(self.startingLocation:getState()) then
 		self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = {x = posX, z = posZ }
 		self.coursePlot:setStartPosition(posX, posZ)
 	end

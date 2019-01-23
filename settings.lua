@@ -1832,7 +1832,6 @@ function SettingList:is(value)
 	return self.values[self.current] == value
 end
 
-
 -- Get the current text
 function SettingList:getText()
 	return courseplay:loc(self.texts[self.current])
@@ -1878,13 +1877,35 @@ function SettingList:onChange()
 	-- setting specific implementation in the derived classes
 end
 
+--- Helper functions for the case when used with a GUI multi text option element
+function SettingList:getGuiElementTexts()
+	local texts = {}
+	for _, text in ipairs(self.texts) do
+		table.insert(texts, courseplay:loc(text))
+	end
+	return texts
+end
+
+function SettingList:getValueFromGuiElementState(state)
+	return self.values[state]
+end
+
+function SettingList:getGuiElementStateFromValue(value)
+	for i = 1, #self.values do
+		if self.values[i] == value then
+			return i
+		end
+	end
+	return nil
+end
+
 
 --- Driving mode setting
 DrivingModeSetting = CpObject(SettingList)
 
 -- Driving modes
 DrivingModeSetting.DRIVING_MODE_NORMAL   = 0  -- legacy
-DrivingModeSetting.DRIVING_MODE_PPC      = 1  -- legacy with pure pursuite controller
+DrivingModeSetting.DRIVING_MODE_PPC      = 1  -- legacy with pure pursuit controller
 DrivingModeSetting.DRIVING_MODE_AIDRIVER = 2  -- AI driver
 
 --- Constructor needs a vehicle to be able to check CP mode
@@ -1929,6 +1950,35 @@ function DrivingModeSetting:onChange()
 		else
 			self.vehicle.cp.ppc:enable()
 		end
+	end
+end
+
+StartingLocationSetting = CpObject(SettingList)
+
+function StartingLocationSetting:init(vehicle)
+	SettingList.init(self,
+		{
+			courseGenerator.STARTING_LOCATION_VEHICLE_POSITION,
+			courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION,
+			courseGenerator.STARTING_LOCATION_SW,
+			courseGenerator.STARTING_LOCATION_NW,
+			courseGenerator.STARTING_LOCATION_NE,
+			courseGenerator.STARTING_LOCATION_SE,
+			courseGenerator.STARTING_LOCATION_SELECT_ON_MAP
+		},
+		{
+			'COURSEPLAY_CORNER_5',
+			'COURSEPLAY_CORNER_6',
+			'COURSEPLAY_CORNER_7',
+			'COURSEPLAY_CORNER_8',
+			'COURSEPLAY_CORNER_9',
+			'COURSEPLAY_CORNER_10',
+			'COURSEPLAY_CORNER_11'
+		})
+	self.vehicle = vehicle
+	if not self.vehicle.cp.generationPosition.hasSavedPosition then
+		table.remove(self.values, 2)
+		table.remove(self.texts, 2)
 	end
 end
 

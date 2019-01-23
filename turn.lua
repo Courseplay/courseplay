@@ -2005,6 +2005,9 @@ function courseplay:lowerImplements(vehicle)
 			end
 		end
 	end
+	-- according the Jos@Giants this should make sure that getCanAIImplementContinueWork works correctly, but it
+	-- did not help, still returns true during lowering.
+	vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
 end
 
 -- @return true if all implements which have been started lowering are still moving, false if they are in their
