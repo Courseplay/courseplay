@@ -423,14 +423,16 @@ function courseplay:updateAllTriggers()
 		courseplay:debug('\tcheck fillTriggerVehicles', 1);
 		local counter = 0
 		for vehicleIndex, vehicle in pairs(g_currentMission.vehicles) do
-			if vehicle.spec_fillTriggerVehicle then
-				counter = counter +1
-				local trigger = vehicle.spec_fillTriggerVehicle.fillTrigger
-				local triggerId = trigger.triggerId
-				
-				courseplay:cpAddTrigger(triggerId, trigger, 'fillTrigger');
-				courseplay:debug(string.format('\t\tadd %s(%i) to fillTriggers', vehicle:getName(),triggerId), 1);
-			end
+				if vehicle.spec_fillTriggerVehicle then
+					if vehicle.spec_fillTriggerVehicle.fillTrigger ~= nil then
+						counter = counter +1
+						local trigger = vehicle.spec_fillTriggerVehicle.fillTrigger
+						local triggerId = trigger.triggerId
+
+						courseplay:cpAddTrigger(triggerId, trigger, 'fillTrigger');
+						courseplay:debug(string.format('\t\tadd %s(%i) to fillTriggers', vehicle:getName(),triggerId), 1);
+					end
+				end
 		end
 		courseplay:debug(('\t%i found'):format(counter), 1);
 	end;
