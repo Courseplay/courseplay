@@ -761,7 +761,7 @@ function courseplay:getSpeedMeasuringUnit()
 end
 
 function courseplay:getMeasuringUnit()
-	return g_i18n.globalI18N.useMiles and g_i18n:getText('unit_miles') or g_i18n:getText('unit_km');
+	return g_gameSettings.useMiles and g_i18n:getText('unit_miles') or g_i18n:getText('unit_km');
 end
 
 function courseplay.utils:crossProductQuery(a, b, c, useC)
