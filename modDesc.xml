@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="40">
-	<version>6.00.00025</version>
+	<version>6.00.00026</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay SIX</br>
@@ -117,7 +117,7 @@ Courseplay is a modification for Farming Simulator 17. It allows you to have man
 
 	<inputBinding>
 		<actionBinding action="COURSEPLAY_MODIFIER">
-			<binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" axisComponent="+" neutralInput="0" index="1"/>
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" />
 		</actionBinding>
 		<actionBinding action="COURSEPLAY_HUD">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_delete" />

@@ -357,10 +357,7 @@ function courseplay:lockContext(lockIt)
 end;
 
 courseplay.inputBindings = {};
-courseplay.inputBindings.mouse = {
-	primaryButtonId =Input.MOUSE_BUTTON_LEFT,
-	secondaryButtonId = Input.MOUSE_BUTTON_RIGHT
-};
+courseplay.inputBindings.mouse = {};
 courseplay.inputBindings.mouse.mouseButtonOverlays = {
 	MOUSE_BUTTON_NONE	   = 'mouseNMB.png',
 	MOUSE_BUTTON_LEFT	   = 'mouseLMB.png',
@@ -381,33 +378,75 @@ function courseplay:onKeyEvent(unicode, sym, modifier, isDown)
 	end	
 end;
 
+--- appendedFunction onActionBindingsChanged for InputDisplayManager.onActionBindingsChanged
+-- Used to update hud if keybindings have been changed when ingame.
+function courseplay:onActionBindingsChanged(...)
+	if g_currentMission and g_currentMission.enterables then
+		--print("onActionBindingsChanged");
+
+		courseplay.inputBindings.updateInputButtonData();
+
+		for _, vehicle in pairs(g_currentMission.enterables) do
+			if vehicle.cp and vehicle.cp.hud then
+				courseplay.hud:setReloadPageOrder(vehicle, courseplay.hud.PAGE_GENERAL_SETTINGS, true);
+			end
+		end
+	end
+end
+InputDisplayManager.onActionBindingsChanged = Utils.appendedFunction(InputDisplayManager.onActionBindingsChanged, courseplay.onActionBindingsChanged);
+
 function courseplay.inputBindings.updateInputButtonData()
 	-- print('updateInputButtonData()')
 
 	-- MOUSE
-	--[[
-	for _,type in ipairs( { 'primary', 'secondary' } ) do
-		local inputName = 'COURSEPLAY_MOUSEACTION_' .. type:upper();
-		local action = InputBinding.actionBinding[ actions[inputName] ];
-		local mouseButtonId = action.intput[1]; -- can there be more than 1 mouseButton for 1 action?
+	for _,inputNameType in ipairs( { 'primary', 'secondary' } ) do
+		local inputName = 'COURSEPLAY_MOUSEACTION_' .. inputNameType:upper();
+		local action = g_inputBinding:getActionByName(inputName);
+		local mouseButtonName = "MOUSE_BUTTON_NONE";
+		local mouseInputDisplayText;
+		for index, binding in ipairs(action.bindings) do
+			if binding.isMouse and mouseButtonName == "MOUSE_BUTTON_NONE" then
+				mouseButtonName = binding.axisNames[1];
+				mouseInputDisplayText = MouseHelper.getInputDisplayText(binding.axisNames);
+			end
+		end
+		-- print(('\t%s: inputName=%q'):format(inputNameType, inputName));
 
-		-- print(('\t%s: inputName=%q'):format(type, inputName));
+		local txt;
+		if type(mouseInputDisplayText) == "number" then
+			txt = g_i18n:getText('COURSEPLAY_MOUSE_BUTTON_NR'):format(mouseInputDisplayText);
+		else
+			txt = g_i18n:getText(("COURSEPLAY_MOUSE_BUTTON_%s"):format(mouseInputDisplayText:upper()));
+		end
 
-		local txt = ('%s %s'):format(g_i18n:getText('ui_mouse'), MouseHelper.getButtonNames(action.mouseButtons)); -- TODO (Jakob): getButtonNames returns English, not i18n text
-		courseplay.inputBindings.mouse[type .. 'TextI18n'] = txt;
-		courseplay.inputBindings.mouse[type .. 'ButtonId'] = mouseButtonId;
-		-- print(('\t\t%sTextI18n=%q, mouseButtonId=%d'):format(type, txt, mouseButtonId));
+		courseplay.inputBindings.mouse[inputNameType .. 'TextI18n'] = txt;
+		courseplay.inputBindings.mouse[inputNameType .. 'ButtonId'] = Input[mouseButtonName];
+		-- print(('\t\t%sTextI18n=%q, mouseButtonId=%d'):format(inputNameType, txt, mouseButtonId));
 
-		if type == 'secondary' then
-			local mouseButtonIdName = Input.mouseButtonIdToIdName[mouseButtonId];
-			local fileName = courseplay.inputBindings.mouse.mouseButtonOverlays[mouseButtonIdName] or 'mouseRMB.png';
-			 --print(('\t\tmouseButtonIdName=%q, fileName=%q'):format(tostring(mouseButtonIdName), tostring(fileName)));
-			if courseplay.inputBindings.mouse.overlaySecondary then
-				courseplay.inputBindings.mouse.overlaySecondary:delete();
-			end;
-			courseplay.inputBindings.mouse.overlaySecondary = Overlay:new(courseplay.path .. 'img/mouseIcons/' .. fileName, 0, 0, 0.0, 0.0);
-		end;
-	end;]]
+		--[[ TODO: Rewrite input key bindings to use Giants default registerActionEvent
+		More info can be found here:
+                https://gdn.giants-software.com/documentation_scripting_fs19.php?version=script&category=70&class=7302#onRegisterActionEvents120704
+                https://gdn.giants-software.com/documentation_scripting_fs19.php?version=script&category=1&class=7052#registerActionEvent118548
+
+		Code below is from Jos.
+		local _, eventId = self.inputManager:registerActionEvent(InputAction.SEASONS_SHOW_MENU, self, self.onToggleMenu, false, true, false, true)
+    	self.inputManager:setActionEventTextVisibility(eventId, true)
+		setActionEventTextPriority(eventId, priority)
+		setActionEventActive(eventId, isActive)
+		]]
+
+		--- Do not activate below code: It will activate variables that dont exist anymore. Read the todo above
+		--if inputNameType == 'secondary' then
+		--	local fileName = courseplay.inputBindings.mouse.mouseButtonOverlays[mouseButtonName] or 'mouseRMB.png';
+		--	 --print(('\t\tmouseButtonIdName=%q, fileName=%q'):format(tostring(mouseButtonIdName), tostring(fileName)));
+		--	if courseplay.inputBindings.mouse.overlaySecondary then
+		--		courseplay.inputBindings.mouse.overlaySecondary:delete();
+		--	end;
+		--	courseplay.inputBindings.mouse.overlaySecondary = Overlay:new(courseplay.path .. 'img/mouseIcons/' .. fileName, 0, 0, 0.0, 0.0);
+		--end;
+	end;
+
+
 	courseplay.inputActions = {}
 	--print("set up courseplay.inputActions:")
 	for index, action in pairs (g_gui.inputManager.nameActions) do
@@ -426,21 +465,15 @@ function courseplay.inputBindings.updateInputButtonData()
 				actionTable.binding = action.primaryKeyboardInput
 				actionTable.bindingSym = Input[actionTable.binding]
 				
-			end	
+			end
 			courseplay.inputActions[index]= actionTable
 		end
 	end
 
 	-- KEYBOARD
-	-- open/close hud (combined with modifier): get i18n text
-	--local modifierAction = InputBinding.actionBinding[ actions.COURSEPLAY_MODIFIER];
-	--local modifierTextI18n = KeyboardHelper.getKeyNames(modifierAction.input);
+	local modifierTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_MODIFIER");
+	local openCloseHudTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_HUD");
 
-	--local openCloseHudAction =InputBinding.actionBinding[ actions.COURSEPLAY_HUD];
-	--local openCloseHudTextI18n = KeyboardHelper.getKeyNames(openCloseHudAction.input);
-	local modifierTextI18n = 'CTRL'
-	local openCloseHudTextI18n = '7'
-	
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
