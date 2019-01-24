@@ -293,7 +293,10 @@ function CpManager:update(dt)
 	-- HELP MENU
 	if g_gui.currentGui == nil and g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
 		if self.playerOnFootMouseEnabled then
-			g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
+			-- TODO: Fix this when rewriting to the new Input Info box
+			-- Throws an error -> CpManager.lua:296: attempt to call method 'addHelpTextFunction' (a nil value)
+			-- wasn't able to find smth similiar in the FS19 doc, hence disable it for now
+			--g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
 		--Tommi elseif self.globalInfoText.hasContent then
 			--Tommi g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 		end;
