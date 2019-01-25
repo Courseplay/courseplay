@@ -553,18 +553,19 @@ end
 local unpack = unpack or table.unpack
 -------------------------------------------------------------------------------
 
-Point = {}
-Point.__index = Point
+---@class PointXY
+PointXY = {}
+PointXY.__index = PointXY
 
 --- Point constructor.
 -- Integer indices are the vertices of the polygon
-function Point:new(x, y)
+function PointXY:new(x, y)
 	local newPoint
 	newPoint = {x = x, y = y}
 	return setmetatable( newPoint, self )
 end
 
-function Point:copy( other )
+function PointXY:copy( other )
 	local newPoint = {}
 	if other then
 		newPoint = copyPoint( other )
@@ -572,12 +573,12 @@ function Point:copy( other )
 	return setmetatable( newPoint, self )
 end
 
-function Point:translate(dx, dy)
+function PointXY:translate(dx, dy)
 	self.x = self.x + dx
 	self.y = self.y + dy
 end
 
-function Point:rotate(angle)
+function PointXY:rotate(angle)
 	self.x, self.y =
 		self.x * math.cos(angle) - self.y  * math.sin(angle),
 		self.x * math.sin(angle) + self.y  * math.cos(angle)
@@ -586,6 +587,7 @@ end
 
 -------------------------------------------------------------------------------
 
+---@class Polyline
 Polyline = {}
 Polyline.__index = Polyline
 
@@ -1048,7 +1050,7 @@ function Polyline:trimEnd(otherLine, insertIntersectionPoint)
 end
 
 ----------------------------------------------------------------------------------
-
+---@class Polygon : Polyline
 Polygon = {}
 -- base class is the polyline
 setmetatable( Polygon, { __index = Polyline })

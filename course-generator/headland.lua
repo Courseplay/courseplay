@@ -451,7 +451,7 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 
 	-- figure out where to start the course. It will be the headland end closest to the
 	-- start location
-	local startLocation = Point:copy(headlandSettings.startLocation)
+	local startLocation = PointXY:copy(headlandSettings.startLocation)
 	startLocation:translate(-dx, -dy)
 	startLocation:rotate(math.rad(bestAngle))
 

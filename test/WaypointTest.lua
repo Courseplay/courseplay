@@ -29,6 +29,85 @@ require("geo")
 require("courseGenerator")
 require("helpers")
 
+TestPoint = {}
+
+function TestPoint:testWorldToLocal()
+	local EPS = 0.001
+
+	local p = Point(0, 0, 0)
+	local x, z = p:worldToLocal(0,0)
+	lu.assertEquals(x, 0)
+	lu.assertEquals(z, 0)
+	x, z = p:localToWorld(x, z)
+	lu.assertEquals(x, 0)
+	lu.assertEquals(z, 0)
+
+
+	p = Point(0, 0, math.pi / 2)
+	x, z = p:worldToLocal(0,0)
+	lu.assertEquals(x, 0)
+	lu.assertEquals(z, 0)
+	x, z = p:localToWorld(x, z)
+	lu.assertEquals(x, 0)
+	lu.assertEquals(z, 0)
+
+	p = Point(3, 4, 0)
+	x, z = p:worldToLocal(0, 0)
+	lu.assertEquals(x, -3)
+	lu.assertEquals(z, -4)
+	x, z = p:localToWorld(x, z)
+	lu.assertEquals(x, 0)
+	lu.assertEquals(z, 0)
+
+	p = Point(1, 2, 0)
+	x, z = p:worldToLocal(3, 4)
+	lu.assertEquals(x, 2)
+	lu.assertEquals(z, 2)
+	x, z = p:localToWorld(x, z)
+	lu.assertEquals(x, 3)
+	lu.assertEquals(z, 4)
+
+	p = Point(0, 0, 2 * math.pi)
+	x, z = p:worldToLocal(3, 4)
+	lu.assertAlmostEquals(x, 3, EPS)
+	lu.assertAlmostEquals(z, 4, EPS)
+	x, z = p:localToWorld(x, z)
+	lu.assertAlmostEquals(x, 3, EPS)
+	lu.assertAlmostEquals(z, 4, EPS)
+
+	p = Point(0, 0, math.pi)
+	x, z = p:worldToLocal(3, 4)
+	lu.assertAlmostEquals(x, -3, EPS)
+	lu.assertAlmostEquals(z, -4, EPS)
+	x, z = p:localToWorld(x, z)
+	lu.assertAlmostEquals(x, 3, EPS)
+	lu.assertAlmostEquals(z, 4, EPS)
+
+	p = Point(0, 0, math.pi / 2)
+	x, z = p:worldToLocal(3, 4)
+	lu.assertAlmostEquals(x, -4, EPS)
+	lu.assertAlmostEquals(z, 3, EPS)
+	x, z = p:localToWorld(x, z)
+	lu.assertAlmostEquals(x, 3, EPS)
+	lu.assertAlmostEquals(z, 4, EPS)
+
+	p = Point(0, 0, math.pi / 4)
+	x, z = p:worldToLocal(1, 1)
+	lu.assertAlmostEquals(x, 0, EPS)
+	lu.assertAlmostEquals(z, math.sqrt(2), EPS)
+	x, z = p:localToWorld(x, z)
+	lu.assertAlmostEquals(x, 1, EPS)
+	lu.assertAlmostEquals(z, 1, EPS)
+
+	p = Point(1, 2, math.pi / 2)
+	x, z = p:worldToLocal(3, 4)
+	lu.assertAlmostEquals(x, -2, EPS)
+	lu.assertAlmostEquals(z, 2, EPS)
+	x, z = p:localToWorld(x, z)
+	lu.assertAlmostEquals(x, 3, EPS)
+	lu.assertAlmostEquals(z, 4, EPS)
+end
+
 TestCourse = {}
 
 function TestCourse:setUp()

@@ -138,7 +138,7 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 
 		linkHeadlandTracks( field, implementWidth, headlandSettings.isClockwise, headlandSettings.startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
 
-		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks[ #field.headlandTracks ], field.bigIslands,
+		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks, field.bigIslands,
 			implementWidth, extendTracks, headlandSettings.nPasses, centerSettings )
 	elseif headlandSettings.nPasses == 0 or -- TODO: use the mode only, not nPasses, this is only for backwards compatibility
 		headlandSettings.mode == courseGenerator.HEADLAND_MODE_NONE then
@@ -146,14 +146,14 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 		-- we have something to work with when generating the up/down tracks
 		field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, courseGenerator.HEADLAND_MODE_NORMAL, field.boundary.isClockwise, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside, nil, nil )
 		linkHeadlandTracks( field, implementWidth, headlandSettings.isClockwise, headlandSettings.startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
-		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks[ #field.headlandTracks ], field.bigIslands,
+		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks, field.bigIslands,
 			implementWidth, extendTracks, headlandSettings.nPasses, centerSettings )
 	elseif headlandSettings.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
 		-- start with rows over the field with no headland.
 		local boundary
 		field.headlandPath, boundary = generateTwoSideHeadlands( field.boundary, field.bigIslands,
 			implementWidth, extendTracks, headlandSettings, centerSettings, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
-		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( boundary, field.bigIslands,
+		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks({ boundary }, field.bigIslands,
 			implementWidth, extendTracks - implementWidth / 2, 0, centerSettings )
 		field.headlandPath:appendLine(field.track, implementWidth / 2, true)
 	end

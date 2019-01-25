@@ -32,8 +32,11 @@ function pathFinder.addFruitDistanceFromBoundary( grid, polygon )
 	local distance = 10
 	for y, row in ipairs( grid.map ) do
 		for x, index in pairs( row ) do
+			grid[index].isOnField = true
 			local _, minDistanceToFieldBoundary = polygon:getClosestPointIndex({ x = grid[ index ].x, y = grid[ index ].y })
 			if minDistanceToFieldBoundary > distance then
+				grid[ index ].hasFruit = true
+			elseif math.random(100) > 95 then
 				grid[ index ].hasFruit = true
 			end
 		end
@@ -44,7 +47,7 @@ function pathFinder.addFruitGridDistanceFromBoundary( grid, polygon )
 	local distance = 1
 	for y, row in ipairs( grid.map ) do
 		for x, index in pairs( row ) do
-			if x > distance + 1 and x <= #row - distance and y > distance and y <= #grid.map - distance then
+			if x > distance + 1 and x <= #row - distance and y > distance and y <= #grid.map - distance  then
 				grid[ index ].hasFruit = true
 			end
 		end
@@ -159,7 +162,11 @@ local function isValidNeighbor( theNode, node )
 	--courseplay:debug( string.format( "node: %.2f, %.2f", node.x, node.y ))
 	local d = a_star.distance( theNode.x, theNode.y, node.x, node.y )
 	-- must be close enough (little more than sqrt(2) to allow for diagonals
-	return d < gridSpacing * 1.5
+	if d < gridSpacing * 1.5 then
+		return true
+	else
+		return false
+	end
 end
 
 --- a_star will call back here to get the valid neighbors
@@ -204,6 +211,8 @@ local function getNeighbors( theNode, grid )
 	end
 	return neighbors
 end
+
+
 
 --- g() score to neighbor, A star will call back here when calculating the score
 --
@@ -280,3 +289,39 @@ function pathFinder.findPath( fromNode, toNode, polygon, fruit, customHasFruitFu
 	end
 	return path, grid
 end
+
+--- Find path on the headland. This one currently ignores the fruit.
+-- @param headlands - array of polygons containing the headland waypoints
+-- #param dontUseInnermostHeadland - if true, won't use the innermost headland
+function pathFinder.findPathOnHeadland(fromNode, toNode, headlands, workWidth, dontUseInnermostHeadland)
+	-- list of nodes for pathfinding are all the waypoints on the headland
+	local nodes = {}
+	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
+	for i = 1, nHeadlandsToUse do
+		for _, node in ipairs(headlands[i]) do
+			table.insert(nodes, node)
+		end
+	end
+	table.insert(nodes, fromNode)
+	table.insert(nodes, toNode)
+
+	courseGenerator.debug( "Starting pathfinding on headland (%d waypoints)", #nodes)
+
+	-- this is for isValidNeighbor() to be able to find the closest points on the headland
+	-- TODO: may need a customized isValidNeighbor if the working width is significantly smaller than the
+	-- waypoint distance
+	gridSpacing = math.max(courseGenerator.waypointDistance, workWidth) * 1.5
+	-- g score does not need to take the fruit into account
+	local gScoreForHeadland = function(a, b) return a_star.distance( a.x, a.y, b.x, b.y )  end
+	-- use a_star's own function to find the neighbors (as any node can be a neighbor here)
+	local path, iterations = a_star.path(fromNode, toNode, nodes, isValidNeighbor, nil, gScoreForHeadland, #nodes * 3)
+	courseGenerator.debug( "Number of iterations %d", iterations)
+	if path then
+		path = Polyline:new( path )
+		path:calculateData()
+		path:smooth( math.rad( 0 ), math.rad( 180 ), 1 )
+		courseGenerator.debug( "Path generated with %d points", #path )
+	end
+	return path, nodes
+end
+

@@ -18,9 +18,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---@class Point
 Point = CpObject()
-function Point:init(x, z)
+function Point:init(x, z, yRotation)
 	self.x = x
 	self.z = z
+	self.yRotation = yRotation or 0
+end
+
+function Point:clone()
+	return Point(self.x, self.z, self.yRotation)
+end
+
+---@param other Point
+function Point:copy(other)
+	return self:clone(other)
+end
+
+function Point:translate(dx, dz)
+	self.x = self.x + dx
+	self.z = self.z + dz
+end
+
+function Point:rotate(yRotation)
+	self.x, self.z =
+	self.x * math.cos(yRotation) + self.z * math.sin(yRotation),
+	- self.x * math.sin(yRotation) + self.z * math.cos(yRotation)
+	self.yRotation = yRotation
+end
+
+--- Get the local coordinates of a world position
+---@param x number
+---@param z number
+---@return number, number x and z local coordinates
+function Point:worldToLocal(x, z)
+	local lp = Point(x, z, 0)
+	lp:translate(-self.x, -self.z)
+	lp:rotate(-self.yRotation)
+	return lp.x, lp.z
+end
+
+--- Convert the local x z coordinates to world coordinates
+---@param x number
+---@param z number
+---@return number, number x and z world coordinates
+function Point:localToWorld(x, z)
+	local lp = Point(x, z, 0)
+	lp:rotate(self.yRotation)
+	lp:translate(self.x, self.z)
+	return lp.x, lp.z
 end
 
 ---@class Waypoint : Point

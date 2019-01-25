@@ -50,9 +50,11 @@ local function heuristic_cost_estimate ( nodeA, nodeB )
 	return dist ( nodeA.x, nodeA.y, nodeB.x, nodeB.y )
 end
 
-local function is_valid_node ( node, neighbor )
+local function default_is_valid_node ( node, neighbor )
 	return true
 end
+
+local is_valid_node = default_is_valid_node
 
 local function lowest_f_score ( set, f_score )
 	local lowest, bestNode = INF, nil
@@ -65,7 +67,7 @@ local function lowest_f_score ( set, f_score )
 	return bestNode
 end
 
-local function neighbor_nodes ( theNode, nodes )
+local function default_neighbor_nodes ( theNode, nodes )
 	local neighbors = {}
 	for _, node in ipairs ( nodes ) do
 		if theNode ~= node and is_valid_node ( theNode, node ) then
@@ -74,6 +76,8 @@ local function neighbor_nodes ( theNode, nodes )
 	end
 	return neighbors
 end
+
+local neighbor_nodes = default_neighbor_nodes
 
 local function not_in ( set, theNode )
 	for _, node in ipairs ( set ) do
@@ -112,8 +116,8 @@ function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func,
 	local came_from = {}
 	local iterations = 0
 
-	if valid_node_func then is_valid_node = valid_node_func end
-	if neighbor_nodes_func then neighbor_nodes = neighbor_nodes_func end
+	is_valid_node = valid_node_func or default_is_valid_node
+	neighbor_nodes = neighbor_nodes_func or default_neighbor_nodes
 	if g_score_to_neighbor_func then g_score_to_neighbor = g_score_to_neighbor_func end
 
 	local g_score, f_score = {}, {}
@@ -127,7 +131,7 @@ function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func,
 		if current == goal then
 			local path = unwind_path ( {}, came_from, goal )
 			table.insert ( path, goal )
-			return path
+			return path, iterations
 		end
 
 		remove_node ( openset, current )
@@ -150,7 +154,7 @@ function a_star.path ( start, goal, nodes, valid_node_func, neighbor_nodes_func,
 			end
 		end
 	end
-	return nil -- no valid path
+	return nil, iterations -- no valid path
 end
 
 function a_star.distance ( x1, y1, x2, y2 )

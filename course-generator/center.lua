@@ -21,6 +21,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 local rotatedMarks = {}
 
+-- Up/down mode is a regular up/down pattern, may skip rows between for wider turns
+
+courseGenerator.CENTER_MODE_UP_DOWN = 1
+
+-- Spiral mode: the center is split into multiple blocks, one block
+-- is not more than 10 rows wide. Each block is then worked in a spiral
+-- fashion from the outside to the inside, see below:
+
+--  ----- 1 ---- < -------  \
+--  ----- 3 ---- < -------  |
+--  ----- 5 ---- < -------  |
+--  ----- 6 ---- > -------  | Block 1
+--  ----- 4 ---- > -------  |
+--  ----- 2 ---- > -------  /
+--  ----- 7 ---- < -------  \
+--  ----- 9 ---- < -------  |
+--  -----11 ---- < -------  | Block 2
+--  -----12 ---- > -------  |
+--  -----10 ---- > -------  |
+--  ----- 8 ---- > -------  /
+courseGenerator.CENTER_MODE_SPIRAL = 2
+
+-- Circular mode, (for now) the area is split into two blocks whcih are then worked in
+-- an alternating pattern:
+--  ----- 1 ---- < -------  \
+--  ----- 3 ---- < -------  |
+--  ----- 5 ---- < -------  |
+--  ----- 7 ---- < -------  | Block 1
+--  ----- 9 ---- < -------  |
+--  -----11 ---- < -------  /
+--  ----- 2 ---- > ------  \
+--  ----- 4 ---- > -------  |
+--  ----- 6 ---- > -------  | Block 2
+--  ----- 8 ---- > -------  |
+--  -----10 ---- > -------  |
+--  -----12 ---- > -------  /
+courseGenerator.CENTER_MODE_CIRCULAR = 3
+courseGenerator.centerModeTexts = {'up/down', 'spiral', 'circular'}
+courseGenerator.CENTER_MODE_MIN = courseGenerator.CENTER_MODE_UP_DOWN
+courseGenerator.CENTER_MODE_MAX = courseGenerator.CENTER_MODE_CIRCULAR
+
 -- Distance of waypoints on the generated track in meters
 courseGenerator.waypointDistance = 5
 -- don't generate waypoints closer than minWaypointDistance 
@@ -144,7 +185,7 @@ end
 
 --- Generate up/down tracks covering a polygon at the optimum angle
 -- 
-function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses, centerSettings )
+function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasses, centerSettings )
 	local distanceFromBoundary
 	if nHeadlandPasses == 0 then
 		-- ugly hack: if there are no headlands, our tracks go right up to the field boundary. So extend tracks
@@ -155,32 +196,44 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 		distanceFromBoundary = width
 	end
 
-	-- translate polygon so we can rotate it around its center. This way all points
-	-- will be approximately the same distance from the origo and the rotation calculation
+	-- translate headlands so we can rotate them around their center. This way all points
+	-- will be approximately the same distance from the origin and the rotation calculation
 	-- will be more accurate
-	local dx, dy = polygon:getCenter()
-	local boundary = Polygon:copy(polygon)
-	boundary:translate(-dx , -dy)
+	-- get the innermost headland
+	local boundary = headlands[#headlands]
+	local dx, dy = boundary:getCenter()
+	-- headlands transformed in the field centered coordinate system. First, just translate, will rotate once
+	-- we figure out the angle
+	local transformedHeadlands = {}
+	for _, headland in ipairs(headlands) do
+		local h = Polygon:copy(headland)
+		h:translate(-dx, -dy)
+		table.insert(transformedHeadlands, h)
+	end
+
 	local translatedIslands = Island.translateAll( islands, -dx, -dy )
 
 	local bestAngle, nTracks, nBlocks, resultIsOk
 	-- Now, determine the angle where the number of tracks is the minimum
-	bestAngle, nTracks, nBlocks, resultIsOk = findBestTrackAngle( boundary, translatedIslands, width, distanceFromBoundary, centerSettings )
+	bestAngle, nTracks, nBlocks, resultIsOk = findBestTrackAngle( transformedHeadlands[#transformedHeadlands], translatedIslands, width, distanceFromBoundary, centerSettings )
 	if nBlocks < 1 then
 		courseGenerator.debug( "No room for up/down rows." )
 		return nil, 0, 0, nil, true
 	end
 	if not bestAngle then
-		bestAngle = polygon.bestDirection.dir
+		bestAngle = boundary.bestDirection.dir
 		courseGenerator.debug( "No best angle found, use the longest edge direction " .. bestAngle )
 	end
 	rotatedMarks = Polygon:new()
-	-- now, generate the tracks according to the implement width within the rotated polygon's bounding box
+	-- now, generate the tracks according to the implement width within the rotated boundary's bounding box
 	-- using the best angle
-	boundary:rotate(math.rad(bestAngle))
+	-- rotate everything we'll need later
+	for _, headland in ipairs(transformedHeadlands) do
+		headland:rotate(math.rad(bestAngle))
+	end
+	local transformedBoundary = transformedHeadlands[#transformedHeadlands]
 	local rotatedIslands = Island.rotateAll( translatedIslands, math.rad( bestAngle ))
-
-	local parallelTracks = generateParallelTracks( boundary, rotatedIslands, width, distanceFromBoundary )
+	local parallelTracks = generateParallelTracks( transformedBoundary, rotatedIslands, width, distanceFromBoundary )
 
 	local blocks = splitCenterIntoBlocks( parallelTracks, width )
 
@@ -204,8 +257,8 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 	-- Now we have to connect the first block with the end of the headland track
 	-- and then connect each block so we cover the entire polygon.
 	math.randomseed( courseGenerator.getCurrentTime())
-	local blocksInSequence = findBlockSequence( blocks, boundary, polygon.circleStart, polygon.circleStep, nHeadlandPasses, centerSettings.nRowsToSkip)
-	local workedBlocks = linkBlocks( blocksInSequence, boundary, polygon.circleStart, polygon.circleStep, centerSettings.nRowsToSkip)
+	local blocksInSequence = findBlockSequence( blocks, transformedBoundary, boundary.circleStart, boundary.circleStep, nHeadlandPasses, centerSettings.nRowsToSkip)
+	local workedBlocks = linkBlocks( blocksInSequence, transformedBoundary, boundary.circleStart, boundary.circleStep, centerSettings.nRowsToSkip)
 
 	-- workedBlocks has now a the list of blocks we need to work on, including the track
 	-- leading to the block from the previous block or the headland.
@@ -231,8 +284,9 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 		if continueWithTurn then
 			track[ #track ].turnStart = true
 		end
-		linkParallelTracks( track, block.tracksWithWaypoints,
-			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings.nRowsToSkip, continueWithTurn )
+		linkParallelTracks(track, block.tracksWithWaypoints,
+			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings, continueWithTurn,
+			transformedHeadlands, rotatedIslands, width)
 		-- TODO: This seems to be causing circling with large implements, disabling for now.
 		-- fixLongTurns( track, width )
 	end
@@ -251,7 +305,7 @@ function generateTracks( polygon, islands, width, extendTracks, nHeadlandPasses,
 	for i = 1, #connectingTracks do
 		connectingTracks[ i ] = translatePoints( rotatePoints( connectingTracks[ i ], -math.rad( bestAngle )), dx, dy )
 	end
-	polygon.connectingTracks = connectingTracks
+	boundary.connectingTracks = connectingTracks
 	-- return the information about blocks for visualization
 	for _, b in ipairs( blocks ) do
 		b.polygon:rotate( -math.rad( bestAngle ))
@@ -417,16 +471,22 @@ end
 -- continuous track.
 -- if bottomToTop == true then start at the bottom and work our way up
 -- if leftToRight == true then start the first track on the left 
--- nRowsToSkip - number of tracks to skip when doing alternative
+-- centerSettings - all center related settings
 -- tracks
-function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, nRowsToSkip, startWithTurn )
+function linkParallelTracks(result, parallelTracks, bottomToTop, leftToRight, centerSettings, startWithTurn, headlands,
+														islands, workWidth)
 	if not bottomToTop then
 		-- we start at the top, so reverse order of tracks as after the generation,
 		-- the last one is on the top
 		parallelTracks = reverseTracks( parallelTracks )
 	end
-	parallelTracks = reorderTracksForAlternateFieldwork( parallelTracks, nRowsToSkip )
-
+	if centerSettings.mode == courseGenerator.CENTER_MODE_UP_DOWN then
+		parallelTracks = reorderTracksForAlternateFieldwork(parallelTracks, centerSettings.nRowsToSkip)
+	elseif centerSettings.mode == courseGenerator.CENTER_MODE_SPIRAL then
+		parallelTracks = reorderTracksForSpiralFieldwork(parallelTracks)
+	elseif centerSettings.mode == courseGenerator.CENTER_MODE_CIRCULAR then
+		parallelTracks = reorderTracksForCircularFieldwork(parallelTracks)
+	end
 	-- now make sure that the we work on the tracks in alternating directions
 	-- we generate track from left to right, so the ones which we'll traverse
 	-- in the other direction must be reversed.
@@ -443,17 +503,16 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
 	end
 	local startTrack = 1
 	local endTrack = #parallelTracks
-	local trackStep = 1
-	for i = startTrack, endTrack, trackStep do
+	local useHeadlandToNextRow = false
+	for i = startTrack, endTrack do
 		if parallelTracks[ i ].waypoints then
+			-- use turn maneuver from one track to the other if they are close to each other
+			local useHeadlandFromPreviousRow = useHeadlandToNextRow
+			useHeadlandToNextRow = i ~= endTrack and math.abs(parallelTracks[i].originalTrackNumber - parallelTracks[i + 1].originalTrackNumber) > 2
 			for j, point in ipairs( parallelTracks[ i ].waypoints) do
 				-- the first point of a track is the end of the turn (except for the first track)
-				if ( j == 1 and ( i ~= startTrack or startWithTurn )) then
+				if ( j == 1 and ( i ~= startTrack or startWithTurn ) and not useHeadlandFromPreviousRow) then
 					point.turnEnd = true
-				end
-				-- the last point of a track is the start of the turn (except for the last track)
-				if ( j == #parallelTracks[ i ].waypoints and i ~= endTrack ) then
-					point.turnStart = true
 				end
 				-- these will come in handy for the ridge markers
 				point.trackNumber = i
@@ -461,10 +520,43 @@ function linkParallelTracks( result, parallelTracks, bottomToTop, leftToRight, n
 				point.adjacentIslands = parallelTracks[ i ].adjacentIslands
 				point.lastTrack = i == endTrack
 				point.firstTrack = i == startTrack
-				table.insert( result, point )
+				-- the last point of a track is the start of the turn (except for the last track)
+				if ( j == #parallelTracks[ i ].waypoints and i ~= endTrack ) then
+					-- if the next row to work on is farther away use the headland to drive there instead of a turn maneuver
+					if useHeadlandToNextRow then
+						addPathOnHeadlandToNextRow(result, parallelTracks[i].waypoints, parallelTracks[i + 1].waypoints, headlands, islands, workWidth)
+					else
+						point.turnStart = true
+						table.insert( result, point )
+					end
+				else
+					table.insert( result, point )
+				end
 			end
 		else
 			courseGenerator.debug( "Track %d has no waypoints, skipping.", i )
+		end
+	end
+end
+
+function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, workWidth)
+	local allHeadlands = {unpack(headlands)}
+	for _, island in ipairs(islands) do
+		for _, islandHeadland in ipairs(island.headlandTracks) do
+			table.insert(allHeadlands, islandHeadland)
+		end
+	end
+	local pathToNextRow	= pathFinder.findPathOnHeadland(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
+	if not pathToNextRow then
+		-- should not happen, safety harness only
+		table.insert(result, fromRow[#fromRow])
+		return
+	end
+	for i, p in ipairs(pathToNextRow) do
+		if i < #pathToNextRow then
+			-- don't add the last waypoint of the path as that is the same as the first wp of the next row
+			if i > 1 then p.isConnectingTrack = true end
+			table.insert(result, p)
 		end
 	end
 end
@@ -536,6 +628,26 @@ function reorderTracksForAlternateFieldwork( parallelTracks, nRowsToSkip )
 				workedTracks[ i ] = true
 			end
 		end
+	end
+	return reorderedTracks
+end
+
+--- See courseGenerator.CENTER_MODE_SPIRAL for an explanation
+function reorderTracksForSpiralFieldwork(parallelTracks)
+	local reorderedTracks = {}
+	for i = 1, math.ceil(#parallelTracks / 2) do
+		table.insert(reorderedTracks, parallelTracks[i])
+		table.insert(reorderedTracks, parallelTracks[#parallelTracks - i + 1])
+	end
+	return reorderedTracks
+end
+
+--- See courseGenerator.CENTER_MODE_CIRCULAR for an explanation
+function reorderTracksForCircularFieldwork(parallelTracks)
+	local reorderedTracks = {}
+	for i = 1, math.ceil(#parallelTracks / 2) do
+		table.insert(reorderedTracks, parallelTracks[i])
+		table.insert(reorderedTracks, parallelTracks[i + math.ceil(#parallelTracks / 2)])
 	end
 	return reorderedTracks
 end
@@ -887,7 +999,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 	--- Calculate the fitness of a solution.
 	--
 	-- Calculate the distance to move between block exits and entrances for all 
-	-- blocks in the given sequence. The fitness is the recoprocal of the distance
+	-- blocks in the given sequence. The fitness is the reciprocal of the distance
 	-- so shorter routes are fitter.
 	function calculateFitness( chromosome )
 		chromosome.distance = 0
@@ -1003,6 +1115,7 @@ function getTrackBetweenPointsOnHeadland( headland, startIx, endIx, step )
 	return track
 end
 
+-- TODO: make sure this works with the spiral and circular center patterns as well.
 function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBlockDirection, nRowsToSkip )
 	local workedBlocks = {}
 	for i, block in ipairs( blocksInSequence ) do
