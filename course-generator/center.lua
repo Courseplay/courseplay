@@ -552,9 +552,8 @@ function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, 
 		table.insert(result, fromRow[#fromRow])
 		return
 	end
-	for i = 1, #pathToNextRow - 1 do
-		--print(i)
-		--printTable(pathToNextRow)
+	table.insert(result, fromRow[#fromRow])
+	for i = 2, #pathToNextRow - 1 do
 		-- don't add the first and last waypoint of the path because those are the last and first points of the
 		-- current and next rows
 		pathToNextRow[i].isConnectingTrack = true
@@ -638,9 +637,14 @@ end
 --- See courseGenerator.CENTER_MODE_SPIRAL for an explanation
 function reorderTracksForSpiralFieldwork(parallelTracks)
 	local reorderedTracks = {}
-	for i = 1, math.ceil(#parallelTracks / 2) do
+	for i = 1, math.floor(#parallelTracks / 2) do
+		print(i,#parallelTracks - i + 1 )
 		table.insert(reorderedTracks, parallelTracks[i])
 		table.insert(reorderedTracks, parallelTracks[#parallelTracks - i + 1])
+	end
+	if #parallelTracks % 2 ~= 0 then
+		table.insert(reorderedTracks, parallelTracks[math.ceil(#parallelTracks /2)])
+		print(math.ceil(#parallelTracks /2))
 	end
 	return reorderedTracks
 end
