@@ -305,6 +305,8 @@ end
 --  We want to use this to round sharp edges of polygon.
 --
 function findArcBetweenEdges( e1, e2, r )
+	print(math.deg(e1.angle), math.deg(e2.angle))
+	print(e1.to.x, e1.to.y, e2.from.x, e2.from.y)
 	-- first, find the intersection of ab and cd. We most likely
 	-- have to make them longer, as they are edges of a polygon
 	-- lengthen ab forward and cd backwards by double radius
@@ -320,6 +322,7 @@ function findArcBetweenEdges( e1, e2, r )
 	-- to connect them with an arc
 	local e1ToIs = getDistanceBetweenPoints( e1.to, is )
 	local isToE2 = getDistanceBetweenPoints( is, e2.from )
+	print(e1ToIs, isToE2, d)
 	if lt( e1ToIs, d ) or lt( isToE2, d ) then
 		return nil
 	end
@@ -531,6 +534,7 @@ end
 
 
 function printTable( t )
+	if not t then print('nil') return end
 	for key, value in pairs( t ) do
 		print( key, value )
 	end

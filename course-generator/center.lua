@@ -546,19 +546,22 @@ function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, 
 			table.insert(allHeadlands, islandHeadland)
 		end
 	end
-	local pathToNextRow	= pathFinder.findPathOnHeadland(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
+	local pathToNextRow, _ = pathFinder.findPathOnHeadland(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
 	if not pathToNextRow then
 		-- should not happen, safety harness only
 		table.insert(result, fromRow[#fromRow])
 		return
 	end
-	for i, p in ipairs(pathToNextRow) do
-		if i < #pathToNextRow then
-			-- don't add the last waypoint of the path as that is the same as the first wp of the next row
-			if i > 1 then p.isConnectingTrack = true end
-			table.insert(result, p)
-		end
+	for i = 1, #pathToNextRow - 1 do
+		--print(i)
+		--printTable(pathToNextRow)
+		-- don't add the first and last waypoint of the path because those are the last and first points of the
+		-- current and next rows
+		pathToNextRow[i].isConnectingTrack = true
+		table.insert(result, pathToNextRow[i])
 	end
+	fromRow[#fromRow].mustReach = true
+	toRow[1].align = true
 end
 
 --- Check parallel tracks to see if the turn start and turn end waypoints

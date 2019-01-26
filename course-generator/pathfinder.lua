@@ -319,7 +319,7 @@ function pathFinder.findPathOnHeadland(fromNode, toNode, headlands, workWidth, d
 	if path then
 		path = Polyline:new( path )
 		path:calculateData()
-		path:smooth( math.rad( 0 ), math.rad( 180 ), 1 )
+		--path:smooth( math.rad( 0 ), math.rad( 180 ), 1 )
 		courseGenerator.debug( "Path generated with %d points", #path )
 	end
 	return path, nodes
