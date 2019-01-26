@@ -19,9 +19,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, vehicle.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
 
-	--- Prevent mouse from zooming when mouse cursor is inside the CP Hud
-	self:lockContext(mouseIsInHudArea);
-
 	--LEFT CLICK
 	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and mouseIsInHudArea then
 		local buttonToHandle;
@@ -145,6 +142,9 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 				end;
 			end;
 		end;
+
+		--- Prevent mouse from zooming when mouse cursor is inside the CP Hud Mouse Wheel area
+		self:lockContext(vehicle.cp.hud.mouseWheel.render);
 	end;
 
 
