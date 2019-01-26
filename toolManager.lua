@@ -1391,11 +1391,11 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 		--start filling
 		if trigger.onActivateObject then
 			if trigger.autoStart then
-				trigger:onActivateObject() 
+				trigger:onActivateObject(vehicle) 
 			else
 				--force the selected fillType and force the trigger to autoload
 				trigger.autoStart = true
-				trigger:onActivateObject() 
+				trigger:onActivateObject(vehicle) 
 				trigger.selectedFillType = vehicle.cp.siloSelectedFillType
 				g_effectManager:setFillType(trigger.effects, trigger.selectedFillType)
 				trigger.autoStart = false
@@ -1413,7 +1413,7 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 	else
 		--stop filling
 		if trigger.onActivateObject then 
-			trigger:onActivateObject()
+			trigger:onActivateObject(vehicle)
 		elseif trigger.sourceObject then
 			workTool:setFillUnitIsFilling(false)							
 		end
