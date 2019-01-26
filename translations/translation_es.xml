@@ -222,6 +222,10 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Maniobra Inversa en Cabeceras"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Recto" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Curva" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="Activado" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Solo nombre" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nombre y Ruta" />

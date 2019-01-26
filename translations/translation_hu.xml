@@ -222,6 +222,10 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Fordulósáv tolatómanőver"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="egyenes" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="kanyarodó" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Tábla közepe (kísérleti)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="fel/le" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="körkörös" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spirál" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="Bekapcsolva" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Csak név" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Név és útvonal" />

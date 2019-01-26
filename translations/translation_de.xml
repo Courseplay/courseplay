@@ -226,6 +226,10 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Vorgewende Eckmanöver"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="rückwärts gerade" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="rückwärts lenkend" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="nur Name" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Name und Kurs" />

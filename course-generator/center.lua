@@ -508,7 +508,8 @@ function linkParallelTracks(result, parallelTracks, bottomToTop, leftToRight, ce
 		if parallelTracks[ i ].waypoints then
 			-- use turn maneuver from one track to the other if they are close to each other
 			local useHeadlandFromPreviousRow = useHeadlandToNextRow
-			useHeadlandToNextRow = i ~= endTrack and math.abs(parallelTracks[i].originalTrackNumber - parallelTracks[i + 1].originalTrackNumber) > 2
+			useHeadlandToNextRow = centerSettings.mode ~= courseGenerator.CENTER_MODE_UP_DOWN and
+				(i ~= endTrack and math.abs(parallelTracks[i].originalTrackNumber - parallelTracks[i + 1].originalTrackNumber) > 2)
 			for j, point in ipairs( parallelTracks[ i ].waypoints) do
 				-- the first point of a track is the end of the turn (except for the first track)
 				if ( j == 1 and ( i ~= startTrack or startWithTurn ) and not useHeadlandFromPreviousRow) then
@@ -552,10 +553,7 @@ function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, 
 		table.insert(result, fromRow[#fromRow])
 		return
 	end
-	table.insert(result, fromRow[#fromRow])
-	for i = 2, #pathToNextRow - 1 do
-		-- don't add the first and last waypoint of the path because those are the last and first points of the
-		-- current and next rows
+	for i = 1, #pathToNextRow - 1 do
 		pathToNextRow[i].isConnectingTrack = true
 		table.insert(result, pathToNextRow[i])
 	end

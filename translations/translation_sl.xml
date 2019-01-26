@@ -226,6 +226,10 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Headland reverse maneuver"/>  <!-- TRANSLATE THIS: when the course is generated to use turn maneuvers on headland corners, this selects the type of the maneuver -->
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="straight" /> <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="curve" /> <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktiviran" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Samo ime" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Ime in pot" />

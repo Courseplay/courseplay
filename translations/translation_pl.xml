@@ -226,6 +226,10 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 	text="Manewr zawracania na uwrociach:"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 	text="Prosto" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 	text="Po łuku" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
 		<text name="COURSEPLAY_ACTIVATED"								 	text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 	text="Tylko nazwa" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 	text="Nazwa i Kurs" />

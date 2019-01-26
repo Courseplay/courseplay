@@ -226,6 +226,7 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Headland reverse maneuver"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="straight" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="curve" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />

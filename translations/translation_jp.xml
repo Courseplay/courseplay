@@ -226,6 +226,10 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="まくら地のリバース経路"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="ストレート" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="カーブ" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="有効" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="車両名のみ" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="車両名とコース名" />

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="40">
-	<version>6.00.00032</version>
+	<version>6.00.00033</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay SIX</br>
@@ -24,66 +24,16 @@
 	<description>
 		<de>
 <![CDATA[
-Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 17, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
-	changeLog:
-	- Pathfinding for Mode 4 and 6 to off field course
-	- neuer Kurs-Generator GUI
-	- support für Ropa Addon
-	- neues Kollisions-Erkennungssystem
-	- Feldarbeitsrichtung kann nun auch manuell vorgegeben werden
-	- Erkennung und Umfahrung von Feldinseln
-	- multiplayer aktiviert
-	- support für straw harvest addon
-	- support für sprayer Addon (mit freundlicher Unterstützung von David FONTAINE)
-	- neue Funktion: Drescher-Kolonne
-	- neue Wendemanöver im Vorgwende
-	- Ausrichtung am ersten Wegpunkt in allen Feldmodi
-	- Unterstützung für mehrere Geräte auf dem selben Feldkurs
-	- support für Plantium Edition
-	- bugfixes
+Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 19, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
 ]]>
 		</de>
 		<en>
 <![CDATA[
-Courseplay is a modification for Farming Simulator 17. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
-	changeLog:
-	- Pathfinding for Mode 4 and 6 to off field course
-	- course generator setting GUI
-	- added support for RO
-	- new traffic recognition system
-	- fieldwork row direction can also be selected manually now
-	- support for big islands
- 	- multiplayer enabled
-	- support for straw harvest addon
-	- new option for course generation to bypass small islands in fields
-	- added support for sprayer Addon (with the friendly support of David FONTAINE)
-	- added combine convoy option
-	- turn maneuver for headland corners to avoid missing fruit
-	- added option to align to 1st waypoint in mode 2, 4 and 6
-	- added easy setup for multiple tools  on one field work course
-	- support for Plantium Edition(Still Work In Progress)
-	- bugfixes
+Courseplay is a modification for Farming Simulator 19. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
 ]]>
 		</en>
 		<fr>
-<![CDATA[Courseplay est une modification pour Farm Simulator 17, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
-	changeLog:
-	- Pathfinding for Mode 4 and 6 to off field course
-	- course generator setting GUI
-	- added support for RO
-	- new traffic recognition system
-	- fieldwork row direction can also be selected manually now
-	- support for big islands
- 	- multiplayer enabled
-	- support for straw harvest addon
-	- new option for course generation to bypass small islands in fields
-	- added support for sprayer Addon (with the friendly support of David FONTAINE)
-	- added combine convoy option
-	- turn maneuver for headland corners to avoid missing fruit
-	- added option to align to 1st waypoint in mode 2, 4 and 6
-	- added easy setup for multiple tools  on one field work course
-	- support for Plantium Edition(Still Work In Progress)
-	- bugfixes
+<![CDATA[Courseplay est une modification pour Farm Simulator 19, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
 ]]>
 		</fr>
 	</description>
