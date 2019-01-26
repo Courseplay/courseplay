@@ -92,6 +92,8 @@ function Waypoint:set(cpWp, cpIndex)
 	self.lane = cpWp.lane
 	self.ridgeMarker = cpWp.ridgeMarker
 	self.unload = cpWp.unload
+	self.mustReach = cpWp.mustReach
+	self.align = cpWp.align
 end
 
 --- Get the (original, non-offset) position of a waypoint
@@ -130,6 +132,7 @@ WaypointNode.MODE_NORMAL = 1
 WaypointNode.MODE_LAST_WP = 2
 WaypointNode.MODE_SWITCH_DIRECTION = 3
 WaypointNode.MODE_SWITCH_TO_FORWARD = 4
+WaypointNode.MODE_MUST_REACH = 5
 
 function WaypointNode:init(name, logChanges)
 	self.logChanges = logChanges
@@ -184,6 +187,18 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 			courseplay.debugVehicle(12, course.vehicle, 'PPC: switching direction at %d, moving node beyond it: %s', ix, getName(self.node))
 		end
 		self.mode = WaypointNode.MODE_SWITCH_DIRECTION
+	elseif course:mustReach(ix) then
+		-- TODO: this is actually the same as the last WP, should it be in the same elsif?
+		self:setToWaypoint(course, ix)
+		-- turn node to the incoming direction as we want to continue in the same direction until we reach it
+		setRotation(self.node, 0, math.rad(course.waypoints[math.max(1, ix - 1)].angle), 0)
+		-- And now, move ahead a bit.
+		local nx, ny, nz = localToWorld(self.node, 0, 0, distance)
+		setTranslation(self.node, nx, ny, nz)
+		if self.logChanges and self.mode and self.mode ~= WaypointNode.MODE_MUST_REACH then
+			courseplay.debugVehicle(12, course.vehicle, 'PPC: must reach next waypoint, moving node beyond it: %s', getName(self.node))
+		end
+		self.mode = WaypointNode.MODE_MUST_REACH
 	else
 		if self.logChanges and self.mode and self.mode ~= WaypointNode.MODE_NORMAL then
 			courseplay.debugVehicle(12, course.vehicle, 'PPC: normal waypoint (not last, no direction change: %s', getName(self.node))
@@ -288,6 +303,11 @@ function Course:isOnConnectingTrack(ix)
 	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].isConnectingTrack
 end
 
+--- Is this a waypoint we must reach (keep driving towards it until we reach it, no cutting corners,
+-- for example the end of a worked row to not miss anything)
+function Course:mustReach(ix)
+	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].mustReach
+end
 
 function Course:switchingDirectionAt(ix) 
 	return self:switchingToForwardAt(ix) or self:switchingToReverseAt(ix)

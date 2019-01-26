@@ -546,19 +546,21 @@ function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, 
 			table.insert(allHeadlands, islandHeadland)
 		end
 	end
-	local pathToNextRow	= pathFinder.findPathOnHeadland(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
+	local pathToNextRow, _ = pathFinder.findPathOnHeadland(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
 	if not pathToNextRow then
 		-- should not happen, safety harness only
 		table.insert(result, fromRow[#fromRow])
 		return
 	end
-	for i, p in ipairs(pathToNextRow) do
-		if i < #pathToNextRow then
-			-- don't add the last waypoint of the path as that is the same as the first wp of the next row
-			if i > 1 then p.isConnectingTrack = true end
-			table.insert(result, p)
-		end
+	table.insert(result, fromRow[#fromRow])
+	for i = 2, #pathToNextRow - 1 do
+		-- don't add the first and last waypoint of the path because those are the last and first points of the
+		-- current and next rows
+		pathToNextRow[i].isConnectingTrack = true
+		table.insert(result, pathToNextRow[i])
 	end
+	fromRow[#fromRow].mustReach = true
+	toRow[1].align = true
 end
 
 --- Check parallel tracks to see if the turn start and turn end waypoints
@@ -635,9 +637,14 @@ end
 --- See courseGenerator.CENTER_MODE_SPIRAL for an explanation
 function reorderTracksForSpiralFieldwork(parallelTracks)
 	local reorderedTracks = {}
-	for i = 1, math.ceil(#parallelTracks / 2) do
+	for i = 1, math.floor(#parallelTracks / 2) do
+		print(i,#parallelTracks - i + 1 )
 		table.insert(reorderedTracks, parallelTracks[i])
 		table.insert(reorderedTracks, parallelTracks[#parallelTracks - i + 1])
+	end
+	if #parallelTracks % 2 ~= 0 then
+		table.insert(reorderedTracks, parallelTracks[math.ceil(#parallelTracks /2)])
+		print(math.ceil(#parallelTracks /2))
 	end
 	return reorderedTracks
 end

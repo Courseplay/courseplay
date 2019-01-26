@@ -752,7 +752,9 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 				ridgemarker='Int',
         		isconnectingtrack='Bool',
 				headlandheightforturn='Int',
-        		radius='String'};
+        		radius='String',
+				mustreach='Bool',
+				align='Bool'};
 
 			for k, v in pairs(cp_course.waypoints) do
 				local waypoint = {
@@ -773,7 +775,9 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 					lane =		  (v.lane and v.lane < 0) and v.lane or nil;
 					headlandheightforturn = v.headlandHeightForTurn and v.headlandHeightForTurn or nil;
 					isconnectingtrack =	v.isConnectingTrack and v.isConnectingTrack or nil;
-          			radius = v.radius and ('%.1f'):format( v.radius ) or nil
+          			radius = v.radius and ('%.1f'):format( v.radius ) or nil;
+					mustreach =	v.mustReach and v.mustReach or nil;
+					align = v.align and v.align or nil
 				};
 
 				waypoints[k] = waypoint;
@@ -1410,6 +1414,8 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					local headlandHeightForTurn = getXMLInt(courseXml, key .. '#headlandheightforturn');
 					local isConnectingTrack   =   getXMLBool(courseXml, key .. '#isconnectingtrack');
           			local radius 	  =  getXMLFloat(courseXml, key .. '#radius');
+					local mustReach   =   getXMLBool(courseXml, key .. '#mustreach');
+					local align		  =   getXMLBool(courseXml, key .. '#align');
 					crossing = crossing == 1 or wpNum == 1;
 					wait = wait == 1;
 					unload = unload == 1;
@@ -1432,7 +1438,9 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 						ridgeMarker = ridgeMarker,
 						headlandHeightForTurn = headlandHeightForTurn,
             			isConnectingTrack = isConnectingTrack,
-            			radius = radius
+            			radius = radius,
+						mustReach = mustReach,
+						align = align
 					};
 					wpNum = wpNum + 1;
 				end; -- END while true (waypoints)
