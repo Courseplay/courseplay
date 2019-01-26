@@ -184,7 +184,8 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 			Island.circleBigIslands( field.course, field.bigIslands, headlandSettings.headlandFirst, implementWidth, minSmoothAngle, maxSmoothAngle )
 			field.course:calculateData()
 		end
-		addTurnsToCorners( field.course, implementWidth, turnRadius, math.rad( headlandSettings.minHeadlandTurnAngleDeg ))
+		addTurnsToCorners( field.course, math.rad( headlandSettings.minHeadlandTurnAngleDeg ),
+			centerSettings.mode ~= courseGenerator.CENTER_MODE_UP_DOWN)
 	end
 	-- flush STDOUT when not in the game for debugging
 	if not courseGenerator.isRunningInGame() then
@@ -249,7 +250,7 @@ function removeHeadlandTurns( course )
 	end
 end
 
-function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
+function addTurnsToCorners( vertices, minHeadlandTurnAngle, headlandOnly)
 	-- start at the second wp to avoid having the first waypoint a turn start,
 	-- that throws an nil in getPointDirection (due to the way calculatePolygonData
 	-- works, the prevEdge to the first point is bogus anyway)
@@ -258,22 +259,22 @@ function addTurnsToCorners( vertices, width, turnRadius, minHeadlandTurnAngle )
 		local cp = vertices[ i ]
 		local np = vertices[ i + 1 ]
 		local nnp = vertices[ i + 2 ]
-		if cp.prevEdge and np.nextEdge then
-			-- start a turn at the current point only if the next one is not a start of the turn already
-			-- or not an island bypass point or a reversing waypoint
-			-- and there really is a turn
-			if not np.turnStart and not cp.turnStart and not cp.turnEnd and
-				not cp.islandBypass and not np.islandBypass and
-				not cp.rev and not np.rev and not nnp.rev and
-				math.abs( getDeltaAngle( np.nextEdge.angle, np.prevEdge.angle )) > minHeadlandTurnAngle then
-				--math.abs( getDeltaAngle( np.nextEdge.angle, cp.nextEdge.angle )) > minHeadlandTurnAngle then
-				cp.turnStart = true
-				cp.headlandTurn = true
-				--cp.text = string.format( "turn start %.1f", math.deg( cp.nextEdge.angle ))
-				np.turnEnd = true
-				np.headlandTurn = true
-				--np.text = string.format( "turn end %.1f", math.deg( np.nextEdge.angle ))
-				i = i + 2
+		if not headlandOnly or (headlandOnly and not cp.trackNumber and not np.trackNumber) then
+			-- cp.trackNumber is set for the up/down rows where we don't want to add turn start/ends when headlandOnly is true
+			if cp.prevEdge and np.nextEdge then
+				-- start a turn at the current point only if the next one is not a start of the turn already
+				-- or not an island bypass point or a reversing waypoint
+				-- and there really is a turn
+				if not np.turnStart and not cp.turnStart and not cp.turnEnd and
+					not cp.islandBypass and not np.islandBypass and
+					not cp.rev and not np.rev and not nnp.rev and
+					math.abs( getDeltaAngle( np.nextEdge.angle, np.prevEdge.angle )) > minHeadlandTurnAngle then
+					cp.turnStart = true
+					cp.headlandTurn = true
+					np.turnEnd = true
+					np.headlandTurn = true
+					i = i + 2
+				end
 			end
 		end
 		i = i + 1
