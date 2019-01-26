@@ -841,12 +841,12 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
 
 		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
-			if not printOnce then
-				printOnce = true
-				courseplay.alreadyPrinted = {}
-				courseplay:printMeThisTable(siloTrigger,0,4,"siloTrigger")
-				
-			end
+			--if not printOnce then
+			--	printOnce = true
+			--	courseplay.alreadyPrinted = {}
+			--	courseplay:printMeThisTable(siloTrigger,0,4,"siloTrigger")
+			--
+			--end
 			--siloTrigger.source
 			
 			local siloIsEmpty = false --siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
@@ -1102,7 +1102,16 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 					end
 
 					-- Get the animation
-					local animation = tipper.spec_animatedVehicle.animations['tipAnimationBack']
+					local animation;
+					if tipper.spec_animatedVehicle.animations['tipAnimationBack'] ~= nil then
+						animation = tipper.spec_animatedVehicle.animations['tipAnimationBack'];
+					elseif tipper.configFileName == 'data/vehicles/annaburger/fieldLinerHTS31/fieldLinerHTS31.xml' then		--Anim time for the Annaburger is just 2 seconds, way to low to unload it properly
+						animation = {['duration'] = 16000, ['currentTime'] = 0}
+					elseif tipper.spec_animatedVehicle.animations['tipAnimationBackDoor'] ~= nil then
+						animation = tipper.spec_animatedVehicle.animations['tipAnimationBackDoor'];
+					else
+						animation = {["duration"] = 15000, ["currentTime"] = 0}								--Set some defaults, so in case a weird anim name was used, at least we are not throwing an error
+					end
 					local totalLength = abs(endDistance - startDistance)*0.9;
 					local fillDelta = vehicle.cp.totalFillLevel / vehicle.cp.totalCapacity;
 					local totalTipDuration = (animation.duration- animation.currentTime)/1*fillDelta / 1000;
@@ -1429,7 +1438,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 
 	if (vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable or vehicle.cp.hasHarvesterAttachable) and vehicle.cp.totalFillLevelPercent > 0 then
 		for i=1, #(vehicle.cp.workTools) do
-			workTool = vehicle.cp.workTools[i];
+			local workTool = vehicle.cp.workTools[i];
 			local combine = vehicle
 			if courseplay:isAttachedCombine(workTool) and workTool.cp.hasSpecializationCutter then
 				combine = workTool
@@ -1595,7 +1604,7 @@ function courseplay:handleHeapUnloading(vehicle)
 		vehicle.cp.workTools[1] = vehicle
 	end;
 	for i=1, #(vehicle.cp.workTools) do
-		workTool = vehicle.cp.workTools[i];
+		local workTool = vehicle.cp.workTools[i];
 		local combine = vehicle
 		if workTool and courseplay:isAttachedCombine(workTool) then
 			combine = workTool
