@@ -139,6 +139,7 @@ function AIDriver:drive(dt)
 		-- looks like this needs to be called in every update cycle.
 		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
 	end
+	self:drawTemporaryCourse()
 end
 
 --- Normal driving according to the course waypoints, using courseplay:goReverse() when needed
@@ -413,4 +414,14 @@ end
 function AIDriver:isStopped()
 	-- giants supplied last speed is in mm/s
 	return math.abs(self.vehicle.lastSpeedReal) < 0.0001
+end
+
+function AIDriver:drawTemporaryCourse()
+	if not self.temporaryCourse then return end
+	if not courseplay.debugChannels[self.debugChannel] then return end
+	for i = 1, self.temporaryCourse:getNumberOfWaypoints() - 1 do
+		local x, y, z = self.temporaryCourse:getWaypointPosition(i)
+		local nx, ny, nz = self.temporaryCourse:getWaypointPosition(i + 1)
+		cpDebug:drawLine(x, y + 3, z, 100, 0, 100, nx, ny + 3, nz)
+	end
 end

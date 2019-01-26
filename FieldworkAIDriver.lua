@@ -279,7 +279,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 			end
 		end
 		-- towards the end of the field course make sure the implement reaches the last waypoint
-		if ix > self.course:getNumberOfWaypoints() - 3 then
+		if self.fieldworkState ~= self.states.TEMPORARY and ix > self.course:getNumberOfWaypoints() - 3 then
 			if self.vehicle.cp.aiFrontMarker then
 				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.vehicle.cp.aiFrontMarker)
 				self.aiDriverOffsetZ = -self.vehicle.cp.aiFrontMarker
