@@ -125,6 +125,14 @@
 						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 					</GuiElement>
 
+					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="centerMode" toolTip="$l10n_COURSEPLAY_CENTER_MODE" onOpen="onOpenCenterMode" onClick="onClickCenterMode">
+						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+						<GuiElement type="text" profile="cpMultiTextOptionText" />
+						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_CENTER_MODE"/>
+						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+					</GuiElement>
+
 
 				</GuiElement>
 				<GuiElement type="flowLayout" profile="buttonBoxDocked" screenAlign="bottomLeft" positionOrigin="bottomLeft" id="buttonsPanel">

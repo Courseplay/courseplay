@@ -1806,7 +1806,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 	end
 end;
 
-
+---@class SettingList
 SettingList = CpObject()
 
 --- A setting that can have a predefined set of values
@@ -1900,6 +1900,7 @@ end
 
 
 --- Driving mode setting
+---@class DrivingModeSetting : SettingList
 DrivingModeSetting = CpObject(SettingList)
 
 -- Driving modes
@@ -1952,6 +1953,7 @@ function DrivingModeSetting:onChange()
 	end
 end
 
+---@class StartingLocationSetting : SettingList
 StartingLocationSetting = CpObject(SettingList)
 
 function StartingLocationSetting:init(vehicle)
@@ -1979,6 +1981,24 @@ function StartingLocationSetting:init(vehicle)
 		table.remove(self.values, 2)
 		table.remove(self.texts, 2)
 	end
+end
+
+--- Course gen center mode setting
+---@class CenterModeSetting : SettingList
+CenterModeSetting = CpObject(SettingList)
+
+function CenterModeSetting:init()
+	SettingList.init(self,
+		{
+			courseGenerator.CENTER_MODE_UP_DOWN,
+			courseGenerator.CENTER_MODE_CIRCULAR,
+			courseGenerator.CENTER_MODE_SPIRAL
+		},
+		{
+			'COURSEPLAY_CENTER_MODE_UP_DOWN',
+			'COURSEPLAY_CENTER_MODE_CIRCULAR',
+			'COURSEPLAY_CENTER_MODE_SPIRAL'
+		})
 end
 
 -- do not remove this comment

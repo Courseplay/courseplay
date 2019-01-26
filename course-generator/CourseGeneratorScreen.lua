@@ -497,6 +497,15 @@ function CourseGeneratorScreen:draw()
 	end
 end
 
+function CourseGeneratorScreen:onOpenCenterMode( element, parameter )
+	self.centerModeSetting = CenterModeSetting()
+	element:setTexts(self.centerModeSetting:getGuiElementTexts())
+	element:setState(self.centerModeSetting:getGuiElementStateFromValue(self.vehicle.cp.courseGeneratorSettings.centerMode))
+end
+
+function CourseGeneratorScreen:onClickCenterMode(state)
+	self.vehicle.cp.courseGeneratorSettings.centerMode = self.centerModeSetting:getValueFromGuiElementState(state)
+end
 
 function CourseGeneratorScreen:isOverElement( x, y, element )
 	if x < element.absPosition[ 1 ] or x > element.absPosition[ 1 ] + element.size[ 1 ] or

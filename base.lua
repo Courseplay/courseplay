@@ -502,7 +502,8 @@ function courseplay:onLoad(savegame)
 		startingLocation = self.cp.startingCorner,
 		manualStartingLocationWorldPos = nil,
 		islandBypassMode = Island.BYPASS_MODE_NONE,
-		nRowsToSkip = 0
+		nRowsToSkip = 0,
+		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
 	}
 	self.cp.headland = {
 		-- with the old, manual direction selection course generator

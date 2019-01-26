@@ -80,7 +80,8 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		useBestAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC,
 		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
 		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0,
-		nRowsToSkip = vehicle.cp.courseGeneratorSettings.nRowsToSkip
+		nRowsToSkip = vehicle.cp.courseGeneratorSettings.nRowsToSkip,
+		mode = vehicle.cp.courseGeneratorSettings.centerMode
 	}
 
 	local minSmoothAngle, maxSmoothAngle
@@ -206,6 +207,6 @@ function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
 	g_CourseGeneratorScreen:setVehicle( vehicle )
 	g_gui:showGui( 'CourseGeneratorScreen' )
 	-- force reload screen so changes in XML do not require the entire game to be restarted, just reselect the screen
-	--g_CourseGeneratorScreen = nil
+	g_CourseGeneratorScreen = nil
 end
 
