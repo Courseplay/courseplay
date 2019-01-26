@@ -413,9 +413,9 @@ function courseplay.inputBindings.updateInputButtonData()
 		-- print(('\t%s: inputName=%q'):format(inputNameType, inputName));
 
 		local txt;
-		if type(mouseInputDisplayText) == "number" then
-			txt = g_i18n:getText('COURSEPLAY_MOUSE_BUTTON_NR'):format(mouseInputDisplayText);
-		elseif type(mouseInputDisplayText) == "string" then
+		if tonumber(mouseInputDisplayText) then
+			txt = g_i18n:getText('COURSEPLAY_MOUSE_BUTTON_NR'):format(tonumber(mouseInputDisplayText));
+		elseif type(mouseInputDisplayText) == "string" and g_i18n.texts[("COURSEPLAY_MOUSE_BUTTON_%s"):format(mouseInputDisplayText:upper())] then
 			txt = g_i18n:getText(("COURSEPLAY_MOUSE_BUTTON_%s"):format(mouseInputDisplayText:upper()));
 		else
 			--- Should never happen but could happen if no mouse button was set.
