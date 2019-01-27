@@ -842,7 +842,7 @@ end;
 function CpManager:setupWages()
 	self.wageDifficultyMultiplier = 1 --Tommi Utils.lerp(0.5, 1, (g_currentMission.missionInfo.difficulty - 1) / 2);
 	self.wagesActive = true;
-	self.wagePerHour = 1500;
+	self.wagePerHour = 13.50;
 	self.wagePer10Secs  = self.wagePerHour / 360;
 	self.showWagesYesNoDialogue = false;
 end;
