@@ -509,7 +509,7 @@ function courseplay:onLoad(savegame)
 		-- with the old, manual direction selection course generator
 		manuDirMaxNumLanes = 6;
 		-- with the new, auto direction selection course generator
-		autoDirMaxNumLanes = 20;
+		autoDirMaxNumLanes = 50;
 		maxNumLanes = 20;
 		numLanes = 0;
 		mode = courseGenerator.HEADLAND_MODE_NORMAL;
