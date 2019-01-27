@@ -1546,7 +1546,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				--print(string.format("tipper.couldNotDropTimer: %s; goForTipping: %s",tostring(tipper.couldNotDropTimer),tostring(goForTipping)))
 				
 				if (tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED or tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING) and goForTipping then
-					tipper:toggleTipState(nil, tipRefpoint);
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 					--print("toggeltipstate by "..message)
 				end
 				
@@ -1554,7 +1554,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				
 				--finsh and go for next round
 				if (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
-					tipper:toggleTipState(nil, tipRefpoint);
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 					vehicle.cp.takeOverSteering = false
 					if revUnload then
 						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
@@ -1696,14 +1696,17 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 	else	
 		_,_,z = worldToLocal(node, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
 	end
-	if (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer > 100 then
-		if tipper.couldNotDropTimer > tipper.couldNotDropTimerThreshold *0.9 then
-			tipper.couldNotDropTimer = 0
-		end
+	local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
+	if (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and not isTipping then
 		vehicle.cp.takeOverSteering = true
+		if vehicle.cp.saveFuelOptionActive then
+			courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
+		end
+		
 	end		
 	
-	if (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and tipper.couldNotDropTimer < 100 and vehicle.cp.takeOverSteering then
+	
+	if g_updateLoopIndex % 100 == 0 and (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and isTipping and vehicle.cp.takeOverSteering then
 		vehicle.cp.takeOverSteering = false	
 		vehicle.cp.lastValidTipDistance = z or 0
 		--print("reset takeOverSteering z= "..tostring(z).." Zsent: "..tostring(zSent))
