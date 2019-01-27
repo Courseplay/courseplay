@@ -576,8 +576,8 @@ function courseplay:setMarkers(vehicle, object)
 
 	local activeInputAttacherJoint = object.getActiveInputAttacherJoint and object:getActiveInputAttacherJoint()
 	if not activeInputAttacherJoint then
-		print('No attacher Joints')
-		return 
+		courseplay.debugVehicle(6, vehicle, 'setMarkers(): no attacher joints')
+		return
 	end
 
 	if not courseplay:hasWorkAreas(object) then

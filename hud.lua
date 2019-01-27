@@ -1352,7 +1352,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	local w32pxConstant, h32pxConstant = self:getPxToNormalConstant(32, 32);
 
 	local gfxPath = Utils.getFilename('img/hud.png', courseplay.path);
-	print(gfxPath)
 	vehicle.cp.hud = {
 		bg				  = Overlay:new(gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
 		bgWithModeButtons = Overlay:new(gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
