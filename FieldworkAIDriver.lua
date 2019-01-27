@@ -321,6 +321,7 @@ function FieldworkAIDriver:startWork()
 		self.vehicle:startMotor()
 	end
 	courseplay:lowerImplements(self.vehicle)
+	self:unfoldImplements()
 end
 
 
@@ -329,6 +330,8 @@ function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
 	courseplay:raiseImplements(self.vehicle)
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
+	self.vehicle:requestActionEventUpdate()
+	self:foldImplements()
 end
 
 --- Check all worktools to see if we are ready
@@ -498,4 +501,30 @@ function FieldworkAIDriver:manageConvoy()
 	end
 
 	return hold
+end
+
+-- Although raising the AI start/stop events supposed to fold/unfold the implements, it does not always happen.
+-- So use these to explicitly do so
+function FieldworkAIDriver:unfoldImplements()
+	for _,workTool in pairs(self.vehicle.cp.workTools) do
+		if courseplay:isFoldable(workTool) then
+			local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool)
+			if not isUnfolded then
+				self:debug('Unfolding %s', workTool:getName())
+				workTool:setFoldDirection(workTool.cp.realUnfoldDirection)
+			end
+		end
+	end
+end
+
+function FieldworkAIDriver:foldImplements()
+	for _,workTool in pairs(self.vehicle.cp.workTools) do
+		if courseplay:isFoldable(workTool) then
+			local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool)
+			if not isFolded then
+				self:debug('Folding %s', workTool:getName())
+				workTool:setFoldDirection(-workTool.cp.realUnfoldDirection)
+			end
+		end
+	end
 end
