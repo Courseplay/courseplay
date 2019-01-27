@@ -511,7 +511,7 @@ function courseplay.fields.saveCustomFields(self)
 		end;
 	end;
 end;
-g_careerScreen.saveSavegame = Utils.appendedFunction(g_careerScreen.saveSavegame, courseplay.fields.saveCustomFields);
+FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, courseplay.fields.saveCustomFields);
 
 --XML LOADING
 function courseplay.fields:loadCustomFields(importFromOldFile)
