@@ -25,6 +25,7 @@ function courseplay.fields:setup()
 end;
 
 function courseplay.fields:setUpFieldsIngameData()
+
 	--self = courseplay.fields
 	self:dbg("call setUpIngameData()", 'scan');
 	--Tommi:still needed ?  self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.plowChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
@@ -282,7 +283,7 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 								name = string.format('%s %d', courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
 							};
 
-							self.fieldData[fieldNum].fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(self.fieldData[fieldNum].areaHa, 2), g_i18n:getText('unit_areaShort'));
+							self.fieldData[fieldNum].fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(self.fieldData[fieldNum].areaHa, 2), g_i18n:getText('unit_ha'));
 							self.fieldData[fieldNum].seedUsage, self.fieldData[fieldNum].seedPrice, self.fieldData[fieldNum].seedDataText = self:getFruitData(area);
 
 							self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
@@ -609,26 +610,29 @@ function courseplay.fields:getFruitTypes()
 	local hudH = courseplay.hud.suc.visibleArea.overlayHeight;
 	local hudX = courseplay.hud.suc.visibleArea.overlayPosX;
 	local hudY = courseplay.hud.suc.visibleArea.overlayPosY;
+	courseplay.alreadyPrinted = {}
+	courseplay:printMeThisTable(g_fruitTypeManager.fruitTypes,0,5,"g_fruitTypeManager.fruitTypes")
+	
 	for name,fruitType in pairs(g_fruitTypeManager.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
-			local fillType = g_fruitTypeManager.fruitTypeIndexToFillType[fruitType.index];
-			local fillTypeDesc = g_fillTypeManager.indexToFillType[ fillType ];
+			local fillTypeDesc = g_fruitTypeManager.fruitTypeIndexToFillType[fruitType.index];
 			if fillTypeDesc then
+				courseplay.alreadyPrinted = {}
+				courseplay:printMeThisTable(fillTypeDesc,0,5,"fillTypeDesc")
+			
 				local fruitData = {
 					index = fruitType.index,
 					name = fruitType.name,
-					nameI18N = fillTypeDesc.nameI18N,
-					sucText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE'):format(tostring(fillTypeDesc.nameI18N))
+					nameI18N = fillTypeDesc.title,
+					sucText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE'):format(fillTypeDesc.title)
 				};
 
-				if fillType and g_currentMission.fillTypeOverlays[fillType] then
-					local hudOverlayPath = g_currentMission.fillTypeOverlays[fillType].filename;
-					if hudOverlayPath and hudOverlayPath ~= '' then
-						if StringUtil.startsWith(hudOverlayPath, 'dataS2') or fileExists(hudOverlayPath) then
-							fruitData.overlay = Overlay:new(hudOverlayPath, hudX, hudY, hudW, hudH);
-							fruitData.overlay:setColor(1, 1, 1, 0.25);
-							-- print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitType.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
-						end;
+				if fillTypeDesc.hudOverlayFilenameSmall ~= '' then
+					local hudOverlayPath = fillTypeDesc.hudOverlayFilenameSmall;
+					if StringUtil.startsWith(hudOverlayPath, 'dataS2') or fileExists(hudOverlayPath) then
+						fruitData.overlay = Overlay:new(hudOverlayPath, hudX, hudY, hudW, hudH);
+						fruitData.overlay:setColor(1, 1, 1, 0.25);
+						--print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitData.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
 					end;
 				end;
 
