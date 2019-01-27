@@ -21,6 +21,7 @@ if courseplay.houstonWeGotAProblem then
 end;
 
 local numInstallationsVehicles = 0;
+local courseplaySpecName = g_currentModName .. ".courseplay"
 
 function courseplay:register(secondTime)
 	if secondTime then
@@ -31,7 +32,7 @@ function courseplay:register(secondTime)
 	for typeName,vehicleType in pairs(g_vehicleTypeManager.vehicleTypes) do
 		if SpecializationUtil.hasSpecialization(AIVehicle, vehicleType.specializations) and not vehicleType.hasCourseplaySpec then
 				print("  install courseplay into "..typeName)
-				g_vehicleTypeManager:addSpecialization(typeName, g_currentModName .. ".courseplay")
+				g_vehicleTypeManager:addSpecialization(typeName, courseplaySpecName)
 				vehicleType.hasCourseplaySpec = true;
 				numInstallationsVehicles = numInstallationsVehicles + 1;
 		end;
