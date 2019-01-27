@@ -1962,6 +1962,15 @@ function courseplay:getAllowCutterAIFruitRequirements(superFunc)
 end
 Cutter.getAllowCutterAIFruitRequirements = Utils.overwrittenFunction(Cutter.getAllowCutterAIFruitRequirements, courseplay.getAllowCutterAIFruitRequirements)
 
+-- Workaround: onEndWorkAreaProcessing seems to cause Cutter to call stopAIVehicle when
+-- driving on an already worked field. This will suppress that call as long as Courseplay is driving
+function courseplay:stopAIVehicle(superFunc, reason, noEventSend)
+	if superFunc ~= nil and not self:getIsCourseplayDriving() then
+		superFunc(self, reason, noEventSend)
+	end
+end
+AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, courseplay.stopAIVehicle)
+	
 
 -- Tour dialog messes up the CP yes no dialogs.
 function courseplay:showTourDialog()

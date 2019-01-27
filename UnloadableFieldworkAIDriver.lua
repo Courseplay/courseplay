@@ -99,19 +99,53 @@ end
 
 function UnloadableFieldworkAIDriver:handlePipe()
 	if self.vehicle.spec_pipe then
-		if self:isFillableTrailerUnderPipe() then
-			if self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_MOVING and
-				self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_OPEN then
-				self:debug('Opening pipe')
-				self.vehicle.spec_pipe:setPipeState(self.PIPE_STATE_OPEN)
-			end
+		if self.vehicle.cp.isChopper then
+			self:handleChopperPipe()
 		else
-			if self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_MOVING and
-				self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED then
-				self:debug('Closing pipe')
-				self.vehicle.spec_pipe:setPipeState(self.PIPE_STATE_CLOSED)
-			end
+			self:handleCombinePipe()
 		end
+	end
+end
+
+function UnloadableFieldworkAIDriver:handleCombinePipe()
+	if self:isFillableTrailerUnderPipe() then
+		self:openPipe()
+	else
+		self:closePipe()
+	end
+end
+
+function UnloadableFieldworkAIDriver:handleChopperPipe()
+	if self.state == self.states.ON_FIELDWORK_COURSE then
+		-- chopper always opens the pipe
+		self:openPipe()
+		-- and stops if there's no trailer in sight
+		local spec = self.vehicle.spec_combine
+		local fillLevel = self.vehicle:getFillUnitFillLevel(spec.fillUnitIndex)
+		--self:debug('filltype = %s, fillLevel = %.1f', self:getFillType(), fillLevel)
+		-- not using isFillableTrailerUnderPipe() as the chopper sometimes has FillType.UNKNOWN
+		if fillLevel > 0.01 and self:getFillType() ~= FillType.UNKNOWN and not self:isFillableTrailerUnderPipe() then
+			self:debugSparse('Chopper waiting for trailer, fill level %f', fillLevel)
+			self:setSpeed(0)
+		end
+	else
+		self:closePipe()
+	end
+end
+
+function UnloadableFieldworkAIDriver:openPipe()
+	if self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_MOVING and
+		self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_OPEN then
+		self:debug('Opening pipe')
+		self.vehicle.spec_pipe:setPipeState(self.PIPE_STATE_OPEN)
+	end
+end
+
+function UnloadableFieldworkAIDriver:closePipe()
+	if self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_MOVING and
+		self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED then
+		self:debug('Closing pipe')
+		self.vehicle.spec_pipe:setPipeState(self.PIPE_STATE_CLOSED)
 	end
 end
 
@@ -138,6 +172,7 @@ function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()
 		for trailer, value in pairs(self.vehicle.spec_pipe.objectsInTriggers) do
 			if value > 0 then
 				local fillType = self:getFillType()
+				--self:debug('ojects = %d, fillType = %s fus=%s', value, tostring(fillType), tostring(trailer:getFillUnits()))
 				if fillType then
 					local fillUnits = trailer:getFillUnits()
 					for i=1, #fillUnits do

@@ -98,8 +98,6 @@ function FieldworkAIDriver:stop(msgReference)
 end
 
 function FieldworkAIDriver:drive(dt)
-	-- reset speed limit
-	self.speed = math.huge
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:driveFieldwork()
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
@@ -111,6 +109,8 @@ function FieldworkAIDriver:drive(dt)
 	self:setRidgeMarkers()
 	self:resetUnloadOrRefillHold()
 	AIDriver.drive(self, dt)
+	-- reset speed limit for the next loop
+	self.speed = math.huge
 end
 
 -- Hold for unload (or refill) for example a combine can be asked by a an unloading tractor
