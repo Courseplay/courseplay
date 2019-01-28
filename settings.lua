@@ -1742,6 +1742,11 @@ function courseplay:deleteFixedWorldPosition(object, recursive)
 end;
 
 function courseplay:setAttachedCombine(vehicle)
+	--- If vehicle do not have courseplay spec, then skip it.
+	if not vehicle.hasCourseplaySpec then
+		return
+	end
+
 	courseplay:debug(('%s: setAttachedCombine()'):format(nameNum(vehicle)), 6);
 	vehicle.cp.attachedCombine = nil;
 	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) and vehicle.attachedImplements then
