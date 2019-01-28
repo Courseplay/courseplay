@@ -213,7 +213,7 @@ function ShovelModeAIDriver:drive(dt)
 			if vehicle.cp.mode9triesTheSameFillUnit and distanceToTarget < 3 then
 				local fillType = targetUnit.fillType 
 				if courseplay:getFreeCapacity(vehicle.cp.shovel,fillType)>= targetUnit.fillLevel then
-					local takenFromGround = TipUtil.removeFromGroundByArea(targetUnit.sx, targetUnit.sz, targetUnit.wx, targetUnit.wz, targetUnit.hx, targetUnit.hz,fillType )
+					local takenFromGround = DensityMapHeightUtil.removeFromGroundByArea(targetUnit.sx, targetUnit.sz, targetUnit.wx, targetUnit.wz, targetUnit.hx, targetUnit.hz,fillType )
 					if takenFromGround > 0 then
 						vehicle.cp.shovel:setUnitFillLevel(1, takenFromGround + vehicle.cp.shovel:getFillLevel(fillType), 0, true)
 						self:debug('%s couldnt get the material %s[%i]-> remove %s fromArea',nameNum(vehicle),g_fillTypeManager.indexToFillType[fillType].name,fillType,tostring(takenFromGround))
