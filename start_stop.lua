@@ -8,20 +8,23 @@ function courseplay:start(self)
 	self.spec_motorized.stopMotorOnLeave = false;
 	self.spec_enterable.disableCharacterOnLeave = false;
 
-	
+
 	-- Peter: temporary band aid for the nil errors from setTranslation/setRotation. Looks like
 	-- AIVehicle deletes the node but leaves its id in aiTrafficCollision
 	-- This does not fix the problem causing stopAIVehicle to be called, just removes the nil errors.
-	local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
-	if collisionRoot ~= nil and collisionRoot ~= 0 then
-		local collision = getChildAt(collisionRoot, 0)
-		link(self.components[1].node, collision)
-		setTranslation(collision, unpack(self.spec_aiVehicle.aiTrafficCollisionTranslation))
-		-- this used to be unpack(self.spec_aiVehicle.aiTrafficCollisionScale) but that is for whaterver reason nil
-		setScale(collision, 40, 30, 40)
-		self.spec_aiVehicle.aiTrafficCollision = collision
-		delete(collisionRoot)
+	if self:getAINeedsTrafficCollisionBox() then
+		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
+		if collisionRoot ~= nil and collisionRoot ~= 0 then
+			local collision = getChildAt(collisionRoot, 0)
+			link(getRootNode(), collision)
+
+			self.spec_aiVehicle.aiTrafficCollision = collision
+
+			delete(collisionRoot)
+		end
 	end
+
+
 
 	if self.setRandomVehicleCharacter ~= nil then
 		self:setRandomVehicleCharacter()
@@ -654,20 +657,25 @@ function courseplay:stop(self)
 	if self.cp.driver then
 		self.cp.driver:stop()
 	end
-	
+
 	self.spec_aiVehicle.isActive = false
 	self.spec_motorized.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.spec_enterable.disableCharacterOnLeave = true;
 
+    if self:getAINeedsTrafficCollisionBox() then
+        setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
+        self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
+    end
+
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
-		self.cp.saveFuel = false;		
+		self.cp.saveFuel = false;
 	end
-	if courseplay:getCustomTimerExists(self,'fuelSaveTimer')  then 
+	if courseplay:getCustomTimerExists(self,'fuelSaveTimer')  then
 		--print("reset existing timer")
 		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
 	end
-	
+
 	if self.cp.runReset == true then
  		self.cp.runCounter = 0;
  		self.cp.runReset = false;
