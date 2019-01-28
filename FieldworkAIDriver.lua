@@ -163,6 +163,8 @@ function FieldworkAIDriver:driveFieldwork()
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
 		self:setSpeed(self:getFieldSpeed())
+	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
+		self:setSpeed(self:getFieldSpeed())
 	end
 end
 
