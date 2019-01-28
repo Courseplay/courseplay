@@ -1,5 +1,7 @@
 # Courseplay Six Beta for Farming Simulator 2019
 
+## Note that the current beta version does NOT support multiplayer!
+
 ### Important Update Information™
 We've got a website for Courseplay, containing all the glorious information you might ever need. Well, probably not. But if there is something you find missing, just holler, there's a good 50/50 chance that we're gonna add it.
 
