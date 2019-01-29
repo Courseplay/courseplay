@@ -706,9 +706,9 @@ function courseplay:stop(self)
 			self.vehicleCharacter:loadCharacter(PlayerUtil.playerIndexToDesc[playerIndex].xmlFilename, playerColorIndex)
 			self.vehicleCharacter:setCharacterVisibility(not self:getIsEntered())
 		end
-	end;
+	end;]]
 	self.currentHelper = nil
--]]
+
 	--stop special tools
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)

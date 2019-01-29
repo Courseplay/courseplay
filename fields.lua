@@ -565,7 +565,7 @@ function courseplay.fields:loadCustomFields(importFromOldFile)
 				local area, _, dimensions = self:getPolygonData(fieldData.points, nil, nil, true);
 				fieldData.areaSqm = area;
 				fieldData.areaHa = area / 10000;
-				fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('unit_areaShort'));
+				fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('unit_ha'));
 				fieldData.dimensions = dimensions;
 
 
@@ -610,16 +610,10 @@ function courseplay.fields:getFruitTypes()
 	local hudH = courseplay.hud.suc.visibleArea.overlayHeight;
 	local hudX = courseplay.hud.suc.visibleArea.overlayPosX;
 	local hudY = courseplay.hud.suc.visibleArea.overlayPosY;
-	courseplay.alreadyPrinted = {}
-	courseplay:printMeThisTable(g_fruitTypeManager.fruitTypes,0,5,"g_fruitTypeManager.fruitTypes")
-	
 	for name,fruitType in pairs(g_fruitTypeManager.fruitTypes) do
 		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
 			local fillTypeDesc = g_fruitTypeManager.fruitTypeIndexToFillType[fruitType.index];
 			if fillTypeDesc then
-				courseplay.alreadyPrinted = {}
-				courseplay:printMeThisTable(fillTypeDesc,0,5,"fillTypeDesc")
-			
 				local fruitData = {
 					index = fruitType.index,
 					name = fruitType.name,
@@ -659,7 +653,7 @@ function courseplay.fields:getFruitData(area)
 			local name = fruitData.name;
 			usage[name] = fruitData.usagePerSqm * area;
 			price[name] = fruitData.pricePerLiter * usage[name];
-			text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('unit_literShort'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
+			text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('unit_liter'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
 		end;
 	end;
 
