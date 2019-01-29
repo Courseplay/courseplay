@@ -1301,6 +1301,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 		local isFilling = false
 		if vehicle.cp.fillTrigger then
 			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
+			courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS)
 			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
 			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, workTool) then
 				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle, workTool)
@@ -1320,7 +1321,8 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 					--	,i,tostring(triggerFilltype),tostring(workTool:getFillUnitFillType(i)),workTool:getFillUnitFillLevelPercentage(i)*100,driveOnAtPercent))
 					if triggerFilltype == workTool:getFillUnitFillType(i)
 					and workTool:getFillUnitFillLevelPercentage(i)*100 > driveOnAtPercent then
-							courseplay:setFillOnTrigger(vehicle,workTool,false,trigger)
+						courseplay:setFillOnTrigger(vehicle,workTool,false,trigger)
+						courseplay:resetFillTrigger(vehicle)
 					end				
 				end
 			end
@@ -1345,7 +1347,7 @@ function courseplay:fillOnTrigger(vehicle, workTool)
 			allowedToDrive = false;
 			if not trigger.isLoading then
 				vehicle.isFuelFilling = nil
-				vehicle.cp.fillTrigger = nil
+				courseplay:resetFillTrigger(vehicle)
 			end
 		end
 	elseif trigger.sourceObject ~= nil then
@@ -1360,12 +1362,9 @@ function courseplay:fillOnTrigger(vehicle, workTool)
 				local fillUnits = objectToFill:getFillUnits()
 				for i=1,#fillUnits do
 					if objectToFill:getFillUnitFillLevelPercentage(i)*100 < vehicle.cp.refillUntilPct and courseplay:fillTypesMatch(vehicle, fillTrigger, objectToFill,i) then
-						
 						courseplay:setFillOnTrigger(vehicle,objectToFill,true,trigger,triggerIndex)
-						
 						allowedToDrive = false;
 						vehicle.isFuelFilling = true
-						
 						break;
 					end
 				end
@@ -1376,14 +1375,14 @@ function courseplay:fillOnTrigger(vehicle, workTool)
 			allowedToDrive = false;
 			--if the trigger stops loading, reset vehicle.isFuelFilling
 			if not objectToFill.spec_fillUnit.fillTrigger.isFilling then 
-				vehicle.isFuelFilling = nil
+				courseplay:resetFillTrigger(vehicle)
 				courseplay:setCustomTimer(vehicle, "resetFillTrigger", 5)
 			end
 		--maybe there are more pallets nearby, so wait for 5s and move further
 		--if you get a new pallet, start loading there, otherwise kill the trigger
 		elseif courseplay:timerIsThrough(vehicle, "resetFillTrigger", false) then
 			if #objectToFill.spec_fillUnit.fillTrigger.triggers == 0 then
-				vehicle.cp.fillTrigger = nil
+				courseplay:resetFillTrigger(vehicle)
 				courseplay:resetCustomTimer(vehicle, "resetFillTrigger", true)
 			end
 		
@@ -1393,6 +1392,11 @@ function courseplay:fillOnTrigger(vehicle, workTool)
 	
 	return allowedToDrive, vehicle.isFuelFilling ;
 end
+	
+function courseplay:resetFillTrigger(vehicle)
+	vehicle.cp.fillTrigger = nil
+	courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
+end	
 	
 function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerIndex)
 	courseplay:resetCustomTimer(vehicle, "triggerFailBackup", true)
@@ -1426,6 +1430,7 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 		elseif trigger.sourceObject then
 			workTool:setFillUnitIsFilling(false)							
 		end
+		courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
 	end
 end	
 		

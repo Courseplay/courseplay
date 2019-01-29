@@ -169,7 +169,8 @@ local function setGlobalData()
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;
 	------------------------------------------------------------
-
+	courseplay.SHOW_COVERS = true 
+	
 
 	-- "start at _ point" options
 	courseplay.START_AT_NEAREST_POINT = 1;
