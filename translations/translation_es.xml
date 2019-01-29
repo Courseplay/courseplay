@@ -5,7 +5,7 @@
 		<text name="COURSEPLAY_DRIVER" 										text="Conductor" />
 		<text name="COURSEPLAY_PPC_OFF" 									text="Modo Normal" />
 		<text name="COURSEPLAY_PPC_ON" 										text="Modo experimental" />
-		<text name="COURSEPLAY_AIDRIVER" 									text="Ayudante IA" />
+		<text name="COURSEPLAY_AIDRIVER" 									text="Conductor Autónomo" /> 
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Empezar a conducir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar de conducir" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Parar en último punto o siguiente trigger" />
@@ -349,7 +349,7 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Botón Izq. Ratón" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Botón Der. Ratón" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Botón Cen. Ratón" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Botón %d Ratón" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Botón del ratón núm %d" /> 
 		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Cargar ruta/combinarla con la ruta cargada" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="Añadir esta ruta al final" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 		text="Mover a otra carpeta" />

@@ -1584,7 +1584,7 @@ function courseplay:checkValidTipDistance(vehicle,tipper,reverseCourseUnloadpoin
 	local searchWidth = 3
 	for i=0,basicDistance,-0.5 do
 		local tempHeightX,tempHeightY,tempHeightZ = localToWorld(tipper.cp.realUnloadOrFillNode,0,0,i) --local tx1, ty1, tz1 = localToWorld(directionNode,3,1,self.cp.aiFrontMarker)
-		local fillType = TipUtil.getFillTypeAtLine(startX,startY,startZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
+		local fillType = DensityMapHeightUtil.getFillTypeAtLine(startX,startY,startZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
 		if fillType == tipper.cp.fillType then
 			trueDistanceToHeap = basicDistance-i;
 			break;

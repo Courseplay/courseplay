@@ -163,6 +163,8 @@ function FieldworkAIDriver:driveFieldwork()
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
 		self:setSpeed(self:getFieldSpeed())
+	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
+		self:setSpeed(self:getFieldSpeed())
 	end
 end
 
@@ -218,6 +220,7 @@ end
 
 function FieldworkAIDriver:changeToUnloadOrRefill()
 	self:stopWork()
+	self:foldImplements()
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
 	self:debug('changing to unload/refill course (%d waypoints)', self.unloadRefillCourse:getNumberOfWaypoints())
 end
@@ -331,7 +334,6 @@ function FieldworkAIDriver:stopWork()
 	courseplay:raiseImplements(self.vehicle)
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
-	self:foldImplements()
 end
 
 --- Check all worktools to see if we are ready
