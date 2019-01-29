@@ -36,7 +36,7 @@ ___
 * Thomas Gärtner
 * Satis
 * Peter Vaiko
-
+* Logo Design by Finals Farming
 ___
 
 ## Attributions

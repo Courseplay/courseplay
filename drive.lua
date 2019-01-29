@@ -667,9 +667,9 @@ function courseplay:drive(self, dt)
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
 
-		courseplay:openCloseCover(self, dt, showCover, self.cp.currentTipTrigger ~= nil);
+		courseplay:openCloseCover(self, showCover, self.cp.currentTipTrigger ~= nil);
 	elseif self.cp.tipperHasCover then
-		courseplay:openCloseCover(self, dt, false);
+		courseplay:openCloseCover(self, false);
 	end;
 
 	-- CHECK TRAFFIC
@@ -1248,18 +1248,18 @@ function courseplay:getSpeedWithLimiter(vehicle, refSpeed)
 	return refSpeed, speedLimitActivated;
 end
 
-function courseplay:openCloseCover(vehicle, dt, showCover, isAtTipTrigger,stopOrder)
+function courseplay:openCloseCover(vehicle, showCover, isAtTipTrigger, stopOrder)
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.cp.workTools[tIdx];
 		-- default Giants trailers
 		if coverType == 'defaultGiants' then
 			local isSprayer, isSowingMachine = courseplay:isSprayer(tipper), courseplay:isSowingMachine(tipper);
-			if (vehicle.cp.mode == 4 and tipper.fillTriggers[1] ~= nil)
+			--[[if (vehicle.cp.mode == 4 and tipper.fillTriggers and tipper.fillTriggers[1] ~= nil)
 				or (vehicle.cp.mode == 1 and tipper.fillTriggers and tipper.fillTriggers[1] ~= nil)
 				or (stopOrder and (isSprayer or isSowingMachine)) then
 				return
-			end
+			end]]
 			local newState = showCover and 0 or 1         
 			if tipper.spec_cover.state ~= newState then
 				tipper:setCoverState(newState);

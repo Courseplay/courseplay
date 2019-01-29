@@ -43,6 +43,10 @@ function inputCourseNameDialogue:onOpen(element)
 	end
 
 	self:validateCourseName();
+
+	FocusManager:setFocus(self.textInputElement)
+	self.textInputElement.blockTime = 0
+	self.textInputElement:onFocusActivate()
 end; --END onOpen()
 
 function inputCourseNameDialogue:onClose(element)
