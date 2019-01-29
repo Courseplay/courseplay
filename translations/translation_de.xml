@@ -3,12 +3,12 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 							text="Kursaufzeichnung beginnen" />
 		<text name="COURSEPLAY_DRIVER" 										text="Abfahrer" />
-		<text name="COURSEPLAY_PPC_OFF" 									text="normal mode" />
-		<text name="COURSEPLAY_PPC_ON" 										text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
-		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- enable new AI driver -->
+		<text name="COURSEPLAY_PPC_OFF" 									text="Normaler Modus" />
+		<text name="COURSEPLAY_PPC_ON" 										text="Experimenteller Modus" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_AIDRIVER" 									text="KI Fahrer" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Abfahrer starten" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Abfahrer stoppen" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Warten am letzten Wegpunkt o. Trigger" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Am letzten Wegpunkt o. Trigger warten" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Anzahl der Durchläufe"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="unbegrenzt" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Abfahrerseite" />
@@ -73,7 +73,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": Gerät muss entladen werden." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": Gerät muss aufgefüllt werden" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Ballen werden entladen." />
-		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="steckt im Verkehr fest" />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Steckt im Verkehr fest" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Abladestelle erreicht" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Abstand z. Abladepunkt" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Wird beladen: %d von %d" />
