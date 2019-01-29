@@ -54,11 +54,6 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	FieldworkAIDriver.drive(self, dt)
 end
 
-function UnloadableFieldworkAIDriver:driveFieldwork()
-
-	FieldworkAIDriver.driveFieldwork(self)
-end
-
 --- Grain tank full during fieldwork
 function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
@@ -162,30 +157,22 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 		return true
 	end
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
-		self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
-		return false
+	if self.state == self.states.ON_FIELDWORK_COURSE and
+		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL and
+		self.vehicle.cp.stopWhenUnloading then
+		if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelEmptyPercentage then
+			self:debugSparse('Not unloaded yet: %s: %.1f', fillTypeName, pc )
+			return false
+		end
+	else
+		if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
+			self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
+			return false
+		end
 	end
 	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
 	return true
-end
-
--- TODO: there should be a generic level checker function with the level condition passed in as a lambda
-function UnloadableFieldworkAIDriver:isUnloaded()
-	if not self.vehicle.cp.workTools then return true end
-	local allUnloaded = true
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		if workTool.getFillUnits then
-			for index, fillUnit in pairs(workTool:getFillUnits()) do
-				local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
-				-- if there's at least one tool with a fill level over this limit than we are not unloaded
-				if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelEmptyPercentage then
-					allUnloaded = false
-				end
-			end
-		end
-	end
-	return allUnloaded
 end
 
 function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()
