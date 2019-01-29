@@ -37,6 +37,7 @@ end;
 
 function courseplay:setAIDriver(vehicle, mode)
 	if mode == courseplay.MODE_TRANSPORT then
+		---@type AIDriver
 		vehicle.cp.driver = AIDriver(vehicle)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
 		vehicle.cp.driver = GrainTransportAIDriver(vehicle)	

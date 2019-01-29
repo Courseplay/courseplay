@@ -87,6 +87,7 @@ function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
+	self.turnIsDriving = false
 end
 
 --- Just hang around after we stopped and make sure a message is displayed when there is one.
@@ -215,6 +216,7 @@ end
 ---@param ix number
 ---@return boolean true when an alignment course was added
 function AIDriver:startCourseWithAlignment(course, ix)
+	self.turnIsDriving = false
 	local alignmentCourse = nil
 	if self.vehicle.cp.alignment.enabled and self:isAlignmentCourseNeeded(course, ix) then
 		alignmentCourse = self:setUpAlignmentCourse(course, ix)
