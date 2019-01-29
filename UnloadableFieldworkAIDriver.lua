@@ -29,6 +29,9 @@ UnloadableFieldworkAIDriver = CpObject(FieldworkAIDriver)
 -- as we won't raise our implements until we stopped and during that time we keep
 -- harvesting
 UnloadableFieldworkAIDriver.fillLevelFullPercentage = 99.5
+-- at which fill level we consider ourselves unloaded
+UnloadableFieldworkAIDriver.fillLevelEmptyPercentage = 0.1
+
 
 -- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
 UnloadableFieldworkAIDriver.PIPE_STATE_MOVING = 0
@@ -49,10 +52,6 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	self:handlePipe()
 	-- the rest is the same as the parent class
 	FieldworkAIDriver.drive(self, dt)
-end
-
-function UnloadableFieldworkAIDriver:driveFieldwork()
-	FieldworkAIDriver.driveFieldwork(self)
 end
 
 --- Grain tank full during fieldwork
@@ -158,9 +157,19 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 		return true
 	end
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
-		self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
-		return false
+	if self.state == self.states.ON_FIELDWORK_COURSE and
+		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL and
+		self.vehicle.cp.stopWhenUnloading then
+		if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelEmptyPercentage then
+			self:debugSparse('Not unloaded yet: %s: %.1f', fillTypeName, pc )
+			return false
+		end
+	else
+		if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
+			self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
+			return false
+		end
 	end
 	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
 	return true

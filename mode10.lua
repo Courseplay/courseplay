@@ -101,8 +101,8 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newWx, 1, newWz); 
 			local hY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newHx, 1, newHz);
 		
-			local fillType = TipUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
-			local newFillLevel = TipUtil.getFillLevelAtArea(fillType, newSx, newSz, newWx, newWz, newHx, newHz )
+			local fillType = DensityMapHeightUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
+			local newFillLevel = DensityMapHeightUtil.getFillLevelAtArea(fillType, newSx, newSz, newWx, newWz, newHx, newHz )
 			
 			local leveled = vehicle.cp.BunkerSiloMap[#vehicle.cp.BunkerSiloMap][1].leveled
 		

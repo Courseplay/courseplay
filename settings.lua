@@ -1416,7 +1416,7 @@ function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 	data.areaSqm = area;
 	data.areaHa = area / 10000;
 	data.dimensions = dimensions;
-	data.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(data.fieldNum, courseplay.fields:formatNumber(data.areaHa, 2), g_i18n:getText('unit_areaShort'));
+	data.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(data.fieldNum, courseplay.fields:formatNumber(data.areaHa, 2), g_i18n:getText('unit_ha'));
 	data.seedUsage, data.seedPrice, data.seedDataText = courseplay.fields:getFruitData(area);
 
 	courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum] = data;
@@ -1742,6 +1742,11 @@ function courseplay:deleteFixedWorldPosition(object, recursive)
 end;
 
 function courseplay:setAttachedCombine(vehicle)
+	--- If vehicle do not have courseplay spec, then skip it.
+	if not vehicle.hasCourseplaySpec then
+		return
+	end
+
 	courseplay:debug(('%s: setAttachedCombine()'):format(nameNum(vehicle)), 6);
 	vehicle.cp.attachedCombine = nil;
 	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) and vehicle.attachedImplements then
