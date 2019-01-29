@@ -29,6 +29,9 @@ UnloadableFieldworkAIDriver = CpObject(FieldworkAIDriver)
 -- as we won't raise our implements until we stopped and during that time we keep
 -- harvesting
 UnloadableFieldworkAIDriver.fillLevelFullPercentage = 99.5
+-- at which fill level we consider ourselves unloaded
+UnloadableFieldworkAIDriver.fillLevelEmptyPercentage = 0.1
+
 
 -- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
 UnloadableFieldworkAIDriver.PIPE_STATE_MOVING = 0
@@ -52,6 +55,7 @@ function UnloadableFieldworkAIDriver:drive(dt)
 end
 
 function UnloadableFieldworkAIDriver:driveFieldwork()
+
 	FieldworkAIDriver.driveFieldwork(self)
 end
 
@@ -164,6 +168,24 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 	end
 	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
 	return true
+end
+
+-- TODO: there should be a generic level checker function with the level condition passed in as a lambda
+function UnloadableFieldworkAIDriver:isUnloaded()
+	if not self.vehicle.cp.workTools then return true end
+	local allUnloaded = true
+	for _, workTool in pairs(self.vehicle.cp.workTools) do
+		if workTool.getFillUnits then
+			for index, fillUnit in pairs(workTool:getFillUnits()) do
+				local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
+				-- if there's at least one tool with a fill level over this limit than we are not unloaded
+				if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelEmptyPercentage then
+					allUnloaded = false
+				end
+			end
+		end
+	end
+	return allUnloaded
 end
 
 function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()
