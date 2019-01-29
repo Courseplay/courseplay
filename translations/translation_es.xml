@@ -346,9 +346,9 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="CP: Mover pala a posición de descarga" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="mostrar el cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="ocultar el cursor" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Botón izdo del ratón" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Botón dcho del ratón" /> 
-		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Rueda del medio ratón" /> 
+		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Botón Izq. Ratón" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Botón Der. Ratón" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Botón Cen. Ratón" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Botón del ratón núm %d" /> 
 		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Cargar ruta/combinarla con la ruta cargada" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="Añadir esta ruta al final" />
