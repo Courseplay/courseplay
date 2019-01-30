@@ -17,7 +17,6 @@ function courseplay:setNameVariable(workTool)
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
 		if     spec == AnimatedVehicle 	   then workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
-		elseif spec == ArticulatedAxis 	   then workTool.cp.hasSpecializationArticulatedAxis 	 = true;
 		elseif spec == BaleLoader 		   then workTool.cp.hasSpecializationBaleLoader 		 = true;
 		elseif spec == Baler 			   then workTool.cp.hasSpecializationBaler 				 = true;
 		elseif spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;

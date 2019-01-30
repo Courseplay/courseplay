@@ -153,7 +153,7 @@ function courseplay:drive(self, dt)
 		cpDebug:drawLine(ctx, cty + 3, ctz, 0, 1, 0, cx, posY + 3, cz);
 		if self.drawDebugLine then self.drawDebugLine() end
 	end;
-	if CpManager.isDeveloper and self.cp.hasSpecializationArticulatedAxis and courseplay.debugChannels[12] then
+	if CpManager.isDeveloper and self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin and courseplay.debugChannels[12] then
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
 		local desX, _, desZ = localToWorld(self.cp.DirectionNode, 0, 0, 5);
 		cpDebug:drawLine(ctx, cty + 3.5, ctz, 0, 0, 1, desX, cty + 3.5, desZ);
@@ -915,7 +915,7 @@ function courseplay:drive(self, dt)
 	local beforeReverse, afterReverse
 	-- DISTANCE TO CHANGE WAYPOINT
 	if ( self.cp.waypointIndex == 1 and not self.cp.alignment.justFinished ) or self.cp.waypointIndex == self.cp.numWaypoints - 1 or self.Waypoints[self.cp.waypointIndex].turnStart then
-		if self.cp.hasSpecializationArticulatedAxis then
+		if self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin then
 			distToChange = 1; -- ArticulatedAxis vehicles
 		else
 			distToChange = 0.5;
@@ -924,19 +924,19 @@ function courseplay:drive(self, dt)
 		beforeReverse = (self.Waypoints[self.cp.waypointIndex + 1].rev and (self.Waypoints[self.cp.waypointIndex].rev == false))
 		afterReverse = (not self.Waypoints[self.cp.waypointIndex + 1].rev and self.Waypoints[self.cp.previousWaypointIndex].rev)
 		if (self.Waypoints[self.cp.waypointIndex].wait or beforeReverse) and self.Waypoints[self.cp.waypointIndex].rev == false then -- or afterReverse or self.cp.waypointIndex == 1
-			if self.cp.hasSpecializationArticulatedAxis then
+			if self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin then
 				distToChange = 2; -- ArticulatedAxis vehicles
 			else
 				distToChange = 1;
 			end;
 		elseif (self.Waypoints[self.cp.waypointIndex].rev and self.Waypoints[self.cp.waypointIndex].wait) or afterReverse then
-			if self.cp.hasSpecializationArticulatedAxis then
+			if self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin then
 				distToChange = 4; -- ArticulatedAxis vehicles
 			else
 				distToChange = 2;
 			end;
 		elseif self.Waypoints[self.cp.waypointIndex].rev then
-			if self.cp.hasSpecializationArticulatedAxis then
+			if self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin then
 				distToChange = 4; -- ArticulatedAxis vehicles
 			else
 				distToChange = 2; --orig:1
@@ -944,7 +944,7 @@ function courseplay:drive(self, dt)
 		elseif self.cp.mode == 4 or self.cp.mode == 6 then
 			distToChange = 5
 		else
-			if self.cp.hasSpecializationArticulatedAxis then
+			if self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin then
 				distToChange = 5; -- ArticulatedAxis vehicles
 			else
 				distToChange = 2.85; --orig: 5
@@ -955,7 +955,7 @@ function courseplay:drive(self, dt)
 			self.cp.shortestDistToWp = nil
 		end
 	else
-		if self.cp.hasSpecializationArticulatedAxis then
+		if self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin then
 			distToChange = 5; -- ArticulatedAxis vehicles stear better with a longer change distance
 		else
 			distToChange = 2.85; --orig: 5

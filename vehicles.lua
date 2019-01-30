@@ -472,8 +472,8 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 				node = courseplay:createNewLinkedNode(object, "realTurningNode", object.rootNode);
 
 				-- Find the pivot point on articulated vehicle
-				if object.articulatedAxis then
-					local jointNode = object.articulatedAxis.componentJoint.jointNode;
+				if object.spec_articulatedAxis and object.spec_articulatedAxis.componentJoint then
+					local jointNode = object.spec_articulatedAxis.componentJoint.jointNode;
 					local x,_,z = getWorldTranslation(jointNode);
 					_,_,Distance = worldToLocal(object.rootNode, x, y, z);
 
@@ -787,7 +787,7 @@ function courseplay:getHighestToolTurnDiameter(object)
 	local turnDiameter = 0;
 
 	-- Tool attached to Steerable
-	for _, implement in ipairs(object.spec_attacherJoints.attachedImplements) do
+	for _, implement in ipairs(object:getAttachedImplements()) do
 		local workTool = implement.object;
 
 		if courseplay:isRearAttached(object, implement.jointDescIndex) then
@@ -1076,16 +1076,17 @@ function courseplay:getVehicleTurnRadius(vehicle)
 		return vehicle.cp.overwriteTurnRadius;
 
 	-- Giants have provided us with maxTurningRadius, so use it.
-	elseif vehicle.maxTurningRadius then
-		return vehicle.maxTurningRadius
+	--elseif vehicle.maxTurningRadius then
+	--	courseplay:debug(('%s -> TurnRadius: Useing Giants value: turnRadius set to %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
+	--	return vehicle.maxTurningRadius
 
 	-- We need to calculate it our self.
 	else
 		-- ArticulatedAxis Steering
-		if vehicle.articulatedAxis then
+		if vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMax then
 			wheelBase = courseplay:getWheelBase(vehicle);
 			CPRatio = courseplay:getCenterPivotRatio(vehicle, wheelBase);
-			rotMax = abs(vehicle.articulatedAxis.rotMax);
+			rotMax = abs(vehicle.spec_articulatedAxis.rotMax);
 			steeringType = "ASW";
 
 		-- 4 Wheel Steering
@@ -1108,7 +1109,13 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	TR = ceil(courseplay:calculateTurnRadius(steeringType, wheelBase, rotMax, CPRatio) * radiusMultiplier);
 
 	if TR > 0 then
-		turnRadius = TR;
+		if vehicle.maxTurningRadius and vehicle.maxTurningRadius > TR then
+			turnRadius = vehicle.maxTurningRadius;
+			courseplay:debug(('%s -> TurnRadius: Using Giants maxTurningRadius: %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
+		else
+			turnRadius = TR;
+			courseplay:debug(('%s -> TurnRadius: (Steering Type: %s) Calculated turnRadius set to %.2fm'):format(nameNum(vehicle), steeringType, turnRadius), 6);
+		end;
 	end;
 
 	return turnRadius
@@ -1128,7 +1135,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 	end;
 
 	-- Make sure we are not some standard combine/crawler/articulated vehicle
-	if not (vehicle.cp.hasSpecializationArticulatedAxis or vehicle.cp.hasSpecializationCombine or vehicle.cp.hasSpecializationCrawler or courseplay:isHarvesterSteerable(vehicle)) then
+	if not ((vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMin) or vehicle.cp.hasSpecializationCombine or vehicle.cp.hasSpecializationCrawler or courseplay:isHarvesterSteerable(vehicle)) then
 	    local isAllWheelStering = false;
 		local haveStraitWheels = false;
 		local haveTurningWheels = false;

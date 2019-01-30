@@ -308,7 +308,7 @@ function courseplay:onLoad(savegame)
 	else
 		-- TODO: (Claus) Check Wheel Loaders Direction node a bit later.
 		--if courseplay:isWheelloader(self)then
-		--	if self.cp.hasSpecializationArticulatedAxis then
+		--	if self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin then
 		--		local nodeIndex = Utils.getNoNil(self.cp.componentNumAsDirectionNode, 2)
 		--		if self.components[nodeIndex] ~= nil then
 		--			DirectionNode = self.components[nodeIndex].node;
