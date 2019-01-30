@@ -68,38 +68,44 @@ end
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)
-function FillableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
-	if self:helperBuysThisFillUnit(fillUnit) then return true end
-	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
-	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.lastValidFillType or fillUnit.fillType)
-	if pc == 0 then
-		self:debugSparse('Empty: %s: %d', fillTypeName, pc )
-		return false
+function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
+	local allOk = true
+	local hasSeeds, hasNoFertilizer = false, false
+
+	for fillType, info in pairs(fillLevelInfo) do
+		self:debugSparse('%d %d %d', fillType, info.fillLevel, info.capacity)
+		if info.fillLevel == 0 and not self:helperBuysThisFillType(fillType) then
+			allOk = false
+			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+		else
+			if fillType == FillType.SEEDS then hasSeeds = true end
+		end
 	end
-	self:debugSparse('Fill levels: %s: %d', fillTypeName, pc )
-	return true
+	if not allOk and hasNoFertilizer and hasSeeds then
+		self:debugSparse('Has no fertilizer but has seeds so keep working.')
+		allOk = true
+	end
+	return allOk
 end
 
 --- Does the helper buy this fill unit (according to the game settings)? If yes, we don't have to stop or refill when empty.
-function FillableFieldworkAIDriver:helperBuysThisFillUnit(fillUnit)
-	for fillType, _ in pairs(fillUnit.supportedFillTypes) do
-		if g_currentMission.missionInfo.helperBuySeeds and fillType == FillType.SEEDS then
-			return true
-		end
-		if g_currentMission.missionInfo.helperBuyFertilizer and
-			(fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER) then
-			return true
-		end
-		if g_currentMission.missionInfo.helperManureSource == 2 and fillType == FillType.MANURE then
-			return true
-		end
-		if g_currentMission.missionInfo.helperSlurrySource == 2 and fillType == FillType.LIQUIDMANURE then
-			return true
-		end
-		if g_currentMission.missionInfo.helperBuyFuel and
-			(fillType == FillType.DIESEL or fillType == FillType.FUEL) then
-			return true
-		end
+function FillableFieldworkAIDriver:helperBuysThisFillType(fillType)
+	if g_currentMission.missionInfo.helperBuySeeds and fillType == FillType.SEEDS then
+		return true
+	end
+	if g_currentMission.missionInfo.helperBuyFertilizer and
+		(fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER) then
+		return true
+	end
+	if g_currentMission.missionInfo.helperManureSource == 2 and fillType == FillType.MANURE then
+		return true
+	end
+	if g_currentMission.missionInfo.helperSlurrySource == 2 and fillType == FillType.LIQUIDMANURE then
+		return true
+	end
+	if g_currentMission.missionInfo.helperBuyFuel and
+		(fillType == FillType.DIESEL or fillType == FillType.FUEL) then
+		return true
 	end
 	return false
 end

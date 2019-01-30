@@ -148,6 +148,33 @@ function UnloadableFieldworkAIDriver:closePipe()
 	end
 end
 
+
+--- Check if need to unload anything
+-- TODO: can this be refactored using FieldworkAIDriver.allFillLevelsOk()?
+function UnloadableFieldworkAIDriver:allFillLevelsOk()
+	if not self.vehicle.cp.workTools then return false end
+	local allOk = true
+	for _, workTool in pairs(self.vehicle.cp.workTools) do
+		allOk = self:fillLevelsOk(workTool) and allOk
+	end
+	return allOk
+end
+
+--- Check fill levels in all tools and stop when one of them isn't ok
+function UnloadableFieldworkAIDriver:fillLevelsOk(workTool)
+	if workTool.getFillUnits then
+		for index, fillUnit in pairs(workTool:getFillUnits()) do
+			-- let's see if we can get by this abstraction for all kinds of tools
+			local ok = self:isLevelOk(workTool, index, fillUnit)
+			if not ok then
+				return false
+			end
+		end
+	end
+	-- all fill levels ok
+	return true
+end
+
 -- is the fill level ok to continue? With unloadable tools we need to stop working when the tool is full
 -- with fruit
 function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
@@ -197,8 +224,7 @@ function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()
 	return canLoad
 end
 
---- Check fill levels in all tools and stop when one of them isn't
--- ok (empty or full, depending on the derived class)
+--- Get the first valid (non-fuel) fill type
 function UnloadableFieldworkAIDriver:getFillType()
 	if not self.vehicle.cp.workTools then return end
 	for _, workTool in pairs(self.vehicle.cp.workTools) do

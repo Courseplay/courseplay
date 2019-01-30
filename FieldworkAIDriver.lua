@@ -346,30 +346,39 @@ function FieldworkAIDriver:areAllWorkToolsReady()
 	return allToolsReady
 end
 
---- Check if need to refill anything
+--- Check if need to refill/unload anything
 function FieldworkAIDriver:allFillLevelsOk()
 	if not self.vehicle.cp.workTools then return false end
-	local allOk = true
+	-- what here comes is basically what Giants' getFillLevelInformation() does but this returns the real fillType,
+	-- not the fillTypeToDisplay as this latter is different for each type of seed
+	local fillLevelInfo = {}
 	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		allOk = self:fillLevelsOk(workTool) and allOk
-	end
-	return allOk
-end
-
---- Check fill levels in all tools and stop when one of them isn't
--- ok (empty or full, depending on the derived class)
-function FieldworkAIDriver:fillLevelsOk(workTool)
-	if workTool.getFillUnits then
-		for index, fillUnit in pairs(workTool:getFillUnits()) do
-			-- let's see if we can get by this abstraction for all kinds of tools
-			local ok = self:isLevelOk(workTool, index, fillUnit)
-			if not ok then
-				return false
+		if workTool.getFillUnits then
+			for _, fillUnit in pairs(workTool:getFillUnits()) do
+				local fillType = self:getFillTypeFromFillUnit(fillUnit)
+				local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType)
+				self:debugSparse('%s: Fill levels: %s: %.1f/%.1f', workTool:getName(), fillTypeName, fillUnit.fillLevel, fillUnit.capacity)
+				if not fillLevelInfo[fillType] then fillLevelInfo[fillType] = {fillLevel=0, capacity=0} end
+				fillLevelInfo[fillType].fillLevel = fillLevelInfo[fillType].fillLevel + fillUnit.fillLevel
+				fillLevelInfo[fillType].capacity = fillLevelInfo[fillType].capacity + fillUnit.capacity
 			end
 		end
 	end
-	-- all fill levels ok
-	return true
+	return self:areFillLevelsOk(fillLevelInfo)
+end
+
+function FieldworkAIDriver:getFillTypeFromFillUnit(fillUnit)
+	local fillType = fillUnit.lastValidFillType or fillUnit.fillType
+	-- TODO: do we need to check more supported fill types? This will probably cover 99.9% of the cases
+	if fillType == FillType.UNKNOWN then
+		-- just get the first valid supported fill type
+		for ft, valid in pairs(fillUnit.supportedFillTypes) do
+			if valid then return ft end
+		end
+	else
+		return fillType
+	end
+
 end
 
 --- Check if worktool is ready for work
@@ -390,7 +399,7 @@ function FieldworkAIDriver:isWorktoolReady(workTool)
 end
 
 -- is the fill level ok to continue?
-function FieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
+function FieldworkAIDriver:areFillLevelsOk()
 	-- implement specifics in the derived classes
 	return true
 end
