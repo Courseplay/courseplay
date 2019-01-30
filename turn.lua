@@ -2124,6 +2124,7 @@ see https://ggbm.at/RN3cawGc
 --]]
 
 function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection, generateStraightWaypoints )
+	vehicle.cp.turnTargets = {}
 	-- make the radius a bit bigger to make sure we can make the turn
 	local turnRadius = 1.2 * vehicle.cp.turnDiameter / 2
 	-- target waypoint we want to reach
