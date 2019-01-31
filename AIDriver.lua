@@ -90,6 +90,12 @@ function AIDriver:stop(msgReference)
 	self.turnIsDriving = false
 end
 
+function AIDriver:continue()
+	self:debug('Continuing...')
+	self.state = self.states.RUNNING
+	self:clearInfoText()
+end
+
 --- Just hang around after we stopped and make sure a message is displayed when there is one.
 function AIDriver:idle(dt)
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, false, true, 0, 1, 0, false)
@@ -317,6 +323,20 @@ function AIDriver:onWaypointChange(newIx)
 		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
 	end
 	-- rest is implemented by the derived classes	
+end
+
+function AIDriver:onWaypointPassed(ix)
+	self:debug('onWaypointPassed %d', ix)
+	-- default behaviour for mode 5 (transport)
+	if self.course:isWaitAt(ix) then
+		self:stop('WAIT_POINT')
+		-- show continue button
+		courseplay.hud:setReloadPageOrder(self.vehicle, 1, true);
+	end
+end
+
+function AIDriver:isWaiting()
+	return self.state == self.states.STOPPED
 end
 
 --- Function used by the driver to get the speed it is supposed to drive at

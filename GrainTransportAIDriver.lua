@@ -97,6 +97,10 @@ function GrainTransportAIDriver:onWaypointChange(newIx)
 	end
 end
 
+function GrainTransportAIDriver:onWaypointPassed(ix)
+	-- nothing for now
+end
+
 function GrainTransportAIDriver:hasTipTrigger()
 	-- TODO: come up with something better?
 	return self.vehicle.cp.currentTipTrigger ~= nil

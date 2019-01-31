@@ -769,7 +769,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			else
 				vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 
-				if vehicle.cp.HUD1wait then
+				if vehicle.cp.HUD1wait or (vehicle.cp.driver and vehicle.cp.driver:isWaiting()) then
 					vehicle.cp.hud.content.pages[1][2][1].text = courseplay:loc('COURSEPLAY_CONTINUE')
 				end
 

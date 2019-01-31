@@ -9,6 +9,8 @@ function courseplay:onLoad(savegame)
 	self.setCourseplayFunc = courseplay.setCourseplayFunc;
 	self.getIsCourseplayDriving = courseplay.getIsCourseplayDriving;
 	self.setIsCourseplayDriving = courseplay.setIsCourseplayDriving;
+	-- TODO: this is the worst programming practice ever. Defined as courseplay:setCpVar() but then self refers to the
+	-- vehicle, this is the ugliest hack I've ever seen.
 	self.setCpVar = courseplay.setCpVar;
 	
 	--SEARCH AND SET self.name IF NOT EXISTING
@@ -814,7 +816,7 @@ function courseplay:onDraw()
 			if self.cp.canDrive then
 				if isDriving then
 					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_STOP_COURSE'), InputBinding.COURSEPLAY_START_STOP);
-					if self.cp.HUD1wait then
+					if self.cp.HUD1wait or (self.cp.driver and self.cp.driver:isWaiting()) then
 						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_CONTINUE'), InputBinding.COURSEPLAY_CANCELWAIT);
 					end;
 					if self.cp.HUD1noWaitforFill then
@@ -975,7 +977,8 @@ function courseplay:onUpdate(dt)
 					self:setCourseplayFunc('stop_record', nil, false, 1);
 				end;
 			end;
-		elseif courseplay.inputActions.COURSEPLAY_CANCELWAIT.hasEvent and self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving then
+		elseif courseplay.inputActions.COURSEPLAY_CANCELWAIT.hasEvent and
+			(self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving) or (self.cp.driver and self.cp.driver:isWaiting()) then
 			self:setCourseplayFunc('cancelWait', true, false, 1);
 		elseif courseplay.inputActions.COURSEPLAY_DRIVENOW.hasEvent and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
 			self:setCourseplayFunc('setIsLoaded', true, false, 1);

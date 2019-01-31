@@ -154,6 +154,9 @@ function courseplay:setVehicleWait(vehicle, active)
 end;
 
 function courseplay:cancelWait(vehicle, cancelStopAtEnd)
+	if vehicle.cp.driver then
+		vehicle.cp.driver:continue()
+	end
 	if vehicle.cp.wait then
 		courseplay:setVehicleWait(vehicle, false);
 		if vehicle.cp.mode == 8 then
@@ -1773,7 +1776,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 	local split = StringUtil.splitString(".", varName);
 	if #split ==1 then
 		if self.cp[varName] ~= value then
-			local oldValue = self.cp[varName]; --TODO check wheter needed or not
+			local oldValue = self.cp[varName]; --TODO check whether needed or not
 			self.cp[varName] = value;		
 			if CpManager.isMP and not noEventSend then
 				--print(courseplay.utils:getFnCallPath(2))
@@ -1784,6 +1787,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 				courseplay:debug("reload page 1", 5);
 				courseplay.hud:setReloadPageOrder(self, 1, true);
 			elseif varName:sub(1, 3) == 'HUD' then
+				-- TODO: using the variable name to trigger a HUD refresh is not a good idea.
 				--print('broken settings 1860')
 				if StringUtil.startsWith(varName, 'HUD0') then
 					courseplay:debug("reload page 0", 5);

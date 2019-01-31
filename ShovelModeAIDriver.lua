@@ -404,6 +404,10 @@ function ShovelModeAIDriver:findNextRevWaypoint(currentPoint)
 	return currentPoint;
 end
 
+function ShovelModeAIDriver:onWaypointPassed(ix)
+	-- nothing for now
+end
+
 
 function ShovelModeAIDriver:getSpeed()
 	return self.refSpeed

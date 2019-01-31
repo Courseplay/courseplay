@@ -286,7 +286,7 @@ function courseplay:executeFunction(self, func, value, page)
 				else -- driving
 					if line == 1 then
 						courseplay:stop(self);
-					elseif line == 2 and self.cp.HUD1wait then
+					elseif line == 2 and (self.cp.HUD1wait or (self.cp.driver and self.cp.driver:isWaiting())) then
 						if self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil) then
 							courseplay:setStopAtEnd(self, false);
 						else

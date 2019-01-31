@@ -325,6 +325,10 @@ function Course:isUnloadAt(ix)
 	return self.waypoints[ix].unload
 end
 
+function Course:isWaitAt(ix)
+	return self.waypoints[ix].interact
+end
+
 --- Returns the position of the waypoint at ix with the current offset applied.
 function Course:getWaypointPosition(ix)
 	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
