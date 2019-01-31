@@ -42,6 +42,7 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
+	self.stopImplementsWhileUnloadOrRefillOnField = false
 end
 
 function UnloadableFieldworkAIDriver:drive(dt)
@@ -57,7 +58,7 @@ end
 --- Grain tank full during fieldwork
 function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
-	if not self.heldForUnloadRefill then
+	if not self.heldForUnloadRefill and not self:shouldStopForUnloading() then
 		self:setInfoText('NEEDS_UNLOADING')
 	end
 	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
@@ -148,7 +149,6 @@ function UnloadableFieldworkAIDriver:closePipe()
 	end
 end
 
-
 --- Check if need to unload anything
 -- TODO: can this be refactored using FieldworkAIDriver.allFillLevelsOk()?
 function UnloadableFieldworkAIDriver:allFillLevelsOk()
@@ -184,22 +184,26 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 		return true
 	end
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if self.state == self.states.ON_FIELDWORK_COURSE and
-		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
-		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL and
-		self.vehicle.cp.stopWhenUnloading then
-		if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelEmptyPercentage then
-			self:debugSparse('Not unloaded yet: %s: %.1f', fillTypeName, pc )
-			return false
-		end
-	else
-		if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
-			self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
-			return false
-		end
+	if self:shouldStopForUnloading() then
+		self:debugSparse('Stop for unloading: %s: %.1f', fillTypeName, pc )
+		return false
+	end
+	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
+		self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
+		return false
 	end
 	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
 	return true
+end
+
+function UnloadableFieldworkAIDriver:shouldStopForUnloading()
+	if self.vehicle.cp.stopWhenUnloading and self.vehicle.spec_pipe then
+		if self.vehicle.spec_pipe.currentState == UnloadableFieldworkAIDriver.PIPE_STATE_OPEN then
+			return true
+		end
+	else
+		return false
+	end
 end
 
 function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()

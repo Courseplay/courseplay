@@ -54,10 +54,14 @@ function FieldworkAIDriver:init(vehicle)
 	-- force stop for unload/refill, for example by a tractor, otherwise the same as stopping because full or empty
 	self.heldForUnloadRefill = false
 	self.heldForUnloadRefillTimestamp = 0
+	-- stop and raise implements while refilling/unloading on field
+	self.stopImplementsWhileUnloadOrRefillOnField = true
 end
 
 --- Start the course and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
+	self:debug('Starting in mode %d', self.mode)
+
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
 	self.turnIsDriving = false
@@ -187,7 +191,11 @@ end
 --- Grain tank full during fieldwork
 function FieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
-	self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_RAISE
+	if self.stopImplementsWhileUnloadOrRefillOnField then
+		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_RAISE
+	else
+		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
+	end
 end
 
 --- Stop for unload/refill while driving the fieldwork course
