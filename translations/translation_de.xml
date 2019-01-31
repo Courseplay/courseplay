@@ -28,7 +28,7 @@
 		<text name="COURSEPLAY_MODE_5" 										text="Typ: Überführung (Route abfahren)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Typ: Feldarbeit" />
 		<text name="COURSEPLAY_MODE_7" 										text="Typ: Drescher fährt selbst abtanken" />
-		<text name="COURSEPLAY_MODE_8" 										text="Type: Flüssigkeitstransport" />
+		<text name="COURSEPLAY_MODE_8" 										text="Typ: Flüssigkeitstransport" />
 		<text name="COURSEPLAY_MODE_9" 										text="Typ: Schaufel befüllen und entleeren" />
 		<text name="COURSEPLAY_MODE_10" 									text="Typ: Bunkersilo befüllen und verdichten" />
 		<text name="COURSEPLAY_CONTINUE" 									text="weiterfahren" />
