@@ -226,10 +226,10 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Vorgewende Eckmanöver"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="rückwärts gerade" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="rückwärts lenkend" />
-		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
-		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
-		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
-		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Feldmitte (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="hoch/runter" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="kreisförmig" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiralförmig" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="nur Name" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Name und Kurs" />
@@ -284,7 +284,7 @@
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Feldrandkurs-Nummer" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Feldrandkurs %d zur Liste hinzufügen" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Feldrandkurs %d in Liste überschreiben" />
-		<text name="COURSEPLAY_USER" 										text="User" />
+		<text name="COURSEPLAY_USER" 										text="Nutzer" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="sollte repariert werden" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="muss repariert werden" />
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 					text="wird repariert" />
@@ -351,10 +351,10 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text='CP: Schaufel auf Position Abladen setzen' />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Mauszeiger anzeigen" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Mauszeiger verstecken" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Left Mouse Button" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Right Mouse Button" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Middle Mouse Button" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Mouse Button %d" /> <!-- TODO TRANSLATE: %s = number -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Linke Maustaste" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Rechte Maustaste" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Mittlere Maustaste" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Maustaste %d" /> <!-- TODO TRANSLATE: %s = number -->
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Betriebsart" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="verteilen und verdichten" />
