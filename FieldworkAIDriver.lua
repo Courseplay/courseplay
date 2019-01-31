@@ -252,6 +252,10 @@ function FieldworkAIDriver:onEndCourse()
 end
 
 function FieldworkAIDriver:onWaypointPassed(ix)
+	if self.turnIsDriving then
+		self:debug('onWaypointPassed %d, ignored as turn is driving now', ix)
+		return
+	end
 	self:debug('onWaypointPassed %d', ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.WORKING then
@@ -272,7 +276,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			local d, firstUpDownWpIx = self.course:getDistanceToFirstUpDownRowWaypoint(ix)
 			self:debug('up/down rows start in %s meters.', tostring(d))
 			if d < self.vehicle.cp.turnDiameter * 2 and firstUpDownWpIx then
-				self:debug('start working on up/down rows (waypoint %d) with alignment course if needed.', firstUpDownWpIx)
+				self:debug('End connecting track, start working on up/down rows (waypoint %d) with alignment course if needed.', firstUpDownWpIx)
 				self:startFieldworkWithAlignment(firstUpDownWpIx)
 			end
 		end
