@@ -42,6 +42,12 @@ end
 
 --- Drive the refill part of the course
 function FillableFieldworkAIDriver:driveUnloadOrRefill()
+	-- Workaround for issues like #3064, most likely the raiseAIEvent() call in stopWork()
+	-- stops the engine when the player is not in the vehicle, so restart it here.
+	-- Need to ask Giants' help to figure out how to do this properly.
+	if not courseplay:getIsEngineReady(self.vehicle) then
+		self.vehicle:startMotor()
+	end
 	self:searchForRefillTriggers()
 	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
