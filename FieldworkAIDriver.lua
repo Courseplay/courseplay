@@ -364,19 +364,26 @@ function FieldworkAIDriver:allFillLevelsOk()
 	-- what here comes is basically what Giants' getFillLevelInformation() does but this returns the real fillType,
 	-- not the fillTypeToDisplay as this latter is different for each type of seed
 	local fillLevelInfo = {}
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		if workTool.getFillUnits then
-			for _, fillUnit in pairs(workTool:getFillUnits()) do
-				local fillType = self:getFillTypeFromFillUnit(fillUnit)
-				local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType)
-				self:debugSparse('%s: Fill levels: %s: %.1f/%.1f', workTool:getName(), fillTypeName, fillUnit.fillLevel, fillUnit.capacity)
-				if not fillLevelInfo[fillType] then fillLevelInfo[fillType] = {fillLevel=0, capacity=0} end
-				fillLevelInfo[fillType].fillLevel = fillLevelInfo[fillType].fillLevel + fillUnit.fillLevel
-				fillLevelInfo[fillType].capacity = fillLevelInfo[fillType].capacity + fillUnit.capacity
-			end
+	self:getAllFillLevels(self.vehicle, fillLevelInfo)
+	return self:areFillLevelsOk(fillLevelInfo)
+end
+
+function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)
+	-- get own fill levels
+	if object.getFillUnits then
+		for _, fillUnit in pairs(object:getFillUnits()) do
+			local fillType = self:getFillTypeFromFillUnit(fillUnit)
+			local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType)
+			self:debugSparse('%s: Fill levels: %s: %.1f/%.1f', object:getName(), fillTypeName, fillUnit.fillLevel, fillUnit.capacity)
+			if not fillLevelInfo[fillType] then fillLevelInfo[fillType] = {fillLevel=0, capacity=0} end
+			fillLevelInfo[fillType].fillLevel = fillLevelInfo[fillType].fillLevel + fillUnit.fillLevel
+			fillLevelInfo[fillType].capacity = fillLevelInfo[fillType].capacity + fillUnit.capacity
 		end
 	end
-	return self:areFillLevelsOk(fillLevelInfo)
+ 	-- collect fill levels from all attached implements recursively
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:getAllFillLevels(impl.object, fillLevelInfo)
+	end
 end
 
 function FieldworkAIDriver:getFillTypeFromFillUnit(fillUnit)
