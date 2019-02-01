@@ -763,7 +763,7 @@ function courseplay.hud:loadPage(vehicle, page)
 				
 				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE and vehicle.cp.hasFertilizerSowingMachine then
 					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_FERTILIZERFUNCTION');
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.fertilizerOption and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.fertilizerEnabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 				end;
 
 			else

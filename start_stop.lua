@@ -209,7 +209,7 @@ function courseplay:start(self)
 			if workTool.cp.orignalAllowsSpraying == nil then
 				workTool.cp.orignalAllowsSpraying = workTool.allowsSpraying
 			end
-			workTool.allowsSpraying = self.cp.fertilizerOption
+			workTool.allowsSpraying = self.cp.fertilizerEnabled
 		end	
 		if workTool.cp.isSugarCaneAugerWagon then
 			isReversePossible = false

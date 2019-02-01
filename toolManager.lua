@@ -392,7 +392,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	end;
 	
 	--belongs to mode4 but should be considered even if the mode is not set correctely
-	if workTool.sprayer ~= nil and workTool.sowingMachine ~= nil then
+	if workTool.spec_sprayer ~= nil and workTool.spec_sowingMachine ~= nil then
 				vehicle.cp.hasFertilizerSowingMachine = true;
 	end
 	

@@ -2082,20 +2082,20 @@ end
 -- TODO: this (or an even more generalized version) should be part of the Course class.
 -- TODO: if the time needed to lower the implement this could be made time based (if the speed is known)
 function courseplay.getWpIxInDistanceFromEnd(turnTargets, d, turnEndNode)
-	local currentD = 0
+	local dBehind = 0
 	for i = #turnTargets, 2, -1 do
 		-- only start counting when we are behind the turn end node (as the generated turn often
 		-- extends way into the next row, beyond the turn end node
 		local _, _, z = worldToLocal(turnEndNode, turnTargets[i].posX, 0, turnTargets[i].posZ)
 		if z < 0 then
 			-- we are now behind the turn end node, so start adding distances
-			currentD = currentD + courseplay:distance(
+			dBehind = dBehind + courseplay:distance(
 				turnTargets[i].posX, turnTargets[i].posZ, turnTargets[i - 1].posX, turnTargets[i - 1].posZ)
 		end
 		-- keep going until we are far enough _and_ not in a turnEnd section (as a turn is practically ended
 		-- after the first turnEnd turn waypoint is reached and will only lower implements when the deltaZ in the
 		-- stage 4 part triggers it which may be too late
-		if not turnTargets[i].turnEnd and currentD >= d then
+		if not turnTargets[i].turnEnd and dBehind >= d then
 			return i - 1
 		end
 	end
@@ -2167,6 +2167,7 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection, ge
 	-- leverage Claus' nice turn generator
 	courseplay:generateTurnCircle( vehicle, c1, t1, wp, turnRadius, leftOrRight, false, false )
 	local result = vehicle.cp.turnTargets
+	-- TODO: check if this is a dangerous (has a side effect on result?)
 	vehicle.cp.turnTargets = {}
 
 	courseplay.destroyNode( t1Node )

@@ -113,7 +113,7 @@ function courseplay:toggleFuelSaveOption(self)
 end
 
 function courseplay:toggleFertilizeOption(self)
-	self.cp.fertilizerOption = not self.cp.fertilizerOption 
+	self.cp.fertilizerEnabled = not self.cp.fertilizerEnabled
 end
 
 function courseplay:toggleAutoRefuel(self)

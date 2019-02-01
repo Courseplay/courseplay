@@ -7,7 +7,7 @@ function courseplay:handle_mode4(vehicle, allowedToDrive, workSpeed, refSpeed)
 	local hasFinishedWork = false
 	local seederFillLevelPct = vehicle.cp.totalSeederFillLevelPercent   or 100;
 	local sprayerFillLevelPct = vehicle.cp.totalSprayerFillLevelPercent or 100;
-	if vehicle.cp.hasFertilizerSowingMachine and not vehicle.cp.fertilizerOption then
+	if vehicle.cp.hasFertilizerSowingMachine and not vehicle.cp.fertilizerEnabled then
 		sprayerFillLevelPct = 100
 	end
 	local refillMessage = ""
