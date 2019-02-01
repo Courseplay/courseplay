@@ -725,6 +725,10 @@ function courseplay:stop(self)
 		end
 	end
 
+	if self.cp.directionNodeToTurnNodeLength ~= nil then
+		self.cp.directionNodeToTurnNodeLength = nil
+	end
+
 	self.cp.lastInfoText = nil
 
 	if courseplay.isClient then

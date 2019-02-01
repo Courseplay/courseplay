@@ -136,8 +136,8 @@ function courseplay:turn(vehicle, dt)
 	end;
 
 	--- While driving (Stage 2 & 3), do we need to use the reversing WP change distance
-	local newTarget = vehicle.cp.turnTargets[vehicle.cp.curTurnIndex];
-	if newTarget and newTarget.turnReverse then
+	local curTurnTarget = vehicle.cp.turnTargets[vehicle.cp.curTurnIndex];
+	if curTurnTarget and curTurnTarget.turnReverse then
 		wpChangeDistance = reverseWPChangeDistance;
 	end;
 
@@ -406,8 +406,8 @@ function courseplay:turn(vehicle, dt)
 			-- TURN STAGES 2 - Drive Turn maneuver
 			----------------------------------------------------------
 		elseif vehicle.cp.turnStage == 2 then
-			if newTarget then
-				if newTarget.turnEnd then
+			if curTurnTarget then
+				if curTurnTarget.turnEnd then
 					if vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
 						-- We are on the last waypoint, so we goto stage 3 without changing to new waypoints.
 						vehicle.cp.turnStage = 3;
@@ -420,17 +420,15 @@ function courseplay:turn(vehicle, dt)
 				end;
 
 
-				local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
+				local dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, vehicleX, vehicleZ);
 				local distOrig = dist
 
 				-- Set reversing settings.
-				if newTarget.turnReverse then
+				if curTurnTarget.turnReverse then
 					refSpeed = vehicle.cp.speeds.reverse;
 					if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
 						local workToolX, _, workToolZ = getWorldTranslation(reversingWorkTool.cp.realTurningNode);
-						local directionNodeToTurnNodeLengthOffset = courseplay:distance(workToolX, workToolZ, vehicleX, vehicleZ);
-						-- set the correct distance when reversing
-						dist = dist - (directionNodeToTurnNodeLength + (directionNodeToTurnNodeLength - directionNodeToTurnNodeLengthOffset));
+						dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, workToolX, workToolZ);
 
 						if courseplay.debugChannels[14] then
 							local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, workToolX, 300, workToolZ);
@@ -439,7 +437,7 @@ function courseplay:turn(vehicle, dt)
 					end;
 
 					-- If next wp is more than 10 meters ahead, use fieldwork speed.
-				elseif dist > 10 and not newTarget.turnReverse then
+				elseif dist > 10 and not curTurnTarget.turnReverse then
 					refSpeed = vehicle.cp.speeds.field;
 				end;
 
@@ -456,7 +454,8 @@ function courseplay:turn(vehicle, dt)
 						courseplay:lowerImplements(vehicle)
 					end
 					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
-					local changeDir = ((newTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not newTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
+					local changeDir = ((curTurnTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not curTurnTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
+
 					-- We are still moving and want to swicth directions STOP if using MR mod. And we haven't yet stoped
 					if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle and changeDir and not vehicle.cp.mrHasStopped then
 						allowedToDrive = false
@@ -474,7 +473,7 @@ function courseplay:turn(vehicle, dt)
 
 
 				-- Start reversing before time if we are allowed and if we can
-				if newTarget.changeWhenPosible then
+				if curTurnTarget.changeWhenPosible then
 					-- Get the world rotation of the next lane
 					local dx, dz = courseplay.generation:getPointDirection(vehicle.Waypoints[vehicle.cp.waypointIndex+1], vehicle.Waypoints[vehicle.cp.waypointIndex+2]);
 					local laneRot = MathUtil.getYRotationFromDirection(dx, dz);
@@ -501,7 +500,7 @@ function courseplay:turn(vehicle, dt)
 							if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle then
 								allowedToDrive = false -- This is to ensure MR brakes before changing directions to prevent runaway tractors on steep grades
 							else
-								local changeToForward = newTarget.turnReverse;
+								local changeToForward = curTurnTarget.turnReverse;
 								for i = vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, 1 do
 									if changeToForward and not vehicle.cp.turnTargets[i].turnReverse then
 										courseplay:debug(("%s:(Turn) Changing to forward"):format(nameNum(vehicle)), 14);
@@ -540,7 +539,7 @@ function courseplay:turn(vehicle, dt)
 				lowerImplements = deltaZ < frontMarker + 1
 			end
 
-			if newTarget.turnReverse then
+			if curTurnTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
@@ -570,21 +569,24 @@ function courseplay:turn(vehicle, dt)
 			-- TURN STAGES 4 - Lower implement and continue on next lane (Multi waypoint version)
 			----------------------------------------------------------
 		elseif vehicle.cp.turnStage == 4 then
-			if newTarget.turnEnd and vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
+			if curTurnTarget.turnEnd and vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
 				vehicle.cp.turnStage = 3;
 				return;
 			end;
 
-			local dist = courseplay:distance(newTarget.posX, newTarget.posZ, vehicleX, vehicleZ);
+			local dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, vehicleX, vehicleZ);
 
 			-- Set reverseing settings.
-			if newTarget.turnReverse then
+			if curTurnTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
 					local workToolX, _, workToolZ = getWorldTranslation(reversingWorkTool.cp.realTurningNode);
-					local directionNodeToTurnNodeLengthOffset = courseplay:distance(workToolX, workToolZ, vehicleX, vehicleZ);
-					-- set the correct distance when reversing
-					dist = dist - (directionNodeToTurnNodeLength + (directionNodeToTurnNodeLength - directionNodeToTurnNodeLengthOffset));
+					dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, workToolX, workToolZ);
+
+					if courseplay.debugChannels[14] then
+						local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, workToolX, 300, workToolZ);
+						cpDebug:drawLine(vehicleX, posY + 5, vehicleZ, 1, 1, 0, workToolX, posY + 5, workToolZ);
+					end
 				end;
 			end;
 			-- Change turn waypoint
@@ -600,7 +602,7 @@ function courseplay:turn(vehicle, dt)
 
 			--courseplay.debugVehicle(14, vehicle, 'ix=%d dz=%.1f', vehicle.cp.waypointIndex+1, deltaZ)
 			local lowerImplements = deltaZ < frontMarker + 1
-			if newTarget.turnReverse then
+			if curTurnTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
@@ -638,7 +640,7 @@ function courseplay:turn(vehicle, dt)
 		----------------------------------------------------------
 	else
 		--- Add WP to follow while doing last bit before raising Implement
-		if not newTarget then
+		if not curTurnTarget then
 			local extraForward = 0;
 			if backMarker < 0 then
 				extraForward = abs(backMarker);
@@ -688,8 +690,8 @@ function courseplay:turn(vehicle, dt)
 	----------------------------------------------------------
 	--Set the driving direction
 	----------------------------------------------------------
-	if newTarget then
-		local posX, posZ = newTarget.revPosX or newTarget.posX, newTarget.revPosZ or newTarget.posZ;
+	if curTurnTarget then
+		local posX, posZ = curTurnTarget.revPosX or curTurnTarget.posX, curTurnTarget.revPosZ or curTurnTarget.posZ;
 		local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
 		dtpX,_,dtpZ = worldToLocal(directionNode, posX, vehicleY, posZ);
 		if courseplay:isWheelloader(vehicle) then
@@ -698,7 +700,7 @@ function courseplay:turn(vehicle, dt)
 		--print( ("dtp %.1f, %.1f, %.1f"):format( dtpX, dtpZ, refSpeed ))
 
 		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, posX, vehicleY, posZ);
-		if newTarget.turnReverse then
+		if curTurnTarget.turnReverse then
 			lx, lz, moveForwards = courseplay:goReverse(vehicle,lx,lz);
 		end;
 	end;
@@ -706,8 +708,8 @@ function courseplay:turn(vehicle, dt)
 	----------------------------------------------------------
 	-- Debug prints: Show Current Waypoint
 	----------------------------------------------------------
-	if courseplay.debugChannels[12] and newTarget then
-		local posX, posZ = newTarget.revPosX or newTarget.posX, newTarget.revPosZ or newTarget.posZ;
+	if courseplay.debugChannels[12] and curTurnTarget then
+		local posX, posZ = curTurnTarget.revPosX or curTurnTarget.posX, curTurnTarget.revPosZ or curTurnTarget.posZ;
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, posX, 300, posZ);
 		cpDebug:drawLine(posX, posY + 3, posZ, 0, 0, 1, posX, posY + 4, posZ);  -- Blue Line
 	end;
@@ -774,7 +776,7 @@ function courseplay:turn(vehicle, dt)
 	
 	--courseplay.debugVehicle(14, vehicle, 'turn speed = %.1f, allowedToDrive %s', refSpeed, allowedToDrive)
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-	if newTarget and ((newTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
+	if curTurnTarget and ((curTurnTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
 			if not moveForwards then
 				vehicle.nextMovingDirection = -1

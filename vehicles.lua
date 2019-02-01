@@ -201,8 +201,6 @@ function courseplay:getDistances(object)
 				local tempNode, backTrack, rotLimits = courseplay:findJointNodeConnectingToNode(object, activeInputAttacherJoint.rootNode, lastNode);
 				if tempNode and backTrack then
 					node = tempNode;
-					local tnx, tny, tnz = getWorldTranslation(tempNode);
-					local xdis,ydis,dis = worldToLocal(activeInputAttacherJoint.node, tnx, tny, tnz);
 					local nodeLength = 0;
 					local isPivoted = false;
 					for i = 1, #backTrack do
@@ -226,6 +224,9 @@ function courseplay:getDistances(object)
 					if isPivoted then
 						distances.attacherJointToPivot = nodeLength;
 						courseplay:debug(('%s: attacherJointToPivot=%.2f'):format(nameNum(object), distances.attacherJointToPivot), 6);
+					else
+						distances.attacherJointToLastMovingPart = nodeLength;
+						courseplay:debug(('%s: attacherJointToLastMovingPart=%.2f'):format(nameNum(object), distances.attacherJointToLastMovingPart), 6);
 					end;
 				end;
 			end;
@@ -235,21 +236,25 @@ function courseplay:getDistances(object)
 			setRotation(node, 0, 0, 0);
 
 			-- Find the distance from attacherJoint to rear wheel
-			local objectWheels =  object:getWheels();
+			local objectWheels = object:getWheels();
 			if objectWheels and #objectWheels > 0 and not isHookLift then
 				local length = 0;
 				for _, wheel in ipairs(objectWheels) do
-					local nx, ny, nz = getWorldTranslation(wheel.driveNode);
-					local _,_,dis = worldToLocal(node, nx, ny, nz);
+					if wheel.maxLatStiffnessLoad > 0.5 then
+						local nx, ny, nz = getWorldTranslation(wheel.driveNode);
+						local _,_,dis = worldToLocal(node, nx, ny, nz);
 
-					if abs(dis) > length then
-						length = abs(dis);
+						if abs(dis) > length then
+							length = abs(dis);
+						end;
 					end;
 				end;
 
 				if distances.attacherJointToPivot then
 					distances.pivotToRearWheel = length;
 					distances.attacherJointToRearWheel = distances.attacherJointToPivot + length;
+				elseif distances.attacherJointToLastMovingPart then
+					distances.attacherJointToRearWheel = distances.attacherJointToLastMovingPart + length;
 				else
 					distances.attacherJointToRearWheel = length;
 				end;
@@ -272,10 +277,12 @@ function courseplay:getDistances(object)
 						if not distances.pivotToRearTrailerAttacherJoints then
 							distances.pivotToRearTrailerAttacherJoints = {};
 						end;
-						distances.pivotToRearTrailerAttacherJoints[attacherJoint.jointType] = abs(dis);
-						distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = distances.attacherJointToPivot + abs(dis);
+						distances.pivotToRearTrailerAttacherJoints[attacherJoint.jointType] = dis;
+						distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = distances.attacherJointToPivot + dis;
+					elseif distances.attacherJointToLastMovingPart then
+						distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = distances.attacherJointToLastMovingPart + dis;
 					else
-						distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = abs(dis);
+						distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = dis;
 					end;
 
 					courseplay:debug(('%s: attacherJointToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
@@ -302,7 +309,11 @@ function courseplay:getDistances(object)
 				-- Finde the attacherJoint/Pivot distance to the turning node
 				local nx, ny, nz = getWorldTranslation(node);
 				local _,_,dis = worldToLocal(turningNode, nx, ny, nz);
-				distances.attacherJointOrPivotToTurningNode = dis;
+				if distances.attacherJointToLastMovingPart then
+					distances.attacherJointOrPivotToTurningNode = distances.attacherJointToLastMovingPart + dis;
+				else
+					distances.attacherJointOrPivotToTurningNode = dis;
+				end;
 				courseplay:debug(('%s: attacherJointOrPivotToTurningNode=%.2f'):format(nameNum(object), distances.attacherJointOrPivotToTurningNode), 6);
 
 			end;
@@ -318,42 +329,59 @@ function courseplay:getDistances(object)
 end;
 
 function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
-	local distances = vehicle.cp.distances;
-	local totalDistance = 0;
-	for _, imp in ipairs(vehicle:getAttachedImplements()) do
-		if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
-			local workTool = imp.object;
-			local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
-			if courseplay:isWheeledWorkTool(workTool) then
-				local workToolDistances = workTool.cp.distances;
-
-				if workToolDistances.attacherJointToPivot then
-					totalDistance = totalDistance + workToolDistances.attacherJointToPivot;
-				end;
-
-				totalDistance = totalDistance + workToolDistances.attacherJointOrPivotToTurningNode;
-			else
-				if not distances.attacherJointOrPivotToTurningNode and distances.attacherJointToRearTrailerAttacherJoints then
-					totalDistance = totalDistance + distances.attacherJointToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
-				end;
-				totalDistance = totalDistance + courseplay:getDirectionNodeToTurnNodeLength(workTool);
-			end;
-			break;
-		end;
+	--- This is in case vehicle is a tool and CP havent been set on it
+	if not vehicle.cp then
+		vehicle.cp = {};
 	end;
 
-	if vehicle.cp.DirectionNode and totalDistance > 0 then
+	local totalDistance = 0;
+
+	--- If this have not been set before after last stop command, we need to reset it again.
+	-- This also prevents from this code to calculate each loop while we are turning and can save CPU usage
+	if not vehicle.cp.directionNodeToTurnNodeLength then
+		local distances = vehicle.cp.distances;
+
 		for _, imp in ipairs(vehicle:getAttachedImplements()) do
 			if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 				local workTool = imp.object;
 				local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
-				totalDistance = totalDistance + distances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
+				if courseplay:isWheeledWorkTool(workTool) then
+					local workToolDistances = workTool.cp.distances;
+
+					if workToolDistances.attacherJointToPivot then
+						totalDistance = totalDistance + workToolDistances.attacherJointToPivot;
+						courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToPivot=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointToPivot), 14);
+					end;
+
+					totalDistance = totalDistance + workToolDistances.attacherJointOrPivotToTurningNode;
+					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointOrPivotToTurningNode=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointOrPivotToTurningNode), 14);
+					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToTurningNode=%.2fm'):format(nameNum(workTool), totalDistance), 14);
+				else
+					if not distances.attacherJointOrPivotToTurningNode and distances.attacherJointToRearTrailerAttacherJoints then
+						totalDistance = totalDistance + distances.attacherJointToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
+					end;
+					totalDistance = totalDistance + courseplay:getDirectionNodeToTurnNodeLength(workTool);
+					courseplay:debug(('%s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(workTool), totalDistance), 14);
+				end;
 				break;
 			end;
 		end;
+
+		if vehicle.cp.DirectionNode and totalDistance > 0 then
+			for _, imp in ipairs(vehicle:getAttachedImplements()) do
+				if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
+					local workTool = imp.object;
+					local activeInputAttacherJoint = workTool:getActiveInputAttacherJoint();
+					totalDistance = totalDistance + distances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
+					break;
+				end;
+			end;
+			vehicle.cp.directionNodeToTurnNodeLength = totalDistance;
+			courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(vehicle), totalDistance), 14);
+		end;
 	end;
 
-	return totalDistance;
+	return vehicle.cp.directionNodeToTurnNodeLength or totalDistance;
 end;
 
 function courseplay:getRealDollyFrontNode(dolly)
@@ -566,7 +594,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 						-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 						for i = 1, #objectWheels do
-							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffnessLoad > 1 then
+							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffnessLoad > 0.5 then
 								local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
 								local _,_,dis = worldToLocal(componentNode, x, y, z);
 								dis = dis * invert;
@@ -710,7 +738,7 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 				-- Loop through all the wheels and see if they are attached to this component.
 				for i = 1, #workToolsWheels do
 					-- isLeft is only set for real wheels and not dummy wheels, so we can use that to sort out the dummy wheels
-					if workToolsWheels[i].isLeft ~= nil then
+					if workToolsWheels[i].isLeft ~= nil and workToolsWheels[i].maxLatStiffnessLoad > 0.5 then
 						if courseplay:isPartOfNode(workToolsWheels[i].node, component.node) then
 							-- Check if they are linked together
 							for _, joint in ipairs(workTool.componentJoints) do
@@ -830,14 +858,14 @@ function courseplay:getToolTurnRadius(workTool)
 		for i, attachedImplement in pairs(attacherVehicle:getAttachedImplements()) do
 			if attachedImplement.object == workTool then
 				-- Check if AIVehicleUtil can calculate it for us
-				local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
-				if AIMaxToolRadius > 0 then
-					if workToolDistances.attacherJointOrPivotToTurningNode > AIMaxToolRadius then
-						AIMaxToolRadius = workToolDistances.attacherJointOrPivotToTurningNode;
-					end;
-					courseplay:debug(('%s -> TurnRadius: AIVehicleUtil.getMaxToolRadius=%.2fm'):format(nameNum(workTool), AIMaxToolRadius), 6);
-					return AIMaxToolRadius;
-				end;
+				--local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
+				--if AIMaxToolRadius > 0 then
+				--	if workToolDistances.attacherJointOrPivotToTurningNode > AIMaxToolRadius then
+				--		AIMaxToolRadius = workToolDistances.attacherJointOrPivotToTurningNode;
+				--	end;
+				--	courseplay:debug(('%s -> TurnRadius: AIVehicleUtil.getMaxToolRadius=%.2fm'):format(nameNum(workTool), AIMaxToolRadius), 6);
+				--	return AIMaxToolRadius;
+				--end;
 
 				-- AIVehicleUtil could not calculate it, so we do it our self.
 				rotMax = attachedImplement.upperRotLimit[2];
