@@ -213,13 +213,13 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isGrimmeTectron415 = true;
 		workTool.cp.isHarvesterSteerable = true;
 
-	elseif workTool.cp.xmlFileName == 'holmerTerraDosT4_40.xml' then
+	elseif workTool.cp.xmlFileName == 'terraDosT4_40.xml' then
 		workTool.cp.isHolmerTerraDosT4_40 = true;
 		workTool.cp.useCrabSteeringMode = 1;
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.pipeSide = 1;
 		workTool.cp.ridgeMarkerIndex = 6;
-	elseif workTool.cp.xmlFileName == 'ropaTiger6.xml' then 
+	elseif workTool.cp.xmlFileName == 'tiger6.xml' then
 		workTool.cp.isRopaTiger6 = true;
 		workTool.cp.isHarvesterSteerable = true;
 		workTool.cp.useCrabSteeringMode = 1;
@@ -228,11 +228,11 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
 		workTool.cp.isHolmerHR9 = true;
 
-	elseif workTool.cp.xmlFileName ==  'holmerTerraFelis2.xml' then
+	elseif workTool.cp.xmlFileName ==  'terraFelis2.xml' then
 		workTool.cp.isHolmerTerraFelis2 = true;
 		workTool.cp.isSugarBeetLoader = true
 
-	elseif workTool.cp.xmlFileName ==  'ropaMaus5.xml' then
+	elseif workTool.cp.xmlFileName ==  'maus5.xml' then
 		workTool.cp.isRopaMaus5 = true;
 		workTool.cp.isSugarBeetLoader = true
 
@@ -247,7 +247,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterSteerable = true;
 		
 	-- Harvesters (attachable) [Giants]
-	elseif workTool.cp.xmlFileName == 'grimmeRootster604.xml' then
+	elseif workTool.cp.xmlFileName == 'rootster604.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
 		workTool.cp.notToBeReversed = true;
@@ -255,26 +255,26 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.fixedChopperOffset = -4.5
 		workTool.cp.specialWorkWidth = 2.9
 	
-	elseif workTool.cp.xmlFileName == 'ropaKeiler2.xml' then
+	elseif workTool.cp.xmlFileName == 'keiler2.xml' then
 		workTool.cp.isRopaKeiler2 = true;
 		workTool.cp.isHarvesterAttachable = true;
 		--workTool.cp.notToBeReversed = true;
 		workTool.cp.fixedCombineOffset = 5.5
 			
-	elseif workTool.cp.xmlFileName == 'grimmeSE260.xml' then
+	elseif workTool.cp.xmlFileName == 'SE260.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.specialWorkWidth = 1.6
 		
-	elseif workTool.cp.xmlFileName == 'poettingerMex5.xml' then
+	elseif workTool.cp.xmlFileName == 'mex5.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isPoettingerMex5 = true;
 		workTool.cp.fixedCombineOffset = 5.5
 		workTool.cp.fixedChopperOffset = 5.5
 	
 	-- SWT7 [Giants DLC]
-	elseif workTool.cp.xmlFileName == 'lizardSWT7.xml' then
+	elseif workTool.cp.xmlFileName == 'SWT7.xml' then
 		workTool.cp.isTraileredChopper = true;
 		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 9;
@@ -480,12 +480,12 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.notToBeReversed = true;
 
 	--Hatzenbichler TH1400 [Giants Big Bud DLC]
-	elseif workTool.cp.xmlFileName == 'hatzenbichlerTH1400.xml' then
+	elseif workTool.cp.xmlFileName == 'th1400.xml' then
 		workTool.cp.isHatzenbichlerTH1400 = true;
 		workTool.cp.notToBeReversed = true;
 
 	--Htzenbichler Terminator 18 [Giants Big Bud DLC]
-	elseif workTool.cp.xmlFileName == 'hatzenbichlerTerminator18.xml' then
+	elseif workTool.cp.xmlFileName == 'terminator18.xml' then
 		workTool.cp.isHatzenbichlerTerminator18 = true;
 
 	--Seed Hawk XL Toolbar 84ft [Giants Big Bud DLC]
@@ -494,7 +494,7 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.overwriteTurnRadius = 10;
 
 	--Great Plains YP2425A [Giants Big Bud DLC]
-	elseif workTool.cp.xmlFileName == 'greatPlainsYP2425A.xml' then
+	elseif workTool.cp.xmlFileName == 'yp2425A.xml' then
 		workTool.cp.notToBeReversed = true;
 
 	end;
@@ -862,6 +862,9 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 	return false, allowedToDrive;
 end
 
+-- TODO: this screams for refactoring. Those self.cp.is<some special tool> are completely wrong. We should set the
+-- attributes (like offst, noStopOnEdge etc,) which needs to be set for that specfic tool and that's it, no need for this
+-- tool specific variable. (Or better yet, the whole special tool config should be read from an XML file)
 function courseplay:askForSpecialSettings(self, object)
 	--- SPECIAL VARIABLES THAT CAN BE USED:
 	--
