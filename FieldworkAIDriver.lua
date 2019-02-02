@@ -264,7 +264,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 				-- reached a connecting track (done with the headland, move to the up/down row or vice versa),
 				-- raise all implements while moving
 				self:debug('on a connecting track now, raising implements.')
-				self:stopWork()
+				courseplay:raiseImplements(self.vehicle)
 				self.fieldworkState = self.states.ON_CONNECTING_TRACK
 			end
 		end
