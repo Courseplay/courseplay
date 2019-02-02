@@ -13,7 +13,7 @@
 		<hu>CoursePlay SIX - A Vezetősegéd</hu>
 		<it>CoursePlay SIX</it>
 		<jp>CoursePlay SIX</jp>
-		<nl>CoursePlay SIX</nl>
+		<nl>CoursePlay 6</nl>
 		<pl>CoursePlay SIX</pl>
 		<pt>CoursePlay SIX</pt>
 		<ru>CoursePlay SIX</ru>
@@ -47,6 +47,11 @@ Courseplay Six es un mod para Farming Simulator 19, el cual te permite tener muc
 Courseplay est une modification pour Farm Simulator 19, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
 ]]>
 		</fr>
+        <nl>
+<![CDATA[
+Courseplay is een modificatie voor Farming Simulator 19. Het geeft je de mogelijkheid om veel verschillende voertuigen autonoom en automatisch te laten rond rijden, veldwerk uit te voeren, dorsen & hakselen, granen en goederen te verkopen aan verkooppunten, een bunker of trailer met een shovel te vullen, niveleren en aanrijden van kuilvoer en nog veel meer...
+]]>
+		</nl>
 	</description>
 
 	<multiplayer supported="false" />
