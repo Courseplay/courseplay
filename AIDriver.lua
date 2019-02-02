@@ -327,7 +327,8 @@ end
 
 function AIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
-	-- default behaviour for mode 5 (transport)
+	-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
+	-- passed stop until the user presses the continue button
 	if self.course:isWaitAt(ix) then
 		self:stop('WAIT_POINT')
 		-- show continue button
@@ -350,6 +351,10 @@ function AIDriver:getSpeed()
 		speed = self:getRecordedSpeed()
 	end
 	if self:getIsInFilltrigger() then
+		speed = self.vehicle.cp.speeds.turn
+	end
+	-- slow down before wait points
+	if self.course:hasWaitPointAround(self.ppc:getCurrentOriginalWaypointIx(), 2, 1) then
 		speed = self.vehicle.cp.speeds.turn
 	end
 	return speed and speed or 15
