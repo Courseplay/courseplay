@@ -67,6 +67,8 @@ end
 ---@return boolean true if unload took over the driving
 function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	self:updateOffset()
+	-- by default, drive street/recorded speed.
+	self:setSpeed(self:getRecordedSpeed())
 	if not self.ppc:isReversing() then
 		-- 'cause reverse does the raycasting for us
 		self:searchForTipTriggers()

@@ -553,8 +553,10 @@ function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, 
 		table.insert(result, fromRow[#fromRow])
 		return
 	end
-	for i = 1, #pathToNextRow - 1 do
-		pathToNextRow[i].isConnectingTrack = true
+	for i = 1, math.max(1, #pathToNextRow - 1) do
+		if i > 1 then
+			pathToNextRow[i].isConnectingTrack = true
+		end
 		table.insert(result, pathToNextRow[i])
 	end
 	fromRow[#fromRow].mustReach = true

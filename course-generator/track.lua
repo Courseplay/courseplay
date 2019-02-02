@@ -229,6 +229,12 @@ function reverseCourse( course )
 		elseif newPoint.turnEnd then
 			newPoint.turnEnd = nil
 			newPoint.turnStart = true
+		elseif newPoint.mustReach then
+			newPoint.mustReach = nil
+			newPoint.align = true
+		elseif newPoint.align then
+			newPoint.align = nil
+			newPoint.mustReach = true
 		end
 		table.insert( result, newPoint )
 	end
