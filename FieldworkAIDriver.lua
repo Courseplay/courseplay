@@ -174,6 +174,12 @@ end
 
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
+	-- Workaround for issues like #3064, most likely the raiseAIEvent() call in stopWork()
+	-- stops the engine when the player is not in the vehicle, so restart it here.
+	-- Need to ask Giants' help to figure out how to do this properly.
+	if not courseplay:getIsEngineReady(self.vehicle) then
+		self.vehicle:startMotor()
+	end
 	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
 		self:setSpeed(self.vehicle.cp.speeds.field)
@@ -293,8 +299,15 @@ function FieldworkAIDriver:onWaypointChange(ix)
 				self:changeToFieldwork()
 			end
 		end
+		if self.fieldworkState == self.states.TEMPORARY then
+			-- band aid to make sure we have our implements lowered by the time we end the
+			-- temporary course
+			if ix == self.course:getNumberOfWaypoints() then
+				self:debug('temporary (alignment) course is about to end, start work')
+				self:startWork()
+			end
 		-- towards the end of the field course make sure the implement reaches the last waypoint
-		if self.fieldworkState ~= self.states.TEMPORARY and ix > self.course:getNumberOfWaypoints() - 3 then
+		elseif ix > self.course:getNumberOfWaypoints() - 3 then
 			if self.vehicle.cp.aiFrontMarker then
 				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.vehicle.cp.aiFrontMarker)
 				self.aiDriverOffsetZ = -self.vehicle.cp.aiFrontMarker
