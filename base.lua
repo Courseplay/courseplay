@@ -342,6 +342,7 @@ function courseplay:onLoad(savegame)
 	self.findTrailerRaycastCallback = courseplay.findTrailerRaycastCallback;
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
 	self.findSpecialTriggerCallback = courseplay.findSpecialTriggerCallback;
+	self.findFuelTriggerCallback = courseplay.findFuelTriggerCallback;
 	self.cp.hasRunRaycastThisLoop = {};
 	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
 	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft;

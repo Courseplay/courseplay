@@ -17,6 +17,10 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 		callBack = 'findSpecialTriggerCallback';
 		debugChannel = 19;
 		r, g, b = 0, 1, 0.6;
+	elseif triggerType == 'fuelTrigger' then
+		callBack = 'findFuelTriggerCallback';
+		debugChannel = 19;
+		r, g, b = 0, 1, 0.6;
 	else
 		return;
 	end;
@@ -29,13 +33,17 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 	courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 1);
 
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
-		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
+		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
+		or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) 
+		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
 			local x, _, z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
 
-		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) then
+		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
+		or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) 
+		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
 			local x, _, z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
@@ -188,6 +196,42 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	if courseplay.triggers.fillTriggers[transformId] then
 		--print(transformId.." is in fillTrigers")
 		self.cp.fillTrigger = transformId;
+		courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
+		return false;
+	end
+			
+	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
+	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1;
+	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), 19);
+
+	return true;
+end;
+
+-- FIND Fuel TRIGGER CALLBACK
+function courseplay:findFuelTriggerCallback(transformId, x, y, z, distance)
+	if CpManager.confirmedNoneSpecialTriggers[transformId] then
+		return true;
+	end;
+		
+	if courseplay.debugChannels[19] then
+		cpDebug:drawPoint(x, y, z, 1, 1, 0);
+	end;
+	
+	--[[Tommi TODO check if its still nessesary (mode8) 
+	local name = tostring(getName(transformId));
+	local parent = getParent(transformId);
+	for _,implement in pairs(self:getAttachedImplements()) do
+		if (implement.object ~= nil and implement.object.rootNode == parent) then
+			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), 19);
+			return true
+		end
+	end	
+	]]
+	
+	--print("findSpecialTriggerCallback found "..tostring(transformId).." "..getName(transformId))
+	if courseplay.triggers.fillTriggers[transformId] then
+		--print(transformId.." is in fillTrigers")
+		self.cp.fuelFillTrigger = transformId;
 		courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
 		return false;
 	end

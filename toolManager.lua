@@ -1300,11 +1300,13 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 	for _,workTool in ipairs(vehicle.cp.workTools) do
 		local isFilling = false
 		if vehicle.cp.fillTrigger then
-			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
-			courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS)
 			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
 			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, workTool) then
-				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle, workTool)
+				courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
+				courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS)
+				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle, workTool,vehicle.cp.fillTrigger)
+			else
+				courseplay:resetFillTrigger(vehicle)
 			end
 			
 			--check whether vehicle.cp.refillUntilPct is set 
@@ -1331,10 +1333,10 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 	return allowedToDrive, lx, lz;
 end;		
 		
-function courseplay:fillOnTrigger(vehicle, workTool)
+function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 	local allowedToDrive = true
-	local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
-	local objectToFill = workTool or vehicle; 
+	local trigger = courseplay.triggers.fillTriggers[triggerId]
+	local objectToFill = workTool; 
 	if trigger.onActivateObject then
 		--loadTriggers:placeables,silos
 		--when I'm in the trigger, activate it
@@ -1394,7 +1396,11 @@ function courseplay:fillOnTrigger(vehicle, workTool)
 end
 	
 function courseplay:resetFillTrigger(vehicle)
-	vehicle.cp.fillTrigger = nil
+	if vehicle.cp.fillTrigger then
+		vehicle.cp.fillTrigger = nil
+	elseif vehicle.cp.fuelFillTrigger then
+		vehicle.cp.fuelFillTrigger = nil
+	end
 	courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
 end	
 	
@@ -1406,10 +1412,10 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 			if trigger.autoStart then
 				trigger:onActivateObject(vehicle) 
 			else
-				--force the selected fillType and force the trigger to autoload
+				--force Diesel when I'm in fuelFillTrigger or the selected fillType in fillTrigger and start the autoload
 				trigger.autoStart = true
 				trigger:onActivateObject(vehicle) 
-				trigger.selectedFillType = vehicle.cp.siloSelectedFillType
+				trigger.selectedFillType = vehicle.cp.fuelFillTrigger and FillType.DIESEL or vehicle.cp.siloSelectedFillType
 				g_effectManager:setFillType(trigger.effects, trigger.selectedFillType)
 				trigger.autoStart = false
 			end

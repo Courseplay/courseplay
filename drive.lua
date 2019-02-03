@@ -2084,16 +2084,18 @@ function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
 		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
 		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.allwaysSearchFuel and currentFuelPercentage < 99 or currentFuelPercentage < 20); 
-		if searchForFuel and not vehicle.cp.fillTrigger then
+		if searchForFuel and not vehicle.cp.fuelFillTrigger then
 			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
 			local tx, ty, tz = getWorldTranslation(vehicle.cp.DirectionNode)
-			courseplay:doTriggerRaycasts(vehicle, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
+			courseplay:doTriggerRaycasts(vehicle, 'fuelTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end
 		
-		if vehicle.cp.fillTrigger then
-			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
+		if vehicle.cp.fuelFillTrigger then
+			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fuelFillTrigger]
 			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, vehicle, dieselIndex) then
-				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle)
+				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle,vehicle,vehicle.cp.fuelFillTrigger)
+			else
+				vehicle.cp.fuelFillTrigger = nil
 			end			
 		end
 		if currentFuelPercentage < 5 then
