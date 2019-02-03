@@ -271,9 +271,9 @@ function courseplay:onLoad(savegame)
 
 	--aiTrafficCollisionTrigger
 	if self.aiTrafficCollisionTrigger == nil then
-		local index = getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
+		local index = self.i3dMappings.aiCollisionTrigger --getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
 		if index then
-			local triggerObject = Utils.indexToObject(self.components, index);
+			local triggerObject = I3DUtil.indexToObject(self.components, index);
 			if triggerObject then
 				self.aiTrafficCollisionTrigger = triggerObject;
 			end;
@@ -281,14 +281,15 @@ function courseplay:onLoad(savegame)
 	else
 		CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true; --add AI traffic collision trigger to global ignore list
 	end;
+	
 	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
-		if getChild(self.rootNode, "trafficCollisionTrigger") ~= 0 then
-			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "trafficCollisionTrigger");
+		if getChild(self.rootNode, "aiCollisionTrigger") ~= 0 then
+			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "aiCollisionTrigger");
 		else
 			for i=0,getNumOfChildren(self.rootNode)-1 do
 				local child = getChildAt(self.rootNode, i);
-				if getChild(child, "trafficCollisionTrigger") ~= 0 then
-					self.aiTrafficCollisionTrigger = getChild(child, "trafficCollisionTrigger");
+				if getChild(child, "aiCollisionTrigger") ~= 0 then
+					self.aiTrafficCollisionTrigger = getChild(child, "aiCollisionTrigger");
 					break;
 				end;
 			end;
