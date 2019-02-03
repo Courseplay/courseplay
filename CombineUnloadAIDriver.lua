@@ -244,6 +244,14 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 	end
 end
 
+function CombineUnloadAIDriver:getIsCombineTurning(combine)
+	local driveableComponent = combine:getAttacherVehicle() or combine
+	local aiTurn = driveableComponent.spec_aiVehicle and driveableComponent.spec_aiVehicle.isTurning	
+	local cpTurn = driveableComponent.cp.turnStage > 0
+	return  aiTurn or cpTurn
+end
+
+
 function CombineUnloadAIDriver:onWaypointChange(newIx)
 	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
 		if not self.onTurnAwayCourse then

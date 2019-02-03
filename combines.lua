@@ -7,10 +7,8 @@ function courseplay:getAllCombines()
 			vehicle.cp = {};
 			courseplay:setNameVariable(vehicle);
 		end;
-
-		if not courseplay:isAttachedCombine(vehicle) or (vehicle.attacherVehicle ~= nil and not vehicle.cp.isPoettingerMex6) then
-			table.insert(combines, vehicle);
-		end;
+		
+		table.insert(combines, vehicle);
 	end;
 
 	return combines;
@@ -107,7 +105,7 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 			else
 				-- force unload when combine is full
 				-- is the pipe on the correct side?
-				if (combine.turnStage ~= nil and combine.turnStage > 0) or combine.cp.turnStage ~= 0 then
+				if CombineUnloadAIDriver.getIsCombineTurning(callerVehicle,combine) then
 					courseplay:debug(nameNum(callerVehicle)..": combine is turning -> don't register tractor",4)
 					return false, true
 				end
@@ -448,10 +446,10 @@ function courseplay:getCombinesPipeSide(combine)
 	
 	if combineToPrnX >= 0 then
 		combine.cp.pipeSide = 1; --left
-		print("pipe is left")
+		courseplay:debug(string.format("%s:getCombinesPipeSide: pipe is left",nameNum(vehicle)), 4);
 	else
 		combine.cp.pipeSide = -1; --right
-		print("pipe is right")
+		courseplay:debug(string.format("%s:getCombinesPipeSide: pipe is right",nameNum(vehicle)), 4);
 	end;
 end
 
@@ -481,6 +479,7 @@ function courseplay:releaseCombineStop(vehicle,combine)
 	if combine == nil and vehicle.cp.activeCombine == nil then 
 		return 
 	end
+	courseplay:debug(string.format("%s: releaseCombineStop()", nameNum(vehicle)), 4);
 	local combineToStart = combine or vehicle.cp.activeCombine
 	if combineToStart:getIsActive() and combineToStart.spec_drivable.cruiseControl.speed == 0 then
 		combineToStart.spec_drivable.cruiseControl.speed = combineToStart.cp.lastCruiseControlSpeed

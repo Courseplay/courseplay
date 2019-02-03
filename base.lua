@@ -1138,7 +1138,7 @@ function courseplay:onUpdate(dt)
 			end
 			self:setCpVar('HUD4savedCombine', self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil,courseplay.isClient);
 			if self.cp.savedCombine ~= nil then
-				self:setCpVar('HUD4savedCombineName', self.cp.savedCombine.name,courseplay.isClient);
+				self:setCpVar('HUD4savedCombineName', self.cp.savedCombine:getName(),courseplay.isClient);
 			end
 
 		elseif self.cp.hud.currentPage == 8 then
@@ -1208,11 +1208,10 @@ function courseplay:onUpdateTick(dt)
 	end
 
 	--get the combines filling rate in l/second
-	--[[Tommi overloading doesnt exist anymore
 	if self.cp.isCombine then
 		if courseplay:timerIsThrough(self, 'combineFillLevel') then 
 			courseplay:setCustomTimer(self, "combineFillLevel", 2);
-			local currentFillLevel = self:getUnitFillLevel(self.overloading.fillUnitIndex)
+			local currentFillLevel = self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex)
 			local timeDiff = (g_currentMission.time - (self.cp.lastFillLevelTime or g_currentMission.time))/1000
 			self.cp.lastFillLevelTime = g_currentMission.time
 			if self.cp.lastFillLevel ~= nil then
@@ -1228,7 +1227,6 @@ function courseplay:onUpdateTick(dt)
 			end	
 		end
 	end
-	]]
 	self.timer = self.timer + dt;
 end
 

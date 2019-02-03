@@ -377,7 +377,7 @@ function courseplay:unload_combine(vehicle, dt)
 	local tractor = combine
 	if courseplay:isAttachedCombine(combine) then
     -- this is the tractor pulling a harvester
-		tractor = combine.attacherVehicle
+		tractor = combine:getAttacherVehicle()
 
 		-- Really make sure the combine's attacherVehicle still exists - see issue #443
 		if tractor == nil then
@@ -398,14 +398,9 @@ function courseplay:unload_combine(vehicle, dt)
 	elseif combine.turnStage ~= 3 then
 		vehicle.cp.choppersTurnHasEnded = false
 	end
-	local aiTurn = tractor.spec_aiVehicle and tractor.spec_aiVehicle.isTurning	
+	
+	combineIsTurning = CombineUnloadAIDriver.getIsCombineTurning(vehicle,combine)
 
-	--local aiTurn = combine.isAIThreshing and combine.turnStage > 0 and not (combine.turnStage == 3 and vehicle.cp.choppersTurnHasEnded)
-	if tractor ~= nil and (aiTurn or tractor.cp.turnStage > 0) then
-		--courseplay:setInfoText(vehicle, "COURSEPLAY_COMBINE_IS_TURNING");
-		combineIsTurning = true
-		-- print(('%s: cp.turnStage=%d -> combineIsTurning=true'):format(nameNum(tractor), tractor.cp.turnStage));
-	end
 
 	vehicle.cp.mode2DebugTurning = combineIsTurning
 	
@@ -845,7 +840,7 @@ function courseplay:unload_combine(vehicle, dt)
 	if combine.getIsAIActive and combine:getIsAIActive() and stopAICombine and combine:getCruiseControlSpeed() > 0 then
 		combine.cp.lastCruiseControlSpeed = combine:getCruiseControlSpeed()
 		combine.spec_drivable.cruiseControl.speed = 0 
-		print("stopAICombine")
+		courseplay:debug(string.format("%s : stop AI Helper Combine.", nameNum(vehicle)), 4);
 	end
 	
 	if combineIsTurning and distance < 20 then

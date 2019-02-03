@@ -159,7 +159,7 @@ end;
 function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local tractor = combine;
 	if courseplay:isAttachedCombine(combine) then
-		tractor = combine.attacherVehicle;
+		tractor = combine:getAttacherVehicle();
 	end;
 
 	-- COMBINE DIRECTION
