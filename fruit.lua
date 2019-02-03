@@ -15,7 +15,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 		density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
-			return true;
+			return true,fruitType;
 		end;
 	else
 		for i = 1, #g_fruitTypeManager.fruitTypes do
@@ -33,7 +33,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 		if maxDensity > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			--print("areaHasFruit: return "..tostring(maxFruitType))
-			return true,maxFruitType;
+			return true, maxFruitType;
 		end;
 	end;
 
@@ -186,11 +186,16 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	local rHeightX = rStartX + dirX * 0.5 * threshWidth;
 	local rHeightZ = rStartZ + dirZ * 0.5 * threshWidth;
 	local fruitType = combine.spec_combine.lastValidInputFruitType
+	local hasFruit = false
 	if fruitType == nil or fruitType == 0 then
-		_,fruitType = courseplay:areaHasFruit(x, z, nil, threshWidth, threshWidth)
+		hasFruit,fruitType = courseplay:areaHasFruit(x, z, nil, threshWidth, threshWidth)
 	end
-	if fruitType == nil then fruitType = 0 end
-	local minHarvestable, maxHarvestable = 1, g_fruitTypeManager.fruitTypes[fruitType].numGrowthStates
+	local minHarvestable, maxHarvestable = 1,1
+	if hasFruit then
+		maxHarvestable = g_fruitTypeManager.fruitTypes[fruitType].numGrowthStates
+	else
+		fruitType = 0 
+	end
 	local leftFruit, totalArealeft = FieldUtil.getFruitArea(lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 	local rightFruit, totalArearight = FieldUtil.getFruitArea(rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 	courseplay:debug(string.format("%s:courseplay:sideToDrive: fruit(%s): left %f, right %f", nameNum(combine),tostring(fruitType), leftFruit, rightFruit), 4);
