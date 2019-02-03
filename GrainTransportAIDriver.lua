@@ -95,6 +95,10 @@ function GrainTransportAIDriver:onWaypointChange(newIx)
 		courseplay:setIsLoaded(self.vehicle, false);
 		courseplay:changeRunCounter(self.vehicle, false)
 	end
+	if newIx == 3 then
+		courseplay:openCloseCover(self.vehicle, courseplay.SHOW_COVERS)
+	end
+	
 end
 
 function GrainTransportAIDriver:hasTipTrigger()
@@ -127,6 +131,8 @@ end
 function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:reachedLastWaypoint() then
+		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
+		
 		-- Don't make life too complicated. Whenever we restart the course, we just
 		-- increment the run counter
 		-- TODO: check if it makes sense to use the totalFillLevel changing to 0 as a trigger.
@@ -181,6 +187,10 @@ function GrainTransportAIDriver:unLoad(allowedToDrive, dt)
 	if self.vehicle.cp.hasAugerWagon then
 		courseplay:handleMode3(self.vehicle, allowedToDrive, dt);
 	else
+		--handle cover 
+		if self:hasTipTrigger() then
+			courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
+		end
 		-- done tipping?
 		if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 then
 			courseplay:resetTipTrigger(self.vehicle, true);

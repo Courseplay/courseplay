@@ -1275,6 +1275,8 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 	vehicle.cp.isBGATipping = false;
+	courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
+	
 	for k, tipper in pairs(vehicle.cp.workTools) do
 		tipper.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
 		tipper.cp.isTipping = false;
