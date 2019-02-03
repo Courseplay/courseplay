@@ -275,8 +275,8 @@ function courseplay:handle_mode2(vehicle, dt)
 						-- it's not a precise calculation but it should work somehow... (calculating the true path to all combines every 5 sec is too expensive)
 						elseif combine.cp.fillLitersPerSecond and not combine.cp.driverPriorityUseFillLevel then
 								local distanceToCombine = courseplay:distanceToObject(vehicle, combine);
-								local capacity = combine:getUnitCapacity(combine.overloading.fillUnitIndex)
-								local fillLevel = combine:getUnitFillLevel(combine.overloading.fillUnitIndex)
+								local capacity = combine:getFillUnitCapacity(combine.spec_combine.fillUnitIndex)
+								local fillLevel = combine:getFillUnitFillLevel(combine.spec_combine.fillUnitIndex)
 								local triggerFillLevel = capacity* vehicle.cp.followAtFillLevel / 100
 								local timeToReachFillLevel = (triggerFillLevel - fillLevel)/combine.cp.fillLitersPerSecond
 								local approxTimeToCombine = distanceToCombine /(vehicle.cp.speeds.field/3.6)
