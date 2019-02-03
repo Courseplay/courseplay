@@ -11,11 +11,11 @@
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Am letzten Wegpunkt o. Trigger warten" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Anzahl der Durchläufe"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="unbegrenzt" />
-		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Abfahrerseite" />
+		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Abkippseite" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 										text="links" />
 		<text name="COURSEPLAY_RIGHT" 										text="rechts" />
-		<text name="COURSEPLAY_CENTER" 										text="mittig" />
+		<text name="COURSEPLAY_CENTER" 										text="Hinten" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 					text="Abfahrer wegschicken" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Abfahrer rufen" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Abfahrer gerufen" />
