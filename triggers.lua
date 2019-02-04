@@ -124,11 +124,15 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and g_fillTypeManager.indexToName[trailerFillType] or ''), 1);
 				if trailerFillType and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[trailerFillType] then
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
-
 					-- check trigger fillLevel / capacity
-					if trigger.fillLevels ~= nil and trigger.fillLevels[trailerFillType] and trigger.capacity and trigger.fillLevels[trailerFillType] >= trigger.capacity then
-						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d -> abort'):format(tostring(triggerId), trigger.fillLevels[trailerFillType], trigger.capacity), 1);
-						return true;
+					if trigger.unloadingStation then
+						local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType,1)
+						local capacity = trigger.unloadingStation:getCapacity(trailerFillType,1)
+						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d '):format(tostring(triggerId), fillLevel, capacity), 1);
+						if fillLevel>=capacity then
+							courseplay:debug(('    trigger (%s) Trigger is full -> abort'):format(tostring(triggerId)), 1);
+							return true;
+						end
 					end;
 
 					-- check single fillType validity
@@ -391,8 +395,7 @@ function courseplay:updateAllTriggers()
 					trigger = {
 								triggerId = triggerId;
 								acceptedFillTypes = placeable.storages[1].fillTypes;
-								capacity = placeable.storages[1].capacityPerFillType;
-								fillLevels = placeable.storages[1].fillLevels;
+								unloadingStation = placeable.unloadingStation;
 					
 							}
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
