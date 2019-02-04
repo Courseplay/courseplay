@@ -43,6 +43,7 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
 	self.stopImplementsWhileUnloadOrRefillOnField = false
+	self.lastEmptyTimestamp = 0
 end
 
 function UnloadableFieldworkAIDriver:drive(dt)
@@ -191,26 +192,34 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 		return true
 	end
 	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if self:shouldStopForUnloading() then
-		self:debugSparse('Stop for unloading: %s: %.1f', fillTypeName, pc )
+	if self:shouldStopForUnloading(pc) then
+		self:debugSparse('Stop for unloading: %s: %.2f', fillTypeName, pc )
 		return false
 	end
 	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
-		self:debugSparse('Full: %s: %.1f', fillTypeName, pc )
+		self:debugSparse('Full: %s: %.2f', fillTypeName, pc )
 		return false
 	end
-	self:debugSparse('Fill levels: %s: %.1f', fillTypeName, pc )
+	self:debugSparse('Fill levels: %s: %.2f', fillTypeName, pc )
 	return true
 end
 
-function UnloadableFieldworkAIDriver:shouldStopForUnloading()
+function UnloadableFieldworkAIDriver:shouldStopForUnloading(pc)
+	local stop = false
 	if self.vehicle.cp.stopWhenUnloading and self.vehicle.spec_pipe then
-		if self.vehicle.spec_pipe.currentState == UnloadableFieldworkAIDriver.PIPE_STATE_OPEN then
-			return true
+		if self.vehicle.spec_pipe.currentState == UnloadableFieldworkAIDriver.PIPE_STATE_OPEN and
+			g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
+			-- stop only if the pipe is open AND we have been emptied more than 1000 cycles ago.
+			-- this makes sure the combine will start driving after it is emptied but the trailer
+			-- is still under the pipe
+			stop = true
 		end
-	else
-		return false
 	end
+	if pc and pc < 0.1 then
+		-- remember the time we were completely unloaded.
+		self.lastEmptyTimestamp = g_updateLoopIndex
+	end
+	return stop
 end
 
 function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()

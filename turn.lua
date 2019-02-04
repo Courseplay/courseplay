@@ -2082,6 +2082,8 @@ end
 -- TODO: this (or an even more generalized version) should be part of the Course class.
 -- TODO: if the time needed to lower the implement this could be made time based (if the speed is known)
 function courseplay.getWpIxInDistanceFromEnd(turnTargets, d, turnEndNode)
+	-- if our implement is behind us no need to worry about lowering it early.
+	if d < 0 then return nil end
 	local dBehind = 0
 	for i = #turnTargets, 2, -1 do
 		-- only start counting when we are behind the turn end node (as the generated turn often

@@ -62,6 +62,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 			self:setSpeed(math.min(self.vehicle.cp.speeds.turn, self:getRecordedSpeed()))
 		else
 			-- stop for refill when refillWorkTools tells us
+			self:debugSparse('refillWorkTools() tells us to stop')
 			self:setSpeed( 0)
 		end
 	else
