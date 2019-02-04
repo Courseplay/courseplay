@@ -90,7 +90,7 @@
 		<text name="COURSEPLAY_TURN_RADIUS" 								text="Wendekreis:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="vertik. Abstand:" />
 		<text name="COURSEPLAY_COMBINE" 									text="Drescher" />
-		<text name="COURSEPLAY_NONE" 										text="keiner" />
+		<text name="COURSEPLAY_NONE" 										text="kein" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 								text="Drescher wählen:" />
 		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Dreschersuche:" />
 		<text name="COURSEPLAY_CURRENT" 									text="Aktuell:" />
@@ -126,13 +126,13 @@
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Drescher wendet" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Kein Arbeitsbereich in diesem Kurs" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 							text="kombinierte Kurse" />
-		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 						text="fahre hinter Drescher" />
-		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 						text="fahre neben Drescher" />
-		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 							text="fahre zu Drescher" />
-		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 					text="Drescher sagt ich soll anhalten" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 						text="fahre hinter dem Drescher" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 						text="fahre neben dem Drescher" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 							text="fahre zu dem Drescher" />
+		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 					text="Drescher bittet anzuhalten" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Warte bis die Warteposition frei ist" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="wende in Richtung Koordinaten %d %d" />
-		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="fahre zu Wegpunkt %d %d" />
+		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="fahre zum Wegpunkt %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Warte bis Füllstand erreicht ist" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Kein Drescher in Reichweite" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Warte bis Drescher gewendet hat" />
@@ -146,7 +146,7 @@
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 						text="Zu wenig Wartepunkte! %d benötigt." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 					text="Zu viele Entladepunkte! Nur %d erlaubt." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"					text="Zu wenige Entladepunkte! %d benötigt." />
-		<text name="COURSEPLAY_WRONG_TRAILER" 								text="falscher Trailer für diesen Modus" />
+		<text name="COURSEPLAY_WRONG_TRAILER" 								text="falscher Auflieger für diesen Modus" />
 		<text name="COURSEPLAY_WRONG_TOOL" 									text="falsches Gerät für diesen Modus" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 			text="Dieser Fahrzeugtyp wird in diesem Modus nicht unterstützt." />
 		<text name="COURSEPLAY_WEATHER_WARNING" 							text="wartet auf besseres Wetter" />
@@ -158,7 +158,7 @@
 		<text name="COURSEPLAY_FRONT" 										text="vorne" />
 		<text name="COURSEPLAY_BACK" 										text="hinten" />
 		<text name="COURSEPLAY_WORK_WIDTH" 									text="Arbeitsbreite" />
-		<text name="COURSEPLAY_WATER_WARNING" 								text="möchte baden gehen" />
+		<text name="COURSEPLAY_WATER_WARNING" 								text="Wasser Warnung" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 								text="Courseplay öffnen:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 								text="Debug-Channels" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 				text="Kursgenerierung" />
@@ -214,7 +214,7 @@
         <text name="COURSEPLAY_DIRECTION_WNW"                           	text="WNW"/>
         <text name="COURSEPLAY_DIRECTION_NW"                            	text="NW"/>
         <text name="COURSEPLAY_DIRECTION_NNW"                           	text="NNW"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="Der Kurs wurde erfolgreich generiert,kann jedoch aufgrund seiner Richtungseinstellungen zu Problemen beim Befahren führen"/>
+        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="Der Kurs wurde erfolgreich generiert, kann jedoch aufgrund seiner Richtungseinstellungen zu Problemen beim Befahren führen"/>
 		<text name="COURSEPLAY_HEADLAND" 									text="Vorgewende" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  							text="Feldinseln umfahren" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="deaktiviert" />
