@@ -536,7 +536,7 @@ function courseplay:turn(vehicle, dt)
 				return
 			else
 				_, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
-				lowerImplements = deltaZ < frontMarker + 1
+				lowerImplements = deltaZ < frontMarker + 3
 			end
 
 			if curTurnTarget.turnReverse then
@@ -601,7 +601,7 @@ function courseplay:turn(vehicle, dt)
 			local _, _, deltaZ = worldToLocal(realDirectionNode,vehicle.Waypoints[vehicle.cp.waypointIndex+1].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex+1].cz)
 
 			--courseplay.debugVehicle(14, vehicle, 'ix=%d dz=%.1f', vehicle.cp.waypointIndex+1, deltaZ)
-			local lowerImplements = deltaZ < frontMarker + 1
+			local lowerImplements = deltaZ < frontMarker + 3
 			if curTurnTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
