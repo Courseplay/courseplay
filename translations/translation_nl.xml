@@ -66,8 +66,8 @@
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="Is klaar met graan transport." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="Is klaar met vloeibaar transport." />
 		<text name="COURSEPLAY_WORK_END" 									text="Werk afgerond." />
-		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text="Coursplay: gereedschap legen." />
-		<text name="COURSEPLAY_NEEDS_REFILLING" 							text="Coursplay: gereedschap vullen." />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text="Courseplay: gereedschap legen." />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 							text="Courseplay: gereedschap vullen." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Balen lossen" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Oponthoud." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Uitlaad trigger bereikt" />
