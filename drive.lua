@@ -667,7 +667,7 @@ function courseplay:drive(self, dt)
 			showCover = not workArea and self.cp.currentTipTrigger == nil;
 		end;
 
-		courseplay:openCloseCover(self, showCover, self.cp.currentTipTrigger ~= nil);
+		courseplay:openCloseCover(self, showCover);
 	elseif self.cp.tipperHasCover then
 		courseplay:openCloseCover(self, false);
 	end;
@@ -1248,23 +1248,48 @@ function courseplay:getSpeedWithLimiter(vehicle, refSpeed)
 	return refSpeed, speedLimitActivated;
 end
 
-function courseplay:openCloseCover(vehicle, showCover, isAtTipTrigger, stopOrder)
+function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.cp.workTools[tIdx];
 		-- default Giants trailers
 		if coverType == 'defaultGiants' then
-			local isSprayer, isSowingMachine = courseplay:isSprayer(tipper), courseplay:isSowingMachine(tipper);
-			--[[if (vehicle.cp.mode == 4 and tipper.fillTriggers and tipper.fillTriggers[1] ~= nil)
-				or (vehicle.cp.mode == 1 and tipper.fillTriggers and tipper.fillTriggers[1] ~= nil)
-				or (stopOrder and (isSprayer or isSowingMachine)) then
-				return
-			end]]
-			local newState = showCover and 0 or 1         
-			if tipper.spec_cover.state ~= newState then
-				tipper:setCoverState(newState);
-			end;
-
+			if not showCover then
+				if courseplay:isSprayer(tipper) or courseplay:isSowingMachine(tipper) and fillTrigger then
+					local fillUnits = tipper:getFillUnits()
+					for i=1,#fillUnits do	
+						if courseplay:fillTypesMatch(vehicle, fillTrigger, tipper, i) then
+							if tipper.spec_cover.state ~= i then
+								tipper:setCoverState(i,true);
+							end
+						end
+					end
+				else
+					local newState = 1    
+					if tipper.spec_cover.state ~= newState and tipper:getIsNextCoverStateAllowed(newState) then
+						tipper:setCoverState(newState,true);
+					end
+				end
+			else --showCover	
+				local newState = 0         
+				if tipper.spec_cover.state ~= newState then
+					if tipper:getIsNextCoverStateAllowed(newState) then
+						tipper:setCoverState(newState,true);
+					else
+						for i=tipper.spec_cover.state,#tipper.spec_cover.covers do
+							if tipper:getIsNextCoverStateAllowed(i+1)then
+								tipper:setCoverState(i+1,true);
+							end
+							if tipper:getIsNextCoverStateAllowed(newState) then
+								tipper:setCoverState(newState,true);
+								break
+							end
+						end
+					end;
+				end
+			end
+			
+			
 
 			-- Example: for mods trailer that don't use the default cover specialization
 		else--if coverType == 'CoverVehicle' then
@@ -1472,7 +1497,7 @@ function courseplay:isInUnloadArea(vehicle, wpBefore, wpAfter, fromWP, unloadInd
 	return false;
 end;
 
-function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
+--[[function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 	local station, name, x, y, z, vehToCenterX, vehToCenterZ;
 	local isInFrontOfStation = vehicle.cp.fillTrigger ~= nil;
 
@@ -1590,7 +1615,7 @@ function courseplay:handleMapWeightStation(vehicle, allowedToDrive)
 	courseplay:debug(('%s: handleMapWeightStation() **END** -> station=%s, isInFrontOfStation=%s, isInStation=%s, vehToCenterZ=%s'):format(nameNum(vehicle), tostring(name), tostring(isInFrontOfStation), tostring(vehicle.cp.curMapWeightStation ~= nil), tostring(vehToCenterZ)), 20);
 
 	return allowedToDrive;
-end;
+end;]]
 
 function courseplay:setReverseBackDistance(vehicle, metersBack)
 	if not vehicle or not metersBack then return; end;

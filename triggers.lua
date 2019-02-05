@@ -199,7 +199,9 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	--print("findSpecialTriggerCallback found "..tostring(transformId).." "..getName(transformId))
 	if courseplay.triggers.fillTriggers[transformId] then
 		--print(transformId.." is in fillTrigers")
-		self.cp.fillTrigger = transformId;
+		if self.cp.fillTrigger == nil then
+			self.cp.fillTrigger = transformId;
+		end
 		courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
 		return false;
 	end
