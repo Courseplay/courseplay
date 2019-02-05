@@ -15,7 +15,7 @@
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automatisch" />
 		<text name="COURSEPLAY_LEFT" 										text="links" />
 		<text name="COURSEPLAY_RIGHT" 										text="rechts" />
-		<text name="COURSEPLAY_CENTER" 										text="Hinten" />
+		<text name="COURSEPLAY_CENTER" 										text="hinten" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 					text="Abfahrer wegschicken" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Abfahrer rufen" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Abfahrer gerufen" />
