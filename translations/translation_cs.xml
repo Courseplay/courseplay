@@ -163,62 +163,62 @@
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="结束位置" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="车辆行驶的方向" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="返回到起始点" />
-		<text name="COURSEPLAY_CORNER_1" 									text="西S" />
-		<text name="COURSEPLAY_CORNER_2" 									text="西N" />
-		<text name="COURSEPLAY_CORNER_3" 									text="东N" />
-		<text name="COURSEPLAY_CORNER_4" 									text="东S" />
-		<text name="COURSEPLAY_CORNER_5" 									text="车辆位置" />
-		<text name="COURSEPLAY_CORNER_7" 									text="S-西 (new)" />
-		<text name="COURSEPLAY_CORNER_8" 									text="N-西 (new)" />
-		<text name="COURSEPLAY_CORNER_9" 									text="N-东 (new)" />
-		<text name="COURSEPLAY_CORNER_10" 									text="S-东 (new)" />
+		<text name="COURSEPLAY_CORNER_1" 									text="西南方向" />
+		<text name="COURSEPLAY_CORNER_2" 									text="西北方向" />
+		<text name="COURSEPLAY_CORNER_3" 									text="东北方向" />
+		<text name="COURSEPLAY_CORNER_4" 									text="东南方向" />
+		<text name="COURSEPLAY_CORNER_5" 									text="车辆的位置" />
+		<text name="COURSEPLAY_CORNER_7" 									text="南-西 (new)" />
+		<text name="COURSEPLAY_CORNER_8" 									text="北-西 (new)" />
+		<text name="COURSEPLAY_CORNER_9" 									text="北-东 (new)" />
+		<text name="COURSEPLAY_CORNER_10" 									text="南-东 (new)" />
 		<text name="COURSEPLAY_CORNER_11" 									text="在地图上选择位置" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 				text="(点击地图选择地块)" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 		text="(点击地图选择起始位置)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			            	text="开始工作" />
 		<text name="COURSEPLAY_SKIP_ROWS"     			                	text="跳过行" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="上/下 行" />
-		<text name="COURSEPLAY_HEADLAND_PASSES" 				        	text="岬角通过" />
-		<text name="COURSEPLAY_HEADLAND_CORNERS" 				        	text="岬角" />
+		<text name="COURSEPLAY_HEADLAND_PASSES" 				        	text="夹角通过" />
+		<text name="COURSEPLAY_HEADLAND_CORNERS" 				        	text="夹角" />
 		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				        	text="顺时针" />
 		<text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 					text="逆时针" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NONE"   				    	text="无" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				    	text="周围" />
 		<text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 					text="狭窄的地块" />
-		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 		text="Short edges" />
-		<text name="COURSEPLAY_DIRECTION_1" 								text="N" />
+		<text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 		text="短边" />
+		<text name="COURSEPLAY_DIRECTION_1" 								text="北" />
 		<text name="COURSEPLAY_DIRECTION_2" 								text="东" />
-		<text name="COURSEPLAY_DIRECTION_3" 								text="S" />
+		<text name="COURSEPLAY_DIRECTION_3" 								text="南" />
 		<text name="COURSEPLAY_DIRECTION_4" 								text="西" />
 		<text name="COURSEPLAY_DIRECTION_5" 								text="自动" />
-		<text name="COURSEPLAY_DIRECTION_6" 								text="最长的边" />
+		<text name="COURSEPLAY_DIRECTION_6" 								text="长边" />
 		<text name="COURSEPLAY_DIRECTION_7" 								text="菜单" />
-        <text name="COURSEPLAY_DIRECTION_N"                             	text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                           	text="NN东"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                            	text="N东"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                           	text="东N东"/>
+        <text name="COURSEPLAY_DIRECTION_N"                             	text="北"/>
+        <text name="COURSEPLAY_DIRECTION_NNE"                           	text="北偏东"/>
+        <text name="COURSEPLAY_DIRECTION_NE"                            	text="东北"/>
+        <text name="COURSEPLAY_DIRECTION_ENE"                           	text="东偏北"/>
         <text name="COURSEPLAY_DIRECTION_E"                             	text="东"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                           	text="东S东"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                            	text="S东"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                           	text="SS东"/>
-        <text name="COURSEPLAY_DIRECTION_S"                             	text="S"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                           	text="SS西"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                            	text="S西"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                           	text="西S西"/>
+        <text name="COURSEPLAY_DIRECTION_ESE"                           	text="东偏南"/>
+        <text name="COURSEPLAY_DIRECTION_SE"                            	text="东南"/>
+        <text name="COURSEPLAY_DIRECTION_SSE"                           	text="南偏东"/>
+        <text name="COURSEPLAY_DIRECTION_S"                             	text="南"/>
+        <text name="COURSEPLAY_DIRECTION_SSW"                           	text="南偏西"/>
+        <text name="COURSEPLAY_DIRECTION_SW"                            	text="西南"/>
+        <text name="COURSEPLAY_DIRECTION_WSW"                           	text="西偏南"/>
         <text name="COURSEPLAY_DIRECTION_W"                             	text="西"/>
-        <text name="COURSEPLAY_DIRECTION_WNW"                           	text="西N西"/>
-        <text name="COURSEPLAY_DIRECTION_NW"                            	text="N西"/>
-        <text name="COURSEPLAY_DIRECTION_NNW"                           	text="NN西"/>
+        <text name="COURSEPLAY_DIRECTION_WNW"                           	text="西偏北"/>
+        <text name="COURSEPLAY_DIRECTION_NW"                            	text="西北"/>
+        <text name="COURSEPLAY_DIRECTION_NNW"                           	text="北偏西"/>
         <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="课程成功生成，但由于当前的方向设置，驾驶时可能会导致问题."/>
 		<text name="COURSEPLAY_HEADLAND" 									text="路径生成的模式" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  							text="绕过障碍" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="禁用避障" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="简化路点" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="绕开障碍物" /> <!-- drive a full circle around the island when first bypassing -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="避开障碍物" /> <!-- drive a full circle around the island when first bypassing -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="光滑" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  				text="转" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  				text="圆" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="反向岬角运动"/>
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="反向夹角运动"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="直行" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="曲行" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="围绕地块 (测试功能)" />
@@ -315,7 +315,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="总是 4WD &amp; 后差速器工作" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="总是 4WD &amp; 前后差速器工作" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="需要自动测量土地范围路径么？" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="你想要CP赚取雇人的工资么(%s/小时)？" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="你要支付雇人的工资么(%s/小时)？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="种子使用量" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="地块编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="种子类型: %s" />
