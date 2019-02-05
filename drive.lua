@@ -1249,6 +1249,10 @@ function courseplay:getSpeedWithLimiter(vehicle, refSpeed)
 end
 
 function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
+	if not vehicle.cp.automaticCoverHandling then
+		return
+	end
+	
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.cp.workTools[tIdx];

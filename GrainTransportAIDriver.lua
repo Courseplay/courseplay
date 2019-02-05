@@ -175,6 +175,7 @@ function GrainTransportAIDriver:load(allowedToDrive)
 	if self:isNearFillPoint() and self.vehicle.cp.totalFillLevel <= self.vehicle.cp.totalCapacity then
 		allowedToDrive = courseplay:load_tippers(self.vehicle, allowedToDrive);
 		courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(self.vehicle.cp.totalFillLevel, 100),self.vehicle.cp.totalCapacity));
+		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 	end
 	return allowedToDrive
 end
