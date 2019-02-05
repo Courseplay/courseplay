@@ -1973,7 +1973,7 @@ function courseplay:stopAIVehicle(superFunc, reason, noEventSend)
 	end
 end
 AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, courseplay.stopAIVehicle)
-	
+
 
 -- Tour dialog messes up the CP yes no dialogs.
 function courseplay:showTourDialog()

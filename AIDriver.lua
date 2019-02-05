@@ -452,3 +452,14 @@ function AIDriver:drawTemporaryCourse()
 		cpDebug:drawLine(x, y + 3, z, 100, 0, 100, nx, ny + 3, nz)
 	end
 end
+
+function AIDriver:onAIEnd(superFunc)
+	if self.cp and self.cp.driver and self:getIsCourseplayDriving() then
+		self.cp.driver.debug(self.cp.driver, 'overriding onAIEnd() to prevent engine stop')
+	elseif superFunc ~= nil then
+		superFunc(self)
+	end
+end
+Motorized.onAIEnd = Utils.overwrittenFunction(Motorized.onAIEnd , AIDriver.onAIEnd)
+
+

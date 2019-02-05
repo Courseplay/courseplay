@@ -174,12 +174,6 @@ end
 
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
-	-- Workaround for issues like #3064, most likely the raiseAIEvent() call in stopWork()
-	-- stops the engine when the player is not in the vehicle, so restart it here.
-	-- Need to ask Giants' help to figure out how to do this properly.
-	if not courseplay:getIsEngineReady(self.vehicle) then
-		self.vehicle:startMotor()
-	end
 	if self.temporaryCourse then
 		-- use the courseplay speed limit for fields
 		self:setSpeed(self.vehicle.cp.speeds.field)
