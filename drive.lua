@@ -1256,10 +1256,11 @@ function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
 	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
 		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
 		local tipper = vehicle.cp.workTools[tIdx];
+		local numCovers = #tipper.spec_cover.covers
 		-- default Giants trailers
 		if coverType == 'defaultGiants' then
 			if not showCover then
-				if courseplay:isSprayer(tipper) or courseplay:isSowingMachine(tipper) and fillTrigger then
+				if numCovers > 1 and (courseplay:isSprayer(tipper) or courseplay:isSowingMachine(tipper)) and fillTrigger then
 					local fillUnits = tipper:getFillUnits()
 					for i=1,#fillUnits do	
 						if courseplay:fillTypesMatch(vehicle, fillTrigger, tipper, i) then
@@ -1280,7 +1281,7 @@ function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
 					if tipper:getIsNextCoverStateAllowed(newState) then
 						tipper:setCoverState(newState,true);
 					else
-						for i=tipper.spec_cover.state,#tipper.spec_cover.covers do
+						for i=tipper.spec_cover.state,numCovers do
 							if tipper:getIsNextCoverStateAllowed(i+1)then
 								tipper:setCoverState(i+1,true);
 							end
