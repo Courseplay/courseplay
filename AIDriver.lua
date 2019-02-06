@@ -114,6 +114,7 @@ end
 -- at the index as originally was in vehicle.Waypoints.
 function AIDriver:resumeAt(cpIx)
 	local i = self.course:findOriginalIx(cpIx)
+	self:debug('resumeAt %d (legacy) %d (AIDriver', cpIx, i)
 	self.ppc:initialize(i)
 end
 

@@ -135,8 +135,9 @@ function PurePursuitController:initialize(ix, aiDriver)
 	if not self.course then
 		self.course = Course(self.vehicle, self.vehicle.Waypoints)
 	end
-	-- we rely on the code in start_stop.lua to select the first waypoint
-	self.firstIx = ix and ix or self.vehicle.cp.waypointIndex
+	-- if we use the legacy waypointIndex then we need the original index (in case of combined courses)
+	-- TODO: always require to pass in the index, don't use global variable
+	self.firstIx = ix and ix or self.course:findOriginalIx(self.vehicle.cp.waypointIndex)
 	-- relevantWpNode always points to the point where the relevant path segment starts
 	self.relevantWpNode:setToWaypoint(self.course, self.firstIx )
 	self.nextWpNode:setToWaypoint(self.course, self.firstIx)
@@ -146,7 +147,7 @@ function PurePursuitController:initialize(ix, aiDriver)
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
 	if aiDriver then
-		self.aiDriver = aiDriver			
+		self.aiDriver = aiDriver
 	end
 	self.sendWaypointChange = nil
 	self.sendWaypointPassed = nil
