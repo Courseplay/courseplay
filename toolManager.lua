@@ -1379,7 +1379,8 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 			allowedToDrive = false;
 			--if the trigger stops loading, reset vehicle.isFuelFilling
 			if not objectToFill.spec_fillUnit.fillTrigger.isFilling then 
-				courseplay:resetFillTrigger(vehicle)
+				--courseplay:resetFillTrigger(vehicle)
+				vehicle.isFuelFilling = nil
 				courseplay:setCustomTimer(vehicle, "resetFillTrigger", 5)
 			end
 		--maybe there are more pallets nearby, so wait for 5s and move further
