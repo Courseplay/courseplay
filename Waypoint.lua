@@ -251,6 +251,7 @@ function Course:enrichWaypointData()
 	for i = 1, #self.waypoints - 1 do
 		local cx, _, cz = self:getWaypointPosition(i)
 		local nx, _, nz = self:getWaypointPosition( i + 1)
+		self.waypoints[i].dToNext = courseplay:distance(cx, cz, nx, nz)
 		self.waypoints[i].dx, _, self.waypoints[i].dz, _ =
 			courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
 		courseplay:debugFormat(12, '%d %s %s', i, tostring(self.waypoints[i].dx), tostring(self.waypoints[i].dz))
@@ -268,6 +269,7 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].angle = self.waypoints[#self.waypoints - 1].angle
 	self.waypoints[#self.waypoints].dx = self.waypoints[#self.waypoints - 1].dx
 	self.waypoints[#self.waypoints].dz = self.waypoints[#self.waypoints - 1].dz
+	self.waypoints[#self.waypoints].dToNext = 0
 end
 
 --- Is this the same course as otherCourse?
@@ -385,8 +387,7 @@ function Course:print()
 end
 
 function Course:getDistanceToNextWaypoint(ix)
-	local nx = math.min(#self.waypoints, ix + 1)
-	return self.waypoints[ix]:getDistanceFromPoint(self.waypoints[nx].x, self.waypoints[nx].z)
+	return self.waypoints[math.min(#self.waypoints, ix)].dToNext
 end
 
 function Course:getWaypointsWithinDrivingTime(startIx, fwd, seconds, speed)

@@ -393,7 +393,7 @@ function courseplay:onLoad(savegame)
 			local newTrigger = clone(self.aiTrafficCollisionTrigger, true);
 			self.cp.trafficCollisionTriggers[i] = newTrigger
 			if i > 1 then
-				unlink(newTrigger);
+				unlink(newTrigger)
 				link(self.cp.trafficCollisionTriggers[i-1], newTrigger);
 				setTranslation(newTrigger, 0,0,5);
 			end;

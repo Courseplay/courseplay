@@ -102,6 +102,7 @@ local function initialize()
 		'triggers', 
 		'turn',
 		'traffic',
+		'TrafficCollision',
 		'vehicles',
 		'PurePursuitController',
 		'Waypoint',

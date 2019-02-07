@@ -50,6 +50,18 @@ function AIDriver:init(vehicle)
 	self.temporaryCourse = nil
 	self.state = self.states.STOPPED
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
+	self.collisionDetector = CollisionDetector(self.vehicle)
+	-- AIDriver and its derived classes set the self.speed in various locations in
+	-- the code and then getSpeed() will pass that on to AIDriver.driveCourse.
+	self.speed = 0
+end
+
+-- destructor. The reason for having this is the collisionDetector which creates nodes and
+-- we want those nodes removed when the AIDriver instance is deleted.
+function AIDriver:destroy()
+	if self.collisionDetector then
+		self.collisionDetector:destroy()
+	end
 end
 
 --- Aggregation of states from this and all descendant classes
@@ -137,6 +149,9 @@ function AIDriver:drive(dt)
 	self.allowedToDrive = true
 	-- update current waypoint/goal point
 	self.ppc:update()
+	-- collision detection
+
+	self:detectCollision()
 
 	if self.state == self.states.STOPPED then self:idle(dt) return end
 
@@ -148,9 +163,11 @@ function AIDriver:drive(dt)
 		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
 	end
 	self:drawTemporaryCourse()
+	-- reset speed limit for the next loop
+	self.speed = math.huge
 end
 
---- Normal driving according to the course waypoints, using courseplay:goReverse() when needed
+--- Normal driving according to the course waypoints, using	 courseplay:goReverse() when needed
 -- to reverse with trailer.
 function AIDriver:driveCourse(dt)
 	-- check if reversing
@@ -160,6 +177,16 @@ function AIDriver:driveCourse(dt)
 	or not courseplay:getIsEngineReady(self.vehicle) then
 		self:hold()
 	end
+
+	self:setSpeed(self:getRecordedSpeed())
+	if self:getIsInFilltrigger() then
+		self:setSpeed(self.vehicle.cp.speeds.turn)
+	end
+	-- slow down before wait points
+	if self.course:hasWaitPointAround(self.ppc:getCurrentOriginalWaypointIx(), 2, 1) then
+		self:setSpeed(self.vehicle.cp.speeds.turn)
+	end
+
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
 		self:driveVehicleInDirection(dt, self.allowedToDrive, moveForwards, lx, lz, self:getSpeed())
@@ -197,7 +224,7 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f', maxSpeed, gx, gz, l, ax, az)
+	self:debug('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f', maxSpeed, gx, gz, l, ax, az)
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
@@ -313,6 +340,8 @@ function AIDriver:getReverseDrivingDirection()
 		-- as of now we need to invert the direction from goReverse to work correctly with
 		-- AI Driver, it seems to have a different reference
 		lx, lz = -lx, -lz
+		self:setSpeed(self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl)
+
 	end
 	return lx, lz, moveForwards, isReverseActive
 end
@@ -341,24 +370,18 @@ function AIDriver:isWaiting()
 	return self.state == self.states.STOPPED
 end
 
+
+--- Set the speed. The idea is that self.speed is reset at the beginning of every loop and
+-- every function calls setSpeed() and the speed will be set to the minimum
+-- speed set in this loop.
+function AIDriver:setSpeed(speed)
+	self.speed = math.min(self.speed, speed)
+end
+
 --- Function used by the driver to get the speed it is supposed to drive at
--- This is a default implementation, derived classes should deliver their own version.
+--
 function AIDriver:getSpeed()
-	-- override by the derived classes
-	local speed
-	if self.ppc:isReversing() then
-		speed = self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl
-	else
-		speed = self:getRecordedSpeed()
-	end
-	if self:getIsInFilltrigger() then
-		speed = self.vehicle.cp.speeds.turn
-	end
-	-- slow down before wait points
-	if self.course:hasWaitPointAround(self.ppc:getCurrentOriginalWaypointIx(), 2, 1) then
-		speed = self.vehicle.cp.speeds.turn
-	end
-	return speed and speed or 15
+	return self.speed or 15
 end
 
 function AIDriver:getRecordedSpeed()
@@ -451,6 +474,22 @@ function AIDriver:drawTemporaryCourse()
 		local x, y, z = self.temporaryCourse:getWaypointPosition(i)
 		local nx, ny, nz = self.temporaryCourse:getWaypointPosition(i + 1)
 		cpDebug:drawLine(x, y + 3, z, 100, 0, 100, nx, ny + 3, nz)
+	end
+end
+
+function AIDriver:detectCollision()
+	self.collisionDetector:update(self.course, self.ppc:getCurrentWaypointIx(), 0, 1)
+	if self.collisionDetector:isInTraffic() then
+		self:setSpeed(0)
+		self.acceleration = -1
+	else
+		self.acceleration = 1
+	end
+	if self.collisionDetector:justGotInTraffic() then
+		-- do not handle being in traffic as a state (at least for now it does not seem to be necessary)
+		self:setInfoText('TRAFFIC')
+	elseif self.collisionDetector:justClearedTraffic() then
+		self:clearInfoText()
 	end
 end
 

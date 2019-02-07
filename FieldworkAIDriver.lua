@@ -44,9 +44,6 @@ function FieldworkAIDriver:init(vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
 	-- waiting for tools to turn on, unfold and lower
 	self.waitingForTools = true
-	-- FieldworkAIDriver and its derived classes set the self.speed in various locations in
-	-- the code and then getSpeed() will pass that on to the AIDriver.
-	self.speed = 0
 	self.debugChannel = 14
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
 	-- an unload/refill course
@@ -113,8 +110,6 @@ function FieldworkAIDriver:drive(dt)
 	self:setRidgeMarkers()
 	self:resetUnloadOrRefillHold()
 	AIDriver.drive(self, dt)
-	-- reset speed limit for the next loop
-	self.speed = math.huge
 end
 
 -- Hold for unload (or refill) for example a combine can be asked by a an unloading tractor
@@ -317,16 +312,9 @@ function FieldworkAIDriver:getFieldSpeed()
 	return math.min(self.vehicle.cp.speeds.field, speedLimit)
 end
 
---- Set the speed. The idea is that self.speed is reset at the beginning of every loop and
--- every function calls setSpeed() and the speed will be set to the minimum
--- speed set in this loop.
-function FieldworkAIDriver:setSpeed(speed)
-	self.speed = math.min(self.speed, speed)
-end
-
 --- Pass on self.speed set elsewhere to the AIDriver.
 function FieldworkAIDriver:getSpeed()
-	local speed = self.speed or 10
+	local speed = AIDriver.getSpeed(self)
 	-- as long as other CP components mess with the cruise control we need to reset this, for example after
 	-- a turn
 	self.vehicle:setCruiseControlMaxSpeed(speed)
@@ -450,7 +438,8 @@ function FieldworkAIDriver:setUpCourses()
 		end
 	end
 	if #self.vehicle.Waypoints > endFieldCourseIx and endFieldCourseIx ~= 0 then
-		self:debug('There seems to be an unload/refill course starting at waypoint %d', endFieldCourseIx + 1)
+		self:debug('Course with %d waypoints set up, there seems to be an unload/refill course starting at waypoint %d',
+			#self.vehicle.Waypoints, endFieldCourseIx + 1)
 		---@type Course
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, endFieldCourseIx)
 		-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
@@ -458,7 +447,7 @@ function FieldworkAIDriver:setUpCourses()
 		---@type Course
 		self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, endFieldCourseIx + 1, #self.vehicle.Waypoints)
 	else
-		self:debug('There seems to be no unload/refill course')
+		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, #self.vehicle.Waypoints)
 	end
 end

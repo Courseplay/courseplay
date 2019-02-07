@@ -1133,7 +1133,7 @@ function getTarget(vehicle)
 
 end
 
-function courseplay:setTrafficCollision(vehicle, lx, lz, disadleLongCheck)
+function courseplay:setTrafficCollision(vehicle, lx, lz, disableLongCheck)
 	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.cp.waypointIndex > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.cp.waypointIndex > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.cp.waypointIndex > 3)
 	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
 	--local maxlx = 0.5; --sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
@@ -1153,7 +1153,7 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, disadleLongCheck)
 		local recordNumber = vehicle.cp.waypointIndex
 		if vehicle.cp.collidingVehicleId == nil then
 			for i=2,vehicle.cp.numTrafficCollisionTriggers do
-				if disadleLongCheck or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
+				if disableLongCheck or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
 					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 				else
 

@@ -36,6 +36,9 @@ function courseplay:setCpMode(vehicle, modeNum)
 end;
 
 function courseplay:setAIDriver(vehicle, mode)
+	if vehicle.cp.driver then
+		vehicle.cp.driver:destroy()
+	end
 	if mode == courseplay.MODE_TRANSPORT then
 		---@type AIDriver
 		vehicle.cp.driver = AIDriver(vehicle)

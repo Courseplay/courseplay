@@ -82,7 +82,7 @@ function courseplay:start(self)
 	self.cp.aiFrontMarker = nil
 	courseplay:resetTools(self)	
 	
-	--TODO when checking the Collision triggers, check whetehr we stil need this 
+	--TODO when checking the Collision triggers, check if we still need this
 	if self.attachedCutters ~= nil then
 		for cutter, implement in pairs(self.attachedCutters) do
 			--remove cutter atTrafficCollisionTrigger in case of having changed or removed it while not in CP
