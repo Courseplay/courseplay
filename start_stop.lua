@@ -8,10 +8,7 @@ function courseplay:start(self)
 	self.spec_motorized.stopMotorOnLeave = false;
 	self.spec_enterable.disableCharacterOnLeave = false;
 
-
-	-- Peter: temporary band aid for the nil errors from setTranslation/setRotation. Looks like
-	-- AIVehicle deletes the node but leaves its id in aiTrafficCollision
-	-- This does not fix the problem causing stopAIVehicle to be called, just removes the nil errors.
+	-- TODO: move this to TrafficCollision.lua
 	if self:getAINeedsTrafficCollisionBox() then
 		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
 		if collisionRoot ~= nil and collisionRoot ~= 0 then
@@ -24,19 +21,10 @@ function courseplay:start(self)
 		end
 	end
 
-
-
 	if self.setRandomVehicleCharacter ~= nil then
 		self:setRandomVehicleCharacter()
 	end
-	--[[ This is FS17 code
-	if self.vehicleCharacter ~= nil and not g_currentMission.missionDynamicInfo.isMultiplayer then --disabled for MP for further investigation (Nil errors in ingame(draw))
-		self.vehicleCharacter:delete();
-		self.vehicleCharacter:loadCharacter(self.currentHelper.xmlFilename, getUserRandomizedMpColor(self.currentHelper.name))
-		if self:getIsEntered() then
-			self.spec_enterable.vehicleCharacter:setCharacterVisibility(false)
-		end
-	end ]]
+
     -- Start the reset character timer.
 	courseplay:setCustomTimer(self, "resetCharacter", 300);
 
@@ -662,6 +650,7 @@ function courseplay:stop(self)
 	self.spec_motorized.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.spec_enterable.disableCharacterOnLeave = true;
 
+	-- TODO: move this to TrafficCollision.lua
     if self:getAINeedsTrafficCollisionBox() then
         setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
         self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200

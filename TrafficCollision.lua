@@ -22,7 +22,9 @@ CollisionDetector = CpObject()
 function CollisionDetector:init(vehicle, course)
 	self.vehicle = vehicle
 	self.course = course
-	self:removeLegacyCollisionTriggers()
+	if CpManager.isDeveloper then
+		self:removeLegacyCollisionTriggers()
+	end
 	self.numTrafficCollisionTriggers = 4
 	self.trafficCollisionTriggers = {}
 	self:createTriggers()
@@ -30,6 +32,7 @@ function CollisionDetector:init(vehicle, course)
 	self:addToIgnoreList(self.vehicle)
 	self.collidingObjects = {}
 	self.nCollidingObjects = 0
+	self.nPreviousCollidingObjects = 0
 end
 
 -- destructor
@@ -95,7 +98,7 @@ function CollisionDetector:createTriggers()
 		if i > 1 then
 			unlink(newTrigger)
 			link(self.trafficCollisionTriggers[i - 1], newTrigger)
-			setTranslation(newTrigger, 0, 0, 5)
+			setTranslation(newTrigger, 0, 0, 4)
 		end;
 		addTrigger(newTrigger, 'onCollision', self)
 		CpManager.trafficCollisionIgnoreList[newTrigger] = true
@@ -161,6 +164,11 @@ function CollisionDetector:justClearedTraffic()
 	local justClearedTraffic = self.nPreviousCollidingObjects and self.nPreviousCollidingObjects > 0 and self.nCollidingObjects == 0
 	if justClearedTraffic then self.nPreviousCollidingObjects = self.nCollidingObjects end
 	return justClearedTraffic
+end
+
+--- Get the speed setting recommended by the collision detector
+function CollisionDetector:getSpeed()
+	return 0
 end
 
 --- Update the collision detection boxes. This bends the snake according to the next waypoints in the path so

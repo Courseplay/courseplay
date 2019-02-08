@@ -216,16 +216,18 @@ end
 
 function FieldworkAIDriver:changeToFieldwork()
 	self:debug('change to fieldwork')
+	self:disableCollisionDetection()
 	self.state = self.states.ON_FIELDWORK_COURSE
 	self.fieldworkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
 end
 
 function FieldworkAIDriver:changeToUnloadOrRefill()
+	self:debug('changing to unload/refill course (%d waypoints)', self.unloadRefillCourse:getNumberOfWaypoints())
 	self:stopWork()
 	self:foldImplements()
+	self:enableCollisionDetection()
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
-	self:debug('changing to unload/refill course (%d waypoints)', self.unloadRefillCourse:getNumberOfWaypoints())
 end
 
 function FieldworkAIDriver:onEndTemporaryCourse()

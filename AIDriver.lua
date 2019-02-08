@@ -54,6 +54,10 @@ function AIDriver:init(vehicle)
 	-- AIDriver and its derived classes set the self.speed in various locations in
 	-- the code and then getSpeed() will pass that on to AIDriver.driveCourse.
 	self.speed = 0
+	-- same for allowedToDrive, is reset at the end of each loop to true and needs to be set to false
+	-- if someone wants to stop by calling hold()
+	self.allowedToDrive = true
+	self.collisionDetectionEnabled = false
 end
 
 -- destructor. The reason for having this is the collisionDetector which creates nodes and
@@ -117,11 +121,6 @@ function AIDriver:idle(dt)
 	end
 end
 
---- Anyone wants to temporarily stop driving for whatever reason, call this
-function AIDriver:hold()
-	self.allowedToDrive = false
-end
-
 --- Compatibility function for the legacy CP code so the course can be resumed
 -- at the index as originally was in vehicle.Waypoints.
 function AIDriver:resumeAt(cpIx)
@@ -150,7 +149,6 @@ function AIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
 	-- collision detection
-
 	self:detectCollision()
 
 	if self.state == self.states.STOPPED then self:idle(dt) return end
@@ -163,8 +161,7 @@ function AIDriver:drive(dt)
 		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
 	end
 	self:drawTemporaryCourse()
-	-- reset speed limit for the next loop
-	self.speed = math.huge
+	self:resetSpeed()
 end
 
 --- Normal driving according to the course waypoints, using	 courseplay:goReverse() when needed
@@ -178,12 +175,15 @@ function AIDriver:driveCourse(dt)
 		self:hold()
 	end
 
+	-- use the recorded speed by default
 	self:setSpeed(self:getRecordedSpeed())
+
 	if self:getIsInFilltrigger() then
 		self:setSpeed(self.vehicle.cp.speeds.turn)
 	end
+
 	-- slow down before wait points
-	if self.course:hasWaitPointAround(self.ppc:getCurrentOriginalWaypointIx(), 2, 1) then
+	if self.course:hasWaitPointAround(self.ppc:getCurrentOriginalWaypointIx(), 1, 2) then
 		self:setSpeed(self.vehicle.cp.speeds.turn)
 	end
 
@@ -224,7 +224,9 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f', maxSpeed, gx, gz, l, ax, az)
+
+	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f allowed=%s fwd=%s', maxSpeed, gx, gz, l, ax, az,
+		allowedToDrive, moveForwards)
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
@@ -341,7 +343,6 @@ function AIDriver:getReverseDrivingDirection()
 		-- AI Driver, it seems to have a different reference
 		lx, lz = -lx, -lz
 		self:setSpeed(self.vehicle.cp.speeds.reverse or self.vehicle.cp.speeds.crawl)
-
 	end
 	return lx, lz, moveForwards, isReverseActive
 end
@@ -376,6 +377,18 @@ end
 -- speed set in this loop.
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
+end
+
+--- Reset drive controls at the end of each loop
+function AIDriver:resetSpeed()
+	-- reset speed limit for the next loop
+	self.speed = math.huge
+	self.allowedToDrive = true
+end
+
+--- Anyone wants to temporarily stop driving for whatever reason, call this
+function AIDriver:hold()
+	self.allowedToDrive = false
 end
 
 --- Function used by the driver to get the speed it is supposed to drive at
@@ -477,18 +490,51 @@ function AIDriver:drawTemporaryCourse()
 	end
 end
 
-function AIDriver:detectCollision()
-	self.collisionDetector:update(self.course, self.ppc:getCurrentWaypointIx(), 0, 1)
-	if self.collisionDetector:isInTraffic() then
-		-- not yet enabled
-		-- self:setSpeed(0)
+function AIDriver:enableCollisionDetection()
+	if not CpManager.isDeveloper then return end
+	self:debug('Collision detection enabled')
+	self.collisionDetectionEnabled = true
+	-- move the big collision box around the vehicle underground because this will stop
+	-- traffic (not CP drivers though) around us otherwise
+	if self.vehicle:getAINeedsTrafficCollisionBox() then
+		self:debug("Making sure cars won't stop around us")
+		-- something deep inside the Giants vehicle sets the translation of this box to whatever
+		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
+		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
 	end
-	if self.collisionDetector:justGotInTraffic() then
-		-- do not handle being in traffic as a state (at least for now it does not seem to be necessary)
-		--self:setInfoText('TRAFFIC')
+end
+
+function AIDriver:disableCollisionDetection()
+	self:debug('Collision detection disabled')
+	self.collisionDetectionEnabled = false
+	-- move the big collision box around the vehicle back over the ground so
+	-- game traffic around us will stop while we are working on the field
+	if self.vehicle:getAINeedsTrafficCollisionBox() then
+		self:debug('Cars will stop around us again.')
+		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = 1000
+	end
+end
+
+function AIDriver:detectCollision()
+
+	self.collisionDetector:update(self.course, self.ppc:getCurrentWaypointIx(), 0, 1)
+
+	if self.collisionDetectionEnabled and self.collisionDetector:isInTraffic() then
+		local speed = self.collisionDetector:getSpeed()
+		self:setSpeed(speed)
+		-- setting the speed to 0 won't slow us down fast enough so use the more effective allowedToDrive = false
+		if speed == 0 then
+			self:hold()
+		end
+	end
+
+	if self.collisionDetectionEnabled and self.collisionDetector:justGotInTraffic() then
+		-- TODO: make sure this is shown whe started in the traffic already
+		self:setInfoText('TRAFFIC')
 	elseif self.collisionDetector:justClearedTraffic() then
 		--self:clearInfoText()
 	end
+
 end
 
 function AIDriver:onAIEnd(superFunc)
