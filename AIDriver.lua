@@ -224,7 +224,7 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	self:debug('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f', maxSpeed, gx, gz, l, ax, az)
+	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f', maxSpeed, gx, gz, l, ax, az)
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
@@ -480,16 +480,14 @@ end
 function AIDriver:detectCollision()
 	self.collisionDetector:update(self.course, self.ppc:getCurrentWaypointIx(), 0, 1)
 	if self.collisionDetector:isInTraffic() then
-		self:setSpeed(0)
-		self.acceleration = -1
-	else
-		self.acceleration = 1
+		-- not yet enabled
+		-- self:setSpeed(0)
 	end
 	if self.collisionDetector:justGotInTraffic() then
 		-- do not handle being in traffic as a state (at least for now it does not seem to be necessary)
-		self:setInfoText('TRAFFIC')
+		--self:setInfoText('TRAFFIC')
 	elseif self.collisionDetector:justClearedTraffic() then
-		self:clearInfoText()
+		--self:clearInfoText()
 	end
 end
 

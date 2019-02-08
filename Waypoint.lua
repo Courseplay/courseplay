@@ -363,7 +363,7 @@ function Course:getAverageSpeed(ix, n)
 			count = count + 1
 		end
 	end
-	return count > 0 and (total / count) or nil
+	return (total > 0 and count > 0) and (total / count) or nil
 end
 
 function Course:getIxRollover(ix)
