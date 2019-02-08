@@ -86,6 +86,7 @@ end
 -- the onCollision() callback is triggered by the game engine
 function CollisionDetector:createTriggers()
 	self.aiTrafficCollisionTrigger = self:findAiCollisionTrigger()
+	if not self.aiTrafficCollisionTrigger then return end
 	CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true
 	for i = 1, self.numTrafficCollisionTriggers do
 		local newTrigger = clone(self.aiTrafficCollisionTrigger, true)
