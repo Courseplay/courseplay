@@ -1268,29 +1268,30 @@ function courseplay:getTipTriggerFreeCapacity(trigger, fillType)
 end;
 
 function courseplay:resetTipTrigger(vehicle, changeToForward)
-	if vehicle.cp.tipperFillLevel == 0 then
-		vehicle.cp.isUnloaded = true;
+	if vehicle.cp.currentTipTrigger ~= nil then
+		if vehicle.cp.tipperFillLevel == 0 then
+			vehicle.cp.isUnloaded = true;
+		end
+		vehicle.cp.currentTipTrigger = nil;
+		vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
+		vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
+		vehicle.cp.isBGATipping = false;
+
+		for k, tipper in pairs(vehicle.cp.workTools) do
+			tipper.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
+			tipper.cp.isTipping = false;
+			tipper.cp.prevTrailerDistance = 100.00;
+		end;
+		vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
+		if vehicle.cp.backupUnloadSpeed then
+			courseplay:changeReverseSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed, true);
+			vehicle.cp.backupUnloadSpeed = nil;
+		end;
+		if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
+			courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
+			vehicle.cp.ppc:initialize()
+		end;
 	end
-	vehicle.cp.currentTipTrigger = nil;
-	vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
-	vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
-	vehicle.cp.isBGATipping = false;
-	courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
-	
-	for k, tipper in pairs(vehicle.cp.workTools) do
-		tipper.cp.BGASelectedSection = nil; -- Used for reverse BGA tipping
-		tipper.cp.isTipping = false;
-		tipper.cp.prevTrailerDistance = 100.00;
-	end;
-	vehicle.cp.inversedRearTipNode = nil; -- Used for reverse BGA tipping
-	if vehicle.cp.backupUnloadSpeed then
-		courseplay:changeReverseSpeed(vehicle, nil, vehicle.cp.backupUnloadSpeed, true);
-		vehicle.cp.backupUnloadSpeed = nil;
-	end;
-	if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
-		courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
-		vehicle.cp.ppc:initialize()
-	end;
 end;
 
 -- this does not change lx/lz (direction), only allowedToDrive

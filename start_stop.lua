@@ -801,11 +801,6 @@ function courseplay:stop(self)
 		self:setTurnLightState(Lights.TURNLIGHT_OFF);
 	end;
 
-	--open all covers --Tommi: Why ??
-	--[[if self.cp.workToolAttached and self.cp.tipperHasCover and self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 5 or self.cp.mode == 6 then
-		courseplay:openCloseCover(self,not courseplay.SHOW_COVERS);
-	end;]]
-
 	-- resetting variables
 	self.cp.ColliHeightSet = nil
 	self.cp.tempCollis = {}

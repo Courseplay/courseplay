@@ -648,7 +648,7 @@ function courseplay:drive(self, dt)
 
 	self.cp.inTraffic = false;
 
-	
+
 	-- HANDLE TIPPER COVER
 	if self.cp.tipperHasCover and self.cp.automaticCoverHandling and (self.cp.mode == 1 or self.cp.mode == 2 or self.cp.mode == 4 or self.cp.mode == 5 or self.cp.mode == 6) then
 		local showCover = false;

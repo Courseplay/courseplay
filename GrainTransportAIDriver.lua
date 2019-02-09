@@ -100,7 +100,7 @@ function GrainTransportAIDriver:onWaypointChange(newIx)
 		courseplay:changeRunCounter(self.vehicle, false)
 	end
 	-- Close cover after leaving the silo, assuming the silo is at waypoint 1
-	if newIx == 3 then
+	if not self:hasTipTrigger() and not self:isNearFillPoint() then
 		courseplay:openCloseCover(self.vehicle, courseplay.SHOW_COVERS)
 	end
 	
