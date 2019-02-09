@@ -41,16 +41,7 @@ function CollisionDetector:destroy()
 	-- first one removes all and then there's a warning about deleting object before
 	-- removing the trigger
 	if self.trafficCollisionTriggers then
-		for i = #self.trafficCollisionTriggers, 1, -1 do
-			local node = self.trafficCollisionTriggers[i]
-			if node then
-				removeTrigger(node)
-				if entityExists(node) then
-					unlink(node)
-					delete(node)
-				end
-			end
-		end
+		self:deleteTriggers()
 		self.trafficCollisionTriggers = nil
 	end
 end
@@ -105,6 +96,22 @@ function CollisionDetector:createTriggers()
 	end;
 end
 
+
+function CollisionDetector:deleteTriggers()
+	for i = #self.trafficCollisionTriggers, 1, -1 do
+		local node = self.trafficCollisionTriggers[i]
+		if node then
+			removeTrigger(node)
+			if entityExists(node) then
+				unlink(node)
+				delete(node)
+			end
+		end
+	end
+
+end
+
+
 --- Add and object to the list of ignored nodes. We must ignore collisions with our own collision boxes,
 -- and with our own vehicle/implements. This one adds object and all the objects attached to it to the ignore list
 -- recursively
@@ -121,6 +128,15 @@ function CollisionDetector:addToIgnoreList(object)
 	for _,impl in pairs(object:getAttachedImplements()) do
 		self:addToIgnoreList(impl.object)
 	end
+end
+
+--- make sure we have latest status (mainly refresh the ignore list with implement changes)
+function CollisionDetector:refresh()
+	self:debug('refreshing ignore list')
+	self.ignoredNodes = {}
+	self:addToIgnoreList(self.vehicle)
+	-- trigger justGotInTraffic in case we start up in the traffic
+	self.nPreviousCollidingObjects = 0
 end
 
 function CollisionDetector:isIgnored(node)
@@ -229,5 +245,6 @@ function CollisionDetector:setCollisionDirection(node, col, colDirX, colDirZ)
 end
 
 function CollisionDetector:debug(...)
+	-- channel 12 until the legacy code is spamming channel 3
 	courseplay.debugVehicle(12, self.vehicle, ...)
 end

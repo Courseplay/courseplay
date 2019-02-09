@@ -49,32 +49,37 @@ function GrainTransportAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
 
-	if self.state == self.states.STOPPED then self:idle(dt) return end
+	self:updateInfoText()
 
-	local lx, lz = self:getDirectionToGoalPoint()
-	-- should we keep driving?
-	self.allowedToDrive = self:checkLastWaypoint()
-
-	-- RESET TRIGGER RAYCASTS from drive.lua. 
+	-- RESET TRIGGER RAYCASTS from drive.lua.
 	-- TODO: Not sure how raycast can be called twice if everything is coded cleanly.
 	self.vehicle.cp.hasRunRaycastThisLoop['tipTrigger'] = false
 	self.vehicle.cp.hasRunRaycastThisLoop['specialTrigger'] = false
 
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 
+	-- should we give up control so some other code can drive?
 	local giveUpControl = false
+	-- should we keep driving?
+	local allowedToDrive = self:checkLastWaypoint()
 
 	-- TODO: are these checks really necessary?
 	if self.vehicle.cp.totalFillLevel ~= nil
 		and self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
 
+		local lx, lz = self:getDirectionToGoalPoint()
 		self:searchForTipTrigger(lx, lz)
 
-		self.allowedToDrive = self:load(self.allowedToDrive)
-		self.allowedToDrive, giveUpControl = self:unLoad(self.allowedToDrive, dt)
+		allowedToDrive = self:load(allowedToDrive)
+		allowedToDrive, giveUpControl = self:unLoad(allowedToDrive, dt)
 	else
 		self:debug('Safety check failed')
+	end
+
+	-- TODO: clean up the self.allowedToDrives above and use a local copy
+	if self.state == self.states.STOPPED or not allowedToDrive then
+		self:hold()
 	end
 
 	if giveUpControl then

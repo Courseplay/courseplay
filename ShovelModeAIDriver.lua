@@ -39,8 +39,7 @@ NOTE: rotation: movingTool.curRot[1] (only x-axis) / translation: movingTool.cur
 NOTE: although lx and lz are passed in as parameters, they are never used.
 ]]
 
-
-
+---@class ShovelModeAIDriver : AIDriver
 
 ShovelModeAIDriver = CpObject(AIDriver)
 ShovelModeAIDriver.STATE_GOTO_SILO = 1
@@ -51,8 +50,6 @@ ShovelModeAIDriver.STATE_START_UNLOAD = 5
 ShovelModeAIDriver.STATE_WAIT_FOR_UNLOADREADY = 6
 ShovelModeAIDriver.STATE_GO_BACKTO_START = 7
 
-
-
 --- Constructor
 function ShovelModeAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
@@ -61,6 +58,7 @@ function ShovelModeAIDriver:init(vehicle)
 end
 
 function ShovelModeAIDriver:start(ix)
+	self:beforeStart()
 	--finding my working points
 	local vehicle = self.vehicle
 	vehicle.cp.shovelFillStartPoint = nil

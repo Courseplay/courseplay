@@ -50,7 +50,6 @@ function AIDriver:init(vehicle)
 	self.temporaryCourse = nil
 	self.state = self.states.STOPPED
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
-	self.collisionDetector = CollisionDetector(self.vehicle)
 	-- AIDriver and its derived classes set the self.speed in various locations in
 	-- the code and then getSpeed() will pass that on to AIDriver.driveCourse.
 	self.speed = 0
@@ -58,6 +57,7 @@ function AIDriver:init(vehicle)
 	-- if someone wants to stop by calling hold()
 	self.allowedToDrive = true
 	self.collisionDetectionEnabled = false
+	self.collisionDetector = CollisionDetector(self.vehicle)
 end
 
 -- destructor. The reason for having this is the collisionDetector which creates nodes and
@@ -83,13 +83,23 @@ function AIDriver:getCpMode()
 	return self.vehicle.cp.mode
 end
 
+--- If you have your own start() implementation and you do not call AIDriver.start() then
+-- make sure this is called from the derived start() to initialize all common stuff
+function AIDriver:beforeStart()
+	self.turnIsDriving = false
+	self.temporaryCourse = nil
+	-- make sure collision detector has the latest status (mainly refresh the ignore list with
+	-- implement changes)
+	self.collisionDetector:refresh()
+end
+
 --- Start driving
 -- @param ix the waypoint index to start driving at
 function AIDriver:start(ix)
+	self:beforeStart()
 	self.state = self.states.RUNNING
-	self.turnIsDriving = false
-	self.temporaryCourse = nil
-
+	-- derived classes must disable collision detection if they don't need its
+	self:enableCollisionDetection()
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
@@ -112,15 +122,6 @@ function AIDriver:continue()
 	self:clearInfoText()
 end
 
---- Just hang around after we stopped and make sure a message is displayed when there is one.
-function AIDriver:idle(dt)
-	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, false, true, 0, 1, 0, false)
-	if self.msgReference then
-		-- looks like this needs to be called in every update cycle.
-		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
-	end
-end
-
 --- Compatibility function for the legacy CP code so the course can be resumed
 -- at the index as originally was in vehicle.Waypoints.
 function AIDriver:resumeAt(cpIx)
@@ -139,6 +140,13 @@ function AIDriver:clearInfoText()
 	self.msgReference = nil
 end
 
+function AIDriver:updateInfoText()
+	if self.msgReference then
+		-- looks like this needs to be called in every update cycle.
+		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
+	end
+end
+
 --- Main driving function
 -- should be called from update()
 -- This base implementation just follows the waypoints, anything more than that
@@ -149,15 +157,15 @@ function AIDriver:drive(dt)
 	-- collision detection
 	self:detectCollision()
 
-	if self.state == self.states.STOPPED then self:idle(dt) return end
+	self:updateInfoText()
+
+	if self.state == self.states.STOPPED then
+		self:hold()
+	end
 
 	self:checkLastWaypoint()
 	self:driveCourse(dt)
 
-	if self.msgReference then
-		-- looks like this needs to be called in every update cycle.
-		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
-	end
 	self:drawTemporaryCourse()
 	self:resetSpeed()
 end

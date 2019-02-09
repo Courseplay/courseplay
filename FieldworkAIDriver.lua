@@ -58,11 +58,9 @@ end
 --- Start the course and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	self:debug('Starting in mode %d', self.mode)
-
+	self:beforeStart()
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
-	self.turnIsDriving = false
-	self.temporaryCourse = nil
 	-- any offset imposed by the driver itself (tight turns, end of course, etc.), addtional to any
 	-- tool offsets
 	self.aiDriverOffsetX = 0
