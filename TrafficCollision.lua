@@ -124,8 +124,9 @@ function CollisionDetector:addToIgnoreList(object)
 end
 
 function CollisionDetector:isIgnored(node)
-	-- TODO: check for parents as the original code? Why?
-	if self.ignoredNodes[node] or CpManager.trafficCollisionIgnoreList[node] then
+	local parent = getParent(node)
+	if self.ignoredNodes[node] or CpManager.trafficCollisionIgnoreList[node] or
+		self.ignoredNodes[parent] or CpManager.trafficCollisionIgnoreList[parent]then
 		return true
 	end
 end

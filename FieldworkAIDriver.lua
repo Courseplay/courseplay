@@ -232,9 +232,7 @@ end
 
 function FieldworkAIDriver:onEndTemporaryCourse()
 	if self.state == self.states.ON_FIELDWORK_COURSE then
-		self:debug('starting fieldwork')
-		self.fieldworkState = self.states.WAITING_FOR_LOWER
-		self:startWork()
+		self:changeToFieldwork()
 	end
 end
 

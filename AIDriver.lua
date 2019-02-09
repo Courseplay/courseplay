@@ -144,8 +144,6 @@ end
 -- This base implementation just follows the waypoints, anything more than that
 -- should be implemented by the derived classes as needed.
 function AIDriver:drive(dt)
-	-- This is reset once at the beginning of each loop
-	self.allowedToDrive = true
 	-- update current waypoint/goal point
 	self.ppc:update()
 	-- collision detection
@@ -224,7 +222,8 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-
+	-- TODO: remove allowedToDrive parameter and only use self.allowedToDrive
+	if not self.allowedToDrive then allowedToDrive = false end
 	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f allowed=%s fwd=%s', maxSpeed, gx, gz, l, ax, az,
 		allowedToDrive, moveForwards)
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
@@ -532,7 +531,7 @@ function AIDriver:detectCollision()
 		-- TODO: make sure this is shown whe started in the traffic already
 		self:setInfoText('TRAFFIC')
 	elseif self.collisionDetector:justClearedTraffic() then
-		--self:clearInfoText()
+		self:clearInfoText()
 	end
 
 end

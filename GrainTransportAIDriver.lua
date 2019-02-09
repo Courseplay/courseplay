@@ -81,6 +81,8 @@ function GrainTransportAIDriver:drive(dt)
 		-- unload_tippers does the driving
 		return
 	else
+		-- collision detection
+		self:detectCollision()
 		-- we drive the course as usual
 		self:driveCourse(dt)
 	end
