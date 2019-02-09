@@ -481,13 +481,13 @@ function courseplay:drive(self, dt)
 		end;
 
 		-- MAP WEIGHT STATION
-		if courseplay:canUseWeightStation(self) then
+		--[[if courseplay:canUseWeightStation(self) then
 			if self.cp.curMapWeightStation ~= nil or (self.cp.fillTrigger ~= nil and courseplay.triggers.all[self.cp.fillTrigger].isWeightStation) then
 				allowedToDrive = courseplay:handleMapWeightStation(self, allowedToDrive);
 			elseif courseplay:canScanForWeightStation(self) then
 				courseplay:doTriggerRaycasts(self, 'specialTrigger', 'fwd', false, tx, ty, tz, nx, ny, nz);
 			end;
-		end;
+		end;]]
 
 		--VEHICLE DAMAGE
 		if self.damageLevel then
@@ -1853,11 +1853,11 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 				fillUnit.capacity = fillUnit.capacity *3
 			end
 		end
-		-- TODO: why not fillUnit.fillType == FillType.DIESEL?
+		-- TODO: why not fillUnit.fillType == FillType.DIESEL? answer: because you may have diesel in your trailer
 		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL) 
 		or index == workTool:getConsumerFillUnitIndex(FillType.DEF)
 		or index == workTool:getConsumerFillUnitIndex(FillType.AIR))
-		or fillUnit.capacity > 99999 then
+		or fillUnit.capacity > 999999 then
 		else
 			
 			fillLevel = fillLevel + fillUnit.fillLevel
