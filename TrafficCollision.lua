@@ -71,11 +71,11 @@ function CollisionDetector:removeLegacyCollisionTriggers()
 	end
 end
 
-function CollisionDetector:findAiCollisionTrigger()
-	local index = self.vehicle.i3dMappings.aiCollisionTrigger
+function CollisionDetector:findAiCollisionTrigger(object)
+	local index = object.i3dMappings.aiCollisionTrigger
 	if index then
 		self:debug('Collision detector initializing.')
-		return I3DUtil.indexToObject(self.vehicle.components, index);
+		return I3DUtil.indexToObject(object.components, index);
 	else
 		self:debug('No aiCollisionTrigger node found.')
 	end
@@ -85,7 +85,7 @@ end
 -- so they form a snake in front of the vehicle along the path. When this snakes collides with something, the
 -- the onCollision() callback is triggered by the game engine
 function CollisionDetector:createTriggers()
-	self.aiTrafficCollisionTrigger = self:findAiCollisionTrigger()
+	self.aiTrafficCollisionTrigger = self:findAiCollisionTrigger(self.vehicle)
 	if not self.aiTrafficCollisionTrigger then return end
 	CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true
 	for i = 1, self.numTrafficCollisionTriggers do
@@ -118,14 +118,21 @@ function CollisionDetector:deleteTriggers()
 end
 
 --- Add and object to the list of ignored nodes. We must ignore collisions with our own collision boxes,
--- and with our own vehicle/implements. This one adds object and all the objects attached to it to the ignore list
--- recursively
+-- and with our own vehicle/implements and their collision triggers. This one adds object and all the objects
+-- attached to it to the ignore list recursively
 function CollisionDetector:addToIgnoreList(object)
 	self:debug('will ignore collisions with %q (%q)', nameNum(object), tostring(object.cp.xmlFileName))
 	self.ignoredNodes[object.rootNode] = true;
+	-- add the vehicle or implement's own collision trigger to the ignore list
+	local aiCollisionTrigger = self:findAiCollisionTrigger(object)
+	if aiCollisionTrigger then
+		self:debug('-- %q', getName(aiCollisionTrigger))
+		self.ignoredNodes[aiCollisionTrigger] = true
+	end
 	if object.components then
 		self:debug('will ignore collisions with %q (%q) components', nameNum(object), tostring(object.cp.xmlFileName))
 		for _, component in pairs(object.components) do
+			self:debug('-- %q', getName(component.node))
 			self.ignoredNodes[component.node] = true;
 		end
 	end
@@ -147,7 +154,7 @@ end
 function CollisionDetector:isIgnored(node)
 	local parent = getParent(node)
 	if self.ignoredNodes[node] or CpManager.trafficCollisionIgnoreList[node] or
-		self.ignoredNodes[parent] or CpManager.trafficCollisionIgnoreList[parent]then
+		self.ignoredNodes[parent] or CpManager.trafficCollisionIgnoreList[parent] then
 		return true
 	end
 end
