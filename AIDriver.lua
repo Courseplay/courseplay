@@ -38,6 +38,7 @@ function AIDriver:init(vehicle)
 	self.states = {}
 	self:initStates(AIDriver.myStates)
 	self.vehicle = vehicle
+	self:debug('creating AIDriver')
 	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	---@type PurePursuitController
 	self.ppc = PurePursuitController(self.vehicle)
@@ -62,10 +63,16 @@ end
 
 -- destructor. The reason for having this is the collisionDetector which creates nodes and
 -- we want those nodes removed when the AIDriver instance is deleted.
-function AIDriver:destroy()
+function AIDriver:delete()
+	self:debug('delete AIDriver')
+	self:deleteCollisionDetector()
+end
+
+function AIDriver:deleteCollisionDetector()
 	if self.collisionDetector then
-		self.collisionDetector:destroy()
+		self.collisionDetector:delete()
 	end
+	self.collisionDetector = nil
 end
 
 --- Aggregation of states from this and all descendant classes
@@ -88,9 +95,10 @@ end
 function AIDriver:beforeStart()
 	self.turnIsDriving = false
 	self.temporaryCourse = nil
+	self:deleteCollisionDetector()
 	-- make sure collision detector has the latest status (mainly refresh the ignore list with
 	-- implement changes)
-	self.collisionDetector:refresh()
+	--self.collisionDetector:refresh()
 end
 
 --- Start driving
@@ -114,6 +122,7 @@ function AIDriver:stop(msgReference)
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
 	self.turnIsDriving = false
+	self:deleteCollisionDetector()
 end
 
 function AIDriver:continue()
@@ -525,10 +534,15 @@ function AIDriver:disableCollisionDetection()
 end
 
 function AIDriver:detectCollision()
+	-- if no detector yet, no problem, create it now.
+	if not self.collisionDetector then
+		self.collisionDetector = CollisionDetector(self.vehicle)
+	end
 
 	self.collisionDetector:update(self.course, self.ppc:getCurrentWaypointIx(), 0, 1)
+	local isInTraffic, justGotInTraffic, justClearedTraffic = self.collisionDetector:getStatus()
 
-	if self.collisionDetectionEnabled and self.collisionDetector:isInTraffic() then
+	if self.collisionDetectionEnabled and isInTraffic then
 		local speed = self.collisionDetector:getSpeed()
 		self:setSpeed(speed)
 		-- setting the speed to 0 won't slow us down fast enough so use the more effective allowedToDrive = false
@@ -537,10 +551,10 @@ function AIDriver:detectCollision()
 		end
 	end
 
-	if self.collisionDetectionEnabled and self.collisionDetector:justGotInTraffic() then
+	if self.collisionDetectionEnabled and justGotInTraffic then
 		-- TODO: make sure this is shown whe started in the traffic already
 		self:setInfoText('TRAFFIC')
-	elseif self.collisionDetector:justClearedTraffic() then
+	elseif justClearedTraffic then
 		self:clearInfoText()
 	end
 

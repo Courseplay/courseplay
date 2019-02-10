@@ -20,23 +20,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 CollisionDetector = CpObject()
 
 function CollisionDetector:init(vehicle, course)
+	-- channel 12 until the legacy code is spamming channel 3
+	self.debugChannel = 12
+	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
 	self.vehicle = vehicle
+	self:debug('creating CollisionDetector')
 	self.course = course
-	if CpManager.isDeveloper then
+	--if CpManager.isDeveloper then
 		self:removeLegacyCollisionTriggers()
-	end
-	self.numTrafficCollisionTriggers = 4
-	self.trafficCollisionTriggers = {}
-	self:createTriggers()
-	self.ignoredNodes = {}
-	self:addToIgnoreList(self.vehicle)
+	--end
 	self.collidingObjects = {}
 	self.nCollidingObjects = 0
 	self.nPreviousCollidingObjects = 0
+	self.ignoredNodes = {}
+	self:addToIgnoreList(self.vehicle)
+	self.numTrafficCollisionTriggers = 4
+	self.trafficCollisionTriggers = {}
+	self:createTriggers()
+
 end
 
 -- destructor
-function CollisionDetector:destroy()
+function CollisionDetector:delete()
+	self:debug('deleting CollisionDetector')
 	-- work from the back of the list as these are linked together and deleting the
 	-- first one removes all and then there's a warning about deleting object before
 	-- removing the trigger
@@ -147,8 +153,6 @@ function CollisionDetector:isIgnored(node)
 end
 
 function CollisionDetector:onCollision(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	-- to detect the situation when we clear the traffic
-	self.nPreviousCollidingObjects = self.nCollidingObjects
 	if not self:isIgnored(otherId) then
 		if onEnter then
 			if not self.collidingObjects[otherId] then
@@ -165,21 +169,13 @@ function CollisionDetector:onCollision(triggerId, otherId, onEnter, onLeave, onS
 	end
 end
 
-function CollisionDetector:justGotInTraffic()
+function CollisionDetector:getStatus()
 	local justGotInTraffic = self.nPreviousCollidingObjects and self.nPreviousCollidingObjects == 0 and self.nCollidingObjects > 0
-	if justGotInTraffic then self.nPreviousCollidingObjects = self.nCollidingObjects end
-	return justGotInTraffic
-end
-
-function CollisionDetector:isInTraffic()
-	return self.nCollidingObjects > 0
-end
-
---- Did we just cleared traffic?
-function CollisionDetector:justClearedTraffic()
 	local justClearedTraffic = self.nPreviousCollidingObjects and self.nPreviousCollidingObjects > 0 and self.nCollidingObjects == 0
-	if justClearedTraffic then self.nPreviousCollidingObjects = self.nCollidingObjects end
-	return justClearedTraffic
+	local isInTraffic = self.nCollidingObjects > 0
+	-- to detect the situation when we clear the traffic
+	self.nPreviousCollidingObjects = self.nCollidingObjects
+	return isInTraffic, justGotInTraffic, justClearedTraffic
 end
 
 --- Get the speed setting recommended by the collision detector
@@ -193,6 +189,8 @@ end
 function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 	local colDirX = lx
 	local colDirZ = lz
+
+	self:debugSparse('has %d colliding object(s)', self.nCollidingObjects)
 
 	if self.trafficCollisionTriggers[1] ~= nil then
 		courseplay:setCollisionDirection(self.vehicle.cp.DirectionNode, self.trafficCollisionTriggers[1], colDirX, colDirZ)
@@ -244,6 +242,11 @@ function CollisionDetector:setCollisionDirection(node, col, colDirX, colDirZ)
 end
 
 function CollisionDetector:debug(...)
-	-- channel 12 until the legacy code is spamming channel 3
-	courseplay.debugVehicle(12, self.vehicle, ...)
+	courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
+end
+
+function CollisionDetector:debugSparse(...)
+	if g_updateLoopIndex % self.debugTicks == 0 then
+		courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
+	end
 end

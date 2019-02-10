@@ -30,9 +30,9 @@ end
 
 function GrainTransportAIDriver:start(ix)
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
+	self:beforeStart()
 	AIDriver.start(self, ix)
 	self.runCounter = 0
-	self:enableCollisionDetection()
 	-- due to lack of understanding what exactly isLoaded means and where is it set to false in mode 1,
 	-- we just set it to false here so load_tippers() will actually attempt to load the tippers...
 	courseplay:setIsLoaded(self.vehicle, false);

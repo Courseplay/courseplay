@@ -37,7 +37,7 @@ end;
 
 function courseplay:setAIDriver(vehicle, mode)
 	if vehicle.cp.driver then
-		vehicle.cp.driver:destroy()
+		vehicle.cp.driver:delete()
 	end
 	if mode == courseplay.MODE_TRANSPORT then
 		---@type AIDriver
