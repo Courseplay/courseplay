@@ -1407,7 +1407,7 @@ function courseplay:resetFillTrigger(vehicle)
 	end
 	courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
 end	
-	
+
 function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerIndex)
 	courseplay:resetCustomTimer(vehicle, "triggerFailBackup", true)
 	if fillOrder then
@@ -1419,7 +1419,7 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 				--force Diesel when I'm in fuelFillTrigger or the selected fillType in fillTrigger and start the autoload
 				trigger.autoStart = true
 				trigger:onActivateObject(vehicle) 
-				trigger.selectedFillType = vehicle.cp.fuelFillTrigger and FillType.DIESEL or vehicle.cp.siloSelectedFillType
+				trigger.selectedFillType = (vehicle.cp.fuelFillTrigger and FillType.DIESEL) or (vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN and vehicle.cp.siloSelectedFillType) or courseplay:getOnlyPossibleFillType(vehicle,workTool,trigger) 
 				g_effectManager:setFillType(trigger.effects, trigger.selectedFillType)
 				trigger.autoStart = false
 			end
@@ -1443,6 +1443,22 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 		courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
 	end
 end	
+
+function courseplay:getOnlyPossibleFillType(vehicle,workTool,fillTrigger)
+	local fillUnits = workTool:getFillUnits()
+	for i=1,#fillUnits do	
+		local unitsFillTypes = workTool:getFillUnitSupportedFillTypes(i)
+		local counter = 0
+		local lastCheckedFillType = 1
+		for fillType,v in pairs (unitsFillTypes) do
+			counter = counter+1
+			lastCheckedFillType = fillType
+		end
+		if counter == 1 and fillTrigger.source.providedFillTypes[lastCheckedFillType] then
+			return lastCheckedFillType
+		end
+	end
+end
 		
 function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoint)
 	local tipRefpoint = 0

@@ -180,7 +180,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	if CpManager.confirmedNoneSpecialTriggers[transformId] then
 		return true;
 	end;
-		
+	
 	if courseplay.debugChannels[19] then
 		cpDebug:drawPoint(x, y, z, 1, 1, 0);
 	end;
@@ -418,7 +418,15 @@ function courseplay:updateAllTriggers()
 			if placeable.buyingStation ~= nil then
 				for _,loadTrigger in pairs (placeable.buyingStation.loadTriggers) do
 					local triggerId = loadTrigger.triggerNode;
-					courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers', placeable.buyingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers (buyingStation)', placeable.buyingStation.stationName,tostring(triggerId)), 1);
+					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
+				end
+			end
+			
+			if placeable.loadingStation ~= nil then
+				for _,loadTrigger in pairs (placeable.loadingStation.loadTriggers) do
+					local triggerId = loadTrigger.triggerNode;
+					courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers (loadingStation)', placeable.loadingStation.stationName,tostring(triggerId)), 1);
 					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
 				end
 			end
@@ -439,7 +447,7 @@ function courseplay:updateAllTriggers()
 						local triggerId = trigger.triggerId
 
 						courseplay:cpAddTrigger(triggerId, trigger, 'fillTrigger');
-						courseplay:debug(string.format('\t\tadd %s(%i) to fillTriggers', vehicle:getName(),triggerId), 1);
+						courseplay:debug(string.format('\t\tadd %s(%i) to fillTriggers (fillTriggerVehicle)', vehicle:getName(),triggerId), 1);
 					end
 				end
 		end
