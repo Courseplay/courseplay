@@ -21,7 +21,7 @@ CollisionDetector = CpObject()
 
 function CollisionDetector:init(vehicle, course)
 	-- channel 12 until the legacy code is spamming channel 3
-	self.debugChannel = 12
+	self.debugChannel = 3
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
 	self.vehicle = vehicle
 	self:debug('creating CollisionDetector')

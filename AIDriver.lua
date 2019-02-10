@@ -509,7 +509,10 @@ function AIDriver:drawTemporaryCourse()
 end
 
 function AIDriver:enableCollisionDetection()
-	--if not CpManager.isDeveloper then return end
+	if not courseplay.debugChannels[3] then
+		self:debug('Will enable collision detection only if debug channel 3 is on')
+		return
+	end
 	self:debug('Collision detection enabled')
 	self.collisionDetectionEnabled = true
 	-- move the big collision box around the vehicle underground because this will stop
@@ -551,7 +554,7 @@ function AIDriver:detectCollision()
 		end
 	end
 
-	if self.collisionDetectionEnabled and justGotInTraffic then
+	if justGotInTraffic then
 		-- TODO: make sure this is shown whe started in the traffic already
 		self:setInfoText('TRAFFIC')
 	elseif justClearedTraffic then
