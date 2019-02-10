@@ -111,7 +111,6 @@ function CollisionDetector:deleteTriggers()
 
 end
 
-
 --- Add and object to the list of ignored nodes. We must ignore collisions with our own collision boxes,
 -- and with our own vehicle/implements. This one adds object and all the objects attached to it to the ignore list
 -- recursively
@@ -122,10 +121,10 @@ function CollisionDetector:addToIgnoreList(object)
 		self:debug('will ignore collisions with %q (%q) components', nameNum(object), tostring(object.cp.xmlFileName))
 		for _, component in pairs(object.components) do
 			self.ignoredNodes[component.node] = true;
-		end;
-	end;
+		end
+	end
 	-- add all attached implements recursively
-	for _,impl in pairs(object:getAttachedImplements()) do
+	for _, impl in pairs(object:getAttachedImplements()) do
 		self:addToIgnoreList(impl.object)
 	end
 end

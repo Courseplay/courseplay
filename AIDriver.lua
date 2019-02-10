@@ -315,7 +315,9 @@ end
 --- Course ended
 function AIDriver:onEndCourse()
 	if self.vehicle.cp.stopAtEnd then
-		self:stop('END_POINT')
+		if self.state ~= self.states.STOPPED then
+			self:stop('END_POINT')
+		end
 	else
 		-- continue at the first waypoint
 		self.ppc:initialize(1)
@@ -498,7 +500,7 @@ function AIDriver:drawTemporaryCourse()
 end
 
 function AIDriver:enableCollisionDetection()
-	if not CpManager.isDeveloper then return end
+	--if not CpManager.isDeveloper then return end
 	self:debug('Collision detection enabled')
 	self.collisionDetectionEnabled = true
 	-- move the big collision box around the vehicle underground because this will stop
@@ -518,7 +520,7 @@ function AIDriver:disableCollisionDetection()
 	-- game traffic around us will stop while we are working on the field
 	if self.vehicle:getAINeedsTrafficCollisionBox() then
 		self:debug('Cars will stop around us again.')
-		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = 1000
+		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = 0
 	end
 end
 
