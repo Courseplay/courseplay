@@ -122,7 +122,10 @@ function AIDriver:stop(msgReference)
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
 	self.turnIsDriving = false
-	self:deleteCollisionDetector()
+	-- don't delete the collision detector in dev mode so we can see collisions logged while manually driving
+	if not CpManager.isDeveloper then
+		self:deleteCollisionDetector()
+	end
 end
 
 function AIDriver:continue()
@@ -243,6 +246,9 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 	if not self.allowedToDrive then allowedToDrive = false end
 	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f allowed=%s fwd=%s', maxSpeed, gx, gz, l, ax, az,
 		allowedToDrive, moveForwards)
+	if self.collisionDetector then
+		self.collisionDetector:update(self.course, self.ppc:getCurrentWaypointIx(), ax, az)
+	end
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
 
@@ -509,11 +515,11 @@ function AIDriver:drawTemporaryCourse()
 end
 
 function AIDriver:enableCollisionDetection()
-	if not courseplay.debugChannels[3] then
-		self:debug('Will enable collision detection only if debug channel 3 is on')
-		return
+	if courseplay.debugChannels[3] then
+		self:debug('Collision detection enabled')
+	else
+		self:debug('Will stop on collision only if debug channel 3 is on')
 	end
-	self:debug('Collision detection enabled')
 	self.collisionDetectionEnabled = true
 	-- move the big collision box around the vehicle underground because this will stop
 	-- traffic (not CP drivers though) around us otherwise
@@ -542,10 +548,9 @@ function AIDriver:detectCollision()
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
 
-	self.collisionDetector:update(self.course, self.ppc:getCurrentWaypointIx(), 0, 1)
 	local isInTraffic, justGotInTraffic, justClearedTraffic = self.collisionDetector:getStatus()
 
-	if self.collisionDetectionEnabled and isInTraffic then
+	if courseplay.debugChannels[3] and self.collisionDetectionEnabled and isInTraffic then
 		local speed = self.collisionDetector:getSpeed()
 		self:setSpeed(speed)
 		-- setting the speed to 0 won't slow us down fast enough so use the more effective allowedToDrive = false

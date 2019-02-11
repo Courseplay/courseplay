@@ -193,6 +193,7 @@ end
 --- Update the collision detection boxes. This bends the snake according to the next waypoints in the path so
 -- we can detect objects along the path.
 ---@param course Course
+-- @param lx, lz vehicle-local coordinates of the goal point the vehicle is driving to
 function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 	local colDirX = lx
 	local colDirZ = lz
@@ -200,12 +201,12 @@ function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 	self:debugSparse('has %d colliding object(s)', self.nCollidingObjects)
 
 	if self.trafficCollisionTriggers[1] ~= nil then
-		courseplay:setCollisionDirection(self.vehicle.cp.DirectionNode, self.trafficCollisionTriggers[1], colDirX, colDirZ)
+		self:setCollisionDirection(self.vehicle.cp.DirectionNode, self.trafficCollisionTriggers[1], colDirX, colDirZ)
 		local recordNumber = ix
 		if self.vehicle.cp.collidingVehicleId == nil then
 			for i = 2, #self.trafficCollisionTriggers do
 				if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() or recordNumber < 2 then
-					courseplay:setCollisionDirection(self.trafficCollisionTriggers[i-1], self.trafficCollisionTriggers[i], 0, -1)
+					self:setCollisionDirection(self.trafficCollisionTriggers[i-1], self.trafficCollisionTriggers[i], 0, -1)
 				else
 
 					local nodeX, nodeY, nodeZ = getWorldTranslation(self.trafficCollisionTriggers[i])
@@ -223,14 +224,14 @@ function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 						nodeDirX, nodeDirY, nodeDirZ, distance = courseplay:getWorldDirection(nodeX, nodeY, nodeZ, x, y, z)
 						_,_,Z = worldToLocal(self.trafficCollisionTriggers[i], x, y, z)
 						if oldValue > Z then
-							courseplay:setCollisionDirection(self.trafficCollisionTriggers[1], self.trafficCollisionTriggers[i], 0, 1)
+							self:setCollisionDirection(self.trafficCollisionTriggers[1], self.trafficCollisionTriggers[i], 0, 1)
 							break
 						end
 						index = index + 1
 						oldValue = Z
 					end
 					nodeDirX, nodeDirY, nodeDirZ = worldDirectionToLocal(self.trafficCollisionTriggers[i - 1], nodeDirX, nodeDirY, nodeDirZ)
-					courseplay:setCollisionDirection(self.trafficCollisionTriggers[i - 1], self.trafficCollisionTriggers[i], nodeDirX, nodeDirZ)
+					self:setCollisionDirection(self.trafficCollisionTriggers[i - 1], self.trafficCollisionTriggers[i], nodeDirX, nodeDirZ)
 				end
 			end
 		end
