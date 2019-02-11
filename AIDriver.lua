@@ -147,6 +147,10 @@ function AIDriver:setInfoText(msgReference)
 	self.msgReference = msgReference
 end
 
+function AIDriver:hasInfoTextSet(msgReference)
+	return self.msgReference == msgReference
+end
+
 function AIDriver:clearInfoText()
 	self:debug('info text cleared')
 	self.msgReference = nil
@@ -159,6 +163,8 @@ function AIDriver:updateInfoText()
 	end
 end
 
+
+
 --- Main driving function
 -- should be called from update()
 -- This base implementation just follows the waypoints, anything more than that
@@ -167,7 +173,7 @@ function AIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
 	-- collision detection
-	self:detectCollision()
+	self:detectCollision(dt)
 
 	self:updateInfoText()
 
@@ -542,27 +548,29 @@ function AIDriver:disableCollisionDetection()
 	end
 end
 
-function AIDriver:detectCollision()
+function AIDriver:detectCollision(dt)
 	-- if no detector yet, no problem, create it now.
 	if not self.collisionDetector then
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
 
-	local isInTraffic, justGotInTraffic, justClearedTraffic = self.collisionDetector:getStatus()
+	local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)
 
-	if courseplay.debugChannels[3] and self.collisionDetectionEnabled and isInTraffic then
-		local speed = self.collisionDetector:getSpeed()
-		self:setSpeed(speed)
+	if self.collisionDetectionEnabled then
+		if trafficSpeed ~= 0 then
+			--get the speed from the target vehicle
+			self:setSpeed(trafficSpeed)
+		end
+		
 		-- setting the speed to 0 won't slow us down fast enough so use the more effective allowedToDrive = false
-		if speed == 0 then
+		if isInTraffic then
 			self:hold()
 		end
 	end
 
-	if justGotInTraffic then
-		-- TODO: make sure this is shown whe started in the traffic already
+	if isInTraffic and not self:hasInfoTextSet('TRAFFIC') then
 		self:setInfoText('TRAFFIC')
-	elseif justClearedTraffic then
+	elseif not isInTraffic and self:hasInfoTextSet('TRAFFIC') then
 		self:clearInfoText()
 	end
 

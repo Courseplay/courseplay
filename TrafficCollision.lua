@@ -176,19 +176,89 @@ function CollisionDetector:onCollision(triggerId, otherId, onEnter, onLeave, onS
 	end
 end
 
-function CollisionDetector:getStatus()
-	local justGotInTraffic = self.nPreviousCollidingObjects and self.nPreviousCollidingObjects == 0 and self.nCollidingObjects > 0
-	local justClearedTraffic = self.nPreviousCollidingObjects and self.nPreviousCollidingObjects > 0 and self.nCollidingObjects == 0
-	local isInTraffic = self.nCollidingObjects > 0
-	-- to detect the situation when we clear the traffic
-	self.nPreviousCollidingObjects = self.nCollidingObjects
-	return isInTraffic, justGotInTraffic, justClearedTraffic
+function CollisionDetector:getStatus(dt)
+	local isInTraffic = false
+	local trafficSpeed = 0
+	if self.nCollidingObjects > 0 then
+		local collidingVehicleId = self:findTheValidCollisionVehicle()
+		if collidingVehicleId ~= nil then
+			local collidingVehicle = g_currentMission.nodeToObject[collidingVehicleId]
+			if collidingVehicle ~= nil then
+				if collidingVehicle.isCpPathVehicle then
+					self:setPathVehiclesSpeed(collidingVehicle,dt)
+				end
+				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 == 0 then
+					isInTraffic = true
+				else	
+					trafficSpeed = collidingVehicle.lastSpeedReal*3600
+				end
+			end
+		end
+	end	
+	
+	return isInTraffic, trafficSpeed
 end
 
---- Get the speed setting recommended by the collision detector
-function CollisionDetector:getSpeed()
-	return 0
+function CollisionDetector:findTheValidCollisionVehicle()
+--go throught the objects to figure out the valid target
+	local currentCollisionVehicleId = 0
+	local distanceToCollisionVehicle = math.huge
+	local distance = math.huge
+	--toggle through my collisionTriggerHits
+	for targetId,_ in pairs (self.collidingObjects) do
+		--does it still exist? (straw bales)
+		if entityExists(targetId) then
+			--get the vehicle concerned
+			local collisionVehicle = g_currentMission.nodeToObject[targetId]
+			--print(string.format("collisionVehicle[%s](%s): %s",tostring(targetId),tostring(getName(targetId)),tostring(collisionVehicle)))
+			if collisionVehicle ~= nil then
+				--if the collisionVehicle is valid, check whether it's the closest
+				if self:isItARailCrossing(collisionVehicle) then
+					distance = courseplay:nodeToNodeDistance(self.vehicle.cp.DirectionNode or self.vehicle.rootNode, targetId)
+				else
+					distance = courseplay:distanceToObject(self.vehicle, collisionVehicle)
+				end
+					if distanceToCollisionVehicle > distance then
+					--print(string.format("   %d is closer (%.2f m)",targetId,distance));
+					distanceToCollisionVehicle = distance
+					currentCollisionVehicleId = targetId;
+				end
+
+			else
+				self:isItATrafficVehicle(targetId)
+			end
+		else
+			--delete NodeID e.g. StrawBales will be deleted and don't get onLeave
+		end
+	end 
+	--print("findTheValidCollisionVehicle: return:"..tostring(currentCollisionVehicleId))
+	return currentCollisionVehicleId
 end
+
+--check whether we hit the trafficBlokker of an railway crossing
+function CollisionDetector:isItARailCrossing(collisionVehicle)
+	if collisionVehicle.railroadObjects then
+		return true;
+	end
+end
+
+-- check, whether its a traffic vehicle.
+-- if yes ,set it to g_cM.nodeToObject
+function CollisionDetector:isItATrafficVehicle(nodeId)
+	local cm = getCollisionMask(nodeId);
+	-- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
+	if collisionVehicle == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(nodeId),'Trigger') and not string.match(getName(nodeId),'trigger') then
+		local pathVehicle = {
+			rootNode = nodeId,
+			isCpPathVehicle = true,
+			name = "PathVehicle",
+			sizeLength = 7,
+			sizeWidth = 3,
+				}
+		g_currentMission.nodeToObject[nodeId] = pathVehicle
+	end
+end
+
 
 --- Update the collision detection boxes. This bends the snake according to the next waypoints in the path so
 -- we can detect objects along the path.
@@ -257,4 +327,41 @@ function CollisionDetector:debugSparse(...)
 	if g_updateLoopIndex % self.debugTicks == 0 then
 		courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
 	end
+end
+
+function CollisionDetector:setPathVehiclesSpeed(pathVehicle,dt)
+	--print("update speed")
+	if pathVehicle.speedDisplayDt == nil then
+		pathVehicle.speedDisplayDt = 0;
+		pathVehicle.lastSpeed = 0;
+		pathVehicle.lastSpeedReal = 0;
+		pathVehicle.movingDirection = 1;
+	end;
+	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt;
+	if pathVehicle.speedDisplayDt > 100 then
+		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode);
+		if pathVehicle.lastPosition == nil then
+		  pathVehicle.lastPosition = {
+			newX,
+			newY,
+			newZ
+		  };
+		end;
+		local lastMovingDirection = pathVehicle.movingDirection;
+		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3]);
+		if dz > 0.001 then
+		  pathVehicle.movingDirection = 1;
+		elseif dz < -0.001 then
+		  pathVehicle.movingDirection = -1;
+		else
+		  pathVehicle.movingDirection = 0;
+		end;
+		pathVehicle.lastMovedDistance = MathUtil.vector3Length(dx, dy, dz);
+		local lastLastSpeedReal = pathVehicle.lastSpeedReal;
+		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01;
+		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01;
+		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15;
+		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ;
+		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100;
+	end;
 end
