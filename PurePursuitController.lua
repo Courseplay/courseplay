@@ -248,7 +248,8 @@ function PurePursuitController:havePassedAnyWaypointBetween(fromIx, toIx)
 	local node = WaypointNode( self.name .. '-node', false)
 	local result, passedWaypointIx = false, 0
 	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
-	for ix = fromIx, toIx do
+	-- math.max so we do one loop even if toIx < fromIx
+	for ix = fromIx, math.max(toIx, fromIx) do
 		node:setToWaypoint(self.course, ix)
 		if self:havePassedWaypoint(node) then
 			result = true
