@@ -470,3 +470,19 @@ function Course:hasWaypointWithPropertyAround(ix, forward, backward, hasProperty
 	end
 	return false
 end
+
+function Course:getRemainingDistanceAndTurnsFrom(ix)
+	local distance = 0;
+	local numTurns =0;
+	for i = ix, #self.waypoints -1 do
+		distance = distance + self.waypoints[i].dToNext
+		if self:isTurnStartAtIx(i) then
+			numTurns = numTurns+1;
+		end
+	end
+	return distance, numTurns
+end
+
+
+
+

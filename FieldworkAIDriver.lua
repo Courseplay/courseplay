@@ -279,6 +279,7 @@ end
 function FieldworkAIDriver:onWaypointChange(ix)
 	self:debug('onWaypointChange %d', ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
+		self:calculateTimeRemaining(ix)
 		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 			if not self.course:isOnConnectingTrack(ix) then
 				-- reached the end of the connecting track, back to work
@@ -551,4 +552,12 @@ function FieldworkAIDriver:foldImplements()
 			end
 		end
 	end
+end
+
+
+function FieldworkAIDriver:calculateTimeRemaining(ix)
+	local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
+	print(string.format("Distance to go: %s; Turns: %s",tostring(dist),tostring(turns)))
+	--local turnTime = turns* recordedTurnTime 
+	--self.vehicle.cp.timeRemaining = dist/speed + turnTime
 end
