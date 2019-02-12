@@ -187,7 +187,7 @@ function CollisionDetector:getStatus(dt)
 				if collidingVehicle.isCpPathVehicle then
 					self:setPathVehiclesSpeed(collidingVehicle,dt)
 				end
-				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 == 0 then
+				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 == 0 or not self:doesVehicleGoMyDirection(collidingVehicleId) then
 					isInTraffic = true
 				else	
 					trafficSpeed = collidingVehicle.lastSpeedReal*3600
@@ -197,6 +197,16 @@ function CollisionDetector:getStatus(dt)
 	end	
 	
 	return isInTraffic, trafficSpeed
+end
+
+function CollisionDetector:doesVehicleGoMyDirection(collidingVehicleId)
+	local x, y, z = getWorldTranslation(self.vehicle.cp.DirectionNode);
+	local x1,z1 = AIVehicleUtil.getDriveDirection(collidingVehicleId, x, y, z);
+	if z1 > -0.9 then 
+		-- I'm in front of vehicle, face2face or beside < 4 o'clock
+		return false;
+	end;
+	return true;
 end
 
 function CollisionDetector:findTheValidCollisionVehicle()
