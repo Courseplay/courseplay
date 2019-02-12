@@ -757,9 +757,11 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 				align='Bool'};
 
 			for k, v in pairs(cp_course.waypoints) do
+				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, v.cx, 0, v.cz)
 				local waypoint = {
 					-- Required Values
-					pos =   ('%.2f %.2f'):format(v.cx, v.cz);
+					-- be nice to our fellow modders and write y to the saved course
+					pos =   ('%.2f %.2f %.2f'):format(v.cx, y, v.cz);
 					angle = ('%.2f'):format(v.angle);
 					speed = ('%d'):format(v.speed or 0);
 
@@ -1390,7 +1392,13 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					if not hasXMLProperty(courseXml, key .. '#pos') then
 						break;
 					end;
-					local x, z = StringUtil.getVectorFromString(getXMLString(courseXml, key .. '#pos'));
+
+					local x, y, z = StringUtil.getVectorFromString(getXMLString(courseXml, key .. '#pos'));
+					-- if there are three values then we have x, y and z all saved in the course
+					if z == nil then
+						-- if there are two values only then those are x and z (for backward compatibility) and there's no y
+						z, y = y, nil
+					end
 					if x == nil or z == nil then
 						break;
 					end;
@@ -1424,6 +1432,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 					turnEnd = turnEnd == 1;
 					waypoints[wpNum] = {
 						cx = x,
+						cy = y,
 						cz = z,
 						angle = angle,
 						speed = speed,
