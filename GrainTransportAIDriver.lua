@@ -118,7 +118,7 @@ end
 
 function GrainTransportAIDriver:isNearFillPoint()
 	-- TODO: like above, we may have some better indication of this
-	return self.ppc:getCurrentWaypointIx() >= 1 and self.ppc:getCurrentWaypointIx() <= 3
+	return self.ppc:getCurrentWaypointIx() >= 1 and self.ppc:getCurrentWaypointIx() <= 3  
 end
 
 function GrainTransportAIDriver:getSpeed()

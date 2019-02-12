@@ -203,7 +203,7 @@ function AIDriver:driveCourse(dt)
 	self:setSpeed(self:getRecordedSpeed())
 
 	if self:getIsInFilltrigger() then
-		self:setSpeed(self.vehicle.cp.speeds.turn)
+		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
 
 	-- slow down before wait points
@@ -441,7 +441,7 @@ function AIDriver:getRecordedSpeed()
 end
 
 function AIDriver:getIsInFilltrigger()
-	return self.vehicle.cp.fillTrigger ~= nil or self.vehicle.cp.tipperLoadMode > 0
+	return self.vehicle.cp.fillTrigger ~= nil or self:isNearFillPoint()
 end
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed

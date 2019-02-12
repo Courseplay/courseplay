@@ -252,6 +252,7 @@ function courseplay:onLoad(savegame)
 		crawl = 3;
 		discharge = 8;
 		bunkerSilo = 20;
+		approach = 10;
 		
 		minReverse = 3;
 		minTurn = 3;

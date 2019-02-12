@@ -784,7 +784,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
 
 	local driveOn = vehicle.cp.isLoaded;
-
+		
 	if not currentTrailer.cp.realUnloadOrFillNode and not driveOn then
 		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
 		if not currentTrailer.cp.realUnloadOrFillNode then
@@ -796,9 +796,9 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		end;
 	end;
 	
-	if vehicle.cp.tipperLoadMode == 0 and not driveOn then
-		if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then
-			--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
+	if vehicle.cp.tipperLoadMode == 0 or not driveOn then
+		if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then  --vehicle.cp.ppc:haveJustPassedWaypoint(1) doesn't work here
+		--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
 			vehicle.cp.tipperLoadMode = 2;
 		elseif currentTrailer.cp.currentSiloTrigger then
 			--- We have an silo trigger, so we go load at silo trigger mode
@@ -826,11 +826,12 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				courseplay:debug(string.format('%s: Silo Trigger unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(vehicle.cp.trailerFillDistance)), 2);
 			end;
 		elseif vehicle.cp.tipperLoadMode == 2 then
-			local cx, cz = vehicle.Waypoints[2].cx, vehicle.Waypoints[2].cz;
+			local cx, cz = vehicle.Waypoints[1].cx, vehicle.Waypoints[1].cz; --TODO Tommi convert this to the ppc, course, waypoint, no idea stuff
+			local dx,_,dz = getWorldTranslation(vehicle.cp.DirectionNode);
 			if not vehicle.cp.trailerFillDistance then
-				vehicle.cp.trailerFillDistance = courseplay:distance(cx, cz, trailerX, trailerZ) + 0.5;
+				vehicle.cp.trailerFillDistance = 1;
 			end;
-			unloadDistance = courseplay:distance(cx, cz, trailerX, trailerZ);
+			unloadDistance = courseplay:distance(cx, cz, dx, dz);
 			courseplay:debug(string.format('%s: Non Silo unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(vehicle.cp.trailerFillDistance)), 2);
 		end;
 
