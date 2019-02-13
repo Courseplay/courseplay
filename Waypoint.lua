@@ -259,8 +259,7 @@ function Course:enrichWaypointData()
 		self.waypoints[i].dToNext = dToNext
 		self.waypoints[i].dToHere = self.totalDistance
 		self.waypoints[i].turnsToHere = self.totalTurns
-		self.waypoints[i].dx, _, self.waypoints[i].dz, _ =
-		courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
+		self.waypoints[i].dx, _, self.waypoints[i].dz, _ = courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
 		if not self.waypoints[i].angle then
 			-- TODO: fix this weird coordinate system transformation from x/z to x/y
 			local dx, dz = nx - cx, -nz - (-cz)
@@ -268,6 +267,7 @@ function Course:enrichWaypointData()
 			-- and now back to x/z
 			self.waypoints[i].angle = courseGenerator.toCpAngle(angle)
 		end
+--		courseplay.debugFormat(12, '%d %.1f %d', i, self.waypoints[i].dToHere, self.waypoints[i].turnsToHere)
 	end
 	-- make the last waypoint point to the same direction as the previous so we don't
 	-- turn towards the first when ending the course. (the course generator points the last
@@ -279,6 +279,8 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dToHere = self.totalDistance + self.waypoints[#self.waypoints - 1].dToNext
 	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
 	courseplay.debugFormat(12, 'Course with %d waypoints created, %.1f meters, %d turns', #self.waypoints, self.totalDistance, self.totalTurns)
+--	self:print()
+
 end
 
 --- Is this the same course as otherCourse?
@@ -391,7 +393,7 @@ end
 function Course:print()
 	for i = 1, #self.waypoints do
 		local p = self.waypoints[i]
-		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s i=%s d=%.1f t=%d', i, p.x, p.z, p.angle, tostring(p.rev), tostring(p.interact), p.dToHere, p.turnsToHere))
+		print(string.format('%d: x=%.1f z=%.1f a=%.1f r=%s i=%s d=%.1f t=%d', i, p.x, p.z, p.angle, tostring(p.rev), tostring(p.interact), p.dToHere, p.turnsToHere))
 	end
 end
 

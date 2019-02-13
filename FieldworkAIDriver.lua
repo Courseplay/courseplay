@@ -143,6 +143,7 @@ function FieldworkAIDriver:driveFieldwork()
 	elseif self.fieldworkState == self.states.WORKING then
 		self:setSpeed(self:getFieldSpeed())
 		self:manageConvoy()
+		self:checkWeather()
 		if not self:allFillLevelsOk() or self.heldForUnloadRefill then
 			if self.unloadRefillCourse and not self.heldForUnloadRefill then
 				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
@@ -504,7 +505,7 @@ function FieldworkAIDriver:manageConvoy()
 		end
 	end
 
-	--when I'm too close to the combine before me, then stop
+	-- stop when I'm too close to the combine in front of me
 	if position > 1 then
 		if closestDistance < 100 then
 			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
@@ -524,8 +525,6 @@ function FieldworkAIDriver:manageConvoy()
 	if self.vehicle.cp.convoy.members ~= total then
 		self.vehicle:setCpVar('convoy.members',total)
 	end
-
-	return hold
 end
 
 -- Although raising the AI start/stop events supposed to fold/unfold the implements, it does not always happen.
@@ -559,4 +558,11 @@ function FieldworkAIDriver:calculateTimeRemaining(ix)
 	self:debug('Distance to go: %.1f; Turns left: %d', dist, turns)
 	--local turnTime = turns* recordedTurnTime 
 	--self.vehicle.cp.timeRemaining = dist/speed + turnTime
+end
+
+function FieldworkAIDriver:checkWeather()
+	if self.vehicle.getIsThreshingAllowed and not self.vehicle:getIsThreshingAllowed() then
+		self:debugSparse('No threshing in rain...')
+		self:setSpeed(0)
+	end
 end

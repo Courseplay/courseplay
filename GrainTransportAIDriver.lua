@@ -116,11 +116,6 @@ function GrainTransportAIDriver:hasTipTrigger()
 	return self.vehicle.cp.currentTipTrigger ~= nil
 end
 
-function GrainTransportAIDriver:isNearFillPoint()
-	-- TODO: like above, we may have some better indication of this
-	return self.ppc:getCurrentWaypointIx() >= 1 and self.ppc:getCurrentWaypointIx() <= 3  
-end
-
 function GrainTransportAIDriver:getSpeed()
 	if self:hasTipTrigger() then
 		-- slow down around the tip trigger

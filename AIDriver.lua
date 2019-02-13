@@ -440,6 +440,12 @@ function AIDriver:getRecordedSpeed()
 	return speed
 end
 
+-- TODO: review this whole fillpoint/filltrigger mess.
+function AIDriver:isNearFillPoint()
+	-- TODO: like above, we may have some better indication of this
+	return self.ppc:getCurrentWaypointIx() >= 1 and self.ppc:getCurrentWaypointIx() <= 3
+end
+
 function AIDriver:getIsInFilltrigger()
 	return self.vehicle.cp.fillTrigger ~= nil or self:isNearFillPoint()
 end
