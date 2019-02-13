@@ -442,14 +442,14 @@ function FieldworkAIDriver:setUpCourses()
 			#self.vehicle.Waypoints, endFieldCourseIx + 1)
 		---@type Course
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, endFieldCourseIx)
-		-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
-		self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
 		---@type Course
 		self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, endFieldCourseIx + 1, #self.vehicle.Waypoints)
 	else
 		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, #self.vehicle.Waypoints)
 	end
+	-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
 end
 
 function FieldworkAIDriver:setRidgeMarkers()
@@ -469,9 +469,9 @@ end
 --- We already set the offsets on the course at start, this is to update those values
 -- if the user changed them during the run or the AI driver wants to add an offset
 function FieldworkAIDriver:updateFieldworkOffset()
-	-- pass this in through the PPC instead of setting it on the course directly as we don't know what
-	-- course it is running at the moment
-	self.ppc:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX, self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
+	-- (as lua passes tables by reference, we can directly change self.fieldworkCourse even if we passed self.course
+	-- to the PPC to drive)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX, self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
 end
 
 function FieldworkAIDriver:hasSameCourse(otherVehicle)
