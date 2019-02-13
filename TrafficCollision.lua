@@ -185,7 +185,7 @@ function CollisionDetector:getStatus(dt)
 			local collidingVehicle = g_currentMission.nodeToObject[collidingVehicleId]
 			if collidingVehicle ~= nil then
 				if collidingVehicle.isCpPathVehicle then
-					self:setPathVehiclesSpeed(collidingVehicle,dt)
+					self:setPathVehiclesSpeed(collidingVehicle, dt)
 				end
 				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 == 0 or not self:doesVehicleGoMyDirection(collidingVehicleId) then
 					isInTraffic = true

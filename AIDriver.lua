@@ -443,7 +443,7 @@ end
 -- TODO: review this whole fillpoint/filltrigger mess.
 function AIDriver:isNearFillPoint()
 	-- TODO: like above, we may have some better indication of this
-	return self.ppc:getCurrentWaypointIx() >= 1 and self.ppc:getCurrentWaypointIx() <= 3
+	return self.ppc:getCurrentWaypointIx() >= 1 and self.ppc:getCurrentWaypointIx() <= 3 or self.vehicle.cp.tipperLoadMode > 0
 end
 
 function AIDriver:getIsInFilltrigger()

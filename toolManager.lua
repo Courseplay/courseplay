@@ -796,15 +796,18 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		end;
 	end;
 	
-	if vehicle.cp.tipperLoadMode == 0 and not driveOn then
-		if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then  --vehicle.cp.ppc:haveJustPassedWaypoint(1) doesn't work here
+	if (vehicle.cp.tipperLoadMode == 0 or vehicle.cp.tipperLoadMode == 3) and not driveOn then
+		--if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then  --vehicle.cp.ppc:haveJustPassedWaypoint(1) doesn't work here
+		if courseplay:havePhysicallyPassedWaypoint(vehicle,1) and currentTrailer.cp.currentSiloTrigger == nil then
 		--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
 			vehicle.cp.tipperLoadMode = 2;
 		elseif currentTrailer.cp.currentSiloTrigger then
 			--- We have an silo trigger, so we go load at silo trigger mode
 			vehicle.cp.tipperLoadMode = 1;
 		else
-			--- We were not able to determine what mode to set, so we move further forward until one is set.
+			
+			--- we know, we are in the filling range so tell the rest of the program.
+			vehicle.cp.tipperLoadMode = 3;
 			return allowedToDrive;
 		end;
 	end;
@@ -826,15 +829,8 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				courseplay:debug(string.format('%s: Silo Trigger unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(vehicle.cp.trailerFillDistance)), 2);
 			end;
 		elseif vehicle.cp.tipperLoadMode == 2 then
-			local cx, cz = vehicle.Waypoints[1].cx, vehicle.Waypoints[1].cz; --TODO Tommi convert this to the ppc, course, waypoint, no idea stuff
-			local dx,_,dz = getWorldTranslation(vehicle.cp.DirectionNode);
-			if not vehicle.cp.trailerFillDistance then
-				vehicle.cp.trailerFillDistance = 1;
-			end;
-			unloadDistance = courseplay:distance(cx, cz, dx, dz);
-			courseplay:debug(string.format('%s: Non Silo unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(vehicle.cp.trailerFillDistance)), 2);
+			vehicle.cp.trailerFillDistance = 1;
 		end;
-
 	end;
 
 	if vehicle.cp.tipperLoadMode == 1 and currentTrailer.cp.currentSiloTrigger ~= nil and not driveOn then
@@ -842,14 +838,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
 
 		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
-			--if not printOnce then
-			--	printOnce = true
-			--	courseplay.alreadyPrinted = {}
-			--	courseplay:printMeThisTable(siloTrigger,0,4,"siloTrigger")
-			--
-			--end
-			--siloTrigger.source
-			
+
 			local siloIsEmpty = false --siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
 			if not siloTrigger.isLoading and not siloIsEmpty and unloadDistance < vehicle.cp.trailerFillDistance then
 				if siloTrigger:getIsActivatable(currentTrailer) then
@@ -902,7 +891,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			end;
 		else
 			courseplay:debug(string.format('%s: Stop the tipper unloadDistance = %.4s vehicle.cp.trailerFillDistance = %.4s waypointindex = %s', nameNum(vehicle), tostring(unloadDistance), tostring(vehicle.cp.trailerFillDistance), tostring(vehicle.cp.waypointIndex)), 2);
-			if unloadDistance < vehicle.cp.trailerFillDistance then
+			if unloadDistance < vehicle.cp.trailerFillDistance or vehicle.cp.tipperLoadMode == 2 then
 				allowedToDrive = false;
 			end;
 		end;
@@ -1872,4 +1861,11 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 			return left - right;
 		end
 	end
+end
+
+function courseplay:havePhysicallyPassedWaypoint(vehicle,index)
+	local cx, cz = vehicle.Waypoints[index].cx, vehicle.Waypoints[index].cz; --TODO Tommi convert this to the ppc, course, waypoint, no idea stuff
+	local _,dy,_ = getWorldTranslation(vehicle.cp.DirectionNode);
+	local _,_,tz = worldToLocal(vehicle.cp.DirectionNode,cx,dy,cz) 
+	return tz < 0
 end

@@ -87,7 +87,7 @@ function GrainTransportAIDriver:drive(dt)
 		return
 	else
 		-- collision detection
-		self:detectCollision()
+		self:detectCollision(dt)
 		-- we drive the course as usual
 		self:driveCourse(dt)
 	end
