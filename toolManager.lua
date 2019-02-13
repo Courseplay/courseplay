@@ -796,7 +796,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		end;
 	end;
 	
-	if vehicle.cp.tipperLoadMode == 0 or not driveOn then
+	if vehicle.cp.tipperLoadMode == 0 and not driveOn then
 		if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then  --vehicle.cp.ppc:haveJustPassedWaypoint(1) doesn't work here
 		--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
 			vehicle.cp.tipperLoadMode = 2;
