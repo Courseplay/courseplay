@@ -248,13 +248,19 @@ end
 -- add missing angles and world directions from one waypoint to the other
 -- PPC relies on waypoint angles, the world direction is needed to calculate offsets
 function Course:enrichWaypointData()
+	self.totalDistance = 0
+	self.totalTurns = 0
 	for i = 1, #self.waypoints - 1 do
 		local cx, _, cz = self:getWaypointPosition(i)
 		local nx, _, nz = self:getWaypointPosition( i + 1)
-		self.waypoints[i].dToNext = courseplay:distance(cx, cz, nx, nz)
+		local dToNext = courseplay:distance(cx, cz, nx, nz)
+		self.totalDistance = self.totalDistance + dToNext
+		if self:isTurnStartAtIx(i) then self.totalTurns = self.totalTurns + 1 end
+		self.waypoints[i].dToNext = dToNext
+		self.waypoints[i].dToHere = self.totalDistance
+		self.waypoints[i].turnsToHere = self.totalTurns
 		self.waypoints[i].dx, _, self.waypoints[i].dz, _ =
-			courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
-		courseplay:debugFormat(12, '%d %s %s', i, tostring(self.waypoints[i].dx), tostring(self.waypoints[i].dz))
+		courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
 		if not self.waypoints[i].angle then
 			-- TODO: fix this weird coordinate system transformation from x/z to x/y
 			local dx, dz = nx - cx, -nz - (-cz)
@@ -270,6 +276,9 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dx = self.waypoints[#self.waypoints - 1].dx
 	self.waypoints[#self.waypoints].dz = self.waypoints[#self.waypoints - 1].dz
 	self.waypoints[#self.waypoints].dToNext = 0
+	self.waypoints[#self.waypoints].dToHere = self.totalDistance + self.waypoints[#self.waypoints - 1].dToNext
+	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
+	courseplay.debugFormat(12, 'Course with %d waypoints created, %.1f meters, %d turns', #self.waypoints, self.totalDistance, self.totalTurns)
 end
 
 --- Is this the same course as otherCourse?
@@ -382,7 +391,7 @@ end
 function Course:print()
 	for i = 1, #self.waypoints do
 		local p = self.waypoints[i]
-		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s i=%s', i, p.x, p.z, p.angle, tostring(p.rev), tostring(p.interact)))
+		print(string.format('%d: x=%.1f y=%.1f a=%.1f r=%s i=%s d=%.1f t=%d', i, p.x, p.z, p.angle, tostring(p.rev), tostring(p.interact), p.dToHere, p.turnsToHere))
 	end
 end
 
@@ -472,14 +481,8 @@ function Course:hasWaypointWithPropertyAround(ix, forward, backward, hasProperty
 end
 
 function Course:getRemainingDistanceAndTurnsFrom(ix)
-	local distance = 0;
-	local numTurns =0;
-	for i = ix, #self.waypoints -1 do
-		distance = distance + self.waypoints[i].dToNext
-		if self:isTurnStartAtIx(i) then
-			numTurns = numTurns+1;
-		end
-	end
+	local distance = self.totalDistance - self.waypoints[ix].dToHere
+	local numTurns = self.totalTurns - self.waypoints[ix].turnsToHere
 	return distance, numTurns
 end
 

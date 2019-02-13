@@ -554,10 +554,9 @@ function FieldworkAIDriver:foldImplements()
 	end
 end
 
-
 function FieldworkAIDriver:calculateTimeRemaining(ix)
 	local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
-	print(string.format("Distance to go: %s; Turns: %s",tostring(dist),tostring(turns)))
+	self:debug('Distance to go: %.1f; Turns left: %d', dist, turns)
 	--local turnTime = turns* recordedTurnTime 
 	--self.vehicle.cp.timeRemaining = dist/speed + turnTime
 end
