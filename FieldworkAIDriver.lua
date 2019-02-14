@@ -566,3 +566,8 @@ function FieldworkAIDriver:checkWeather()
 		self:setSpeed(0)
 	end
 end
+
+function FieldworkAIDriver:updateLights()
+	self.vehicle:setBeaconLightsVisibility(false)
+end
+

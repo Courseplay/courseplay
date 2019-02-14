@@ -356,6 +356,13 @@ function Course:getDistanceBetweenVehicleAndWaypoint(vehicle, ix)
 	return self.waypoints[ix]:getDistanceFromVehicle(vehicle)
 end
 
+--- get waypoint position in the node's local coordinates
+function Course:getWaypointLocalPosition(node, ix)
+	local x, y, z = self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
+	local dx, _, dz = worldToLocal(node, x, y, z)
+	return dx, dz
+end
+
 function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[ix].angle
 end

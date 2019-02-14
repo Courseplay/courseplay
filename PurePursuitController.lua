@@ -543,3 +543,7 @@ end
 function PurePursuitController:haveJustPassedWaypoint(ix)
 	return self.lastPassedWaypointIx and self.lastPassedWaypointIx == ix or false
 end
+
+function PurePursuitController:haveAlreadyPassedWaypoint(ix)
+	return self.lastPassedWaypointIx and self.lastPassedWaypointIx <= ix or false
+end

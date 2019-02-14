@@ -115,6 +115,12 @@ function AIDriver:start(ix)
 	self:startCourseWithAlignment(self.mainCourse, ix)
 end
 
+--- Dismiss the driver
+function AIDriver:dismiss()
+	self.vehicle:deactivateLights()
+	self:stop()
+end
+
 --- Stop the driver
 -- @param reason as defined in globalInfoText.msgReference
 function AIDriver:stop(msgReference)
@@ -191,6 +197,7 @@ end
 --- Normal driving according to the course waypoints, using	 courseplay:goReverse() when needed
 -- to reverse with trailer.
 function AIDriver:driveCourse(dt)
+	self:updateLights()
 	-- check if reversing
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
 	-- stop for fuel if needed
@@ -573,6 +580,14 @@ function AIDriver:detectCollision(dt)
 		self:clearInfoText()
 	end
 
+end
+
+function AIDriver:updateLights()
+	if self.vehicle.spec_lights and self.vehicle.cp.warningLightsMode > courseplay.lights.WARNING_LIGHTS_NEVER then
+		self.vehicle:setBeaconLightsVisibility(true)
+	else
+		self.vehicle:setBeaconLightsVisibility(false)
+	end
 end
 
 function AIDriver:onAIEnd(superFunc)

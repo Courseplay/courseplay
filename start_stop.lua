@@ -643,7 +643,7 @@ end;
 function courseplay:stop(self)
 	-- Stop AI Driver
 	if self.cp.driver then
-		self.cp.driver:stop()
+		self.cp.driver:dismiss()
 	end
 
 	self.spec_aiVehicle.isActive = false

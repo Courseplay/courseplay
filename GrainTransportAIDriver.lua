@@ -275,3 +275,7 @@ function GrainTransportAIDriver:updateOffset()
 		self.ppc:setOffset(0, 0)
 	end
 end
+
+function GrainTransportAIDriver:updateLights()
+	self.vehicle:setBeaconLightsVisibility(false)
+end
