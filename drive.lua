@@ -1259,17 +1259,21 @@ function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
 		local numCovers = #tipper.spec_cover.covers
 		-- default Giants trailers
 		if coverType == 'defaultGiants' then
+			--open cover
 			if not showCover then
+				--we have more covers, open the one related to the fillUnit
 				if numCovers > 1 and (courseplay:isSprayer(tipper) or courseplay:isSowingMachine(tipper)) and fillTrigger then
 					local fillUnits = tipper:getFillUnits()
 					for i=1,#fillUnits do	
 						if courseplay:fillTypesMatch(vehicle, fillTrigger, tipper, i) then
-							if tipper.spec_cover.state ~= i then
-								tipper:setCoverState(i,true);
+							local cover = tipper:getCoverByFillUnitIndex(i)
+							if tipper.spec_cover.state ~= cover.index then
+								tipper:setCoverState(cover.index ,true);
 							end
 						end
 					end
 				else
+					--we have just one, easy going
 					local newState = 1    
 					if tipper.spec_cover.state ~= newState and tipper:getIsNextCoverStateAllowed(newState) then
 						tipper:setCoverState(newState,true);
