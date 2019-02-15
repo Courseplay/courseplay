@@ -53,6 +53,10 @@ function FieldworkAIDriver:init(vehicle)
 	self.heldForUnloadRefillTimestamp = 0
 	-- stop and raise implements while refilling/unloading on field
 	self.stopImplementsWhileUnloadOrRefillOnField = true
+	-- time to lower all implements. This is a default value and will
+	-- be adjusted by the driver as it learns and then used to start lowering implements in time
+	-- so they reach the working position before the row starts.
+	self.loweringDurationMs = 3000
 end
 
 --- Start the course and turn on all implements when needed
@@ -137,7 +141,9 @@ function FieldworkAIDriver:driveFieldwork()
 			self:debug('all tools ready, start working')
 			self.fieldworkState = self.states.WORKING
 			self:setSpeed(self:getFieldSpeed())
+			self:calculateLoweringDuration()
 		else
+			self:startLoweringDurationTimer()
 			self:setSpeed(0)
 		end
 	elseif self.fieldworkState == self.states.WORKING then
@@ -526,6 +532,16 @@ function FieldworkAIDriver:foldImplements()
 	end
 end
 
+function FieldworkAIDriver:isAllUnfolded()
+	for _,workTool in pairs(self.vehicle.cp.workTools) do
+		if courseplay:isFoldable(workTool) then
+			local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool)
+			if not isUnfolded then return false end
+		end
+	end
+	return true
+end
+
 function FieldworkAIDriver:calculateTimeRemaining(ix)
 	local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
 	self:debug('Distance to go: %.1f; Turns left: %d', dist, turns)
@@ -544,3 +560,21 @@ function FieldworkAIDriver:updateLights()
 	self.vehicle:setBeaconLightsVisibility(false)
 end
 
+function FieldworkAIDriver:startLoweringDurationTimer()
+	-- if not started yet
+	if not self.startedLoweringAt then
+		-- then start but only after everything is unfolded as we don't want to include the
+		-- unfold duration (since we don't fold at the end of the row).
+		if self:isAllUnfolded() then
+			self.startedLoweringAt = self.vehicle.timer
+		end
+	end
+end
+
+function FieldworkAIDriver:calculateLoweringDuration()
+	if self.startedLoweringAt then
+		self.loweringDurationMs = self.vehicle.timer - self.startedLoweringAt
+		self:debug('Measured implement lowering duration is %.0f ms', self.loweringDurationMs)
+		self.startedLoweringAt = nil
+	end
+end
