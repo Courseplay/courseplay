@@ -133,7 +133,7 @@ end
 function FieldworkAIDriver:driveFieldwork()
 	self:updateFieldworkOffset()
 	if self.fieldworkState == self.states.WAITING_FOR_LOWER then
-		if self:areAllWorkToolsReady() then
+		if self.vehicle:getCanAIVehicleContinueWork() then
 			self:debug('all tools ready, start working')
 			self.fieldworkState = self.states.WORKING
 			self:setSpeed(self:getFieldSpeed())
@@ -343,16 +343,6 @@ function FieldworkAIDriver:stopWork()
 	self.vehicle:requestActionEventUpdate()
 end
 
---- Check all worktools to see if we are ready
-function FieldworkAIDriver:areAllWorkToolsReady()
-	if not self.vehicle.cp.workTools then return true end
-	local allToolsReady = true
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		allToolsReady = self:isWorktoolReady(workTool) and allToolsReady
-	end
-	return allToolsReady
-end
-
 --- Check if need to refill/unload anything
 function FieldworkAIDriver:allFillLevelsOk()
 	if not self.vehicle.cp.workTools then return false end
@@ -393,23 +383,6 @@ function FieldworkAIDriver:getFillTypeFromFillUnit(fillUnit)
 		return fillType
 	end
 
-end
-
---- Check if worktool is ready for work
-function FieldworkAIDriver:isWorktoolReady(workTool)
-	local _, _, isUnfolded = courseplay:isFolding(workTool)
-
-	-- TODO: move these to a generic helper?
-	local isTurnedOn = true
-	if workTool.spec_turnOnVehicle then
-		isTurnedOn = workTool:getAIRequiresTurnOn() and workTool:getIsTurnedOn()
-	end
-
-	local isLowered = courseplay:isLowered(workTool)
-	local isAiImplementReady = self.vehicle:getCanAIImplementContinueWork()
-	courseplay.debugVehicle(12, workTool, 'islowered=%s isAiReady=%s isturnedon=%s unfolded=%s',
-		isLowered, isAiImplementReady, isTurnedOn, isUnfolded)
-	return isLowered and isTurnedOn and isUnfolded
 end
 
 -- is the fill level ok to continue?
