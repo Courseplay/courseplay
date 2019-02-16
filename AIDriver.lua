@@ -582,8 +582,13 @@ function AIDriver:detectCollision(dt)
 
 end
 
+function AIDriver:areBeaconLightsEnabled()
+	return self.vehicle.cp.warningLightsMode > courseplay.lights.WARNING_LIGHTS_NEVER
+end
+
 function AIDriver:updateLights()
-	if self.vehicle.spec_lights and self.vehicle.cp.warningLightsMode > courseplay.lights.WARNING_LIGHTS_NEVER then
+	if not self.vehicle.spec_lights then return end
+	if self:areBeaconLightsEnabled() then
 		self.vehicle:setBeaconLightsVisibility(true)
 	else
 		self.vehicle:setBeaconLightsVisibility(false)

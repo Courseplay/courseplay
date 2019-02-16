@@ -555,7 +555,7 @@ function FieldworkAIDriver:updateRemainingTime(ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
 		local turnTime = turns * self.turnDurationMs / 1000
-		self.vehicle.cp.timeRemaining = dist / (self:getFieldSpeed() / 3.6) + turnTime
+		self.vehicle.cp.timeRemaining = math.max(0, dist / (self:getFieldSpeed() / 3.6) + turnTime)
 		self:debug('Distance to go: %.1f; Turns left: %d; Time left: %ds', dist, turns, self.vehicle.cp.timeRemaining)
 	else
 		self:clearRemainingTime()
@@ -585,7 +585,13 @@ function FieldworkAIDriver:checkWeather()
 end
 
 function FieldworkAIDriver:updateLights()
-	self.vehicle:setBeaconLightsVisibility(false)
+	if not self.vehicle.spec_lights then return end
+	-- turn on beacon lights on unload/refill course when enabled
+	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE and self:areBeaconLightsEnabled() then
+		self.vehicle:setBeaconLightsVisibility(true)
+	else
+		self.vehicle:setBeaconLightsVisibility(false)
+	end
 end
 
 function FieldworkAIDriver:startLoweringDurationTimer()
