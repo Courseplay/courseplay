@@ -224,11 +224,14 @@ function CollisionDetector:findTheValidCollisionVehicle()
 			if collisionVehicle ~= nil then
 				--if the collisionVehicle is valid, check whether it's the closest
 				if self:isItARailCrossing(collisionVehicle) then
-					distance = courseplay:nodeToNodeDistance(self.vehicle.cp.DirectionNode or self.vehicle.rootNode, targetId)
+					local _,transY,_ = getTranslation(targetId);
+					if transY > 0 then
+						distance = courseplay:nodeToNodeDistance(self.vehicle.cp.DirectionNode or self.vehicle.rootNode, targetId)
+					end
 				else
 					distance = courseplay:distanceToObject(self.vehicle, collisionVehicle)
 				end
-					if distanceToCollisionVehicle > distance then
+				if distanceToCollisionVehicle > distance then
 					--print(string.format("   %d is closer (%.2f m)",targetId,distance));
 					distanceToCollisionVehicle = distance
 					currentCollisionVehicleId = targetId;
