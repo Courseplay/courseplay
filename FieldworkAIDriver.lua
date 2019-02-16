@@ -57,6 +57,9 @@ function FieldworkAIDriver:init(vehicle)
 	-- be adjusted by the driver as it learns and then used to start lowering implements in time
 	-- so they reach the working position before the row starts.
 	self.loweringDurationMs = 3000
+	-- duration of the last turn maneuver. This is a default value and the driver will measure
+	-- the actual turn times. Used to calculate the remaining fieldwork time
+	self.turnDurationMs = 20000
 end
 
 --- Start the course and turn on all implements when needed
@@ -112,6 +115,7 @@ function FieldworkAIDriver:drive(dt)
 	self:setRidgeMarkers()
 	self:resetUnloadOrRefillHold()
 	AIDriver.drive(self, dt)
+	self:measureTurnTime()
 end
 
 -- Hold for unload (or refill) for example a combine can be asked by a an unloading tractor
@@ -286,7 +290,7 @@ end
 function FieldworkAIDriver:onWaypointChange(ix)
 	self:debug('onWaypointChange %d', ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
-		self:calculateTimeRemaining(ix)
+		self:updateRemainingTime(ix)
 		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 			if not self.course:isOnConnectingTrack(ix) then
 				-- reached the end of the connecting track, back to work
@@ -347,6 +351,7 @@ function FieldworkAIDriver:stopWork()
 	courseplay:raiseImplements(self.vehicle)
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
+	self:clearRemainingTime()
 end
 
 --- Check if need to refill/unload anything
@@ -542,11 +547,34 @@ function FieldworkAIDriver:isAllUnfolded()
 	return true
 end
 
-function FieldworkAIDriver:calculateTimeRemaining(ix)
-	local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
-	self:debug('Distance to go: %.1f; Turns left: %d', dist, turns)
-	--local turnTime = turns* recordedTurnTime 
-	--self.vehicle.cp.timeRemaining = dist/speed + turnTime
+function FieldworkAIDriver:clearRemainingTime()
+	self.vehicle.cp.timeRemaining = nil
+end
+
+function FieldworkAIDriver:updateRemainingTime(ix)
+	if self.state == self.states.ON_FIELDWORK_COURSE then
+		local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
+		local turnTime = turns * self.turnDurationMs / 1000
+		self.vehicle.cp.timeRemaining = dist / (self:getFieldSpeed() / 3.6) + turnTime
+		self:debug('Distance to go: %.1f; Turns left: %d; Time left: %ds', dist, turns, self.vehicle.cp.timeRemaining)
+	else
+		self:clearRemainingTime()
+	end
+end
+
+function FieldworkAIDriver:measureTurnTime()
+	if self.turnWasDriving and not self.turnIsDriving then
+		-- end of turn
+		if self.turnStartedAt then
+			-- use sliding average to smooth jumps
+			self.turnDurationMs = (self.turnDurationMs + self.vehicle.timer - self.turnStartedAt) / 2
+			self:debug('Measured turn duration is %.0f ms', self.turnDurationMs)
+		end
+	elseif not self.turnWasDriving and self.turnIsDriving then
+		-- start of turn
+		self.turnStartedAt = self.vehicle.timer
+	end
+	self.turnWasDriving = self.turnIsDriving
 end
 
 function FieldworkAIDriver:checkWeather()
