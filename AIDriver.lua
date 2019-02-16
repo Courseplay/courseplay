@@ -1,6 +1,6 @@
 --[[
 This file is part of Courseplay (https://github.com/Courseplay/courseplay)
-Copyright (C) 2018 Peter Vajko
+Copyright (C) 2019 Peter Vaiko
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,6 +14,81 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+]]
+
+--[[
+
+This is the base class of all AI drivers (modes) and implements MODE_TRANSPORT (5),
+using the PurePursuitController (PPC). It replaces the code in drive.lua and has the
+basic functionality:
+•	Drive a course
+•	Drive turn maneuvers (by passing on control to the code in turn.lua for the duration of the turn)
+•	Add an alignment when needed before starting the course (this is a lot easier now as
+it just initializes the PPC with the alignment course and after that is finished, initializes
+it with the regular course)
+•	Restarts or finishes the course at the last waypoint.
+•	Uses reverse.lua to reverse with a trailer but can reverse single vehicles.
+•	Has collision detection enabled by default
+
+The AIDriver class implements all functionality common to all modes (like lights, covers, etc.).
+Mode specific functions should all go into the derived classes. AIDriver MUST NOT HAVE any
+IF statements with things like cp.mode == x!
+
+
+Start/Stop
+----------
+
+Start the AIDriver with calling start(), stop it with dismiss().
+
+If you implement your own start() and don't call AIDriver.start() then make sure you call
+beforeStart() to perform some essential initialization.
+
+
+Drive
+-----
+
+Call drive() in each update loop. Like with start() if you implement your own drive() function
+it is a good idea to call AIDriver.drive() from that once you did your derived class specific
+stuff. If you don't call AIDriver.drive() make sure you call at least self.ppc:update() at the
+beginning of the function and resetSpeed() just before leaving drive() these are essential for
+the AIDriver.
+
+For some more control you can use any one of the drive*() function but driveVehicleToLocalPosition()
+must always be called either through these or directly to do the actual driving.
+
+
+Speed Control
+-------------
+
+The general idea is that the AIDriver follows the current course by steering the vehicle and switching to
+forward or reverse. Then, based on various conditions we regulate the driving speed, for example to
+stop for refill or wait for the implements to unfold, etc.
+
+There are two functions provided to control the speed: hold() and setSpeed(). At the end of every loop
+these are reset so if you don't do anything, the AIDriver will keep driving with the recorded speed.
+
+If you want to momentarily stop the vehicle, you'll have to call hold() in every loop as long as you
+don't want it to move (this will set allowedToDrive = false and stop abruptly). You can also stop the
+vehicle by setting the speed to 0, this will just let it roll until it stops without applying the brake.
+
+Likewise, if you want to drive with any speed different than the recorded one you have to call setSpeed()
+at least once during the update loop, before driveVehicleToLocalPosition() is called. You can call
+setSpeed() multiple times in a loop, the AIDriver will apply the lowest value set in the loop.
+
+
+Triggering Position Based Events
+--------------------------------
+
+If you need to control your vehicle based on its position on the course please use the callback provided
+by the PPC (like onWaypointPassed()) or the functions of the Course() class like hasUnloadPointAround())
+and never the waypoints directly.
+
+
+Note:
+If the AIDriver does not seem to have the functionality you need please contact me, we'll figure something out.
+
+Peter
+
 ]]
 
 ---@class AIDriver
@@ -86,6 +161,7 @@ function AIDriver:getMode()
 	return self.mode
 end
 
+-- TODO: remove this once mode 2 is cleaned up!
 function AIDriver:getCpMode()
 	return self.vehicle.cp.mode
 end
@@ -96,9 +172,6 @@ function AIDriver:beforeStart()
 	self.turnIsDriving = false
 	self.temporaryCourse = nil
 	self:deleteCollisionDetector()
-	-- make sure collision detector has the latest status (mainly refresh the ignore list with
-	-- implement changes)
-	--self.collisionDetector:refresh()
 end
 
 --- Start driving
@@ -168,8 +241,6 @@ function AIDriver:updateInfoText()
 		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
 	end
 end
-
-
 
 --- Main driving function
 -- should be called from update()
