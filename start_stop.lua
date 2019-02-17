@@ -97,41 +97,6 @@ function courseplay:start(self)
 		end
 	end
 	
-	-- adapt collis height to vehicles height , its a runonce
-	if self.cp.ColliHeightSet == nil and self.cp.numTrafficCollisionTriggers > 0 then
-		local height = 0;
-		local step = (self.sizeLength/2)+1 ;
-		local stepBehind, stepFront = step, step;
-		if self.getAttachedImplements ~= nil then
-			for index, implement in pairs(self:getAttachedImplements()) do
-				local tool = implement.object
-				local x,y,z = getWorldTranslation(tool.rootNode);
-			    local _,_,nz =  worldToLocal(self.cp.DirectionNode, x, y, z);
-				if nz > 0 then
-					stepFront = stepFront + (tool.sizeLength)+2				
-				else
-					stepBehind = stepBehind + (tool.sizeLength)+2	
-				end
-			end
-		end
-		
-		local distance = self.sizeLength;
-		local nx, ny, nz = localDirectionToWorld(self.rootNode, 0, -1, 0);	
-		self.cp.HeightsFound = 0;
-		self.cp.HeightsFoundColli = 0;			
-		for i=-stepBehind,stepFront,0.5 do				
-			local x,y,z = localToWorld(self.rootNode, 0, distance, i);
-			raycastAll(x, y, z, nx, ny, nz, "findVehicleHeights", distance, self);
-			--print("drive raycast "..tostring(i).." end");
-			--cpDebug:drawLine(x, y, z, 1, 0, 0, x+(nx*distance), y+(ny*distance), z+(nz*distance));
-		end
-		local difference = self.cp.HeightsFound - self.cp.HeightsFoundColli;
-		local trigger = self.cp.trafficCollisionTriggers[1];
-		local Tx,Ty,Tz = getTranslation(trigger,self.rootNode);
-		setTranslation(trigger, Tx,Ty+difference,Tz);
-		self.cp.ColliHeightSet = true;
-	end
-	
 	--calculate workwidth for combines in mode7
 	if self.cp.mode == 7 then
 		courseplay:calculateWorkWidth(self)
@@ -802,7 +767,7 @@ function courseplay:stop(self)
 	end;
 
 	-- resetting variables
-	self.cp.ColliHeightSet = nil
+	--self.cp.ColliHeightSet = nil
 	self.cp.tempCollis = {}
 	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
@@ -893,10 +858,11 @@ end
 
 
 function courseplay:findVehicleHeights(transformId, x, y, z, distance)
-	local height = self.sizeLength - distance
+	local startHeight = math.max(self.sizeLength,5)
+	local height = startHeight - distance
 	local vehicle = false
 	--print(string.format("found %s (%s)",tostring(getName(transformId)),tostring(transformId)))
-	if self.cp.trafficCollisionTriggerToTriggerIndex[transformId] ~= nil then
+	if self.cp.aiTrafficCollisionTrigger == transformId then
 		if self.cp.HeightsFoundColli < height then
 			self.cp.HeightsFoundColli = height
 		end

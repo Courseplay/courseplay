@@ -88,9 +88,12 @@ function CollisionDetector:createTriggers()
 	self.aiTrafficCollisionTrigger = self:findAiCollisionTrigger(self.vehicle)
 	if not self.aiTrafficCollisionTrigger then return end
 	CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true
+	self.vehicle.cp.trafficCollisionTriggerToTriggerIndex = {}
+	self.vehicle.cp.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
 	for i = 1, self.numTrafficCollisionTriggers do
 		local newTrigger = clone(self.aiTrafficCollisionTrigger, true)
 		self.trafficCollisionTriggers[i] = newTrigger
+		self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
 		setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
 		if i > 1 then
 			unlink(newTrigger)
@@ -377,4 +380,42 @@ function CollisionDetector:setPathVehiclesSpeed(pathVehicle,dt)
 		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ;
 		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100;
 	end;
+end
+
+
+-- adapt collis height to vehicles height
+function CollisionDetector:adaptCollisHeight()
+	local vehicle = self.vehicle
+	if self.numTrafficCollisionTriggers > 0 then
+		local height = 0;
+		local step = (vehicle.sizeLength/2)+1 ;
+		local stepBehind, stepFront = step, step;
+		if vehicle.getAttachedImplements ~= nil then
+			for index, implement in pairs(vehicle:getAttachedImplements()) do
+				local tool = implement.object
+				local x,y,z = getWorldTranslation(tool.rootNode);
+			    local _,_,nz =  worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+				if nz > 0 then
+					stepFront = stepFront + (tool.sizeLength)+2				
+				else
+					stepBehind = stepBehind + (tool.sizeLength)+2	
+				end
+			end
+		end
+		
+		local distance = math.max(vehicle.sizeLength,5)
+		local nx, ny, nz = localDirectionToWorld(vehicle.rootNode, 0, -1, 0);	
+		vehicle.cp.HeightsFound = 0;
+		vehicle.cp.HeightsFoundColli = 0;			
+		for i=-stepBehind,stepFront,0.5 do				
+			local x,y,z = localToWorld(vehicle.rootNode, 0, distance, i);
+			raycastAll(x, y, z, nx, ny, nz, "findVehicleHeights", distance, vehicle);
+			--print("drive raycast "..tostring(i).." end");
+			--cpDebug:drawLine(x, y, z, 1, 0, 0, x+(nx*distance), y+(ny*distance), z+(nz*distance));
+		end
+		local difference = vehicle.cp.HeightsFound - vehicle.cp.HeightsFoundColli;
+		local trigger = self.trafficCollisionTriggers[1];
+		local Tx,Ty,Tz = getTranslation(trigger,vehicle.rootNode);
+		setTranslation(trigger, Tx,Ty+difference,Tz);
+	end
 end
