@@ -134,7 +134,6 @@ function AIDriver:init(vehicle)
 	self.allowedToDrive = true
 	self.collisionDetectionEnabled = false
 	self.collisionDetector = CollisionDetector(self.vehicle)
-	self.collisionDetector:adaptCollisHeight()
 end
 
 -- destructor. The reason for having this is the collisionDetector which creates nodes and
@@ -630,7 +629,6 @@ function AIDriver:detectCollision(dt)
 	-- if no detector yet, no problem, create it now.
 	if not self.collisionDetector then
 		self.collisionDetector = CollisionDetector(self.vehicle)
-		self.collisionDetector:adaptCollisHeight()
 	end
 
 	local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)

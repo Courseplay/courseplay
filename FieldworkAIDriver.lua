@@ -291,6 +291,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 	self:debug('onWaypointChange %d', ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:updateRemainingTime(ix)
+		self:calculateTightTurnOffset()
 		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 			if not self.course:isOnConnectingTrack(ix) then
 				-- reached the end of the connecting track, back to work
@@ -299,7 +300,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 			end
 		end
 		if self.fieldworkState == self.states.TEMPORARY then
-			-- band aid to make sure we have our implements lowered by the time we end the
+			-- band aid to make sure we have our implements lowered by the time we end the`
 			-- temporary course
 			if ix == self.course:getNumberOfWaypoints() then
 				self:debug('temporary (alignment) course is about to end, start work')
@@ -455,7 +456,8 @@ end
 function FieldworkAIDriver:updateFieldworkOffset()
 	-- (as lua passes tables by reference, we can directly change self.fieldworkCourse even if we passed self.course
 	-- to the PPC to drive)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX, self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
+		self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
 end
 
 function FieldworkAIDriver:hasSameCourse(otherVehicle)
@@ -611,4 +613,59 @@ function FieldworkAIDriver:calculateLoweringDuration()
 		self:debug('Measured implement lowering duration is %.0f ms', self.loweringDurationMs)
 		self.startedLoweringAt = nil
 	end
+end
+
+
+
+--- If we are towing an implement, move to a bigger radius in tight turns
+-- making sure that the towed implement's trajectory remains closer to the
+-- course.
+function FieldworkAIDriver:calculateTightTurnOffset()
+	local function smoothOffset(offset)
+		self.tightTurnOffset = (offset + 3 * (self.tightTurnOffset or 0 )) / 4
+		return self.tightTurnOffset
+	end
+	-- first of all, does the current waypoint have radius data?
+	local r = self.course:getWaypointRadius(self.ppc:getCurrentWaypointIx())
+	if not r then
+		return smoothOffset(0)
+	end
+
+	-- is there a wheeled implement behind the tractor and is it on a pivot?
+	local workTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
+	if not workTool or not workTool.cp.realTurningNode then
+		return smoothOffset(0)
+	end
+
+	-- get the distance between the tractor and the towed implement's turn node
+	-- (not quite accurate when the angle between the tractor and the tool is high)
+	local tractorX, _, tractorZ = getWorldTranslation( self.vehicle.cp.DirectionNode )
+	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
+	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+
+	-- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
+	-- we ignore it.
+	if towBarLength < r / 3 then
+		return smoothOffset(0)
+	end
+
+	-- Ok, looks like a tight turn, so we need to move a bit left or right of the course
+	-- to keep the tool on the course.
+	local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
+	local offset = rTractor - r
+
+	-- figure out left or right now?
+	local nextAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx() + 1)
+	local currentAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx())
+	if not nextAngle or not currentAngle then
+		return smoothOffset(0)
+	end
+
+	if getDeltaAngle(math.rad(nextAngle), math.rad(currentAngle)) > 0 then offset = -offset end
+
+	-- smooth the offset a bit to avoid sudden changes
+	smoothOffset(offset)
+	self:debug('Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, self.tightTurnOffset )
+	-- remember the last value for smoothing
+	return self.tightTurnOffset
 end

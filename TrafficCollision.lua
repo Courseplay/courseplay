@@ -38,7 +38,7 @@ function CollisionDetector:init(vehicle, course)
 	self.requiredNumTriggers = 4
 	self.trafficCollisionTriggers = {}
 	self:createTriggers()
-
+	self:adaptCollisHeight()
 end
 
 -- destructor

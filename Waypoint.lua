@@ -82,6 +82,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.x = cpWp.cx or cpWp.posX or cpWp.x or 0
 	self.z = cpWp.cz or cpWp.posZ or cpWp.z or 0
 	self.angle = cpWp.angle or nil
+	self.radius = cpWp.radius or nil
 	self.rev = cpWp.rev or false
 	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
@@ -364,11 +365,15 @@ function Course:getWaypointLocalPosition(node, ix)
 end
 
 function Course:getWaypointAngleDeg(ix)
-	return self.waypoints[ix].angle
+	return self.waypoints[math.min(#self.waypoints, ix)].angle
 end
 
 function Course:getRidgeMarkerState(ix)
 	return self.waypoints[ix].ridgeMarker or 0
+end
+
+function Course:getWaypointRadius(ix)
+	return self.waypoints[ix].radius
 end
 
 --- Get the average speed setting across n waypoints starting at ix
