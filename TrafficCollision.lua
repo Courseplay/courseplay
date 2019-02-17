@@ -34,7 +34,8 @@ function CollisionDetector:init(vehicle, course)
 	self.nPreviousCollidingObjects = 0
 	self.ignoredNodes = {}
 	self:addToIgnoreList(self.vehicle)
-	self.numTrafficCollisionTriggers = 4
+	self.numTrafficCollisionTriggers = 0
+	self.requiredNumTriggers = 4
 	self.trafficCollisionTriggers = {}
 	self:createTriggers()
 
@@ -90,10 +91,11 @@ function CollisionDetector:createTriggers()
 	CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true
 	self.vehicle.cp.trafficCollisionTriggerToTriggerIndex = {}
 	self.vehicle.cp.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
-	for i = 1, self.numTrafficCollisionTriggers do
+	for i = 1, self.requiredNumTriggers do
 		local newTrigger = clone(self.aiTrafficCollisionTrigger, true)
 		self.trafficCollisionTriggers[i] = newTrigger
 		self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
+		self.numTrafficCollisionTriggers = self.numTrafficCollisionTriggers + 1
 		setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
 		if i > 1 then
 			unlink(newTrigger)
