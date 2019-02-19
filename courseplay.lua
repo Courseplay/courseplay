@@ -61,6 +61,7 @@ local function initialize()
 	local fileList = {
 		'CpObject',
 		'AIDriver',
+		'AIImplement',
 		'base',
 		'button',
 		'bunkersilo_management',		

@@ -116,6 +116,7 @@ function courseplay:prePreDelete(self)
 end;
 FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);
 
+courseplay.initAIImplements()
 
 function courseplay:vehicleDelete()
 	if self.cp ~= nil then
@@ -252,73 +253,3 @@ AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceler
     end
 end
 
---[[ local originaldriveToPoint = AIVehicleUtil.driveToPoint;
-AIVehicleUtil.driveToPoint = function(self, dt, acceleration, allowedToDrive, moveForwards, tX, tZ, maxSpeed, doNotSteer)
-
-	if self.firstTimeRun then
-		if allowedToDrive then
-
-			local tX_2 = tX * 0.5;
-			local tZ_2 = tZ * 0.5;
-
-			local d1X, d1Z = tZ_2, -tX_2;
-			if tX > 0 then
-				d1X, d1Z = -tZ_2, tX_2;
-			end
-
-			local hit,_,f2 = Utils.getLineLineIntersection2D(tX_2,tZ_2, d1X,d1Z, 0,0, tX, 0);
-
-			if doNotSteer == nil or not doNotSteer then
-				local rotTime = 0;
-				local radius = 0;
-				if hit and math.abs(f2) < 100000 then
-					radius = tX * f2;
-					rotTime = self.wheelSteeringDuration * ( math.atan(1/radius) / math.atan(1/self.maxTurningRadius) );
-				end
-
-				local targetRotTime = 0;
-				if rotTime >= 0 then
-					targetRotTime = math.min(rotTime, self.maxRotTime)
-				else
-					targetRotTime = math.max(rotTime, self.minRotTime)
-				end
-
-				if targetRotTime > self.rotatedTime then
-					self.rotatedTime = math.min(self.rotatedTime + dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
-				else
-					self.rotatedTime = math.max(self.rotatedTime - dt*self.spec_aiVehicle.aiSteeringSpeed, targetRotTime);
-				end
-
-				-- adjust maxSpeed
-				local steerDiff = targetRotTime - self.rotatedTime;
-				local fac = math.abs(steerDiff) / math.max(self.maxRotTime, -self.minRotTime);
-				maxSpeed = maxSpeed * math.max( 0.01, 1.0 - fac);
-			end;
-		end
-
-		self.spec_motorized.motor:setSpeedLimit(maxSpeed);
-		if self.spec_drivable.cruiseControl.state ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
-			self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE);
-		end
-
-		if not allowedToDrive then
-			acceleration = 0;
-		end
-		if not moveForwards then
-			acceleration = -acceleration;
-		end
-
-		if not g_currentMission.missionInfo.stopAndGoBraking then
-			if acceleration ~= self.nextMovingDirection then
-				if not self.hasStopped then
-					if math.abs(self.lastSpeedAcceleration) < 0.0001 and math.abs(self.lastSpeedReal) < 0.0001 and math.abs(self.lastMovedDistance) < 0.001 then
-						acceleration = 0;
-					end
-				end
-			end
-		end
-
-		WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal, acceleration, not allowedToDrive, self.requiredDriveMode);
-
-	end
-end ]]
