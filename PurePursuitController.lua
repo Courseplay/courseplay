@@ -331,7 +331,7 @@ function PurePursuitController:findGoalPoint()
 		local l = courseplay:distance(x1, z1, x2, z2)  -- length of path segment (distance between node 1 and 2
 
 		-- case i (first node outside virtual circle but not yet reached) or (not the first node but we are way off the track)
-		if ((ix == self.firstIx and ix ~= self.lastPassedWaypointIx) or (q1 + q2) > 5 * self.lookAheadDistance) and
+		if (ix == self.firstIx and ix ~= self.lastPassedWaypointIx) and
 			q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
 			self:showGoalpointDiag(1, 'PPC: initializing, ix=%d, q1=%.1f, q2=%.1f, la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			-- If we weren't on track yet (after initialization, on our way to the first/initialized waypoint)
