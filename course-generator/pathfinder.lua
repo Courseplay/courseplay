@@ -71,9 +71,7 @@ end
 local function isOnField( node )
 	if courseGenerator.isRunningInGame() then
 		if node.isOnField == nil then
-			local y = getTerrainHeightAtWorldPos( g_currentMission.terrainRootNode, node.x, 0, -node.y );
-			local densityBits = getDensityAtWorldPos( g_currentMission.terrainDetailId, node.x, y, -node.y);
-			node.isOnField = densityBits ~= 0
+			node.isOnField = courseplay:isField(node.x, - node.y)
 		end
 	end
 	return node.isOnField
