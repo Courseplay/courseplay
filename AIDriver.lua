@@ -84,6 +84,20 @@ by the PPC (like onWaypointPassed()) or the functions of the Course() class like
 and never the waypoints directly.
 
 
+Displaying Messages
+-------------------
+
+Use setInfoText(<message>) to display a message where message is one of the globalInfoText.msgReference
+entries. You can set it in each loop or set it once the condition (like NEEDS_UNLOADING) emerges. A message
+turned on by calling setInfoText() will be shown until clearInfoText(<message>) is called again or the
+helper is dismissed.
+
+You can add multiple messages to display by calling setInfoText() multiple times with different messages.
+
+Make sure to call updateInfoText() in each cycle to display the current message texts.
+
+
+
 Note:
 If the AIDriver does not seem to have the functionality you need please contact me, we'll figure something out.
 
@@ -134,6 +148,8 @@ function AIDriver:init(vehicle)
 	self.allowedToDrive = true
 	self.collisionDetectionEnabled = false
 	self.collisionDetector = CollisionDetector(self.vehicle)
+	-- list of active messages to display
+	self.activeMsgReferences = {}
 end
 
 -- destructor. The reason for having this is the collisionDetector which creates nodes and
@@ -210,7 +226,9 @@ end
 function AIDriver:continue()
 	self:debug('Continuing...')
 	self.state = self.states.RUNNING
-	self:clearInfoText()
+	-- can be stopped for various reasons and those can have different msgReferences, so
+	-- just remove all, if there's a condition which requires a message it'll call setInfoText() again anyway.
+	self:clearAllInfoTexts()
 end
 
 --- Compatibility function for the legacy CP code so the course can be resumed
@@ -222,23 +240,26 @@ function AIDriver:resumeAt(cpIx)
 end
 
 function AIDriver:setInfoText(msgReference)
-	self:debug('set info text to %s', msgReference)
-	self.msgReference = msgReference
+	if msgReference then
+		self:debugSparse('set info text to %s', msgReference)
+		self.activeMsgReferences[msgReference] = true
+	end
 end
 
-function AIDriver:hasInfoTextSet(msgReference)
-	return self.msgReference == msgReference
+function AIDriver:clearInfoText(msgReference)
+	if msgReference then
+		self.activeMsgReferences[msgReference] = nil
+	end
 end
 
-function AIDriver:clearInfoText()
-	self:debug('info text cleared')
-	self.msgReference = nil
+function AIDriver:clearAllInfoTexts()
+	self.activeMsgReferences = nil
 end
 
+-- This has to be called in each update cycle to show messages
 function AIDriver:updateInfoText()
-	if self.msgReference then
-		-- looks like this needs to be called in every update cycle.
-		CpManager:setGlobalInfoText(self.vehicle, self.msgReference)
+	for msg, _ in pairs(self.activeMsgReferences) do
+		CpManager:setGlobalInfoText(self.vehicle, msg)
 	end
 end
 
@@ -461,7 +482,7 @@ function AIDriver:onWaypointChange(newIx)
 	if not self.turnIsDriving then
 		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
 	end
-	-- rest is implemented by the derived classes	
+	-- rest is implemented by the derived classes
 end
 
 function AIDriver:onWaypointPassed(ix)
@@ -638,17 +659,17 @@ function AIDriver:detectCollision(dt)
 			--get the speed from the target vehicle
 			self:setSpeed(trafficSpeed)
 		end
-		
+
 		-- setting the speed to 0 won't slow us down fast enough so use the more effective allowedToDrive = false
 		if isInTraffic then
 			self:hold()
 		end
 	end
 
-	if isInTraffic and not self:hasInfoTextSet('TRAFFIC') then
+	if isInTraffic then
 		self:setInfoText('TRAFFIC')
-	elseif not isInTraffic and self:hasInfoTextSet('TRAFFIC') then
-		self:clearInfoText()
+	else
+		self:clearInfoText('TRAFFIC')
 	end
 
 end

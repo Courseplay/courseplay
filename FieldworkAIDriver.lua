@@ -217,7 +217,7 @@ function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 		if self:allFillLevelsOk() and not self.heldForUnloadRefill then
 			self:debug('unloaded/refilled, continue working')
 			-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
-			self:clearInfoText()
+			self:clearInfoText(self:getFillLevelInfoText())
 			self:changeToFieldwork()
 		end
 	end
@@ -583,6 +583,9 @@ function FieldworkAIDriver:checkWeather()
 	if self.vehicle.getIsThreshingAllowed and not self.vehicle:getIsThreshingAllowed() then
 		self:debugSparse('No threshing in rain...')
 		self:setSpeed(0)
+		self:setInfoText('COURSEPLAY_WEATHER_WARNING')
+	else
+		self:clearInfoText('COURSEPLAY_WEATHER_WARNING')
 	end
 end
 
@@ -668,4 +671,8 @@ function FieldworkAIDriver:calculateTightTurnOffset()
 	self:debug('Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, self.tightTurnOffset )
 	-- remember the last value for smoothing
 	return self.tightTurnOffset
+end
+
+function FieldworkAIDriver:getFillLevelInfoText()
+	return 'NEEDS_REFILLING'
 end

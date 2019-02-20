@@ -60,7 +60,7 @@ end
 function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
 	if not self.heldForUnloadRefill and not self:shouldStopForUnloading() then
-		self:setInfoText('NEEDS_UNLOADING')
+		self:setInfoText(self:getFillLevelInfoText())
 	end
 	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 end
@@ -75,6 +75,8 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 		self:searchForTipTriggers()
 	end
 	local takeOverSteering = FieldworkAIDriver.driveUnloadOrRefill(self)
+	-- just in case clear this text now and if we are still unloading it'll put it back down below
+	courseplay:clearInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 	if self.vehicle.cp.totalFillLevel > 0 then
 		local allowedToDrive = true
 		if self:hasTipTrigger() then
@@ -340,4 +342,8 @@ function UnloadableFieldworkAIDriver:handleBalers(workTool)
 	if not allowedToDrive then
 		self:setSpeed(0)
 	end
+end
+
+function UnloadableFieldworkAIDriver:getFillLevelInfoText()
+	return 'NEEDS_UNLOADING'
 end

@@ -36,7 +36,7 @@ end
 --- Out of seeds/fertilizer/whatever
 function FillableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork refilling')
-	self:setInfoText('NEEDS_REFILLING')
+	self:setInfoText(self:getFillLevelInfoText())
 	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 end
 
@@ -121,3 +121,6 @@ function FillableFieldworkAIDriver:searchForRefillTriggers()
 	courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', true, x, y, z, nx, ny, nz)
 end
 
+function FillableFieldworkAIDriver:getFillLevelInfoText()
+	return 'NEEDS_REFILLING'
+end
