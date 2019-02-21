@@ -111,8 +111,8 @@
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 							text="percorso: nessun percorso selezionato" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Luci di avvertimento:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="mai accese" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="luci e fari (sulla strada)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="fari &amp; luci di emergenza (sulla strada)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="lampeggianti (sulla strada)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="lampeggianti &amp; luci di emergenza (sulla strada)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="lampeggianti (sempre accesi)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 						text="Controlli del Courseplay" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Controlli della trebbia" />
