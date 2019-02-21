@@ -500,6 +500,14 @@ function Course:getRemainingDistanceAndTurnsFrom(ix)
 	return distance, numTurns
 end
 
-
+function Course:getNextFwdWaypointIx(ix)
+	for i = ix, #self.waypoints do
+		if not self:isReverseAt(i) then
+			return i
+		end
+	end
+	courseplay.debugFormat(12, 'Course: could not find next forward waypoint after %d', ix)
+	return ix
+end
 
 

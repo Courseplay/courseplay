@@ -67,6 +67,10 @@ function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x
 end;
 
 -- FIND TIP TRIGGER CALLBACK
+-- target object in raycastAll() was the vehicle, so here, super confusingly, self is the vehicle and not courseplay,
+-- TODO: function signature should really be courseplay.findTipTriggerCallback(vehicle, transformId, x, y, z) for clarity.
+-- When a trigger with a suitable fill type is found, vehicle.cp.currentTipTrigger is set to the trigger (definition unclear)
+-- and vehicle.cp.currentTipTrigger.cpActualLength is set to a twice the distance from the trigger (reason for twice is undocumented)
 function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	if CpManager.confirmedNoneTipTriggers[transformId] == true then
 		return true;

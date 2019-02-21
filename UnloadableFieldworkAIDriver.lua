@@ -56,7 +56,7 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	FieldworkAIDriver.drive(self, dt)
 end
 
---- Grain tank full during fieldwork
+--- Full during fieldwork
 function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork unload')
 	if not self.heldForUnloadRefill and not self:shouldStopForUnloading() then

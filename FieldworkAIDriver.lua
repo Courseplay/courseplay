@@ -150,30 +150,35 @@ function FieldworkAIDriver:driveFieldwork()
 			self:debugSparse('waiting for all tools to lower')
 			self:startLoweringDurationTimer()
 			self:setSpeed(0)
+			self:checkFillLevels()
 		end
 	elseif self.fieldworkState == self.states.WORKING then
 		self:setSpeed(self:getFieldSpeed())
 		self:manageConvoy()
 		self:checkWeather()
-		if not self:allFillLevelsOk() or self.heldForUnloadRefill then
-			if self.unloadRefillCourse and not self.heldForUnloadRefill then
-				---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
-				-- last wp may not be available shortly after a ppc initialization like after a turn
-				self.fieldworkAbortedAtWaypoint = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
-				self.vehicle.cp.fieldworkAbortedAtWaypoint = self.fieldworkAbortedAtWaypoint
-				self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.fieldworkAbortedAtWaypoint or -1)
-				self:changeToUnloadOrRefill()
-				self:startCourseWithAlignment(self.unloadRefillCourse, 1 )
-			else
-				self:changeToFieldworkUnloadOrRefill()
-			end
-		end
+		self:checkFillLevels()
 	elseif self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 		self:setSpeed(self:getFieldSpeed())
+	end
+end
+
+function FieldworkAIDriver:checkFillLevels()
+	if not self:allFillLevelsOk() or self.heldForUnloadRefill then
+		if self.unloadRefillCourse and not self.heldForUnloadRefill then
+			---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
+			-- last wp may not be available shortly after a ppc initialization like after a turn
+			self.fieldworkAbortedAtWaypoint = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
+			self.vehicle.cp.fieldworkAbortedAtWaypoint = self.fieldworkAbortedAtWaypoint
+			self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.fieldworkAbortedAtWaypoint or -1)
+			self:changeToUnloadOrRefill()
+			self:startCourseWithAlignment(self.unloadRefillCourse, 1 )
+		else
+			self:changeToFieldworkUnloadOrRefill()
+		end
 	end
 end
 

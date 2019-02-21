@@ -51,7 +51,11 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
 		vehicle.cp.driver = FillableFieldworkAIDriver(vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
-		vehicle.cp.driver = UnloadableFieldworkAIDriver(vehicle)
+		if BaleLoaderAIDriver.hasBaleLoaderAttached(vehicle) then
+			vehicle.cp.driver = BaleLoaderAIDriver(vehicle)
+		else
+			vehicle.cp.driver = UnloadableFieldworkAIDriver(vehicle)
+		end
 	end
 end
 

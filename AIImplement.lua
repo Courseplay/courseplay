@@ -30,24 +30,22 @@ function courseplay.initAIImplements()
 	BaleLoader.onAIImplementStart = Utils.overwrittenFunction(BaleLoader.onAIImplementStart,
 		function(self, superFunc)
 			if superFunc ~= nil then superFunc(self) end
-			print('#### onAIImplementStart')
 			self:doStateChange(BaleLoader.CHANGE_MOVE_TO_WORK);
 		end)
 
 	BaleLoader.onAIImplementEnd = Utils.overwrittenFunction(BaleLoader.onAIImplementEnd,
 		function(self, superFunc)
 			if superFunc ~= nil then superFunc(self) end
-			print('#### onAIImplementEnd')
 			self:doStateChange(BaleLoader.CHANGE_MOVE_TO_TRANSPORT);
 		end)
 
 	local baleLoaderRegisterEventListeners = function(vehicleType)
-		print('Registering event listeners for bale loader')
+		print('## Courseplay: Registering event listeners for bale loader')
 		SpecializationUtil.registerEventListener(vehicleType, "onAIImplementStart", BaleLoader)
 		SpecializationUtil.registerEventListener(vehicleType, "onAIImplementEnd", BaleLoader)
 	end
 
-	print('Appending event listener for bale loaders')
+	print('## Courseplay: Appending event listener for bale loaders')
 	BaleLoader.registerEventListeners = Utils.appendedFunction(BaleLoader.registerEventListeners, baleLoaderRegisterEventListeners)
 
 

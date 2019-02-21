@@ -465,6 +465,15 @@ function courseplay:start(self)
 	end
 	if self.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
 		-- the driver handles the PPC
+		-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
+		-- attached and I don't have the motivation do dig through the legacy code to find out why
+		if self.cp.mode == courseplay.MODE_FIELDWORK then
+			if BaleLoaderAIDriver.hasBaleLoaderAttached(self) then
+				-- recreating the driver as BaleLoaderAIDriver instead of UnloadableFieldworkAIDriver
+				self.cp.driver:delete()
+				self.cp.driver = BaleLoaderAIDriver(self)
+			end
+		end
 		self.cp.driver:start(self.cp.waypointIndex)
 	else
 		-- Initialize pure pursuit controller
