@@ -207,6 +207,7 @@ end
 --- Dismiss the driver
 function AIDriver:dismiss()
 	self.vehicle:deactivateLights()
+	self:clearAllInfoTexts()
 	self:stop()
 end
 
@@ -253,7 +254,7 @@ function AIDriver:clearInfoText(msgReference)
 end
 
 function AIDriver:clearAllInfoTexts()
-	self.activeMsgReferences = nil
+	self.activeMsgReferences = {}
 end
 
 -- This has to be called in each update cycle to show messages

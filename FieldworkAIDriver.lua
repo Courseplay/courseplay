@@ -147,6 +147,7 @@ function FieldworkAIDriver:driveFieldwork()
 			self:setSpeed(self:getFieldSpeed())
 			self:calculateLoweringDuration()
 		else
+			self:debugSparse('waiting for all tools to lower')
 			self:startLoweringDurationTimer()
 			self:setSpeed(0)
 		end
