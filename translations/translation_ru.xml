@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Отправить транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Остановить транспорт" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Остановить в последней точке/триггере:" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Остановить в триггере/конечной точке:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Выполнить количество рейсов" />
 		<text name="COURSEPLAY_UNLIMITED" 									text="неограниченно" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Транспорт грузится" />
@@ -66,7 +66,7 @@
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 							text="Сохр. положение перегрузочной трубы" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="в сохранённое положение трубы" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="доехал до места ожидания." />
-		<text name="COURSEPLAY_REACHED_END_POINT" 							text="доехал до нужного пункта" />
+		<text name="COURSEPLAY_REACHED_END_POINT" 							text="доехал до триггера/конечной точки" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="транспортировка закончена." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="закончил перевозку жидкостей." />
 		<text name="COURSEPLAY_WORK_END" 									text="завершил работу на маршруте." />
@@ -340,7 +340,7 @@
 		<text name="input_COURSEPLAY_START_STOP" 							text="Courseplay: старт/стоп маршрута" />
 		<text name="input_COURSEPLAY_CANCELWAIT" 							text="Courseplay: продолжить" />
 		<text name="input_COURSEPLAY_DRIVENOW" 								text="Courseplay: старт маршрута" />
-		<text name="input_COURSEPLAY_STOP_AT_END" 							text="Courseplay: остановить в последней точке/триггере" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 							text="Courseplay: остановиться в триггере/конечной точке" />
 		<text name="input_COURSEPLAY_NEXTMODE" 								text="Courseplay: следующий тип работы" />
 		<text name="input_COURSEPLAY_PREVMODE" 								text="Courseplay: предыдущий тип работы" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					text="Courseplay: 1-я функция мыши" />
