@@ -329,7 +329,7 @@ function courseplay:updateAllTriggers()
 						trigger = {
 									triggerId = triggerId;
 									acceptedFillTypes = item.sellingStation.acceptedFillTypes;
-													
+									unloadTrigger = unloadTrigger;				
 								}
 						
 						courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',item.sellingStation.stationName,tostring(triggerId)), 1);
@@ -357,7 +357,7 @@ function courseplay:updateAllTriggers()
 								triggerId = triggerId;
 								acceptedFillTypes = placeable.storages[1].fillTypes;
 								unloadingStation = placeable.unloadingStation;
-					
+								unloadTrigger = unloadTrigger;
 							}
 					
 					courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',placeable.unloadingStation.stationName,tostring(triggerId)), 1);
@@ -373,7 +373,7 @@ function courseplay:updateAllTriggers()
 					trigger = {
 								triggerId = triggerId;
 								acceptedFillTypes = placeable.sellingStation.acceptedFillTypes;
-												
+								unloadTrigger = unloadTrigger;				
 							}
 					courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',placeable.sellingStation.stationName,tostring(triggerId)), 1);
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
