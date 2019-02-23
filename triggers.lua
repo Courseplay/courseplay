@@ -34,7 +34,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
-		or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) 
+		or (triggerType == 'specialTrigger') 
 		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
 			local x, _, z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
@@ -42,7 +42,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 		end;
 
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
-		or (triggerType == 'specialTrigger' and vehicle.cp.fillTrigger == nil) 
+		or (triggerType == 'specialTrigger') 
 		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
 			local x, _, z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
@@ -199,9 +199,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	--print("findSpecialTriggerCallback found "..tostring(transformId).." "..getName(transformId))
 	if courseplay.triggers.fillTriggers[transformId] then
 		--print(transformId.." is in fillTrigers")
-		if self.cp.fillTrigger == nil then
-			self.cp.fillTrigger = transformId;
-		end
+		courseplay:addFoundFillTrigger(self, transformId)
 		courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
 		return false;
 	end
@@ -212,6 +210,28 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 
 	return true;
 end;
+
+function courseplay:addFoundFillTrigger(vehicle, transformId)
+	--if we dont have a fillTrigger, set cp.fillTrigger
+	if vehicle.cp.fillTrigger == nil then
+		vehicle.cp.fillTrigger = transformId;
+	end
+	-- check whether we have it in our list allready
+	local allreadyThere = false
+	if  #vehicle.cp.fillTriggers >0 then
+		for i=1,#vehicle.cp.fillTriggers do
+			if vehicle.cp.fillTriggers[i] == transformId then	
+				allreadyThere = true;
+				break;
+			end
+		end
+	end
+	--if not, add it
+	if not allreadyThere then
+		table.insert(vehicle.cp.fillTriggers,transformId)
+		--print(string.format("add %s to vehicle.cp.fillTriggers; new: %d",tostring(transformId),#vehicle.cp.fillTriggers))
+	end
+end
 
 -- FIND Fuel TRIGGER CALLBACK
 function courseplay:findFuelTriggerCallback(transformId, x, y, z, distance)

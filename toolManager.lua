@@ -1288,7 +1288,7 @@ end;
 function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, lx, lz)
 	--if the trigger is not used by me, reset it after 10s
 	if courseplay:timerIsThrough(vehicle, "triggerFailBackup", false) then
-		 vehicle.cp.fillTrigger = nil
+		  courseplay:resetFillTrigger(vehicle)
 	end
 	for _,workTool in ipairs(vehicle.cp.workTools) do
 		local isFilling = false
@@ -1370,7 +1370,7 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 			allowedToDrive = false;
 			--if the trigger stops loading, reset vehicle.isFuelFilling
 			if not objectToFill.spec_fillUnit.fillTrigger.isFilling then 
-				--courseplay:resetFillTrigger(vehicle)
+				courseplay:resetFillTrigger(vehicle)
 				vehicle.isFuelFilling = nil
 				courseplay:setCustomTimer(vehicle, "resetFillTrigger", 5)
 			end
@@ -1390,8 +1390,17 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 end
 	
 function courseplay:resetFillTrigger(vehicle)
+	--print("resetFillTrigger: triggers: "..tostring(#vehicle.cp.fillTriggers))
 	if vehicle.cp.fillTrigger then
-		vehicle.cp.fillTrigger = nil
+		--if we have more than one trigger found, take the next one
+		if #vehicle.cp.fillTriggers >1 then
+			table.remove(vehicle.cp.fillTriggers,1)
+			vehicle.cp.fillTrigger = vehicle.cp.fillTriggers[1];
+		--if it was the last one, reset vehicle.cp.fillTrigger
+		else
+			table.remove(vehicle.cp.fillTriggers,1)
+			vehicle.cp.fillTrigger = nil
+		end
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end

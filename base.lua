@@ -351,6 +351,8 @@ function courseplay:onLoad(savegame)
 	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight;
 	self.findVehicleHeights = courseplay.findVehicleHeights; 
 	
+	self.cp.fillTriggers = {}
+	
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 	if self.maxRotation then
