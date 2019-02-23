@@ -85,6 +85,7 @@ function BaleLoaderAIDriver:init(vehicle)
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self.baleLoader = self:getBaleLoader()
 	self:initStates(BaleLoaderAIDriver.myStates)
+	self.manualUnloadNode = WaypointNode(self.vehicle:getName() .. 'unloadNode')
 	self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
 end
 
@@ -110,31 +111,33 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 		-- 'cause reverse does the raycasting for us
 		self:searchForTipTriggers()
 	end
+	-- TODO: forward/backward should be in meters, not number of waypoints
+	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(), 20)
 
-	if self:hasTipTrigger() then
+	if self:hasTipTrigger() or nearUnloadPoint then
+		self:setSpeed(self.vehicle.cp.speeds.approach)
 		if self:haveBales() and self.unloadRefillState == nil then
 			self.unloadRefillState = self.states.APPROACHING_UNLOAD_POINT
 			self:debug('Approaching unload point.')
 		elseif self:haveBales() and self.unloadRefillState == self.states.APPROACHING_UNLOAD_POINT then
-			local _, _, dz = localToLocal(self.baleLoader.cp.realUnloadOrFillNode, self.vehicle.cp.currentTipTrigger.triggerId, 0, 0, 0)
+			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)
+			local _, _, dz = localToLocal(self.baleLoader.cp.realUnloadOrFillNode, unloadNode, 0, 0, 0)
 			self:debugSparse('distance to unload point: %.1f', dz)
 			if math.abs(dz) < 1 then
 				self:debug('Unload point reached.')
 				self.unloadRefillState = self.states.UNLOADING
-				self.lastEmptyState = nil
 			end
 		elseif self.unloadRefillState == self.states.UNLOADING then
 			self:setSpeed(0)
 			-- don't do this in every update loop, sending events does not make sense so often
 			if g_updateLoopIndex % 100 == 0 then
-				self:debug('Unloading, emptyState=%d, last=%s.', self.baleLoader.spec_baleLoader.emptyState, self.lastEmptyState)
+				self:debug('Unloading, emptyState=%d.', self.baleLoader.spec_baleLoader.emptyState)
 				-- EMPTY_NONE is the base position (loaded or unloaded)
 				if self:haveBales() or self.baleLoader.spec_baleLoader.emptyState ~= BaleLoader.EMPTY_NONE then
 					-- this is like keep pressing the 'Unload' button. Not nice, should probably check the current state
 					-- of the bale loader, but it is so simple like this and works ...
 					self:debug('Press unload button, emptyState: %d...', self.baleLoader.spec_baleLoader.emptyState)
 					g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(self.baleLoader, BaleLoader.CHANGE_BUTTON_EMPTY))
-					self.lastEmptyState = self.baleLoader.spec_baleLoader.emptyState
 				else
 					self:debug('Bales unloaded, continue course.')
 					self.unloadRefillState = nil
@@ -174,5 +177,15 @@ function BaleLoaderAIDriver:getFillType()
 				end
 			end
 		end
+	end
+end
+
+function BaleLoaderAIDriver:getUnloadNode(isUnloadpoint, unloadPointIx)
+	if isUnloadpoint then
+		self:debugSparse('manual unload point at ix = %d', unloadPointIx)
+		self.manualUnloadNode:setToWaypoint(self.course, unloadPointIx)
+		return self.manualUnloadNode.node
+	else
+		return self.vehicle.cp.currentTipTrigger.triggerId
 	end
 end

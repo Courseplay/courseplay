@@ -469,7 +469,7 @@ end
 ---@param ix number waypoint index to look around
 ---@param forward number look forward this number of waypoints when searching
 ---@param backward number look back this number of waypoints when searching
----@return boolean true if any of the waypoints are unload points
+---@return boolean true if any of the waypoints are unload points and the index of the next unload point
 function Course:hasUnloadPointAround(ix, forward, backward)
 	return self:hasWaypointWithPropertyAround(ix, forward, backward, function(p) return p.unload end)
 end
@@ -478,7 +478,7 @@ end
 ---@param ix number waypoint index to look around
 ---@param forward number look forward this number of waypoints when searching
 ---@param backward number look back this number of waypoints when searching
----@return boolean true if any of the waypoints are wait points
+---@return boolean true if any of the waypoints are wait points and the index of the next wait point
 function Course:hasWaitPointAround(ix, forward, backward)
 	-- TODO: clarify if we use interact or wait or both?
 	return self:hasWaypointWithPropertyAround(ix, forward, backward, function(p) return p.wait or p.interact end)
@@ -488,8 +488,38 @@ function Course:hasWaypointWithPropertyAround(ix, forward, backward, hasProperty
 	for i = math.max(ix - backward + 1, 1), math.min(ix + forward - 1, #self.waypoints) do
 		if hasProperty(self.waypoints[i]) then
 			-- one of the waypoints around ix has this property
-			return true
+			return true, i
 		end
+	end
+	return false
+end
+
+--- Is there an unload waypoints within distance around ix?
+---@param ix number waypoint index to look around
+---@param distance distance in meters to look around the waypoint
+---@return boolean true if any of the waypoints are unload points and the index of the next unload point
+function Course:hasUnloadPointWithinDistance(ix, distance)
+	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.unload end)
+end
+
+function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
+	-- search backwards first
+	local d = 0
+	for i = math.max(1, ix - 1), 1, -1 do
+		if hasProperty(self.waypoints[i]) then
+			return true, i
+		end
+		d = d + self.waypoints[i].dToNext
+		if d > distance then break end
+	end
+	-- search forward
+	d = 0
+	for i = ix, #self.waypoints - 1 do
+		if hasProperty(self.waypoints[i]) then
+			return true, i
+		end
+		d = d + self.waypoints[i].dToNext
+		if d > distance then break end
 	end
 	return false
 end
