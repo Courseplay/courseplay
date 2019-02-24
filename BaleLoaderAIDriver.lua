@@ -116,6 +116,7 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 
 	if self:hasTipTrigger() or nearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
+		self:raycast()
 		if self:haveBales() and self.unloadRefillState == nil then
 			self.unloadRefillState = self.states.APPROACHING_UNLOAD_POINT
 			self:debug('Approaching unload point.')
@@ -123,7 +124,7 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)
 			local _, _, dz = localToLocal(self.baleLoader.cp.realUnloadOrFillNode, unloadNode, 0, 0, 0)
 			self:debugSparse('distance to unload point: %.1f', dz)
-			if math.abs(dz) < 1 then
+			if math.abs(dz) < 1 or self.tooCloseToOtherBales then
 				self:debug('Unload point reached.')
 				self.unloadRefillState = self.states.UNLOADING
 			end
@@ -180,6 +181,7 @@ function BaleLoaderAIDriver:getFillType()
 	end
 end
 
+--- Unload node is either an unload waypoint or an unload trigger
 function BaleLoaderAIDriver:getUnloadNode(isUnloadpoint, unloadPointIx)
 	if isUnloadpoint then
 		self:debugSparse('manual unload point at ix = %d', unloadPointIx)
@@ -187,5 +189,27 @@ function BaleLoaderAIDriver:getUnloadNode(isUnloadpoint, unloadPointIx)
 		return self.manualUnloadNode.node
 	else
 		return self.vehicle.cp.currentTipTrigger.triggerId
+	end
+end
+
+--- Raycast back to stop when there's already a stack of bales at the unload point.
+function BaleLoaderAIDriver:raycast()
+	if not self.baleLoader.cp.realUnloadOrFillNode then return end
+	local nx, ny, nz = localDirectionToWorld(self.baleLoader.cp.realUnloadOrFillNode, 0, 0, -1)
+	local x, y, z = localToWorld(self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
+	raycastClosest(x, y, z, nx, ny, nz, 'raycastCallback', 5, self)
+end
+
+function BaleLoaderAIDriver:raycastCallback(hitObjectId, x, y, z, distance, nx, ny, nz, subShapeIndex)
+	if hitObjectId ~= 0 then
+		local object = g_currentMission:getNodeObject(hitObjectId)
+		if object and object:isa(Bale) then
+			if distance < 2 then
+				self.tooCloseToOtherBales = true
+				self:debugSparse('Bale found at d=%.1f', distance)
+			else
+				self.tooCloseToOtherBales = false
+			end
+		end
 	end
 end
