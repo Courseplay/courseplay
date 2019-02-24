@@ -271,7 +271,7 @@ function CpManager:update(dt)
 
 
 	-- REAL TIME 10 SECS CHANGER
-	if self.wagesActive and g_server ~= nil then -- NOTE: if there are more items to be dealt with every 10 secs, remove the "wagesActive" restriction
+	if g_server ~= nil then
 		if self.realTime10SecsTimer < 10000 then
 			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
 		else
@@ -806,13 +806,13 @@ function CpManager:realTime10SecsChanged()
 	-- WAGES
 	if self.wagesActive and g_server ~= nil then
 		local totalWages = 0;
+		local farmID = 0
 		for vehicleNum, vehicle in pairs(self.activeCoursePlayers) do
-			if vehicle:getIsCourseplayDriving() and not vehicle.aiIsStarted then
-				totalWages = totalWages + self.wagePer10Secs;
-			end;
+			totalWages = totalWages + self.wagePer10Secs;
+			farmID = vehicle.ownerFarmId
 		end;
 		if totalWages > 0 then
-			--g_currentMission:addSharedMoney(-totalWages * self.wageDifficultyMultiplier, 'wagePayment');
+			g_currentMission:addMoney(-totalWages * self.wageDifficultyMultiplier, farmID, MoneyType.AI, true);
 		end;
 	end;
 end;
@@ -840,7 +840,7 @@ end;
 -- ####################################################################################################
 -- WAGES
 function CpManager:setupWages()
-	self.wageDifficultyMultiplier = 1 --Tommi Utils.lerp(0.5, 1, (g_currentMission.missionInfo.difficulty - 1) / 2);
+	self.wageDifficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier;
 	self.wagesActive = true;
 	self.wagePerHour = 1500;
 	self.wagePer10Secs  = self.wagePerHour / 360;
