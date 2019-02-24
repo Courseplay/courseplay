@@ -3,7 +3,7 @@ local _;
 
 
 -- FIND TRIGGERS
-function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x, y, z, nx, ny, nz, distance)
+function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x, y, z, nx, ny, nz, raycastDistance)
 	local numIntendedRaycasts = sides and 3 or 1;
 	--[[if vehicle.cp.hasRunRaycastThisLoop[triggerType] and vehicle.cp.hasRunRaycastThisLoop[triggerType] >= numIntendedRaycasts then
 		return;
@@ -25,7 +25,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 		return;
 	end;
 
-	distance = distance or 10;
+	local distance = raycastDistance or 10;
 	direction = direction or 'fwd';
 
 	--------------------------------------------------
