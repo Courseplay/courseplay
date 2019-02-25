@@ -141,6 +141,7 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 					g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(self.baleLoader, BaleLoader.CHANGE_BUTTON_EMPTY))
 				else
 					self:debug('Bales unloaded, continue course.')
+					courseplay:resetTipTrigger(self.vehicle)
 					self.unloadRefillState = nil
 					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
 				end
