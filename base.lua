@@ -390,6 +390,8 @@ function courseplay:onLoad(savegame)
 	self.cp.numCollidingObjects = {
 		all = 0;
 	};
+	
+	--TODO Tommi: remove this when we are completely on AIDriver
 	if self.aiTrafficCollisionTrigger ~= nil then
 		self.cp.numTrafficCollisionTriggers = 4;
 		for i=1,self.cp.numTrafficCollisionTriggers do
@@ -1251,14 +1253,30 @@ function courseplay:preDelete()
 	end;
 end;
 
-function courseplay:delete()
+function courseplay:onDelete()
+	if self.cp.driver and self.cp.driver.collisionDetector then
+		self.cp.driver.collisionDetector:deleteTriggers()
+	end
+	
+	
+	--TODO Tommi: remove this when we are completely on AIDriver
+	for i=#self.cp.trafficCollisionTriggers,1,-1 do
+		
+		local node = self.cp.trafficCollisionTriggers[i]
+		if node ~= nil then
+			removeTrigger(trigger);
+			if entityExists(node) then
+				unlink(node)
+				delete(node)
+			end
+		end
+	end;
 	if self.aiTrafficCollisionTrigger ~= nil then
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end;
-	for i,trigger in pairs(self.cp.trafficCollisionTriggers) do
-		removeTrigger(trigger);
-	end;
-
+	---
+	
+	
 	if self.cp ~= nil then
 		if self.cp.headland and self.cp.headland.tg then
 			unlink(self.cp.headland.tg);

@@ -58,7 +58,8 @@ end
 -- not running with the AIDriver (the code in traffic.lua seems to be safely handle
 -- the lack of collision triggers)
 function CollisionDetector:removeLegacyCollisionTriggers()
-	for i, node in ipairs(self.vehicle.cp.trafficCollisionTriggers) do
+	for i=self.vehicle.cp.numTrafficCollisionTriggers,1,-1 do 
+		local node = self.vehicle.cp.trafficCollisionTriggers[i]
 		if node then
 			removeTrigger(node)
 			if entityExists(node) then
@@ -68,8 +69,8 @@ function CollisionDetector:removeLegacyCollisionTriggers()
 		end
 		CpManager.trafficCollisionIgnoreList[node] = nil
 		self.vehicle.cp.trafficCollisionTriggers[i] = nil
-		self.vehicle.cp.numTrafficCollisionTriggers = 0 -- why not #trafficCollisionTriggers???
 	end
+	self.vehicle.cp.numTrafficCollisionTriggers = 0 -- why not #trafficCollisionTriggers???
 end
 
 function CollisionDetector:findAiCollisionTrigger(object)
