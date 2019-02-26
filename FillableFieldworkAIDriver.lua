@@ -75,7 +75,7 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	local hasSeeds, hasNoFertilizer = false, false
 
 	for fillType, info in pairs(fillLevelInfo) do
-		if info.fillLevel == 0 and not self:helperBuysThisFillType(fillType) then
+		if info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
 			allOk = false
 			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
 		else
