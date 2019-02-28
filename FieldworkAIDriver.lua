@@ -639,17 +639,7 @@ function FieldworkAIDriver:calculateTightTurnOffset()
 		return smoothOffset(0)
 	end
 
-	-- is there a wheeled implement behind the tractor and is it on a pivot?
-	local workTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
-	if not workTool or not workTool.cp.realTurningNode then
-		return smoothOffset(0)
-	end
-
-	-- get the distance between the tractor and the towed implement's turn node
-	-- (not quite accurate when the angle between the tractor and the tool is high)
-	local tractorX, _, tractorZ = getWorldTranslation( self.vehicle.cp.DirectionNode )
-	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
-	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+	local towBarLength = self:getTowBarLength()
 
 	-- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
 	-- we ignore it.
@@ -659,8 +649,7 @@ function FieldworkAIDriver:calculateTightTurnOffset()
 
 	-- Ok, looks like a tight turn, so we need to move a bit left or right of the course
 	-- to keep the tool on the course.
-	local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
-	local offset = rTractor - r
+	local offset = self:getOffsetForTowBarLength(r, towBarLength)
 
 	-- figure out left or right now?
 	local nextAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx() + 1)
@@ -677,6 +666,26 @@ function FieldworkAIDriver:calculateTightTurnOffset()
 	-- remember the last value for smoothing
 	return self.tightTurnOffset
 end
+
+function FieldworkAIDriver:getTowBarLength()
+	-- is there a wheeled implement behind the tractor and is it on a pivot?
+	local workTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
+	if not workTool or not workTool.cp.realTurningNode then
+		return 0
+	end
+	-- get the distance between the tractor and the towed implement's turn node
+	-- (not quite accurate when the angle between the tractor and the tool is high)
+	local tractorX, _, tractorZ = getWorldTranslation( self.vehicle.cp.DirectionNode )
+	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
+	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+	return towBarLength
+end
+
+function FieldworkAIDriver:getOffsetForTowBarLength(r, towBarLength)
+	local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
+	return rTractor - r
+end
+
 
 function FieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_REFILLING'

@@ -106,9 +106,9 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		roundCorners = true
 	else
 		-- generate turns over 75 degrees
-		headlandSettings.minHeadlandTurnAngleDeg = 75
+		headlandSettings.minHeadlandTurnAngleDeg = 60
 		-- smooth only below 75 degrees
-		minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 75 )
+		minSmoothAngle, maxSmoothAngle = math.rad( 25 ), math.rad( 60 )
 	end
 	-- use some overlap between headland passes to get better results
 	-- (=less fruit missed) at smooth headland corners

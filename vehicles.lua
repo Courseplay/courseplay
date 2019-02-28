@@ -361,7 +361,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 						totalDistance = totalDistance + distances.attacherJointToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
 					end;
 					totalDistance = totalDistance + courseplay:getDirectionNodeToTurnNodeLength(workTool);
-					courseplay:debug(('%s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(workTool), totalDistance), 14);
+					--courseplay:debug(('%s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(workTool), totalDistance), 14);
 				end;
 				break;
 			end;
