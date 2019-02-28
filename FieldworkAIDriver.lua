@@ -347,15 +347,12 @@ function FieldworkAIDriver:startWork()
 	if not courseplay:getIsEngineReady(self.vehicle) then
 		self.vehicle:startMotor()
 	end
-	courseplay:lowerImplements(self.vehicle)
-	self:unfoldImplements()
 end
 
 
 --- Stop working. Raise and stop implements
 function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
-	courseplay:raiseImplements(self.vehicle)
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
 	self:clearRemainingTime()
