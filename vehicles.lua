@@ -1458,3 +1458,9 @@ function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 
 	return x,y,z,nx,ny,nz;
 end
+
+function courseplay:isNodeTurnedWrongWay(vehicle,dischargeNode)
+	local x,y,z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local _,_, nz = worldToLocal(dischargeNode,x,y,z)
+	return nz < 0
+end

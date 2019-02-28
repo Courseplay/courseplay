@@ -186,14 +186,14 @@ end
 function GrainTransportAIDriver:unLoad(allowedToDrive, dt)
 	-- Unloading
 	local takeOverSteering = false
-
+	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
+	
 	-- If we are an auger wagon, we don't have a tip point, so handle it as an auger wagon in mode 3
-	-- This should be in drive.lua on line 305 IMO --pops64
 	if self.vehicle.cp.hasAugerWagon then
 		courseplay:handleMode3(self.vehicle, allowedToDrive, dt);
 	else
 		--handle cover 
-		if self:hasTipTrigger() then
+		if self:hasTipTrigger() or isNearUnloadPoint then
 			courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 		end
 		-- done tipping?
@@ -209,6 +209,12 @@ function GrainTransportAIDriver:unLoad(allowedToDrive, dt)
 			and not self:isNearFillPoint() then
 			allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive, dt);
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+		end
+		-- tractor reaches unloadPoint
+		if isNearUnloadPoint then
+			self:setSpeed(self.vehicle.cp.speeds.turn)
+			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+			allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,unloadPointIx)
 		end
 	end
 	return allowedToDrive, takeOverSteering;

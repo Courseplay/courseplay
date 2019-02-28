@@ -540,4 +540,17 @@ function Course:getNextFwdWaypointIx(ix)
 	return ix
 end
 
+function Course:getNextFwdWaypointIxfromVehiclePosition(ix,vehicle,lookAheadDistance)
+	for i = ix, #self.waypoints do
+		if not self:isReverseAt(i) then
+			local uX,uY,uZ = self:getWaypointPosition(i)
+			_,_,z = worldToLocal(vehicle.cp.DirectionNode, uX,uY,uZ);
+			if z > lookAheadDistance then
+				return i
+			end
+		end
+	end
+	courseplay.debugFormat(12, 'Course: could not find next forward waypoint after %d', ix)
+	return ix
+end
 
