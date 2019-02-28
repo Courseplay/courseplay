@@ -31,13 +31,15 @@ function courseplay:register(secondTime)
 		print('## Courseplay: register into vehicle types:');
 	end
 	for typeName,vehicleType in pairs(g_vehicleTypeManager.vehicleTypes) do
-		if SpecializationUtil.hasSpecialization(AIVehicle, vehicleType.specializations) and not vehicleType.hasCourseplaySpec then
+		if SpecializationUtil.hasSpecialization(AIVehicle, vehicleType.specializations) and not vehicleType.specializationsByName[courseplaySpecName] then
 				print("  install courseplay into "..typeName)
 				g_vehicleTypeManager:addSpecialization(typeName, courseplaySpecName)
-				vehicleType.hasCourseplaySpec = true;
 				numInstallationsVehicles = numInstallationsVehicles + 1;
 		end;
 	end;
+	if secondTime then
+		print('## Courseplay: register later loaded mods: done');
+	end	
 end;
 
 function courseplay:attachablePostLoad(xmlFile)
