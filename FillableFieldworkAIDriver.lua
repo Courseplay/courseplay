@@ -98,11 +98,37 @@ function FillableFieldworkAIDriver:helperBuysThisFillType(fillType)
 		(fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER) then
 		return true
 	end
-	if g_currentMission.missionInfo.helperManureSource == 2 and fillType == FillType.MANURE then
-		return true
-	end
-	if g_currentMission.missionInfo.helperSlurrySource == 2 and fillType == FillType.LIQUIDMANURE then
-		return true
+	-- Check for source as in Sprayer:getExternalFill()
+	-- Source 1 - helper refill off, 2 - helper buys, > 2 - farm sources (manure heap, etc.)
+	if fillType == FillType.MANURE then
+		if  g_currentMission.missionInfo.helperManureSource == 2 then
+			-- helper buys
+			return true
+		elseif g_currentMission.missionInfo.helperManureSource > 2 then
+		else
+			-- maure heaps
+			local info = g_currentMission.manureHeaps[g_currentMission.missionInfo.helperManureSource - 2]
+			if info ~= nil then -- Can be nil if pen was removed
+				if info.manureHeap:getManureLevel() > 0 then
+					return true
+				end
+			end
+			return false
+		end
+	elseif fillType == FillType.LIQUIDMANURE or fillType == FillType.DIGESTATE then
+		if g_currentMission.missionInfo.helperSlurrySource == 2 then
+			-- helper buys
+			return true
+		elseif g_currentMission.missionInfo.helperSlurrySource > 2 then
+			--
+			local info = g_currentMission.liquidManureTriggers[g_currentMission.missionInfo.helperSlurrySource - 2]
+			if info ~= nil then -- Can be nil if pen was removed
+				if info.silo:getFillLevel(FillType.LIQUIDMANURE) > 0 then
+					return true
+				end
+			end
+			return true
+		end
 	end
 	if g_currentMission.missionInfo.helperBuyFuel and
 		(fillType == FillType.DIESEL or fillType == FillType.FUEL) then
