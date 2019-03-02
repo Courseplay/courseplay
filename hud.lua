@@ -8,6 +8,11 @@ end
 courseplay.hud.sizeRatio = 1;
 courseplay.hud.uiScale = g_gameSettings:getValue("uiScale");
 
+--Ternary function utility
+function courseplay:ternary(cond, T, F)
+    if cond then return T else return F end
+end
+
 -- px are in targetSize for 1920x1080
 function courseplay.hud:pxToNormal(px, dimension, fullPixel)
 	local ret;
@@ -1034,12 +1039,9 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- Open hud key
 		vehicle.cp.hud.content.pages[6][2][1].text = courseplay:loc('COURSEPLAY_OPEN_HUD_MODE');
-		-- add condition for the hud opening shortcut selection to work
-		if vehicle.cp.hud.openWithMouse then
-            vehicle.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.mouse.secondaryTextI18n;
-        else
-            vehicle.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.keyboard.openCloseHudTextI18n;
-        end		
+		-- add condition for the hud opening shortcut selection to work with the new function TERNARY
+        vehicle.cp.hud.content.pages[6][2][2].text = courseplay:ternary(vehicle.cp.hud.openWithMouse, inputBindings.mouse.secondaryTextI18n,courseplay.inputBindings.keyboard.openCloseHudTextI18n);
+        
 
 		-- Waypoint mode
 		vehicle.cp.hud.content.pages[6][3][1].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE');
