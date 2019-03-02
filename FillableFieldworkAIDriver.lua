@@ -27,12 +27,21 @@ Also known as mode 4
 ---@class FillableFieldworkAIDriver : FieldworkAIDriver
 FillableFieldworkAIDriver = CpObject(FieldworkAIDriver)
 
+FillableFieldworkAIDriver.myStates = {
+	TO_BE_REFILLED = {},
+	REFILL_DONE = {}
+}
 function FillableFieldworkAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(FillableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
+	self.refillState = self.states.TO_BE_REFILLED
 end
 
+function FillableFieldworkAIDriver:changeToUnloadOrRefill()
+	self.refillState = self.states.TO_BE_REFILLED
+	FieldworkAIDriver.changeToUnloadOrRefill(self)
+end
 --- Out of seeds/fertilizer/whatever
 function FillableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self:debug('change to fieldwork refilling')
@@ -61,7 +70,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 			self:debugSparse('refillWorkTools() tells us to stop')
 			self:setSpeed( 0)
 		end
-	elseif isNearWaitPoint then
+	elseif  self.refillState == self.states.TO_BE_REFILLED and isNearWaitPoint then
 		local allowedToDrive = true;
 		local distanceToWait = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, waitPointIx)
 		self:setSpeed(MathUtil.clamp(distanceToWait,self.vehicle.cp.speeds.crawl,self:getRecordedSpeed()))
@@ -103,7 +112,8 @@ end
 
 function FillableFieldworkAIDriver:continue()
 	self:debug('Continuing...')
-	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE_FULL 
+	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
+	self.refillState = self.states.REFILL_DONE	
 	self:clearAllInfoTexts()
 end
 
