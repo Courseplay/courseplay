@@ -1401,6 +1401,9 @@ function courseplay:resetFillTrigger(vehicle)
 			table.remove(vehicle.cp.fillTriggers,1)
 			vehicle.cp.fillTrigger = nil
 		end
+		--setting the next fwd waypoint for reverse filling. should not cause problems in fwd filling. if it does, find an other way 
+		local driver = vehicle.cp.driver
+		driver.ppc:initialize(driver.course:getNextFwdWaypointIx(driver.ppc:getCurrentWaypointIx()));
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end

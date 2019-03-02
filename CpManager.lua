@@ -481,8 +481,7 @@ end;
 
 function CpManager:devAddMoney()
 	if g_server ~= nil then
-		-- no addSharedMoney in FS19
---		g_currentMission:addSharedMoney(5000000, 'other');
+		g_currentMission:addMoney(5000000,1, MoneyType.OTHER,true);
 		return ('Added %s to your bank account'):format(g_i18n:formatMoney(5000000));
 	end;
 end;
