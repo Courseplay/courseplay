@@ -465,6 +465,17 @@ function courseplay:updateAllTriggers()
 		courseplay:debug(('\t%i found'):format(counter), 1);
 	end;
 	
+	--Add storage system loading stations, such as BioGaz / Farm Silos
+	if g_currentMission.storageSystem ~= nil then
+        for _station,loadStation in pairs (g_currentMission.storageSystem.loadingStations) do
+            for _,loadTrigger in pairs (loadStation.loadTriggers) do
+                local triggerId = loadTrigger.triggerNode;
+                courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers (storage system)', loadStation.stationName,tostring(triggerId)), 1);
+    			courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
+	        end
+  		end
+    end 
+	
 	if g_currentMission.vehicles ~= nil then
 		courseplay:debug('\tcheck fillTriggerVehicles', 1);
 		local counter = 0
