@@ -348,14 +348,14 @@ function FieldworkAIDriver:startWork()
 	if not courseplay:getIsEngineReady(self.vehicle) then
 		self.vehicle:startMotor()
 	end
-	courseplay:lowerImplements(self.vehicle)
+	self:lowerImplements()
 end
 
 
 --- Stop working. Raise and stop implements
 function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
-	courseplay:raiseImplements(self.vehicle)
+	self:raiseImplements()
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
 	self:clearRemainingTime()
@@ -690,4 +690,24 @@ end
 
 function FieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_REFILLING'
+end
+
+function FieldworkAIDriver:lowerImplements()
+	for _,impl in pairs(self.vehicle:getAttachedImplements()) do
+		if impl.object.aiImplementStartLine then
+			courseplay.debugVehicle(self.debugChannel, impl.object, 'lowering.')
+			impl.object:aiImplementStartLine()
+		end
+	end
+	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
+end
+
+function FieldworkAIDriver:raiseImplements()
+	for _,impl in pairs(self.vehicle:getAttachedImplements()) do
+		if impl.object.aiImplementEndLine then
+			courseplay.debugVehicle(self.debugChannel, impl.object, 'raising.')
+			impl.object:aiImplementEndLine()
+		end
+	end
+	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_END_LINE)
 end

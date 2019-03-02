@@ -258,11 +258,12 @@ function courseplay:changeLaneOffset(vehicle, changeBy, force)
 	if abs(vehicle.cp.laneOffset) < 0.1 then
 		vehicle.cp.laneOffset = 0;
 	end;
+	courseplay.debugVehicle(14, vehicle, 'laneoffset %.1f, tooloffset %.1f', vehicle.cp.laneOffset, vehicle.cp.toolOffsetX)
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 end;
 
 function courseplay:changeLaneNumber(vehicle, changeBy, reset)
-	--This function takes input from the hud. And claculates laneOffset by dividing tool workwidth and multiplying that by the lane number counting outwards.
+	--This function takes input from the hud. And calculates laneOffset by dividing tool workwidth and multiplying that by the lane number counting outwards.
 	local toolsIsEven = vehicle.cp.multiTools%2 == 0
 	
 	if reset then
@@ -289,6 +290,8 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 		else
 			newOffset = vehicle.cp.workWidth*vehicle.cp.laneNumber
 		end
+		courseplay.debugVehicle(14, vehicle, 'newOffset %.1f, laneNumber %.1f workwidth %.1f', newOffset, vehicle.cp.laneNumber, vehicle.cp.workWidth)
+
 		courseplay:changeLaneOffset(vehicle, nil , newOffset)
 		vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 	end;
