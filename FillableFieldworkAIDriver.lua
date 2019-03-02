@@ -42,6 +42,7 @@ end
 
 --- Drive the refill part of the course
 function FillableFieldworkAIDriver:driveUnloadOrRefill()
+	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointAround(self.ppc:getCurrentWaypointIx(), 10, 3)
 
 	self:searchForRefillTriggers()
 	if self.temporaryCourse then
@@ -60,6 +61,16 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 			self:debugSparse('refillWorkTools() tells us to stop')
 			self:setSpeed( 0)
 		end
+	elseif isNearWaitPoint then
+		local allowedToDrive = true;
+		local distanceToWait = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, waitPointIx)
+		self:setSpeed(MathUtil.clamp(distanceToWait,self.vehicle.cp.speeds.crawl,self:getRecordedSpeed()))
+		if distanceToWait < 1 then
+			allowedToDrive = self:fillAtWaitPoint()
+		end	
+		if not allowedToDrive then
+			self:setSpeed( 0)
+		end
 	else
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
@@ -67,6 +78,34 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	return false
 end
 
+function FillableFieldworkAIDriver:fillAtWaitPoint()
+	local vehicle = self.vehicle
+	local allowedToDrive = false
+	courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
+	self:setInfoText('WAIT_POINT')
+	
+	--fillLevel changed in last loop-> start timer
+	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= vehicle.cp.totalFillLevelPercent then
+		self.prevFillLevelPct = vehicle.cp.totalFillLevelPercent
+		courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
+	end
+	
+	--if time is up and no fillLevel change happend, check whether we may drive on or not
+	if courseplay:timerIsThrough(vehicle, "fillLevelChange",false) then
+		if vehicle.cp.totalFillLevelPercent >= vehicle.cp.refillUntilPct then
+			self:continue()
+			courseplay:resetCustomTimer(vehicle, "fillLevelChange",true);
+			self.prevFillLevelPct = nil
+		end
+	end
+	return allowedToDrive
+end
+
+function FillableFieldworkAIDriver:continue()
+	self:debug('Continuing...')
+	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE_FULL 
+	self:clearAllInfoTexts()
+end
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)

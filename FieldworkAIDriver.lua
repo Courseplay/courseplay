@@ -29,6 +29,7 @@ FieldworkAIDriver = CpObject(AIDriver)
 FieldworkAIDriver.myStates = {
 	ON_FIELDWORK_COURSE = {},
 	ON_UNLOAD_OR_REFILL_COURSE = {},
+	ON_UNLOAD_OR_REFILL_COURSE_FULL = {},
 	UNLOAD_OR_REFILL_ON_FIELD = {},
 	WAITING_FOR_UNLOAD_OR_REFILL ={}, -- while on the field
 	ON_CONNECTING_TRACK = {},
@@ -104,6 +105,7 @@ function FieldworkAIDriver:stop(msgReference)
 end
 
 function FieldworkAIDriver:drive(dt)
+	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:driveFieldwork()
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
@@ -252,7 +254,7 @@ function FieldworkAIDriver:onEndTemporaryCourse()
 end
 
 function FieldworkAIDriver:onEndCourse()
-	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
+	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE  or  self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE_FULL then
 		-- unload/refill course ended, return to fieldwork
 		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.fieldworkAbortedAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
 		self:startFieldworkWithAlignment(self.vehicle.cp.fieldworkAbortedAtWaypoint or self.fieldworkAbortedAtWaypoint)
