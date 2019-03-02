@@ -1034,7 +1034,12 @@ function courseplay.hud:loadPage(vehicle, page)
 
 		-- Open hud key
 		vehicle.cp.hud.content.pages[6][2][1].text = courseplay:loc('COURSEPLAY_OPEN_HUD_MODE');
-		vehicle.cp.hud.content.pages[6][2][2].text = vehicle.cp.hud.openWithMouse and courseplay.inputBindings.mouse.secondaryTextI18n or courseplay.inputBindings.keyboard.openCloseHudTextI18n;
+		-- add condition for the hud opening shortcut selection to work
+		if vehicle.cp.hud.openWithMouse then
+            vehicle.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.mouse.secondaryTextI18n;
+        else
+            vehicle.cp.hud.content.pages[6][2][2].text = courseplay.inputBindings.keyboard.openCloseHudTextI18n;
+        end		
 
 		-- Waypoint mode
 		vehicle.cp.hud.content.pages[6][3][1].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE');
