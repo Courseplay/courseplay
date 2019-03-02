@@ -356,7 +356,13 @@ function CollisionDetector:setPathVehiclesSpeed(pathVehicle,dt)
 		pathVehicle.lastSpeedReal = 0;
 		pathVehicle.movingDirection = 1;
 	end;
+	
+	--Check dt to be set > avoid errors in loop if null then set dt = -1 to slow down because we re behind a car
+	if dt == nil then
+		dt = -1;
+	end
 	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt;
+	
 	if pathVehicle.speedDisplayDt > 100 then
 		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode);
 		if pathVehicle.lastPosition == nil then
