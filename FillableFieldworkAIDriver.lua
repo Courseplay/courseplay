@@ -213,7 +213,7 @@ function FillableFieldworkAIDriver:searchForRefillTriggers()
 				--create a hammerhead racast to get small triggerStartId
 				local x, y, z = localToWorld(node, -1.5, 1, -10)
 				local nx, ny, nz = localDirectionToWorld(node, 1, 0, 0)
-				courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', false, x, y, z, nx, ny, nz,3)
+				courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'rev', false, x, y, z, nx, ny, nz,3)
 			end
 		end
 	end

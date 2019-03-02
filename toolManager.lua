@@ -1403,7 +1403,7 @@ function courseplay:resetFillTrigger(vehicle)
 		end
 		--setting the next fwd waypoint for reverse filling. should not cause problems in fwd filling. if it does, find an other way 
 		local driver = vehicle.cp.driver
-		driver.ppc:initialize(driver.course:getNextFwdWaypointIx(driver.ppc:getCurrentWaypointIx()));
+		driver.ppc:initialize(driver.course:getNextFwdWaypointIxfromVehiclePosition(driver.ppc:getCurrentWaypointIx(),vehicle,driver.ppc:getLookaheadDistance()));
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end

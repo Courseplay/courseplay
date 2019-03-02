@@ -356,7 +356,7 @@ function courseplay:updateAllTriggers()
 									unloadTrigger = unloadTrigger;				
 								}
 						
-						courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',item.sellingStation.stationName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers',item.sellingStation.stationName,tostring(triggerId)), 1);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 					end
 				end
@@ -384,7 +384,7 @@ function courseplay:updateAllTriggers()
 								unloadTrigger = unloadTrigger;
 							}
 					
-					courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',placeable.unloadingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to tipTriggers',placeable.unloadingStation.stationName,tostring(triggerId)), 1);
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				end
 			end
@@ -399,7 +399,7 @@ function courseplay:updateAllTriggers()
 								acceptedFillTypes = placeable.sellingStation.acceptedFillTypes;
 								unloadTrigger = unloadTrigger;				
 							}
-					courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',placeable.sellingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to tipTriggers',placeable.sellingStation.stationName,tostring(triggerId)), 1);
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				end
 			end
@@ -419,7 +419,7 @@ function courseplay:updateAllTriggers()
 												--capacity = myModule.fillCapacity;
 												--fillLevels = myModule.fillLevels;
 											}
-							courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
+							courseplay:debug(string.format('    add %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
 							courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');							
 					end
 										
@@ -431,23 +431,21 @@ function courseplay:updateAllTriggers()
 											--capacity = myModule.fillCapacity;
 											--fillLevels = myModule.fillLevels;
 										}
-						courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 					end
 					if myModule.loadPlace ~= nil then                                            
                         local triggerId = myModule.loadPlace.triggerNode;                        						      
-						courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers',myModule.moduleName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to fillTriggers',myModule.moduleName,tostring(triggerId)), 1);
 						courseplay:cpAddTrigger(triggerId, myModule.loadPlace, 'fillTrigger');
                     end					
 				end
 			end
 			
-			
-			
 			if placeable.buyingStation ~= nil then
 				for _,loadTrigger in pairs (placeable.buyingStation.loadTriggers) do
 					local triggerId = loadTrigger.triggerNode;
-					courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers (buyingStation)', placeable.buyingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to fillTriggers (buyingStation)', placeable.buyingStation.stationName,tostring(triggerId)), 1);
 					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
 				end
 			end
@@ -455,7 +453,7 @@ function courseplay:updateAllTriggers()
 			if placeable.loadingStation ~= nil then
 				for _,loadTrigger in pairs (placeable.loadingStation.loadTriggers) do
 					local triggerId = loadTrigger.triggerNode;
-					courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers (loadingStation)', placeable.loadingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to fillTriggers (loadingStation)', placeable.loadingStation.stationName,tostring(triggerId)), 1);
 					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
 				end
 			end
@@ -464,6 +462,7 @@ function courseplay:updateAllTriggers()
 		end
 		courseplay:debug(('\t%i found'):format(counter), 1);
 	end;
+	
 	
 	if g_currentMission.vehicles ~= nil then
 		courseplay:debug('\tcheck fillTriggerVehicles', 1);
@@ -476,7 +475,7 @@ function courseplay:updateAllTriggers()
 						local triggerId = trigger.triggerId
 
 						courseplay:cpAddTrigger(triggerId, trigger, 'fillTrigger');
-						courseplay:debug(string.format('\t\tadd %s(%i) to fillTriggers (fillTriggerVehicle)', vehicle:getName(),triggerId), 1);
+						courseplay:debug(string.format('    add %s(%i) to fillTriggers (fillTriggerVehicle)', vehicle:getName(),triggerId), 1);
 					end
 				end
 		end
@@ -497,9 +496,24 @@ function courseplay:updateAllTriggers()
 				trigger.capacity = 10000000 --DensityMapHeightUtil.volumePerPixel*totalArea*800 ;
 				--print(string.format("capacity= %s  fillLevel= %s ",tostring(trigger.capacity),tostring(trigger.fillLevel)))
 				courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				courseplay:debug(('\t\tadd tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(triggerId, name, className), 1);
+				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(triggerId, name, className), 1);
 			end
 		end
+	end
+	
+	if g_currentMission.nodeToObject ~= nil then
+		courseplay:debug('\tcheck nodeToObject', 1);
+		for _,object in pairs (g_currentMission.nodeToObject) do
+			if object.triggerNode ~= nil and not courseplay.triggers.all[object.triggerNode] then
+				local triggerId = object.triggerNode;
+				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject)', '',tostring(triggerId)), 1);
+				courseplay:cpAddTrigger(triggerId, object, 'fillTrigger');
+			end
+			if object.baleTriggerNode ~= nil and not courseplay.triggers.all[object.baleTriggerNode] then
+				courseplay:cpAddTrigger(object.baleTriggerNode, object, 'tipTrigger');
+				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(object.baleTriggerNode, '', className), 1);
+			end	
+		end			
 	end
 	
 end;
@@ -511,14 +525,7 @@ function courseplay:cpAddTrigger(triggerId, trigger, groupType)
 
 	t.all[triggerId] = trigger;
 	t.allCount = t.allCount + 1;
---[[
-	if groupType then
-		if groupType == 'nonUpdateable' then
-			t.allNonUpdateables[triggerId] = trigger;
-			t.allNonUpdateablesCount = t.allNonUpdateablesCount + 1;
-		end;
-	end;
-]]
+
 	-- tipTriggers
 	if groupType == 'tipTrigger' then
 		t.tipTriggers[triggerId] = trigger;
@@ -526,34 +533,6 @@ function courseplay:cpAddTrigger(triggerId, trigger, groupType)
 	elseif groupType == 'fillTrigger' then	
 		t.fillTriggers[triggerId] = trigger;
 		t.fillTriggersCount = t.fillTriggersCount + 1;
-		
-		
---[[
-	-- other triggers
-	elseif triggerType == 'damageMod' then
-		t.damageModTriggers[triggerId] = trigger;
-		t.damageModTriggersCount = t.damageModTriggersCount + 1;
-	elseif triggerType == 'gasStation' then
-		t.gasStationTriggers[triggerId] = trigger;
-		t.gasStationTriggersCount = t.gasStationTriggersCount + 1;
-	elseif triggerType == 'liquidManure' then
-		t.liquidManureFillTriggers[triggerId] = trigger;
-		t.liquidManureFillTriggersCount = t.liquidManureFillTriggersCount + 1;
-	elseif triggerType == 'sowingMachine' then
-		t.sowingMachineFillTriggers[triggerId] = trigger;
-		t.sowingMachineFillTriggersCount = t.sowingMachineFillTriggersCount + 1;
-	elseif triggerType == 'sprayer' then
-		t.sprayerFillTriggers[triggerId] = trigger;
-		t.sprayerFillTriggersCount = t.sprayerFillTriggersCount + 1;
-	elseif triggerType == 'water' then
-		t.waterTrailerFillTriggers[triggerId] = trigger;
-		t.waterTrailerFillTriggersCount = t.waterTrailerFillTriggersCount + 1;
-	elseif triggerType == 'weightStation' then
-		t.weightStations[triggerId] = trigger;
-		t.weightStationsCount = t.weightStationsCount + 1;
-	elseif triggerType == 'waterReceiver' then
-		t.waterReceivers[triggerId] = trigger;
-		t.waterReceiversCount = t.waterReceiversCount + 1;]]
 	end;
 end;
 
