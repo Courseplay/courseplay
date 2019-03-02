@@ -1142,10 +1142,13 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						local trailerX,_,trailerZ = getWorldTranslation(tipper.tipReferencePoints[bestTipReferencePoint].node);
 						local triggerX,_,triggerZ = getWorldTranslation(vehicle.cp.currentTipTrigger.rootNode);
 
-						local unloadDistance = courseplay:distance(trailerX, trailerZ, triggerX, triggerZ) 
+						--REDUCE DISTANCE TO DONT GO TOO FAR FROM TRIGGER FOR TIPPER
+						local unloadDistance = courseplay:distance(trailerX, trailerZ, triggerX, triggerZ) *0.5;
 
 						courseplay:debug(string.format('%s: unloadDistance = %.2f tipper.cp.trailerFillDistance = %.4s', nameNum(tipper), unloadDistance, tostring(tipper.cp.prevTrailerDistance)), 2);
-						goForTipping = trailerInTipRange and tipper.cp.prevTrailerDistance and tipper.cp.prevTrailerDistance < unloadDistance
+						
+						--EDIT : removed "'trailerInTipRange' and tipper.cp.prevTrailerDistance and tipper.cp.prevTrailerDistance < unloadDistance" in condition to stop on trigger (no need to wait to be far)
+						goForTipping = trailerInTipRange;
 						tipper.cp.prevTrailerDistance = unloadDistance 
 						
 					else
