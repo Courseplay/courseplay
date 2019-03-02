@@ -433,18 +433,7 @@ function courseplay:updateAllTriggers()
 										}
 						courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-					end
-					
-					-- ADD PLACEABLES LOAD PLACES
-                                                           
-                    if myModule.loadPlace ~= nil then
-                                            
-                        local triggerId = myModule.loadPlace.triggerNode;
-                        						
-						courseplay:debug(string.format('\t\tadd %s(%s) to fillTriggers',myModule.moduleName,tostring(triggerId)), 1);
-						courseplay:cpAddTrigger(triggerId, myModule.loadPlace, 'fillTrigger');
-                    end
-					
+					end							
 				end
 			end
 			
