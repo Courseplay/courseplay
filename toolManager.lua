@@ -1173,8 +1173,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 					else
 						courseplay:debug(nameNum(tipper) .. ": goForTipping = true [trigger accepts fruit (" .. tostring(fillType) .. ")]", 2);
 					end;
-					local dischargeState = tipper:getDischargeState()
-					if dischargeState == Trailer.TIPSTATE_CLOSED or dischargeState == Trailer.TIPSTATE_CLOSING then
+					local tipState = tipper:getTipState()
+					if tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING then
 						local isNearestPoint = false
 						if courseplay:round(distanceToTrigger, 1) > courseplay:round(tipper.cp.closestTipDistance, 1) then
 							isNearestPoint = true
@@ -1201,8 +1201,8 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						allowedToDrive = false;
 					end;
 				else
-					local dischargeState = tipper:getDischargeState()
-					if dischargeState ~= Trailer.TIPSTATE_CLOSING and dischargeState ~= Trailer.TIPSTATE_CLOSED then
+					local tipState = tipper:getTipState()
+					if tipState ~= Trailer.TIPSTATE_CLOSING and tipState ~= Trailer.TIPSTATE_CLOSED then
 						tipper.cp.closestTipDistance = math.huge
 						allowedToDrive = false;
 					end;
@@ -1401,6 +1401,9 @@ function courseplay:resetFillTrigger(vehicle)
 			table.remove(vehicle.cp.fillTriggers,1)
 			vehicle.cp.fillTrigger = nil
 		end
+		--setting the next fwd waypoint for reverse filling. should not cause problems in fwd filling. if it does, find an other way 
+		local driver = vehicle.cp.driver
+		driver.ppc:initialize(driver.course:getNextFwdWaypointIx(driver.ppc:getCurrentWaypointIx()));
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end
@@ -1537,7 +1540,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 					if reverseCourseUnloadpoint ~= nil and reverseCourseUnloadpoint > 0 then
 						_,y,_ = getWorldTranslation(tipper.cp.realUnloadOrFillNode or tipRefpoint or tipper.rootNode);
 						_,_,z = worldToLocal(tipper.cp.realUnloadOrFillNode or tipRefpoint or tipper.rootNode, vehicle.Waypoints[reverseCourseUnloadpoint].cx, y, vehicle.Waypoints[reverseCourseUnloadpoint].cz);
-						if not vehicle.cp.lastValidTipDistanceChecked and tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED then
+						if not vehicle.cp.lastValidTipDistanceChecked and tipper:getTipState() == Trailer.TIPSTATE_CLOSED then
 							courseplay:debug(nameNum(vehicle) .. ": call courseplay:checkValidTipDistance" , 2);
 							local trueDistanceToHeap = courseplay:checkValidTipDistance(vehicle,tipper,reverseCourseUnloadpoint)
 							if vehicle.cp.lastValidTipDistance == nil or trueDistanceToHeap < vehicle.cp.lastValidTipDistance then
@@ -1551,7 +1554,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 						end
 						
 						
-						if vehicle.cp.lastValidTipDistance ~= nil and (z > vehicle.cp.lastValidTipDistance or tipper:getDischargeState() ~= Trailer.TIPSTATE_CLOSED) and tipper.cp.fillLevel ~= 0 then
+						if vehicle.cp.lastValidTipDistance ~= nil and (z > vehicle.cp.lastValidTipDistance or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED) and tipper.cp.fillLevel ~= 0 then
 							stopForTipping = true
 							goForTipping = true
 							vehicle.cp.lastValidTipDistanceChecked = nil
@@ -1575,7 +1578,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				
 				--print(string.format("tipper.couldNotDropTimer: %s; goForTipping: %s",tostring(tipper.couldNotDropTimer),tostring(goForTipping)))
 				
-				if (tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED or tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING) and goForTipping then
+				if (tipper:getTipState() == Trailer.TIPSTATE_CLOSED or tipper:getTipState() == Trailer.TIPSTATE_CLOSING) and goForTipping then
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 					--print("toggeltipstate by "..message)
 				end
@@ -1583,7 +1586,7 @@ function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoin
 				takeOverSteering = courseplay:manageCompleteTipping(vehicle,tipper,dt,z)
 				
 				--finsh and go for next round
-				if (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
+				if (tipper:getTipState() == Trailer.TIPSTATE_OPEN or tipper:getTipState() == Trailer.TIPSTATE_OPENING) and tipper.cp.fillLevel == 0 then
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 					vehicle.cp.takeOverSteering = false
 					if revUnload then
@@ -1727,7 +1730,7 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 		_,_,z = worldToLocal(node, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
 	end
 	local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
-	if (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and not isTipping then
+	if tipper:getTipState() == Trailer.TIPSTATE_OPEN and not isTipping then
 		vehicle.cp.takeOverSteering = true
 		if vehicle.cp.saveFuelOptionActive then
 			courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
@@ -1736,7 +1739,7 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 	end		
 	
 	
-	if g_updateLoopIndex % 100 == 0 and (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and isTipping and vehicle.cp.takeOverSteering then
+	if g_updateLoopIndex % 100 == 0 and (tipper:getTipState() == Trailer.TIPSTATE_OPEN or tipper:getTipState() == Trailer.TIPSTATE_OPENING) and isTipping and vehicle.cp.takeOverSteering then
 		vehicle.cp.takeOverSteering = false	
 		vehicle.cp.lastValidTipDistance = z or 0
 		--print("reset takeOverSteering z= "..tostring(z).." Zsent: "..tostring(zSent))
@@ -1771,14 +1774,14 @@ function courseplay:updateSugarCaneTrailerTipping(vehicle,dt)
 	for _,tipper in pairs(vehicle.cp.workTools) do
 		if tipper.cp.isSugarCaneTrailer then
 			local movingTools = tipper.movingTools
-			if tipper:getDischargeState() == Trailer.TIPSTATE_OPENING then
+			if tipper:getTipState() == Trailer.TIPSTATE_OPENING then
 				local targetPositions = { 	rot = { [1] = movingTools[1].rotMin},
 											trans = { [1] = 0 }
 										}
 				if courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, nil, targetPositions, dt ,1) then
 					tipper.tipState = Trailer.TIPSTATE_OPEN
 				end
-			elseif tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING then
+			elseif tipper:getTipState() == Trailer.TIPSTATE_CLOSING then
 				local targetPositions = { 	rot = { [1] = movingTools[1].rotMax},
 											trans = { [1] = 0 }
 										}
@@ -1786,7 +1789,7 @@ function courseplay:updateSugarCaneTrailerTipping(vehicle,dt)
 					tipper.tipState = Trailer.TIPSTATE_CLOSED
 				end
 			end
-			if tipper:getDischargeState() == Trailer.TIPSTATE_OPEN and tipper:getFillLevel() == 0 then
+			if tipper:getTipState() == Trailer.TIPSTATE_OPEN and tipper:getFillLevel() == 0 then
 				tipper.tipState = Trailer.TIPSTATE_CLOSING
 			end
 		end

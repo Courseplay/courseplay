@@ -420,22 +420,7 @@ function courseplay:drive(self, dt)
 			return
 		end
 
-		--resetTrailer when empty after unloading in Bunkersilo
-		--[[Tommi : not used anymore ? tippers reset them self now
-		if self.cp.totalFillLevel == 0 then
-			for _,tipper in pairs (self.cp.workTools) do
-				if tipper.getDischargeState ~= nil then
-					if tipper:getDischargeState() == Trailer.TIPSTATE_OPENING or tipper:getDischargeState() == Trailer.TIPSTATE_OPEN then
-						tipper:toggleTipState();
-					end
-					if (tipper:getDischargeState() == Trailer.TIPSTATE_CLOSED or tipper:getDischargeState() == Trailer.TIPSTATE_CLOSING) and self.cp.keepOnTipping then
-						self.cp.keepOnTipping = false
-						--print("reset vehicle.cp.keepOnTipping")
-					end
-				end
-			end
-		end]]
-
+		
 		-- COMBI MODE / BYPASSING
 		if (((self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 2) or self.cp.activeCombine) and self.cp.workToolAttached then
 			self.cp.inTraffic = false

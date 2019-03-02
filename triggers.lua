@@ -31,7 +31,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 	--------------------------------------------------
 
 	courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 1);
-
+	
 	if sides and vehicle.cp.tipRefOffset ~= 0 then
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
 		or (triggerType == 'specialTrigger') 
@@ -433,7 +433,6 @@ function courseplay:updateAllTriggers()
 										}
 						courseplay:debug(string.format('\t\tadd %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-					end							
 				end
 			end
 			
