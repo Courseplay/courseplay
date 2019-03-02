@@ -1727,7 +1727,8 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 		_,_,z = worldToLocal(node, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cx, y, vehicle.Waypoints[vehicle.cp.previousWaypointIndex].cz);
 	end
 	local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
-	if (tipper:getDischargeState() == Trailer.TIPSTATE_OPEN or tipper:getDischargeState() == Trailer.TIPSTATE_OPENING) and not isTipping then
+	--Remove TIPSTATE_OPENING condition for slow animation tippers to dont move forward while starting to unload
+	if tipper:getDischargeState() == Trailer.TIPSTATE_OPEN and not isTipping then
 		vehicle.cp.takeOverSteering = true
 		if vehicle.cp.saveFuelOptionActive then
 			courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
