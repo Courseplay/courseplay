@@ -487,16 +487,15 @@ function courseplay:updateAllTriggers()
 		for _, trigger in pairs(g_currentMission.bunkerSilos) do
 			if courseplay:isValidTipTrigger(trigger) and trigger.bunkerSilo then
 				local triggerId = trigger.triggerId;
-				local name = tostring(getName(triggerId));
-				local className = tostring(trigger.className);
-				local detailId = g_currentMission.terrainDetailId
+				courseplay:debug(('    add tipTrigger: id=%d, is BunkerSiloTipTrigger '):format(triggerId), 1);
+							
 				--local area = trigger.bunkerSiloArea
 				--local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, area.sx,area.sz, area.wx, area.wz, area.hx, area.hz);
 				--local _ ,_,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
 				trigger.capacity = 10000000 --DensityMapHeightUtil.volumePerPixel*totalArea*800 ;
 				--print(string.format("capacity= %s  fillLevel= %s ",tostring(trigger.capacity),tostring(trigger.fillLevel)))
 				courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(triggerId, name, className), 1);
+				
 			end
 		end
 	end
@@ -538,7 +537,7 @@ end;
 
 --Tommi TODO check if its still needed
 function courseplay:isValidTipTrigger(trigger)
-	local isValid = trigger.className and (trigger.className == 'SiloTrigger' or trigger.isAlternativeTipTrigger or StringUtil.endsWith(trigger.className, 'TipTrigger'));
+	local isValid = trigger.className and (trigger.className == 'SiloTrigger' or trigger.isAlternativeTipTrigger or StringUtil.endsWith(trigger.className, 'TipTrigger') and trigger.triggerId ~= nil);
 	return isValid;
 end;
 
