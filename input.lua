@@ -194,6 +194,8 @@ function courseplay.button:handleMouseClick(vehicle)
 			vehicle:setCourseplayFunc(self.functionToCall, parameter, false, self.page);
 		end
 		-- self:setClicked(false);
+		--Reload vehicle preference just after saved them, correcting the HUD show window trouble 
+		courseplay:loadVehicleCPSettings(vehicle, courseplay.savegame_custom.xmlFile, courseplay.savegame_custom.key, courseplay.savegame_custom.resetVehicles);
 	end;
 end;
 
