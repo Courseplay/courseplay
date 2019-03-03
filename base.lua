@@ -615,6 +615,8 @@ end;
 function courseplay:onPostLoad(savegame)
 	if savegame ~= nil and savegame.key ~= nil and not savegame.resetVehicles then
 		courseplay.loadVehicleCPSettings(self, savegame.xmlFile, savegame.key, savegame.resetVehicles)
+		--Save the savegame_handle into custom var
+		courseplay.savegame_custom = savegame;
 	end
 
 	-- Drive Control (upsidedown)
