@@ -37,7 +37,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		elseif vehicle.cp.mode ~= 9 then
 			-- Start: Fixes issue #525
 			local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode, 0, 1, -3);
-			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
+			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, -0,1, lz);
 			courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, tx, ty, tz, nx, ny, nz);
 			--  End:  Fixes issue #525
 		end
@@ -266,7 +266,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	end;
 
 	if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and (vehicle.cp.totalFillLevel ~= nil and vehicle.cp.totalFillLevel > 0) then
-		local nx, ny, nz = localDirectionToWorld(node, lxTipper, 0, lzTipper);
+		local nx, ny, nz = localDirectionToWorld(node, lxTipper, -0.1, lzTipper);
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;
 	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz, 0.7, 0, 1);

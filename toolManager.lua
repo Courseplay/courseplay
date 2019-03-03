@@ -969,7 +969,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 	end;]]
 	
 
-	local isBGA = ctt.bunkerSilo ~= nil  and vehicle.cp.handleAsOneSilo ~= true;
+	local isBGA = ctt.bunkerSilo ~= nil;
 	local bgaIsFull = isBGA and (ctt.fillLevel >= ctt.capacity);
 	if isBGA then
 		vehicle.cp.isBGATipping = true;
@@ -1263,7 +1263,6 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 			vehicle.cp.isUnloaded = true;
 		end
 		vehicle.cp.currentTipTrigger = nil;
-		vehicle.cp.handleAsOneSilo = nil; -- Used for BGA tipping
 		vehicle.cp.isReverseBGATipping = nil; -- Used for reverse BGA tipping
 		vehicle.cp.isBGATipping = false;
 

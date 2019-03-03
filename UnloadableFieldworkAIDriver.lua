@@ -80,7 +80,8 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	if self.vehicle.cp.totalFillLevel > 0 then
 		if self:hasTipTrigger() then
 			-- unload at tip trigger
-			allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive);
+			self:setSpeed(self.vehicle.cp.speeds.approach)
+			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
 			courseplay:setInfoText(self.vehicle,"COURSEPLAY_TIPTRIGGER_REACHED");
 			self:setSpeed(self.vehicle.cp.speeds.turn)
 		end		
@@ -88,7 +89,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	
 	-- tractor reaches unloadPoint
 	if isNearUnloadPoint then
-		self:setSpeed(self.vehicle.cp.speeds.turn)
+		self:setSpeed(self.vehicle.cp.speeds.approach)
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 		allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,unloadPointIx)
 	end
@@ -103,10 +104,6 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	end
 		
 	return takeOverSteering
-end
-
-function UnloadableFieldworkAIDriver:hasTipTrigger()
-	return self.vehicle.cp.currentTipTrigger ~= nil
 end
 
 function UnloadableFieldworkAIDriver:handlePipe()

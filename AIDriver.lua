@@ -300,8 +300,10 @@ function AIDriver:driveCourse(dt)
 	end
 
 	-- use the recorded speed by default
-	self:setSpeed(self:getRecordedSpeed())
-
+	if not self:hasTipTrigger() then
+		self:setSpeed(self:getRecordedSpeed())
+	end
+	
 	if self:getIsInFilltrigger() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
@@ -501,6 +503,9 @@ function AIDriver:isWaiting()
 	return self.state == self.states.STOPPED
 end
 
+function AIDriver:hasTipTrigger()
+	return self.vehicle.cp.currentTipTrigger ~= nil
+end
 
 --- Set the speed. The idea is that self.speed is reset at the beginning of every loop and
 -- every function calls setSpeed() and the speed will be set to the minimum
@@ -717,7 +722,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 			z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 
 			local foundHeap = self:checkForHeapBehindMe(tipper)
-			print(string.format("foundHeap(%s) or z(%s) >= 0",tostring(foundHeap),tostring(z)))
+			--print(string.format("foundHeap(%s) or z(%s) >= 0",tostring(foundHeap),tostring(z)))
 			
 			--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
 			if (foundHeap or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
@@ -799,4 +804,87 @@ function AIDriver:checkForHeapBehindMe(tipper)
 	if fillType == tipper.cp.fillType then
 		return true;
 	end
+end
+
+function AIDriver:dischargeAtTipTrigger(dt)
+	local trigger = self.vehicle.cp.currentTipTrigger
+	local allowedToDrive = true
+	if trigger ~= nil then
+		local isBGA = trigger.bunkerSilo ~= nil;
+		if isBGA then
+			if not self.ppc:isReversing() then
+				--we are going forward into the BGA silo, so tip when I'm in and adjust the speed
+				self:tipIntoBGASiloTipTrigger(dt)
+			else
+				--we are reversing into the BGA Silo. We are taking the last rev waypoint as virtual unloadpoint and start tipping there the same way as on unload point
+				allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,self.course:getLastReverseAt(self.ppc:getCurrentWaypointIx()))     
+			end
+		else
+			--using all standard tip triggers
+			allowedToDrive = self:tipIntoStandardTipTrigger()
+		end;
+	end
+	return allowedToDrive,takeOverSteering
+end
+
+function AIDriver:tipIntoStandardTipTrigger()
+	local stopForTipping = false
+	for _, tipper in pairs(self.vehicle.cp.workTools) do
+		if tipper.spec_dischargeable ~= nil then
+			for i=1,#tipper.spec_dischargeable.dischargeNodes do
+				if tipper:getCanDischargeToObject(tipper.spec_dischargeable.dischargeNodes[i])then
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
+					stopForTipping = true
+				end
+			end
+		end
+	end
+
+	return not stopForTipping
+end
+
+function AIDriver:tipIntoBGASiloTipTrigger(dt)
+	local trigger = self.vehicle.cp.currentTipTrigger
+	for _, tipper in pairs (self.vehicle.cp.workTools) do
+		if tipper.spec_dischargeable ~= nil and trigger ~= nil then
+			--figure out , when i'm in the silo area
+			local currentDischargeNode = tipper:getCurrentDischargeNode().node
+			local x,y,z = getWorldTranslation(currentDischargeNode)
+			local tx,ty,tz = x,y,z+1
+			local x1,z1 = trigger.bunkerSiloArea.sx,trigger.bunkerSiloArea.sz
+			local x2,z2 = trigger.bunkerSiloArea.wx,trigger.bunkerSiloArea.wz
+			local x3,z3 = trigger.bunkerSiloArea.hx,trigger.bunkerSiloArea.hz
+			local trailerInTipRange = MathUtil.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z)
+			
+			--tip when I'm inside the Silo
+			if trailerInTipRange then
+				if not self.unloadSpeed then
+					--calculate the speed needed to unload in this silo
+					local sx, sy, sz = worldToLocal(trigger.triggerStartId, x, y, z);
+					local ex, ey, ez = worldToLocal(trigger.triggerEndId, x, y, z);
+					local totalLength = courseplay:distance3D(sx, sy, sz, ex, ey, ez)
+					local fillDelta = self.vehicle.cp.totalFillLevel / self.vehicle.cp.totalCapacity;
+
+					local animation;
+					if tipper.spec_animatedVehicle.animations['tipAnimationBack'] ~= nil then
+						animation = tipper.spec_animatedVehicle.animations['tipAnimationBack'];
+					else
+						animation = {["duration"] = 15000, ["currentTime"] = 0}		--Set some defaults, so in case a weird anim name was used, at least we are not throwing an error
+					end
+					local totalTipDuration = (animation.duration- animation.currentTime)/1*fillDelta / 1000;
+					local meterPrSeconds = totalLength / totalTipDuration;
+					self.unloadSpeed = meterPrSeconds*3.6	
+				end
+				
+				local tipState = tipper:getTipState()
+				if tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING then
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
+				end				
+			else
+				self.unloadSpeed = nil
+			end
+			self.speed = self.unloadSpeed or self.speed
+		end
+	end
+
 end

@@ -307,6 +307,14 @@ function Course:isReverseAt(ix)
 	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].rev
 end
 
+function Course:getLastReverseAt(ix)
+	for i=ix,#self.waypoints do
+		if not self.waypoints[i].rev then
+			return i-1
+		end
+	end
+end
+
 function Course:isTurnStartAtIx(ix)
 	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].turnStart
 end

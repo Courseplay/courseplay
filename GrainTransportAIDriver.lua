@@ -111,28 +111,6 @@ function GrainTransportAIDriver:onWaypointChange(newIx)
 	
 end
 
-function GrainTransportAIDriver:hasTipTrigger()
-	-- TODO: come up with something better?
-	return self.vehicle.cp.currentTipTrigger ~= nil
-end
-
-function GrainTransportAIDriver:getSpeed()
-	if self:hasTipTrigger() then
-		-- slow down around the tip trigger
-		if self:getIsInBunksiloTrigger() then
-			return self.vehicle.cp.speeds.reverse
-		else
-			return 10
-		end
-	else
-		return AIDriver.getSpeed(self)
-	end
-end
-
-function GrainTransportAIDriver:getIsInBunksiloTrigger()
-	return self.vehicle.cp.backupUnloadSpeed ~= nil
-end
-
 function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:reachedLastWaypoint() then
@@ -207,12 +185,13 @@ function GrainTransportAIDriver:unLoad(allowedToDrive, dt)
 		if self.vehicle.cp.totalFillLevel > 0
 			and self:hasTipTrigger()
 			and not self:isNearFillPoint() then
-			allowedToDrive, takeOverSteering = courseplay:unload_tippers(self.vehicle, allowedToDrive, dt);
+			self:setSpeed(self.vehicle.cp.speeds.approach)
+			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 		end
 		-- tractor reaches unloadPoint
 		if isNearUnloadPoint then
-			self:setSpeed(self.vehicle.cp.speeds.turn)
+			self:setSpeed(self.vehicle.cp.speeds.approach)
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 			allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,unloadPointIx)
 		end
