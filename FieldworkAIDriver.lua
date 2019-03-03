@@ -158,6 +158,17 @@ function FieldworkAIDriver:startFieldworkWithAlignment(ix)
 	end
 end
 
+
+function FieldworkAIDriver:startFieldworkWithPathfinding(ix)
+	if self:startCourseWithPathfinding(self.fieldworkCourse, ix, false) then
+		self.state = self.states.ON_FIELDWORK_COURSE
+		self.fieldworkState = self.states.TEMPORARY
+	else
+		self:changeToFieldwork()
+	end
+end
+
+
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
 	AIDriver.stop(self, msgReference)
@@ -236,7 +247,7 @@ function FieldworkAIDriver:checkFillLevels()
 			self.vehicle.cp.fieldworkAbortedAtWaypoint = self.fieldworkAbortedAtWaypoint
 			self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.fieldworkAbortedAtWaypoint or -1)
 			self:changeToUnloadOrRefill()
-			self:startCourseWithAlignment(self.unloadRefillCourse, 1 )
+			self:startCourseWithPathfinding(self.unloadRefillCourse, 1, true)
 		else
 			self:changeToFieldworkUnloadOrRefill()
 		end
@@ -316,8 +327,9 @@ function FieldworkAIDriver:onEndCourse()
 	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		-- unload/refill course ended, return to fieldwork
 		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.fieldworkAbortedAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
-		self:startFieldworkWithAlignment(self.vehicle.cp.fieldworkAbortedAtWaypoint or self.fieldworkAbortedAtWaypoint)
+		self:startFieldworkWithPathfinding(self.vehicle.cp.fieldworkAbortedAtWaypoint or self.fieldworkAbortedAtWaypoint)
 	else
+		self:debug('Fieldwork AI driver in mode %d ending course', self:getMode())
 		AIDriver.onEndCourse(self)
 	end
 end
@@ -327,7 +339,6 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 		self:debug('onWaypointPassed %d, ignored as turn is driving now', ix)
 		return
 	end
-	self:debug('onWaypointPassed %d', ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.WORKING then
 			-- check for transition to connecting track
@@ -352,6 +363,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			end
 		end
 	end
+	AIDriver.onWaypointPassed(self, ix)
 end
 
 function FieldworkAIDriver:onWaypointChange(ix)

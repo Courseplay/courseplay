@@ -718,3 +718,23 @@ function courseplay.fields.saveAllFields()
 		end;
 	end;
 end
+
+
+function courseplay.fields:onWhichFieldAmI(vehicle)
+	local positionX, _, positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
+	return self:getFieldNumForPosition( positionX, positionZ )
+end
+
+function courseplay.fields:getFieldNumForPosition(positionX, positionZ)
+	local fieldNum = 0;
+	for index, field in pairs(courseplay.fields.fieldData) do
+		if positionX >= field.dimensions.minX and positionX <= field.dimensions.maxX and positionZ >= field.dimensions.minZ and positionZ <= field.dimensions.maxZ then
+			local _, pointInPoly, _, _ = self:getPolygonData(field.points, positionX, positionZ, true, true, true);
+			if pointInPoly then
+				fieldNum = index
+				break
+			end
+		end
+	end
+	return fieldNum
+end

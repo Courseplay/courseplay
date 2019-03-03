@@ -249,16 +249,16 @@ end
 -- add missing angles and world directions from one waypoint to the other
 -- PPC relies on waypoint angles, the world direction is needed to calculate offsets
 function Course:enrichWaypointData()
-	self.totalDistance = 0
+	self.length = 0
 	self.totalTurns = 0
 	for i = 1, #self.waypoints - 1 do
 		local cx, _, cz = self:getWaypointPosition(i)
 		local nx, _, nz = self:getWaypointPosition( i + 1)
 		local dToNext = courseplay:distance(cx, cz, nx, nz)
-		self.totalDistance = self.totalDistance + dToNext
+		self.length = self.length + dToNext
 		if self:isTurnStartAtIx(i) then self.totalTurns = self.totalTurns + 1 end
 		self.waypoints[i].dToNext = dToNext
-		self.waypoints[i].dToHere = self.totalDistance
+		self.waypoints[i].dToHere = self.length
 		self.waypoints[i].turnsToHere = self.totalTurns
 		self.waypoints[i].dx, _, self.waypoints[i].dz, _ = courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
 		if not self.waypoints[i].angle then
@@ -268,7 +268,6 @@ function Course:enrichWaypointData()
 			-- and now back to x/z
 			self.waypoints[i].angle = courseGenerator.toCpAngle(angle)
 		end
---		courseplay.debugFormat(12, '%d %.1f %d', i, self.waypoints[i].dToHere, self.waypoints[i].turnsToHere)
 	end
 	-- make the last waypoint point to the same direction as the previous so we don't
 	-- turn towards the first when ending the course. (the course generator points the last
@@ -277,11 +276,9 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dx = self.waypoints[#self.waypoints - 1].dx
 	self.waypoints[#self.waypoints].dz = self.waypoints[#self.waypoints - 1].dz
 	self.waypoints[#self.waypoints].dToNext = 0
-	self.waypoints[#self.waypoints].dToHere = self.totalDistance + self.waypoints[#self.waypoints - 1].dToNext
+	self.waypoints[#self.waypoints].dToHere = self.length + self.waypoints[#self.waypoints - 1].dToNext
 	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
-	courseplay.debugFormat(12, 'Course with %d waypoints created, %.1f meters, %d turns', #self.waypoints, self.totalDistance, self.totalTurns)
---	self:print()
-
+	courseplay.debugFormat(12, 'Course with %d waypoints created, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
 end
 
 --- Is this the same course as otherCourse?
@@ -502,7 +499,7 @@ function Course:hasWaypointWithPropertyAround(ix, forward, backward, hasProperty
 	return false
 end
 
---- Is there an unload waypoints within distance around ix?
+--- Is there an unload waypoint within distance around ix?
 ---@param ix number waypoint index to look around
 ---@param distance distance in meters to look around the waypoint
 ---@return boolean true if any of the waypoints are unload points and the index of the next unload point
@@ -510,6 +507,10 @@ function Course:hasUnloadPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.unload end)
 end
 
+--- Is there a wait waypoint within distance around ix?
+---@param ix number waypoint index to look around
+---@param distance distance in meters to look around the waypoint
+---@return boolean true if any of the waypoints are wait points and the index of that wait point
 function Course:hasWaitPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.wait or p.interact end)
 end
@@ -536,8 +537,12 @@ function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 	return false
 end
 
+function Course:getLength()
+	return self.length
+end
+
 function Course:getRemainingDistanceAndTurnsFrom(ix)
-	local distance = self.totalDistance - self.waypoints[ix].dToHere
+	local distance = self.length - self.waypoints[ix].dToHere
 	local numTurns = self.totalTurns - self.waypoints[ix].turnsToHere
 	return distance, numTurns
 end
@@ -566,3 +571,28 @@ function Course:getNextFwdWaypointIxfromVehiclePosition(ix,vehicle,lookAheadDist
 	return ix
 end
 
+--- Cut waypoints from the end of the course until we shortened it by at least d
+-- @param d length in meters to shorten course
+-- @return true if shortened
+function Course:shorten(d)
+	local dCut = 0
+	local from = #self.waypoints - 1
+	for i = from, 1, -1 do
+		dCut = dCut + self.waypoints[i].dToNext
+		if dCut > d then
+			self:enrichWaypointData()
+			return true
+		end
+		table.remove(self.waypoints)
+	end
+	self:enrichWaypointData()
+	return false
+end
+
+--- Append waypoints to the course
+function Course:append(waypoints)
+	for i =1, #waypoints do
+		table.insert(self.waypoints, Waypoint(waypoints[i], #self.waypoints + 1))
+	end
+	self:enrichWaypointData()
+end

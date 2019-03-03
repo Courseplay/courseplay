@@ -111,6 +111,7 @@ function GrainTransportAIDriver:onWaypointChange(newIx)
 	
 end
 
+-- TODO: move this into onWaypointPassed() instead
 function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:reachedLastWaypoint() then

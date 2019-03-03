@@ -289,7 +289,7 @@ end
 
 function addWpsToReturnToFirstPoint( course, boundary )
 	-- should not check for fruit
-	local path = pathFinder.findPath( course[ #course ], course[ 1 ], boundary, nil, function() return false end )
+	local path = courseGenerator.pathFinder:findPath( course[ #course ], course[ 1 ], boundary )
 	-- already close enough, don't add extra return path
 	if not path or #path < 5 then
 		return

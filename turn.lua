@@ -2155,14 +2155,14 @@ Then we add waypoints on a circle from T1 to WP.
 see https://ggbm.at/RN3cawGc
 --]]
 
-function courseplay:getAlignWpsToTargetWaypoint( vehicle, tx, tz, tDirection, generateStraightWaypoints )
+function courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, tx, tz, tDirection, generateStraightWaypoints )
 	vehicle.cp.turnTargets = {}
 	-- make the radius a bit bigger to make sure we can make the turn
 	local turnRadius = 1.2 * vehicle.cp.turnDiameter / 2
 	-- target waypoint we want to reach
 	local wpNode = courseplay.createNode( "wpNode", tx, tz, tDirection )
 	-- which side of the target node are we?
-	local vx, vy, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
+	local vy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vx, 0, vz)
 	local dx, _, _ = worldToLocal( wpNode, vx, vy, vz )
 	-- right -1, left +1
 	local leftOrRight = dx < 0 and -1 or 1
@@ -2228,7 +2228,8 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
 		targetWaypoint.cx, targetWaypoint.cz = courseplay:getVehicleOffsettedCoords(vehicle, targetWaypoint.cx, targetWaypoint.cz);
 	end;
 
-	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
+	local vx, _, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
+	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
 	if not points then
 		courseplay.debugVehicle( 14, vehicle, "(Align) can't find an alignment course, may be too close to target wp?" )
 		return

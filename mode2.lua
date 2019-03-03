@@ -85,7 +85,7 @@ function courseplay:handle_mode2(vehicle, dt)
 				local cx,cz = vehicle.Waypoints[1].cx, vehicle.Waypoints[1].cz
 				local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 0, cz)
 								
-				if vehicle.cp.realisticDriving then
+					if vehicle.cp.realisticDriving then
 					-- generate course to target around fruit when needed but don't end course in turnDiameter distance
 					-- before to avoid circling when transitioning to the next mode
 					if courseplay:calculateAstarPathToCoords(vehicle,nil,cx,cz, vehicle.cp.turnDiameter * 2 ) then
