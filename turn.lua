@@ -1980,39 +1980,32 @@ function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
 end
 
 function courseplay:raiseImplements(vehicle)
-	if vehicle.cp.driver and vehicle.cp.driver.raiseImplements then
-		vehicle.cp.driver:raiseImplements()
-	else
-		-- TODO: remove this once everyone has an AIDriver
-		for _,workTool in pairs(vehicle.cp.workTools) do
-			local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true, false,true,nil,nil,nil);
-			if not specialTool then
-				courseplay.debugVehicle(12, workTool, 'raising.')
-				workTool:aiImplementEndLine()
-				if workTool.spec_pickup and workTool.spec_pickup.isLowered then
-					workTool:setPickupState(false)
-				end
+	for _,workTool in pairs(vehicle.cp.workTools) do
+		local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true, false,true,nil,nil,nil);
+		if not specialTool then
+			courseplay.debugVehicle(12, workTool, 'raising.')
+			workTool:aiImplementEndLine()
+			if workTool.spec_pickup and workTool.spec_pickup.isLowered then
+				workTool:setPickupState(false)
 			end
 		end
 	end
 end
 
 function courseplay:lowerImplements(vehicle)
-	if vehicle.cp.driver and vehicle.cp.driver.lowerImplements then
-		vehicle.cp.driver:lowerImplements()
-	else
-		-- TODO: remove this once everyone has an AIDriver
-		for _,workTool in pairs(vehicle.cp.workTools) do
-			local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,nil,nil,nil);
-			if not specialTool then
-				courseplay.debugVehicle(12, workTool, 'lowering.')
-				workTool:aiImplementStartLine()
-				if workTool.spec_pickup and not workTool.spec_pickup.isLowered then
-					workTool:setPickupState(true)
-				end
+	for _,workTool in pairs(vehicle.cp.workTools) do
+		local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,nil,nil,nil);
+		if not specialTool then
+			courseplay.debugVehicle(12, workTool, 'lowering.')
+			workTool:aiImplementStartLine()
+			if workTool.spec_pickup and not workTool.spec_pickup.isLowered then
+				workTool:setPickupState(true)
 			end
 		end
 	end
+	-- according the Jos@Giants this should make sure that getCanAIImplementContinueWork works correctly, but it
+	-- did not help, still returns true during lowering.
+	vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
 end
 
 -- @return true if all implements which have been started lowering are still moving, false if they are in their
