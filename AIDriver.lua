@@ -463,14 +463,13 @@ function AIDriver:getReverseDrivingDirection()
 	local moveForwards = true
 	local isReverseActive = false
 	-- TODO: refactor this! No dependencies on modes here!
-	local isMode2 = self:getCpMode() == courseplay.MODE_COMBI
 	-- get the direction to drive to
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- take care of reversing
 	if self.ppc:isReversing() then
 		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
-		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz, isMode2)
+		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz)
 		-- as of now we need to invert the direction from goReverse to work correctly with
 		-- AI Driver, it seems to have a different reference
 		lx, lz = -lx, -lz
@@ -887,4 +886,113 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 		end
 	end
 
+end
+
+function AIDriver:searchForTipTriggers(lx, lz)
+	if not self.vehicle.cp.hasAugerWagon
+		and not self:hasTipTrigger()
+		and self.vehicle.cp.totalFillLevel > 0
+		and self.ppc:getCurrentWaypointIx() > 2
+		and not self.ppc:reachedLastWaypoint()
+		and not self.ppc:isReversing() then
+		local raycastDistance = math.max(10,self.vehicle.lastSpeedReal * 3600)
+		local x,y,z,nx,ny,nz = courseplay:getTipTriggerRaycastDirection(self.vehicle,lx,lz,raycastDistance)	
+		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz,raycastDistance)
+	end
+end
+
+function AIDriver:onUnLoadCourse(allowedToDrive, dt)
+	-- Unloading
+	local takeOverSteering = false
+	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
+	self:setSpeed(self:getRecordedSpeed())
+	
+	--handle cover 
+	if self:hasTipTrigger() or isNearUnloadPoint then
+		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
+	end
+	-- done tipping?
+	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 then
+		courseplay:resetTipTrigger(self.vehicle, true);
+	end
+
+	self:cleanUpMissedTriggerExit()
+
+	-- tipper is not empty and tractor reaches TipTrigger
+	if self.vehicle.cp.totalFillLevel > 0
+		and self:hasTipTrigger()
+		and not self:isNearFillPoint() then
+		self:setSpeed(self.vehicle.cp.speeds.approach)
+		allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
+		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+	end
+	-- tractor reaches unloadPoint
+	if isNearUnloadPoint then
+		self:setSpeed(self.vehicle.cp.speeds.approach)
+		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+		allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,unloadPointIx)
+	end
+	return allowedToDrive, takeOverSteering;
+end;
+
+
+function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to be doing
+	-- damn, I missed the trigger!
+	if self:hasTipTrigger() then
+		local t = self.vehicle.cp.currentTipTrigger;
+		local trigger_id = t.triggerId;
+
+		if t.specialTriggerId ~= nil then
+			trigger_id = t.specialTriggerId;
+		end;
+		if t.isPlaceableHeapTrigger then
+			trigger_id = t.rootNode;
+		end;
+
+		if trigger_id ~= nil then
+			local trigger_x, _, trigger_z = getWorldTranslation(trigger_id)
+			local ctx, _, ctz = getWorldTranslation(self.vehicle.cp.DirectionNode)
+			local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
+
+			-- Start reversing value is to check if we have started to reverse
+			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
+			local startReversing = self.course:switchingToReverseAt(self.ppc:getCurrentWaypointIx() - 1)
+			if startReversing then
+				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self.vehicle)), 13);
+			end
+
+			local isBGA = t.bunkerSilo ~= nil
+			local triggerLength = Utils.getNoNil(self.vehicle.cp.currentTipTrigger.cpActualLength, 20)
+			local maxDist = isBGA and (self.vehicle.cp.totalLength + 55) or (self.vehicle.cp.totalLength + triggerLength);
+			if distToTrigger > maxDist or startReversing then --it's a backup, so we don't need to care about +/-10m
+				courseplay:resetTipTrigger(self.vehicle)
+				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(self.vehicle), distToTrigger, maxDist), 1);
+			end
+		else
+			courseplay:resetTipTrigger(self.vehicle)
+		end;
+	end;
+end
+
+--- Update the unload offset from the current settings and apply it when needed
+function AIDriver:updateOffset()
+	local currentWaypointIx = self.ppc:getCurrentWaypointIx()
+	local useOffset = false
+
+	if not self.vehicle.cp.hasAugerWagon and (currentWaypointIx > self.course:getNumberOfWaypoints() - 6 or currentWaypointIx <= 4) then
+		-- around the fill trigger (don't understand the auger wagon part though)
+		useOffset = true
+	elseif self.course:hasWaitPointAround(currentWaypointIx, 6, 3) then
+		-- around wait points
+		useOffset = true
+	elseif self.course:hasUnloadPointAround(currentWaypointIx, 6, 3) then
+		-- around unload points
+		useOffset = true
+	end
+
+	if useOffset then
+		self.ppc:setOffset(self.vehicle.cp.loadUnloadOffsetX, self.vehicle.cp.loadUnloadOffsetZ)
+	else
+		self.ppc:setOffset(0, 0)
+	end
 end

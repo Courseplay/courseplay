@@ -264,16 +264,6 @@ function UnloadableFieldworkAIDriver:isValidFillType(fillType)
 	return fillType ~= FillType.DIESEL and fillType ~= FillType.DEF	and fillType ~= FillType.AIR
 end
 
-function UnloadableFieldworkAIDriver:searchForTipTriggers()
-	-- look straight ahead for now. The rest of CP looks into the direction of the 'current waypoint'
-	-- but we don't have that information (lx/lz) here. See if we can get away with this, should only
-	-- be a problem if we have a sharp curve around the trigger
-	local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, 0, -0.1, 1)
-	-- raycast start point in front of vehicle
-	local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
-	courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz)
-end
-
 function UnloadableFieldworkAIDriver:atUnloadWaypoint()
 	return self.course:isUnloadAt(self.ppc:getCurrentWaypointIx())
 end
