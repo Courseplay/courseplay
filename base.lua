@@ -1166,6 +1166,11 @@ function courseplay:onUpdate(dt)
 		courseplay:setPathVehiclesSpeed(self,dt)
 	end
 
+	--reset selected field num, when field doesn't exist anymone (contracts)
+	if courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum] == nil then
+		self.cp.fieldEdge.selectedField.fieldNum = 0;
+	end
+	
 	-- MODE 9: move shovel to positions (manually)
 	if (self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY or self.cp.shovelPositionFromKey) and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
 		if courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[ self.cp.manualShovelPositionOrder ], dt) or courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
