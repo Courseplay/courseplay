@@ -1447,15 +1447,13 @@ end
 
 function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 	--get raycast direction x and z
-	local nx,_, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz)
+	local nx,_, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx or 0, 0, lz or 1)
 	-- get raycast start point in front of vehicle
 	local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 1, 3)
 	--get the raycast direction y to a point 1m below terrain at raycast tip 
 	local xt,zt = x+(nx*distance), z+(nz*distance)
 	local yt = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, xt, 0, zt);
 	local _, ny,_ = courseplay:getWorldDirection(x, y, z, xt, yt-1, zt)
-
-
 	return x,y,z,nx,ny,nz;
 end
 
