@@ -119,7 +119,7 @@ function courseplay:prePreDelete(self)
 end;
 FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);
 
-BaleLoaderAIDriver.register()
+FieldworkAIDriver.register()
 
 function courseplay:vehicleDelete()
 	if self.cp ~= nil then

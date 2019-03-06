@@ -62,6 +62,66 @@ function FieldworkAIDriver:init(vehicle)
 	self.turnDurationMs = 20000
 end
 
+function FieldworkAIDriver.register()
+
+	AIImplement.getCanImplementBeUsedForAI = Utils.overwrittenFunction(AIImplement.getCanImplementBeUsedForAI,
+		function(self, superFunc)
+			if SpecializationUtil.hasSpecialization(BaleLoader, self.specializations) then
+				return true
+			elseif SpecializationUtil.hasSpecialization(Pickup, self.specializations) then
+				return true
+			elseif superFunc ~= nil then
+				return superFunc(self)
+			end
+		end)
+
+	-- Make sure the Giants helper can't be hired for implements which have no Giants AI functionality
+	AIVehicle.getCanStartAIVehicle = Utils.overwrittenFunction(AIVehicle.getCanStartAIVehicle,
+		function(self, superFunc)
+			-- Only the courseplay helper can handle bale loaders.
+			if FieldworkAIDriver.hasImplementWithSpecializationAttached(self, BaleLoader) or
+				FieldworkAIDriver.hasImplementWithSpecializationAttached(self, Pickup) then
+				return false
+			end
+			if superFunc ~= nil then
+				return superFunc(self)
+			end
+		end)
+
+	BaleLoaderAIDriver.register()
+
+	Pickup.onAIImplementStartLine = Utils.overwrittenFunction(Pickup.onAIImplementStartLine,
+		function(self, superFunc)
+			if superFunc ~= nil then superFunc(self) end
+			self:setPickupState(true)
+		end)
+
+	Pickup.onAIImplementEndLine = Utils.overwrittenFunction(Pickup.onAIImplementEndLine,
+		function(self, superFunc)
+			if superFunc ~= nil then superFunc(self) end
+			self:setPickupState(false)
+		end)
+
+	-- TODO: move these to another dedicated class for implements?
+	local PickupRegisterEventListeners = function(vehicleType)
+		print('## Courseplay: Registering event listeners for loader wagons.')
+		SpecializationUtil.registerEventListener(vehicleType, "onAIImplementStartLine", Pickup)
+		SpecializationUtil.registerEventListener(vehicleType, "onAIImplementEndLine", Pickup)
+	end
+
+	print('## Courseplay: Appending event listener for loader wagons.')
+	Pickup.registerEventListeners = Utils.appendedFunction(Pickup.registerEventListeners, PickupRegisterEventListeners)
+end
+
+function FieldworkAIDriver.hasImplementWithSpecializationAttached(vehicle, specialization)
+	local aiImplements = vehicle:getAttachedAIImplements()
+	for _, implement in ipairs(aiImplements) do
+		if SpecializationUtil.hasSpecialization(specialization, implement.object.specializations) then
+			return true
+		end
+	end
+end
+
 --- Start the course and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	self:debug('Starting in mode %d', self.mode)
@@ -275,7 +335,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 				-- reached a connecting track (done with the headland, move to the up/down row or vice versa),
 				-- raise all implements while moving
 				self:debug('on a connecting track now, raising implements.')
-				courseplay:raiseImplements(self.vehicle)
+				self:raiseImplements()
 				self.fieldworkState = self.states.ON_CONNECTING_TRACK
 			end
 		end
@@ -348,14 +408,14 @@ function FieldworkAIDriver:startWork()
 	if not courseplay:getIsEngineReady(self.vehicle) then
 		self.vehicle:startMotor()
 	end
-	courseplay:lowerImplements(self.vehicle)
+	self:lowerImplements(self.vehicle)
 end
 
 
 --- Stop working. Raise and stop implements
 function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
-	courseplay:raiseImplements(self.vehicle)
+	self:raiseImplements()
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
 	self:clearRemainingTime()
@@ -690,4 +750,18 @@ end
 
 function FieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_REFILLING'
+end
+
+function FieldworkAIDriver:lowerImplements()
+	for _, implement in pairs(self.vehicle:getAttachedAIImplements()) do
+		implement.object:aiImplementStartLine()
+	end
+	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
+end
+
+function FieldworkAIDriver:raiseImplements()
+	for _, implement in pairs(self.vehicle:getAttachedAIImplements()) do
+		implement.object:aiImplementEndLine()
+	end
+	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_END_LINE)
 end

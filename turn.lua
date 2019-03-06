@@ -450,10 +450,18 @@ function courseplay:turn(vehicle, dt)
 					-- See if we have to raise/lower implements at this point
 					if vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].raiseImplement then
 						courseplay:debug( string.format( "%s:(Turn) raising implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						courseplay:raiseImplements(vehicle)
+						if vehicle.cp.driver.raiseImplements then
+							vehicle.cp.driver:raiseImplements()
+						else
+							courseplay:raiseImplements(vehicle)
+						end
 					elseif vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].lowerImplement then
 						courseplay:debug( string.format( "%s:(Turn) lowering implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						courseplay:lowerImplements(vehicle)
+						if vehicle.cp.driver.lowerImplements then
+							vehicle.cp.driver:lowerImplements()
+						else
+							courseplay:lowerImplements(vehicle)
+						end
 					end
 					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 					local changeDir = ((curTurnTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not curTurnTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
@@ -548,7 +556,11 @@ function courseplay:turn(vehicle, dt)
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
-					courseplay:lowerImplements(vehicle)
+					if vehicle.cp.driver.lowerImplements then
+						vehicle.cp.driver:lowerImplements()
+					else
+						courseplay:lowerImplements(vehicle)
+					end
 					courseplay:addTemporaryMarker(vehicle, frontMarker)
 				end;
 
@@ -611,7 +623,11 @@ function courseplay:turn(vehicle, dt)
 			-- Lower implement and continue on next lane
 			if lowerImplements then
 				if vehicle.cp.abortWork == nil then
-					courseplay:lowerImplements(vehicle)
+					if vehicle.cp.driver.lowerImplements then
+						vehicle.cp.driver:lowerImplements()
+					else
+						courseplay:lowerImplements(vehicle)
+					end
 					courseplay:addTemporaryMarker(vehicle, frontMarker)
 				end;
 
@@ -654,7 +670,11 @@ function courseplay:turn(vehicle, dt)
 		end;
 
 		if vehicle.cp.lowerToolThisTurnLoop then
-			courseplay:lowerImplements(vehicle)
+			if vehicle.cp.driver.lowerImplements then
+				vehicle.cp.driver:lowerImplements()
+			else
+				courseplay:lowerImplements(vehicle)
+			end
 			vehicle.cp.lowerToolThisTurnLoop = false;
 		end;
 
@@ -683,7 +703,11 @@ function courseplay:turn(vehicle, dt)
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
 			if not isHeadlandCorner then
-				courseplay:raiseImplements(vehicle)
+				if vehicle.cp.driver.raiseImplements then
+					vehicle.cp.driver:raiseImplements()
+				else
+					courseplay:raiseImplements(vehicle)
+				end
 			end
 			vehicle.cp.turnStage = 1;
 		end;

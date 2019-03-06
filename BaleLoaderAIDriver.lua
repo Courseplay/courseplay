@@ -28,15 +28,6 @@ BaleLoaderAIDriver.myStates = {
 --- events so there's no special handling is needed elswhere.
 function BaleLoaderAIDriver.register()
 
-	AIImplement.getCanImplementBeUsedForAI = Utils.overwrittenFunction(AIImplement.getCanImplementBeUsedForAI,
-		function(self, superFunc)
-			if SpecializationUtil.hasSpecialization(BaleLoader, self.specializations) then
-				return true
-			elseif superFunc ~= nil then
-				return superFunc(self)
-			end
-		end)
-
 	BaleLoader.onAIImplementStart = Utils.overwrittenFunction(BaleLoader.onAIImplementStart,
 		function(self, superFunc)
 			if superFunc ~= nil then superFunc(self) end
@@ -58,28 +49,8 @@ function BaleLoaderAIDriver.register()
 	print('## Courseplay: Appending event listener for bale loaders')
 	BaleLoader.registerEventListeners = Utils.appendedFunction(BaleLoader.registerEventListeners, baleLoaderRegisterEventListeners)
 
-
-	-- Make sure the Giants helper can't be hired for implements which have no Giants AI functionality
-	AIVehicle.getCanStartAIVehicle = Utils.overwrittenFunction(AIVehicle.getCanStartAIVehicle,
-		function(self, superFunc)
-			-- Only the courseplay helper can handle bale loaders.
-			if BaleLoaderAIDriver.hasBaleLoaderAttached(self) then
-				return false
-			end
-			if superFunc ~= nil then
-				return superFunc(self)
-			end
-		end)
 end
 
-function BaleLoaderAIDriver.hasBaleLoaderAttached(vehicle)
-	local aiImplements = vehicle:getAttachedAIImplements()
-	for _, implement in ipairs(aiImplements) do
-		if SpecializationUtil.hasSpecialization(BaleLoader, implement.object.specializations) then
-			return true
-		end
-	end
-end
 
 function BaleLoaderAIDriver:init(vehicle)
 	UnloadableFieldworkAIDriver.init(self, vehicle)

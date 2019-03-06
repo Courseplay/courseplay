@@ -46,6 +46,16 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self.lastEmptyTimestamp = 0
 end
 
+
+function UnloadableFieldworkAIDriver.create(vehicle)
+	if FieldworkAIDriver.hasImplementWithSpecializationAttached(vehicle, BaleLoader) then
+		return BaleLoaderAIDriver(vehicle)
+	else
+		return UnloadableFieldworkAIDriver(vehicle)
+	end
+end
+
+
 function UnloadableFieldworkAIDriver:drive(dt)
 	-- only reason we need this is to update the totalFillLevel for reverse.lua so it will
 	-- do a raycast for tip triggers
