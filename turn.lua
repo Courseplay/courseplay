@@ -1691,7 +1691,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Reverse Turn for tractors", nameNum(vehicle)), 14);
 	cpPrintLine(14, 3);
 
-	local fromPoint, toPoint = {}, {};
+	local fromPoint, toPoint = {}, {}
 	local centerForward = vehicle.cp.turnCorner:getArcCenter()
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), fwdCircle( %.2f %.2f ), deltaAngle %.2f"):format(
 		nameNum(vehicle), centerForward.x, centerForward.z, math.deg( turnInfo.deltaAngle )), 14);
@@ -1701,7 +1701,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	-- drive forward only until our implement reaches the headland area after the turn so we leave an unworked area here at the corner
 	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerStart((vehicle.cp.courseWorkWidth / 2) + turnInfo.frontMarker - turnInfo.wpChangeDistance)
 	-- is this now in front of us? We may not need to drive forward
-	local _, _, dz = worldToLocal( turnInfo.directionNode, toPoint.x, 0, toPoint.z )
+	local _, _, dz = worldToLocal( turnInfo.directionNode, toPoint.x, toPoint.y, toPoint.z )
 	-- at which waypoint we have to raise the implement
 	local raiseImplementIndex
 	if dz > 0 then
@@ -2385,24 +2385,24 @@ end
 
 --- Point in distance from the corner in the turn start direction. Positive number until the corner is reached
 function Corner:getPointAtDistanceFromCornerStart(d)
-	local x, _, z = localToWorld(self.cornerStartNode, 0, 0, d)
-	return {x = x, z = z}
+	local x, y, z = localToWorld(self.cornerStartNode, 0, 0, d)
+	return {x = x, y = y, z = z}
 end
 
 --- Point in distance from the point on the start leg where the arc begins. Positive until we reach the arc
 function Corner:getPointAtDistanceFromArcStart(d)
-	local x, _, z = localToWorld(self.cornerStartNode, 0, 0, self.dCornerToTangentPoints + d)
-	return {x = x, z = z}
+	local x, y, z = localToWorld(self.cornerStartNode, 0, 0, self.dCornerToTangentPoints + d)
+	return {x = x, y = y, z = z}
 end
 
 function Corner:getPointAtDistanceFromCornerEnd(d)
-	local x, _, z = localToWorld(self.cornerEndNode, 0, 0, d)
-	return {x = x, z = z}
+	local x, y, z = localToWorld(self.cornerEndNode, 0, 0, d)
+	return {x = x, y = y, z = z}
 end
 
 function Corner:getPointAtDistanceFromArcEnd(d)
-	local x, _, z = localToWorld(self.cornerEndNode, 0, 0, d + self.dCornerToTangentPoints)
-	return {x = x, z = z}
+	local x, y, z = localToWorld(self.cornerEndNode, 0, 0, d + self.dCornerToTangentPoints)
+	return {x = x, y = y, z = z}
 end
 
 function Corner:getCornerEndNode()
