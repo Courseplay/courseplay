@@ -649,9 +649,9 @@ function FieldworkAIDriver:checkWeather()
 	if self.vehicle.getIsThreshingAllowed and not self.vehicle:getIsThreshingAllowed() then
 		self:debugSparse('No threshing in rain...')
 		self:setSpeed(0)
-		self:setInfoText('COURSEPLAY_WEATHER_WARNING')
+		self:setInfoText('WEATHER')
 	else
-		self:clearInfoText('COURSEPLAY_WEATHER_WARNING')
+		self:clearInfoText('WEATHER')
 	end
 end
 
