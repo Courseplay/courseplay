@@ -713,55 +713,56 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 	
 	if unloadPointIsReverse then
 		for _, tipper in pairs (vehicle.cp.workTools) do
-			readyToDischarge = false
-			tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
-			nx,ny,nz = getWorldTranslation(tipRefpoint);
-			local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
-			_,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
-			z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
+			if tipper.spec_dischargeable then	
+				readyToDischarge = false
+				tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
+				nx,ny,nz = getWorldTranslation(tipRefpoint);
+				local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
+				_,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
+				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 
-			local foundHeap = self:checkForHeapBehindMe(tipper)
-			--print(string.format("foundHeap(%s) or z(%s) >= 0",tostring(foundHeap),tostring(z)))
-			
-			--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
-			if (foundHeap or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
-				stopForTipping = true
-				readyToDischarge = true
-			end
+				local foundHeap = self:checkForHeapBehindMe(tipper)
+				--print(string.format("foundHeap(%s) or z(%s) >= 0",tostring(foundHeap),tostring(z)))
+				
+				--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
+				if (foundHeap or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
+					stopForTipping = true
+					readyToDischarge = true
+				end
 
-			--force tipper to tip to ground
-			if (tipper:getTipState() == Trailer.TIPSTATE_CLOSED or tipper:getTipState() == Trailer.TIPSTATE_CLOSING) and readyToDischarge then
-				tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
+				--force tipper to tip to ground
+				if (tipper:getTipState() == Trailer.TIPSTATE_CLOSED or tipper:getTipState() == Trailer.TIPSTATE_CLOSING) and readyToDischarge then
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
+				end
+				
+				--if we can't tip here anymore, pull a bit further
+				if tipper:getTipState() == Trailer.TIPSTATE_OPEN and not isTipping then
+					self.pullForward = true
+				end
+				
+				--when we can tip again, stop the movement
+				if g_updateLoopIndex % 100 == 0 and self.pullForward and isTipping then
+					self.pullForward = false
+				end
+				
+				--ready with tipping, go forward on the course
+				if tipper.cp.fillLevel == 0 then
+					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
+					self.pullForward = nil
+				end
+				
+				--do the driving here because if we initalize the ppc, we dont have the unload point anymore
+				if self.pullForward then
+					takeOverSteering = true
+					local fwdWayoint = self.course:getNextFwdWaypointIxfromVehiclePosition(unloadPointIx,self.vehicle,self.ppc:getLookaheadDistance())
+					local x,y,z = self.course:getWaypointPosition(fwdWayoint)
+					--local x,z = vehicle.Waypoints[fwdWayoint].cx, vehicle.Waypoints[fwdWayoint].cz;
+					--local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+					local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
+					AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
+				end
 			end
-			
-			--if we can't tip here anymore, pull a bit further
-			if tipper:getTipState() == Trailer.TIPSTATE_OPEN and not isTipping then
-				self.pullForward = true
-			end
-			
-			--when we can tip again, stop the movement
-			if g_updateLoopIndex % 100 == 0 and self.pullForward and isTipping then
-				self.pullForward = false
-			end
-			
-			--ready with tipping, go forward on the course
-			if tipper.cp.fillLevel == 0 then
-				self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
-				tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
-				self.pullForward = nil
-			end
-			
-			--do the driving here because if we initalize the ppc, we dont have the unload point anymore
-			if self.pullForward then
-				takeOverSteering = true
-				local fwdWayoint = self.course:getNextFwdWaypointIxfromVehiclePosition(unloadPointIx,self.vehicle,self.ppc:getLookaheadDistance())
-				local x,y,z = self.course:getWaypointPosition(fwdWayoint)
-				--local x,z = vehicle.Waypoints[fwdWayoint].cx, vehicle.Waypoints[fwdWayoint].cz;
-				--local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
-				local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
-				AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
-			end
-			
 		end
 		
 	else
@@ -806,6 +807,7 @@ function AIDriver:checkForHeapBehindMe(tipper)
 end
 
 function AIDriver:dischargeAtTipTrigger(dt)
+	print("AIDriver:dischargeAtTipTrigger(dt)")
 	local trigger = self.vehicle.cp.currentTipTrigger
 	local allowedToDrive = true
 	if trigger ~= nil then
@@ -902,6 +904,7 @@ function AIDriver:searchForTipTriggers(lx, lz)
 end
 
 function AIDriver:onUnLoadCourse(allowedToDrive, dt)
+	print("AIDriver:onUnLoadCourse")
 	-- Unloading
 	local takeOverSteering = false
 	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)

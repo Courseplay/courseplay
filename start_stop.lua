@@ -469,7 +469,7 @@ function courseplay:start(self)
 		-- attached and I don't have the motivation do dig through the legacy code to find out why
 		if self.cp.mode == courseplay.MODE_FIELDWORK then
 			self.cp.driver:delete()
-			self.cp.driver = UnloadableFieldworkAIDriver(self)
+			self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 		end
 		self.cp.driver:start(self.cp.waypointIndex)
 	else
