@@ -245,7 +245,7 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 		block.covered = false
 	end
 
-	if #blocks > 10 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
+	if #blocks > 20 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
 		-- don't waste time on unrealistic problems
 		courseGenerator.debug( 'Implausible number of blocks/tracks (%d/%d), not generating up/down rows', #blocks, nTotalTracks )
 		return nil, 0, 0, nil, false
