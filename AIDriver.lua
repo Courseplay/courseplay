@@ -807,7 +807,6 @@ function AIDriver:checkForHeapBehindMe(tipper)
 end
 
 function AIDriver:dischargeAtTipTrigger(dt)
-	print("AIDriver:dischargeAtTipTrigger(dt)")
 	local trigger = self.vehicle.cp.currentTipTrigger
 	local allowedToDrive = true
 	if trigger ~= nil then
@@ -904,7 +903,6 @@ function AIDriver:searchForTipTriggers(lx, lz)
 end
 
 function AIDriver:onUnLoadCourse(allowedToDrive, dt)
-	print("AIDriver:onUnLoadCourse")
 	-- Unloading
 	local takeOverSteering = false
 	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
