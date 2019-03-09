@@ -211,7 +211,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 	local vx, vy, vz = getWorldTranslation(self.controlledNode)
 	local dx, _, dz = worldToLocal(wpNode.node, vx, vy, vz);
 	local dFromNext = MathUtil.vector2Length(dx, dz)
-	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking %d, dz: %.1f', wpNode.ix, dz)
+	-- courseplay.debugVehicle(12, self.vehicle, 'PPC: checking %d, dz: %.1f, dFromNext: %.1f', wpNode.ix, dz, dFromNext)
 	local result = false
 	if self.course:switchingDirectionAt(wpNode.ix) then
 		-- switching direction at this waypoint, so this is pointing into the opposite direction.
@@ -226,8 +226,8 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 		-- when looking into the direction of the waypoint, we are ahead of it.
 		-- Also, when on the process of aligning to the course, like for example the vehicle just started
 		-- driving towards the first waypoint, we have to make sure we actually get close to the waypoint 
-		-- (as we may already be in front of it), so try get within the turn diameter.
-		if dz >= 0 and dFromNext < self.vehicle.cp.turnDiameter then
+		-- (as we may already be in front of it), so try get within the turn diameter * 2.
+		if dz >= 0 and dFromNext < self.vehicle.cp.turnDiameter * 2 then
 			result = true
 		end
 	end
@@ -247,8 +247,8 @@ end
 function PurePursuitController:havePassedAnyWaypointBetween(fromIx, toIx)
 	local node = WaypointNode( self.name .. '-node', false)
 	local result, passedWaypointIx = false, 0
-	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
 	-- math.max so we do one loop even if toIx < fromIx
+	-- courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
 	for ix = fromIx, math.max(toIx, fromIx) do
 		node:setToWaypoint(self.course, ix)
 		if self:havePassedWaypoint(node) then
