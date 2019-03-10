@@ -369,7 +369,6 @@ function Pathfinder:run(fromNode, toNode, polygon, fruit, customHasFruitFunc, ad
 	courseGenerator.debug( "Grid generated with %d points, grid spacing %.1f", #grid, self.gridSpacing)
 	self:addOffGridNode( grid, fromNode )
 	self:addOffGridNode( grid, toNode )
-	-- limit number of iterations depending on the grid size to avoid long freezes
 
 	local path = self:path( fromNode, toNode, grid, #grid * 10)
 

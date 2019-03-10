@@ -291,6 +291,7 @@ function Course:enrichWaypointData()
 	-- now add distance to next turn for the combines
 	local dToNextTurn, lNextRow = 0, 0
 	local turnFound = false
+	local onLastConnectingTrack = true
 	for i = #self.waypoints - 1, 1, -1 do
 		if turnFound then
 			dToNextTurn = dToNextTurn + self.waypoints[i].dToNext
