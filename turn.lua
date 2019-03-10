@@ -159,6 +159,7 @@ function courseplay:turn(vehicle, dt)
 			local turnInfo = {};
 			turnInfo.directionNode					= realDirectionNode
 			turnInfo.frontMarker					= frontMarker;
+			turnInfo.backMarker						= backMarker;
 			turnInfo.halfVehicleWidth 				= 2.5;
 			turnInfo.directionNodeToTurnNodeLength  = directionNodeToTurnNodeLength + 0.5; -- 0.5 is to make the start turn point just a tiny in front of the tractor
 			turnInfo.wpChangeDistance				= wpChangeDistance;
@@ -1120,7 +1121,11 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 	--- Front marker is in front of tractor
 	local extraMoveBack = 0
-	if turnInfo.frontMarker > 0 then
+	-- This works fine as long as there's no implement with a work area in the back as well. We don't really handle that
+	-- case properly. In stage 0 we check for the backmarker to change to stage 1 so we'll be further ahead than with
+	-- a front implement only. So no need to move the circle back, actually it should be moved forward but I don't have
+	-- the motivation to change that, for now, just don't move back, this works most of the time.
+	if turnInfo.frontMarker > 0 and turnInfo.backMarker > 0 then
 		extraMoveBack = turnInfo.frontMarker;
 	end;
 	courseplay:debug(("%s:(Turn) targetOffsetZ=%s, extraMoveBack=%.2fm"):format(nameNum(vehicle), tostring(targetOffsetZ), extraMoveBack), 14);
