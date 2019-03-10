@@ -510,6 +510,10 @@ function Course:hasUnloadPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.unload end)
 end
 
+function Course:hasWaitPointWithinDistance(ix, distance)
+	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.wait or p.interact end)
+end
+
 function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 	-- search backwards first
 	local d = 0

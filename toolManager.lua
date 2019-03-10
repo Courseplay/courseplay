@@ -813,6 +813,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	local unloadDistance = 1000;
+	local backUpDistance = 1000;
 	local trailerX,_,trailerZ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
 
 	if not driveOn then
@@ -827,6 +828,10 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				local triggerX,_,triggerZ = getWorldTranslation(currentTrailer.cp.currentSiloTrigger.rootNode);
 				_,_,unloadDistance = worldToLocal(directionNode, triggerX, vehicleY, triggerZ);
 				courseplay:debug(string.format('%s: Silo Trigger unloadDistance = %.2f vehicle.cp.trailerFillDistance = %.4s', nameNum(vehicle), unloadDistance, tostring(vehicle.cp.trailerFillDistance)), 2);
+				
+				--to be used when the waypoints are too close to get the realUnloadOrFillNode under the fillTrigger
+				--we are in fillTrigger anyway, so thats just optics
+				backUpDistance = vehicle.cp.driver.course:getDistanceBetweenVehicleAndWaypoint(vehicle, 1)
 			end;
 		elseif vehicle.cp.tipperLoadMode == 2 then
 			vehicle.cp.trailerFillDistance = 1;
@@ -836,11 +841,9 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	if vehicle.cp.tipperLoadMode == 1 and currentTrailer.cp.currentSiloTrigger ~= nil and not driveOn then
         local acceptedFillType = false;
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
-
 		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
-
 			local siloIsEmpty = false --siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
-			if not siloTrigger.isLoading and not siloIsEmpty and unloadDistance < vehicle.cp.trailerFillDistance then
+			if not siloTrigger.isLoading and not siloIsEmpty and (unloadDistance < vehicle.cp.trailerFillDistance or backUpDistance < 1 ) then
 				if siloTrigger:getIsActivatable(currentTrailer) then
 					courseplay:setFillOnTrigger(vehicle,currentTrailer,true,siloTrigger)
 				end 
@@ -891,7 +894,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			end;
 		else
 			courseplay:debug(string.format('%s: Stop the tipper unloadDistance = %.4s vehicle.cp.trailerFillDistance = %.4s waypointindex = %s', nameNum(vehicle), tostring(unloadDistance), tostring(vehicle.cp.trailerFillDistance), tostring(vehicle.cp.waypointIndex)), 2);
-			if unloadDistance < vehicle.cp.trailerFillDistance or vehicle.cp.tipperLoadMode == 2 then
+			if unloadDistance < vehicle.cp.trailerFillDistance or vehicle.cp.tipperLoadMode == 2 or backUpDistance < 1 then
 				allowedToDrive = false;
 			end;
 		end;

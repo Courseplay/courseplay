@@ -51,7 +51,7 @@ end
 
 --- Drive the refill part of the course
 function FillableFieldworkAIDriver:driveUnloadOrRefill()
-	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointAround(self.ppc:getCurrentWaypointIx(), 10, 3)
+	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 5)
 
 	self:searchForRefillTriggers()
 	if self.temporaryCourse then
