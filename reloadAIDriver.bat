@@ -8,5 +8,7 @@ type FillableFieldworkAIDriver.lua >> %outfile%
 type UnloadableFieldworkAIDriver.lua >> %outfile%
 type GrainTransportAIDriver.lua >> %outfile%
 type BaleLoaderAIDriver.lua >> %outfile%
+type BalerAIDriver.lua >> %outfile%
+type CombineAIDriver.lua >> %outfile%
 echo ]]^> >> %outfile%
 echo ^</code^> >> %outfile%

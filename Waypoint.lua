@@ -214,9 +214,10 @@ Course = CpObject()
 
 --- Course constructor
 ---@param waypoints Waypoint[] table of waypoints of the course
--- @param first optional, index of first waypoint to use
--- @param last optional, index of last waypoint to use to construct of the course
-function Course:init(vehicle, waypoints, first, last)
+---@param temporary boolean optional, default false is this a temporary course?
+-- @param first number optional, index of first waypoint to use
+-- @param last number optional, index of last waypoint to use to construct of the course
+function Course:init(vehicle, waypoints, temporary, first, last)
 	-- add waypoints from current vehicle course
 	---@type Waypoint[]
 	self.waypoints = {}
@@ -231,6 +232,7 @@ function Course:init(vehicle, waypoints, first, last)
 	self.vehicle = vehicle
 	-- offset to apply to every position
 	self.offsetX, self.offsetZ = 0, 0
+	self.temporary = temporary or false
 end
 
 --- Current offset to apply. getWaypointPosition() will always return the position adjusted by the
@@ -244,6 +246,12 @@ end
 --- get number of waypoints in course
 function Course:getNumberOfWaypoints()
 	return #self.waypoints
+end
+
+--- Is this a temporary course? Can be used to differentiate between recorded and dynamically generated courses
+-- The Course() object does not use this attribute for anything
+function Course:isTemporary()
+	return self.temporary
 end
 
 -- add missing angles and world directions from one waypoint to the other
@@ -279,6 +287,21 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dToNext = 0
 	self.waypoints[#self.waypoints].dToHere = self.length + self.waypoints[#self.waypoints - 1].dToNext
 	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
+	-- now add distance to next turn for the combines
+	local dToNextTurn, lNextRow = 0, 0
+	local turnFound = false
+	for i = #self.waypoints - 1, 1, -1 do
+		if turnFound then
+			dToNextTurn = dToNextTurn + self.waypoints[i].dToNext
+			self.waypoints[i].dToNextTurn = dToNextTurn
+			self.waypoints[i].lNextRow = lNextRow
+		end
+		if self:isTurnStartAtIx(i) then
+			lNextRow = dToNextTurn
+			dToNextTurn = 0
+			turnFound = true
+		end
+	end
 	courseplay.debugFormat(12, 'Course with %d waypoints created, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
 end
 
@@ -600,14 +623,22 @@ function Course:append(waypoints)
 end
 
 
-function Course:getDirectionToWPInDistance(ix,vehicle,distance)
-	local lx,lz = 0,1;
+function Course:getDirectionToWPInDistance(ix, vehicle, distance)
+	local lx, lz = 0, 1
 	for i = ix, #self.waypoints do
 		if self:getDistanceBetweenVehicleAndWaypoint(vehicle, i) > distance then
 			local x,y,z = self:getWaypointPosition(i)
-			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
-			break;
+			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z)
+			break
 		end
 	end
-	return lx,lz;
+	return lx, lz
+end
+
+function Course:getDistanceToNextTurn(ix)
+	return self.waypoints[ix].dToNextTurn
+end
+
+function Course:getNextRowLength(ix)
+	return self.waypoints[ix].lNextRow
 end

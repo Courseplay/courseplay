@@ -80,8 +80,8 @@ function FieldworkAIDriver.register()
 	AIVehicle.getCanStartAIVehicle = Utils.overwrittenFunction(AIVehicle.getCanStartAIVehicle,
 		function(self, superFunc)
 			-- Only the courseplay helper can handle bale loaders.
-			if FieldworkAIDriver.hasImplementWithSpecializationAttached(self, BaleLoader) or
-				FieldworkAIDriver.hasImplementWithSpecializationAttached(self, Pickup) then
+			if FieldworkAIDriver.hasImplementWithSpecialization(self, BaleLoader) or
+				FieldworkAIDriver.hasImplementWithSpecialization(self, Pickup) then
 				return false
 			end
 			if superFunc ~= nil then
@@ -114,11 +114,15 @@ function FieldworkAIDriver.register()
 	Pickup.registerEventListeners = Utils.appendedFunction(Pickup.registerEventListeners, PickupRegisterEventListeners)
 end
 
-function FieldworkAIDriver.hasImplementWithSpecializationAttached(vehicle, specialization)
+function FieldworkAIDriver.hasImplementWithSpecialization(vehicle, specialization)
+	return FieldworkAIDriver.getImplementWithSpecialization(vehicle, specialization) ~= nil
+end
+
+function FieldworkAIDriver.getImplementWithSpecialization(vehicle, specialization)
 	local aiImplements = vehicle:getAttachedAIImplements()
 	for _, implement in ipairs(aiImplements) do
 		if SpecializationUtil.hasSpecialization(specialization, implement.object.specializations) then
-			return true
+			return implement.object
 		end
 	end
 end
@@ -257,8 +261,8 @@ end
 
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
-	if self.temporaryCourse then
-		-- use the courseplay speed limit for fields
+	if self.course:isTemporary() then
+		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
 	else
 		-- just drive normally
@@ -271,7 +275,7 @@ function FieldworkAIDriver:driveUnloadOrRefill()
 	return false
 end
 
---- Grain tank full during fieldwork
+--- Full during fieldwork
 function FieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 	if self.stopImplementsWhileUnloadOrRefillOnField then
@@ -294,7 +298,7 @@ function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 		end
 	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
 		if self:allFillLevelsOk() and not self.heldForUnloadRefill then
-			self:debug('unloaded/refilled, continue working')
+			self:debug('unloaded, continue working')
 			-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
 			self:clearInfoText(self:getFillLevelInfoText())
 			self:changeToFieldwork()
@@ -318,7 +322,7 @@ function FieldworkAIDriver:changeToUnloadOrRefill()
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
 end
 
-function FieldworkAIDriver:onEndTemporaryCourse()
+function FieldworkAIDriver:onNextCourse()
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:changeToFieldwork()
 	end
@@ -423,9 +427,7 @@ function FieldworkAIDriver:startWork()
 	-- send the event first and _then_ lower otherwise it sometimes does not turn it on
 	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
 	self.vehicle:requestActionEventUpdate() 
-	if not courseplay:getIsEngineReady(self.vehicle) then
-		self.vehicle:startMotor()
-	end
+	self:startEngineIfNeeded()
 	self:lowerImplements(self.vehicle)
 end
 
@@ -510,12 +512,12 @@ function FieldworkAIDriver:setUpCourses()
 		self:debug('Course with %d waypoints set up, there seems to be an unload/refill course starting at waypoint %d',
 			#self.vehicle.Waypoints, endFieldCourseIx + 1)
 		---@type Course
-		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, endFieldCourseIx)
+		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, endFieldCourseIx)
 		---@type Course
-		self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, endFieldCourseIx + 1, #self.vehicle.Waypoints)
+		self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, false, endFieldCourseIx + 1, #self.vehicle.Waypoints)
 	else
 		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
-		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, 1, #self.vehicle.Waypoints)
+		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, #self.vehicle.Waypoints)
 	end
 	-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
 	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
@@ -679,8 +681,13 @@ function FieldworkAIDriver:updateLights()
 	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE and self:areBeaconLightsEnabled() then
 		self.vehicle:setBeaconLightsVisibility(true)
 	else
-		self.vehicle:setBeaconLightsVisibility(false)
+		self:updateLightsOnField()
 	end
+end
+
+function FieldworkAIDriver:updateLightsOnField()
+	-- there are no beacons used on the field by default
+	self.vehicle:setBeaconLightsVisibility(false)
 end
 
 function FieldworkAIDriver:startLoweringDurationTimer()
@@ -702,7 +709,9 @@ function FieldworkAIDriver:calculateLoweringDuration()
 	end
 end
 
-
+function FieldworkAIDriver:getLoweringDurationMs()
+	return self.loweringDurationMs
+end
 
 --- If we are towing an implement, move to a bigger radius in tight turns
 -- making sure that the towed implement's trajectory remains closer to the
@@ -764,7 +773,6 @@ function FieldworkAIDriver:getOffsetForTowBarLength(r, towBarLength)
 	local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
 	return rTractor - r
 end
-
 
 function FieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_REFILLING'

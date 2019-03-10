@@ -174,7 +174,6 @@ function PurePursuitController:getCurrentWaypointIx()
 end
 
 function PurePursuitController:getLastPassedWaypointIx()
-
 	return self.lastPassedWaypointIx
 end
 

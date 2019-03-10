@@ -55,8 +55,8 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 5)
 
 	self:searchForRefillTriggers()
-	if self.temporaryCourse then
-		-- use the courseplay speed limit for fields
+	if self.course:isTemporary() then
+		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
 	elseif self:getIsInFilltrigger() then
 		-- our raycast in searchForRefillTriggers found a fill trigger

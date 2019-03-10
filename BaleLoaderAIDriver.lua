@@ -55,20 +55,10 @@ end
 function BaleLoaderAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BaleLoaderAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.baleLoader = self:getBaleLoader()
+	self.baleLoader = FieldworkAIDriver.getImplementWithSpecialization(vehicle, BaleLoader)
 	self:initStates(BaleLoaderAIDriver.myStates)
 	self.manualUnloadNode = WaypointNode(self.vehicle:getName() .. 'unloadNode')
 	self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
-end
-
--- find my bale loader object
-function BaleLoaderAIDriver:getBaleLoader()
-	local aiImplements = self.vehicle:getAttachedAIImplements()
-	for _, implement in ipairs(aiImplements) do
-		if SpecializationUtil.hasSpecialization(BaleLoader, implement.object.specializations) then
-			return implement.object
-		end
-	end
 end
 
 ---@return boolean true if unload took over the driving
