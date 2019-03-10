@@ -863,17 +863,11 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					local sx, sy, sz = worldToLocal(trigger.triggerStartId, x, y, z);
 					local ex, ey, ez = worldToLocal(trigger.triggerEndId, x, y, z);
 					local totalLength = courseplay:distance3D(sx, sy, sz, ex, ey, ez)
-					local fillDelta = self.vehicle.cp.totalFillLevel / self.vehicle.cp.totalCapacity;
-
-					local animation;
-					if tipper.spec_animatedVehicle.animations['tipAnimationBack'] ~= nil then
-						animation = tipper.spec_animatedVehicle.animations['tipAnimationBack'];
-					else
-						animation = {["duration"] = 15000, ["currentTime"] = 0}		--Set some defaults, so in case a weird anim name was used, at least we are not throwing an error
-					end
-					local totalTipDuration = (animation.duration- animation.currentTime)/1*fillDelta / 1000;
+					local dischargeNode = tipper:getCurrentDischargeNode()
+					local totalTipDuration = ((tipper.cp.totalFillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
 					local meterPrSeconds = totalLength / totalTipDuration;
-					self.unloadSpeed = meterPrSeconds*3.6	
+					self.unloadSpeed = meterPrSeconds*3.6
+					--print(string.format("totalTipDuration: %s; totalLength: %s",tostring(totalTipDuration),tostring(totalLength)))
 				end
 				
 				local tipState = tipper:getTipState()

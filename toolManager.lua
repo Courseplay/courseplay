@@ -1093,7 +1093,7 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 					if trailerInTipRange then
 						goForTipping = true
 					end
-
+					--[[
 					-- Get the animation
 					local animation;
 					if tipper.spec_animatedVehicle.animations['tipAnimationBack'] ~= nil then
@@ -1105,10 +1105,15 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 					else
 						animation = {["duration"] = 15000, ["currentTime"] = 0}								--Set some defaults, so in case a weird anim name was used, at least we are not throwing an error
 					end
+					]]
+					
 					local totalLength = abs(endDistance - startDistance)*0.9;
-					local fillDelta = vehicle.cp.totalFillLevel / vehicle.cp.totalCapacity;
-					local totalTipDuration = (animation.duration- animation.currentTime)/1*fillDelta / 1000;
+					--local fillDelta = vehicle.cp.totalFillLevel / vehicle.cp.totalCapacity;
+					
+					local dischargeNode = tipper:getCurrentDischargeNode()
+					local totalTipDuration = ((tipper.cp.totalFillLevel / dischargeNode.emptySpeed )/ 1000)
 					local meterPrSeconds = totalLength / totalTipDuration;
+					
 					if stopAndGo then
 						meterPrSeconds = vehicle.cp.speeds.reverse * 1000;
 					end;
