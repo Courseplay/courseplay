@@ -779,7 +779,9 @@ function courseplay:onDraw()
 			local ox,oy,oz = getWorldTranslation(self.cp.oldDirectionNode);
 			cpDebug:drawPoint(ox, oy+4, oz, 0.9098, 0.6902 , 0.2706);
 		end;
-
+		if self.cp.driver then
+			self.cp.driver:onDraw()
+		end
 		local nx,ny,nz = getWorldTranslation(self.cp.DirectionNode);
 		cpDebug:drawPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0);
 	end;
@@ -1211,13 +1213,13 @@ function courseplay:onUpdateTick(dt)
 		courseplay:createFieldEdgeButtons(self);
 	end;
 
-	
 	--attached or detached implement?
 	if self.cp.tooIsDirty then
 		self.cpTrafficCollisionIgnoreList = {}
 		courseplay:resetTools(self)
 	end
 
+	-- TODO this must be removed, combines should be handled by the AIDriver, not some random piece of code somewhere
 	--get the combines filling rate in l/second
 	if self.cp.isCombine then
 		if courseplay:timerIsThrough(self, 'combineFillLevel') then 
