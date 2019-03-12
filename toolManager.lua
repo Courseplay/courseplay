@@ -1124,7 +1124,9 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 						local refSpeed = meterPrSeconds * 3.6; -- * 0.90;
 						vehicle.cp.backupUnloadSpeed = vehicle.cp.speeds.reverse;
 						courseplay:changeReverseSpeed(vehicle, nil, refSpeed, true);
-						courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(tipper), totalLength, totalTipDuration, refSpeed), 2);
+						--courseplay:debug(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(tipper), totalLength, totalTipDuration, refSpeed), 2);
+						courseplay:debug(string.format("%s in mode %s: entering BGASilo: \nemptySpeed: %sl/sek; fillLevel: %0.1fl\nSilo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh", tostring(tipper.getName and tipper:getName() or 'no name'), tostring(vehicle.cp.mode), tostring(dischargeNode.emptySpeed*1000),tipper.cp.totalFillLevel,tostring(totalLength) ,tostring(totalTipDuration),refSpeed),14)
+					--print(string.format("totalTipDuration: %s; totalLength: %s",tostring(totalTipDuration),tostring(totalLength)))
 						--print(string.format("%s: BGA totalLength=%.2f,  totalTipDuration%.2f,  refSpeed=%.2f", nameNum(vehicle), totalLength, totalTipDuration, refSpeed));
 					end;
 				end;

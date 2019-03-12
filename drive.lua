@@ -816,6 +816,10 @@ function courseplay:drive(self, dt)
 	if self.cp.currentTipTrigger ~= nil then
 		if self.cp.currentTipTrigger.bunkerSilo ~= nil then
 			refSpeed = Utils.getNoNil(self.cp.speeds.reverse, self.cp.speeds.crawl);
+			if courseplay.debugChannels[14] and g_updateLoopIndex % 100 == 0 then
+				courseplay:debug(string.format("%s: refSpeed: %.2f ", nameNum(self),refSpeed), 14);
+			end
+			
 			--speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
 		else
 			refSpeed = self.cp.speeds.turn;
