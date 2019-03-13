@@ -68,8 +68,7 @@ function GrainTransportAIDriver:drive(dt)
 		and self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
 
-		local lx, lz = self:getDirectionToGoalPoint()
-		self:searchForTipTriggers(lx, lz)
+		self:searchForTipTriggers()
 
 		allowedToDrive = self:load(allowedToDrive)
 		allowedToDrive, giveUpControl = self:onUnLoadCourse(allowedToDrive, dt)

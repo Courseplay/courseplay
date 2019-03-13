@@ -596,3 +596,16 @@ function Course:append(waypoints)
 	end
 	self:enrichWaypointData()
 end
+
+
+function Course:getDirectionToWPInDistance(ix,vehicle,distance)
+	local lx,lz = 0,1;
+	for i = ix, #self.waypoints do
+		if self:getDistanceBetweenVehicleAndWaypoint(vehicle, i) > distance then
+			local x,y,z = self:getWaypointPosition(i)
+			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
+			break;
+		end
+	end
+	return lx,lz;
+end
