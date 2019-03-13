@@ -859,10 +859,10 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					local ex, ey, ez = worldToLocal(trigger.triggerEndId, x, y, z);
 					local totalLength = courseplay:distance3D(sx, sy, sz, ex, ey, ez)
 					local dischargeNode = tipper:getCurrentDischargeNode()
-					local totalTipDuration = ((tipper.cp.totalFillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
+					local totalTipDuration = ((tipper.cp.fillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
 					local meterPrSeconds = totalLength / totalTipDuration;
 					self.unloadSpeed = meterPrSeconds*3.6
-					self:debug("%s in mode %s: entering BGASilo: \nemptySpeed: %sl/sek; fillLevel: %0.1fl\nSilo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh", tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode), tostring(dischargeNode.emptySpeed*1000),tipper.cp.totalFillLevel,tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
+					self:debug("%s in mode %s: entering BGASilo: \nemptySpeed: %sl/sek; fillLevel: %0.1fl\nSilo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh", tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode), tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel,tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
 					--print(string.format("totalTipDuration: %s; totalLength: %s",tostring(totalTipDuration),tostring(totalLength)))
 				end
 				
