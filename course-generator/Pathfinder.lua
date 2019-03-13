@@ -233,7 +233,7 @@ function Pathfinder:generateGridForPolygon( polygon, gridSpacingHint )
 end
 
 function Pathfinder:findIslands( polygon )
-	local grid, _ = self:generateGridForPolygon( polygon, Island.self.gridSpacing )
+	local grid, _ = self:generateGridForPolygon( polygon, Island.gridSpacing )
 	local islandNodes = {}
 	for _, row in ipairs( grid.map ) do
 		for _, index in pairs( row ) do
@@ -243,7 +243,7 @@ function Pathfinder:findIslands( polygon )
 				local _, d = polygon:getClosestPointIndex(grid[ index ])
 				-- TODO: should calculate the closest distance to polygon edge, not
 				-- the vertices. This may miss an island close enough to the field boundary
-				if d > 8 * Island.self.gridSpacing then
+				if d > 8 * Island.gridSpacing then
 					table.insert( islandNodes, grid[ index ])
 					grid[ index ].island = true
 				end
