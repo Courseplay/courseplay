@@ -201,11 +201,21 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	]]
 	
 	--print("findSpecialTriggerCallback found "..tostring(transformId).." "..getName(transformId))
+	--if the trigger is on my list an I'm not in the trigger (because I allready filled up here), add it to my found triggers   
 	if courseplay.triggers.fillTriggers[transformId] then
+		local imNotInThisTrigger = true
+		local trigger = courseplay.triggers.fillTriggers[transformId]
+		for _,workTool in pairs (self.cp.workTools) do
+			if trigger.getIsActivatable and trigger:getIsActivatable(workTool) then 
+				imNotInThisTrigger = false
+			end
+		end
+		if imNotInThisTrigger then
 		--print(transformId.." is in fillTrigers")
-		courseplay:addFoundFillTrigger(self, transformId)
-		courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
-		return false;
+			courseplay:addFoundFillTrigger(self, transformId)
+			courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
+			return false;
+		end
 	end
 			
 	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
