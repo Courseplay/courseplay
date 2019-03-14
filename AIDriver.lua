@@ -1064,11 +1064,11 @@ end
 --- If we have a path now then set it up as a temporary course, also appending an alignment between the end
 --- of the path and the target course
 function AIDriver:onPathfindingDone(path)
-	if path and #path > 0 then
+	if path and #path > 5 then
 		self:debug('Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathFindingStartedAt or 0))
 		local temporaryCourse = Course(self.vehicle, courseGenerator.pointsToXz(path))
 		-- first remove a few waypoints from the path so we have room for the alignment course
-		if temporaryCourse:getNumberOfWaypoints() > 5 and temporaryCourse:getLength() > self.vehicle.cp.turnDiameter * 3 and temporaryCourse:shorten(self.vehicle.cp.turnDiameter * 1.5) then
+		if temporaryCourse:getLength() > self.vehicle.cp.turnDiameter * 3 and temporaryCourse:shorten(self.vehicle.cp.turnDiameter * 1.5) then
 			self:debug('Path shortened to accommodate alignment, has now %d waypoints', temporaryCourse:getNumberOfWaypoints())
 			-- append an alignment course at the end of the path to the target waypoint
 			local x, _, z = temporaryCourse:getWaypointPosition(temporaryCourse:getNumberOfWaypoints())
@@ -1087,7 +1087,11 @@ function AIDriver:onPathfindingDone(path)
 			self:startCourseWithAlignment(self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
 		end
 	else
-		self:debug('Pathfinding finished, no path found, reverting to alignment course')
+		if path then
+			self:debug('Path found but too short (%d), reverting to alignment course.', #path)
+		else
+			self:debug('Pathfinding finished, no path found, reverting to alignment course')
+		end
 		self:startCourseWithAlignment(self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
 	end
 end
