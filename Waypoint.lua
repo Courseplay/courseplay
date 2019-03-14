@@ -574,6 +574,7 @@ end
 --- Cut waypoints from the end of the course until we shortened it by at least d
 -- @param d length in meters to shorten course
 -- @return true if shortened
+-- TODO: this must be protected from courses with a few waypoints only
 function Course:shorten(d)
 	local dCut = 0
 	local from = #self.waypoints - 1

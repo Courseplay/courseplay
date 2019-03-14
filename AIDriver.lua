@@ -1068,7 +1068,7 @@ function AIDriver:onPathfindingDone(path)
 		self:debug('Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathFindingStartedAt or 0))
 		local temporaryCourse = Course(self.vehicle, courseGenerator.pointsToXz(path))
 		-- first remove a few waypoints from the path so we have room for the alignment course
-		if temporaryCourse:getLength() > self.vehicle.cp.turnDiameter * 3 and temporaryCourse:shorten(self.vehicle.cp.turnDiameter * 1.5) then
+		if temporaryCourse:getNumberOfWaypoints() > 5 and temporaryCourse:getLength() > self.vehicle.cp.turnDiameter * 3 and temporaryCourse:shorten(self.vehicle.cp.turnDiameter * 1.5) then
 			self:debug('Path shortened to accommodate alignment, has now %d waypoints', temporaryCourse:getNumberOfWaypoints())
 			-- append an alignment course at the end of the path to the target waypoint
 			local x, _, z = temporaryCourse:getWaypointPosition(temporaryCourse:getNumberOfWaypoints())
