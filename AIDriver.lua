@@ -472,23 +472,27 @@ function AIDriver:onWaypointPassed(ix)
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
 	-- or stop.
 	if ix == self.course:getNumberOfWaypoints() then
-		if self:onTemporaryCourse() then
-			-- temporary course to the first waypoint ended, start the main course now
-			self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-			self:startCourse(self.courseAfterTemporary, self.waypointIxAfterTemporary)
-			self.temporaryCourse = nil
-			self:debug('Temporary course finished, starting next course at waypoint %d', self.waypointIxAfterTemporary)
-			self:onEndTemporaryCourse()
-		else
-			self:debug('Last waypoint reached, end of course.')
-			self:onEndCourse()
-		end
+		self:onLastWaypoint()
 	elseif self.course:isWaitAt(ix) then
 		-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
 		-- passed stop until the user presses the continue button
 		self:stop('WAIT_POINT')
 		-- show continue button
 		courseplay.hud:setReloadPageOrder(self.vehicle, 1, true);
+	end
+end
+
+function AIDriver:onLastWaypoint()
+	if self:onTemporaryCourse() then
+		-- temporary course to the first waypoint ended, start the main course now
+		self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
+		self:startCourse(self.courseAfterTemporary, self.waypointIxAfterTemporary)
+		self.temporaryCourse = nil
+		self:debug('Temporary course finished, starting next course at waypoint %d', self.waypointIxAfterTemporary)
+		self:onEndTemporaryCourse()
+	else
+		self:debug('Last waypoint reached, end of course.')
+		self:onEndCourse()
 	end
 end
 

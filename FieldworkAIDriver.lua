@@ -335,6 +335,7 @@ function FieldworkAIDriver:onEndCourse()
 end
 
 function FieldworkAIDriver:onWaypointPassed(ix)
+	self:debug('onWaypointPassed %d', ix)
 	if self.turnIsDriving then
 		self:debug('onWaypointPassed %d, ignored as turn is driving now', ix)
 		return
@@ -363,7 +364,11 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			end
 		end
 	end
-	AIDriver.onWaypointPassed(self, ix)
+	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
+	-- or stop.
+	if ix == self.course:getNumberOfWaypoints() then
+		self:onLastWaypoint()
+	end
 end
 
 function FieldworkAIDriver:onWaypointChange(ix)
