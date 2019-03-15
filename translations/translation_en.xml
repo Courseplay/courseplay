@@ -5,17 +5,17 @@
 		<text name="COURSEPLAY_DRIVER" 										text="Driver" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Start driver" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Stop driver" />
-		<text name="COURSEPLAY_PPC_OFF" 									text="normal mode" />
-		<text name="COURSEPLAY_PPC_ON" 										text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_PPC_OFF" 									text="Normal mode" />
+		<text name="COURSEPLAY_PPC_ON" 										text="Experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point or at next trigger" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Number of runs to perform" />
  		<text name="COURSEPLAY_UNLIMITED" 									text="Unlimited" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Driver side" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="Automatic" />
-		<text name="COURSEPLAY_LEFT" 										text="left" />
-		<text name="COURSEPLAY_RIGHT" 										text="right" />
-		<text name="COURSEPLAY_CENTER" 										text="center" />
+		<text name="COURSEPLAY_LEFT" 										text="Left" />
+		<text name="COURSEPLAY_RIGHT" 										text="Right" />
+		<text name="COURSEPLAY_CENTER" 										text="Center" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 					text="Send driver home" />
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Request driver" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Driver requested" />
@@ -31,16 +31,16 @@
 		<text name="COURSEPLAY_MODE_8" 										text="Type: Liquid product transport" />
 		<text name="COURSEPLAY_MODE_9" 										text="Type: Fill and empty shovel" />
 		<text name="COURSEPLAY_MODE_10" 									text="Type: Leveling and compacting" />
-		<text name="COURSEPLAY_CONTINUE" 									text="continue" />
+		<text name="COURSEPLAY_CONTINUE" 									text="Continue" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Clear current course" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Drive now" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Drive on at:" />
-		<text name="UNKNOWN" 												text="unknown" />
+		<text name="UNKNOWN" 												text="Unknown" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Headland counter-/clockwise" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Headland before/after field course" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"						text="Generate field course" />
 		<text name="COURSEPLAY_MULTI_TOOLS"					 				text="Multiple Tools" />  <!-- Todo use somthing better -->
-		<text name="COURSEPLAY_DISTANCE" 									text="distance" />
+		<text name="COURSEPLAY_DISTANCE" 									text="Distance" />
 		<text name="COURSEPLAY_WAITING_TIME" 								text="Waiting time" />
 		<text name="COURSEPLAY_MINUTES" 									text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 									text="%d sec" />
@@ -63,8 +63,8 @@
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 				text="Search for courses and folders" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 							text="Deactivate filter" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT"					text="has reached overload point." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="save pipe position" />
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text= "move pipe to position" />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="Save pipe position" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="move pipe to position" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="has reached waiting point" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 							text="has reached trigger/end point" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="has finished grain transport." />
@@ -85,35 +85,35 @@
 		<text name="COURSEPLAY_START_AT" 									text="Start at:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Turn on field:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Opposite turn direction:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="last couple of lanes" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="when possible" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Last couple of lanes" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="When possible" />
 		<text name="COURSEPLAY_TURN_RADIUS" 								text="Turning circle:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Vertical offset:" />
 		<text name="COURSEPLAY_COMBINE" 									text="Combine" />
-		<text name="COURSEPLAY_NONE" 										text="none" />
+		<text name="COURSEPLAY_NONE" 										text="None" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 								text="Choose combine:" />
 		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Find combine:" />
 		<text name="COURSEPLAY_CURRENT" 									text="Current:" />
-		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 							text="automatic search" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 								text="select manually" />
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 							text="Automatic search" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 								text="Select manually" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Search combine on field:  %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 								text="Copy course:" />
 		<text name="COURSEPLAY_VEHICLE" 									text="Vehicle" />
-		<text name="COURSEPLAY_TEMP_COURSE" 								text="temporary course" />
+		<text name="COURSEPLAY_TEMP_COURSE" 								text="Temporary course" />
 		<text name="COURSEPLAY_SPEED_TURN" 									text="Turn speed:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 								text="Field speed:" />
 		<text name="COURSEPLAY_SPEED_MAX" 									text="Street speed:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 							text="Reversing speed:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 								text="Speed:" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 					text="from recording" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 							text="maximum speed" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="automatic (from course, max. %s)" />
-		<text name="COURSEPLAY_NO_COURSE_LOADED" 							text="no course loaded" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 					text="From recording" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 							text="Maximum speed" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="Automatic (from course, max. %s)" />
+		<text name="COURSEPLAY_NO_COURSE_LOADED" 							text="No course loaded" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Warning lights:" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="never turn on" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="Never turn on" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="beacon lights (on the street)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="beacon &amp; hazard lights (on the street)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="beacon lights (always)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="Beacon &amp; hazard lights (on the street)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="Beacon lights (always)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 						text="Courseplay control" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Combine controls" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Manage courses" />
@@ -124,11 +124,11 @@
 		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Driving settings" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Settings" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Combine is turning" />
-		<text name="COURSEPLAY_NO_WORK_AREA" 								text="no work area at this course" />
+		<text name="COURSEPLAY_NO_WORK_AREA" 								text="No work area at this course" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 							text="combined courses" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 						text="Drive behind combine" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 						text="Drive next to combine" />
-		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 							text="drive to combine" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 							text="Drive to combine" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 					text="Combine is telling me to stop" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Waiting until waiting position is free" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Turning to direction %d %d" />
@@ -138,16 +138,16 @@
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Waiting until combine has turned" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Waiting for new waypoint" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 							text="Following tractor" />
-		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 							text="should be refueled soon" />
-		<text name="COURSEPLAY_MUST_BE_REFUELED" 							text="must be refueled" />
+		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 							text="Should be refueled soon" />
+		<text name="COURSEPLAY_MUST_BE_REFUELED" 							text="Must be refueled" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 							text="is being refueled" />
 		<text name="COURSEPLAY_IS_BEING_WEIGHED" 							text="is being weighed" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 					text="Too many waiting points! Only %d allowed." />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 						text="Too few waiting points! %d needed." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 					text="Too many unload points! Only %d allowed." />
 		<text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"					text="Too few unload points! %d needed." />
-		<text name="COURSEPLAY_WRONG_TRAILER" 								text="wrong trailer for this mode" />
-		<text name="COURSEPLAY_WRONG_TOOL" 									text="wrong tool for this mode" />
+		<text name="COURSEPLAY_WRONG_TRAILER" 								text="Wrong trailer for this mode" />
+		<text name="COURSEPLAY_WRONG_TOOL" 									text="Wrong tool for this mode" />
 		<text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 			text="This vehicle type isn't supported in this mode." />
 		<text name="COURSEPLAY_WEATHER_WARNING" 							text="is waiting for better weather" />
 		<text name="COURSEPLAY_LANE_OFFSET" 								text="Lane offset" />
@@ -178,8 +178,8 @@
 		<text name="COURSEPLAY_CORNER_9" 									text="North-East (new)" />
 		<text name="COURSEPLAY_CORNER_10" 									text="South-East (new)" />
 		<text name="COURSEPLAY_CORNER_11" 									text="Select position on map" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 				text="(click map to select field)" />
-		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 		text="(click map to select starting position)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 				text="(Click map to select field)" />
+		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 		text="(Click map to select starting position)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			            	text="Start working on" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Up/down rows" />
 		<text name="COURSEPLAY_SKIP_ROWS"     			                	text="Skip rows" />
@@ -217,34 +217,34 @@
         <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="Course generated successfully but due to the current direction settings it may cause issues when driving."/>
 		<text name="COURSEPLAY_HEADLAND" 									text="Headland" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  							text="Bypass islands" /> <!-- course will bypass smaller islands (like utility poles or trees) in the field -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="deactivated" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="simple" /> <!-- just move existing waypoints out of the island -->
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="circle" /> <!-- drive a full circle around the island when first bypassing -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="Deactivated" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="Simple" /> <!-- just move existing waypoints out of the island -->
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="Circle" /> <!-- drive a full circle around the island when first bypassing -->
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Smooth" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="Turn" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Round (turn radius)" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Headland reverse maneuver"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="straight" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="curve" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Straight" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Curve" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
-		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
-		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="racetrack" />
-		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
-		<text name="COURSEPLAY_ACTIVATED" 									text="activated" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Up/Down" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Racetrack" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spiral" />
+		<text name="COURSEPLAY_ACTIVATED" 									text="Activated" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Name only" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Name and Course" />
-		<text name="COURSEPLAY_DEACTIVATED" 								text="deactivated" />
+		<text name="COURSEPLAY_DEACTIVATED" 								text="Deactivated" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Ridge markers" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Unloading on field" />
-		<text name="COURSEPLAY_AUTOMATIC" 									text="automatic" />
-		<text name="COURSEPLAY_MANUAL" 										text="manually" />
+		<text name="COURSEPLAY_AUTOMATIC" 									text="Automatic" />
+		<text name="COURSEPLAY_MANUAL" 										text="Manually" />
 		<text name="COURSEPLAY_TURN_MANEUVER" 								text="Turn maneuver:" />
 		<text name="COURSEPLAY_START" 										text="Start" />
 		<text name="COURSEPLAY_FINISH" 										text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Course is not valid" />
-		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="fertilizer function of sowing machine" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="combine convoy" />
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="combines pipe is in fruit" />
+		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Fertilizer function of sowing machine" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Combine Convoy" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Combines pipe is in fruit" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="No shovel could be found" />
@@ -265,26 +265,26 @@
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Stop &amp; go loading" />
 
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Start course at" />
-		<text name="COURSEPLAY_NEAREST_POINT" 								text="nearest waypoint" />
-		<text name="COURSEPLAY_FIRST_POINT" 								text="first waypoint" />
-		<text name="COURSEPLAY_CURRENT_POINT" 								text="current waypoint" />
-		<text name="COURSEPLAY_NEXT_POINT" 									text="next closest waypoint" />
+		<text name="COURSEPLAY_NEAREST_POINT" 								text="Nearest waypoint" />
+		<text name="COURSEPLAY_FIRST_POINT" 								text="First waypoint" />
+		<text name="COURSEPLAY_CURRENT_POINT" 								text="Current waypoint" />
+		<text name="COURSEPLAY_NEXT_POINT" 									text="Next closest waypoint" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Field edge path" />
 		<text name="COURSEPLAY_FIELD" 										text="Field" />
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(currently loaded course)" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Currently loaded course)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 						text="Field scan in progress" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 							text="Scanning field %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 								text="No hose could be found - cancel refill" />
 		<text name="COURSEPLAY_SYMMETRIC_LANE_CHANGE" 						text="Symmetric lane change" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_PRIORITY" 					text="Driver priority" />
-		<text name="COURSEPLAY_FILLEVEL" 									text="fill level" />
+		<text name="COURSEPLAY_FILLEVEL" 									text="Fill level" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 								text=": pickup is jammed" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 							text=": baler needs new net rolls" />
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 					text="Calculate current field's edge path" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Field edge path number" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Add field %d's edge path to list" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Overwrite field %d's edge path in list" />
-		<text name="COURSEPLAY_USER" 										text="user" />
+		<text name="COURSEPLAY_USER" 										text="User" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="should be repaired soon" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="must be repaired" />
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 					text="is being repaired" />
@@ -350,42 +350,42 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="CP: Move to transport position" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Move to pre-unloading position" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="CP: Move to unloading position" />
-		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="show mouse cursor" />
-		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="hide mouse cursor" />
+		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Show mouse cursor" />
+		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Hide mouse cursor" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Left Mouse Button" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Right Mouse Button" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Middle Mouse Button" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Mouse Button %d" />
 
-		<text name="COURSEPLAY_MODE10_MODE" 						    	text="mode" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="leveling and compacting" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="filling up" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="just courseplayers" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="all with running engine" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="detect tractors in range of " />
-		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="max speed while pushing" />
-		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="blade height" />
-		<text name="COURSEPLAY_MODE10_NOSILO"						 		text="no bunkersilo detected at start point" />
-		<text name="COURSEPLAY_MODE10_NOBLADE"						 		text="no blade attached" />
-		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"							text="front mounted blade is not supported" />
+		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Mode" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Leveling and Compacting" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="Filling up" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Automaticly stop for" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Just courseplayers" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="All with running engine" />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Detect tractors in range of " />
+		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Max speed while pushing" />
+		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Blade height" />
+		<text name="COURSEPLAY_MODE10_NOSILO"						 		text="No bunkersilo detected at start point" />
+		<text name="COURSEPLAY_MODE10_NOBLADE"						 		text="No blade attached" />
+		<text name="COURSEPLAY_MODE10_NOFRONTBLADE"							text="Front mounted blade is not supported" />
 		<text name="COURSEPLAY_MODE10_SETTINGS"						    	text="BunkerSilo settings" />
-		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 		text="blade width" />
+		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 		text="Blade width" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 						text="Silo is being filled by" />
-		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 						text="driving through" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 		text="reverse unloading" />
+		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 						text="Driving through" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 		text="Reverse unloading" />
 
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						    	text="Refill fuel at gas station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"						        	text="always" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"							text="below 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						    	text="fuel save option" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"						        	text="Always" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"							text="Below 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						    	text="Fuel save option" />
 
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 							text="Reload course list" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 		text="Couldn't generate course. Try changing the settings or moving the vehicle."/>
 
-		<text name="COURSEPLAY_FillType_BaleTwine" 							text="bale twine" />
-		<text name="COURSEPLAY_FillType_BaleNet" 							text="bale net" />
-		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="wrapping foil" />
-		<text name="COURSEPLAY_FillType_Molasses"							text="molasses" />
+		<text name="COURSEPLAY_FillType_BaleTwine" 							text="Bale twine" />
+		<text name="COURSEPLAY_FillType_BaleNet" 							text="Bale net" />
+		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="Wrapping foil" />
+		<text name="COURSEPLAY_FillType_Molasses"							text="Molasses" />
 	</texts>
 </l10n>
