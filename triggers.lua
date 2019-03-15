@@ -200,7 +200,6 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	end	
 	]]
 	
-	--print("findSpecialTriggerCallback found "..tostring(transformId).." "..getName(transformId))
 	--if the trigger is on my list an I'm not in the trigger (because I allready filled up here), add it to my found triggers   
 	if courseplay.triggers.fillTriggers[transformId] then
 		local imNotInThisTrigger = true
@@ -211,11 +210,13 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 			end
 		end
 		if imNotInThisTrigger then
-		--print(transformId.." is in fillTrigers")
+			courseplay:debug(('%s: fillTrigger(%d) found, add to vehicle.cp.fillTriggers'):format(nameNum(self), transformId), 19);
 			courseplay:addFoundFillTrigger(self, transformId)
 			courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
-			return false;
+		else
+			courseplay:debug(('%s: fillTrigger(%d) found, but Im allready in it so ignore it'):format(nameNum(self), transformId), 19);
 		end
+		return false;
 	end
 			
 	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
@@ -228,6 +229,7 @@ end;
 function courseplay:addFoundFillTrigger(vehicle, transformId)
 	--if we dont have a fillTrigger, set cp.fillTrigger
 	if vehicle.cp.fillTrigger == nil then
+		courseplay:debug(string.format("set %s as vehicle.cp.fillTrigger",tostring(transformId)),19)
 		vehicle.cp.fillTrigger = transformId;
 	end
 	-- check whether we have it in our list allready
@@ -243,7 +245,7 @@ function courseplay:addFoundFillTrigger(vehicle, transformId)
 	--if not, add it
 	if not allreadyThere then
 		table.insert(vehicle.cp.fillTriggers,transformId)
-		--print(string.format("add %s to vehicle.cp.fillTriggers; new: %d",tostring(transformId),#vehicle.cp.fillTriggers))
+		courseplay:debug(string.format("add %s to vehicle.cp.fillTriggers; new: %d",tostring(transformId),#vehicle.cp.fillTriggers),19)
 	end
 end
 
