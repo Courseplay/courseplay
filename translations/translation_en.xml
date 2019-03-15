@@ -40,7 +40,7 @@
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Headland before/after field course" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"						text="Generate field course" />
 		<text name="COURSEPLAY_MULTI_TOOLS"					 				text="Multiple Tools" />  <!-- Todo use somthing better -->
-		<text name="COURSEPLAY_DISTANCE" 									text="distance" />
+		<text name="COURSEPLAY_DISTANCE" 									text="Distance" />
 		<text name="COURSEPLAY_WAITING_TIME" 								text="Waiting time" />
 		<text name="COURSEPLAY_MINUTES" 									text="%d min" />
 		<text name="COURSEPLAY_SECONDS" 									text="%d sec" />
@@ -64,7 +64,7 @@
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 							text="Deactivate filter" />
 		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT"					text="has reached overload point." />
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="Save pipe position" />
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text= "move pipe to position" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="move pipe to position" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="has reached waiting point" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 							text="has reached trigger/end point" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="has finished grain transport." />
@@ -86,7 +86,7 @@
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Turn on field:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Opposite turn direction:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Last couple of lanes" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="when possible" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="When possible" />
 		<text name="COURSEPLAY_TURN_RADIUS" 								text="Turning circle:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Vertical offset:" />
 		<text name="COURSEPLAY_COMBINE" 									text="Combine" />
@@ -94,8 +94,8 @@
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 								text="Choose combine:" />
 		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Find combine:" />
 		<text name="COURSEPLAY_CURRENT" 									text="Current:" />
-		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 							text="automatic search" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 								text="select manually" />
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 							text="Automatic search" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 								text="Select manually" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Search combine on field:  %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 								text="Copy course:" />
 		<text name="COURSEPLAY_VEHICLE" 									text="Vehicle" />
@@ -138,8 +138,8 @@
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Waiting until combine has turned" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Waiting for new waypoint" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 							text="Following tractor" />
-		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 							text="should be refueled soon" />
-		<text name="COURSEPLAY_MUST_BE_REFUELED" 							text="must be refueled" />
+		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 							text="Should be refueled soon" />
+		<text name="COURSEPLAY_MUST_BE_REFUELED" 							text="Must be refueled" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 							text="is being refueled" />
 		<text name="COURSEPLAY_IS_BEING_WEIGHED" 							text="is being weighed" />
 		<text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 					text="Too many waiting points! Only %d allowed." />
@@ -357,7 +357,7 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Middle Mouse Button" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Mouse Button %d" />
 
-		<text name="COURSEPLAY_MODE10_MODE" 						    	text="mode" />
+		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Mode" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Leveling and Compacting" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="Filling up" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Automaticly stop for" />
