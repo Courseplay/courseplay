@@ -122,6 +122,7 @@ AIDriver.myStates = {
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'AIDriver:init()') 
 	self.debugChannel = 14
 	self.mode = courseplay.MODE_TRANSPORT
 	self.states = {}
@@ -628,11 +629,12 @@ function AIDriver:drawTemporaryCourse()
 end
 
 function AIDriver:enableCollisionDetection()
+	courseplay.debugVehicle(3,self.vehicle,'Collision detection enabled')
 	self.collisionDetectionEnabled = true
 	-- move the big collision box around the vehicle underground because this will stop
 	-- traffic (not CP drivers though) around us otherwise
 	if self.vehicle:getAINeedsTrafficCollisionBox() then
-		self:debug("Making sure cars won't stop around us")
+		courseplay.debugVehicle(3,self.vehicle,"Making sure cars won't stop around us")
 		-- something deep inside the Giants vehicle sets the translation of this box to whatever
 		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
 		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
@@ -640,12 +642,12 @@ function AIDriver:enableCollisionDetection()
 end
 
 function AIDriver:disableCollisionDetection()
-	self:debug('Collision detection disabled')
+	courseplay.debugVehicle(3,self.vehicle,'Collision detection disabled')
 	self.collisionDetectionEnabled = false
 	-- move the big collision box around the vehicle back over the ground so
 	-- game traffic around us will stop while we are working on the field
 	if self.vehicle:getAINeedsTrafficCollisionBox() then
-		self:debug('Cars will stop around us again.')
+		courseplay.debugVehicle(3,self.vehicle,'Cars will stop around us again.')
 		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = 0
 	end
 end
@@ -721,10 +723,10 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 
 				local foundHeap = self:checkForHeapBehindMe(tipper)
-				--print(string.format("foundHeap(%s) or z(%s) >= 0",tostring(foundHeap),tostring(z)))
 				
 				--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
 				if (foundHeap or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
+					courseplay.debugVehicle(2,self.vehicle,'foundHeap(%s) or z(%s) >= 0  --> readyToDischarge ',tostring(foundHeap),tostring(z))
 					stopForTipping = true
 					readyToDischarge = true
 				end
@@ -866,18 +868,19 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					local totalTipDuration = ((tipper.cp.fillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
 					local meterPrSeconds = totalLength / totalTipDuration;
 					self.unloadSpeed = meterPrSeconds*3.6
-					self:debug("%s in mode %s: entering BGASilo: \nemptySpeed: %sl/sek; fillLevel: %0.1fl\nSilo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh", tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode), tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel,tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
-					--print(string.format("totalTipDuration: %s; totalLength: %s",tostring(totalTipDuration),tostring(totalLength)))
+					courseplay.debugVehicle(2,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode))
+					courseplay.debugVehicle(2,self.vehicle,'emptySpeed: %sl/sek; fillLevel: %0.1fl',tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel)
+					courseplay.debugVehicle(2,self.vehicle,'Silo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh',tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
 				end
 				
 				local tipState = tipper:getTipState()
 				if tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING then
-					self:debug("start tipping")
+					courseplay.debugVehicle(2,self.vehicle,"start tipping")
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 				end				
 			else
 				if self.unloadSpeed then
-					self:debug("reset self.unloadSpeed")
+					courseplay.debugVehicle(2,self.vehicle,"reset self.unloadSpeed")
 				end
 				self.unloadSpeed = nil
 			end
@@ -958,7 +961,7 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
 			local startReversing = self.course:switchingToReverseAt(self.ppc:getCurrentWaypointIx() - 1)
 			if startReversing then
-				courseplay:debug(string.format("%s: Is starting to reverse. Tip trigger is reset.", nameNum(self.vehicle)), 13);
+				courseplay:debug(string.format(2,"%s: Is starting to reverse. Tip trigger is reset.", nameNum(self.vehicle)), 13);
 			end
 
 			local isBGA = t.bunkerSilo ~= nil
@@ -966,7 +969,7 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 			local maxDist = isBGA and (self.vehicle.cp.totalLength + 55) or (self.vehicle.cp.totalLength + triggerLength);
 			if distToTrigger > maxDist or startReversing then --it's a backup, so we don't need to care about +/-10m
 				courseplay:resetTipTrigger(self.vehicle)
-				courseplay:debug(string.format("%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(self.vehicle), distToTrigger, maxDist), 1);
+				courseplay.debugVehicle(1,self.vehicle,"%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(self.vehicle), distToTrigger, maxDist);
 			end
 		else
 			courseplay:resetTipTrigger(self.vehicle)

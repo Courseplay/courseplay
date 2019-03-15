@@ -40,6 +40,7 @@ FieldworkAIDriver.myStates = {
 -- through multiple level of inheritances therefore we must explicitly call
 -- the base class ctr.
 function FieldworkAIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'FieldworkAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
 	-- waiting for tools to turn on, unfold and lower

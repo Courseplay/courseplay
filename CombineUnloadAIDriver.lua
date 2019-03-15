@@ -33,6 +33,7 @@ CombineUnloadAIDriver.STATE_SWITCH_SIDE = 11
 
 --- Constructor
 function CombineUnloadAIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_COMBI
 	self:setModeState(self.STATE_DEFAULT)

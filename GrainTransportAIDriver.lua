@@ -21,6 +21,7 @@ GrainTransportAIDriver = CpObject(AIDriver)
 
 --- Constructor
 function GrainTransportAIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'GrainTransportAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
 	self.runCounter = 0

@@ -52,6 +52,7 @@ ShovelModeAIDriver.STATE_GO_BACKTO_START = 7
 
 --- Constructor
 function ShovelModeAIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'ShovelModeAIDriver:init') 
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 	self.refSpeed = 3

@@ -32,6 +32,7 @@ FillableFieldworkAIDriver.myStates = {
 	REFILL_DONE = {}
 }
 function FillableFieldworkAIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(FillableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_SEED_FERTILIZE

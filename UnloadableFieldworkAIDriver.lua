@@ -39,6 +39,7 @@ UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED = 1
 UnloadableFieldworkAIDriver.PIPE_STATE_OPEN = 2
 
 function UnloadableFieldworkAIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'UnloadableFieldworkAIDriver:init()') 
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK

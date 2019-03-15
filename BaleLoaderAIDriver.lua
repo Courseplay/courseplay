@@ -53,6 +53,7 @@ end
 
 
 function BaleLoaderAIDriver:init(vehicle)
+	courseplay.debugVehicle(11,vehicle,'BaleLoaderAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self.baleLoader = self:getBaleLoader()
 	self:initStates(BaleLoaderAIDriver.myStates)
