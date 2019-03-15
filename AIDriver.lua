@@ -484,16 +484,21 @@ end
 
 function AIDriver:onLastWaypoint()
 	if self:onTemporaryCourse() then
-		-- temporary course to the first waypoint ended, start the main course now
-		self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
-		self:startCourse(self.courseAfterTemporary, self.waypointIxAfterTemporary)
-		self.temporaryCourse = nil
-		self:debug('Temporary course finished, starting next course at waypoint %d', self.waypointIxAfterTemporary)
-		self:onEndTemporaryCourse()
+		self:endTemporaryCourse(self.courseAfterTemporary, self.waypointIxAfterTemporary)
 	else
 		self:debug('Last waypoint reached, end of course.')
 		self:onEndCourse()
 	end
+end
+
+--- End a temporary course and then continue on nextCourse at nextWpIx
+function AIDriver:endTemporaryCourse(nextCourse, nextWpIx)
+	-- temporary course to the first waypoint ended, start the main course now
+	self.ppc:setLookaheadDistance(PurePursuitController.normalLookAheadDistance)
+	self:startCourse(nextCourse, nextWpIx)
+	self.temporaryCourse = nil
+	self:debug('Temporary course finished, starting next course at waypoint %d', nextWpIx)
+	self:onEndTemporaryCourse()
 end
 
 function AIDriver:isWaiting()
@@ -623,11 +628,6 @@ function AIDriver:drawTemporaryCourse()
 end
 
 function AIDriver:enableCollisionDetection()
-	if courseplay.debugChannels[3] then
-		self:debug('Collision detection enabled')
-	else
-		self:debug('Will stop on collision only if debug channel 3 is on')
-	end
 	self.collisionDetectionEnabled = true
 	-- move the big collision box around the vehicle underground because this will stop
 	-- traffic (not CP drivers though) around us otherwise
@@ -1006,7 +1006,7 @@ end
 --- current position to the start of course.
 ---@param course Course
 ---@param ix number
--- @param vehicleIsOnField use the vehicle's position to determine for which field
+---@param vehicleIsOnField boolean use the vehicle's position to determine for which field
 -- we need a path. If false, we assume that the course's waypoint at ix is on the field.
 ---@return boolean true when an alignment course was added
 function AIDriver:startCourseWithPathfinding(course, ix, vehicleIsOnField)
@@ -1035,7 +1035,7 @@ function AIDriver:startCourseWithPathfinding(course, ix, vehicleIsOnField)
 				local done, path = self.pathfinder:start({x = vx, y = -vz}, {x = tx, y = -tz},
 					Polygon:new(courseGenerator.pointsToXy(courseplay.fields.fieldData[fieldNum].points)))
 				if done then
-					self:onPathfindingDone(path)
+					return self:onPathfindingDone(path)
 				end
 			else
 				self:debug('Pathfinder already active')
@@ -1063,6 +1063,7 @@ end
 
 --- If we have a path now then set it up as a temporary course, also appending an alignment between the end
 --- of the path and the target course
+---@return boolean true if a temporary course (path/align) is started, false otherwise
 function AIDriver:onPathfindingDone(path)
 	if path and #path > 5 then
 		self:debug('Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathFindingStartedAt or 0))
@@ -1082,17 +1083,28 @@ function AIDriver:onPathfindingDone(path)
 				self:debug('Could not append an alignment course to the path')
 			end
 			self:startTemporaryCourse(temporaryCourse, self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
+			return true
 		else
-			self:debug('Path too short, reverting to alignment course.')
-			self:startCourseWithAlignment(self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
+			return self:onNoPathFound('Path too short, reverting to alignment course.')
 		end
 	else
 		if path then
-			self:debug('Path found but too short (%d), reverting to alignment course.', #path)
+			return self:onNoPathFound('Path found but too short (%d), reverting to alignment course.', #path)
 		else
-			self:debug('Pathfinding finished, no path found, reverting to alignment course')
+			return self:onNoPathFound('Pathfinding finished, no path found, reverting to alignment course')
 		end
-		self:startCourseWithAlignment(self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
+	end
+end
+
+---@return boolean true if a temporary course is started
+function AIDriver:onNoPathFound(...)
+	self:debug(...)
+	if not self:startCourseWithAlignment(self.courseAfterPathfinding, self.waypointIxAfterPathfinding) then
+		-- no alignment course needed or possible, skip to the end of temp course to continue on the normal course
+		self:endTemporaryCourse(self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
+		return false
+	else
+		return true
 	end
 end
 
