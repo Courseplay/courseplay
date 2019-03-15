@@ -249,6 +249,7 @@ end
 -- add missing angles and world directions from one waypoint to the other
 -- PPC relies on waypoint angles, the world direction is needed to calculate offsets
 function Course:enrichWaypointData()
+	if #self.waypoints < 2 then return end
 	self.length = 0
 	self.totalTurns = 0
 	for i = 1, #self.waypoints - 1 do

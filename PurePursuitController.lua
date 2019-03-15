@@ -143,7 +143,7 @@ function PurePursuitController:initialize(ix, aiDriver)
 	self.nextWpNode:setToWaypoint(self.course, self.firstIx)
 	self.wpBeforeGoalPointIx = self.nextWpNode.ix
 	self.currentWpNode:setToWaypoint(self.course, self.firstIx )
-	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d', self.firstIx )
+	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d of %d', self.firstIx, self.course:getNumberOfWaypoints())
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
 	if aiDriver then
