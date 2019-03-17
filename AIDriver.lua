@@ -830,17 +830,26 @@ end
 
 function AIDriver:tipIntoStandardTipTrigger()
 	local stopForTipping = false
+	local siloIsFull = false
 	for _, tipper in pairs(self.vehicle.cp.workTools) do
 		if tipper.spec_dischargeable ~= nil then
-			for i=1,#tipper.spec_dischargeable.dischargeNodes do
-				if tipper:getCanDischargeToObject(tipper.spec_dischargeable.dischargeNodes[i])then
-					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
-					stopForTipping = true
+			if self:tipTriggerIsFull(trigger,tipper) then
+				siloIsFull = true
+				stopForTipping = true
+			else
+				for i=1,#tipper.spec_dischargeable.dischargeNodes do
+					if tipper:getCanDischargeToObject(tipper.spec_dischargeable.dischargeNodes[i])then
+						tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
+						stopForTipping = true
+					end
 				end
 			end
 		end
 	end
-
+	if siloIsFull then
+		self:setInfoText('FARM_SILO_IS_FULL')
+	end
+	
 	return not stopForTipping
 end
 
@@ -975,6 +984,21 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 			courseplay:resetTipTrigger(self.vehicle)
 		end;
 	end;
+end
+
+function AIDriver:tipTriggerIsFull(trigger,tipper)
+	local trigger = self.vehicle.cp.currentTipTrigger
+	local trailerFillType = tipper.cp.fillType
+	if trigger and trigger.unloadingStation then
+		local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType,1)
+		local capacity = trigger.unloadingStation:getCapacity(trailerFillType,1)
+		courseplay.debugVehicle(2,self.vehicle,'    trigger (%s) fillLevel=%d, capacity=%d ',tostring(trigger.triggerId), fillLevel, capacity);
+		if fillLevel>=capacity then
+			courseplay.debugVehicle(2, self.vehicle,'    trigger (%s) Trigger is full',tostring(triggerId));
+			return true;
+		end
+	end;
+	return false;
 end
 
 --- Update the unload offset from the current settings and apply it when needed
