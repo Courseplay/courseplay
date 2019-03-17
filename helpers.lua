@@ -288,13 +288,28 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 				local matchInThisUnit = false
 				for index,_ in pairs(workTool:getFillUnitSupportedFillTypes(i))do 
 					--loadTriggers
-					if fillTrigger.source ~= nil and fillTrigger.source.providedFillTypes[index] then
-						typesMatch = true
-						matchInThisUnit =true
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch: checking trigger vs. %s fillunit %d for %d (%s)',tostring(workTool:getName()),i,index,g_fillTypeManager.indexToName[index])
+					if fillTrigger.source ~= nil then
+						if courseplay.debugChannels[19] then
+							courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
+							for index,_ in pairs(fillTrigger.source.providedFillTypes)do
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch:    %d:%s',index,g_fillTypeManager.indexToName[index])
+							end						
+						end
+						if fillTrigger.source.providedFillTypes[index] then						
+							typesMatch = true
+							matchInThisUnit =true
+						end
 					end
 					--fillTriggers
 					if fillTrigger.sourceObject ~= nil then
 						local fillTypes = fillTrigger.sourceObject:getFillUnitSupportedFillTypes(1)  
+						if courseplay.debugChannels[19] then
+							courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
+							for index,_ in pairs(fillTypes)do
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch:    %d:%s',index,g_fillTypeManager.indexToName[index])
+							end						
+						end						
 						if fillTypes[index] then 
 							typesMatch = true
 							matchInThisUnit =true
@@ -314,6 +329,7 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 			if selectedFillType == FillType.UNKNOWN then
 				return true;
 			else
+				courseplay.debugVehicle(19,vehicle,'fillTypesMatch: selectedFillType:%d',selectedFillType)
 				if fillTrigger.source then
 					return fillTrigger.source.providedFillTypes[selectedFillType] or false;
 				elseif fillTrigger.sourceObject ~= nil then

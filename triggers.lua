@@ -205,7 +205,9 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 		local imNotInThisTrigger = true
 		local trigger = courseplay.triggers.fillTriggers[transformId]
 		for _,workTool in pairs (self.cp.workTools) do
-			if trigger.getIsActivatable and trigger:getIsActivatable(workTool) then 
+			if (trigger.onActivateObject and trigger.getIsActivatable and trigger:getIsActivatable(workTool))
+			or (trigger.sourceObject and  #workTool.spec_fillUnit.fillTrigger.triggers > 0 and workTool.spec_fillUnit.fillTrigger.triggers[1] == trigger) then 
+				courseplay:debug(('%s: %s is allready in fillTrigger(%d)'):format(nameNum(self),tostring(workTool:getName()), transformId), 19);
 				imNotInThisTrigger = false
 			end
 		end
@@ -245,7 +247,7 @@ function courseplay:addFoundFillTrigger(vehicle, transformId)
 	--if not, add it
 	if not allreadyThere then
 		table.insert(vehicle.cp.fillTriggers,transformId)
-		courseplay:debug(string.format("add %s to vehicle.cp.fillTriggers; new: %d",tostring(transformId),#vehicle.cp.fillTriggers),19)
+		courseplay.debugVehicle(19,vehicle,'add %s to vehicle.cp.fillTriggers; new number of triggers: %d',tostring(transformId),#vehicle.cp.fillTriggers)
 	end
 end
 

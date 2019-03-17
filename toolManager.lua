@@ -1308,6 +1308,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 				courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS,trigger)
 				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle, workTool,vehicle.cp.fillTrigger)
 			else
+				courseplay.debugVehicle(19,vehicle,'fillTypes dont match -> reset fillTrigger')
 				courseplay:resetFillTrigger(vehicle)
 			end
 			
@@ -1325,6 +1326,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 					--	,i,tostring(triggerFilltype),tostring(workTool:getFillUnitFillType(i)),workTool:getFillUnitFillLevelPercentage(i)*100,driveOnAtPercent))
 					if triggerFilltype == workTool:getFillUnitFillType(i)
 					and workTool:getFillUnitFillLevelPercentage(i)*100 > driveOnAtPercent then
+						courseplay.debugVehicle(19,vehicle,'set fillLevel percentage reached -> stop filling and reset fillTrigger')
 						courseplay:setFillOnTrigger(vehicle,workTool,false,trigger)
 						courseplay:resetFillTrigger(vehicle)
 					end				
@@ -1343,6 +1345,7 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 		--loadTriggers:placeables,silos
 		--when I'm in the trigger, activate it
 		if trigger:getIsActivatable(objectToFill) and not vehicle.isFuelFilling then
+			courseplay.debugVehicle(19,vehicle,'start filling')
 			courseplay:setFillOnTrigger(vehicle,objectToFill,true,trigger)
 			allowedToDrive = false;
 			vehicle.isFuelFilling = true
@@ -1350,6 +1353,7 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 		if vehicle.isFuelFilling then 
 			allowedToDrive = false;
 			if not trigger.isLoading then
+				courseplay.debugVehicle(19,vehicle,'fillTrigger stopped filling -> reset fillTrigger')
 				vehicle.isFuelFilling = nil
 				courseplay:resetFillTrigger(vehicle)
 			end
@@ -1366,6 +1370,7 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 				local fillUnits = objectToFill:getFillUnits()
 				for i=1,#fillUnits do
 					if objectToFill:getFillUnitFillLevelPercentage(i)*100 < vehicle.cp.refillUntilPct and courseplay:fillTypesMatch(vehicle, fillTrigger, objectToFill,i) then
+						courseplay.debugVehicle(19,vehicle,'start filling')
 						courseplay:setFillOnTrigger(vehicle,objectToFill,true,trigger,triggerIndex)
 						allowedToDrive = false;
 						vehicle.isFuelFilling = true
@@ -1379,6 +1384,7 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 			allowedToDrive = false;
 			--if the trigger stops loading, reset vehicle.isFuelFilling
 			if not objectToFill.spec_fillUnit.fillTrigger.isFilling then 
+				courseplay.debugVehicle(19,vehicle,'fillTrigger stopped filling -> reset fillTrigger')
 				courseplay:resetFillTrigger(vehicle)
 				vehicle.isFuelFilling = nil
 				courseplay:setCustomTimer(vehicle, "resetFillTrigger", 5)
@@ -1387,6 +1393,7 @@ function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
 		--if you get a new pallet, start loading there, otherwise kill the trigger
 		elseif courseplay:timerIsThrough(vehicle, "resetFillTrigger", false) then
 			if #objectToFill.spec_fillUnit.fillTrigger.triggers == 0 then
+				courseplay.debugVehicle(19,vehicle,'timer "resetFillTrigger" is up -> reset fillTrigger')
 				courseplay:resetFillTrigger(vehicle)
 				courseplay:resetCustomTimer(vehicle, "resetFillTrigger", true)
 			end
@@ -1405,10 +1412,12 @@ function courseplay:resetFillTrigger(vehicle)
 		if #vehicle.cp.fillTriggers >1 then
 			table.remove(vehicle.cp.fillTriggers,1)
 			vehicle.cp.fillTrigger = vehicle.cp.fillTriggers[1];
+			courseplay.debugVehicle(19,vehicle,'resetFillTrigger: there are more triggers, take then next one (%d)', vehicle.cp.fillTrigger)
 		--if it was the last one, reset vehicle.cp.fillTrigger
 		else
 			table.remove(vehicle.cp.fillTriggers,1)
 			vehicle.cp.fillTrigger = nil
+			courseplay.debugVehicle(19,vehicle,'resetFillTrigger: no triggers left, reset vehicle.cp.fillTrigger')
 		end
 		--setting the next fwd waypoint for reverse filling. should not cause problems in fwd filling. if it does, find an other way 
 		local driver = vehicle.cp.driver
