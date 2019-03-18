@@ -237,7 +237,25 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 
 	local blocks = splitCenterIntoBlocks( parallelTracks, width )
 
+	-- using a while loop as we'll remove blocks if they have no tracks
 	local nTotalTracks = 0
+	local i = 1
+	while blocks[i] do
+		local block = blocks[i]
+		nTotalTracks = nTotalTracks + #block
+		courseGenerator.debug( "Block %d has %d tracks", i, #block )
+		block.tracksWithWaypoints = addWaypointsToTracks( block, width, extendTracks )
+		block.covered = false
+		-- we may end up with blocks without tracks in case we did not find a single track
+		-- with at least two waypoints. Now remove those blocks
+		if #blocks[i].tracksWithWaypoints == 0 then
+			courseGenerator.debug( "Block %d removed as it has no tracks with waypoints", i)
+			table.remove(blocks, i)
+		else
+			i = i + 1
+		end
+	end
+
 	for i, block in ipairs( blocks ) do
 		nTotalTracks = nTotalTracks + #block
 		courseGenerator.debug( "Block %d has %d tracks", i, #block )
@@ -446,8 +464,11 @@ function addWaypointsToTracks( tracks, width, extendTracks )
 			else
 				courseGenerator.debug( "Track %d has only one waypoint, skipping.", i )
 			end
+		else
+			courseGenerator.debug('Track %d has no waypoints', i)
 		end
 	end
+	courseGenerator.debug('Generated %d tracks for this block', #result)
 	return result
 end
 
