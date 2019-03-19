@@ -116,6 +116,7 @@ function CollisionDetector:deleteTriggers()
 			removeTrigger(node)
 			if entityExists(node) then
 				unlink(node)
+				self.vehicle:removeWashableNode(node)
 				delete(node)
 			end
 		end
