@@ -183,6 +183,7 @@ function courseplay:turn(vehicle, dt)
 				turnInfo.extraAlignLength			= turnInfo.extraAlignLength + directionNodeToTurnNodeLength * 2;
 			end;
 			turnInfo.isHarvester					= isHarvester;
+            turnInfo.totalLength                    = vehicle.cp.totalLength;
 
 			turnInfo.directionChangeDeg, turnInfo.isHeadlandCorner = getDirectionChangeOfTurn( vehicle )
 			-- headland turn data 
@@ -306,7 +307,7 @@ function courseplay:turn(vehicle, dt)
 			courseplay:debug(("%s:(Turn Data) numLanes=%q, onLaneNum=%q, turnOnField=%q, reverseOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.numLanes), tostring(turnInfo.onLaneNum), tostring(turnInfo.turnOnField), tostring(turnInfo.reverseOffset)), 14);
 			courseplay:debug(("%s:(Turn Data) haveWheeledImplement=%q, reversingWorkTool=%q, turnRadius=%q, turnDiameter=%q"):format(nameNum(vehicle), tostring(turnInfo.haveWheeledImplement), tostring(turnInfo.reversingWorkTool), tostring(turnInfo.turnRadius), tostring(turnInfo.turnDiameter)), 14);
 			courseplay:debug(("%s:(Turn Data) targetNode=%q, targetDeltaX=%q, targetDeltaZ=%q, zOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.targetNode), tostring(turnInfo.targetDeltaX), tostring(turnInfo.targetDeltaZ), tostring(turnInfo.zOffset)), 14);
-			courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester)), 14);
+			courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q, totalLength=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester), tostring(turnInfo.totalLength)), 14);
 
 
 			if not turnInfo.isHeadlandCorner then
@@ -318,7 +319,7 @@ function courseplay:turn(vehicle, dt)
 				-- WIDE TURNS (Turns where the distance to next lane is bigger than the turning Diameter)
 				----------------------------------------------------------
 				if abs(turnInfo.targetDeltaX) >= turnInfo.turnDiameter then
-					if abs(turnInfo.targetDeltaX) >= (turnInfo.turnDiameter * 2) and abs(turnInfo.targetDeltaZ) >= (turnInfo.turnRadius * 3) then
+					if abs(turnInfo.targetDeltaX) >= (turnInfo.turnDiameter * 2) and abs(turnInfo.targetDeltaZ) >= (turnInfo.turnRadius * 3) and turnInfo.totalLength < turnInfo.turnRadius then
 						courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo);
 					else
 						courseplay:generateTurnTypeWideTurn(vehicle, turnInfo);
