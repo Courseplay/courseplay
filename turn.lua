@@ -7,7 +7,7 @@ local wpCircleDistance	= 1; 	-- Waypoint Distance in circles
 -- if the direction difference between turnStart and turnEnd is bigger than this then
 -- we consider that as a turn when switching to the next up/down lane and assume that
 -- after the turn we'll be heading into the opposite direction. 
-local laneTurnAngleThreshold = 135
+local laneTurnAngleThreshold = 150
 
 function courseplay:turn(vehicle, dt)
 	---- TURN STAGES:
