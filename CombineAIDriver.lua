@@ -125,9 +125,11 @@ function CombineAIDriver:unloadFinished()
 	if self.vehicle.spec_pipe then
 		discharging = self.vehicle.spec_pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
 	end
+	local fillLevel = self.vehicle:getFillUnitFillLevel(self.vehicle.spec_combine.fillUnitIndex)
+
 	-- unload is done when fill levels are ok (not full) and not discharging anymore (either because we
 	-- are empty or the trailer is full)
-	return self:allFillLevelsOk() and not discharging
+	return (self:allFillLevelsOk() and not discharging) or fillLevel < 0.1
 end
 
 function CombineAIDriver:checkFruit()
