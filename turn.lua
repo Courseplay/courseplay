@@ -949,17 +949,17 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 
 		--- Generate line between first and second turn circles
 		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.directionNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnRadius);
-		toPoint.x, _, toPoint.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnRadius);
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnRadius);
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint);
 
 		--- Generate the second turn circles
-		center.x,_,center.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnDiameter);
-		startDir.x,_,startDir.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnRadius);
-		stopDir.x,_,stopDir.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnDiameter);
+		center.x,_,center.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnDiameter);
+		startDir.x,_,startDir.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnRadius);
+		stopDir.x,_,stopDir.z = localToWorld(turnInfo.directionNode, vehicle.cp.courseWorkWidth * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnDiameter);
 		courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction * -1);
 
 		--- Generate line between second and third turn circles
-		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.directionNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnDiameter);
+		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.directionNode, vehicle.cp.courseWorkWidth * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset + turnInfo.turnDiameter);
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, turnInfo.turnDiameter * turnInfo.direction, 0, turnInfo.reverseOffset);
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint);
 
@@ -981,17 +981,17 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 
 		--- Generate line between first and second turn circles
 		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.directionNode, turnInfo.turnDiameter * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset);
-		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnDiameter);
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, vehicle.cp.courseWorkWidth * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnDiameter);
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint);
 
 		--- Generate the second turn circles
-		center.x,_,center.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnDiameter);
-		startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnDiameter);
-		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnRadius);
+		center.x,_,center.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnDiameter);
+		startDir.x,_,startDir.z = localToWorld(turnInfo.targetNode, vehicle.cp.courseWorkWidth * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnDiameter);
+		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnRadius);
 		courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, turnInfo.turnRadius, turnInfo.direction * -1);
 
 		--- Generate line between second and third turn circles
-		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnDiameter - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnRadius);
+		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, (vehicle.cp.courseWorkWidth - turnInfo.turnRadius) * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnRadius);
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.reverseOffset - turnInfo.turnRadius);
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint);
 
