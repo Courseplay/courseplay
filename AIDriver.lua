@@ -1153,6 +1153,9 @@ function AIDriver:startEngineIfNeeded()
 	if self.vehicle.spec_motorized and not self.vehicle.spec_motorized.isMotorStarted then
 		self.vehicle:startMotor()
 	end
+	-- reset motor auto stop timer when someone starts the engine so we won't stop it for while just because
+	-- our speed is 0 (for example while waiting for the implements to lower)
+	self.lastMovingTime = self.vehicle.timer
 end
 
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
