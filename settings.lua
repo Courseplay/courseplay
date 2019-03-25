@@ -148,10 +148,14 @@ function courseplay:toggleWantsCourseplayer(combine)
 end;
 
 function courseplay:startStop(vehicle)
-	if not vehicle:getIsCourseplayDriving() then
-		courseplay:start(vehicle);
+	if vehicle.cp.canDrive then
+		if not vehicle:getIsCourseplayDriving() then
+			courseplay:start(vehicle);
+		else
+			courseplay:stop(vehicle);
+		end
 	else
-		courseplay:stop(vehicle);
+		courseplay:start_record(vehicle);
 	end
 end;
 
