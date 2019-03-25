@@ -114,7 +114,7 @@ end
 -- TODO: move this into onWaypointPassed() instead
 function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
-	if self.ppc:reachedLastWaypoint() then
+	if self.ppc:getCurrentWaypointIx() == self.course:getNumberOfWaypoints() then
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 		
 		-- Don't make life too complicated. Whenever we restart the course, we just
