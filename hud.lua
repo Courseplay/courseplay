@@ -664,7 +664,7 @@ function courseplay.hud:loadPage(vehicle, page)
 
 	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 18);
 		
-	--PAGE 0: COMBINE SETTINGS
+--[[	--PAGE 0: COMBINE SETTINGS
 	if page == self.PAGE_COMBINE_CONTROLS then
 		local combine = vehicle;
 		if vehicle.cp.attachedCombine ~= nil then
@@ -814,18 +814,18 @@ function courseplay.hud:loadPage(vehicle, page)
 				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_COMBINE_CONVOY');
 				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.convoyActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED')
 				if vehicle.cp.convoyActive then
-					--[[ TODO find a description or new entry in translations for the currently loaded course
-					local currentLoadedCourse = courseplay:loc('COURSEPLAY_CURRENTLY_LOADED_COURSE')
-					if StringUtil.startsWith(currentLoadedCourse, "(") then
-						local split = StringUtil.splitString("(", currentLoadedCourse);
-						local split2 = StringUtil.splitString(")", split[2]);
-						currentLoadedCourse = split2[1]
-					end
-					if vehicle.cp.currentCourseName ~= nil then
-						vehicle.cp.hud.content.pages[1][6][1].text =  string.format("%s: %s",currentLoadedCourse,vehicle.cp.currentCourseName);
-					elseif vehicle.Waypoints[1] ~= nil then
-						vehicle.cp.hud.content.pages[1][6][1].text = string.format("%s: %s",currentLoadedCourse,courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-					end]]
+					-- -- TODO find a description or new entry in translations for the currently loaded course
+					--local currentLoadedCourse = courseplay:loc('COURSEPLAY_CURRENTLY_LOADED_COURSE')
+					--if StringUtil.startsWith(currentLoadedCourse, "(") then
+					--	local split = StringUtil.splitString("(", currentLoadedCourse);
+					--	local split2 = StringUtil.splitString(")", split[2]);
+					--	currentLoadedCourse = split2[1]
+					--end
+					--if vehicle.cp.currentCourseName ~= nil then
+					--	vehicle.cp.hud.content.pages[1][6][1].text =  string.format("%s: %s",currentLoadedCourse,vehicle.cp.currentCourseName);
+					--elseif vehicle.Waypoints[1] ~= nil then
+					--	vehicle.cp.hud.content.pages[1][6][1].text = string.format("%s: %s",currentLoadedCourse,courseplay:loc('COURSEPLAY_TEMP_COURSE'));
+					--end
 					if vehicle.cp.currentCourseName ~= nil then
 						vehicle.cp.hud.content.pages[1][6][1].text =  string.format("%s",vehicle.cp.currentCourseName);
 					elseif vehicle.Waypoints[1] ~= nil then
@@ -1300,7 +1300,7 @@ function courseplay.hud:loadPage(vehicle, page)
 			vehicle.cp.hud.content.pages[10][2][2].text = courseplay:loc('COURSEPLAY_MODE10_SEARCH_MODE_ALL');
 		end
 	end; -- END if page == n
-
+]]
 	self:setReloadPageOrder(vehicle, page, false);
 end;
 
@@ -1468,6 +1468,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		end;
 	end;
 
+	--[[
 	--default hud conditional variables
 	vehicle.cp.HUD0noCourseplayer = false;
 	vehicle.cp.HUD0wantsCourseplayer = false;
@@ -1485,8 +1486,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.HUD4savedCombine = nil;
 	vehicle.cp.HUD4savedCombineName = "";
 
+	]]
 	vehicle.cp.attachedCombine = nil;
-	courseplay:setMinHudPage(vehicle);
+	-- courseplay:setMinHudPage(vehicle);
 
 	local mouseWheelArea = {
 		x = self.contentMinX,
@@ -1580,6 +1582,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	end;
 
 	-- row buttons
+	--[[
+	
 	local w = self.buttonPosX[2] - self.col1posX;
 	for i=1, self.numLines do
 		if i == 1 then
@@ -1923,7 +1927,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 10, nil, 'changeShieldHeight', 0.1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 0.05, true, true);
 	--line7 driveThroughtLoading
 	courseplay.button:new(vehicle, 10, nil, 'rowButton', 7, self.col1posX, self.linesPosY[7], w, self.lineHeight, 7, nil, true);
-	
+	]]
 	-- ##################################################
 	-- Status icons
 	local bi = self.bottomInfo;
