@@ -93,7 +93,7 @@ function FillableFieldworkAIDriver:fillAtWaitPoint()
 	local allowedToDrive = false
 	courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
 	self:setInfoText('WAIT_POINT')
-	
+	courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS)
 	--fillLevel changed in last loop-> start timer
 	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= vehicle.cp.totalFillLevelPercent then
 		self.prevFillLevelPct = vehicle.cp.totalFillLevelPercent
@@ -106,6 +106,7 @@ function FillableFieldworkAIDriver:fillAtWaitPoint()
 			self:continue()
 			courseplay:resetCustomTimer(vehicle, "fillLevelChange",true);
 			self.prevFillLevelPct = nil
+			courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
 		end
 	end
 	return allowedToDrive
