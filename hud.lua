@@ -502,7 +502,7 @@ function courseplay.hud:setContent(vehicle)
 				vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][line][column].text = nil;
 			end;
 		end;
-		self:loadPage(vehicle, vehicle.cp.hud.currentPage);
+		self:updatePageContent(vehicle, vehicle.cp.hud.currentPage);
 	end;
 end; --END setHudContent()
 
@@ -659,10 +659,26 @@ function courseplay:setMinHudPage(vehicle)
 	
 end;
 
-function courseplay.hud:loadPage(vehicle, page)
+function courseplay.hud:updatePageContent(vehicle, page)
 	-- self = courseplay.hud
 
 	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 18);
+		
+	for line,columns in pairs(vehicle.cp.hud.content.pages[page]) do
+		for column,entry in pairs(columns) do
+			if entry.functionToCall ~= nil then
+				if entry.functionToCall == 'startStop' then
+					if not vehicle:getIsCourseplayDriving() then
+						vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_START_COURSE')
+					else
+						vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
+					end					
+				else
+				
+				end			
+			end		
+		end
+	end
 		
 --[[	--PAGE 0: COMBINE SETTINGS
 	if page == self.PAGE_COMBINE_CONTROLS then
@@ -1570,6 +1586,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		local isToggleButton = data[3];
 		local toolTip = courseplay:loc(data[4]);
 		local button = courseplay.button:new(vehicle, 1, { 'iconSprite.png', data[1] }, fn, nil, posX, self.linesButtonPosY[2], wBig, hBig, nil, nil, false, false, isToggleButton, toolTip);
+		button:setShow(false);
 		if isToggleButton then
 			if fn == 'setRecordingPause' then
 				vehicle.cp.hud.recordingPauseButton = button;
@@ -1954,5 +1971,22 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud.toolTipIcon = Overlay:new(self.iconSpritePath, self.toolTipIconPosX, self.toolTipIconPosY, self.toolTipIconWidth, self.toolTipIconHeight);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.toolTipIcon, { 112, 180, 144, 148 }, sizeX, sizeY);
 end;
+
+function courseplay.hud:setAIDriverContent(vehicle)
+	courseplay.hud:addRowButton(vehicle,'startStop', 1, 1, 1 )
+
+	self:setReloadPageOrder(vehicle, -1, true)
+end
+
+function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
+	local width = {
+					[1] = self.buttonPosX[2] - self.col1posX;
+					}
+  
+  --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
+	courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[column], self.lineHeight, line, nil, true);
+	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
+end
+
 -- do not remove this comment
 -- vim: set noexpandtab:

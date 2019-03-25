@@ -116,7 +116,7 @@ function courseplay.button:render()
 
 	--mouseWheelAreas conditionals
 	if self.isMouseWheelArea then
-		local canScrollUp, canScrollDown;
+		--[[local canScrollUp, canScrollDown;
 		if pg == courseplay.hud.PAGE_CP_CONTROL then
 			if fn == "setCustomFieldEdgePathNumber" then
 				canScrollUp   = vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum < courseplay.fields.customFieldMaxNum;
@@ -252,10 +252,10 @@ function courseplay.button:render()
 		end;
 		if canScrollDown ~= nil then
 			self:setCanScrollDown(canScrollDown);
-		end;
+		end;]]
 
 	elseif self.overlay ~= nil then
-		if pg ~= -courseplay.hud.PAGE_MANAGE_COURSES then -- NOTE: course buttons' (page -2) visibility are handled in buttonsActiveEnabled(), section 'page2'
+		--[[if pg ~= -courseplay.hud.PAGE_MANAGE_COURSES then -- NOTE: course buttons' (page -2) visibility are handled in buttonsActiveEnabled(), section 'page2'
 			local show = true;
 			-- CONDITIONAL DISPLAY
 			-- Global
@@ -517,7 +517,7 @@ function courseplay.button:render()
 			end;
 			self:setShow(show);
 		end;
-
+		]]
 
 		if self.show then
 			-- set color
@@ -557,7 +557,7 @@ function courseplay.button:render()
 
 			if currentColor ~= targetColor then
 				self:setColor(targetColor);
-			end;
+			end; 
 
 			-- render
 			self.overlay:render();

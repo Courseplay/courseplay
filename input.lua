@@ -180,9 +180,9 @@ function courseplay.button:handleMouseClick(vehicle)
 	end;
 
 	if self.show and not self.isHidden and self.canBeClicked and not self.isDisabled then
-		if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
+		--[[if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
 			return;
-		end;
+		end;]]
 
 		-- self:setClicked(true);
 		if self.functionToCall == "showSaveCourseForm" then
@@ -274,7 +274,7 @@ function courseplay:executeFunction(self, func, value, page)
 			if self.cp.canDrive then
 				if not self:getIsCourseplayDriving() then
 					if line == 1 then
-						courseplay:start(self);
+						--courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
 					elseif line == 4 then
@@ -285,7 +285,7 @@ function courseplay:executeFunction(self, func, value, page)
 
 				else -- driving
 					if line == 1 then
-						courseplay:stop(self);
+						--courseplay:stop(self);
 					elseif line == 2 and (self.cp.HUD1wait or (self.cp.driver and self.cp.driver:isWaiting())) then
 						if self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil) then
 							courseplay:setStopAtEnd(self, false);

@@ -147,6 +147,15 @@ function courseplay:toggleWantsCourseplayer(combine)
 	combine.cp.wantsCourseplayer = not combine.cp.wantsCourseplayer;
 end;
 
+function courseplay:startStop(vehicle)
+	if not vehicle:getIsCourseplayDriving() then
+		courseplay:start(vehicle);
+	else
+		courseplay:stop(vehicle);
+	end
+end;
+
+
 function courseplay:startStopCourseplayer(combine)
 	local tractor = combine.courseplayers[1];
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;

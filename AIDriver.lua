@@ -151,7 +151,12 @@ function AIDriver:init(vehicle)
 	-- list of active messages to display
 	self.activeMsgReferences = {}
 	self.pathfinder = Pathfinder()
+	self:setHudContent()
 end
+function AIDriver:setHudContent()
+	courseplay.hud:setAIDriverContent(self.vehicle)
+end
+
 
 -- destructor. The reason for having this is the collisionDetector which creates nodes and
 -- we want those nodes removed when the AIDriver instance is deleted.
