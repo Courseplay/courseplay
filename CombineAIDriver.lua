@@ -50,7 +50,7 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 	-- is our pipe in the fruit? (assuming pipe is on the left side)
 	self:checkFruit()
 	-- TODO: check around turn maneuvers we may not want to pull back before a turn
-	if self.fruitLeft > self.fruitRight then
+	if self.vehicle.cp.realisticDriving and self.fruitLeft > self.fruitRight then
 		local pullBackCourse = self:createPullBackCourse()
 		if pullBackCourse then
 			self:debug('Pipe in fruit, pulling back to make room for unloading')
