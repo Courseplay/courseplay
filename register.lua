@@ -15,6 +15,20 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onEnterVehicle", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onLeaveVehicle", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onDelete", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", courseplay)
+end
+
+function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
+	--print("courseplay:onRegisterActionEvents")
+	courseplay.inputActions = {}
+	courseplay.inputActionEventIds = {}
+	for index, action in pairs (g_gui.inputManager.nameActions) do
+		if string.match(index,'COURSEPLAY_') then
+			local _,eventId = self:addActionEvent(courseplay.inputActions, index, self, courseplay.inputActionCallback, true, true, false, true, nil);
+			courseplay.inputActionEventIds[index] = eventId;
+			g_gui.inputManager:setActionEventTextVisibility(eventId, false)
+		end
+	end
 end
 
 if courseplay.houstonWeGotAProblem then

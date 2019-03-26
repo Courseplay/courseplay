@@ -107,7 +107,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 						--action
 						local parameter = button.parameter;
-						if courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed and button.modifiedParameter ~= nil then
+						if courseplay.inputModifierIsPressed and button.modifiedParameter ~= nil then
 							parameter = button.modifiedParameter;
 						end;
 
@@ -174,7 +174,7 @@ end;
 function courseplay.button:handleMouseClick(vehicle)
 	vehicle = vehicle or self.vehicle;
 	local parameter = self.parameter;
-	if courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed and self.modifiedParameter ~= nil then
+	if courseplay.inputModifierIsPressed and self.modifiedParameter ~= nil then
 		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
 		parameter = self.modifiedParameter;
 	end;
@@ -369,13 +369,13 @@ courseplay.inputBindings.keyboard = {};
 
 function courseplay:onKeyEvent(unicode, sym, modifier, isDown) 
 	--print(string.format("%s: unicode(%s), sym(%s), modifier(%s), isDown(%s)",tostring(Input.keyIdToIdName[sym]),tostring(unicode),tostring(sym),tostring(modifier),tostring(isDown)))
-	for name,action in pairs (courseplay.inputActions) do
+	--[[for name,action in pairs (courseplay.inputActions) do
 		if sym == action.bindingSym then
 			--print("set "..tostring(name)..' to '..tostring(isDown))
 			action.isPressed = isDown
 			action.hasEvent = isDown
 		end
-	end	
+	end]]	
 end;
 
 --- appendedFunction onActionBindingsChanged for InputDisplayManager.onActionBindingsChanged
@@ -450,7 +450,7 @@ function courseplay.inputBindings.updateInputButtonData()
 	end;
 
 
-	courseplay.inputActions = {}
+	--[[
 	--print("set up courseplay.inputActions:")
 	for index, action in pairs (g_gui.inputManager.nameActions) do
 		if string.match(index,'COURSEPLAY_') then
@@ -471,7 +471,7 @@ function courseplay.inputBindings.updateInputButtonData()
 			end
 			courseplay.inputActions[index]= actionTable
 		end
-	end
+	end]]
 
 	-- KEYBOARD
 	local modifierTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_MODIFIER");
@@ -480,3 +480,59 @@ function courseplay.inputBindings.updateInputButtonData()
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
+
+
+function courseplay.inputActionCallback(self, actionName, keyStatus)
+	--print(string.format("courseplay:actionCallback(%s, %s)",tostring(actionName),tostring(keyStatus)))
+	
+	courseplay.inputModifierIsPressed = g_gui.inputManager.nameActions.COURSEPLAY_MODIFIER.activeBindings[1].isPressed
+	
+	if courseplay.inputModifierIsPressed then
+		if keyStatus == 1 and self:getIsActive() and self:getIsEntered() then
+			if actionName == 'COURSEPLAY_START_STOP' then
+				if self.cp.canDrive then
+					if self.cp.isDriving then
+						self:setCourseplayFunc('stop', nil, false, 1);
+					else
+						self:setCourseplayFunc('start', nil, false, 1);
+					end;
+				else
+					if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
+						self:setCourseplayFunc('start_record', nil, false, 1);
+					elseif self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.isRecordingTurnManeuver then
+						self:setCourseplayFunc('stop_record', nil, false, 1);
+					end;
+				end;
+			elseif actionName == 'COURSEPLAY_CANCELWAIT' and
+				(self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving) or (self.cp.driver and self.cp.driver:isWaiting()) then
+				self:setCourseplayFunc('cancelWait', true, false, 1);
+			elseif actionName == 'COURSEPLAY_DRIVENOW' and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
+				self:setCourseplayFunc('setIsLoaded', true, false, 1);
+			elseif actionName == 'COURSEPLAY_STOP_AT_END' and self.cp.canDrive and self.cp.isDriving then
+				self:setCourseplayFunc('setStopAtEnd', not self.cp.stopAtEnd, false, 1);
+			elseif self.cp.canSwitchMode and self.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
+				self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
+			elseif self.cp.canSwitchMode and self.cp.prevMode and actionName == 'COURSEPLAY_PREVMODE' then
+				self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
+					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(self, 2);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
+					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(self, 3);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
+					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(self, 4);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
+					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(self, 5);
+			end;
+
+			if not self.cp.openHudWithMouse and actionName == 'COURSEPLAY_HUD' then
+				self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
+			end;
+		end; -- END self:getIsActive() and Enterable.getIsEntered(self) and modifierPressed
+	end
+		
+
+end
