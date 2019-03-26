@@ -502,6 +502,9 @@ function courseplay.hud:setContent(vehicle)
 				vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][line][column].text = nil;
 			end;
 		end;
+		self:showRecordingButtons(vehicle,false)
+		self:showCpModeButtons(vehicle, false)
+		vehicle.cp.hud.saveCourseButton:setShow(false)
 		self:updatePageContent(vehicle, vehicle.cp.hud.currentPage);
 	end;
 end; --END setHudContent()
@@ -675,17 +678,16 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 						end
 						self:showCpModeButtons(vehicle, not vehicle:getIsCourseplayDriving())
-						self:showRecordingButtons(vehicle,false)
+						
 					else
 						if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) then
 							if vehicle.cp.numWaypoints == 0 then
 								vehicle.cp.hud.content.pages[1][1][1].text = courseplay:loc('COURSEPLAY_RECORDING_START');
 							end;
-							self:showRecordingButtons(vehicle,false)
 						else
 							self:showRecordingButtons(vehicle,true)
 						end
-						self:showCpModeButtons(vehicle, false)
+						
 					end
 				elseif entry.functionToCall == 'cancelWait' then
 					if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:isWaiting() then
@@ -703,12 +705,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						elseif vehicle.cp.startAtPoint == courseplay.START_AT_NEXT_POINT then
 							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NEXT_POINT');
 						end;
-					end
-					
-				
+					end				
 				end			
 			end		
 		end
+	end
+	
+	if vehicle.cp.hud.clearCurrentCourseButton[page] then
+		vehicle.cp.hud.saveCourseButton:setShow(not vehicle:getIsCourseplayDriving() and vehicle.Waypoints[1] ~= nil)
+		vehicle.cp.hud.clearCurrentCourseButton[page]:setShow(not vehicle:getIsCourseplayDriving() and vehicle.Waypoints[1] ~= nil) --TODO the waypoint thing is a hack, make it nicer;
 	end
 		
 --[[	--PAGE 0: COMBINE SETTINGS
@@ -1553,7 +1558,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	local closeY = self.basePosY + self:pxToNormal(280, 'y');
 	courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'close' }, 'openCloseHud', false, closeX, closeY, wMiddle, hMiddle);
 
-	courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
+	vehicle.cp.hud.saveCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
 
 	vehicle.cp.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'changeDrawCourseMode', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true);
 
@@ -1614,10 +1619,10 @@ function courseplay.hud:setupVehicleHud(vehicle)
 			end;
 		end;
 	end;
-
-	vehicle.cp.hud.clearCurrentCourseButton1 = courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
-	vehicle.cp.hud.clearCurrentCourseButton2 = courseplay.button:new(vehicle, 2, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
-	vehicle.cp.hud.clearCurrentCourseButton8 = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
+	vehicle.cp.hud.clearCurrentCourseButton = {}
+	vehicle.cp.hud.clearCurrentCourseButton[1] = courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
+	vehicle.cp.hud.clearCurrentCourseButton[2] = courseplay.button:new(vehicle, 2, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
+	vehicle.cp.hud.clearCurrentCourseButton[8] = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
 
 	
 	-- row buttons
