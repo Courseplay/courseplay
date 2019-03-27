@@ -482,56 +482,55 @@ function courseplay.inputBindings.updateInputButtonData()
 end;
 
 
-function courseplay.inputActionCallback(self, actionName, keyStatus)
-	--print(string.format("courseplay:actionCallback(%s, %s)",tostring(actionName),tostring(keyStatus)))
-	
+function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 	courseplay.inputModifierIsPressed = g_gui.inputManager.nameActions.COURSEPLAY_MODIFIER.activeBindings[1].isPressed
-	
+	--print(string.format("inputActionCallback:(vehicle(%s), actionName(%s), keyStatus(%s))",tostring(vehicle:getName()),tostring(actionName),tostring(keyStatus)))
 	if courseplay.inputModifierIsPressed then
-		if keyStatus == 1 and self:getIsActive() and self:getIsEntered() then
+		
+		if keyStatus == 1 and vehicle:getIsActive() and vehicle:getIsEntered() then
 			if actionName == 'COURSEPLAY_START_STOP' then
-				if self.cp.canDrive then
-					if self.cp.isDriving then
-						self:setCourseplayFunc('stop', nil, false, 1);
+				if vehicle.cp.canDrive then
+					if vehicle.cp.isDriving then
+						vehicle:setCourseplayFunc('stop', nil, false, 1);
 					else
-						self:setCourseplayFunc('start', nil, false, 1);
+						vehicle:setCourseplayFunc('start', nil, false, 1);
 					end;
 				else
-					if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
-						self:setCourseplayFunc('start_record', nil, false, 1);
-					elseif self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.isRecordingTurnManeuver then
-						self:setCourseplayFunc('stop_record', nil, false, 1);
+					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.cp.numWaypoints == 0 then
+						vehicle:setCourseplayFunc('start_record', nil, false, 1);
+					elseif vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.isRecordingTurnManeuver then
+						vehicle:setCourseplayFunc('stop_record', nil, false, 1);
 					end;
 				end;
 			elseif actionName == 'COURSEPLAY_CANCELWAIT' and
-				(self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving) or (self.cp.driver and self.cp.driver:isWaiting()) then
-				self:setCourseplayFunc('cancelWait', true, false, 1);
-			elseif actionName == 'COURSEPLAY_DRIVENOW' and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
-				self:setCourseplayFunc('setIsLoaded', true, false, 1);
-			elseif actionName == 'COURSEPLAY_STOP_AT_END' and self.cp.canDrive and self.cp.isDriving then
-				self:setCourseplayFunc('setStopAtEnd', not self.cp.stopAtEnd, false, 1);
-			elseif self.cp.canSwitchMode and self.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
-				self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
-			elseif self.cp.canSwitchMode and self.cp.prevMode and actionName == 'COURSEPLAY_PREVMODE' then
-				self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
+				(vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting()) then
+				vehicle:setCourseplayFunc('cancelWait', true, false, 1);
+			elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
+				vehicle:setCourseplayFunc('setIsLoaded', true, false, 1);
+			elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive and vehicle.cp.isDriving then
+				vehicle:setCourseplayFunc('setStopAtEnd', not vehicle.cp.stopAtEnd, false, 1);
+			elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
+				vehicle:setCourseplayFunc('setCpMode', vehicle.cp.nextMode, false, 1);
+			elseif vehicle.cp.canSwitchMode and vehicle.cp.prevMode and actionName == 'COURSEPLAY_PREVMODE' then
+				vehicle:setCourseplayFunc('setCpMode', vehicle.cp.prevMode, false, 1);
 			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
-					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(self, 2);
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 2);
 			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
-					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(self, 3);
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 3);
 			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
-					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(self, 4);
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 4);
 			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
-					self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(self, 5);
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 5);
 			end;
 
-			if not self.cp.openHudWithMouse and actionName == 'COURSEPLAY_HUD' then
-				self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
+			if not vehicle.cp.openHudWithMouse and actionName == 'COURSEPLAY_HUD' then
+				vehicle:setCourseplayFunc('openCloseHud', not vehicle.cp.hud.show, true);
 			end;
-		end; -- END self:getIsActive() and Enterable.getIsEntered(self) and modifierPressed
+		end; -- END vehicle:getIsActive() and Enterable.getIsEntered(vehicle) and modifierPressed
 	end
 		
 
