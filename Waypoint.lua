@@ -393,6 +393,11 @@ function Course:getWaypointLocalPosition(node, ix)
 	return dx, dz
 end
 
+function Course:havePhysicallyPassedWaypoint(node, ix)
+	local _, dz = self:getWaypointLocalPosition(node, ix)
+	return dz < 0;
+end
+
 function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].angle
 end

@@ -608,6 +608,7 @@ end;
 -- Adding easy access to SiloTrigger
 --------------------------------------------------
 local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+	courseplay:debug(' SiloTrigger_TriggerCallback',2);
 	local trailer = g_currentMission.nodeToObject[otherShapeId];
 	if trailer ~= nil then
 		-- Make sure cp table is present in the trailer.
