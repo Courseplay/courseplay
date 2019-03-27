@@ -92,19 +92,6 @@ function courseplay.hud:setup()
 		textDark 	  = courseplay.utils:rgbToNormal(  1,   1,   1, 1.00)  -- IS FAKE COLOR! ORIG COLOR: 15/15/15/1
 	};
 
-	self.pagesPerMode = {						 --  Pg 0		  Pg 1		  Pg 2		  Pg 3		   Pg 4		    Pg 5		Pg 6		Pg 7		Pg 8		 Pg 9			Pg10
-		[courseplay.MODE_GRAIN_TRANSPORT]		 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false}; -- mode 1
-		[courseplay.MODE_COMBI]					 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 2
-		[courseplay.MODE_OVERLOADER]			 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = true,  [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 3
-		[courseplay.MODE_SEED_FERTILIZE]		 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false,  [10] = false }; -- mode 4
-		[courseplay.MODE_TRANSPORT]				 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 5
-		[courseplay.MODE_FIELDWORK]				 = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = true,  [9] = false,  [10] = false }; -- mode 6
-		[courseplay.MODE_COMBINE_SELF_UNLOADING] = { [0] = false, [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 7
-		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { [0] = true,  [1] = true, [2] = true, [3] = true,  [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = false }; -- mode 8
-		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = true,  [10] = false  }; -- mode 9
-		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { [0] = true,  [1] = true, [2] = true, [3] = false, [4] = false, [5] = true, [6] = true, [7] = true, [8] = false, [9] = false,  [10] = true  }; -- mode 10
-	};
-
 	self.visibleArea = {};
 	self.visibleArea.width = self:pxToNormal(600, 'x');
 	self.visibleArea.x1 = self.basePosX + self:pxToNormal(15, 'x');
@@ -706,6 +693,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NEXT_POINT');
 						end;
 					end				
+				elseif entry.functionToCall == 'changeTurnSpeed' then
+					vehicle.cp.hud.content.pages[5][1][1].text = courseplay:loc('COURSEPLAY_SPEED_TURN');
+					vehicle.cp.hud.content.pages[5][1][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.turn), courseplay:getSpeedMeasuringUnit());
+		
 				end			
 			end		
 		end
@@ -1542,6 +1533,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	-- ##################################################
 	-- Global
+	vehicle.cp.hud.hudPageButtons ={}
 	local posY = self.basePosY + self:pxToNormal(300, 'y');
 	local totalWidth = ((self.numPages + 1) * wBig) + (self.numPages * marginBig); --numPages=9, real numPages=10
 	local baseX = self.baseCenterPosX - totalWidth/2;
@@ -1551,7 +1543,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		if p == 2 then
 			toolTip = self.pageTitles[p][1];
 		end;
-		courseplay.button:new(vehicle, 'global', 'iconSprite.png', 'setHudPage', p, posX, posY, wBig, hBig, nil, nil, false, false, false, toolTip);
+		vehicle.cp.hud.hudPageButtons[p] = courseplay.button:new(vehicle, 'global', 'iconSprite.png', 'setHudPage', p, posX, posY, wBig, hBig, nil, nil, false, false, false, toolTip);
 	end;
 
 	local closeX = self.visibleArea.x2 - marginMiddle - wMiddle;
@@ -2017,9 +2009,28 @@ function courseplay.hud:showRecordingButtons(vehicle, show)
 end
 
 function courseplay.hud:setAIDriverContent(vehicle)
+	courseplay.hud:disablePageButtons(vehicle)
+	
+	--page 1 driving
+	courseplay.hud:enablePageButton(vehicle,1)
 	courseplay.hud:addRowButton(vehicle,'startStop', 1, 1, 1 )
 	courseplay.hud:addRowButton(vehicle,'cancelWait', 1, 2, 1 )
 	courseplay.hud:addRowButton(vehicle,'changeStartAtPoint', 1, 3, 1 )
+	
+	--page2 courses
+	courseplay.hud:enablePageButton(vehicle,2)
+	
+	
+	--page 5 speeds
+	courseplay.hud:enablePageButton(vehicle,5)
+	courseplay.hud:addSettingsRow(vehicle,'changeTurnSpeed', 5, 1, 1 )
+	
+	
+	
+	
+	
+	
+	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
@@ -2031,6 +2042,26 @@ function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
   --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
 	courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[column], self.lineHeight, line, nil, true);
 	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
+end
+
+function courseplay.hud:addSettingsRow(vehicle,funct, hudPage, line, column )
+	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navMinus' }, 'changeTurnSpeed',   -1, self.buttonPosX[2], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, 1, -5, false);
+	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navPlus' },  'changeTurnSpeed',    1, self.buttonPosX[1], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, 1,  5, false);
+	courseplay.button:new(vehicle, hudPage, nil, 'changeTurnSpeed', line, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, 1, 5, true, true);
+	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
+end
+
+function courseplay.hud:enablePageButton(vehicle,pageNumber)
+	local button = vehicle.cp.hud.hudPageButtons[pageNumber];
+	button:setDisabled(false);
+	button:setCanBeClicked(not button.isDisabled);
+end
+
+function courseplay.hud:disablePageButtons(vehicle)
+	for _,button in pairs(vehicle.cp.hud.hudPageButtons) do
+		button:setDisabled(true);
+		button:setCanBeClicked(false);
+	end;
 end
 
 -- do not remove this comment

@@ -750,27 +750,7 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 	local anySection = section == nil or section == 'all';
 
 	if anySection or section == 'pageNav' then
-		for _,button in pairs(vehicle.cp.buttons.global) do
-			if button.functionToCall == 'setHudPage' then
-				local pageNum = button.parameter;
-				button:setActive(pageNum == vehicle.cp.hud.currentPage);
-
-				if vehicle.cp.mode == nil then
-					button:setDisabled(false);
-				elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum] then
-					if pageNum == 0 then
-						local disabled = not (vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.attachedCombine ~= nil);
-						button:setDisabled(disabled);
-					else
-						button:setDisabled(false);
-					end;
-				else
-					button:setDisabled(true);
-				end;
-
-				button:setCanBeClicked(not button.isDisabled and not button.isActive);
-			end;
-		end;
+		
 	end;
 
 	if vehicle.cp.hud.currentPage == 1 and (anySection or section == 'quickModes' or section == 'recording' or section == 'customFieldShow' or section == 'findFirstWaypoint') then

@@ -224,22 +224,10 @@ function courseplay:switchCourseplayerSide(combine)
 end;
 
 function courseplay:setHudPage(vehicle, pageNum)
-	if vehicle.cp.mode == nil then
-		vehicle.cp.hud.currentPage = pageNum;
-	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum] then
-		if pageNum == 0 then
-			if vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.attachedCombine ~= nil then
-				vehicle.cp.hud.currentPage = pageNum;
-			end;
-		else
-			vehicle.cp.hud.currentPage = pageNum;
-		end;
-	end;
-
+	vehicle.cp.hud.hudPageButtons[vehicle.cp.hud.currentPage]:setActive(false)
+	vehicle.cp.hud.currentPage = pageNum;
+	vehicle.cp.hud.hudPageButtons[pageNum]:setActive(true)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-
-	courseplay.buttons:setActiveEnabled(vehicle, "all");
-
 end;
 
 function courseplay:changeCombineOffset(vehicle, changeBy)
