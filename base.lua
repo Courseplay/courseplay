@@ -791,32 +791,33 @@ function courseplay:onDraw()
 	--renderText(0.2, 0.5, 0.02, string.format("InputBinding.wrapMousePositionEnabled(%s),g_currentMission.isPlayerFrozen(%s) self:getIsActive(%s) and Enterable.getIsEntered(self)(%s) then"
 	--,tostring(InputBinding.wrapMousePositionEnabled),tostring(g_currentMission.isPlayerFrozen),tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))));
 	--print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))))
-															-- VVVV Tommi
-	if self:getIsActive() and self:getIsEntered() and false then
-		local modifierPressed = courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed;
+		
+										
+	if self:getIsActive() and self:getIsEntered() then
+		local modifierPressed = courseplay.inputModifierIsPressed;
 		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
-			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER);
+			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER, nil, GS_PRIO_HIGH);
 		end;
 
-		if self.cp.hud.show then
-			print("self.cp.hud.show")
+		--[[if self.cp.hud.show then
 			if self.cp.mouseCursorActive then
 				g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
 			else
 				g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 			end;
-		end;
+		end;]]
 
 		if self.cp.hud.openWithMouse then
 			if not self.cp.hud.show then
-				g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_HUD_OPEN'));
+				--g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_HUD_OPEN'));
 			end;
 		else
 			if modifierPressed then
 				if not self.cp.hud.show then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_OPEN'), InputBinding.COURSEPLAY_HUD);
+					--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_HUD'], true)
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_OPEN'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
 				else
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_CLOSE'), InputBinding.COURSEPLAY_HUD);
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_CLOSE'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
 				end;
 			end;
 		end;
@@ -824,44 +825,45 @@ function courseplay:onDraw()
 		if modifierPressed then
 			if self.cp.canDrive then
 				if isDriving then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_STOP_COURSE'), InputBinding.COURSEPLAY_START_STOP);
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_STOP_COURSE'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
+					--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_START_STOP'], true)
 					if self.cp.HUD1wait or (self.cp.driver and self.cp.driver:isWaiting()) then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_CONTINUE'), InputBinding.COURSEPLAY_CANCELWAIT);
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_CONTINUE'), InputBinding.COURSEPLAY_CANCELWAIT, nil, GS_PRIO_HIGH);
 					end;
 					if self.cp.HUD1noWaitforFill then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_DRIVE_NOW'), InputBinding.COURSEPLAY_DRIVENOW);
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_DRIVE_NOW'), InputBinding.COURSEPLAY_DRIVENOW, nil, GS_PRIO_HIGH);
 					end;
 				else
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP);
-					
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
+					--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_START_STOP'], true)
 					if self.cp.hasShovelStatePositions[2] and InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD ~= nil then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_LOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD);
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_LOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD, nil, GS_PRIO_HIGH);
 					end;
 					if self.cp.hasShovelStatePositions[3] and InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT ~= nil then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_TRANSPORT'). InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT);
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_TRANSPORT'). InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT, nil, GS_PRIO_HIGH);
 					end;
 					if self.cp.hasShovelStatePositions[4] and InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD ~= nil then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_PREUNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD);
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_PREUNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD, nil, GS_PRIO_HIGH);
 					end;
 					if self.cp.hasShovelStatePositions[5] and InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD ~= nil then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_UNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD);
+						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_UNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD, nil, GS_PRIO_HIGH);
 					end;
 					--end;
 				end;
 			else
 				if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_START'), InputBinding.COURSEPLAY_START_STOP);
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_START'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
 				elseif self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.isRecordingTurnManeuver then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_STOP'), InputBinding.COURSEPLAY_START_STOP);
+					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_STOP'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
 				end;
 			end;
 
 			if self.cp.canSwitchMode then
 				if self.cp.nextMode then
-					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_NEXTMODE'), InputBinding.COURSEPLAY_NEXTMODE);
+					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_NEXTMODE'), InputBinding.COURSEPLAY_NEXTMODE, nil, GS_PRIO_HIGH);
 				end;
 				if self.cp.prevMode then
-					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_PREVMODE'), InputBinding.COURSEPLAY_PREVMODE);
+					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_PREVMODE'), InputBinding.COURSEPLAY_PREVMODE, nil, GS_PRIO_HIGH);
 				end;
 			end;
 		end;
@@ -970,51 +972,6 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:onUpdate(dt)
-	-- KEYBOARD EVENTS
-	if self:getIsActive() and self:getIsEntered() and courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed then
-		if courseplay.inputActions.COURSEPLAY_START_STOP.hasEvent then
-			if self.cp.canDrive then
-				if self.cp.isDriving then
-					self:setCourseplayFunc('stop', nil, false, 1);
-				else
-					self:setCourseplayFunc('start', nil, false, 1);
-				end;
-			else
-				if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
-					self:setCourseplayFunc('start_record', nil, false, 1);
-				elseif self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.isRecordingTurnManeuver then
-					self:setCourseplayFunc('stop_record', nil, false, 1);
-				end;
-			end;
-		elseif courseplay.inputActions.COURSEPLAY_CANCELWAIT.hasEvent and
-			(self.cp.HUD1wait and self.cp.canDrive and self.cp.isDriving) or (self.cp.driver and self.cp.driver:isWaiting()) then
-			self:setCourseplayFunc('cancelWait', true, false, 1);
-		elseif courseplay.inputActions.COURSEPLAY_DRIVENOW.hasEvent and self.cp.HUD1noWaitforFill and self.cp.canDrive and self.cp.isDriving then
-			self:setCourseplayFunc('setIsLoaded', true, false, 1);
-		elseif courseplay.inputActions.COURSEPLAY_STOP_AT_END.hasEvent and self.cp.canDrive and self.cp.isDriving then
-			self:setCourseplayFunc('setStopAtEnd', not self.cp.stopAtEnd, false, 1);
-		elseif self.cp.canSwitchMode and self.cp.nextMode and courseplay.inputActions.COURSEPLAY_NEXTMODE.hasEvent then
-			self:setCourseplayFunc('setCpMode', self.cp.nextMode, false, 1);
-		elseif self.cp.canSwitchMode and self.cp.prevMode and courseplay.inputActions.COURSEPLAY_PREVMODE.hasEvent then
-			self:setCourseplayFunc('setCpMode', self.cp.prevMode, false, 1);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION.hasEvent then
-				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(self, 2);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION.hasEvent then
-				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(self, 3);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION.hasEvent then
-				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(self, 4);
-		elseif courseplay.inputActions.COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION.hasEvent then
-				self:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(self, 5);
-		end;
-
-		if not self.cp.openHudWithMouse and courseplay.inputActions.COURSEPLAY_HUD.hasEvent then
-			self:setCourseplayFunc('openCloseHud', not self.cp.hud.show, true);
-		end;
-	end; -- self:getIsActive() and Enterable.getIsEntered(self) and modifierPressed
 	
 	if not self.cp.remoteIsEntered then
 		if self.cp.isEntered ~= Enterable.getIsEntered(self) then
@@ -1194,11 +1151,7 @@ function courseplay:onUpdate(dt)
 	-- this really should be only done in one place.
 	self.cp.curSpeed = self.lastSpeedReal * 3600;
 	
-	
-	--reset actionEvents
-	for name,action in pairs (courseplay.inputActions) do
-		action.hasEvent = false	
-	end
+
 end; --END update()
 
 --[[

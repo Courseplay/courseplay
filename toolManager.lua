@@ -798,7 +798,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	
 	if (vehicle.cp.tipperLoadMode == 0 or vehicle.cp.tipperLoadMode == 3) and not driveOn then
 		--if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then  --vehicle.cp.ppc:haveJustPassedWaypoint(1) doesn't work here
-		if courseplay:havePhysicallyPassedWaypoint(vehicle,1) and currentTrailer.cp.currentSiloTrigger == nil then
+		if vehicle.cp.driver.course:havePhysicallyPassedWaypoint(vehicle.cp.DirectionNode, 1) and currentTrailer.cp.currentSiloTrigger == nil then
 		--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
 			vehicle.cp.tipperLoadMode = 2;
 		elseif currentTrailer.cp.currentSiloTrigger then
@@ -1891,11 +1891,4 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 			return left - right;
 		end
 	end
-end
-
-function courseplay:havePhysicallyPassedWaypoint(vehicle,index)
-	local cx, cz = vehicle.Waypoints[index].cx, vehicle.Waypoints[index].cz; --TODO Tommi convert this to the ppc, course, waypoint, no idea stuff
-	local _,dy,_ = getWorldTranslation(vehicle.cp.DirectionNode);
-	local _,_,tz = worldToLocal(vehicle.cp.DirectionNode,cx,dy,cz) 
-	return tz < 0
 end

@@ -107,7 +107,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 						--action
 						local parameter = button.parameter;
-						if courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed and button.modifiedParameter ~= nil then
+						if courseplay.inputModifierIsPressed and button.modifiedParameter ~= nil then
 							parameter = button.modifiedParameter;
 						end;
 
@@ -174,7 +174,7 @@ end;
 function courseplay.button:handleMouseClick(vehicle)
 	vehicle = vehicle or self.vehicle;
 	local parameter = self.parameter;
-	if courseplay.inputActions.COURSEPLAY_MODIFIER.isPressed and self.modifiedParameter ~= nil then
+	if courseplay.inputModifierIsPressed and self.modifiedParameter ~= nil then
 		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
 		parameter = self.modifiedParameter;
 	end;
@@ -369,13 +369,13 @@ courseplay.inputBindings.keyboard = {};
 
 function courseplay:onKeyEvent(unicode, sym, modifier, isDown) 
 	--print(string.format("%s: unicode(%s), sym(%s), modifier(%s), isDown(%s)",tostring(Input.keyIdToIdName[sym]),tostring(unicode),tostring(sym),tostring(modifier),tostring(isDown)))
-	for name,action in pairs (courseplay.inputActions) do
+	--[[for name,action in pairs (courseplay.inputActions) do
 		if sym == action.bindingSym then
 			--print("set "..tostring(name)..' to '..tostring(isDown))
 			action.isPressed = isDown
 			action.hasEvent = isDown
 		end
-	end	
+	end]]	
 end;
 
 --- appendedFunction onActionBindingsChanged for InputDisplayManager.onActionBindingsChanged
@@ -450,7 +450,7 @@ function courseplay.inputBindings.updateInputButtonData()
 	end;
 
 
-	courseplay.inputActions = {}
+	--[[
 	--print("set up courseplay.inputActions:")
 	for index, action in pairs (g_gui.inputManager.nameActions) do
 		if string.match(index,'COURSEPLAY_') then
@@ -471,7 +471,7 @@ function courseplay.inputBindings.updateInputButtonData()
 			end
 			courseplay.inputActions[index]= actionTable
 		end
-	end
+	end]]
 
 	-- KEYBOARD
 	local modifierTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_MODIFIER");
@@ -480,3 +480,58 @@ function courseplay.inputBindings.updateInputButtonData()
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 	-- print(('\topenCloseHudTextI18n=%q'):format(courseplay.inputBindings.keyboard.openCloseHudTextI18n));
 end;
+
+
+function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
+	courseplay.inputModifierIsPressed = g_gui.inputManager.nameActions.COURSEPLAY_MODIFIER.activeBindings[1].isPressed
+	--print(string.format("inputActionCallback:(vehicle(%s), actionName(%s), keyStatus(%s))",tostring(vehicle:getName()),tostring(actionName),tostring(keyStatus)))
+	if courseplay.inputModifierIsPressed then
+		
+		if keyStatus == 1 and vehicle:getIsActive() and vehicle:getIsEntered() then
+			if actionName == 'COURSEPLAY_START_STOP' then
+				if vehicle.cp.canDrive then
+					if vehicle.cp.isDriving then
+						vehicle:setCourseplayFunc('stop', nil, false, 1);
+					else
+						vehicle:setCourseplayFunc('start', nil, false, 1);
+					end;
+				else
+					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.cp.numWaypoints == 0 then
+						vehicle:setCourseplayFunc('start_record', nil, false, 1);
+					elseif vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.isRecordingTurnManeuver then
+						vehicle:setCourseplayFunc('stop_record', nil, false, 1);
+					end;
+				end;
+			elseif actionName == 'COURSEPLAY_CANCELWAIT' and
+				(vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting()) then
+				vehicle:setCourseplayFunc('cancelWait', true, false, 1);
+			elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
+				vehicle:setCourseplayFunc('setIsLoaded', true, false, 1);
+			elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive and vehicle.cp.isDriving then
+				vehicle:setCourseplayFunc('setStopAtEnd', not vehicle.cp.stopAtEnd, false, 1);
+			elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
+				vehicle:setCourseplayFunc('setCpMode', vehicle.cp.nextMode, false, 1);
+			elseif vehicle.cp.canSwitchMode and vehicle.cp.prevMode and actionName == 'COURSEPLAY_PREVMODE' then
+				vehicle:setCourseplayFunc('setCpMode', vehicle.cp.prevMode, false, 1);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 2);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 3);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 4);
+			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
+					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+					courseplay:moveShovelToPosition(vehicle, 5);
+			end;
+
+			if not vehicle.cp.openHudWithMouse and actionName == 'COURSEPLAY_HUD' then
+				vehicle:setCourseplayFunc('openCloseHud', not vehicle.cp.hud.show, true);
+			end;
+		end; -- END vehicle:getIsActive() and Enterable.getIsEntered(vehicle) and modifierPressed
+	end
+		
+
+end

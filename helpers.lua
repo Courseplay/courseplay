@@ -320,6 +320,7 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 					end
 				end
 				if matchInThisUnit and selectedFillTypeIsNotInMyFillUnit then
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(324): return true')
 					return true;
 				end
 			end
@@ -331,14 +332,19 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 			else
 				courseplay.debugVehicle(19,vehicle,'fillTypesMatch: selectedFillType:%d',selectedFillType)
 				if fillTrigger.source then
-					return fillTrigger.source.providedFillTypes[selectedFillType] or false;
+					local result = fillTrigger.source.providedFillTypes[selectedFillType] or false;
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(337): return %s',tostring(result))
+					return result;
 				elseif fillTrigger.sourceObject ~= nil then
 					local fillType = fillTrigger.sourceObject:getFillUnitFillType(1)  
-					return fillType == selectedFillType;
+					local result = fillType == selectedFillType;
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(342): return %s',tostring(result))
+					return result;
 				end
 			end		
 		end
 	end
+	courseplay.debugVehicle(19,vehicle,'fillTypesMatch(348): return false')
 	return false;
 end;
 
