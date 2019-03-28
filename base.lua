@@ -1227,6 +1227,8 @@ function courseplay:onDelete()
 			removeTrigger(trigger);
 			if entityExists(node) then
 				unlink(node)
+				self:removeWashableNode(node)
+				self:removeWearableNode(node)
 				delete(node)
 			end
 		end
