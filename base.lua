@@ -877,7 +877,7 @@ function courseplay:onDraw()
 				courseplay:toggleFindFirstWaypoint(self);
 			end;
 
-			if self.cp.mouseCursorActive then --Tommi and not InputBinding:getShowMouseCursor() then
+			if self.cp.mouseCursorActive then
 				g_inputBinding:setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
 		end;

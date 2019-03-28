@@ -343,7 +343,8 @@ function CpManager:draw()
 end;
 
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
-	if g_currentMission.paused then return; end;
+	-- if the game is paused or a gui is open (e.g. Shop or Landscaping) then ignore the input
+	if g_currentMission.paused or g_gui.currentGui~= nil then return; end;
 
 	--print(string.format('CpManager:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseKey(%s))',
 	--tostring(posX),tostring(posY),tostring(isDown),tostring(isUp),tostring(mouseKey) ))
@@ -357,7 +358,7 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- LEFT CLICK
+	-- LEFT CLICK to click the button shown in globalInfoText
 	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.primaryButtonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
 		if self.globalInfoText.hasContent then
 			for i,button in pairs(self.globalInfoText.buttons) do
@@ -373,7 +374,7 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- RIGHT CLICK
+	-- RIGHT CLICK  to activate the mouse cursor when I'm not in a vehicle and a globalInfoText is shown
 	elseif isUp and mouseKey == courseplay.inputBindings.mouse.secondaryButtonId and g_currentMission.controlledVehicle == nil then
 		if self.globalInfoText.hasContent and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
 			self.playerOnFootMouseEnabled = true;
