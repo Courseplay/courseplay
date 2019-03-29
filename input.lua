@@ -93,7 +93,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 				button:setHovered(button:getHasMouse(posX, posY));
 			end;
 		end;
-
 		vehicle.cp.hud.mouseWheel.render = false;
 		for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
 			button:setClicked(false);
@@ -107,6 +106,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 						--action
 						local parameter = button.parameter;
+						--print(string.format("if courseplay.inputModifierIsPressed(%s) and button.modifiedParameter(%s) ~= nil then",tostring(courseplay.inputModifierIsPressed),tostring(button.modifiedParameter)))
 						if courseplay.inputModifierIsPressed and button.modifiedParameter ~= nil then
 							parameter = button.modifiedParameter;
 						end;

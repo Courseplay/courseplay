@@ -401,10 +401,9 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 
 	courseplay.signs:updateWaypointSigns(vehicle, "current");
 
-	vehicle.cp.hud.clearCurrentCourseButton[1]:setHovered(false);
-	vehicle.cp.hud.clearCurrentCourseButton[2]:setHovered(false);
-	vehicle.cp.hud.clearCurrentCourseButton[8]:setHovered(false);
-
+	vehicle.cp.hud.clearCurrentCourseButton:setHovered(false);
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
+	
 	-- remove 2D course data
 	vehicle.cp.course2dDimensions = nil;
 	vehicle.cp.course2dDrawData = nil;

@@ -157,6 +157,7 @@ function courseplay:startStop(vehicle)
 	else
 		courseplay:start_record(vehicle);
 	end
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 end;
 
 
