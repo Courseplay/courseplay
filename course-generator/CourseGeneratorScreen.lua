@@ -1,4 +1,5 @@
 
+---@class CourseGeneratorScreen
 CourseGeneratorScreen = {}
 
 local CourseGeneratorScreen_mt = Class(CourseGeneratorScreen, ScreenElement)
