@@ -637,7 +637,7 @@ function courseplay.hud:renderHud(vehicle)
 			txt = '2D\nDBG';
 		end;
 		courseplay:setFontSettings('white', true);
-		renderText(vehicle.cp.changeDrawCourseModeButton.x + vehicle.cp.changeDrawCourseModeButton.width * 0.5, self.topIconsY + self.fontSizes.version * 1.25, self.fontSizes.version, txt);
+		renderText(vehicle.cp.hud.changeDrawCourseModeButton.x + vehicle.cp.hud.changeDrawCourseModeButton.width * 0.5, self.topIconsY + self.fontSizes.version * 1.25, self.fontSizes.version, txt);
 		courseplay:setFontSettings('white', false);
 	end;
 end;
@@ -666,33 +666,42 @@ function courseplay.hud:updatePageContent(vehicle, page)
 			if entry.functionToCall ~= nil then
 				if entry.functionToCall == 'startStop' then
 					if vehicle.cp.canDrive then
-						print("vehicle.cp.canDrive")
+						self:enableButtonWithFunction(vehicle,page, 'startStop')
 						if not vehicle:getIsCourseplayDriving() then
-							print("not vehicle:getIsCourseplayDriving()")
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_START_COURSE')
 						else
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_STOP_COURSE')
 						end
 						self:showCpModeButtons(vehicle, not vehicle:getIsCourseplayDriving())
-						
+						self:enableButtonsOnThisPage(vehicle,page)
 					else
-						print("not vehicle:getIsCourseplayDriving()")
+						self:disableButtonWithFunction(vehicle,page, 'startStop')
+					end
+				elseif entry.functionToCall == 'start_record' then
+					if not vehicle.cp.canDrive then
 						if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) then
+							self:enableButtonWithFunction(vehicle,page, 'start_record')
 							if vehicle.cp.numWaypoints == 0 then
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RECORDING_START');
 							end;
 						else
-							print("vehicle.cp.isRecording")
+							self:disableButtonsOnThisPage(vehicle,page)
 							self:showRecordingButtons(vehicle, true)
 						end
-						
+					else
+						self:disableButtonWithFunction(vehicle,page, 'cancelWait')
 					end
+				
 				elseif entry.functionToCall == 'cancelWait' then
 					if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:isWaiting() then
+						self:enableButtonWithFunction(vehicle,page, 'cancelWait')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CONTINUE')
+					else
+						self:disableButtonWithFunction(vehicle,page, 'cancelWait')
 					end				
 				elseif entry.functionToCall == 'changeStartAtPoint' then
 					if not vehicle:getIsCourseplayDriving() and vehicle.cp.canDrive then
+						self:enableButtonWithFunction(vehicle,page, 'changeStartAtPoint')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_START_AT_POINT');
 						if vehicle.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT then
 							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NEAREST_POINT');
@@ -703,7 +712,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						elseif vehicle.cp.startAtPoint == courseplay.START_AT_NEXT_POINT then
 							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NEXT_POINT');
 						end;
+					else
+						self:disableButtonWithFunction(vehicle,page, 'changeStartAtPoint')
 					end				
+				elseif entry.functionToCall == 'setStopAtEnd' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_STOP_AT_LAST_POINT');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.stopAtEnd and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+				
+				
 				elseif entry.functionToCall == 'changeTurnSpeed' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SPEED_TURN');
 					vehicle.cp.hud.content.pages[page][line][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.turn), courseplay:getSpeedMeasuringUnit());
@@ -1586,9 +1602,9 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	vehicle.cp.hud.saveCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
 	vehicle.cp.hud.clearCurrentCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
-	
-	vehicle.cp.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'changeDrawCourseMode', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true);
-
+	vehicle.cp.hud.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'changeDrawCourseMode', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true);
+	self:setupCpModeButtons(vehicle)
+	self:setRecordingButtons(vehicle)
 
 	-- ##################################################
 	-- Page 0: Combine controls
@@ -2017,10 +2033,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 end;
 --END setupVehicleHud
 
-
-
-
-function courseplay.hud:setCpModeButtons(vehicle)
+--setup functions 
+function courseplay.hud:setupCpModeButtons(vehicle)
 	-- setCpMode buttons
 	local totalWidth = (courseplay.NUM_MODES * self.buttonSize.big.w) + ((courseplay.NUM_MODES - 1) * self.buttonSize.big.margin);
 	local baseX = self.baseCenterPosX - totalWidth/2;
@@ -2031,95 +2045,6 @@ function courseplay.hud:setCpModeButtons(vehicle)
 		local button = courseplay.button:new(vehicle, 'global', 'iconSprite.png', 'setCpMode', i, posX, y, self.buttonSize.big.w, self.buttonSize.big.h, nil, nil, false, false, false, toolTip);
 		button:setActive(i == vehicle.cp.mode)
 	end;
-end
-
-
-
-function courseplay.hud:showCpModeButtons(vehicle, show)
-	for _,button in pairs(vehicle.cp.buttons.global) do
-		local fn, prm = button.functionToCall, button.parameter;
-		if fn == 'setCpMode'then
-			button:setShow(show);
-		end
-	end
-end
-
-function courseplay.hud:showRecordingButtons(vehicle, show)
-	for _,button in pairs(vehicle.cp.buttons.global) do
-		if 	button.isRecordingButton then
-			button:setShow(show);
-		end
-	end	
-end
-
-function courseplay.hud:setAIDriverContent(vehicle)
-	print("setAIDriverContent")
-	self:clearContent(vehicle)
-	self:disablePageButtons(vehicle)
-		
-	--page 1 driving
-	self:setCpModeButtons(vehicle)
-	self:enablePageButton(vehicle,1)
-	self:addRowButton(vehicle,'startStop', 1, 1, 1 )
-	self:addRowButton(vehicle,'cancelWait', 1, 2, 1 )
-	self:addRowButton(vehicle,'changeStartAtPoint', 1, 3, 1 )
-	self:setRecordingButtons(vehicle)
-	
-	--page2 courses
-	courseplay.hud:enablePageButton(vehicle,2)
-	
-	
-	--page 5 speeds
-	self:enablePageButton(vehicle,5)
-	self:addSettingsRow(vehicle,'changeTurnSpeed', 5, 1, 1 )
-	self:addSettingsRow(vehicle,'changeFieldSpeed', 5, 2, 1 )
-	self:addSettingsRow(vehicle,'changeMaxSpeed', 5, 3, 1 ) 
-	self:addRowButton(vehicle,'toggleUseRecordingSpeed', 5, 4, 1 ) 
-	
-	
-	--page 6 settings
-	self:enablePageButton(vehicle,6)
-	self:setDebugButtons(vehicle,6)
-	
-	self:setReloadPageOrder(vehicle, -1, true)
-end
-
-function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
-	print("addRowButton: "..tostring(funct))
-	local width = {
-					[1] = self.buttonPosX[2] - self.col1posX;
-					}
-  
-  --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
-	courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[column], self.lineHeight, line, nil, true);
-	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
-end
-
-function courseplay.hud:addSettingsRow(vehicle,funct, hudPage, line, column )
-	print("addSettingsRow: "..tostring(funct))
-	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navMinus' }, funct,   -1, self.buttonPosX[2], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, -5, false);
-	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navPlus' },  funct,    1, self.buttonPosX[1], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line,  5, false);
-	courseplay.button:new(vehicle, hudPage, nil, funct, 1, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true);
-	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
-end
-
-function courseplay.hud:enablePageButton(vehicle,pageNumber)
-	local button = vehicle.cp.hud.hudPageButtons[pageNumber];
-	button:setDisabled(false);
-	button:setCanBeClicked(not button.isDisabled);
-end
-
-function courseplay.hud:disablePageButtons(vehicle)
-	for _,button in pairs(vehicle.cp.hud.hudPageButtons) do
-		button:setDisabled(true);
-		button:setCanBeClicked(false);
-	end;
-end
-
-function courseplay.hud:clearContent(vehicle)
-	for hudPage=0,self.numPages do
-		vehicle.cp.buttons[hudPage]= {}
-	end
 end
 
 function courseplay.hud:setDebugButtons(vehicle,debugButtonOnPage)
@@ -2143,8 +2068,7 @@ function courseplay.hud:setDebugButtons(vehicle,debugButtonOnPage)
 		courseplay.button:new(vehicle, debugButtonOnPage, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, debugButtonOnPage, -1, true, true);
 	end
 end
-		
-		
+
 function courseplay.hud:setRecordingButtons(vehicle)
 	local recordingData = {
 		[1] = { 'recordingStop',	 'stop_record',				 nil,  'COURSEPLAY_RECORDING_STOP'			   },
@@ -2182,6 +2106,138 @@ function courseplay.hud:setRecordingButtons(vehicle)
 			end;
 		end;
 	end;
-end		
+end	
+
+
+
+-- Hud content functions
+function courseplay.hud:showCpModeButtons(vehicle, show)
+	for _,button in pairs(vehicle.cp.buttons.global) do
+		local fn, prm = button.functionToCall, button.parameter;
+		if fn == 'setCpMode'then
+			button:setShow(show);
+			button:setActive(prm == vehicle.cp.mode)
+		end
+	end
+end
+
+function courseplay.hud:showRecordingButtons(vehicle, show)
+	for _,button in pairs(vehicle.cp.buttons.global) do
+		if 	button.isRecordingButton then
+			button:setShow(show);
+		end
+	end	
+end
+
+function courseplay.hud:enablePageButton(vehicle,pageNumber)
+	local button = vehicle.cp.hud.hudPageButtons[pageNumber];
+	button:setDisabled(false);
+	button:setCanBeClicked(not button.isDisabled);
+end
+
+function courseplay.hud:disablePageButtons(vehicle)
+	for _,button in pairs(vehicle.cp.hud.hudPageButtons) do
+		button:setDisabled(true);
+		button:setCanBeClicked(false);
+	end;
+end
+
+function courseplay.hud:clearContent(vehicle)
+	for hudPage=0,self.numPages do
+		vehicle.cp.buttons[hudPage]= {}
+	end
+end
+
+function courseplay.hud:enableButtonsOnThisPage(vehicle,page)
+	for _, button in pairs(vehicle.cp.buttons[page])do
+		button:setDisabled(false)
+	end
+end
+
+function courseplay.hud:disableButtonsOnThisPage(vehicle,page)
+	for _, button in pairs(vehicle.cp.buttons[page])do
+		button:setDisabled(true)
+	end
+end
+
+function courseplay.hud:enableButtonWithFunction(vehicle,page, func)
+	print("enableButton: "..func)
+	for _, button in pairs(vehicle.cp.buttons[page])do
+		if button.functionToCall == func then
+			button:setDisabled(false)
+		end
+	end
+end
+
+function courseplay.hud:disableButtonWithFunction(vehicle,page, func)
+	print("disableButton: "..func)
+	for _, button in pairs(vehicle.cp.buttons[page])do
+		if button.functionToCall == func then
+			button:setDisabled(true)
+		end
+	end
+end
+
+--call the setup for the different modes
+function courseplay.hud:setAIDriverContent(vehicle)
+	print("setAIDriverContent")
+	self:clearContent(vehicle)
+	self:disablePageButtons(vehicle)
+		
+	--page 1 driving
+	self:enablePageButton(vehicle,1)
+	self:addRowButton(vehicle,'startStop', 1, 1, 1 )
+	self:addRowButton(vehicle,'start_record', 1, 1, 2 )
+	self:addRowButton(vehicle,'cancelWait', 1, 2, 1 )
+	self:addRowButton(vehicle,'changeStartAtPoint', 1, 2, 2 )
+	self:addRowButton(vehicle,'setStopAtEnd', 1, 3, 1 )
+	
+	--page2 courses
+	courseplay.hud:enablePageButton(vehicle,2)
+	
+	
+	--page 5 speeds
+	self:enablePageButton(vehicle,5)
+	self:addSettingsRow(vehicle,'changeTurnSpeed', 5, 1, 1 )
+	self:addSettingsRow(vehicle,'changeFieldSpeed', 5, 2, 1 )
+	self:addSettingsRow(vehicle,'changeMaxSpeed', 5, 3, 1 ) 
+	self:addRowButton(vehicle,'toggleUseRecordingSpeed', 5, 4, 1 ) 
+	
+	
+	--page 6 settings
+	self:enablePageButton(vehicle,6)
+	self:setDebugButtons(vehicle,6)
+	
+	self:setReloadPageOrder(vehicle, -1, true)
+end
+
+
+--different buttons to set
+
+function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
+	print("  addRowButton: "..tostring(funct))
+	local width = {
+					[1] = self.buttonPosX[2] - self.col1posX;
+					}
+  
+  --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
+	courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
+	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
+end
+
+function courseplay.hud:addSettingsRow(vehicle,funct, hudPage, line, column )
+	print("  addSettingsRow: "..tostring(funct))
+	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navMinus' }, funct,   -1, self.buttonPosX[2], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, -5, false);
+	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navPlus' },  funct,    1, self.buttonPosX[1], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line,  5, false);
+	courseplay.button:new(vehicle, hudPage, nil, funct, 1, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true);
+	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
+end
+
+
+
+
+		
+		
+	
 -- do not remove this comment
 -- vim: set noexpandtab:

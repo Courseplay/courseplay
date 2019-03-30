@@ -192,7 +192,12 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 end;
 
 function courseplay:setStopAtEnd(vehicle, bool)
-	vehicle.cp.stopAtEnd = bool;
+	--if bool is nil, toggle stopAtEnd  
+	if bool == nil then 
+		vehicle.cp.stopAtEnd = not vehicle.cp.stopAtEnd
+	else
+		vehicle.cp.stopAtEnd = bool;
+	end
 end;
 
 function courseplay:setIsLoaded(vehicle, bool)
@@ -1471,7 +1476,7 @@ end;
 
 function courseplay:changeDrawCourseMode(vehicle, changeBy)
 	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, CpManager.isDeveloper and courseplay.COURSE_2D_DISPLAY_BOTH or courseplay.COURSE_2D_DISPLAY_2DONLY, courseplay.COURSE_2D_DISPLAY_OFF);
-	vehicle.cp.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
+	vehicle.cp.hud.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
 end;
 
 function courseplay:setEngineState(vehicle, on)
