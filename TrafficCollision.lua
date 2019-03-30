@@ -64,6 +64,8 @@ function CollisionDetector:removeLegacyCollisionTriggers()
 			removeTrigger(node)
 			if entityExists(node) then
 				unlink(node)
+				self.vehicle:removeWashableNode(node)
+				self.vehicle:removeWearableNode(node)
 				delete(node)
 			end
 		end

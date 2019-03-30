@@ -591,9 +591,9 @@ function courseplay:onLoad(savegame)
 	-- 2D course
 	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
 	-- 2D pda map background -- TODO: MP?
-	if g_currentMission.ingameMap and g_currentMission.ingameMap.mapOverlay and g_currentMission.ingameMap.mapOverlay.filename then
-	self.cp.course2dPdaMapOverlay = Overlay:new(g_currentMission.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
-	self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
+	if g_currentMission.hud.ingameMap and g_currentMission.hud.ingameMap.mapOverlay and g_currentMission.hud.ingameMap.mapOverlay.filename then
+		self.cp.course2dPdaMapOverlay = Overlay:new(g_currentMission.hud.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
+		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
 	end;
 
 	-- HUD
@@ -877,7 +877,7 @@ function courseplay:onDraw()
 				courseplay:toggleFindFirstWaypoint(self);
 			end;
 
-			if self.cp.mouseCursorActive then --Tommi and not InputBinding:getShowMouseCursor() then
+			if self.cp.mouseCursorActive then
 				g_inputBinding:setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
 		end;
@@ -1129,6 +1129,10 @@ function courseplay:onUpdate(dt)
 	if courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum] == nil then
 		self.cp.fieldEdge.selectedField.fieldNum = 0;
 	end
+	if courseplay.fields.fieldData[self.cp.searchCombineOnField] == nil then
+		self.cp.searchCombineOnField = 0;
+	end
+	
 	
 	-- MODE 9: move shovel to positions (manually)
 	if (self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY or self.cp.shovelPositionFromKey) and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
@@ -1227,6 +1231,8 @@ function courseplay:onDelete()
 			removeTrigger(trigger);
 			if entityExists(node) then
 				unlink(node)
+				self:removeWashableNode(node)
+				self:removeWearableNode(node)
 				delete(node)
 			end
 		end
