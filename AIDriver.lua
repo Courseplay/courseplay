@@ -1157,9 +1157,14 @@ function AIDriver:startEngineIfNeeded()
 	self.lastMovingTime = self.vehicle.timer
 end
 
+--- Is auto stop engine enabled?
+function AIDriver:isEngineAutoStopEnabled()
+	return self.vehicle.cp.saveFuelOptionActive
+end
+
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
 function AIDriver:stopEngineIfNotNeeded()
-	if self.vehicle.cp.saveFuelOptionActive then
+	if self:isEngineAutoStopEnabled() then
 		if self.vehicle.timer - (self.lastMovingTime or math.huge) > 30000 then
 			if self.vehicle.spec_motorized and self.vehicle.spec_motorized.isMotorStarted then
 				self:debug('Been stopped for more than 30 seconds, stopping engine. %d %d', self.vehicle.timer, (self.lastMovingTime or math.huge))

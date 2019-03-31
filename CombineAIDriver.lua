@@ -236,3 +236,9 @@ function CombineAIDriver:createPullBackReturnCourse()
 	end
 	return Course(self.vehicle, pullBackReturnWaypoints, true)
 end
+
+--- Disable auto stop for choppers as when we stop the engine they'll also raise implements and the way we restart them
+--- won't lower the header. So for now, just don't let them to stop the engine
+function CombineAIDriver:isEngineAutoStopEnabled()
+	return not self:isChopper() and self.vehicle.cp.saveFuelOptionActive
+end

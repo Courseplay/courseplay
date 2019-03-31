@@ -119,9 +119,13 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	return takeOverSteering
 end
 
+function UnloadableFieldworkAIDriver:isChopper()
+ return self.vehicle.cp.isChopper
+end
+
 function UnloadableFieldworkAIDriver:handlePipe()
 	if self.vehicle.spec_pipe then
-		if self.vehicle.cp.isChopper then
+		if self:isChopper() then
 			self:handleChopperPipe()
 		else
 			self:handleCombinePipe()
