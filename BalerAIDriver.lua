@@ -68,9 +68,6 @@ function BalerAIDriver:handleBaler()
 			elseif fillLevel >= 0 and not self.baler:getIsTurnedOn() and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
 				self.baler:setIsTurnedOn(true, false);
 			end
-			if self.baler.spec_baleWrapper and self.baler.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_WRAPPER_FINSIHED then --Unloads the baler wrapper combo
-				self.baler:doStateChange(BaleWrapper.CHANGE_WRAPPER_START_DROP_BALE)
-			end
 		end
 		if self.baler.setPickupState ~= nil then
 			if self.baler.spec_pickup ~= nil and not self.baler.spec_pickup.isLowered then

@@ -104,6 +104,7 @@ local function initialize()
 		'FillableFieldworkAIDriver',
 		'UnloadableFieldworkAIDriver',
 		'BaleLoaderAIDriver',
+		'BaleWrapperAIDriver',
 		'BalerAIDriver',
 		'CombineAIDriver',
 		'ShovelModeAIDriver',

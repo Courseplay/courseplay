@@ -69,6 +69,8 @@ function FieldworkAIDriver.register()
 		function(self, superFunc)
 			if SpecializationUtil.hasSpecialization(BaleLoader, self.specializations) then
 				return true
+			elseif SpecializationUtil.hasSpecialization(BaleWrapper, self.specializations) then
+				return true
 			elseif SpecializationUtil.hasSpecialization(Pickup, self.specializations) then
 				return true
 			elseif superFunc ~= nil then
@@ -81,6 +83,7 @@ function FieldworkAIDriver.register()
 		function(self, superFunc)
 			-- Only the courseplay helper can handle bale loaders.
 			if FieldworkAIDriver.hasImplementWithSpecialization(self, BaleLoader) or
+				FieldworkAIDriver.hasImplementWithSpecialization(self, BaleWrapper) or
 				FieldworkAIDriver.hasImplementWithSpecialization(self, Pickup) then
 				return false
 			end
