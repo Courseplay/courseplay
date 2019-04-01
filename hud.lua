@@ -751,8 +751,23 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	end
 	
 	if self.pagesWithSaveCourseIcon[page] then
-		vehicle.cp.hud.saveCourseButton:setShow(not vehicle:getIsCourseplayDriving() and vehicle.Waypoints[1] ~= nil)
-		vehicle.cp.hud.clearCurrentCourseButton:setShow(not vehicle:getIsCourseplayDriving() and vehicle.Waypoints[1] ~= nil) --TODO the waypoint thing is a hack, make it nicer;
+		vehicle.cp.hud.saveCourseButton:setShow(vehicle.cp.canDrive and not vehicle.cp.isDriving)
+		vehicle.cp.hud.clearCurrentCourseButton:setShow(vehicle.cp.canDrive and not vehicle.cp.isDriving) --TODO the waypoint thing is a hack, make it nicer;
+	end
+	
+	if page == 2 then
+		self:updateCourseList(vehicle, 2)
+		vehicle.cp.hud.filterButton:setShow(not vehicle.cp.hud.choose_parent);
+		vehicle.cp.hud.reloadCourses:setShow(g_server ~= nil and not vehicle.cp.canDrive and not g_currentMission.missionDynamicInfo.isMultiplayer);
+		vehicle.cp.hud.newFolderButton:setShow(true)
+		self:showShiftHudButtons(vehicle, true)
+		self:setCourseButtonsVisibilty(vehicle)
+		
+	else
+		self:showShiftHudButtons(vehicle, false)
+		vehicle.cp.hud.filterButton:setShow(false);
+		vehicle.cp.hud.reloadCourses:setShow(false);
+		vehicle.cp.hud.newFolderButton:setShow(false)
 	end
 		
 --[[	--PAGE 0: COMBINE SETTINGS
@@ -1535,8 +1550,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud.showFoldersOnly = false
 	vehicle.cp.hud.showZeroLevelFolder = false
 	vehicle.cp.hud.courses = {}
-	vehicle.cp.hud.courseListPrev = false;
-	vehicle.cp.hud.courseListNext = false; -- will be updated after loading courses into the hud
+	--vehicle.cp.hud.courseListPrev = false;
+	--vehicle.cp.hud.courseListNext = false; -- will be updated after loading courses into the hud
 
 	--Camera backups: allowTranslation
 	vehicle.cp.camerasBackup = {};
@@ -1605,6 +1620,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'changeDrawCourseMode', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true);
 	self:setupCpModeButtons(vehicle)
 	self:setRecordingButtons(vehicle)
+	self:setupCoursePageButtons(vehicle,2)
 
 	-- ##################################################
 	-- Page 0: Combine controls
@@ -2108,8 +2124,155 @@ function courseplay.hud:setRecordingButtons(vehicle)
 	end;
 end	
 
+function courseplay.hud:updateCourseList(vehicle, page)
+	-- update courses?
+	if vehicle.cp.reloadCourseItems then
+		courseplay.courses:reloadVehicleCourses(vehicle)
+		CourseplayEvent.sendEvent(vehicle,'self.cp.onMpSetCourses',true)
+	end
+	-- end update courses
 
+	local numCourses = #(vehicle.cp.hud.courses)
 
+	-- set line text
+	local courseName = ''
+	for line = 1, numCourses do
+		courseName = vehicle.cp.hud.courses[line].displayname
+		if courseName == nil or courseName == '' then
+			courseName = '-';
+		end;
+		vehicle.cp.hud.content.pages[page][line][1].text = courseName;
+		if vehicle.cp.hud.courses[line].type == 'course' then
+			vehicle.cp.hud.content.pages[page][line][1].indention = vehicle.cp.hud.courses[line].level * self.indent;
+		else
+			vehicle.cp.hud.content.pages[page][line][1].indention = (vehicle.cp.hud.courses[line].level + 1) * self.indent;
+		end
+	end;
+	for line = numCourses+1, self.numLines do
+		vehicle.cp.hud.content.pages[page][line][1].text = nil;
+	end
+end
+
+function courseplay.hud:setupCoursePageButtons(vehicle,page)
+	local wMiddle	   = self.buttonSize.middle.w;
+	local hMiddle	   = self.buttonSize.middle.h;
+	local wSmall	   = self.buttonSize.small.w;
+	local hSmall	   = self.buttonSize.small.h;
+	local arrowPosYTop = self.linesButtonPosY[1];
+	local arrowPosYBottom = self.linesButtonPosY[1];
+	local listArrowX = self.contentMaxX - wMiddle;
+	local topIconsX = {};
+	topIconsX[3] = listArrowX - wSmall - wMiddle;
+	topIconsX[2] = topIconsX[3] - wSmall - wMiddle;
+	topIconsX[1] = topIconsX[2] - wSmall - wMiddle;
+	topIconsX[0] = topIconsX[1] - wSmall - wMiddle;
+	
+	local mouseWheelArea = {
+		x = self.contentMinX,
+		w = self.contentMaxWidth,
+		h = self.lineHeight
+	}
+	local courseListMouseWheelArea = {
+		x = self.contentMinX,
+		y = self.linesPosY[self.numLines],
+		width = self.buttonCoursesPosX[4] - self.contentMinX,
+		height = self.linesPosY[1] + self.lineHeight - self.linesPosY[self.numLines]
+	};
+	vehicle.cp.hud.courseListMouseArea= courseplay.button:new(vehicle, 'global', nil, 'shiftHudCourses', -1, courseListMouseWheelArea.x, courseListMouseWheelArea.y, courseListMouseWheelArea.width, courseListMouseWheelArea.height, nil, -self.numLines, true, true); 
+	
+	-- courser actions
+	local hoverAreaWidth = self.buttonCoursesPosX[page] + wSmall - self.buttonCoursesPosX[4];
+	if g_server ~= nil then
+		hoverAreaWidth = self.buttonCoursesPosX[1] + wSmall - self.buttonCoursesPosX[4];
+	end;
+	for i=1, self.numLines do
+		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'navPlus' }, 'expandFolder', i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
+		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'loadSortedCourse', i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_LOAD_COURSE'));
+		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'courseAdd' }, 'addSortedCourse', i, self.buttonCoursesPosX[3], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_APPEND_COURSE'));
+		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'folderParentFrom' }, 'linkParent', i, self.buttonCoursesPosX[2], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_MOVE_TO_FOLDER'));
+		if g_server ~= nil then
+			courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'delete' }, 'deleteSortedItem', i, self.buttonCoursesPosX[1], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_DELETE_COURSE'));
+		end;
+		courseplay.button:new(vehicle, -2, nil, nil, nil, self.buttonCoursesPosX[4], self.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
+	end;
+	vehicle.cp.hud.filterButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS'));
+	vehicle.cp.hud.newFolderButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'folderNew' }, 'showSaveCourseForm', 'folder', topIconsX[2], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CREATE_FOLDER'));
+	vehicle.cp.hud.reloadCourses = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'refresh' }, 'reloadCoursesFromXML', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_RELOAD_COURSE_LIST'));
+	vehicle.cp.hud.courseListPrevButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'navUp' },   'shiftHudCourses', -self.numLines, listArrowX, self.linesButtonPosY[1],			   wMiddle, hMiddle, nil, -self.numLines*2);
+	vehicle.cp.hud.courseListNextButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'navDown' }, 'shiftHudCourses',  self.numLines, listArrowX, self.linesButtonPosY[self.numLines], wMiddle, hMiddle, nil,  self.numLines*2);
+end
+
+function courseplay.hud:setCourseButtonsVisibilty(vehicle)
+	local enable, show = true, true;
+	local numVisibleCourses = #(vehicle.cp.hud.courses);
+	local nofolders = nil == next(g_currentMission.cp_folders);
+	local indent = courseplay.hud.indent;
+	local row, fn;
+	for _, button in pairs(vehicle.cp.buttons[-2]) do
+		row = button.row;
+		fn = button.functionToCall;
+		enable = true;
+		show = true;
+
+		if row > numVisibleCourses then
+			show = false;
+		else
+			if fn == 'expandFolder' then
+				if vehicle.cp.hud.courses[row].type == 'course' then
+					show = false;
+				else
+					-- position the expandFolder buttons
+					button:setOffset(vehicle.cp.hud.courses[row].level * indent, 0)
+					
+					if vehicle.cp.hud.courses[row].id == 0 then
+						show = false; --hide for level 0 'folder'
+					else
+						-- check if plus or minus should show up
+						if vehicle.cp.folder_settings[vehicle.cp.hud.courses[row].id].showChildren then
+							button:setSpriteSectionUVs('navMinus');
+						else
+							button:setSpriteSectionUVs('navPlus');
+						end;
+						if g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild == 0 then
+							enable = false; -- button has no children
+						end;
+					end;
+				end;
+			else
+				if vehicle.cp.hud.courses[row].type == 'folder' and (fn == 'loadSortedCourse' or fn == 'addSortedCourse') then
+					show = false;
+				elseif vehicle.cp.hud.choose_parent ~= true then
+					if fn == 'deleteSortedItem' and vehicle.cp.hud.courses[row].type == 'folder' and g_currentMission.cp_sorted.info[ vehicle.cp.hud.courses[row].uid ].lastChild ~= 0 then
+						enable = false;
+					elseif fn == 'linkParent' then
+						button:setSpriteSectionUVs('folderParentFrom');
+						if nofolders then
+							enable = false;
+						end;
+					elseif vehicle.cp.hud.courses[row].type == 'course' and (fn == 'loadSortedCourse' or fn == 'addSortedCourse' or fn == 'deleteSortedItem') and vehicle.cp.isDriving then
+						enable = false;
+					end;
+				else
+					if fn ~= 'linkParent' then
+						enable = false;
+					else
+						button:setSpriteSectionUVs('folderParentTo');
+					end;
+				end;
+			end;
+		end;
+
+		button:setDisabled(not enable or not show);
+		button:setShow(show);
+	end; -- for buttons
+	
+end	
+function courseplay.hud:showShiftHudButtons(vehicle, show)
+	local previousLine, nextLine = courseplay.settings.validateCourseListArrows(vehicle);
+	vehicle.cp.hud.courseListPrevButton:setShow(previousLine and show)
+	vehicle.cp.hud.courseListNextButton:setShow(nextLine and show)
+	vehicle.cp.hud.courseListMouseArea:setShow(show)
+end
 -- Hud content functions
 function courseplay.hud:showCpModeButtons(vehicle, show)
 	for _,button in pairs(vehicle.cp.buttons.global) do
@@ -2193,8 +2356,8 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'setStopAtEnd', 1, 3, 1 )
 	
 	--page2 courses
-	courseplay.hud:enablePageButton(vehicle,2)
-	
+	self:enablePageButton(vehicle,2)
+	self:updateCourseList(vehicle, 2)
 	
 	--page 5 speeds
 	self:enablePageButton(vehicle,5)

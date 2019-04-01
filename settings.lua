@@ -905,11 +905,12 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 				next = false
 			end
 		end
-		vehicle.cp.hud.courseListPrev = prev
-		vehicle.cp.hud.courseListNext = next
-	else
+		return prev, next;
+		--vehicle.cp.hud.courseListPrev = prev
+		--vehicle.cp.hud.courseListNext = next
+	--[[else
 		-- update all vehicles
-		for k,v in pairs(g_currentMission.enterables) do
+			for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				prev = true
 				next = true
@@ -936,7 +937,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 				v.cp.hud.courseListPrev = prev
 				v.cp.hud.courseListNext = next
 			end -- if hasSpecialization
-		end -- in pairs(enterables)
+		end]] -- in pairs(enterables)
 	end -- if vehicle
 end;
 

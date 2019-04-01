@@ -587,6 +587,60 @@ function courseplay.button:setPosition(posX, posY)
 	self.overlay:setPosition(self.x, self.y);
 end;
 
+
+function courseplay.button:handleHoverAction(vehicle, posX, posY)
+	local button = self;
+	if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
+		--Mouse wheel icon
+		vehicle.cp.hud.mouseWheel.render = true;
+		vehicle.cp.hud.mouseWheel.icon:setPosition(posX + 3/g_screenWidth, posY - 16/g_screenHeight);
+
+		
+		--action
+		local parameter = button.parameter;
+		--print(string.format("if courseplay.inputModifierIsPressed(%s) and button.modifiedParameter(%s) ~= nil then",tostring(courseplay.inputModifierIsPressed),tostring(button.modifiedParameter)))
+		if courseplay.inputModifierIsPressed and button.modifiedParameter ~= nil then
+			parameter = button.modifiedParameter;
+		end;
+
+		local upParameter = parameter;
+		local downParameter = upParameter * -1;
+		if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
+			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(upParameter)), 18);
+			vehicle:setCourseplayFunc(button.functionToCall, upParameter, false, button.page);
+		elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
+			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(downParameter)), 18);
+			vehicle:setCourseplayFunc(button.functionToCall, downParameter, false, button.page);
+		end;
+	end;
+end
+
+function courseplay.button:handleMouseClick(vehicle)
+	vehicle = vehicle or self.vehicle;
+	local parameter = self.parameter;
+	if courseplay.inputModifierIsPressed and self.modifiedParameter ~= nil then
+		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
+		parameter = self.modifiedParameter;
+	end;
+
+	if self.show and not self.isHidden and self.canBeClicked and not self.isDisabled then
+		--[[if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
+			return;
+		end;]]
+
+		-- self:setClicked(true);
+		if self.functionToCall == "showSaveCourseForm" then
+			vehicle.cp.imWriting = true
+		end
+		if self.functionToCall == "goToVehicle" then
+			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
+		else
+			vehicle:setCourseplayFunc(self.functionToCall, parameter, false, self.page);
+		end
+		-- self:setClicked(false);
+	end;
+end;
+
 function courseplay.button:setOffset(offsetX, offsetY)
 	offsetX = offsetX or 0
 	offsetY = offsetY or 0
