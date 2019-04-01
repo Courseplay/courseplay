@@ -1892,3 +1892,17 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 		end
 	end
 end
+
+function courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
+	if cpModeToCheck == 5 then 
+		return true;
+	elseif vehicle.cp.workToolAttached then
+		if cpModeToCheck == 1
+		or cpModeToCheck == 4
+		or cpModeToCheck == 6
+		or cpModeToCheck == 9
+		or cpModeToCheck == 10 then
+			return true;
+		end
+	end
+end

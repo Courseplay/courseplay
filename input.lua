@@ -35,7 +35,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons.global) do
 				if button.show and button:getHasMouse(posX, posY) then
-					print(" global ")
 					buttonToHandle = button;
 					break;
 				end;
@@ -45,7 +44,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
 				if button.canBeClicked and button.show and not button.isDisabled and button:getHasMouse(posX, posY) then
-					print(" vehicle.cp.buttons[vehicle.cp.hud.currentPage] ")
 					buttonToHandle = button;
 					break;
 				end;
@@ -56,7 +54,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 			if vehicle.cp.hud.currentPage == 2 then
 				for _,button in pairs(vehicle.cp.buttons[-2]) do
 					if button.show and button:getHasMouse(posX, posY) then
-						print(" vehicle.cp.buttons[-2] ")
 						buttonToHandle = button;
 						break;
 					end;
@@ -65,7 +62,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if buttonToHandle then
-			print("on MouseEvent buttonToHandle: "..tostring(buttonToHandle.functionToCall))
 			buttonToHandle:setClicked(isDown);
 			--[[if not buttonToHandle.isDisabled and buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
 				vehicle.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;

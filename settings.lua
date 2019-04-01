@@ -122,6 +122,11 @@ end
 function courseplay:toggleAutoRefuel(self)
 	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 
 end
+
+function courseplay:toggleAutomaticCoverHandling (self)
+	self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling 
+end
+
 function courseplay:toggleMode10automaticSpeed(self)
 	if self.cp.mode10.leveling then
 		self.cp.mode10.automaticSpeed = not self.cp.mode10.automaticSpeed
