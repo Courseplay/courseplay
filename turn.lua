@@ -681,10 +681,11 @@ function courseplay:turn(vehicle, dt)
 			vehicle.cp.lowerToolThisTurnLoop = false;
 		end;
 
-		if vehicle.isStrawEnabled then
+		-- TODO: this may not be needed anymore as handled by AIDriver:holdInTurnManeuver()
+		if vehicle.spec_combine and vehicle.spec_combine.strawPSenabled then
 			vehicle.cp.savedNoStopOnTurn = vehicle.cp.noStopOnTurn
 			vehicle.cp.noStopOnTurn = false;
-			turnTimer = vehicle.strawToggleTime or 5;
+			turnTimer = vehicle.spec_combine.processing.toggleTime / 1000 or 5;
 		elseif vehicle.cp.savedNoStopOnTurn ~= nil then
 			vehicle.cp.noStopOnTurn = vehicle.cp.savedNoStopOnTurn;
 			vehicle.cp.savedNoStopOnTurn = nil;
@@ -806,7 +807,7 @@ function courseplay:turn(vehicle, dt)
 			directionForce = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
 		end
 	end
-	allowedToDrive = vehicle.cp.driver and not vehicle.cp.driver.heldForUnloadRefill and allowedToDrive
+	allowedToDrive = vehicle.cp.driver and not vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0) and allowedToDrive
 	
 	--courseplay.debugVehicle(14, vehicle, 'turn speed = %.1f, allowedToDrive %s', refSpeed, allowedToDrive)
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle

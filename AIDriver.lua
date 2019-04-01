@@ -1174,6 +1174,15 @@ function AIDriver:stopEngineIfNotNeeded()
 	end
 end
 
+--- Compatibility function for turn.lua to check if the vehicle should stop during a turn (for example while it
+--- is held for unloading or waiting for the straw swath to stop
+--- Turn.lua calls this in every cycle during the turn and will stop the vehicle if this returns true.
+---@param isApproaching boolean if true we are still in the turn approach phase (still working on the field,
+---not yet reached the turn start
+function AIDriver:holdInTurnManeuver(isApproaching)
+	return false
+end
+
 --- called from courseplay:onDraw, a placeholder for showing debug infos, which can this way be added and reloaded
 --- without restarting the game.
 function AIDriver:onDraw()
