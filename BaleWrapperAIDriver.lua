@@ -16,12 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
----@class BaleWrapperAIDriver : UnloadableFieldworkAIDriver
-BaleWrapperAIDriver = CpObject(UnloadableFieldworkAIDriver)
+---@class BaleWrapperAIDriver : BalerAIDriver
+BaleWrapperAIDriver = CpObject(BalerAIDriver)
 
 function BaleWrapperAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BaleWrapperAIDriver:init()')
-	UnloadableFieldworkAIDriver.init(self, vehicle)
+	-- the only reason this is derived from BalerAIDriver is that some wrappers are also balers. Our concept
+	-- derived classes may not fly when there are multiple specializations to handle, if we had a bale loader
+	-- which is also a bale wrapper then we would probably have to put everything back into the baler.
+	BalerAIDriver.init(self, vehicle)
 	self.baleWrapper = FieldworkAIDriver.getImplementWithSpecialization(vehicle, BaleWrapper)
 end
 
@@ -29,8 +32,9 @@ function BaleWrapperAIDriver:driveFieldwork()
 	if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE then
 		self:setSpeed(0)
 	end
-	if self.baleWrapper.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_WRAPPER_FINSIHED then --Unloads the baler wrapper combo
+	-- Yes, Giants has a typo in the state
+	if self.baleWrapper.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_WRAPPER_FINSIHED then
 		self.baleWrapper:doStateChange(BaleWrapper.CHANGE_WRAPPER_START_DROP_BALE)
 	end
-	UnloadableFieldworkAIDriver.driveFieldwork(self)
+	BalerAIDriver.driveFieldwork(self)
 end

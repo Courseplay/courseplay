@@ -26,7 +26,11 @@ function BalerAIDriver:init(vehicle)
 end
 
 function BalerAIDriver:driveFieldwork()
-	self:handleBaler()
+	-- this is due to the derived BaleWrapperAIDriver, not all bale wrappers are balers at the same time
+	-- so handle balers only if we really have one.
+	if self.baler then
+		self:handleBaler()
+	end
 	UnloadableFieldworkAIDriver.driveFieldwork(self)
 end
 
