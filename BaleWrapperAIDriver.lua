@@ -29,7 +29,9 @@ function BaleWrapperAIDriver:init(vehicle)
 end
 
 function BaleWrapperAIDriver:driveFieldwork()
-	if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE then
+	-- stop while wrapping only if we deon't have a baler. If we do we should continue driving and working
+	-- on the next bale, the baler code will take care about stopping if we need to
+	if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE and not self.baler then
 		self:setSpeed(0)
 	end
 	-- Yes, Giants has a typo in the state
