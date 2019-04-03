@@ -187,7 +187,7 @@ function courseplay:executeFunction(self, func, value, page)
 	if func ~= "rowButton" then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
-
+		courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
 	--[[else
 		local page = Utils.getNoNil(page, self.cp.hud.currentPage);
 		local line = value;

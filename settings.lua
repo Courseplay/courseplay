@@ -107,6 +107,11 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 	return true;
 end;
 
+function courseplay:toggleShowMiniHud(vehicle)
+	vehicle.cp.hud.showMiniHud = not vehicle.cp.hud.showMiniHud
+	print("vehicle.cp.hud.showMiniHud: "..tostring(vehicle.cp.hud.showMiniHud))
+end
+
 function courseplay:toggleConvoyActive(self)
 	self.cp.convoyActive =  not self.cp.convoyActive
 end
@@ -401,6 +406,35 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	
 end;
 
+
+function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
+	local eftl = vehicle.cp.easyFillTypeList;
+	local newVal = 1;
+	if currentSelectedFilltype and currentSelectedFilltype ~= FillType.UNKNOWN then
+		for index, fillType in ipairs(eftl) do
+			if currentSelectedFilltype == fillType then
+				newVal = index;
+			end;
+		end;
+	else
+		newVal = vehicle.cp.siloSelectedEasyFillType + modifyer
+		if newVal < 1 then
+			newVal = #eftl;
+		elseif newVal > #eftl then
+			newVal = 1;
+		end
+	end;
+	if vehicle.cp.siloSelectedFillType ~= eftl[newVal] then
+ 		--Mode 1 Run Counter Reset
+ 		vehicle.cp.runCounter = 0;
+ 		courseplay:changeRunCounter(vehicle, false)
+ 	end
+	vehicle.cp.siloSelectedEasyFillType = newVal;
+	vehicle.cp.siloSelectedFillType = eftl[newVal];
+
+end;
+
+
 function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibilityUpdate)
 	vehicle.cp.visualWaypointsStartEnd = Utils.getNoNil(force, not vehicle.cp.visualWaypointsStartEnd);
 
@@ -410,7 +444,7 @@ function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibility
 	end;
 
 	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.buttons:setActiveEnabled(vehicle, 'visualWaypoints');
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 		courseplay.signs:setSignsVisibility(vehicle);
 	end;
 end;
@@ -423,14 +457,14 @@ function courseplay:toggleShowVisualWaypointsAll(vehicle, force, visibilityUpdat
 	end;
 
 	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.buttons:setActiveEnabled(vehicle, 'visualWaypoints');
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 		courseplay.signs:setSignsVisibility(vehicle);
 	end;
 end;
 function courseplay:toggleShowVisualWaypointsCrossing(vehicle, force, visibilityUpdate)
 	vehicle.cp.visualWaypointsCrossing = Utils.getNoNil(force, not vehicle.cp.visualWaypointsCrossing);
 	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.buttons:setActiveEnabled(vehicle, 'visualWaypoints');
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 		courseplay.signs:setSignsVisibility(vehicle);
 	end;
 end;
@@ -617,7 +651,7 @@ end;
 
 function courseplay:switchDriverCopy(vehicle, changeBy)
 	local drivers = courseplay:findDrivers(vehicle);
-
+	
 	if drivers ~= nil then
 		vehicle.cp.selectedDriverNumber = MathUtil.clamp(vehicle.cp.selectedDriverNumber + changeBy, 0, #(drivers));
 

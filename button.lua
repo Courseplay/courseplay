@@ -806,7 +806,7 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 	if anySection or section == 'pageNav' then
 		
 	end;
-
+--[[
 	if vehicle.cp.hud.currentPage == 1 and (anySection or section == 'quickModes' or section == 'recording' or section == 'customFieldShow' or section == 'findFirstWaypoint') then
 		local isMode2_3_4_6 = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER;
 		local isMode4or6 = vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK
@@ -988,5 +988,6 @@ function courseplay.buttons:setActiveEnabled(vehicle, section)
 			end;
 		end;
 	end;	
+	]]
 end;
 

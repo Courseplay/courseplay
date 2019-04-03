@@ -65,34 +65,6 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.tooIsDirty = false;
 end;
 
-function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
-	local eftl = vehicle.cp.easyFillTypeList;
-	local newVal = 1;
-	if currentSelectedFilltype and currentSelectedFilltype ~= FillType.UNKNOWN then
-		for index, fillType in ipairs(eftl) do
-			if currentSelectedFilltype == fillType then
-				newVal = index;
-			end;
-		end;
-	else
-		newVal = vehicle.cp.siloSelectedEasyFillType + modifyer
-		if newVal < 1 then
-			newVal = #eftl;
-		elseif newVal > #eftl then
-			newVal = 1;
-		end
-	end;
-	if vehicle.cp.siloSelectedFillType ~= eftl[newVal] then
- 		--Mode 1 Run Counter Reset
- 		vehicle.cp.runCounter = 0;
- 		courseplay:changeRunCounter(vehicle, false)
- 	end
-	vehicle.cp.siloSelectedEasyFillType = newVal;
-	vehicle.cp.siloSelectedFillType = eftl[newVal];
-
-end;
-
-
 function courseplay:getAvailableFillTypes(object, fillUnitIndex)
 	-- We really should be using getFillUnitSupportedFillTypes(fillUnitIndex) TODO Make a loop to go through it. 
 	if fillUnitIndex == nil then
@@ -1894,15 +1866,41 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 end
 
 function courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
+	--3,8,9,10 are still disabled
 	if cpModeToCheck == 5 then 
 		return true;
 	elseif vehicle.cp.workToolAttached then
-		if cpModeToCheck == 1
-		or cpModeToCheck == 4
-		or cpModeToCheck == 6
-		or cpModeToCheck == 9
-		or cpModeToCheck == 10 then
-			return true;
+		local modeValid = false
+		for _, workTool in pairs(vehicle.cp.workTools) do
+			if (cpModeToCheck == 1 and workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
+				modeValid = true;
+			elseif cpModeToCheck == 4 then
+				local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
+				if isSprayer or isSowingMachine or workTool.cp.isTreePlanter or workTool.cp.isKuhnDC401 or workTool.cp.isKuhnHR4004 then
+					modeValid = true;
+				end
+			elseif cpModeToCheck == 6 then
+				if (courseplay:isBaler(workTool) 
+				or courseplay:isBaleLoader(workTool) 
+				or courseplay:isSpecialBaleLoader(workTool) 
+				or workTool.cp.hasSpecializationCultivator
+				or courseplay:isCombine(workTool)
+				or workTool.cp.hasSpecializationFruitPreparer 
+				or workTool.cp.hasSpecializationPlow
+				or workTool.cp.hasSpecializationTedder
+				or workTool.cp.hasSpecializationWindrower
+				or workTool.cp.hasSpecializationCutter
+				or workTool.spec_dischargeable
+				or courseplay:isMower(workTool)
+				or courseplay:isAttachedCombine(workTool) 
+				or courseplay:isFoldable(workTool))
+				and not courseplay:isSprayer(workTool)
+				and not courseplay:isSowingMachine(workTool)
+				then
+					modeValid = true;
+				end
+			end
 		end
+		return modeValid 
 	end
 end

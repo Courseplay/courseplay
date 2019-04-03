@@ -873,6 +873,7 @@ function courseplay:onDraw()
 		if self.cp.hud.show then
 			courseplay.hud:setContent(self);
 			courseplay.hud:renderHud(self);
+			courseplay.hud:renderHudBottomInfo(self);
 			if self.cp.distanceCheck and (isDriving or (not self.cp.canDrive and not self.cp.isRecording and not self.cp.recordingIsPaused)) then -- turn off findFirstWaypoint when driving or no course loaded
 				courseplay:toggleFindFirstWaypoint(self);
 			end;
@@ -880,7 +881,11 @@ function courseplay:onDraw()
 			if self.cp.mouseCursorActive then
 				g_inputBinding:setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
+		elseif self.cp.hud.showMiniHud then
+			courseplay.hud:setContent(self);
+			courseplay.hud:renderHudBottomInfo(self);
 		end;
+		
 		if self.cp.distanceCheck and self.cp.numWaypoints > 1 then 
 			courseplay:distanceCheck(self);
 		elseif self.cp.infoText ~= nil and StringUtil.startsWith(self.cp.infoText, 'COURSEPLAY_DISTANCE') then  
