@@ -236,3 +236,20 @@ function CombineAIDriver:createPullBackReturnCourse()
 	end
 	return Course(self.vehicle, pullBackReturnWaypoints, true)
 end
+
+--- Disable auto stop for choppers as when we stop the engine they'll also raise implements and the way we restart them
+--- won't lower the header. So for now, just don't let them to stop the engine
+function CombineAIDriver:isEngineAutoStopEnabled()
+	return not self:isChopper() and self.vehicle.cp.saveFuelOptionActive
+end
+
+--- Compatibility function for turn.lua to check if the vehicle should stop during a turn (for example while it
+--- is held for unloading or waiting for the straw swath to stop
+--- Turn.lua calls this in every cycle during the turn and will stop the vehicle if this returns true.
+---@param isApproaching boolean if true we are still in the turn approach phase (still working on the field,
+---not yet reached the turn start
+function CombineAIDriver:holdInTurnManeuver(isApproaching)
+	self:debugSparse('held for unload %s, straw active %s, approaching = %s',
+		tostring(self.heldForUnloadRefill), tostring(self.vehicle.spec_combine.strawPSenabled), tostring(isApproaching))
+	return self.heldForUnloadRefill or (self.vehicle.spec_combine.strawPSenabled and not isApproaching)
+end

@@ -26,7 +26,11 @@ function BalerAIDriver:init(vehicle)
 end
 
 function BalerAIDriver:driveFieldwork()
-	self:handleBaler()
+	-- this is due to the derived BaleWrapperAIDriver, not all bale wrappers are balers at the same time
+	-- so handle balers only if we really have one.
+	if self.baler then
+		self:handleBaler()
+	end
 	UnloadableFieldworkAIDriver.driveFieldwork(self)
 end
 
@@ -67,9 +71,6 @@ function BalerAIDriver:handleBaler()
 				end
 			elseif fillLevel >= 0 and not self.baler:getIsTurnedOn() and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
 				self.baler:setIsTurnedOn(true, false);
-			end
-			if self.baler.spec_baleWrapper and self.baler.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_WRAPPER_FINSIHED then --Unloads the baler wrapper combo
-				self.baler:doStateChange(BaleWrapper.CHANGE_WRAPPER_START_DROP_BALE)
 			end
 		end
 		if self.baler.setPickupState ~= nil then

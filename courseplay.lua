@@ -105,6 +105,7 @@ local function initialize()
 		'UnloadableFieldworkAIDriver',
 		'BaleLoaderAIDriver',
 		'BalerAIDriver',
+		'BaleWrapperAIDriver',
 		'CombineAIDriver',
 		'ShovelModeAIDriver',
     'course-generator/Pathfinder',

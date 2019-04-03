@@ -50,6 +50,10 @@ end
 function UnloadableFieldworkAIDriver.create(vehicle)
 	if FieldworkAIDriver.hasImplementWithSpecialization(vehicle, BaleLoader) then
 		return BaleLoaderAIDriver(vehicle)
+	elseif FieldworkAIDriver.hasImplementWithSpecialization(vehicle, BaleWrapper) then
+		-- Bale wrapper is derived from baler so must check it first to make sure that we instantiate a
+		-- BaleWrapperAIDriver if we have both the baler and the balewrapper specialization
+		return BaleWrapperAIDriver(vehicle)
 	elseif FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Baler) then
 		return BalerAIDriver(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
@@ -119,9 +123,13 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	return takeOverSteering
 end
 
+function UnloadableFieldworkAIDriver:isChopper()
+ return self.vehicle.cp.isChopper
+end
+
 function UnloadableFieldworkAIDriver:handlePipe()
 	if self.vehicle.spec_pipe then
-		if self.vehicle.cp.isChopper then
+		if self:isChopper() then
 			self:handleChopperPipe()
 		else
 			self:handleCombinePipe()

@@ -1162,9 +1162,14 @@ function AIDriver:startEngineIfNeeded()
 	self.lastMovingTime = self.vehicle.timer
 end
 
+--- Is auto stop engine enabled?
+function AIDriver:isEngineAutoStopEnabled()
+	return self.vehicle.cp.saveFuelOptionActive
+end
+
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
 function AIDriver:stopEngineIfNotNeeded()
-	if self.vehicle.cp.saveFuelOptionActive then
+	if self:isEngineAutoStopEnabled() then
 		if self.vehicle.timer - (self.lastMovingTime or math.huge) > 30000 then
 			if self.vehicle.spec_motorized and self.vehicle.spec_motorized.isMotorStarted then
 				self:debug('Been stopped for more than 30 seconds, stopping engine. %d %d', self.vehicle.timer, (self.lastMovingTime or math.huge))
@@ -1172,6 +1177,15 @@ function AIDriver:stopEngineIfNotNeeded()
 			end
 		end
 	end
+end
+
+--- Compatibility function for turn.lua to check if the vehicle should stop during a turn (for example while it
+--- is held for unloading or waiting for the straw swath to stop
+--- Turn.lua calls this in every cycle during the turn and will stop the vehicle if this returns true.
+---@param isApproaching boolean if true we are still in the turn approach phase (still working on the field,
+---not yet reached the turn start
+function AIDriver:holdInTurnManeuver(isApproaching)
+	return false
 end
 
 --- called from courseplay:onDraw, a placeholder for showing debug infos, which can this way be added and reloaded
