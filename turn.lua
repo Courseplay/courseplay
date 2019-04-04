@@ -270,25 +270,14 @@ function courseplay:turn(vehicle, dt)
 				end;
 			end
 
-			--- Find the zOffset based on tractors current position from the start turn wp
+			-- Relative position of the turn start waypoint from the vehicle.
+			-- Note that as we start the turn when the backMarkerOffset reaches the turn start point, this zOffset
+			-- is the same as tye backMarkerOffset
 			_, _, turnInfo.zOffset = worldToLocal(turnInfo.directionNode, vehicle.Waypoints[vehicle.cp.waypointIndex].cx, vehicleY, vehicle.Waypoints[vehicle.cp.waypointIndex].cz);
 			-- remember this as we'll need it later
 			turnInfo.deltaZBetweenVehicleAndTarget = turnInfo.targetDeltaZ
 			-- targetDeltaZ is now the delta Z between the turn start and turn end waypoints.
 			turnInfo.targetDeltaZ = turnInfo.targetDeltaZ - turnInfo.zOffset;
-
-			--- Get headland height
-			-- if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
-			-- 	-- First headland is only half the work width
-			-- 	turnInfo.headlandHeight = vehicle.cp.courseWorkWidth / 2;
-			-- 	-- Add extra workwidth for each extra headland
-			-- 	if vehicle.cp.courseNumHeadlandLanes - 1 > 0 then
-			-- 		turnInfo.headlandHeight = turnInfo.headlandHeight + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth);
-			-- 	end;
-			-- end; 
-
-
-
 
 			--- Calculate reverseOffset in case we need to reverse
 			local offset = turnInfo.zOffset;
@@ -428,16 +417,23 @@ function courseplay:turn(vehicle, dt)
 				local dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, vehicleX, vehicleZ);
 				local distOrig = dist
 
+				local forceSwitch = false
 				-- Set reversing settings.
 				if curTurnTarget.turnReverse then
 					refSpeed = vehicle.cp.speeds.reverse;
 					if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
-						local workToolX, _, workToolZ = getWorldTranslation(reversingWorkTool.cp.realTurningNode);
+						local workToolX, workToolY, workToolZ = getWorldTranslation(reversingWorkTool.cp.realTurningNode);
 						dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, workToolX, workToolZ);
-
+						local _, _, dz = worldToLocal(reversingWorkTool.cp.realTurningNode, curTurnTarget.posX, workToolY, curTurnTarget.posZ)
+						courseplay.debugVehicle(14, vehicle, '(Turn) Reversing with tool but target %d is in front of us, dist = %.1f, dz = %.1f',
+							vehicle.cp.curTurnIndex, dist, dz)
+						if dz > 0 then
+							-- we are reversing but the target is in front of us, switch to the next target to avoid
+							-- circling back to this one
+							forceSwitch = true
+						end
 						if courseplay.debugChannels[14] then
-							local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, workToolX, 300, workToolZ);
-							cpDebug:drawLine(vehicleX, posY + 5, vehicleZ, 1, 1, 0, workToolX, posY + 5, workToolZ);
+							cpDebug:drawLine(vehicleX, workToolY + 5, vehicleZ, 1, 1, 0, workToolX, workToolY + 5, workToolZ);
 						end
 					end;
 
@@ -447,7 +443,7 @@ function courseplay:turn(vehicle, dt)
 				end;
 
 				-- Change turn waypoint
-				if dist < wpChangeDistance then
+				if dist < wpChangeDistance or forceSwitch then
 					courseplay:debug( string.format( "%s:(Turn) @( %.1f, %.1f) ix = %d/%d, distOrig = %.1f, dist = %.1f, wpChangeDistance = %.1f",
 						nameNum( vehicle ), vehicleX, vehicleZ, vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, distOrig, dist, wpChangeDistance ), 14)
 					-- See if we have to raise/lower implements at this point
@@ -1151,8 +1147,9 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
 	end;
 
-	--- Do the oposite direction turns for bale loaders, so we avoide bales in the normal turn direction
+	--- Do the opposite direction turns for bale loaders, so we avoid bales in the normal turn direction
 	if doNormalTurn and isReverseingBaleLoader then
+		courseplay.debugVehicle(14, vehicle, '(Turn) opposite direction for bale loaders to avoid bales')
 		doNormalTurn = false;
 	end;
 
@@ -1204,7 +1201,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 				directionNodeToTurnNodeLength = directionNodeToTurnNodeLength * 1.25;
 			end;
 
-			--- Check if there is enought space to reverse back to the new lane start.
+			--- Check if there is enough space to reverse back to the new lane start.
 			local fromDistance = newZOffset - 3;
 			local extraDistance = 0;
 			if fromDistance < 0 then
