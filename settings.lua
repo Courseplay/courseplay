@@ -448,6 +448,7 @@ function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibility
 		courseplay.signs:setSignsVisibility(vehicle);
 	end;
 end;
+
 function courseplay:toggleShowVisualWaypointsAll(vehicle, force, visibilityUpdate)
 	vehicle.cp.visualWaypointsAll = Utils.getNoNil(force, not vehicle.cp.visualWaypointsAll);
 
@@ -461,6 +462,7 @@ function courseplay:toggleShowVisualWaypointsAll(vehicle, force, visibilityUpdat
 		courseplay.signs:setSignsVisibility(vehicle);
 	end;
 end;
+
 function courseplay:toggleShowVisualWaypointsCrossing(vehicle, force, visibilityUpdate)
 	vehicle.cp.visualWaypointsCrossing = Utils.getNoNil(force, not vehicle.cp.visualWaypointsCrossing);
 	if visibilityUpdate == nil or visibilityUpdate then
@@ -469,6 +471,10 @@ function courseplay:toggleShowVisualWaypointsCrossing(vehicle, force, visibility
 	end;
 end;
 
+function courseplay:toggleTurnOnField(vehicle)
+	vehicle.cp.turnOnField = not vehicle.cp.turnOnField
+end
+	
 function courseplay:changeMode10Radius (vehicle, changeBy)
 	vehicle.cp.mode10.searchRadius = math.max(1,vehicle.cp.mode10.searchRadius + changeBy)
 end
@@ -1385,7 +1391,6 @@ function courseplay:setFieldEdgePath(vehicle, changeDir, force)
 		end;
 		return;
 	end;
-
 	while courseplay.fields.fieldData[newFieldNum] == nil do
 		if newFieldNum == 0 then
 			vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
@@ -1407,6 +1412,7 @@ function courseplay:setFieldEdgePath(vehicle, changeDir, force)
 	if vehicle.cp.fieldEdge.customField.show then
 		courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
 	end;
+	
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 

@@ -63,6 +63,11 @@ function FieldworkAIDriver:init(vehicle)
 	self.turnDurationMs = 20000
 end
 
+function FieldworkAIDriver:setHudContent()
+	AIDriver.setHudContent(self)
+	courseplay.hud:setFieldWorkAIDriverContent(self.vehicle)
+end
+
 function FieldworkAIDriver.register()
 
 	AIImplement.getCanImplementBeUsedForAI = Utils.overwrittenFunction(AIImplement.getCanImplementBeUsedForAI,
