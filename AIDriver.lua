@@ -293,6 +293,14 @@ function AIDriver:driveCourse(dt)
 		self:hold()
 	end
 
+	if not self:getIsEngineReady() then
+		if self:getSpeed() > 0 and self.allowedToDrive then
+			self:startEngineIfNeeded()
+			self:hold()
+			self:debugSparse('Wait for the engine to start')
+		end
+	end
+
 	-- use the recorded speed by default
 	if not self:hasTipTrigger() then
 		self:setSpeed(self:getRecordedSpeed())
@@ -310,10 +318,6 @@ function AIDriver:driveCourse(dt)
 	self:updatePathfinding()
 
 	self:stopEngineIfNotNeeded()
-
-	if self:getSpeed() > 0 and self.allowedToDrive then
-		self:startEngineIfNeeded()
-	end
 
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
@@ -1149,13 +1153,19 @@ function AIDriver:getClosestPointOnFieldBoundary(x, z, fieldNum)
 end
 
 function AIDriver:startEngineIfNeeded()
-	if self.vehicle.spec_motorized and not self.vehicle.spec_motorized.isMotorStarted then
+	if self.vehicle.spec_motorized and not self.vehicle.spec_motorized:getIsMotorStarted() then
 		self.vehicle:startMotor()
 	end
-	-- reset motor auto stop timer when someone starts the engine so we won't stop it for while just because
+	-- reset motor auto stop timer when someone starts the engine so we won't stop it for a while just because
 	-- our speed is 0 (for example while waiting for the implements to lower)
 	self.lastMovingTime = self.vehicle.timer
 end
+
+function AIDriver:getIsEngineReady()
+	local spec = self.vehicle.spec_motorized
+	return spec and (spec:getIsMotorStarted() and spec:getMotorStartTime() < g_currentMission.time)
+end;
+
 
 --- Is auto stop engine enabled?
 function AIDriver:isEngineAutoStopEnabled()

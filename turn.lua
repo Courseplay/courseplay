@@ -803,7 +803,9 @@ function courseplay:turn(vehicle, dt)
 			directionForce = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
 		end
 	end
-	allowedToDrive = vehicle.cp.driver and not vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0) and allowedToDrive
+	-- hold while straw swatch is active (not during headland turn maneuvers though)
+	local holdInTurn = not vehicle.cp.headlandTurn and vehicle.cp.driver and vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0)
+	allowedToDrive = not holdInTurn and allowedToDrive
 	
 	--courseplay.debugVehicle(14, vehicle, 'turn speed = %.1f, allowedToDrive %s', refSpeed, allowedToDrive)
 	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
