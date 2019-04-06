@@ -818,8 +818,10 @@ function courseplay:turn(vehicle, dt)
 
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
 	else
-		dtpZ = dtpZ * 0.85;
-		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
+		-- This code causing the bouncing of the speeds during turns. We must use driveInDirection here to prevent this. As this Giants Function lets us defeine the slow angle limit where as point is a set calc
+		--dtpZ = dtpZ * 0.85;
+		--AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
 	end;
 	courseplay:setTrafficCollision(vehicle, lx, lz, true);
 end;
