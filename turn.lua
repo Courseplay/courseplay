@@ -805,24 +805,16 @@ function courseplay:turn(vehicle, dt)
 	end
 	allowedToDrive = vehicle.cp.driver and not vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0) and allowedToDrive
 	
-	--courseplay.debugVehicle(14, vehicle, 'turn speed = %.1f, allowedToDrive %s', refSpeed, allowedToDrive)
-	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-	if curTurnTarget and ((curTurnTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
-		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
-			if not moveForwards then
-				vehicle.nextMovingDirection = -1
-			else
-				vehicle.nextMovingDirection = 1
-			end
+	if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+		if not moveForwards then
+			vehicle.nextMovingDirection = -1
+		else
+			vehicle.nextMovingDirection = 1
 		end
+	end
 
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
-	else
-		-- This code causing the bouncing of the speeds during turns. We must use driveInDirection here to prevent this. As this Giants Function lets us defeine the slow angle limit where as point is a set calc
-		--dtpZ = dtpZ * 0.85;
-		--AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
-	end;
+	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+
 	courseplay:setTrafficCollision(vehicle, lx, lz, true);
 end;
 
