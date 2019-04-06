@@ -587,7 +587,7 @@ function FieldworkAIDriver:manageConvoy()
 
 	-- stop when I'm too close to the combine in front of me
 	if position > 1 then
-		if closestDistance < 100 then
+		if closestDistance < self.vehicle.cp.convoy.minDistance then
 			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
 			self:setSpeed(0)
 		end

@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Controlli della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gestione percorsi" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Scegliere la cartella" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Opzioni modalità trasporto e lavoro in campo" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gestione della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Parametri velocità" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Parametri di guida" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Parametri generali" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="La trebbia sta svoltando" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Nessuna area di lavoro in questo percorso" />
@@ -243,8 +243,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Termina" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Il percorso non è valido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION" 							text="funzione fertilizzazione nelle seminatrici" />
-		<text name="COURSEPLAY_COMBINE_CONVOY" 								text="Convoglio con trebbia" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 							text="Il condotto di scarico è sul raccolto" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Pala non trovata" />

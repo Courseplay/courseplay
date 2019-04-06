@@ -176,6 +176,8 @@ function courseplay:onLoad(savegame)
 					  distance = 0,
 					  number = 0,
 					  members = 0,
+					  minDistance = 100,
+					  maxDistance = 300
 					  }
 	
 	

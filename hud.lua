@@ -199,7 +199,7 @@ function courseplay.hud:setup()
 		[self.PAGE_SPEEDS] 			  = courseplay:loc("COURSEPLAY_PAGE_TITLE_SPEEDS"), -- speeds
 		[self.PAGE_GENERAL_SETTINGS]  = courseplay:loc("COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS"), -- general settings
 		[self.PAGE_DRIVING_SETTINGS]  = courseplay:loc("COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"), -- Driving settings
-		[self.PAGE_COURSE_GENERATION] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COURSE_GENERATION"), -- course generation
+		[self.PAGE_COURSE_GENERATION] = courseplay:loc("COURSEPLAY_MODESPECIFIC_SETTINGS"), -- course generation
 		[self.PAGE_SHOVEL_POSITIONS]  = courseplay:loc("COURSEPLAY_SHOVEL_POSITIONS"), -- shovel
 		[self.PAGE_BUNKERSILO_SETTINGS]  = courseplay:loc("COURSEPLAY_MODE10_SETTINGS") -- compacter
 	};
@@ -453,6 +453,14 @@ function courseplay.hud:setContent(vehicle)
 	else
 		vehicle.cp.hud.content.bottomInfo.timeRemainingText = nil
 	end
+	
+	if vehicle.cp.convoyActive then
+		vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<--%s--> %d/%d",(vehicle.cp.convoy.distance == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.distance,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.number,vehicle.cp.convoy.members)
+	else
+		vehicle.cp.hud.content.bottomInfo.convoyText = nil
+	end	
+	
+	
 	if vehicle.cp.runNumber < 11 and vehicle.cp.canDrive then
 		vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %d",vehicle.cp.runCounter, vehicle.cp.runNumber);
 	else
@@ -608,7 +616,7 @@ function courseplay.hud:renderHud(vehicle)
 	end;
 
 	-- BOTTOM GLOBAL INFO
-	if vehicle.cp.hud.content.bottomInfo.waitPointsText ~= nil and vehicle.cp.hud.content.bottomInfo.crossingPointsText ~= nil then
+	if vehicle.cp.hud.content.bottomInfo.waitPointsText ~= nil and vehicle.cp.hud.content.bottomInfo.crossingPointsText ~= nil and vehicle.cp.hud.content.bottomInfo.timeRemainingText == nil then
 		courseplay:setFontSettings('white', false, 'center');
 
 		renderText(self.bottomInfo.waitPointsTextX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.waitPointsText);
@@ -654,8 +662,14 @@ function courseplay.hud:renderHudBottomInfo(vehicle)
 
 	if vehicle.cp.hud.content.bottomInfo.timeRemainingText ~= nil  then
 		courseplay:setFontSettings('white', false, 'right');
-		renderText(self.bottomInfo.additionalContentX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.timeRemainingText);
+		--renderText(self.bottomInfo.additionalContentX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.timeRemainingText);
+		renderText(self.bottomInfo.crossingPointsTextX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.timeRemainingText);
 	end	
+	
+	if vehicle.cp.hud.content.bottomInfo.convoyText  ~= nil  then
+		courseplay:setFontSettings('white', false, 'right');
+		renderText(self.bottomInfo.additionalContentX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.convoyText);
+	end
 	
 	if vehicle.cp.hud.content.bottomInfo.runCounterText ~= nil  then
 		courseplay:setFontSettings('white', false, 'right');
@@ -761,7 +775,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.runNumber < 11 and string.format("%d", vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
 					end
 				elseif entry.functionToCall == 'switchDriverCopy' then
-					if not vehicle.cp.canDrive then
+					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'switchDriverCopy')
 						vehicle.cp.hud.copyCourseButton:setShow(true)
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COPY_COURSE');
@@ -783,7 +797,12 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:disableButtonWithFunction(vehicle,page, 'switchDriverCopy')
 					end
 				elseif entry.functionToCall == 'openAdvancedCourseGeneratorSettings' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS');
+					if not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
+						self:enableButtonWithFunction(vehicle,page, 'openAdvancedCourseGeneratorSettings')
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS');
+					else
+						self:disableButtonWithFunction(vehicle,page, 'openAdvancedCourseGeneratorSettings')
+					end
 				elseif entry.functionToCall == 'setIsLoaded' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 
@@ -871,7 +890,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					if vehicle.cp.turnDiameterAuto ~= nil or vehicle.cp.turnDiameter ~= nil then
 						vehicle.cp.hud.content.pages[page][line][2].text = ('%s %d%s'):format(vehicle.cp.turnDiameterAutoMode and '(auto)' or '(mnl)', vehicle.cp.turnDiameter, courseplay:loc('COURSEPLAY_UNIT_METER'));
 					else
-						vehicle.cp.hud.content.pages[3][3][2].text = '---';
+						vehicle.cp.hud.content.pages[page][line][2].text = '---';
 					end;
 				elseif entry.functionToCall == 'changeWorkWidth' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
@@ -886,9 +905,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					if vehicle.cp.multiTools > 1 then
 						self:enableButtonWithFunction(vehicle,page, 'changeLaneNumber')
 						if vehicle.cp.laneNumber == 0 then
-							vehicle.cp.hud.content.pages[7][1][2].text = ('%s'):format(courseplay:loc('COURSEPLAY_CENTER'));
+							vehicle.cp.hud.content.pages[page][line][2].text = ('%s'):format(courseplay:loc('COURSEPLAY_CENTER'));
 						else
-							vehicle.cp.hud.content.pages[7][1][2].text = ('%d %s'):format(abs(vehicle.cp.laneNumber), courseplay:loc(vehicle.cp.laneNumber > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
+							vehicle.cp.hud.content.pages[page][line][2].text = ('%d %s'):format(abs(vehicle.cp.laneNumber), courseplay:loc(vehicle.cp.laneNumber > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
 						end						
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeLaneNumber')
@@ -914,7 +933,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	
 	
 				elseif entry.functionToCall == 'setCustomSingleFieldEdge' then
-					if not vehicle.cp.fieldEdge.customField.isCreated then
+					if not vehicle.cp.fieldEdge.customField.isCreated 
+					and not vehicle:getIsCourseplayDriving() 
+					and not vehicle:getIsCourseplayDriving() 
+					and not vehicle.cp.isRecording 
+					and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SCAN_CURRENT_FIELD_EDGES');
 					else
@@ -943,9 +966,61 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							vehicle.cp.hud.content.pages[page][line][1].text = string.format(courseplay:loc('COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST'), vehicle.cp.fieldEdge.customField.fieldNum);
 						end;
 					end
-
+				elseif entry.functionToCall == 'toggleSymmetricLaneChange' then
+					--Symmetrical lane change
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SYMMETRIC_LANE_CHANGE');
+					if vehicle.cp.laneOffset ~= 0 then
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SYMMETRIC_LANE_CHANGE');
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.symmetricLaneChange and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					else
+						vehicle.cp.hud.content.pages[page][line][2].text = '---';
+					end;
+				elseif entry.functionToCall == 'changeToolOffsetX' then
+					--Tool horizontal offset
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
+					if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
+						vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetX > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
+					else
+						vehicle.cp.hud.content.pages[page][line][2].text = '---';
+					end;
+				elseif entry.functionToCall == 'changeToolOffsetZ' then
+					--Tool vertical offset
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
+					if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
+						vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetZ > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'));
+					else
+						vehicle.cp.hud.content.pages[page][line][2].text = '---';
+					end;
+				elseif entry.functionToCall == 'changeWaitTime' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
+					local str;
+					if vehicle.cp.waitTime < 1 then
+						str = '---';
+					elseif vehicle.cp.waitTime < 60 then
+						str = courseplay:loc('COURSEPLAY_SECONDS'):format(vehicle.cp.waitTime);
+					else
+						local minutes, seconds = floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
+						str = courseplay:loc('COURSEPLAY_MINUTES'):format(minutes);
+						if seconds > 0 then
+							str = str .. ', ' .. courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
+						end;
+					end;
+					vehicle.cp.hud.content.pages[page][line][2].text = str;
 				
+				elseif entry.functionToCall == 'toggleAlignmentWaypoint' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_ALIGNMENT_WAYPOINT');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.alignment.enabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 				
+				elseif entry.functionToCall == 'toggleConvoyActive' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_CONVOY');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.convoyActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED')
+				
+				elseif entry.functionToCall == 'setConvoyMinDistance' then
+					vehicle.cp.hud.content.pages[page][line][1].text = string.format('  %s',courseplay:loc('COURSEPLAY_CONVOY_MAX_DISTANCE'));
+					vehicle.cp.hud.content.pages[page][line][2].text = string.format('%dm', vehicle.cp.convoy.minDistance);
+				elseif entry.functionToCall == 'setConvoyMaxDistance' then
+					vehicle.cp.hud.content.pages[page][line][1].text = string.format('  %s',courseplay:loc('COURSEPLAY_CONVOY_MIN_DISTANCE'));
+					vehicle.cp.hud.content.pages[page][line][2].text = string.format('%dm', vehicle.cp.convoy.maxDistance);
 				end	
 			end		
 		end
@@ -972,30 +1047,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	
 	if page == self.PAGE_GENERAL_SETTINGS then
 		vehicle.cp.hud.content.pages[6][3][1].text = courseplay:loc('COURSEPLAY_WAYPOINT_MODE');
-		
-		--[[
-		-- Waiting point: wait time
-		if courseplay:getCanHaveWaitTime(vehicle) then
-			vehicle.cp.hud.content.pages[6][5][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
-			local str;
-			if vehicle.cp.waitTime < 60 then
-				str = courseplay:loc('COURSEPLAY_SECONDS'):format(vehicle.cp.waitTime);
-			else
-				local minutes, seconds = floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
-				str = courseplay:loc('COURSEPLAY_MINUTES'):format(minutes);
-				if seconds > 0 then
-					str = str .. ', ' .. courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
-				end;
-			end;
-			vehicle.cp.hud.content.pages[6][5][2].text = str;
-		end;
-
-		-- Ingame map icon text
-		
-
-		
-		
-		]]
 		
 		self:showShowWaypointsButtons(vehicle, true)
 		vehicle.cp.hud.visualWaypointsStartButton:setActive(vehicle.cp.visualWaypointsStartEnd);
@@ -1143,30 +1194,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					elseif vehicle.Waypoints[1] ~= nil then
 						vehicle.cp.hud.content.pages[1][6][1].text = string.format("%s",courseplay:loc('COURSEPLAY_TEMP_COURSE'));
 					end
-					vehicle.cp.hud.content.pages[1][6][2].text = string.format("<--%s--> %d/%d",(vehicle.cp.convoy.distance == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.distance,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.number,vehicle.cp.convoy.members)
 				end
 			end;
 
-		elseif not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
-			if (not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused) and not vehicle.cp.canDrive then
-
-				--Custom field edge path
-				vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc('COURSEPLAY_SCAN_CURRENT_FIELD_EDGES');
-				if vehicle.cp.fieldEdge.customField.isCreated then
-					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER');
-					if vehicle.cp.fieldEdge.customField.fieldNum > 0 then
-						vehicle.cp.hud.content.pages[1][4][2].text = tostring(vehicle.cp.fieldEdge.customField.fieldNum);
-						if vehicle.cp.fieldEdge.customField.selectedFieldNumExists then
-							vehicle.cp.hud.content.pages[1][5][1].text = string.format(courseplay:loc('COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST'), vehicle.cp.fieldEdge.customField.fieldNum);
-						else
-							vehicle.cp.hud.content.pages[1][5][1].text = string.format(courseplay:loc('COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST'), vehicle.cp.fieldEdge.customField.fieldNum);
-						end;
-					else
-						vehicle.cp.hud.content.pages[1][4][2].text = '---';
-					end;
-				end;
-			end;
-		end;
 
 	--PAGE 3: MODE 2 SETTINGS
 	elseif page == self.PAGE_COMBI_MODE then
@@ -1261,78 +1291,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 			vehicle.cp.hud.content.pages[4][5][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
 		end;
 
-
-	--PAGE 5: SPEEDS
-		
-	--PAGE 6: GENERAL SETTINGS
-	elseif page == self.PAGE_GENERAL_SETTINGS then
-		-- pathfinding
-		vehicle.cp.hud.content.pages[6][1][1].text = nil;
-		vehicle.cp.hud.content.pages[6][1][2].text = nil;
-		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER or courseplay.MDOE_FIELDWORK or courseplay.MODE_SEED_FERTILIZE then
-			vehicle.cp.hud.content.pages[6][1][1].text = courseplay:loc('COURSEPLAY_PATHFINDING');
-			vehicle.cp.hud.content.pages[6][1][2].text = vehicle.cp.realisticDriving and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-		end;
-
-		-- Waiting point: wait time
-		if courseplay:getCanHaveWaitTime(vehicle) then
-			vehicle.cp.hud.content.pages[6][5][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
-			local str;
-			if vehicle.cp.waitTime < 60 then
-				str = courseplay:loc('COURSEPLAY_SECONDS'):format(vehicle.cp.waitTime);
-			else
-				local minutes, seconds = floor(vehicle.cp.waitTime/60), vehicle.cp.waitTime % 60;
-				str = courseplay:loc('COURSEPLAY_MINUTES'):format(minutes);
-				if seconds > 0 then
-					str = str .. ', ' .. courseplay:loc('COURSEPLAY_SECONDS'):format(seconds);
-				end;
-			end;
-			vehicle.cp.hud.content.pages[6][5][2].text = str;
-		end;
-
-
-
-	--PAGE 7: DRIVING SETTINGS
-	elseif page == self.PAGE_DRIVING_SETTINGS then
-		if vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
-			--Lane offset
-			if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then
-				vehicle.cp.hud.content.pages[7][1][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
-				if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 and vehicle.cp.multiTools == 1 then
-					vehicle.cp.hud.content.pages[7][1][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.laneOffset > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
-				elseif vehicle.cp.multiTools > 1 then
-					if vehicle.cp.laneNumber == 0 then
-						vehicle.cp.hud.content.pages[7][1][2].text = ('%s'):format(courseplay:loc('COURSEPLAY_CENTER'));
-					else
-						vehicle.cp.hud.content.pages[7][1][2].text = ('%d %s'):format(abs(vehicle.cp.laneNumber), courseplay:loc(vehicle.cp.laneNumber > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
-					end
-				else
-					vehicle.cp.hud.content.pages[7][1][2].text = '---';
-				end;
-			end;
-
-			--Symmetrical lane change
-			if (vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.laneOffset ~= 0 then
-				vehicle.cp.hud.content.pages[7][2][1].text = courseplay:loc('COURSEPLAY_SYMMETRIC_LANE_CHANGE');
-				vehicle.cp.hud.content.pages[7][2][2].text = vehicle.cp.symmetricLaneChange and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-			end;
-
-			--Tool horizontal offset
-			vehicle.cp.hud.content.pages[7][3][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
-			if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
-				vehicle.cp.hud.content.pages[7][3][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetX > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
-			else
-				vehicle.cp.hud.content.pages[7][3][2].text = '---';
-			end;
-
-			--Tool vertical offset
-			vehicle.cp.hud.content.pages[7][4][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
-			if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
-				vehicle.cp.hud.content.pages[7][4][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetZ > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'));
-			else
-				vehicle.cp.hud.content.pages[7][4][2].text = '---';
-			end;
-		end;
 
 		
 		-- PAGE 8: COURSE GENERATION
@@ -1736,8 +1694,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- Find first waypoint
 	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'search' }, 'toggleFindFirstWaypoint', nil, topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, true, courseplay:loc('COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT'));
 
-	-- Clear current course
-	vehicle.cp.hud.clearCurrentCourseButton1 = courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
 
 	--go to pipe position in mode3
 	courseplay.button:new(vehicle, 1, { 'iconSprite.png', 'recordingPlay' }, 'movePipeToPosition', 1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, nil, true, false, false, courseplay:loc('COURSEPLAY_MOVE_PIPE_TO_POSITION'));
@@ -1755,9 +1711,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 3, nil, 'changeTipperOffset', 0.1, mouseWheelArea.x, self.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 0.5, true, true);
 	courseplay.button:new(vehicle, 3, nil, 'rowButton', 2, self.basePosX, self.linesButtonPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
 
-	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navMinus' }, 'changeTurnDiameter', -1, self.buttonPosX[2], self.linesButtonPosY[3], wSmall, hSmall, 3, -5, false);
-	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeTurnDiameter',  1, self.buttonPosX[1], self.linesButtonPosY[3], wSmall, hSmall, 3,  5, false);
-	courseplay.button:new(vehicle, 3, nil, 'changeTurnDiameter', 1, mouseWheelArea.x, self.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
 
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navMinus' }, 'changeFollowAtFillLevel', -5, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, -10, false);
 	courseplay.button:new(vehicle, 3, { 'iconSprite.png', 'navPlus' },  'changeFollowAtFillLevel',  5, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,  10, false);
@@ -1796,103 +1749,12 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	courseplay.button:new(vehicle, 4, nil, 'removeActiveCombineFromTractor', nil, self.col1posX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
 
 
-	-- ##################################################
-	-- Page 5: Speeds
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navMinus' }, 'changeTurnSpeed',   -1, self.buttonPosX[2], self.linesButtonPosY[1], wSmall, hSmall, 1, -5, false);
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navPlus' },  'changeTurnSpeed',    1, self.buttonPosX[1], self.linesButtonPosY[1], wSmall, hSmall, 1,  5, false);
-	courseplay.button:new(vehicle, 5, nil, 'changeTurnSpeed', 1, mouseWheelArea.x, self.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
-
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navMinus' }, 'changeFieldSpeed',  -1, self.buttonPosX[2], self.linesButtonPosY[2], wSmall, hSmall, 2, -5, false);
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navPlus' },  'changeFieldSpeed',   1, self.buttonPosX[1], self.linesButtonPosY[2], wSmall, hSmall, 2,  5, false);
-	courseplay.button:new(vehicle, 5, nil, 'changeFieldSpeed', 1, mouseWheelArea.x, self.linesButtonPosY[2], mouseWheelArea.w, mouseWheelArea.h, 2, 5, true, true);
-
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navMinus' }, 'changeMaxSpeed',    -1, self.buttonPosX[2], self.linesButtonPosY[3], wSmall, hSmall, 3, -5, false);
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navPlus' },  'changeMaxSpeed',     1, self.buttonPosX[1], self.linesButtonPosY[3], wSmall, hSmall, 3,  5, false);
-	courseplay.button:new(vehicle, 5, nil, 'changeMaxSpeed', 1, mouseWheelArea.x, self.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 5, true, true);
-
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navMinus' }, 'changeReverseSpeed', -1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4, -5, false);
-	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navPlus' },  'changeReverseSpeed',  1, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,  5, false);
-	courseplay.button:new(vehicle, 5, nil, 'changeReverseSpeed', 1, mouseWheelArea.x, self.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 5, true, true);
-
-	courseplay.button:new(vehicle, 5, nil, 'toggleUseRecordingSpeed', nil, self.contentMinX, self.linesPosY[5], self.contentMaxWidth, self.lineHeight, 5, nil, true);
-	
-	courseplay.button:new(vehicle, 5, nil, 'toggleFuelSaveOption', nil, self.contentMinX, self.linesPosY[8], self.contentMaxWidth, self.lineHeight, 8, nil, true);
-
-	-- 4WD button in line 5: only added if driveControl and 4WD exist
+-- 4WD button in line 5: only added if driveControl and 4WD exist
 	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navLeft' },  'changeDriveControlMode', -1, self.buttonPosX[2], self.linesButtonPosY[7], wSmall, hSmall, 7, -1, false);
 	courseplay.button:new(vehicle, 5, { 'iconSprite.png', 'navRight' }, 'changeDriveControlMode',  1, self.buttonPosX[1], self.linesButtonPosY[7], wSmall, hSmall, 7, -1, false);
 
 
-	-- ##################################################
-	-- Page 6: General settings
-	local pg = self.PAGE_GENERAL_SETTINGS;
-
-	-- realistic driving
-	courseplay.button:new(vehicle, pg, nil, 'toggleRealisticDriving', nil,  self.contentMinX, self.linesPosY[1], self.contentMaxWidth, self.lineHeight, 1, nil, true);
-
-	-- open hud with mouse/keyboard
-	courseplay.button:new(vehicle, pg, nil, 'toggleOpenHudWithMouse', nil,  self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
-
-	-- wait time
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navMinus' }, 'changeWaitTime', -1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5, -5, false);
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navPlus' },  'changeWaitTime',  1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,  5, false);
-	courseplay.button:new(vehicle, pg, nil, 'changeWaitTime', 1, mouseWheelArea.x, self.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 5, true, true);
-
-	-- ingame map show text
-	if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
-		courseplay.button:new(vehicle, pg, nil, 'toggleIngameMapIconShowText', nil, self.contentMinX, self.linesPosY[6], self.contentMaxWidth, self.lineHeight, 6, nil, true);
-	end;
 	
-	courseplay.button:new(vehicle, pg, nil, 'toggleAutoRefuel', nil,  self.contentMinX, self.linesPosY[7], self.contentMaxWidth, self.lineHeight, 7, nil, true);
-
-	-- debug channels
-	if courseplay.isDevVersion then 
-		vehicle.cp.hud.debugChannelButtons = {};
-		for dbg=1, courseplay.numDebugChannelButtonsPerLine do
-			local data = courseplay.debugButtonPosData[dbg];
-			local toolTip = courseplay.debugChannelsDesc[dbg];
-			vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, pg, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
-		end;
-		courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], wSmall, hSmall, 8, -1, true, false);
-		courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall, 8,  1, true, false);
-		courseplay.button:new(vehicle, pg, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, 8, -1, true, true);
-	end
-
-	-- ##################################################
-	-- Page 7: Driving settings
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navLeft' },  'changeLaneOffset', -0.1, self.buttonPosX[2], self.linesButtonPosY[1], wSmall, hSmall, 1, -0.5, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navRight' }, 'changeLaneOffset',  0.1, self.buttonPosX[1], self.linesButtonPosY[1], wSmall, hSmall, 1,  0.5, false);
-	courseplay.button:new(vehicle, 7, nil, 'changeLaneOffset', 0.1, mouseWheelArea.x, self.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 0.5, true, true);
-	
-	--Lane Number
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navLeft' },  'changeLaneNumber', -1, self.buttonPosX[2], self.linesButtonPosY[1], wSmall, hSmall, 1, nil, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navRight' }, 'changeLaneNumber',  1, self.buttonPosX[1], self.linesButtonPosY[1], wSmall, hSmall, 1,  nil, false);
-	courseplay.button:new(vehicle, 7, nil, 'changeLaneNumber', 1, mouseWheelArea.x, self.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, nil, true, true);
-
-	courseplay.button:new(vehicle, 7, nil, 'toggleSymmetricLaneChange', nil, self.contentMinX, self.linesPosY[2], self.contentMaxWidth, self.lineHeight, 2, nil, true);
-
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navLeft' },  'changeToolOffsetX', -0.1, self.buttonPosX[2], self.linesButtonPosY[3], wSmall, hSmall, 3,  -0.5, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navRight' }, 'changeToolOffsetX',  0.1, self.buttonPosX[1], self.linesButtonPosY[3], wSmall, hSmall, 3,   0.5, false);
-	courseplay.button:new(vehicle, 7, nil, 'changeToolOffsetX', 0.1, mouseWheelArea.x, self.linesButtonPosY[3], mouseWheelArea.w, mouseWheelArea.h, 3, 0.5, true, true);
-
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navDown' }, 'changeToolOffsetZ', -0.1, self.buttonPosX[2], self.linesButtonPosY[4], wSmall, hSmall, 4,  -0.5, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navUp' },   'changeToolOffsetZ',  0.1, self.buttonPosX[1], self.linesButtonPosY[4], wSmall, hSmall, 4,   0.5, false);
-	courseplay.button:new(vehicle, 7, nil, 'changeToolOffsetZ', 0.1, mouseWheelArea.x, self.linesButtonPosY[4], mouseWheelArea.w, mouseWheelArea.h, 4, 0.5, true, true);
-
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navLeft' },  'changeLoadUnloadOffsetX', -0.1, self.buttonPosX[2], self.linesButtonPosY[5], wSmall, hSmall, 5,  -0.5, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navRight' }, 'changeLoadUnloadOffsetX',  0.1, self.buttonPosX[1], self.linesButtonPosY[5], wSmall, hSmall, 5,   0.5, false);
-	courseplay.button:new(vehicle, 7, nil, 'changeLoadUnloadOffsetX', 0.1, mouseWheelArea.x, self.linesButtonPosY[5], mouseWheelArea.w, mouseWheelArea.h, 5, 0.5, true, true);
-
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navDown' }, 'changeLoadUnloadOffsetZ', -0.1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6,  -0.5, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navUp' },   'changeLoadUnloadOffsetZ',  0.1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,   0.5, false);
-	courseplay.button:new(vehicle, 7, nil, 'changeLoadUnloadOffsetZ', 0.1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 0.5, true, true);
-
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navDown' },   'switchDriverCopy', -1, self.buttonPosX[2], self.linesButtonPosY[7], wSmall, hSmall, 7, nil, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'navUp' }, 'switchDriverCopy',  1, self.buttonPosX[1], self.linesButtonPosY[7], wSmall, hSmall, 7, nil, false);
-	courseplay.button:new(vehicle, 7, nil, nil, nil, self.buttonPosX[2], self.linesButtonPosY[7], wSmall * 2 + self.buttonSize.small.margin, mouseWheelArea.h, 7, nil, true, false);
-	courseplay.button:new(vehicle, 7, { 'iconSprite.png', 'copy' }, 'copyCourse', nil, self.buttonPosX[1], self.linesButtonPosY[8], wSmall, hSmall);
-
-
 	-- ##################################################
 	-- Page 8: Course generation
 	-- Note: line 1 (field edges) will be applied in first updateTick() runthrough
@@ -2406,7 +2268,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleShowMiniHud', 6, 1, 1 )
 	self:addRowButton(vehicle,'toggleOpenHudWithMouse', 6, 2, 1 )
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
-	self:addRowButton(vehicle,'ttoggleIngameMapIconShowText', 6, 4, 1 )
+	self:addRowButton(vehicle,'toggleIngameMapIconShowText', 6, 4, 1 )
 	
 	--page 7 driving settings
 	self:enablePageButton(vehicle, 7)
@@ -2414,6 +2276,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleFuelSaveOption', 7, 2, 1 )
 	self:addRowButton(vehicle,'toggleAutoRefuel', 7, 3, 1 )
 	self:addRowButton(vehicle,'toggleAutomaticCoverHandling', 7, 4, 1 )
+	self:addSettingsRow(vehicle,'changeWaitTime', 7, 5, 1 )
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
@@ -2439,17 +2302,31 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'setCustomSingleFieldEdge', 1, 5, 1 )
 	self:addSettingsRow(vehicle,'setCustomFieldEdgePathNumber', 1, 5, 2 )
 	self:addRowButton(vehicle,'addCustomSingleFieldEdgeToList', 1, 6, 1 )
-			--setFieldEdgePath
+	
+	--page 3 settings
+	self:enablePageButton(vehicle, 3)
+	self:addSettingsRow(vehicle,'changeTurnDiameter', 3, 1, 1 )
+	self:addSettingsRow(vehicle,'changeWorkWidth', 3, 2, 1 )
+	self:setupCalculateWorkWidthButton(vehicle,3, 2)
+	self:addRowButton(vehicle,'toggleConvoyActive', 3, 3, 1 )
+	self:addSettingsRow(vehicle,'setConvoyMinDistance', 3, 4, 1 )
+	--self:addSettingsRow(vehicle,'setConvoyMaxDistance', 3, 5, 1 )
+	
+	
+	--page 7
+	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
+	
 	
 	--page 8 fieldwork settings
 	self:enablePageButton(vehicle, 8)
-	self:addSettingsRow(vehicle,'changeWorkWidth', 8, 1, 1 )
-	self:setupCalculateWorkWidthButton(vehicle,8,1)
-	self:addSettingsRow(vehicle,'changeTurnDiameter', 8, 2, 1 )
-	self:addSettingsRowWithArrows(vehicle,'changeLaneNumber', 8, 3, 1 )
-	self:addSettingsRowWithArrows(vehicle,'changeLaneOffset', 8, 3, 2 )
+	self:addSettingsRowWithArrows(vehicle,'changeLaneNumber', 8, 1, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeLaneOffset', 8, 1, 2 )
+	self:addRowButton(vehicle,'toggleSymmetricLaneChange', 8, 2, 1 )
 	self:addRowButton(vehicle,'toggleTurnOnField', 8, 3, 1 )
 	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetX', 8, 5, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
+	
 	
 	
 	self:setReloadPageOrder(vehicle, -1, true)

@@ -114,10 +114,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 		    	text="Controlo da ceifeira" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gerir percursos" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Escolher pasta" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Configurações do modo combi" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gerir ceifeiras" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 					 		text="Limite de velocidade" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Configurações de condução" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 		    	text="Configurações gerais" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 					 		text="Ceifeira a virar" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 						 		text="sem área de trabalho neste percurso" />
@@ -239,8 +239,11 @@
 		<text name="COURSEPLAY_FINISH" 							 			text="Concluir" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 					 		text="Percurso inválido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Função fertilizante para plantadeira" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="várias ceifeiras" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Tubo da ceifeira está no fruto" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="nenhuma pá encontrada" />

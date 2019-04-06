@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Gestion de la conduite" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gestion des courses" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Choisir le dossier" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Option du mode batteuse" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gestion des batteuses" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 					 		text="Vitesse limite" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"					text="Paramètres de conduite" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"					text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Paramètres" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 					 		text="La batteuse tourne" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 						 		text="Pas de zone de travail" />
@@ -243,9 +243,12 @@
 		<text name="COURSEPLAY_FINISH" 							 			text="Arrêter" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 					 		text="La course n'est pas valide" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Fonction engrais du semoir" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Ensemble de Moissonneuses" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de godet trouvé" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 					 		text="Positions du godet" />

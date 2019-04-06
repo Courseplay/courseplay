@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS"				 	text="Sterowanie kombajnami" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES"				 	text="Zarządzanie kursami" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER"				 	text="Wybierz folder" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE"					 	text="Ustawienia różnych trybów" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE"					 	text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES"				 	text="Zarządzanie kombajnami" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS"						 	text="Limity prędkości" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"				 	text="Ustawienia jazdy" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"				 	text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS"				 	text="Ustawienia" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING"						 	text="Kombajn zawraca" />
 		<text name="COURSEPLAY_NO_WORK_AREA"							 	text="brak obszaru roboczego dla tego kursu" />
@@ -243,8 +243,11 @@
 		<text name="COURSEPLAY_FINISH"									 	text="Zakończ" />
 		<text name="COURSEPLAY_NO_VALID_COURSE"							 	text="Kurs nieważny" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"						 	text="Nawożenie siewnikiem" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 	 	text="Konwój kombajnów:" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 	text="Rura wyładowcza po stronie uprawy" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 		
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 	text="Nie znaleziono łychy" />

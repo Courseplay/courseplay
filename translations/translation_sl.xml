@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Kombajn nastavitve" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Upravljaj s potmi" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Izberi mapo" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Nastavitve combi načina" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Upravljaj s kombajni" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Hitrostne omejitve" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Vozne nastavitve" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Nastavitve" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Kombajn obrača" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="na tej poti ni delovnega območja" />
@@ -243,9 +243,12 @@
 		<text name="COURSEPLAY_FINISH" 										text="Konec" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Pot ni veljavna" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="fertilizer function of sowing machine" /> <!-- TODO: TRANSLATION! (its to activate or deactivate the fertizer function of sowing machines) -->
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="combine convoy" /> <!-- TODO TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Kible ni mogoče najti" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 							text="Položaji kible" />

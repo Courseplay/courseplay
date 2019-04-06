@@ -109,11 +109,18 @@ end;
 
 function courseplay:toggleShowMiniHud(vehicle)
 	vehicle.cp.hud.showMiniHud = not vehicle.cp.hud.showMiniHud
-	print("vehicle.cp.hud.showMiniHud: "..tostring(vehicle.cp.hud.showMiniHud))
 end
 
-function courseplay:toggleConvoyActive(self)
-	self.cp.convoyActive =  not self.cp.convoyActive
+function courseplay:toggleConvoyActive(vehicle)
+	vehicle.cp.convoyActive =  not vehicle.cp.convoyActive
+end
+
+function courseplay:setConvoyMinDistance(vehicle, changeBy)
+	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 200);
+end
+
+function courseplay:setConvoyMaxDistance(vehicle, changeBy)
+	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 300);
 end
 
 function courseplay:toggleFuelSaveOption(self)
@@ -267,7 +274,7 @@ function courseplay:changeTipperOffset(vehicle, changeBy)
 end
 
 function courseplay:changeLaneOffset(vehicle, changeBy, force)
-	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy);
+	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy*0.1);
 	if abs(vehicle.cp.laneOffset) < 0.1 then
 		vehicle.cp.laneOffset = 0;
 	end;
@@ -309,37 +316,37 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 end;
 
 function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
-	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy);
+	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy*0.1);
 	if abs(vehicle.cp.toolOffsetX) < 0.1 then
 		vehicle.cp.toolOffsetX = 0;
 	end;
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 
-	if not noDraw and vehicle.cp.mode ~= 2 and vehicle.cp.mode ~= 3 and vehicle.cp.mode ~= 7 then
+	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
 end;
 
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
-	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy);
+	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy*0.1);
 	if abs(vehicle.cp.toolOffsetZ) < 0.1 then
 		vehicle.cp.toolOffsetZ = 0;
 	end;
 
-	if not noDraw and vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
+	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
 end;
 
 function courseplay:changeLoadUnloadOffsetX(vehicle, changeBy, force)
-	vehicle.cp.loadUnloadOffsetX = force or (courseplay:round(vehicle.cp.loadUnloadOffsetX, 1) + changeBy);
+	vehicle.cp.loadUnloadOffsetX = force or (courseplay:round(vehicle.cp.loadUnloadOffsetX, 1) + changeBy*0.1);
 	if abs(vehicle.cp.loadUnloadOffsetX) < 0.1 then
 		vehicle.cp.loadUnloadOffsetX = 0;
 	end;
 end;
 
 function courseplay:changeLoadUnloadOffsetZ(vehicle, changeBy, force)
-	vehicle.cp.loadUnloadOffsetZ = force or (courseplay:round(vehicle.cp.loadUnloadOffsetZ, 1) + changeBy);
+	vehicle.cp.loadUnloadOffsetZ = force or (courseplay:round(vehicle.cp.loadUnloadOffsetZ, 1) + changeBy*0.1);
 	if abs(vehicle.cp.loadUnloadOffsetZ) < 0.1 then
 		vehicle.cp.loadUnloadOffsetZ = 0;
 	end;

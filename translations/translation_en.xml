@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Combine controls" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Manage courses" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Choose folder" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Settings combi mode" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Manage combines" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Speed limits" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Driving settings" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Settings" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Combine is turning" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="No work area at this course" />
@@ -243,8 +243,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Course is not valid" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Fertilizer function of sowing machine" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Combine Convoy" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> 
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Combines pipe is in fruit" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="No shovel could be found" />
