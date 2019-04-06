@@ -28,7 +28,8 @@ UnloadableFieldworkAIDriver = CpObject(FieldworkAIDriver)
 -- at which fill level we need to unload. We want to have a little buffer there
 -- as we won't raise our implements until we stopped and during that time we keep
 -- harvesting
-UnloadableFieldworkAIDriver.fillLevelFullPercentage = 99.5
+UnloadableFieldworkAIDriver.normalFillLevelFullPercentage = 99.5
+UnloadableFieldworkAIDriver.fillLevelFullPercentage = UnloadableFieldworkAIDriver.normalFillLevelFullPercentage
 -- at which fill level we consider ourselves unloaded
 UnloadableFieldworkAIDriver.fillLevelEmptyPercentage = 0.1
 
