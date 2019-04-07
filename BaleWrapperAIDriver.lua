@@ -29,14 +29,17 @@ function BaleWrapperAIDriver:init(vehicle)
 end
 
 function BaleWrapperAIDriver:driveFieldwork()
-	-- stop while wrapping only if we deon't have a baler. If we do we should continue driving and working
-	-- on the next bale, the baler code will take care about stopping if we need to
-	if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE and not self.baler then
-		self:setSpeed(0)
-	end
-	-- Yes, Giants has a typo in the state
-	if self.baleWrapper.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_WRAPPER_FINSIHED then
-		self.baleWrapper:doStateChange(BaleWrapper.CHANGE_WRAPPER_START_DROP_BALE)
+	-- Don't drop the bale in the turn
+	if not self.turnIsDriving then
+		-- stop while wrapping only if we deon't have a baler. If we do we should continue driving and working
+		-- on the next bale, the baler code will take care about stopping if we need to
+		if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE and not self.baler then
+			self:setSpeed(0)
+		end
+		-- Yes, Giants has a typo in the state
+		if self.baleWrapper.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_WRAPPER_FINSIHED then
+			self.baleWrapper:doStateChange(BaleWrapper.CHANGE_WRAPPER_START_DROP_BALE)
+		end
 	end
 	BalerAIDriver.driveFieldwork(self)
 end

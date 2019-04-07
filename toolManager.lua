@@ -567,7 +567,8 @@ function courseplay:setMarkers(vehicle, object)
 				vehicle.cp.aiFrontMarker = abs(frontMarkerCorrection) > 0 and ztt + frontMarkerCorrection or -3;
 			end
 
-			courseplay:debug(('%s: setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s'):format(nameNum(vehicle), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker)), 6);
+			courseplay.debugVehicle(6, vehicle, '(%s) setMarkers(), no work area: cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',
+				nameNum(object), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker))
 		else
 			--- Set front and back marker to default values, so we don't check again.
 			if vehicle.cp.backMarkerOffset == nil then
@@ -643,7 +644,8 @@ function courseplay:setMarkers(vehicle, object)
 		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker + aLittleBitMore * 0.75;
 	end
 
-	courseplay:debug(('%s: setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s'):format(nameNum(vehicle), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker)), 6);
+	courseplay.debugVehicle(6, vehicle, '(%s), setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',
+		nameNum(object), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker))
 end;
 
 function courseplay:setFoldedStates(object)
@@ -1393,7 +1395,7 @@ function courseplay:resetFillTrigger(vehicle)
 		end
 		--setting the next fwd waypoint for reverse filling. should not cause problems in fwd filling. if it does, find an other way 
 		local driver = vehicle.cp.driver
-		driver.ppc:initialize(driver.course:getNextFwdWaypointIxfromVehiclePosition(driver.ppc:getCurrentWaypointIx(),vehicle,driver.ppc:getLookaheadDistance()));
+		driver.ppc:initialize(driver.course:getNextFwdWaypointIxFromVehiclePosition(driver.ppc:getCurrentWaypointIx(),vehicle,driver.ppc:getLookaheadDistance()));
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end
