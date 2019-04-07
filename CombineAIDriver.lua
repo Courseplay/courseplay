@@ -50,6 +50,11 @@ function CombineAIDriver:init(vehicle)
 	self.pocketReverseDistance = 25
 end
 
+function CombineAIDriver:setHudContent()
+	UnloadableFieldworkAIDriver.setHudContent(self)
+	courseplay.hud:setCombineAIDriverContent(self.vehicle)
+end
+
 function CombineAIDriver:onWaypointPassed(ix)
 	if self.turnIsDriving then
 		self:debug('onWaypointPassed %d, ignored as turn is driving now', ix)
@@ -357,3 +362,10 @@ function CombineAIDriver:holdInTurnManeuver(isApproaching)
 	return self.heldForUnloadRefill or (self.vehicle.spec_combine.strawPSenabled and not isApproaching)
 end
 
+function CombineAIDriver:getHasCourseplayers()
+	return self.vehicle.courseplayers and #self.vehicle.courseplayers ~= 0
+end
+
+function CombineAIDriver:getFirstCourseplayer()
+	return self.vehicle.courseplayers and self.vehicle.courseplayers[1]
+end

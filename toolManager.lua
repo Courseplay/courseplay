@@ -22,7 +22,6 @@ function courseplay:onPostDetachImplement(implementIndex)
 	local sAI= self:getAttachedImplements()
 	if sAI[implementIndex].object == self.cp.attachedCombine then
 		self.cp.attachedCombine = nil;
-		courseplay:setMinHudPage(self);
 	end
 end;
 --AttacherJoints.detachImplement = Utils.appendedFunction(AttacherJoints.detachImplement, courseplay.detachImplement);

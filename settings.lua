@@ -107,6 +107,10 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 	return true;
 end;
 
+function courseplay:setDriveNow(vehicle)
+	courseplay:setIsLoaded(vehicle, true);
+end
+
 function courseplay:toggleShowMiniHud(vehicle)
 	vehicle.cp.hud.showMiniHud = not vehicle.cp.hud.showMiniHud
 end
@@ -225,6 +229,10 @@ end;
 
 function courseplay:sendCourseplayerHome(combine)
 	courseplay:setIsLoaded(combine.courseplayers[1], true);
+end
+
+function courseplay:toggleTurnStage(combine)
+	combine.cp.turnStage = self.cp.turnStage== 0 and 1 or 0 ;
 end
 
 function courseplay:switchCourseplayerSide(combine)
@@ -1011,7 +1019,7 @@ end
 function courseplay:toggleDebugChannel(self, channel, force)
 	if courseplay.debugChannels[channel] ~= nil then
 		courseplay.debugChannels[channel] = Utils.getNoNil(force, not courseplay.debugChannels[channel]);
-		courseplay.buttons:setActiveEnabled(self, "debug");
+		courseplay.hud:updateDebugChannelButtons(self);
 	end;
 end;
 
@@ -1339,7 +1347,8 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 		button:setParameter(channel);
 		button:setToolTip(courseplay.debugChannelsDesc[channel]);
 	end;
-	courseplay.buttons:setActiveEnabled(vehicle, 'debug');
+	
+	--courseplay.buttons:setActiveEnabled(vehicle, 'debug');
 end;
 
 function courseplay:toggleSymmetricLaneChange(vehicle, force)
@@ -1826,7 +1835,6 @@ function courseplay:setAttachedCombine(vehicle)
 		end;
 	end;
 
-	courseplay:setMinHudPage(vehicle);
 end;
 
 function courseplay:getIsEngineReady(vehicle)
