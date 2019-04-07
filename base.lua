@@ -356,7 +356,7 @@ function courseplay:onLoad(savegame)
 	-- traffic collision
 	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 	if self.maxRotation then
-		self.cp.steeringAngle = math.deg(self.maxRotation);
+		self.cp.steeringAngle = math.deg(self.wheelSteeringDuration);
 	else
 		self.cp.steeringAngle = 30;
 	end
