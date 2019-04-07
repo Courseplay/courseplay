@@ -228,7 +228,6 @@ function FieldworkAIDriver:driveFieldwork()
 			self:calculateLoweringDuration()
 		else
 			self:debugSparse('waiting for all tools to lower')
-			self:startLoweringDurationTimer()
 			self:setSpeed(0)
 			self:checkFillLevels()
 		end
@@ -694,13 +693,10 @@ function FieldworkAIDriver:updateLightsOnField()
 end
 
 function FieldworkAIDriver:startLoweringDurationTimer()
-	-- if not started yet
-	if not self.startedLoweringAt then
-		-- then start but only after everything is unfolded as we don't want to include the
-		-- unfold duration (since we don't fold at the end of the row).
-		if self:isAllUnfolded() then
-			self.startedLoweringAt = self.vehicle.timer
-		end
+	-- then start but only after everything is unfolded as we don't want to include the
+	-- unfold duration (since we don't fold at the end of the row).
+	if self:isAllUnfolded() then
+		self.startedLoweringAt = self.vehicle.timer
 	end
 end
 
@@ -786,6 +782,7 @@ function FieldworkAIDriver:lowerImplements()
 		implement.object:aiImplementStartLine()
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
+	self:startLoweringDurationTimer()
 end
 
 function FieldworkAIDriver:raiseImplements()

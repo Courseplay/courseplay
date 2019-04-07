@@ -165,6 +165,14 @@ function PurePursuitController:setLookaheadDistance(d)
 	self.baseLookAheadDistance = d
 end
 
+function PurePursuitController:setNormalLookaheadDistance()
+	self.baseLookAheadDistance = self.normalLookAheadDistance
+end
+
+function PurePursuitController:setShortLookaheadDistance()
+	self.baseLookAheadDistance = self.shortLookaheadDistance
+end
+
 function PurePursuitController:getLookaheadDistance()
 	return self.baseLookAheadDistance
 end
@@ -328,6 +336,7 @@ function PurePursuitController:findGoalPoint()
 		local q1 = courseplay:distance(x1, z1, vx, vz) -- distance from node 1
 		local q2 = courseplay:distance(x2, z2, vx, vz) -- distance from node 2
 		local l = courseplay:distance(x1, z1, x2, z2)  -- length of path segment (distance between node 1 and 2
+		--courseplay.debugVehicle(12, self.vehicle, 'PPC: ix=%d, q1=%.1f, q2=%.1f la=%.1f l=%.1f', ix, q1, q2, self.lookAheadDistance, l)
 
 		-- case i (first node outside virtual circle but not yet reached) or (not the first node but we are way off the track)
 		if (ix == self.firstIx and ix ~= self.lastPassedWaypointIx) and

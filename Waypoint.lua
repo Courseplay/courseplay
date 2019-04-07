@@ -566,6 +566,27 @@ function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 	return false
 end
 
+
+--- Get the index of the first waypoint from ix which is at least distance meters away (search forward)
+function Course:getNextWaypointIxWithinDistance(ix, distance)
+	local d = 0
+	for i =ix, #self.waypoints - 1 do
+		d = d + self.waypoints[i].dToNext
+		if d > distance then return i end
+	end
+	return nil
+end
+
+--- Get the index of the first waypoint from ix which is at least distance meters away (search backwards)
+function Course:getPreviousWaypointIxWithinDistance(ix, distance)
+	local d = 0
+	for i = math.max(1, ix - 1), 1, -1 do
+		d = d + self.waypoints[i].dToNext
+		if d > distance then return i end
+	end
+	return nil
+end
+
 function Course:getLength()
 	return self.length
 end
@@ -586,7 +607,7 @@ function Course:getNextFwdWaypointIx(ix)
 	return ix
 end
 
-function Course:getNextFwdWaypointIxfromVehiclePosition(ix,vehicle,lookAheadDistance)
+function Course:getNextFwdWaypointIxFromVehiclePosition(ix,vehicle,lookAheadDistance)
 	for i = ix, #self.waypoints do
 		if not self:isReverseAt(i) then
 			local uX,uY,uZ = self:getWaypointPosition(i)
