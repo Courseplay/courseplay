@@ -252,8 +252,8 @@ AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceler
             if math.abs(angle) >= slowAngleLimit then
                 maxSpeed = maxSpeed * slowDownFactor;
             end
-            self.spec_motorized.motor:setSpeedLimit(maxSpeed);
-            if self.spec_drivable.cruiseControl.state ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
+            self:getMotor():setSpeedLimit(maxSpeed);
+            if self:getCruiseControlState() ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
                 self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE);
             end
         else
