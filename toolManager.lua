@@ -1873,7 +1873,7 @@ function courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
 	elseif vehicle.cp.workToolAttached then
 		local modeValid = false
 		for _, workTool in pairs(vehicle.cp.workTools) do
-			if (cpModeToCheck == 1 and workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
+			if ((cpModeToCheck == 1 or cpModeToCheck == 2) and workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
 				modeValid = true;
 			elseif cpModeToCheck == 4 then
 				local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
@@ -1901,6 +1901,9 @@ function courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
 					modeValid = true;
 				end
 			end
+		end
+		if vehicle.cp.mode == cpModeToCheck and not modeValid then
+			courseplay:setCpMode(vehicle, 5)
 		end
 		return modeValid 
 	end

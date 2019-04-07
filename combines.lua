@@ -232,7 +232,8 @@ function courseplay:registerAtCombine(callerVehicle, combine)
 	  	end;
 	end;
 	--END OFFSET
-
+	courseplay.hud:setReloadPageOrder(combine, -1, true)
+	courseplay.hud:setReloadPageOrder(callerVehicle, -1, true)
 	courseplay:addToCombinesIgnoreList(callerVehicle, combine);
 	return true;
 end
@@ -272,6 +273,8 @@ function courseplay:unregisterFromCombine(vehicle, combine)
 			combine.cp.turnStage = 0
 		end
 	end
+	courseplay.hud:setReloadPageOrder(combine, -1, true)
+	courseplay.hud:setReloadPageOrder(vehicle, -1, true)
 	
 	return true
 end

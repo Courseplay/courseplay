@@ -85,6 +85,11 @@ function CombineUnloadAIDriver:drive(dt)
 	end
 end
 
+function CombineUnloadAIDriver:setHudContent(vehicle)
+	courseplay.hud:setAIDriverContent(vehicle)
+	courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
+end
+
 function CombineUnloadAIDriver:setOnTurnAwayCourse(onTurnAwayCourse)
 	if self.onTurnAwayCourse ~= onTurnAwayCourse then
 		self.onTurnAwayCourse = onTurnAwayCourse

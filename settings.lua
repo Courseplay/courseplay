@@ -24,13 +24,13 @@ function courseplay:setCpMode(vehicle, modeNum)
 		if modeNum == 1 then
 			courseplay:resetTools(vehicle);
 		end;
-		if not CpManager.isDeveloper then
+		--if not CpManager.isDeveloper then
 			if modeNum == courseplay.MODE_COMBI then
 				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
 			else
 				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
 			end
-		end
+		--end
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
 end;
@@ -44,7 +44,8 @@ function courseplay:setAIDriver(vehicle, mode)
 		vehicle.cp.driver = AIDriver(vehicle)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
 		vehicle.cp.driver = GrainTransportAIDriver(vehicle)	
-	--elseif mode == courseplay.MODE_COMBI then
+	elseif mode == courseplay.MODE_COMBI then
+		CombineUnloadAIDriver:setHudContent(vehicle)
 	--	vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		vehicle.cp.driver = ShovelModeAIDriver(vehicle)
@@ -265,7 +266,7 @@ function courseplay:changeCombineOffset(vehicle, changeBy)
 	local previousOffset = vehicle.cp.combineOffset;
 
 	vehicle.cp.combineOffsetAutoMode = false;
-	vehicle.cp.combineOffset = courseplay:round(vehicle.cp.combineOffset, 1) + changeBy;
+	vehicle.cp.combineOffset = courseplay:round(vehicle.cp.combineOffset, 1) + changeBy*0.1;
 	if abs(vehicle.cp.combineOffset) < 0.1 then
 		vehicle.cp.combineOffset = 0.0;
 		vehicle.cp.combineOffsetAutoMode = true;
@@ -275,7 +276,7 @@ function courseplay:changeCombineOffset(vehicle, changeBy)
 end
 
 function courseplay:changeTipperOffset(vehicle, changeBy)
-	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy;
+	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy*0.1;
 	if abs(vehicle.cp.tipperOffset) < 0.1 then
 		vehicle.cp.tipperOffset = 0;
 	end;

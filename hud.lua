@@ -1012,14 +1012,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REQUEST_UNLOADING_DRIVER');
 						end
 					else
+						local courseplayer = vehicle.cp.driver:getFirstCourseplayer()
 						self:disableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVER');
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.HUD0tractorName;
+						vehicle.cp.hud.content.pages[page][line][2].text =  courseplayer:getName();
 					end
 				elseif entry.functionToCall == 'startStopCourseplayer' then
 					if vehicle.cp.driver:getHasCourseplayers() then
 						self:enableButtonWithFunction(vehicle,page, 'startStopCourseplayer')
-						local courseplayer = self.vehicle.cp.driver:getFirstCourseplayer()
+						local courseplayer = vehicle.cp.driver:getFirstCourseplayer()
 						if courseplayer.cp.forcedToStop then
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_START');
 						else
@@ -1082,9 +1083,97 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc( courseplay.headlandReverseManeuverTypeText[ vehicle.cp.headland.reverseManeuverType ])
 		
 		
-	
+				elseif entry.functionToCall == 'changeCombineOffset' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
+					if vehicle.cp.modeState ~= nil then
+						if vehicle.cp.combineOffset ~= 0 then
+							vehicle.cp.hud.content.pages[page][line][2].text = ('%s %.1fm'):format(vehicle.cp.combineOffsetAutoMode and '(auto)' or '(mnl)', vehicle.cp.combineOffset);
+						else
+							vehicle.cp.hud.content.pages[page][line][2].text = 'auto';
+						end;
+					else
+						vehicle.cp.hud.content.pages[page][line][2].text = '---';
+					end;
+		
+				elseif entry.functionToCall == 'changeTipperOffset' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_VERTICAL');
+					if vehicle.cp.tipperOffset ~= nil then
+						if vehicle.cp.tipperOffset ~= 0 then
+							vehicle.cp.hud.content.pages[page][line][2].text = ('auto%+.1fm'):format(vehicle.cp.tipperOffset);
+						else
+							vehicle.cp.hud.content.pages[page][line][2].text = 'auto';
+						end;
+					else
+						vehicle.cp.hud.content.pages[page][line][2].text = '---';
+					end;	
+					
+				elseif entry.functionToCall == 'changeFollowAtFillLevel' then	
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_START_AT');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.followAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.followAtFillLevel) or '---';
+					
+				elseif entry.functionToCall == 'changeDriveOnAtFillLevel' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_ON_AT');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.driveOnAtFillLevel) or '---';
+
+					
+				elseif entry.functionToCall == 'toggleSearchCombineMode' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_SEARCH_MODE'); --always
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc('COURSEPLAY_AUTOMATIC_SEARCH') or courseplay:loc('COURSEPLAY_MANUAL_SEARCH');
+				
+				elseif entry.functionToCall == 'showSavedCombine' then
+					--Line 2: select combine manually
+					self:disableButtonWithFunction(vehicle,page, 'showSavedCombine')
+					if not vehicle.cp.searchCombineAutomatically then
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CHOOSE_COMBINE'); --only if manual
+						if vehicle.cp.savedCombine ~= nil then
+							local name = vehicle.cp.savedCombine:getName()
+							local dist = courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine);
+							if dist >= 1000 then
+								vehicle.cp.hud.content.pages[page][line][2].text = ('%s (%.1f%s)'):format(name, dist * 0.001, courseplay:getMeasuringUnit());
+							else
+								vehicle.cp.hud.content.pages[page][line][2].text = ('%s (%d%s)'):format(name, dist, courseplay:loc('COURSEPLAY_UNIT_METER'));
+							end;
+						else
+							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NONE');
+						end;
+					end;
+				
+				elseif entry.functionToCall == 'setSearchCombineOnField' then
+					--Line 3: choose field for automatic search --only if automatic
+					if vehicle.cp.searchCombineAutomatically and courseplay.fields.numAvailableFields > 0 then
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SEARCH_COMBINE_ON_FIELD'):format(vehicle.cp.searchCombineOnField > 0 and tostring(vehicle.cp.searchCombineOnField) or '---');
+					end;
+								
+				elseif entry.functionToCall == 'showCombineName' then
+					self:disableButtonWithFunction(vehicle,page, 'showCombineName')
+					--Line 4: current assigned combine
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CURRENT'); --always
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.activeCombine ~= nil and vehicle.cp.activeCombine.name or courseplay:loc('COURSEPLAY_NONE');
+
+				elseif entry.functionToCall == 'removeActiveCombineFromTractor' then
+					--Line 5: remove active combine from tractor
+					if vehicle.cp.activeCombine ~= nil then --only if activeCombine
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
+					end;
+					
+					
+					
+
+
 		
 		
+
+		
+		
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					
 					
 					
@@ -1192,68 +1281,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				end;
 			end
 
-			vehicle.cp.hud.content.pages[1][1][2].text = vehicle.cp.drivingMode:getText()
-
-			elseif vehicle.cp.mode == courseplay.MODE_FIELDWORK or vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE then
-				vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_COMBINE_CONVOY');
-				vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.convoyActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED')
-				if vehicle.cp.convoyActive then
-					-- -- TODO find a description or new entry in translations for the currently loaded course
-					--local currentLoadedCourse = courseplay:loc('COURSEPLAY_CURRENTLY_LOADED_COURSE')
-					--if StringUtil.startsWith(currentLoadedCourse, "(") then
-					--	local split = StringUtil.splitString("(", currentLoadedCourse);
-					--	local split2 = StringUtil.splitString(")", split[2]);
-					--	currentLoadedCourse = split2[1]
-					--end
-					--if vehicle.cp.currentCourseName ~= nil then
-					--	vehicle.cp.hud.content.pages[1][6][1].text =  string.format("%s: %s",currentLoadedCourse,vehicle.cp.currentCourseName);
-					--elseif vehicle.Waypoints[1] ~= nil then
-					--	vehicle.cp.hud.content.pages[1][6][1].text = string.format("%s: %s",currentLoadedCourse,courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-					--end
-					if vehicle.cp.currentCourseName ~= nil then
-						vehicle.cp.hud.content.pages[1][6][1].text =  string.format("%s",vehicle.cp.currentCourseName);
-					elseif vehicle.Waypoints[1] ~= nil then
-						vehicle.cp.hud.content.pages[1][6][1].text = string.format("%s",courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-					end
-				end
-			end;
-
 
 	--PAGE 3: MODE 2 SETTINGS
 	elseif page == self.PAGE_COMBI_MODE then
-		if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
-			vehicle.cp.hud.content.pages[3][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
-			vehicle.cp.hud.content.pages[3][2][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_VERTICAL');
 
-			if vehicle.cp.modeState ~= nil then
-				if vehicle.cp.combineOffset ~= 0 then
-					vehicle.cp.hud.content.pages[3][1][2].text = ('%s %.1fm'):format(vehicle.cp.combineOffsetAutoMode and '(auto)' or '(mnl)', vehicle.cp.combineOffset);
-				else
-					vehicle.cp.hud.content.pages[3][1][2].text = 'auto';
-				end;
-			else
-				vehicle.cp.hud.content.pages[3][1][2].text = '---';
-			end;
-
-			if vehicle.cp.tipperOffset ~= nil then
-				if vehicle.cp.tipperOffset ~= 0 then
-					vehicle.cp.hud.content.pages[3][2][2].text = ('auto%+.1fm'):format(vehicle.cp.tipperOffset);
-				else
-					vehicle.cp.hud.content.pages[3][2][2].text = 'auto';
-				end;
-			else
-				vehicle.cp.hud.content.pages[3][2][2].text = '---';
-			end;
-
-		end;
-
-		
-
-		vehicle.cp.hud.content.pages[3][4][1].text = courseplay:loc('COURSEPLAY_START_AT');
-		vehicle.cp.hud.content.pages[3][4][2].text = vehicle.cp.followAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.followAtFillLevel) or '---';
-
-		vehicle.cp.hud.content.pages[3][5][1].text = courseplay:loc('COURSEPLAY_DRIVE_ON_AT');
-		vehicle.cp.hud.content.pages[3][5][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.driveOnAtFillLevel) or '---';
 
 		if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
 			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
@@ -1268,50 +1299,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 			vehicle.cp.hud.content.pages[3][7][2].text = vehicle.cp.plowFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 		end;
 		
-		vehicle.cp.hud.content.pages[3][8][1].text = courseplay:loc('COURSEPLAY_ALIGNMENT_WAYPOINT');
-		vehicle.cp.hud.content.pages[3][8][2].text = vehicle.cp.alignment.enabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-
-	--PAGE 4: COMBINE ASSIGNMENT
-	elseif page == self.PAGE_MANAGE_COMBINES then
-		--Line 1: combine search mode (automatic vs manual)
-		vehicle.cp.hud.content.pages[4][1][1].text = courseplay:loc('COURSEPLAY_COMBINE_SEARCH_MODE'); --always
-		vehicle.cp.hud.content.pages[4][1][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc('COURSEPLAY_AUTOMATIC_SEARCH') or courseplay:loc('COURSEPLAY_MANUAL_SEARCH');
-
-		--Line 2: select combine manually
-		if not vehicle.cp.searchCombineAutomatically then
-			vehicle.cp.hud.content.pages[4][2][1].text = courseplay:loc('COURSEPLAY_CHOOSE_COMBINE'); --only if manual
-			if vehicle.cp.HUD4savedCombine then
-				if vehicle.cp.HUD4savedCombineName == nil then
-					vehicle:setCpVar('HUD4savedCombineName',courseplay:loc('COURSEPLAY_COMBINE'),courseplay.isClient);
-				end;
-				if vehicle.cp.savedCombine ~= nil then
-					local dist = courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine);
-					if dist >= 1000 then
-						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%.1f%s)'):format(vehicle.cp.HUD4savedCombineName, dist * 0.001, courseplay:getMeasuringUnit());
-					else
-						vehicle.cp.hud.content.pages[4][2][2].text = ('%s (%d%s)'):format(vehicle.cp.HUD4savedCombineName, dist, courseplay:loc('COURSEPLAY_UNIT_METER'));
-					end;
-				end
-			else
-				vehicle.cp.hud.content.pages[4][2][2].text = courseplay:loc('COURSEPLAY_NONE');
-			end;
-		end;
-
-		--Line 3: choose field for automatic search --only if automatic
-		if vehicle.cp.searchCombineAutomatically and courseplay.fields.numAvailableFields > 0 then
-			vehicle.cp.hud.content.pages[4][3][1].text = courseplay:loc('COURSEPLAY_SEARCH_COMBINE_ON_FIELD'):format(vehicle.cp.searchCombineOnField > 0 and tostring(vehicle.cp.searchCombineOnField) or '---');
-		end;
-		
-
-		--Line 4: current assigned combine
-		vehicle.cp.hud.content.pages[4][4][1].text = courseplay:loc('COURSEPLAY_CURRENT'); --always
-		vehicle.cp.hud.content.pages[4][4][2].text = vehicle.cp.HUD4hasActiveCombine and vehicle.cp.HUD4combineName or courseplay:loc('COURSEPLAY_NONE');
-
-		--Line 5: remove active combine from tractor
-		if vehicle.cp.activeCombine ~= nil then --only if activeCombine
-			vehicle.cp.hud.content.pages[4][5][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
-		end;
-
 
 		
 		-- PAGE 8: COURSE GENERATION
@@ -2372,6 +2359,7 @@ function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle)
 end
 
 function courseplay.hud:setCombineAIDriverContent(vehicle)
+	self:debug(vehicle,"setCombineAIDriverContent")
 	--page 0 
 	self:enablePageButton(vehicle, 0)
 	self:addRowButton(vehicle,'toggleWantsCourseplayer', 0, 1, 1 )
@@ -2383,12 +2371,38 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 	else
 		self:addRowButton(vehicle,'toggleDriverPriority', 0, 4, 1 )
 		self:addRowButton(vehicle,'toggleStopWhenUnloading', 0, 5, 1 )
-		self:addRowButton(vehicle,'changeHeadlandReverseManeuverType', 0, 5, 1 )
+		self:addRowButton(vehicle,'changeHeadlandReverseManeuverType', 0, 6, 1 )
 	end
 end
 
+function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
+	self:debug(vehicle,"setCombineUnloadAIDriverContent")
 
-
+	--page 1
+	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
+	
+	--page 4 
+	self:enablePageButton(vehicle, 4)
+	
+	self:addRowButton(vehicle,'toggleSearchCombineMode', 4, 1, 1 )
+	self:addRowButton(vehicle,'showSavedCombine', 4, 2, 1 )
+	self:addSettingsRowWithArrows(vehicle,'setSearchCombineOnField', 4, 3, 1 )
+	self:addRowButton(vehicle,'showCombineName', 4, 4, 1 )
+	self:addRowButton(vehicle,'removeActiveCombineFromTractor', 4, 5, 1 )
+	
+	
+	--page 7
+	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
+	
+	--page 8
+	self:enablePageButton(vehicle, 8)
+	self:addSettingsRowWithArrows(vehicle,'changeCombineOffset', 8, 1, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeTipperOffset', 8, 2, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeDriveOnAtFillLevel', 8, 3, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeFollowAtFillLevel', 8, 4, 1 )
+	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 5, 1 )
+	
+end
 
 
 --different buttons to set
@@ -2420,7 +2434,7 @@ function courseplay.hud:addSettingsRowWithArrows(vehicle,funct, hudPage, line, c
 end
 		
 function courseplay.hud:debug(vehicle,printString,showManyPrints)
-	print(printString)
+	--print(printString)
 end	
 	
 -- do not remove this comment
