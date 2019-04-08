@@ -24,8 +24,6 @@ function courseplay:onPostDetachImplement(implementIndex)
 		self.cp.attachedCombine = nil;
 	end
 end;
---AttacherJoints.detachImplement = Utils.appendedFunction(AttacherJoints.detachImplement, courseplay.detachImplement);
---Tommi disabled it self is allways nil
 
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
@@ -35,6 +33,9 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.hasSugarCaneTrailer = false
 	vehicle.cp.hasFertilizerSowingMachine = nil;
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
+	if not vehicle.cp.workToolAttached then
+		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
+	end
 	-- Ryan prints fillTypeManager table. Nice cause it prints out all the fillTypes print_r(g_fillTypeManager)
 	-- Reset fill type.
 	--[[
@@ -53,9 +54,7 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.siloSelectedEasyFillType = 0;
 	courseplay:changeSiloFillType(vehicle, 1, vehicle.cp.siloSelectedFillType);
 
-	if vehicle.cp.hud.currentPage == 1 then
-		courseplay.hud:setReloadPageOrder(vehicle, 1, true);
-	end;
+	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
 	
 	courseplay:calculateWorkWidth(vehicle, true);
 	
@@ -1901,9 +1900,6 @@ function courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
 					modeValid = true;
 				end
 			end
-		end
-		if vehicle.cp.mode == cpModeToCheck and not modeValid then
-			courseplay:setCpMode(vehicle, 5)
 		end
 		return modeValid 
 	end

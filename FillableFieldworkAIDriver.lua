@@ -39,6 +39,11 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self.refillState = self.states.TO_BE_REFILLED
 end
 
+function FillableFieldworkAIDriver:setHudContent()
+	FieldworkAIDriver.setHudContent(self)
+	courseplay.hud:setFillableFieldworkAIDriverContent(self.vehicle)
+end
+
 function FillableFieldworkAIDriver:changeToUnloadOrRefill()
 	self.refillState = self.states.TO_BE_REFILLED
 	FieldworkAIDriver.changeToUnloadOrRefill(self)

@@ -136,6 +136,14 @@ function courseplay:toggleFertilizeOption(self)
 	self.cp.fertilizerEnabled = not self.cp.fertilizerEnabled
 end
 
+function courseplay:toggleRidgeMarkersAutomatic(self)
+	self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic
+end
+
+function courseplay:toggleAutomaticUnloadingOnField(self)
+	self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
+end
+
 function courseplay:toggleAutoRefuel(self)
 	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 
 end
@@ -168,6 +176,10 @@ end
 function courseplay:toggleWantsCourseplayer(combine)
 	combine.cp.wantsCourseplayer = not combine.cp.wantsCourseplayer;
 end;
+
+function courseplay:toggleOppositeTurnMode(vehicle)
+	vehicle.cp.oppositeTurnMode = not vehicle.cp.oppositeTurnMode
+end
 
 function courseplay:startStop(vehicle)
 	if vehicle.cp.canDrive then

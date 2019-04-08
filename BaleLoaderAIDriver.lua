@@ -61,6 +61,12 @@ function BaleLoaderAIDriver:init(vehicle)
 	self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
 end
 
+function BaleLoaderAIDriver:setHudContent()
+	UnloadableFieldworkAIDriver.setHudContent(self)
+	courseplay.hud:setBaleLoaderAIDriverContent(self.vehicle)
+end
+
+
 ---@return boolean true if unload took over the driving
 function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 	self:updateOffset()

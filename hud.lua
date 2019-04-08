@@ -726,18 +726,26 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'setStopAtEnd')
 					end				
+				
 				elseif entry.functionToCall == 'toggleAutomaticCoverHandling' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COVER_HANDLING');
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+				
 				elseif entry.functionToCall == 'changeSiloFillType' then
 					if vehicle.cp.canDrive then
+						self:enableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
 						vehicle.cp.hud.content.pages[page][line][2].text = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title
+					else
+						self:disableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 					end
 				elseif entry.functionToCall == 'changeRunNumber' then
 					if vehicle.cp.canDrive then
+						self:enableButtonWithFunction(vehicle,page, 'changeRunNumber')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.runNumber < 11 and string.format("%d", vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
+					else
+						self:disableButtonWithFunction(vehicle,page, 'changeRunNumber')
 					end
 				elseif entry.functionToCall == 'switchDriverCopy' then
 					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
@@ -768,9 +776,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'openAdvancedCourseGeneratorSettings')
 					end
-				elseif entry.functionToCall == 'setIsLoaded' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
-
+				
 				elseif entry.functionToCall == 'changeTurnSpeed' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SPEED_TURN');
 					vehicle.cp.hud.content.pages[page][line][2].text = string.format('%d %s', g_i18n:getSpeed(vehicle.cp.speeds.turn), courseplay:getSpeedMeasuringUnit());
@@ -1156,42 +1162,49 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
 					end;
 					
+				elseif entry.functionToCall == 'toggleOppositeTurnMode' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPPOSITE_TURN_DIRECTION');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
+				
+				elseif entry.functionToCall == 'toggleFertilizeOption' then
+					if vehicle.cp.hasFertilizerSowingMachine then
+						self:enableButtonWithFunction(vehicle,page, 'toggleFertilizeOption')
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FERTILIZERFUNCTION');
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.fertilizerEnabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					else
+						self:disableButtonWithFunction(vehicle,page, 'toggleFertilizeOption')
+					end
 					
+				elseif entry.functionToCall == 'toggleRidgeMarkersAutomatic' then
+					if vehicle.cp.hasSowingMachine then
+						self:enableButtonWithFunction(vehicle,page, 'toggleRidgeMarkersAutomatic')
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					else
+						self:disableButtonWithFunction(vehicle,page, 'toggleRidgeMarkersAutomatic')
+					end
 					
-
-
-		
-		
-
-		
-		
+				elseif entry.functionToCall == 'changeRefillUntilPct' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
+					vehicle.cp.hud.content.pages[page][line][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
+							
+				elseif entry.functionToCall == 'toggleAutomaticUnloadingOnField' then
+					if not vehicle.cp.hasUnloadingRefillingCourse then
+						self:enableButtonWithFunction(vehicle,page, 'toggleAutomaticUnloadingOnField')
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_ON_FIELD');
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.automaticUnloadingOnField and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
+					else
+						self:disableButtonWithFunction(vehicle,page, 'toggleAutomaticUnloadingOnField')
+					end
 					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
+				elseif entry.functionToCall == 'togglePlowFieldEdge' then
+					if vehicle.cp.hasPlow then
+						self:enableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_PLOW_FIELD_EDGE');
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.plowFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					else
+						self:disableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
+					end
 					
 				end					
 			end		
@@ -1237,8 +1250,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		
 --[[
 
+
+
 	--PAGE 1: COURSEPLAY CONTROL
 	elseif page == self.PAGE_CP_CONTROL then
+
 		if vehicle.cp.canDrive then
 			if not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
 				
@@ -1250,58 +1266,17 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[1][4][2].text = courseplay:loc('UNKNOWN');
 					end
 				end
-
-				
-				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE and vehicle.cp.hasFertilizerSowingMachine then
-					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_FERTILIZERFUNCTION');
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.fertilizerEnabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-				end;
-
-			else
-				
-
-				if vehicle.cp.HUD1noWaitforFill then
-					vehicle.cp.hud.content.pages[1][3][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
-				end
-
-				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE and vehicle.cp.hasSowingMachine then
-					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-
-				elseif vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.cp.hasBaleLoader and not vehicle.cp.hasUnloadingRefillingCourse then
-					vehicle.cp.hud.content.pages[1][5][1].text = courseplay:loc('COURSEPLAY_UNLOADING_ON_FIELD');
-					vehicle.cp.hud.content.pages[1][5][2].text = vehicle.cp.automaticUnloadingOnField and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
-				end;
-
-				
-
-				if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_FIELDWORK then	
-					vehicle.cp.hud.content.pages[1][8][1].text = courseplay:loc('COURSEPLAY_OPPOSITE_TURN_DIRECTION');
-					vehicle.cp.hud.content.pages[1][8][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
-				end;
-			end
-
-
-	--PAGE 3: MODE 2 SETTINGS
-	elseif page == self.PAGE_COMBI_MODE then
-
-
-		if vehicle.cp.mode == courseplay.MODE_SEED_FERTILIZE or vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
-			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
-			vehicle.cp.hud.content.pages[3][6][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
-		elseif vehicle.cp.lastValidTipDistance ~= nil then
+	
+	
+		if vehicle.cp.lastValidTipDistance ~= nil then
 			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_LAST_VAILD_TIP_DIST');
 			vehicle.cp.hud.content.pages[3][6][2].text = ('%.1fm'):format(vehicle.cp.lastValidTipDistance);
 		end;
-
-		if vehicle.cp.mode == courseplay.MODE_FIELDWORK and vehicle.cp.hasPlow then
-			vehicle.cp.hud.content.pages[3][7][1].text = courseplay:loc('COURSEPLAY_PLOW_FIELD_EDGE');
-			vehicle.cp.hud.content.pages[3][7][2].text = vehicle.cp.plowFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-		end;
+	
+	--PAGE 3: MODE 2 SETTINGS
+	elseif page == self.PAGE_COMBI_MODE then
 		
-
-		
-		-- PAGE 8: COURSE GENERATION
+	-- PAGE 8: COURSE GENERATION
 	elseif page == self.PAGE_COURSE_GENERATION then
 		-- line 1 = field edge path
 		vehicle.cp.hud.content.pages[8][1][1].text = courseplay:loc('COURSEPLAY_FIELD_EDGE_PATH');
@@ -2168,8 +2143,8 @@ function courseplay.hud:showCpModeButtons(vehicle, show)
 		local fn, cpModeToCheck = button.functionToCall, button.parameter;
 		if fn == 'setCpMode'then
 			button:setShow(show);
-			button:setActive(cpModeToCheck == vehicle.cp.mode)
 			button:setDisabled(not courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck))
+			button:setActive(cpModeToCheck == vehicle.cp.mode)
 		end
 	end
 end
@@ -2308,6 +2283,10 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:addSettingsRow(vehicle,'changeLoadUnloadOffsetX', 7, 5, 1 )
 	self:addSettingsRow(vehicle,'changeLoadUnloadOffsetZ', 7, 6, 1 )
 	
+	--page 8  
+	self:enablePageButton(vehicle, 8)
+	self:addSettingsRow(vehicle,'changeRefillUntilPct', 8, 1, 1 )
+	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
@@ -2340,11 +2319,12 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,'changeLaneOffset', 8, 1, 2 )
 	self:addRowButton(vehicle,'toggleSymmetricLaneChange', 8, 2, 1 )
 	self:addRowButton(vehicle,'toggleTurnOnField', 8, 3, 1 )
-	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
+	
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetX', 8, 5, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
+	self:addRowButton(vehicle,'toggleOppositeTurnMode', 8, 7, 1 )
 	
-	
+	--togglePlowFieldEdge
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
@@ -2353,9 +2333,10 @@ function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle)
 	self:debug(vehicle,"setUnloadableFieldworkAIDriverContent")
 	
 	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
-	--self:addSettingsRow(vehicle,'changeDriveOnAtFillLevel', 3, 5, 1 )
 
-
+	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
+	
+	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
 end
 
 function courseplay.hud:setCombineAIDriverContent(vehicle)
@@ -2400,9 +2381,26 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,'changeTipperOffset', 8, 2, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeDriveOnAtFillLevel', 8, 3, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeFollowAtFillLevel', 8, 4, 1 )
-	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 5, 1 )
+	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
 	
 end
+
+
+function courseplay.hud:setBaleLoaderAIDriverContent(vehicle)
+	self:debug(vehicle,"setBaleLoaderAIDriverContent")
+	self:addRowButton(vehicle,'toggleAutomaticUnloadingOnField', 3, 6, 1 )
+
+end
+
+function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
+	self:debug(vehicle,"setFillableFieldworkAIDriverContent")
+	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
+
+	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
+end
+
+
+
 
 
 --different buttons to set
@@ -2434,7 +2432,9 @@ function courseplay.hud:addSettingsRowWithArrows(vehicle,funct, hudPage, line, c
 end
 		
 function courseplay.hud:debug(vehicle,printString,showManyPrints)
-	--print(printString)
+	if not showManyPrints then
+		print(printString)
+	end
 end	
 	
 -- do not remove this comment
