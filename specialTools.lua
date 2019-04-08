@@ -579,7 +579,7 @@ function courseplay:setCustomSpecVariables(vehicle)
 		end;
 	end;
 
-	for i, spec in ipairs(VehicleTypeUtil.vehicleTypes[vehicle.typeName].specializations) do
+	for i, spec in ipairs(g_vehicleTypeManager.vehicleTypes[vehicle.typeName].specializations) do
 		if specToSpecClassName[spec] ~= nil then
 			local varName = specToSpecClassName[spec]:gsub('^%l', string.upper):gsub('_', ''); -- first char uppercase, remove underscores
 			vehicle.cp['hasSpecialization' .. varName] = true;
