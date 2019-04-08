@@ -83,7 +83,17 @@ function courseplay:attachablePostLoad(xmlFile)
 		self.name = courseplay:getObjectName(self, xmlFile);
 	end;
 end;
-Attachable.postLoad = Utils.appendedFunction(Attachable.postLoad, courseplay.attachablePostLoad);
+Attachable.onPostLoad = Utils.appendedFunction(Attachable.onPostLoad, courseplay.attachablePostLoad);
+
+function courseplay:articulatedAxisOnLoad()
+	-- Due to a bug in Giant's ArticulatedAxis:onLoad() maxRotation has a value in degrees instead of radians,
+	-- fix that here.
+	if self.maxRotation > math.pi then
+		print(string.format('## %s: fixing maxRotation, setting to %.0f degrees', self:getName(), self.maxRotation))
+		self.maxRotation = math.rad(self.maxRotation)
+	end
+end
+ArticulatedAxis.onLoad = Utils.appendedFunction(ArticulatedAxis.onLoad, courseplay.articulatedAxisOnLoad)
 
 function courseplay:attachableDelete()
 	if self.cp ~= nil then
@@ -253,8 +263,8 @@ AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceler
             if math.abs(angle) >= slowAngleLimit then
                 maxSpeed = maxSpeed * slowDownFactor;
             end
-            self:getMotor():setSpeedLimit(maxSpeed);
-            if self:getCruiseControlState() ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
+            self.spec_motorized.motor:setSpeedLimit(maxSpeed);
+            if self.spec_drivable.cruiseControl.state ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
                 self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE);
             end
         else

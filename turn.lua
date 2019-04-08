@@ -807,16 +807,22 @@ function courseplay:turn(vehicle, dt)
 	local holdInTurn = not vehicle.cp.headlandTurn and vehicle.cp.driver and vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0)
 	allowedToDrive = not holdInTurn and allowedToDrive
 	
-	if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
-		if not moveForwards then
-			vehicle.nextMovingDirection = -1
-		else
-			vehicle.nextMovingDirection = 1
+	--courseplay.debugVehicle(14, vehicle, 'turn speed = %.1f, allowedToDrive %s', refSpeed, allowedToDrive)
+	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
+	if curTurnTarget and ((curTurnTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
+		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+			if not moveForwards then
+				vehicle.nextMovingDirection = -1
+			else
+				vehicle.nextMovingDirection = 1
+			end
 		end
-	end
 
-	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
-
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+	else
+		dtpZ = dtpZ * 0.85;
+		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
+	end;
 	courseplay:setTrafficCollision(vehicle, lx, lz, true);
 end;
 
