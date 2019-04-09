@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Controlli della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gestione percorsi" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Scegliere la cartella" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Impostazioni specifiche per veicolo" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gestione della trebbia" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Parametri velocità" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Impostazioni generali di guida" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Parametri generali" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="La trebbia sta svoltando" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Nessuna area di lavoro in questo percorso" />
@@ -162,7 +162,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 								text="Apri Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 								text="Canali di debug" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 				text="Generazione del lavoro in campo" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 			text="Impostazioni avanzate per la generazione del lavoro in campo" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 			text="Impostazioni generazione del lavoro in campo" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 							text="Posizione di partenza" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="Posizione di arrivo" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Direzione di partenza" />
@@ -243,11 +243,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Termina" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Il percorso non è valido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION" 							text="funzione fertilizzazione nelle seminatrici" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Convoglio veicoli" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Distanza massima" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Distanza minima" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 							text="Il condotto di scarico è sul raccolto" />
-		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Modalità impostazioni specifiche" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Pala non trovata" />
@@ -295,7 +295,7 @@
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Rimuovere assegnazione trebbia" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Fermarsi durante lo scarico" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="sta slittando" />
-		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Riempire botte fino al:" />
+		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Riempire rimorchio fino al:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": il silo è pieno!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 						text="Il rimorchio non sa con cosa riempire" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Il rimorchio sta caricando:" />
