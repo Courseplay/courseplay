@@ -772,7 +772,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'openAdvancedCourseGeneratorSettings' then
 					if not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'openAdvancedCourseGeneratorSettings')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS');
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_PAGE_TITLE_COURSE_GENERATION').."...";
 					else
 						self:disableButtonWithFunction(vehicle,page, 'openAdvancedCourseGeneratorSettings')
 					end
@@ -1428,7 +1428,7 @@ function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
 	if vehicle.cp.hud.reloadPage[page] ~= bool then
 		vehicle.cp.hud.reloadPage[page] = bool;
 		if courseplay.debugChannels[18] and bool == true then
-			courseplay:debug(string.format('%s: set reloadPage[%d] to %s (called from %s)', nameNum(vehicle), page, tostring(bool), courseplay.utils:getFnCallPath(4)), 18);
+			courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), 18);
 		end;
 	end;
 end;
@@ -2205,7 +2205,7 @@ function courseplay.hud:disableButtonsOnThisPage(vehicle,page)
 end
 
 function courseplay.hud:enableButtonWithFunction(vehicle,page, func)
-	self:debug(vehicle,"enableButton: "..func,true)
+	self:debug(vehicle,"enableButton: "..func)
 	for _, button in pairs(vehicle.cp.buttons[page])do
 		if button.functionToCall == func then
 			button:setDisabled(false)
@@ -2215,7 +2215,7 @@ function courseplay.hud:enableButtonWithFunction(vehicle,page, func)
 end
 
 function courseplay.hud:disableButtonWithFunction(vehicle,page, func)
-	self:debug(vehicle,"disableButton: "..func,true)
+	self:debug(vehicle,"disableButton: "..func)
 	for _, button in pairs(vehicle.cp.buttons[page])do
 		if button.functionToCall == func then
 			button:setDisabled(true)
@@ -2237,7 +2237,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'cancelWait', 1, 2, 1 )
 	self:addRowButton(vehicle,'changeStartAtPoint', 1, 2, 2 )
 	self:addRowButton(vehicle,'setStopAtEnd', 1, 3, 1 )
-	self:addSettingsRow(vehicle,'switchDriverCopy', 1, 3, 2 )
+	self:addSettingsRowWithArrows(vehicle,'switchDriverCopy', 1, 3, 2 )
 	self:setupCopyCourseButton(vehicle, 1, 3)
 	
 	
@@ -2319,7 +2319,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,'changeLaneOffset', 8, 1, 2 )
 	self:addRowButton(vehicle,'toggleSymmetricLaneChange', 8, 2, 1 )
 	self:addRowButton(vehicle,'toggleTurnOnField', 8, 3, 1 )
-	
+	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetX', 8, 5, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
 	self:addRowButton(vehicle,'toggleOppositeTurnMode', 8, 7, 1 )
@@ -2336,7 +2336,7 @@ function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle)
 
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
 	
-	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
+	self:setReloadPageOrder(vehicle, -1, true)
 end
 
 function courseplay.hud:setCombineAIDriverContent(vehicle)
@@ -2354,6 +2354,7 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 		self:addRowButton(vehicle,'toggleStopWhenUnloading', 0, 5, 1 )
 		self:addRowButton(vehicle,'changeHeadlandReverseManeuverType', 0, 6, 1 )
 	end
+	self:setReloadPageOrder(vehicle, -1, true)
 end
 
 function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
@@ -2381,22 +2382,25 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,'changeTipperOffset', 8, 2, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeDriveOnAtFillLevel', 8, 3, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeFollowAtFillLevel', 8, 4, 1 )
-	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
+	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 5, 1 )
 	
+	self:setReloadPageOrder(vehicle, -1, true)
 end
 
 
 function courseplay.hud:setBaleLoaderAIDriverContent(vehicle)
 	self:debug(vehicle,"setBaleLoaderAIDriverContent")
 	self:addRowButton(vehicle,'toggleAutomaticUnloadingOnField', 3, 6, 1 )
-
+	
+	self:setReloadPageOrder(vehicle, -1, true)
 end
 
 function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 	self:debug(vehicle,"setFillableFieldworkAIDriverContent")
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
 
-	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
+	
+	self:setReloadPageOrder(vehicle, -1, true)
 end
 
 
@@ -2405,7 +2409,7 @@ end
 
 --different buttons to set
 function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
-	self:debug(vehicle,"  addRowButton: "..tostring(funct),true)
+	self:debug(vehicle,"  addRowButton: "..tostring(funct))
 	local width = {
 					[1] = self.buttonPosX[2] - self.col1posX;
 					}
@@ -2416,7 +2420,7 @@ function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
 end
 
 function courseplay.hud:addSettingsRow(vehicle,funct, hudPage, line, column )
-	self:debug(vehicle,"  addSettingsRow: "..tostring(funct),true)
+	self:debug(vehicle,"  addSettingsRow: "..tostring(funct))
 	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navMinus' }, funct,   -1, self.buttonPosX[2], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, -5, false);
 	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navPlus' },  funct,    1, self.buttonPosX[1], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line,  5, false);
 	courseplay.button:new(vehicle, hudPage, nil, funct, 1, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true);
@@ -2424,17 +2428,15 @@ function courseplay.hud:addSettingsRow(vehicle,funct, hudPage, line, column )
 end
 
 function courseplay.hud:addSettingsRowWithArrows(vehicle,funct, hudPage, line, column )
-	self:debug(vehicle,"  addSettingsRowWithArrows: "..tostring(funct),true)
+	self:debug(vehicle,"  addSettingsRowWithArrows: "..tostring(funct))
 	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navLeft' }, funct,   -1, self.buttonPosX[2], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, -5, false);
 	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navRight' },  funct,    1, self.buttonPosX[1], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line,  5, false);
 	courseplay.button:new(vehicle, hudPage, nil, funct, 1, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true);
 	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
 end
 		
-function courseplay.hud:debug(vehicle,printString,showManyPrints)
-	if not showManyPrints then
-		print(printString)
-	end
+function courseplay.hud:debug(vehicle,...)
+	courseplay.debugVehicle(18, vehicle, ...)
 end	
 	
 -- do not remove this comment
