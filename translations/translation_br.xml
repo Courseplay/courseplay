@@ -119,10 +119,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Controle da ceifadeira" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gerenciar rotas" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Escolher pasta" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Configurações do modo combi" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gerenciar ceifadeiras" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Limite de velocidade" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Configurações de condução" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Configurações" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Ceifadeira virando" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="nenhuma area de trabalho para esta rota" />
@@ -244,9 +244,12 @@
 		<text name="COURSEPLAY_FINISH" 										text="Finalizar" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="rota inválida" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Função fertilizante p.máquina de semea" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="comboio ceifadeiras" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="ceifadeira colhendo" />
-
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="nenhuma pá carregadeira encontrada" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 							text="Posições da pá carregadeira" />

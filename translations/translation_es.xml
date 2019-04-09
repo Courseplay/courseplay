@@ -114,10 +114,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Controles de cosechadora" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gestión de rutas" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Elegir la carpeta" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Configuración modo cosechadora" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gestionar cosechadoras" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Limite velocidad" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Configuración conducción" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Configuración" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Cosechadora está girando" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Ningún area de campo de trabajo en esta ruta" />
@@ -239,8 +239,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Detener" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="El curso no es válido" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Función fertilizar de sembradoras" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Varias Cosechadoras Misma Ruta" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Tubo cosechadoras esta en modo cultivo" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Falta la pala" />

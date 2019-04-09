@@ -43,7 +43,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
-				if button.canBeClicked and button.show and button:getHasMouse(posX, posY) then
+				if button.canBeClicked and button.show and not button.isDisabled and button:getHasMouse(posX, posY) then
 					buttonToHandle = button;
 					break;
 				end;
@@ -63,9 +63,9 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle then
 			buttonToHandle:setClicked(isDown);
-			if not buttonToHandle.isDisabled and buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
+			--[[if not buttonToHandle.isDisabled and buttonToHandle.hoverText and buttonToHandle.functionToCall ~= nil then
 				vehicle.cp.hud.content.pages[buttonToHandle.page][buttonToHandle.row][1].isClicked = isDown;
-			end;
+			end;]]
 			if isUp then
 				buttonToHandle:handleMouseClick();
 			end;
@@ -85,43 +85,25 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 				end;
 			end;
 		end;
-
+		vehicle.cp.hud.mouseWheel.render = false;
+		
 		for _,button in pairs(vehicle.cp.buttons.global) do
 			button:setClicked(false);
 			if button.show and not button.isHidden then
 				button:setClicked(false);
 				button:setHovered(button:getHasMouse(posX, posY));
+				if button.isHovered then
+					button:handleHoverAction(vehicle, posX, posY)
+				end;
 			end;
 		end;
-
-		vehicle.cp.hud.mouseWheel.render = false;
+		
 		for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
 			button:setClicked(false);
 			if button.show and not button.isHidden then
 				button:setHovered(button:getHasMouse(posX, posY));
 				if button.isHovered then
-					if button.isMouseWheelArea and (button.canScrollUp or button.canScrollDown) then
-						--Mouse wheel icon
-						vehicle.cp.hud.mouseWheel.render = true;
-						vehicle.cp.hud.mouseWheel.icon:setPosition(posX + 3/g_screenWidth, posY - 16/g_screenHeight);
-
-						--action
-						local parameter = button.parameter;
-						if courseplay.inputModifierIsPressed and button.modifiedParameter ~= nil then
-							parameter = button.modifiedParameter;
-						end;
-
-						local upParameter = parameter;
-						local downParameter = upParameter * -1;
-
-						if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
-							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(upParameter)), 18);
-							vehicle:setCourseplayFunc(button.functionToCall, upParameter, false, button.page);
-						elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
-							courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(downParameter)), 18);
-							vehicle:setCourseplayFunc(button.functionToCall, downParameter, false, button.page);
-						end;
-					end;
+					button:handleHoverAction(vehicle, posX, posY)
 				end;
 
 				if button.hoverText and not button.isDisabled then
@@ -135,7 +117,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 				button:setClicked(false);
 				if button.show and not button.isHidden then
 					button:setHovered(button:getHasMouse(posX, posY));
-
 					if button.hoverText then
 						vehicle.cp.hud.content.pages[2][button.row][1].isHovered = button.isHovered;
 					end;
@@ -169,32 +150,6 @@ end; --END mouseEvent()
 
 function courseplay:mouseIsInArea(mouseX, mouseY, areaX1, areaX2, areaY1, areaY2)
 	return mouseX >= areaX1 and mouseX <= areaX2 and mouseY >= areaY1 and mouseY <= areaY2;
-end;
-
-function courseplay.button:handleMouseClick(vehicle)
-	vehicle = vehicle or self.vehicle;
-	local parameter = self.parameter;
-	if courseplay.inputModifierIsPressed and self.modifiedParameter ~= nil then
-		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
-		parameter = self.modifiedParameter;
-	end;
-
-	if self.show and not self.isHidden and self.canBeClicked and not self.isDisabled then
-		if self.functionToCall == "rowButton" and vehicle.cp.hud.content.pages[vehicle.cp.hud.currentPage][self.parameter][1].text == nil then
-			return;
-		end;
-
-		-- self:setClicked(true);
-		if self.functionToCall == "showSaveCourseForm" then
-			vehicle.cp.imWriting = true
-		end
-		if self.functionToCall == "goToVehicle" then
-			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
-		else
-			vehicle:setCourseplayFunc(self.functionToCall, parameter, false, self.page);
-		end
-		-- self:setClicked(false);
-	end;
 end;
 
 function courseplay:setCourseplayFunc(func, value, noEventSend, page)
@@ -232,8 +187,8 @@ function courseplay:executeFunction(self, func, value, page)
 	if func ~= "rowButton" then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
-
-	else
+		courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
+	--[[else
 		local page = Utils.getNoNil(page, self.cp.hud.currentPage);
 		local line = value;
 		if page == 0 then
@@ -274,7 +229,7 @@ function courseplay:executeFunction(self, func, value, page)
 			if self.cp.canDrive then
 				if not self:getIsCourseplayDriving() then
 					if line == 1 then
-						courseplay:start(self);
+						--courseplay:start(self);
 					elseif line == 3 and self.cp.mode ~= 9 then
 						courseplay:changeStartAtPoint(self);
 					elseif line == 4 then
@@ -285,7 +240,7 @@ function courseplay:executeFunction(self, func, value, page)
 
 				else -- driving
 					if line == 1 then
-						courseplay:stop(self);
+						--courseplay:stop(self);
 					elseif line == 2 and (self.cp.HUD1wait or (self.cp.driver and self.cp.driver:isWaiting())) then
 						if self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil) then
 							courseplay:setStopAtEnd(self, false);
@@ -342,7 +297,7 @@ function courseplay:executeFunction(self, func, value, page)
 			elseif 	line == 7 then
 				courseplay:toggleMode10drivingThroughtLoading(self)
 			end 
-		end; --END is page 0 or 1 or 3 or 10
+		end; --END is page 0 or 1 or 3 or 10]]
 	end; --END isRowFunction
 end;
 

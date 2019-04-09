@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Drescher steuern" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Kurse verwalten" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Ordner auswählen" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Einstellungen Combi Modus" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Fahrzeugspezifische Einstellungen " />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Drescher verwalten" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Geschwindigkeiten" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Fahr-/Arbeitseinstellungen" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Allgemeine Fahreinstellungen" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Allgemeine Einstellungen" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Drescher wendet" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Kein Arbeitsbereich in diesem Kurs" />
@@ -243,9 +243,12 @@
 		<text name="COURSEPLAY_FINISH" 										text="Beenden" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Kein gültiger Kurs geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Düngefunktion der Sämaschine" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Drescher-Verband" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Fahrzeugverband" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximale Entfernung" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minmale Entfernung" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Drescher-Rohr ist in der Frucht" />
-
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Modusabhängige Einstellungen" />
+		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="keine Schaufel vorhanden" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 							text="Schaufelstellung" />

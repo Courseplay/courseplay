@@ -114,10 +114,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Kombájn szabályozás" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Útvonal kezelés" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Mappa választás" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Szállító üzemmód beállítása" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Kombájn kezelés" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Sebességhatár" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Vezetési beállítások" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Beállitások" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Kombájn éppen fordul" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Nincs munkaterülete a vezetőnek" />
@@ -239,9 +239,12 @@
 		<text name="COURSEPLAY_FINISH" 										text="Vége" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Az útvonal nem megfelelő" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="vetőgép műtrágyaszóró funkció" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="combine convoy" /> <!-- TRANSLATE THIS: option to let more combines run on the same field on the same course (with side offset) -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Kanál nem található" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 							text="Kanál pozíció" />

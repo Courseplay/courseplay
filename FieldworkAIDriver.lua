@@ -63,6 +63,11 @@ function FieldworkAIDriver:init(vehicle)
 	self.turnDurationMs = 20000
 end
 
+function FieldworkAIDriver:setHudContent()
+	AIDriver.setHudContent(self)
+	courseplay.hud:setFieldWorkAIDriverContent(self.vehicle)
+end
+
 function FieldworkAIDriver.register()
 
 	AIImplement.getCanImplementBeUsedForAI = Utils.overwrittenFunction(AIImplement.getCanImplementBeUsedForAI,
@@ -314,6 +319,8 @@ function FieldworkAIDriver:changeToFieldwork()
 	self.state = self.states.ON_FIELDWORK_COURSE
 	self.fieldworkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
+	self:setIsLoaded(false);
+	self:refreshHUD();
 end
 
 function FieldworkAIDriver:changeToUnloadOrRefill()
@@ -581,7 +588,7 @@ function FieldworkAIDriver:manageConvoy()
 
 	-- stop when I'm too close to the combine in front of me
 	if position > 1 then
-		if closestDistance < 100 then
+		if closestDistance < self.vehicle.cp.convoy.minDistance then
 			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
 			self:setSpeed(0)
 		end
@@ -791,3 +798,4 @@ function FieldworkAIDriver:raiseImplements()
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_END_LINE)
 end
+

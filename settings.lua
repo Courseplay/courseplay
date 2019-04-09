@@ -24,13 +24,13 @@ function courseplay:setCpMode(vehicle, modeNum)
 		if modeNum == 1 then
 			courseplay:resetTools(vehicle);
 		end;
-		if not CpManager.isDeveloper then
+		--if not CpManager.isDeveloper then
 			if modeNum == courseplay.MODE_COMBI then
 				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
 			else
 				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
 			end
-		end
+		--end
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
 end;
@@ -44,7 +44,8 @@ function courseplay:setAIDriver(vehicle, mode)
 		vehicle.cp.driver = AIDriver(vehicle)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
 		vehicle.cp.driver = GrainTransportAIDriver(vehicle)	
-	--elseif mode == courseplay.MODE_COMBI then
+	elseif mode == courseplay.MODE_COMBI then
+		CombineUnloadAIDriver:setHudContent(vehicle)
 	--	vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		vehicle.cp.driver = ShovelModeAIDriver(vehicle)
@@ -107,8 +108,24 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 	return true;
 end;
 
-function courseplay:toggleConvoyActive(self)
-	self.cp.convoyActive =  not self.cp.convoyActive
+function courseplay:setDriveNow(vehicle)
+	courseplay:setIsLoaded(vehicle, true);
+end
+
+function courseplay:toggleShowMiniHud(vehicle)
+	vehicle.cp.hud.showMiniHud = not vehicle.cp.hud.showMiniHud
+end
+
+function courseplay:toggleConvoyActive(vehicle)
+	vehicle.cp.convoyActive =  not vehicle.cp.convoyActive
+end
+
+function courseplay:setConvoyMinDistance(vehicle, changeBy)
+	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 200);
+end
+
+function courseplay:setConvoyMaxDistance(vehicle, changeBy)
+	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 300);
 end
 
 function courseplay:toggleFuelSaveOption(self)
@@ -119,9 +136,22 @@ function courseplay:toggleFertilizeOption(self)
 	self.cp.fertilizerEnabled = not self.cp.fertilizerEnabled
 end
 
+function courseplay:toggleRidgeMarkersAutomatic(self)
+	self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic
+end
+
+function courseplay:toggleAutomaticUnloadingOnField(self)
+	self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
+end
+
 function courseplay:toggleAutoRefuel(self)
 	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 
 end
+
+function courseplay:toggleAutomaticCoverHandling (self)
+	self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling 
+end
+
 function courseplay:toggleMode10automaticSpeed(self)
 	if self.cp.mode10.leveling then
 		self.cp.mode10.automaticSpeed = not self.cp.mode10.automaticSpeed
@@ -146,6 +176,24 @@ end
 function courseplay:toggleWantsCourseplayer(combine)
 	combine.cp.wantsCourseplayer = not combine.cp.wantsCourseplayer;
 end;
+
+function courseplay:toggleOppositeTurnMode(vehicle)
+	vehicle.cp.oppositeTurnMode = not vehicle.cp.oppositeTurnMode
+end
+
+function courseplay:startStop(vehicle)
+	if vehicle.cp.canDrive then
+		if not vehicle:getIsCourseplayDriving() then
+			courseplay:start(vehicle);
+		else
+			courseplay:stop(vehicle);
+		end
+	else
+		courseplay:start_record(vehicle);
+	end
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
+end;
+
 
 function courseplay:startStopCourseplayer(combine)
 	local tractor = combine.courseplayers[1];
@@ -178,7 +226,12 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 end;
 
 function courseplay:setStopAtEnd(vehicle, bool)
-	vehicle.cp.stopAtEnd = bool;
+	--if bool is nil, toggle stopAtEnd  
+	if bool == nil then 
+		vehicle.cp.stopAtEnd = not vehicle.cp.stopAtEnd
+	else
+		vehicle.cp.stopAtEnd = bool;
+	end
 end;
 
 function courseplay:setIsLoaded(vehicle, bool)
@@ -189,6 +242,10 @@ end;
 
 function courseplay:sendCourseplayerHome(combine)
 	courseplay:setIsLoaded(combine.courseplayers[1], true);
+end
+
+function courseplay:toggleTurnStage(combine)
+	combine.cp.turnStage = self.cp.turnStage== 0 and 1 or 0 ;
 end
 
 function courseplay:switchCourseplayerSide(combine)
@@ -211,29 +268,17 @@ function courseplay:switchCourseplayerSide(combine)
 end;
 
 function courseplay:setHudPage(vehicle, pageNum)
-	if vehicle.cp.mode == nil then
-		vehicle.cp.hud.currentPage = pageNum;
-	elseif courseplay.hud.pagesPerMode[vehicle.cp.mode] ~= nil and courseplay.hud.pagesPerMode[vehicle.cp.mode][pageNum] then
-		if pageNum == 0 then
-			if vehicle.cp.minHudPage == 0 or vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or vehicle.cp.attachedCombine ~= nil then
-				vehicle.cp.hud.currentPage = pageNum;
-			end;
-		else
-			vehicle.cp.hud.currentPage = pageNum;
-		end;
-	end;
-
+	vehicle.cp.hud.hudPageButtons[vehicle.cp.hud.currentPage]:setActive(false)
+	vehicle.cp.hud.currentPage = pageNum;
+	vehicle.cp.hud.hudPageButtons[pageNum]:setActive(true)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-
-	courseplay.buttons:setActiveEnabled(vehicle, "all");
-
 end;
 
 function courseplay:changeCombineOffset(vehicle, changeBy)
 	local previousOffset = vehicle.cp.combineOffset;
 
 	vehicle.cp.combineOffsetAutoMode = false;
-	vehicle.cp.combineOffset = courseplay:round(vehicle.cp.combineOffset, 1) + changeBy;
+	vehicle.cp.combineOffset = courseplay:round(vehicle.cp.combineOffset, 1) + changeBy*0.1;
 	if abs(vehicle.cp.combineOffset) < 0.1 then
 		vehicle.cp.combineOffset = 0.0;
 		vehicle.cp.combineOffsetAutoMode = true;
@@ -243,14 +288,14 @@ function courseplay:changeCombineOffset(vehicle, changeBy)
 end
 
 function courseplay:changeTipperOffset(vehicle, changeBy)
-	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy;
+	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy*0.1;
 	if abs(vehicle.cp.tipperOffset) < 0.1 then
 		vehicle.cp.tipperOffset = 0;
 	end;
 end
 
 function courseplay:changeLaneOffset(vehicle, changeBy, force)
-	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy);
+	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy*0.1);
 	if abs(vehicle.cp.laneOffset) < 0.1 then
 		vehicle.cp.laneOffset = 0;
 	end;
@@ -292,37 +337,37 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 end;
 
 function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
-	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy);
+	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy*0.1);
 	if abs(vehicle.cp.toolOffsetX) < 0.1 then
 		vehicle.cp.toolOffsetX = 0;
 	end;
 	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 
-	if not noDraw and vehicle.cp.mode ~= 2 and vehicle.cp.mode ~= 3 and vehicle.cp.mode ~= 7 then
+	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
 end;
 
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
-	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy);
+	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy*0.1);
 	if abs(vehicle.cp.toolOffsetZ) < 0.1 then
 		vehicle.cp.toolOffsetZ = 0;
 	end;
 
-	if not noDraw and vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
+	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
 end;
 
 function courseplay:changeLoadUnloadOffsetX(vehicle, changeBy, force)
-	vehicle.cp.loadUnloadOffsetX = force or (courseplay:round(vehicle.cp.loadUnloadOffsetX, 1) + changeBy);
+	vehicle.cp.loadUnloadOffsetX = force or (courseplay:round(vehicle.cp.loadUnloadOffsetX, 1) + changeBy*0.1);
 	if abs(vehicle.cp.loadUnloadOffsetX) < 0.1 then
 		vehicle.cp.loadUnloadOffsetX = 0;
 	end;
 end;
 
 function courseplay:changeLoadUnloadOffsetZ(vehicle, changeBy, force)
-	vehicle.cp.loadUnloadOffsetZ = force or (courseplay:round(vehicle.cp.loadUnloadOffsetZ, 1) + changeBy);
+	vehicle.cp.loadUnloadOffsetZ = force or (courseplay:round(vehicle.cp.loadUnloadOffsetZ, 1) + changeBy*0.1);
 	if abs(vehicle.cp.loadUnloadOffsetZ) < 0.1 then
 		vehicle.cp.loadUnloadOffsetZ = 0;
 	end;
@@ -389,6 +434,35 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	
 end;
 
+
+function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
+	local eftl = vehicle.cp.easyFillTypeList;
+	local newVal = 1;
+	if currentSelectedFilltype and currentSelectedFilltype ~= FillType.UNKNOWN then
+		for index, fillType in ipairs(eftl) do
+			if currentSelectedFilltype == fillType then
+				newVal = index;
+			end;
+		end;
+	else
+		newVal = vehicle.cp.siloSelectedEasyFillType + modifyer
+		if newVal < 1 then
+			newVal = #eftl;
+		elseif newVal > #eftl then
+			newVal = 1;
+		end
+	end;
+	if vehicle.cp.siloSelectedFillType ~= eftl[newVal] then
+ 		--Mode 1 Run Counter Reset
+ 		vehicle.cp.runCounter = 0;
+ 		courseplay:changeRunCounter(vehicle, false)
+ 	end
+	vehicle.cp.siloSelectedEasyFillType = newVal;
+	vehicle.cp.siloSelectedFillType = eftl[newVal];
+
+end;
+
+
 function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibilityUpdate)
 	vehicle.cp.visualWaypointsStartEnd = Utils.getNoNil(force, not vehicle.cp.visualWaypointsStartEnd);
 
@@ -398,10 +472,11 @@ function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibility
 	end;
 
 	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.buttons:setActiveEnabled(vehicle, 'visualWaypoints');
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 		courseplay.signs:setSignsVisibility(vehicle);
 	end;
 end;
+
 function courseplay:toggleShowVisualWaypointsAll(vehicle, force, visibilityUpdate)
 	vehicle.cp.visualWaypointsAll = Utils.getNoNil(force, not vehicle.cp.visualWaypointsAll);
 
@@ -411,18 +486,23 @@ function courseplay:toggleShowVisualWaypointsAll(vehicle, force, visibilityUpdat
 	end;
 
 	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.buttons:setActiveEnabled(vehicle, 'visualWaypoints');
-		courseplay.signs:setSignsVisibility(vehicle);
-	end;
-end;
-function courseplay:toggleShowVisualWaypointsCrossing(vehicle, force, visibilityUpdate)
-	vehicle.cp.visualWaypointsCrossing = Utils.getNoNil(force, not vehicle.cp.visualWaypointsCrossing);
-	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.buttons:setActiveEnabled(vehicle, 'visualWaypoints');
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 		courseplay.signs:setSignsVisibility(vehicle);
 	end;
 end;
 
+function courseplay:toggleShowVisualWaypointsCrossing(vehicle, force, visibilityUpdate)
+	vehicle.cp.visualWaypointsCrossing = Utils.getNoNil(force, not vehicle.cp.visualWaypointsCrossing);
+	if visibilityUpdate == nil or visibilityUpdate then
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
+		courseplay.signs:setSignsVisibility(vehicle);
+	end;
+end;
+
+function courseplay:toggleTurnOnField(vehicle)
+	vehicle.cp.turnOnField = not vehicle.cp.turnOnField
+end
+	
 function courseplay:changeMode10Radius (vehicle, changeBy)
 	vehicle.cp.mode10.searchRadius = math.max(1,vehicle.cp.mode10.searchRadius + changeBy)
 end
@@ -605,7 +685,7 @@ end;
 
 function courseplay:switchDriverCopy(vehicle, changeBy)
 	local drivers = courseplay:findDrivers(vehicle);
-
+	
 	if drivers ~= nil then
 		vehicle.cp.selectedDriverNumber = MathUtil.clamp(vehicle.cp.selectedDriverNumber + changeBy, 0, #(drivers));
 
@@ -898,11 +978,12 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 				next = false
 			end
 		end
-		vehicle.cp.hud.courseListPrev = prev
-		vehicle.cp.hud.courseListNext = next
-	else
+		return prev, next;
+		--vehicle.cp.hud.courseListPrev = prev
+		--vehicle.cp.hud.courseListNext = next
+	--[[else
 		-- update all vehicles
-		for k,v in pairs(g_currentMission.enterables) do
+			for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				prev = true
 				next = true
@@ -929,7 +1010,7 @@ function courseplay.settings.validateCourseListArrows(vehicle)
 				v.cp.hud.courseListPrev = prev
 				v.cp.hud.courseListNext = next
 			end -- if hasSpecialization
-		end -- in pairs(enterables)
+		end]] -- in pairs(enterables)
 	end -- if vehicle
 end;
 
@@ -951,7 +1032,7 @@ end
 function courseplay:toggleDebugChannel(self, channel, force)
 	if courseplay.debugChannels[channel] ~= nil then
 		courseplay.debugChannels[channel] = Utils.getNoNil(force, not courseplay.debugChannels[channel]);
-		courseplay.buttons:setActiveEnabled(self, "debug");
+		courseplay.hud:updateDebugChannelButtons(self);
 	end;
 end;
 
@@ -1279,7 +1360,8 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 		button:setParameter(channel);
 		button:setToolTip(courseplay.debugChannelsDesc[channel]);
 	end;
-	courseplay.buttons:setActiveEnabled(vehicle, 'debug');
+	
+	--courseplay.buttons:setActiveEnabled(vehicle, 'debug');
 end;
 
 function courseplay:toggleSymmetricLaneChange(vehicle, force)
@@ -1338,7 +1420,6 @@ function courseplay:setFieldEdgePath(vehicle, changeDir, force)
 		end;
 		return;
 	end;
-
 	while courseplay.fields.fieldData[newFieldNum] == nil do
 		if newFieldNum == 0 then
 			vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
@@ -1360,6 +1441,7 @@ function courseplay:setFieldEdgePath(vehicle, changeDir, force)
 	if vehicle.cp.fieldEdge.customField.show then
 		courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
 	end;
+	
 	courseplay:validateCourseGenerationData(vehicle);
 end;
 
@@ -1469,7 +1551,7 @@ end;
 
 function courseplay:changeDrawCourseMode(vehicle, changeBy)
 	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, CpManager.isDeveloper and courseplay.COURSE_2D_DISPLAY_BOTH or courseplay.COURSE_2D_DISPLAY_2DONLY, courseplay.COURSE_2D_DISPLAY_OFF);
-	vehicle.cp.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
+	vehicle.cp.hud.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
 end;
 
 function courseplay:setEngineState(vehicle, on)
@@ -1766,7 +1848,6 @@ function courseplay:setAttachedCombine(vehicle)
 		end;
 	end;
 
-	courseplay:setMinHudPage(vehicle);
 end;
 
 function courseplay:getIsEngineReady(vehicle)

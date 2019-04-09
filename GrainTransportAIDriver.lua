@@ -29,6 +29,11 @@ function GrainTransportAIDriver:init(vehicle)
 	self.vehicle.cp.runCounter = self.runCounter
 end
 
+function GrainTransportAIDriver:setHudContent()
+	AIDriver.setHudContent(self)
+	courseplay.hud:setGrainTransportAIDriverContent(self.vehicle)
+end
+
 function GrainTransportAIDriver:start(ix)
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	self:beforeStart()

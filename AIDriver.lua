@@ -151,7 +151,12 @@ function AIDriver:init(vehicle)
 	-- list of active messages to display
 	self.activeMsgReferences = {}
 	self.pathfinder = Pathfinder()
+	self:setHudContent()
 end
+function AIDriver:setHudContent()
+	courseplay.hud:setAIDriverContent(self.vehicle)
+end
+
 
 -- destructor. The reason for having this is the collisionDetector which creates nodes and
 -- we want those nodes removed when the AIDriver instance is deleted.
@@ -479,7 +484,7 @@ function AIDriver:onWaypointPassed(ix)
 		-- passed stop until the user presses the continue button
 		self:stop('WAIT_POINT')
 		-- show continue button
-		courseplay.hud:setReloadPageOrder(self.vehicle, 1, true);
+		self:refreshHUD()
 	end
 end
 
@@ -772,25 +777,28 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 		
 	else
 		for _, tipper in pairs (vehicle.cp.workTools) do
-			readyToDischarge = false
-			tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
-			_,y,_ = getWorldTranslation(tipRefpoint);
-			local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
-			_,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
-			z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
-			
-			--when we reached the unload point, stop the tractor 
-			if z <= 0 and tipper.cp.fillLevel ~= 0 then
-				stopForTipping = true
-				readyToDischarge = true
-			end	
-			--force tipper to tip to ground
-			if (tipper:getTipState() == Trailer.TIPSTATE_CLOSED or tipper:getTipState() == Trailer.TIPSTATE_CLOSING) and readyToDischarge then
-				tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
-			end
-			--if we can't tip here anymore, pull a bit further
-			if tipper:getTipState() == Trailer.TIPSTATE_OPEN and not isTipping then
-				stopForTipping = false
+			if tipper.spec_dischargeable then	
+				readyToDischarge = false
+				tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
+				_,y,_ = getWorldTranslation(tipRefpoint);
+				local currentDischargeNode = tipper:getCurrentDischargeNode()
+				local isTipping = currentDischargeNode.isEffectActive
+				_,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
+				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
+				
+				--when we reached the unload point, stop the tractor 
+				if z <= 0 and tipper.cp.fillLevel ~= 0 then
+					stopForTipping = true
+					readyToDischarge = true
+				end	
+				--force tipper to tip to ground
+				if tipper.getTipState and (tipper:getTipState() == Trailer.TIPSTATE_CLOSED or tipper:getTipState() == Trailer.TIPSTATE_CLOSING) and readyToDischarge then
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
+				end
+				--if we can't tip here anymore, pull a bit further
+				if tipper.getTipState and tipper:getTipState() == Trailer.TIPSTATE_OPEN and not isTipping then
+					stopForTipping = false
+				end
 			end
 		end
 	end
@@ -935,12 +943,15 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	self:cleanUpMissedTriggerExit()
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	if self.vehicle.cp.totalFillLevel > 0
-		and self:hasTipTrigger()
+	if self.vehicle.cp.totalFillLevel > 0 then
+		if  self:hasTipTrigger()
 		and not self:isNearFillPoint() then
-		self:setSpeed(self.vehicle.cp.speeds.approach)
-		allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
-		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+			self:setSpeed(self.vehicle.cp.speeds.approach)
+			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
+			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+		end
+	else
+		courseplay:setIsLoaded(self.vehicle, false);
 	end
 	-- tractor reaches unloadPoint
 	if isNearUnloadPoint then
@@ -1197,4 +1208,16 @@ end
 --- without restarting the game.
 function AIDriver:onDraw()
 
+end
+
+function AIDriver:setIsLoaded(isLoaded)
+	self.vehicle.cp.isLoaded = isLoaded or false
+end
+
+function AIDriver:getIsLoaded()
+	return self.vehicle.cp.isLoaded
+end
+
+function AIDriver:refreshHUD()
+	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true);
 end

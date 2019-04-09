@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="コンバイン コントロール" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="コース設定" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="フォルダを選択" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="コンビモード設定" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="コンバイン設定" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="速度制限" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="ドライバー設定" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="設定" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="コンバインがターン" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="ワークエリアではありません" />
@@ -243,8 +243,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="終了" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="コースは有効ではありません" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="播種機の肥料散布機能" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="コンバイン連携" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="コンバインのパイプが作物側" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="バケットが見つかりません" />

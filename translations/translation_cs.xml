@@ -114,10 +114,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="收割机控制" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="CP任务管理" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="选择目录" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="联合作业管理" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="收割机管理" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="速度控制" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="车辆驾驶设置" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="基本设置" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="收割机正在转弯" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="无法发现工作区" />
@@ -238,9 +238,12 @@
 		<text name="COURSEPLAY_FINISH" 										text="完成" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="无效任务" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="施肥功能" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="联合车队" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="收割机管道开启" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="找不到铲斗" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 							text="铲斗位置" />

@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="УПРАВЛЕНИЕ ТРАНСПОРТОМ" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="ЗАГРУЗИТЬ МАРШРУТ" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="СОДЕРЖИМОЕ ПАПКИ" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="ПАРАМЕТРЫ КОМБАЙНА" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="ВЫБОР КОМБАЙНА" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="ПАРАМЕТРЫ СКОРОСТИ" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="СМЕЩЕНИЕ МАРШРУТА" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Комбайн поворачивает" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="у этого маршрута нет рабочей области" />
@@ -243,8 +243,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Нерабочий маршрут" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Функция удобрения сеялки:" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Конвой комбайна" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="выгрузной шнек со стороны посевов" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Ковш не обнаружен" />

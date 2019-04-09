@@ -114,10 +114,10 @@
  	    <text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Combine bediening" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Beheer routes" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Kies map" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Instelling combi-modus" />
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Beheer combines" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Snelheden" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="Bestuur instellingen" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Instellingen" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Combine draait" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Geen werkgebied in deze route" />
@@ -239,8 +239,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Finish" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Geen route geladen" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="bemester functie van zaai machine" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="combine konvooi" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="combines pijp is in product" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Geen shovel gevonden" />

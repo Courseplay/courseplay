@@ -176,6 +176,8 @@ function courseplay:onLoad(savegame)
 					  distance = 0,
 					  number = 0,
 					  members = 0,
+					  minDistance = 100,
+					  maxDistance = 300
 					  }
 	
 	
@@ -873,6 +875,7 @@ function courseplay:onDraw()
 		if self.cp.hud.show then
 			courseplay.hud:setContent(self);
 			courseplay.hud:renderHud(self);
+			courseplay.hud:renderHudBottomInfo(self);
 			if self.cp.distanceCheck and (isDriving or (not self.cp.canDrive and not self.cp.isRecording and not self.cp.recordingIsPaused)) then -- turn off findFirstWaypoint when driving or no course loaded
 				courseplay:toggleFindFirstWaypoint(self);
 			end;
@@ -880,7 +883,11 @@ function courseplay:onDraw()
 			if self.cp.mouseCursorActive then
 				g_inputBinding:setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
+		elseif self.cp.hud.showMiniHud then
+			courseplay.hud:setContent(self);
+			courseplay.hud:renderHudBottomInfo(self);
 		end;
+		
 		if self.cp.distanceCheck and self.cp.numWaypoints > 1 then 
 			courseplay:distanceCheck(self);
 		elseif self.cp.infoText ~= nil and StringUtil.startsWith(self.cp.infoText, 'COURSEPLAY_DISTANCE') then  
@@ -1025,7 +1032,7 @@ function courseplay:onUpdate(dt)
 		self.cp.onMpSetCourses = nil
 	end
 
-	if not courseplay.isClient then
+	--[[if not courseplay.isClient then
 		if self.cp.isDriving then
 			local showDriveOnButton = false;
 			if self.cp.mode == courseplay.MODE_FIELDWORK then
@@ -1042,27 +1049,7 @@ function courseplay:onUpdate(dt)
 			self:setCpVar('HUD1wait', showDriveOnButton,courseplay.isClient);
 
 			self:setCpVar('HUD1noWaitforFill', not self.cp.isLoaded and self.cp.mode ~= 5,courseplay.isClient);
-			--[[ TODO (Jakob):
-				* rename to "HUD1waitForFill"
-				* should only be applicable in following situations:
-					** mode 1: waypoint 1 (being filled)
-					** mode 2: waiting for fill/unloading combine
-					** mode 3: unloading at wait point 3
-					** mode 4: refilling in trigger/at wait point 3
-					** mode 6: on field
-					** mode 7: ai threshing / unloading at wait point
-			]]
 		end;
-
-		--Tommi hack
-		
-			if self.cp.hud == nil then
-				self.cp.hud = {}
-				self.cp.hud["currentPage"] = 0
-			end				
-		
-		-- Hack End
-		
 		
 		if self.cp.hud.currentPage == 0 then
 			local combine = self;
@@ -1111,7 +1098,7 @@ function courseplay:onUpdate(dt)
 				courseplay:showFieldEdgePath(self, "selectedField");
 			end;
 		end;
-	end;
+	end;]]
 	
 	--Not sure if this needs to be reenabled? During my test this produced a nil error
 	--[[if g_server ~= nil and g_currentMission.missionDynamicInfo.isMultiplayer then 

@@ -48,6 +48,11 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self.lastEmptyTimestamp = 0
 end
 
+function UnloadableFieldworkAIDriver:setHudContent()
+	FieldworkAIDriver.setHudContent(self)
+	courseplay.hud:setUnloadableFieldworkAIDriverContent(self.vehicle)
+end
+
 function UnloadableFieldworkAIDriver.create(vehicle)
 	if FieldworkAIDriver.hasImplementWithSpecialization(vehicle, BaleLoader) then
 		return BaleLoaderAIDriver(vehicle)
@@ -102,7 +107,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
 			courseplay:setInfoText(self.vehicle,"COURSEPLAY_TIPTRIGGER_REACHED");
 			self:setSpeed(self.vehicle.cp.speeds.turn)
-		end		
+		end
 	end
 	
 	-- tractor reaches unloadPoint
@@ -184,7 +189,7 @@ end
 -- TODO: can this be refactored using FieldworkAIDriver.allFillLevelsOk()?
 function UnloadableFieldworkAIDriver:allFillLevelsOk()
 	if not self.vehicle.cp.workTools then return false end
-	local allOk = true
+	local allOk = not self:getIsLoaded()
 	for _, workTool in pairs(self.vehicle.cp.workTools) do
 		allOk = self:fillLevelsOk(workTool) and allOk
 	end

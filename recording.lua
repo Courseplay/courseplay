@@ -126,6 +126,8 @@ function courseplay:stop_record(vehicle)
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
+	
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
 end;
 
 function courseplay:setRecordingPause(vehicle)
