@@ -1865,42 +1865,55 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 	end
 end
 
-function courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
-	--3,8,9,10 are still disabled
+function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
+	--5 is always valid
 	if cpModeToCheck == 5 then 
 		return true;
-	elseif vehicle.cp.workToolAttached then
-		local modeValid = false
+	end
+	local modeValid = false
+	if vehicle.cp.workToolAttached then
 		for _, workTool in pairs(vehicle.cp.workTools) do
-			if ((cpModeToCheck == 1 or cpModeToCheck == 2) and workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
-				modeValid = true;
-			elseif cpModeToCheck == 4 then
-				local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
-				if isSprayer or isSowingMachine or workTool.cp.isTreePlanter or workTool.cp.isKuhnDC401 or workTool.cp.isKuhnHR4004 then
-					modeValid = true;
-				end
-			elseif cpModeToCheck == 6 then
-				if (courseplay:isBaler(workTool) 
-				or courseplay:isBaleLoader(workTool) 
-				or courseplay:isSpecialBaleLoader(workTool) 
-				or workTool.cp.hasSpecializationCultivator
-				or courseplay:isCombine(workTool)
-				or workTool.cp.hasSpecializationFruitPreparer 
-				or workTool.cp.hasSpecializationPlow
-				or workTool.cp.hasSpecializationTedder
-				or workTool.cp.hasSpecializationWindrower
-				or workTool.cp.hasSpecializationCutter
-				or workTool.spec_dischargeable
-				or courseplay:isMower(workTool)
-				or courseplay:isAttachedCombine(workTool) 
-				or courseplay:isFoldable(workTool))
-				and not courseplay:isSprayer(workTool)
-				and not courseplay:isSowingMachine(workTool)
-				then
-					modeValid = true;
-				end
+			if courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck) then
+				modeValid = true
 			end
 		end
-		return modeValid 
 	end
+	if not modeValid then
+		modeValid = courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
+	end
+	return modeValid
+end
+
+function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
+	local modeValid = false
+	--3,8,9,10 are still disabled
+	if ((cpModeToCheck == 1 or cpModeToCheck == 2) and workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
+		modeValid = true;
+	elseif cpModeToCheck == 4 then
+		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
+		if isSprayer or isSowingMachine or workTool.cp.isTreePlanter or workTool.cp.isKuhnDC401 or workTool.cp.isKuhnHR4004 then
+			modeValid = true;
+		end
+	elseif cpModeToCheck == 6 then
+		if (courseplay:isBaler(workTool) 
+		or courseplay:isBaleLoader(workTool) 
+		or courseplay:isSpecialBaleLoader(workTool) 
+		or workTool.cp.hasSpecializationCultivator
+		or courseplay:isCombine(workTool)
+		or workTool.cp.hasSpecializationFruitPreparer 
+		or workTool.cp.hasSpecializationPlow
+		or workTool.cp.hasSpecializationTedder
+		or workTool.cp.hasSpecializationWindrower
+		or workTool.cp.hasSpecializationCutter
+		--or workTool.spec_dischargeable
+		or courseplay:isMower(workTool)
+		or courseplay:isAttachedCombine(workTool) 
+		or courseplay:isFoldable(workTool))
+		and not courseplay:isSprayer(workTool)
+		and not courseplay:isSowingMachine(workTool)
+		then
+			modeValid = true;
+		end
+	end
+	return modeValid ;
 end

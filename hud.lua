@@ -2146,7 +2146,7 @@ function courseplay.hud:showCpModeButtons(vehicle, show)
 		local fn, cpModeToCheck = button.functionToCall, button.parameter;
 		if fn == 'setCpMode'then
 			button:setShow(show);
-			button:setDisabled(not courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck))
+			button:setDisabled(not courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck))
 			button:setActive(cpModeToCheck == vehicle.cp.mode)
 		end
 	end

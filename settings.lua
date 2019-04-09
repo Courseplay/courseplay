@@ -434,7 +434,7 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 end;
 
 
-function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltype)
+function courseplay:changeSiloFillType(vehicle, modifier, currentSelectedFilltype)
 	local eftl = vehicle.cp.easyFillTypeList;
 	local newVal = 1;
 	if currentSelectedFilltype and currentSelectedFilltype ~= FillType.UNKNOWN then
@@ -444,7 +444,7 @@ function courseplay:changeSiloFillType(vehicle, modifyer, currentSelectedFilltyp
 			end;
 		end;
 	else
-		newVal = vehicle.cp.siloSelectedEasyFillType + modifyer
+		newVal = vehicle.cp.siloSelectedEasyFillType + modifier
 		if newVal < 1 then
 			newVal = #eftl;
 		elseif newVal > #eftl then
