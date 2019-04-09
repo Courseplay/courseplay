@@ -1974,9 +1974,9 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 		h = self.lineHeight
 	}
 	local courseListMouseWheelArea = {
-		x = self.contentMinX+wSmall,
+		x = self.contentMinX+wSmall*2,
 		y = self.linesPosY[self.numLines],
-		width = self.buttonCoursesPosX[4] - self.contentMinX-wSmall,
+		width = self.buttonCoursesPosX[4] - self.contentMinX-wSmall*2,
 		height = self.linesPosY[1] + self.lineHeight - self.linesPosY[self.numLines]
 	};
 	vehicle.cp.hud.courseListMouseArea= courseplay.button:new(vehicle, 'global', nil, 'shiftHudCourses', -1, courseListMouseWheelArea.x, courseListMouseWheelArea.y, courseListMouseWheelArea.width, courseListMouseWheelArea.height, nil, -self.numLines, true, true); 
