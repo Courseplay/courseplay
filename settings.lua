@@ -14,16 +14,15 @@ function courseplay:openCloseHud(vehicle, open)
 end;
 
 function courseplay:setCpMode(vehicle, modeNum)
-
-
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
-		courseplay:setNextPrevModeVars(vehicle);
+		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-		courseplay.buttons:setActiveEnabled(vehicle, 'all');
+		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
 		if modeNum == 1 then
 			courseplay:resetTools(vehicle);
 		end;
+		vehicle.cp.runNumber = 11; --peter will find a better way
 		--if not CpManager.isDeveloper then
 			if modeNum == courseplay.MODE_COMBI then
 				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
@@ -56,7 +55,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	end
 end
 
-function courseplay:setNextPrevModeVars(vehicle)
+--[[function courseplay:setNextPrevModeVars(vehicle)
 	local curMode = vehicle.cp.mode;
 	local nextMode, prevMode, nextModeTest, prevModeTest = nil, nil, curMode + 1, curMode - 1;
 
@@ -85,7 +84,7 @@ function courseplay:setNextPrevModeVars(vehicle)
 		end;
 	end;
 	vehicle.cp.nextMode = nextMode;
-end;
+end;]]
 
 function courseplay:getCanVehicleUseMode(vehicle, mode)
 	if not CpManager.isDeveloper then
@@ -1148,7 +1147,7 @@ end;
 
 function courseplay:toggleHeadlandOrder(vehicle)
 	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
-	vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
+	--vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
 	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
 end;
 

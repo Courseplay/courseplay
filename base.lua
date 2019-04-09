@@ -131,7 +131,7 @@ function courseplay:onLoad(savegame)
 
 	-- CP mode
 	self.cp.mode = courseplay.MODE_TRANSPORT;
-	courseplay:setNextPrevModeVars(self);
+	--courseplay:setNextPrevModeVars(self);
 	self.cp.modeState = 0
 	self.cp.mode2nextState = nil;
 	self.cp.heapStart = nil
