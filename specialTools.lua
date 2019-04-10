@@ -18,6 +18,7 @@ function courseplay:setNameVariable(workTool)
 	for i,spec in pairs(workTool.specializations) do
 		if     spec == AnimatedVehicle 	   then workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
 		elseif spec == BaleLoader 		   then workTool.cp.hasSpecializationBaleLoader 		 = true;
+		elseif spec == Pickup	 		   then workTool.cp.hasSpecializationPickup		 		 = true;
 		elseif spec == Baler 			   then workTool.cp.hasSpecializationBaler 				 = true;
 		elseif spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;
 		elseif spec == Cover 			   then workTool.cp.hasSpecializationCover				 = true;

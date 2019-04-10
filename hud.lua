@@ -732,9 +732,13 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 				
 				elseif entry.functionToCall == 'changeSiloFillType' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
-					vehicle.cp.hud.content.pages[page][line][2].text = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title
-				
+					if vehicle.cp.siloSelectedFillType ~= nil then 
+						self:enableButtonWithFunction(vehicle,page, 'changeSiloFillType')
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
+						vehicle.cp.hud.content.pages[page][line][2].text = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title
+					else
+						self:disableButtonWithFunction(vehicle,page, 'changeSiloFillType')
+					end
 				elseif entry.functionToCall == 'changeRunNumber' then
 					if vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'changeRunNumber')
@@ -2407,6 +2411,7 @@ function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 	
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
 	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 6, 1 )
+	self:addRowButton(vehicle,'toggleFertilizeOption', 3, 7, 1 )
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end

@@ -1898,6 +1898,7 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 		if (courseplay:isBaler(workTool) 
 		or courseplay:isBaleLoader(workTool) 
 		or courseplay:isSpecialBaleLoader(workTool) 
+		or workTool.cp.hasSpecializationPickup	
 		or workTool.cp.hasSpecializationCultivator
 		or courseplay:isCombine(workTool)
 		or workTool.cp.hasSpecializationFruitPreparer 
