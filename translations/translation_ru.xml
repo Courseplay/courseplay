@@ -105,23 +105,23 @@
 		<text name="COURSEPLAY_SPEED_MAX" 									text="В пути:" />
 		<text name="COURSEPLAY_SPEED_REVERSING" 							text="Задняя/Разгрузка:" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE" 								text="Скорость:" />
-		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 					text="по настройкам" />
+		<text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 					text="как при записи" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 							text="максимальная" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="автоматически (до %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 							text="Маршрут не загружен" />
 		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Сигнальные огни:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="отключено" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="в дороге - маячок" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="в дороге - маячок и аварийка" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="на дороге - маячок" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="на дороге - маячок и аварийка" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="постоянно - маячок" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 						text="УПРАВЛЕНИЕ МАРШРУТОМ" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="УПРАВЛЕНИЕ ТРАНСПОРТОМ" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="ЗАГРУЗИТЬ МАРШРУТ" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="СОДЕРЖИМОЕ ПАПКИ" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="ОСОБЫЕ НАСТРОЙКИ ТЕХНИКИ" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="ВЫБОР КОМБАЙНА" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="ПАРАМЕТРЫ СКОРОСТИ" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="ОБЩИЕ НАСТРОЙКИ ВОЖДЕНИЯ" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Комбайн поворачивает" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="у этого маршрута нет рабочей области" />
@@ -243,11 +243,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Нерабочий маршрут" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Функция удобрения сеялки:" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Автоколонна" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Максимальная дистанция" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Минимальная дистанция" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="выгрузной шнек со стороны посевов" />
-		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="СПЕЦИФИЧНЫЕ НАСТРОЙКИ ДЛЯ РЕЖИМА" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Ковш не обнаружен" />
