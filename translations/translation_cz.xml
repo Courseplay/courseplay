@@ -118,10 +118,10 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Ovládání odvozce" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Správa tras" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Vybrat složku" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="specifické nastavení vozidla" />  
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Správa kombajnu/řezačky" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Rychlosti" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="obecná nastavení řízení" />  
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Nastavení" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Kombajn/řezačka se otáčí" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Na této trase není žádná pracovní oblast" />
@@ -243,11 +243,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Ukončit" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Trasa není platná" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Přihnojování" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="konvoj vozidel" /> 
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximální odstup" /> 
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimální odstup" /> 
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="vysýpací roura v neposekaném" />
-		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="nastavení specifického režimu" /> 
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Lžíce nenalezena" />
@@ -355,10 +355,10 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="Pohyb lžíce do pozice k vykládání" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="skrýt kurzor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="zobrazit kurzor" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Levé tlačítko myši" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Pravé tlačítko myši" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Střední tlačítko myši" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_NR"						 		text="Kolečno myši %d" /> <!-- TODO TRANSLATE: %s = number -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Levé tlačítko myši" /> 
+		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Pravé tlačítko myši" /> 
+		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Střední tlačítko myši" /> 
+		<text name="COURSEPLAY_MOUSE_BUTTON_NR"						 		text="Kolečno myši %d" /> 
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="mod" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="nahrnování a dusání" />
