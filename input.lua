@@ -34,7 +34,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons.global) do
-				if button.show and button:getHasMouse(posX, posY) then
+				if button.show and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
 					buttonToHandle = button;
 					break;
 				end;
@@ -43,7 +43,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
-				if button.canBeClicked and button.show and not button.isDisabled and button:getHasMouse(posX, posY) then
+				if button.canBeClicked and button.show and not button.isDisabled and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
 					buttonToHandle = button;
 					break;
 				end;
@@ -53,7 +53,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if buttonToHandle == nil then
 			if vehicle.cp.hud.currentPage == 2 then
 				for _,button in pairs(vehicle.cp.buttons[-2]) do
-					if button.show and button:getHasMouse(posX, posY) then
+					if button.show and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
 						buttonToHandle = button;
 						break;
 					end;
