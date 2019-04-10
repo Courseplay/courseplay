@@ -160,17 +160,17 @@ function courseplay.hud:setup()
 		[self.PAGE_COMBINE_CONTROLS]  = self.basePosX + self:pxToNormal(234, 'x'),
 		[self.PAGE_CP_CONTROL] 		  = self.basePosX + self:pxToNormal(368, 'x'),
 		[self.PAGE_MANAGE_COURSES] 	  = self.basePosX + self:pxToNormal(234, 'x'),
-		[self.PAGE_COMBI_MODE] 		  = self.basePosX + self:pxToNormal(234, 'x'),
+		[self.PAGE_COMBI_MODE] 		  = self.basePosX + self:pxToNormal(368, 'x'),
 		[self.PAGE_MANAGE_COMBINES]   = self.basePosX + self:pxToNormal(234, 'x'),
 		[self.PAGE_SPEEDS] 			  = self.basePosX + self:pxToNormal(234, 'x'),
 		[self.PAGE_GENERAL_SETTINGS]  = self.basePosX + self:pxToNormal(350, 'x'),
 		[self.PAGE_DRIVING_SETTINGS]  = self.basePosX + self:pxToNormal(368, 'x'),
-		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(272, 'x'),
+		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(368, 'x'),
 		[self.PAGE_SHOVEL_POSITIONS]  = self.basePosX + self:pxToNormal(390, 'x'),
 		[self.PAGE_BUNKERSILO_SETTINGS]  = self.basePosX + self:pxToNormal(390, 'x'),
 	};
 	self.col2posXforce = {
-		[self.PAGE_COMBINE_CONTROLS] = {
+		--[[[self.PAGE_COMBINE_CONTROLS] = {
 			[4] = self.basePosX + self:pxToNormal(407, 'x');
 			[5] = self.basePosX + self:pxToNormal(407, 'x');
 			[7] = self.basePosX + self:pxToNormal(407, 'x');
@@ -181,7 +181,7 @@ function courseplay.hud:setup()
 		[self.PAGE_DRIVING_SETTINGS] = {
 			[7] = self.basePosX + self:pxToNormal(202, 'x');
 			[8] = self.basePosX + self:pxToNormal(202, 'x');
-		};
+		};]]
 	};
 	self.col3posX = {
 		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(450, 'x'),
