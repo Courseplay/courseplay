@@ -2382,17 +2382,18 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'showCombineName', 4, 4, 1 )
 	self:addRowButton(vehicle,'removeActiveCombineFromTractor', 4, 5, 1 )
 	
-	
 	--page 7
 	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
-	
+		
 	--page 8
 	self:enablePageButton(vehicle, 8)
+	
 	self:addSettingsRowWithArrows(vehicle,'changeCombineOffset', 8, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeTipperOffset', 8, 2, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeDriveOnAtFillLevel', 8, 3, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeFollowAtFillLevel', 8, 4, 1 )
 	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 5, 1 )
+	self:addRowButton(vehicle,'toggleTurnOnField', 8, 6, 1 )
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
