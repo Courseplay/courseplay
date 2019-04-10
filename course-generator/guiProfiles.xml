@@ -111,9 +111,9 @@
 	</Profile>
 
 	<Profile name="cpSettingsLayout" extends="settingsBox" with="anchorTopLeft">
-		<Value name="size" value="600px 600px"/>
 		<Value name="fitFlowToElements" value="true"/>
 		<Value name="wrapAround" value="true"/>
+		<Value name="numFlows" value="2"/>
 		<Value name="flowMargin" value="0px 0px 0px 0px"/>
 	</Profile>
 
@@ -174,5 +174,31 @@
 		<Value name="iconTextOffset" value="35px -10.5px"/>
 		<Value name="positionOrigin" value="topRight"/>
 	</Profile>
+
+	<Profile name="cpWidthButton" extends="wideButton">
+	</Profile>
+
+	<Profile name="cpWidthButton2" extends="buttonBase">
+		<Value name="handleFocus" value="true"/>
+		<Value name="size" value="39px 39px"/>
+		<Value name="iconSize" value="36px 36px"/>
+		<Value name="margin" value="25px 0px 14px 6px" />
+		<Value name="textSize" value="14px"/>
+
+		<Value name="imageColor" value="$preset_colorGlass"/>
+		<Value name="imageFocusedColor" value="$preset_colorGlassExtremelyLight"/>
+		<Value name="imageHighlightedColor" value="$preset_colorGlassVeryLight"/>
+
+		<Value name="iconColor" value="$preset_colorMainUI"/>
+		<Value name="iconHighlightedColor" value="$preset_colorMainUI"/>
+		<Value name="iconFocusedColor" value="$preset_colorMainUI"/>
+
+		<Value name="iconTextOffset" value="-10px 0px"/>
+		<Value name="iconUVs" value="246px 294px 36px 36px"/>
+
+		<Value name="textAlignment" value="left"/>
+		<Value name="clickSound" value="PAGING"/>
+	</Profile>
+
 
 </GUIProfiles>

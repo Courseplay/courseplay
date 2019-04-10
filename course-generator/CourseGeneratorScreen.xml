@@ -11,130 +11,136 @@
 		<GuiElement type="bitmap" profile="cpSettingsFrame" id="settingsFrame">
 			<GuiElement type="text" profile="cpHeader" position="20px -10px" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 			<GuiElement type="bitmap" profile="cpSettingsBg" position="20px -60px" id="settingsContainer">
-				<GuiElement type="boxLayout" profile="cpSettingsLayout" position="0px -20px" id="boxLayout">
 
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="fieldSelector" toolTip="$l10n_COURSEPLAY_FIELD_EDGE_PATH" onOpen="onOpenFieldSelector" onClick="onClickFieldSelector">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_FIELD_EDGE_PATH"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+					<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 550px" id="boxLayoutTop">
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="fieldSelector" toolTip="$l10n_COURSEPLAY_FIELD_EDGE_PATH" onOpen="onOpenFieldSelector" onClick="onClickFieldSelector">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_FIELD_EDGE_PATH"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="startingLocation" toolTip="$l10n_COURSEPLAY_STARTING_LOCATION" onOpen="onOpenStartingLocation" onClick="onClickStartingLocation">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_STARTING_LOCATION"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="rowDirectionMode" toolTip="$l10n_COURSEPLAY_STARTING_DIRECTION" onOpen="onOpenRowDirectionMode" onClick="onClickRowDirectionMode">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_STARTING_DIRECTION"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="manualDirectionAngle" toolTip="$l10n_COURSEPLAY_DIRECTION_7" onOpen="onOpenManualDirectionAngle" onClick="onClickManualDirectionAngle">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_DIRECTION_7"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="islandBypassMode" toolTip="$l10n_COURSEPLAY_BYPASS_ISLANDS" onOpen="onOpenIslandBypassMode" onClick="onClickIslandBypassMode">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_BYPASS_ISLANDS"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="skipRows" toolTip="$l10n_COURSEPLAY_SKIP_ROWS" onOpen="onOpenSkipRows" onClick="onClickSkipRows">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SKIP_ROWS"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="returnToFirstPoint" toolTip="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT" onOpen="onOpenReturnToFirstPoint" onClick="onClickReturnToFirstPoint">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="multiTools" toolTip="$l10n_COURSEPLAY_MULTI_TOOLS" onOpen="onOpenMultiTools" onClick="onClickMultiTools" wrap="false">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_MULTI_TOOLS"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandMode" toolTip="$l10n_COURSEPLAY_HEADLAND" onOpen="onOpenHeadlandMode" onClick="onClickHeadlandMode">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandPasses" toolTip="$l10n_COURSEPLAY_HEADLAND_PASSES" onOpen="onOpenHeadlandPasses" onClick="onClickHeadlandPasses">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_PASSES"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandDirection" toolTip="$l10n_COURSEPLAY_HEADLAND_DIRECTION" onOpen="onOpenHeadlandDirection" onClick="onClickHeadlandDirection">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_DIRECTION"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandFirst" toolTip="$l10n_COURSEPLAY_START_WORKING_ON" onOpen="onOpenHeadlandFirst" onClick="onClickHeadlandFirst">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_START_WORKING_ON"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandCorners" toolTip="$l10n_COURSEPLAY_HEADLAND_CORNERS" onOpen="onOpenHeadlandCorners" onClick="onClickHeadlandCorners">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_CORNERS"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="centerMode" toolTip="$l10n_COURSEPLAY_CENTER_MODE" onOpen="onOpenCenterMode" onClick="onClickCenterMode">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_CENTER_MODE"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
 					</GuiElement>
 
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="startingLocation" toolTip="$l10n_COURSEPLAY_STARTING_LOCATION" onOpen="onOpenStartingLocation" onClick="onClickStartingLocation">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText"/>
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_STARTING_LOCATION"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="rowDirectionMode" toolTip="$l10n_COURSEPLAY_STARTING_DIRECTION" onOpen="onOpenRowDirectionMode" onClick="onClickRowDirectionMode">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_STARTING_DIRECTION"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="manualDirectionAngle" toolTip="$l10n_COURSEPLAY_DIRECTION_7" onOpen="onOpenManualDirectionAngle" onClick="onClickManualDirectionAngle">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_DIRECTION_7"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="islandBypassMode" toolTip="$l10n_COURSEPLAY_BYPASS_ISLANDS" onOpen="onOpenIslandBypassMode" onClick="onClickIslandBypassMode">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_BYPASS_ISLANDS"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="skipRows" toolTip="$l10n_COURSEPLAY_SKIP_ROWS" onOpen="onOpenSkipRows" onClick="onClickSkipRows">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SKIP_ROWS"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="returnToFirstPoint" toolTip="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT" onOpen="onOpenReturnToFirstPoint" onClick="onClickReturnToFirstPoint">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="multiTools" toolTip="$l10n_COURSEPLAY_MULTI_TOOLS" onOpen="onOpenMultiTools" onClick="onClickMultiTools" wrap="false">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_MULTI_TOOLS"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="width" toolTip="$l10n_COURSEPLAY_WORK_WIDTH" onOpen="onOpenWidth" onClick="onClickWidth" wrap="false">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_WORK_WIDTH"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandMode" toolTip="$l10n_COURSEPLAY_HEADLAND" onOpen="onOpenHeadlandMode" onClick="onClickHeadlandMode">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandPasses" toolTip="$l10n_COURSEPLAY_HEADLAND_PASSES" onOpen="onOpenHeadlandPasses" onClick="onClickHeadlandPasses">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_PASSES"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandDirection" toolTip="$l10n_COURSEPLAY_HEADLAND_DIRECTION" onOpen="onOpenHeadlandDirection" onClick="onClickHeadlandDirection">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_DIRECTION"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandFirst" toolTip="$l10n_COURSEPLAY_START_WORKING_ON" onOpen="onOpenHeadlandFirst" onClick="onClickHeadlandFirst">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_START_WORKING_ON"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandCorners" toolTip="$l10n_COURSEPLAY_HEADLAND_CORNERS" onOpen="onOpenHeadlandCorners" onClick="onClickHeadlandCorners">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_CORNERS"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-					</GuiElement>
-
-					<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="centerMode" toolTip="$l10n_COURSEPLAY_CENTER_MODE" onOpen="onOpenCenterMode" onClick="onClickCenterMode">
-						<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-						<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-						<GuiElement type="text" profile="cpMultiTextOptionText" />
-						<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_CENTER_MODE"/>
-						<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+					<!-- ugly hack to position this box directly to have the width multitext and auto width side by side
+					     tried to use nested box layouts but that did not work out well -->
+					<GuiElement type="boxLayout" profile="cpSettingsLayout" position="0px -510px" flowDirection="horizontal" id="boxLayoutBottom">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="width" toolTip="$l10n_COURSEPLAY_WORK_WIDTH" onOpen="onOpenWidth" onClick="onClickWidth" wrap="false">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_WORK_WIDTH"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+						<GuiElement type="button" profile="cpWidthButton2" text="auto" onOpen="onOpenAutoWidth" onClick="onClickAutoWidth" id="autoWidth"/>
 					</GuiElement>
 
 
-				</GuiElement>
 				<GuiElement type="flowLayout" profile="buttonBoxDocked" screenAlign="bottomLeft" positionOrigin="bottomLeft" id="buttonsPanel">
 					<!-- these are standard buttons with standard callbacks according to the action assigned to them in inputActions.xml and
 					 bound to the key as in inputBinding.xml. So buttonBack will have create an onClickBack, buttonSave an onClickActivate callback,

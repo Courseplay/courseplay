@@ -7,6 +7,7 @@ local CourseGeneratorScreen_mt = Class(CourseGeneratorScreen, ScreenElement)
 CourseGeneratorScreen.SHOW_NOTHING = 0
 CourseGeneratorScreen.SHOW_FULL_MAP = 1
 CourseGeneratorScreen.SHOW_SELECTED_FIELD = 2
+CourseGeneratorScreen.WidthFormatString = '%.1f m'
 
 -- these are needed to be able to access those screen elements with self.<id>
 CourseGeneratorScreen.CONTROLS = {
@@ -15,6 +16,7 @@ CourseGeneratorScreen.CONTROLS = {
 	rowDirectionMode = 'rowDirectionMode',
 	manualDirectionAngle = 'manualDirectionAngle',
 	width = 'width',
+	autoWidth = 'autoWidth',
 	islandBypassMode = 'islandBypassMode',
 	headlandDirection = 'headlandDirection',
 	headlandCorners = 'headlandCorners',
@@ -189,12 +191,11 @@ end
 function CourseGeneratorScreen:onOpenWidth( element )
 	local texts = {}
 	self.minWidth, self.maxWidth = 1, 50
-	local formatString = '%.1f m'
 	local w = self.vehicle.cp.workWidth
 	-- have at most 3 values in the text box around the selected
-	if w > self.minWidth then table.insert( texts, string.format(formatString, w - 0.1)) end
-	table.insert(texts, string.format(formatString, w))
-	if w < self.maxWidth then table.insert( texts, string.format(formatString, w + 0.1)) end
+	if w > self.minWidth then table.insert( texts, string.format(CourseGeneratorScreen.WidthFormatString, w - 0.1)) end
+	table.insert(texts, string.format(CourseGeneratorScreen.WidthFormatString, w))
+	if w < self.maxWidth then table.insert( texts, string.format(CourseGeneratorScreen.WidthFormatString, w + 0.1)) end
 	element:setTexts(texts)
 	if w == self.minWidth then
 		element:setState(1)
@@ -210,6 +211,24 @@ function CourseGeneratorScreen:onClickWidth( state )
 		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
 	end
 	self:onOpenWidth(self.width)
+end
+
+function CourseGeneratorScreen:onOpenAutoWidth(element)
+	local autoWidth = courseplay:getWorkWidth(self.vehicle)
+	if autoWidth > 0 then
+		element:setVisible(true)
+		element:setText(string.format(CourseGeneratorScreen.WidthFormatString, courseplay:getWorkWidth(self.vehicle)))
+	else
+		element:setVisible(false)
+	end
+end
+
+function CourseGeneratorScreen:onClickAutoWidth(state)
+	local autoWidth = courseplay:getWorkWidth(self.vehicle)
+	if autoWidth > 0 then
+		self.vehicle.cp.workWidth = autoWidth
+		self:onOpenWidth(self.width)
+	end
 end
 
 function CourseGeneratorScreen:onScrollWidth(element, isDown, isUp, button)
