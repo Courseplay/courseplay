@@ -158,11 +158,11 @@ function courseplay:start(self)
 			end
 		end
 				
-		if workTool.sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
+		if workTool.spec_sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
 			if workTool.cp.orignalAllowsSpraying == nil then
-				workTool.cp.orignalAllowsSpraying = workTool.allowsSpraying
+				workTool.cp.orignalAllowsSpraying = workTool.spec_sprayer.allowsSpraying
 			end
-			workTool.allowsSpraying = self.cp.fertilizerEnabled
+			workTool.spec_sprayer.allowsSpraying = self.cp.fertilizerEnabled
 		end	
 		if workTool.cp.isSugarCaneAugerWagon then
 			isReversePossible = false
@@ -680,7 +680,7 @@ function courseplay:stop(self)
 			tool.cp.originalCapacities = nil
 		end
 		if tool.cp.orignalAllowsSpraying ~= nil then
-			tool.allowsSpraying = tool.cp.orignalAllowsSpraying
+			tool.spec_sprayer.allowsSpraying = tool.cp.orignalAllowsSpraying
 			tool.cp.orignalAllowsSpraying = nil
 		end
 	end
