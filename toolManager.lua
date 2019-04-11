@@ -9,6 +9,13 @@ function courseplay:attachImplement(implement)
 			if attacherVehicle.spec_aiVehicle then 
 				attacherVehicle.cp.tooIsDirty = true; 
 			end;
+			
+			if attacherVehicle.getAttacherVehicle then
+				local firstAttacherVehicle =  attacherVehicle:getAttacherVehicle()
+				if firstAttacherVehicle~= nil and firstAttacherVehicle.spec_aiVehicle then
+					firstAttacherVehicle.cp.tooIsDirty = true; 
+				end;				
+			end
 		end
 		courseplay:setAttachedCombine(self);
 	end
