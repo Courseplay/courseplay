@@ -157,7 +157,7 @@ function courseplay.hud:setup()
 	self.contentMaxWidth = self.contentMaxX - self.contentMinX;
 	self.col1posX = self.contentMinX;
 	self.col2posX = {
-		[self.PAGE_COMBINE_CONTROLS]  = self.basePosX + self:pxToNormal(234, 'x'),
+		[self.PAGE_COMBINE_CONTROLS]  = self.basePosX + self:pxToNormal(368, 'x'),
 		[self.PAGE_CP_CONTROL] 		  = self.basePosX + self:pxToNormal(368, 'x'),
 		[self.PAGE_MANAGE_COURSES] 	  = self.basePosX + self:pxToNormal(234, 'x'),
 		[self.PAGE_COMBI_MODE] 		  = self.basePosX + self:pxToNormal(368, 'x'),
@@ -1007,10 +1007,23 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.driveOnAtFillLevel) or '---';
 
 				elseif entry.functionToCall == 'setDriveNow' then
-					if not vehicle.cp.isLoaded and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
-					end
-					
+					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
+						if vehicle.cp.driver and vehicle.cp.driver.getIsOnFieldworkCourse then
+							if vehicle.cp.driver:getIsOnFieldworkCourse() and not vehicle.cp.isLoaded then
+								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
+								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
+							else
+								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')			
+							end
+						else --temp solution for old mode2
+							if not vehicle.cp.isLoaded and vehicle.cp.waypointIndex < 2 then
+								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
+								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
+							else
+								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')			
+							end					
+						end
+					end					
 				elseif entry.functionToCall == 'toggleWantsCourseplayer' then
 					if not vehicle.cp.driver:getHasCourseplayers() then
 						self:enableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
