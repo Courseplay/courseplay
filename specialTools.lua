@@ -870,9 +870,9 @@ function courseplay:askForSpecialSettings(self, object)
 	--- SPECIAL VARIABLES THAT CAN BE USED:
 	--
 	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset. Negagive value = left, Positive value = right.
-	-- object.cp.backMarkerOffsetCorection:		(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise and/or turn off the work tool
+	-- object.cp.backMarkerOffsetCorrection:		(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise and/or turn off the work tool
 	--																	Positive value, moves it forward, Negative value moves it backwards.
-	-- object.cp.frontMarkerOffsetCorection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
+	-- object.cp.frontMarkerOffsetCorrection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
 	--																	Positive value, moves it forward, Negative value moves it backwards.
 	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
 	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
@@ -908,8 +908,8 @@ function courseplay:askForSpecialSettings(self, object)
 
 	-- OBJECTS
 	if object.cp.isSP400F then
-		object.cp.backMarkerOffsetCorection = 0.5;
-		object.cp.frontMarkerOffsetCorection = -0.25;
+		object.cp.backMarkerOffsetCorrection = 0.5;
+		object.cp.frontMarkerOffsetCorrection = -0.25;
 
 	elseif object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
@@ -930,8 +930,8 @@ function courseplay:askForSpecialSettings(self, object)
 
 	elseif object.cp.isSalford8312 then
 		automaticToolOffsetX = 0.4; -- ToolOffsetX is 0.4 meters to the right
-		object.cp.backMarkerOffsetCorection = -7.5;
-		object.cp.frontMarkerOffsetCorection = -10;
+		object.cp.backMarkerOffsetCorrection = -7.5;
+		object.cp.frontMarkerOffsetCorrection = -10;
 
 	elseif object.cp.isLemkenTitan18 then
 		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
@@ -982,15 +982,15 @@ function courseplay:askForSpecialSettings(self, object)
 		end
 
 	elseif object.cp.isHolmerHR9 then
-		object.cp.frontMarkerOffsetCorection = 2;
+		object.cp.frontMarkerOffsetCorrection = 2;
 
 	elseif object.cp.isKuhnDiscolanderXM52 then
-		object.cp.frontMarkerOffsetCorection = 5.6;
-		object.cp.backMarkerOffsetCorection = -4.5;
+		object.cp.frontMarkerOffsetCorrection = 5.6;
+		object.cp.backMarkerOffsetCorrection = -4.5;
 
 	elseif object.cp.isHatzenbichlerTerminator18 then
-		object.cp.frontMarkerOffsetCorection = -6.5;
-		object.cp.backMarkerOffsetCorection = -6.5;
+		object.cp.frontMarkerOffsetCorrection = -6.5;
+		object.cp.backMarkerOffsetCorrection = -6.5;
 
 	elseif object.cp.isHatzenbichlerTH1400 then
 		object.cp.noWorkArea = true;
@@ -999,7 +999,7 @@ function courseplay:askForSpecialSettings(self, object)
 		automaticToolOffsetX = 2.1;
 
 	elseif object.cp.isBednarSM18000 then
-		object.cp.backMarkerOffsetCorection = -3.25;
+		object.cp.backMarkerOffsetCorrection = -3.25;
 		
 	elseif object.cp.isSWT7 then
 		automaticToolOffsetX = -2.2;

@@ -562,12 +562,12 @@ function courseplay:setMarkers(vehicle, object)
 			-- Calculate the offset based on the distances
 			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1;
 
-			local backMarkerCorrection = Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
+			local backMarkerCorrection = Utils.getNoNil(object.cp.backMarkerOffsetCorrection, 0);
 			if vehicle.cp.backMarkerOffset == nil or (abs(backMarkerCorrection) > 0 and  ztt + backMarkerCorrection > vehicle.cp.backMarkerOffset) then
 				vehicle.cp.backMarkerOffset = abs(backMarkerCorrection) > 0 and ztt + backMarkerCorrection or 0;
 			end
 
-			local frontMarkerCorrection = Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
+			local frontMarkerCorrection = Utils.getNoNil(object.cp.frontMarkerOffsetCorrection, 0);
 			if vehicle.cp.aiFrontMarker == nil or (abs(frontMarkerCorrection) > 0 and  ztt + frontMarkerCorrection < vehicle.cp.aiFrontMarker) then
 				vehicle.cp.aiFrontMarker = abs(frontMarkerCorrection) > 0 and ztt + frontMarkerCorrection or -3;
 			end
@@ -587,6 +587,7 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end
 
+	local backMarkerAreaType, frontMarkerAreaType
 	-- TODO: figure out what other types to avoid, the FS17 types ending with DROP do not seem to exist anymore
 	local avoidType = {
 		[WorkAreaType.RIDGEMARKER] = true
@@ -630,9 +631,11 @@ function courseplay:setMarkers(vehicle, object)
 						object:getName(), type, g_workAreaTypeManager.workAreaTypes[area.type].name, tostring(j), ztt)
 					if object.cp.backMarkerOffset == nil or ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0) > object.cp.backMarkerOffset then
 						object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
+						backMarkerAreaType = area.type
 					end
 					if object.cp.aiFrontMarker == nil or ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0) < object.cp.aiFrontMarker then
 						object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
+						frontMarkerAreaType = area.type
 					end
 				end
 			end
@@ -647,6 +650,21 @@ function courseplay:setMarkers(vehicle, object)
 
 	if vehicle.cp.aiFrontMarker == nil or object.cp.aiFrontMarker > (vehicle.cp.aiFrontMarker - aLittleBitMore) then
 		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker + aLittleBitMore * 0.75;
+	end
+
+	-- Sprayers have a rectangular work area but the spray is at an angle so the front of the area is not covered.
+	-- Also, some sprayers have multiple work areas depending on the configuration and fill type which can also
+	-- move the front or back markers.
+	-- This leads to little unsprayed rectangles at the row ends as the turn code turns off the sprayer when the back
+	-- marker (which is actually in the front when the implement is attached to the back of the vehicle) reaches the
+	-- field edge.
+	-- So, if both the front and back markers are from sprayer work areas, move the back marker to where the front
+	-- marker is which will result turning off the sprayer later.
+	if frontMarkerAreaType and backMarkerAreaType and
+		frontMarkerAreaType == WorkAreaType.SPRAYER and
+		backMarkerAreaType == WorkAreaType.SPRAYER then
+		courseplay.debugVehicle(6, vehicle, "Forcing backmarker to frontmarker for sprayer")
+		vehicle.cp.backMarkerOffset = vehicle.cp.aiFrontMarker
 	end
 
 	courseplay.debugVehicle(6, vehicle, '(%s), setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',

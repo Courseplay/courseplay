@@ -677,16 +677,6 @@ function courseplay:turn(vehicle, dt)
 			vehicle.cp.lowerToolThisTurnLoop = false;
 		end;
 
-		-- TODO: this may not be needed anymore as handled by AIDriver:holdInTurnManeuver()
-		if vehicle.spec_combine and vehicle.spec_combine.strawPSenabled then
-			vehicle.cp.savedNoStopOnTurn = vehicle.cp.noStopOnTurn
-			vehicle.cp.noStopOnTurn = false;
-			turnTimer = vehicle.spec_combine.processing.toggleTime / 1000 or 5;
-		elseif vehicle.cp.savedNoStopOnTurn ~= nil then
-			vehicle.cp.noStopOnTurn = vehicle.cp.savedNoStopOnTurn;
-			vehicle.cp.savedNoStopOnTurn = nil;
-		end;
-
 		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
 		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
 
