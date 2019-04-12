@@ -1952,8 +1952,9 @@ AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, cou
 
 
 function courseplay.processSowingMachineArea(tool,originalFunction, superFunc, workArea, dt)
-	tool.spec_sprayer.workAreaParameters.sprayFillLevel = tool.fertilizerEnabled and tool.spec_sprayer.workAreaParameters.sprayFillLevel or 0
-	
+	if tool.fertilizerEnabled ~= nil then
+		tool.spec_sprayer.workAreaParameters.sprayFillLevel = tool.fertilizerEnabled and tool.spec_sprayer.workAreaParameters.sprayFillLevel or 0
+	end
 	return originalFunction(tool, superFunc, workArea, dt)
 end
 FertilizingSowingMachine.processSowingMachineArea = Utils.overwrittenFunction(FertilizingSowingMachine.processSowingMachineArea, courseplay.processSowingMachineArea)
