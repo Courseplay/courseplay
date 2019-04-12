@@ -1951,6 +1951,14 @@ end
 AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, courseplay.stopAIVehicle)
 
 
+function courseplay.processSowingMachineArea(tool,originalFunction, superFunc, workArea, dt)
+	tool.spec_sprayer.workAreaParameters.sprayFillLevel = tool.fertilizerEnabled and tool.spec_sprayer.workAreaParameters.sprayFillLevel or 0
+	
+	return originalFunction(tool, superFunc, workArea, dt)
+end
+FertilizingSowingMachine.processSowingMachineArea = Utils.overwrittenFunction(FertilizingSowingMachine.processSowingMachineArea, courseplay.processSowingMachineArea)
+
+
 -- Tour dialog messes up the CP yes no dialogs.
 function courseplay:showTourDialog()
 	print('Tour dialog is disabled by Courseplay.')

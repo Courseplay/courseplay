@@ -1187,7 +1187,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
 				
 				elseif entry.functionToCall == 'toggleFertilizeOption' then
-					if vehicle.cp.hasFertilizerSowingMachine then
+					if vehicle.cp.hasFertilizerSowingMachine and not vehicle:getIsCourseplayDriving() then
 						self:enableButtonWithFunction(vehicle,page, 'toggleFertilizeOption')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FERTILIZERFUNCTION');
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.fertilizerEnabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
