@@ -158,3 +158,7 @@ end
 function GrainTransportAIDriver:updateLights()
 	self.vehicle:setBeaconLightsVisibility(false)
 end
+
+function GrainTransportAIDriver:getCanShowDriveOnButton()
+	return self:isNearFillPoint()
+end

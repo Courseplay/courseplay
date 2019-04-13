@@ -237,6 +237,7 @@ function courseplay:setIsLoaded(vehicle, bool)
 	if vehicle.cp.isLoaded ~= bool then
 		vehicle.cp.isLoaded = bool;
 	end;
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);	
 end;
 
 function courseplay:sendCourseplayerHome(combine)

@@ -1008,15 +1008,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 
 				elseif entry.functionToCall == 'setDriveNow' then
 					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
-						if vehicle.cp.driver and vehicle.cp.driver.getIsOnFieldworkCourse then
-							if vehicle.cp.driver:getIsOnFieldworkCourse() and not vehicle.cp.isLoaded then
+						if vehicle.cp.driver and vehicle.cp.driver.getCanShowDriveOnButton then
+							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and not vehicle.cp.isLoaded then
 								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 							else
 								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')			
 							end
 						else --temp solution for old mode2
-							if not vehicle.cp.isLoaded and vehicle.cp.waypointIndex < 2 then
+							if vehicle:getIsCourseplayDriving() and not vehicle.cp.isLoaded and vehicle.cp.waypointIndex < 2 then
 								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 							else
@@ -2297,18 +2297,16 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:debug(vehicle,"setGrainTransportAIDriverContent")
 	--page 1 driving
 	self:addSettingsRow(vehicle,'changeRunNumber', 1, 6, 1 )
+	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
 	
 	--page 1 driving
 	self:enablePageButton(vehicle, 3)
-	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 1, 1 )
-	
+	self:addSettingsRowWithArrows(vehicle,'changeSiloFillType', 3, 1, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 2, 1 )
+
 	--page 7 
 	self:addSettingsRow(vehicle,'changeLoadUnloadOffsetX', 7, 5, 1 )
 	self:addSettingsRow(vehicle,'changeLoadUnloadOffsetZ', 7, 6, 1 )
-	
-	--page 8  
-	self:enablePageButton(vehicle, 8)
-	self:addSettingsRow(vehicle,'changeRefillUntilPct', 8, 1, 1 )
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end

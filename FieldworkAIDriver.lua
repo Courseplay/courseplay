@@ -799,6 +799,6 @@ function FieldworkAIDriver:raiseImplements()
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_END_LINE)
 end
 
-function FieldworkAIDriver:getIsOnFieldworkCourse()
+function FieldworkAIDriver:getCanShowDriveOnButton()
 	return self.state == self.states.ON_FIELDWORK_COURSE 
 end

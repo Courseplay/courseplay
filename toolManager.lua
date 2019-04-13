@@ -782,9 +782,9 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 	local driveOn = vehicle.cp.isLoaded;
 		
-	if not currentTrailer.cp.realUnloadOrFillNode and not driveOn then
+	if not currentTrailer.cp.realUnloadOrFillNode then
 		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
-		if not currentTrailer.cp.realUnloadOrFillNode then
+		if not currentTrailer.cp.realUnloadOrFillNode or not currentTrailer.spec_trailer then
 			if vehicle.cp.numWorkTools > vehicle.cp.currentTrailerToFill then
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else
@@ -792,6 +792,8 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 			end;
 		end;
 	end;
+	
+	currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
 	
 	if (vehicle.cp.tipperLoadMode == 0 or vehicle.cp.tipperLoadMode == 3) and not driveOn then
 		--if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then  --vehicle.cp.ppc:haveJustPassedWaypoint(1) doesn't work here
@@ -812,7 +814,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	local unloadDistance = 1000;
 	local backUpDistance = 1000;
 	local trailerX,_,trailerZ = getWorldTranslation(currentTrailer.cp.realUnloadOrFillNode);
-
+	
 	if not driveOn then
 		if vehicle.cp.tipperLoadMode == 1 then
 			local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
@@ -850,7 +852,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isLoading = %s'):format(nameNum(vehicle), tostring(g_fillTypeManager.indexToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isLoading)), 2);
 			elseif siloTrigger.isLoading then
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
-			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.driveOnAtFillLevel and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then
+			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.refillUntilPct and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then
 				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
 		else
@@ -859,13 +861,20 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 
 	-- drive on when required fill level is reached
+	-- in case of waiting to be loaded e.g. by shovel 
 	if not driveOn and (courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil) then
-		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent > vehicle.cp.driveOnAtFillLevel then
+		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct then
 			driveOn = true;
 		end;
 		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;
 		courseplay:setCustomTimer(vehicle, 'fillLevelChange', 7);
 	end;
+	
+	--if established on a fill trigger go on immediately when level is reached
+	if currentTrailer.cp.currentSiloTrigger ~= nil and (vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct or vehicle.cp.isLoaded) then
+		courseplay:setFillOnTrigger(vehicle,currentTrailer,false,currentTrailer.cp.currentSiloTrigger)
+		driveOn = true;
+	end;	
 
 	if vehicle.cp.totalFillLevelPercent == 100 or driveOn then
 		vehicle.cp.prevFillLevelPct = nil;
@@ -873,7 +882,6 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 		vehicle.cp.trailerFillDistance = nil;
 		vehicle.cp.currentTrailerToFill = nil;
 		vehicle.cp.tipperLoadMode = 0;
-		courseplay:changeRunCounter(vehicle, true)
 		return allowedToDrive;
 	end;
 
@@ -1453,7 +1461,9 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 	else
 		--stop filling
 		if trigger.onActivateObject then 
-			trigger:onActivateObject(vehicle)
+			if trigger.isLoading then
+				trigger:onActivateObject(vehicle)
+			end
 		elseif trigger.sourceObject then
 			workTool:setFillUnitIsFilling(false)							
 		end
