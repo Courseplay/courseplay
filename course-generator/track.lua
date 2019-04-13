@@ -149,13 +149,14 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks, field.bigIslands,
 			implementWidth, extendTracks, headlandSettings.nPasses, centerSettings )
 	elseif headlandSettings.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
+		-- force headland corners
+		headlandSettings.minHeadlandTurnAngleDeg = 60
 		-- start with rows over the field with no headland.
 		local boundary
 		field.headlandPath, boundary = generateTwoSideHeadlands( field.boundary, field.bigIslands,
 			implementWidth, extendTracks, headlandSettings, centerSettings, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
 		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks({ boundary }, field.bigIslands,
 			implementWidth, extendTracks - implementWidth / 2, 0, centerSettings )
-		field.headlandPath:appendLine(field.track, implementWidth / 2, true)
 	end
 	courseGenerator.debug("####### COURSE GENERATOR END ###########################################################")
 

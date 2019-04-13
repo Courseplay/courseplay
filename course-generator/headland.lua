@@ -349,8 +349,9 @@ end
 
 --- calculate n headland tracks for any section (between startIx and endIx) of a field boundary
 -- if rightSide is true, the headland is on the right side of the previous headland.
-function calculateOneSide(boundary, startIx, endIx, step, rightSide, headlandSettings, implementWidth,
+function calculateOneSide(boundary, innerBoundary, startIx, endIx, step, rightSide, headlandSettings, implementWidth,
 													minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
+	---@type Polyline[]
 	local headlands = {}
 	-- construct the boundary
 	headlands[0] = Polyline:new()
@@ -362,7 +363,7 @@ function calculateOneSide(boundary, startIx, endIx, step, rightSide, headlandSet
 	for i = 1, headlandSettings.nPasses do
 		local width = i == 1 and implementWidth / 2 or implementWidth
 		headlands[i] = calculateHeadlandTrack(headlands[i - 1], headlandSettings.mode, rightSide, width,
-			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, true, true,
+			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, false, true,
 			centerSettings, i)
 		extendLineToOtherLine(headlands[i], boundary, implementWidth * 2)
 		headlands[i]:space(math.pi, minDistanceBetweenPoints)
@@ -431,23 +432,18 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 	local bottomRightIx = parallelTracks[startTrack].intersections[#parallelTracks[startTrack].intersections].headlandVertexIx
 	local topRightIx = parallelTracks[endTrack].intersections[#parallelTracks[endTrack].intersections].headlandVertexIx
 
-	local step = boundary.isClockwise and 1 or -1
-	local leftHeadlands = calculateOneSide(boundary, bottomLeftIx, topLeftIx, step, true, headlandSettings, implementWidth,
-		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
-
-	step = boundary.isClockwise and -1 or 1
-	local rightHeadlands = calculateOneSide(boundary, bottomRightIx, topRightIx, step, false, headlandSettings, implementWidth,
-		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
-
 	-- we need this for the part which connects the left and right side headlands.
 	local headlandAround = calculateHeadlandTrack(boundary, headlandSettings.mode, boundary.isClockwise, implementWidth / 2,
 		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, true, true,
 		centerSettings, 1)
 
-	-- we need this for the part which connects the left and right side headlands.
-	local innerHeadlandAround = calculateHeadlandTrack(boundary, headlandSettings.mode, boundary.isClockwise, implementWidth * 1.5,
-		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, true, true,
-		centerSettings, 1)
+	local step = boundary.isClockwise and 1 or -1
+	local leftHeadlands = calculateOneSide(boundary, headlandAround, bottomLeftIx, topLeftIx, step, true, headlandSettings, implementWidth,
+		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
+
+	step = boundary.isClockwise and -1 or 1
+	local rightHeadlands = calculateOneSide(boundary, headlandAround, bottomRightIx, topRightIx, step, false, headlandSettings, implementWidth,
+		minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
 
 	-- figure out where to start the course. It will be the headland end closest to the
 	-- start location
@@ -455,13 +451,38 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 	startLocation:translate(-dx, -dy)
 	startLocation:rotate(math.rad(bestAngle))
 
-	local _, dLeft = leftHeadlands[1]:getClosestPointIndex(startLocation)
-	local _, dRight = rightHeadlands[1]:getClosestPointIndex(startLocation)
+	local ixLeft, dLeft = leftHeadlands[1]:getClosestPointIndex(startLocation)
+	local ixRight, dRight = rightHeadlands[1]:getClosestPointIndex(startLocation)
 
 	-- start with the left side or right side?
 	local startLeft = dLeft <= dRight
 	local firstHeadlands = startLeft and leftHeadlands or rightHeadlands
 	local lastHeadlands = startLeft and rightHeadlands or leftHeadlands
+
+	-- this entire logic assumes that we turned our field so that the headlands are on the left and right side of it
+	-- figure out if we start the headland on the top or the bottom
+	local startTop = startLeft and ixLeft > 1 or ixRight > 1
+
+	-- trim the headlands both ends so they don't reach all the way to the field edge
+	for i = 1, #firstHeadlands do
+			if i == 1 then
+				-- except the very first headland, that must not be shortened at the course start.
+				if startTop then
+					firstHeadlands[i]:shortenStart(implementWidth / 2)
+				else
+					firstHeadlands[i]:shortenEnd(implementWidth / 2)
+				end
+			else
+				firstHeadlands[i]:shortenStart(implementWidth / 2)
+				firstHeadlands[i]:shortenEnd(implementWidth / 2)
+			end
+			firstHeadlands[i]:space(math.pi, minDistanceBetweenPoints)
+	end
+	for i = 1, #lastHeadlands do
+		lastHeadlands[i]:shortenStart(implementWidth / 2)
+		lastHeadlands[i]:shortenEnd(implementWidth / 2)
+		lastHeadlands[i]:space(math.pi, minDistanceBetweenPoints)
+	end
 
 	-- the boundary of the up down row area, nPasses headlands on two sides, one headland on one side
 	-- and the field boundary on the other.
@@ -485,15 +506,18 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 		result[#result].headlandHeightForTurn = 0
 		currentLocation = result[#result]
 	end
+
 	-- ok, find the section of headland connecting the start and the end side
 	local closestIx, _, _ = lastHeadlands[1]:getIteratorParamsFromEndClosestToPoint(result[#result])
 	local sectionBetweenLeftAndRight = headlandAround:getSectionBetweenPoints(result[#result], lastHeadlands[1][closestIx])
+	local innerSectionBetweenLeftAndRight = headlandAround:getSectionBetweenPoints(result[#result], lastHeadlands[#lastHeadlands][closestIx])
 	result:appendLine(sectionBetweenLeftAndRight, implementWidth * 2)
 	result:appendLine(lastHeadlands[1], implementWidth * 2)
 
 	result[#result].turnStart = true
 	result[#result].headlandHeightForTurn = 0
 
+	-- now add the end headlands
 	currentLocation = result[#result]
 	for i = 2, #lastHeadlands do
 		for j, p in lastHeadlands[i]:iteratorFromEndClosestToPoint(currentLocation) do
@@ -506,17 +530,22 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 		result[#result].headlandHeightForTurn = 0
 		currentLocation = result[#result]
 	end
-	result:trimEnd(headlandAround, true)
 
-	innerBoundary:appendLine(sectionBetweenLeftAndRight, implementWidth * 2)
+	if headlandSettings.nPasses % 2 == 0 then
+		result:calculateData()
+		result:shortenEnd(implementWidth / 2)
+	end
+
+	innerBoundary:appendLine(innerSectionBetweenLeftAndRight, implementWidth * 2)
 	innerBoundary:appendLine(lastHeadlands[#lastHeadlands], implementWidth * 2)
+
 	-- the last point in result is now where the up/down rows should start
-	-- this will determine where the up/down rows start
 	innerBoundary.circleStart = innerBoundary:getClosestPointIndex(result[#result])
 
 	local otherSectionBetweenLeftAndRight = boundary:getSectionBetweenPoints(innerBoundary[#innerBoundary], innerBoundary[1])
 	innerBoundary:appendLine(otherSectionBetweenLeftAndRight, implementWidth * 2)
 	innerBoundary:calculateData()
+	--result:trimEnd(innerBoundary, true)
 
 	innerBoundary:rotate(-math.rad(bestAngle))
 	innerBoundary:translate(dx, dy)
@@ -529,7 +558,10 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 	return result, innerBoundary
 end
 
---- Extend line both ends until it intersects with otherLine
+--- Extend (or trim) line both ends until it intersects with otherLine
+---@param line Polyline
+---@param otherLine Polyline
+---@param extension number
 function extendLineToOtherLine(line, otherLine, extension)
 	-- extend upotherLine
 	local up = addPolarVectorToPoint(line[1], line[1].nextEdge.angle, -extension * 2)

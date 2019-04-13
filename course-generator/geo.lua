@@ -981,6 +981,7 @@ end
 -- if they don't, extend self's end and/or line's start until they intersect
 -- line's start is the end closest to self's end.
 -- if trimOnly is true, do not append line, only trim/extend self.
+---@return index of the intersection point
 function Polyline:appendLine(line, extensionLength, trimOnly, isRetry)
 	local lineToAppend = Polyline:new()
 	for i, p in line:iteratorFromEndClosestToPoint(self[#self]) do
@@ -988,7 +989,7 @@ function Polyline:appendLine(line, extensionLength, trimOnly, isRetry)
 	end
 	-- lineToAppend now has the points to append in the correct order
 	-- see if it intersects us
-	local from, to, is, at
+	local from, to, is, at, isIx
 	for i, p in self:iterator(#self, math.max(2, #self - 10), -1) do
 		from, to, is = lineToAppend:getIntersectionWithLine(self[i], self[i - 1])
 		at = i
@@ -1002,6 +1003,7 @@ function Polyline:appendLine(line, extensionLength, trimOnly, isRetry)
 		end
 		-- add the intersection point
 		table.insert(self, is)
+		isIx = #self
 		for i = 1, from do
 			-- remove points of lineToAppend before the intersection
 			table.remove(lineToAppend, 1)
@@ -1013,15 +1015,14 @@ function Polyline:appendLine(line, extensionLength, trimOnly, isRetry)
 			courseGenerator.debug('Could not append lines, they do not intersect even after extended')
 			return
 		end
-		-- bummer, they do not intersect. So estend them both a bit and retry.
+		-- bummer, they do not intersect. So extend them both a bit and retry.
 		lineToAppend:calculateData()
 		local p = addPolarVectorToPoint(lineToAppend[1], lineToAppend[1].nextEdge.angle, -extensionLength)
 		table.insert(lineToAppend, 1, p)
 		self:calculateData()
 		p = addPolarVectorToPoint(self[#self], self[#self].prevEdge.angle, extensionLength)
 		table.insert(self, p)
-		self:appendLine(lineToAppend, extensionLength, trimOnly, true)
-		return
+		return self:appendLine(lineToAppend, extensionLength, trimOnly, true)
 	end
 	-- now append line
 	if not trimOnly then
@@ -1029,9 +1030,11 @@ function Polyline:appendLine(line, extensionLength, trimOnly, isRetry)
 			table.insert(self, p)
 		end
 	end
+	return isIx
 end
 
---- Trim section of polyline between it's end and intersection with otherLine
+--- Trim section of polyline between its end and intersection with otherLine
+---@param otherLine Polyline
 function Polyline:trimEnd(otherLine, insertIntersectionPoint)
 	local i = #self
 	local from, to, is
@@ -1049,6 +1052,45 @@ function Polyline:trimEnd(otherLine, insertIntersectionPoint)
 		i = i - 1
 	end
 end
+
+--- Shorten polyline by d
+---@param otherLine Polyline
+function Polyline:shortenEnd(d)
+	local dCut = d
+	local from = #self
+	for i = from, 2, -1 do
+		dCut = dCut - self[i - 1].nextEdge.length
+		if dCut < 0 then
+			local p = addPolarVectorToPoint(self[i - 1], self[i - 1].nextEdge.angle, - dCut)
+			table.remove(self)
+			table.insert(self, p)
+			self:calculateData()
+			return true
+		end
+		table.remove(self)
+	end
+end
+
+--- Shorten polyline by d from start
+---@param otherLine Polyline
+function Polyline:shortenStart(d)
+	local dCut = d
+	local to = #self
+	for i = 2, to do
+		dCut = dCut - self[1].nextEdge.length
+		if dCut < 0 then
+			local p = addPolarVectorToPoint(self[2], self[2].prevEdge.angle, dCut)
+			table.remove(self, 1)
+			table.insert(self, 1, p)
+			self:calculateData()
+			return true
+		end
+		table.remove(self, 1)
+	end
+end
+
+
+
 
 ----------------------------------------------------------------------------------
 ---@class Polygon : Polyline

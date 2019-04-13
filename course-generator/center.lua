@@ -350,8 +350,7 @@ function generateParallelTracks( polygon, islands, width, distanceFromBoundary )
 		table.insert( tracks, { from=from, to=to, intersections={}, originalTrackNumber = ix } )
 	end
 	local trackIndex = 1
-	-- use just a little bit of overlap to make sure not missing fruit
-	for y = polygon.boundingBox.minY + distanceFromBoundary - 0.2, polygon.boundingBox.maxY - distanceFromBoundary + 0.2, width do
+	for y = polygon.boundingBox.minY + distanceFromBoundary, polygon.boundingBox.maxY - distanceFromBoundary, width do
 		addTrack( polygon.boundingBox.minX, polygon.boundingBox.maxX, y, trackIndex )
 		trackIndex = trackIndex + 1
 	end
