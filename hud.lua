@@ -455,8 +455,15 @@ function courseplay.hud:setContent(vehicle)
 		vehicle.cp.hud.content.bottomInfo.timeRemainingText = nil
 	end
 	
-	if vehicle.cp.convoyActive then
-		vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<--%s--> %d/%d",(vehicle.cp.convoy.distance == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.distance,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.number,vehicle.cp.convoy.members)
+	if (vehicle.cp.convoyActive and vehicle.cp.convoy.id~=nil) then
+		--vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<--%s--> %d/%d",(vehicle.cp.convoy.distance == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.distance,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.number,vehicle.cp.convoy.members)
+        if (vehicle.cp.convoy.number == 1) then
+            vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<--%s--> %d:%d/%d",(vehicle.cp.convoy.trailDist == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.trailDist,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.id,vehicle.cp.convoy.number,vehicle.cp.convoy.members)
+        elseif (vehicle.cp.convoy.number == vehicle.cp.convoy.members) then
+            vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<--%s--> %d:%d/%d",(vehicle.cp.convoy.leadDist == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.leadDist,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.id,vehicle.cp.convoy.number,vehicle.cp.convoy.members)
+        else
+            vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<-%s-%s-> %d:%d/%d",(vehicle.cp.convoy.leadDist == 0 and "-" or string.format("%d%s",vehicle.cp.convoy.leadDist,courseplay:loc('COURSEPLAY_UNIT_METER'))),(vehicle.cp.convoy.trailDist == 0 and "-" or string.format("%d%s",vehicle.cp.convoy.trailDist,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.id,vehicle.cp.convoy.number,vehicle.cp.convoy.members)
+        end       
 	else
 		vehicle.cp.hud.content.bottomInfo.convoyText = nil
 	end	
@@ -1039,11 +1046,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.convoyActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED')
 				
 				elseif entry.functionToCall == 'setConvoyMinDistance' then
-					vehicle.cp.hud.content.pages[page][line][1].text = string.format('  %s',courseplay:loc('COURSEPLAY_CONVOY_MAX_DISTANCE'));
+					vehicle.cp.hud.content.pages[page][line][1].text = string.format('  %s',courseplay:loc('COURSEPLAY_CONVOY_MIN_DISTANCE'));
 					vehicle.cp.hud.content.pages[page][line][2].text = string.format('%dm', vehicle.cp.convoy.minDistance);
 				
 				elseif entry.functionToCall == 'setConvoyMaxDistance' then
-					vehicle.cp.hud.content.pages[page][line][1].text = string.format('  %s',courseplay:loc('COURSEPLAY_CONVOY_MIN_DISTANCE'));
+					vehicle.cp.hud.content.pages[page][line][1].text = string.format('  %s',courseplay:loc('COURSEPLAY_CONVOY_MAX_DISTANCE'));
 					vehicle.cp.hud.content.pages[page][line][2].text = string.format('%dm', vehicle.cp.convoy.maxDistance);
 				
 				
@@ -2428,10 +2435,9 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:setupCalculateWorkWidthButton(vehicle,3, 2)
 	self:addRowButton(vehicle,'toggleConvoyActive', 3, 3, 1 )
 	self:addSettingsRow(vehicle,'setConvoyMinDistance', 3, 4, 1 )
-	--self:addSettingsRow(vehicle,'setConvoyMaxDistance', 3, 5, 1 )
-	self:addSettingsRow(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
-
-	
+	self:addSettingsRow(vehicle,'setConvoyMaxDistance', 3, 5, 1 )
+    self:addSettingsRow(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
+		
 	--page 7
 	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
 	
@@ -2456,7 +2462,7 @@ function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle)
 	
 	self:addRowButton(vehicle,'forceGoToUnloadCourse', 1, 2, 3 )
 
-	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
+	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 8, 1 )
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
@@ -2522,7 +2528,8 @@ function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 	self:debug(vehicle,"setFillableFieldworkAIDriverContent")
 	
 	
-	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
+	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 8, 1 )
+        
 	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 6, 1 )
 	self:addRowButton(vehicle,'toggleFertilizeOption', 3, 7, 1 )
 	

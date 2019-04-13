@@ -66,6 +66,10 @@ function CpManager:loadMap(name)
 	self.totalCoursePlayers = {};
 	self.activeCoursePlayers = {};
 	self.numActiveCoursePlayers = 0;
+    
+    -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- CONVOYS
+	self.convoys = {};
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- height for mouse text line in game's help menu DISABLED HUD issue
@@ -479,6 +483,68 @@ function CpManager:removeFromActiveCoursePlayers(vehicle)
 	self.activeCoursePlayers[vehicle.rootNode] = nil;
 	self.numActiveCoursePlayers = math.max(self.numActiveCoursePlayers - 1, 0);
 end;
+
+-- convoy vehicle participation
+function CpManager:addToConvoy(vehicle)
+    -- look for an existing suitable convoy to join
+    courseplay:debug(string.format("%s: Looking for an existing suitable convoy to join", nameNum(vehicle)), 4);
+    for convoyId,convoy in ipairs(self.convoys) do
+        courseplay:debug(string.format("%s: Looking in convoy %u", nameNum(vehicle), convoyId), 4);
+        if courseplay:haveSameCourse(vehicle, convoy[1]) then
+            table.insert(convoy,vehicle)
+            vehicle:setCpVar('convoy.id',convoyId)
+            vehicle:setCpVar('convoy.number',#convoy)
+            vehicle:setCpVar('convoy.members',#convoy)            
+            courseplay:debug(string.format("%s: Joining convoy %u at position %u/%u", nameNum(vehicle), convoyId, vehicle.cp.convoy.number, vehicle.cp.convoy.members), 4);
+            -- Update convoy total members
+            for _, veh in ipairs (convoy) do
+                veh:setCpVar('convoy.members',#convoy)
+            end
+            break
+        end
+    end
+    -- if there's no suitable convoy, we'll start a new one
+    if vehicle.cp.convoy.id == nil then
+        local newConvoy = {}
+        table.insert(newConvoy,vehicle)
+        table.insert(self.convoys,newConvoy)
+        vehicle:setCpVar('convoy.id',#self.convoys)
+        vehicle:setCpVar('convoy.number',1)
+        vehicle:setCpVar('convoy.members',1)
+        courseplay:debug(string.format("%s: Making a new convoy, id %u", nameNum(vehicle), vehicle.cp.convoy.id), 4);
+    end
+end
+
+function CpManager:removeFromConvoy(vehicle)
+    -- Remove the vehicle
+    courseplay:debug(string.format("%s: Leaving convoy %u", nameNum(vehicle), vehicle.cp.convoy.id), 4);
+    table.remove(self.convoys[vehicle.cp.convoy.id], vehicle.cp.convoy.number)
+    -- Check if the convoy has more memebers
+    if #self.convoys[vehicle.cp.convoy.id] > 0 then
+        -- Update convoy order keys
+        courseplay:debug(string.format("%s: Rearranging convoy %u", nameNum(vehicle), vehicle.cp.convoy.id), 4);
+        for vehPos, veh in ipairs (self.convoys[vehicle.cp.convoy.id]) do
+            veh:setCpVar('convoy.number',vehPos)
+            veh:setCpVar('convoy.members',#self.convoys[vehicle.cp.convoy.id])
+        end
+    else
+        -- If it's empty, remove the convoy
+        courseplay:debug(string.format("%s: Removing convoy %u", nameNum(vehicle), vehicle.cp.convoy.id), 4);
+        self.convoys[vehicle.cp.convoy.id] = nil
+        -- Update convoy id keys
+        if #self.convoys > 0 then
+            for convId, conv in ipairs (self.convoys) do
+                for _, veh in ipairs (conv) do
+                    veh:setCpVar('convoy.id',convId)
+                end
+            end
+        end
+    end
+    -- Clear the vehicle's convoy table
+    vehicle:setCpVar('convoy.id',nil)
+    vehicle:setCpVar('convoy.number',0)
+    vehicle:setCpVar('convoy.members',0)
+end
 
 function CpManager:devAddMoney()
 	if g_server ~= nil then

@@ -240,7 +240,8 @@ function FieldworkAIDriver:driveFieldwork()
 		if self.vehicle:getCanAIVehicleContinueWork() then
 			self:debug('all tools ready, start working')
 			self.fieldworkState = self.states.WORKING
-			self:setSpeed(self:getWorkSpeed())
+    		self:setSpeed(self:getWorkSpeed())
+            self:manageConvoy()
 		else
 			self:debugSparse('waiting for all tools to lower')
 			self:setSpeed(0)
@@ -255,10 +256,12 @@ function FieldworkAIDriver:driveFieldwork()
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
 		self:setSpeed(self:getFieldSpeed())
+        self:manageConvoy()
 	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkState == self.states.TURNING then
 		self:setSpeed(self.vehicle.cp.speeds.turn)
+        self:manageConvoy()
 	end
 end
 
@@ -624,57 +627,30 @@ function FieldworkAIDriver:updateFieldworkOffset()
 		self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
 end
 
-function FieldworkAIDriver:hasSameCourse(otherVehicle)
-	if otherVehicle.cp.driver and otherVehicle.cp.driver.fieldworkCourse then
-		return self.fieldworkCourse:equals(otherVehicle.cp.driver.fieldworkCourse)
-	else
-		return false
-	end
-end
-
---- When working in a group (convoy), do I have to hold so I don't get too close to the
--- other vehicles in front of me?
+--- When working in a group (convoy), 
+--    do I have to hold so I don't get too close to the leading vehicle?
+--    do I have to hold so I don't get too far from the trailing vehicle?
 function FieldworkAIDriver:manageConvoy()
 	if not self.vehicle.cp.convoyActive then return false end
-	--get my position in convoy and look for the closest combine
-	local position = 1
-	local total = 1
-	local closestDistance = math.huge
-	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
-		if otherVehicle ~= self.vehicle and otherVehicle.cp.convoyActive and self:hasSameCourse(otherVehicle) then
-			local myWpIndex = self.ppc:getCurrentWaypointIx()
-			local otherVehicleWpIndex = otherVehicle.cp.ppc:getCurrentWaypointIx()
-			total = total + 1
-			if myWpIndex < otherVehicleWpIndex then
-				position = position + 1
-				local distance = (otherVehicleWpIndex - myWpIndex) * courseGenerator.waypointDistance
-				if distance < closestDistance then
-					closestDistance = distance
-				end
-			end
-		end
-	end
-
-	-- stop when I'm too close to the combine in front of me
-	if position > 1 then
-		if closestDistance < self.vehicle.cp.convoy.minDistance then
-			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
-			self:setSpeed(0)
-		end
-	else
-		closestDistance = 0
-	end
-
-	-- TODO: check for change should be handled by setCpVar()
-	if self.vehicle.cp.convoy.distance ~= closestDistance then
-		self.vehicle:setCpVar('convoy.distance',closestDistance)
-	end
-	if self.vehicle.cp.convoy.number ~= position then
-		self.vehicle:setCpVar('convoy.number',position)
-	end
-	if self.vehicle.cp.convoy.members ~= total then
-		self.vehicle:setCpVar('convoy.members',total)
-	end
+	
+    -- Stop if we're too close to the leading vehicle
+    if self.vehicle.cp.convoy.number > 1 then
+        --self.vehicle.cp.convoy.leadDist = courseplay:nodeToNodeDistance(self.vehicle.rootNode, CpManager.convoys[self.vehicle.cp.convoy.id][self.vehicle.cp.convoy.number-1].rootNode)
+        self.vehicle:setCpVar('convoy.leadDist',courseplay:nodeToNodeDistance(self.vehicle.rootNode, CpManager.convoys[self.vehicle.cp.convoy.id][self.vehicle.cp.convoy.number-1].rootNode))
+        if self.vehicle.cp.convoy.leadDist < self.vehicle.cp.convoy.minDistance then
+            self:setSpeed(0)
+            self:debugSparse('too close (%.1f) to leading vehicle, holding.', leadingDist)
+        end
+    end
+    -- Stop if we're too far from the trailing vehicle
+    if self.vehicle.cp.convoy.number < self.vehicle.cp.convoy.members then
+        --self.vehicle.cp.convoy.trailDist = courseplay:nodeToNodeDistance(self.vehicle.rootNode, CpManager.convoys[self.vehicle.cp.convoy.id][self.vehicle.cp.convoy.number+1].rootNode)
+        self.vehicle:setCpVar('convoy.trailDist', courseplay:nodeToNodeDistance(self.vehicle.rootNode, CpManager.convoys[self.vehicle.cp.convoy.id][self.vehicle.cp.convoy.number+1].rootNode))
+        if self.vehicle.cp.convoy.trailDist > self.vehicle.cp.convoy.maxDistance then
+            self:setSpeed(0)
+            self:debugSparse('too far (%.1f) from trailing vehicle, holding.', trailingDist)
+        end
+    end    
 end
 
 -- Although raising the AI start/stop events supposed to fold/unfold the implements, it does not always happen.

@@ -168,16 +168,18 @@ function courseplay:onLoad(savegame)
 	
 	self.cp.startAtPoint = courseplay.START_AT_NEXT_POINT;
 	self.cp.fertilizerEnabled = true
-	self.cp.convoyActive = false
+	
+    -- convoy info
+    self.cp.convoyActive = false
 	self.cp.convoy= {
-					  distance = 0,
+                      id = nil,
+                      leadDist = 0,
+                      trailDist = 0,
 					  number = 0,
 					  members = 0,
 					  minDistance = 100,
 					  maxDistance = 300
 					  }
-	
-	
 	
 
 	-- ai mode 9: shovel

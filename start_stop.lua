@@ -114,6 +114,10 @@ function courseplay:start(self)
 	end;
 	--add to activeCoursePlayers
 	CpManager:addToActiveCoursePlayers(self);
+    --add to convoy
+    if self.cp.convoyActive then
+        CpManager:addToConvoy(self)
+    end
 
 	self.cp.turnTimer = 8000
 	
@@ -840,7 +844,11 @@ function courseplay:stop(self)
 	
 	--remove from activeCoursePlayers
 	CpManager:removeFromActiveCoursePlayers(self);
-
+    --remove from convoy
+    if self.cp.convoyActive then
+        CpManager:removeFromConvoy(self);
+    end
+    
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
 
