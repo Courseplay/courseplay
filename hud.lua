@@ -2437,7 +2437,8 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addSettingsRow(vehicle,'setConvoyMinDistance', 3, 4, 1 )
 	self:addSettingsRow(vehicle,'setConvoyMaxDistance', 3, 5, 1 )
     self:addSettingsRow(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
-		
+
+
 	--page 7
 	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
 	
