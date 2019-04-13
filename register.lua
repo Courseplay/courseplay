@@ -88,7 +88,7 @@ Attachable.onPostLoad = Utils.appendedFunction(Attachable.onPostLoad, courseplay
 function courseplay:articulatedAxisOnLoad()
 	-- Due to a bug in Giant's ArticulatedAxis:onLoad() maxRotation has a value in degrees instead of radians,
 	-- fix that here.
-	if self.maxRotation > math.pi then
+	if self.maxRotation and self.maxRotation > math.pi then
 		print(string.format('## %s: fixing maxRotation, setting to %.0f degrees', self:getName(), self.maxRotation))
 		self.maxRotation = math.rad(self.maxRotation)
 	end
