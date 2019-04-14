@@ -247,8 +247,8 @@ function courseplay:executeFunction(self, func, value, page)
 						else
 							courseplay:cancelWait(self);
 						end;
-					elseif line == 3 and not self.cp.isLoaded then
-						courseplay:setIsLoaded(self, true);
+					elseif line == 3 and not self.cp.driveUnloadNow then
+						courseplay:setDriveUnloadNow(self, true);
 					elseif line == 4 then
 						courseplay:setStopAtEnd(self, not self.cp.stopAtEnd);
 					elseif line == 5 then
@@ -461,7 +461,7 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 				(vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting()) then
 				vehicle:setCourseplayFunc('cancelWait', true, false, 1);
 			elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
-				vehicle:setCourseplayFunc('setIsLoaded', true, false, 1);
+				vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
 			elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive and vehicle.cp.isDriving then
 				vehicle:setCourseplayFunc('setStopAtEnd', not vehicle.cp.stopAtEnd, false, 1);
 			elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then

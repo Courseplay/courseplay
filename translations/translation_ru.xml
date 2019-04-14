@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Остановить в триггере/конечной точке:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Выполнить количество рейсов" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
 		<text name="COURSEPLAY_UNLIMITED" 									text="неограниченно" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Транспорт грузится" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="автоматически" />

@@ -780,7 +780,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
 
-	local driveOn = vehicle.cp.isLoaded;
+	local driveOn = vehicle.cp.driveUnloadNow;
 		
 	if not currentTrailer.cp.realUnloadOrFillNode then
 		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
@@ -871,14 +871,14 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 	
 	--if established on a fill trigger go on immediately when level is reached
-	if currentTrailer.cp.currentSiloTrigger ~= nil and (vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct or vehicle.cp.isLoaded) then
+	if currentTrailer.cp.currentSiloTrigger ~= nil and (vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct or vehicle.cp.driveUnloadNow) then
 		courseplay:setFillOnTrigger(vehicle,currentTrailer,false,currentTrailer.cp.currentSiloTrigger)
 		driveOn = true;
 	end;	
 
 	if vehicle.cp.totalFillLevelPercent == 100 or driveOn then
 		vehicle.cp.prevFillLevelPct = nil;
-		courseplay:setIsLoaded(vehicle, true);
+		courseplay:setDriveUnloadNow(vehicle, true);
 		vehicle.cp.trailerFillDistance = nil;
 		vehicle.cp.currentTrailerToFill = nil;
 		vehicle.cp.tipperLoadMode = 0;
@@ -892,7 +892,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1;
 			else
 				vehicle.cp.prevFillLevelPct = nil;
-				courseplay:setIsLoaded(vehicle, true);
+				courseplay:setDriveUnloadNow(vehicle, true);
 				vehicle.cp.trailerFillDistance = nil;
 				vehicle.cp.currentTrailerToFill = nil;
 				vehicle.cp.tipperLoadMode = 0;
@@ -1440,13 +1440,14 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 		if trigger.onActivateObject then
 			if trigger.autoStart then
 				trigger:onActivateObject(vehicle) 
-			else
+			elseif not trigger.isLoading then
 				--force Diesel when I'm in fuelFillTrigger or the selected fillType in fillTrigger and start the autoload
 				trigger.autoStart = true
 				trigger:onActivateObject(vehicle) 
 				trigger.selectedFillType = (vehicle.cp.fuelFillTrigger and FillType.DIESEL) or (vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN and vehicle.cp.siloSelectedFillType) or courseplay:getOnlyPossibleFillType(vehicle,workTool,trigger) 
 				g_effectManager:setFillType(trigger.effects, trigger.selectedFillType)
 				trigger.autoStart = false
+				courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 			end
 		elseif trigger.sourceObject ~= nil then
 			--move the wanted trigger to the top of the table, setFillUnitIsFilling takes allways the trigger[1] 

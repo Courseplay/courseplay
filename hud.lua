@@ -403,7 +403,7 @@ function courseplay.hud:setContent(vehicle)
 		--- Reset tools
 		-- This is to show the silo filltype line on first time opening the hud and the mode is Grain Transport.
 		if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
-			courseplay:resetTools(vehicle);
+			--courseplay:resetTools(vehicle); TODO Tommi shouldn't be needed anymore
 		end;
 		vehicle.cp.hud.firstTimeSetContent = false
 	end;
@@ -461,8 +461,8 @@ function courseplay.hud:setContent(vehicle)
 		vehicle.cp.hud.content.bottomInfo.convoyText = nil
 	end	
 		
-	if vehicle.cp.runNumber < 11 and vehicle.cp.canDrive then
-		vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %d",vehicle.cp.runCounter, vehicle.cp.runNumber);
+	if vehicle.cp.runCounterActive and vehicle.cp.canDrive and vehicle.cp.driver.runCounter then
+		vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %d",vehicle.cp.driver.runCounter, vehicle.cp.maxRunNumber);
 	else
 		vehicle.cp.hud.content.bottomInfo.runCounterText = nil 
 	end
@@ -739,14 +739,32 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 					end
-				elseif entry.functionToCall == 'changeRunNumber' then
+				elseif entry.functionToCall == 'changemaxRunNumber' then
 					if vehicle.cp.canDrive then
-						self:enableButtonWithFunction(vehicle,page, 'changeRunNumber')
+						self:enableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
+						self:enableButtonWithFunction(vehicle,page, 'toggleRunCounterActive')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.runNumber < 11 and string.format("%d", vehicle.cp.runNumber) or courseplay:loc('COURSEPLAY_UNLIMITED');
+						if vehicle.cp.runCounterActive then
+							vehicle.cp.hud.content.pages[page][line][2].text = string.format("%d", vehicle.cp.maxRunNumber);
+						else
+							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_UNLIMITED');
+							self:disableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
+						end
+					
 					else
-						self:disableButtonWithFunction(vehicle,page, 'changeRunNumber')
+						self:disableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
+						self:disableButtonWithFunction(vehicle,page, 'toggleRunCounterActive')
 					end
+					
+				elseif entry.functionToCall == 'resetRunCounter' then
+					if vehicle.cp.canDrive and vehicle.cp.runCounterActive then
+						self:enableButtonWithFunction(vehicle,page, 'resetRunCounter')
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RESET_NUMBER_OF_RUNS') ;
+					else
+						self:disableButtonWithFunction(vehicle,page, 'resetRunCounter')
+					end
+					
+					
 				elseif entry.functionToCall == 'switchDriverCopy' then
 					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'switchDriverCopy')
@@ -1009,14 +1027,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'setDriveNow' then
 					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						if vehicle.cp.driver and vehicle.cp.driver.getCanShowDriveOnButton then
-							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and not vehicle.cp.isLoaded then
+							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and not vehicle.cp.driveUnloadNow then
 								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 							else
 								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')			
 							end
 						else --temp solution for old mode2
-							if vehicle:getIsCourseplayDriving() and not vehicle.cp.isLoaded and vehicle.cp.waypointIndex < 2 then
+							if vehicle:getIsCourseplayDriving() and not vehicle.cp.driveUnloadNow and vehicle.cp.waypointIndex < 2 then
 								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 							else
@@ -2296,8 +2314,12 @@ end
 function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:debug(vehicle,"setGrainTransportAIDriverContent")
 	--page 1 driving
-	self:addSettingsRow(vehicle,'changeRunNumber', 1, 6, 1 )
 	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
+	
+	self:addSettingsRow(vehicle,'changemaxRunNumber', 1, 5, 1 )
+	self:addRowButton(vehicle,'toggleRunCounterActive', 1, 5, 2 )
+	self:addRowButton(vehicle,'resetRunCounter', 1, 6, 1 )
+	
 	
 	--page 1 driving
 	self:enablePageButton(vehicle, 3)

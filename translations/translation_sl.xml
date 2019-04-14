@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Ustavi voznika" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Ustavi se na zadnji točki ali na naslednjem prožilcu" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Število izvedb teka" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="Nešteto" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Stran voznika" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="Avtomatsko" />

@@ -950,8 +950,6 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 		end
-	else
-		courseplay:setIsLoaded(self.vehicle, false);
 	end
 	-- tractor reaches unloadPoint
 	if isNearUnloadPoint then
@@ -1210,12 +1208,12 @@ function AIDriver:onDraw()
 
 end
 
-function AIDriver:setIsLoaded(isLoaded)
-	self.vehicle.cp.isLoaded = isLoaded or false
+function AIDriver:setDriveUnloadNow(driveUnloadNow)
+	courseplay:setDriveUnloadNow(self.vehicle, driveUnloadNow or false)
 end
 
-function AIDriver:getIsLoaded()
-	return self.vehicle.cp.isLoaded
+function AIDriver:getDriveUnloadNow()
+	return self.vehicle.cp.driveUnloadNow
 end
 
 function AIDriver:refreshHUD()

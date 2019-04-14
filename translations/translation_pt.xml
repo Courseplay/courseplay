@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar o condutor" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 					 		text="Parar no último ponto ou próximo trigger" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Número de passagens" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="Ilimitado" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 						 		text="Lado do condutor" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automático" />

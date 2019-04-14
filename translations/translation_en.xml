@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point or at next trigger" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Number of runs to perform" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="Unlimited" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Driver side" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="Automatic" />

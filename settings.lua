@@ -19,10 +19,7 @@ function courseplay:setCpMode(vehicle, modeNum)
 		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
-		if modeNum == 1 then
-			courseplay:resetTools(vehicle);
-		end;
-		vehicle.cp.runNumber = 11; --peter will find a better way
+
 		--if not CpManager.isDeveloper then
 			if modeNum == courseplay.MODE_COMBI then
 				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
@@ -108,7 +105,7 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 end;
 
 function courseplay:setDriveNow(vehicle)
-	courseplay:setIsLoaded(vehicle, true);
+	courseplay:setDriveUnloadNow(vehicle, true);
 end
 
 function courseplay:toggleShowMiniHud(vehicle)
@@ -219,9 +216,6 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 	if cancelStopAtEnd then
 		courseplay:setStopAtEnd(vehicle, false);
 	end;
-	if vehicle.cp.runReset == true then
- 		vehicle.cp.runCounter = 0
- 	end;
 end;
 
 function courseplay:setStopAtEnd(vehicle, bool)
@@ -233,15 +227,16 @@ function courseplay:setStopAtEnd(vehicle, bool)
 	end
 end;
 
-function courseplay:setIsLoaded(vehicle, bool)
-	if vehicle.cp.isLoaded ~= bool then
-		vehicle.cp.isLoaded = bool;
+function courseplay:setDriveUnloadNow(vehicle, bool)
+	if vehicle.cp.driveUnloadNow ~= bool then
+		vehicle.cp.driveUnloadNow = bool;
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 	end;
-	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);	
+		
 end;
 
 function courseplay:sendCourseplayerHome(combine)
-	courseplay:setIsLoaded(combine.courseplayers[1], true);
+	courseplay:setDriveUnloadNow(combine.courseplayers[1], true);
 end
 
 function courseplay:toggleTurnStage(combine)
@@ -452,11 +447,6 @@ function courseplay:changeSiloFillType(vehicle, modifier, currentSelectedFilltyp
 			newVal = 1;
 		end
 	end;
-	if vehicle.cp.siloSelectedFillType ~= eftl[newVal] then
- 		--Mode 1 Run Counter Reset
- 		vehicle.cp.runCounter = 0;
- 		courseplay:changeRunCounter(vehicle, false)
- 	end
 	vehicle.cp.siloSelectedEasyFillType = newVal;
 	vehicle.cp.siloSelectedFillType = eftl[newVal];
 
@@ -1625,32 +1615,17 @@ function courseplay:changeLastValidTipDistance(vehicle, changeBy)
 	vehicle.cp.lastValidTipDistance = MathUtil.clamp(vehicle.cp.lastValidTipDistance + changeBy, -500, 0);
 end;
 
-
-function courseplay:changeRunNumber(vehicle, changeBy)
- 	vehicle.cp.runNumber = MathUtil.clamp(vehicle.cp.runNumber + changeBy, 1, 11);
+function courseplay:changemaxRunNumber(vehicle, changeBy)
+ 	vehicle.cp.maxRunNumber = MathUtil.clamp(vehicle.cp.maxRunNumber + changeBy, 1, 10);
 end;
 
-function courseplay:changeRunCounter(vehicle, bool)
-	--courseplay:debug(string.format('%s: bool = %s vehicle.cp.runCounterBool = %s (called from %s)', nameNum(vehicle), tostring(bool), tostring(vehicle.cp.runCounterBool), courseplay.utils:getFnCallPath(2)), 12);
-	if vehicle.cp.runCounterBool ~= bool then
-		if bool == true and not courseplay:waypointsHaveAttr(vehicle, vehicle.cp.waypointIndex, -3, 3, 'wait', true, false) then
-			if vehicle.cp.runNumber < 11 then
-				vehicle.cp.runCounter = vehicle.cp.runCounter + 1
-				courseplay.hud:setReloadPageOrder(vehicle, 1, true)
-				courseplay:debug(string.format('%s: incremnting runCounter = %d runNumber = %d', nameNum(vehicle), vehicle.cp.runCounter, vehicle.cp.runNumber), 12);
-			elseif vehicle.cp.runNumber == 11 then
-				vehicle.cp.runCounter = 1 -- restets the number of runs if set to unlimted on tipper load
-				courseplay:debug(string.format('%s: runNumber is set to Unlimted reset run counter runCounter = %d runNumber = %d', nameNum(vehicle), vehicle.cp.runCounter, vehicle.cp.runNumber), 12);
-			end;
-			vehicle.cp.runReset = false;
-			vehicle.cp.runCounterBool = bool
-			courseplay:debug(string.format('%s: runCounterBool is set to %s', nameNum(vehicle), tostring(vehicle.cp.runCounterBool)), 12);
-		elseif bool == false then
-			vehicle.cp.runCounterBool = bool
-			courseplay:debug(string.format('%s: runCounterBool is set to %s', nameNum(vehicle), tostring(vehicle.cp.runCounterBool)), 12);
-		end;
-	end;
+function courseplay:toggleRunCounterActive(vehicle, changeBy)
+ 	vehicle.cp.runCounterActive = not vehicle.cp.runCounterActive;
 end;
+
+function courseplay:resetRunCounter(vehicle)
+	vehicle.cp.driver:resetRunCounter()
+end
 
 function courseplay:toggleSucHud(vehicle)
 	vehicle.cp.suc.active = not vehicle.cp.suc.active;

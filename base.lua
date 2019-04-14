@@ -84,10 +84,8 @@ function courseplay:onLoad(savegame)
 	self.cp.positionWithCombine = nil;
 
 	--Mode 1 Run Loop
- 	self.cp.runNumber = 11; -- Number of times to run Mode 1. Set to 11 for unlimited runs by default.
- 	self.cp.runCounter = 0; -- Current Number of runs
-	self.cp.runReset = false; -- Resets run loop at stop.
-	self.cp.runCounterBool = false; 
+ 	self.cp.maxRunNumber = 10; -- Number of times to run Mode 1. Set to 11 for unlimited runs by default.
+ 	self.cp.runCounterActive = false; 
 
 	-- RECORDING
 	self.cp.isRecording = false;
@@ -428,7 +426,7 @@ function courseplay:onLoad(savegame)
 	self.cp.trailerFillDistance = nil;
 	self.cp.prevTrailerDistance = 100.00;
 	self.cp.isUnloaded = false;
-	self.cp.isLoaded = false;
+	self.cp.driveUnloadNow = false;
 	self.cp.totalFillLevel = nil;
 	self.cp.totalCapacity = nil;
 	self.cp.totalFillLevelPercent = 0;
@@ -1034,11 +1032,7 @@ function courseplay:onUpdate(dt)
 
 	--[[if not courseplay.isClient then
 		if self.cp.isDriving then
-			local showDriveOnButton = false;
-			if self.cp.mode == courseplay.MODE_FIELDWORK then
-				if self.cp.wait and (self.cp.waypointIndex == self.cp.stopWork or self.cp.previousWaypointIndex == self.cp.stopWork) and self.cp.abortWork == nil and not self.cp.isLoaded and not isFinishingWork and self.cp.hasUnloadingRefillingCourse then
-					showDriveOnButton = true;
-				end;
+			
 			elseif self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.isMode3Unloading then
 				showDriveOnButton = true;
 			else
@@ -1046,9 +1040,6 @@ function courseplay:onUpdate(dt)
 					showDriveOnButton = true;
 				end;
 			end;
-			self:setCpVar('HUD1wait', showDriveOnButton,courseplay.isClient);
-
-			self:setCpVar('HUD1noWaitforFill', not self.cp.isLoaded and self.cp.mode ~= 5,courseplay.isClient);
 		end;
 		
 		if self.cp.hud.currentPage == 0 then
@@ -1512,13 +1503,12 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
 		local curKey = key .. '.courseplay.basics';
-		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'),			 self.cp.mode));
-		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
+		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode));
 		self.cp.warningLightsMode  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#lights'),			 1);
 		self.cp.waitTime 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#waitTime'),		 0);
- 		self.cp.runCounter  	= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runCounter'),	 		 0);
- 		self.cp.runNumber		 = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runNumber'),			 11);
- 		self.cp.runCounterBool	= Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#runCounterBool'),		 false);
+ 		self.cp.driver.runCounter  	= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runCounter'),	 		 0);
+ 		self.cp.maxRunNumber		 = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#maxRunNumber'),			 11);
+ 		self.cp.runCounterActive	= Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#runCounterActive'),		 false);
 		self.cp.saveFuelOptionActive = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#saveFuelOption'),			 true);
 		-- TODO: move this into DrivingModeSetting
 		self.cp.drivingMode:set(Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#drivingMode'),			 0));
@@ -1545,6 +1535,12 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.siloSelectedFillType = FillTypeManager.getFillTypeIndexByName(Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown'));
 		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = FillType.UNKNOWN end 
 
+		--HUD
+		curKey = key .. '.courseplay.HUD';
+		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
+		self.cp.hud.showMiniHud = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showMiniHud'), true);
+		self.cp.hud.show = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showHud'), false);
+		
 		-- SPEEDS
 		curKey = key .. '.courseplay.speeds';
 		self.cp.speeds.useRecordingSpeed = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#useRecordingSpeed'), true);
@@ -1695,25 +1691,28 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 		newKey = newKey..'.'..keySplit[i]
 	end
 	newKey = newKey..'.courseplay'
+
+	
+	local runCounter = self.cp.driver.runCounter or 0
 	--CP basics
-	local runCounter = self.cp.runCounter
-	if self.cp.runReset == true then
-		runCounter = 0;
-	end;
 	setXMLInt(xmlFile, newKey..".basics #aiMode", self.cp.mode)
 	setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
-	setXMLBool(xmlFile, newKey..".basics #openHudWithMouse", self.cp.hud.openWithMouse)
 	setXMLString(xmlFile, newKey..".basics #lights", tostring(self.cp.warningLightsMode))
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsStartEnd", self.cp.visualWaypointsStartEnd)
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsAll", self.cp.visualWaypointsAll)
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsCrossing", self.cp.visualWaypointsCrossing)
 	setXMLInt(xmlFile, newKey..".basics #waitTime", self.cp.waitTime)
 	setXMLString(xmlFile, newKey..".basics #siloSelectedFillType", tostring(FillTypeManager.getFillTypeNameByIndex(self.cp.siloSelectedFillType)))
-	setXMLInt(xmlFile, newKey..".basics #runNumber", self.cp.runNumber)
+	setXMLInt(xmlFile, newKey..".basics #maxRunNumber", self.cp.maxRunNumber)
 	setXMLInt(xmlFile, newKey..".basics #runCounter", runCounter)
-	setXMLBool(xmlFile, newKey..".basics #runCounterBool", self.cp.runCounterBool)
+	setXMLBool(xmlFile, newKey..".basics #runCounterActive", self.cp.runCounterActive)
 	setXMLBool(xmlFile, newKey..".basics #saveFuelOption", self.cp.saveFuelOptionActive)
 	setXMLInt(xmlFile, newKey..".basics #drivingMode", self.cp.drivingMode:get())
+	
+	--HUD
+	setXMLBool(xmlFile, newKey..".HUD #openHudWithMouse", self.cp.hud.openWithMouse)
+	setXMLBool(xmlFile, newKey..".HUD #showMiniHud", self.cp.hud.showMiniHud)
+	setXMLBool(xmlFile, newKey..".HUD #showHud", self.cp.hud.show)
 	
 	--speeds
 	setXMLBool(xmlFile, newKey..".speeds #useRecordingSpeed", self.cp.speeds.useRecordingSpeed)
@@ -1881,7 +1880,7 @@ function courseplay:getSaveAttributesAndNodes(nodeIdent)
 	end;
 
 	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q runNumber="%d" runCounter="%d" runCounterBool=%q saveFuelOption=%q drivingMode=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), g_fillTypeManager.indexToName[self.cp.siloSelectedFillType], self.cp.runNumber, runCounter, tostring(self.cp.runCounterBool), tostring(self.cp.saveFuelOptionActive), tostring(self.cp.drivingMode:get()));
+	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q maxRunNumber="%d" runCounter="%d" runCounterActive=%q saveFuelOption=%q drivingMode=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), g_fillTypeManager.indexToName[self.cp.siloSelectedFillType], self.cp.maxRunNumber, runCounter, tostring(self.cp.runCounterActive), tostring(self.cp.saveFuelOptionActive), tostring(self.cp.drivingMode:get()));
 	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
 	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
 	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q alignment=%q searchCombineOnField="%d" />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel),tostring(self.cp.alignment.enabled),self.cp.searchCombineOnField);

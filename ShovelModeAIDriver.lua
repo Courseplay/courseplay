@@ -125,7 +125,7 @@ function ShovelModeAIDriver:drive(dt)
 	
 	if self.ppc:getCurrentWaypointIx() == 1 and vehicle.cp.shovelState ~= self.STATE_GO_BACKTO_START then  --backup for missed approach
 		self:setShovelState(vehicle, self.STATE_GOTO_SILO, 'backup');
-		courseplay:setIsLoaded(vehicle, false);
+		courseplay:setDriveUnloadNow(vehicle, false);
 	end;
 	
 	-- STATE 1: DRIVE TO BUNKER SILO (1st waiting point)
@@ -234,13 +234,13 @@ function ShovelModeAIDriver:drive(dt)
 			vehicle.cp.shovelLastFillLevel = fillLevelPct;
 		end;
 						--vv TODO checkif its a Giants Bug the Shovel never gets 100%
-		if fillLevelPct >= 99 or vehicle.cp.isLoaded or vehicle.cp.slippingStage == 2 or heapEnd then
-			if not vehicle.cp.isLoaded then
+		if fillLevelPct >= 99 or vehicle.cp.driveUnloadNow or vehicle.cp.slippingStage == 2 or heapEnd then
+			if not vehicle.cp.driveUnloadNow then
 				local newWP = self:findNextRevWaypoint(self.ppc:getCurrentWaypointIx())
 				--courseplay:setWaypointIndex(vehicle, newWP)
 				self.ppc:initialize(newWP);
 				self.ppc:update()
-				courseplay:setIsLoaded(vehicle, true);
+				courseplay:setDriveUnloadNow(vehicle, true);
 				
 				if not g_currentMission.missionInfo.stopAndGoBraking then
 					vehicle.nextMovingDirection = -1
@@ -273,7 +273,7 @@ function ShovelModeAIDriver:drive(dt)
 		if vehicle.cp.slippingStageBreak and not self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) then
 			vehicle.cp.slippingStageBreak = nil
 			if fillLevelPct < 75 then
-				courseplay:setIsLoaded(vehicle, false);
+				courseplay:setDriveUnloadNow(vehicle, false);
 				self:setShovelState(vehicle, self.STATE_GOTO_SILO,'try again');
 				--courseplay:setWaypointIndex(vehicle, vehicle.cp.shovelFillStartPoint - 1);
 				vehicle.cp.BunkerSiloMap = nil
@@ -341,12 +341,12 @@ function ShovelModeAIDriver:drive(dt)
 		local stopUnloading = not vehicle.cp.shovel:getCanDischargeToObject(dischargeNode)
 		if fillLevelPct <= 1 or stopUnloading then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[4], dt) then
-				if vehicle.cp.isLoaded then
+				if vehicle.cp.driveUnloadNow then
 					local newWP = self:findNextRevWaypoint(self.ppc:getCurrentWaypointIx())
 					--courseplay:setWaypointIndex(vehicle, newWP);
 					vehicle.cp.ppc:initialize(newWP);
 					self.ppc:update()
-					courseplay:setIsLoaded(vehicle, false);
+					courseplay:setDriveUnloadNow(vehicle, false);
 				end;
 				if not self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) then
 					self:setShovelState(vehicle, self.STATE_GO_BACKTO_START);

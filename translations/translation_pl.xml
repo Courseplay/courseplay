@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP"					 	text="Zatrzymaj kierowcę" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT"						 	text="Zatrzymaj się w ostatnim punkcie:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 							 	text="Ilość tras do wykonania:" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 								 	text="Dowolna" />
 		<text name="COURSEPLAY_UNLOADING_SIDE"							 	text="Po stronie kierowcy" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE"						 	text="Automatycznie" />

@@ -189,7 +189,7 @@ end
 -- TODO: can this be refactored using FieldworkAIDriver.allFillLevelsOk()?
 function UnloadableFieldworkAIDriver:allFillLevelsOk()
 	if not self.vehicle.cp.workTools then return false end
-	local allOk = not self:getIsLoaded()
+	local allOk = not self:getDriveUnloadNow()
 	for _, workTool in pairs(self.vehicle.cp.workTools) do
 		allOk = self:fillLevelsOk(workTool) and allOk
 	end

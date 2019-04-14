@@ -103,7 +103,7 @@ function courseplay:drive(self, dt)
 	self.cp.hasRunRaycastThisLoop['specialTrigger'] = false;
 
 	--[[ unregister at combine, if there is one
-	if self.cp.isLoaded == true and self.cp.positionWithCombine ~= nil then
+	if self.cp.driveUnloadNow == true and self.cp.positionWithCombine ~= nil then
 		courseplay:unregisterFromCombine(self, self.cp.activeCombine)
 	end]]
 
@@ -408,7 +408,7 @@ function courseplay:drive(self, dt)
 		-- ### NON-WAITING POINTS
 	else
 		-- MODES 1 & 2: unloading in trigger
-		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.isLoaded)) and self.cp.totalFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.workToolAttached then
+		if (self.cp.mode == 1 or (self.cp.mode == 2 and self.cp.driveUnloadNow)) and self.cp.totalFillLevel ~= nil and self.cp.tipRefOffset ~= nil and self.cp.workToolAttached then
 			if not self.cp.hasAugerWagon and self.cp.currentTipTrigger == nil and self.cp.totalFillLevel > 0 and self.cp.waypointIndex > 2 and self.cp.waypointIndex < self.cp.numWaypoints and not self.Waypoints[self.cp.waypointIndex].rev then
 				courseplay:doTriggerRaycasts(self, 'tipTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 			end;
@@ -524,26 +524,6 @@ function courseplay:drive(self, dt)
 		if self.cp.stopAtEndMode1 and self.cp.waypointIndex == self.cp.numWaypoints then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
-		end;
-
-		--STOP AT END OF RUNCOUNTER
-		if self.cp.runCounter >= self.cp.runNumber then
-			if self.cp.mode == 8 and (self.cp.fillTrigger or self.cp.isInFilltrigger) and not self.cp.runCounterBool and not courseplay:waypointsHaveAttr(self, self.cp.waypointIndex, -3, 3, 'wait', true, false) then
-				allowedToDrive = false;
-				self.cp.runReset = true;
-				courseplay:debug(string.format('%s: Mode8 Has tried to stop', nameNum(self)), 12);
-				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_8');
-			elseif self.cp.mode == 1 and self.cp.waypointIndex == self.cp.numWaypoints then
-				allowedToDrive = false;
-				self.cp.runReset = true;
-				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_1');
-				courseplay:debug(string.format('%s: Mode 1 Has tried to stop', nameNum(self)), 12);
-			elseif self.cp.runCounter > self.cp.runNumber then --Something broke stop.
-				allowedToDrive = false;
-				self.cp.runReset = true
-				courseplay:debug(string.format('%s: Something went wrong with runcounter stopping', nameNum(self)), 12);
-				CpManager:setGlobalInfoText(self, 'END_POINT_MODE_8');
-			end;
 		end;
 	end;
 	-- ### NON-WAITING POINTS END
@@ -692,7 +672,7 @@ function courseplay:drive(self, dt)
 				allowedToDrive = false
 				CpManager:setGlobalInfoText(self, 'WORK_END');
 			else
-				courseplay:setIsLoaded(self, true);
+				courseplay:setDriveUnloadNow(self, true);
 				courseplay:setWaypointIndex(self, i + 2);
 			end
 		end
@@ -1087,11 +1067,8 @@ function courseplay:drive(self, dt)
 			end
 			self.cp.isUnloaded = false
 			courseplay:setStopAtEnd(self, false);
-			courseplay:setIsLoaded(self, false);
+			courseplay:setDriveUnloadNow(self, false);
 			courseplay:setIsRecording(self, false);
-			if self.cp.mode == 1 then
-				courseplay:changeRunCounter(self, false)
-			end;
 			self:setCpVar('canDrive',true,courseplay.isClient)
 		end
 	end

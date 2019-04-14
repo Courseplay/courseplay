@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Zastavit odvozce" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Čekat na posledním bodě nebo triggeru:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Počet jízd" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="Neomezený" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Strana odvozce:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automaticky" />

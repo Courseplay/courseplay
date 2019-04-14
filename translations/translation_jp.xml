@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="ドライバーを停止" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="次のトリガー/エンドポイントで停止" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="実行予定回数" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="無制限" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="追従方向" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="自動" />

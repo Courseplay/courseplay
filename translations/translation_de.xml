@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Abfahrer stoppen" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Am letzten Wegpunkt o. Trigger warten" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Anzahl der Durchläufe"/>
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Durchläufe zurücksetzen"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="unbegrenzt" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Abkippseite" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automatisch" />

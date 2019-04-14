@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Szállító megállítása" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Állj az utolsó pontnál, következő triggernél" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Fordulók száma" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="bármennyi" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Ürítés oldala:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automatikus" />

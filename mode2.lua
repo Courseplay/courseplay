@@ -70,8 +70,8 @@ function courseplay:handle_mode2(vehicle, dt)
 	end
 	
 	-- Trailers full?
-	if currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.isLoaded then
-		if #(vehicle.cp.workTools) > vehicle.cp.currentTrailerToFill and not vehicle.cp.isLoaded then -- TODO (Jakob): use numWorkTools
+	if currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.driveUnloadNow then
+		if #(vehicle.cp.workTools) > vehicle.cp.currentTrailerToFill and not vehicle.cp.driveUnloadNow then -- TODO (Jakob): use numWorkTools
 			-- got more than one trailer, switch to next
 			vehicle.cp.currentTrailerToFill = vehicle.cp.currentTrailerToFill + 1
 		else
@@ -119,7 +119,7 @@ function courseplay:handle_mode2(vehicle, dt)
 		end
 	end
 	-- Have enough payload, can now drive back to the silo
-	if vehicle.cp.modeState == STATE_WAIT_AT_START and (vehicle.cp.totalFillLevelPercent >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.isLoaded) then
+	if vehicle.cp.modeState == STATE_WAIT_AT_START and (vehicle.cp.totalFillLevelPercent >= vehicle.cp.driveOnAtFillLevel or vehicle.cp.driveUnloadNow) then
 		vehicle.cp.currentTrailerToFill = nil
 	  courseplay:debug(string.format("%s (%s): wait for work but trailers full.", nameNum(vehicle), tostring(vehicle.id)), 4);
 		if vehicle.cp.realisticDriving then
@@ -135,12 +135,12 @@ function courseplay:handle_mode2(vehicle, dt)
 				-- start combi course at 2nd wp
 				courseplay:setWaypointIndex(vehicle, 2);
 				courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[ 1 ])
-				courseplay:setIsLoaded(vehicle, true);
+				courseplay:setDriveUnloadNow(vehicle, true);
 			end	
 		else
 			courseplay:setWaypointIndex(vehicle, 2);
 			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[ 1 ])
-			courseplay:setIsLoaded(vehicle, true);
+			courseplay:setDriveUnloadNow(vehicle, true);
 		end
 
 	end
@@ -192,7 +192,7 @@ function courseplay:handle_mode2(vehicle, dt)
 			AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 0, 0, 28, false, moveForwards, 0, 1)
 			courseplay:resetSlippingTimers(vehicle)
 			-- We are loaded and have no lastActiveCombine Aviable to us 
-			if vehicle.cp.isLoaded and vehicle.cp.lastActiveCombine == nil then
+			if vehicle.cp.driveUnloadNow and vehicle.cp.lastActiveCombine == nil then
 				courseplay:setWaypointIndex(vehicle, 2); 
 				-- courseplay:setModeState(vehicle, 99);
 				return false
@@ -1108,7 +1108,7 @@ function courseplay:unload_combine(vehicle, dt)
 					courseplay:debug(string.format("%s (%s): trailer(s) full, last field waypoint reached, heading for the first course waypoint.", nameNum(vehicle), tostring(vehicle.id)), 4);
 					courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 					courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-					courseplay:setIsLoaded(vehicle, true);
+					courseplay:setDriveUnloadNow(vehicle, true);
 					courseplay:setModeState(vehicle, STATE_DEFAULT);
 					courseplay:setWaypointIndex(vehicle, 2);
 					courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[ 1 ])
@@ -1318,7 +1318,7 @@ function courseplay:unload_combine(vehicle, dt)
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine
 		local distanceToCombine = math.huge
 		--reasons for not calling bypassing in 50m range
-		if combine ~= nil and (combine.cp.isChopper or vehicle.cp.isLoaded or vehicle.cp.totalFillLevel >= vehicle.cp.totalCapacity) then
+		if combine ~= nil and (combine.cp.isChopper or vehicle.cp.driveUnloadNow or vehicle.cp.totalFillLevel >= vehicle.cp.totalCapacity) then
 			distanceToCombine = courseplay:distanceToObject( vehicle, combine )  	
 		end
 		if distanceToCombine > 50 and ((vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev and not vehicle.cp.isParking ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE) then   

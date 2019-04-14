@@ -59,7 +59,7 @@ function CombineUnloadAIDriver:drive(dt)
 	elseif modeState == self.STATE_WAIT_AT_START then
 		renderText(0.2, 0.105, 0.02, "CombineUnloadAIDriver:searchForCombines");
 		self:searchForCombines(dt)
-		courseplay:setIsLoaded(self.vehicle, false);
+		courseplay:setDriveUnloadNow(self.vehicle, false);
 		courseplay:setWaypointIndex(self.vehicle, 1);
 	--drive to the combine
 	elseif modeState == self.STATE_DRIVE_TO_COMBINE then
@@ -124,12 +124,12 @@ function CombineUnloadAIDriver:checkFillLevels(dt)
 	local combine = vehicle.cp.activeCombine
 	local currentTrailerToFill = vehicle.cp.currentTrailerToFill or 1
 	local currentTipper = vehicle.cp.workTools[currentTrailerToFill]
-	if currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.isLoaded then
-		print("currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.isLoaded: "..tostring(vehicle.cp.isLoaded))
+	if currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.driveUnloadNow then
+		print("currentTipper.cp.fillLevel >= currentTipper.cp.capacity or vehicle.cp.driveUnloadNow: "..tostring(vehicle.cp.driveUnloadNow))
 		self:setModeState(self.STATE_DEFAULT);
 		self.ppc:setCourse(self.course)
 		self.ppc:initialize(1)
-		courseplay:setIsLoaded(vehicle, true);
+		courseplay:setDriveUnloadNow(vehicle, true);
 		courseplay:releaseCombineStop(vehicle,vehicle.cp.activeCombine)
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
 	end
@@ -280,7 +280,7 @@ function CombineUnloadAIDriver:checkLastWaypoint()
 		else
 			print("setModeState(self.STATE_WAIT_AT_START)")
 			self:setModeState(self.STATE_WAIT_AT_START)
-			courseplay:setIsLoaded(self.vehicle, false);
+			courseplay:setDriveUnloadNow(self.vehicle, false);
 		end
 	end
 end

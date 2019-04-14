@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Arrêter le chauffeur" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 					 		text="Arrêter au prochain point ou trigger" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Nombre de tours à effectuer" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="Illimité" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 						 		text="Côté du chauffeur:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automatique" />

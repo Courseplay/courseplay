@@ -10,6 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Ferma autista" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Ferma alla fine o al punto di scarico" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Numero di corse da effettuare" />
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
 		<text name="COURSEPLAY_UNLIMITED" 									text="Illimitate" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Lato scarico" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="Nessun lato di scarico" />
