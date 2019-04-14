@@ -665,6 +665,7 @@ function FieldworkAIDriver:measureTurnTime()
 		if self.turnStartedAt then
 			-- use sliding average to smooth jumps
 			self.turnDurationMs = (self.turnDurationMs + self.vehicle.timer - self.turnStartedAt) / 2
+			self.realTurnDurationMs = self.vehicle.timer - self.turnStartedAt
 			self:debug('Measured turn duration is %.0f ms', self.turnDurationMs)
 		end
 	elseif not self.turnWasDriving and self.turnIsDriving then
