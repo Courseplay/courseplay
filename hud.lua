@@ -2198,6 +2198,33 @@ function courseplay.hud:showRecordingButtons(vehicle, show)
 	for _,button in pairs(vehicle.cp.buttons.global) do
 		if 	button.isRecordingButton then
 			button:setShow(show);
+			local fn = button.functionToCall
+			
+			if fn == 'stop_record' then
+				button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
+				button:setCanBeClicked(not button.isDisabled);
+			elseif fn == 'setRecordingPause' then
+				button:setActive(vehicle.cp.recordingIsPaused);
+				button:setDisabled(vehicle.cp.waypointIndex < 4 or vehicle.cp.isRecordingTurnManeuver);
+				button:setCanBeClicked(not button.isDisabled);
+			elseif fn == 'delete_waypoint' then
+				button:setDisabled(not vehicle.cp.recordingIsPaused or vehicle.cp.waypointIndex <= 4);
+				button:setCanBeClicked(not button.isDisabled);
+			elseif fn == 'set_waitpoint' or fn == 'set_crossing' then
+				button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
+				button:setCanBeClicked(not button.isDisabled);
+			elseif fn == 'setRecordingTurnManeuver' then --isToggleButton
+				button:setActive(vehicle.cp.isRecordingTurnManeuver);
+				button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.drivingDirReverse);
+				button:setCanBeClicked(not button.isDisabled);
+			elseif fn == 'change_DriveDirection' then --isToggleButton
+				button:setActive(vehicle.cp.drivingDirReverse);
+				button:setDisabled(vehicle.cp.recordingIsPaused or vehicle.cp.isRecordingTurnManeuver);
+				button:setCanBeClicked(not button.isDisabled);
+			elseif fn == 'addSplitRecordingPoints' then
+				button:setDisabled(not vehicle.cp.recordingIsPaused);
+				button:setCanBeClicked(not button.isDisabled);
+			end;			
 		end
 	end	
 end
