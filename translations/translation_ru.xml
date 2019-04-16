@@ -10,7 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Остановить в триггере/конечной точке:" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Выполнить количество рейсов" />
-		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="обнулить к-во выполненных рейсов"/>
 		<text name="COURSEPLAY_UNLIMITED" 									text="неограниченно" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Транспорт грузится" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="автоматически" />
@@ -77,7 +77,7 @@
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Достигнут пункт разгрузки" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Расстояние до точки разгрузки" />
-		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Заполнение %d из %d" />
+		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Заполнено %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 								text="Режим отображения:" />
 		<text name="COURSEPLAY_PATHFINDING" 								text="Избегать движения по посевам:" />
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Плуг за границы поля" />
@@ -100,7 +100,7 @@
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Комбайн с поля № %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 								text="Скопировать курс у:" />
 		<text name="COURSEPLAY_VEHICLE" 									text="Транспорт" />
-		<text name="COURSEPLAY_TEMP_COURSE" 								text="несохраненный" />
+		<text name="COURSEPLAY_TEMP_COURSE" 								text="несохранённый" />
 		<text name="COURSEPLAY_SPEED_TURN" 									text="Маневры:" />
 		<text name="COURSEPLAY_SPEED_FIELD" 								text="На поле:" />
 		<text name="COURSEPLAY_SPEED_MAX" 									text="В пути:" />
