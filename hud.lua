@@ -747,7 +747,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						if vehicle.cp.runCounterActive then
 							vehicle.cp.hud.content.pages[page][line][2].text = string.format("%d", vehicle.cp.maxRunNumber);
 						else
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_UNLIMITED');
+							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_DEACTIVATED') --courseplay:loc('COURSEPLAY_UNLIMITED');
 							self:disableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
 						end
 					
