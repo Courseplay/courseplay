@@ -536,10 +536,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 		elseif vehicle.cp.turnStage == 3 then
 			local deltaZ, lowerImplements
 			if courseplay:onAlignmentCourse( vehicle ) then
-				-- on alignment course to the waypoint, ignore front marker, we want to get the vehicle itself to get to the waypoint
-				-- Why are we even do this? lowerImplements doesn't occur till later in this elseif statement and we are returning out of the function before we even get there
-				_, _, deltaZ = worldToLocal(realDirectionNode, turnContext.turnStartWp.x, vehicleY, turnContext.turnStartWp.z)
-				lowerImplements = deltaZ < 3
 				courseplay:endAlignmentCourse( vehicle )
 				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex );
 				return
