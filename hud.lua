@@ -1041,7 +1041,23 @@ function courseplay.hud:updatePageContent(vehicle, page)
 								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')			
 							end					
 						end
-					end					
+					end		
+
+				elseif entry.functionToCall == 'forceGoToUnloadCourse' then
+					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
+						if vehicle.cp.driver and vehicle.cp.driver.getCanShowDriveOnButton then
+							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and not vehicle.cp.driveUnloadNow then
+								self:enableButtonWithFunction(vehicle,page, 'forceGoToUnloadCourse')
+								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
+							else
+								self:disableButtonWithFunction(vehicle,page, 'forceGoToUnloadCourse')			
+							end
+						end
+					end
+				
+				
+
+					
 				elseif entry.functionToCall == 'toggleWantsCourseplayer' then
 					if not vehicle.cp.driver:getHasCourseplayers() then
 						self:enableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
@@ -2393,8 +2409,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetX', 8, 5, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
 	self:addRowButton(vehicle,'toggleOppositeTurnMode', 8, 7, 1 )
-	
-	--togglePlowFieldEdge
+	self:addRowButton(vehicle,'togglePlowFieldEdge', 8, 8, 1 )
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
@@ -2402,7 +2417,7 @@ end
 function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle)
 	self:debug(vehicle,"setUnloadableFieldworkAIDriverContent")
 	
-	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
+	self:addRowButton(vehicle,'forceGoToUnloadCourse', 1, 2, 3 )
 
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
 	

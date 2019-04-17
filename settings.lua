@@ -108,6 +108,11 @@ function courseplay:setDriveNow(vehicle)
 	courseplay:setDriveUnloadNow(vehicle, true);
 end
 
+function courseplay:forceGoToUnloadCourse(vehicle)
+	vehicle.cp.driver:stopAndChangeToUnload()
+end
+
+
 function courseplay:toggleShowMiniHud(vehicle)
 	vehicle.cp.hud.showMiniHud = not vehicle.cp.hud.showMiniHud
 end

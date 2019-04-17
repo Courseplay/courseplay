@@ -252,16 +252,21 @@ end
 
 function FieldworkAIDriver:checkFillLevels()
 	if not self:allFillLevelsOk() or self.heldForUnloadRefill then
-		if self.unloadRefillCourse and not self.heldForUnloadRefill then
-			self:rememberWaypointToContinueFieldwork()
-			self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.continueFieldworkAtWaypoint or -1)
-			self:changeToUnloadOrRefill()
-			self:startCourseWithPathfinding(self.unloadRefillCourse, 1, true)
-		else
-			self:changeToFieldworkUnloadOrRefill()
-		end
+		self:stopAndChangeToUnload()
 	end
 end
+
+function FieldworkAIDriver:stopAndChangeToUnload()
+	if self.unloadRefillCourse and not self.heldForUnloadRefill then
+		self:rememberWaypointToContinueFieldwork()
+		self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.continueFieldworkAtWaypoint or -1)
+		self:changeToUnloadOrRefill()
+		self:startCourseWithPathfinding(self.unloadRefillCourse, 1, true)
+	else
+		self:changeToFieldworkUnloadOrRefill()
+	end
+end
+
 
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
