@@ -95,6 +95,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.unload = cpWp.unload
 	self.mustReach = cpWp.mustReach
 	self.align = cpWp.align
+	self.headlandHeightForTurn = cpWp.headlandHeightForTurn
 end
 
 --- Get the (original, non-offset) position of a waypoint

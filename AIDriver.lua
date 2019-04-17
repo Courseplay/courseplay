@@ -330,10 +330,7 @@ function AIDriver:driveCourse(dt)
 	elseif self.turnIsDriving then
 		-- let the code in turn drive the turn maneuvers
 		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
-		courseplay:turn(self.vehicle, dt)
-	elseif self.course:isTurnStartAtIx(self.ppc:getCurrentWaypointIx()) then
-		-- a turn is coming up, relinquish control to turn.lua
-		self:onTurnStart()
+		courseplay:turn(self.vehicle, dt, self.turnContext)
 	else
 		-- use the PPC goal point when forward driving or reversing without trailer
 		local gx, _, gz = self.ppc:getGoalPointLocalPosition()
@@ -469,6 +466,10 @@ function AIDriver:onWaypointChange(newIx)
 	-- except while turn is driving as that does not like changing the waypoint during the turn
 	if not self.turnIsDriving then
 		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
+		if self.course:isTurnStartAtIx(newIx) then
+			-- a turn is coming up, relinquish control to turn.lua
+			self:startTurn(newIx)
+		end
 	end
 	-- rest is implemented by the derived classes
 end
@@ -569,12 +570,10 @@ function AIDriver:isAlignmentCourseNeeded(course, ix)
 	return d > self.vehicle.cp.turnDiameter and self.vehicle.cp.alignment.enabled
 end
 
-function AIDriver:onTurnStart()
+function AIDriver:startTurn(ix)
 	self.turnIsDriving = true
-	-- make sure turn has the current waypoint set to the the turn start wp
-	-- TODO: refactor turn.lua so it does not assume the waypoint ix won't change
-	courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
 	self:debug('Starting a turn.')
+	self.turnContext = TurnContext(self.course, ix)
 end
 
 function AIDriver:onTurnEnd()

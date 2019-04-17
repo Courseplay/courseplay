@@ -203,7 +203,11 @@ end
 function PurePursuitController:notifyListeners()
 	if self.aiDriver then
 		if self.sendWaypointChange and self.aiDriver.onWaypointChange then
-			self.aiDriver:onWaypointChange(self.sendWaypointChange)
+			-- send waypoint change event for all waypoints between the previous and current to make sure
+			-- we don't miss any
+			for ix = self.sendWaypointChange.prev + 1, self.sendWaypointChange.current do
+				self.aiDriver:onWaypointChange(ix)
+			end
 		end
 		if self.sendWaypointPassed and self.aiDriver.onWaypointPassed then
 			self.aiDriver:onWaypointPassed(self.sendWaypointPassed)
@@ -421,7 +425,7 @@ function PurePursuitController:setCurrentWaypoint(ix)
 		-- therefore, only call listeners if ix <= #self.course
 		if ix ~= prevIx and ix <= self.course:getNumberOfWaypoints() then
 			-- remember to send notification at the end of the loop
-			self.sendWaypointChange = self.currentWpNode.ix
+			self.sendWaypointChange = { current = self.currentWpNode.ix, prev = prevIx }
 		end
 	end
 end

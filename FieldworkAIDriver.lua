@@ -48,7 +48,7 @@ function FieldworkAIDriver:init(vehicle)
 	self.debugChannel = 14
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
 	-- an unload/refill course
-	self.fieldworkAbortedAtWaypoint = 1
+	self.continueFieldworkAtWaypoint = 1
 	-- force stop for unload/refill, for example by a tractor, otherwise the same as stopping because full or empty
 	self.heldForUnloadRefill = false
 	self.heldForUnloadRefillTimestamp = 0
@@ -253,11 +253,8 @@ end
 function FieldworkAIDriver:checkFillLevels()
 	if not self:allFillLevelsOk() or self.heldForUnloadRefill then
 		if self.unloadRefillCourse and not self.heldForUnloadRefill then
-			---@see courseplay#setAbortWorkWaypoint if that logic needs to be implemented
-			-- last wp may not be available shortly after a ppc initialization like after a turn
-			self.fieldworkAbortedAtWaypoint = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
-			self.vehicle.cp.fieldworkAbortedAtWaypoint = self.fieldworkAbortedAtWaypoint
-			self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.fieldworkAbortedAtWaypoint or -1)
+			self:rememberWaypointToContinueFieldwork()
+			self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.continueFieldworkAtWaypoint or -1)
 			self:changeToUnloadOrRefill()
 			self:startCourseWithPathfinding(self.unloadRefillCourse, 1, true)
 		else
@@ -340,8 +337,8 @@ end
 function FieldworkAIDriver:onEndCourse()
 	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		-- unload/refill course ended, return to fieldwork
-		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.fieldworkAbortedAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
-		self:startFieldworkWithPathfinding(self.vehicle.cp.fieldworkAbortedAtWaypoint or self.fieldworkAbortedAtWaypoint)
+		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.continueFieldworkAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
+		self:startFieldworkWithPathfinding(self.vehicle.cp.continueFieldworkAtWaypoint or self.continueFieldworkAtWaypoint)
 	else
 		self:debug('Fieldwork AI driver in mode %d ending course', self:getMode())
 		AIDriver.onEndCourse(self)
@@ -799,6 +796,25 @@ function FieldworkAIDriver:raiseImplements()
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_END_LINE)
 end
 
+function FieldworkAIDriver:rememberWaypointToContinueFieldwork()
+	local bestKnownCurrentWpIx = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
+	-- after we return from a refill/unload, continue a bit before the point where we left to
+	-- make sure not leaving any unworked patches
+	self.continueFieldworkAtWaypoint = self.course:getPreviousWaypointIxWithinDistance(bestKnownCurrentWpIx, 10)
+	if self.continueFieldworkAtWaypoint then
+		-- anything other than a turn start wp will work fine
+		if self.course:isTurnStartAtIx(self.continueFieldworkAtWaypoint) then
+			self.continueFieldworkAtWaypoint = self.continueFieldworkAtWaypoint - 1
+		end
+		self.vehicle.cp.continueFieldworkAtWaypoint = self.continueFieldworkAtWaypoint
+	else
+		self.continueFieldworkAtWaypoint = bestKnownCurrentWpIx
+	end
+	self:debug('Will return to fieldwork at waypoint %d', self.continueFieldworkAtWaypoint)
+end
+
+
 function FieldworkAIDriver:getCanShowDriveOnButton()
 	return self.state == self.states.ON_FIELDWORK_COURSE 
 end
+
