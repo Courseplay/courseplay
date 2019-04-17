@@ -1,6 +1,6 @@
 # Courseplay Six Beta for Farming Simulator 2019
 
- **[Download the latest developer version](https://github.com/Courseplay/courseplay/releases)** (the file ZZZ_Courseplay_[version].zip).
+ **[Download the latest developer version](https://github.com/Courseplay/courseplay/releases)** (the file Courseplay_[version].zip).
 
 ## Note that the current beta version does NOT support multiplayer!
 
