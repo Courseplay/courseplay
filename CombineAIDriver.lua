@@ -362,6 +362,14 @@ function CombineAIDriver:holdInTurnManeuver(isApproaching)
 	return self.heldForUnloadRefill or (self.vehicle.spec_combine.strawPSenabled and not isApproaching)
 end
 
+--- Should we return to the first point of the course after we are done?
+function CombineAIDriver:shouldReturnToFirstPoint()
+	-- Combines stay where they are after finishing work
+	-- TODO: call unload driver
+	return false
+end
+
+-- TODO: either implement these cleanly or remove them from AIDriver
 function CombineAIDriver:getHasCourseplayers()
 	return self.vehicle.courseplayers and #self.vehicle.courseplayers ~= 0
 end

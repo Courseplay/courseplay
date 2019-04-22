@@ -350,14 +350,19 @@ function FieldworkAIDriver:onEndCourse()
 		AIDriver.onEndCourse(self)
 	else
 		self:debug('Fieldwork AI driver in mode %d ending course', self:getMode())
-		local x, _, z = self.fieldworkCourse:getWaypointPosition(1)
-		if self:driveToPointWithPathfinding(x, z) then
-			-- pathfinding was successful, drive back to first point
-			self.state = self.states.RETURNING_TO_FIRST_POINT
-			self:raiseImplements()
-			self:foldImplements()
+		if self:shouldReturnToFirstPoint() then
+			self:debug('Returning to first point')
+			local x, _, z = self.fieldworkCourse:getWaypointPosition(1)
+			if self:driveToPointWithPathfinding(x, z) then
+				-- pathfinding was successful, drive back to first point
+				self.state = self.states.RETURNING_TO_FIRST_POINT
+				self:raiseImplements()
+				self:foldImplements()
+			else
+				-- no path or too short, stop here.
+				AIDriver.onEndCourse(self)
+			end
 		else
-			-- no path or too short, stop here.
 			AIDriver.onEndCourse(self)
 		end
 	end
@@ -428,6 +433,17 @@ function FieldworkAIDriver:onWaypointChange(ix)
 		end
 	end
 	AIDriver.onWaypointChange(self, ix)
+end
+
+--- Should we return to the first point of the course after we are done?
+function FieldworkAIDriver:shouldReturnToFirstPoint()
+	-- TODO: implement and check setting in course or HUD
+	if self.fieldworkCourse:isOnHeadland(self.fieldworkCourse:getNumberOfWaypoints()) then
+		self:debug('Course ends on headland, no return to first point')
+		return false
+	else
+		return true
+	end
 end
 
 function FieldworkAIDriver:getFieldSpeed()
