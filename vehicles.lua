@@ -784,7 +784,7 @@ function courseplay:getRealUnloadOrFillNode(workTool)
 			workTool.cp.unloadOrFillNode = node;
 
 			-- NORMAL FILLABLE TRAILERS WITH ALLOW TO BE FILLED FROM THE AIR
-		elseif workTool.cp.hasSpecializationTrailer and workTool.cp.hasSpecializationFillable and #workTool.spec_fillUnit.fillUnits > 0 then
+		elseif workTool.cp.hasSpecializationFillable and #workTool.spec_fillUnit.fillUnits > 0 then
 			-- Get the current exactFillRootNode.
 			local exactFillRootNode = workTool.spec_fillUnit.fillUnits[1].exactFillRootNode; -- TODO: Handle multiply exactFillRootNode for trailers with more than 1 fill plane. (temp fix for now)
 
