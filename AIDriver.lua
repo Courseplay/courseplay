@@ -397,7 +397,7 @@ end
 function AIDriver:startCourseWithAlignment(course, ix)
 	self.turnIsDriving = false
 	local alignmentCourse = nil
-	if self.vehicle.cp.alignment.enabled and self:isAlignmentCourseNeeded(course, ix) then
+	if self:isAlignmentCourseNeeded(course, ix) then
 		alignmentCourse = self:setUpAlignmentCourse(course, ix)
 	end
 	if alignmentCourse then
