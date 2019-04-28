@@ -91,7 +91,7 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 	if self.vehicle.cp.realisticDriving then
 		self:checkFruit()
 		-- TODO: check around turn maneuvers we may not want to pull back before a turn
-		if not self.fieldOnLeft then
+		if not self.fieldOnLeft or (self.fruitLeft > 0.75 and self.fruitRight > 0.75) then
 			-- I'm on the edge of the field, make a pocket on the right side and wait there for the unload
 			local pocketCourse, nextIx = self:createPocketCourse()
 			if pocketCourse then
