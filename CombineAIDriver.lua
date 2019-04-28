@@ -63,7 +63,7 @@ function CombineAIDriver:onWaypointPassed(ix)
 	self:checkFruit()
 	-- make sure we start making a pocket while we still have some fill capacity left as we'll be
 	-- harvesting fruit while making the pocket
-	if not self.fieldOnLeft then
+	if self:shouldMakePocket() then
 		self.fillLevelFullPercentage = self.pocketFillLevelFullPercentage
 	end
 	self:checkDistanceUntilFull(ix)
@@ -91,8 +91,8 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 	if self.vehicle.cp.realisticDriving then
 		self:checkFruit()
 		-- TODO: check around turn maneuvers we may not want to pull back before a turn
-		if not self.fieldOnLeft or (self.fruitLeft > 0.75 and self.fruitRight > 0.75) then
-			-- I'm on the edge of the field, make a pocket on the right side and wait there for the unload
+		if self:shouldMakePocket() then
+			-- I'm on the edge of the field or fruit is on both sides, make a pocket on the right side and wait there for the unload
 			local pocketCourse, nextIx = self:createPocketCourse()
 			if pocketCourse then
 				self:debug('No room to the left, making a pocket for unload')
@@ -105,7 +105,7 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 				-- revert to normal behavior
 				UnloadableFieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 			end
-		elseif self.fruitLeft > self.fruitRight then
+		elseif self:shouldPullBack() then
 			-- is our pipe in the fruit? (assuming pipe is on the left side)
 			local pullBackCourse = self:createPullBackCourse()
 			if pullBackCourse then
@@ -209,6 +209,16 @@ function CombineAIDriver:unloadFinished()
 	-- unload is done when fill levels are ok (not full) and not discharging anymore (either because we
 	-- are empty or the trailer is full)
 	return (self:allFillLevelsOk() and not discharging) or fillLevel < 0.1
+end
+
+function CombineAIDriver:shouldMakePocket()
+	-- on the outermost headland clockwise (field edge) or fruit both sides
+	return not self.fieldOnLeft or (self.fruitLeft > 0.75 and self.fruitRight > 0.75)
+end
+
+function CombineAIDriver:shouldPullBack()
+	-- is our pipe in the fruit? (assuming pipe is on the left side)
+	return self.fruitLeft > self.fruitRight
 end
 
 function CombineAIDriver:checkFruit()

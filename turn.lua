@@ -410,7 +410,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 						-- We have more waypoints, so we goto stage 4, which will still change waypoints together with checking if we can lower the implement
 						vehicle.cp.turnStage = 4;
 					end;
-					courseplay:debug(string.format("%s:(Turn) Ending turn, stage %d", nameNum(vehicle), vehicle.cp.turnStage ), 14);
+					courseplay:debug(string.format("%s:(Turn) Ending turn at waypoint %d, stage %d", nameNum(vehicle), vehicle.cp.curTurnIndex, vehicle.cp.turnStage ), 14);
 					return;
 				end;
 
@@ -1401,6 +1401,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		fromPoint.z = z;
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength - turnInfo.zOffset + 5);
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, false, true);
+		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker, turnInfo.targetNode)
 	else
 		--- Get the 2 circle center coordinate
 		local center1ZOffset = turnInfo.targetDeltaZ + turnInfo.zOffset + frontOffset;
