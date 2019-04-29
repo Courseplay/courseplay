@@ -145,7 +145,7 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 	elseif self.fieldWorkUnloadOrRefillState == self.states.REVERSING_TO_MAKE_A_POCKET then
 		self:setSpeed(self.vehicle.cp.speeds.reverse)
 	elseif self.fieldWorkUnloadOrRefillState == self.states.MAKING_POCKET then
-		self:setSpeed(self:getFieldSpeed())
+		self:setSpeed(self:getWorkSpeed())
 	elseif self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_PULL_BACK then
 		self:setSpeed(self.vehicle.cp.speeds.turn)
 	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET then

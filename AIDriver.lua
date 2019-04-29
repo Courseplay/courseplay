@@ -1060,7 +1060,7 @@ function AIDriver:startCourseWithPathfinding(course, ix)
 	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
 	if d < 3 * self.vehicle.cp.turnDiameter then
 		self:debug('Too close to target (%.1fm), will not perform pathfinding', d)
-		return false
+		return self:startCourseWithAlignment(course, ix)
 	end
 
 	local tx, _, tz = course:getWaypointPosition(ix)

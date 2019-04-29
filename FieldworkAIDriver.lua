@@ -234,14 +234,14 @@ function FieldworkAIDriver:driveFieldwork()
 		if self.vehicle:getCanAIVehicleContinueWork() then
 			self:debug('all tools ready, start working')
 			self.fieldworkState = self.states.WORKING
-			self:setSpeed(self:getFieldSpeed())
+			self:setSpeed(self:getWorkSpeed())
 		else
 			self:debugSparse('waiting for all tools to lower')
 			self:setSpeed(0)
 			self:checkFillLevels()
 		end
 	elseif self.fieldworkState == self.states.WORKING then
-		self:setSpeed(self:getFieldSpeed())
+		self:setSpeed(self:getWorkSpeed())
 		self:manageConvoy()
 		self:checkWeather()
 		self:checkFillLevels()
@@ -449,7 +449,13 @@ function FieldworkAIDriver:shouldReturnToFirstPoint()
 	end
 end
 
+--- Speed on the field when not working
 function FieldworkAIDriver:getFieldSpeed()
+	return self.vehicle.cp.speeds.field
+end
+
+-- Speed on the field when working
+function FieldworkAIDriver:getWorkSpeed()
 	-- use the speed limit supplied by Giants for fieldwork
 	local speedLimit = self.vehicle:getSpeedLimit() or math.huge
 	return math.min(self.vehicle.cp.speeds.field, speedLimit)
@@ -686,7 +692,7 @@ function FieldworkAIDriver:updateRemainingTime(ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
 		local turnTime = turns * self.turnDurationMs / 1000
-		self.vehicle.cp.timeRemaining = math.max(0, dist / (self:getFieldSpeed() / 3.6) + turnTime)
+		self.vehicle.cp.timeRemaining = math.max(0, dist / (self:getWorkSpeed() / 3.6) + turnTime)
 		self:debug('Distance to go: %.1f; Turns left: %d; Time left: %ds', dist, turns, self.vehicle.cp.timeRemaining)
 	else
 		self:clearRemainingTime()
@@ -764,7 +770,7 @@ function FieldworkAIDriver:calculateTightTurnOffset()
 	end
 	-- first of all, does the current waypoint have radius data?
 	local r = self.course:getWaypointRadius(self.ppc:getCurrentWaypointIx())
-	if not r then
+	if not r or r ~= r then
 		return smoothOffset(0)
 	end
 
@@ -779,7 +785,10 @@ function FieldworkAIDriver:calculateTightTurnOffset()
 	-- Ok, looks like a tight turn, so we need to move a bit left or right of the course
 	-- to keep the tool on the course.
 	local offset = self:getOffsetForTowBarLength(r, towBarLength)
-
+	if offset ~= offset then
+		-- check for nan
+		return smoothOffset(0)
+	end
 	-- figure out left or right now?
 	local nextAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx() + 1)
 	local currentAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx())
