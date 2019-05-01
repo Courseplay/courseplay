@@ -274,6 +274,7 @@ function courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, wait,unl
 	vehicle.Waypoints[vehicle.cp.waypointIndex] = { cx = cx, cz = cz, angle = angle, wait = wait,unload = unload, rev = rev, crossing = crossing, speed = speed, turnStart = turnStart, turnEnd = turnEnd };
 	courseplay:debug(string.format('%s: recording: set new waypoint (#%d): cx,cz=%.1f,%.1f, angle=%.1f, wait=%s, rev=%s, crossing=%s, speed=%.5f, turnStart=%s, turnEnd=%s', nameNum(vehicle), vehicle.cp.waypointIndex, cx, cz, angle, tostring(wait), tostring(rev), tostring(crossing), speed, tostring(turnStart), tostring(turnEnd)), 16);
 	vehicle.cp.numWayPoints = vehicle.cp.waypointIndex
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
 end;
 
 function courseplay:addSplitRecordingPoints(vehicle)

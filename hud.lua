@@ -1293,7 +1293,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	end
 	
 	if self.pagesWithSaveCourseIcon[page] then
-		vehicle.cp.hud.saveCourseButton:setShow(vehicle.cp.canDrive and not vehicle.cp.isDriving)
+		vehicle.cp.hud.saveCourseButton:setShow(vehicle.cp.canDrive)
 		vehicle.cp.hud.clearCurrentCourseButton:setShow(vehicle.cp.canDrive and not vehicle.cp.isDriving) --TODO the waypoint thing is a hack, make it nicer;
 	end
 
