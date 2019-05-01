@@ -1478,7 +1478,7 @@ end;
 function courseplay:toggleCustomFieldEdgePathShow(vehicle, force)
 	vehicle.cp.fieldEdge.customField.show = Utils.getNoNil(force, not vehicle.cp.fieldEdge.customField.show);
 	--print(string.format("%s: customField.show=%s", nameNum(vehicle), tostring(vehicle.cp.fieldEdge.customField.show)));
-	courseplay.buttons:setActiveEnabled(vehicle, "customFieldShow");
+	--courseplay.buttons:setActiveEnabled(vehicle, "customFieldShow");
 end;
 
 function courseplay:setCustomFieldEdgePathNumber(vehicle, changeBy, force)

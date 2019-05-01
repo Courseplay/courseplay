@@ -621,6 +621,13 @@ function courseplay.hud:renderHud(vehicle)
 		renderText(vehicle.cp.hud.changeDrawCourseModeButton.x + vehicle.cp.hud.changeDrawCourseModeButton.width * 0.5, self.topIconsY + self.fontSizes.version * 1.25, self.fontSizes.version, txt);
 		courseplay:setFontSettings('white', false);
 	end;
+	
+	--field edge path
+	if vehicle:getIsActive() and not vehicle.cp.canDrive and vehicle.cp.fieldEdge.customField.show and vehicle.cp.fieldEdge.customField.points ~= nil then
+		courseplay:showFieldEdgePath(vehicle, "customField");
+	end;
+	
+	
 end;
 
 function courseplay.hud:renderHudBottomInfo(vehicle)	
@@ -929,7 +936,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'setCustomSingleFieldEdge' then
 					if not vehicle.cp.fieldEdge.customField.isCreated 
 					and not vehicle:getIsCourseplayDriving() 
-					and not vehicle:getIsCourseplayDriving() 
+					and not vehicle.cp.canDrive
 					and not vehicle.cp.isRecording 
 					and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
@@ -938,8 +945,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:disableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 					end	
 				elseif entry.functionToCall == 'setCustomFieldEdgePathNumber' then
-					if vehicle.cp.fieldEdge.customField.isCreated then
+					if vehicle.cp.fieldEdge.customField.isCreated and not vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'setCustomFieldEdgePathNumber')
+						vehicle.cp.hud.clearCustomFieldEdgeButton:setShow(true)
+						vehicle.cp.hud.toggleCustomFieldEdgePathShowButton:setShow(true)
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER');
 						if vehicle.cp.fieldEdge.customField.fieldNum > 0 then
 							vehicle.cp.hud.content.pages[page][line][2].text = tostring(vehicle.cp.fieldEdge.customField.fieldNum);
@@ -948,11 +957,13 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						end;
 					else
 						self:disableButtonWithFunction(vehicle,page, 'setCustomFieldEdgePathNumber')
+						vehicle.cp.hud.clearCustomFieldEdgeButton:setShow(false)
+						vehicle.cp.hud.toggleCustomFieldEdgePathShowButton:setShow(false)
 					end					
 				
 				
 				elseif entry.functionToCall == 'addCustomSingleFieldEdgeToList' then
-					if vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0 then
+					if vehicle.cp.fieldEdge.customField.isCreated and vehicle.cp.fieldEdge.customField.fieldNum > 0 and not vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'addCustomSingleFieldEdgeToList')
 						if vehicle.cp.fieldEdge.customField.selectedFieldNumExists then
 							vehicle.cp.hud.content.pages[page][line][1].text = string.format(courseplay:loc('COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST'), vehicle.cp.fieldEdge.customField.fieldNum);
@@ -1259,7 +1270,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
 					end
-					
+				
 				end					
 			end		
 		end
@@ -2005,6 +2016,11 @@ function courseplay.hud:setupCopyCourseButton(vehicle,page,line)
 	vehicle.cp.hud.copyCourseButton = courseplay.button:new(vehicle, page, { 'iconSprite.png', 'copy' }, 'copyCourse', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h);
 end
 
+function courseplay.hud:setupCustomFieldEdgeButtons(vehicle,page,line)
+	vehicle.cp.hud.clearCustomFieldEdgeButton = courseplay.button:new(vehicle, page, { 'iconSprite.png', 'cancel' }, 'clearCustomFieldEdge', nil, self.buttonPosX[4], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
+	vehicle.cp.hud.toggleCustomFieldEdgePathShowButton = courseplay.button:new(vehicle, page, { 'iconSprite.png', 'eye' }, 'toggleCustomFieldEdgePathShow', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
+end
+
 function courseplay.hud:setupCoursePageButtons(vehicle,page)
 	local wMiddle	   = self.buttonSize.middle.w;
 	local hMiddle	   = self.buttonSize.middle.h;
@@ -2383,6 +2399,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'openAdvancedCourseGeneratorSettings', 1, 4, 1 )
 	self:addRowButton(vehicle,'setCustomSingleFieldEdge', 1, 5, 1 )
 	self:addSettingsRow(vehicle,'setCustomFieldEdgePathNumber', 1, 5, 2 )
+	self:setupCustomFieldEdgeButtons(vehicle,1,5)
 	self:addRowButton(vehicle,'addCustomSingleFieldEdgeToList', 1, 6, 1 )
 	
 	--page 3 settings
