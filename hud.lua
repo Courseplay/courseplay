@@ -462,10 +462,26 @@ function courseplay.hud:setContent(vehicle)
 	end	
 		
 	if vehicle.cp.runCounterActive and vehicle.cp.canDrive and vehicle.cp.driver.runCounter then
-		vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %d",vehicle.cp.driver.runCounter, vehicle.cp.maxRunNumber);
+		if vehicle.cp.siloSelectedFillType ~= nil and vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN then
+			vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %d",vehicle.cp.driver.runCounter, vehicle.cp.maxRunNumber);
+		else
+			vehicle.cp.hud.content.bottomInfo.runCounterText = courseplay:loc('UNKNOWN')..string.format(": %d / %d",vehicle.cp.driver.runCounter, vehicle.cp.maxRunNumber);
+		end
 	else
 		vehicle.cp.hud.content.bottomInfo.runCounterText = nil 
 	end
+	
+	
+	if vehicle.cp.hud.content.bottomInfo.runCounterText ~= nil then
+		local maxLength = 38
+		local courseNameLength = string.len(vehicle.cp.hud.content.bottomInfo.courseNameText)
+		local runCounterLength = string.len(vehicle.cp.hud.content.bottomInfo.runCounterText)
+		if courseNameLength + runCounterLength > maxLength then
+			local maxValidLength = maxLength-runCounterLength-3
+			vehicle.cp.hud.content.bottomInfo.courseNameText = string.sub(vehicle.cp.hud.content.bottomInfo.courseNameText,1, maxValidLength).."..."
+		end	
+	end
+	
 	------------------------------------------------------------------
 
 	-- AUTOMATIC PAGE RELOAD BASED ON VARIABLE STATE
