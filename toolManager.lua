@@ -307,12 +307,13 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		or workTool.cp.hasSpecializationTedder
 		or workTool.cp.hasSpecializationWindrower
 		or workTool.cp.hasSpecializationCutter
+		or workTool.cp.hasSpecializationWeeder
 		or workTool.spec_dischargeable
 		or courseplay:isMower(workTool)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
 		and not courseplay:isSprayer(workTool)
-		and not courseplay:isSowingMachine(workTool)
+		and not (courseplay:isSowingMachine(workTool) and not workTool.cp.hasSpecializationWeeder)
 		then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
@@ -1941,13 +1942,14 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 		or workTool.cp.hasSpecializationPlow
 		or workTool.cp.hasSpecializationTedder
 		or workTool.cp.hasSpecializationWindrower
+		or workTool.cp.hasSpecializationWeeder
 		or workTool.cp.hasSpecializationCutter
 		--or workTool.spec_dischargeable
 		or courseplay:isMower(workTool)
 		or courseplay:isAttachedCombine(workTool) 
 		or courseplay:isFoldable(workTool))
 		and not courseplay:isSprayer(workTool)
-		and not courseplay:isSowingMachine(workTool)
+		and not (courseplay:isSowingMachine(workTool) and not workTool.cp.hasSpecializationWeeder)
 		then
 			modeValid = true;
 		end
