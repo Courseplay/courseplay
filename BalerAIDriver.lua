@@ -40,9 +40,8 @@ function BalerAIDriver:allFillLevelsOk()
 end
 
 function BalerAIDriver:handleBaler()
-	-- turn.lua will raise/lower as needed, don't touch the balers while the turn maneuver is executed
-	if self.turnIsDriving then return end
-
+	-- turn.lua will raise/lower as needed, don't touch the balers while the turn maneuver is executed or while on temporary alignment / connecting track
+	if self.turnIsDriving or self.fieldworkState == self.states.ON_CONNECTING_TRACK or self.fieldworkState == self.states.TEMPORARY then return end
 	--if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
 	--  vehicle, self.baler, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit,workSpeed)
 	local specialTool, allowedToDrive, stoppedForReason = courseplay:handleSpecialTools(self.vehicle, self.baler, true, true, true, true, nil, nil, nil);
@@ -51,7 +50,6 @@ function BalerAIDriver:handleBaler()
 		local capacity = self.baler.cp.capacity
 		local fillLevel = self.baler.cp.fillLevel
 		if self.baler.spec_baler ~= nil then
-
 			--print(string.format("if courseplay:isRoundbaler(self.baler)(%s) and fillLevel(%s) > capacity(%s) * 0.9 and fillLevel < capacity and self.baler.spec_baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
 			--tostring(courseplay:isRoundbaler(self.baler)),tostring(fillLevel),tostring(capacity),tostring(self.baler.spec_baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
 			if courseplay:isRoundbaler(self.baler) and fillLevel > capacity * 0.9 and fillLevel < capacity and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
