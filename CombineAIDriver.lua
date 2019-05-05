@@ -345,6 +345,10 @@ function CombineAIDriver:createPocketCourse()
 	if startIx - backIx > 2 then
 		local pocketReverseWaypoints = {}
 		for i = startIx, backIx, -1 do
+			if self.course:isTurnStartAtIx(i) then
+				self:debug('There is a turn behind me at waypoint %d, no pocket', i)
+				return nil
+			end
 			local x, _, z = self.course:getWaypointPosition(i)
 			table.insert(pocketReverseWaypoints, {x = x, z = z, rev = true})
 		end

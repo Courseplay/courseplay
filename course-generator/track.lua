@@ -310,6 +310,7 @@ end
 ---@param course Polyline course waypoints, in the order of driving
 ---@param i number index of a waypoint which is a start of an up/down row block
 function fixHeadlandToCenterTransition(course, headlandSettings, turnRadius)
+	course:calculateData()
 	local i = 2
 	while i < #course do
 		if course[i].mayNeedTurn then
