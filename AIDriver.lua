@@ -519,7 +519,7 @@ end
 -- speed set in this loop.
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
-	if self.speed > 0 then
+	if self.speed > 0 and self.allowedToDrive then
 		self.lastMovingTime = self.vehicle.timer
 	end
 end
