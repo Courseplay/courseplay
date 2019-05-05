@@ -256,13 +256,6 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 		end
 	end
 
-	for i, block in ipairs( blocks ) do
-		nTotalTracks = nTotalTracks + #block
-		courseGenerator.debug( "Block %d has %d tracks", i, #block )
-		block.tracksWithWaypoints = addWaypointsToTracks( block, width, extendTracks )
-		block.covered = false
-	end
-
 	if #blocks > 20 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
 		-- don't waste time on unrealistic problems
 		courseGenerator.debug( 'Implausible number of blocks/tracks (%d/%d), not generating up/down rows', #blocks, nTotalTracks )
@@ -281,15 +274,15 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 	-- workedBlocks has now a the list of blocks we need to work on, including the track
 	-- leading to the block from the previous block or the headland.
 	local track = Polygon:new()
-	local connectingTracks = {}
+	local connectingTracks = {} -- only for visualization/debug
 	for i, block in ipairs( workedBlocks ) do
 		connectingTracks[ i ] = Polygon:new()
 		local nPoints = block.trackToThisBlock and #block.trackToThisBlock or 0
-		courseGenerator.debug( "Track to block %d has %d points", i, nPoints )
-		for j = 1, nPoints do
-			table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
-			-- do not add connecting tracks to the first block if there's no headland
-			if nHeadlandPasses > 0 then
+		courseGenerator.debug( "Connecting track to block %d has %d points", i, nPoints )
+		-- do not add connecting tracks to the first block if there's no headland
+		if nHeadlandPasses > 0 then
+			for j = 1, nPoints do
+				table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
 				table.insert( track, block.trackToThisBlock[ j ])
 				-- mark this section as a connecting track where implements should be raised as we are
 				-- driving on a previously worked headland track.
@@ -302,9 +295,18 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 		if continueWithTurn then
 			track[ #track ].turnStart = true
 		end
-		linkParallelTracks(track, block.tracksWithWaypoints,
+		local linkedTracks = linkParallelTracks(block.tracksWithWaypoints,
 			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings, continueWithTurn,
 			transformedHeadlands, rotatedIslands, width)
+		if not continueWithTurn then
+			-- this is a transition to/from up/down rows and may need to be fixed
+			-- by adding a turn if the delta angle is high enough.
+			-- for now, mark it, will fix after everything is finished
+			linkedTracks[1].mayNeedTurn = true
+		end
+		for _, p in ipairs(linkedTracks) do
+			table.insert(track, p)
+		end
 		-- TODO: This seems to be causing circling with large implements, disabling for now.
 		-- fixLongTurns( track, width )
 	end
@@ -493,7 +495,7 @@ end
 -- if leftToRight == true then start the first track on the left 
 -- centerSettings - all center related settings
 -- tracks
-function linkParallelTracks(result, parallelTracks, bottomToTop, leftToRight, centerSettings, startWithTurn, headlands,
+function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSettings, startWithTurn, headlands,
 														islands, workWidth)
 	if not bottomToTop then
 		-- we start at the top, so reverse order of tracks as after the generation,
@@ -521,6 +523,7 @@ function linkParallelTracks(result, parallelTracks, bottomToTop, leftToRight, ce
 	for i = start, #parallelTracks, 2 do
 		parallelTracks[ i ].waypoints = reverse( parallelTracks[ i ].waypoints)
 	end
+	local result = Polyline:new()
 	local startTrack = 1
 	local endTrack = #parallelTracks
 	local useHeadlandToNextRow = false
@@ -558,6 +561,7 @@ function linkParallelTracks(result, parallelTracks, bottomToTop, leftToRight, ce
 			courseGenerator.debug( "Track %d has no waypoints, skipping.", i )
 		end
 	end
+	return result
 end
 
 function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, workWidth)

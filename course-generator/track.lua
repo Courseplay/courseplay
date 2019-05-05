@@ -108,8 +108,8 @@
 -- 
 
 function generateCourseForField( field, implementWidth, headlandSettings, extendTracks,
-                                 minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
-                                 turnRadius, returnToFirstPoint, islandNodes, islandBypassMode, centerSettings )
+																 minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
+																 turnRadius, returnToFirstPoint, islandNodes, islandBypassMode, centerSettings )
 
 	local resultIsOk = true
 
@@ -132,7 +132,7 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 
 	if headlandSettings.nPasses > 0 and
 		(headlandSettings.mode == courseGenerator.HEADLAND_MODE_NORMAL or
-		 headlandSettings.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD) then
+			headlandSettings.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD) then
 		generateAllHeadlandTracks(field, implementWidth, headlandSettings, centerSettings,
 			minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside, turnRadius)
 
@@ -177,7 +177,7 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 			courseGenerator.debug("Adding waypoints to return to first point.")
 			addWpsToReturnToFirstPoint( field.course, field.boundary )
 		end
-		field.course:calculateData()
+		fixHeadlandToCenterTransition(field.course, headlandSettings, turnRadius)
 		if not headlandSettings.headlandFirst then
 			field.course = reverseCourse( field.course )
 		end
@@ -209,7 +209,6 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 	courseGenerator.debug("Course with %d waypoints generated.", #field.course)
 	return resultIsOk
 end
-
 
 --- Reverse a course. This is to build a sowing/cultivating etc. course
 -- from a harvester course.
@@ -303,8 +302,45 @@ function addWpsToReturnToFirstPoint( course, boundary )
 			table.insert( course, path[ i ])
 		end
 	end
+	course:calculateData()
 end
 
+
+--- Check the transitions from headland to the center up/down rows and add a turn when neeeded
+---@param course Polyline course waypoints, in the order of driving
+---@param i number index of a waypoint which is a start of an up/down row block
+function fixHeadlandToCenterTransition(course, headlandSettings, turnRadius)
+	local i = 2
+	while i < #course do
+		if course[i].mayNeedTurn then
+			-- this is the first waypoint of a block with up/down rows.
+			local d = 0
+			local totalAngle = 0
+			local cutHere = 0
+			-- walk back from the up/down row on the headland and see if we need a turn here
+			for j, point in course:iterator(i - 1, 1, -1) do
+				d = d + point.nextEdge.length
+				totalAngle = totalAngle + getDeltaAngle(point.nextEdge.angle, point.prevEdge.angle)
+				if point.radius > turnRadius * 2 and (d > turnRadius * math.pi or totalAngle > math.pi) then
+					-- here's a point on a relatively straight section but we turned quite a lot since
+					-- we left the up/down waypoint, so put a turn here
+					cutHere = j + 1
+					break
+				end
+			end
+			-- remove the waypoints between turn start and end
+			if cutHere > 0 and math.abs(totalAngle) > math.rad(headlandSettings.minHeadlandTurnAngleDeg) then
+				for j = cutHere, i - 1 do
+					table.remove(course, cutHere)
+				end
+				course[cutHere - 1].turnStart = true
+				course[cutHere].turnEnd = true
+			end
+		end
+		i = i + 1
+	end
+	course:calculateData()
+end
 -- set up all island related data for the field  
 function setupIslands( field, nPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
                        doSmooth, islandNodes )
