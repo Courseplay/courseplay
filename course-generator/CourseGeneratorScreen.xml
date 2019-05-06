@@ -12,7 +12,7 @@
 			<GuiElement type="text" profile="cpHeader" position="20px -10px" text="$l10n_COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" />
 			<GuiElement type="bitmap" profile="cpSettingsBg" position="20px -60px" id="settingsContainer">
 
-					<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 550px" id="boxLayoutTop">
+					<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 500px" id="boxLayoutTop">
 
 						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="fieldSelector" toolTip="$l10n_COURSEPLAY_FIELD_EDGE_PATH" onOpen="onOpenFieldSelector" onClick="onClickFieldSelector">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
@@ -59,14 +59,6 @@
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
 							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SKIP_ROWS"/>
-							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
-						</GuiElement>
-
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="returnToFirstPoint" toolTip="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT" onOpen="onOpenReturnToFirstPoint" onClick="onClickReturnToFirstPoint">
-							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
-							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
-							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_RETURN_TO_FIRST_POINT"/>
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 

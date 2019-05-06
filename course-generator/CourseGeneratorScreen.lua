@@ -366,20 +366,6 @@ function CourseGeneratorScreen:onClickSkipRows( state )
 end
 
 -----------------------------------------------------------------------------------------------------
--- Return to first point
-function CourseGeneratorScreen:onOpenReturnToFirstPoint( element, parameter )
-	local texts = {}
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_DEACTIVATED'))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_ACTIVATED'))
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.returnToFirstPoint and 2 or 1 )
-end
-
-function CourseGeneratorScreen:onClickReturnToFirstPoint( state )
-	self.vehicle.cp.returnToFirstPoint = state == 2
-end
-
------------------------------------------------------------------------------------------------------
 -- Multiple tools
 function CourseGeneratorScreen:onOpenMultiTools( element, parameter )
 	local texts = {}
