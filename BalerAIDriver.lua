@@ -39,7 +39,7 @@ function BalerAIDriver:allFillLevelsOk()
 	return true
 end
 
-function BalerAIDriver:handlingIsAllowed()
+function BalerAIDriver:isHandlingAllowed()
 	if self.turnIsDriving or self.fieldworkState == self.states.ON_CONNECTING_TRACK or self.fieldworkState == self.states.TEMPORARY  then
 		return false
 	end
@@ -48,7 +48,7 @@ end
 
 function BalerAIDriver:handleBaler()
 	-- turn.lua will raise/lower as needed, don't touch the balers while the turn maneuver is executed or while on temporary alignment / connecting track
-	if not self:handlingIsAllowed() then return end
+	if not self:isHandlingAllowed() then return end
 	--if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
 	--  vehicle, self.baler, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit,workSpeed)
 	local specialTool, allowedToDrive, stoppedForReason = courseplay:handleSpecialTools(self.vehicle, self.baler, true, true, true, true, nil, nil, nil);

@@ -28,16 +28,9 @@ function BaleWrapperAIDriver:init(vehicle)
 	self.baleWrapper = FieldworkAIDriver.getImplementWithSpecialization(vehicle, BaleWrapper)
 end
 
-function BaleWrapperAIDriver:isOkToDropBale()
-	if self.turnIsDriving or self.fieldworkState == self.states.ON_CONNECTING_TRACK or self.fieldworkState == self.states.TEMPORARY then
-		return false
-	end
-	return true
-end
-
 function BaleWrapperAIDriver:driveFieldwork()
 	-- Don't drop the bale in the turn or on temporary alignment or connecting tracks
-	if self:isOkToDropBale() then
+	if BalerAIDriver.isHandlingAllowed(self) then
 		-- stop while wrapping only if we deon't have a baler. If we do we should continue driving and working
 		-- on the next bale, the baler code will take care about stopping if we need to
 		if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE and not self.baler then
