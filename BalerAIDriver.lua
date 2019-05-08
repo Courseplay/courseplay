@@ -39,10 +39,16 @@ function BalerAIDriver:allFillLevelsOk()
 	return true
 end
 
-function BalerAIDriver:handleBaler()
-	-- turn.lua will raise/lower as needed, don't touch the balers while the turn maneuver is executed
-	if self.turnIsDriving then return end
+function BalerAIDriver:isHandlingAllowed()
+	if self.turnIsDriving or self.fieldworkState == self.states.ON_CONNECTING_TRACK or self.fieldworkState == self.states.TEMPORARY  then
+		return false
+	end
+	return true
+end
 
+function BalerAIDriver:handleBaler()
+	-- turn.lua will raise/lower as needed, don't touch the balers while the turn maneuver is executed or while on temporary alignment / connecting track
+	if not self:isHandlingAllowed() then return end
 	--if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
 	--  vehicle, self.baler, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit,workSpeed)
 	local specialTool, allowedToDrive, stoppedForReason = courseplay:handleSpecialTools(self.vehicle, self.baler, true, true, true, true, nil, nil, nil);
@@ -51,13 +57,12 @@ function BalerAIDriver:handleBaler()
 		local capacity = self.baler.cp.capacity
 		local fillLevel = self.baler.cp.fillLevel
 		if self.baler.spec_baler ~= nil then
-
 			--print(string.format("if courseplay:isRoundbaler(self.baler)(%s) and fillLevel(%s) > capacity(%s) * 0.9 and fillLevel < capacity and self.baler.spec_baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
 			--tostring(courseplay:isRoundbaler(self.baler)),tostring(fillLevel),tostring(capacity),tostring(self.baler.spec_baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
 			if courseplay:isRoundbaler(self.baler) and fillLevel > capacity * 0.9 and fillLevel < capacity and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
 				if not self.baler.spec_turnOnVehicle.isTurnedOn and not stoppedForReason then
-					self.baler:setIsTurnedOn(true, false);
-				end;
+					self.baler:setIsTurnedOn(true, false)
+				end
 				self:setSpeed(self.vehicle.cp.speeds.turn)
 			elseif fillLevel >= capacity and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
 				allowedToDrive = false;
@@ -75,10 +80,10 @@ function BalerAIDriver:handleBaler()
 		end
 		if self.baler.setPickupState ~= nil then
 			if self.baler.spec_pickup ~= nil and not self.baler.spec_pickup.isLowered then
-				self.baler:setPickupState(true, false);
+				self.baler:setPickupState(true, false)
 				courseplay:debug('lowering baler pickup')
-			end;
-		end;
+			end
+		end
 	end
 	if not allowedToDrive then
 		self:setSpeed(0)
