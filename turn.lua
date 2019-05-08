@@ -585,7 +585,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 			local dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, vehicleX, vehicleZ);
 
-			-- Set reverseing settings.
+			-- Set reversing settings.
 			if curTurnTarget.turnReverse then
 				refSpeed = vehicle.cp.speeds.reverse;
 				if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
@@ -788,26 +788,21 @@ function courseplay:turn(vehicle, dt, turnContext)
 			directionForce = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
 		end
 	end
-	-- hold while straw swatch is active (not during headland turn maneuvers though)
+
+	-- hold while straw swath is active (not during headland turn maneuvers though)
 	local holdInTurn = not vehicle.cp.headlandTurn and vehicle.cp.driver and vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0)
 	allowedToDrive = not holdInTurn and allowedToDrive
-	
-	--courseplay.debugVehicle(14, vehicle, 'turn speed = %.1f, allowedToDrive %s', refSpeed, allowedToDrive)
-	--vehicle,dt,steeringAngleLimit,acceleration,slowAcceleration,slowAngleLimit,allowedToDrive,moveForwards,lx,lz,maxSpeed,slowDownFactor,angle
-	if curTurnTarget and ((curTurnTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
-		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
-			if not moveForwards then
-				vehicle.nextMovingDirection = -1
-			else
-				vehicle.nextMovingDirection = 1
-			end
-		end
 
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
-	else
-		dtpZ = dtpZ * 0.85;
-		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
-	end;
+	if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+		if not moveForwards then
+			vehicle.nextMovingDirection = -1
+		else
+			vehicle.nextMovingDirection = 1
+		end
+	end
+
+	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+
 	courseplay:setTrafficCollision(vehicle, lx, lz, true);
 end;
 
@@ -1774,9 +1769,9 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].lowerImplement = true
 
 	--- Finish the turn
-	fromPoint.x, fromPoint.z = toPoint.x, toPoint.z
 	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromArcEnd(3)
-	courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, false, true);
+	-- add just one target well forward, making sure it is in front of the tractor
+	courseplay:addTurnTarget(vehicle, toPoint.x, toPoint.z, true, false)
 end
 
 function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftTurn)
