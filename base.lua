@@ -1693,7 +1693,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	newKey = newKey..'.courseplay'
 
 	
-	local runCounter = self.cp.driver.runCounter or 0
+	local runCounter = self.cp.driver and self.cp.driver.runCounter or 0
 	--CP basics
 	setXMLInt(xmlFile, newKey..".basics #aiMode", self.cp.mode)
 	setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
