@@ -907,3 +907,8 @@ function FieldworkAIDriver:findLoweringDurationMs()
 	end
 	self:debug('Final lowering duration: %d ms', self.loweringDurationMs)
 end
+
+--- Never continue automatically at a wait point
+function FieldworkAIDriver:isAutoContinueAtWaitPointEnabled()
+	return false
+end
