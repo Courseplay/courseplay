@@ -273,7 +273,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 			-- Relative position of the turn start waypoint from the vehicle.
 			-- Note that as we start the turn when the backMarkerOffset reaches the turn start point, this zOffset
-			-- is the same as tye backMarkerOffset
+			-- is the same as the backMarkerOffset
 			_, _, turnInfo.zOffset = worldToLocal(turnInfo.directionNode, turnContext.turnStartWp.x, vehicleY, turnContext.turnStartWp.z);
 			-- remember this as we'll need it later
 			turnInfo.deltaZBetweenVehicleAndTarget = turnInfo.targetDeltaZ
@@ -793,15 +793,20 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local holdInTurn = not vehicle.cp.headlandTurn and vehicle.cp.driver and vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0)
 	allowedToDrive = not holdInTurn and allowedToDrive
 
-	if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
-		if not moveForwards then
-			vehicle.nextMovingDirection = -1
-		else
-			vehicle.nextMovingDirection = 1
+	if curTurnTarget and ((curTurnTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
+		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+			if not moveForwards then
+				vehicle.nextMovingDirection = -1
+			else
+				vehicle.nextMovingDirection = 1
+			end
 		end
-	end
 
-	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+	else
+		dtpZ = dtpZ * 0.85;
+		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
+	end
 
 	courseplay:setTrafficCollision(vehicle, lx, lz, true);
 end;
@@ -841,7 +846,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, nil, turnInfo.reverseWPChangeDistance);
 	end;
 
-	--- Get the 2 circle center cordinate
+	--- Get the 2 circle center coordinate
 	center1.x,_,center1.z = localToWorld(turnInfo.directionNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset);
 	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.reverseOffset);
 
@@ -1341,12 +1346,12 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		end;
 
 		if not doNormalTurn then
-			--- We don't have space on the side we want to turn into, so we do the turn in oposite sirection
+			--- We don't have space on the side we want to turn into, so we do the turn in opposite direction
 			turnInfo.direction = turnInfo.direction * -1;
 		end;
 		courseplay:debug(("%s:(Turn) centerOffset=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(turnInfo.centerOffset), tostring(turnInfo.centerHeight)), 14);
 
-		--- Get the 2 circle center cordinate
+		--- Get the 2 circle center coordinate
 		center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, targetDeltaZ + turnInfo.zOffset + frontOffset);
 		center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction * -1, 0, targetDeltaZ + turnInfo.zOffset - turnInfo.centerHeight + frontOffset);
 
@@ -1374,18 +1379,18 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint);
 
 		--- Generate second turn circle (Reversing)
-		local zPossition = targetDeltaZ + turnInfo.zOffset - turnInfo.centerHeight + frontOffset;
-		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition);
+		local zPosition = targetDeltaZ + turnInfo.zOffset - turnInfo.centerHeight + frontOffset;
+		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition);
 		courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, turnInfo.turnRadius, turnInfo.direction, true, true);
 
-		--- Move a bit furthen back
-		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition - 2);
-		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition - (turnInfo.reverseWPChangeDistance * 1.5));
+		--- Move a bit further back
+		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition - 2);
+		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition - (turnInfo.reverseWPChangeDistance * 1.5));
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, nil, nil, true);
 
-		--- Move furthen back depending on the frontmarker
-		if turnInfo.frontMarker < zPossition then
-			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPossition - (turnInfo.reverseWPChangeDistance * 2));
+		--- Move further back depending on the frontmarker
+		if turnInfo.frontMarker < zPosition then
+			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, zPosition - (turnInfo.reverseWPChangeDistance * 2));
 			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.frontMarker - (turnInfo.reverseWPChangeDistance * 2));
 			courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, nil, nil, true);
 		end;
@@ -1400,11 +1405,10 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	else
 		--- Get the 2 circle center coordinate
 		local center1ZOffset = turnInfo.targetDeltaZ + turnInfo.zOffset + frontOffset;
-		local center2ZOffset = turnInfo.zOffset + frontOffset;
+		local center2ZOffset = frontOffset
 
 		center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, center1ZOffset);
 		center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction, 0, center2ZOffset);
-
 		--- Get the circle intersection points
 		intersect1.x, intersect1.z = center1.x, center1.z;
 		intersect2.x, intersect2.z = center2.x, center2.z;
