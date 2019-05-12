@@ -96,10 +96,8 @@ function Pathfinder:path (start, goal, nodes, max_iterations)
 			table.insert ( path, goal )
 			return path, iterations
 		end
-
 		self:removeNode ( openset, current )
 		current.onClosedSet = true
-
 		local neighbors = self:getNeighbors ( current, nodes )
 		for _, neighbor in ipairs ( neighbors ) do
 			if not neighbor.onClosedSet then
@@ -470,11 +468,12 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
 	for i = 1, nHeadlandsToUse do
 		for _, node in ipairs(headlands[i]) do
-			table.insert(nodes, node)
+			table.insert(nodes, PointXY:copy(node))
 		end
 	end
-	table.insert(nodes, fromNode)
-	table.insert(nodes, toNode)
+	local from, to = PointXY:copy(fromNode), PointXY:copy(toNode)
+	table.insert(nodes, from)
+	table.insert(nodes, to)
 
 	courseGenerator.debug( "Starting pathfinding on headland (%d waypoints)", #nodes)
 
@@ -482,7 +481,7 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	-- TODO: may need a customized isValidNeighbor if the working width is significantly smaller than the
 	-- waypoint distance
 	self.gridSpacing = math.max(courseGenerator.waypointDistance, workWidth) * 1.5
-	local path, iterations = self:path(fromNode, toNode, nodes, #nodes * 3)
+	local path, iterations = self:path(from, to, nodes, #nodes * 3)
 	courseGenerator.debug( "Number of iterations %d", iterations)
 	if path then
 		path = Polyline:new( path )
