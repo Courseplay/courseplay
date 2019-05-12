@@ -10,7 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Ferma autista" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Ferma alla fine o al punto di scarico" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Numero di corse da effettuare" />
-		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Resetta il numero attuale di corse"/>
 		<text name="COURSEPLAY_UNLIMITED" 									text="Illimitate" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Lato scarico" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="Nessun lato di scarico" />
@@ -113,7 +113,7 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Luci di avvertimento:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="mai accese" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="lampeggianti (sulla strada)" />
-		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="lampeggianti &amp; luci di emergenza (sulla strada)" />
+		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="lamp. &amp; 4frecce (sulla strada)" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="lampeggianti (sempre accesi)" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 						text="Controlli del Courseplay" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Controlli della trebbia" />
@@ -224,7 +224,7 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="morbide" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="secche" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="circolari" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE" 				text="Manovra di inversione in testata del campo" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE" 				text="Manovra d'inversione in testata del campo" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT" 	text="dritta" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE" 		text="circolare" />
 		<text name="COURSEPLAY_CENTER_MODE" 								text="Centro del campo (sperimentale)" />
@@ -321,9 +321,9 @@
 		<text name="COURSEPLAY_DRIVECONTROL" 								text="Impostazioni Drive Control" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 						text="Spento" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 						text="4WD Sempre" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 						text="4WD Sempre + differ. anteriore attivo nel lavoro in campo" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Sempre + differ. posteriore attivo nel lavoro in campo" />
-		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Sempre + entrambi differ. attivi nel lavoro in campo" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_2" 						text="4WD Sempre + diff. ant. attivo in campo" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Sempre + diff. post. attivo in campo" />
+		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Sempre + diff. attivi in campo" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Vuoi analizzare i campi automaticamente?" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Vuoi che i tuoi lavoratori guadagnino i salari (%s / ora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Utilizzo dei semi" />
