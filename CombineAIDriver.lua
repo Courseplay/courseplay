@@ -337,6 +337,7 @@ function CombineAIDriver:createPocketCourse()
 	local startIx = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
 	-- find the waypoint we want to back up to
 	local backIx = self.course:getPreviousWaypointIxWithinDistance(startIx, self.pocketReverseDistance)
+	if not backIx then return nil end
 	-- this is where we'll stop in the pocket for unload
 	self.unloadInPocketIx = startIx - 2
 	-- this where we are back on track after returning from the pocket
