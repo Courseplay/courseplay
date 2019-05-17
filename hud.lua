@@ -456,7 +456,6 @@ function courseplay.hud:setContent(vehicle)
 	end
 	
 	if (vehicle.cp.convoyActive and vehicle.cp.convoy.id~=nil) then
-		--vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<--%s--> %d/%d",(vehicle.cp.convoy.distance == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.distance,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.number,vehicle.cp.convoy.members)
         if (vehicle.cp.convoy.number == 1) then
             vehicle.cp.hud.content.bottomInfo.convoyText = string.format("<--%s--> %d:%d/%d",(vehicle.cp.convoy.trailDist == 0 and "--" or string.format("%d%s",vehicle.cp.convoy.trailDist,courseplay:loc('COURSEPLAY_UNIT_METER'))),vehicle.cp.convoy.id,vehicle.cp.convoy.number,vehicle.cp.convoy.members)
         elseif (vehicle.cp.convoy.number == vehicle.cp.convoy.members) then

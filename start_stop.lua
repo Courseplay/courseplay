@@ -114,10 +114,7 @@ function courseplay:start(self)
 	end;
 	--add to activeCoursePlayers
 	CpManager:addToActiveCoursePlayers(self);
-    --add to convoy
-    if self.cp.convoyActive then
-        CpManager:addToConvoy(self)
-    end
+    
 
 	self.cp.turnTimer = 8000
 	
@@ -478,6 +475,11 @@ function courseplay:start(self)
 		self.cp.ppc:initialize()
 	end
 	--print('startStop 509')
+    
+    --add to convoy
+    if self.cp.convoyActive then
+        CpManager:addToConvoy(self)
+    end
 
 end;
 

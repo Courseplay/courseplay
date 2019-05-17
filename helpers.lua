@@ -1269,11 +1269,3 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
 		courseplay.alreadyPrinted = {};
 	end;
 end
-
-function courseplay:haveSameCourse(vehicleA, vehicleB)
-	if (vehicleA.cp.numWaypoints == vehicleB.cp.numWaypoints) then
-		return (vehicleA.waypoints == vehicleB.waypoints)
-    else
-        return false
-    end
-end
