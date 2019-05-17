@@ -127,8 +127,8 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 	field.headlandTracks = {}
 
 	courseGenerator.debug("####### COURSE GENERATOR START ##########################################################")
-	courseGenerator.debug("Headland mode %s, number of passes %d", courseGenerator.headlandModeTexts[headlandSettings.mode],
-		headlandSettings.nPasses)
+	courseGenerator.debug("Headland mode %s, number of passes %d, center mode %s", courseGenerator.headlandModeTexts[headlandSettings.mode],
+		headlandSettings.nPasses, courseGenerator.centerModeTexts[centerSettings.mode])
 
 	if headlandSettings.nPasses > 0 and
 		(headlandSettings.mode == courseGenerator.HEADLAND_MODE_NORMAL or
@@ -177,7 +177,7 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 			courseGenerator.debug("Adding waypoints to return to first point.")
 			addWpsToReturnToFirstPoint( field.course, field.boundary )
 		end
-		fixHeadlandToCenterTransition(field.course, headlandSettings, turnRadius)
+		fixHeadlandToCenterTransition(field.course, headlandSettings, centerSettings, turnRadius, field.bigIslands, field.headlandTracks, implementWidth)
 		if not headlandSettings.headlandFirst then
 			field.course = reverseCourse( field.course )
 		end
@@ -309,33 +309,56 @@ end
 --- Check the transitions from headland to the center up/down rows and add a turn when neeeded
 ---@param course Polyline course waypoints, in the order of driving
 ---@param i number index of a waypoint which is a start of an up/down row block
-function fixHeadlandToCenterTransition(course, headlandSettings, turnRadius)
+function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings, turnRadius, islands, headlands, width)
 	course:calculateData()
 	local i = 2
-	while i < #course do
+		while i < #course do
 		if course[i].mayNeedTurn then
+			course[i].mayNeedTurn = nil
 			-- this is the first waypoint of a block with up/down rows.
-			local d = 0
-			local totalAngle = 0
-			local cutHere = 0
-			-- walk back from the up/down row on the headland and see if we need a turn here
-			for j, point in course:iterator(i - 1, 1, -1) do
-				d = d + point.nextEdge.length
-				totalAngle = totalAngle + getDeltaAngle(point.nextEdge.angle, point.prevEdge.angle)
-				if point.radius > turnRadius * 2 and (d > turnRadius * math.pi or totalAngle > math.pi) then
-					-- here's a point on a relatively straight section but we turned quite a lot since
-					-- we left the up/down waypoint, so put a turn here
-					cutHere = j + 1
-					break
+			if centerSettings.mode == courseGenerator.CENTER_MODE_CIRCULAR then
+				-- In this mode we want to reach the first up/down row waypoint on the headland as the starting row
+				-- is usually somewhere in the middle of the field
+				-- walk back from the up/down row on the headland and see if we have a connecting track here
+				local replaceFromHere = i - 1
+				for j, point in course:iterator(i - 2, 1, -1) do
+					if not point.isConnectingTrack then
+						replaceFromHere = j
+						break
+					end
 				end
-			end
-			-- remove the waypoints between turn start and end
-			if cutHere > 0 and math.abs(totalAngle) > math.rad(headlandSettings.minHeadlandTurnAngleDeg) then
-				for j = cutHere, i - 1 do
-					table.remove(course, cutHere)
+				local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(course[replaceFromHere], course[i],
+					getAllHeadlands(headlands, islands), width, true)
+				if pathToNextRow then
+					course:replaceElementsBetween(replaceFromHere, i, pathToNextRow)
+					print(i, replaceFromHere, #pathToNextRow)
+					i = replaceFromHere + #pathToNextRow
+					print(i, replaceFromHere, #pathToNextRow)
 				end
-				course[cutHere - 1].turnStart = true
-				course[cutHere].turnEnd = true
+			else
+				-- In other modes we add a turn maneuver if needed as we start at the row adjacent to the headland
+				local d = 0
+				local totalAngle = 0
+				local cutHere = 0
+				-- walk back from the up/down row on the headland and see if we need a turn here
+				for j, point in course:iterator(i - 1, 1, -1) do
+					d = d + point.nextEdge.length
+					totalAngle = totalAngle + getDeltaAngle(point.nextEdge.angle, point.prevEdge.angle)
+					if point.radius > turnRadius * 2 and (d > turnRadius * math.pi or totalAngle > math.pi) then
+						-- here's a point on a relatively straight section but we turned quite a lot since
+						-- we left the up/down waypoint, so put a turn here
+						cutHere = j + 1
+						break
+					end
+				end
+				-- remove the waypoints between turn start and end
+				if cutHere > 0 and math.abs(totalAngle) > math.rad(headlandSettings.minHeadlandTurnAngleDeg) then
+					for j = cutHere, i - 1 do
+						table.remove(course, cutHere)
+					end
+					course[cutHere - 1].turnStart = true
+					course[cutHere].turnEnd = true
+				end
 			end
 		end
 		i = i + 1
@@ -366,3 +389,12 @@ function setupIslands( field, nPasses, implementWidth, overlapPercent, minDistan
 	end
 end
 
+function getAllHeadlands(headlands, islands)
+	local result = headlands and {unpack(headlands)} or {}
+	for _, island in ipairs(islands) do
+		for _, islandHeadland in ipairs(island.headlandTracks) do
+			table.insert(result, islandHeadland)
+		end
+	end
+	return result
+end

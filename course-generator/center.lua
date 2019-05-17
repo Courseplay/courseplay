@@ -43,20 +43,23 @@ courseGenerator.CENTER_MODE_UP_DOWN = 1
 --  ----- 8 ---- > -------  /
 courseGenerator.CENTER_MODE_SPIRAL = 2
 
--- Circular mode, (for now) the area is split into two blocks whcih are then worked in
--- an alternating pattern:
---  ----- 1 ---- < -------  \
---  ----- 3 ---- < -------  |
---  ----- 5 ---- < -------  |
---  ----- 7 ---- < -------  | Block 1
---  ----- 9 ---- < -------  |
---  -----11 ---- < -------  /
---  ----- 2 ---- > ------  \
---  ----- 4 ---- > -------  |
---  ----- 6 ---- > -------  | Block 2
---  ----- 8 ---- > -------  |
---  -----10 ---- > -------  |
---  -----12 ---- > -------  /
+-- Circular mode, (for now) the area is split into multiple blocks which are then worked one by one. Work in each
+-- block starts around the middle, skipping a maximum of four rows to avoid 180 turns and working the block in
+-- a circular, racetrack like pattern.
+-- Depending on the number of rows, there may be a few of them left at the end which will need to be worked in a
+-- regular up/down pattern
+--  ----- 2 ---- > -------     \
+--  ----- 4 ---- > -------     |
+--  ----- 6 ---- > -------     |
+--  ----- 8 ---- > -------     | Block 1
+--  ----- 1 ---- < -------     |
+--  ----- 3 ---- < -------     |
+--  ----- 5 ---- < ------      |
+--  ----- 7 ---- < -------     /
+--  -----10 ---- > -------    \
+--  -----12 ---- > -------     |
+--  ----- 9 ---- < -------     | Block 2
+--  -----11 ---- < -------     /
 courseGenerator.CENTER_MODE_CIRCULAR = 3
 courseGenerator.centerModeTexts = {'up/down', 'spiral', 'circular'}
 courseGenerator.CENTER_MODE_MIN = courseGenerator.CENTER_MODE_UP_DOWN
@@ -565,12 +568,7 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 end
 
 function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, workWidth)
-	local allHeadlands = {unpack(headlands)}
-	for _, island in ipairs(islands) do
-		for _, islandHeadland in ipairs(island.headlandTracks) do
-			table.insert(allHeadlands, islandHeadland)
-		end
-	end
+	local allHeadlands = getAllHeadlands(headlands, islands)
 	local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
 	if not pathToNextRow then
 		-- should not happen, safety harness only
@@ -674,13 +672,55 @@ end
 --- See courseGenerator.CENTER_MODE_CIRCULAR for an explanation
 function reorderTracksForCircularFieldwork(parallelTracks)
 	local reorderedTracks = {}
-	for i = 1, math.ceil(#parallelTracks / 2) do
+	local SKIP_FWD = {} -- skipping rows towards the end of field
+	local SKIP_BACK = {} -- skipping rows towards the beginning of the field
+	local FILL_IN = {} -- filling in whatever is left after skipping
+	local n = #parallelTracks
+	local nSkip = 4
+	local rowsDone = {}
+	-- start in the middle
+	local i = nSkip + 1
+	table.insert(reorderedTracks, parallelTracks[i])
+	rowsDone[i] = true
+	local nDone = 1
+	local mode = SKIP_BACK
+	-- start circling
+	while nDone < n do
+		local nextI
+		if mode == SKIP_FWD then
+			nextI = i + nSkip + 1
+			mode = SKIP_BACK
+		elseif mode == SKIP_BACK then
+			nextI = i - nSkip
+			mode = SKIP_FWD
+		elseif mode == FILL_IN then
+			nextI = i + 1
+		end
+		if rowsDone[nextI] then
+			-- this has been done already, so skip forward to the next block
+			nextI = i + nSkip + 1
+			mode = SKIP_BACK
+		end
+		if nextI > n then
+			-- reached the end of the field with the current skip, start skipping less, but keep skipping rows
+			-- as long as we can to prevent backing up in turn maneuvers
+			nSkip = math.floor((n - nDone) / 2)
+			if nSkip > 0 then
+				nextI = i + nSkip + 1
+				mode = SKIP_BACK
+			else
+				-- no room to skip anymore
+				mode = FILL_IN
+				nextI = i + 1
+			end
+		end
+		i = nextI
+		rowsDone[i] = true
 		table.insert(reorderedTracks, parallelTracks[i])
-		table.insert(reorderedTracks, parallelTracks[i + math.ceil(#parallelTracks / 2)])
+		nDone = nDone + 1
 	end
 	return reorderedTracks
 end
-
 
 --- Find blocks of center tracks which have to be worked separately
 -- in case of non-convex fields or islands
@@ -1144,7 +1184,7 @@ function getTrackBetweenPointsOnHeadland( headland, startIx, endIx, step )
 	return track
 end
 
--- TODO: make sure this works with the spiral and circular center patterns as well.
+-- TODO: make sure this work with the spiral and circular center patterns as well.
 function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBlockDirection, nRowsToSkip )
 	local workedBlocks = {}
 	for i, block in ipairs( blocksInSequence ) do
@@ -1193,3 +1233,4 @@ function removeTurn( course, i, step )
 		course[ i + 1 ].turnEnd = nil
 	end
 end
+

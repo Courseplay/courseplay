@@ -953,6 +953,16 @@ function Polyline:removeElementsBetween( fromIx, toIx )
 	end
 end
 
+--- Replace vertices between (and including) two indexes
+--- @param replacement Polyline
+function Polyline:replaceElementsBetween(fromIx, toIx, replacement)
+	self:removeElementsBetween(fromIx, toIx)
+	for i, p in replacement:iterator() do
+		table.insert(self, fromIx + i - 1, PointXY:copy(p))
+	end
+	self:calculateData()
+end
+
 -- open line, no wrap around
 function Polyline:canWrapAround()
 	return false
