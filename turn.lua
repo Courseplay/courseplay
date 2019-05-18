@@ -1833,7 +1833,7 @@ function courseplay:haveHeadlands(vehicle)
 	return vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0;
 end;
 
-function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeWhenPosible)
+function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeWhenPosible, doNotAddLastPoint)
 	local endTurn = false;
 	local wpDistance = wpDistance;
 	local dist = courseplay:distance(fromPoint.x, fromPoint.z, toPoint.x, toPoint.z);
@@ -1844,12 +1844,14 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 		endTurn = turnEnd;
 	end;
 
+	-- add first point
 	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, endTurn, reverse, nil, nil, nil, changeWhenPosible);
 
+	-- add points between the first and last
 	local posX, posZ;
-	if numPointsNeeded > 0 then
+	if numPointsNeeded > 1 then
 		wpDistance = dist / numPointsNeeded;
-		for i=1, numPointsNeeded do
+		for i=1, numPointsNeeded - 1 do
 			posX = fromPoint.x + (i * wpDistance * dx);
 			posZ = fromPoint.z + (i * wpDistance * dz);
 
@@ -1857,6 +1859,9 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 		end;
 	end;
 
+	if doNotAddLastPoint then return end
+
+	-- add last point
 	local revPosX, revPosZ;
 	if reverse and secondaryReverseDistance then
 		revPosX = toPoint.x + (secondaryReverseDistance * dx);
@@ -2205,7 +2210,7 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, tx, tz, tDirec
 
 	-- add waypoints to the straight section from the vehicle to T1 (the start of the arc)
 	if generateStraightWaypoints then
-		courseplay:generateTurnStraightPoints(vehicle, {x = vx, z = vz}, t1, false)
+		courseplay:generateTurnStraightPoints(vehicle, {x = vx, z = vz}, t1, false, false, false, false, true)
 	end
 	-- leverage Claus' nice turn generator
 	courseplay:generateTurnCircle( vehicle, c1, t1, wp, turnRadius, leftOrRight, false, false )
