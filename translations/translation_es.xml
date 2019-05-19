@@ -37,7 +37,7 @@
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Conducir ahora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Conducir a:" />
 		<text name="UNKNOWN" 												text="Desconocido" />
-		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Cabecera sentido contrario agujas de reloj" />
+		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sentido de la cabecera" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Cabecera antes/después de ruta del campo" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"						text="Generar ruta del campo" />
 		<text name="COURSEPLAY_MULTI_TOOLS"					 				text="Varios Aperos Misma Anchura" />
@@ -70,7 +70,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": equipamiento necesita ser descargado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": el equipamiento necesita ser rellenado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Descargar pacas." />
-		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="atasco de trafico." />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Atasco de trafico." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Punto de descarga alcanzado" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Distancia a punto descarga" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Carga: %d de %d" />
@@ -87,12 +87,12 @@
 		<text name="COURSEPLAY_TURN_RADIUS" 								text="Radio de giro:" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Decalaje vertical:" />
 		<text name="COURSEPLAY_COMBINE" 									text="Cosechadora" />
-		<text name="COURSEPLAY_NONE" 										text="ningún" />
-		<text name="COURSEPLAY_CHOOSE_COMBINE" 								text="Cambiar cosechad:" />
-		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Buscar cosechad:" />
+		<text name="COURSEPLAY_NONE" 										text="Ninguno" />
+		<text name="COURSEPLAY_CHOOSE_COMBINE" 								text="Cambiar cosechadora:" />
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Buscar cosechadora:" />
 		<text name="COURSEPLAY_CURRENT" 									text="Actual:" />
-		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 							text="busqueda automática" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 								text="selección manual" />
+		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 							text="Busqueda automática" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 								text="Selección manual" />
 		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Buscar cosechadora en el campo %s" />
 		<text name="COURSEPLAY_COPY_COURSE" 								text="Copiar ruta:" />
 		<text name="COURSEPLAY_VEHICLE" 									text="Vehiculo" />
@@ -122,7 +122,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Configuración" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Cosechadora está girando" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Ningún area de campo de trabajo en esta ruta" />
-		<text name="COURSEPLAY_COMBINED_COURSES" 							text="rutas combinadas" />
+		<text name="COURSEPLAY_COMBINED_COURSES" 							text="Rutas combinadas" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 						text="Ir tras la cosechadora" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 						text="Ir junto a la cosechadora" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 							text="Ir hacia la cosechadora" />
@@ -214,19 +214,19 @@
         <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="Ruta generada con éxito, pero debido a la configuración de dirección actual puede causar problemas al conducir."/>
 		<text name="COURSEPLAY_HEADLAND" 									text="Cabecera" />
 		<text name="COURSEPLAY_BYPASS_ISLANDS"  							text="Evitar obstáculos en campos" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="dectivated" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="simple" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="rodear" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="Ninguno" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="Simple" />
+        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="Rodear" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  				text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  				text="Brusco" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  				text="Redondo" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Maniobra Inversa en Cabeceras"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Recto" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Curva" />
-		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
-		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
-		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
-		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Centro Campo (Beta)" />
+		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Arriba/Abajo" />
+		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circular" />
+		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Espiral" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="Activado" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Solo nombre" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nombre y Ruta" />
@@ -348,8 +348,8 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text="CP: Mover pala a posición de transporte" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Mover pala a posición de pre-descarga" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="CP: Mover pala a posición de descarga" />
-		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="mostrar el cursor" />
-		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="ocultar el cursor" />
+		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Mostrar el cursor" />
+		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Ocultar el cursor" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Botón Izq. Ratón" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Botón Der. Ratón" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Botón Cen. Ratón" />
