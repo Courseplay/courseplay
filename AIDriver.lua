@@ -1085,13 +1085,9 @@ function AIDriver:startCourseWithPathfinding(course, ix)
 	end
 
 	local tx, _, tz = course:getWaypointPosition(ix)
-	self.courseAfterPathfinding = course
-	self.waypointIxAfterPathfinding = ix
-	if self:driveToPointWithPathfinding(tx, tz) then
+	if self:driveToPointWithPathfinding(tx, tz, course, ix) then
 		return true
 	else
-		self.courseAfterPathfinding = nil
-		self.waypointIxAfterPathfinding = nil
 		return self:startCourseWithAlignment(course, ix)
 	end
 end
@@ -1106,8 +1102,10 @@ end
 ---
 ---@param tx number target coordinate
 ---@param tz number target coordinate
+---@param course Course course to start after pathfinding is done, can be nil
+---@param ix number course to start at after pathfinding, can be nil
 ---@return boolean true when a pathfinding successfully started
-function AIDriver:driveToPointWithPathfinding(tx, tz)
+function AIDriver:driveToPointWithPathfinding(tx, tz, course, ix)
 	self.turnIsDriving = false
 	if self.vehicle.cp.realisticDriving then
 		local vx, _, vz = getWorldTranslation(self.vehicle.rootNode)
@@ -1133,6 +1131,8 @@ function AIDriver:driveToPointWithPathfinding(tx, tz)
 				self:debug('Start pathfinding on field %d from vehicle at %d/%d (%s) and target at %d/%d (%s)',
 					fieldNum, vx, vz, tostring(courseplay:isField(vx, vz)), tx, tz, tostring(courseplay:isField(tx, tz)))
 				self.pathFindingStartedAt = self.vehicle.timer
+				self.courseAfterPathfinding = course
+				self.waypointIxAfterPathfinding = ix
 				-- TODO: move this coordinate transformation into the pathfinder, it is internal
 				local done, path = self.pathfinder:start({x = vx, y = -vz}, {x = tx, y = -tz},
 					Polygon:new(courseGenerator.pointsToXy(courseplay.fields.fieldData[fieldNum].points)))
@@ -1149,6 +1149,8 @@ function AIDriver:driveToPointWithPathfinding(tx, tz)
 	else
 		self:debug('Pathfinding turned off, falling back to dumb mode')
 	end
+	self.courseAfterPathfinding = nil
+	self.waypointIxAfterPathfinding = nil
 	return false
 end
 
