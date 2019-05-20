@@ -144,11 +144,24 @@ function UnloadableFieldworkAIDriver:handlePipe()
 end
 
 function UnloadableFieldworkAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() then
+	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() then
 		self:openPipe()
 	else
 		self:closePipe()
 	end
+end
+
+--- Support for AutoDrive mod: they'll only find us if we open the pipe
+function UnloadableFieldworkAIDriver:isAutoDriveWaitingForPipe()
+	return (self.vehicle.ad ~= nil and (self.vehicle.ad.tryingToCallDriver or self.vehicle.ad.driverOnTheWay))
+end
+
+--- Interface for AutoDrive
+---@return boolean true when the combine is waiting to be unloaded
+function UnloadableFieldworkAIDriver:isWaitingForUnload()
+	return self.state == self.states.ON_FIELDWORK_COURSE and
+		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL
 end
 
 function UnloadableFieldworkAIDriver:handleChopperPipe()
