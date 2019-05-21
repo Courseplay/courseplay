@@ -153,7 +153,7 @@ end
 
 --- Support for AutoDrive mod: they'll only find us if we open the pipe
 function UnloadableFieldworkAIDriver:isAutoDriveWaitingForPipe()
-	return self.vehicle.ad ~= nil and self.vehicle.ad:combineIsCallingDriver(self.vehicle)
+	return self.vehicle.ad ~= nil and self.vehicle.ad.combineIsCallingDriver and self.vehicle.ad:combineIsCallingDriver(self.vehicle)
 end
 
 --- Interface for AutoDrive
