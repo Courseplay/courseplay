@@ -392,3 +392,13 @@ end
 function CombineAIDriver:getFirstCourseplayer()
 	return self.vehicle.courseplayers and self.vehicle.courseplayers[1]
 end
+
+--- Interface for AutoDrive
+---@return boolean true when the combine is waiting to be unloaded
+function CombineAIDriver:isWaitingForUnload()
+	return self.state == self.states.ON_FIELDWORK_COURSE and
+		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+		(self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL or
+		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
+		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK)
+end

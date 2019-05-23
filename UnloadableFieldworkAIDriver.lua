@@ -157,7 +157,7 @@ function UnloadableFieldworkAIDriver:isAutoDriveWaitingForPipe()
 end
 
 --- Interface for AutoDrive
----@return boolean true when the combine is waiting to be unloaded
+---@return boolean true when the tool is waiting to be unloaded
 function UnloadableFieldworkAIDriver:isWaitingForUnload()
 	return self.state == self.states.ON_FIELDWORK_COURSE and
 		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
