@@ -154,7 +154,7 @@ function WaypointNode:setToWaypoint(course, ix, suppressLog)
 	self.ix = newIx
 	local x, y, z = course:getWaypointPosition(self.ix)
 	setTranslation(self.node, x, y, z)
-	setRotation(self.node, 0, math.rad(course.waypoints[self.ix].angle), 0)
+	setRotation(self.node, 0, course:getWaypointYRotation(self.ix), 0)
 end
 
 
@@ -165,7 +165,7 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 		-- beyond the last, so put it on the last for now
 		-- but use the direction of the one before the last as the last one's is bogus
 		self:setToWaypoint(course, course:getNumberOfWaypoints())
-		setRotation(self.node, 0, math.rad(course.waypoints[course:getNumberOfWaypoints() - 1].angle), 0)
+		setRotation(self.node, 0, course:getWaypointYRotation(course:getNumberOfWaypoints() - 1), 0)
 		-- And now, move ahead a bit.
 		local nx, ny, nz = localToWorld(self.node, 0, 0, distance)
 		setTranslation(self.node, nx, ny, nz)
@@ -193,7 +193,7 @@ function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 		-- TODO: this is actually the same as the last WP, should it be in the same elsif?
 		self:setToWaypoint(course, ix)
 		-- turn node to the incoming direction as we want to continue in the same direction until we reach it
-		setRotation(self.node, 0, math.rad(course.waypoints[math.max(1, ix - 1)].angle), 0)
+		setRotation(self.node, 0, course:getWaypointYRotation(ix - 1), 0)
 		-- And now, move ahead a bit.
 		local nx, ny, nz = localToWorld(self.node, 0, 0, distance)
 		setTranslation(self.node, nx, ny, nz)
@@ -221,7 +221,17 @@ Course = CpObject()
 function Course:init(vehicle, waypoints, temporary, first, last)
 	-- add waypoints from current vehicle course
 	---@type Waypoint[]
-	self.waypoints = {}
+	self.waypoints = setmetatable({}, {
+		-- add a function to clamp the index between 1 and #self.waypoints
+		__index = function(tbl, key)
+			local result = rawget(tbl, key)
+			if not result and type(key) == "number" then
+				result = rawget(tbl, math.min(math.max(1, key), #tbl))
+				courseplay.debugFormat(14, 'Invalid index %s, clamped to %s', key, math.min(math.max(1, key), #tbl))
+			end
+			return result
+		end
+	})
 	local n = 0
 	for i = first or 1, last or #waypoints do
 		-- make sure we pass in the original vehicle.Waypoints index with n+first
@@ -406,6 +416,23 @@ end
 
 function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].angle
+end
+
+--- Get the Y rotation of a waypoint (pointing into the direction of the next)
+function Course:getWaypointYRotation(ix)
+	local i = ix
+	-- at the last waypoint use the incoming direction
+	if ix >= #self.waypoints then
+		i = #self.waypoints - 1
+	elseif ix < 1 then
+		i = 1
+	end
+	local cx, _, cz = self:getWaypointPosition(i)
+	local nx, _, nz = self:getWaypointPosition(i + 1)
+	local dx, dz = MathUtil.vector2Normalize(nx - cx, nz - cz)
+	-- check for NaN
+	if dx ~= dx or dz ~= dz then return 0 end
+	return MathUtil.getYRotationFromDirection(dx, dz)
 end
 
 function Course:getRidgeMarkerState(ix)
@@ -673,4 +700,12 @@ end
 
 function Course:getNextRowLength(ix)
 	return self.waypoints[ix].lNextRow
+end
+
+function Course:draw()
+	for i = 1, math.max(#self.waypoints - 1, 1) do
+		local x1, y1, z1 = self:getWaypointPosition(i)
+		local x2, y2, z2 = self:getWaypointPosition(i + 1)
+		cpDebug:drawLine(x1, y1 + 2.7, z1, 1.7, 0, 0, x2, y2 + 2.7, z2);
+	end
 end

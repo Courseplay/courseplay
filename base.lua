@@ -941,7 +941,7 @@ function courseplay:showWorkWidth(vehicle)
 end;
 
 function courseplay:drawWaypointsLines(vehicle)
-	if not CpManager.isDeveloper or not vehicle.isControlled or vehicle ~= g_currentMission.controlledVehicle then return; end;
+	if not CpManager.isDeveloper or vehicle ~= g_currentMission.controlledVehicle then return; end;
 
 	local height = 2.5;
 	local r,g,b,a;

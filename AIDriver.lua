@@ -1276,7 +1276,9 @@ end
 --- called from courseplay:onDraw, a placeholder for showing debug infos, which can this way be added and reloaded
 --- without restarting the game.
 function AIDriver:onDraw()
-
+	if CpManager.isDeveloper and self.course then
+		self.course:draw()
+	end
 end
 
 function AIDriver:setDriveUnloadNow(driveUnloadNow)
