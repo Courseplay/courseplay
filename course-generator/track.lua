@@ -331,9 +331,7 @@ function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 					getAllHeadlands(headlands, islands), width, true)
 				if pathToNextRow then
 					course:replaceElementsBetween(replaceFromHere, i, pathToNextRow)
-					print(i, replaceFromHere, #pathToNextRow)
 					i = replaceFromHere + #pathToNextRow
-					print(i, replaceFromHere, #pathToNextRow)
 				end
 			else
 				-- In other modes we add a turn maneuver if needed as we start at the row adjacent to the headland

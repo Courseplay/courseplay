@@ -534,7 +534,7 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 		if parallelTracks[ i ].waypoints then
 			-- use turn maneuver from one track to the other if they are close to each other
 			local useHeadlandFromPreviousRow = useHeadlandToNextRow
-			useHeadlandToNextRow = centerSettings.mode ~= courseGenerator.CENTER_MODE_UP_DOWN and
+			useHeadlandToNextRow = centerSettings.mode == courseGenerator.CENTER_MODE_SPIRAL and
 				(i ~= endTrack and math.abs(parallelTracks[i].originalTrackNumber - parallelTracks[i + 1].originalTrackNumber) > 2)
 			for j, point in ipairs( parallelTracks[ i ].waypoints) do
 				-- the first point of a track is the end of the turn (except for the first track)
