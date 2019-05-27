@@ -194,6 +194,9 @@ function CombineAIDriver:onNextCourse()
 			self.fieldWorkUnloadOrRefillState = self.states.MAKING_POCKET
 			self.aiDriverOffsetX = self.pullBackSideOffset
 		end
+	elseif self.fieldworkState == self.states.TURNING then
+		self.ppc:setNormalLookaheadDistance()
+		UnloadableFieldworkAIDriver.onNextCourse(self)
 	else
 		UnloadableFieldworkAIDriver.onNextCourse(self)
 	end
@@ -401,4 +404,119 @@ function CombineAIDriver:isWaitingForUnload()
 		(self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL or
 		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
 		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK)
+end
+function CombineAIDriver:startTurn(ix)
+	self:debug('Starting a combine turn.')
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
+	if not self.turnContext:isHeadlandCorner() then
+		self:debug('Non headland turn.')
+		self.turnIsDriving = true
+		return nil
+	end
+	---@type cornerCourse Course
+	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
+	if cornerCourse then
+		cornerCourse:print()
+		self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
+			cornerCourse:getNumberOfWaypoints(), nextIx)
+		self.fieldworkState = self.states.TURNING
+		self:startCourse(cornerCourse, 1, self.course, nextIx)
+		-- tighter turns
+		self.ppc:setShortLookaheadDistance()
+	else
+		self:debug('Could not create a corner course, falling back to default headland turn')
+		self.turnIsDriving = true
+		return
+	end
+end
+
+---@param turnContext TurnContext
+---@param ix number
+function CombineAIDriver:createHeadlandCornerCourse(ix, turnContext)
+	if self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.turnOnField then
+		-- create a pocket in the corner so the combine stays on the field
+		return self:createOuterHeadlandCornerCourse(turnContext)
+	else
+		return self:createInnerHeadlandCornerCourse(turnContext)
+	end
+end
+
+--- Simple combine headland corner maneuver
+---@param turnContext TurnContext
+function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
+	local cornerWaypoints = {}
+	local turnRadius = self.vehicle.cp.turnDiameter / 2
+	local offset = turnRadius * 0.25
+	table.insert(cornerWaypoints, turnContext.turnStartWp)
+	local corner = turnContext:createCorner(self.vehicle, turnRadius)
+	-- drive forward up to the headland edge
+	local wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2)
+	table.insert(cornerWaypoints, wp)
+	-- drive further forward and start turning slightly
+	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 - offset, -offset)
+	table.insert(cornerWaypoints, wp)
+	-- reverse back to set up for the headland after the corner
+	wp = corner:getPointAtDistanceFromCornerEnd(-turnRadius * 0.5, self.vehicle.cp.workWidth / 2 + offset)
+	wp.rev = true
+	table.insert(cornerWaypoints, wp)
+	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
+end
+
+--- Create a pocket in the next row at the corner to stay on the field during the turn maneuver.
+---@param turnContext TurnContext
+function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
+	local cornerWaypoints = {}
+	local turnRadius = self.vehicle.cp.turnDiameter / 2
+	local offset = math.min(turnRadius * 0.6, self.vehicle.cp.workWidth)
+	local corner = turnContext:createCorner(self.vehicle, turnRadius)
+	local wp = corner:getPointAtDistanceFromCornerStart(self.vehicle.cp.workWidth / 2 )
+	wp.speed = self.vehicle.cp.speeds.turn * 0.75
+	table.insert(cornerWaypoints, wp)
+	-- drive forward up to the field edge
+	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance)
+	wp.speed = self.vehicle.cp.speeds.turn * 0.75
+	table.insert(cornerWaypoints, wp)
+	-- drive back to prepare for making a pocket
+	-- reverse back to set up for the headland after the corner
+	wp = corner:getPointAtDistanceFromCornerStart(turnRadius)
+	wp.rev = true
+	table.insert(cornerWaypoints, wp)
+	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 2)
+	wp.rev = true
+	table.insert(cornerWaypoints, wp)
+	-- now make a pocket in the inner headland to make room to turn
+	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.6, -offset * 0.8)
+	table.insert(cornerWaypoints, wp)
+	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.2, -offset * 0.9)
+	if not courseplay:isField(wp.x, wp.z) then
+		self:debug('No field where the pocket would be, this seems to be a 270 corner')
+		return nil
+	end
+	table.insert(cornerWaypoints, wp)
+	-- drive forward to the field edge on the inner headland
+	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance, -offset)
+	wp.speed = self.vehicle.cp.speeds.turn * 0.75
+	table.insert(cornerWaypoints, wp)
+	wp = corner:getPointAtDistanceFromCornerStart(turnRadius)
+	wp.rev = true
+	table.insert(cornerWaypoints, wp)
+	wp = corner:getPointAtDistanceFromCornerEnd(turnRadius / 3, turnRadius / 4)
+	wp.speed = self.vehicle.cp.speeds.turn * 0.5
+	table.insert(cornerWaypoints, wp)
+	wp = corner:getPointAtDistanceFromCornerEnd(turnRadius, turnRadius / 4)
+	wp.speed = self.vehicle.cp.speeds.turn * 0.5
+	table.insert(cornerWaypoints, wp)
+	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
+end
+
+function CombineAIDriver:onBlocked()
+	self:debug('Combine blocked, trying to switch to next waypoint...')
+	local nextWpIx = self.ppc:getCurrentWaypointIx() + 1
+	if nextWpIx >= self.course:getNumberOfWaypoints() then
+		self:debug('Combine blocked, already at last waypoint, ending course.')
+		self:onLastWaypoint()
+	else
+		self:debug('Combine blocked, trying to switch to next (%d) waypoint', nextWpIx)
+		self.ppc:initialize(nextWpIx)
+	end
 end

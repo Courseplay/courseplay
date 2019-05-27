@@ -34,7 +34,8 @@ FieldworkAIDriver.myStates = {
 	WAITING_FOR_UNLOAD_OR_REFILL ={}, -- while on the field
 	ON_CONNECTING_TRACK = {},
 	WAITING_FOR_LOWER = {},
-	WAITING_FOR_RAISE = {}
+	WAITING_FOR_RAISE = {},
+	TURNING = {}
 }
 
 -- Our class implementation does not call the constructor of base classes
@@ -49,7 +50,7 @@ function FieldworkAIDriver:init(vehicle)
 	self.debugChannel = 14
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
 	-- an unload/refill course
-	self.continueFieldworkAtWaypoint = 1
+	self.aiDriverData.continueFieldworkAtWaypoint = 1
 	-- force stop for unload/refill, for example by a tractor, otherwise the same as stopping because full or empty
 	self.heldForUnloadRefill = false
 	self.heldForUnloadRefillTimestamp = 0
@@ -58,6 +59,7 @@ function FieldworkAIDriver:init(vehicle)
 	-- duration of the last turn maneuver. This is a default value and the driver will measure
 	-- the actual turn times. Used to calculate the remaining fieldwork time
 	self.turnDurationMs = 20000
+	self:setMarkers()
 end
 
 function FieldworkAIDriver:setHudContent()
@@ -135,6 +137,7 @@ end
 --- Start the course and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	self:debug('Starting in mode %d', self.mode)
+	self:setMarkers()
 	self:beforeStart()
 	-- time to lower all implements
 	self:findLoweringDurationMs()
@@ -181,7 +184,6 @@ function FieldworkAIDriver:startFieldworkWithPathfinding(ix)
 		self:changeToFieldwork()
 	end
 end
-
 
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
@@ -251,6 +253,8 @@ function FieldworkAIDriver:driveFieldwork()
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 		self:setSpeed(self:getFieldSpeed())
+	elseif self.fieldworkState == self.states.TURNING then
+		self:setSpeed(self.vehicle.cp.speeds.turn)
 	end
 end
 
@@ -263,7 +267,7 @@ end
 function FieldworkAIDriver:stopAndChangeToUnload()
 	if self.unloadRefillCourse and not self.heldForUnloadRefill then
 		self:rememberWaypointToContinueFieldwork()
-		self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.continueFieldworkAtWaypoint or -1)
+		self:debug('at least one tool is empty/full, aborting work at waypoint %d.', self.aiDriverData.continueFieldworkAtWaypoint or -1)
 		self:changeToUnloadOrRefill()
 		self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 	else
@@ -346,8 +350,8 @@ end
 function FieldworkAIDriver:onEndCourse()
 	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		-- unload/refill course ended, return to fieldwork
-		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.continueFieldworkAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
-		self:startFieldworkWithPathfinding(self.vehicle.cp.continueFieldworkAtWaypoint or self.continueFieldworkAtWaypoint)
+		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.aiDriverData.continueFieldworkAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
+		self:startFieldworkWithPathfinding(self.aiDriverData.continueFieldworkAtWaypoint)
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		AIDriver.onEndCourse(self)
 	else
@@ -413,6 +417,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:updateRemainingTime(ix)
 		self:calculateTightTurnOffset()
+		self.aiDriverOffsetZ = 0
 		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 			if not self.course:isOnConnectingTrack(ix) then
 				-- reached the end of the connecting track, back to work
@@ -421,7 +426,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 			end
 		end
 		if self.fieldworkState == self.states.TEMPORARY then
-			-- band aid to make sure we have our implements lowered by the time we end the`
+			-- band aid to make sure we have our implements lowered by the time we end the
 			-- temporary course
 			if ix == self.course:getNumberOfWaypoints() then
 				self:debug('temporary (alignment) course is about to end, start work')
@@ -436,6 +441,10 @@ function FieldworkAIDriver:onWaypointChange(ix)
 		end
 	end
 	AIDriver.onWaypointChange(self, ix)
+end
+
+function FieldworkAIDriver:onTowedImplementPassedWaypoint(ix)
+	self:debug('Implement passsed waypoint %d', ix)
 end
 
 --- Should we return to the first point of the course after we are done?
@@ -835,8 +844,13 @@ end
 function FieldworkAIDriver:lowerImplements()
 	for _, implement in pairs(self.vehicle:getAttachedAIImplements()) do
 		implement.object:aiImplementStartLine()
+
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
+	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
+		-- sowing machines want to stop while the implement is being lowered
+		self.fieldworkState = self.states.WAITING_FOR_LOWER
+	end
 end
 
 function FieldworkAIDriver:raiseImplements()
@@ -850,17 +864,16 @@ function FieldworkAIDriver:rememberWaypointToContinueFieldwork()
 	local bestKnownCurrentWpIx = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
 	-- after we return from a refill/unload, continue a bit before the point where we left to
 	-- make sure not leaving any unworked patches
-	self.continueFieldworkAtWaypoint = self.course:getPreviousWaypointIxWithinDistance(bestKnownCurrentWpIx, 10)
-	if self.continueFieldworkAtWaypoint then
+	self.aiDriverData.continueFieldworkAtWaypoint = self.course:getPreviousWaypointIxWithinDistance(bestKnownCurrentWpIx, 10)
+	if self.aiDriverData.continueFieldworkAtWaypoint then
 		-- anything other than a turn start wp will work fine
-		if self.course:isTurnStartAtIx(self.continueFieldworkAtWaypoint) then
-			self.continueFieldworkAtWaypoint = self.continueFieldworkAtWaypoint - 1
+		if self.course:isTurnStartAtIx(self.aiDriverData.continueFieldworkAtWaypoint) then
+			self.aiDriverData.continueFieldworkAtWaypoint = self.aiDriverData.continueFieldworkAtWaypoint - 1
 		end
-		self.vehicle.cp.continueFieldworkAtWaypoint = self.continueFieldworkAtWaypoint
 	else
-		self.continueFieldworkAtWaypoint = bestKnownCurrentWpIx
+		self.aiDriverData.continueFieldworkAtWaypoint = bestKnownCurrentWpIx
 	end
-	self:debug('Will return to fieldwork at waypoint %d', self.continueFieldworkAtWaypoint)
+	self:debug('Will return to fieldwork at waypoint %d', self.aiDriverData.continueFieldworkAtWaypoint)
 end
 
 
@@ -915,4 +928,125 @@ end
 --- Never continue automatically at a wait point
 function FieldworkAIDriver:isAutoContinueAtWaitPointEnabled()
 	return false
+end
+
+--- For each work area: create nodes to mark the front and the back of the area. These will be used
+--- to determine when to raise/lower the tools
+function FieldworkAIDriver:setMarkers()
+	local addMarkers = function(object)
+		self:debug('Finding work areas of %s', nameNum(object))
+		for k, area in courseplay:workAreaIterator(object) do
+			-- TODO: generalize work area types to ignore
+			if area.start and area.height and area.width and
+				area.type ~= WorkAreaType.RIDGEMARKER and
+				area.type ~= WorkAreaType.COMBINESWATH and
+				area.type ~= WorkAreaType.COMBINECHOPPER
+			then
+				-- place a node at the middle of the work area front
+				local width, _, _ = localToLocal(area.width, area.start, 0, 0, 0)
+				local frontMarkerNode = courseplay.createNode(nameNum(object) .. ' front marker', width / 2, 0, 0, area.start)
+				-- place a node at the middle of the work area back
+				local backMarkerNode = courseplay.createNode(nameNum(object) .. ' back marker', width / 2, 0, 0, area.height)
+				table.insert(self.markers, {object = object, workArea = area, front = frontMarkerNode, back = backMarkerNode})
+				self:debug('Markers added to %s - %s', nameNum(object), g_workAreaTypeManager.workAreaTypes[area.type].name)
+			end
+		end
+	end
+	-- first remove any old markers
+	if self.markers then
+		for _, markers in pairs(self.markers) do
+			courseplay.destroyNode(markers.front)
+			courseplay.destroyNode(markers.back)
+		end
+	end
+	self.markers = {}
+	-- now go ahead and try to find the real markers
+	-- work areas of the vehicle itself
+	addMarkers(self.vehicle)
+	-- and then the work areas of all the implements
+	for _, implement in pairs(self.vehicle:getAttachedImplements()) do
+		addMarkers(implement.object)
+	end
+	local referenceNode = self.vehicle.cp.DirectionNode or self.vehicle.rootNode
+	if #self.markers == 0 then
+		-- make sure we always have a default front/back marker, placed on the direction node
+		self.aiDriverData.frontMarkerNode = courseplay.createNode(self.vehicle:getName() .. ' front marker', 0, 0, 0, referenceNode)
+		self.aiDriverData.backMarkerNode = courseplay.createNode(self.vehicle:getName() .. ' back marker', 0, 0, 0, referenceNode)
+		table.insert(self.markers,
+			{object = self.vehicle, front = self.aiDriverData.frontMarkerNode, back = self.aiDriverData.backMarkerNode})
+	end
+	-- now that we have all, find the foremost and the last
+	-- place everything on the vehicle root node first
+	self.frontMarkerDistance, self.backMarkerDistance = 0, 0
+	local frontMarkerDistance, backMarkerDistance = math.huge, -math.huge
+	for _, markers in pairs(self.markers) do
+		local _, _, dz = localToLocal(referenceNode, markers.front, 0, 0, 0)
+		self:debug(' -> %s: dz = %.1f', getName(markers.front), dz)
+		if dz < frontMarkerDistance then
+			frontMarkerDistance = dz
+			self.frontMarkerDistance = -dz
+			self.aiDriverData.frontMarkerNode = markers.front
+		end
+		_, _, dz = localToLocal(referenceNode, markers.back, 0, 0, 0)
+		self:debug(' -> %s: dz = %.1f', getName(markers.back), dz)
+		if dz > backMarkerDistance then
+			backMarkerDistance = dz
+			self.backMarkerDistance = -dz
+			self.aiDriverData.backMarkerNode = markers.back
+		end
+	end
+	self:debug('Front marker node: %s (%.1f m), back %s (%.1f) m',
+		getName(self.aiDriverData.frontMarkerNode), self.frontMarkerDistance,
+		getName(self.aiDriverData.backMarkerNode), self.backMarkerDistance)
+end
+
+---@param waypoint Waypoint
+function FieldworkAIDriver:getFrontMarkerDistanceToWaypoint(ix)
+	if self.aiDriverData.frontMarkerNode then
+		local _, _, dz = self.course:getWaypointLocalPosition(self.aiDriverData.frontMarkerNode, ix)
+		return dz
+	else
+		return nil
+	end
+end
+
+---@param targetNode node at the first waypoint of the row, pointing in the direction of travel. This is where
+--- the implement should be in the working position after a turn
+function FieldworkAIDriver:shouldLowerImplements(turnEndNode, reversing)
+	local _, _, dz = localToLocal(self.aiDriverData.frontMarkerNode or self.vehicle.rootNode, turnEndNode, 0, 0, 0)
+	local loweringDistance
+	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
+		-- sowing machines are stopped while lowering
+		loweringDistance = 0
+	else
+		-- others can be lowered without stopping so need to start lowering before we get to the turn end to be
+		-- in the working position by the time we get to the first waypoint of the next row
+		loweringDistance = self.vehicle.lastSpeed * self:getLoweringDurationMs() + 0.5 -- vehicle.lastSpeed is in meters per millisecond
+	end
+		self:debug('dz = %.1f, loweringDistance = %.1f', dz, loweringDistance)
+	if reversing then
+		return dz < 0
+	else
+		-- dz will be negative as we are behind the target node
+		return dz > - loweringDistance
+	end
+end
+
+---@param targetNode node at the last waypoint of the row, pointing in the direction of travel. This is where
+--- the implement should be raised when beginning a turn
+function FieldworkAIDriver:shouldRaiseImplements(turnStartNode)
+	-- turn start node in the front marker node's coordinate system
+	local _, _, dz = localToLocal(turnStartNode, self.aiDriverData.frontMarkerNode or self.vehicle.rootNode, 0, 0, 0)
+	self:debug('shouldRaiseImplements: dz = %.1f', dz)
+	-- turn start node just behind the marker
+	return dz < 0
+end
+
+
+function FieldworkAIDriver:onDraw()
+	if self.aiDriverData.frontMarkerNode and self.aiDriverData.backMarkerNode then
+		DebugUtil.drawDebugNode(self.aiDriverData.frontMarkerNode, getName(self.aiDriverData.frontMarkerNode))
+		DebugUtil.drawDebugNode(self.aiDriverData.backMarkerNode, getName(self.aiDriverData.backMarkerNode))
+	end
+	AIDriver.onDraw(self)
 end

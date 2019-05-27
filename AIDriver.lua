@@ -128,12 +128,17 @@ function AIDriver:init(vehicle)
 	self.states = {}
 	self:initStates(AIDriver.myStates)
 	self.vehicle = vehicle
+	-- set up a global container on the vehicle to persist AI Driver related data between AIDriver incarnations
+	if not vehicle.cp.aiDriverData then
+		vehicle.cp.aiDriverData = {}
+	end
+	self.aiDriverData = vehicle.cp.aiDriverData
 	self:debug('creating AIDriver')
 	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	---@type PurePursuitController
 	self.ppc = PurePursuitController(self.vehicle)
 	self.vehicle.cp.ppc = self.ppc
-	self.ppc:setAIDriver(self)
+	self.ppc:setAIDriver(self, 'onWaypointPassed', 'onWaypointChange')
 	self.ppc:enable()
 	self.nextWpIx = 1
 	self.acceleration = 1
@@ -284,7 +289,7 @@ function AIDriver:drive(dt)
 	end
 
 	self:driveCourse(dt)
-
+	self:checkIfBlocked()
 	self:drawTemporaryCourse()
 	self:resetSpeed()
 end
@@ -333,6 +338,10 @@ function AIDriver:driveCourse(dt)
 		-- let the code in turn drive the turn maneuvers
 		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
 		courseplay:turn(self.vehicle, dt, self.turnContext)
+	elseif self.useDirection then
+		lx, lz = self.ppc:getGoalPointDirection()
+		self:debug('%.1f %.1f', lx, lz)
+		self:driveVehicleInDirection(dt, self.allowedToDrive, moveForwards, lx / 2, lz, self:getSpeed())
 	else
 		-- use the PPC goal point when forward driving or reversing without trailer
 		local gx, _, gz = self.ppc:getGoalPointLocalPosition()
@@ -383,7 +392,11 @@ end
 ---@param nextCourse Course
 ---@param ix number
 function AIDriver:startCourse(course, ix, nextCourse, nextWpIx)
-	self:debug('Starting a course, will continue at waypoint %d afterwards.', ix)
+	if nextWpIx then
+		self:debug('Starting a course, at waypoint %d, will continue at waypoint %d afterwards.', ix, nextWpIx)
+	else
+		self:debug('Starting a course, at waypoint %d, no next course set.', ix)
+	end
 	self.nextWpIx = nextWpIx
 	self.nextCourse = nextCourse
 	self.course = course
@@ -447,7 +460,6 @@ function AIDriver:getReverseDrivingDirection()
 
 	local moveForwards = true
 	local isReverseActive = false
-	-- TODO: refactor this! No dependencies on modes here!
 	-- get the direction to drive to
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- take care of reversing
@@ -512,7 +524,7 @@ end
 -- and continue when needed
 function AIDriver:continueIfWaitTimeIsOver()
 	if self:isAutoContinueAtWaitPointEnabled() then
-		if (self.vehicle.timer - self.lastMovingTime) > self.vehicle.cp.waitTime * 1000 then
+		if (self.vehicle.timer - self.lastMoveCommandTime) > self.vehicle.cp.waitTime * 1000 then
 			self:debug('Waiting time of %d s is over, continuing', self.vehicle.cp.waitTime)
 			self:continue()
 		end
@@ -541,7 +553,10 @@ end
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
 	if self.speed > 0 and self.allowedToDrive then
-		self.lastMovingTime = self.vehicle.timer
+		self.lastMoveCommandTime = self.vehicle.timer
+		if self.vehicle:getLastSpeed() > 0.5 then
+			self.lastRealMovingTime = self.vehicle.timer
+		end
 	end
 end
 
@@ -595,7 +610,10 @@ end
 function AIDriver:startTurn(ix)
 	self.turnIsDriving = true
 	self:debug('Starting a turn.')
-	self.turnContext = TurnContext(self.course, ix)
+	-- as TurnContext() creates nodes when needed, store these nodes in the vehicle storage and on the the AIDriver
+	-- object, so the nodes are created only once and never destroyed (if this was a proper language with a destructor
+	-- then this would not be necessary)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
 end
 
 function AIDriver:onTurnEnd()
@@ -1238,7 +1256,7 @@ function AIDriver:startEngineIfNeeded()
 	end
 	-- reset motor auto stop timer when someone starts the engine so we won't stop it for a while just because
 	-- our speed is 0 (for example while waiting for the implements to lower)
-	self.lastMovingTime = self.vehicle.timer
+	self.lastMoveCommandTime = self.vehicle.timer
 end
 
 function AIDriver:getIsEngineReady()
@@ -1255,9 +1273,9 @@ end
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
 function AIDriver:stopEngineIfNotNeeded()
 	if self:isEngineAutoStopEnabled() then
-		if self.vehicle.timer - (self.lastMovingTime or math.huge) > 30000 then
+		if self.vehicle.timer - (self.lastMoveCommandTime or math.huge) > 30000 then
 			if self.vehicle.spec_motorized and self.vehicle.spec_motorized.isMotorStarted then
-				self:debug('Been stopped for more than 30 seconds, stopping engine. %d %d', self.vehicle.timer, (self.lastMovingTime or math.huge))
+				self:debug('Been stopped for more than 30 seconds, stopping engine. %d %d', self.vehicle.timer, (self.lastMoveCommandTime or math.huge))
 				self.vehicle:stopMotor()
 			end
 		end
@@ -1276,7 +1294,8 @@ end
 --- called from courseplay:onDraw, a placeholder for showing debug infos, which can this way be added and reloaded
 --- without restarting the game.
 function AIDriver:onDraw()
-	if CpManager.isDeveloper and self.course then
+	if CpManager.isDeveloper and self.course and
+		(self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH)  then
 		self.course:draw()
 	end
 end
@@ -1291,4 +1310,26 @@ end
 
 function AIDriver:refreshHUD()
 	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true);
+end
+
+function AIDriver:checkIfBlocked()
+	if self.lastRealMovingTime and self.lastMoveCommandTime and self.lastRealMovingTime < self.lastMoveCommandTime - 3000 then
+		if not self.blocked then
+			self:onBlocked()
+		end
+		self.blocked = true
+	else
+		if self.blocked then
+			self:onUnBlocked()
+		end
+		self.blocked = false
+	end
+end
+
+function AIDriver:onBlocked()
+	self:debug('Blocked...')
+end
+
+function AIDriver:onUnBlocked()
+	self:debug('Unblocked...')
 end

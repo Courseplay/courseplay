@@ -388,6 +388,10 @@ function Course:isOnHeadland(ix)
 	return self.waypoints[ix].lane and self.waypoints[ix].lane < 0
 end
 
+function Course:isOnOutermostHeadland(ix)
+	return self.waypoints[ix].lane and self.waypoints[ix].lane == -1
+end
+
 --- Returns the position of the waypoint at ix with the current offset applied.
 function Course:getWaypointPosition(ix)
 	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
@@ -405,12 +409,12 @@ end
 --- get waypoint position in the node's local coordinates
 function Course:getWaypointLocalPosition(node, ix)
 	local x, y, z = self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
-	local dx, _, dz = worldToLocal(node, x, y, z)
-	return dx, dz
+	local dx, dy, dz = worldToLocal(node, x, y, z)
+	return dx, dy, dz
 end
 
 function Course:havePhysicallyPassedWaypoint(node, ix)
-	local _, dz = self:getWaypointLocalPosition(node, ix)
+	local _, _, dz = self:getWaypointLocalPosition(node, ix)
 	return dz < 0;
 end
 
