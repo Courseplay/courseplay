@@ -128,12 +128,17 @@ function AIDriver:init(vehicle)
 	self.states = {}
 	self:initStates(AIDriver.myStates)
 	self.vehicle = vehicle
+	-- set up a global container on the vehicle to persist AI Driver related data between AIDriver incarnations
+	if not vehicle.cp.aiDriverData then
+		vehicle.cp.aiDriverData = {}
+	end
+	self.aiDriverData = vehicle.cp.aiDriverData
 	self:debug('creating AIDriver')
 	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
 	---@type PurePursuitController
 	self.ppc = PurePursuitController(self.vehicle)
 	self.vehicle.cp.ppc = self.ppc
-	self.ppc:setAIDriver(self)
+	self.ppc:setAIDriver(self, 'onWaypointPassed', 'onWaypointChange')
 	self.ppc:enable()
 	self.nextWpIx = 1
 	self.acceleration = 1
@@ -333,6 +338,10 @@ function AIDriver:driveCourse(dt)
 		-- let the code in turn drive the turn maneuvers
 		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
 		courseplay:turn(self.vehicle, dt, self.turnContext)
+	elseif self.useDirection then
+		lx, lz = self.ppc:getGoalPointDirection()
+		self:debug('%.1f %.1f', lx, lz)
+		self:driveVehicleInDirection(dt, self.allowedToDrive, moveForwards, lx / 2, lz, self:getSpeed())
 	else
 		-- use the PPC goal point when forward driving or reversing without trailer
 		local gx, _, gz = self.ppc:getGoalPointLocalPosition()
@@ -447,7 +456,6 @@ function AIDriver:getReverseDrivingDirection()
 
 	local moveForwards = true
 	local isReverseActive = false
-	-- TODO: refactor this! No dependencies on modes here!
 	-- get the direction to drive to
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- take care of reversing
@@ -595,7 +603,10 @@ end
 function AIDriver:startTurn(ix)
 	self.turnIsDriving = true
 	self:debug('Starting a turn.')
-	self.turnContext = TurnContext(self.course, ix)
+	-- as TurnContext() creates nodes when needed, store these nodes in the vehicle storage and on the the AIDriver
+	-- object, so the nodes are created only once and never destroyed (if this was a proper language with a destructor
+	-- then this would not be necessary)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
 end
 
 function AIDriver:onTurnEnd()

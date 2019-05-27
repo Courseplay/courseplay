@@ -96,6 +96,8 @@ function PurePursuitController:init(vehicle)
 	self.firstIx = 1
 	self.crossTrackError = 0
 	self.lastPassedWaypointIx = nil
+	self.waypointPassedListeners = {}
+	self.waypointChangeListeners = {}
 end
 
 -- destructor
@@ -130,7 +132,7 @@ function PurePursuitController:resetControlledNode()
 end
 
 -- initialize controller before driving
-function PurePursuitController:initialize(ix, aiDriver)
+function PurePursuitController:initialize(ix)
 	-- for now, if no course set, use the vehicle's current waypoints
 	if not self.course then
 		self.course = Course(self.vehicle, self.vehicle.Waypoints)
@@ -146,19 +148,18 @@ function PurePursuitController:initialize(ix, aiDriver)
 	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d of %d', self.firstIx, self.course:getNumberOfWaypoints())
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
-	if aiDriver then
-		self.aiDriver = aiDriver
-	end
 	self.sendWaypointChange = nil
 	self.sendWaypointPassed = nil
 end
 
 -- TODO: make this more generic and allow registering multiple listeners?
 -- could also implement listeners for events like notify me when within x meters of a waypoint, etc.
-function PurePursuitController:setAIDriver(aiDriver)
+function PurePursuitController:setAIDriver(aiDriver, onWaypointPassedFunc, onWaypointChangeFunc)
 	-- for backwards compatibility, PPC currently is initialized by the legacy code so
 	-- by the time AIDriver takes over, it is already there. So let AIDriver tell PPC who's driving.
 	self.aiDriver = aiDriver
+	table.insert(self.waypointPassedListeners, onWaypointPassedFunc)
+	table.insert(self.waypointChangeListeners, onWaypointChangeFunc)
 end
 
 function PurePursuitController:setLookaheadDistance(d)
@@ -202,15 +203,19 @@ end
 
 function PurePursuitController:notifyListeners()
 	if self.aiDriver then
-		if self.sendWaypointChange and self.aiDriver.onWaypointChange then
+		if self.sendWaypointChange then
 			-- send waypoint change event for all waypoints between the previous and current to make sure
 			-- we don't miss any
 			for ix = self.sendWaypointChange.prev + 1, self.sendWaypointChange.current do
-				self.aiDriver:onWaypointChange(ix)
+				for _, listener in ipairs(self.waypointChangeListeners) do
+					self.aiDriver[listener](self.aiDriver, ix)
+				end
 			end
 		end
-		if self.sendWaypointPassed and self.aiDriver.onWaypointPassed then
-			self.aiDriver:onWaypointPassed(self.sendWaypointPassed)
+		if self.sendWaypointPassed then
+			for _, listener in ipairs(self.waypointPassedListeners) do
+				self.aiDriver[listener](self.aiDriver, self.sendWaypointPassed)
+			end
 		end
 	end
 	self.sendWaypointChange = nil
@@ -502,6 +507,14 @@ function PurePursuitController:getGoalPointLocalPosition()
 	return localToLocal(self.goalWpNode.node, self.controlledNode, 0, 0, 0)
 end
 
+-- goal point normalized direction
+function PurePursuitController:getGoalPointDirection()
+	local gx, _, gz = localToLocal(self.goalWpNode.node, self.controlledNode, 0, 0, 0)
+	local dx, dz = MathUtil.vector2Normalize(gx, gz)
+	-- check for NaN
+	if dx ~= dx or dz ~= dz then return 0, 0 end
+	return dx, dz
+end
 
 function PurePursuitController:getGoalPointPosition()
 	return getWorldTranslation(self.goalWpNode.node)
