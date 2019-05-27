@@ -57,7 +57,6 @@ function courseplay:onLoad(savegame)
 	self.cp.turnOnField = true;
 	self.cp.oppositeTurnMode = false;
 	self.cp.waitForTurnTime = 0.00   --float
-	self.cp.lowerToolThisTurnLoop = true;
 	self.cp.turnStage = 0 --int
 	self.cp.aiTurnNoBackward = false --bool
 	self.cp.canBeReversed = nil --bool

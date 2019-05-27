@@ -154,7 +154,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		----------------------------------------------------------
 		if vehicle.cp.turnStage == 1 then
 			--- Cleanup in case we already have old info
-			courseplay:clearTurnTargets(vehicle, false); -- Make sure we have cleaned it from any previus usage.
+			courseplay:clearTurnTargets(vehicle); -- Make sure we have cleaned it from any previus usage.
 
 			--- Setting default turnInfo values
 			local turnInfo = {};
@@ -216,7 +216,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			local cx,cz = turnContext.turnEndWp.x, turnContext.turnEndWp.z
 			local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
 			setTranslation(turnInfo.targetNode, cx, cy, cz);
-
+			turnContext:setTargetNode(targetNode)
 			-- Rotate it's direction to the next wp.
 			local yRot = MathUtil.getYRotationFromDirection(turnContext.turnEndWp.dx, turnContext.turnEndWp.dz);
 			setRotation(turnInfo.targetNode, 0, yRot, 0);
@@ -401,6 +401,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			-- TURN STAGES 2 - Drive Turn maneuver
 			----------------------------------------------------------
 		elseif vehicle.cp.turnStage == 2 then
+			vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node)
 			if curTurnTarget then
 				if curTurnTarget.turnEnd then
 					if vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
@@ -410,7 +411,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 						-- We have more waypoints, so we goto stage 4, which will still change waypoints together with checking if we can lower the implement
 						vehicle.cp.turnStage = 4;
 					end;
-					courseplay:debug(string.format("%s:(Turn) Ending turn at waypoint %d, stage %d", nameNum(vehicle), vehicle.cp.curTurnIndex, vehicle.cp.turnStage ), 14);
+					courseplay:debug(string.format("%s:(Turn) Ending turn at waypoint %d, switch to stage %d", nameNum(vehicle), vehicle.cp.curTurnIndex, vehicle.cp.turnStage ), 14);
 					return;
 				end;
 
@@ -450,18 +451,10 @@ function courseplay:turn(vehicle, dt, turnContext)
 					-- See if we have to raise/lower implements at this point
 					if vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].raiseImplement then
 						courseplay:debug( string.format( "%s:(Turn) raising implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						if vehicle.cp.driver.raiseImplements then
-							vehicle.cp.driver:raiseImplements()
-						else
-							courseplay:raiseImplements(vehicle)
-						end
+						vehicle.cp.driver:raiseImplements()
 					elseif vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].lowerImplement then
 						courseplay:debug( string.format( "%s:(Turn) lowering implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						if vehicle.cp.driver.lowerImplements then
-							vehicle.cp.driver:lowerImplements()
-						else
-							courseplay:lowerImplements(vehicle)
-						end
+						vehicle.cp.driver:lowerImplements()
 					end
 					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 					local changeDir = ((curTurnTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not curTurnTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
@@ -548,19 +541,14 @@ function courseplay:turn(vehicle, dt, turnContext)
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
+
 			-- Lower implement and continue on next lane
-			if lowerImplements then
-				if vehicle.cp.abortWork == nil then
-					if vehicle.cp.driver.lowerImplements then
-						vehicle.cp.driver:lowerImplements()
-					else
-						courseplay:lowerImplements(vehicle)
-					end
-					courseplay:addTemporaryMarker(vehicle, frontMarker)
-				end;
+			if vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
+				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
+				vehicle.cp.driver:lowerImplements()
+				courseplay:addTemporaryMarker(vehicle, vehicle.cp.aiDriverData.frontMarkerNode)
 
 				vehicle.cp.isTurning = nil;
-				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
 				-- move on to the turnEnd (targetNode)
 				courseplay:setWaypointIndex(vehicle, turnContext.turnEndWp.cpIndex);
@@ -615,19 +603,14 @@ function courseplay:turn(vehicle, dt, turnContext)
 				refSpeed = vehicle.cp.speeds.reverse;
 				lowerImplements = deltaZ > frontMarker;
 			end;
+
 			-- Lower implement and continue on next lane
-			if lowerImplements then
-				if vehicle.cp.abortWork == nil then
-					if vehicle.cp.driver.lowerImplements then
-						vehicle.cp.driver:lowerImplements()
-					else
-						courseplay:lowerImplements(vehicle)
-					end
-					courseplay:addTemporaryMarker(vehicle, frontMarker)
-				end;
+			if vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
+				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
+				vehicle.cp.driver:lowerImplements()
+				courseplay:addTemporaryMarker(vehicle, vehicle.cp.aiDriverData.frontMarkerNode)
 
 				vehicle.cp.isTurning = nil;
-				vehicle.cp.waitForTurnTime = vehicle.timer + turnOutTimer;
 
 				courseplay:setWaypointIndex(vehicle, turnContext.turnEndWp.cpIndex);
 				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
@@ -649,7 +632,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 
 		----------------------------------------------------------
-		-- TURN STAGES 0 - Finish lane and raise implement and togo turn stage 1
+		-- TURN STAGES 0 - Finish lane and raise implement and change to stage 1
 		----------------------------------------------------------
 	else
 		--- Add WP to follow while doing last bit before raising Implement
@@ -663,39 +646,16 @@ function courseplay:turn(vehicle, dt, turnContext)
 			courseplay:addTurnTarget(vehicle, posX, posZ);
 		end;
 
-		if vehicle.cp.lowerToolThisTurnLoop then
-			if vehicle.cp.driver.lowerImplements then
-				vehicle.cp.driver:lowerImplements()
-			else
-				courseplay:lowerImplements(vehicle)
-			end
-			vehicle.cp.lowerToolThisTurnLoop = false;
-		end;
-
 		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
 		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
-
-		local wpX, wpZ = turnContext.turnStartWp.x, turnContext.turnStartWp.z;
-		local _, _, disZ = worldToLocal(realDirectionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
-
-		-- we don't want to turn off anything during a headland turn.
-		local _, isHeadlandCorner = turnContext:getDirectionChangeOfTurn()
-
-		if disZ < backMarker then
-			if not vehicle.cp.noStopOnTurn then
-				vehicle.cp.waitForTurnTime = vehicle.timer + turnTimer;
-			end;
+		if vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartWpNode.node) then
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
-			if not isHeadlandCorner then
-				if vehicle.cp.driver.raiseImplements then
-					vehicle.cp.driver:raiseImplements()
-				else
-					courseplay:raiseImplements(vehicle)
-				end
+			if not turnContext.isHeadlandCornerTurn then
+				vehicle.cp.driver:raiseImplements()
 			end
 			vehicle.cp.turnStage = 1;
-		end;
+		end
 	end;
 
 	----------------------------------------------------------
@@ -887,7 +847,6 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	else
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, nil, true);
-		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker, turnInfo.targetNode)
 	end;
 end;
 
@@ -1007,7 +966,6 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 	else
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.reverseOffset + turnInfo.directionNodeToTurnNodeLength + 5);
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, nil, true);
-		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker, turnInfo.targetNode)
 	end;
 end;
 
@@ -1057,7 +1015,6 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 	--- Extra WP - End Turn turnInfo.frontMarker
 	posX, _, posZ = localToWorld(turnInfo.targetNode, 0, 0, -turnInfo.zOffset + (turnInfo.frontMarker < 0 and -turnInfo.frontMarker or 0) + 5);
 	courseplay:addTurnTarget(vehicle, posX, posZ, true);
-	courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker, turnInfo.targetNode)
 end;
 
 function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
@@ -1401,7 +1358,6 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		fromPoint.z = z;
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.directionNodeToTurnNodeLength - turnInfo.zOffset + 5);
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, false, true);
-		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker, turnInfo.targetNode)
 	else
 		--- Get the 2 circle center coordinate
 		local center1ZOffset = turnInfo.targetDeltaZ + turnInfo.zOffset + frontOffset;
@@ -1440,7 +1396,6 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, false, true);
 
 		-- make sure implement is lowered by the time we get to the up/down row, so start lowering well before
-		courseplay.setLowerImplementsPoint(vehicle, turnInfo.frontMarker, turnInfo.targetNode)
 	end;
 end;
 
@@ -1978,8 +1933,7 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, rev
 	end;
 end
 
-function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
-	vehicle.cp.lowerToolThisTurnLoop = Utils.getNoNil(lowerToolThisTurnLoop, true); -- if lowerToolThisTurnLoop is set to false, it will not lower any implements in the next turn loop
+function courseplay:clearTurnTargets(vehicle)
 	vehicle.cp.turnStage = 0;
 	vehicle.cp.turnTargets = {};
 	vehicle.cp.curTurnIndex = 1;
@@ -2002,35 +1956,6 @@ function courseplay:clearTurnTargets(vehicle, lowerToolThisTurnLoop)
 	end
 end
 
-function courseplay:raiseImplements(vehicle)
-	for _,workTool in pairs(vehicle.cp.workTools) do
-		local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true, false,true,nil,nil,nil);
-		if not specialTool then
-			courseplay.debugVehicle(12, workTool, 'raising.')
-			workTool:aiImplementEndLine()
-			if workTool.spec_pickup and workTool.spec_pickup.isLowered then
-				workTool:setPickupState(false)
-			end
-		end
-	end
-end
-
-function courseplay:lowerImplements(vehicle)
-	for _,workTool in pairs(vehicle.cp.workTools) do
-		local specialTool = courseplay:handleSpecialTools(vehicle,workTool,true,true,true,nil,nil,nil);
-		if not specialTool then
-			courseplay.debugVehicle(12, workTool, 'lowering.')
-			workTool:aiImplementStartLine()
-			if workTool.spec_pickup and not workTool.spec_pickup.isLowered then
-				workTool:setPickupState(true)
-			end
-		end
-	end
-	-- according the Jos@Giants this should make sure that getCanAIImplementContinueWork works correctly, but it
-	-- did not help, still returns true during lowering.
-	vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
-end
-
 -- @return true if all implements which have been started lowering are still moving, false if they are in their
 -- final position or have not been started lowering
 function courseplay:needToWaitForTools(vehicle)
@@ -2039,7 +1964,7 @@ function courseplay:needToWaitForTools(vehicle)
 		-- the stock Giants getIsLowered() returns true from the moment the tool starts lowering
 		if workTool.getIsLowered and workTool:getIsLowered() then
 			-- started lowering, is it now really lowered? if not, must wait
-			wait = not courseplay:isLowered(workTool) or wait
+			wait = not workTool:getCanAIImplementContinueWork() or wait
 		end
 	end
 	return wait
@@ -2139,30 +2064,6 @@ function courseplay:findTurnTargetWaypointIx(vehicle, turnEndNode)
 	courseplay:debug(string.format("%s:(Turn) turn target is at waypoint index %d", nameNum(vehicle), targetIx and targetIx or -1), 14)
 	return targetIx
 end
-
-function courseplay.setLowerImplementsPoint(vehicle, frontMarker, turnEndNode)
-	local lowerDzFromTargetNode = -frontMarker - 2
-	if vehicle.cp.driver and vehicle.cp.driver.getLoweringDurationMs then
-		-- the distance we travel while lowering the implement
-		local loweringDistance = vehicle.lastSpeed * vehicle.cp.driver:getLoweringDurationMs() -- vehicle.lastSpeed is in meters per millisecond
-		-- must lower at this local distance from the target node
-		lowerDzFromTargetNode = -frontMarker - loweringDistance
-		courseplay:debug(string.format("%s:(Turn) Last speed is %.1f km/h, lowering duration is %d ms, will lower implements at %.1f + %.1f m",
-			nameNum(vehicle), vehicle.lastSpeed * 3600, vehicle.cp.driver:getLoweringDurationMs(), -frontMarker, -loweringDistance), 14)
-	end
-	-- index of the waypoint closest to the turn end
-	local targetIx = courseplay:findTurnTargetWaypointIx(vehicle, turnEndNode)
-	local lowerImplementAt
-	if targetIx then
-		lowerImplementAt = courseplay.getWpIxInDistanceFromEnd(vehicle.cp.turnTargets, lowerDzFromTargetNode, targetIx)
-		if lowerImplementAt then
-			courseplay:debug(string.format("%s:(Turn) Will lower implement at waypoint index %d (%.1fm)",
-				nameNum(vehicle), lowerImplementAt, lowerDzFromTargetNode), 14)
-			vehicle.cp.turnTargets[lowerImplementAt].lowerImplement = true
-		end
-	end
-end
-
 
 --[[
 The vehicle at vehiclePos moving into the direction of WP waypoint. 
@@ -2298,20 +2199,6 @@ end
 
 ---@class Corner
 Corner = CpObject()
-
---- Temporary compatibility constructor until we finally use the Course class only
-function Corner.createCornerFromLegacyWaypoints(vehicle, ix, r)
-	local startAngleDeg = vehicle.Waypoints[ix - 1].angle -- use the _incoming_ angle of the start waypoint
-	local startWp = Waypoint(vehicle.Waypoints[ix], ix)
-	-- use the average angle of the turn end and the next wp as there is often a bend there
-	local nextIx = math.min(#vehicle.Waypoints, ix + 2)
-	local endAngleDeg = math.deg(getAverageAngle(math.rad(vehicle.Waypoints[ix + 1].angle), math.rad(vehicle.Waypoints[nextIx].angle)))
-	courseplay.debugVehicle(14, vehicle, 'start angle: %.1f, end angle: %.1f (from %.1f and %.1f)', startAngleDeg,
-		endAngleDeg, vehicle.Waypoints[ix+ 1].angle, vehicle.Waypoints[nextIx].angle)
-	local endWp = Waypoint(vehicle.Waypoints[ix + 1], ix + 1)
-
-	return Corner(vehicle, startAngleDeg, startWp, endAngleDeg, endWp, r, vehicle.cp.totalOffsetX)
-end
 
 -- @param vehicle the vehicle
 -- @param startAngleDeg the angle we are arriving at the turn start waypoint (not the angle of the turn start wp, the angle
@@ -2502,19 +2389,46 @@ TurnContext = CpObject()
 -- TODO: this uses a bit too many course internal info, should maybe moved into Course?
 ---@param course Course
 ---@param turnStartIx number
-function TurnContext:init(course, turnStartIx)
-	self.turnStartWp = course.waypoints[turnStartIx]
+---@param turnStartWpNode WaypointNode output, node on the turn start waypoint, created if nil passed in
+---@param turnEndWpNode WaypointNode output, node on the turn end waypoint, created if nil passed in
+function TurnContext:init(course, turnStartIx, turnStartWpNode, turnEndWpNode)
+
+	---@type Waypoint
 	self.beforeTurnStartWp = course.waypoints[turnStartIx - 1]
+
+	---@type Waypoint
+	self.turnStartWp = course.waypoints[turnStartIx]
+	if not turnStartWpNode then
+		turnStartWpNode = WaypointNode('turnEnd')
+	end
+	turnStartWpNode:setToWaypoint(course, turnStartIx)
+	self.turnStartWpNode = turnStartWpNode
+
+	---@type Waypoint
 	self.turnEndWp = course.waypoints[turnStartIx + 1]
+	if not turnEndWpNode then
+		turnEndWpNode = WaypointNode('turnEnd')
+	end
+	turnEndWpNode:setToWaypoint(course, turnStartIx + 1)
+	self.turnEndWpNode = turnEndWpNode
+
+	---@type Waypoint
 	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
-	courseplay.debugFormat('Turn context: start ix = %d', turnStartIx)
+
+	courseplay.debugFormat(12, 'Turn context: start ix = %d', turnStartIx)
+
+end
+
+function TurnContext:setTargetNode(node)
+	self.targetNode = node
 end
 
 function TurnContext:getDirectionChangeOfTurn()
 	local directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle),
 		math.rad(self.beforeTurnStartWp.angle)))
-	local isHeadlandCornerTurn = math.abs( directionChangeDeg ) < laneTurnAngleThreshold
-	return directionChangeDeg, isHeadlandCornerTurn
+	self.isHeadlandCornerTurn = math.abs( directionChangeDeg ) < laneTurnAngleThreshold
+
+	return directionChangeDeg, self.isHeadlandCornerTurn
 end
 
 function TurnContext:createCorner(vehicle, r)

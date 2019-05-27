@@ -473,11 +473,11 @@ function courseplay:showTemporaryMarkers(vehicle)
 end
 
 --- start showing a temporary marker line
-function courseplay:addTemporaryMarker(vehicle, offset)
+function courseplay:addTemporaryMarker(vehicle, node)
 	vehicle.cp.showMarkers = {}
-	vehicle.cp.showMarkers.timer = vehicle.timer + 15000
-	vehicle.cp.showMarkers.x1, _, vehicle.cp.showMarkers.z1 = localToWorld( vehicle.cp.DirectionNode, -1, 0, offset )
-	vehicle.cp.showMarkers.x2, _, vehicle.cp.showMarkers.z2 = localToWorld( vehicle.cp.DirectionNode, 1, 0, offset )
+	vehicle.cp.showMarkers.timer = vehicle.timer + 25000
+	vehicle.cp.showMarkers.x1, _, vehicle.cp.showMarkers.z1 = localToWorld(node, -1, 0, 0)
+	vehicle.cp.showMarkers.x2, _, vehicle.cp.showMarkers.z2 = localToWorld(node, 1, 0, 0)
 	vehicle.cp.showMarkers.y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, vehicle.cp.showMarkers.x1, 0, vehicle.cp.showMarkers.z1 );
 end
 
