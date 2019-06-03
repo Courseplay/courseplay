@@ -185,9 +185,8 @@ function courseplay:turn(vehicle, dt, turnContext)
 			end;
 			turnInfo.isHarvester					= isHarvester;
 
-			turnInfo.directionChangeDeg, turnInfo.isHeadlandCorner = turnContext:getDirectionChangeOfTurn()
-			-- headland turn data 
-			vehicle.cp.headlandTurn = turnInfo.isHeadlandCorner and {} or nil
+			-- headland turn data
+			vehicle.cp.headlandTurn = turnContext.isHeadlandCorner and {} or nil
 			-- direction halfway between dir of turnStart and turnEnd 
 			turnInfo.halfAngle = math.deg( getAverageAngle( math.rad( turnContext.turnEndWp.angle ),
 				math.rad( turnContext.turnStartWp.angle )))
@@ -203,7 +202,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			turnInfo.turnDiameter = turnInfo.turnRadius * 2;
 
 			--- Get the new turn target with offset
-			if courseplay:getIsVehicleOffsetValid(vehicle) and turnInfo.isHeadlandCorner == false then
+			if courseplay:getIsVehicleOffsetValid(vehicle) and turnContext.isHeadlandCorner == false then
 				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(vehicle)), 14);
 				courseplay:turnWithOffset(vehicle);
 			end;
@@ -244,7 +243,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 				cpDebug:drawLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz);
 				-- this is an test
 				courseplay:debug(("%s:(Turn) wp%d=%.1f°, wp%d=%.1f°, directionChangeDeg = %.1f° halfAngle = %.1f"):format(nameNum(vehicle),
-					turnContext.beforeTurnStartWp.cpIndex, turnContext.beforeTurnStartWp.angle,  turnContext.turnEndWp.cpIndex, turnContext.turnEndWp.angle, turnInfo.directionChangeDeg, turnInfo.halfAngle), 14);
+					turnContext.beforeTurnStartWp.cpIndex, turnContext.beforeTurnStartWp.angle,  turnContext.turnEndWp.cpIndex, turnContext.turnEndWp.angle, turnContext.directionChangeDeg, turnInfo.halfAngle), 14);
 			end;
 
 			--- Get the local delta distances from the tractor to the targetNode
@@ -252,9 +251,9 @@ function courseplay:turn(vehicle, dt, turnContext)
 			courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(vehicle), turnInfo.targetDeltaX, turnInfo.targetDeltaZ), 14);
 
 			--- Get the turn direction
-			if turnInfo.isHeadlandCorner then
+			if turnContext.isHeadlandCorner then
 				-- headland corner turns have a targetDeltaX around 0 so use the direction diff
-				if turnInfo.directionChangeDeg > 0 then
+				if turnContext.directionChangeDeg > 0 then
 					turnInfo.direction = 1;
 				end
 			else
@@ -299,11 +298,11 @@ function courseplay:turn(vehicle, dt, turnContext)
 			courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester)), 14);
 
 
-			if not turnInfo.isHeadlandCorner then
+			if not turnContext.isHeadlandCorner then
 				----------------------------------------------------------
 				-- SWITCH TO THE NEXT LANE
 				----------------------------------------------------------
-				courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a lane switch.", nameNum(vehicle), turnInfo.directionChangeDeg), 14);
+				courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a lane switch.", nameNum(vehicle), turnContext.directionChangeDeg), 14);
 				----------------------------------------------------------
 				-- WIDE TURNS (Turns where the distance to next lane is bigger than the turning Diameter)
 				----------------------------------------------------------
@@ -363,7 +362,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 				-- A SHARP TURN, LIKELY ON THE HEADLAND BUT NOT A LANE SWITCH
 				-------------------------------------------------------------
 				courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner, maneuver type = %d.",
-					nameNum(vehicle), turnInfo.directionChangeDeg, vehicle.cp.headland.reverseManeuverType), 14);
+					nameNum(vehicle), turnContext.directionChangeDeg, vehicle.cp.headland.reverseManeuverType), 14);
 
 				vehicle.cp.turnCorner = turnContext:createCorner(vehicle, turnInfo.turnRadius)
 
@@ -383,7 +382,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			cpPrintLine(14, 3);
 
 			-- Rotate plow on lane change.
-			if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and vehicle.cp.toolOffsetX ~= 0 and turnInfo.isHeadlandCorner == false then
+			if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and vehicle.cp.toolOffsetX ~= 0 and turnContext.isHeadlandCorner == false then
 				if vehicle.cp.toolOffsetX < 0 then
 					vehicle.cp.rotateablePlow:setRotationMax(true);
 				else
@@ -651,7 +650,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		if vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartWpNode.node) then
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
-			if not turnContext.isHeadlandCornerTurn then
+			if not turnContext.isHeadlandCorner then
 				vehicle.cp.driver:raiseImplements()
 			end
 			vehicle.cp.turnStage = 1;
@@ -2415,20 +2414,15 @@ function TurnContext:init(course, turnStartIx, turnStartWpNode, turnEndWpNode)
 	---@type Waypoint
 	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
 
+	self.directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle), math.rad(self.beforeTurnStartWp.angle)))
+	self.isHeadlandCorner = math.abs( self.directionChangeDeg ) < laneTurnAngleThreshold
+
 	courseplay.debugFormat(12, 'Turn context: start ix = %d', turnStartIx)
 
 end
 
 function TurnContext:setTargetNode(node)
 	self.targetNode = node
-end
-
-function TurnContext:getDirectionChangeOfTurn()
-	local directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle),
-		math.rad(self.beforeTurnStartWp.angle)))
-	self.isHeadlandCornerTurn = math.abs( directionChangeDeg ) < laneTurnAngleThreshold
-
-	return directionChangeDeg, self.isHeadlandCornerTurn
 end
 
 function TurnContext:createCorner(vehicle, r)
