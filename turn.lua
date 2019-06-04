@@ -279,13 +279,18 @@ function courseplay:turn(vehicle, dt, turnContext)
 			-- targetDeltaZ is now the delta Z between the turn start and turn end waypoints.
 			turnInfo.targetDeltaZ = turnInfo.targetDeltaZ - turnInfo.zOffset;
 
-			--- Calculate reverseOffset in case we need to reverse
+			-- Calculate reverseOffset in case we need to reverse.
+			-- This is used in both wide turns and in the question mark turn
 			local offset = turnInfo.zOffset;
 			if turnInfo.frontMarker > 0 then
 				offset = -turnInfo.zOffset - turnInfo.frontMarker;
 			end;
 			if turnInfo.turnOnField and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward then
 				turnInfo.reverseOffset = max((turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight), offset);
+			elseif turnInfo.isHarvester and turnInfo.frontMarker > 0 then
+				-- without fully understanding this reverseOffset, correct it with combines so they don't make
+				-- unnecessarily wide turns (and hit trees outside the field)
+				turnInfo.reverseOffset = -turnInfo.frontMarker
 			else
 				turnInfo.reverseOffset = offset;
 			end;
