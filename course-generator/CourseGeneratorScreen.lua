@@ -403,7 +403,9 @@ end
 function CourseGeneratorScreen:setHeadlandFields()
 	local headlandFieldsVisible = self.vehicle.cp.headland.mode ==
 		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE
-  self.headlandDirection:setVisible( headlandFieldsVisible )
+  self.headlandDirection:setVisible( self.vehicle.cp.headland.mode ==
+		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode ==
+		courseGenerator.HEADLAND_MODE_NARROW_FIELD )
 	self.headlandPasses:setVisible( headlandFieldsVisible )
 	self.headlandFirst:setVisible( headlandFieldsVisible )
 	-- force headland turn maneuver for two side mode
