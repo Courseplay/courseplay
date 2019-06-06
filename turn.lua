@@ -405,7 +405,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 			-- TURN STAGES 2 - Drive Turn maneuver
 			----------------------------------------------------------
 		elseif vehicle.cp.turnStage == 2 then
-			vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node)
 			if curTurnTarget then
 				if curTurnTarget.turnEnd then
 					if vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
