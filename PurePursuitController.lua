@@ -247,7 +247,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 			result = true
 		end
 	end
-	if result and not self:reachedLastWaypoint() then
+	if result then --and not self:reachedLastWaypoint() then
 		if not self.lastPassedWaypointIx or (self.lastPassedWaypointIx ~= wpNode.ix) then
 			self.lastPassedWaypointIx = wpNode.ix
 			courseplay.debugVehicle(12, self.vehicle, 'PPC: waypoint %d passed, dz: %.1f %s %s', wpNode.ix, dz,
@@ -264,7 +264,7 @@ function PurePursuitController:havePassedAnyWaypointBetween(fromIx, toIx)
 	local node = WaypointNode( self.name .. '-node', false)
 	local result, passedWaypointIx = false, 0
 	-- math.max so we do one loop even if toIx < fromIx
-	-- courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
+	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
 	for ix = fromIx, math.max(toIx, fromIx) do
 		node:setToWaypoint(self.course, ix)
 		if self:havePassedWaypoint(node) then
