@@ -34,7 +34,8 @@ FieldworkAIDriver.myStates = {
 	WAITING_FOR_UNLOAD_OR_REFILL ={}, -- while on the field
 	ON_CONNECTING_TRACK = {},
 	WAITING_FOR_LOWER = {},
-	WAITING_FOR_RAISE = {}
+	WAITING_FOR_RAISE = {},
+	TURNING = {}
 }
 
 -- Our class implementation does not call the constructor of base classes
@@ -252,6 +253,8 @@ function FieldworkAIDriver:driveFieldwork()
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 		self:setSpeed(self:getFieldSpeed())
+	elseif self.fieldworkState == self.states.TURNING then
+		self:setSpeed(self.vehicle.cp.speeds.turn)
 	end
 end
 
@@ -414,6 +417,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:updateRemainingTime(ix)
 		self:calculateTightTurnOffset()
+		self.aiDriverOffsetZ = 0
 		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 			if not self.course:isOnConnectingTrack(ix) then
 				-- reached the end of the connecting track, back to work
@@ -963,31 +967,37 @@ function FieldworkAIDriver:setMarkers()
 	for _, implement in pairs(self.vehicle:getAttachedImplements()) do
 		addMarkers(implement.object)
 	end
+	local referenceNode = self.vehicle.cp.DirectionNode or self.vehicle.rootNode
 	if #self.markers == 0 then
-		-- make sure we always have a default front/back marker, placed on the root node
-		self.aiDriverData.frontMarkerNode = courseplay.createNode(self.vehicle:getName() .. ' front marker', 0, 0, 0, self.vehicle.rootNode)
-		self.aiDriverData.backMarkerNode = courseplay.createNode(self.vehicle:getName() .. ' back marker', 0, 0, 0, self.vehicle.rootNode)
+		-- make sure we always have a default front/back marker, placed on the direction node
+		self.aiDriverData.frontMarkerNode = courseplay.createNode(self.vehicle:getName() .. ' front marker', 0, 0, 0, referenceNode)
+		self.aiDriverData.backMarkerNode = courseplay.createNode(self.vehicle:getName() .. ' back marker', 0, 0, 0, referenceNode)
 		table.insert(self.markers,
 			{object = self.vehicle, front = self.aiDriverData.frontMarkerNode, back = self.aiDriverData.backMarkerNode})
 	end
 	-- now that we have all, find the foremost and the last
 	-- place everything on the vehicle root node first
+	self.frontMarkerDistance, self.backMarkerDistance = 0, 0
 	local frontMarkerDistance, backMarkerDistance = math.huge, -math.huge
 	for _, markers in pairs(self.markers) do
-		local _, _, dz = localToLocal(self.vehicle.rootNode, markers.front, 0, 0, 0)
+		local _, _, dz = localToLocal(referenceNode, markers.front, 0, 0, 0)
 		self:debug(' -> %s: dz = %.1f', getName(markers.front), dz)
 		if dz < frontMarkerDistance then
 			frontMarkerDistance = dz
+			self.frontMarkerDistance = -dz
 			self.aiDriverData.frontMarkerNode = markers.front
 		end
-		_, _, dz = localToLocal(self.vehicle.rootNode, markers.back, 0, 0, 0)
+		_, _, dz = localToLocal(referenceNode, markers.back, 0, 0, 0)
 		self:debug(' -> %s: dz = %.1f', getName(markers.back), dz)
 		if dz > backMarkerDistance then
 			backMarkerDistance = dz
+			self.backMarkerDistance = -dz
 			self.aiDriverData.backMarkerNode = markers.back
 		end
 	end
-	self:debug('Front marker node: %s, back %s', getName(self.aiDriverData.frontMarkerNode), getName(self.aiDriverData.backMarkerNode))
+	self:debug('Front marker node: %s (%.1f m), back %s (%.1f) m',
+		getName(self.aiDriverData.frontMarkerNode), self.frontMarkerDistance,
+		getName(self.aiDriverData.backMarkerNode), self.backMarkerDistance)
 end
 
 ---@param waypoint Waypoint
@@ -1011,7 +1021,7 @@ function FieldworkAIDriver:shouldLowerImplements(turnEndNode, reversing)
 	else
 		-- others can be lowered without stopping so need to start lowering before we get to the turn end to be
 		-- in the working position by the time we get to the first waypoint of the next row
-		loweringDistance = self.vehicle.lastSpeed * self:getLoweringDurationMs() -- vehicle.lastSpeed is in meters per millisecond
+		loweringDistance = self.vehicle.lastSpeed * self:getLoweringDurationMs() + 0.5 -- vehicle.lastSpeed is in meters per millisecond
 	end
 		self:debug('dz = %.1f, loweringDistance = %.1f', dz, loweringDistance)
 	if reversing then

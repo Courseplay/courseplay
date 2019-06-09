@@ -186,7 +186,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			turnInfo.isHarvester					= isHarvester;
 
 			-- headland turn data
-			vehicle.cp.headlandTurn = turnContext.isHeadlandCorner and {} or nil
+			vehicle.cp.headlandTurn = turnContext:isHeadlandCorner() and {} or nil
 			-- direction halfway between dir of turnStart and turnEnd 
 			turnInfo.halfAngle = math.deg( getAverageAngle( math.rad( turnContext.turnEndWp.angle ),
 				math.rad( turnContext.turnStartWp.angle )))
@@ -202,7 +202,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			turnInfo.turnDiameter = turnInfo.turnRadius * 2;
 
 			--- Get the new turn target with offset
-			if courseplay:getIsVehicleOffsetValid(vehicle) and turnContext.isHeadlandCorner == false then
+			if courseplay:getIsVehicleOffsetValid(vehicle) and turnContext:isHeadlandCorner() == false then
 				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(vehicle)), 14);
 				courseplay:turnWithOffset(vehicle);
 			end;
@@ -251,7 +251,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(vehicle), turnInfo.targetDeltaX, turnInfo.targetDeltaZ), 14);
 
 			--- Get the turn direction
-			if turnContext.isHeadlandCorner then
+			if turnContext:isHeadlandCorner() then
 				-- headland corner turns have a targetDeltaX around 0 so use the direction diff
 				if turnContext.directionChangeDeg > 0 then
 					turnInfo.direction = 1;
@@ -303,7 +303,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester)), 14);
 
 
-			if not turnContext.isHeadlandCorner then
+			if not turnContext:isHeadlandCorner() then
 				----------------------------------------------------------
 				-- SWITCH TO THE NEXT LANE
 				----------------------------------------------------------
@@ -387,7 +387,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			cpPrintLine(14, 3);
 
 			-- Rotate plow on lane change.
-			if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and vehicle.cp.toolOffsetX ~= 0 and turnContext.isHeadlandCorner == false then
+			if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and vehicle.cp.toolOffsetX ~= 0 and turnContext:isHeadlandCorner() == false then
 				if vehicle.cp.toolOffsetX < 0 then
 					vehicle.cp.rotateablePlow:setRotationMax(true);
 				else
@@ -654,7 +654,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		if vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartWpNode.node) then
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
-			if not turnContext.isHeadlandCorner then
+			if not turnContext:isHeadlandCorner() then
 				vehicle.cp.driver:raiseImplements()
 			end
 			vehicle.cp.turnStage = 1;
@@ -2323,8 +2323,8 @@ function Corner:getCornerStartNode()
 end
 
 --- Point in distance from the corner in the turn start direction. Positive number until the corner is reached
-function Corner:getPointAtDistanceFromCornerStart(d)
-	local x, y, z = localToWorld(self.cornerStartNode, 0, 0, d)
+function Corner:getPointAtDistanceFromCornerStart(d, sideOffset)
+	local x, y, z = localToWorld(self.cornerStartNode, sideOffset and sideOffset * self.turnDirection or 0, 0, d)
 	return {x = x, y = y, z = z}
 end
 
@@ -2334,8 +2334,8 @@ function Corner:getPointAtDistanceFromArcStart(d)
 	return {x = x, y = y, z = z}
 end
 
-function Corner:getPointAtDistanceFromCornerEnd(d)
-	local x, y, z = localToWorld(self.cornerEndNode, 0, 0, d)
+function Corner:getPointAtDistanceFromCornerEnd(d, sideOffset)
+	local x, y, z = localToWorld(self.cornerEndNode, sideOffset and sideOffset * self.turnDirection or 0, 0, d)
 	return {x = x, y = y, z = z}
 end
 
@@ -2401,6 +2401,7 @@ function TurnContext:init(course, turnStartIx, turnStartWpNode, turnEndWpNode)
 
 	---@type Waypoint
 	self.turnStartWp = course.waypoints[turnStartIx]
+	self.turnStartWpIx = turnStartIx
 	if not turnStartWpNode then
 		turnStartWpNode = WaypointNode('turnEnd')
 	end
@@ -2409,6 +2410,7 @@ function TurnContext:init(course, turnStartIx, turnStartWpNode, turnEndWpNode)
 
 	---@type Waypoint
 	self.turnEndWp = course.waypoints[turnStartIx + 1]
+	self.turnEndWpIx = turnStartIx + 1
 	if not turnEndWpNode then
 		turnEndWpNode = WaypointNode('turnEnd')
 	end
@@ -2419,10 +2421,13 @@ function TurnContext:init(course, turnStartIx, turnStartWpNode, turnEndWpNode)
 	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
 
 	self.directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle), math.rad(self.beforeTurnStartWp.angle)))
-	self.isHeadlandCorner = math.abs( self.directionChangeDeg ) < laneTurnAngleThreshold
 
 	courseplay.debugFormat(12, 'Turn context: start ix = %d', turnStartIx)
 
+end
+
+function TurnContext:isHeadlandCorner()
+	return math.abs( self.directionChangeDeg ) < laneTurnAngleThreshold
 end
 
 function TurnContext:setTargetNode(node)

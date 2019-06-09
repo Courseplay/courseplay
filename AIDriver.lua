@@ -392,7 +392,11 @@ end
 ---@param nextCourse Course
 ---@param ix number
 function AIDriver:startCourse(course, ix, nextCourse, nextWpIx)
-	self:debug('Starting a course, will continue at waypoint %d afterwards.', ix)
+	if nextWpIx then
+		self:debug('Starting a course, at waypoint %d, will continue at waypoint %d afterwards.', ix, nextWpIx)
+	else
+		self:debug('Starting a course, at waypoint %d, no next course set.', ix)
+	end
 	self.nextWpIx = nextWpIx
 	self.nextCourse = nextCourse
 	self.course = course

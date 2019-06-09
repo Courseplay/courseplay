@@ -388,6 +388,10 @@ function Course:isOnHeadland(ix)
 	return self.waypoints[ix].lane and self.waypoints[ix].lane < 0
 end
 
+function Course:isOnOutermostHeadland(ix)
+	return self.waypoints[ix].lane and self.waypoints[ix].lane == -1
+end
+
 --- Returns the position of the waypoint at ix with the current offset applied.
 function Course:getWaypointPosition(ix)
 	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
