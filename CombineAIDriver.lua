@@ -407,8 +407,14 @@ function CombineAIDriver:isWaitingForUnload()
 end
 function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
+	if not self.turnContext:isHeadlandCorner() then
+		self:debug('180 turn.')
+		self.turnIsDriving = true
+		return nil
+	end
 	---@type cornerCourse Course
-	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix)
+	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
 	if cornerCourse then
 		cornerCourse:print()
 		self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
@@ -426,11 +432,7 @@ end
 
 ---@param turnContext TurnContext
 ---@param ix number
-function CombineAIDriver:createHeadlandCornerCourse(ix)
-	local turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
-	if not turnContext:isHeadlandCorner() then
-		return nil
-	end
+function CombineAIDriver:createHeadlandCornerCourse(ix, turnContext)
 	if self.course:isOnOutermostHeadland(ix) then
 		return self:createOuterHeadlandCornerCourse(turnContext)
 	else
