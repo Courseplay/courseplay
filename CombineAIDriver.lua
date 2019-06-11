@@ -409,7 +409,7 @@ function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
 	self.turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
 	if not self.turnContext:isHeadlandCorner() then
-		self:debug('180 turn.')
+		self:debug('Non headland turn.')
 		self.turnIsDriving = true
 		return nil
 	end
@@ -433,13 +433,15 @@ end
 ---@param turnContext TurnContext
 ---@param ix number
 function CombineAIDriver:createHeadlandCornerCourse(ix, turnContext)
-	if self.course:isOnOutermostHeadland(ix) then
+	if self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.turnOnField then
+		-- create a pocket in the corner so the combine stays on the field
 		return self:createOuterHeadlandCornerCourse(turnContext)
 	else
 		return self:createInnerHeadlandCornerCourse(turnContext)
 	end
 end
 
+--- Simple combine headland corner maneuver
 ---@param turnContext TurnContext
 function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
 	local cornerWaypoints = {}
@@ -454,17 +456,18 @@ function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
 	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 - offset, -offset)
 	table.insert(cornerWaypoints, wp)
 	-- reverse back to set up for the headland after the corner
-	wp = corner:getPointAtDistanceFromCornerEnd(-turnRadius * 0.75, offset)
+	wp = corner:getPointAtDistanceFromCornerEnd(-turnRadius * 0.5, self.vehicle.cp.workWidth / 2 + offset)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
 	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
 end
 
+--- Create a pocket in the next row at the corner to stay on the field during the turn maneuver.
 ---@param turnContext TurnContext
 function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	local cornerWaypoints = {}
 	local turnRadius = self.vehicle.cp.turnDiameter / 2
-	local offset = turnRadius * 0.4
+	local offset = math.min(turnRadius * 0.6, self.vehicle.cp.workWidth)
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)
 	local wp = corner:getPointAtDistanceFromCornerStart(self.vehicle.cp.workWidth / 2 )
 	wp.speed = self.vehicle.cp.speeds.turn * 0.75
@@ -482,12 +485,16 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
 	-- now make a pocket in the inner headland to make room to turn
-	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.6, -self.vehicle.cp.workWidth * 0.75)
+	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.6, -offset * 0.8)
 	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.2, -self.vehicle.cp.workWidth * 0.9)
+	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.2, -offset * 0.9)
+	if not courseplay:isField(wp.x, wp.z) then
+		self:debug('No field where the pocket would be, this seems to be a 270 corner')
+		return nil
+	end
 	table.insert(cornerWaypoints, wp)
 	-- drive forward to the field edge on the inner headland
-	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance, -self.vehicle.cp.workWidth)
+	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance, -offset)
 	wp.speed = self.vehicle.cp.speeds.turn * 0.75
 	table.insert(cornerWaypoints, wp)
 	wp = corner:getPointAtDistanceFromCornerStart(turnRadius)
