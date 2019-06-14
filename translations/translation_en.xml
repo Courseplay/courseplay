@@ -391,5 +391,11 @@
 		<text name="COURSEPLAY_FillType_BaleNet" 							text="Bale net" />
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="Wrapping foil" />
 		<text name="COURSEPLAY_FillType_Molasses"							text="Molasses" />
+
+		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+
 	</texts>
 </l10n>

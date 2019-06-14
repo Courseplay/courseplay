@@ -601,6 +601,7 @@ function courseplay:onLoad(savegame)
 	courseplay:validateCanSwitchMode(self);
 	courseplay.buttons:setActiveEnabled(self, 'all');
 
+	-- TODO: remove driving mode when mode 2 is finally converted
 	self.cp.drivingMode = DrivingModeSetting(self)
 	
 	--if CpManager.isDeveloper then

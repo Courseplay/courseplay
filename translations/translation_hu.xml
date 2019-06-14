@@ -389,6 +389,11 @@
 		<text name="COURSEPLAY_FillType_BaleNet" 							text="bale net" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="wrapping foil" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
 		<text name="COURSEPLAY_FillType_Molasses"							text="molasses" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
-		
+
+		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+
 	</texts>
 </l10n>

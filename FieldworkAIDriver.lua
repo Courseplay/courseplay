@@ -35,7 +35,8 @@ FieldworkAIDriver.myStates = {
 	ON_CONNECTING_TRACK = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_RAISE = {},
-	TURNING = {}
+	TURNING = {},
+	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {}
 }
 
 -- Our class implementation does not call the constructor of base classes
@@ -203,6 +204,9 @@ function FieldworkAIDriver:drive(dt)
 		end
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		self:setSpeed(self:getFieldSpeed())
+	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE then
+		-- AutoDrive is driving, don't call AIDriver.drive()
+		return
 	end
 	self:setRidgeMarkers()
 	self:resetUnloadOrRefillHold()
@@ -271,7 +275,18 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 		self:changeToUnloadOrRefill()
 		self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 	else
-		self:changeToFieldworkUnloadOrRefill()
+		if self.autoDriveMode:is(AutoDriveModeSetting.UNLOAD_OR_REFILL) then
+			-- Switch to AutoDrive when enabled 
+			self:rememberWaypointToContinueFieldwork()
+			self:stopWork()
+			self:foldImplements()
+			self.state = self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+			self:debug('passing the control to AutoDrive to run the unload/refill course.')
+			self.vehicle.spec_autodrive:StartDriving(self.vehicle, self.vehicle.ad.mapMarkerSelected, self.vehicle.ad.mapMarkerSelected_Unload, self, FieldworkAIDriver.onEndCourse, nil);
+		else
+			-- otherwise we'll 
+			self:changeToFieldworkUnloadOrRefill()
+		end;
 	end
 end
 
@@ -348,7 +363,8 @@ function FieldworkAIDriver:onNextCourse()
 end
 
 function FieldworkAIDriver:onEndCourse()
-	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
+	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
+		self.state == self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE then
 		-- unload/refill course ended, return to fieldwork
 		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.aiDriverData.continueFieldworkAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
 		self:startFieldworkWithPathfinding(self.aiDriverData.continueFieldworkAtWaypoint)

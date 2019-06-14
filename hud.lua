@@ -1286,8 +1286,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
 					end
-				
-				end					
+
+				elseif entry.functionToCall == 'toggleAutoDriveMode' and vehicle.cp.driver and vehicle.cp.driver.autoDriveMode:isAutoDriveAvailable() then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_AUTODRIVE_MODE');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driver.autoDriveMode:getText()
+				end
 			end		
 		end
 	end
@@ -2426,7 +2429,8 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleConvoyActive', 3, 3, 1 )
 	self:addSettingsRow(vehicle,'setConvoyMinDistance', 3, 4, 1 )
 	--self:addSettingsRow(vehicle,'setConvoyMaxDistance', 3, 5, 1 )
-	
+	self:addSettingsRow(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
+
 	
 	--page 7
 	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
