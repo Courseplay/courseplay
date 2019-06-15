@@ -608,7 +608,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			end;
 
 			-- Lower implement and continue on next lane
-			if vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
+			if vehicle.cp.driver.shouldLowerImplements and vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
 				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
 				vehicle.cp.driver:lowerImplements()
 				courseplay:addTemporaryMarker(vehicle, vehicle.cp.aiDriverData.frontMarkerNode)
@@ -651,7 +651,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
 		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
-		if vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartWpNode.node) then
+		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartWpNode.node) then
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
 			if not turnContext:isHeadlandCorner() then

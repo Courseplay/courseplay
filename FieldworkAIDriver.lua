@@ -1053,7 +1053,7 @@ end
 function FieldworkAIDriver:shouldRaiseImplements(turnStartNode)
 	-- turn start node in the front marker node's coordinate system
 	local _, _, dz = localToLocal(turnStartNode, self.aiDriverData.frontMarkerNode or self.vehicle.rootNode, 0, 0, 0)
-	self:debug('shouldRaiseImplements: dz = %.1f', dz)
+	self:debugSparse('shouldRaiseImplements: dz = %.1f', dz)
 	-- turn start node just behind the marker
 	return dz < 0
 end
