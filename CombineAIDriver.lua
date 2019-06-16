@@ -512,7 +512,7 @@ end
 function CombineAIDriver:onBlocked()
 	self:debug('Combine blocked, trying to switch to next waypoint...')
 	local nextWpIx = self.ppc:getCurrentWaypointIx() + 1
-	if nextWpIx >= self.course:getNumberOfWaypoints() then
+	if nextWpIx > self.course:getNumberOfWaypoints() then
 		self:debug('Combine blocked, already at last waypoint, ending course.')
 		self:onLastWaypoint()
 	else
