@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI Driver" /> 
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Dirigir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Parar no último ponto ou próximo gatilho" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Parar no último ponto ou próximo trigger" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Total de voltas" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Redefinir numero atual de voltas"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="Ilimitado" />
@@ -394,9 +394,9 @@
 		<text name="COURSEPLAY_FillType_Molasses"							text="Melaço de cana" />
 
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Não instalado" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Não usar" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Para descarregar/recarregar" />
 
 	</texts>
 </l10n>
