@@ -502,9 +502,6 @@ function courseplay:showAIMarkers(vehicle)
 			end
 		end
 	end
-
-	-- draw our calculated front and back markers and work width
-	courseplay:showWorkWidth(vehicle)
 end
 
 --------------------------------------------------

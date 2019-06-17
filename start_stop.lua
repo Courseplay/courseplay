@@ -66,9 +66,7 @@ function courseplay:start(self)
 	courseplay:setRecordingIsPaused(self, false);
 	self.cp.calculatedCourseToCombine = false
 
-	self.cp.backMarkerOffset = nil
-	self.cp.aiFrontMarker = nil
-	courseplay:resetTools(self)	
+	courseplay:resetTools(self)
 	
 	--TODO when checking the Collision triggers, check if we still need this
 	if self.attachedCutters ~= nil then
@@ -741,8 +739,6 @@ function courseplay:stop(self)
 	courseplay:setRecordingIsPaused(self, false);
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
-	self.cp.backMarkerOffset = nil
-	self.cp.aiFrontMarker = nil
 	self.cp.aiTurnNoBackward = false
 	self.cp.noStopOnEdge = false
 	self.cp.fillTrigger = nil;

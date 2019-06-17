@@ -275,7 +275,7 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 		self:changeToUnloadOrRefill()
 		self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 	else
-		if self.autoDriveMode:is(AutoDriveModeSetting.UNLOAD_OR_REFILL) then
+		if self.aiDriverData.autoDriveMode:is(AutoDriveModeSetting.UNLOAD_OR_REFILL) then
 			-- Switch to AutoDrive when enabled 
 			self:rememberWaypointToContinueFieldwork()
 			self:stopWork()
@@ -450,9 +450,9 @@ function FieldworkAIDriver:onWaypointChange(ix)
 			end
 		-- towards the end of the field course make sure the implement reaches the last waypoint
 		elseif ix > self.course:getNumberOfWaypoints() - 3 then
-			if self.vehicle.cp.aiFrontMarker then
-				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.vehicle.cp.aiFrontMarker)
-				self.aiDriverOffsetZ = -self.vehicle.cp.aiFrontMarker
+			if self.frontMarkerDistance then
+				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.frontMarkerDistance)
+				self.aiDriverOffsetZ = -self.frontMarkerDistance
 			end
 		end
 	end
@@ -1011,6 +1011,10 @@ function FieldworkAIDriver:setMarkers()
 			self.aiDriverData.backMarkerNode = markers.back
 		end
 	end
+	-- set these up for turn.lua. TODO: pass in with the turn context and get rid of the aiFrontMarker and backMarkerOffset completely
+	self.vehicle.cp.aiFrontMarker = self.frontMarkerDistance
+	self.vehicle.cp.backMarkerOffset = self.backMarkerDistance
+
 	self:debug('Front marker node: %s (%.1f m), back %s (%.1f) m',
 		getName(self.aiDriverData.frontMarkerNode), self.frontMarkerDistance,
 		getName(self.aiDriverData.backMarkerNode), self.backMarkerDistance)

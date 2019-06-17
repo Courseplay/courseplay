@@ -41,53 +41,22 @@ function courseplay:turn(vehicle, dt, turnContext)
 		turnOutTimer = 0;
 	end;
 
-	-- TODO: Jeez. Fix this workwidth calculation. Looks like we have lost track long ago where it is actually correct
-	-- and try to fix it here.
 	--- This is in case we use manually recorded fieldswork course and not generated.
 	if not vehicle.cp.courseWorkWidth then
 		courseplay:calculateWorkWidth(vehicle, true);
 		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
 	end;
 
-	-- This is to correct courseworkwidth when loading from a save course when using multiTools
+	-- This is to correct course work width when loading from a save course when using multiTools
 	if vehicle.cp.multiTools and vehicle.cp.multiTools > 1 and vehicle.cp.courseWorkWidth ~= vehicle.cp.workWidth*vehicle.cp.multiTools then
 		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth*vehicle.cp.multiTools
-	end;
-
-	--- Make sure front and back markers is calculated.
-	if not vehicle.cp.haveCheckedMarkersThisTurn then
-		vehicle.cp.aiFrontMarker = nil;
-		vehicle.cp.backMarkerOffset = nil;
-		for _,workTool in pairs(vehicle.cp.workTools) do
-			courseplay:setMarkers(vehicle, workTool);
-		end;
-		vehicle.cp.haveCheckedMarkersThisTurn = true;
-		if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
-			-- First headland is only half the work width
-			vehicle.cp.headlandHeight = vehicle.cp.courseWorkWidth / 2;
-			-- Add extra workwidth for each extra headland
-			if vehicle.cp.courseNumHeadlandLanes - 1 > 0 then
-				vehicle.cp.headlandHeight = vehicle.cp.headlandHeight + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth);
-			end;
-		else
-			vehicle.cp.headlandHeight = 0;
-		end;
-		local frontMarker2 = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
-		local backMarker2 = Utils.getNoNil(vehicle.cp.backMarkerOffset,0);
-		if vehicle.cp.hasPlow and (vehicle.cp.plowFieldEdge or math.abs(frontMarker2 - backMarker2) < vehicle.cp.headlandHeight) then
-			vehicle.cp.aiFrontMarker = backMarker2;
-			vehicle.cp.backMarkerOffset = frontMarker2
-		end
 	end;
 
 	--- Get front and back markers
 	local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
 	local backMarker = Utils.getNoNil(vehicle.cp.backMarkerOffset,0);
 
-
-
 	local vehicleX, vehicleY, vehicleZ = getWorldTranslation(realDirectionNode);
-
 
 	----------------------------------------------------------
 	-- Debug prints

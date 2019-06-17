@@ -603,8 +603,8 @@ end
 
 function courseplay:toggleAutoDriveMode(vehicle)
 	if vehicle.cp.driver then
-		vehicle.cp.driver.autoDriveMode:next()
-		courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.driver.autoDriveMode:get())
+		vehicle.cp.aiDriverData.autoDriveMode:next()
+		courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.aiDriverData.autoDriveMode:get())
 	end
 end;
 
@@ -2004,8 +2004,8 @@ function AutoDriveModeSetting:init(vehicle)
 
 end
 
-function AutoDriveModeSetting:isAutoDriveAvailable()
-	return self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.StartDriving
+function AutoDriveModeSetting.isAutoDriveAvailable(vehicle)
+	return vehicle.spec_autodrive and vehicle.spec_autodrive.StartDriving
 end
 
 --- Driving mode setting
