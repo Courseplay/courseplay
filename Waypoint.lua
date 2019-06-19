@@ -108,12 +108,16 @@ end
 --- Get the offset position of a waypoint
 ---@param offsetX number left/right offset (right +, left -)
 ---@param offsetZ number forward/backward offset (forward +)
+---@param dx number delta x to use (dx to the next waypoint by default)
+---@param dz number delta z to use (dz to the next waypoint by default)
 ---@return number, number, number x, y, z
-function Waypoint:getOffsetPosition(offsetX, offsetZ)
+function Waypoint:getOffsetPosition(offsetX, offsetZ, dx, dz)
 	local x, y, z = self:getPosition()
-	if self.dx and self.dz then
-		x = x - self.dz * offsetX + self.dx * offsetZ
-		z = z + self.dx * offsetX + self.dz * offsetZ
+	local deltaX = dx or self.dx
+	local deltaZ = dz or self.dz
+	if deltaX and deltaZ then
+		x = x - deltaZ * offsetX + deltaX * offsetZ
+		z = z + deltaX * offsetX + deltaZ * offsetZ
 	end
 	return x, y, z
 end
@@ -238,11 +242,11 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 		table.insert(self.waypoints, Waypoint(waypoints[i], n + (first or 1)))
 		n = n + 1
 	end
+	-- offset to apply to every position
+	self.offsetX, self.offsetZ = 0, 0
 	self:enrichWaypointData()
 	-- only for logging purposes
 	self.vehicle = vehicle
-	-- offset to apply to every position
-	self.offsetX, self.offsetZ = 0, 0
 	self.temporary = temporary or false
 end
 
@@ -394,7 +398,14 @@ end
 
 --- Returns the position of the waypoint at ix with the current offset applied.
 function Course:getWaypointPosition(ix)
-	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
+	if self:isTurnStartAtIx(ix) then
+		-- turn start waypoints point to the turn end wp, for example at the row end they point 90 degrees to the side
+		-- from the row direction. This is a problem when there's an offset so use the direction of the previous wp
+		-- when calculating the offset for a turn start wp.
+		return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ, self.waypoints[ix - 1].dx, self.waypoints[ix - 1].dz)
+	else
+		return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
+	end
 end
 
 -- distance between (px,pz) and the ix waypoint
@@ -408,7 +419,7 @@ end
 
 --- get waypoint position in the node's local coordinates
 function Course:getWaypointLocalPosition(node, ix)
-	local x, y, z = self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
+	local x, y, z = self:getWaypointPosition(ix)
 	local dx, dy, dz = worldToLocal(node, x, y, z)
 	return dx, dy, dz
 end
@@ -567,7 +578,7 @@ end
 
 --- Is there an unload waypoint within distance around ix?
 ---@param ix number waypoint index to look around
----@param distance distance in meters to look around the waypoint
+---@param distance number distance in meters to look around the waypoint
 ---@return boolean true if any of the waypoints are unload points and the index of the next unload point
 function Course:hasUnloadPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.unload end)
@@ -575,7 +586,7 @@ end
 
 --- Is there a wait waypoint within distance around ix?
 ---@param ix number waypoint index to look around
----@param distance distance in meters to look around the waypoint
+---@param distance number distance in meters to look around the waypoint
 ---@return boolean true if any of the waypoints are wait points and the index of that wait point
 function Course:hasWaitPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.wait or p.interact end)

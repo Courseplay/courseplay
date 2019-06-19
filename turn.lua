@@ -93,6 +93,10 @@ function courseplay:turn(vehicle, dt, turnContext)
 				end;
 			end;
 		end;
+		if turnContext and turnContext.turnStartWpNode and turnContext.turnEndWpNode then
+			DebugUtil.drawDebugNode(turnContext.turnStartWpNode.node, 'Start')
+			DebugUtil.drawDebugNode(turnContext.turnEndWpNode.node, 'End')
+		end
 	end;
 
 	--- Get the directionNodeToTurnNodeLength used for reverse turn distances
