@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI Driver" /> 
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Dirigir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Parar no último ponto ou próximo gatilho" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Parar no último ponto ou próximo trigger" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Total de voltas" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Redefinir numero atual de voltas"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="Ilimitado" />
@@ -68,7 +68,7 @@
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="Salvar a posição do tubo" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="mover tubo para posição" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="chegou no ponto de espera" />
-		<text name="COURSEPLAY_REACHED_END_POINT" 							text="chegou no gatilho ou no ponto final" />
+		<text name="COURSEPLAY_REACHED_END_POINT" 							text="chegou no trigger ou no ponto final" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="finalizou o transporte de grãos." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="finalizou o transporte de líquidos." />
 		<text name="COURSEPLAY_WORK_END" 									text="finalizou o trabalho." />
@@ -76,7 +76,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": equipamento precisa ser recarregado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="descarregando fardos." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="em tráfego." />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="gatilho alcançado" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="trigger alcançado" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Distancia do ponto para descarregar" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Carregando: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 								text="Mostrar waypoints" />
