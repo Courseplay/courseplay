@@ -68,7 +68,7 @@
 		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="Salvar a posição do tubo" />
 		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="mover tubo para posição" />
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="chegou no ponto de espera" />
-		<text name="COURSEPLAY_REACHED_END_POINT" 							text="chegou no gatilho ou no ponto final" />
+		<text name="COURSEPLAY_REACHED_END_POINT" 							text="chegou no trigger ou no ponto final" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="finalizou o transporte de grãos." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="finalizou o transporte de líquidos." />
 		<text name="COURSEPLAY_WORK_END" 									text="finalizou o trabalho." />
@@ -76,7 +76,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": equipamento precisa ser recarregado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="descarregando fardos." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="em tráfego." />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="gatilho alcançado" />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="trigger alcançado" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Distancia do ponto para descarregar" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Carregando: %d de %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 								text="Mostrar waypoints" />
