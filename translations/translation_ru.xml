@@ -392,10 +392,10 @@
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="оберточная фольга" />
 		<text name="COURSEPLAY_FillType_Molasses"							text="меласса" />
 
-		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_MODE"								text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"						text="Не установлен" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"							text="Не использовать" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Для разгрузки/наполнеия" />
 
 	</texts>
 </l10n>
