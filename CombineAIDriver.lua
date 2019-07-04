@@ -407,7 +407,8 @@ function CombineAIDriver:isWaitingForUnload()
 end
 function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
+	self:setMarkers()
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData)
 	if not self.turnContext:isHeadlandCorner() then
 		self:debug('Non headland turn.')
 		self.turnIsDriving = true
@@ -445,7 +446,8 @@ function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
 	local cornerWaypoints = {}
 	local turnRadius = self.vehicle.cp.turnDiameter / 2
 	local offset = turnRadius * 0.25
-	table.insert(cornerWaypoints, turnContext.turnStartWp)
+	-- (copy only the coordinates instead of reference turnStatWp so no attributes like turnStart is inherited
+	table.insert(cornerWaypoints, {x = turnContext.turnStartWp.x, z = turnContext.turnStartWp.z})
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)
 	-- drive forward up to the headland edge
 	local wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2)

@@ -121,17 +121,19 @@ function courseplay.debugVehicle(channel, vehicle, ...)
 	end
 end
 
--- add a debug marker to the log file when Left Alt-D is pressed. This is to mark 
--- issues in the log file so developers can find relevant log entries easier.
-function courseplay.logDebugMarker()
-	local timestamp = getDate( "%H:%M:%S")
-	if g_server ~= nil then
-		print( string.format( '[dbg lp%d %s] Debug Marker %s', g_updateLoopIndex, timestamp,
-			g_careerScreen.savegames[g_careerScreen.selectedIndex].mapId ))
-	else
-		print( string.format( '[dbg lp%d %s] Debug Marker', g_updateLoopIndex, timestamp))
-	end
+function courseplay.info(...)
+	local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
+	local timestamp = getDate( ":%S")
+	print(string.format('%s [info lp%d] %s', timestamp, updateLoopIndex, string.format( ... )))
 end
+
+function courseplay.infoVehicle(vehicle, ...)
+	local vehicleName = vehicle and nameNum(vehicle) or "Unknown vehicle"
+	local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
+	local timestamp = getDate( ":%S")
+	print(string.format('%s [info lp%d] %s: %s', timestamp, updateLoopIndex, vehicleName, string.format( ... )))
+end
+
 
 local lines = {
 	('-'):rep(50),
@@ -485,21 +487,28 @@ function courseplay:showAIMarkers(vehicle)
 
 	if not courseplay.debugChannels[6] then return end
 
+	local function showAIMarkersOfObject(object)
+		if object.getAIMarkers then
+			local aiLeftMarker, aiRightMarker, aiBackMarker = object:getAIMarkers()
+			if aiLeftMarker then
+				DebugUtil.drawDebugNode(aiLeftMarker, object:getName() .. ' AI Left')
+			end
+			if aiRightMarker then
+				DebugUtil.drawDebugNode(aiRightMarker, object:getName() .. ' AI Right')
+			end
+			if aiBackMarker then
+				DebugUtil.drawDebugNode(aiBackMarker, object:getName() .. ' AI Back')
+			end
+			DebugUtil.drawDebugNode(object.cp.DirectionNode or object.rootNode, object:getName() .. ' root')
+		end
+	end
+
+	showAIMarkersOfObject(vehicle)
 	-- draw the Giant's supplied AI markers for all implements
 	local implements = vehicle:getAttachedImplements()
 	if implements then
 		for _, implement in ipairs(implements) do
-			local object = implement.object
-			if object.getAIMarkers then
-				local aiLeftMarker, aiRightMarker = object:getAIMarkers()
-				if aiLeftMarker then
-					DebugUtil.drawDebugNode(aiLeftMarker, object:getName() .. ' AI Left')
-				end
-				if aiRightMarker then
-					DebugUtil.drawDebugNode(aiRightMarker, object:getName() .. ' AI Right')
-				end
-				DebugUtil.drawDebugNode(object.cp.DirectionNode or object.rootNode, object:getName() .. ' root')
-			end
+			showAIMarkersOfObject(implement.object)
 		end
 	end
 end

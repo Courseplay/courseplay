@@ -52,6 +52,18 @@ function courseplay:turn(vehicle, dt, turnContext)
 		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth*vehicle.cp.multiTools
 	end;
 
+	-- find out the headland height to figure out if we have enough room on the headland to make turns
+	if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
+		-- First headland is only half the work width
+		vehicle.cp.headlandHeight = vehicle.cp.courseWorkWidth / 2;
+		-- Add extra workwidth for each extra headland
+		if vehicle.cp.courseNumHeadlandLanes > 1 then
+			vehicle.cp.headlandHeight = vehicle.cp.headlandHeight + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth);
+		end;
+	else
+		vehicle.cp.headlandHeight = 0;
+	end;
+
 	--- Get front and back markers
 	local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
 	local backMarker = Utils.getNoNil(vehicle.cp.backMarkerOffset,0);
@@ -522,7 +534,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			if vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
 				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
 				vehicle.cp.driver:lowerImplements()
-				courseplay:addTemporaryMarker(vehicle, vehicle.cp.aiDriverData.frontMarkerNode)
+				--courseplay:addTemporaryMarker(vehicle, vehicle.cp.driver.frontMarker:getNode())
 
 				vehicle.cp.isTurning = nil;
 
@@ -584,7 +596,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			if vehicle.cp.driver.shouldLowerImplements and vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
 				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
 				vehicle.cp.driver:lowerImplements()
-				courseplay:addTemporaryMarker(vehicle, vehicle.cp.aiDriverData.frontMarkerNode)
+				--courseplay:addTemporaryMarker(vehicle, vehicle.cp.driver.frontMarker:getNode())
 
 				vehicle.cp.isTurning = nil;
 
@@ -624,7 +636,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
 		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
-		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartWpNode.node) then
+		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartForwardWpNode.node) then
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
 			if not turnContext:isHeadlandCorner() then
@@ -1742,7 +1754,6 @@ end;
 function courseplay:getLaneInfo(vehicle)
 	local numLanes			= 1;
 	local onLaneNum			= 0;
-	courseplay.debugFormat(14, '%d %s %s', vehicle.cp.waypointIndex,vehicle.cp.startWork, vehicle.cp.stopWork)
 	for index, wP in ipairs(vehicle.Waypoints) do
 		local isWorkArea = index >= vehicle.cp.startWork and index <= vehicle.cp.stopWork;
 		if (wP.generated or isWorkArea) and (not wP.lane or wP.lane >= 0) then
@@ -2365,9 +2376,10 @@ TurnContext = CpObject()
 -- TODO: this uses a bit too many course internal info, should maybe moved into Course?
 ---@param course Course
 ---@param turnStartIx number
----@param turnStartWpNode WaypointNode output, node on the turn start waypoint, created if nil passed in
----@param turnEndWpNode WaypointNode output, node on the turn end waypoint, created if nil passed in
-function TurnContext:init(course, turnStartIx, turnStartWpNode, turnEndWpNode)
+---@param aiDriverData table to store the turn start/end waypoint nodes (which are created if nil passed in)
+--- we store the nodes some global, long lived table to avoid creating new nodes every time a TurnContext object
+--- is created
+function TurnContext:init(course, turnStartIx, aiDriverData)
 
 	---@type Waypoint
 	self.beforeTurnStartWp = course.waypoints[turnStartIx - 1]
@@ -2375,20 +2387,31 @@ function TurnContext:init(course, turnStartIx, turnStartWpNode, turnEndWpNode)
 	---@type Waypoint
 	self.turnStartWp = course.waypoints[turnStartIx]
 	self.turnStartWpIx = turnStartIx
-	if not turnStartWpNode then
-		turnStartWpNode = WaypointNode('turnEnd')
+	if not aiDriverData.turnStartWpNode then
+		aiDriverData.turnStartWpNode = WaypointNode('turnStart')
 	end
-	turnStartWpNode:setToWaypoint(course, turnStartIx)
-	self.turnStartWpNode = turnStartWpNode
+	aiDriverData.turnStartWpNode:setToWaypoint(course, turnStartIx)
+	self.turnStartWpNode = aiDriverData.turnStartWpNode
+
+	-- create a node pointing in the incoming direction of the turn start waypoint. This will be used
+	-- to determine relative position to the turn start. (the turn start WP can't be used as it is
+	-- pointing towards the turn end waypoint which may be anything around 90 degrees
+	---@type Waypoint
+	if not aiDriverData.turnStartForwardWpNode then
+		aiDriverData.turnStartForwardWpNode = WaypointNode('turnStartForward')
+	end
+	aiDriverData.turnStartForwardWpNode:setToWaypoint(course, turnStartIx)
+	setRotation(aiDriverData.turnStartForwardWpNode.node, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
+	self.turnStartForwardWpNode = aiDriverData.turnStartForwardWpNode
 
 	---@type Waypoint
 	self.turnEndWp = course.waypoints[turnStartIx + 1]
 	self.turnEndWpIx = turnStartIx + 1
-	if not turnEndWpNode then
-		turnEndWpNode = WaypointNode('turnEnd')
+	if not aiDriverData.turnEndWpNode then
+		aiDriverData.turnEndWpNode = WaypointNode('turnEnd')
 	end
-	turnEndWpNode:setToWaypoint(course, turnStartIx + 1)
-	self.turnEndWpNode = turnEndWpNode
+	aiDriverData.turnEndWpNode:setToWaypoint(course, turnStartIx + 1)
+	self.turnEndWpNode = aiDriverData.turnEndWpNode
 
 	---@type Waypoint
 	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]

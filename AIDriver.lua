@@ -616,7 +616,7 @@ function AIDriver:startTurn(ix)
 	-- as TurnContext() creates nodes when needed, store these nodes in the vehicle storage and on the the AIDriver
 	-- object, so the nodes are created only once and never destroyed (if this was a proper language with a destructor
 	-- then this would not be necessary)
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData.turnStartWaypointNode, self.aiDriverData.turnEndWaypointNode)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData)
 end
 
 function AIDriver:onTurnEnd()

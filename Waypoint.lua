@@ -240,7 +240,7 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	for i = first or 1, last or #waypoints do
 		-- make sure we pass in the original vehicle.Waypoints index with n+first
 		table.insert(self.waypoints, Waypoint(waypoints[i], n + (first or 1)))
-		n = n + 1
+		n = n + 1	
 	end
 	-- offset to apply to every position
 	self.offsetX, self.offsetZ = 0, 0
@@ -353,13 +353,13 @@ function Course:getLastReverseAt(ix)
 end
 
 function Course:isTurnStartAtIx(ix)
-	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].turnStart
+	return self.waypoints[ix].turnStart
 end
 
 --- Is this waypoint on a connecting track, that is, a transfer path between
 -- a headland and the up/down rows where there's no fieldwork to do.
 function Course:isOnConnectingTrack(ix)
-	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].isConnectingTrack
+	return self.waypoints[ix].isConnectingTrack
 end
 
 --- Is this a waypoint we must reach (keep driving towards it until we reach it, no cutting corners,
@@ -487,7 +487,8 @@ end
 function Course:print()
 	for i = 1, #self.waypoints do
 		local p = self.waypoints[i]
-		print(string.format('%d: x=%.1f z=%.1f a=%.1f r=%s i=%s d=%.1f t=%d', i, p.x, p.z, p.angle, tostring(p.rev), tostring(p.interact), p.dToHere, p.turnsToHere))
+		print(string.format('%d: x=%.1f z=%.1f a=%.1f ts=%s te=%s r=%s i=%s d=%.1f t=%d', i, p.x, p.z, p.angle or -1,
+			tostring(p.turnStart), tostring(p.turnEnd), tostring(p.rev), tostring(p.interact), p.dToHere or -1, p.turnsToHere or -1))
 	end
 end
 

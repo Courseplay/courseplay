@@ -307,11 +307,6 @@ function CpManager:update(dt)
 		courseplay.fields.filter = DensityMapFilter:new(courseplay.fields.modifier) -- filter on terrain type
 		courseplay.fields.filter:setValueCompareParams("greater", 0) -- more than 0, so it is a field
 	end
-	-- add a debug marker to the log file when Left Alt-D pressed
-	--[[Tommiif  InputBinding.hasEvent( InputBinding.COURSEPLAY_DEBUG_MARKER ) then
-		courseplay.logDebugMarker()
-	end]]
-
 end;
 
 function CpManager:draw()
