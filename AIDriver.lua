@@ -1270,7 +1270,8 @@ end;
 
 --- Is auto stop engine enabled?
 function AIDriver:isEngineAutoStopEnabled()
-	return self.vehicle.cp.saveFuelOptionActive
+	-- do not auto stop engine when auto motor start is enabled as it'll try to restart the engine on each update tick.
+	return self.vehicle.cp.saveFuelOptionActive and not g_currentMission.missionInfo.automaticMotorStartEnabled
 end
 
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
