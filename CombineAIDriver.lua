@@ -413,10 +413,8 @@ function CombineAIDriver:startTurn(ix)
 		self.turnIsDriving = true
 		return nil
 	end
-	---@type cornerCourse Course
 	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
 	if cornerCourse then
-		cornerCourse:print()
 		self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
 			cornerCourse:getNumberOfWaypoints(), nextIx)
 		self.fieldworkState = self.states.TURNING

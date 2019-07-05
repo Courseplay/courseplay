@@ -156,7 +156,9 @@ function AIDriver:init(vehicle)
 	-- list of active messages to display
 	self.activeMsgReferences = {}
 	self.pathfinder = Pathfinder()
-	self.aiDriverData.autoDriveMode = AutoDriveModeSetting(self.vehicle)
+	if not self.aiDriverData.autoDriveMode then
+		self.aiDriverData.autoDriveMode = AutoDriveModeSetting(self.vehicle)
+	end
 	self:setHudContent()
 end
 
