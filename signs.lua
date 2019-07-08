@@ -241,12 +241,14 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 			end;
 
 			for _,course in pairs(g_currentMission.cp_courses) do
-				for _,wp in pairs(course.waypoints) do
-					if wp.crossing then
-						self:addSign(vehicle, 'cross', wp.cx, wp.cz, nil, wp.angle);
+				if course.waypoints then
+					for _,wp in pairs(course.waypoints) do
+						if wp.crossing then
+							self:addSign(vehicle, 'cross', wp.cx, wp.cz, nil, wp.angle);
+						end;
 					end;
 				end;
-			end;
+			end
 		end;
 	end;
 
