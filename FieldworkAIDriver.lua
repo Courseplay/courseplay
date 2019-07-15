@@ -955,7 +955,7 @@ function FieldworkAIDriver:setMarkers()
 	local markers= {}
 	local addMarkers = function(object, referenceNode)
 		self:debug('Finding AI markers of %s', nameNum(object))
-		local aiLeftMarker, aiRightMarker, aiBackMarker = object:getAIMarkers()
+		local aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkers(object)
 		if aiLeftMarker and aiBackMarker and aiRightMarker then
 			local _, _, leftMarkerDistance = localToLocal(aiLeftMarker, referenceNode, 0, 0, 0)
 			local _, _, rightMarkerDistance = localToLocal(aiRightMarker, referenceNode, 0, 0, 0)
@@ -963,6 +963,7 @@ function FieldworkAIDriver:setMarkers()
 			table.insert(markers, leftMarkerDistance)
 			table.insert(markers, rightMarkerDistance)
 			table.insert(markers, backMarkerDistance)
+			self:debug('%s: left = %.1f, right = %.1f, back = %.1f', nameNum(object), leftMarkerDistance, rightMarkerDistance, backMarkerDistance)
 		end
 	end
 
@@ -1005,8 +1006,14 @@ function FieldworkAIDriver:getAIMarkers(object)
 	end
 	if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
 		-- use the root node if there are no AI markers
-		self:debug('%s has no AI markers', nameNum(object))
-		return nil, nil, nil
+		self:debug('%s has no AI markers, try work areas', nameNum(object))
+		aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkersFromWorkAreas(object)
+		if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
+			self:debug('%s has no work areas, giving up', nameNum(object))
+			return nil, nil, nil
+		else
+			return aiLeftMarker, aiRightMarker, aiBackMarker
+		end
 	else
 		return aiLeftMarker, aiRightMarker, aiBackMarker
 	end
@@ -1067,7 +1074,6 @@ function FieldworkAIDriver:shouldRaiseImplements(turnStartNode)
 	local doRaise = self:shouldRaiseThisImplement(self.vehicle, turnStartNode)
 	-- and then check all implements
 	for _, implement in ipairs(self.vehicle:getAttachedAIImplements()) do
-		print(nameNum(implement.object))
 		-- only when _all_ implements can be raised will we raise them all, hence the 'and'
 		doRaise = doRaise and self:shouldRaiseThisImplement(implement.object, turnStartNode)
 	end
@@ -1078,7 +1084,6 @@ end
 --- the implement should be raised when beginning a turn
 function FieldworkAIDriver:shouldRaiseThisImplement(object, turnStartNode)
 	local _, _, aiBackMarker = self:getAIMarkers(object)
-	self:debug('%s: backmarker %s', nameNum(object), tostring(aiBackMarker))
 	-- if something (like a combine) does not have an AI marker it should not prevent from raising other implements
 	-- like the header, which does have markers), therefore, return true here
 	if not aiBackMarker then return true end
@@ -1096,3 +1101,25 @@ function FieldworkAIDriver:onDraw()
 	end
 	AIDriver.onDraw(self)
 end
+
+function FieldworkAIDriver:isValidWorkArea(area)
+	return area.start and area.height and area.width and
+		area.type ~= WorkAreaType.RIDGEMARKER and
+		area.type ~= WorkAreaType.COMBINESWATH and
+		area.type ~= WorkAreaType.COMBINECHOPPER
+end
+
+--- Calculate the front and back marker nodes of a work area
+function FieldworkAIDriver:getAIMarkersFromWorkAreas(object)
+	-- work areas are defined by three nodes: start, width and height. These nodes
+	-- define a rectangular work area which you can make visible with the
+	-- gsVehicleDebugAttributes console command and then pressing F5
+	for _, area in courseplay:workAreaIterator(object) do
+		if self:isValidWorkArea(area) then
+			-- for now, just use the first valid work area we find
+			self:debug('%s: Using %s work area markers as AIMarkers', nameNum(object), g_workAreaTypeManager.workAreaTypes[area.type].name)
+			return area.start, area.width, area.height
+		end
+	end
+end
+
