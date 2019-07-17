@@ -76,7 +76,7 @@ function Pathfinder:unwindPath ( flat_path, map, current_node )
 	end
 end
 
--- The A start adapted from https://github.com/lattejed/a-star-lua
+-- The A star adapted from https://github.com/lattejed/a-star-lua
 function Pathfinder:path (start, goal, nodes, max_iterations)
 
 	local openset = { start }
@@ -437,7 +437,36 @@ end
 ---@class HeadlandPathfinder : Pathfinder
 HeadlandPathfinder = CpObject(Pathfinder)
 
---- Default neighbor finder function, considering all nodes
+-- On a headland path, we prefer switching to the headland as
+-- soon as we can and stay on it as long as we can
+function HeadlandPathfinder:isValidNeighbor( theNode, node )
+	local d = self:distance( theNode.x, theNode.y, node.x, node.y )
+	if theNode.headlandNumber and node.headlandNumber then
+		-- both nodes are on a headland
+		if theNode.headlandNumber == node.headlandNumber then
+			-- on same the headland we don't want to cut corners, must remain
+			-- on the headland waypoints
+			if theNode.index == node.prevIndex or theNode.index == node.nextIndex then
+				return true
+			else
+				return false
+			end
+		else
+			-- nodes are on a different headland, allow for switching between headlands
+			return d < self.maxDistanceBetweenPointsOnDifferentHeadlands
+		end
+	else
+		if theNode.headlandNumber or node.headlandNumber then
+			-- at least one of the nodes is the headland, the other one must be the start or end node
+			-- this determines how close to the start/end we switch to the headland
+			return d < self.maxDistanceBetweenStartOrEndAndHeadland
+		else
+			-- no direct path between start and end node
+			return false
+		end
+	end
+end
+
 function HeadlandPathfinder:getNeighbors( theNode, nodes )
 	local neighbors = {}
 	for _, node in ipairs ( nodes ) do
@@ -466,29 +495,40 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	-- list of nodes for pathfinding are all the waypoints on the headland
 	local nodes = {}
 	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
+
 	for i = 1, nHeadlandsToUse do
-		for _, node in ipairs(headlands[i]) do
-			table.insert(nodes, PointXY:copy(node))
+		for j, node in ipairs(headlands[i]) do
+			local newNode = PointXY:copy(node)
+			-- add metadata for isValidNeighbor()
+			newNode.headlandNumber = i
+			newNode.index = j
+			-- last and first points are also next to each other as the headland is closed
+			newNode.prevIndex = j == 1 and #headlands[i] or j - 1
+			newNode.nextIndex = j == #headlands[i] and 1 or j + 1
+			table.insert(nodes, newNode)
 		end
 	end
+
 	local from, to = PointXY:copy(fromNode), PointXY:copy(toNode)
 	table.insert(nodes, from)
 	table.insert(nodes, to)
 
 	courseGenerator.debug( "Starting pathfinding on headland (%d waypoints)", #nodes)
 
-	-- this is for isValidNeighbor() to be able to find the closest points on the headland
-	-- TODO: may need a customized isValidNeighbor if the working width is significantly smaller than the
-	-- waypoint distance
-	self.gridSpacing = math.max(courseGenerator.waypointDistance, workWidth) * 1.5
+	self.maxDistanceBetweenPointsOnDifferentHeadlands = math.max(courseGenerator.waypointDistance, workWidth) * 1.3
+	self.maxDistanceBetweenStartOrEndAndHeadland = workWidth * (#headlands - nHeadlandsToUse + 1)
+
 	local path, iterations = self:path(from, to, nodes, #nodes * 3)
+
 	courseGenerator.debug( "Number of iterations %d", iterations)
+
 	if path then
 		path = Polyline:new( path )
 		path:calculateData()
 		--path:smooth( math.rad( 0 ), math.rad( 180 ), 1 )
 		courseGenerator.debug( "Path generated with %d points", #path )
 	end
+
 	return path, nodes
 end
 
