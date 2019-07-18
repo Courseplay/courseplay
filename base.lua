@@ -941,7 +941,7 @@ function courseplay:showWorkWidth(vehicle)
 end;
 
 function courseplay:drawWaypointsLines(vehicle)
-	if not CpManager.isDeveloper or vehicle ~= g_currentMission.controlledVehicle then return; end;
+	if vehicle ~= g_currentMission.controlledVehicle then return; end;
 
 	local height = 2.5;
 	local r,g,b,a;
@@ -994,7 +994,7 @@ function courseplay:onUpdate(dt)
 		end
 	end;
 
-	if CpManager.isDeveloper and (self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
+	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
 		courseplay:drawWaypointsLines(self);
 	end;
 
