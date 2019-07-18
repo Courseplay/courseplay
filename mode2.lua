@@ -1272,14 +1272,14 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 
 		courseplay:checkSaveFuel(vehicle,allowedToDrive)
-		
+
 		if not allowedToDrive then
 			AIVehicleUtil.driveInDirection(vehicle, dt, 30, 0, 0, 28, false, moveForwards, 0, 1)
 			vehicle.cp.speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
 			courseplay:resetSlippingTimers(vehicle)
 			return;
 		end
-		
+
 		if vehicle.cp.TrafficBrake then
 			moveForwards = vehicle.movingDirection == -1;
 				lx = 0
@@ -1336,7 +1336,8 @@ function courseplay:unload_combine(vehicle, dt)
 			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
 		end
 		
-		courseplay:setTrafficCollision(vehicle, lx, lz,true)
+				-- courseplay:setTrafficCollision(vehicle, lx, lz,true)
+		courseplay:setTrafficCollision_onfield(vehicle, lx, lz,false)				
 		
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 			if not moveForwards then
@@ -1355,6 +1356,28 @@ function courseplay:unload_combine(vehicle, dt)
 			end
 		end
 		
+		allowedToDrive = courseplay:checkTraffic(vehicle, true, allowedToDrive)
+		-- allowedToDrive false -> STOP OR HOLD POSITION
+		if not allowedToDrive then
+			-- reset slipping timers
+			courseplay:resetSlippingTimers(vehicle)
+			if courseplay.debugChannels[21] then
+				renderText(0.5,0.85-(0.03*vehicle.cp.coursePlayerNum),0.02,string.format("%s: vehicle.lastSpeedReal: %.8f km/h ",nameNum(vehicle),vehicle.lastSpeedReal*3600))
+			end
+			vehicle.cp.TrafficBrake = false;
+			vehicle.cp.isTrafficBraking = false;
+
+			local moveForwards = true;
+			if vehicle.cp.curSpeed > 1 then
+				allowedToDrive = true;
+				moveForwards = vehicle.movingDirection == 1;
+			end;
+			--print('broken 779')
+			AIVehicleUtil.driveInDirection(vehicle, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
+			--self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+			return;
+		end;
+
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, accelrator, 0.5, 10, allowedToDrive, moveForwards, lx, lz, refSpeed, 1)
 				
 		--if courseplay.debugChannels[4] and vehicle.cp.nextTargets and vehicle.cp.curTarget.x and vehicle.cp.curTarget.z then

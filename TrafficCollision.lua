@@ -27,15 +27,15 @@ function CollisionDetector:init(vehicle, course)
 	self:debug('creating CollisionDetector')
 	self.course = course
 	--if CpManager.isDeveloper then
-		self:removeLegacyCollisionTriggers()
+		-- self:removeLegacyCollisionTriggers()	-- handled at higher level, do not use here
 	--end
 	self.collidingObjects = {}
 	self.nCollidingObjects = 0
-	self.nPreviousCollidingObjects = 0
+	-- self.nPreviousCollidingObjects = 0			-- ??? not used anywhere
 	self.ignoredNodes = {}
 	self:addToIgnoreList(self.vehicle)
-	self.numTrafficCollisionTriggers = 0
-	self.requiredNumTriggers = 4
+	-- self.numTrafficCollisionTriggers = 0			-- inconsistent handling of Colli number(s) cleared
+	-- self.requiredNumTriggers = 4					-- inconsistent handling of Colli number(s) cleared -> this is a global setting!
 	self.trafficCollisionTriggers = {}
 	self:createTriggers()
 	self:adaptCollisHeight()
@@ -50,6 +50,9 @@ function CollisionDetector:delete()
 	if self.trafficCollisionTriggers then
 		self:deleteTriggers()
 		self.trafficCollisionTriggers = nil
+		self.collidingObjects = {}				-- clear all detected collisions
+		self.nCollidingObjects = 0				-- clear all detected collisions
+		self.ignoredNodes = {}					-- clear all detected collisions
 	end
 end
 
@@ -57,6 +60,7 @@ end
 -- has the side effect that this vehicle won't have traffic collision detection when
 -- not running with the AIDriver (the code in traffic.lua seems to be safely handle
 -- the lack of collision triggers)
+--[[	handled at start_stop.lua
 function CollisionDetector:removeLegacyCollisionTriggers()
 	for i=self.vehicle.cp.numTrafficCollisionTriggers,1,-1 do 
 		local node = self.vehicle.cp.trafficCollisionTriggers[i]
@@ -72,8 +76,10 @@ function CollisionDetector:removeLegacyCollisionTriggers()
 		CpManager.trafficCollisionIgnoreList[node] = nil
 		self.vehicle.cp.trafficCollisionTriggers[i] = nil
 	end
-	self.vehicle.cp.numTrafficCollisionTriggers = 0 -- why not #trafficCollisionTriggers???
+	-- self.vehicle.cp.numTrafficCollisionTriggers = 0 -- why not #trafficCollisionTriggers???
 end
+]]
+
 
 function CollisionDetector:findAiCollisionTrigger(object)
 	local index = object.i3dMappings.aiCollisionTrigger
@@ -91,14 +97,15 @@ end
 function CollisionDetector:createTriggers()
 	self.aiTrafficCollisionTrigger = self:findAiCollisionTrigger(self.vehicle)
 	if not self.aiTrafficCollisionTrigger then return end
-	CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true
+	-- CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true			-- the main colli of a vehicle should not be globaly ignored, what shall be detected in such case ?
 	self.vehicle.cp.trafficCollisionTriggerToTriggerIndex = {}
-	self.vehicle.cp.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
-	for i = 1, self.requiredNumTriggers do
+	-- self.vehicle.cp.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
+	self.vehicle.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
+	for i = 1, self.vehicle.cp.numTrafficCollisionTriggers do
 		local newTrigger = clone(self.aiTrafficCollisionTrigger, true)
 		self.trafficCollisionTriggers[i] = newTrigger
 		self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
-		self.numTrafficCollisionTriggers = self.numTrafficCollisionTriggers + 1
+		-- self.numTrafficCollisionTriggers = self.numTrafficCollisionTriggers + 1	-- makes no sense to count the number of triggers as they are always numTrafficCollisionTriggers
 		setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
 		if i > 1 then
 			unlink(newTrigger)
@@ -106,13 +113,14 @@ function CollisionDetector:createTriggers()
 			setTranslation(newTrigger, 0, 0, 4)
 		end;
 		addTrigger(newTrigger, 'onCollision', self)
-		CpManager.trafficCollisionIgnoreList[newTrigger] = true
+		-- CpManager.trafficCollisionIgnoreList[newTrigger] = true					-- should the colli boxes realy be ignored globaly?
 	end;
 end
 
 
 function CollisionDetector:deleteTriggers()
-	for i = #self.trafficCollisionTriggers, 1, -1 do
+	-- for i = #self.trafficCollisionTriggers, 1, -1 do
+	for i = self.vehicle.cp.numTrafficCollisionTriggers, 1, -1 do
 		local node = self.trafficCollisionTriggers[i]
 		if node then
 			removeTrigger(node)
@@ -153,6 +161,8 @@ function CollisionDetector:addToIgnoreList(object)
 end
 
 --- make sure we have latest status (mainly refresh the ignore list with implement changes)
+-- ??? not used anywhere
+--[[
 function CollisionDetector:refresh()
 	self:debug('refreshing ignore list')
 	self.ignoredNodes = {}
@@ -160,7 +170,8 @@ function CollisionDetector:refresh()
 	-- trigger justGotInTraffic in case we start up in the traffic
 	self.nPreviousCollidingObjects = 0
 end
-
+]]
+ 
 function CollisionDetector:isIgnored(node)
 	local parent = getParent(node)
 	if self.ignoredNodes[node] or CpManager.trafficCollisionIgnoreList[node] or
@@ -296,11 +307,13 @@ function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 	if self.trafficCollisionTriggers[1] ~= nil then
 		self:setCollisionDirection(self.vehicle.cp.DirectionNode, self.trafficCollisionTriggers[1], colDirX, colDirZ)
 		local recordNumber = ix
-		if self.vehicle.cp.collidingVehicleId == nil then
-			for i = 2, #self.trafficCollisionTriggers do
-				if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() or recordNumber < 2 then
-					self:setCollisionDirection(self.trafficCollisionTriggers[i-1], self.trafficCollisionTriggers[i], 0, -1)
-				else
+		-- if self.vehicle.cp.collidingVehicleId == nil then -- this is wrong -> only update the colli boxes if no colliding vehicle was deteced, and only #2,3,4 why not also #1?
+-- 		for i = 2, #self.trafficCollisionTriggers do
+		for i = 2, self.vehicle.cp.numTrafficCollisionTriggers do
+			-- if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() or recordNumber < 2 then
+			if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() then		-- enable the snake on the way to the start point of a course
+				self:setCollisionDirection(self.trafficCollisionTriggers[i-1], self.trafficCollisionTriggers[i], 0, -1)
+			else
 
 					local nodeX, nodeY, nodeZ = getWorldTranslation(self.trafficCollisionTriggers[i])
 					local x, y, z = course:getWaypointPosition(recordNumber)
@@ -327,7 +340,7 @@ function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 					self:setCollisionDirection(self.trafficCollisionTriggers[i - 1], self.trafficCollisionTriggers[i], nodeDirX, nodeDirZ)
 				end
 			end
-		end
+		-- end		-- this is wrong -> only update the colli boxes if no colliding vehicle was deteced...
 	end
 end
 
@@ -393,7 +406,8 @@ end
 -- adapt collis height to vehicles height
 function CollisionDetector:adaptCollisHeight()
 	local vehicle = self.vehicle
-	if self.numTrafficCollisionTriggers > 0 then
+	-- if self.numTrafficCollisionTriggers > 0 then		-- see above
+	if self.trafficCollisionTriggers[1] ~= nil then	
 		local height = 0;
 		local step = (vehicle.sizeLength/2)+1 ;
 		local stepBehind, stepFront = step, step;

@@ -2,11 +2,16 @@ local curFile = 'start_stop.lua';
 
 -- starts driving the course
 function courseplay:start(self)
+	self.cp.TrafficBrake = false
+	self.cp.inTraffic = false
 	self.currentHelper = g_helperManager:getRandomHelper()
 	self.spec_aiVehicle.isActive = true
 	self.cp.stopMotorOnLeaveBackup = self.spec_motorized.stopMotorOnLeave;
 	self.spec_motorized.stopMotorOnLeave = false;
 	self.spec_enterable.disableCharacterOnLeave = false;
+	if not CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] then			-- ???
+		CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
+	end;
 
 	-- TODO: move this to TrafficCollision.lua
 	if self:getAINeedsTrafficCollisionBox() then
@@ -56,7 +61,7 @@ function courseplay:start(self)
 	end]]
 	
 	self.cpTrafficCollisionIgnoreList = {}
-	self.CPnumCollidingVehicles = 0;
+	-- self.CPnumCollidingVehicles = 0;					-- ??? not used anywhere
 	self.cp.collidingVehicleId = nil
 	
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
@@ -67,34 +72,11 @@ function courseplay:start(self)
 	self.cp.calculatedCourseToCombine = false
 
 	courseplay:resetTools(self)
-	
+--[[
 	--TODO when checking the Collision triggers, check if we still need this
 	if self.attachedCutters ~= nil then
-		for cutter, implement in pairs(self.attachedCutters) do
-			--remove cutter atTrafficCollisionTrigger in case of having changed or removed it while not in CP
-			if self.cp.trafficCollisionTriggers[0] ~= nil then
-				removeTrigger(self.cp.trafficCollisionTriggers[0])
-				self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[0]] = nil
-			end	
-			--set cutter aiTrafficCollisionTrigger to cp.aiTrafficCollisionTrigger's list
-			if cutter.aiTrafficCollisionTrigger ~= nil then
-				if cutter.cpTrafficCollisionTrigger == nil then
-					cutter.cpTrafficCollisionTrigger = clone(cutter.aiTrafficCollisionTrigger, true);
-					self.cp.trafficCollisionTriggers[0] = cutter.cpTrafficCollisionTrigger
-				else
-					self.cp.trafficCollisionTriggers[0] = cutter.cpTrafficCollisionTrigger
-				end
-				addTrigger(self.cp.trafficCollisionTriggers[0], 'cpOnTrafficCollisionTrigger', self);
-				self.cp.trafficCollisionTriggerToTriggerIndex[self.cp.trafficCollisionTriggers[0]] = 0
-				self.cp.collidingObjects[0] = {};
-				courseplay:debug(string.format("%s: Start/Stop: cutter.aiTrafficCollisionTrigger present -> adding %s to self.cp.trafficCollisionTriggers[0]",nameNum(self),tostring(self.cp.trafficCollisionTriggers[0])),3)
-				--self.cp.numCollidingObjects[0] = 0;
-			else
-				courseplay:debug(string.format('## Courseplay: %s: aiTrafficCollisionTrigger in cutter missing. Traffic collision prevention will not work!', nameNum(self)),3);
-			end
-		end
-	end
-	
+]]
+
 	--calculate workwidth for combines in mode7
 	if self.cp.mode == 7 then
 		courseplay:calculateWorkWidth(self)
@@ -460,6 +442,8 @@ function courseplay:start(self)
 		self.cp.changedMRMod = true;
 	end
 	if self.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
+		local ret_removeLegacyCollisionTriggers = false
+		ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
 		-- the driver handles the PPC
 		-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
 		-- attached and I don't have the motivation do dig through the legacy code to find out why
@@ -472,6 +456,11 @@ function courseplay:start(self)
 		-- Initialize pure pursuit controller
 		self.cp.ppc = PurePursuitController(self)
 		self.cp.ppc:initialize()
+		if self.cp.driver ~= nil and self.cp.driver.collisionDetector ~= nil then
+			self.cp.driver.collisionDetector:deleteTriggers()
+		end
+		local ret_createLegacyCollisionTriggers = false
+		ret_createLegacyCollisionTriggers = courseplay:createLegacyCollisionTriggers(self)
 	end
 	--print('startStop 509')
 
@@ -613,6 +602,8 @@ function courseplay:stop(self)
 		self.cp.driver:dismiss()
 	end
 
+	local ret2_removeLegacyCollisionTriggers = false
+	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
 	self.spec_aiVehicle.isActive = false
 	self.spec_motorized.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
 	self.spec_enterable.disableCharacterOnLeave = true;
@@ -748,7 +739,9 @@ function courseplay:stop(self)
 	self.cp.unloadOrder = false
 	self.cp.isUnloadingStopped = false
 	self.cp.foundColli = {}
+	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
+	self.cp.collidingVehicleId = nil
 	self.cp.bypassWaypointsSet = false
 	-- deactivate beacon and hazard lights
 	if self.beaconLightsActive then
@@ -854,7 +847,8 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 	local height = startHeight - distance
 	local vehicle = false
 	--print(string.format("found %s (%s)",tostring(getName(transformId)),tostring(transformId)))
-	if self.cp.aiTrafficCollisionTrigger == transformId then
+	-- if self.cp.aiTrafficCollisionTrigger == transformId then
+	if self.aiTrafficCollisionTrigger == transformId then	
 		if self.cp.HeightsFoundColli < height then
 			self.cp.HeightsFoundColli = height
 		end

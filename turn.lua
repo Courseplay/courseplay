@@ -756,7 +756,11 @@ function courseplay:turn(vehicle, dt, turnContext)
 		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
 	end
 
-	courseplay:setTrafficCollision(vehicle, lx, lz, true);
+	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
+		-- in AIDriver based modes do not call / use legacy collision code
+	else
+		courseplay:setTrafficCollision(vehicle, lx, lz,false)
+	end
 end;
 
 function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
