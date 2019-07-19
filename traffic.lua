@@ -46,16 +46,6 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			changedTables = true
 			courseplay:debug(string.format("%s:%s-> self.cp.collidingObjects[%d][%d] = nil", nameNum(self),debugMessage,triggerNumber,otherId), 3);
 		end
---[[		
-		--is this ID in one of the other triggers?
-		local isInOtherTrigger = false 
-		for i=1,4 do
-			if i ~= triggerNumber and self.cp.collidingObjects[i][otherId] then
-				isInOtherTrigger = true
-			end
-		end
-]]		
---		if self.cp.collidingObjects.all[otherId] and not isInOtherTrigger then
 		if self.cp.collidingObjects.all[otherId] then
 			self.cp.collidingObjects.all[otherId] = nil
 			changedTables = true
@@ -65,7 +55,6 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	
 	if changedTables then
 		if courseplay.debugChannels[3] then
---			for triggerNumber =1,4 do
 			for triggerNumber =1,self.cp.numTrafficCollisionTriggers do
 				print(string.format("     self.cp.collidingObjects[%d]:",triggerNumber))
 				for otherID,_ in pairs (self.cp.collidingObjects[triggerNumber]) do
@@ -83,8 +72,7 @@ function courseplay:removeInvalidID(self,otherId)
 	if self.cp.collidingObjects.all[otherId] then
 		self.cp.collidingObjects.all[otherId] = nil
 	end
-	-- for triggerNumber =1,4 do
-	for triggerNumber =1,self.cp.numTrafficCollisionTriggers do	
+	for triggerNumber =1,self.cp.numTrafficCollisionTriggers do
 		if self.cp.collidingObjects[triggerNumber][otherId] then 
 			self.cp.collidingObjects[triggerNumber][otherId] = nil;
 		end
@@ -134,7 +122,6 @@ function courseplay:updateCollisionVehicle(vehicle)
 						courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's green or Off-> go on",3)
 					else
 						courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's red-> set as collision vehicle",3)
-						-- for triggerNumber = 1,4 do
 						for triggerNumber = 1, vehicle.cp.numTrafficCollisionTriggers do
 							if vehicle.cp.collidingObjects[triggerNumber][otherId] then
 								local trafficLightDistance = triggerNumber*5;
@@ -297,20 +284,32 @@ function courseplay:findaiTrafficCollisionTrigger(vehicle)
 	end;
 
 	local ret = false
-
+	local index = nil
+	
 	if vehicle.aiTrafficCollisionTrigger == nil then
-		local index = vehicle.i3dMappings.aiCollisionTrigger --getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
+		if vehicle.i3dMappings.aiCollisionTrigger then		-- standard colli definition
+			index = vehicle.i3dMappings.aiCollisionTrigger
+		elseif vehicle.i3dMappings.trafficCollisionTrigger then		-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.trafficCollisionTrigger
+		elseif vehicle.i3dMappings.collisionTrigger then			-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.collisionTrigger
+		elseif vehicle.i3dMappings.aiTrafficTrigger then			-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.aiTrafficTrigger
+		elseif vehicle.i3dMappings.aiCollisionTriggerBig then			-- workaround GIANTS FS19 vehicle K105, K165
+			index = vehicle.i3dMappings.aiCollisionTriggerBig
+		elseif vehicle.i3dMappings.aiCollisionTriggerSmall then			-- workaround GIANTS FS19 vehicle K105, K165
+			index = vehicle.i3dMappings.aiCollisionTriggerSmall
+		end
 		if index then
 			local triggerObject = I3DUtil.indexToObject(vehicle.components, index);
 			if triggerObject then
 				vehicle.aiTrafficCollisionTrigger = triggerObject;
 			end;
 		end;
-	else
-		-- CpManager.trafficCollisionIgnoreList[vehicle.aiTrafficCollisionTrigger] = true; --add AI traffic collision trigger to global ignore list
 	end;
 	
 	if vehicle.aiTrafficCollisionTrigger == nil and getNumOfChildren(vehicle.rootNode) > 0 then
+		courseplay:debug(string.format("%s:findaiTrafficCollisionTrigger: no aiCollisionTrigger found in vehicle XML - trying alternative", nameNum(vehicle)), 3);	
 		if getChild(vehicle.rootNode, "aiCollisionTrigger") ~= 0 then
 			vehicle.aiTrafficCollisionTrigger = getChild(vehicle.rootNode, "aiCollisionTrigger");
 		else
@@ -319,7 +318,6 @@ function courseplay:findaiTrafficCollisionTrigger(vehicle)
 				if getChild(child, "aiCollisionTrigger") ~= 0 then
 					vehicle.aiTrafficCollisionTrigger = getChild(child, "aiCollisionTrigger");
 					if vehicle.aiTrafficCollisionTrigger then
-						-- CpManager.trafficCollisionIgnoreList[vehicle.aiTrafficCollisionTrigger] = true; --add AI traffic collision trigger to global ignore list
 						break;
 					end
 				end;
@@ -332,7 +330,6 @@ function courseplay:findaiTrafficCollisionTrigger(vehicle)
 	end;
 
 	if vehicle.aiTrafficCollisionTrigger then
-		-- CpManager.trafficCollisionIgnoreList[vehicle.aiTrafficCollisionTrigger] = true; --add AI traffic collision trigger to global ignore list
 		ret = true;
 	end
 

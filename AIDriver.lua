@@ -217,8 +217,7 @@ end
 --- Dismiss the driver
 function AIDriver:dismiss()
 	if self.collisionDetector then		-- restore the default direction of the colli boxes
-		self.collisionDetector:deleteTriggers()
-		self.collisionDetector:createTriggers()
+		self.collisionDetector:reset()
 	end
 	self.vehicle:deactivateLights()
 	self:clearAllInfoTexts()
@@ -232,10 +231,6 @@ function AIDriver:stop(msgReference)
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
 	self.turnIsDriving = false
-	-- don't delete the collision detector in dev mode so we can see collisions logged while manually driving
-	if not CpManager.isDeveloper then
-		-- self:deleteCollisionDetector()		-- makes no sense to delete it
-	end
 end
 
 function AIDriver:continue()

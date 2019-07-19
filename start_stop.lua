@@ -453,12 +453,12 @@ function courseplay:start(self)
 		end
 		self.cp.driver:start(self.cp.waypointIndex)
 	else
+		if self.cp.driver then
+			self.cp.driver:delete()
+		end
 		-- Initialize pure pursuit controller
 		self.cp.ppc = PurePursuitController(self)
 		self.cp.ppc:initialize()
-		if self.cp.driver ~= nil and self.cp.driver.collisionDetector ~= nil then
-			self.cp.driver.collisionDetector:deleteTriggers()
-		end
 		local ret_createLegacyCollisionTriggers = false
 		ret_createLegacyCollisionTriggers = courseplay:createLegacyCollisionTriggers(self)
 	end
