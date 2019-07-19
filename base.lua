@@ -269,6 +269,7 @@ function courseplay:onLoad(savegame)
 	self.cp.folder_settings = {}
 	courseplay.settings.update_folders(self)
 
+--[[	moved to start_stop.lua
 	--aiTrafficCollisionTrigger
 	if self.aiTrafficCollisionTrigger == nil then
 		local index = self.i3dMappings.aiCollisionTrigger --getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
@@ -298,7 +299,7 @@ function courseplay:onLoad(savegame)
 	if self.aiTrafficCollisionTrigger == nil then
 		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger missing. Traffic collision prevention will not work!', nameNum(self)));
 	end;
-
+]]
 	-- DIRECTION NODE SETUP
 	local DirectionNode;
 	if self.getAIVehicleDirectionNode ~= nil then -- Check if function exist before trying to use it
@@ -345,15 +346,13 @@ function courseplay:onLoad(savegame)
 	self.findSpecialTriggerCallback = courseplay.findSpecialTriggerCallback;
 	self.findFuelTriggerCallback = courseplay.findFuelTriggerCallback;
 	self.cp.hasRunRaycastThisLoop = {};
-	self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;
+	-- self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;		-- ??? not used anywhere
 	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft;
 	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight;
 	self.findVehicleHeights = courseplay.findVehicleHeights; 
 	
 	self.cp.fillTriggers = {}
 	
-	-- traffic collision
-	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
 	if self.maxRotation then
 		self.cp.steeringAngle = math.deg(self.maxRotation);
 	else
@@ -368,7 +367,10 @@ function courseplay:onLoad(savegame)
 	elseif self.cp.steeringAngleMultiplier then
 		self.cp.steeringAngle = self.cp.steeringAngle * self.cp.steeringAngleMultiplier;
 	end;
-	self.cp.tempCollis = {}
+
+	-- traffic collision
+	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
+	-- self.cp.tempCollis = {}								-- ??? not used anywhere
 	self.cpTrafficCollisionIgnoreList = {};
 	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
@@ -376,38 +378,29 @@ function courseplay:onLoad(savegame)
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
-	 if self.numCollidingVehicles == nil then
-		self.numCollidingVehicles = {};
-	end
+	-- if self.numCollidingVehicles == nil then				-- ??? not used anywhere
+		-- self.numCollidingVehicles = {};
+	-- end
 
-	self.cp.numTrafficCollisionTriggers = 0;
+	self.cp.collidingVehicleId = nil		-- on load game assume no colliding vehicle is detected
+	self.cp.numTrafficCollisionTriggers = 4;		-- single point of definition of the number of traffic collision boxes in front of a vehicle
 	self.cp.trafficCollisionTriggers = {};
+	self.cp.trafficCollisionTriggers[1] = nil;		-- LegacyCollisionTriggers not created
 	self.cp.trafficCollisionTriggerToTriggerIndex = {};
 	self.cp.collidingObjects = {
 		all = {};
 	};
-	self.cp.numCollidingObjects = {
-		all = 0;
-	};
-	
-	--TODO Tommi: remove this when we are completely on AIDriver
-	if self.aiTrafficCollisionTrigger ~= nil then
-		self.cp.numTrafficCollisionTriggers = 4;
-		for i=1,self.cp.numTrafficCollisionTriggers do
-			local newTrigger = clone(self.aiTrafficCollisionTrigger, true);
-			self.cp.trafficCollisionTriggers[i] = newTrigger
-			if i > 1 then
-				unlink(newTrigger)
-				link(self.cp.trafficCollisionTriggers[i-1], newTrigger);
-				setTranslation(newTrigger, 0,0,5);
-			end;
-			addTrigger(newTrigger, 'cpOnTrafficCollisionTrigger', self);
-			self.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
-			CpManager.trafficCollisionIgnoreList[newTrigger] = true; --add all traffic collision triggers to global ignore list
-			self.cp.collidingObjects[i] = {};
-			self.cp.numCollidingObjects[i] = 0;
-		end;
-	end;
+	-- self.cp.numCollidingObjects = {							-- ??? not used anywhere
+		-- all = 0;
+	-- };
+
+	--aiTrafficCollisionTrigger
+	self.aiTrafficCollisionTrigger = nil
+
+	local ret_findAiCollisionTrigger = false
+	ret_findAiCollisionTrigger = courseplay:findAiCollisionTrigger(self)
+
+	-- create LegacyCollisionTriggers on load game ? -> vehicles not running CP are getting the collision snake
 
 	if not CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] then
 		CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
@@ -1150,7 +1143,7 @@ function courseplay:onUpdateTick(dt)
 
 	--attached or detached implement?
 	if self.cp.tooIsDirty then
-		self.cpTrafficCollisionIgnoreList = {}
+		self.cpTrafficCollisionIgnoreList = {}			-- clear local colli list, will be updated inside resetTools(self) again
 		courseplay:resetTools(self)
 	end
 
@@ -1200,7 +1193,7 @@ function courseplay:onDelete()
 		self.cp.driver.collisionDetector:deleteTriggers()
 	end
 	
-	
+--[[	
 	--TODO Tommi: remove this when we are completely on AIDriver
 	for i=#self.cp.trafficCollisionTriggers,1,-1 do
 		
@@ -1219,6 +1212,9 @@ function courseplay:onDelete()
 		removeTrigger(self.aiTrafficCollisionTrigger);
 	end;
 	---
+]]
+	local ret_removeLegacyCollisionTriggers = false
+	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self);
 	
 	
 	if self.cp ~= nil then

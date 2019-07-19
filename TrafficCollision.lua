@@ -26,16 +26,10 @@ function CollisionDetector:init(vehicle, course)
 	self.vehicle = vehicle
 	self:debug('creating CollisionDetector')
 	self.course = course
-	--if CpManager.isDeveloper then
-		self:removeLegacyCollisionTriggers()
-	--end
 	self.collidingObjects = {}
 	self.nCollidingObjects = 0
-	self.nPreviousCollidingObjects = 0
 	self.ignoredNodes = {}
 	self:addToIgnoreList(self.vehicle)
-	self.numTrafficCollisionTriggers = 0
-	self.requiredNumTriggers = 4
 	self.trafficCollisionTriggers = {}
 	self:createTriggers()
 	self:adaptCollisHeight()
@@ -50,55 +44,37 @@ function CollisionDetector:delete()
 	if self.trafficCollisionTriggers then
 		self:deleteTriggers()
 		self.trafficCollisionTriggers = nil
+		self.collidingObjects = {}				-- clear all detected collisions
+		self.nCollidingObjects = 0				-- clear all detected collisions
+		self.ignoredNodes = {}					-- clear all detected collisions
+		self:addToIgnoreList(self.vehicle)
 	end
 end
 
--- Remove legacy CP collision triggers as they are always created in base.lua. This
--- has the side effect that this vehicle won't have traffic collision detection when
--- not running with the AIDriver (the code in traffic.lua seems to be safely handle
--- the lack of collision triggers)
-function CollisionDetector:removeLegacyCollisionTriggers()
-	for i=self.vehicle.cp.numTrafficCollisionTriggers,1,-1 do 
-		local node = self.vehicle.cp.trafficCollisionTriggers[i]
-		if node then
-			removeTrigger(node)
-			if entityExists(node) then
-				unlink(node)
-				self.vehicle:removeWashableNode(node)
-				self.vehicle:removeWearableNode(node)
-				delete(node)
-			end
-		end
-		CpManager.trafficCollisionIgnoreList[node] = nil
-		self.vehicle.cp.trafficCollisionTriggers[i] = nil
+function CollisionDetector:reset()
+	self:debug('reset CollisionDetector triggers')
+	if self.trafficCollisionTriggers then
+		self:delete()
 	end
-	self.vehicle.cp.numTrafficCollisionTriggers = 0 -- why not #trafficCollisionTriggers???
-end
-
-function CollisionDetector:findAiCollisionTrigger(object)
-	local index = object.i3dMappings.aiCollisionTrigger
-	if index then
-		self:debug('Collision detector initializing.')
-		return I3DUtil.indexToObject(object.components, index);
-	else
-		self:debug('No aiCollisionTrigger node found.')
-	end
+	self:createTriggers()
 end
 
 --- Create collision detection triggers: make four copies of the existing collision box and link them together
 -- so they form a snake in front of the vehicle along the path. When this snakes collides with something, the
 -- the onCollision() callback is triggered by the game engine
 function CollisionDetector:createTriggers()
-	self.aiTrafficCollisionTrigger = self:findAiCollisionTrigger(self.vehicle)
-	if not self.aiTrafficCollisionTrigger then return end
-	CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true
+	if not courseplay:findAiCollisionTrigger(self.vehicle) then return end
+	-- self.aiTrafficCollisionTrigger = courseplay:findAiCollisionTrigger(self.vehicle)
+	-- if not self.aiTrafficCollisionTrigger then return end
+	if not self.trafficCollisionTriggers then
+		self.trafficCollisionTriggers = {}
+	end
 	self.vehicle.cp.trafficCollisionTriggerToTriggerIndex = {}
-	self.vehicle.cp.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
-	for i = 1, self.requiredNumTriggers do
-		local newTrigger = clone(self.aiTrafficCollisionTrigger, true)
+	-- self.vehicle.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
+	for i = 1, self.vehicle.cp.numTrafficCollisionTriggers do
+		local newTrigger = clone(self.vehicle.aiTrafficCollisionTrigger, true)
 		self.trafficCollisionTriggers[i] = newTrigger
 		self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
-		self.numTrafficCollisionTriggers = self.numTrafficCollisionTriggers + 1
 		setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
 		if i > 1 then
 			unlink(newTrigger)
@@ -106,13 +82,12 @@ function CollisionDetector:createTriggers()
 			setTranslation(newTrigger, 0, 0, 4)
 		end;
 		addTrigger(newTrigger, 'onCollision', self)
-		CpManager.trafficCollisionIgnoreList[newTrigger] = true
 	end;
 end
 
 
 function CollisionDetector:deleteTriggers()
-	for i = #self.trafficCollisionTriggers, 1, -1 do
+	for i = self.vehicle.cp.numTrafficCollisionTriggers, 1, -1 do
 		local node = self.trafficCollisionTriggers[i]
 		if node then
 			removeTrigger(node)
@@ -134,10 +109,11 @@ function CollisionDetector:addToIgnoreList(object)
 	self:debug('will ignore collisions with %q (%q)', nameNum(object), tostring(object.cp.xmlFileName))
 	self.ignoredNodes[object.rootNode] = true;
 	-- add the vehicle or implement's own collision trigger to the ignore list
-	local aiCollisionTrigger = self:findAiCollisionTrigger(object)
-	if aiCollisionTrigger then
-		self:debug('-- %q', getName(aiCollisionTrigger))
-		self.ignoredNodes[aiCollisionTrigger] = true
+	-- local aiCollisionTrigger = courseplay:findAiCollisionTrigger(object)
+	if not courseplay:findAiCollisionTrigger(object) then return end
+	if object.aiCollisionTrigger then
+		self:debug('-- %q', getName(object.aiCollisionTrigger))
+		self.ignoredNodes[object.aiCollisionTrigger] = true
 	end
 	if object.components then
 		self:debug('will ignore collisions with %q (%q) components', nameNum(object), tostring(object.cp.xmlFileName))
@@ -150,15 +126,6 @@ function CollisionDetector:addToIgnoreList(object)
 	for _, impl in pairs(object:getAttachedImplements()) do
 		self:addToIgnoreList(impl.object)
 	end
-end
-
---- make sure we have latest status (mainly refresh the ignore list with implement changes)
-function CollisionDetector:refresh()
-	self:debug('refreshing ignore list')
-	self.ignoredNodes = {}
-	self:addToIgnoreList(self.vehicle)
-	-- trigger justGotInTraffic in case we start up in the traffic
-	self.nPreviousCollidingObjects = 0
 end
 
 function CollisionDetector:isIgnored(node)
@@ -249,6 +216,16 @@ function CollisionDetector:findTheValidCollisionVehicle()
 
 			else
 				self:isItATrafficVehicle(targetId)
+--[[
+				if self:isItATrafficVehicle(targetId) then
+					distance = courseplay:nodeToNodeDistance(self.vehicle.cp.DirectionNode or self.vehicle.rootNode, targetId)
+					if distanceToCollisionVehicle > distance then
+						--print(string.format("   %d is closer (%.2f m)",targetId,distance));
+						distanceToCollisionVehicle = distance
+						currentCollisionVehicleId = targetId;
+					end
+				end
+]]
 			end
 		else
 			--delete NodeID e.g. StrawBales will be deleted and don't get onLeave
@@ -269,8 +246,10 @@ end
 -- if yes ,set it to g_cM.nodeToObject
 function CollisionDetector:isItATrafficVehicle(nodeId)
 	local cm = getCollisionMask(nodeId);
+	local currentCollisionVehicleId
 	-- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
-	if collisionVehicle == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(nodeId),'Trigger') and not string.match(getName(nodeId),'trigger') then
+	-- if nodeId == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(nodeId),'Trigger') and not string.match(getName(nodeId),'trigger') then
+	if currentCollisionVehicleId == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(nodeId),'Trigger') and not string.match(getName(nodeId),'trigger') then
 		local pathVehicle = {
 			rootNode = nodeId,
 			isCpPathVehicle = true,
@@ -279,7 +258,9 @@ function CollisionDetector:isItATrafficVehicle(nodeId)
 			sizeWidth = 3,
 				}
 		g_currentMission.nodeToObject[nodeId] = pathVehicle
+		-- currentCollisionVehicleId = nodeId;
 	end
+	return currentCollisionVehicleId
 end
 
 
@@ -296,36 +277,34 @@ function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 	if self.trafficCollisionTriggers[1] ~= nil then
 		self:setCollisionDirection(self.vehicle.cp.DirectionNode, self.trafficCollisionTriggers[1], colDirX, colDirZ)
 		local recordNumber = ix
-		if self.vehicle.cp.collidingVehicleId == nil then
-			for i = 2, #self.trafficCollisionTriggers do
-				if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() or recordNumber < 2 then
-					self:setCollisionDirection(self.trafficCollisionTriggers[i-1], self.trafficCollisionTriggers[i], 0, -1)
-				else
-
-					local nodeX, nodeY, nodeZ = getWorldTranslation(self.trafficCollisionTriggers[i])
-					local x, y, z = course:getWaypointPosition(recordNumber)
-					local nodeDirX, nodeDirY, nodeDirZ, distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, x, y, z)
-					local _,_,Z = worldToLocal(self.trafficCollisionTriggers[i], x, y, z)
-					local index = 1
-					local oldValue = Z
-					while Z < 5.5 do
-						recordNumber = recordNumber + index
-						if recordNumber > course:getNumberOfWaypoints() then -- just a backup
-							break
-						end
-						x, y, z = course:getWaypointPosition(recordNumber)
-						nodeDirX, nodeDirY, nodeDirZ, distance = courseplay:getWorldDirection(nodeX, nodeY, nodeZ, x, y, z)
-						_,_,Z = worldToLocal(self.trafficCollisionTriggers[i], x, y, z)
-						if oldValue > Z then
-							self:setCollisionDirection(self.trafficCollisionTriggers[1], self.trafficCollisionTriggers[i], 0, 1)
-							break
-						end
-						index = index + 1
-						oldValue = Z
+		for i = 2, self.vehicle.cp.numTrafficCollisionTriggers do
+			-- if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() or recordNumber < 2 then
+			if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() then		-- enable the snake on the way to the start point of a course
+				self:setCollisionDirection(self.trafficCollisionTriggers[i-1], self.trafficCollisionTriggers[i], 0, -1)
+			else
+				local nodeX, nodeY, nodeZ = getWorldTranslation(self.trafficCollisionTriggers[i])
+				local x, y, z = course:getWaypointPosition(recordNumber)
+				local nodeDirX, nodeDirY, nodeDirZ, distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, x, y, z)
+				local _,_,Z = worldToLocal(self.trafficCollisionTriggers[i], x, y, z)
+				local index = 1
+				local oldValue = Z
+				while Z < 5.5 do
+					recordNumber = recordNumber + index
+					if recordNumber > course:getNumberOfWaypoints() then -- just a backup
+						break
 					end
-					nodeDirX, nodeDirY, nodeDirZ = worldDirectionToLocal(self.trafficCollisionTriggers[i - 1], nodeDirX, nodeDirY, nodeDirZ)
-					self:setCollisionDirection(self.trafficCollisionTriggers[i - 1], self.trafficCollisionTriggers[i], nodeDirX, nodeDirZ)
+					x, y, z = course:getWaypointPosition(recordNumber)
+					nodeDirX, nodeDirY, nodeDirZ, distance = courseplay:getWorldDirection(nodeX, nodeY, nodeZ, x, y, z)
+					_,_,Z = worldToLocal(self.trafficCollisionTriggers[i], x, y, z)
+					if oldValue > Z then
+						self:setCollisionDirection(self.trafficCollisionTriggers[1], self.trafficCollisionTriggers[i], 0, 1)
+						break
+					end
+					index = index + 1
+					oldValue = Z
 				end
+				nodeDirX, nodeDirY, nodeDirZ = worldDirectionToLocal(self.trafficCollisionTriggers[i - 1], nodeDirX, nodeDirY, nodeDirZ)
+				self:setCollisionDirection(self.trafficCollisionTriggers[i - 1], self.trafficCollisionTriggers[i], nodeDirX, nodeDirZ)
 			end
 		end
 	end
@@ -393,7 +372,7 @@ end
 -- adapt collis height to vehicles height
 function CollisionDetector:adaptCollisHeight()
 	local vehicle = self.vehicle
-	if self.numTrafficCollisionTriggers > 0 then
+	if self.trafficCollisionTriggers[1] ~= nil then	
 		local height = 0;
 		local step = (vehicle.sizeLength/2)+1 ;
 		local stepBehind, stepFront = step, step;

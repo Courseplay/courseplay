@@ -46,16 +46,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 			changedTables = true
 			courseplay:debug(string.format("%s:%s-> self.cp.collidingObjects[%d][%d] = nil", nameNum(self),debugMessage,triggerNumber,otherId), 3);
 		end
-		
-		--is this ID in one of the other triggers?
-		local isInOtherTrigger = false 
-		for i=1,4 do
-			if i ~= triggerNumber and self.cp.collidingObjects[i][otherId] then
-				isInOtherTrigger = true
-			end
-		end
-		
-		if self.cp.collidingObjects.all[otherId] and not isInOtherTrigger then
+		if self.cp.collidingObjects.all[otherId] then
 			self.cp.collidingObjects.all[otherId] = nil
 			changedTables = true
 			courseplay:debug(string.format("%s:%s-> self.cp.collidingObjects.all[%d]= nil", nameNum(self),debugMessage,otherId), 3);
@@ -64,7 +55,7 @@ function courseplay:cpOnTrafficCollisionTrigger(triggerId, otherId, onEnter, onL
 	
 	if changedTables then
 		if courseplay.debugChannels[3] then
-			for triggerNumber =1,4 do
+			for triggerNumber =1,self.cp.numTrafficCollisionTriggers do
 				print(string.format("     self.cp.collidingObjects[%d]:",triggerNumber))
 				for otherID,_ in pairs (self.cp.collidingObjects[triggerNumber]) do
 					print(string.format("       [%d]",otherID))
@@ -81,7 +72,7 @@ function courseplay:removeInvalidID(self,otherId)
 	if self.cp.collidingObjects.all[otherId] then
 		self.cp.collidingObjects.all[otherId] = nil
 	end
-	for triggerNumber =1,4 do
+	for triggerNumber =1,self.cp.numTrafficCollisionTriggers do
 		if self.cp.collidingObjects[triggerNumber][otherId] then 
 			self.cp.collidingObjects[triggerNumber][otherId] = nil;
 		end
@@ -131,7 +122,7 @@ function courseplay:updateCollisionVehicle(vehicle)
 						courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's green or Off-> go on",3)
 					else
 						courseplay:debug("   trafficLight: transY = "..tostring(translationY)..", so it's red-> set as collision vehicle",3)
-						for triggerNumber = 1,4 do
+						for triggerNumber = 1, vehicle.cp.numTrafficCollisionTriggers do
 							if vehicle.cp.collidingObjects[triggerNumber][otherId] then
 								local trafficLightDistance = triggerNumber*5;
 								if distanceToCollisionVehicle > trafficLightDistance then
@@ -206,7 +197,9 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 
 		if collisionVehicle.lastSpeedReal == nil or collisionVehicle.lastSpeedReal*3600 < 5 or ahead then
 			-- courseplay:debug(('%s: checkTraffic:\tcall distance=%.2f'):format(nameNum(vehicle), tz-halfLength), 3);
-			if tz <= halfLength + 4 then --TODO: abs(tz) ?
+			-- if tz <= halfLength + 4 then --TODO: abs(tz) ?
+			if abs(tz) <= halfLength + 8 then --TODO: abs(tz) ?				-- 4 was very close to the colli vehicle -> increased to 8
+			
 				allowedToDrive = false;
 				vehicle.cp.inTraffic = true;
 				courseplay:debug(('%s: checkTraffic:\tstop'):format(nameNum(vehicle)), 3);
@@ -228,7 +221,8 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 		end
 	end;
 
-	if displayWarnings and vehicle.cp.inTraffic and not inQueue then
+	-- if displayWarnings and vehicle.cp.inTraffic and not inQueue then
+	if displayWarnings and vehicle.cp.inTraffic then				-- not clear at the moment what inQueue is responsible?
 		CpManager:setGlobalInfoText(vehicle, 'TRAFFIC');
 	end;
 	return allowedToDrive;
@@ -263,13 +257,13 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 			courseplay:debug(string.format("%s: v.rootNode= %s,v.lastSpeedReal= %s, distance: %f, vehicleBehind= %s",nameNum(vehicle),tostring(collisionVehicle.rootNode),tostring(collisionVehicle.lastSpeedReal),distance,tostring(vehicleBehind)),3)
 			courseplay:deleteCollisionVehicle(vehicle)
 		else
-			if allowedToDrive and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or collisionVehicle.cp.mode9TrafficIgnoreVehicle)) then
+			-- if allowedToDrive and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or collisionVehicle.cp.mode9TrafficIgnoreVehicle)) then	-- speed reduction should also be applied if allowedToDrive is false
 				if vehicle.cp.curSpeed - (collisionVehicle.lastSpeedReal*3600) > 15 or z1 < 3 then
 					vehicle.cp.TrafficBrake = true
 				else
 					return min(collisionVehicle.lastSpeedReal*3600,refSpeed)
 				end
-			end
+			-- end
 		end
 	end
 	
@@ -283,3 +277,123 @@ function courseplay:deleteCollisionVehicle(vehicle)
 		courseplay:updateCollisionVehicle(vehicle)
 	end
 end
+
+function courseplay:createLegacyCollisionTriggers(vehicle)
+	if vehicle == nil then 
+		return false;
+	end;
+
+	local ret = false
+	
+	if vehicle.cp.trafficCollisionTriggers[1]	== nil then
+		--TODO Tommi: remove this when we are completely on AIDriver
+		vehicle.cp.trafficCollisionTriggerToTriggerIndex = {};
+		if vehicle.aiTrafficCollisionTrigger ~= nil then
+			for i=1,vehicle.cp.numTrafficCollisionTriggers do
+				local newTrigger = clone(vehicle.aiTrafficCollisionTrigger, true);
+				vehicle.cp.trafficCollisionTriggers[i] = newTrigger
+				if i > 1 then
+					unlink(newTrigger)
+					link(vehicle.cp.trafficCollisionTriggers[i-1], newTrigger);
+					setTranslation(newTrigger, 0,0,5);
+				end;
+				addTrigger(newTrigger, 'cpOnTrafficCollisionTrigger', vehicle);
+				vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
+				-- CpManager.trafficCollisionIgnoreList[newTrigger] = true; --add all traffic collision triggers to global ignore list
+				vehicle.cp.collidingObjects[i] = {};
+				ret = true
+			end;
+		end;
+	end;
+	return ret;
+end
+
+function courseplay:removeLegacyCollisionTriggers(vehicle)
+	if vehicle == nil then
+		return false;
+	end;
+
+	local ret = false
+
+	--TODO Tommi: remove this when we are completely on AIDriver
+	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then
+		for i=vehicle.cp.numTrafficCollisionTriggers,1,-1 do 
+			local node = vehicle.cp.trafficCollisionTriggers[i]
+			if node then
+				removeTrigger(node)
+				if entityExists(node) then
+					unlink(node)
+					vehicle:removeWashableNode(node)
+					vehicle:removeWearableNode(node)
+					delete(node)
+				end
+			end
+			-- CpManager.trafficCollisionIgnoreList[node] = nil
+			vehicle.cp.collidingObjects[i] = {};
+			vehicle.cp.trafficCollisionTriggers[i] = nil
+			ret = true
+		end
+	end;
+	return ret;
+end
+
+function courseplay:setTrafficCollisionOnField(vehicle, lx, lz, disableLongCheck)
+	local steeringfactor = 0.25;
+	local colDirX = lx;
+	local colDirZ = lz;
+
+	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then
+		courseplay:setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX * steeringfactor, colDirZ * steeringfactor);
+		local recordNumber = vehicle.cp.waypointIndex
+		for i=2,vehicle.cp.numTrafficCollisionTriggers do	-- continue with i=2 for the rest of the colli boxes
+			if disableLongCheck or recordNumber + i >= vehicle.cp.numWaypoints then
+				courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
+			else
+				courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, 1);
+			end
+		end
+	end;
+end;
+
+function courseplay:setTrafficCollision(vehicle, lx, lz, disableLongCheck)
+	local colDirX = lx;
+	local colDirZ = lz;
+
+	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
+
+	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then
+		courseplay:setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
+		local recordNumber = vehicle.cp.waypointIndex
+		for i=2,vehicle.cp.numTrafficCollisionTriggers do
+			-- if disableLongCheck or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
+				if disableLongCheck or recordNumber + i >= vehicle.cp.numWaypoints then
+					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
+				else
+					local nodeX,nodeY,nodeZ = getWorldTranslation(vehicle.cp.trafficCollisionTriggers[i]);
+					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
+					local _,_,Z = worldToLocal(vehicle.cp.trafficCollisionTriggers[i], vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
+					local index = 1
+					local oldValue = Z
+					while Z < 5.5 do
+						recordNumber = recordNumber+index
+						if recordNumber > vehicle.cp.numWaypoints then -- just a backup
+							break
+						end
+						nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
+						_,_,Z = worldToLocal(vehicle.cp.trafficCollisionTriggers[i], vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
+						if oldValue > Z then
+
+							courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[1], vehicle.cp.trafficCollisionTriggers[i], 0, 1);
+							break
+						end
+						index = index +1
+						oldValue = Z
+					end
+					nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(vehicle.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
+					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
+				end;
+			-- end;
+		end
+	end;
+end;
+
