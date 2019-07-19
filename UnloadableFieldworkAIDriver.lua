@@ -173,7 +173,8 @@ function UnloadableFieldworkAIDriver:handleChopperPipe()
 		local fillLevel = self.vehicle:getFillUnitFillLevel(spec.fillUnitIndex)
 		--self:debug('filltype = %s, fillLevel = %.1f', self:getFillType(), fillLevel)
 		-- not using isFillableTrailerUnderPipe() as the chopper sometimes has FillType.UNKNOWN
-		if fillLevel > 0.01 and self:getFillType() ~= FillType.UNKNOWN and not self:isFillableTrailerUnderPipe() then
+		if fillLevel > 0.01 and self:getFillType() ~= FillType.UNKNOWN and
+			not (self:isFillableTrailerUnderPipe() and self:canDischarge())	then
 			self:debugSparse('Chopper waiting for trailer, fill level %f', fillLevel)
 			self:setSpeed(0)
 		end
@@ -279,6 +280,15 @@ function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()
 		end
 	end
 	return canLoad
+end
+
+-- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
+-- trailer and can start discharging.
+function UnloadableFieldworkAIDriver:canDischarge()
+	-- TODO: self.vehicle should be the combine, which may not be the vehicle in case of towed harvesters
+	local dischargeNode = self.vehicle:getCurrentDischargeNode()
+	local targetObject, _ = self.vehicle:getDischargeTargetObject(dischargeNode)
+	return targetObject
 end
 
 --- Get the first valid (non-fuel) fill type
