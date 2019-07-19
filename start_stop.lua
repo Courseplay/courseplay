@@ -442,7 +442,7 @@ function courseplay:start(self)
 		self.cp.changedMRMod = true;
 	end
 	if self.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
-		local ret_removeLegacyCollisionTriggers = false
+		local ret_removeLegacyCollisionTriggers = false			-- TODO could be used for further processing / error handling / information to the user
 		ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
 		-- the driver handles the PPC
 		-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
@@ -459,7 +459,7 @@ function courseplay:start(self)
 		-- Initialize pure pursuit controller
 		self.cp.ppc = PurePursuitController(self)
 		self.cp.ppc:initialize()
-		local ret_createLegacyCollisionTriggers = false
+		local ret_createLegacyCollisionTriggers = false			-- TODO could be used for further processing / error handling / information to the user
 		ret_createLegacyCollisionTriggers = courseplay:createLegacyCollisionTriggers(self)
 	end
 	--print('startStop 509')
@@ -602,7 +602,7 @@ function courseplay:stop(self)
 		self.cp.driver:dismiss()
 	end
 
-	local ret2_removeLegacyCollisionTriggers = false
+	local ret2_removeLegacyCollisionTriggers = false				-- TODO could be used for further processing / error handling / information to the user
 	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
 	self.spec_aiVehicle.isActive = false
 	self.spec_motorized.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;

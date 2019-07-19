@@ -1337,7 +1337,7 @@ function courseplay:unload_combine(vehicle, dt)
 		end
 		
 				-- courseplay:setTrafficCollision(vehicle, lx, lz,true)
-		courseplay:setTrafficCollision_onfield(vehicle, lx, lz,false)				
+		courseplay:setTrafficCollisionOnField(vehicle, lx, lz,false)				
 		
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 			if not moveForwards then

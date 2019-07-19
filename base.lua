@@ -397,8 +397,8 @@ function courseplay:onLoad(savegame)
 	--aiTrafficCollisionTrigger
 	self.aiTrafficCollisionTrigger = nil
 
-	local ret_findaiTrafficCollisionTrigger = false
-	ret_findaiTrafficCollisionTrigger = courseplay:findaiTrafficCollisionTrigger(self)
+	local ret_findAiCollisionTrigger = false
+	ret_findAiCollisionTrigger = courseplay:findAiCollisionTrigger(self)
 
 	-- create LegacyCollisionTriggers on load game ? -> vehicles not running CP are getting the collision snake
 

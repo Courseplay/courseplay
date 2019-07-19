@@ -47,6 +47,7 @@ function CollisionDetector:delete()
 		self.collidingObjects = {}				-- clear all detected collisions
 		self.nCollidingObjects = 0				-- clear all detected collisions
 		self.ignoredNodes = {}					-- clear all detected collisions
+		self:addToIgnoreList(self.vehicle)
 	end
 end
 
@@ -58,39 +59,20 @@ function CollisionDetector:reset()
 	self:createTriggers()
 end
 
-function CollisionDetector:findAiCollisionTrigger(object)
-	local index = nil
-	if object.i3dMappings.aiCollisionTrigger then		-- standard colli definition
-		index = object.i3dMappings.aiCollisionTrigger
-	elseif object.i3dMappings.trafficCollisionTrigger then		-- workaround GIANTS FS19 vehicle
-		index = object.i3dMappings.trafficCollisionTrigger
-	elseif object.i3dMappings.collisionTrigger then			-- workaround GIANTS FS19 vehicle
-		index = object.i3dMappings.collisionTrigger
-	elseif object.i3dMappings.aiTrafficTrigger then			-- workaround GIANTS FS19 vehicle
-		index = object.i3dMappings.aiTrafficTrigger
-	elseif object.i3dMappings.aiCollisionTriggerBig then			-- workaround GIANTS FS19 vehicle K105, K165
-		index = object.i3dMappings.aiCollisionTriggerBig
-	elseif object.i3dMappings.aiCollisionTriggerSmall then			-- workaround GIANTS FS19 vehicle K105, K165
-		index = object.i3dMappings.aiCollisionTriggerSmall
-	end
-	if index then
-		self:debug('Collision detector initializing.')
-		return I3DUtil.indexToObject(object.components, index);
-	else
-		self:debug('No aiCollisionTrigger node found.')
-	end
-end
-
 --- Create collision detection triggers: make four copies of the existing collision box and link them together
 -- so they form a snake in front of the vehicle along the path. When this snakes collides with something, the
 -- the onCollision() callback is triggered by the game engine
 function CollisionDetector:createTriggers()
-	self.aiTrafficCollisionTrigger = self:findAiCollisionTrigger(self.vehicle)
-	if not self.aiTrafficCollisionTrigger then return end
+	if not courseplay:findAiCollisionTrigger(self.vehicle) then return end
+	-- self.aiTrafficCollisionTrigger = courseplay:findAiCollisionTrigger(self.vehicle)
+	-- if not self.aiTrafficCollisionTrigger then return end
+	if not self.trafficCollisionTriggers then
+		self.trafficCollisionTriggers = {}
+	end
 	self.vehicle.cp.trafficCollisionTriggerToTriggerIndex = {}
-	self.vehicle.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
+	-- self.vehicle.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
 	for i = 1, self.vehicle.cp.numTrafficCollisionTriggers do
-		local newTrigger = clone(self.aiTrafficCollisionTrigger, true)
+		local newTrigger = clone(self.vehicle.aiTrafficCollisionTrigger, true)
 		self.trafficCollisionTriggers[i] = newTrigger
 		self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
 		setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
@@ -127,10 +109,11 @@ function CollisionDetector:addToIgnoreList(object)
 	self:debug('will ignore collisions with %q (%q)', nameNum(object), tostring(object.cp.xmlFileName))
 	self.ignoredNodes[object.rootNode] = true;
 	-- add the vehicle or implement's own collision trigger to the ignore list
-	local aiCollisionTrigger = self:findAiCollisionTrigger(object)
-	if aiCollisionTrigger then
-		self:debug('-- %q', getName(aiCollisionTrigger))
-		self.ignoredNodes[aiCollisionTrigger] = true
+	-- local aiCollisionTrigger = courseplay:findAiCollisionTrigger(object)
+	if not courseplay:findAiCollisionTrigger(object) then return end
+	if object.aiCollisionTrigger then
+		self:debug('-- %q', getName(object.aiCollisionTrigger))
+		self.ignoredNodes[object.aiCollisionTrigger] = true
 	end
 	if object.components then
 		self:debug('will ignore collisions with %q (%q) components', nameNum(object), tostring(object.cp.xmlFileName))
@@ -232,6 +215,8 @@ function CollisionDetector:findTheValidCollisionVehicle()
 				end
 
 			else
+				self:isItATrafficVehicle(targetId)
+--[[
 				if self:isItATrafficVehicle(targetId) then
 					distance = courseplay:nodeToNodeDistance(self.vehicle.cp.DirectionNode or self.vehicle.rootNode, targetId)
 					if distanceToCollisionVehicle > distance then
@@ -240,6 +225,7 @@ function CollisionDetector:findTheValidCollisionVehicle()
 						currentCollisionVehicleId = targetId;
 					end
 				end
+]]
 			end
 		else
 			--delete NodeID e.g. StrawBales will be deleted and don't get onLeave
@@ -262,7 +248,8 @@ function CollisionDetector:isItATrafficVehicle(nodeId)
 	local cm = getCollisionMask(nodeId);
 	local currentCollisionVehicleId
 	-- if bit21 is part of the collisionMask then set new vehicle in GCM.NTV
-	if nodeId == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(nodeId),'Trigger') and not string.match(getName(nodeId),'trigger') then
+	-- if nodeId == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(nodeId),'Trigger') and not string.match(getName(nodeId),'trigger') then
+	if currentCollisionVehicleId == nil and bitAND(cm, 2097152) ~= 0 and not string.match(getName(nodeId),'Trigger') and not string.match(getName(nodeId),'trigger') then
 		local pathVehicle = {
 			rootNode = nodeId,
 			isCpPathVehicle = true,
@@ -271,7 +258,7 @@ function CollisionDetector:isItATrafficVehicle(nodeId)
 			sizeWidth = 3,
 				}
 		g_currentMission.nodeToObject[nodeId] = pathVehicle
-		currentCollisionVehicleId = nodeId;
+		-- currentCollisionVehicleId = nodeId;
 	end
 	return currentCollisionVehicleId
 end

@@ -1501,3 +1501,61 @@ function courseplay:isNodeTurnedWrongWay(vehicle,dischargeNode)
 	local _,_, nz = worldToLocal(dischargeNode,x,y,z)
 	return nz < 0
 end
+
+function courseplay:findAiCollisionTrigger(vehicle)
+	if vehicle == nil then
+		return false;
+	end;
+
+	local ret = false
+	local index = nil
+	
+	if vehicle.aiTrafficCollisionTrigger == nil then
+		if vehicle.i3dMappings.aiCollisionTrigger then		-- standard colli definition
+			index = vehicle.i3dMappings.aiCollisionTrigger
+		elseif vehicle.i3dMappings.trafficCollisionTrigger then		-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.trafficCollisionTrigger
+		elseif vehicle.i3dMappings.collisionTrigger then			-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.collisionTrigger
+		elseif vehicle.i3dMappings.aiTrafficTrigger then			-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.aiTrafficTrigger
+		elseif vehicle.i3dMappings.aiCollisionTriggerBig then			-- workaround GIANTS FS19 vehicle K105, K165
+			index = vehicle.i3dMappings.aiCollisionTriggerBig
+		elseif vehicle.i3dMappings.aiCollisionTriggerSmall then			-- workaround GIANTS FS19 vehicle K105, K165
+			index = vehicle.i3dMappings.aiCollisionTriggerSmall
+		end
+		if index then
+			local triggerObject = I3DUtil.indexToObject(vehicle.components, index);
+			if triggerObject then
+				vehicle.aiTrafficCollisionTrigger = triggerObject;
+			end;
+		end;
+	end;
+	
+	if vehicle.aiTrafficCollisionTrigger == nil and getNumOfChildren(vehicle.rootNode) > 0 then
+		courseplay.debugVehicle( 3, vehicle, "findaiTrafficCollisionTrigger: no aiCollisionTrigger found in vehicle XML - trying alternative")
+		if getChild(vehicle.rootNode, "aiCollisionTrigger") ~= 0 then
+			vehicle.aiTrafficCollisionTrigger = getChild(vehicle.rootNode, "aiCollisionTrigger");
+		else
+			for i=0,getNumOfChildren(vehicle.rootNode)-1 do
+				local child = getChildAt(vehicle.rootNode, i);
+				if getChild(child, "aiCollisionTrigger") ~= 0 then
+					vehicle.aiTrafficCollisionTrigger = getChild(child, "aiCollisionTrigger");
+					if vehicle.aiTrafficCollisionTrigger then
+						break;
+					end
+				end;
+			end;
+		end;
+	end;
+
+	if vehicle.aiTrafficCollisionTrigger == nil then
+		print(string.format('## Courseplay: aiTrafficCollisionTrigger missing. Traffic collision prevention will not work! vehicle %s', nameNum(vehicle)));
+	end;
+
+	if vehicle.aiTrafficCollisionTrigger then
+		ret = true;
+	end
+
+	return ret;
+end
