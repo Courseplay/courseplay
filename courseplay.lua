@@ -48,7 +48,7 @@ local sonOfaBangSonOfaBoom = {
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
 };
 
-CpManager.isDeveloper = false and sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
+CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
 
 if CpManager.isDeveloper then
 	print('Special dev magic for Courseplay developer unlocked. You go, girl!');

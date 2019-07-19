@@ -115,6 +115,11 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			addCourseAtEnd = true;
 		end
 
+		if not g_currentMission.cp_courses[id] then
+			courseplay.infoVehicle( vehicle, 'There is no course with id=%d, not loading course for this vehicle', id)
+			return
+		end
+
 		if not g_currentMission.cp_courses[id].waypoints then
 			courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
 			courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
@@ -146,7 +151,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			course.multiTools = course.multiTools or 1
 			courseplay:setMultiTools(vehicle, course.multiTools)
-			
+
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s",
 				debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
 
@@ -161,7 +166,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			local numCourse1, numCourse2 = #course1, #course2;
 			local course1wp, course2wp = numCourse1, 1;
 
-			local matchFound = false 
+			local matchFound = false
 			local wpDistMax = 50
 			-- may cause problems when intesections are too close to one another - think town @Golcrest 
 
@@ -195,30 +200,30 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 							local angleTurn = math.atan2(wp2.cx-wp1.cx,wp2.cz-wp1.cz) -- in radians 
 							--add direction change differences between original direction and turn direction and destination direction							
 							local totalAngle=math.deg(
-								   math.abs(getDeltaAngle(math.rad(wp1.angle),angleTurn)) + 
-								   math.abs(getDeltaAngle(angleTurn,math.rad(wp2.angle))))
+								math.abs(getDeltaAngle(math.rad(wp1.angle),angleTurn)) +
+									math.abs(getDeltaAngle(angleTurn,math.rad(wp2.angle))))
 							angleTurn = math.deg(angleTurn) -- now in degrees
 							--courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), 8);
 							if dist and dist ~= 0 and dist < wpDistMax then
-								courseplay:debug(string.format('wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f', 
+								courseplay:debug(string.format('wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f',
 									wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist), 8);
-								
+
 								local foundBetter = false
-							
+
 								--better is when totalAngle is significantly better than before (say 10 degrees)
-								if totalAngle + 10 < smallestAngle  then 
+								if totalAngle + 10 < smallestAngle  then
 									smallestAngle = totalAngle;
 									foundBetter = true
 									smallestDist = dist -- this is now the distance to beat
 								end
 
 								-- or when totalAngle is relatively the same - within 10 degrees - but distance is shorter 
-								if (totalAngle - 10 < smallestAngle)  and (dist < smallestDist) then 
+								if (totalAngle - 10 < smallestAngle)  and (dist < smallestDist) then
 									foundBetter = true
 									smallestDist = dist --distance just got better
 								end
 
-								if foundBetter then 
+								if foundBetter then
 									matchFound = true
 									--remove previous 'merged' vars
 									course1[course1wp].merged = nil;
@@ -231,7 +236,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 									course1[course1wp].merged = true;
 									course2[course2wp].merged = true;
 									courseplay.debugVehicle(8, vehicle,
-										'wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f', 
+										'wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f',
 										wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist)
 								end;
 							end;
@@ -239,10 +244,10 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 					end;
 				end;
 				if matchFound then
-					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d', 
+					courseplay:debug(string.format('%s: merge points found: course 1: #%d, course 2: #%d',
 						nameNum(vehicle), course1wp, course2wp), 8);
 				else
-					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end', 
+					courseplay:debug(string.format('%s: no points where the courses could be merged have been found -> add 2nd course at end',
 						nameNum(vehicle)), 8);
 				end
 			end;
@@ -272,14 +277,14 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			if vehicle.cp.courseHeadlandDirectionCW == nil then
 				vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			end;
-			
-			
+
+
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
 		end;
 
-		
+
 		vehicle:setCpVar('canDrive',true,courseplay.isClient);
-		
+
 		courseplay:setWaypointIndex(vehicle, 1);
 		courseplay:setModeState(vehicle, 0);
 		courseplay.signs:updateWaypointSigns(vehicle, "current");
