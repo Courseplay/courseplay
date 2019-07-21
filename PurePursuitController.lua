@@ -125,10 +125,20 @@ function PurePursuitController:setControlledNode(node)
 	self.controlledNode = node
 end
 
---- reset controlled node to the default (vehicle's own root node)
+function PurePursuitController:getControlledNode()
+	return self.controlledNode
+end
+
+--- reset controlled node to the default (vehicle's own direction node)
 function PurePursuitController:resetControlledNode()
 	-- our reference node we are tracking/controlling, by default it is the vehicle's root/direction node
-	self.controlledNode = self.vehicle.cp.DirectionNode or self.vehicle.rootNode
+	if self.vehicle.spec_reverseDriving and self.vehicle.spec_reverseDriving.isReverseDriving then
+		-- reverse driving tractor, use the CP calculated reverse driving direction node pointing in the
+		-- direction the driver seat is facing
+		self.controlledNode = self.vehicle.cp.reverseDrivingDirectionNode
+	else
+		self.controlledNode = self.vehicle.cp.DirectionNode or self.vehicle.rootNode
+	end
 end
 
 -- initialize controller before driving

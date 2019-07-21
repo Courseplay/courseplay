@@ -19,6 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class CombineAIDriver : UnloadableFieldworkAIDriver
 CombineAIDriver = CpObject(UnloadableFieldworkAIDriver)
 
+-- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
+CombineAIDriver.PIPE_STATE_MOVING = 0
+CombineAIDriver.PIPE_STATE_CLOSED = 1
+CombineAIDriver.PIPE_STATE_OPEN = 2
+
 -- fill level when we start making a pocket to unload if we are on the outermost headland
 CombineAIDriver.pocketFillLevelFullPercentage = 95
 
@@ -48,11 +53,40 @@ function CombineAIDriver:init(vehicle)
 	self.pullBackDistanceEnd = self.pullBackDistanceStart + 10
 	-- when making a pocket, how far to back up before changing to forward
 	self.pocketReverseDistance = 25
+
+	if self.vehicle.spec_combine then
+		self.combine = self.vehicle.spec_combine
+	else
+		local combineImplement = FieldworkAIDriver.getImplementWithSpecialization(self.vehicle, Combine)
+		if combineImplement then
+			self.combine = combineImplement.spec_combine
+		else
+			self:error('Vehicle is not a combine and could not find implement with spec_combine')
+		end
+	end
+
+	if self.vehicle.spec_pipe then
+		self.pipe = self.vehicle.spec_pipe
+	else
+		local implementWithPipe = FieldworkAIDriver.getImplementWithSpecialization(self.vehicle, Pipe)
+		if implementWithPipe then
+			self.pipe = implementWithPipe.spec_pipe
+		else
+			self:info('Could not find implement with pipe')
+		end
+	end
 end
 
 function CombineAIDriver:setHudContent()
 	UnloadableFieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setCombineAIDriverContent(self.vehicle)
+end
+
+function CombineAIDriver:drive(dt)
+	-- handle the pipe in any state
+	self:handlePipe()
+	-- the rest is the same as the parent class
+	UnloadableFieldworkAIDriver.drive(self, dt)
 end
 
 function CombineAIDriver:onWaypointPassed(ix)
@@ -204,10 +238,10 @@ end
 
 function CombineAIDriver:unloadFinished()
 	local discharging = false
-	if self.vehicle.spec_pipe then
-		discharging = self.vehicle.spec_pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
+	if self.pipe then
+		discharging = self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
 	end
-	local fillLevel = self.vehicle:getFillUnitFillLevel(self.vehicle.spec_combine.fillUnitIndex)
+	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 
 	-- unload is done when fill levels are ok (not full) and not discharging anymore (either because we
 	-- are empty or the trailer is full)
@@ -233,15 +267,14 @@ function CombineAIDriver:checkFruit()
 	self.vehicle.aiDriveDirection = {dx, dz}
 	self.fruitLeft, self.fruitRight = AIVehicleUtil.getValidityOfTurnDirections(self.vehicle)
 	-- Is there field on my left side?
-	local x, _, z = localToWorld(self.vehicle.cp.DirectionNode, self.vehicle.cp.workWidth, 0, 0)
+	local x, _, z = localToWorld(self:getDirectionNode(), self.vehicle.cp.workWidth, 0, 0)
 	self.fieldOnLeft = courseplay:isField(x, z, 1, 1)
 	self:debug('Fruit left: %.2f right %.2f, field on left %s', self.fruitLeft, self.fruitRight, tostring(self.fieldOnLeft))
 end
 
 function CombineAIDriver:checkDistanceUntilFull(ix)
 	-- calculate fill rate so the combine driver knows if it can make the next row without unloading
-	local spec = self.vehicle.spec_combine
-	local fillLevel = self.vehicle:getFillUnitFillLevel(spec.fillUnitIndex)
+	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 	if ix > 1 then
 		if self.fillLevelAtLastWaypoint and self.fillLevelAtLastWaypoint > 0 and self.fillLevelAtLastWaypoint <= fillLevel then
 			self.litersPerMeter = (fillLevel - self.fillLevelAtLastWaypoint) / self.course:getDistanceToNextWaypoint(ix - 1)
@@ -257,7 +290,7 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 	local dToNextTurn = self.course:getDistanceToNextTurn(ix) or -1
 	local lNextRow = self.course:getNextRowLength(ix) or -1
 	if dToNextTurn > 0 and lNextRow > 0 and self.litersPerMeter > 0 then
-		local dUntilFull = (self.vehicle:getFillUnitCapacity(spec.fillUnitIndex) - fillLevel) / self.litersPerMeter
+		local dUntilFull = (self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) - fillLevel) / self.litersPerMeter
 		self:debug('dUntilFull: %.1f m, dToNextTurn: %.1f m, lNextRow = %.1f m', dUntilFull, dToNextTurn, lNextRow)
 		if dUntilFull > dToNextTurn and dUntilFull < dToNextTurn + lNextRow then
 			self:debug('Will be full in the next row' )
@@ -268,9 +301,8 @@ end
 function CombineAIDriver:updateLightsOnField()
 	-- handle beacon lights to call unload driver
 	-- copy/paste from AIDriveStrategyCombine
-	local spec = self.vehicle.spec_combine
-	local fillLevel = self.vehicle:getFillUnitFillLevel(spec.fillUnitIndex)
-	local capacity = self.vehicle:getFillUnitCapacity(spec.fillUnitIndex)
+	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
+	local capacity = self.vehicle:getFillUnitCapacity(self.combine.fillUnitIndex)
 	if fillLevel > (0.8 * capacity) then
 		if not self.beaconLightsActive then
 			self.vehicle:setAIMapHotspotBlinking(true)
@@ -293,16 +325,16 @@ function CombineAIDriver:createPullBackCourse()
 	self.returnPoint = {}
 	self.returnPoint.x, _, self.returnPoint.z = getWorldTranslation(self.vehicle.rootNode)
 
-	local dx,_,dz = localDirectionToWorld(self.vehicle.rootNode, 0, 0, 1)
+	local dx,_,dz = localDirectionToWorld(self:getDirectionNode(), 0, 0, 1)
 	self.returnPoint.rotation = MathUtil.getYRotationFromDirection(dx, dz)
-	dx,_,dz = localDirectionToWorld(self.vehicle.rootNode, 0, 0, -1)
+	dx,_,dz = localDirectionToWorld(self:getDirectionNode(), 0, 0, -1)
 	local reverseRotation = MathUtil.getYRotationFromDirection(dx, dz)
 
-	local x1, _, z1 = localToWorld(self.vehicle.rootNode, -self.pullBackSideOffset, 0, -self.pullBackDistanceStart)
-	local x2, _, z2 = localToWorld(self.vehicle.rootNode, -self.pullBackSideOffset, 0, -self.pullBackDistanceEnd)
+	local x1, _, z1 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceStart)
+	local x2, _, z2 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceEnd)
 	-- both points must be on the field
 	if courseplay:isField(x1, z1) and courseplay:isField(x2, z2) then
-		local vx, _, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
+		local vx, _, vz = getWorldTranslation(self:getDirectionNode())
 		self:debug('%.2f %.2f %d %d', self.returnPoint.rotation, reverseRotation, math.deg(self.returnPoint.rotation), math.deg(reverseRotation))
 		local pullBackWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, vx, vz, x1, z1, reverseRotation, true)
 		if not pullBackWaypoints then
@@ -322,7 +354,7 @@ function CombineAIDriver:createPullBackCourse()
 end
 
 function CombineAIDriver:createPullBackReturnCourse()
-	local x1, _, z1 = localToWorld(self.vehicle.cp.DirectionNode, 0, 0, self.pullBackDistanceStart / 2)
+	local x1, _, z1 = localToWorld(self:getDirectionNode(), 0, 0, self.pullBackDistanceStart / 2)
 	-- don't need to check if points are on the field, we did it when we got here
 	local pullBackReturnWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x1, z1, self.returnPoint.x, self.returnPoint.z, self.returnPoint.rotation, true)
 	if not pullBackReturnWaypoints then
@@ -376,8 +408,8 @@ end
 ---not yet reached the turn start
 function CombineAIDriver:holdInTurnManeuver(isApproaching)
 	self:debugSparse('held for unload %s, straw active %s, approaching = %s',
-		tostring(self.heldForUnloadRefill), tostring(self.vehicle.spec_combine.strawPSenabled), tostring(isApproaching))
-	return self.heldForUnloadRefill or (self.vehicle.spec_combine.strawPSenabled and not isApproaching)
+		tostring(self.heldForUnloadRefill), tostring(self.combine.strawPSenabled), tostring(isApproaching))
+	return self.heldForUnloadRefill or (self.combine.strawPSenabled and not isApproaching)
 end
 
 --- Should we return to the first point of the course after we are done?
@@ -415,6 +447,7 @@ function CombineAIDriver:startTurn(ix)
 		return nil
 	end
 	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
+	cornerCourse:print()
 	if cornerCourse then
 		self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
 			cornerCourse:getNumberOfWaypoints(), nextIx)
@@ -469,35 +502,36 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	local turnRadius = self.vehicle.cp.turnDiameter / 2
 	local offset = math.min(turnRadius * 0.6, self.vehicle.cp.workWidth)
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)
-	local wp = corner:getPointAtDistanceFromCornerStart(self.vehicle.cp.workWidth / 2 )
+	local d = -self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance
+	local wp = corner:getPointAtDistanceFromCornerStart(d + 2)
 	wp.speed = self.vehicle.cp.speeds.turn * 0.75
 	table.insert(cornerWaypoints, wp)
 	-- drive forward up to the field edge
-	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance)
+	wp = corner:getPointAtDistanceFromCornerStart(d)
 	wp.speed = self.vehicle.cp.speeds.turn * 0.75
 	table.insert(cornerWaypoints, wp)
 	-- drive back to prepare for making a pocket
 	-- reverse back to set up for the headland after the corner
-	wp = corner:getPointAtDistanceFromCornerStart(turnRadius)
+	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 2)
+	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius * 2)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
 	-- now make a pocket in the inner headland to make room to turn
-	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.6, -offset * 0.8)
+	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius * 1.6, -offset * 0.8)
 	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(turnRadius * 1.2, -offset * 0.9)
+	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius * 1.2, -offset * 0.9)
 	if not courseplay:isField(wp.x, wp.z) then
 		self:debug('No field where the pocket would be, this seems to be a 270 corner')
 		return nil
 	end
 	table.insert(cornerWaypoints, wp)
 	-- drive forward to the field edge on the inner headland
-	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance, -offset)
+	wp = corner:getPointAtDistanceFromCornerStart(d, -offset)
 	wp.speed = self.vehicle.cp.speeds.turn * 0.75
 	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(turnRadius)
+	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
 	wp = corner:getPointAtDistanceFromCornerEnd(turnRadius / 3, turnRadius / 4)
@@ -519,4 +553,116 @@ function CombineAIDriver:onBlocked()
 		self:debug('Combine blocked, trying to switch to next (%d) waypoint', nextWpIx)
 		self.ppc:initialize(nextWpIx)
 	end
+end
+
+
+function CombineAIDriver:isChopper()
+	return self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) > 10000000
+end
+
+function CombineAIDriver:handlePipe()
+	if self.pipe then
+		if self:isChopper() then
+			self:handleChopperPipe()
+		else
+			self:handleCombinePipe()
+		end
+	end
+end
+
+function CombineAIDriver:handleCombinePipe()
+	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() then
+		self:openPipe()
+	else
+		self:closePipe()
+	end
+end
+
+
+--- Support for AutoDrive mod: they'll only find us if we open the pipe
+function CombineAIDriver:isAutoDriveWaitingForPipe()
+	return self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.combineIsCallingDriver and self.vehicle.spec_autodrive:combineIsCallingDriver(self.vehicle)
+end
+
+function CombineAIDriver:handleChopperPipe()
+	if self.state == self.states.ON_FIELDWORK_COURSE then
+		-- chopper always opens the pipe
+		self:openPipe()
+		-- and stops if there's no trailer in sight
+		local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
+		--self:debug('filltype = %s, fillLevel = %.1f', self:getFillType(), fillLevel)
+		-- not using isFillableTrailerUnderPipe() as the chopper sometimes has FillType.UNKNOWN
+		if fillLevel > 0.01 and self:getFillType() ~= FillType.UNKNOWN and
+			not (self:isFillableTrailerUnderPipe() and self:canDischarge())	then
+			self:debugSparse('Chopper waiting for trailer, fill level %f', fillLevel)
+			self:setSpeed(0)
+		end
+	else
+		self:closePipe()
+	end
+end
+
+function CombineAIDriver:openPipe()
+	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
+		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_OPEN then
+		self:debug('Opening pipe')
+		self.pipe:setPipeState(self.PIPE_STATE_OPEN)
+	end
+end
+
+function CombineAIDriver:closePipe()
+	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
+		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_CLOSED then
+		self:debug('Closing pipe')
+		self.pipe:setPipeState(self.PIPE_STATE_CLOSED)
+	end
+end
+
+function CombineAIDriver:shouldStopForUnloading(pc)
+	local stop = false
+	if self.vehicle.cp.stopWhenUnloading and self.pipe then
+		if self.pipe.currentState == UnloadableFieldworkAIDriver.PIPE_STATE_OPEN and
+			g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
+			-- stop only if the pipe is open AND we have been emptied more than 1000 cycles ago.
+			-- this makes sure the combine will start driving after it is emptied but the trailer
+			-- is still under the pipe
+			stop = true
+		end
+	end
+	if pc and pc < 0.1 then
+		-- remember the time we were completely unloaded.
+		self.lastEmptyTimestamp = g_updateLoopIndex
+	end
+	return stop
+end
+
+function CombineAIDriver:isFillableTrailerUnderPipe()
+	local canLoad = false
+	if self.pipe then
+		for trailer, value in pairs(self.pipe.objectsInTriggers) do
+			if value > 0 then
+				local fillType = self:getFillType()
+				--self:debug('ojects = %d, fillType = %s fus=%s', value, tostring(fillType), tostring(trailer:getFillUnits()))
+				if fillType then
+					local fillUnits = trailer:getFillUnits()
+					for i=1, #fillUnits do
+						local supportedFillTypes = trailer:getFillUnitSupportedFillTypes(i)
+						if supportedFillTypes[fillType] and trailer:getFillUnitFreeCapacity(i) > 0 then
+							canLoad = true
+						end
+					end
+				end
+			end
+		end
+	end
+	return canLoad
+end
+
+-- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
+-- trailer and can start discharging.
+function CombineAIDriver:canDischarge()
+	-- TODO: self.vehicle should be the combine, which may not be the vehicle in case of towed harvesters
+	local dischargeNode = self.combine:getCurrentDischargeNode()
+	local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
+	return targetObject
 end

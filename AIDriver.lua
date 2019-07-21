@@ -371,7 +371,11 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	-- TODO: remove allowedToDrive parameter and only use self.allowedToDrive
+	if self.vehicle.spec_reverseDriving and self.vehicle.spec_reverseDriving.isReverseDriving then
+		self:debugSparse('reverse driving, reversing steering')
+		ax = -ax
+	end
+		-- TODO: remove allowedToDrive parameter and only use self.allowedToDrive
 	if not self.allowedToDrive then allowedToDrive = false end
 	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f allowed=%s fwd=%s', maxSpeed, gx, gz, l, ax, az,
 		allowedToDrive, moveForwards)
@@ -387,6 +391,12 @@ function AIDriver:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, 
 	-- construct an artificial goal point to drive to
 	local gx, gz = lx * self.ppc:getLookaheadDistance(), lz * self.ppc:getLookaheadDistance()
 	self:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
+
+end
+
+-- node pointing in the direction the driver is facing, even in case of reverse driving tractors
+function AIDriver:getDirectionNode()
+	return self.ppc:getControlledNode()
 end
 
 --- Start a course and continue with nextCourse at ix when done
@@ -451,7 +461,7 @@ function AIDriver:getDirectionToGoalPoint()
 	-- goal point to drive to
 	local gx, gy, gz = self.ppc:getGoalPointPosition()
 	-- direction to the goal point
-	return AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx, gy, gz);
+	return AIVehicleUtil.getDriveDirection(self:getDirectionNode(), gx, gy, gz);
 end
 
 
@@ -595,7 +605,7 @@ end
 
 -- TODO: review this whole fillpoint/filltrigger thing.
 function AIDriver:isNearFillPoint()
-	return self.course:havePhysicallyPassedWaypoint(self.vehicle.cp.DirectionNode,#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
+	return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
 end
 
 function AIDriver:getIsInFilltrigger()
@@ -628,7 +638,7 @@ end
 ---@param course Course
 function AIDriver:setUpAlignmentCourse(course, ix)
 	local x, _, z = course:getWaypointPosition(ix)
-	local vx, _, vz = getWorldTranslation(self.vehicle.cp.DirectionNode or self.vehicle.rootNode)
+	local vx, _, vz = getWorldTranslation(self:getDirectionNode())
 	local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, vx, vz, x, z, math.rad( course:getWaypointAngleDeg(ix)), true)
 	if not alignmentWaypoints then
 		self:debug("Can't find an alignment course, may be too close to target wp?" )
@@ -644,6 +654,14 @@ end
 
 function AIDriver:debug(...)
 	courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
+end
+
+function AIDriver:info(...)
+	courseplay.infoVehicle(self.vehicle, ...)
+end
+
+function AIDriver:error(...)
+	courseplay.infoVehicle(self.vehicle, ...)
 end
 
 --- output debug message only at every debugTicks loop
@@ -666,6 +684,7 @@ function AIDriver:drawTemporaryCourse()
 		local nx, ny, nz = self.course:getWaypointPosition(i + 1)
 		cpDebug:drawPoint(x, y + 3, z, 10, 0, 0)
 		cpDebug:drawLine(x, y + 3, z, 0, 0, 100, nx, ny + 3, nz)
+		Utils.renderTextAtWorldPosition(x, y + 3.2, z, tostring(i), getCorrectTextSize(0.012), 0)
 	end
 end
 
@@ -1017,7 +1036,7 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 
 		if trigger_id ~= nil then
 			local trigger_x, _, trigger_z = getWorldTranslation(trigger_id)
-			local ctx, _, ctz = getWorldTranslation(self.vehicle.cp.DirectionNode)
+			local ctx, _, ctz = getWorldTranslation(self:getDirectionNode())
 			local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
 
 			-- Start reversing value is to check if we have started to reverse

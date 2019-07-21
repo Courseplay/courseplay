@@ -841,7 +841,7 @@ function FieldworkAIDriver:getTowBarLength()
 	end
 	-- get the distance between the tractor and the towed implement's turn node
 	-- (not quite accurate when the angle between the tractor and the tool is high)
-	local tractorX, _, tractorZ = getWorldTranslation( self.vehicle.cp.DirectionNode )
+	local tractorX, _, tractorZ = getWorldTranslation( self:getDirectionNode() )
 	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
 	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
 	return towBarLength
@@ -967,7 +967,7 @@ function FieldworkAIDriver:setMarkers()
 		end
 	end
 
-	local referenceNode = self.vehicle.cp.DirectionNode or self.vehicle.rootNode
+	local referenceNode = self:getDirectionNode()
 	-- now go ahead and try to find the real markers
 	-- work areas of the vehicle itself
 	addMarkers(self.vehicle, referenceNode)

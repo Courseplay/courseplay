@@ -33,12 +33,6 @@ UnloadableFieldworkAIDriver.fillLevelFullPercentage = UnloadableFieldworkAIDrive
 -- at which fill level we consider ourselves unloaded
 UnloadableFieldworkAIDriver.fillLevelEmptyPercentage = 0.1
 
-
--- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
-UnloadableFieldworkAIDriver.PIPE_STATE_MOVING = 0
-UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED = 1
-UnloadableFieldworkAIDriver.PIPE_STATE_OPEN = 2
-
 function UnloadableFieldworkAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'UnloadableFieldworkAIDriver:init()') 
 	FieldworkAIDriver.init(self, vehicle)
@@ -46,6 +40,7 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_FIELDWORK
 	self.stopImplementsWhileUnloadOrRefillOnField = false
 	self.lastEmptyTimestamp = 0
+
 end
 
 function UnloadableFieldworkAIDriver:setHudContent()
@@ -62,7 +57,8 @@ function UnloadableFieldworkAIDriver.create(vehicle)
 		return BaleWrapperAIDriver(vehicle)
 	elseif FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Baler) then
 		return BalerAIDriver(vehicle)
-	elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) then
+	elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) or
+		FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Combine) then
 		return CombineAIDriver(vehicle)
 	else
 		return UnloadableFieldworkAIDriver(vehicle)
@@ -73,8 +69,6 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	-- only reason we need this is to update the totalFillLevel for reverse.lua so it will
 	-- do a raycast for tip triggers (side effects, side effects all over the place, killing me...)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
-	-- handle the pipe in any state
-	self:handlePipe()
 	-- the rest is the same as the parent class
 	FieldworkAIDriver.drive(self, dt)
 end
@@ -129,33 +123,6 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	return takeOverSteering
 end
 
-function UnloadableFieldworkAIDriver:isChopper()
- return self.vehicle.cp.isChopper
-end
-
-function UnloadableFieldworkAIDriver:handlePipe()
-	if self.vehicle.spec_pipe then
-		if self:isChopper() then
-			self:handleChopperPipe()
-		else
-			self:handleCombinePipe()
-		end
-	end
-end
-
-function UnloadableFieldworkAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() then
-		self:openPipe()
-	else
-		self:closePipe()
-	end
-end
-
---- Support for AutoDrive mod: they'll only find us if we open the pipe
-function UnloadableFieldworkAIDriver:isAutoDriveWaitingForPipe()
-	return self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.combineIsCallingDriver and self.vehicle.spec_autodrive:combineIsCallingDriver(self.vehicle)
-end
-
 --- Interface for AutoDrive
 ---@return boolean true when the tool is waiting to be unloaded
 function UnloadableFieldworkAIDriver:isWaitingForUnload()
@@ -164,40 +131,6 @@ function UnloadableFieldworkAIDriver:isWaitingForUnload()
 		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL
 end
 
-function UnloadableFieldworkAIDriver:handleChopperPipe()
-	if self.state == self.states.ON_FIELDWORK_COURSE then
-		-- chopper always opens the pipe
-		self:openPipe()
-		-- and stops if there's no trailer in sight
-		local spec = self.vehicle.spec_combine
-		local fillLevel = self.vehicle:getFillUnitFillLevel(spec.fillUnitIndex)
-		--self:debug('filltype = %s, fillLevel = %.1f', self:getFillType(), fillLevel)
-		-- not using isFillableTrailerUnderPipe() as the chopper sometimes has FillType.UNKNOWN
-		if fillLevel > 0.01 and self:getFillType() ~= FillType.UNKNOWN and
-			not (self:isFillableTrailerUnderPipe() and self:canDischarge())	then
-			self:debugSparse('Chopper waiting for trailer, fill level %f', fillLevel)
-			self:setSpeed(0)
-		end
-	else
-		self:closePipe()
-	end
-end
-
-function UnloadableFieldworkAIDriver:openPipe()
-	if self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_MOVING and
-		self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_OPEN then
-		self:debug('Opening pipe')
-		self.vehicle.spec_pipe:setPipeState(self.PIPE_STATE_OPEN)
-	end
-end
-
-function UnloadableFieldworkAIDriver:closePipe()
-	if self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_MOVING and
-		self.vehicle.spec_pipe.currentState ~= UnloadableFieldworkAIDriver.PIPE_STATE_CLOSED then
-		self:debug('Closing pipe')
-		self.vehicle.spec_pipe:setPipeState(self.PIPE_STATE_CLOSED)
-	end
-end
 
 --- Check if need to unload anything
 -- TODO: can this be refactored using FieldworkAIDriver.allFillLevelsOk()?
@@ -243,53 +176,9 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 end
 
 function UnloadableFieldworkAIDriver:shouldStopForUnloading(pc)
-	local stop = false
-	if self.vehicle.cp.stopWhenUnloading and self.vehicle.spec_pipe then
-		if self.vehicle.spec_pipe.currentState == UnloadableFieldworkAIDriver.PIPE_STATE_OPEN and
-			g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
-			-- stop only if the pipe is open AND we have been emptied more than 1000 cycles ago.
-			-- this makes sure the combine will start driving after it is emptied but the trailer
-			-- is still under the pipe
-			stop = true
-		end
-	end
-	if pc and pc < 0.1 then
-		-- remember the time we were completely unloaded.
-		self.lastEmptyTimestamp = g_updateLoopIndex
-	end
-	return stop
+	return false
 end
 
-function UnloadableFieldworkAIDriver:isFillableTrailerUnderPipe()
-	local canLoad = false
-	if self.vehicle.spec_pipe then
-		for trailer, value in pairs(self.vehicle.spec_pipe.objectsInTriggers) do
-			if value > 0 then
-				local fillType = self:getFillType()
-				--self:debug('ojects = %d, fillType = %s fus=%s', value, tostring(fillType), tostring(trailer:getFillUnits()))
-				if fillType then
-					local fillUnits = trailer:getFillUnits()
-					for i=1, #fillUnits do
-						local supportedFillTypes = trailer:getFillUnitSupportedFillTypes(i)
-						if supportedFillTypes[fillType] and trailer:getFillUnitFreeCapacity(i) > 0 then
-							canLoad = true
-						end
-					end
-				end
-			end
-		end
-	end
-	return canLoad
-end
-
--- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
--- trailer and can start discharging.
-function UnloadableFieldworkAIDriver:canDischarge()
-	-- TODO: self.vehicle should be the combine, which may not be the vehicle in case of towed harvesters
-	local dischargeNode = self.vehicle:getCurrentDischargeNode()
-	local targetObject, _ = self.vehicle:getDischargeTargetObject(dischargeNode)
-	return targetObject
-end
 
 --- Get the first valid (non-fuel) fill type
 function UnloadableFieldworkAIDriver:getFillType()
@@ -317,7 +206,6 @@ end
 --- Update the unload offset from the current settings and apply it when needed
 function UnloadableFieldworkAIDriver:updateOffset()
 	local currentWaypointIx = self.ppc:getCurrentWaypointIx()
-	local useOffset = false
 
 	if self.course:hasUnloadPointAround(currentWaypointIx, 6, 3) then
 		-- around unload points
@@ -330,5 +218,4 @@ end
 function UnloadableFieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_UNLOADING'
 end
-
 
