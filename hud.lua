@@ -624,7 +624,7 @@ function courseplay.hud:renderHud(vehicle)
 	
 	
 	-- 2D/DEBUG LINE BUTTON MODE
-	if CpManager.isDeveloper and vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF then
+	if vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF then
 		local txt;
 		if vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY then
 			txt = '2D';

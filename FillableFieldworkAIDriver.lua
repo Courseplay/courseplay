@@ -198,14 +198,14 @@ function FillableFieldworkAIDriver:searchForRefillTriggers()
 	-- but we don't have that information (lx/lz) here. See if we can get away with this, should only
 	-- be a problem if we have a sharp curve around the trigger
 	if not self.ppc:isReversing() then
-		local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1, 3)
-		local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, 0, -0.1, 1)
+		local x, y, z = localToWorld(self:getDirectionNode(), 0, 1, 3)
+		local nx, ny, nz = localDirectionToWorld(self:getDirectionNode(), 0, -0.1, 1)
 		-- raycast start point in front of vehicle
 		courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', true, x, y, z, nx, ny, nz)
 		
 		--create a hammerhead racast to get small triggerStartId
-		local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, -1.5, 1, 10)
-		local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, 1, 0, 0)
+		local x, y, z = localToWorld(self:getDirectionNode(), -1.5, 1, 10)
+		local nx, ny, nz = localDirectionToWorld(self:getDirectionNode(), 1, 0, 0)
 		courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', false, x, y, z, nx, ny, nz,3)
 		
 	else

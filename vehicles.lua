@@ -1377,6 +1377,45 @@ function courseplay:isWheeledWorkTool(workTool)
 	return false;
 end;
 
+function courseplay:setPathVehiclesSpeed(vehicle,dt)
+	if vehicle.cp.collidingVehicleId == nil then return end;
+	local pathVehicle = g_currentMission.nodeToObject[vehicle.cp.collidingVehicleId];
+	--print("update speed")
+	if pathVehicle.speedDisplayDt == nil then
+		pathVehicle.speedDisplayDt = 0;
+		pathVehicle.lastSpeed = 0;
+		pathVehicle.lastSpeedReal = 0;
+		pathVehicle.movingDirection = 1;
+	end;
+	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt;
+	if pathVehicle.speedDisplayDt > 100 then
+		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode);
+		if pathVehicle.lastPosition == nil then
+		  pathVehicle.lastPosition = {
+			newX,
+			newY,
+			newZ
+		  };
+		end;
+		local lastMovingDirection = pathVehicle.movingDirection;
+		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3]);
+		if dz > 0.001 then
+		  pathVehicle.movingDirection = 1;
+		elseif dz < -0.001 then
+		  pathVehicle.movingDirection = -1;
+		else
+		  pathVehicle.movingDirection = 0;
+		end;
+		pathVehicle.lastMovedDistance = MathUtil.vector3Length(dx, dy, dz);
+		local lastLastSpeedReal = pathVehicle.lastSpeedReal;
+		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01;
+		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01;
+		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15;
+		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ;
+		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100;
+	end;
+end
+
 function courseplay:setAbortWorkWaypoint(vehicle)
 	if not vehicle.cp.realisticDriving then
 		-- Set abort Work to 10 waypoints back from where we stopped working to align with course when returing
@@ -1461,4 +1500,62 @@ function courseplay:isNodeTurnedWrongWay(vehicle,dischargeNode)
 	local x,y,z = getWorldTranslation(vehicle.cp.DirectionNode)
 	local _,_, nz = worldToLocal(dischargeNode,x,y,z)
 	return nz < 0
+end
+
+function courseplay:findAiCollisionTrigger(vehicle)
+	if vehicle == nil then
+		return false;
+	end;
+
+	local ret = false
+	local index = nil
+	
+	if vehicle.aiTrafficCollisionTrigger == nil then
+		if vehicle.i3dMappings.aiCollisionTrigger then		-- standard colli definition
+			index = vehicle.i3dMappings.aiCollisionTrigger
+		elseif vehicle.i3dMappings.trafficCollisionTrigger then		-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.trafficCollisionTrigger
+		elseif vehicle.i3dMappings.collisionTrigger then			-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.collisionTrigger
+		elseif vehicle.i3dMappings.aiTrafficTrigger then			-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.aiTrafficTrigger
+		elseif vehicle.i3dMappings.aiCollisionTriggerBig then			-- workaround GIANTS FS19 vehicle K105, K165
+			index = vehicle.i3dMappings.aiCollisionTriggerBig
+		elseif vehicle.i3dMappings.aiCollisionTriggerSmall then			-- workaround GIANTS FS19 vehicle K105, K165
+			index = vehicle.i3dMappings.aiCollisionTriggerSmall
+		end
+		if index then
+			local triggerObject = I3DUtil.indexToObject(vehicle.components, index);
+			if triggerObject then
+				vehicle.aiTrafficCollisionTrigger = triggerObject;
+			end;
+		end;
+	end;
+	
+	if vehicle.aiTrafficCollisionTrigger == nil and getNumOfChildren(vehicle.rootNode) > 0 then
+		courseplay.debugVehicle( 3, vehicle, "findaiTrafficCollisionTrigger: no aiCollisionTrigger found in vehicle XML - trying alternative")
+		if getChild(vehicle.rootNode, "aiCollisionTrigger") ~= 0 then
+			vehicle.aiTrafficCollisionTrigger = getChild(vehicle.rootNode, "aiCollisionTrigger");
+		else
+			for i=0,getNumOfChildren(vehicle.rootNode)-1 do
+				local child = getChildAt(vehicle.rootNode, i);
+				if getChild(child, "aiCollisionTrigger") ~= 0 then
+					vehicle.aiTrafficCollisionTrigger = getChild(child, "aiCollisionTrigger");
+					if vehicle.aiTrafficCollisionTrigger then
+						break;
+					end
+				end;
+			end;
+		end;
+	end;
+
+	if vehicle.aiTrafficCollisionTrigger == nil then
+		print(string.format('## Courseplay: aiTrafficCollisionTrigger missing. Traffic collision prevention will not work! vehicle %s', nameNum(vehicle)));
+	end;
+
+	if vehicle.aiTrafficCollisionTrigger then
+		ret = true;
+	end
+
+	return ret;
 end

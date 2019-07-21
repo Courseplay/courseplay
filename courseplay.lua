@@ -32,6 +32,7 @@ source(filePath);
 
 -- place sub-classes here in order to get an overview of the contents of the courseplay object and allow for sub-class functions
 courseplay.utils = {};
+---@class courseplay.courses
 courseplay.courses = {};
 courseplay.settings = {};
 courseplay.hud = {};

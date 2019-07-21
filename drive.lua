@@ -424,7 +424,7 @@ function courseplay:drive(self, dt)
 		-- COMBI MODE / BYPASSING
 		if (((self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 2) or self.cp.activeCombine) and self.cp.workToolAttached then
 			self.cp.inTraffic = false
-			courseplay:	handle_mode2(self, dt);
+			allowedToDrive = courseplay:handle_mode2(self, dt);
 			return;
 		elseif (self.cp.mode == 2 or self.cp.mode == 3) and self.cp.waypointIndex < 2 then
 			isBypassing = true
@@ -787,6 +787,27 @@ function courseplay:drive(self, dt)
 		end;
 	end;
 
+	allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
+	-- allowedToDrive false -> STOP OR HOLD POSITION
+	if not allowedToDrive then
+		-- reset slipping timers
+		courseplay:resetSlippingTimers(self)
+		if courseplay.debugChannels[21] then
+			renderText(0.5,0.85-(0.03*self.cp.coursePlayerNum),0.02,string.format("%s: self.lastSpeedReal: %.8f km/h ",nameNum(self),self.lastSpeedReal*3600))
+		end
+		self.cp.TrafficBrake = false;
+		self.cp.isTrafficBraking = false;
+
+		local moveForwards = true;
+		if self.cp.curSpeed > 1 then
+			allowedToDrive = true;
+			moveForwards = self.movingDirection == 1;
+		end;
+		--print('broken 779')
+		AIVehicleUtil.driveInDirection(self, dt, 30, -1, 0, 28, allowedToDrive, moveForwards, 0, 1)
+		--self.cp.speedDebugLine = ("drive("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
+		return;
+	end;
 
 	if self.cp.collidingVehicleId ~= nil then
 		refSpeed = courseplay:regulateTrafficSpeed(self, refSpeed, allowedToDrive);
@@ -1098,58 +1119,9 @@ function getTarget(vehicle)
 
 
 end
-
+--[[  moved to traffic.lua
 function courseplay:setTrafficCollision(vehicle, lx, lz, disableLongCheck)
-	--local goForRaycast = vehicle.cp.mode == 1 or (vehicle.cp.mode == 3 and vehicle.cp.waypointIndex > 3) or vehicle.cp.mode == 5 or vehicle.cp.mode == 8 or ((vehicle.cp.mode == 4 or vehicle.cp.mode == 6) and vehicle.cp.waypointIndex > vehicle.cp.stopWork) or (vehicle.cp.mode == 2 and vehicle.cp.waypointIndex > 3)
-	--print("lx: "..tostring(lx).."	distance: "..tostring(distance))
-	--local maxlx = 0.5; --sin(maxAngle); --sin30°  old was : 0.7071067 sin 45°
-	local colDirX = lx;
-	local colDirZ = lz;
-	--[[if colDirX > maxlx then
-		colDirX = maxlx;
-	elseif colDirX < -maxlx then
-		colDirX = -maxlx;
-	end;
-	if colDirZ < -0.4 then
-		colDirZ = 0.4;
-	end;]]
-	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
-	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then
-		courseplay:setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
-		local recordNumber = vehicle.cp.waypointIndex
-		if vehicle.cp.collidingVehicleId == nil then
-			for i=2,vehicle.cp.numTrafficCollisionTriggers do
-				if disableLongCheck or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then
-					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
-				else
-
-					local nodeX,nodeY,nodeZ = getWorldTranslation(vehicle.cp.trafficCollisionTriggers[i]);
-					local nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
-					local _,_,Z = worldToLocal(vehicle.cp.trafficCollisionTriggers[i], vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
-					local index = 1
-					local oldValue = Z
-					while Z < 5.5 do
-						recordNumber = recordNumber+index
-						if recordNumber > vehicle.cp.numWaypoints then -- just a backup
-							break
-						end
-						nodeDirX,nodeDirY,nodeDirZ,distance = courseplay:getWorldDirection(nodeX,nodeY,nodeZ, vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
-						_,_,Z = worldToLocal(vehicle.cp.trafficCollisionTriggers[i], vehicle.Waypoints[recordNumber].cx,nodeY,vehicle.Waypoints[recordNumber].cz);
-						if oldValue > Z then
-							courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[1], vehicle.cp.trafficCollisionTriggers[i], 0, 1);
-							break
-						end
-						index = index +1
-						oldValue = Z
-					end
-					nodeDirX,nodeDirY,nodeDirZ = worldDirectionToLocal(vehicle.cp.trafficCollisionTriggers[i-1], nodeDirX,nodeDirY,nodeDirZ);
-					--print("colli"..i..": setDirection z= "..tostring(nodeDirZ).." waypoint: "..tostring(recordNumber))
-					courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], nodeDirX, nodeDirZ);
-				end;
-			end
-		end
-	end;
-end;
+]]
 
 function courseplay:setSpeed(vehicle, refSpeed,forceTrueSpeed)
 	local newSpeed = math.max(refSpeed,3)
@@ -2037,7 +2009,9 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 		dod = MathUtil.vector2Length(lx, lz)
 		lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
 	
-		courseplay:setTrafficCollision(vehicle, lx, lz,true)
+-- enable the colli snake while just driving ahead
+		-- courseplay:setTrafficCollision(vehicle, lx, lz,true)
+		courseplay:setTrafficCollision(vehicle, lx, lz,false)
 
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 			if not moveForwards then

@@ -21,7 +21,8 @@ BaleLoaderAIDriver = CpObject(UnloadableFieldworkAIDriver)
 
 BaleLoaderAIDriver.myStates = {
 	APPROACHING_UNLOAD_POINT = {},
-	UNLOADING = {}
+	UNLOADING = {},
+	MOVE_FORWARD_AFTER_UNLOADING = {}
 }
 
 --- Make sure the the bale loader behaves like a proper AIImplement and reacts on AIImplementStart/End
@@ -96,13 +97,29 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 				self:debug('Unload point reached.')
 				self.unloadRefillState = self.states.UNLOADING
 			end
+		elseif self.unloadRefillState == self.states.MOVE_FORWARD_AFTER_UNLOADING then
+			self:setSpeed(self.vehicle.cp.speeds.approach)
+			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)
+			local _, _, dz = localToLocal(unloadNode, self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
+			if math.abs(dz) > 3 then
+				self:debug('Moved away from unload point')
+				-- transition to the next stage (out of EMPTY_WAIT_TO_SINK)
+				g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(self.baleLoader, BaleLoader.CHANGE_BUTTON_EMPTY))
+				-- continue pressing the button until we folded everything back
+				self.unloadRefillState = self.states.UNLOADING
+			end
 		elseif self.unloadRefillState == self.states.UNLOADING then
 			self:setSpeed(0)
 			-- don't do this in every update loop, sending events does not make sense so often
 			if g_updateLoopIndex % 100 == 0 then
 				self:debug('Unloading, emptyState=%d.', self.baleLoader.spec_baleLoader.emptyState)
+				if self.baleLoader.spec_baleLoader.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
+					self:debug('Bales unloaded, moving forward a bit, emptyState: %d...', self.baleLoader.spec_baleLoader.emptyState)
+					self.unloadRefillState = self.states.MOVE_FORWARD_AFTER_UNLOADING
+					-- make sure we are driving forward now
+					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
 				-- EMPTY_NONE is the base position (loaded or unloaded)
-				if self:haveBales() or self.baleLoader.spec_baleLoader.emptyState ~= BaleLoader.EMPTY_NONE then
+				elseif self:haveBales() or self.baleLoader.spec_baleLoader.emptyState ~= BaleLoader.EMPTY_NONE then
 					-- this is like keep pressing the 'Unload' button. Not nice, should probably check the current state
 					-- of the bale loader, but it is so simple like this and works ...
 					self:debug('Press unload button, emptyState: %d...', self.baleLoader.spec_baleLoader.emptyState)
