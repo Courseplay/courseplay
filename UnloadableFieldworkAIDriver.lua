@@ -39,8 +39,6 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
 	self.stopImplementsWhileUnloadOrRefillOnField = false
-	self.lastEmptyTimestamp = 0
-
 end
 
 function UnloadableFieldworkAIDriver:setHudContent()
