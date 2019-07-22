@@ -164,7 +164,7 @@ function CollisionDetector:getStatus(dt)
 				if collidingVehicle.isCpPathVehicle then
 					self:setPathVehiclesSpeed(collidingVehicle, dt)
 				end
-				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 == 0 or not self:doesVehicleGoMyDirection(collidingVehicleId) then
+				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 < 0.01 then		-- collidingVehicle not moving -> STOP
 					isInTraffic = true
 				else	
 					trafficSpeed = collidingVehicle.lastSpeedReal*3600

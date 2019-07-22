@@ -339,7 +339,7 @@ end
 
 function FieldworkAIDriver:changeToFieldwork()
 	self:debug('change to fieldwork')
-	self:disableCollisionDetection()
+	-- self:disableCollisionDetection()
 	self.state = self.states.ON_FIELDWORK_COURSE
 	self.fieldworkState = self.states.WAITING_FOR_LOWER
 	self:startWork()

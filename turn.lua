@@ -693,6 +693,20 @@ function courseplay:turn(vehicle, dt, turnContext)
 	----------------------------------------------------------
 	--allowedToDrive = allowedToDrive and not courseplay:needToWaitForTools(vehicle)
 
+
+	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
+		-- in AIDriver based modes do not call / use legacy collision code
+		if vehicle.cp.driver.collisionDetector then
+			-- TODO pvaiko - decide to take this dirty traffic STOP for AIDriver based modes
+			local isInTraffic, trafficSpeed = vehicle.cp.driver.collisionDetector:getStatus(dt)
+			if isInTraffic then
+				allowedToDrive = false
+			end
+		end
+	else
+		-- allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
+	end
+
 	----------------------------------------------------------
 	-- allowedToDrive false -> SLOW DOWN TO STOP
 	----------------------------------------------------------

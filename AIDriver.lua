@@ -151,7 +151,7 @@ function AIDriver:init(vehicle)
 	-- same for allowedToDrive, is reset at the end of each loop to true and needs to be set to false
 	-- if someone wants to stop by calling hold()
 	self.allowedToDrive = true
-	self.collisionDetectionEnabled = false
+	self.collisionDetectionEnabled = true
 	self.collisionDetector = CollisionDetector(self.vehicle)
 	-- list of active messages to display
 	self.activeMsgReferences = {}
