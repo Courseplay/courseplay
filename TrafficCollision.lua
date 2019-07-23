@@ -47,7 +47,6 @@ function CollisionDetector:delete()
 		self.collidingObjects = {}				-- clear all detected collisions
 		self.nCollidingObjects = 0				-- clear all detected collisions
 		self.ignoredNodes = {}					-- clear all detected collisions
-		self:addToIgnoreList(self.vehicle)
 	end
 end
 
@@ -71,18 +70,21 @@ function CollisionDetector:createTriggers()
 	end
 	self.vehicle.cp.trafficCollisionTriggerToTriggerIndex = {}
 	-- self.vehicle.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
-	for i = 1, self.vehicle.cp.numTrafficCollisionTriggers do
-		local newTrigger = clone(self.vehicle.aiTrafficCollisionTrigger, true)
-		self.trafficCollisionTriggers[i] = newTrigger
-		self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
-		setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
-		if i > 1 then
-			unlink(newTrigger)
-			link(self.trafficCollisionTriggers[i - 1], newTrigger)
-			setTranslation(newTrigger, 0, 0, 4)
+	if self.trafficCollisionTriggers[1] == nil then
+		for i = 1, self.vehicle.cp.numTrafficCollisionTriggers do
+			local newTrigger = clone(self.vehicle.aiTrafficCollisionTrigger, true)
+			self.trafficCollisionTriggers[i] = newTrigger
+			self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
+			setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
+			if i > 1 then
+				unlink(newTrigger)
+				link(self.trafficCollisionTriggers[i - 1], newTrigger)
+				setTranslation(newTrigger, 0, 0, 4)
+			end;
+			addTrigger(newTrigger, 'onCollision', self)
 		end;
 		addTrigger(newTrigger, 'onCollision', self)
-	end;
+	end
 end
 
 
@@ -98,6 +100,7 @@ function CollisionDetector:deleteTriggers()
 				delete(node)
 			end
 		end
+		self.trafficCollisionTriggers[i] = nil
 	end
 
 end

@@ -152,7 +152,8 @@ function AIDriver:init(vehicle)
 	-- if someone wants to stop by calling hold()
 	self.allowedToDrive = true
 	self.collisionDetectionEnabled = true
-	self.collisionDetector = CollisionDetector(self.vehicle)
+	-- self.collisionDetector = CollisionDetector(self.vehicle)
+	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
 	self.pathfinder = Pathfinder()
@@ -196,7 +197,9 @@ end
 function AIDriver:beforeStart()
 	self.turnIsDriving = false
 	self.nextCourse = nil
-	-- self:deleteCollisionDetector()		-- makes no sense to delete the detector here
+	if self.collisionDetector == nil then
+		self.collisionDetector = CollisionDetector(self.vehicle)
+	end
 	self:startEngineIfNeeded()
 end
 
