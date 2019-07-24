@@ -741,21 +741,16 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local holdInTurn = not vehicle.cp.headlandTurn and vehicle.cp.driver and vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0)
 	allowedToDrive = not holdInTurn and allowedToDrive
 
-	if curTurnTarget and ((curTurnTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
-		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
-			if not moveForwards then
-				vehicle.nextMovingDirection = -1
-			else
-				vehicle.nextMovingDirection = 1
-			end
+	if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
+		if not moveForwards then
+			vehicle.nextMovingDirection = -1
+		else
+			vehicle.nextMovingDirection = 1
 		end
-
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
-	else
-		dtpZ = dtpZ * 0.85;
-		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
 	end
 
+	AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
+	
 	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
 		-- in AIDriver based modes do not call / use legacy collision code
 	else
