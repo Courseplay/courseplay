@@ -741,6 +741,7 @@ function AIDriver:detectCollision(dt)
 		self:clearInfoText('TRAFFIC')
 	end
 
+	return self.allowedToDrive
 end
 
 function AIDriver:areBeaconLightsEnabled()
@@ -1357,14 +1358,4 @@ end
 
 function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
-end
-
-function AIDriver:isInTraffic(dt)
-	if self.collisionDetector then
-		local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)
-		if isInTraffic then
-			self:hold()
-		end
-	end
-	return self.allowedToDrive
 end
