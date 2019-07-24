@@ -31,6 +31,7 @@ function CollisionDetector:init(vehicle, course)
 	self.ignoredNodes = {}
 	self:addToIgnoreList(self.vehicle)
 	self.trafficCollisionTriggers = {}
+	self.trafficCollisionTriggers[1] = nil
 	self:createTriggers()
 	self:adaptCollisHeight()
 end
@@ -83,7 +84,6 @@ function CollisionDetector:createTriggers()
 			end;
 			addTrigger(newTrigger, 'onCollision', self)
 		end;
-		addTrigger(newTrigger, 'onCollision', self)
 	end
 end
 
@@ -113,10 +113,10 @@ function CollisionDetector:addToIgnoreList(object)
 	self.ignoredNodes[object.rootNode] = true;
 	-- add the vehicle or implement's own collision trigger to the ignore list
 	-- local aiCollisionTrigger = courseplay:findAiCollisionTrigger(object)
-	if not courseplay:findAiCollisionTrigger(object) then return end
-	if object.aiCollisionTrigger then
-		self:debug('-- %q', getName(object.aiCollisionTrigger))
-		self.ignoredNodes[object.aiCollisionTrigger] = true
+	courseplay:findAiCollisionTrigger(object)		-- get aiTrafficCollisionTrigger for vehicles
+	if object.aiTrafficCollisionTrigger then
+		self:debug('-- %q', getName(object.aiTrafficCollisionTrigger))
+		self.ignoredNodes[object.aiTrafficCollisionTrigger] = true
 	end
 	if object.components then
 		self:debug('will ignore collisions with %q (%q) components', nameNum(object), tostring(object.cp.xmlFileName))

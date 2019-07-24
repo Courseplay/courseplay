@@ -1549,7 +1549,7 @@ function courseplay:findAiCollisionTrigger(vehicle)
 		end;
 	end;
 
-	if vehicle.aiTrafficCollisionTrigger == nil then
+	if vehicle.aiTrafficCollisionTrigger == nil and SpecializationUtil.hasSpecialization(AIVehicle, vehicle.specializations) then
 		print(string.format('## Courseplay: aiTrafficCollisionTrigger missing. Traffic collision prevention will not work! vehicle %s', nameNum(vehicle)));
 	end;
 

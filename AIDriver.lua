@@ -152,7 +152,6 @@ function AIDriver:init(vehicle)
 	-- if someone wants to stop by calling hold()
 	self.allowedToDrive = true
 	self.collisionDetectionEnabled = true
-	-- self.collisionDetector = CollisionDetector(self.vehicle)
 	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
@@ -219,8 +218,8 @@ end
 
 --- Dismiss the driver
 function AIDriver:dismiss()
-	if self.collisionDetector then		-- restore the default direction of the colli boxes
-		self.collisionDetector:reset()
+	if self.collisionDetector then
+		self.collisionDetector:reset()		-- restore the default direction of the colli boxes
 	end
 	self.vehicle:deactivateLights()
 	self:clearAllInfoTexts()
@@ -230,6 +229,7 @@ end
 --- Stop the driver
 -- @param reason as defined in globalInfoText.msgReference
 function AIDriver:stop(msgReference)
+	self:deleteCollisionDetector()
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
@@ -1357,4 +1357,14 @@ end
 
 function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
+end
+
+function AIDriver:isInTraffic(dt)
+	if self.collisionDetector then
+		local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)
+		if isInTraffic then
+			self:hold()
+		end
+	end
+	return self.allowedToDrive
 end
