@@ -38,7 +38,10 @@ function BaleLoaderAIDriver.register()
 	BaleLoader.onAIImplementEnd = Utils.overwrittenFunction(BaleLoader.onAIImplementEnd,
 		function(self, superFunc)
 			if superFunc ~= nil then superFunc(self) end
-			self:doStateChange(BaleLoader.CHANGE_MOVE_TO_TRANSPORT);
+			local spec = self.spec_baleLoader
+			if not spec.grabberIsMoving and spec.grabberMoveState == nil and spec.isInWorkPosition then
+				self:doStateChange(BaleLoader.CHANGE_MOVE_TO_TRANSPORT);
+			end
 		end)
 
 	local baleLoaderRegisterEventListeners = function(vehicleType)
@@ -143,6 +146,15 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
 				end
 			end
+		end
+	else
+		-- for some bale loaders the onAIImplementEnd() does not work seemingly because the grabber is still busy
+		-- with the last bale when switching to the unload course. Make sure here that it is moved to transport
+		-- position on the unload course
+		local spec = self.baleLoader.spec_baleLoader
+		if not spec.grabberIsMoving and spec.grabberMoveState == nil and spec.isInWorkPosition then
+			self:debug('Move grabber to transport position')
+			self.baleLoader:doStateChange(BaleLoader.CHANGE_MOVE_TO_TRANSPORT);
 		end
 	end
 	return false
