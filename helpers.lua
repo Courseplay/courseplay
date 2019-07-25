@@ -114,7 +114,7 @@ function courseplay:nilOrBool(variable, bool)
 end;
 
 function nameNum(vehicle, hideNum)
-	if vehicle == nil then
+	if vehicle == nil or not vehicle.getName then
 		return 'nil';
 	end;
 
