@@ -151,8 +151,8 @@ function AIDriver:init(vehicle)
 	-- same for allowedToDrive, is reset at the end of each loop to true and needs to be set to false
 	-- if someone wants to stop by calling hold()
 	self.allowedToDrive = true
-	self.collisionDetectionEnabled = false
-	self.collisionDetector = CollisionDetector(self.vehicle)
+	self.collisionDetectionEnabled = true
+	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
 	self.pathfinder = Pathfinder()
@@ -196,7 +196,9 @@ end
 function AIDriver:beforeStart()
 	self.turnIsDriving = false
 	self.nextCourse = nil
-	-- self:deleteCollisionDetector()		-- makes no sense to delete the detector here
+	if self.collisionDetector == nil then
+		self.collisionDetector = CollisionDetector(self.vehicle)
+	end
 	self:startEngineIfNeeded()
 end
 
@@ -216,8 +218,8 @@ end
 
 --- Dismiss the driver
 function AIDriver:dismiss()
-	if self.collisionDetector then		-- restore the default direction of the colli boxes
-		self.collisionDetector:reset()
+	if self.collisionDetector then
+		self.collisionDetector:reset()		-- restore the default direction of the colli boxes
 	end
 	self.vehicle:deactivateLights()
 	self:clearAllInfoTexts()
@@ -227,6 +229,7 @@ end
 --- Stop the driver
 -- @param reason as defined in globalInfoText.msgReference
 function AIDriver:stop(msgReference)
+	self:deleteCollisionDetector()
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
@@ -738,6 +741,7 @@ function AIDriver:detectCollision(dt)
 		self:clearInfoText('TRAFFIC')
 	end
 
+	return self.allowedToDrive
 end
 
 function AIDriver:areBeaconLightsEnabled()
