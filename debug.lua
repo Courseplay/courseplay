@@ -486,32 +486,6 @@ end
 
 function courseplay:showAIMarkers(vehicle)
 
-	if not courseplay.debugChannels[6] then return end
-
-	local function showAIMarkersOfObject(object)
-		if object.getAIMarkers then
-			local aiLeftMarker, aiRightMarker, aiBackMarker = object:getAIMarkers()
-			if aiLeftMarker then
-				DebugUtil.drawDebugNode(aiLeftMarker, object:getName() .. ' AI Left')
-			end
-			if aiRightMarker then
-				DebugUtil.drawDebugNode(aiRightMarker, object:getName() .. ' AI Right')
-			end
-			if aiBackMarker then
-				DebugUtil.drawDebugNode(aiBackMarker, object:getName() .. ' AI Back')
-			end
-			DebugUtil.drawDebugNode(object.cp.DirectionNode or object.rootNode, object:getName() .. ' root')
-		end
-	end
-
-	showAIMarkersOfObject(vehicle)
-	-- draw the Giant's supplied AI markers for all implements
-	local implements = vehicle:getAttachedImplements()
-	if implements then
-		for _, implement in ipairs(implements) do
-			showAIMarkersOfObject(implement.object)
-		end
-	end
 end
 
 --------------------------------------------------
