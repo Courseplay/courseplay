@@ -63,6 +63,16 @@ function UnloadableFieldworkAIDriver.create(vehicle)
 	end
 end
 
+-- Bale loaders / wrappers have no AI markers
+function UnloadableFieldworkAIDriver.getAIMarkersFromGrabberNode(object, spec)
+	-- use the grabber node for all markers if exists
+	if spec.baleGrabber and spec.baleGrabber.grabNode then
+		return spec.baleGrabber.grabNode, spec.baleGrabber.grabNode, spec.baleGrabber.grabNode
+	else
+		return object.rootNode, object.rootNode, object.rootNode
+	end
+end
+
 function UnloadableFieldworkAIDriver:drive(dt)
 	-- only reason we need this is to update the totalFillLevel for reverse.lua so it will
 	-- do a raycast for tip triggers (side effects, side effects all over the place, killing me...)
