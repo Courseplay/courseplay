@@ -1149,7 +1149,10 @@ end
 function FieldworkAIDriver:getAllAIImplements(object, implements)
 	if not implements then implements = {} end
 	for _, implement in ipairs(object:getAttachedImplements()) do
-		table.insert(implements, implement)
+		-- ignore everything which has no work area
+		if courseplay:hasWorkAreas(implement.object) then
+			table.insert(implements, implement)
+		end
 		self:getAllAIImplements(implement.object, implements)
 	end
 	return implements
