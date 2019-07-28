@@ -53,6 +53,7 @@ function CombineAIDriver:init(vehicle)
 	self.pullBackDistanceEnd = self.pullBackDistanceStart + 10
 	-- when making a pocket, how far to back up before changing to forward
 	self.pocketReverseDistance = 25
+	self.lastEmptyTimestamp = 0
 
 	if self.vehicle.spec_combine then
 		self.combine = self.vehicle.spec_combine
@@ -621,7 +622,7 @@ end
 function CombineAIDriver:shouldStopForUnloading(pc)
 	local stop = false
 	if self.vehicle.cp.stopWhenUnloading and self.pipe then
-		if self.pipe.currentState == UnloadableFieldworkAIDriver.PIPE_STATE_OPEN and
+		if self.pipe.currentState == CombineAIDriver.PIPE_STATE_OPEN and
 			g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
 			-- stop only if the pipe is open AND we have been emptied more than 1000 cycles ago.
 			-- this makes sure the combine will start driving after it is emptied but the trailer

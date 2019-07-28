@@ -39,8 +39,6 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
 	self.stopImplementsWhileUnloadOrRefillOnField = false
-	self.lastEmptyTimestamp = 0
-
 end
 
 function UnloadableFieldworkAIDriver:setHudContent()
@@ -62,6 +60,16 @@ function UnloadableFieldworkAIDriver.create(vehicle)
 		return CombineAIDriver(vehicle)
 	else
 		return UnloadableFieldworkAIDriver(vehicle)
+	end
+end
+
+-- Bale loaders / wrappers have no AI markers
+function UnloadableFieldworkAIDriver.getAIMarkersFromGrabberNode(object, spec)
+	-- use the grabber node for all markers if exists
+	if spec.baleGrabber and spec.baleGrabber.grabNode then
+		return spec.baleGrabber.grabNode, spec.baleGrabber.grabNode, spec.baleGrabber.grabNode
+	else
+		return object.rootNode, object.rootNode, object.rootNode
 	end
 end
 

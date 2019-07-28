@@ -26,6 +26,14 @@ function BaleWrapperAIDriver:init(vehicle)
 	-- which is also a bale wrapper then we would probably have to put everything back into the baler.
 	BalerAIDriver.init(self, vehicle)
 	self.baleWrapper = FieldworkAIDriver.getImplementWithSpecialization(vehicle, BaleWrapper)
+
+	if not self.baler then
+		-- Bale wrappers which aren't balers have no AI markers as they have no pick up so add a function here
+		-- to get the markers
+		self.baleWrapper.getAIMarkers = function(self)
+			return UnloadableFieldworkAIDriver.getAIMarkersFromGrabberNode(self, self.spec_baleWrapper)
+		end
+	end
 end
 
 function BaleWrapperAIDriver:driveFieldwork()

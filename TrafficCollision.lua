@@ -31,6 +31,7 @@ function CollisionDetector:init(vehicle, course)
 	self.ignoredNodes = {}
 	self:addToIgnoreList(self.vehicle)
 	self.trafficCollisionTriggers = {}
+	self.trafficCollisionTriggers[1] = nil
 	self:createTriggers()
 	self:adaptCollisHeight()
 end
@@ -47,7 +48,6 @@ function CollisionDetector:delete()
 		self.collidingObjects = {}				-- clear all detected collisions
 		self.nCollidingObjects = 0				-- clear all detected collisions
 		self.ignoredNodes = {}					-- clear all detected collisions
-		self:addToIgnoreList(self.vehicle)
 	end
 end
 
@@ -71,18 +71,20 @@ function CollisionDetector:createTriggers()
 	end
 	self.vehicle.cp.trafficCollisionTriggerToTriggerIndex = {}
 	-- self.vehicle.aiTrafficCollisionTrigger = self.aiTrafficCollisionTrigger
-	for i = 1, self.vehicle.cp.numTrafficCollisionTriggers do
-		local newTrigger = clone(self.vehicle.aiTrafficCollisionTrigger, true)
-		self.trafficCollisionTriggers[i] = newTrigger
-		self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
-		setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
-		if i > 1 then
-			unlink(newTrigger)
-			link(self.trafficCollisionTriggers[i - 1], newTrigger)
-			setTranslation(newTrigger, 0, 0, 4)
+	if self.trafficCollisionTriggers[1] == nil then
+		for i = 1, self.vehicle.cp.numTrafficCollisionTriggers do
+			local newTrigger = clone(self.vehicle.aiTrafficCollisionTrigger, true)
+			self.trafficCollisionTriggers[i] = newTrigger
+			self.vehicle.cp.trafficCollisionTriggerToTriggerIndex[newTrigger] = i;
+			setName(newTrigger, 'cpAiCollisionTrigger ' .. tostring(i))
+			if i > 1 then
+				unlink(newTrigger)
+				link(self.trafficCollisionTriggers[i - 1], newTrigger)
+				setTranslation(newTrigger, 0, 0, 4)
+			end;
+			addTrigger(newTrigger, 'onCollision', self)
 		end;
-		addTrigger(newTrigger, 'onCollision', self)
-	end;
+	end
 end
 
 
@@ -98,6 +100,7 @@ function CollisionDetector:deleteTriggers()
 				delete(node)
 			end
 		end
+		self.trafficCollisionTriggers[i] = nil
 	end
 
 end
@@ -110,10 +113,10 @@ function CollisionDetector:addToIgnoreList(object)
 	self.ignoredNodes[object.rootNode] = true;
 	-- add the vehicle or implement's own collision trigger to the ignore list
 	-- local aiCollisionTrigger = courseplay:findAiCollisionTrigger(object)
-	if not courseplay:findAiCollisionTrigger(object) then return end
-	if object.aiCollisionTrigger then
-		self:debug('-- %q', getName(object.aiCollisionTrigger))
-		self.ignoredNodes[object.aiCollisionTrigger] = true
+	courseplay:findAiCollisionTrigger(object)		-- get aiTrafficCollisionTrigger for vehicles
+	if object.aiTrafficCollisionTrigger then
+		self:debug('-- %q', getName(object.aiTrafficCollisionTrigger))
+		self.ignoredNodes[object.aiTrafficCollisionTrigger] = true
 	end
 	if object.components then
 		self:debug('will ignore collisions with %q (%q) components', nameNum(object), tostring(object.cp.xmlFileName))
@@ -164,7 +167,7 @@ function CollisionDetector:getStatus(dt)
 				if collidingVehicle.isCpPathVehicle then
 					self:setPathVehiclesSpeed(collidingVehicle, dt)
 				end
-				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 == 0 or not self:doesVehicleGoMyDirection(collidingVehicleId) then
+				if collidingVehicle.lastSpeedReal == nil or collidingVehicle.lastSpeedReal*3600 < 0.01 then		-- collidingVehicle not moving -> STOP
 					isInTraffic = true
 				else	
 					trafficSpeed = collidingVehicle.lastSpeedReal*3600

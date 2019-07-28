@@ -339,7 +339,6 @@ end
 
 function FieldworkAIDriver:changeToFieldwork()
 	self:debug('change to fieldwork')
-	self:disableCollisionDetection()
 	self.state = self.states.ON_FIELDWORK_COURSE
 	self.fieldworkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
@@ -972,9 +971,10 @@ function FieldworkAIDriver:setMarkers()
 	-- work areas of the vehicle itself
 	addMarkers(self.vehicle, referenceNode)
 	-- and then the work areas of all the implements
-	for _, implement in pairs(self.vehicle:getAttachedImplements()) do
+	for _, implement in pairs( self:getAllAIImplements(self.vehicle)) do
 		addMarkers(implement.object, referenceNode)
 	end
+
 	if #markers == 0 then
 		-- make sure we always have a default front/back marker, placed on the direction node if nothing else found
 		table.insert(markers, 0)
@@ -1028,7 +1028,7 @@ function FieldworkAIDriver:shouldLowerImplements(turnEndNode, reversing)
 		doLower = true
 	end
 	-- and then check all implements
-	for _, implement in ipairs(self.vehicle:getAttachedAIImplements()) do
+	for _, implement in ipairs(self:getAllAIImplements(self.vehicle)) do
 		if reversing then
 			-- when driving backward, all implements must reach the turn end node before lowering, hence the 'and'
 			doLower = doLower and self:shouldLowerThisImplement(implement.object, turnEndNode, reversing)
@@ -1073,7 +1073,7 @@ function FieldworkAIDriver:shouldRaiseImplements(turnStartNode)
 	-- see if the vehicle has AI markers -> has work areas (built-in implements like a mower or cotton harvester)
 	local doRaise = self:shouldRaiseThisImplement(self.vehicle, turnStartNode)
 	-- and then check all implements
-	for _, implement in ipairs(self.vehicle:getAttachedAIImplements()) do
+	for _, implement in ipairs(self:getAllAIImplements(self.vehicle)) do
 		-- only when _all_ implements can be raised will we raise them all, hence the 'and'
 		doRaise = doRaise and self:shouldRaiseThisImplement(implement.object, turnStartNode)
 	end
@@ -1095,9 +1095,32 @@ function FieldworkAIDriver:shouldRaiseThisImplement(object, turnStartNode)
 end
 
 function FieldworkAIDriver:onDraw()
-	if self.frontMarker and self.backMarker then
-		DebugUtil.drawDebugNode(self.frontMarker:getNode(), getName(self.frontMarker:getNode()))
-		DebugUtil.drawDebugNode(self.backMarker:getNode(), getName(self.backMarker:getNode()))
+
+	if not courseplay.debugChannels[6] then return end
+
+	local function showAIMarkersOfObject(object)
+		if object.getAIMarkers then
+			local aiLeftMarker, aiRightMarker, aiBackMarker = object:getAIMarkers()
+			if aiLeftMarker then
+				DebugUtil.drawDebugNode(aiLeftMarker, object:getName() .. ' AI Left')
+			end
+			if aiRightMarker then
+				DebugUtil.drawDebugNode(aiRightMarker, object:getName() .. ' AI Right')
+			end
+			if aiBackMarker then
+				DebugUtil.drawDebugNode(aiBackMarker, object:getName() .. ' AI Back')
+			end
+			DebugUtil.drawDebugNode(object.cp.DirectionNode or object.rootNode, object:getName() .. ' root')
+		end
+	end
+
+	showAIMarkersOfObject(self.vehicle)
+	-- draw the Giant's supplied AI markers for all implements
+	local implements = self:getAllAIImplements(self.vehicle)
+	if implements then
+		for _, implement in ipairs(implements) do
+			showAIMarkersOfObject(implement.object)
+		end
 	end
 	AIDriver.onDraw(self)
 end
@@ -1123,3 +1146,14 @@ function FieldworkAIDriver:getAIMarkersFromWorkAreas(object)
 	end
 end
 
+function FieldworkAIDriver:getAllAIImplements(object, implements)
+	if not implements then implements = {} end
+	for _, implement in ipairs(object:getAttachedImplements()) do
+		-- ignore everything which has no work area
+		if courseplay:hasWorkAreas(implement.object) then
+			table.insert(implements, implement)
+		end
+		self:getAllAIImplements(implement.object, implements)
+	end
+	return implements
+end
