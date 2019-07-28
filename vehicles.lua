@@ -1559,3 +1559,47 @@ function courseplay:findAiCollisionTrigger(vehicle)
 
 	return ret;
 end
+
+--[[
+remove the targetVehicle and all its components and attached implements to the local collision ignore list of the vehicle
+]]
+function courseplay:removeFromVehicleLocalIgnoreList(vehicle, targetVehicle)
+	if vehicle and targetVehicle and vehicle.cpTrafficCollisionIgnoreList then
+
+		vehicle.cpTrafficCollisionIgnoreList[targetVehicle.rootNode] = nil;
+
+		-- TRAFFIC COLLISION IGNORE LIST (components)
+		if targetVehicle.components ~= nil then
+			courseplay:debug(('%s: removing %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(targetVehicle), tostring(targetVehicle.cp.xmlFileName)), 3);
+			for i,component in pairs(targetVehicle.components) do
+				vehicle.cpTrafficCollisionIgnoreList[component.node] = nil;
+			end;
+		end;
+		-- CHECK ATTACHED IMPLEMENTS
+		for k,impl in pairs(targetVehicle:getAttachedImplements()) do
+			courseplay:removeFromVehicleLocalIgnoreList(vehicle, impl.object);
+		end;
+	end;
+end
+
+--[[
+add the targetVehicle and all its components and attached implements to the local collision ignore list of the vehicle
+]]
+function courseplay:addToVehicleLocalIgnoreList(vehicle, targetVehicle)
+	if vehicle and targetVehicle and vehicle.cpTrafficCollisionIgnoreList then
+
+		vehicle.cpTrafficCollisionIgnoreList[targetVehicle.rootNode] = true;
+
+		-- TRAFFIC COLLISION IGNORE LIST (components)
+		if targetVehicle.components ~= nil then
+			courseplay:debug(('%s: adding %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(targetVehicle), tostring(targetVehicle.cp.xmlFileName)), 3);
+			for i,component in pairs(targetVehicle.components) do
+				vehicle.cpTrafficCollisionIgnoreList[component.node] = true;
+			end;
+		end;
+		-- CHECK ATTACHED IMPLEMENTS
+		for k,impl in pairs(targetVehicle:getAttachedImplements()) do
+			courseplay:addToVehicleLocalIgnoreList(vehicle, impl.object);
+		end;
+	end;
+end

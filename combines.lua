@@ -259,6 +259,7 @@ function courseplay:unregisterFromCombine(vehicle, combine)
 
 	vehicle.allow_follwing = false
 	vehicle.cp.positionWithCombine = nil
+	courseplay:removeFromVehicleLocalIgnoreList(vehicle, combine)
 	vehicle.cp.lastActiveCombine = vehicle.cp.activeCombine
 	vehicle.cp.activeCombine = nil
 	courseplay:setModeState(vehicle, 1);

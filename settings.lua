@@ -675,6 +675,7 @@ function courseplay:removeActiveCombineFromTractor(vehicle)
 	if vehicle.cp.activeCombine ~= nil then
 		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
 	end;
+	courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
 	vehicle.cp.lastActiveCombine = nil;
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
