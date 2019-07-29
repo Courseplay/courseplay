@@ -1392,7 +1392,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 				else
 					table.insert(courses_without_id, course);
 				end;
-				waypoints = nil;
+				courseplay.courses:loadCourseFromFile(course)
 
 			end;
 		end; -- END for loop
