@@ -63,7 +63,8 @@ end
 -- so they form a snake in front of the vehicle along the path. When this snakes collides with something, the
 -- the onCollision() callback is triggered by the game engine
 function CollisionDetector:createTriggers()
-	if not courseplay:findAiCollisionTrigger(self.vehicle) then return end
+
+	if not courseplay:findAiCollisionTrigger(self.vehicle) then return end	-- create triggers only for enterable vehicles
 	-- self.aiTrafficCollisionTrigger = courseplay:findAiCollisionTrigger(self.vehicle)
 	-- if not self.aiTrafficCollisionTrigger then return end
 	if not self.trafficCollisionTriggers then

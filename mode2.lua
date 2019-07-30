@@ -202,6 +202,7 @@ function courseplay:handle_mode2(vehicle, dt)
 				if vehicle.cp.lastActiveCombine ~= nil then
 					local distance = courseplay:distanceToObject(vehicle, vehicle.cp.lastActiveCombine)
 					if distance > 20 or vehicle.cp.totalFillLevelPercent == 100 then
+						courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
 						vehicle.cp.lastActiveCombine = nil
 						courseplay:debug(string.format("%s (%s): last combine = nil", nameNum(vehicle), tostring(vehicle.id)), 4);
 					else
@@ -323,7 +324,8 @@ function courseplay:handle_mode2(vehicle, dt)
 	if vehicle.cp.hasDriveControl and vehicle.cp.driveControl.hasFourWD then
 		--courseplay:setFourWheelDrive(vehicle); disabled, already moved to AIDriver
 	end;
-end
+	return true
+end		-- end handle_mode2()
 
 function courseplay:unload_combine(vehicle, dt)
 	local curFile = "mode2.lua"
@@ -1318,7 +1320,7 @@ function courseplay:unload_combine(vehicle, dt)
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine
 		local distanceToCombine = math.huge
 		--reasons for not calling bypassing in 50m range
-		if combine ~= nil and (combine.cp.isChopper or vehicle.cp.driveUnloadNow or vehicle.cp.totalFillLevel >= vehicle.cp.totalCapacity) then
+		if combine ~= nil then
 			distanceToCombine = courseplay:distanceToObject( vehicle, combine )  	
 		end
 		if distanceToCombine > 50 and ((vehicle.cp.modeState == STATE_FOLLOW_TARGET_WPS and not vehicle.cp.curTarget.turn and not vehicle.cp.curTarget.rev and not vehicle.cp.isParking ) or vehicle.cp.modeState == STATE_DRIVE_TO_COMBINE) then   
@@ -1336,8 +1338,9 @@ function courseplay:unload_combine(vehicle, dt)
 			lx, lz = courseplay:isTheWayToTargetFree(vehicle, lx, lz, tx, tz,dod )
 		end
 		
-				-- courseplay:setTrafficCollision(vehicle, lx, lz,true)
-		courseplay:setTrafficCollisionOnField(vehicle, lx, lz,false)				
+		courseplay:addToVehicleLocalIgnoreList(vehicle, combine)
+
+		courseplay:setTrafficCollisionOnField(vehicle, lx, lz,false,distanceToCombine)
 		
 		if math.abs(vehicle.lastSpeedReal) < 0.0001 and not g_currentMission.missionInfo.stopAndGoBraking then
 			if not moveForwards then

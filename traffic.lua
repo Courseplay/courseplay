@@ -172,7 +172,11 @@ function courseplay:updateCollisionVehicle(vehicle)
 	 courseplay:debug(string.format("    setting vehicle.cp.collidingVehicleId to %d (%s)",currentCollisionVehicleId,tostring(getName(currentCollisionVehicleId))), 3);	
 	end
 	vehicle.cp.collidingVehicleId = currentCollisionVehicleId
-
+	if vehicle.cp.collidingVehicleId ~= nil then
+		courseplay.debugVehicle(3, vehicle, 'updateCollisionVehicle: vehicle.cp.collidingVehicleId = %d (%s)',vehicle.cp.collidingVehicleId, getName(vehicle.cp.collidingVehicleId))
+	else
+		courseplay.debugVehicle(3, vehicle, 'updateCollisionVehicle: vehicle.cp.collidingVehicleId is nil')
+	end;
 end
 
 function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
@@ -337,7 +341,7 @@ function courseplay:removeLegacyCollisionTriggers(vehicle)
 	return ret;
 end
 
-function courseplay:setTrafficCollisionOnField(vehicle, lx, lz, disableLongCheck)
+function courseplay:setTrafficCollisionOnField(vehicle, lx, lz, disableLongCheck, distanceToCombine)
 	local steeringfactor = 0.25;
 	local colDirX = lx;
 	local colDirZ = lz;
@@ -346,7 +350,7 @@ function courseplay:setTrafficCollisionOnField(vehicle, lx, lz, disableLongCheck
 		courseplay:setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX * steeringfactor, colDirZ * steeringfactor);
 		local recordNumber = vehicle.cp.waypointIndex
 		for i=2,vehicle.cp.numTrafficCollisionTriggers do	-- continue with i=2 for the rest of the colli boxes
-			if disableLongCheck or recordNumber + i >= vehicle.cp.numWaypoints then
+			if disableLongCheck or (distanceToCombine) < ((i+2) * 5) then
 				courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, -1);
 			else
 				courseplay:setCollisionDirection(vehicle.cp.trafficCollisionTriggers[i-1], vehicle.cp.trafficCollisionTriggers[i], 0, 1);
