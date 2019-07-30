@@ -333,7 +333,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 						--- Get the Triangle sides
 						turnInfo.centerOffset = (turnInfo.targetDeltaX * turnInfo.direction) - turnInfo.turnRadius;
 						local sideC = turnInfo.turnDiameter;
-						local sideB = turnInfo.turnRadius + turnInfo.centerOffset;
+						local sideB = turnInfo.turnRadius + turnInfo.centerOffset; -- which is exactly targetDeltaX, see above
 						turnInfo.centerHeight = square(sideC^2 - sideB^2);
 
 						local neededSpace = abs(turnInfo.targetDeltaZ) + turnInfo.zOffset + 1 + turnInfo.centerHeight + (turnInfo.reverseWPChangeDistance * 1.5);
