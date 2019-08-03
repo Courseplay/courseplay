@@ -1006,6 +1006,7 @@ function FieldworkAIDriver:getAIMarkers(object)
 	end
 	if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
 		-- use the root node if there are no AI markers
+		-- TODO: these debug messages are shown even when CP is not driving, fix that.
 		self:debug('%s has no AI markers, try work areas', nameNum(object))
 		aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkersFromWorkAreas(object)
 		if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
@@ -1150,10 +1151,27 @@ function FieldworkAIDriver:getAllAIImplements(object, implements)
 	if not implements then implements = {} end
 	for _, implement in ipairs(object:getAttachedImplements()) do
 		-- ignore everything which has no work area
-		if courseplay:hasWorkAreas(implement.object) then
+		if self:isValidAIImplement(implement.object) then
 			table.insert(implements, implement)
 		end
 		self:getAllAIImplements(implement.object, implements)
 	end
 	return implements
+end
+
+-- Is this and implement we should consider when deciding when to lift/raise implements at the end/start of a row?
+function FieldworkAIDriver:isValidAIImplement(object)
+	if courseplay:hasWorkAreas(object) then
+		-- has work areas, good.
+		return true
+	else
+		local aiLeftMarker, _, _ = self:getAIMarkers(object)
+		if aiLeftMarker then
+			-- has AI markers, good
+			return true
+		else
+			-- no work areas, no AI markers, can't use.
+			return false
+		end
+	end
 end

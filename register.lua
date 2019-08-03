@@ -172,6 +172,7 @@ function courseplay:vehicleDelete()
 						courseplay:unregisterFromCombine(courseplayer, self)
 					end
 					if courseplayer.cp.lastActiveCombine and courseplayer.cp.lastActiveCombine == self then
+						courseplay:removeFromVehicleLocalIgnoreList(self, courseplayer.cp.lastActiveCombine)
 						courseplayer.cp.lastActiveCombine = nil
 					end
 				end
