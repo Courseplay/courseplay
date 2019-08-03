@@ -63,6 +63,9 @@ function courseplay:start(self)
 	self.cpTrafficCollisionIgnoreList = {}
 	-- self.CPnumCollidingVehicles = 0;					-- ??? not used anywhere
 	self.cp.collidingVehicleId = nil
+	self.cp.collidingObjects = {
+		all = {};
+	};
 	
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
 	--self.numToolsCollidingVehicles = {};
@@ -744,6 +747,9 @@ function courseplay:stop(self)
 	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
 	self.cp.collidingVehicleId = nil
+	self.cp.collidingObjects = {
+		all = {};
+	};
 	self.cp.bypassWaypointsSet = false
 	-- deactivate beacon and hazard lights
 	if self.beaconLightsActive then
