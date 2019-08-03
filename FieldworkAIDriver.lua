@@ -681,7 +681,7 @@ function FieldworkAIDriver:unfoldImplements()
 	for _,workTool in pairs(self.vehicle.cp.workTools) do
 		if courseplay:isFoldable(workTool) then
 			local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool)
-			if not isUnfolded then
+			if not isUnfolded and workTool:getIsFoldAllowed(workTool.cp.realUnfoldDirection) then
 				self:debug('Unfolding %s', workTool:getName())
 				workTool:setFoldDirection(workTool.cp.realUnfoldDirection)
 			end
@@ -693,7 +693,7 @@ function FieldworkAIDriver:foldImplements()
 	for _,workTool in pairs(self.vehicle.cp.workTools) do
 		if courseplay:isFoldable(workTool) then
 			local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool)
-			if not isFolded then
+			if not isFolded and workTool:getIsFoldAllowed(-workTool.cp.realUnfoldDirection) then
 				self:debug('Folding %s', workTool:getName())
 				workTool:setFoldDirection(-workTool.cp.realUnfoldDirection)
 			end
