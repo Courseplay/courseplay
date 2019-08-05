@@ -88,6 +88,7 @@ function courseGenerator.debug( ... )
 		courseplay:debug( string.format( ... ), 7 )
 	else
 		print( string.format( ... ))
+		io.stdout:flush()
 	end
 end
 

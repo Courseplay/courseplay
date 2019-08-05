@@ -259,7 +259,7 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 		end
 	end
 
-	if #blocks > 20 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
+	if #blocks > 30 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
 		-- don't waste time on unrealistic problems
 		courseGenerator.debug( 'Implausible number of blocks/tracks (%d/%d), not generating up/down rows', #blocks, nTotalTracks )
 		return nil, 0, 0, nil, false
@@ -1111,7 +1111,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 				end
 			end
 		end
-		chromosome.fitness = math.floor( 10000 / chromosome.distance )
+		chromosome.fitness = ( 10000 / chromosome.distance )
 		return chromosome.fitness
 	end
 
@@ -1156,6 +1156,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 		local newGeneration = population:breed()
 		population:recombine( newGeneration )
 		generation = generation + 1
+		courseGenerator.debug( 'generation %d %s', generation, tostring( population.bestChromosome ))
 	end
 	courseGenerator.debug( tostring( population.bestChromosome ))
 	-- this table contains the blocks and other relevant data in the order they have to be worked on
@@ -1167,6 +1168,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 		block.directionToNextBlock = population.bestChromosome.directionToNextBlock[ blockIx ] -- step direction on the headland index to take
 		table.insert( blocksInSequence, block )
 	end
+
 	return blocksInSequence, population.bestChromosome
 end
 
