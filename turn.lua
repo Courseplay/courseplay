@@ -1,5 +1,5 @@
 local abs, min, max, floor, ceil, square, pi, rad, deg = math.abs, math.min, math.max, math.floor, math.ceil, math.sqrt, math.pi, math.rad, math.deg;
-local _; --- The _ is an discart character for values not needed. Setting it to local, prevent's it from being an global variable.
+local _; --- The _ is an discard character for values not needed. Setting it to local, prevent's it from being an global variable.
 
 --- SET VALUES
 local wpDistance		= 1.5;  -- Waypoint Distance in Strait lines
@@ -1281,8 +1281,13 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	if turnInfo.frontMarker > 0 then
 		frontOffset = frontOffset - turnInfo.frontMarker;
 	end;
+	-- getAttachedImplementsAllowTurnBackward will return true for anything easy to reverse, that is has now towed implement,
+	-- like combines or tractors with implements mounted on the 3 point hitch. Those should make the same turn (fishtail or K-turn)
+	-- as combines do as it takes up a lot less space on the headland. Our calculation of how much space is needed is still off a bit
+	-- so you may have to turn off 'turn on field' for this to work for tractors.
+	if not ((courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle)) and not courseplay:isHarvesterSteerable(vehicle)) and
+		not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(vehicle) then
 
-	if not ((courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle)) and not courseplay:isHarvesterSteerable(vehicle)) then
 		local targetDeltaZ = turnInfo.targetDeltaZ;
 		if targetDeltaZ > 0 then
 			targetDeltaZ = 0;
@@ -2429,6 +2434,8 @@ function TurnContext:init(course, turnStartIx, aiDriverData)
 	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
 
 	self.directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle), math.rad(self.beforeTurnStartWp.angle)))
+	self.dx, _, _ = localToLocal(self.turnEndWpNode.node, self.turnStartForwardWpNode.node, 0, 0, 0)
+	self.leftTurn = self.dx > 0
 
 	courseplay.debugFormat(12, 'Turn context: start ix = %d', turnStartIx)
 
@@ -2449,6 +2456,40 @@ function TurnContext:createCorner(vehicle, r)
 		endAngleDeg, self.turnEndWp.angle, self.afterTurnEndWp.angle)
 	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, vehicle.cp.totalOffsetX)
 end
+
+function TurnContext:createCornersForRowEndTurn(vehicle, r, frontMarkerDistance, backMarkerDistance)
+	local c1, c2 = {}, {}
+	-- first circle to drive on until we are about 90 off the row direction
+	c1.x, _, c1.z = localToWorld(self.turnStartForwardWpNode.node, self.leftTurn and r or -r, 0, - backMarkerDistance)
+	-- second circle to drive on until are aligned with the target row
+	c2.x, _, c2.z = localToWorld(self.turnEndWpNode.node, self.leftTurn and r or -r, 0, frontMarkerDistance)
+	local circleToCircleAngle
+	if self.dx > vehicle.cp.workWidth then
+		-- no reversing needed
+		circleToCircleAngle = Waypoint.getWaypointAngle(c1.x, c1.z, c2.x, c2.z)
+	else
+		circleToCircleAngle = Waypoint.getWaypointAngle(c2.x, c2.z, c1.x, c1.z)
+	end
+
+	local corner1Wp, corner2Wp = {}, {}
+	local alpha = getDeltaAngle(math.rad(self.turnStartForwardWp.angle), math.rad(circleToCircleAngle))
+	courseplay.debugVehicle(14, vehicle, '%.1f %.1f', self.turnStartForwardWp.angle, circleToCircleAngle)
+	-- TODO: check for nan on tan() return value
+	local dCornerToTangentPoint = math.abs(r / math.tan(alpha / 2))
+	courseplay.debugVehicle(14, vehicle, '%.1f %.1f', math.deg(alpha), dCornerToTangentPoint)
+	corner1Wp.x, _, corner1Wp.z = localToWorld(self.turnStartForwardWpNode.node, 0, 0, dCornerToTangentPoint - backMarkerDistance)
+
+	alpha = getDeltaAngle(math.rad(self.turnEndWp.angle), math.rad(circleToCircleAngle))
+	dCornerToTangentPoint = math.abs(r / math.tan(alpha / 2))
+	courseplay.debugVehicle(14, vehicle, '%.1f %.1f', math.deg(alpha), dCornerToTangentPoint)
+	corner2Wp.x, _, corner2Wp.z = localToWorld(self.turnEndWpNode.node, 0, 0, - (dCornerToTangentPoint - frontMarkerDistance))
+	corner1Wp.angle = Waypoint.getWaypointAngle(c1.x, c1.z, c2.x, c2.z)
+
+	local corner1 = Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, corner1Wp.angle, corner1Wp, r, vehicle.cp.totalOffsetX)
+	local corner2 = Corner(vehicle, corner1Wp.angle, corner1Wp, self.turnEndWp.angle, corner2Wp, r, vehicle.cp.totalOffsetX)
+	return corner1, corner2
+end
+
 
 -- do not delete this line
 -- vim: set noexpandtab:

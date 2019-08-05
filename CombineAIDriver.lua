@@ -444,8 +444,7 @@ function CombineAIDriver:startTurn(ix)
 	self.turnContext = TurnContext(self.course, ix, self.aiDriverData)
 	if not self.turnContext:isHeadlandCorner() then
 		self:debug('Non headland turn.')
-		self.turnIsDriving = true
-		return nil
+		return UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
 	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
 	cornerCourse:print()
@@ -458,8 +457,7 @@ function CombineAIDriver:startTurn(ix)
 		self.ppc:setShortLookaheadDistance()
 	else
 		self:debug('Could not create a corner course, falling back to default headland turn')
-		self.turnIsDriving = true
-		return
+		return UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
 end
 

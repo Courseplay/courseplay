@@ -1392,8 +1392,9 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 				else
 					table.insert(courses_without_id, course);
 				end;
-				courseplay.courses:loadCourseFromFile(course)
-
+				if not CpManager.isDeveloper then
+					courseplay.courses:loadCourseFromFile(course)
+				end
 			end;
 		end; -- END for loop
 

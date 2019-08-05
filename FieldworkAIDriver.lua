@@ -999,18 +999,21 @@ function FieldworkAIDriver:setMarkers()
 	self:debug('front marker: %.1f, back marker: %.1f', frontMarkerDistance, backMarkerDistance)
 end
 
-function FieldworkAIDriver:getAIMarkers(object)
+function FieldworkAIDriver:getAIMarkers(object, suppressLog)
 	local aiLeftMarker, aiRightMarker, aiBackMarker
 	if object.getAIMarkers then
 		aiLeftMarker, aiRightMarker, aiBackMarker = object:getAIMarkers()
 	end
 	if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
 		-- use the root node if there are no AI markers
-		-- TODO: these debug messages are shown even when CP is not driving, fix that.
-		self:debug('%s has no AI markers, try work areas', nameNum(object))
+		if not suppressLog then
+			self:debug('%s has no AI markers, try work areas', nameNum(object))
+		end
 		aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkersFromWorkAreas(object)
 		if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
-			self:debug('%s has no work areas, giving up', nameNum(object))
+			if not suppressLog then
+				self:debug('%s has no work areas, giving up', nameNum(object))
+			end
 			return nil, nil, nil
 		else
 			return aiLeftMarker, aiRightMarker, aiBackMarker
@@ -1046,6 +1049,7 @@ end
 --- the implement should be in the working position after a turn
 ---@param reversing boolean are we reversing? When reversing towards the turn end point, we must lower the implements
 --- when we are _behind_ the turn end node (dz < 0), otherwise once we reach it (dz > 0)
+---@return boolean, boolean the second one is true when the first is valid
 function FieldworkAIDriver:shouldLowerThisImplement(object, turnEndNode, reversing)
 	local aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkers(object)
 	if not aiLeftMarker then return false, false end
@@ -1063,10 +1067,10 @@ function FieldworkAIDriver:shouldLowerThisImplement(object, turnEndNode, reversi
 	self:debug('%s: dzLeft = %.1f, dzRight = %.1f, loweringDistance = %.1f, reversing %s', nameNum(object), dzLeft, dzRight, loweringDistance, tostring(reversing))
 	-- both left and right sides should reach the turn end node
 	if reversing then
-		return dzLeft < 0 and dzRight < 0
+		return dzLeft < 0 and dzRight < 0, true
 	else
 		-- dz will be negative as we are behind the target node
-		return dzLeft > - loweringDistance and dzRight > - loweringDistance
+		return dzLeft > - loweringDistance and dzRight > - loweringDistance, true
 	end
 end
 
@@ -1165,7 +1169,7 @@ function FieldworkAIDriver:isValidAIImplement(object)
 		-- has work areas, good.
 		return true
 	else
-		local aiLeftMarker, _, _ = self:getAIMarkers(object)
+		local aiLeftMarker, _, _ = self:getAIMarkers(object, true)
 		if aiLeftMarker then
 			-- has AI markers, good
 			return true
@@ -1174,4 +1178,73 @@ function FieldworkAIDriver:isValidAIImplement(object)
 			return false
 		end
 	end
+end
+
+--[[
+function FieldworkAIDriver:startTurn(ix)
+	self:debug('Starting a fieldwork turn.')
+	self:setMarkers()
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData)
+	if not self:canMakeKTurn(ix, self.turnContext) then
+		return
+	end
+	local turnCourse, nextIx = self:createKTurn(self.turnContext)
+	if turnCourse then
+		self:debug('Starting a turn course with %d waypoints, will continue fieldwork at waypoint %d',
+			turnCourse:getNumberOfWaypoints(), nextIx)
+		self.fieldworkState = self.states.FINISHING_ROW
+		self:startCourse(turnCourse, 1, self.course, nextIx)
+		-- tighter turns
+		self.ppc:setShortLookaheadDistance()
+	else
+		self:debug('Could not create a turn course, falling back to default turn')
+		self.turnIsDriving = true
+		return
+	end
+end
+]]--
+
+function FieldworkAIDriver:canMakeKTurn(ix, turnContext)
+	if turnContext:isHeadlandCorner() then
+		self:debug('Headland turn, let turn.lua drive for now.')
+		AIDriver.startTurn(self, ix)
+		return false
+	end
+	if self.vehicle.cp.workWidth > turnContext.dx then
+		self:debug('wide turn with no reversing, let turn.lua do that for now.')
+		AIDriver.startTurn(self, ix)
+		return false
+	end
+	return true
+end
+
+
+function FieldworkAIDriver:isTurning()
+	return self.state == self.states.ON_FIELDWORK_COURSE and
+		self.fieldworkState == self.states.TURNING or
+		self.fieldworkState == self.states.FINISHING_ROW or
+		self.fieldworkState == self.states.ENDING_TURN
+end
+
+--- @param ix number
+--- @param turnContext TurnContext
+function FieldworkAIDriver:createKTurn(turnContext)
+	local turnRadius = 1.1 * self.vehicle.cp.turnDiameter / 2
+	--- @type corner1 Corner
+	--- @type corner2 Corner
+	self.corner1, self.corner2 = turnContext:createCornersForRowEndTurn(self.vehicle, turnRadius, self.frontMarkerDistance, self.backMarkerDistance)
+	local turnWaypoints = {}
+	-- first point at the turn start
+	table.insert(turnWaypoints, {x = turnContext.turnStartWp.x, z = turnContext.turnStartWp.z})
+	-- next on the first corner
+	table.insert(turnWaypoints, self.corner1:getPointAtDistanceFromCornerEnd(0, 0))
+	table.insert(turnWaypoints, self.corner1:getPointAtDistanceFromArcEnd(0))
+	local wp = self.corner2:getPointAtDistanceFromArcStart(1)
+	wp.rev = true
+	wp.turnEnd = true
+	table.insert(turnWaypoints, wp)
+	--table.insert(turnWaypoints, self.corner2:getPointAtDistanceFromCornerEnd(1, 0))
+	table.insert(turnWaypoints, self.corner2:getPointAtDistanceFromArcEnd(0))
+	table.insert(turnWaypoints, self.corner2:getPointAtDistanceFromArcEnd(5))
+	return Course(self.vehicle, turnWaypoints, true), turnContext.turnEndWpIx
 end
