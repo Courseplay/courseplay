@@ -1714,7 +1714,7 @@ function courseplay:setWaypointIndex(vehicle, number,isRecording)
 		vehicle.cp.course.hasChangedTheWaypointIndex = true
 		if isRecording then
 			vehicle.cp.waypointIndex = number
-			courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+			--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 		else
 			vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
 		end

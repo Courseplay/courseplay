@@ -56,6 +56,13 @@ function ShovelModeAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 	self.refSpeed = 3
+	self:setHudContent()
+end
+
+function ShovelModeAIDriver:setHudContent()
+	courseplay.hud:setShovelModeAIDriverContent(self.vehicle)
+	
+	
 end
 
 function ShovelModeAIDriver:start(ix)
@@ -130,7 +137,7 @@ function ShovelModeAIDriver:drive(dt)
 	
 	-- STATE 1: DRIVE TO BUNKER SILO (1st waiting point)
 	if vehicle.cp.shovelState == self.STATE_GOTO_SILO then
-		self.refSpeed = AIDriver.getSpeed(self)
+		self.refSpeed = self.vehicle.cp.speeds.street
 		if self.ppc:getCurrentWaypointIx() + 1 > vehicle.cp.shovelFillStartPoint then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[2], dt) then
 				self:setShovelState(vehicle, self.STATE_GOINTO_SILO);
@@ -233,7 +240,7 @@ function ShovelModeAIDriver:drive(dt)
 			end;
 			vehicle.cp.shovelLastFillLevel = fillLevelPct;
 		end;
-						--vv TODO checkif its a Giants Bug the Shovel never gets 100%
+						--vv its a Giants thing that the Shovel never gets 100%
 		if fillLevelPct >= 99 or vehicle.cp.driveUnloadNow or vehicle.cp.slippingStage == 2 or heapEnd then
 			if not vehicle.cp.driveUnloadNow then
 				local newWP = self:findNextRevWaypoint(self.ppc:getCurrentWaypointIx())
@@ -263,7 +270,7 @@ function ShovelModeAIDriver:drive(dt)
 		return
 	-- STATE 3: TRANSPORT TO BGA
 	elseif vehicle.cp.shovelState == self.STATE_TRANSPORT then
-		self.refSpeed = AIDriver.getSpeed(self)
+		self.refSpeed = self.vehicle.cp.speeds.street
 		local p = vehicle.cp.shovelFillStartPoint
 		local _,y,_ = getWorldTranslation(vehicle.cp.DirectionNode);
 		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx ,y, vehicle.Waypoints[p].cz); 
@@ -334,7 +341,7 @@ function ShovelModeAIDriver:drive(dt)
 
 	-- STATE 6: UNLOADING
 	elseif vehicle.cp.shovelState == self.STATE_WAIT_FOR_UNLOADREADY then
-		self.refSpeed = AIDriver.getSpeed(self)
+		self.refSpeed = self.vehicle.cp.speeds.turn
 		--courseplay:handleSpecialTools(vehicle,workTool,unfold,lower,turnOn,allowedToDrive,cover,unload)
 		courseplay:handleSpecialTools(vehicle,vehicle,true,nil,nil,nil,nil,nil)
 		local dischargeNode = vehicle.cp.shovel:getCurrentDischargeNode()
@@ -364,7 +371,7 @@ function ShovelModeAIDriver:drive(dt)
 		
 	-- STATE 7: RETURN FROM BGA TO START POINT
 	elseif vehicle.cp.shovelState == self.STATE_GO_BACKTO_START then
-		self.refSpeed = AIDriver.getSpeed(self)
+		self.refSpeed = self.vehicle.cp.speeds.street
 		courseplay:handleSpecialTools(vehicle,vehicle,false,nil,nil,nil,nil,nil);
 		courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[3], dt);
 	end;

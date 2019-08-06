@@ -592,7 +592,7 @@ function courseplay:onLoad(savegame)
 	courseplay.hud:setupVehicleHud(self);
 
 	courseplay:validateCanSwitchMode(self);
-	courseplay.buttons:setActiveEnabled(self, 'all');
+	--courseplay.buttons:setActiveEnabled(self, 'all');
 
 	-- TODO: remove driving mode when mode 2 is finally converted
 	self.cp.drivingMode = DrivingModeSetting(self)
@@ -1525,7 +1525,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		if visualWaypointsCrossing ~= nil then
 			courseplay:toggleShowVisualWaypointsCrossing(self, visualWaypointsCrossing, false);
 		end;
-		courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
+		--courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
 		courseplay.signs:setSignsVisibility(self);
 
 		self.cp.siloSelectedFillType = FillTypeManager.getFillTypeIndexByName(Utils.getNoNil(getXMLString(xmlFile, curKey .. '#siloSelectedFillType'), 'unknown'));
@@ -1634,7 +1634,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 			end;
 		end;
 		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (after loading)', 10), 10);
-		courseplay.buttons:setActiveEnabled(self, 'shovel');
+		--courseplay.buttons:setActiveEnabled(self, 'shovel');
 
 		-- COMBINE
 		if self.cp.isCombine then

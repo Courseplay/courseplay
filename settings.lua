@@ -7,7 +7,7 @@ function courseplay:openCloseHud(vehicle, open)
 	vehicle.cp.hud.show = open;
 	--print(string.format("courseplay:openCloseHud set to %s",tostring(vehicle.cp.hud.show)))
 	if open then
-		courseplay.buttons:setActiveEnabled(vehicle, 'all');
+		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
 	else
 		courseplay.buttons:setHoveredButton(vehicle, nil);
 	end;
@@ -83,7 +83,7 @@ end
 	vehicle.cp.nextMode = nextMode;
 end;]]
 
-function courseplay:getCanVehicleUseMode(vehicle, mode)
+--[[function courseplay:getCanVehicleUseMode(vehicle, mode)
 	if not CpManager.isDeveloper then
 		if mode == courseplay.MODE_OVERLOADER
 		or mode == courseplay.MODE_COMBINE_SELF_UNLOADING
@@ -102,7 +102,7 @@ function courseplay:getCanVehicleUseMode(vehicle, mode)
 	end;
 
 	return true;
-end;
+end;]]
 
 function courseplay:setDriveNow(vehicle)
 	courseplay:setDriveUnloadNow(vehicle, true);
@@ -1216,7 +1216,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 	else
 		vehicle.cp.hasValidCourseGenerationData = false;
 	end;
-	courseplay.buttons:setActiveEnabled(vehicle, 'generateCourse');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'generateCourse');
 
 	if courseplay.debugChannels[7] then
 		courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
@@ -1253,7 +1253,7 @@ function courseplay:saveShovelPosition(vehicle, stage)
 		courseplay:debug('    hasShovelStatePositions=' .. tostring(vehicle.cp.hasShovelStatePositions[stage]), 10);
 
 	end;
-	courseplay.buttons:setActiveEnabled(vehicle, 'shovel');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'shovel');
 end;
 
 function courseplay:moveShovelToPosition(vehicle, stage)
@@ -1453,7 +1453,7 @@ end;
 function courseplay:toggleSelectedFieldEdgePathShow(vehicle, force)
 	vehicle.cp.fieldEdge.selectedField.show = Utils.getNoNil(force, not vehicle.cp.fieldEdge.selectedField.show);
 	--print(string.format("%s: selectedField.show=%s", nameNum(vehicle), tostring(vehicle.cp.fieldEdge.selectedField.show)));
-	courseplay.buttons:setActiveEnabled(vehicle, "selectedFieldShow");
+	--courseplay.buttons:setActiveEnabled(vehicle, "selectedFieldShow");
 end;
 
 --CUSTOM SINGLE FIELD EDGE PATH
@@ -1644,7 +1644,7 @@ end
 
 function courseplay:toggleSucHud(vehicle)
 	vehicle.cp.suc.active = not vehicle.cp.suc.active;
-	courseplay.buttons:setActiveEnabled(vehicle, 'suc');
+	---courseplay.buttons:setActiveEnabled(vehicle, 'suc');
 	if vehicle.cp.suc.selectedFruit == nil then
 		vehicle.cp.suc.selectedFruitIdx = 1;
 		vehicle.cp.suc.selectedFruit = courseplay.fields.seedUsageCalculator.fruitTypes[1];
@@ -1667,7 +1667,7 @@ function courseplay:toggleFindFirstWaypoint(vehicle)
 	if not courseplay.isClient and not vehicle.cp.distanceCheck then
 		courseplay:setInfoText(vehicle, nil);
 	end;
-	courseplay.buttons:setActiveEnabled(vehicle, 'findFirstWaypoint');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'findFirstWaypoint');
 end;
 
 function courseplay:canUseWeightStation(vehicle)
@@ -1874,7 +1874,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 					courseplay.hud:setReloadPageOrder(self, 4, true);
 				end;
 			elseif varName == 'waypointIndex' and self.cp.hud.currentPage == courseplay.hud.PAGE_CP_CONTROL and (self.cp.isRecording or self.cp.recordingIsPaused) and value and value == 4 then -- record pause action becomes available
-				courseplay.buttons:setActiveEnabled(self, 'recording');
+				--courseplay.buttons:setActiveEnabled(self, 'recording');
 			end;
 		end;
 	elseif #split == 2 then

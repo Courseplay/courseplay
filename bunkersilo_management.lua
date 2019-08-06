@@ -167,7 +167,7 @@ function courseplay:getMovingTools(vehicle)
 		if oAI[1] ~= nil then
 			secondaryMovingTools = oAI[1].object.spec_cylindered.movingTools;
 			vehicle.cp.shovel = oAI[1].object;
-			courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
+			courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object:getAttachedImplements()[1].object), nameNum(vehicle.cp.shovel)), 10);
 		end;
 		
 	elseif pipe ~= 0 then

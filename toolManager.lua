@@ -234,6 +234,11 @@ end;
 function courseplay:isWheelloader(workTool)
 	return workTool.typeName:match("wheelLoader");
 end;
+function courseplay:hasShovel(workTool)
+	if workTool.cp.hasSpecializationShovel then
+		return true
+	end
+end
 
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
@@ -1953,6 +1958,8 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 		then
 			modeValid = true;
 		end
+	elseif cpModeToCheck == 9 and courseplay:hasShovel(workTool) then
+		modeValid = true;
 	end
 	return modeValid ;
 end
