@@ -567,11 +567,15 @@ end
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
 	if self.speed > 0 and self.allowedToDrive then
-		self.lastMoveCommandTime = self.vehicle.timer
+		AIDriver:setLastMoveCommandTime(self.vehicle.timer)
 		if self.vehicle:getLastSpeed() > 0.5 then
 			self.lastRealMovingTime = self.vehicle.timer
 		end
 	end
+end
+
+function AIDriver:setLastMoveCommandTime(timer)
+	self.lastMoveCommandTime = timer
 end
 
 --- Reset drive controls at the end of each loop
@@ -1280,7 +1284,7 @@ function AIDriver:startEngineIfNeeded()
 	end
 	-- reset motor auto stop timer when someone starts the engine so we won't stop it for a while just because
 	-- our speed is 0 (for example while waiting for the implements to lower)
-	self.lastMoveCommandTime = self.vehicle.timer
+	AIDriver:setLastMoveCommandTime(self.vehicle.timer)
 end
 
 function AIDriver:getIsEngineReady()

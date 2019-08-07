@@ -290,7 +290,7 @@ end;
 --FIND Trailer CALLBACK
 function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 	local trailer = g_currentMission.nodeToObject[transformId];
-	if trailer~= nil then
+	if trailer~= nil and trailer.getFillUnits then
 		local shovelFillUnits =  self.cp.shovel:getFillUnits()
 		local shovelFillType = shovelFillUnits[1].fillType
 		local fillUnits = trailer:getFillUnits()
@@ -306,6 +306,9 @@ function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 			end
 		end
 	end
+	if courseplay.triggers.tipTriggers[transformId]then
+		self.cp.shovel.targetFound = courseplay.triggers.tipTriggers[transformId];
+	end	
 	return true
 end
 

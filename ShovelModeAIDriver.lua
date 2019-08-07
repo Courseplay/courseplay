@@ -195,7 +195,7 @@ function ShovelModeAIDriver:drive(dt)
 				end
 			end
 		end;
-
+		self:updateLastMoveCommandTime()
 
 	-- STATE 2: PREPARE LOADING
 	elseif vehicle.cp.shovelState == self.STATE_GOINTO_SILO then
@@ -267,6 +267,7 @@ function ShovelModeAIDriver:drive(dt)
 		end;
 		
 		AIDriver.driveVehicleInDirection(self, dt, allowedToDrive, true, lx, lz, self.vehicle.cp.speeds.turn)
+		self:updateLastMoveCommandTime()
 		return
 	-- STATE 3: TRANSPORT TO BGA
 	elseif vehicle.cp.shovelState == self.STATE_TRANSPORT then
@@ -292,6 +293,7 @@ function ShovelModeAIDriver:drive(dt)
 			self:setShovelState(vehicle, self.STATE_WAIT_FOR_TARGET);
 
 		end;
+		self:updateLastMoveCommandTime()
 	-- STATE 4: WAIT FOR TRAILER 10m BEFORE EMPTYING POINT
 	elseif vehicle.cp.shovelState == self.STATE_WAIT_FOR_TARGET then
 		self.refSpeed = self.vehicle.cp.speeds.crawl
@@ -337,7 +339,7 @@ function ShovelModeAIDriver:drive(dt)
 				allowedToDrive = false;
 			end;
 		end;
-		
+		self:updateLastMoveCommandTime()
 
 	-- STATE 6: UNLOADING
 	elseif vehicle.cp.shovelState == self.STATE_WAIT_FOR_UNLOADREADY then
@@ -374,6 +376,7 @@ function ShovelModeAIDriver:drive(dt)
 		self.refSpeed = self.vehicle.cp.speeds.street
 		courseplay:handleSpecialTools(vehicle,vehicle,false,nil,nil,nil,nil,nil);
 		courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[3], dt);
+		self:updateLastMoveCommandTime()
 	end;
 	
 	if allowedToDrive then
@@ -383,6 +386,7 @@ function ShovelModeAIDriver:drive(dt)
 	
 	self:checkLastWaypoint()
 	self.allowedToDrive = allowedToDrive
+	
 	AIDriver.driveCourse(self, dt)
 		
 end
@@ -396,7 +400,9 @@ function ShovelModeAIDriver:checkLastWaypoint()
 	end
 end
 
-
+function ShovelModeAIDriver:updateLastMoveCommandTime()
+	AIDriver.setLastMoveCommandTime(self, self.vehicle.timer)
+end
 
 function ShovelModeAIDriver:findNextRevWaypoint(currentPoint)
 	local vehicle = self.vehicle;
