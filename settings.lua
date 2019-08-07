@@ -1240,8 +1240,8 @@ function courseplay:saveShovelPosition(vehicle, stage)
 		else
 			local mt, secondary = courseplay:getMovingTools(vehicle);
 			local curRot, curTrans = courseplay:getCurrentMovingToolsPosition(vehicle, mt, secondary);
-			courseplay:debug(tableShow(curRot, ('saveShovelPosition(%q, %d) curRot'):format(nameNum(vehicle), stage), 10), 10);
-			courseplay:debug(tableShow(curTrans, ('saveShovelPosition(%q, %d) curTrans'):format(nameNum(vehicle), stage), 10), 10);
+			--courseplay:debug(tableShow(curRot, ('saveShovelPosition(%q, %d) curRot'):format(nameNum(vehicle), stage), 10), 10);
+			--courseplay:debug(tableShow(curTrans, ('saveShovelPosition(%q, %d) curTrans'):format(nameNum(vehicle), stage), 10), 10);
 			if curRot and next(curRot) ~= nil and curTrans and next(curTrans) ~= nil then
 				vehicle.cp.shovelStatePositions[stage] = {
 					rot = curRot,
