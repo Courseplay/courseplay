@@ -109,6 +109,7 @@ local function initialize()
 		'BaleWrapperAIDriver',
 		'CombineAIDriver',
 		'ShovelModeAIDriver',
+		'LevelCompactAIDriver',
     'course-generator/Pathfinder',
     'course-generator/Island',
 	'course-generator/courseGenerator',

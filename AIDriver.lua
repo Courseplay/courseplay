@@ -506,6 +506,7 @@ function AIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
 	-- or stop.
+	print(string.format("AIDriver:onWaypointPassed(ix): ix: %s  numWaypoints: %s",tostring(ix),tostring(self.course:getNumberOfWaypoints())))
 	if ix == self.course:getNumberOfWaypoints() then
 		self:onLastWaypoint()
 	elseif self.course:isWaitAt(ix) then

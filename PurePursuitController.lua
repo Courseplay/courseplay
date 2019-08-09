@@ -237,7 +237,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 	local vx, vy, vz = getWorldTranslation(self.controlledNode)
 	local dx, _, dz = worldToLocal(wpNode.node, vx, vy, vz);
 	local dFromNext = MathUtil.vector2Length(dx, dz)
-	-- courseplay.debugVehicle(12, self.vehicle, 'PPC: checking %d, dz: %.1f, dFromNext: %.1f', wpNode.ix, dz, dFromNext)
+	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking %d, dz: %.1f, dFromNext: %.1f', wpNode.ix, dz, dFromNext)
 	local result = false
 	if self.course:switchingDirectionAt(wpNode.ix) then
 		-- switching direction at this waypoint, so this is pointing into the opposite direction.
