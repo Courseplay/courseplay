@@ -579,8 +579,8 @@ function courseplay:updateAllTriggers()
 				local triggerId = object.exactFillRootNode;
 				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(triggerId)), 1);
 				courseplay:cpAddTrigger(triggerId, object, 'tipTrigger');
-				courseplay.alreadyPrinted = {}
-				courseplay:printMeThisTable(object.target.productLines,0,5,"object.target.productLines")
+				--courseplay.alreadyPrinted = {}
+				--courseplay:printMeThisTable(object.target.productLines,0,5,"object.target.productLines")
 			end
 		end			
 	end
