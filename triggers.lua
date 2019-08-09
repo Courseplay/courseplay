@@ -290,9 +290,10 @@ end;
 --FIND Trailer CALLBACK
 function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 	local trailer = g_currentMission.nodeToObject[transformId];
+	local shovelFillUnits =  self.cp.shovel:getFillUnits()
+	local shovelFillType = shovelFillUnits[1].fillType
+	local shovelFillLevel = shovelFillUnits[1].fillLevel
 	if trailer~= nil and trailer.getFillUnits then
-		local shovelFillUnits =  self.cp.shovel:getFillUnits()
-		local shovelFillType = shovelFillUnits[1].fillType
 		local fillUnits = trailer:getFillUnits()
 		--print(string.format("trailer found; shovelFillType=%s ",tostring(shovelFillType)))
 		for i=1,#fillUnits do
@@ -306,8 +307,13 @@ function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 			end
 		end
 	end
-	if courseplay.triggers.tipTriggers[transformId]then
-		self.cp.shovel.targetFound = courseplay.triggers.tipTriggers[transformId];
+	local Bunker = courseplay.triggers.tipTriggers[transformId]
+	if Bunker then
+		if Bunker.unloadingStation then
+			if Bunker.unloadingStation:getFreeCapacity(shovelFillType, 1) > shovelFillLevel then
+				self.cp.shovel.targetFound = courseplay.triggers.tipTriggers[transformId];
+			end
+		end
 	end	
 	return true
 end
@@ -562,13 +568,20 @@ function courseplay:updateAllTriggers()
 		for _,object in pairs (g_currentMission.nodeToObject) do
 			if object.triggerNode ~= nil and not courseplay.triggers.all[object.triggerNode] then
 				local triggerId = object.triggerNode;
-				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject)', '',tostring(triggerId)), 1);
+				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject->triggerNode )', '',tostring(triggerId)), 1);
 				courseplay:cpAddTrigger(triggerId, object, 'fillTrigger');
 			end
 			--[[if object.baleTriggerNode ~= nil and not courseplay.triggers.all[object.baleTriggerNode] then
 				courseplay:cpAddTrigger(object.baleTriggerNode, object, 'tipTrigger');
 				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(object.baleTriggerNode, '', className), 1);
-			end]]	
+			end]]
+			if object.exactFillRootNode ~= nil and object.target and object.target.productLines and not courseplay.triggers.all[object.exactFillRootNode] then
+				local triggerId = object.exactFillRootNode;
+				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(triggerId)), 1);
+				courseplay:cpAddTrigger(triggerId, object, 'tipTrigger');
+				courseplay.alreadyPrinted = {}
+				courseplay:printMeThisTable(object.target.productLines,0,5,"object.target.productLines")
+			end
 		end			
 	end
 	
