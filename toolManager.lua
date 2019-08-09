@@ -239,6 +239,12 @@ function courseplay:hasShovel(workTool)
 		return true
 	end
 end
+function courseplay:hasLeveler(workTool) 
+	if workTool.cp.hasSpecializationLeveler then	
+		return true
+	end
+end
+
 
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
@@ -1960,6 +1966,10 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 		end
 	elseif cpModeToCheck == 9 and courseplay:hasShovel(workTool) then
 		modeValid = true;
+	
+	elseif cpModeToCheck == 10 and courseplay:hasLeveler(workTool) then
+		modeValid = true;
+
 	end
 	return modeValid ;
 end

@@ -2578,9 +2578,15 @@ function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 9)
 	self:setupShovelModeButtons(vehicle, 9)
 	self:addRowButton(vehicle,'toggleShovelStopAndGo', 9, 5, 1 )
-	
-	
 end
+
+function courseplay.hud:setLevelCompactAIDriverContent(vehicle)
+	--page10
+	self:enablePageButton(vehicle, 10)
+
+
+end
+
 
 function courseplay.hud:setBaleLoaderAIDriverContent(vehicle)
 	self:debug(vehicle,"setBaleLoaderAIDriverContent")

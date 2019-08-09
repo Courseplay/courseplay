@@ -153,12 +153,12 @@ function courseplay:start(self)
 	self.cp.isReversePossible = isReversePossible
 	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
 	
-	if self.cp.mode == 10 then 
+	--[[if self.cp.mode == 10 then 
 		if self.cp.mode10.OrigCompactScale == nil then
 			self.cp.mode10.OrigCompactScale = self.bunkerSiloCompactingScale
 			self.bunkerSiloCompactingScale = self.bunkerSiloCompactingScale*5
 		end
-	end
+	end]]
 		
 		
 	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);
@@ -657,12 +657,12 @@ function courseplay:stop(self)
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
-		if tool.cp.originalCapacities then
+		--[[if tool.cp.originalCapacities then
 			for index,fillUnit in pairs(tool.fillUnits) do
 				fillUnit.capacity =  tool.cp.originalCapacities[index]
 			end
 			tool.cp.originalCapacities = nil
-		end
+		end]]
 		if tool.fertilizerEnabled ~= nil then
 			tool.fertilizerEnabled = nil
 		end
