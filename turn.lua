@@ -371,15 +371,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 			courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), 14);
 			cpPrintLine(14, 3);
 
-			-- Rotate plow on lane change.
-			if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and vehicle.cp.toolOffsetX ~= 0 and turnContext:isHeadlandCorner() == false then
-				if vehicle.cp.toolOffsetX < 0 then
-					vehicle.cp.rotateablePlow:setRotationMax(true);
-				else
-					vehicle.cp.rotateablePlow:setRotationMax(false);
-				end;
-			end;
-
 			vehicle.cp.turnStage = 2;
 			--vehicle.cp.turnStage = 100; -- Stop the tractor (Developing Tests)
 
@@ -390,6 +381,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			-- TURN STAGES 2 - Drive Turn maneuver
 			----------------------------------------------------------
 		elseif vehicle.cp.turnStage == 2 then
+
 			if curTurnTarget then
 				if curTurnTarget.turnEnd then
 					if vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
@@ -434,8 +426,12 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 				-- Change turn waypoint
 				if dist < wpChangeDistance or forceSwitch then
-					courseplay:debug( string.format( "%s:(Turn) @( %.1f, %.1f) ix = %d/%d, distOrig = %.1f, dist = %.1f, wpChangeDistance = %.1f",
-						nameNum( vehicle ), vehicleX, vehicleZ, vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, distOrig, dist, wpChangeDistance ), 14)
+					-- raise turn progress events to turn plows
+					local progress = vehicle.cp.curTurnIndex / #vehicle.cp.turnTargets
+					vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", progress, turnContext:isLeftTurn())
+
+					courseplay:debug( string.format( "%s:(Turn) @( %.1f, %.1f) ix = %d/%d, distOrig = %.1f, dist = %.1f, wpChangeDistance = %.1f, progress = %.0f",
+						nameNum( vehicle ), vehicleX, vehicleZ, vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, distOrig, dist, wpChangeDistance, progress * 100 ), 14)
 					-- See if we have to raise/lower implements at this point
 					if vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].raiseImplement then
 						courseplay:debug( string.format( "%s:(Turn) raising implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
@@ -447,7 +443,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
 					local changeDir = ((curTurnTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not curTurnTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
 
-					-- We are still moving and want to swicth directions STOP if using MR mod. And we haven't yet stoped
+					-- We are still moving and want to switch directions STOP if using MR mod. And we haven't yet stopped
 					if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle and changeDir and not vehicle.cp.mrHasStopped then
 						allowedToDrive = false
 						-- We have finally stopped on direction. Set a flag to allow movement again
@@ -460,6 +456,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 						end;
 						vehicle.cp.curTurnIndex = nextCurTurnIndex;
 					end
+
 				end;
 
 
@@ -2443,6 +2440,10 @@ end
 
 function TurnContext:isHeadlandCorner()
 	return math.abs( self.directionChangeDeg ) < laneTurnAngleThreshold
+end
+
+function TurnContext:isLeftTurn()
+	return self.leftTurn
 end
 
 function TurnContext:setTargetNode(node)

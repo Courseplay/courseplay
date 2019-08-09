@@ -28,6 +28,7 @@ FieldworkAIDriver = CpObject(AIDriver)
 
 FieldworkAIDriver.myStates = {
 	ON_FIELDWORK_COURSE = {},
+	WORKING = {},
 	ON_UNLOAD_OR_REFILL_COURSE = {},
 	RETURNING_TO_FIRST_POINT = {},
 	UNLOAD_OR_REFILL_ON_FIELD = {},
@@ -442,6 +443,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 		if self.fieldworkState == self.states.TEMPORARY then
 			-- band aid to make sure we have our implements lowered by the time we end the
 			-- temporary course
+			-- TODO: fix this and also PlowAIDriver:startWork()
 			if ix == self.course:getNumberOfWaypoints() then
 				self:debug('temporary (alignment) course is about to end, start work')
 				self:startWork()
@@ -498,7 +500,7 @@ function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')
 	-- send the event first and _then_ lower otherwise it sometimes does not turn it on
 	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
-	self.vehicle:requestActionEventUpdate() 
+	self.vehicle:requestActionEventUpdate()
 	self:startEngineIfNeeded()
 	self:lowerImplements(self.vehicle)
 end
@@ -858,7 +860,6 @@ end
 function FieldworkAIDriver:lowerImplements()
 	for _, implement in pairs(self.vehicle:getAttachedAIImplements()) do
 		implement.object:aiImplementStartLine()
-
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
 	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then

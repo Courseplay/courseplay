@@ -103,6 +103,7 @@ local function initialize()
 		'GrainTransportAIDriver',
 		'FieldworkAIDriver',
 		'FillableFieldworkAIDriver',
+		'PlowAIDriver',
 		'UnloadableFieldworkAIDriver',
 		'BaleLoaderAIDriver',
 		'BalerAIDriver',
@@ -173,7 +174,10 @@ local function setGlobalData()
 	courseplay.NUM_MODES = 10;
 	------------------------------------------------------------
 	courseplay.SHOW_COVERS = true 
-	
+
+	courseplay.RIDGEMARKER_NONE = 0
+	courseplay.RIDGEMARKER_LEFT = 1
+	courseplay.RIDGEMARKER_RIGHT = 2
 
 	-- "start at _ point" options
 	courseplay.START_AT_NEAREST_POINT = 1;
