@@ -874,14 +874,6 @@ function overlaps( t1, t2 )
 	end
 end
 
--- ugly copy paste, should be refactored
-local ridgeMarker = {
-	none = 0,
-	left = 1,
-	right = 2
-};
-
-
 --- Add ridge markers to all up/down tracks, including the first and the last.
 -- The last one does not need it but we'll take care of that once we know 
 -- which track will really be the last one, because if we reverse the course
@@ -891,15 +883,14 @@ function addRidgeMarkers( track )
 	-- ridge markers should be on the unworked side so
 	-- just check the turn at the end of the row.
 	-- If it is a right turn then we start with the ridge marker on the right
-	local left, right = 1, 2
 	function getNextTurnDir(startIx)
 		for i = startIx, #track do
 			-- it is an up/down row if it has track number. Otherwise ignore turns
 			if track[i].trackNumber and track[i].turnStart and track[i].deltaAngle then
 				if track[i].deltaAngle >= 0 then
-					return i, right
+					return i, courseplay.RIDGEMARKER_RIGHT
 				else
-					return i, left
+					return i, courseplay.RIDGEMARKER_LEFT
 				end
 			end
 		end
@@ -917,10 +908,10 @@ function addRidgeMarkers( track )
 			-- don't use ridge markers at the first and the last row of the block as
 			-- blocks can be worked in any order and we may screw up the adjacent block
 			if track[i].trackNumber and not track[i].lastTrack and not track[i].firstTrack then
-				if turnDirection == right then
-					track[i].ridgeMarker = ridgeMarker.right
+				if turnDirection == courseplay.RIDGEMARKER_RIGHT then
+					track[i].ridgeMarker = courseplay.RIDGEMARKER_RIGHT
 				else
-					track[i].ridgeMarker = ridgeMarker.left
+					track[i].ridgeMarker = courseplay.RIDGEMARKER_LEFT
 				end
 			end
 			i = i + 1
@@ -940,16 +931,16 @@ function removeRidgeMarkersFromLastTrack( course, isReversed )
 		-- if the course is not reversed (working on headland first)
 		-- remove ridge markers from the last track
 		if not isReversed and p.lastTrack then
-			p.ridgeMarker = ridgeMarker.none
+			p.ridgeMarker = courseplay.RIDGEMARKER_NONE
 		end
 		-- if it is reversed, the first track becomes the last
 		if isReversed and p.firstTrack then
-			p.ridgeMarker = ridgeMarker.none
+			p.ridgeMarker = courseplay.RIDGEMARKER_NONE
 		end
 		-- if the previous wp is a turn end, remove
 		-- (dunno why, this is how the old course generator works)
 		if i > 1 and course[ i - 1 ].turnEnd then
-			p.ridgeMarker = ridgeMarker.none
+			p.ridgeMarker = courseplay.RIDGEMARKER_NONE
 		end
 	end
 end

@@ -58,6 +58,9 @@ function UnloadableFieldworkAIDriver.create(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) or
 		FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Combine) then
 		return CombineAIDriver(vehicle)
+	elseif SpecializationUtil.hasSpecialization(Plow, vehicle.specializations) or
+		FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Plow) then
+		return PlowAIDriver(vehicle)
 	else
 		return UnloadableFieldworkAIDriver(vehicle)
 	end
