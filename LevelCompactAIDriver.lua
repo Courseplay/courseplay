@@ -34,7 +34,8 @@ LevelCompactAIDriver = CpObject(AIDriver)
 
 LevelCompactAIDriver.myStates = {
 	DRIVE_TO_PARKING = {},
-	DRIVE_TO_SILO = {},
+	WAITIN_FOR_FREE_WAY = {},
+	CHECK_SILO = {},
 	DRIVE_IN_SILO = {}
 }
 
@@ -64,7 +65,7 @@ function LevelCompactAIDriver:start(ix)
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize(1)
-	self.state = self.states.DRIVE_TO_SILO	
+	self.levelState = self.states.DRIVE_TO_PARKING
 	
 	--get moving tools (only once after starting)
 	if self.vehicle.cp.movingToolsPrimary == nil then
@@ -79,18 +80,44 @@ function LevelCompactAIDriver:drive(dt)
 	self.ppc:update()
 	self.allowedToDrive = true
 	
-	if self.state == self.states.DRIVE_TO_SILO then
+	if self.levelState == self.states.DRIVE_TO_PARKING then
 		AIDriver.driveCourse(self, dt)
-	elseif self.state == self.states.DRIVE_IN_SILO then
-		self.allowedToDrive = false
+		
+	elseif self.levelState == self.states.WAITIN_FOR_FREE_WAY then
+		self:stopAndWait(dt)
+		
+	
+	elseif self.levelState == self.states.CHECK_SILO then
+		self:stopAndWait(dt)
 	end
 end
 
+function LevelCompactAIDriver:onWaypointPassed(ix)
+	--if  self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints)
+	if self.course:isWaitAt(ix) then
+		self.levelState = self.states.WAITIN_FOR_FREE_WAY
+	end
+	AIDriver.onWaypointPassed(self, ix)
+end
+
+function LevelCompactAIDriver:continue()
+	self.levelState = self.states.DRIVE_TO_PARKING
+end
+
+function LevelCompactAIDriver:stopAndWait(dt)
+	self:driveInDirection(dt,0,1,true,0,false)
+end
+
+function LevelCompactAIDriver:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, true, lx, lz, speed, 1)
+end
+
+
+
 function LevelCompactAIDriver:onEndCourse()
 	self.ppc:initialize(1)
-	print("change state to DRIVE_IN_SILO")
-	self.state = self.states.DRIVE_IN_SILO
-
+	print("change state to CHECK_SILO")
+	self.levelState = self.states.CHECK_SILO
 end
 
 function LevelCompactAIDriver:updateLastMoveCommandTime()
@@ -110,7 +137,13 @@ function LevelCompactAIDriver:findNextRevWaypoint(currentPoint)
 end
 
 function LevelCompactAIDriver:getSpeed()
-	return self.refSpeed
+	local speed = 0
+	if self.levelState == self.states.DRIVE_TO_PARKING then
+		speed = AIDriver.getRecordedSpeed(self)
+	else
+		speed = self.refSpeed
+	end	
+	return speed
 end
 
 function LevelCompactAIDriver:debug(...)

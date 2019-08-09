@@ -506,14 +506,13 @@ function AIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
 	-- or stop.
-	print(string.format("AIDriver:onWaypointPassed(ix): ix: %s  numWaypoints: %s",tostring(ix),tostring(self.course:getNumberOfWaypoints())))
 	if ix == self.course:getNumberOfWaypoints() then
 		self:onLastWaypoint()
 	elseif self.course:isWaitAt(ix) then
 		-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
 		-- passed stop until the user presses the continue button or the timer elapses
 		self:debug('Waiting point reached, wait time %d s', self.vehicle.cp.waitTime)
-		self:stop('WAIT_POINT')
+		self:stop('WAIT_POINT')		
 		-- show continue button
 		self:refreshHUD()
 	end
