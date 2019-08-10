@@ -636,9 +636,8 @@ end
 
 function AIDriver:onTurnEnd()
 	self.turnIsDriving = false
-	-- for now, we rely on turn.lua to set the next waypoint at the end of the turn and
-	self.ppc:initialize()
-	self:debug('Turn ended, continue at waypoint %d.', self.ppc:getCurrentWaypointIx())
+	self:debug('Turn ended, continue at waypoint %d.', self.turnContext.turnEndWpIx)
+	self.ppc:initialize(self.turnContext.turnEndWpIx)
 end
 
 ---@param course Course

@@ -418,6 +418,10 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			end
 		end
 	end
+	-- Reset lookahead distance if we are past a turn
+	if not self.course:isTurnEndAtIx(ix) then
+		self.ppc:setNormalLookaheadDistance()
+	end
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
 	-- or stop.
 	if ix == self.course:getNumberOfWaypoints() then
@@ -946,6 +950,10 @@ end
 
 function FieldworkAIDriver:startTurn(ix)
 	self:setMarkers()
+	-- set a short lookahead distance for PPC to increase accuracy, especially after switching back from
+	-- turn.lua. That often happens too early (when lowering the implement) when we still have a crosstrack error,
+	-- this should help returning to the course faster.
+	self.ppc:setShortLookaheadDistance()
 	AIDriver.startTurn(self, ix)
 end
 

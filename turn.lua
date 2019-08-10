@@ -534,15 +534,9 @@ function courseplay:turn(vehicle, dt, turnContext)
 			if vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
 				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
 				vehicle.cp.driver:lowerImplements()
-				--courseplay:addTemporaryMarker(vehicle, vehicle.cp.driver.frontMarker:getNode())
 
 				vehicle.cp.isTurning = nil;
 
-				-- move on to the turnEnd (targetNode)
-				courseplay:setWaypointIndex(vehicle, turnContext.turnEndWp.cpIndex);
-				-- and then to the next wp in front of us.
-				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-				--vehicle.cp.ppc:initialize()
 				if vehicle.cp.driver then
 					vehicle.cp.driver:onTurnEnd()
 				end
@@ -596,13 +590,9 @@ function courseplay:turn(vehicle, dt, turnContext)
 			if vehicle.cp.driver.shouldLowerImplements and vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
 				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
 				vehicle.cp.driver:lowerImplements()
-				--courseplay:addTemporaryMarker(vehicle, vehicle.cp.driver.frontMarker:getNode())
 
 				vehicle.cp.isTurning = nil;
 
-				courseplay:setWaypointIndex(vehicle, turnContext.turnEndWp.cpIndex);
-				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-				--vehicle.cp.ppc:initialize()
 				if vehicle.cp.driver then
 					vehicle.cp.driver:onTurnEnd()
 				end
