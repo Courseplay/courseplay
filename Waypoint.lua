@@ -660,11 +660,11 @@ function Course:getNextFwdWaypointIx(ix)
 	return ix
 end
 
-function Course:getNextFwdWaypointIxFromVehiclePosition(ix,vehicle,lookAheadDistance)
+function Course:getNextFwdWaypointIxFromVehiclePosition(ix, vehicleNode, lookAheadDistance)
 	for i = ix, #self.waypoints do
 		if not self:isReverseAt(i) then
-			local uX,uY,uZ = self:getWaypointPosition(i)
-			_,_,z = worldToLocal(vehicle.cp.DirectionNode, uX,uY,uZ);
+			local uX, uY, uZ = self:getWaypointPosition(i)
+			local _, _, z = worldToLocal(vehicleNode, uX, uY, uZ);
 			if z > lookAheadDistance then
 				return i
 			end
