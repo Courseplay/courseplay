@@ -214,7 +214,7 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 	end
 end
 
-function CombineAIDriver:onNextCourse()
+function CombineAIDriver:onNextCourse(ix)
 	if self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
 		if self.fieldWorkUnloadOrRefillState == self.states.PULLING_BACK_FOR_UNLOAD then
 			-- pulled back, now wait for unload
@@ -231,6 +231,9 @@ function CombineAIDriver:onNextCourse()
 		end
 	elseif self.fieldworkState == self.states.TURNING then
 		self.ppc:setNormalLookaheadDistance()
+		-- make sure the next waypoint is in front of us. It can be behind us after a turn with multitools where the
+		-- x offset is high (wide tools)
+		self.ppc:initialize(self.course:getNextFwdWaypointIxFromVehiclePosition(ix, self:getDirectionNode(), 0))
 		UnloadableFieldworkAIDriver.onNextCourse(self)
 	else
 		UnloadableFieldworkAIDriver.onNextCourse(self)
@@ -447,7 +450,6 @@ function CombineAIDriver:startTurn(ix)
 		return UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
 	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
-	cornerCourse:print()
 	if cornerCourse then
 		self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
 			cornerCourse:getNumberOfWaypoints(), nextIx)
@@ -478,9 +480,9 @@ function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
 	local cornerWaypoints = {}
 	local turnRadius = self.vehicle.cp.turnDiameter / 2
 	local offset = turnRadius * 0.25
-	-- (copy only the coordinates instead of reference turnStatWp so no attributes like turnStart is inherited
-	table.insert(cornerWaypoints, {x = turnContext.turnStartWp.x, z = turnContext.turnStartWp.z})
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)
+	local wp = corner:getPointAtDistanceFromCornerStart(self.vehicle.cp.workWidth / 2)
+	table.insert(cornerWaypoints, wp)
 	-- drive forward up to the headland edge
 	local wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2)
 	table.insert(cornerWaypoints, wp)

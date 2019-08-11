@@ -531,7 +531,7 @@ end
 function AIDriver:continueOnNextCourse(nextCourse, nextWpIx)
 	self:startCourse(nextCourse, nextWpIx)
 	self:debug('Starting next course at waypoint %d', nextWpIx)
-	self:onNextCourse()
+	self:onNextCourse(nextWpIx)
 end
 
 --- When stopped at a wait point, check if the waiting time is over
@@ -636,9 +636,8 @@ end
 
 function AIDriver:onTurnEnd()
 	self.turnIsDriving = false
-	-- for now, we rely on turn.lua to set the next waypoint at the end of the turn and
-	self.ppc:initialize()
-	self:debug('Turn ended, continue at waypoint %d.', self.ppc:getCurrentWaypointIx())
+	self:debug('Turn ended, continue at waypoint %d.', self.turnContext.turnEndWpIx)
+	self.ppc:initialize(self.turnContext.turnEndWpIx)
 end
 
 ---@param course Course
@@ -832,10 +831,8 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				--do the driving here because if we initalize the ppc, we dont have the unload point anymore
 				if self.pullForward then
 					takeOverSteering = true
-					local fwdWayoint = self.course:getNextFwdWaypointIxFromVehiclePosition(unloadPointIx,self.vehicle,self.ppc:getLookaheadDistance())
-					local x,y,z = self.course:getWaypointPosition(fwdWayoint)
-					--local x,z = vehicle.Waypoints[fwdWayoint].cx, vehicle.Waypoints[fwdWayoint].cz;
-					--local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+					local fwdWaypoint = self.course:getNextFwdWaypointIxFromVehiclePosition(unloadPointIx, self:getDirectionNode(), self.ppc:getLookaheadDistance())
+					local x,y,z = self.course:getWaypointPosition(fwdWaypoint)
 					local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
 					AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
 				end

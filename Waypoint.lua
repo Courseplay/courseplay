@@ -356,6 +356,10 @@ function Course:isTurnStartAtIx(ix)
 	return self.waypoints[ix].turnStart
 end
 
+function Course:isTurnEndAtIx(ix)
+	return self.waypoints[ix].turnEnd
+end
+
 --- Is this waypoint on a connecting track, that is, a transfer path between
 -- a headland and the up/down rows where there's no fieldwork to do.
 function Course:isOnConnectingTrack(ix)
@@ -656,11 +660,11 @@ function Course:getNextFwdWaypointIx(ix)
 	return ix
 end
 
-function Course:getNextFwdWaypointIxFromVehiclePosition(ix,vehicle,lookAheadDistance)
+function Course:getNextFwdWaypointIxFromVehiclePosition(ix, vehicleNode, lookAheadDistance)
 	for i = ix, #self.waypoints do
 		if not self:isReverseAt(i) then
-			local uX,uY,uZ = self:getWaypointPosition(i)
-			_,_,z = worldToLocal(vehicle.cp.DirectionNode, uX,uY,uZ);
+			local uX, uY, uZ = self:getWaypointPosition(i)
+			local _, _, z = worldToLocal(vehicleNode, uX, uY, uZ);
 			if z > lookAheadDistance then
 				return i
 			end
