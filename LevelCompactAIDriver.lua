@@ -68,7 +68,7 @@ function LevelCompactAIDriver:start(ix)
 	
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)
 	self.ppc:setCourse(self.course)
-	self.ppc:initialize(1)
+	self.ppc:initialize()
 	self:changeLevelState(self.states.DRIVE_TO_PARKING)
 	self.fillUpState = self.states.PUSH
 
@@ -220,6 +220,7 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 		if self:isAtEnd() 
 		or self:lastLineFillLevelChanged()
 		or self:isStuck()
+		or self:hasShieldEmpty()
 		then
 			if self:shouldGoToSavePosition() then
 				self:changeLevelState(self.states.DRIVE_TO_PARKING)
@@ -341,6 +342,23 @@ function LevelCompactAIDriver:isStuck()
 
 end
 
+function LevelCompactAIDriver:hasShieldEmpty()
+	--return self.vehicle.cp.workTools[1]:getFillUnitFillLevel(1) < 100 and self.bestTarget.line > self.firstLine
+	if self.vehicle.cp.workTools[1]:getFillUnitFillLevel(1) < 100 then
+		if self.vehicle.cp.timers.bladeEmpty == nil or self.vehicle.cp.timers.bladeEmpty == 0 then
+			print("setTimer")
+			courseplay:setCustomTimer(self.vehicle, 'bladeEmpty', 2);
+		elseif courseplay:timerIsThrough(self.vehicle, 'bladeEmpty') and self.bestTarget.line > self.firstLine+1 then 
+			courseplay:resetCustomTimer(self.vehicle, 'bladeEmpty');
+			print("dropout bladeEmpty")
+			return true
+		end;
+	else
+		courseplay:resetCustomTimer(self.vehicle, 'bladeEmpty');
+	end	
+
+end
+
 function LevelCompactAIDriver:updateTarget()
 	local targetUnit = self.vehicle.cp.BunkerSiloMap[self.bestTarget.line][self.bestTarget.column]
 	local cx ,cz = targetUnit.cx, targetUnit.cz
@@ -454,13 +472,15 @@ function LevelCompactAIDriver:moveShield(moveUp,dt,fixAlpha)
 		local spec = leveler.spec_attacherJointControl
 		local jointDesc = spec.jointDesc
 		if moveUp == "down" then
+			
 			--move attacherJoint down
 			if spec.heightController.moveAlpha ~= jointDesc.lowerAlpha then
 				spec.heightTargetAlpha = jointDesc.lowerAlpha
-				_, self.savedHeightOverGround,_  = getWorldTranslation(self.vehicle.cp.DirectionNode)
+				_, self.savedHeightOverGround,_  = getWorldTranslation(self.vehicle.cp.DirectionNode) --(jointDesc.rotationNode2)
 			else
 				--tilt attacherJoint till Shield touches ground
-				local _,newHeightOverGround,_ = getWorldTranslation(self.vehicle.cp.DirectionNode)
+				local _, newHeightOverGround,_  = getWorldTranslation(self.vehicle.cp.DirectionNode) --(jointDesc.rotationNode2)
+				
 				if newHeightOverGround > self.savedHeightOverGround + 0.05 then
 					moveFinished = true
 				else
