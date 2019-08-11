@@ -1311,6 +1311,55 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					
 					vehicle.cp.hud.content.pages[page][6][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
 					vehicle.cp.hud.content.pages[page][6][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
+				
+				elseif entry.functionToCall == 'toggleMode10Mode' then
+					vehicle.cp.hud.content.pages[10][1][1].text = courseplay:loc('COURSEPLAY_MODE10_MODE');
+					vehicle.cp.hud.content.pages[10][2][1].text = courseplay:loc('COURSEPLAY_MODE10_SEARCH_MODE');
+					
+				elseif entry.functionToCall == 'toggleMode10SearchMode' then
+					if vehicle.cp.mode10.searchCourseplayersOnly then
+						vehicle.cp.hud.content.pages[10][2][2].text = courseplay:loc('COURSEPLAY_MODE10_SEARCH_MODE_CP');
+					else
+						vehicle.cp.hud.content.pages[10][2][2].text = courseplay:loc('COURSEPLAY_MODE10_SEARCH_MODE_ALL');
+					end
+		
+				elseif entry.functionToCall == 'changeMode10Radius' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_MODE10_SEARCHRADIUS');
+					vehicle.cp.hud.content.pages[page][line][2].text = ('%i%s'):format(vehicle.cp.mode10.searchRadius, courseplay:loc('COURSEPLAY_UNIT_METER'));
+					
+				elseif entry.functionToCall == 'changeBladeWorkWidth' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_MODE10_BLADE_WIDTH');
+					vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s'):format(vehicle.cp.workWidth, courseplay:loc('COURSEPLAY_UNIT_METER'));
+				
+				elseif entry.functionToCall == 'changeBunkerSpeed' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_MODE10_MAX_BUNKERSPEED');
+					if vehicle.cp.mode10.automaticSpeed and vehicle.cp.mode10.leveling then
+						vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_AUTOMATIC');
+					else		
+						vehicle.cp.hud.content.pages[page][line][2].text = ('%i %s'):format(vehicle.cp.speeds.bunkerSilo, courseplay:getSpeedMeasuringUnit());
+					end
+				
+				elseif entry.functionToCall == 'changeShieldHeight' then
+					if vehicle.cp.mode10.leveling then
+						vehicle.cp.hud.content.pages[10][6][1].text = courseplay:loc('COURSEPLAY_MODE10_BLADE_HEIGHT');
+						if vehicle.cp.mode10.automaticHeigth then
+							vehicle.cp.hud.content.pages[10][6][2].text = courseplay:loc('COURSEPLAY_AUTOMATIC');
+						else
+							vehicle.cp.hud.content.pages[10][6][2].text = ('%.1f%s'):format(vehicle.cp.mode10.shieldHeight, courseplay:loc('COURSEPLAY_UNIT_METER'));
+						end
+						vehicle.cp.hud.content.pages[10][1][2].text = courseplay:loc('COURSEPLAY_MODE10_MODE_LEVELING');
+						vehicle.cp.hud.content.pages[10][7][1].text = courseplay:loc('COURSEPLAY_MODE10_SILO_LOADEDBY');
+						if vehicle.cp.mode10.drivingThroughtLoading then
+							vehicle.cp.hud.content.pages[10][7][2].text = courseplay:loc('COURSEPLAY_MODE10_DRIVINGTHROUGH');
+						else
+							vehicle.cp.hud.content.pages[10][7][2].text = courseplay:loc('COURSEPLAY_MODE10_REVERSE_UNLOADING');
+						end
+					else
+						vehicle.cp.hud.content.pages[10][1][2].text = courseplay:loc('COURSEPLAY_MODE10_MODE_BUILDUP');
+					end
+				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
+				
+				
 				end
 			end		
 		end
@@ -2584,6 +2633,14 @@ function courseplay.hud:setLevelCompactAIDriverContent(vehicle)
 	--page10
 	self:enablePageButton(vehicle, 10)
 
+	self:addRowButton(vehicle,'toggleMode10Mode', 10, 1, 1)
+	self:addRowButton(vehicle,'toggleMode10SearchMode', 10, 2, 1)
+	self:addSettingsRow(vehicle,'changeMode10Radius', 10, 3, 1 )
+	self:addSettingsRow(vehicle,'changeBladeWorkWidth', 10, 4, 1 )
+	self:setupCalculateWorkWidthButton(vehicle,10, 4)
+	self:addSettingsRow(vehicle,'changeBunkerSpeed', 10, 5, 1 )
+	self:addSettingsRow(vehicle,'changeShieldHeight', 10, 6, 1 )
+	self:addRowButton(vehicle,'toggleMode10drivingThroughtLoading', 10, 7, 1)
 
 end
 

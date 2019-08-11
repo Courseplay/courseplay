@@ -228,7 +228,7 @@ function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
 			local bx = sx + (widthLengthX/2) + (heightLengthX/2)  
 			local bz = sz + (widthLengthZ/2) + (heightLengthZ/2)
 			local offset = 0
-			if vehicle.cp.mode9TargetSilo.type and vehicle.cp.mode9TargetSilo.type == "heap" then
+			if vehicle.cp.mode9TargetSilo and vehicle.cp.mode9TargetSilo.type and vehicle.cp.mode9TargetSilo.type == "heap" then
 				offset = unitWidth/2
 			else
 				if widthIndex == 1 then
