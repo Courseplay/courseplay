@@ -386,6 +386,9 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 
 end;
 
+function courseplay:changeBladeWorkWidth(vehicle, changeBy, force, noDraw)
+	courseplay:changeWorkWidth(vehicle, changeBy/10, force, noDraw)
+end
 
 function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	local isSetManually = false

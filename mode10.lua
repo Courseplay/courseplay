@@ -277,22 +277,7 @@ function courseplay:handleMode10(vehicle,allowedToDrive,lx,lz, dt)
 			--check the target where to go next
 
 			
-			if distance2Target < 1 then
-				vehicle.cp.actualTarget.line = math.min(vehicle.cp.actualTarget.line + 1,#vehicle.cp.BunkerSiloMap)
-				if vehicle.cp.mode10.bladeOffset == 0 then
-					vehicle.cp.mode10.bladeOffset = courseplay:round( shouldBHeight-currentHeight,2)
-				end						
-				if vehicle.cp.actualTarget.line == #vehicle.cp.BunkerSiloMap then
-					targetUnit = vehicle.cp.BunkerSiloMap[vehicle.cp.actualTarget.line][vehicle.cp.actualTarget.column]
-					cx ,cz = targetUnit.cx, targetUnit.cz
-					cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
-					if leveled then
-						distance2Target =  courseplay:distanceToPoint(vehicle, cx, cy, cz)
-					else
-						distance2Target =  courseplay:distance(x,z, cx, cz)
-					end
-				end
-			end
+			
 			
 			local is2Heigh = (y-ty > 4 and not vehicle.cp.mode10.leveling)
 			local isAtEnd = (vehicle.cp.actualTarget.line == #vehicle.cp.BunkerSiloMap and distance2Target < math.max((shouldBHeight*1.74),1))--1)
@@ -515,10 +500,10 @@ function courseplay:moveShield(vehicle,moveUp,dt,fixAlpha)
 	end;
 end
 
-function courseplay:getActualTarget(vehicle)
+function courseplay:getActualTarget(vehicle,Silo)
 	--print(string.format("courseplay:getActualTarget(vehicle) called by %s",tostring(courseplay.utils:getFnCallPath(3))))
 	local newApproach = vehicle.cp.actualTarget == nil or vehicle.cp.mode10.newApproach
-		
+	vehicle.cp.mode9TargetSilo = Silo
 	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, vehicle.cp.mode9TargetSilo)
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local stopSearching = false

@@ -49,8 +49,8 @@ function courseplay:start(self)
 	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
-	courseplay.alreadyPrinted = {}
-	--courseplay:printMeThisTable(g_currentMission,0,5,"g_currentMission")
+	--courseplay.alreadyPrinted = {}
+	--courseplay:printMeThisTable(self:getAttachedImplements()[1].object.spec_attacherJointControl,0,5,"self.attachedImplements[1].object")
 	
 	--[[Tommi Todo Whx is this here ???
 	if self.cp.orgRpm == nil then
@@ -657,12 +657,12 @@ function courseplay:stop(self)
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
-		--[[if tool.cp.originalCapacities then
-			for index,fillUnit in pairs(tool.fillUnits) do
+		if tool.cp.originalCapacities then
+			for index,fillUnit in pairs(tool:getFillUnits()) do
 				fillUnit.capacity =  tool.cp.originalCapacities[index]
 			end
 			tool.cp.originalCapacities = nil
-		end]]
+		end
 		if tool.fertilizerEnabled ~= nil then
 			tool.fertilizerEnabled = nil
 		end
