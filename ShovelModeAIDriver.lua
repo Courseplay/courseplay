@@ -120,6 +120,10 @@ function ShovelModeAIDriver:start(ix)
 end
 
 function ShovelModeAIDriver:drive(dt)
+	if not self:checkShovelPositionsValid() or not self:checkWaypointsValid() then
+		return
+	end
+	
 	-- update current waypoint/goal point
 	self.ppc:update()
 	local lx, lz = 0,0
@@ -137,7 +141,7 @@ function ShovelModeAIDriver:drive(dt)
 	
 	-- STATE 1: DRIVE TO BUNKER SILO (1st waiting point)
 	if vehicle.cp.shovelState == self.STATE_GOTO_SILO then
-		self.refSpeed = self.vehicle.cp.speeds.street
+		self.refSpeed = AIDriver.getRecordedSpeed(self)
 		if self.ppc:getCurrentWaypointIx() + 1 > vehicle.cp.shovelFillStartPoint then
 			if courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[2], dt) then
 				self:setShovelState(vehicle, self.STATE_GOINTO_SILO);
@@ -271,7 +275,7 @@ function ShovelModeAIDriver:drive(dt)
 		return
 	-- STATE 3: TRANSPORT TO BGA
 	elseif vehicle.cp.shovelState == self.STATE_TRANSPORT then
-		self.refSpeed = self.vehicle.cp.speeds.street
+		self.refSpeed = AIDriver.getRecordedSpeed(self)
 		local p = vehicle.cp.shovelFillStartPoint
 		local _,y,_ = getWorldTranslation(vehicle.cp.DirectionNode);
 		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[p].cx ,y, vehicle.Waypoints[p].cz); 
@@ -373,7 +377,7 @@ function ShovelModeAIDriver:drive(dt)
 		
 	-- STATE 7: RETURN FROM BGA TO START POINT
 	elseif vehicle.cp.shovelState == self.STATE_GO_BACKTO_START then
-		self.refSpeed = self.vehicle.cp.speeds.street
+		self.refSpeed = AIDriver.getRecordedSpeed(self)
 		courseplay:handleSpecialTools(vehicle,vehicle,false,nil,nil,nil,nil,nil);
 		courseplay:checkAndSetMovingToolsPosition(vehicle, mt, secondary, vehicle.cp.shovelStatePositions[3], dt);
 		self:updateLastMoveCommandTime()
@@ -389,6 +393,22 @@ function ShovelModeAIDriver:drive(dt)
 	
 	AIDriver.driveCourse(self, dt)
 		
+end
+
+function ShovelModeAIDriver:checkShovelPositionsValid()
+	if self.vehicle.cp.shovelStatePositions == nil or self.vehicle.cp.shovelStatePositions[2] == nil or self.vehicle.cp.shovelStatePositions[3] == nil or self.vehicle.cp.shovelStatePositions[4] == nil or self.vehicle.cp.shovelStatePositions[5] == nil then
+			courseplay:setInfoText(self.vehicle, 'COURSEPLAY_SHOVEL_POSITIONS_MISSING');
+			return false;
+	end
+	return true
+end
+
+function ShovelModeAIDriver:checkWaypointsValid()
+	if self.vehicle.cp.shovelFillStartPoint == nil or self.vehicle.cp.shovelFillEndPoint == nil or self.vehicle.cp.shovelEmptyPoint == nil then
+		courseplay:setInfoText(self.vehicle, 'COURSEPLAY_NO_VALID_COURSE');
+		return false;
+	end;
+	return true
 end
 
 function ShovelModeAIDriver:checkLastWaypoint()
@@ -419,7 +439,6 @@ end
 function ShovelModeAIDriver:onWaypointPassed(ix)
 	-- nothing for now
 end
-
 
 function ShovelModeAIDriver:getSpeed()
 	return self.refSpeed
