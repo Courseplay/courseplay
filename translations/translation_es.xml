@@ -391,9 +391,9 @@
 		<text name="COURSEPLAY_FillType_Molasses"							text="Melaza" />
 
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="No instalado" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="No usar" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Para descargar/cargar" />
 
 	</texts>
 </l10n>
