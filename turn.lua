@@ -428,7 +428,10 @@ function courseplay:turn(vehicle, dt, turnContext)
 				if dist < wpChangeDistance or forceSwitch then
 					-- raise turn progress events to turn plows
 					local progress = vehicle.cp.curTurnIndex / #vehicle.cp.turnTargets
-					vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", progress, turnContext:isLeftTurn())
+
+					if turnContext then
+						vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", progress, turnContext:isLeftTurn())
+					end
 
 					courseplay:debug( string.format( "%s:(Turn) @( %.1f, %.1f) ix = %d/%d, distOrig = %.1f, dist = %.1f, wpChangeDistance = %.1f, progress = %.0f",
 						nameNum( vehicle ), vehicleX, vehicleZ, vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, distOrig, dist, wpChangeDistance, progress * 100 ), 14)
