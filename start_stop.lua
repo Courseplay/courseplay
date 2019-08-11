@@ -50,7 +50,7 @@ function courseplay:start(self)
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 	--courseplay.alreadyPrinted = {}
-	--courseplay:printMeThisTable(self:getAttachedImplements()[1].object.spec_attacherJointControl,0,5,"self.attachedImplements[1].object")
+	--courseplay:printMeThisTable(self:getAttachedImplements()[1].object.spec_attacherJointControl,0,5,"self.attachedImplements[1].object") 
 	
 	--[[Tommi Todo Whx is this here ???
 	if self.cp.orgRpm == nil then
