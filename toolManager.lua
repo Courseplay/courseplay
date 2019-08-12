@@ -1432,7 +1432,7 @@ function courseplay:resetFillTrigger(vehicle)
 		end
 		--setting the next fwd waypoint for reverse filling. should not cause problems in fwd filling. if it does, find an other way 
 		local driver = vehicle.cp.driver
-		driver.ppc:initialize(driver.course:getNextFwdWaypointIxFromVehiclePosition(driver.ppc:getCurrentWaypointIx(),vehicle,driver.ppc:getLookaheadDistance()));
+		driver.ppc:initialize(driver.course:getNextFwdWaypointIxFromVehiclePosition(driver.ppc:getCurrentWaypointIx(),vehicle.cp.DirectionNode,driver.ppc:getLookaheadDistance()));
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end
@@ -1490,6 +1490,15 @@ function courseplay:getOnlyPossibleFillType(vehicle,workTool,fillTrigger)
 		end
 		if counter == 1 and fillTrigger.source.providedFillTypes[lastCheckedFillType] then
 			return lastCheckedFillType
+		end
+		if fillTrigger.isGlobalCompanyFillTrigger and counter == 1 then
+			for _,subProvidedFillTypes in pairs (fillTrigger.source.providedFillTypes) do
+				if type(subProvidedFillTypes)=='table' then
+					if subProvidedFillTypes[lastCheckedFillType] then
+						return lastCheckedFillType
+					end
+				end			
+			end	
 		end
 	end
 end

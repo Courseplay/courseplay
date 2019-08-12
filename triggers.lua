@@ -575,16 +575,36 @@ function courseplay:updateAllTriggers()
 				courseplay:cpAddTrigger(object.baleTriggerNode, object, 'tipTrigger');
 				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(object.baleTriggerNode, '', className), 1);
 			end]]
-			if object.exactFillRootNode ~= nil and object.target and object.target.productLines and not courseplay.triggers.all[object.exactFillRootNode] then
-				local triggerId = object.exactFillRootNode;
-				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(triggerId)), 1);
-				courseplay:cpAddTrigger(triggerId, object, 'tipTrigger');
-				--courseplay.alreadyPrinted = {}
-				--courseplay:printMeThisTable(object.target.productLines,0,5,"object.target.productLines")
-			end
 		end			
 	end
 	
+	if g_company and g_company.loadedFactories then
+		courseplay:debug('   check globalCompany mod', 1);
+		for i=1,#g_company.loadedFactories do
+			local factory = g_company.loadedFactories[i];
+			if factory.registeredUnloadingTriggers then
+				for name, unloadingTrigger in pairs (factory.registeredUnloadingTriggers) do
+					--print(string.format("registeredTriggers: %s : %s",tostring(name),tostring(unloadingTrigger)));
+					if unloadingTrigger.trigger and unloadingTrigger.trigger.exactFillRootNode then
+						--courseplay:printMeThisTable(unloadingTrigger.trigger,0,5,"trigger")
+						unloadingTrigger.trigger.triggerId = unloadingTrigger.trigger.exactFillRootNode;
+						unloadingTrigger.trigger.acceptedFillTypes = unloadingTrigger.trigger.fillTypes
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(unloadingTrigger.trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(unloadingTrigger.trigger.triggerId, unloadingTrigger.trigger, 'tipTrigger');
+					end				
+				end
+				for name, loadingTrigger in pairs (factory.registeredLoadingTriggers) do
+					--print(string.format("registeredTriggers: %s : %s",tostring(name),tostring(loadingTrigger)));
+					if loadingTrigger.trigger and loadingTrigger.trigger.triggerNode then
+						loadingTrigger.trigger.triggerId = loadingTrigger.trigger.triggerNode;
+						loadingTrigger.trigger.isGlobalCompanyFillTrigger = true
+						courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(loadingTrigger.trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(loadingTrigger.trigger.triggerId, loadingTrigger.trigger, 'fillTrigger');
+					end	
+				end
+			end
+		end	
+	end	
 end;
 
 function courseplay:cpAddTrigger(triggerId, trigger, groupType)
