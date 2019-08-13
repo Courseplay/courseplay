@@ -643,7 +643,7 @@ end;
 --------------------------------------------------
 -- Adding easy access to SiloTrigger
 --------------------------------------------------
-local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+courseplay.SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	courseplay:debug(' SiloTrigger_TriggerCallback',2);
 	local trailer = g_currentMission.nodeToObject[otherShapeId];
 	if trailer ~= nil then
@@ -672,7 +672,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 		end;
 	end;
 end;
-LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, SiloTrigger_TriggerCallback);
+LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, courseplay.SiloTrigger_TriggerCallback);
 
 -- this could be used to fill sowing machines, but better may be a better way to find out what Vehicle.addFillUnitTrigger() does.
 local cpFillTriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
