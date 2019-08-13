@@ -1488,17 +1488,8 @@ function courseplay:getOnlyPossibleFillType(vehicle,workTool,fillTrigger)
 			counter = counter+1
 			lastCheckedFillType = fillType
 		end
-		if counter == 1 and fillTrigger.source.providedFillTypes[lastCheckedFillType] then
+		if counter == 1 and courseplay:getLoadTriggerProvidedFillTypeValid(fillTrigger, lastCheckedFillType) then
 			return lastCheckedFillType
-		end
-		if fillTrigger.isGlobalCompanyFillTrigger and counter == 1 then
-			for _,subProvidedFillTypes in pairs (fillTrigger.source.providedFillTypes) do
-				if type(subProvidedFillTypes)=='table' then
-					if subProvidedFillTypes[lastCheckedFillType] then
-						return lastCheckedFillType
-					end
-				end			
-			end	
 		end
 	end
 end

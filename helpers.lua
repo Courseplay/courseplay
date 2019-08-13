@@ -308,22 +308,10 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 								end	
 							end
 						end
-						if fillTrigger.isGlobalCompanyFillTrigger then
-							--bad hack for globalCompany mod. the real provided types are sub of the inputTypes 	e.g. providedFillTypes[3(Barley)].13(seed) = true						
-							for subIndex,subSource in pairs (fillTrigger.source.providedFillTypes) do
-								if type(subSource)== 'table' then
-									if subSource[index] then						
-										typesMatch = true
-										matchInThisUnit =true
-									end
-								end						
-							end						
-						else
-							if fillTrigger.source.providedFillTypes[index] then						
-								typesMatch = true
-								matchInThisUnit =true
-							end
-						end						
+						if courseplay:getLoadTriggerProvidedFillTypeValid(fillTrigger, index) then
+							typesMatch = true
+							matchInThisUnit =true
+						end
 					end
 					--fillTriggers
 					if fillTrigger.sourceObject ~= nil then
@@ -345,7 +333,7 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 					end
 				end
 				if matchInThisUnit and selectedFillTypeIsNotInMyFillUnit then
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(348): return true')
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(336): return true')
 					return true;
 				end
 			end
@@ -357,21 +345,35 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 			else
 				courseplay.debugVehicle(19,vehicle,'fillTypesMatch: selectedFillType:%d',selectedFillType)
 				if fillTrigger.source then
-					local result = fillTrigger.source.providedFillTypes[selectedFillType] or false;
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(361): return %s',tostring(result))
+					local result = courseplay:getLoadTriggerProvidedFillTypeValid(fillTrigger, selectedFillType) or false;
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(349): return %s',tostring(result))
 					return result;
 				elseif fillTrigger.sourceObject ~= nil then
 					local fillType = fillTrigger.sourceObject:getFillUnitFillType(1)  
 					local result = fillType == selectedFillType;
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(366): return %s',tostring(result))
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(354): return %s',tostring(result))
 					return result;
 				end
 			end		
 		end
 	end
-	courseplay.debugVehicle(19,vehicle,'fillTypesMatch(372): return false')
+	courseplay.debugVehicle(19,vehicle,'fillTypesMatch(360): return false')
 	return false;
 end;
+
+function courseplay:getLoadTriggerProvidedFillTypeValid(trigger, fillType)
+	--bad hack for globalCompany mod.  providedFillTypes has a sub structure there
+	if trigger.isGlobalCompanyFillTrigger then
+		for _,subProvidedFillTypes in pairs (trigger.source.providedFillTypes) do
+			if type(subProvidedFillTypes)=='table' then
+				return subProvidedFillTypes[fillType]
+			end			
+		end	
+	else
+		return trigger.source.providedFillTypes[fillType]
+	end
+end
+
 
 -- by horoman
 courseplay.utils.table = {}
