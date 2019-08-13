@@ -582,7 +582,24 @@ function courseplay:updateAllTriggers()
 		courseplay:debug('   check globalCompany mod', 1);
 		for i=1,#g_company.loadedFactories do
 			local factory = g_company.loadedFactories[i];
-			if factory.registeredUnloadingTriggers then
+			if factory.triggerManager then
+				courseplay:debug(string.format('    factory %d:',i), 1);
+				for index, trigger in pairs (factory.triggerManager.registeredTriggers) do
+					if trigger.exactFillRootNode then
+						trigger.triggerId = trigger.exactFillRootNode;
+						trigger.acceptedFillTypes = trigger.fillTypes
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+					end	
+					if trigger.triggerNode then
+						trigger.triggerId = trigger.triggerNode;
+						trigger.isGlobalCompanyFillTrigger = true
+						courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(trigger.triggerId, trigger, 'fillTrigger');
+					end
+				end
+			end
+			--[[if factory.registeredUnloadingTriggers then
 				for name, unloadingTrigger in pairs (factory.registeredUnloadingTriggers) do
 					--print(string.format("registeredTriggers: %s : %s",tostring(name),tostring(unloadingTrigger)));
 					if unloadingTrigger.trigger and unloadingTrigger.trigger.exactFillRootNode then
@@ -602,9 +619,9 @@ function courseplay:updateAllTriggers()
 						courseplay:cpAddTrigger(loadingTrigger.trigger.triggerId, loadingTrigger.trigger, 'fillTrigger');
 					end	
 				end
-			end
+			end]]
 		end	
-	end	
+	end
 end;
 
 function courseplay:cpAddTrigger(triggerId, trigger, groupType)
