@@ -282,7 +282,7 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 			self:foldImplements()
 			self.state = self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
 			self:debug('passing the control to AutoDrive to run the unload/refill course.')
-			self.vehicle.spec_autodrive:StartDriving(self.vehicle, self.vehicle.ad.mapMarkerSelected, self.vehicle.ad.mapMarkerSelected_Unload, self, FieldworkAIDriver.onEndCourse, nil);
+			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, self.vehicle.ad.mapMarkerSelected_Unload, self, FieldworkAIDriver.onEndCourse, nil);
 		else
 			-- otherwise we'll 
 			self:changeToFieldworkUnloadOrRefill()

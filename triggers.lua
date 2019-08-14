@@ -575,16 +575,53 @@ function courseplay:updateAllTriggers()
 				courseplay:cpAddTrigger(object.baleTriggerNode, object, 'tipTrigger');
 				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(object.baleTriggerNode, '', className), 1);
 			end]]
-			if object.exactFillRootNode ~= nil and object.target and object.target.productLines and not courseplay.triggers.all[object.exactFillRootNode] then
-				local triggerId = object.exactFillRootNode;
-				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(triggerId)), 1);
-				courseplay:cpAddTrigger(triggerId, object, 'tipTrigger');
-				--courseplay.alreadyPrinted = {}
-				--courseplay:printMeThisTable(object.target.productLines,0,5,"object.target.productLines")
-			end
 		end			
 	end
 	
+	if g_company and g_company.loadedFactories then
+		courseplay:debug('   check globalCompany mod', 1);
+		for i=1,#g_company.loadedFactories do
+			local factory = g_company.loadedFactories[i];
+			if factory.triggerManager then
+				courseplay:debug(string.format('    factory %d:',i), 1);
+				for index, trigger in pairs (factory.triggerManager.registeredTriggers) do
+					if trigger.exactFillRootNode then
+						trigger.triggerId = trigger.exactFillRootNode;
+						trigger.acceptedFillTypes = trigger.fillTypes
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+					end	
+					if trigger.triggerNode then
+						trigger.triggerId = trigger.triggerNode;
+						trigger.isGlobalCompanyFillTrigger = true
+						courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(trigger.triggerId, trigger, 'fillTrigger');
+					end
+				end
+			end
+			--[[if factory.registeredUnloadingTriggers then
+				for name, unloadingTrigger in pairs (factory.registeredUnloadingTriggers) do
+					--print(string.format("registeredTriggers: %s : %s",tostring(name),tostring(unloadingTrigger)));
+					if unloadingTrigger.trigger and unloadingTrigger.trigger.exactFillRootNode then
+						--courseplay:printMeThisTable(unloadingTrigger.trigger,0,5,"trigger")
+						unloadingTrigger.trigger.triggerId = unloadingTrigger.trigger.exactFillRootNode;
+						unloadingTrigger.trigger.acceptedFillTypes = unloadingTrigger.trigger.fillTypes
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(unloadingTrigger.trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(unloadingTrigger.trigger.triggerId, unloadingTrigger.trigger, 'tipTrigger');
+					end				
+				end
+				for name, loadingTrigger in pairs (factory.registeredLoadingTriggers) do
+					--print(string.format("registeredTriggers: %s : %s",tostring(name),tostring(loadingTrigger)));
+					if loadingTrigger.trigger and loadingTrigger.trigger.triggerNode then
+						loadingTrigger.trigger.triggerId = loadingTrigger.trigger.triggerNode;
+						loadingTrigger.trigger.isGlobalCompanyFillTrigger = true
+						courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(loadingTrigger.trigger.triggerId)), 1);
+						courseplay:cpAddTrigger(loadingTrigger.trigger.triggerId, loadingTrigger.trigger, 'fillTrigger');
+					end	
+				end
+			end]]
+		end	
+	end
 end;
 
 function courseplay:cpAddTrigger(triggerId, trigger, groupType)
@@ -623,7 +660,7 @@ end;
 --------------------------------------------------
 -- Adding easy access to SiloTrigger
 --------------------------------------------------
-local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+courseplay.SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	courseplay:debug(' SiloTrigger_TriggerCallback',2);
 	local trailer = g_currentMission.nodeToObject[otherShapeId];
 	if trailer ~= nil then
@@ -652,7 +689,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 		end;
 	end;
 end;
-LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, SiloTrigger_TriggerCallback);
+LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, courseplay.SiloTrigger_TriggerCallback);
 
 -- this could be used to fill sowing machines, but better may be a better way to find out what Vehicle.addFillUnitTrigger() does.
 local cpFillTriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)

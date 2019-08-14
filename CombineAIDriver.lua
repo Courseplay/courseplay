@@ -493,6 +493,12 @@ function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
 	wp = corner:getPointAtDistanceFromCornerEnd(-turnRadius * 0.5, self.vehicle.cp.workWidth / 2 + offset)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
+	-- this last waypoint isn't really needed. The only reason we add it is to turn the combine into the
+	-- (sort of) new direction before finishing the turn, so if this is a combine on multitool turn with offset on
+	-- the inner side of the corner, it'll find the right waypoint to continue and does not drive a loop (at least until
+	-- we properly generate offset courses as those have a problem at corners)
+	wp = corner:getPointAtDistanceFromCornerEnd(self.vehicle.cp.workWidth / 2, self.vehicle.cp.workWidth / 3)
+	table.insert(cornerWaypoints, wp)
 	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
 end
 

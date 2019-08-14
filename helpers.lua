@@ -291,12 +291,24 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 					courseplay.debugVehicle(19,vehicle,'fillTypesMatch: checking trigger vs. %s fillunit %d for %d (%s)',tostring(workTool:getName()),i,index,g_fillTypeManager.indexToName[index])
 					if fillTrigger.source ~= nil then
 						if courseplay.debugChannels[19] then
-							courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
-							for index,_ in pairs(fillTrigger.source.providedFillTypes)do
-								courseplay.debugVehicle(19,vehicle,'fillTypesMatch:    %d:%s',index,g_fillTypeManager.indexToName[index])
-							end						
+							if fillTrigger.isGlobalCompanyFillTrigger then
+								--bad hack for globalCompany mod
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger -> fillTrigger.source.providedFillTypes:')
+								for index,source in pairs (fillTrigger.source.providedFillTypes) do
+									if type(source)== 'table' then
+										for subIndex, subSource in pairs(source)do
+											courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger ->  %s: %s=%s',tostring(index),tostring(subIndex),tostring(subSource))
+										end									
+									end							
+								end
+							else
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
+								for index,_ in pairs(fillTrigger.source.providedFillTypes)do
+									courseplay.debugVehicle(19,vehicle,'fillTypesMatch:    %d:%s',index,g_fillTypeManager.indexToName[index])
+								end	
+							end
 						end
-						if fillTrigger.source.providedFillTypes[index] then						
+						if courseplay:getLoadTriggerProvidedFillTypeValid(fillTrigger, index) then
 							typesMatch = true
 							matchInThisUnit =true
 						end
@@ -316,11 +328,12 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 						end
 					end
 					if index == selectedFillType and selectedFillType ~= FillType.UNKNOWN then
+						courseplay.debugVehicle(19,vehicle,'fillTypesMatch(343): selectedFillTypeIsNotInMyFillUnit set to false')
 						selectedFillTypeIsNotInMyFillUnit = false;
 					end
 				end
 				if matchInThisUnit and selectedFillTypeIsNotInMyFillUnit then
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(324): return true')
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(336): return true')
 					return true;
 				end
 			end
@@ -332,21 +345,35 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 			else
 				courseplay.debugVehicle(19,vehicle,'fillTypesMatch: selectedFillType:%d',selectedFillType)
 				if fillTrigger.source then
-					local result = fillTrigger.source.providedFillTypes[selectedFillType] or false;
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(337): return %s',tostring(result))
+					local result = courseplay:getLoadTriggerProvidedFillTypeValid(fillTrigger, selectedFillType) or false;
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(349): return %s',tostring(result))
 					return result;
 				elseif fillTrigger.sourceObject ~= nil then
 					local fillType = fillTrigger.sourceObject:getFillUnitFillType(1)  
 					local result = fillType == selectedFillType;
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(342): return %s',tostring(result))
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(354): return %s',tostring(result))
 					return result;
 				end
 			end		
 		end
 	end
-	courseplay.debugVehicle(19,vehicle,'fillTypesMatch(348): return false')
+	courseplay.debugVehicle(19,vehicle,'fillTypesMatch(360): return false')
 	return false;
 end;
+
+function courseplay:getLoadTriggerProvidedFillTypeValid(trigger, fillType)
+	--bad hack for globalCompany mod.  providedFillTypes has a sub structure there
+	if trigger.isGlobalCompanyFillTrigger then
+		for _,subProvidedFillTypes in pairs (trigger.source.providedFillTypes) do
+			if type(subProvidedFillTypes)=='table' then
+				return subProvidedFillTypes[fillType]
+			end			
+		end	
+	else
+		return trigger.source.providedFillTypes[fillType]
+	end
+end
+
 
 -- by horoman
 courseplay.utils.table = {}
