@@ -39,6 +39,7 @@ LevelCompactAIDriver.myStates = {
 	CHECK_SHIELD = {},
 	DRIVE_IN_SILO = {},
 	DRIVE_SILOFILLUP ={},
+	DRIVE_SILOLEVEL ={},
 	PUSH = {},
 	PULLBACK = {}
 }
@@ -71,8 +72,8 @@ function LevelCompactAIDriver:start(ix)
 	self.ppc:initialize()
 	self:changeLevelState(self.states.DRIVE_TO_PARKING)
 	self.fillUpState = self.states.PUSH
-
-
+	self.alphaList = nil
+	self.lastDrivenColumn = nil
 end
 
 function LevelCompactAIDriver:drive(dt)
@@ -94,19 +95,40 @@ function LevelCompactAIDriver:drive(dt)
 
 	elseif self.levelState == self.states.CHECK_SILO then
 		self:stopAndWait(dt)
-		self:checkSilo()
+		if self:checkSilo() then
+			self:changeLevelState(self.states.CHECK_SHIELD)
+		end
 	elseif self.levelState == self.states.CHECK_SHIELD then
 		self:stopAndWait(dt)
-		if self:isModeFillUp(self.vehicle) then
-			if self:moveShield('down',dt) then
-				self:changeLevelState(self.states.DRIVE_SILOFILLUP)
-			end
-		else
-			--mode Level and compact
+	
+		--record alphaList if not existing
+		if self.alphaList == nil then
+			self:setIsAlphaListrecording()
 		end
+		if self:getIsAlphaListrecording() then
+			self:recordAlphaList()
+		else
+			self:selectMode()
+		end
+
 	elseif self.levelState == self.states.DRIVE_SILOFILLUP then
 		self:driveSiloFillUp(dt)
+	elseif self.levelState == self.states.DRIVE_SILOLEVEL then
+		self:driveSiloLevel(dt)
 	end
+end
+
+function LevelCompactAIDriver:selectMode()
+	if self:getIsModeFillUp() then
+		print("self:changeLevelState(self.states.DRIVE_SILOFILLUP)")
+		self:changeLevelState(self.states.DRIVE_SILOFILLUP)
+	elseif self:getIsModeLeveling()then
+		print("self:changeLevelState(self.states.DRIVE_SILOLEVEL)")
+		self:changeLevelState(self.states.DRIVE_SILOLEVEL)
+	elseif self:getIsModeCompact()then
+		print("self:isModeCompact()")
+	end
+	self.fillUpState = self.states.PUSH
 end
 
 function LevelCompactAIDriver:lookOutForCourseplayers()
@@ -169,9 +191,6 @@ function LevelCompactAIDriver:manageCourseplayersStopping()
 			print("remove from stoppedCourseplayers: "..tostring(courseplayer).." new number: "..tostring(#self.stoppedCourseplayers))
 		end
 	end
-	
-	
-	
 end
 
 
@@ -184,43 +203,52 @@ function LevelCompactAIDriver:stopCourseplayer(courseplayer)
 	courseplayer.cp.driver:hold()
 end 
 
-
-
-function LevelCompactAIDriver:driveSiloFillUp(dt)
-	local vehicle = self.vehicle
-	local fwd = true
-	local allowedToDrive = true
-	local refSpeed = 15
-	local cx ,cy,cz = 0,0,0
+function LevelCompactAIDriver:driveSiloLevel(dt)
 	if self.fillUpState == self.states.PUSH then
 		--initialize first target point
-		if self.bestTarget == nil or vehicle.cp.BunkerSiloMap == nil then
-			self.bestTarget, self.firstLine = self:getBestTargetFillUnit(vehicle,self.targetSilo,self.bestTarget)
-			
-			--just for debug reasons
+		if self.bestTarget == nil or self.vehicle.cp.BunkerSiloMap == nil then
+			self.bestTarget, self.firstLine, self.targetHeight = self:getBestTargetFillUnitLeveling(self.targetSilo,self.lastDrivenColumn)
+			--just for debug reasons 
+			self.vehicle.cp.actualTarget = self.bestTarget
+			--
+		end
+		renderText(0.2,0.395,0.02,"self:drivePush(dt)")
+		
+		self:drivePush(dt)
+		self:moveShield('down',dt,self:getDiffHeightforHeight(self.targetHeight))
+	
+		if self:isAtEnd()
+		or self:hasShieldEmpty()
+		then
+			self.fillUpState = self.states.PULLBACK
+		end
+	
+	
+	elseif self.fillUpState == self.states.PULLBACK then
+		renderText(0.2,0.365,0.02,"self:drivePull(dt)")
+		if self:drivePull(dt) then
+			self.fillUpState = self.states.PUSH
+			self:deleteBestTargetLeveling()
+		end
+	end
+end
+
+function LevelCompactAIDriver:driveSiloFillUp(dt)
+	if self.fillUpState == self.states.PUSH then
+		--initialize first target point
+		if self.bestTarget == nil or self.vehicle.cp.BunkerSiloMap == nil then
+			self.bestTarget, self.firstLine = self:getBestTargetFillUnitFillUp(self.targetSilo,self.bestTarget)
+			--just for debug reasons 
 			self.vehicle.cp.actualTarget = self.bestTarget
 			--
 		end
 		
-		allowedToDrive = self:moveShield('down',dt)
-		fwd = false
-
-
-
-
-		
-		local targetUnit = vehicle.cp.BunkerSiloMap[self.bestTarget.line][self.bestTarget.column]
-		cx ,cz = targetUnit.cx, targetUnit.cz
-		cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
-		
-		
-		self:updateTarget()
-		
-		
-		if self:isAtEnd() 
-		or self:lastLineFillLevelChanged()
+		self:drivePush(dt)
+		self:moveShield('down',dt,0)
+		--self:moveShield('down',dt,self:getDiffHeightforHeight(0))
+		if self:lastLineFillLevelChanged()
 		or self:isStuck()
-		or self:hasShieldEmpty()
+		--or self:hasShieldEmpty()
 		then
 			if self:shouldGoToSavePosition() then
 				self:changeLevelState(self.states.DRIVE_TO_PARKING)
@@ -229,68 +257,65 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 			else
 				self.fillUpState = self.states.PULLBACK
 			end
-		end
-		
-		
-		
-		
-		
-		if self:isNearEnd() then
-			refSpeed = math.min(10,vehicle.cp.speeds.bunkerSilo)
-		else
-			refSpeed = math.min(20,vehicle.cp.speeds.bunkerSilo)
-		end		
-		
-		local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
-		if not fwd then
-			lx, lz = -lx,-lz
-		end
-		self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
-	
-	
-	
-	
-	
-	
+		end	
 	elseif self.fillUpState == self.states.PULLBACK then
-
-
-
-		refSpeed = math.min(20,vehicle.cp.speeds.bunkerSilo)
-		allowedToDrive = self:moveShield('up',dt)
-		cx,cy,cz = self.course:getWaypointPosition(self.course:getNumberOfWaypoints())
-		local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
-		self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
-		
-		if lz < 0 then
+		if self:drivePull(dt) or self:getHasMovedToFrontLine(dt) then
 			self.fillUpState = self.states.PUSH
 			self:deleteBestTarget()
 		end
-		
-		
-		local startUnit = vehicle.cp.BunkerSiloMap[self.firstLine][1]
-		local _,ty,_ = getWorldTranslation(self.vehicle.cp.DirectionNode);
-		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, startUnit.cx , ty , startUnit.cz);
-		if z < -15 then
-			self.fillUpState = self.states.PUSH
-			self:deleteBestTarget()
-		
-		end
-
-		
 	end
+end	
 	
+function LevelCompactAIDriver:drivePush(dt)
+	local vehicle = self.vehicle
+	local fwd = false
+	local allowedToDrive = true
+	local refSpeed = 15
+	local cx ,cy,cz = 0,0,0
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	--self:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	--get coords of the target point
+	local targetUnit = vehicle.cp.BunkerSiloMap[self.bestTarget.line][self.bestTarget.column]
+	cx ,cz = targetUnit.cx, targetUnit.cz
+	cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
+	--check whether its time to change the target point	
+	self:updateTarget()
+	--speed
+	if self:isNearEnd() then
+		refSpeed = math.min(10,vehicle.cp.speeds.bunkerSilo)
+	else
+		refSpeed = math.min(20,vehicle.cp.speeds.bunkerSilo)
+	end		
+	--drive
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
+	if not fwd then
+		lx, lz = -lx,-lz
+	end
+	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
+end	
+
+function LevelCompactAIDriver:drivePull(dt)
+	local pullDone = false
+	local fwd = true
+	local refSpeed = math.min(20,self.vehicle.cp.speeds.bunkerSilo)
+	local allowedToDrive = self:moveShield('up',dt)
+	local cx,cy,cz = self.course:getWaypointPosition(self.course:getNumberOfWaypoints())
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
+	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
+	--end if I moved over the last way point
+	if lz < 0 then
+		pullDone = true
+	end
+	return pullDone
+end
+
+function LevelCompactAIDriver:getHasMovedToFrontLine(dt)
+	local startUnit = self.vehicle.cp.BunkerSiloMap[self.firstLine][1]
+	local _,ty,_ = getWorldTranslation(self.vehicle.cp.DirectionNode);
+	local _,_,z = worldToLocal(self.vehicle.cp.DirectionNode, startUnit.cx , ty , startUnit.cz);
+	if z < -15 then
+		return true;			
+	end
+	return false;
 end
 
 function LevelCompactAIDriver:isNearEnd()
@@ -388,12 +413,26 @@ function LevelCompactAIDriver:deleteBestTarget()
 	self.bestTarget = nil
 end
 
+function LevelCompactAIDriver:deleteBestTargetLeveling()
+	self.lastDrivenColumn = self.bestTarget.column
+	self.bestTarget = nil
+end
+
+
 function LevelCompactAIDriver:isWaitingForCourseplayers()
 	return self.levelState == self.states.WAITIN_FOR_FREE_WAY
 end 
 
-function LevelCompactAIDriver:isModeFillUp(vehicle)
-	return not vehicle.cp.mode10.leveling
+function LevelCompactAIDriver:getIsModeFillUp()
+	return not self.vehicle.cp.mode10.leveling
+end
+
+function LevelCompactAIDriver:getIsModeLeveling()
+	return self.vehicle.cp.mode10.leveling and not self.vehicle.cp.mode10.drivingThroughtLoading
+end
+
+function LevelCompactAIDriver:getIsModeCompact()
+	return self.vehicle.cp.mode10.leveling and self.vehicle.cp.mode10.drivingThroughtLoading
 end
 
 function LevelCompactAIDriver:onWaypointPassed(ix)
@@ -461,36 +500,33 @@ function LevelCompactAIDriver:checkSilo()
 	if not self.targetSilo then
 		courseplay:setInfoText(self.vehicle, courseplay:loc('COURSEPLAY_MODE10_NOSILO'));
 	else
-		self:changeLevelState(self.states.CHECK_SHIELD)
+		return true
 	end
 end
 
-function LevelCompactAIDriver:moveShield(moveUp,dt,fixAlpha)
+function LevelCompactAIDriver:moveShield(moveDir,dt,fixHeight)
 	local leveler = self.vehicle.cp.workTools[1]
 	local moveFinished = false
 	if leveler.spec_attacherJointControl ~= nil then
 		local spec = leveler.spec_attacherJointControl
 		local jointDesc = spec.jointDesc
-		if moveUp == "down" then
+		if moveDir == "down" then
 			
 			--move attacherJoint down
 			if spec.heightController.moveAlpha ~= jointDesc.lowerAlpha then
 				spec.heightTargetAlpha = jointDesc.lowerAlpha
-				_, self.savedHeightOverGround,_  = getWorldTranslation(self.vehicle.cp.DirectionNode) --(jointDesc.rotationNode2)
 			else
-				--tilt attacherJoint till Shield touches ground
-				local _, newHeightOverGround,_  = getWorldTranslation(self.vehicle.cp.DirectionNode) --(jointDesc.rotationNode2)
-				
-				if newHeightOverGround > self.savedHeightOverGround + 0.05 then
-					moveFinished = true
-				else
-					leveler:controlAttacherJoint(spec.controls[2], spec.controls[2].moveAlpha - 0.01)
-				end
+				local newAlpha = self:getClosestAlpha(fixHeight)
+				leveler:controlAttacherJoint(spec.controls[2],newAlpha)				
+				moveFinished = true
 			end
-		elseif moveUp == "up" then
+
+		elseif moveDir == "up" then
 			if spec.heightController.moveAlpha ~= spec.jointDesc.upperAlpha then
 				spec.heightTargetAlpha = jointDesc.upperAlpha
-				leveler:controlAttacherJoint(spec.controls[2], spec.controls[2].moveAlpha + 0.1)
+				if not fixHeight then
+					leveler:controlAttacherJoint(spec.controls[2], spec.controls[2].moveAlpha + 0.1)
+				end
 			else
 				moveFinished = true
 			end			
@@ -499,9 +535,83 @@ function LevelCompactAIDriver:moveShield(moveUp,dt,fixAlpha)
 	return moveFinished
 end
 
-function LevelCompactAIDriver:getBestTargetFillUnit(vehicle,Silo,actualTarget)
+function LevelCompactAIDriver:getClosestAlpha(height)
+	local closestIndex = 99
+	local closestValue = 99
+	for indexHeight,_ in pairs (self.alphaList) do
+		--print("try "..tostring(indexHeight))
+		local diff = math.abs(height-indexHeight)
+		if closestValue > diff then
+			--print(string.format("%s is closer- set as closest",tostring(closestValue)))
+			closestIndex = indexHeight
+			closestValue = diff
+		end				
+	end
+	return self.alphaList[closestIndex]
+end
+
+function LevelCompactAIDriver:getIsAlphaListrecording()
+	return self.isAlphaListrecording;
+end
+
+function LevelCompactAIDriver:resetIsAlphaListrecording()
+	self.isAlphaListrecording = nil
+end
+function LevelCompactAIDriver:setIsAlphaListrecording()
+	self.isAlphaListrecording = true
+	self.alphaList ={}
+end
+function LevelCompactAIDriver:getDiffHeightforHeight(targetHeight)
+	local blade = self.vehicle.cp.workTools[1]
+	local bladeX,bladeY,bladeZ = getWorldTranslation(self:getLevelerNode(blade))
+	local bladeTerrain = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, bladeX,bladeY,bladeZ);
+	local _,_,offSetZ = worldToLocal(self.vehicle.rootNode,bladeX,bladeY,bladeZ)
+	local _,projectedTractorY,_  = localToWorld(self.vehicle.rootNode,0,0,offSetZ)
+
+	return targetHeight- (projectedTractorY-bladeTerrain)
+end
+
+
+function LevelCompactAIDriver:recordAlphaList()
+	local blade = self.vehicle.cp.workTools[1]
+	local spec = blade.spec_attacherJointControl
+	local jointDesc = spec.jointDesc
+	local bladeX,bladeY,bladeZ = getWorldTranslation(self:getLevelerNode(blade))
+	local bladeTerrain = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, bladeX,bladeY,bladeZ);
+	local _,_,offSetZ = worldToLocal(self.vehicle.rootNode,bladeX,bladeY,bladeZ)
+	local _,projectedTractorY,_  = localToWorld(self.vehicle.rootNode,0,0,offSetZ) 
+	local tractorToGround = courseplay:round(projectedTractorY-bladeTerrain,3)
+	local bladeToGound = courseplay:round(bladeY-bladeTerrain,3)
+	
+	if spec.heightController.moveAlpha ~= jointDesc.lowerAlpha then
+		spec.heightTargetAlpha = jointDesc.lowerAlpha
+		blade:controlAttacherJoint(spec.controls[2], spec.controls[2].moveAlpha + 0.1)
+	else
+		blade:controlAttacherJoint(spec.controls[2], spec.controls[2].moveAlpha - 0.005)
+		
+		--record the related alphas to the alpha list
+		local alphaEntry = courseplay:round(bladeToGound-tractorToGround,3)
+		if self.alphaList[alphaEntry] ~= nil then
+			print("resetIsAlphaListrecording")
+			self:resetIsAlphaListrecording()
+		else
+			print(string.format("self.alphaList[%s] = %s",tostring(alphaEntry),tostring(spec.controls[2].moveAlpha)))
+			self.alphaList[alphaEntry] = spec.controls[2].moveAlpha 
+		end	
+	end
+end
+
+function LevelCompactAIDriver:getLevelerNode(blade)
+	for _, levelerNode in pairs (blade.spec_leveler.nodes) do
+		if levelerNode.node ~= nil then
+			return levelerNode.node
+		end
+	end
+end
+
+function LevelCompactAIDriver:getBestTargetFillUnitFillUp(Silo,actualTarget)
 	--print(string.format("courseplay:getActualTarget(vehicle) called by %s",tostring(courseplay.utils:getFnCallPath(3))))
-	local newApproach = actualTarget == nil or vehicle.cp.mode10.newApproach
+	local vehicle = self.vehicle
 	local firstLine = 0
 	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, Silo)
 	if vehicle.cp.BunkerSiloMap ~= nil then
@@ -529,10 +639,6 @@ function LevelCompactAIDriver:getBestTargetFillUnit(vehicle,Silo,actualTarget)
 				print(printString)
 			end
 		end
-		
-		
-		
-		
 		
 		-- find column with most fillLevel and figure out whether its empty
 		for lineIndex, line in pairs(vehicle.cp.BunkerSiloMap) do
@@ -574,4 +680,53 @@ function LevelCompactAIDriver:getBestTargetFillUnit(vehicle,Silo,actualTarget)
 	end
 	
 	return actualTarget, firstLine
+end
+
+function LevelCompactAIDriver:getBestTargetFillUnitLeveling(Silo,lastDrivenColumn)
+	local firstLine = 1
+	local targetHeight = 0.5
+	local vehicle = self.vehicle
+	local newApproach = lastDrivenColumn == nil 
+	local newBestTarget = {}
+	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, Silo)
+	if not printOnce then
+		printOnce = true
+		courseplay:printMeThisTable(vehicle.cp.BunkerSiloMap,0,5,"vehicle.cp.BunkerSiloMap")
+	end
+	if vehicle.cp.BunkerSiloMap ~= nil then
+		local newColumn = math.ceil(#vehicle.cp.BunkerSiloMap[1]/2)
+		if newApproach then
+			newBestTarget = { 
+								line = 1;
+								column = newColumn;
+								empty = false;
+								}
+		else
+			newColumn = lastDrivenColumn +1;
+			if newColumn > #vehicle.cp.BunkerSiloMap[1] then
+				newColumn = 1;
+			end
+			newBestTarget= {
+							line = 1;
+							column = newColumn;							
+							empty = false;
+							}
+		end
+		targetHeight = self:getColumnsTargetHeight(newColumn)
+	end
+	
+	return newBestTarget, firstLine, targetHeight
+end
+
+function LevelCompactAIDriver:getColumnsTargetHeight(newColumn)
+	local totalArea = 0
+	local totalFillLevel = 0
+	for i=1,#self.vehicle.cp.BunkerSiloMap do
+		totalArea = totalArea + self.vehicle.cp.BunkerSiloMap[i][newColumn].area
+		totalFillLevel = totalFillLevel + self.vehicle.cp.BunkerSiloMap[i][newColumn].fillLevel
+	end
+	local newHeight = math.max(0.3,(totalFillLevel/1000)/totalArea)
+	print(string.format("getTargetHeigth: totalFillLevel:%s; totalArea:%s Height%s",tostring(totalFillLevel),tostring(totalArea),tostring(newHeight)))
+	return newHeight
+	
 end
