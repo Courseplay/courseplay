@@ -161,7 +161,7 @@ function courseplay:toggleMode10automaticSpeed(self)
 	end
 end
 function courseplay:toggleMode10drivingThroughtLoading(self)
-		self.cp.mode10.drivingThroughtLoading = not self.cp.mode10.drivingThroughtLoading
+	self.cp.mode10.drivingThroughtLoading = not self.cp.mode10.drivingThroughtLoading
 end
 
 function courseplay:toggleMode10AutomaticHeight(self)
