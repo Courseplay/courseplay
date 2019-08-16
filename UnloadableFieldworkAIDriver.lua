@@ -229,4 +229,3 @@ end
 function UnloadableFieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_UNLOADING'
 end
-

@@ -729,3 +729,19 @@ function Course:draw()
 		cpDebug:drawLine(x1, y1 + 2.7, z1, 1.7, 0, 0, x2, y2 + 2.7, z2);
 	end
 end
+
+-- Create a legacy course. This is used for compatibility when loading a virtual AutoDrive course
+function Course:createLegacyCourse()
+	local legacyCourse = {}
+	for i = 1, #self.waypoints do
+		local x, _, z = self:getWaypointPosition(i)
+		legacyCourse[i] = {
+			cx = x,
+			cz = z,
+			angle = self:getWaypointAngleDeg(i)
+		}
+	end
+	legacyCourse[1].crossing = true
+	legacyCourse[#legacyCourse].crossing = true
+	return legacyCourse
+end

@@ -95,8 +95,6 @@ function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay beca
 end
 
 function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is in courseplay because it's vehicle based
--- changed in 5.03.00044 
-
 	-- global array for courses, no refreshing needed any more
 	courseplay.courses:reinitializeCourses();
 	
@@ -105,6 +103,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 	courseplay:debug(string.format('%s: loadCourse(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(vehicle), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), 8);
 	if id ~= nil and id ~= "" then
 		if not useRealId then
+			-- this useRealId smells to heaven...
 			return -- not supported any more
 		end
 		id = id * 1 -- equivalent to tonumber()
@@ -116,18 +115,25 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		end
 
 		if not g_currentMission.cp_courses[id] then
-			courseplay.infoVehicle( vehicle, 'There is no course with id=%d, not loading course for this vehicle', id)
+			courseplay.infoVehicle(vehicle, 'There is no course with id=%d, not loading course for this vehicle', id)
 			return
 		end
 
-		if not g_currentMission.cp_courses[id].waypoints then
+		if not g_currentMission.cp_courses[id].waypoints and not g_currentMission.cp_courses[id].virtual then
 			courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
 			courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
 		end
 
-		local course = g_currentMission.cp_courses[id]
+		local course
+
+		if g_currentMission.cp_courses[id].virtual then
+			course = courseplay.courses.loadAutoDriveCourse(vehicle, g_currentMission.cp_courses[id])
+		else
+			course = g_currentMission.cp_courses[id]
+		end
+
 		if course == nil then
-			courseplay:debug(string.format('\tid %d -> course not found, return', id), 8);
+			courseplay.infoVehicle(vehicle, 'id %d -> course not found, return', id)
 			return
 		end
 
@@ -438,7 +444,6 @@ function courseplay.courses:sort(courses_to_sort, folders_to_sort, parent_id, le
 		courses_to_sort = courseplay.utils.table.copy(courses_to_sort)
 		folders_to_sort = courseplay.utils.table.copy(folders_to_sort)
 	end
-	
 	local sorted = {}
 	sorted.item = {}
 	sorted.info = {}
@@ -577,7 +582,7 @@ function courseplay:deleteSortedItem(vehicle, index) -- fn is in courseplay beca
 		-- check for children: delete only if folder has no children
 		if g_currentMission.cp_sorted.info['f'..id].lastChild == 0 then
 			self.courses:removeFromManagerXml(type, id);
-			g_currentMission.cp_folders[id] = nil
+			self.courses:removeFolder(id)
 		end
 	else
 		--Error?!
@@ -638,8 +643,10 @@ function courseplay.courses:saveFoldersToXml(cpCManXml)
 	end;
 
 	local index = 0;
-	for k,_ in pairs(g_currentMission.cp_folders) do
-		self:saveFolderToXml(k, cpCManXml, index);
+	for k, folder in pairs(g_currentMission.cp_folders) do
+		if not folder.virtual then
+			self:saveFolderToXml(k, cpCManXml, index);
+		end
 		index = index + 1;
 	end;
 
@@ -698,7 +705,6 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 	end
 
 	local cp_course = g_currentMission.cp_courses[course_id];
-
 	local freeSlot, isOwnSaveSlot = self:getFreeSaveSlot(course_id);
 	-- We can use an unused slot
 	if g_currentMission.cp_courseManager[freeSlot] then
@@ -940,11 +946,12 @@ function courseplay.courses:getCourseManagerXML()
 end
 
 function courseplay.courses:getMaxCourseID()
-	local maxID;
+	local maxID = 0
 	if g_currentMission.cp_courses ~= nil then
-		maxID = courseplay.utils.table.getMax(g_currentMission.cp_courses, 'id')
-		if  maxID == false then
-			maxID = 0
+		for _, course in pairs(g_currentMission.cp_courses) do
+			if not course.virtual and course.id > maxID then
+				maxID = course.id
+			end
 		end
 	end
 	return maxID
@@ -1283,6 +1290,7 @@ function courseplay.courses:getMeOrBestFit(self, index)
 end
 
 function courseplay.courses:reloadVehicleCourses(vehicle)
+	self:addAutoDriveDestinations()
 	if vehicle ~= nil then
 		-- reload courses (sort)
 		if vehicle.cp.hud.filter == '' then
@@ -1316,7 +1324,7 @@ function courseplay.courses:reloadVehicleCourses(vehicle)
 		
 		-- update items for the hud
 		courseplay.hud.reloadCourses(vehicle);
-		
+		courseplay.debugVehicle(8, vehicle, 'reloadVehicleCourses')
 		vehicle.cp.reloadCourseItems = false
 	end -- end vehicle ~= nil
 end
@@ -1468,10 +1476,6 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 			end
 			save = true
 		end
-
-		if CpManager.oldCPFileExists then
-			save, courses_by_id, folders_by_id = CpManager:importOldCPFiles(save, courses_by_id, folders_by_id);
-		end;
 
 		if save then
 			-- this will update courseManager file and therefore update the courses and folders without ids.
@@ -1687,4 +1691,111 @@ function courseplay.courses:loadCourseFromFile(course)
 	course.headlandDirectionCW =  headlandDirectionCW
 	course.multiTools = 		  multiTools
 	delete(courseXml);
+end
+
+
+function courseplay.courses:addAutoDriveDestinations()
+	if FS19_AutoDrive.AutoDrive then
+		if not self:getAutoDriveDestinationsFolder() then
+			local id = #g_currentMission.cp_folders + 1
+			-- TODO: language!
+			local folderName = 'AutoDrive'
+			g_currentMission.cp_folders[id] = { id =id, uid = 'f' .. id,
+												type = 'folder',
+												name = folderName,
+												nameClean = courseplay:normalizeUTF8(folderName),
+												parent = 0,
+												virtual = true,
+												autodrive = true}
+			courseplay.settings.add_folder(id)
+			local destinations = FS19_AutoDrive.AutoDrive:GetAvailableDestinations()
+			id = 10000
+			for _, destination in ipairs(destinations) do
+				g_currentMission.cp_courses[id] = self:createAutoDriveCourse(id, destination, false)
+				id = id + 1
+				--g_currentMission.cp_courses[id] = self:createAutoDriveCourse(id, destination, true)
+				--id = id + 1
+			end
+		end
+		g_currentMission.cp_sorted = self:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
+	end
+end
+
+function courseplay.courses:createAutoDriveCourse(id, destination, isReturn)
+	local courseName = destination.name
+	if isReturn then
+		-- TODO: language
+		courseName = courseName .. ' ' .. '(and back)'
+	end
+	local courseNameClean = courseplay:normalizeUTF8(courseName)
+	local parent = self:getAutoDriveDestinationsFolder()
+	local course = {
+		id =				  id,
+		uid =				  'c' .. id ,
+		type =				  'course',
+		name =				  courseName,
+		nameClean =			  courseNameClean,
+		parent =			  parent,
+		adDestinationId =     destination.id,
+		virtual =             true,
+		isReturn = 			  isReturn
+	};
+	return course
+end
+
+function courseplay.courses:getAutoDriveDestinationsFolder()
+	for id, folder in pairs(g_currentMission.cp_folders) do
+		if folder.autodrive then return id, folder end
+	end
+	return nil
+end
+
+function courseplay.courses:moveFolder(oldID, newID)
+
+	g_currentMission.cp_folders[newID] = g_currentMission.cp_folders[oldID]
+	g_currentMission.cp_folders[oldID] = nil
+	g_currentMission.cp_folders[newID].id = newID
+	g_currentMission.cp_folders[newID].uid = 'f' .. newID
+
+	for _, v in pairs(g_currentMission.enterables) do
+		if v.hasCourseplaySpec then
+			v.cp.folder_settings[newID] = v.cp.folder_settings[oldID]
+			v.cp.folder_settings[oldID] = {}
+		end
+	end
+end
+
+function courseplay.courses:removeFolder(id)
+	g_currentMission.cp_folders[id] = nil
+	-- make sure there's no gap between the virtual Autodrive folder and the last real folder
+	local autoDriveFolderId, _ = self:getAutoDriveDestinationsFolder()
+	local lastRealFolderId = 0
+	for i = autoDriveFolderId - 1, 1, -1 do
+		if g_currentMission.cp_folders[i] ~= nil then
+			lastRealFolderId = i
+			break
+		end
+	end
+	if autoDriveFolderId ~= lastRealFolderId + 1 then
+		self:moveFolder(autoDriveFolderId, lastRealFolderId + 1)
+	end
+end
+
+--- Ask AutoDrive for a course from the current vehicle position to a destination (one way or return)
+---@param course table a stored CP course as in g_currentMission.cp_course
+function courseplay.courses.loadAutoDriveCourse(vehicle, course)
+	local x, _, z = getWorldTranslation(vehicle.rootNode)
+	local _, yRot, _ = getWorldRotation(vehicle.rootNode)
+	local options = {minDistance = 1, maxDistance = 20}
+	local adCourse
+	local adCourse = vehicle.spec_autodrive:GetPath(x, z, yRot, course.adDestinationId, options)
+	if adCourse then
+		courseplay.debugVehicle(8, vehicle, 'Received AD course from current position to %s with %d waypoints', course.adDestinationId, #adCourse)
+	else
+		courseplay.infoVehicle(vehicle, 'AutoDrive could not give us a course from the current position to %s', course.adDestinationId)
+		return course
+	end
+	local c = Course(vehicle, adCourse)
+	course.waypoints = c:createLegacyCourse()
+	return course
 end
