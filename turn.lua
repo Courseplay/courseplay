@@ -267,16 +267,19 @@ function courseplay:turn(vehicle, dt, turnContext)
 			-- Calculate reverseOffset in case we need to reverse.
 			-- This is used in both wide turns and in the question mark turn
 			local offset = turnInfo.zOffset;
-			if turnInfo.frontMarker > 0 then
+			-- only if all implements are in the front
+			if turnInfo.frontMarker > 0 and turnInfo.backMarker > 0 then
 				offset = -turnInfo.zOffset - turnInfo.frontMarker;
 			end;
 			if turnInfo.turnOnField and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward then
 				turnInfo.reverseOffset = max((turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight), offset);
 			elseif turnInfo.isHarvester and turnInfo.frontMarker > 0 then
-				-- without fully understanding this reverseOffset, correct it with combines so they don't make
+				-- without fully understanding this reverseOffset, correct it for combines so they don't make
 				-- unnecessarily wide turns (and hit trees outside the field)
 				turnInfo.reverseOffset = -turnInfo.frontMarker
 			else
+				-- the weird thing about this is that reverseOffset here equals to zOffset and this is why
+				-- the wide turn works at all, even if there's no reversing.
 				turnInfo.reverseOffset = offset;
 			end;
 
@@ -796,11 +799,13 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, nil, turnInfo.reverseWPChangeDistance);
 	end;
 
-	--- Get the 2 circle center coordinate
+	-- Get the 2 circle center coordinate
+	-- I don't understand that turnInfo.zOffset here. That is our distance from the turn start WP, and with no reverseOffset it'll put the
+	-- circle behind us. I think this is buggy, and only works with that magic at the beginning where we end up with the reverseOffset == zOffset
 	center1.x,_,center1.z = localToWorld(turnInfo.directionNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset);
 	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.reverseOffset);
 
-	--- Get the circle intersection points
+	-- Get the circle intersection points
 	intersect1.x, intersect1.z = center1.x, center1.z;
 	intersect2.x, intersect2.z = center2.x, center2.z;
 	intersect1, intersect2 = courseplay:getTurnCircleTangentIntersectionPoints(intersect1, intersect2, turnInfo.turnRadius, turnInfo.targetDeltaX > 0);
