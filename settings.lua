@@ -800,10 +800,11 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 		vehicle.cp.reloadCourseItems = true
 		courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 	else
+		-- make sure the course list is reloaded when tabbed to all vehicles.
 		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
-				--print(string.format("courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName))
+				courseplay.debugVehicle(8, v,"courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName)
 				courseplay.hud:setReloadPageOrder(v, 2, true);
 			end
 		end

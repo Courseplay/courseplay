@@ -24,8 +24,6 @@ function CpManager:loadMap(name)
 		self.cpCustomFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayCustomFields.xml';
 		self.cpOldCustomFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayFields.xml';
 
-		self.cpXmlFilePath = self.savegameFolderPath .. '/courseplay.xml';
-		self.oldCPFileExists = fileExists(self.cpXmlFilePath);
 		-- Course save path
 		self.cpCoursesFolderPath = ("%s%s/%s"):format(getUserProfileAppPath(),"CoursePlay_Courses", g_currentMission.missionInfo.mapId);
 		self.cpCourseManagerXmlFilePath = self.cpCoursesFolderPath .. "/courseManager.xml";
@@ -1098,10 +1096,8 @@ function CpManager:loadXmlSettings()
 		cpSettingsXml = loadXMLFile('cpSettingsXml', self.cpSettingsXmlFilePath);
 	else
 		print('## Courseplay: loading default settings');
-		if not self.oldCPFileExists then
-			self.showFieldScanYesNoDialogue = true;
-			self.showWagesYesNoDialogue = true;
-		end;
+		self.showFieldScanYesNoDialogue = true;
+		self.showWagesYesNoDialogue = true;
 		return;
 	end;
 
@@ -1164,7 +1160,7 @@ function CpManager:loadXmlSettings()
 		local fieldsAutomaticScan = getXMLBool(cpSettingsXml, key .. '#automaticScan');
 		if fieldsAutomaticScan ~= nil then
 			courseplay.fields.automaticScan = fieldsAutomaticScan;
-		elseif not self.oldCPFileExists then
+		else
 			self.showFieldScanYesNoDialogue = true;
 		end;
 		courseplay.fields.onlyScanOwnedFields	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields'),	 courseplay.fields.onlyScanOwnedFields);
@@ -1177,12 +1173,12 @@ function CpManager:loadXmlSettings()
 		local wagesActive, wagePerHour = getXMLBool(cpSettingsXml, key .. '#active'), getXMLInt(cpSettingsXml, key .. '#wagePerHour');
 		if wagesActive ~= nil then
 			self.wagesActive = wagesActive;
-		elseif not self.oldCPFileExists then
+		else
 			self.showWagesYesNoDialogue = true;
 		end;
 		if wagePerHour ~= nil then
 			self.wagePerHour = wagePerHour;
-		elseif not self.oldCPFileExists then
+		else
 			self.showWagesYesNoDialogue = true;
 		end;
 		self.wagePer10Secs = self.wagePerHour / 360;
@@ -1210,286 +1206,3 @@ function CpManager:loadXmlSettings()
 	end;
 end;
 
-function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
-	local cpFile = loadXMLFile("cpFile", self.cpXmlFilePath);
-
-	if not fileExists(self.cpXmlFilePath) and false then
-		-------------------------------------------------------------------------
-		-- Import Settings from old file
-		-------------------------------------------------------------------------
-		print('## Courseplay: Importing old settings from "courseplay.xml"');
-
-		-- hud position
-		local key = 'XML.courseplayHud';
-		local posX, posY = getXMLFloat(cpFile, key .. '#posX'), getXMLFloat(cpFile, key .. '#posY');
-		if posX then
-			courseplay.hud.basePosX = courseplay.hud:getFullPx(posX, 'x');
-		end;
-		if posY then
-			courseplay.hud.basePosY = courseplay.hud:getFullPx(posY, 'y');
-		end;
-
-		-- fields settings
-		key = 'XML.courseplayFields';
-		local fieldsAutomaticScan = getXMLBool(cpFile, key .. '#automaticScan');
-		if fieldsAutomaticScan ~= nil then
-			courseplay.fields.automaticScan = fieldsAutomaticScan;
-		end;
-		courseplay.fields.onlyScanOwnedFields	  = Utils.getNoNil(getXMLBool(cpFile, key .. '#onlyScanOwnedFields'),	 courseplay.fields.onlyScanOwnedFields);
-		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpFile, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
-		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpFile, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
-		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpFile, key .. '#scanStep'),				 courseplay.fields.scanStep);
-
-		-- wages
-		key = 'XML.courseplayWages';
-		local wagesActive, wagePerHour = getXMLBool(cpFile, key .. '#active'), getXMLInt(cpFile, key .. '#wagePerHour');
-		if wagesActive ~= nil then
-			self.wagesActive = wagesActive;
-		end;
-		if wagePerHour ~= nil then
-			self.wagePerHour = wagePerHour;
-		end;
-		self.wagePer10Secs = self.wagePerHour / 360;
-
-		-- ingame map
-		key = 'XML.courseplayIngameMap';
-		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#active'),		self.ingameMapIconActive);
-		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#showName'),	self.ingameMapIconShowName);
-		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpFile, key .. '#showCourse'),	self.ingameMapIconShowCourse);
-		self.ingameMapIconShowText =  true --self.ingameMapIconShowName or self.ingameMapIconShowCourse;
-
-		-- 2D course
-		key = 'XML.course2D';
-		self.course2dPlotPosX		= Utils.getNoNil(getXMLFloat(cpFile, key .. '#posX'),	 self.course2dPlotPosX);
-		self.course2dPlotPosY		= Utils.getNoNil(getXMLFloat(cpFile, key .. '#posY'),	 self.course2dPlotPosY);
-		self.course2dPdaMapOpacity	= Utils.getNoNil(getXMLFloat(cpFile, key .. '#opacity'), self.course2dPdaMapOpacity);
-
-		self.course2dPlotField.x = self.course2dPlotPosX;
-		self.course2dPlotField.y = self.course2dPlotPosY;
-
-		-- Save Imported settings.
-		self:saveXmlSettings();
-	end;
-
-	-------------------------------------------------------------------------
-	-- Import Folders and Courses from old file
-	-------------------------------------------------------------------------
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- DO CHECKS AND SETUP BEFORE IMPORTING
-	local startFromFolderID, startFromCourseID = Utils.getNoNil(courseplay.courses:getMaxFolderID(), 0) + 1, Utils.getNoNil(courseplay.courses:getMaxCourseID(), 0) + 1;
-	if hasXMLProperty(cpFile, "XML.folders.folder(0)") or hasXMLProperty(cpFile, "XML.courses.course(0)") then
-		local FolderName = string.format('Import from savegame%d',g_careerScreen.selectedIndex);
-		local folderNameClean = courseplay:normalizeUTF8(FolderName);
-		local folder = { id = startFromFolderID, uid = 'f' .. startFromFolderID, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = 0 }
-		folders_by_id[startFromFolderID] = folder;
-
-		save = true;
-	end;
-
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- LOAD FOLDERS
-	if hasXMLProperty(cpFile, "XML.folders.folder(0)") then
-		-- g_careerScreen.selectedIndex
-		print('## Courseplay: Importing old folders from "courseplay.xml"');
-		local j = 0;
-		local currentFolder, FolderName, id, parent, folder;
-		local finish_all = false;
-		local folders_without_id = {};
-		repeat
-			-- current folder
-			currentFolder = string.format("XML.folders.folder(%d)", j)
-			if not hasXMLProperty(cpFile, currentFolder) then
-				finish_all = true;
-				break;
-			end;
-
-			-- folder id
-			id = getXMLInt(cpFile, currentFolder .. "#id");
-			if id then
-				id = id + startFromFolderID;
-				-- folder name
-				FolderName = getXMLString(cpFile, currentFolder .. "#name");
-				if FolderName == nil then
-					FolderName = string.format('NO_NAME%d',j);
-				end
-				local folderNameClean = courseplay:normalizeUTF8(FolderName);
-
-				-- folder parent
-				parent = getXMLInt(cpFile, currentFolder .. "#parent");
-				if parent == nil then
-					parent = 0;
-				end;
-				parent = parent + startFromFolderID;
-
-				-- "save" current folder
-				folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent };
-				if id ~= 0 then
-					folders_by_id[id] = folder;
-				else
-					table.insert(folders_without_id, folder);
-				end;
-				j = j + 1;
-			end;
-		until finish_all == true
-
-		if #folders_without_id > 0 then
-			-- give a new ID and save
-			local maxID = self:getMaxFolderID()
-			for i = #folders_without_id, 1, -1 do
-				maxID = maxID + 1
-				folders_without_id[i].id = maxID
-				folders_without_id[i].uid = 'f' .. maxID
-				folders_by_id[maxID] = table.remove(folders_without_id)
-			end
-			save = true;
-		end
-	end;
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- LOAD COURSES
-	if hasXMLProperty(cpFile, "XML.courses.course(0)") then
-		print('## Courseplay: Importing old courses from "courseplay.xml"');
-
-		local courses_without_id = {}
-
-		local waypoints;
-		local i = 0;
-		while true do
-			-- current course
-			local courseKey = ('XML.courses.course(%d)'):format(i);
-			if not hasXMLProperty(cpFile, courseKey) then
-				break;
-			end;
-
-			-- course ID
-			local id = getXMLInt(cpFile, courseKey .. '#id');
-			if id then
-				id = id + startFromCourseID;
-				-- course name
-				local courseName = getXMLString(cpFile, courseKey .. '#name');
-				if courseName == nil then
-					courseName = ('NO_NAME%d'):format(i);
-				end;
-				local courseNameClean = courseplay:normalizeUTF8(courseName);
-
-				-- course parent
-				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
-				parent = parent + startFromFolderID;
-
-				-- course workWidth
-				local workWidth = getXMLFloat(cpFile, courseKey .. "#workWidth");
-
-				-- course numHeadlandLanes
-				local numHeadlandLanes = getXMLInt(cpFile, courseKey .. "#numHeadlandLanes");
-
-				-- course headlandDirectionCW
-				local headlandDirectionCW = getXMLBool(cpFile, courseKey .. "#headlandDirectionCW");
-
-				--course waypoints
-				waypoints = {};
-
-				local wpNum = 1;
-				while true do
-					local key = courseKey .. '.waypoint' .. wpNum;
-
-					if not hasXMLProperty(cpFile, key .. '#pos') then
-						break;
-					end;
-					local x, z = StringUtil.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
-					if x == nil or z == nil then
-						break;
-					end;
-
-					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
-					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
-					speed = tonumber(speed);
-					if math.ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
-						speed = math.ceil(speed * 3600);
-					end;
-
-					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
-					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
-					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
-					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
-
-					local generated   =   getXMLBool(cpFile, key .. '#generated');
-					local lane		  =    getXMLInt(cpFile, key .. '#lane');
-					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
-					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
-					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
-
-					crossing = crossing == 1 or wpNum == 1;
-					wait = wait == 1;
-					rev = rev == 1;
-
-					turnStart = turnStart == 1;
-					turnEnd = turnEnd == 1;
-
-					waypoints[wpNum] = {
-						cx = x,
-						cz = z,
-						angle = angle,
-						speed = speed,
-
-						rev = rev,
-						wait = wait,
-						crossing = crossing,
-						generated = generated,
-						turnStart = turnStart,
-						turnEnd = turnEnd,
-						ridgeMarker = ridgeMarker
-					};
-
-					wpNum = wpNum + 1;
-				end; -- END while true (waypoints)
-
-				local course = {
-					id = id,
-					uid = 'c' .. id ,
-					type = 'course',
-					name = courseName,
-					nameClean = courseNameClean,
-					waypoints = waypoints,
-					parent = parent,
-					workWidth = workWidth,
-					numHeadlandLanes = numHeadlandLanes,
-					headlandDirectionCW = headlandDirectionCW
-				};
-				if id ~= 0 then
-					courses_by_id[id] = course;
-				else
-					table.insert(courses_without_id, course);
-				end;
-
-				waypoints = nil;
-			end;
-			i = i + 1;
-		end; -- END while true (courses)
-
-		if #courses_without_id > 0 then
-			-- give a new ID and save
-			local maxID = self:getMaxCourseID()
-			for i = 1, #courses_without_id do
-				maxID = maxID + 1
-				courses_without_id[i].id = maxID
-				courses_without_id[i].uid = 'c' .. maxID
-				courses_by_id[maxID] = courses_without_id[i]
-			end
-			save = true;
-		end;
-	end;
-
-	delete(cpFile);
-
-	-------------------------------------------------------------------------
-	-- Delete content of old file
-	-------------------------------------------------------------------------
-	local cpOldFile = createXMLFile("cpOldFile", self.cpXmlFilePath, 'XML');
-	saveXMLFile(cpOldFile);
-	delete(cpOldFile);
-
-
-	return save, courses_by_id, folders_by_id;
-end;

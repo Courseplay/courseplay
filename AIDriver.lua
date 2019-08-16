@@ -326,10 +326,7 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
 
-	-- slow down before wait points
-	if self.course:hasWaitPointAround(self.ppc:getCurrentOriginalWaypointIx(), 1, 2) then
-		self:setSpeed(self.vehicle.cp.speeds.turn)
-	end
+	self:slowDownForWaitPoints()
 
 	self:updatePathfinding()
 
@@ -597,16 +594,33 @@ function AIDriver:getSpeed()
 end
 
 function AIDriver:getRecordedSpeed()
-	local speed
+	-- default is the street speed (reduced in corners)
+	local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
 	if self.vehicle.cp.speeds.useRecordingSpeed then
-		-- use maximum street speed if there's no recorded speed.
-		speed = math.min(
-			self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or self.vehicle.cp.speeds.street,
-			self.vehicle.cp.speeds.street)
-	else
-		speed = self.vehicle.cp.speeds.street
+		-- use default street speed if there's no recorded speed.
+		speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 	end
 	return speed
+end
+
+-- get a default street speed in case there's no recorded speed. Slow down in corners and at the end of the course
+function AIDriver:getDefaultStreetSpeed(ix)
+	-- reduce speed before the end of the course
+	local dToEnd = self.course:getDistanceToLastWaypoint(ix)
+	if dToEnd < 20 then
+		-- TODO make this smoother depending on the remaining distance?
+		return self.vehicle.cp.speeds.turn
+	end
+	local radius = self.course:getMinRadiusWithinDistance(ix, 25)
+	if radius then
+		return math.max(self.vehicle.cp.speeds.turn, math.min(radius / 20 * self.vehicle.cp.speeds.street, self.vehicle.cp.speeds.street))
+	end
+end
+
+function AIDriver:slowDownForWaitPoints()
+	if self.course:hasWaitPointAround(self.ppc:getCurrentOriginalWaypointIx(), 1, 2) then
+		self:setSpeed(self.vehicle.cp.speeds.turn)
+	end
 end
 
 -- TODO: review this whole fillpoint/filltrigger thing.

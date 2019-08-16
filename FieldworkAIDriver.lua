@@ -802,8 +802,8 @@ function FieldworkAIDriver:calculateTightTurnOffset()
 		return self.tightTurnOffset
 	end
 	-- first of all, does the current waypoint have radius data?
-	local r = self.course:getWaypointRadius(self.ppc:getCurrentWaypointIx())
-	if not r or r ~= r then
+	local r = self.course:getRadiusAtIx(self.ppc:getCurrentWaypointIx())
+	if not r then
 		return smoothOffset(0)
 	end
 
