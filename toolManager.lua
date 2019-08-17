@@ -239,6 +239,17 @@ function courseplay:hasShovel(workTool)
 		return true
 	end
 end
+function courseplay:hasLeveler(workTool) 
+	if workTool.cp.hasSpecializationLeveler then	
+		return true
+	end
+end
+
+function courseplay:hasBunkerSiloCompacter(workTool)
+	if workTool.cp.hasSpecializationBunkerSiloCompacter then	
+		return true
+	end
+end
 
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
@@ -368,7 +379,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		end;
 	-- MODE 10:Leveler
 	elseif vehicle.cp.mode == 10 then
-		if isImplement and workTool.cp.hasSpecializationLeveler then 
+		if isImplement and (workTool.cp.hasSpecializationLeveler or workTool.cp.hasSpecializationBunkerSiloCompacter) then 
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -1960,6 +1971,10 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 		end
 	elseif cpModeToCheck == 9 and courseplay:hasShovel(workTool) then
 		modeValid = true;
+	
+	elseif cpModeToCheck == 10 and (courseplay:hasLeveler(workTool) or courseplay:hasBunkerSiloCompacter(workTool)) then
+		modeValid = true;
+
 	end
 	return modeValid ;
 end

@@ -49,6 +49,8 @@ function courseplay:setAIDriver(vehicle, mode)
 		vehicle.cp.driver = FillableFieldworkAIDriver(vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
 		vehicle.cp.driver = UnloadableFieldworkAIDriver.create(vehicle)
+	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
+		vehicle.cp.driver = LevelCompactAIDriver(vehicle)
 	end
 end
 
@@ -159,7 +161,7 @@ function courseplay:toggleMode10automaticSpeed(self)
 	end
 end
 function courseplay:toggleMode10drivingThroughtLoading(self)
-		self.cp.mode10.drivingThroughtLoading = not self.cp.mode10.drivingThroughtLoading
+	self.cp.mode10.drivingThroughtLoading = not self.cp.mode10.drivingThroughtLoading
 end
 
 function courseplay:toggleMode10AutomaticHeight(self)
@@ -384,6 +386,9 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 
 end;
 
+function courseplay:changeBladeWorkWidth(vehicle, changeBy, force, noDraw)
+	courseplay:changeWorkWidth(vehicle, changeBy/10, force, noDraw)
+end
 
 function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	local isSetManually = false
@@ -2043,6 +2048,7 @@ function DrivingModeSetting:checkAndSetValidValue(new)
 		and self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 		and self.vehicle.cp.mode ~= courseplay.MODE_SEED_FERTILIZE
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
+		and self.vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER
 		--and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
 		and new == #self.values then
 		-- enable AI Driver for mode 1, 4, 5, 6 and 9 only until it can handle other modes

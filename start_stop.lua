@@ -49,8 +49,13 @@ function courseplay:start(self)
 	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
 	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
+<<<<<<< master
 	courseplay.alreadyPrinted = {} 
 	--courseplay:printMeThisTable(g_currentMission,0,5,"g_currentMission")
+=======
+	--courseplay.alreadyPrinted = {}
+	--courseplay:printMeThisTable(self:getAttachedImplements()[1].object.spec_attacherJointControl,0,5,"self.attachedImplements[1].object") 
+>>>>>>> update
 	
 	--[[Tommi Todo Whx is this here ???
 	if self.cp.orgRpm == nil then
@@ -153,12 +158,12 @@ function courseplay:start(self)
 	self.cp.isReversePossible = isReversePossible
 	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
 	
-	if self.cp.mode == 10 then 
+	--[[if self.cp.mode == 10 then 
 		if self.cp.mode10.OrigCompactScale == nil then
 			self.cp.mode10.OrigCompactScale = self.bunkerSiloCompactingScale
 			self.bunkerSiloCompactingScale = self.bunkerSiloCompactingScale*5
 		end
-	end
+	end]]
 		
 		
 	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);
@@ -658,7 +663,7 @@ function courseplay:stop(self)
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
 		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
 		if tool.cp.originalCapacities then
-			for index,fillUnit in pairs(tool.fillUnits) do
+			for index,fillUnit in pairs(tool:getFillUnits()) do
 				fillUnit.capacity =  tool.cp.originalCapacities[index]
 			end
 			tool.cp.originalCapacities = nil

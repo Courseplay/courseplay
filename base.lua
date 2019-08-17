@@ -734,17 +734,17 @@ function courseplay:onDraw()
 			end
 		elseif self.cp.mode == 10 then
 
-			renderText(0.2,0.395,0.02,"numStoppedCPs: "..tostring(#self.cp.mode10.stoppedCourseplayers ))
-			renderText(0.2,0.365,0.02,"shieldHeight: "..tostring(self.cp.mode10.shieldHeight))
-			renderText(0.2,0.335,0.02,"lowestAlpha: "..tostring(self.cp.mode10.lowestAlpha))
-			renderText(0.2,0.305,0.02,"speeds.bunkerSilo: "..tostring(self.cp.speeds.bunkerSilo))
-			renderText(0.2,0.275,0.02,"jumpsPerRun: "..tostring(self.cp.mode10.jumpsPerRun))
-			renderText(0.2,0.245,0.02,"bladeOffset: "..tostring(self.cp.mode10.bladeOffset))
-			renderText(0.2,0.215,0.02,"diffY: "..tostring(self.cp.diffY ))
-			renderText(0.2,0.195,0.02,"tractorHeight: "..tostring(self.cp.tractorHeight ))
-			renderText(0.2,0.165,0.02,"shouldBHeight: "..tostring(self.cp.shouldBHeight ))
-			renderText(0.2,0.135,0.02,"targetHeigth: "..tostring(self.cp.mode10.targetHeigth))
-			renderText(0.2,0.105,0.02,"height: "..tostring(self.cp.currentHeigth))
+			--renderText(0.2,0.395,0.02,"numStoppedCPs: "..tostring(#self.cp.mode10.stoppedCourseplayers ))
+			--renderText(0.2,0.365,0.02,"shieldHeight: "..tostring(self.cp.mode10.shieldHeight))
+			--renderText(0.2,0.335,0.02,"lowestAlpha: "..tostring(self.cp.mode10.lowestAlpha))
+			--renderText(0.2,0.305,0.02,"speeds.bunkerSilo: "..tostring(self.cp.speeds.bunkerSilo))
+			--renderText(0.2,0.275,0.02,"jumpsPerRun: "..tostring(self.cp.mode10.jumpsPerRun))
+			--renderText(0.2,0.245,0.02,"bladeOffset: "..tostring(self.cp.mode10.bladeOffset))
+			--renderText(0.2,0.215,0.02,"diffY: "..tostring(self.cp.diffY ))
+			--renderText(0.2,0.195,0.02,"tractorHeight: "..tostring(self.cp.tractorHeight ))
+			--renderText(0.2,0.165,0.02,"shouldBHeight: "..tostring(self.cp.shouldBHeight ))
+			--renderText(0.2,0.135,0.02,"targetHeigth: "..tostring(self.cp.mode10.targetHeigth))
+			--renderText(0.2,0.105,0.02,"height: "..tostring(self.cp.currentHeigth))
 		end
 	end
 	

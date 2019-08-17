@@ -512,7 +512,7 @@ function AIDriver:onWaypointPassed(ix)
 		-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
 		-- passed stop until the user presses the continue button or the timer elapses
 		self:debug('Waiting point reached, wait time %d s', self.vehicle.cp.waitTime)
-		self:stop('WAIT_POINT')
+		self:stop('WAIT_POINT')		
 		-- show continue button
 		self:refreshHUD()
 	end
