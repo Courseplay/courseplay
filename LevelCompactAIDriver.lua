@@ -40,6 +40,7 @@ LevelCompactAIDriver.myStates = {
 	DRIVE_IN_SILO = {},
 	DRIVE_SILOFILLUP ={},
 	DRIVE_SILOLEVEL ={},
+	DRIVE_SILOCOMPACT = {},
 	PUSH = {},
 	PULLBACK = {}
 }
@@ -52,6 +53,7 @@ function LevelCompactAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self:initStates(LevelCompactAIDriver.myStates)
 	self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
+	self.debugChannel = 14
 	self.refSpeed = 10
 	self:setHudContent()
 	self.fillUpState = self.states.PUSH
@@ -100,33 +102,55 @@ function LevelCompactAIDriver:drive(dt)
 		end
 	elseif self.levelState == self.states.CHECK_SHIELD then
 		self:stopAndWait(dt)
-	
-		--record alphaList if not existing
-		if self.alphaList == nil then
-			self:setIsAlphaListrecording()
-		end
-		if self:getIsAlphaListrecording() then
-			self:recordAlphaList()
-		else
+		if self:checkShield() then
 			self:selectMode()
 		end
-
 	elseif self.levelState == self.states.DRIVE_SILOFILLUP then
 		self:driveSiloFillUp(dt)
 	elseif self.levelState == self.states.DRIVE_SILOLEVEL then
 		self:driveSiloLevel(dt)
+	elseif self.levelState == self.states.DRIVE_SILOCOMPACT then
+		self:driveSiloCompact(dt)
 	end
 end
 
+function LevelCompactAIDriver:checkShield()
+	local workTool = self.vehicle.cp.workTools[1]
+	
+	if workTool.cp.hasSpecializationLeveler then
+		if self:getIsModeFillUp() or self:getIsModeLeveling() then
+			--record alphaList if not existing
+			if self.alphaList == nil then
+				self:setIsAlphaListrecording()
+			end
+			if self:getIsAlphaListrecording() then
+				self:recordAlphaList()
+			else
+				return true
+			end
+		else
+			courseplay:setInfoText(self.vehicle, 'COURSEPLAY_WRONG_TOOL');
+		end
+	elseif workTool.cp.hasSpecializationBunkerSiloCompacter then
+		if self:getIsModeCompact() then
+			return true
+		else
+			courseplay:setInfoText(self.vehicle, 'COURSEPLAY_WRONG_TOOL');
+		end
+	end		
+end
+
+
 function LevelCompactAIDriver:selectMode()
 	if self:getIsModeFillUp() then
-		print("self:changeLevelState(self.states.DRIVE_SILOFILLUP)")
+		self:debug("self:getIsModeFillUp()")
 		self:changeLevelState(self.states.DRIVE_SILOFILLUP)
-	elseif self:getIsModeLeveling()then
-		print("self:changeLevelState(self.states.DRIVE_SILOLEVEL)")
+	elseif self:getIsModeLeveling() then
+		self:debug("self:getIsModeLeveling()")
 		self:changeLevelState(self.states.DRIVE_SILOLEVEL)
 	elseif self:getIsModeCompact()then
-		print("self:isModeCompact()")
+		self:debug("self:isModeCompact()")
+		self:changeLevelState(self.states.DRIVE_SILOCOMPACT)
 	end
 	self.fillUpState = self.states.PUSH
 end
@@ -148,7 +172,7 @@ function LevelCompactAIDriver:lookOutForCourseplayers()
 				if insert then
 					
 					table.insert(self.stoppedCourseplayers ,courseplayer)
-					print("add to stoppedCourseplayers: "..tostring(courseplayer).." new number: "..tostring(#self.stoppedCourseplayers))
+					self:debug("add to stoppedCourseplayers: "..tostring(courseplayer).." new number: "..tostring(#self.stoppedCourseplayers))
 				end
 			end
 		end
@@ -156,8 +180,8 @@ function LevelCompactAIDriver:lookOutForCourseplayers()
 		for _,steerable in pairs(g_currentMission.enterables) do
 			local x,y,z = getWorldTranslation(steerable.rootNode)
 			local cx,cy,cz = self.course:getWaypointPosition(1)
-			local distance = courseplay:distance(x,z,cx,cz) 
-			if distance  < vehicle.cp.mode10.searchRadius and steerable ~= vehicle and steerable.isMotorStarted then
+			local distance = courseplay:distance(x,z,cx,cz)
+			if distance  < vehicle.cp.mode10.searchRadius and steerable ~= vehicle and (steerable.getIsMotorStarted and steerable:getIsMotorStarted()) then
 				local insert = true
 				for i=1,#self.stoppedCourseplayers do
 					if steerable == self.stoppedCourseplayers[i] then
@@ -188,7 +212,7 @@ function LevelCompactAIDriver:manageCourseplayersStopping()
 		local distance = courseplay:distance(x,z,cx,cz) 
 		if distance  > self.vehicle.cp.mode10.searchRadius and self.stoppedCourseplayers[i].cp.totalFillLevel <1 then
 			table.remove(self.stoppedCourseplayers,i)
-			print("remove from stoppedCourseplayers: "..tostring(courseplayer).." new number: "..tostring(#self.stoppedCourseplayers))
+			self:debug("remove from stoppedCourseplayers: "..tostring(courseplayer).." new number: "..tostring(#self.stoppedCourseplayers))
 		end
 	end
 end
@@ -203,14 +227,39 @@ function LevelCompactAIDriver:stopCourseplayer(courseplayer)
 	courseplayer.cp.driver:hold()
 end 
 
+function LevelCompactAIDriver:driveSiloCompact(dt)
+	if self.fillUpState == self.states.PUSH then
+		--initialize first target point
+		if self.bestTarget == nil or self.vehicle.cp.BunkerSiloMap == nil then
+			self.bestTarget, self.firstLine, self.targetHeight = self:getBestTargetFillUnitLeveling(self.targetSilo,self.lastDrivenColumn)
+		end
+
+		self:drivePush(dt)
+		self:lowerImplements()
+		if self:isAtEnd() then
+			if self:shouldGoToSavePosition() then
+				self:changeLevelState(self.states.DRIVE_TO_PARKING)
+				self:deleteBestTarget()
+				self:raiseImplements()
+				return
+			else
+				self.fillUpState = self.states.PULLBACK
+			end
+		end
+	
+	elseif self.fillUpState == self.states.PULLBACK then
+		if self:drivePull(dt) then
+			self.fillUpState = self.states.PUSH
+			self:deleteBestTargetLeveling()
+		end
+	end
+end
+
 function LevelCompactAIDriver:driveSiloLevel(dt)
 	if self.fillUpState == self.states.PUSH then
 		--initialize first target point
 		if self.bestTarget == nil or self.vehicle.cp.BunkerSiloMap == nil then
 			self.bestTarget, self.firstLine, self.targetHeight = self:getBestTargetFillUnitLeveling(self.targetSilo,self.lastDrivenColumn)
-			--just for debug reasons 
-			self.vehicle.cp.actualTarget = self.bestTarget
-			--
 		end
 		renderText(0.2,0.395,0.02,"self:drivePush(dt)")
 		
@@ -219,13 +268,21 @@ function LevelCompactAIDriver:driveSiloLevel(dt)
 	
 		if self:isAtEnd()
 		or self:hasShieldEmpty()
+		or self:isStuck()
 		then
-			self.fillUpState = self.states.PULLBACK
+			if self:shouldGoToSavePosition() then
+				self:changeLevelState(self.states.DRIVE_TO_PARKING)
+				self:deleteBestTarget()
+				return
+			else
+				self.fillUpState = self.states.PULLBACK
+			end
 		end
 	
 	
 	elseif self.fillUpState == self.states.PULLBACK then
 		renderText(0.2,0.365,0.02,"self:drivePull(dt)")
+		self:moveShield('up',dt)
 		if self:drivePull(dt) then
 			self.fillUpState = self.states.PUSH
 			self:deleteBestTargetLeveling()
@@ -238,9 +295,6 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 		--initialize first target point
 		if self.bestTarget == nil or self.vehicle.cp.BunkerSiloMap == nil then
 			self.bestTarget, self.firstLine = self:getBestTargetFillUnitFillUp(self.targetSilo,self.bestTarget)
-			--just for debug reasons 
-			self.vehicle.cp.actualTarget = self.bestTarget
-			--
 		end
 		
 		self:drivePush(dt)
@@ -248,7 +302,7 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 		--self:moveShield('down',dt,self:getDiffHeightforHeight(0))
 		if self:lastLineFillLevelChanged()
 		or self:isStuck()
-		--or self:hasShieldEmpty()
+		or self:hasShieldEmpty()
 		then
 			if self:shouldGoToSavePosition() then
 				self:changeLevelState(self.states.DRIVE_TO_PARKING)
@@ -259,6 +313,7 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 			end
 		end	
 	elseif self.fillUpState == self.states.PULLBACK then
+		self:moveShield('up',dt)
 		if self:drivePull(dt) or self:getHasMovedToFrontLine(dt) then
 			self.fillUpState = self.states.PUSH
 			self:deleteBestTarget()
@@ -290,6 +345,7 @@ function LevelCompactAIDriver:drivePush(dt)
 	if not fwd then
 		lx, lz = -lx,-lz
 	end
+	self:debugRouting()
 	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
 end	
 
@@ -297,7 +353,7 @@ function LevelCompactAIDriver:drivePull(dt)
 	local pullDone = false
 	local fwd = true
 	local refSpeed = math.min(20,self.vehicle.cp.speeds.bunkerSilo)
-	local allowedToDrive = self:moveShield('up',dt)
+	local allowedToDrive = true 
 	local cx,cy,cz = self.course:getWaypointPosition(self.course:getNumberOfWaypoints())
 	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
 	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
@@ -343,7 +399,7 @@ function LevelCompactAIDriver:lastLineFillLevelChanged()
 	
 	if self.savedLastLineFillLevel ~= newFillLevel then
 		self.savedLastLineFillLevel = nil
-		print("dropout fillLevel")
+		self:debug("dropout fillLevel")
 		return true
 		
 	end	
@@ -351,14 +407,14 @@ end
 
 
 function LevelCompactAIDriver:isStuck()
-	if AIDriver.isStopped(self) then
+	if self:doesNotMove() then
 		if self.vehicle.cp.timers.slipping == nil or self.vehicle.cp.timers.slipping == 0 then
 			courseplay:setCustomTimer(self.vehicle, 'slipping', 3);
 			--courseplay:debug(('%s: setCustomTimer(..., "slippingStage", 3)'):format(nameNum(self.vehicle)), 10);
 		elseif courseplay:timerIsThrough(self.vehicle, 'slipping') then
 			--courseplay:debug(('%s: timerIsThrough(..., "slippingStage") -> return isStuck(), reset timer'):format(nameNum(self.vehicle)), 10);
 			courseplay:resetCustomTimer(self.vehicle, 'slipping');
-			print("dropout isStuck")
+			self:debug("dropout isStuck")
 			return true
 		end;
 	else
@@ -367,15 +423,20 @@ function LevelCompactAIDriver:isStuck()
 
 end
 
+function LevelCompactAIDriver:doesNotMove()
+	-- giants supplied last speed is in mm/s;
+	-- does not move if we are less than 1km/h
+	return math.abs(self.vehicle.lastSpeedReal) < 1/3600 and self.bestTarget.line > self.firstLine+1
+end
+
 function LevelCompactAIDriver:hasShieldEmpty()
 	--return self.vehicle.cp.workTools[1]:getFillUnitFillLevel(1) < 100 and self.bestTarget.line > self.firstLine
 	if self.vehicle.cp.workTools[1]:getFillUnitFillLevel(1) < 100 then
 		if self.vehicle.cp.timers.bladeEmpty == nil or self.vehicle.cp.timers.bladeEmpty == 0 then
-			print("setTimer")
 			courseplay:setCustomTimer(self.vehicle, 'bladeEmpty', 2);
 		elseif courseplay:timerIsThrough(self.vehicle, 'bladeEmpty') and self.bestTarget.line > self.firstLine+1 then 
 			courseplay:resetCustomTimer(self.vehicle, 'bladeEmpty');
-			print("dropout bladeEmpty")
+			self:debug("dropout bladeEmpty")
 			return true
 		end;
 	else
@@ -403,13 +464,14 @@ function LevelCompactAIDriver:isAtEnd()
 	local distance2Target =  courseplay:distance(x,z, cx, cz) --distance from shovel to target
 	if distance2Target < 1 then
 		if self.bestTarget.line == #self.vehicle.cp.BunkerSiloMap then
-			print("dropout atEnd")
+			self:debug("dropout atEnd")
 			return true
 		end
 	end
 end
 
 function LevelCompactAIDriver:deleteBestTarget()
+	self.lastDrivenColumn = nil
 	self.bestTarget = nil
 end
 
@@ -504,6 +566,25 @@ function LevelCompactAIDriver:checkSilo()
 	end
 end
 
+function LevelCompactAIDriver:lowerImplements()
+	for _, implement in pairs(self.vehicle:getAttachedImplements()) do
+		if implement.object.aiImplementStartLine then
+			implement.object:aiImplementStartLine()
+		end
+	end
+	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
+end
+
+function LevelCompactAIDriver:raiseImplements()
+	for _, implement in pairs(self.vehicle:getAttachedImplements()) do
+		if implement.object.aiImplementEndLine then
+			implement.object:aiImplementEndLine()
+		end
+	end
+	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_END_LINE)
+end
+
+
 function LevelCompactAIDriver:moveShield(moveDir,dt,fixHeight)
 	local leveler = self.vehicle.cp.workTools[1]
 	local moveFinished = false
@@ -592,10 +673,10 @@ function LevelCompactAIDriver:recordAlphaList()
 		--record the related alphas to the alpha list
 		local alphaEntry = courseplay:round(bladeToGound-tractorToGround,3)
 		if self.alphaList[alphaEntry] ~= nil then
-			print("resetIsAlphaListrecording")
+			self:debug("resetIsAlphaListrecording")
 			self:resetIsAlphaListrecording()
 		else
-			print(string.format("self.alphaList[%s] = %s",tostring(alphaEntry),tostring(spec.controls[2].moveAlpha)))
+			self:debug(string.format("self.alphaList[%s] = %s",tostring(alphaEntry),tostring(spec.controls[2].moveAlpha)))
 			self.alphaList[alphaEntry] = spec.controls[2].moveAlpha 
 		end	
 	end
@@ -689,10 +770,6 @@ function LevelCompactAIDriver:getBestTargetFillUnitLeveling(Silo,lastDrivenColum
 	local newApproach = lastDrivenColumn == nil 
 	local newBestTarget = {}
 	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, Silo)
-	if not printOnce then
-		printOnce = true
-		courseplay:printMeThisTable(vehicle.cp.BunkerSiloMap,0,5,"vehicle.cp.BunkerSiloMap")
-	end
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local newColumn = math.ceil(#vehicle.cp.BunkerSiloMap[1]/2)
 		if newApproach then
@@ -722,11 +799,35 @@ function LevelCompactAIDriver:getColumnsTargetHeight(newColumn)
 	local totalArea = 0
 	local totalFillLevel = 0
 	for i=1,#self.vehicle.cp.BunkerSiloMap do
-		totalArea = totalArea + self.vehicle.cp.BunkerSiloMap[i][newColumn].area
+		--calculate the area without first and last line
+		if i~= 1 and i~= #self.vehicle.cp.BunkerSiloMap then
+			totalArea = totalArea + self.vehicle.cp.BunkerSiloMap[i][newColumn].area
+		end
 		totalFillLevel = totalFillLevel + self.vehicle.cp.BunkerSiloMap[i][newColumn].fillLevel
 	end
-	local newHeight = math.max(0.3,(totalFillLevel/1000)/totalArea)
-	print(string.format("getTargetHeigth: totalFillLevel:%s; totalArea:%s Height%s",tostring(totalFillLevel),tostring(totalArea),tostring(newHeight)))
+	local newHeight = math.max(0.6,(totalFillLevel/1000)/totalArea)
+	self:debug("getTargetHeigth: totalFillLevel:%s; totalArea:%s Height%s",tostring(totalFillLevel),tostring(totalArea),tostring(newHeight))
 	return newHeight
 	
+end
+
+function LevelCompactAIDriver:debugRouting()
+	if courseplay.debugChannels[10] and self.vehicle.cp.BunkerSiloMap ~= nil and self.bestTarget ~= nil then
+
+		local fillUnit = self.vehicle.cp.BunkerSiloMap[self.bestTarget.line][self.bestTarget.column]
+		--print(string.format("fillUnit %s; self.cp.actualTarget.line %s; self.cp.actualTarget.column %s",tostring(fillUnit),tostring(self.cp.actualTarget.line),tostring(self.cp.actualTarget.column)))
+		local sx,sz = fillUnit.sx,fillUnit.sz
+		local wx,wz = fillUnit.wx,fillUnit.wz
+		local bx,bz = fillUnit.bx,fillUnit.bz
+		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
+		local _,tractorHeight,_ = getWorldTranslation(self.vehicle.cp.DirectionNode)
+		local y = tractorHeight + 1.5;
+
+		cpDebug:drawLine(sx, y, sz, 1, 0, 0, wx, y, wz);
+		cpDebug:drawLine(wx, y, wz, 1, 0, 0, hx, y, hz);
+		cpDebug:drawLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz);
+		--drawDebugLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz, 1, 0, 0); -- Have gradiant color. new draw line cant do that
+		cpDebug:drawLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz);
+		cpDebug:drawPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1);
+	end
 end
