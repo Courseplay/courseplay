@@ -247,12 +247,18 @@ function ShovelModeAIDriver:drive(dt)
 						--vv its a Giants thing that the Shovel never gets 100%
 		if fillLevelPct >= 99 or vehicle.cp.driveUnloadNow or vehicle.cp.slippingStage == 2 or heapEnd then
 			if not vehicle.cp.driveUnloadNow then
-				local newWP = self:findNextRevWaypoint(self.ppc:getCurrentWaypointIx())
-				--courseplay:setWaypointIndex(vehicle, newWP)
+				local newWP = 0
+				if not self:getTargetIsOnBunkerWallColumn() then
+					newWP = self:findNextRevWaypoint(self.ppc:getCurrentWaypointIx())
+					--courseplay:setWaypointIndex(vehicle, newWP)
+				else
+					newWP = self:getClosestPointToStartFill()
+
+				end
 				self.ppc:initialize(newWP);
 				self.ppc:update()
 				courseplay:setDriveUnloadNow(vehicle, true);
-				
+
 				if not g_currentMission.missionInfo.stopAndGoBraking then
 					vehicle.nextMovingDirection = -1
 				end
@@ -461,3 +467,26 @@ function ShovelModeAIDriver:setShovelState(vehicle, state, extraText)
 		end;
 	end
 end;
+
+function ShovelModeAIDriver:getTargetIsOnBunkerWallColumn()
+	local vehicle = self.vehicle
+	return vehicle.cp.actualTarget.column == 1 or vehicle.cp.actualTarget.column == #vehicle.cp.BunkerSiloMap[#vehicle.cp.BunkerSiloMap]
+end
+
+function ShovelModeAIDriver:getClosestPointToStartFill()
+	local vehicle = self.vehicle;
+	local closestDistance = math.huge
+	local closestPoint = 0
+	for i= self.ppc:getCurrentWaypointIx(), self.course:getNumberOfWaypoints() do
+		local px, _, pz = self.course:getWaypointPosition(vehicle.cp.shovelFillStartPoint)
+		local distance = self.course:getDistanceBetweenPointAndWaypoint(px, pz, i)
+		--print(string.format("try %s distance %s rev %s ",tostring(i),tostring(distance),tostring(self.course:isReverseAt(i))))
+		if distance < closestDistance and self.course:isReverseAt(i) then
+			--print("set closestPoint to "..i)
+			closestDistance = distance
+			closestPoint = i
+		end
+	end
+	--print("return "..closestPoint)
+	return closestPoint;
+end
