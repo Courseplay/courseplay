@@ -663,7 +663,7 @@ function courseplay:onDraw()
 	courseplay:showTemporaryMarkers(self)
 
 	local isDriving = self:getIsCourseplayDriving();
-	
+
 	--WORKWIDTH DISPLAY
 	if self.cp.mode ~= 7 and self.cp.timers.showWorkWidth and self.cp.timers.showWorkWidth > 0 then
 		if courseplay:timerIsThrough(self, 'showWorkWidth') then -- stop showing, reset timer

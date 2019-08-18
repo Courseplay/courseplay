@@ -51,6 +51,8 @@ function courseplay:setAIDriver(vehicle, mode)
 		vehicle.cp.driver = UnloadableFieldworkAIDriver.create(vehicle)
 	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
 		vehicle.cp.driver = LevelCompactAIDriver(vehicle)
+	elseif mode == courseplay.MODE_FIELD_SUPPLY then
+		vehicle.cp.driver = FieldSupplyAIDriver(vehicle)
 	end
 end
 
@@ -213,9 +215,6 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 	end
 	if vehicle.cp.wait then
 		courseplay:setVehicleWait(vehicle, false);
-		if vehicle.cp.mode == 8 then
-			courseplay:resetMode8(vehicle)
-		end;
 	end;
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 3 then
 		vehicle.cp.isUnloaded = true;
@@ -2049,9 +2048,10 @@ function DrivingModeSetting:checkAndSetValidValue(new)
 		and self.vehicle.cp.mode ~= courseplay.MODE_SEED_FERTILIZE
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
 		and self.vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER
+		and self.vehicle.cp.mode ~= courseplay.MODE_FIELD_SUPPLY
 		--and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
 		and new == #self.values then
-		-- enable AI Driver for mode 1, 4, 5, 6 and 9 only until it can handle other modes
+		-- enable AI Driver for mode 1, 4, 5, 6 ,8 , 9 and 10 only until it can handle other modes
 		return 1
 	else
 		return SettingList.checkAndSetValidValue(self, new)

@@ -83,9 +83,7 @@ local function initialize()
 		'mode1',
 		'mode2',
 		'mode3', 
-		'mode8',
-		'mode10',		
-		'recording', 
+		'recording',
 		'reverse',
 		'settings',
 		'signs', 
@@ -103,6 +101,7 @@ local function initialize()
 		'GrainTransportAIDriver',
 		'FieldworkAIDriver',
 		'FillableFieldworkAIDriver',
+		'FieldSupplyAIDriver',
 		'PlowAIDriver',
 		'UnloadableFieldworkAIDriver',
 		'BaleLoaderAIDriver',
@@ -169,7 +168,7 @@ local function setGlobalData()
 	courseplay.MODE_TRANSPORT = 5;
 	courseplay.MODE_FIELDWORK = 6;
 	courseplay.MODE_COMBINE_SELF_UNLOADING = 7; --removed by Tommi
-	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
+	courseplay.MODE_FIELD_SUPPLY = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;

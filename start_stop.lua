@@ -51,7 +51,7 @@ function courseplay:start(self)
 	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
 	courseplay.alreadyPrinted = {} 
 	--courseplay:printMeThisTable(g_currentMission,0,5,"g_currentMission")
-	
+
 	--[[Tommi Todo Whx is this here ???
 	if self.cp.orgRpm == nil then
 		self.cp.orgRpm = {}
@@ -466,7 +466,6 @@ function courseplay:start(self)
 		ret_createLegacyCollisionTriggers = courseplay:createLegacyCollisionTriggers(self)
 	end
 	--print('startStop 509')
-
 end;
 
 function courseplay:getCanUseCpMode(vehicle)
@@ -879,7 +878,7 @@ function courseplay:checkSaveFuel(vehicle,allowedToDrive)
 	if (not vehicle.cp.saveFuelOptionActive) 
 	or (vehicle.cp.mode == courseplay.MODE_COMBI and vehicle.cp.activeCombine ~= nil)
 	or (vehicle.cp.mode == courseplay.MODE_FIELDWORK and ((vehicle.courseplayers ~= nil and #vehicle.courseplayers > 0) or vehicle.cp.convoyActive))
-	or ((vehicle.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT or vehicle.cp.mode == courseplay.MODE_OVERLOADER) and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait)
+	or ((vehicle.cp.mode == courseplay.MODE_FIELD_SUPPLY or vehicle.cp.mode == courseplay.MODE_OVERLOADER) and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait)
 	then
 		if vehicle.cp.saveFuel then
 			vehicle.cp.saveFuel = false

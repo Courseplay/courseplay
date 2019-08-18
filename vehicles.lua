@@ -787,7 +787,6 @@ function courseplay:getRealUnloadOrFillNode(workTool)
 		elseif workTool.cp.hasSpecializationTrailer and workTool.cp.hasSpecializationFillable and #workTool.spec_fillUnit.fillUnits > 0 then
 			-- Get the current exactFillRootNode.
 			local exactFillRootNode = workTool.spec_fillUnit.fillUnits[1].exactFillRootNode; -- TODO: Handle multiply exactFillRootNode for trailers with more than 1 fill plane. (temp fix for now)
-
 			-- Create the new node and link it to exactFillRootNode
 			local node = courseplay:createNewLinkedNode(workTool, "UnloadOrFillNode", exactFillRootNode);
 
@@ -801,7 +800,6 @@ function courseplay:getRealUnloadOrFillNode(workTool)
 			end;
 
 			workTool.cp.unloadOrFillNode = node;
-
 			-- NONE OF THE ABOVE
 		else
 			workTool.cp.unloadOrFillNode = false;

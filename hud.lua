@@ -256,7 +256,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_TRANSPORT]				 = {   4,108,  36,76 };
 		[courseplay.MODE_FIELDWORK]				 = {  40,108,  72,76 };
 		[courseplay.MODE_COMBINE_SELF_UNLOADING] = {  76,108, 108,76 };
-		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { 112,108, 144,76 };
+		[courseplay.MODE_FIELD_SUPPLY] = { 112,108, 144,76 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 148,108, 180,76 };
 		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,431, 251,399 };
 	};
@@ -348,7 +348,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_TRANSPORT]				 = {  76,144, 108,112 };
 		[courseplay.MODE_FIELDWORK]				 = { 112,144, 144,112 };
 		[courseplay.MODE_COMBINE_SELF_UNLOADING] = { 148,144, 180,112 };
-		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] = { 184,144, 216,112 };
+		[courseplay.MODE_FIELD_SUPPLY] = { 184,144, 216,112 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 220,144, 252,112 };
 		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,394, 251,362 };
 	};
@@ -380,7 +380,7 @@ function courseplay.hud:setup()
 		[courseplay.MODE_TRANSPORT] 				= courseplay.utils:rgbToNormal( 21, 198, 255, 1),       -- Blue
 		[courseplay.MODE_FIELDWORK] 				= courseplay.utils:rgbToNormal( 49,  52, 140, 1),       -- Dark Blue
 		[courseplay.MODE_COMBINE_SELF_UNLOADING]	= courseplay.utils:rgbToNormal(159,  29, 250, 1),       -- Purple
-		[courseplay.MODE_LIQUIDMANURE_TRANSPORT] 	= courseplay.utils:rgbToNormal(255,  27, 231, 1),       -- Pink
+		[courseplay.MODE_FIELD_SUPPLY] 	= courseplay.utils:rgbToNormal(255,  27, 231, 1),       -- Pink
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]		= courseplay.utils:rgbToNormal(231,  19,  19, 1),       -- Red
 		[courseplay.MODE_BUNKERSILO_COMPACTER]		= courseplay.utils:rgbToNormal(231,  19,  19, 1),       -- Red
 	};
@@ -2621,6 +2621,13 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
+function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
+	self:enablePageButton(vehicle, 3)
+	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 1, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeDriveOnAtFillLevel', 3, 2, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeSiloFillType', 3, 3, 1 )
+end
+
 
 function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	--page 9
@@ -2654,8 +2661,8 @@ end
 
 function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 	self:debug(vehicle,"setFillableFieldworkAIDriverContent")
-	
-	
+
+
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
 	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 6, 1 )
 	self:addRowButton(vehicle,'toggleFertilizeOption', 3, 7, 1 )

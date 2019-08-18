@@ -1007,11 +1007,11 @@ function courseplay:askForSpecialSettings(self, object)
 		automaticToolOffsetX = -2.2;
 
 	end;
-
+--[[
 	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
 		object.cp.lastFillLevel = object.cp.fillLevel;
 	end;
-
+]]
 	if automaticToolOffsetX ~= nil and self.cp.tempToolOffsetX == nil then
 		self.cp.tempToolOffsetX = self.cp.toolOffsetX;
 		courseplay:changeToolOffsetX(self, nil, automaticToolOffsetX, true);

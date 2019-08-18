@@ -62,8 +62,6 @@ end
 
 function LevelCompactAIDriver:setHudContent()
 	courseplay.hud:setLevelCompactAIDriverContent(self.vehicle)
-	
-	
 end
 
 function LevelCompactAIDriver:start(ix)

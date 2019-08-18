@@ -272,7 +272,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	local hasWaterTrailer = false
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
+		if SpecializationUtil.hasSpecialization(Dischargeable, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -356,15 +356,13 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			end;
 		end;
 
-	-- MODE 8: LIQUID MANURE TRANSFER
+	-- MODE 8: Field Supply
 	elseif vehicle.cp.mode == 8 then
-		if workTool.cp.hasSpecializationFillable and ((workTool.overloading ~= nil or workTool.setIsReFilling ~= nil) or workTool.cp.isFuelTrailer or workTool.cp.isWaterTrailer) then
+		if SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			vehicle.cp.hasMachinetoFill = true;
-			workTool.cp.waterReceiverTrigger = nil; -- water trailer: make sure it has no saved unloading water trigger
 		end;
-		hasWaterTrailer = workTool.cp.isWaterTrailer
+
 	-- MODE 9: FILL AND EMPTY SHOVEL
 	elseif vehicle.cp.mode == 9 then
 		if not isImplement and (courseplay:isWheelloader(workTool) or workTool.typeName == 'frontloader' or courseplay:isMixer(workTool)) then
@@ -798,7 +796,6 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
 
 	local driveOn = vehicle.cp.driveUnloadNow;
-		
 	if not currentTrailer.cp.realUnloadOrFillNode then
 		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
 		if not currentTrailer.cp.realUnloadOrFillNode or not currentTrailer.spec_trailer then
@@ -1359,10 +1356,9 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 	return allowedToDrive, lx, lz;
 end;		
 		
-function courseplay:fillOnTrigger(vehicle, workTool,triggerId)
+function courseplay:fillOnTrigger(vehicle, objectToFill,triggerId)
 	local allowedToDrive = true
 	local trigger = courseplay.triggers.fillTriggers[triggerId]
-	local objectToFill = workTool; 
 	if trigger.onActivateObject then
 		--loadTriggers:placeables,silos
 		--when I'm in the trigger, activate it
@@ -1940,7 +1936,7 @@ end
 function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 	local modeValid = false
 	--3,8,9,10 are still disabled
-	if ((cpModeToCheck == 1 or cpModeToCheck == 2) and workTool.spec_dischargeable and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
+	if ((cpModeToCheck == 1 or cpModeToCheck == 2) and SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
 		modeValid = true;
 	elseif cpModeToCheck == 4 then
 		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
@@ -1948,27 +1944,30 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 			modeValid = true;
 		end
 	elseif cpModeToCheck == 6 then
-		if (courseplay:isBaler(workTool) 
-		or courseplay:isBaleLoader(workTool) 
-		or courseplay:isSpecialBaleLoader(workTool) 
-		or workTool.cp.hasSpecializationPickup	
-		or workTool.cp.hasSpecializationCultivator
-		or courseplay:isCombine(workTool)
-		or workTool.cp.hasSpecializationFruitPreparer 
-		or workTool.cp.hasSpecializationPlow
-		or workTool.cp.hasSpecializationTedder
-		or workTool.cp.hasSpecializationWindrower
-		or workTool.cp.hasSpecializationWeeder
-		or workTool.cp.hasSpecializationCutter
-		--or workTool.spec_dischargeable
-		or courseplay:isMower(workTool)
-		or courseplay:isAttachedCombine(workTool) 
-		or courseplay:isFoldable(workTool))
-		and not courseplay:isSprayer(workTool)
-		and not (courseplay:isSowingMachine(workTool) and not workTool.cp.hasSpecializationWeeder)
+		if (courseplay:isBaler(workTool)
+			or courseplay:isBaleLoader(workTool)
+			or courseplay:isSpecialBaleLoader(workTool)
+			or workTool.cp.hasSpecializationPickup
+			or workTool.cp.hasSpecializationCultivator
+			or courseplay:isCombine(workTool)
+			or workTool.cp.hasSpecializationFruitPreparer
+			or workTool.cp.hasSpecializationPlow
+			or workTool.cp.hasSpecializationTedder
+			or workTool.cp.hasSpecializationWindrower
+			or workTool.cp.hasSpecializationWeeder
+			or workTool.cp.hasSpecializationCutter
+			--or workTool.spec_dischargeable
+			or courseplay:isMower(workTool)
+			or courseplay:isAttachedCombine(workTool)
+			or courseplay:isFoldable(workTool))
+			and not courseplay:isSprayer(workTool)
+			and not (courseplay:isSowingMachine(workTool) and not workTool.cp.hasSpecializationWeeder)
 		then
 			modeValid = true;
 		end
+	elseif cpModeToCheck == 8 and SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
+		modeValid = true;
+
 	elseif cpModeToCheck == 9 and courseplay:hasShovel(workTool) then
 		modeValid = true;
 	
