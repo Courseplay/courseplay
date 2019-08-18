@@ -1793,7 +1793,7 @@ function courseplay.courses.loadAutoDriveCourse(vehicle, course)
 		courseplay.debugVehicle(8, vehicle, 'Received AD course from current position to %s with %d waypoints', course.adDestinationId, #adCourse)
 	else
 		courseplay.infoVehicle(vehicle, 'AutoDrive could not give us a course from the current position to %s', course.adDestinationId)
-		return course
+		return nil
 	end
 	local c = Course(vehicle, adCourse)
 	course.waypoints = c:createLegacyCourse()
