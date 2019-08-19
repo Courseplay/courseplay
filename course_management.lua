@@ -1784,10 +1784,14 @@ end
 --- Ask AutoDrive for a course from the current vehicle position to a destination (one way or return)
 ---@param course table a stored CP course as in g_currentMission.cp_course
 function courseplay.courses.loadAutoDriveCourse(vehicle, course)
+	if not vehicle.spec_autodrive then
+		-- TODO: either find AutoDrive mod or not save these courses.
+		courseplay.infoVehicle(vehicle, 'AutoDrive is not loaded yet, can\'t load AutoDrive course')
+		return nil
+	end
 	local x, _, z = getWorldTranslation(vehicle.rootNode)
 	local _, yRot, _ = getWorldRotation(vehicle.rootNode)
 	local options = {minDistance = 1, maxDistance = 20}
-	local adCourse
 	local adCourse = vehicle.spec_autodrive:GetPath(x, z, yRot, course.adDestinationId, options)
 	if adCourse then
 		courseplay.debugVehicle(8, vehicle, 'Received AD course from current position to %s with %d waypoints', course.adDestinationId, #adCourse)

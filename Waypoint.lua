@@ -292,6 +292,7 @@ function Course:enrichWaypointData()
 			-- and now back to x/z
 			self.waypoints[i].angle = courseGenerator.toCpAngle(angle)
 		end
+		self.waypoints[i].radius = self:calculateRadius(i)
 	end
 	-- make the last waypoint point to the same direction as the previous so we don't
 	-- turn towards the first when ending the course. (the course generator points the last
@@ -302,6 +303,7 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dToNext = 0
 	self.waypoints[#self.waypoints].dToHere = self.length + self.waypoints[#self.waypoints - 1].dToNext
 	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
+	self.waypoints[#self.waypoints].radius = self:calculateRadius(#self.waypoints)
 	-- now add distance to next turn for the combines
 	local dToNextTurn, lNextRow = 0, 0
 	local turnFound = false
@@ -319,6 +321,11 @@ function Course:enrichWaypointData()
 		end
 	end
 	courseplay.debugFormat(12, 'Course with %d waypoints created, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
+end
+
+function Course:calculateRadius(ix)
+	local deltaAngleDeg = math.abs(self:getWaypointAngleDeg(ix - 1) - self:getWaypointAngleDeg(ix))
+	return math.abs( self:getDistanceToNextWaypoint(ix) / ( 2 * math.asin( math.rad(deltaAngleDeg) / 2 )))
 end
 
 --- Is this the same course as otherCourse?
@@ -435,6 +442,16 @@ end
 
 function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].angle
+end
+
+function Course:getRadiusAtIx(ix)
+	local r = self.waypoints[ix].radius
+	if r ~= r then
+		-- radius can be nan
+		return nil
+	else
+		return r
+	end
 end
 
 --- Get the Y rotation of a waypoint (pointing into the direction of the next)

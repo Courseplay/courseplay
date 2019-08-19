@@ -499,6 +499,7 @@ function AIDriver:onWaypointChange(newIx)
 			self:startTurn(newIx)
 		end
 	end
+	self:setCorneringSpeed(newIx)
 	-- rest is implemented by the derived classes
 end
 
@@ -597,16 +598,21 @@ function AIDriver:getSpeed()
 end
 
 function AIDriver:getRecordedSpeed()
-	local speed
+	-- default is the street speed (reduced in corners)
+	local speed = self.corneringSpeed or self.vehicle.cp.speeds.street
 	if self.vehicle.cp.speeds.useRecordingSpeed then
-		-- use maximum street speed if there's no recorded speed.
-		speed = math.min(
-			self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or self.vehicle.cp.speeds.street,
-			self.vehicle.cp.speeds.street)
-	else
-		speed = self.vehicle.cp.speeds.street
+		-- use default street speed if there's no recorded speed.
+		speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 	end
 	return speed
+end
+
+function AIDriver:setCorneringSpeed(ix)
+	local radius = self.course:getRadiusAtIx(ix)
+	if radius then
+		self.corneringSpeed = math.max(self.vehicle.cp.speeds.turn, math.min(radius / 20 * self.vehicle.cp.speeds.street, self.vehicle.cp.speeds.street))
+		self:debug('Course radius = %.1f, reduced speed %.1f', radius, self.corneringSpeed)
+	end
 end
 
 -- TODO: review this whole fillpoint/filltrigger thing.
