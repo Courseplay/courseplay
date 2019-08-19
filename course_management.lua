@@ -1695,7 +1695,7 @@ end
 
 
 function courseplay.courses:addAutoDriveDestinations()
-	if FS19_AutoDrive.AutoDrive then
+	if FS19_AutoDrive and FS19_AutoDrive.AutoDrive then
 		if not self:getAutoDriveDestinationsFolder() then
 			local id = #g_currentMission.cp_folders + 1
 			-- TODO: language!
