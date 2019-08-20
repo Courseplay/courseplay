@@ -674,6 +674,20 @@ function Course:getNextFwdWaypointIxFromVehiclePosition(ix, vehicleNode, lookAhe
 	return ix
 end
 
+function Course:getNextRevWaypointIxFromVehiclePosition(ix, vehicleNode, lookAheadDistance)
+	for i = ix, #self.waypoints do
+		if self:isReverseAt(i) then
+			local uX, uY, uZ = self:getWaypointPosition(i)
+			local _, _, z = worldToLocal(vehicleNode, uX, uY, uZ);
+			if z < -lookAheadDistance then
+				return i
+			end
+		end
+	end
+	courseplay.debugFormat(12, 'Course: could not find next forward waypoint after %d', ix)
+	return ix
+end
+
 --- Cut waypoints from the end of the course until we shortened it by at least d
 -- @param d length in meters to shorten course
 -- @return true if shortened

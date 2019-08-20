@@ -300,7 +300,7 @@ function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
 	if forcedPoint then
 		 pointIndex = forcedPoint;
 	else
-		pointIndex = vehicle.cp.shovelFillStartPoint+1
+		pointIndex = vehicle.cp.driver.shovelFillStartPoint+2
 	end
 	local x,z = vehicle.Waypoints[pointIndex].cx,vehicle.Waypoints[pointIndex].cz			
 	local tx,tz = x,z + 0.50
@@ -320,8 +320,8 @@ function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
 	--it's not a bunkersSilo, try to find a heap
 	local heapFillType = 0
 	if vehicle.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		p1x,p1z = vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cx,vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cz;
-		p2x,p2z = vehicle.Waypoints[vehicle.cp.shovelFillEndPoint].cx,vehicle.Waypoints[vehicle.cp.shovelFillEndPoint].cz;
+		p1x,p1z = vehicle.Waypoints[vehicle.cp.driver.shovelFillStartPoint].cx,vehicle.Waypoints[vehicle.cp.driver.shovelFillStartPoint].cz;
+		p2x,p2z = vehicle.Waypoints[vehicle.cp.driver.shovelFillEndPoint].cx,vehicle.Waypoints[vehicle.cp.driver.shovelFillEndPoint].cz;
 		p1y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p1x, 1, p1z);
 		p2y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p2x, 1, p2z);
 		heapFillType = DensityMapHeightUtil.getFillTypeAtLine(p1x, p1y, p1z, p2x, p2y, p2z, 5)

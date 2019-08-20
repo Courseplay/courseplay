@@ -260,7 +260,7 @@ function LevelCompactAIDriver:driveSiloLevel(dt)
 			self.bestTarget, self.firstLine, self.targetHeight = self:getBestTargetFillUnitLeveling(self.targetSilo,self.lastDrivenColumn)
 		end
 		renderText(0.2,0.395,0.02,"self:drivePush(dt)")
-		
+
 		self:drivePush(dt)
 		self:moveShield('down',dt,self:getDiffHeightforHeight(self.targetHeight))
 	
@@ -294,7 +294,7 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 		if self.bestTarget == nil or self.vehicle.cp.BunkerSiloMap == nil then
 			self.bestTarget, self.firstLine = self:getBestTargetFillUnitFillUp(self.targetSilo,self.bestTarget)
 		end
-		
+
 		self:drivePush(dt)
 		self:moveShield('down',dt,0)
 		--self:moveShield('down',dt,self:getDiffHeightforHeight(0))
@@ -527,18 +527,6 @@ function LevelCompactAIDriver:changeLevelState(newState)
 	self.levelState = newState
 end
 
-function LevelCompactAIDriver:findNextRevWaypoint(currentPoint)
-	local vehicle = self.vehicle;
-	local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
-	for i= currentPoint, self.vehicle.cp.numWaypoints do
-		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
-		if z < -3 and vehicle.Waypoints[i].rev  then
-			return i
-		end;
-	end;
-	return currentPoint;
-end
-
 function LevelCompactAIDriver:getSpeed()
 	local speed = 0
 	if self.levelState == self.states.DRIVE_TO_PARKING then
@@ -750,11 +738,7 @@ function LevelCompactAIDriver:getBestTargetFillUnitFillUp(Silo,actualTarget)
 												}
 		end
 		
-		if vehicle.cp.mode10.leveling and not fillingTarget.empty then
-			actualTarget = levelingTarget
-		else
-			actualTarget = fillingTarget
-		end
+		actualTarget = fillingTarget
 		firstLine = actualTarget.line
 	end
 	
@@ -827,5 +811,24 @@ function LevelCompactAIDriver:debugRouting()
 		--drawDebugLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz, 1, 0, 0); -- Have gradiant color. new draw line cant do that
 		cpDebug:drawLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz);
 		cpDebug:drawPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1);
+
+		local bunker = self.targetSilo
+		if bunker ~= nil then
+			local sx,sz = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
+			local wx,wz = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
+			local hx,hz = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
+			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz);
+			--drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+			--drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz);
+			cpDebug:drawLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz);
+		end
+		if self.tempTarget ~= nil then
+			local tx,tz = self.tempTarget.cx,self.tempTarget.cz
+			local fillUnit = self.vehicle.cp.BunkerSiloMap[self.bestTarget.line][self.bestTarget.column]
+			local sx,sz = fillUnit.sx,fillUnit.sz
+			cpDebug:drawLine(tx, y, tz, 1, 0, 1, sx, y, sz);
+			cpDebug:drawPoint(tx, y, tz, 1, 1 , 1);
+		end
 	end
 end
