@@ -55,6 +55,7 @@ end
 function FieldSupplyAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.allowedToDrive = true
+	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	if self.supplyState == self.states.ON_REFILL_COURSE  then
 		FillableFieldworkAIDriver.driveUnloadOrRefill(self)
 		AIDriver.drive(self, dt)
@@ -75,6 +76,7 @@ end
 
 function FieldSupplyAIDriver:continue()
 	self:changeSupplyState(self.states.ON_REFILL_COURSE )
+	self.state = self.states.RUNNING
 end
 
 function FieldSupplyAIDriver:onWaypointPassed(ix)
@@ -85,8 +87,10 @@ function FieldSupplyAIDriver:onWaypointPassed(ix)
 		self:onLastWaypoint()
 	elseif self.course:isWaitAt(ix) then
 		-- show continue button
+		self.state = self.states.STOPPED
 		self:refreshHUD()
 		self:changeSupplyState(self.states.WAITING_FOR_GETTING_UNLOADED)
+
 	end
 end
 

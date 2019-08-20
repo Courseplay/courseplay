@@ -222,7 +222,9 @@ end
 
 
 function LevelCompactAIDriver:stopCourseplayer(courseplayer)
-	courseplayer.cp.driver:hold()
+	if courseplayer.cp.driver ~= nil then
+		courseplayer.cp.driver:hold()
+	end
 end 
 
 function LevelCompactAIDriver:driveSiloCompact(dt)
