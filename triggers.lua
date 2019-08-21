@@ -303,14 +303,14 @@ function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 			--,tostring(i),tostring(fillTypes[shovelFillType]),tostring(fillUnits[i].fillType),tostring(fillUnits[i].fillLevel),tostring(fillUnits[i].capacity)))
 			if fillTypes[shovelFillType]
 				and (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN)
-				and fillUnits[i].fillLevel <= fillUnits[i].capacity then
+				and fillUnits[i].fillLevel < fillUnits[i].capacity then
 				self.cp.shovel.targetFound = trailer;
 			elseif not fillTypes[shovelFillType] then
 				failReason = "shovels fillType not supported"
 			elseif not (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN) then
 				failReason = "shovel and trailer doesnt have the same fillType"
-			elseif not  fillUnits[i].fillLevel < fillUnits[i].capacity then
-				failReason = "targets capacity is not enought"
+			elseif not (fillUnits[i].fillLevel < fillUnits[i].capacity) then
+				failReason = "target is full"
 			end
 		end
 	end
@@ -326,7 +326,7 @@ function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 		end
 	end
 	if failReason ~= 'none' and courseplay.debugChannels[10] then
-		if g_updateLoopIndex % 1000 == 0 then
+		if g_updateLoopIndex % 100 == 0 then
 			print("findTrailerRaycastCallback failed. Reason: "..failReason)
 		end
 	end

@@ -234,7 +234,8 @@ function ShovelModeAIDriver:drive(dt)
 		end;
 	elseif self.shovelState == self.states.STATE_WAIT_FOR_UNLOADREADY then
 		self:hold()
-		if self:getIsShovelEmpty() then
+		local dischargeNode = self.vehicle.cp.shovel:getCurrentDischargeNode()
+		if self:getIsShovelEmpty() or not self.vehicle.cp.shovel:getCanDischargeToObject(dischargeNode) then
 			if self:setShovelToPositionFinshed(4,dt) then
 				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.DirectionNode, 3 )
 				self.ppc:initialize(newPoint)
