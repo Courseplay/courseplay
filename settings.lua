@@ -1907,6 +1907,9 @@ function SettingList:init(values, texts)
 	self.current = 1
 	-- index of the previous value/text
 	self.previous = 1
+	-- override
+	self.xmlKey = 'SettingsList'
+	self.xmlAttribute = '#value'
 end
 
 -- Get the current value
@@ -1985,6 +1988,51 @@ function SettingList:getGuiElementStateFromValue(value)
 	end
 	return nil
 end
+
+function SettingList:getKey(parentKey)
+	return parentKey .. '.' .. self.xmlKey .. self.xmlAttribute
+end
+
+function SettingList:loadFromXml(xml, parentKey)
+	local value = getXMLInt(xml, self:getKey(parentKey))
+	if value then
+		self:set(value)
+	end
+end
+
+function SettingList:saveToXml(xml, parentKey)
+	setXMLInt(xml, self:getKey(parentKey), self:get())
+end
+
+--- Generic boolean settign
+---@class BooleanSetting : SettingList
+BooleanSetting = CpObject(SettingList)
+
+function BooleanSetting:init(texts)
+	if not texts then
+		texts = {
+			'COURSEPLAY_DEACTIVATED',
+			'COURSEPLAY_ACTIVATED'
+		}
+	end
+	SettingList.init(self,
+		{
+			false,
+			true
+		}, texts)
+end
+
+function BooleanSetting:loadFromXml(xml, parentKey)
+	local value = getXMLBool(xml, self:getKey(parentKey))
+	if value then
+		self:set(value)
+	end
+end
+
+function BooleanSetting:saveToXml(xml, parentKey)
+	setXMLBool(xml, self:getKey(parentKey), self:get())
+end
+
 
 --- AutoDrive mode setting
 ---@class AutoDriveModeSetting : SettingList
@@ -2115,6 +2163,16 @@ function CenterModeSetting:init()
 			'COURSEPLAY_CENTER_MODE_CIRCULAR',
 			'COURSEPLAY_CENTER_MODE_SPIRAL'
 		})
+end
+
+--- Load courses at startup?
+---@class LoadCoursesAtStartupSetting : BooleanSetting
+LoadCoursesAtStartupSetting = CpObject(BooleanSetting)
+
+function LoadCoursesAtStartupSetting:init()
+	BooleanSetting.init(self)
+	self.xmlKey = 'loadCoursesAtStartup'
+	self.xmlAttribute = '#active'
 end
 
 -- do not remove this comment

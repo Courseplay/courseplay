@@ -25,11 +25,6 @@ courseplay.modName = g_currentModName;
 --- CoursePlay Input Context name for locking keys and mouse to the hud
 courseplay.INPUT_CONTEXT_NAME = "COURSEPLAY_HUD";
 
--- initiate CpManager
-local filePath = courseplay.path .. 'CpManager.lua';
-assert(fileExists(filePath), ('COURSEPLAY ERROR: "CpManager.lua" can\'t be found at %q'):format(filePath));
-source(filePath);
-
 -- place sub-classes here in order to get an overview of the contents of the courseplay object and allow for sub-class functions
 courseplay.utils = {};
 ---@class courseplay.courses
@@ -48,19 +43,10 @@ local sonOfaBangSonOfaBoom = {
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
 };
 
-CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
-
-if CpManager.isDeveloper then
-	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
-else
-	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	--courseplay.houstonWeGotAProblem = true;
-	--return;
-end;
-
 local function initialize()
 	local fileList = {
 		'CpObject',
+		'CpManager',
 		'base',
 		'button',
 		'bunkersilo_management',		
@@ -123,7 +109,7 @@ local function initialize()
     'course-generator/geo'
 	};
 
-	local numFiles, numFilesLoaded = #(fileList) + 3, 3; -- + 3 as 'register.lua', 'courseplay.lua' and 'CpManager.lua' have already been loaded
+	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded
 	for _,file in ipairs(fileList) do
 		local filePath = courseplay.path .. file .. '.lua';
 
@@ -375,10 +361,19 @@ end;
 
 --------------------------------------------------------------
 
-
 setVersionData();
 
 initialize();
+
+CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
+
+if CpManager.isDeveloper then
+	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+else
+	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
+	--courseplay.houstonWeGotAProblem = true;
+	--return;
+end;
 
 courseplay.inputBindings.updateInputButtonData();
 
