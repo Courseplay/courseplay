@@ -323,14 +323,8 @@ courseplay.inputBindings.mouse.mouseButtonOverlays = {
 courseplay.inputBindings.keyboard = {};
 
 function courseplay:onKeyEvent(unicode, sym, modifier, isDown) 
-	--print(string.format("%s: unicode(%s), sym(%s), modifier(%s), isDown(%s)",tostring(Input.keyIdToIdName[sym]),tostring(unicode),tostring(sym),tostring(modifier),tostring(isDown)))
-	--[[for name,action in pairs (courseplay.inputActions) do
-		if sym == action.bindingSym then
-			--print("set "..tostring(name)..' to '..tostring(isDown))
-			action.isPressed = isDown
-			action.hasEvent = isDown
-		end
-	end]]	
+	--print(string.format("courseplay:onKeyEvent %s: unicode(%s), sym(%s), modifier(%s), isDown(%s)",tostring(Input.keyIdToIdName[sym]),tostring(unicode),tostring(sym),tostring(modifier),tostring(isDown)))
+	g_schwarmManager:onInputEvent(unicode, sym, modifier, isDown)
 end;
 
 --- appendedFunction onActionBindingsChanged for InputDisplayManager.onActionBindingsChanged

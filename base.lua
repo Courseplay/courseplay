@@ -214,7 +214,10 @@ function courseplay:onLoad(savegame)
 	self.cp.mode10.firstLine = 0
 	self.cp.mode10.bladeOffset = 0
 	self.cp.mode10.drivingThroughtLoading = false
-	
+
+	self.cp.schwarmId = 0;
+	self.cp.schwarmGroupId = 1;
+
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
 		crossing = {};
@@ -1464,7 +1467,10 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.saveFuelOptionActive = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#saveFuelOption'),			 true);
 		-- TODO: move this into DrivingModeSetting
 		self.cp.drivingMode:set(Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#drivingMode'),			 0));
-	
+		self.cp.schwarmId 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#schwarmId'),		 0);
+		self.cp.schwarmGroupId	  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#schwarmGroupId'),		 0);
+
+
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
@@ -1540,6 +1546,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.generationPosition.fieldNum 		= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#savedFieldNum'),			0);
 		self.cp.fertilizerEnabled					= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#fertilizerEnabled'),		true);
 		self.cp.convoyActive						= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#convoyActive'),			false);
+		self.cp.convoy.minDistance					= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#convoyDistance'),			100);
 		if self.cp.abortWork == 0 then
 			self.cp.abortWork = nil;
 		end;
@@ -1673,6 +1680,8 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".basics #runCounterActive", self.cp.runCounterActive)
 	setXMLBool(xmlFile, newKey..".basics #saveFuelOption", self.cp.saveFuelOptionActive)
 	setXMLInt(xmlFile, newKey..".basics #drivingMode", self.cp.drivingMode:get())
+	setXMLInt(xmlFile, newKey..".basics #schwarmId", self.cp.schwarmId)
+	setXMLInt(xmlFile, newKey..".basics #schwarmGroupId", self.cp.schwarmGroupId)
 	
 	--HUD
 	setXMLBool(xmlFile, newKey..".HUD #openHudWithMouse", self.cp.hud.openWithMouse)
@@ -1719,7 +1728,8 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".fieldWork #savedFieldNum", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.fieldNum,0)))
 	setXMLBool(xmlFile, newKey..".fieldWork #fertilizerEnabled", self.cp.fertilizerEnabled)
 	setXMLBool(xmlFile, newKey..".fieldWork #convoyActive", self.cp.convoyActive)
-	
+	setXMLInt(xmlFile, newKey..".fieldWork #convoyDistance", self.cp.convoy.minDistance)
+
 	--LevlingAndCompactingSettings
 	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
 	setXMLBool(xmlFile, newKey..".mode10 #CourseplayersOnly", self.cp.mode10.searchCourseplayersOnly)

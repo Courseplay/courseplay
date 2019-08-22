@@ -1381,8 +1381,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[10][1][2].text = courseplay:loc('COURSEPLAY_MODE10_MODE_BUILDUP');
 					end
 				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
-				
-				
+
+
+
+				elseif entry.functionToCall == 'setSchwarmId' then
+					vehicle.cp.hud.content.pages[page][line][1].text = 'Schwarm Id';
+					vehicle.cp.hud.content.pages[page][line][2].text = tostring(vehicle.cp.schwarmId)
+				elseif entry.functionToCall == 'setSchwarmGroupId' then
+					vehicle.cp.hud.content.pages[page][line][1].text = 'Schwarm Gruppen Id';
+					vehicle.cp.hud.content.pages[page][line][2].text = tostring(vehicle.cp.schwarmGroupId);
 				end
 			end		
 		end
@@ -2404,7 +2411,8 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	
 	--page 7
 	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
-	
+	self:addSettingsRow(vehicle,'setSchwarmId', 7, 7, 1 )
+	self:addSettingsRow(vehicle,'setSchwarmGroupId', 7, 8, 1 )
 	
 	--page 8 fieldwork settings
 	self:enablePageButton(vehicle, 8)

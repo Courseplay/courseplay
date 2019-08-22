@@ -219,13 +219,14 @@ function CpManager:deleteMap()
 end;
 
 function CpManager:update(dt)
-  --print("CpManager:update(dt)")
-  -- UPDATE CLOCK
+	-- UPDATE CLOCK
   courseplay.clock = courseplay.clock + dt
 
 	if g_currentMission.paused or (g_gui.currentGui ~= nil and g_gui.currentGuiName ~= 'inputCourseNameDialogue') then
 		return;
 	end;
+
+	g_schwarmManager:onUpdate()
 
 	if self.firstRun then
 		courseplay:addCpNilTempFillLevelFunction();

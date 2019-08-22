@@ -108,6 +108,14 @@ end;]]
 	return true;
 end;]]
 
+function courseplay:setSchwarmId(vehicle, changeBy)
+	vehicle.cp.schwarmId = MathUtil.clamp(vehicle.cp.schwarmId + changeBy, 0, 50);
+end
+
+function courseplay:setSchwarmGroupId(vehicle, changeBy)
+	vehicle.cp.schwarmGroupId = MathUtil.clamp(vehicle.cp.schwarmGroupId + changeBy, 0, 10);
+end
+
 function courseplay:setDriveNow(vehicle)
 	courseplay:setDriveUnloadNow(vehicle, true);
 end

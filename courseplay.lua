@@ -96,7 +96,7 @@ local function initialize()
 		'CombineAIDriver',
 		'LevelCompactAIDriver',
 		'ShovelModeAIDriver',
-		'AITurn',
+		'SchwarmManager',
 	'course-generator/Pathfinder',
     'course-generator/Island',
 	'course-generator/courseGenerator',

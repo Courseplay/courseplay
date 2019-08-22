@@ -1228,6 +1228,14 @@ function FieldworkAIDriver:getAIMarkersFromWorkAreas(object)
 	end
 end
 
+function FieldworkAIDriver:isOnField()
+	local x, _, z = getWorldTranslation(self:getDirectionNode())
+	local isFIeld = courseplay:isField(x, z)
+	print("isFIeld"..tostring(isFIeld))
+	return isFIeld
+end
+
+
 function FieldworkAIDriver:getAllAIImplements(object, implements)
 	if not implements then implements = {} end
 	for _, implement in ipairs(object:getAttachedImplements()) do
