@@ -109,7 +109,7 @@ function inputCourseNameDialogue:onSaveClick()
 
 		local maxID = courseplay.courses:getMaxFolderID()
 		local folderID
-		if maxID == nil then
+		if not maxID or maxID == 0 then
 			-- no folders yet
 			g_currentMission.cp_folders = {}
 			folderID = 1

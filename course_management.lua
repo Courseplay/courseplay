@@ -957,6 +957,7 @@ function courseplay.courses:getMaxCourseID()
 	return maxID
 end
 
+-- sometimes we return nil, sometimes false, no idea why
 function courseplay.courses:getMaxFolderID()
 	local maxID;
 	if g_currentMission.cp_folders ~= nil then
@@ -1779,6 +1780,12 @@ function courseplay.courses:moveFolder(oldID, newID)
 			v.cp.folder_settings[oldID] = {}
 		end
 	end
+	-- update the parent of all children
+	for _, c in pairs(g_currentMission.cp_courses) do
+		if c.parent == oldID then
+			c.parent = newID
+		end
+	end
 end
 
 function courseplay.courses:removeFolder(id)
@@ -1806,7 +1813,8 @@ function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 		return nil
 	end
 	local x, _, z = getWorldTranslation(vehicle.rootNode)
-	local _, yRot, _ = getWorldRotation(vehicle.rootNode)
+	local nx, _, nz = localDirectionToWorld( vehicle.cp.DirectionNode, 0, 0, 1 )
+	local yRot = math.atan2( nx, nz )  -- because getWorldRotation() is only -pi/2 - +pi/2
 	local options = {minDistance = 1, maxDistance = 20}
 	local adCourse
 	if course.isReturn then
