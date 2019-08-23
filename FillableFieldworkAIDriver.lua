@@ -131,7 +131,7 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	local hasSeeds, hasNoFertilizer = false, false
 
 	for fillType, info in pairs(fillLevelInfo) do
-		if info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
+		if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
 			allOk = false
 			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
 		else
@@ -143,6 +143,13 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 		allOk = true
 	end
 	return allOk
+end
+
+--- Do we need to check this fill unit at all?
+--- AIR and DEF are currently don't seem to be used in the game and some mods come with empty tank. Most stock
+--- vehicles don't seem to consume any air or adblue.
+function FillableFieldworkAIDriver:isValidFillType(fillType)
+	return fillType ~= FillType.DEF	and fillType ~= FillType.AIR
 end
 
 --- Does the helper buy this fill unit (according to the game settings)? If yes, we don't have to stop or refill when empty.
