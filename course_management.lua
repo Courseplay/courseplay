@@ -127,7 +127,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		local course
 
 		if g_currentMission.cp_courses[id].virtual then
-			course = courseplay.courses.loadAutoDriveCourse(vehicle, g_currentMission.cp_courses[id])
+			course = courseplay.courses:loadAutoDriveCourse(vehicle, g_currentMission.cp_courses[id])
 		else
 			course = g_currentMission.cp_courses[id]
 		end
@@ -1701,8 +1701,7 @@ function courseplay.courses:addAutoDriveDestinations()
 	if FS19_AutoDrive and FS19_AutoDrive.AutoDrive then
 		if not self:getAutoDriveDestinationsFolder() then
 			local id = #g_currentMission.cp_folders + 1
-			-- TODO: language!
-			local folderName = 'AutoDrive'
+			local folderName = courseplay:loc('COURSEPLAY_AUTODRIVE_FOLDER')
 			g_currentMission.cp_folders[id] = { id =id, uid = 'f' .. id,
 												type = 'folder',
 												name = folderName,
@@ -1716,19 +1715,32 @@ function courseplay.courses:addAutoDriveDestinations()
 			for _, destination in ipairs(destinations) do
 				g_currentMission.cp_courses[id] = self:createAutoDriveCourse(id, destination, false)
 				id = id + 1
-				--g_currentMission.cp_courses[id] = self:createAutoDriveCourse(id, destination, true)
-				--id = id + 1
+				g_currentMission.cp_courses[id] = self:createAutoDriveCourse(id, destination, true)
+				id = id + 1
 			end
 		end
 		g_currentMission.cp_sorted = self:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 	end
 end
+function courseplay.courses:getClosestAutoDriveDestination(destinations, vehicle)
+	local d = math.huge
+	local closestDestinationId, closestDestinationName
+	local vx, _, vz = getWorldTranslation(vehicle.rootNode)
+	for _, destination in ipairs(destinations) do
+		local dToDestination = courseplay:distance(vx, vz, destination.x, destination.z)
+		if dToDestination < d then
+			d = dToDestination
+			closestDestinationId = destination.id
+			closestDestinationName = destination.name
+		end
+	end
+	return closestDestinationId, closestDestinationName
+end
 
 function courseplay.courses:createAutoDriveCourse(id, destination, isReturn)
 	local courseName = destination.name
 	if isReturn then
-		-- TODO: language
-		courseName = courseName .. ' ' .. '(and back)'
+		courseName = courseName .. ' ' .. courseplay:loc('COURSEPLAY_AUTODRIVE_RETURN_COURSE')
 	end
 	local courseNameClean = courseplay:normalizeUTF8(courseName)
 	local parent = self:getAutoDriveDestinationsFolder()
@@ -1740,6 +1752,7 @@ function courseplay.courses:createAutoDriveCourse(id, destination, isReturn)
 		nameClean =			  courseNameClean,
 		parent =			  parent,
 		adDestinationId =     destination.id,
+		adDestinationName =   destination.name,
 		virtual =             true,
 		isReturn = 			  isReturn
 	};
@@ -1786,7 +1799,7 @@ end
 
 --- Ask AutoDrive for a course from the current vehicle position to a destination (one way or return)
 ---@param course table a stored CP course as in g_currentMission.cp_course
-function courseplay.courses.loadAutoDriveCourse(vehicle, course)
+function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 	if not vehicle.spec_autodrive then
 		-- TODO: either find AutoDrive mod or not save these courses.
 		courseplay.infoVehicle(vehicle, 'AutoDrive is not loaded yet, can\'t load AutoDrive course')
@@ -1795,11 +1808,26 @@ function courseplay.courses.loadAutoDriveCourse(vehicle, course)
 	local x, _, z = getWorldTranslation(vehicle.rootNode)
 	local _, yRot, _ = getWorldRotation(vehicle.rootNode)
 	local options = {minDistance = 1, maxDistance = 20}
-	local adCourse = vehicle.spec_autodrive:GetPath(x, z, yRot, course.adDestinationId, options)
-	if adCourse then
-		courseplay.debugVehicle(8, vehicle, 'Received AD course from current position to %s with %d waypoints', course.adDestinationId, #adCourse)
+	local adCourse
+	if course.isReturn then
+		-- if a return course is requested, find the AD destination closest to the current vehicle position and
+		-- ask AD for a course back to this closest one via the selected destination
+		local destinations = FS19_AutoDrive.AutoDrive:GetAvailableDestinations()
+		local closestDestinationId, closestDestinationName = self:getClosestAutoDriveDestination(destinations, vehicle)
+		if closestDestinationId then
+			courseplay.infoVehicle(vehicle, 'Requesting AutoDrive return course to %s and back to closest destination %s', course.adDestinationName, closestDestinationName)
+			adCourse = vehicle.spec_autodrive:GetPathVia(x, z, yRot, course.adDestinationId, closestDestinationId, options)
+		else
+			courseplay.infoVehicle(vehicle, 'Could not find closest destination, can\'t generate return course to %s', course.adDestinationName)
+			return nil
+		end
 	else
-		courseplay.infoVehicle(vehicle, 'AutoDrive could not give us a course from the current position to %s', course.adDestinationId)
+		adCourse = vehicle.spec_autodrive:GetPath(x, z, yRot, course.adDestinationId, options)
+	end
+	if adCourse then
+		courseplay.debugVehicle(8, vehicle, 'Received AD course with %d waypoints', #adCourse)
+	else
+		courseplay.infoVehicle(vehicle, 'AutoDrive could not give us a course from the current position to %s', course.adDestinationName)
 		return nil
 	end
 	local c = Course(vehicle, adCourse)

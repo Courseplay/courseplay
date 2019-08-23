@@ -395,5 +395,7 @@
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
 
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
 	</texts>
 </l10n>
