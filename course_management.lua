@@ -1792,15 +1792,17 @@ function courseplay.courses:removeFolder(id)
 	g_currentMission.cp_folders[id] = nil
 	-- make sure there's no gap between the virtual Autodrive folder and the last real folder
 	local autoDriveFolderId, _ = self:getAutoDriveDestinationsFolder()
-	local lastRealFolderId = 0
-	for i = autoDriveFolderId - 1, 1, -1 do
-		if g_currentMission.cp_folders[i] ~= nil then
-			lastRealFolderId = i
-			break
+	if autoDriveFolderId then
+		local lastRealFolderId = 0
+		for i = autoDriveFolderId - 1, 1, -1 do
+			if g_currentMission.cp_folders[i] ~= nil then
+				lastRealFolderId = i
+				break
+			end
 		end
-	end
-	if autoDriveFolderId ~= lastRealFolderId + 1 then
-		self:moveFolder(autoDriveFolderId, lastRealFolderId + 1)
+		if autoDriveFolderId ~= lastRealFolderId + 1 then
+			self:moveFolder(autoDriveFolderId, lastRealFolderId + 1)
+		end
 	end
 end
 

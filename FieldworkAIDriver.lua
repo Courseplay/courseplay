@@ -35,6 +35,7 @@ FieldworkAIDriver.myStates = {
 	WAITING_FOR_UNLOAD_OR_REFILL ={}, -- while on the field
 	ON_CONNECTING_TRACK = {},
 	WAITING_FOR_LOWER = {},
+	WAITING_FOR_LOWER_DELAYED = {},
 	WAITING_FOR_RAISE = {},
 	TURNING = {},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {}
@@ -236,13 +237,18 @@ end
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
 function FieldworkAIDriver:driveFieldwork()
 	self:updateFieldworkOffset()
-	if self.fieldworkState == self.states.WAITING_FOR_LOWER then
+	if self.fieldworkState == self.states.WAITING_FOR_LOWER_DELAYED then
+		-- getCanAIVehicleContinueWork() seems to return false when the implement being lowered/raised (moving) but
+		-- true otherwise. Due to some timing issues it may return true just after we started lowering it, so this
+		-- here delays the check for another cycle.
+		self.fieldworkState = self.states.WAITING_FOR_LOWER
+	elseif self.fieldworkState == self.states.WAITING_FOR_LOWER then
 		if self.vehicle:getCanAIVehicleContinueWork() then
 			self:debug('all tools ready, start working')
 			self.fieldworkState = self.states.WORKING
 			self:setSpeed(self:getWorkSpeed())
 		else
-			self:debugSparse('waiting for all tools to lower')
+			self:debug('waiting for all tools to lower')
 			self:setSpeed(0)
 			self:checkFillLevels()
 		end
@@ -420,7 +426,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 		end
 	end
 	-- Reset lookahead distance if we are past a turn
-	if not self.course:isTurnEndAtIx(ix) then
+	if self.course:isTurnEndAtIx(ix - 1) then
 		self.ppc:setNormalLookaheadDistance()
 	end
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
@@ -868,7 +874,7 @@ function FieldworkAIDriver:lowerImplements()
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
 	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
 		-- sowing machines want to stop while the implement is being lowered
-		self.fieldworkState = self.states.WAITING_FOR_LOWER
+		self.fieldworkState = self.states.WAITING_FOR_LOWER_DELAYED
 	end
 end
 
