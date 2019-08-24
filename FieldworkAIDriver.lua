@@ -1230,9 +1230,7 @@ end
 
 function FieldworkAIDriver:isOnField()
 	local x, _, z = getWorldTranslation(self:getDirectionNode())
-	local isFIeld = courseplay:isField(x, z)
-	print("isFIeld"..tostring(isFIeld))
-	return isFIeld
+	return courseplay:isField(x, z)
 end
 
 
