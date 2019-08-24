@@ -1465,6 +1465,8 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
  		self.cp.maxRunNumber		 = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#maxRunNumber'),			 11);
  		self.cp.runCounterActive	= Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#runCounterActive'),		 false);
 		self.cp.saveFuelOptionActive = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#saveFuelOption'),			 true);
+		self.cp.startAtPoint = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#startAtPoint'),			 1);
+
 		-- TODO: move this into DrivingModeSetting
 		self.cp.drivingMode:set(Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#drivingMode'),			 0));
 		self.cp.schwarmId 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#schwarmId'),		 0);
