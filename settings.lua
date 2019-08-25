@@ -109,7 +109,7 @@ end;]]
 end;]]
 
 function courseplay:setSchwarmId(vehicle, changeBy)
-	vehicle.cp.schwarmId = MathUtil.clamp(vehicle.cp.schwarmId + changeBy, 0, 50);
+	vehicle.cp.schwarmId = MathUtil.clamp(vehicle.cp.schwarmId + changeBy, 0, 9);
 end
 
 function courseplay:setSchwarmGroupId(vehicle, changeBy)
