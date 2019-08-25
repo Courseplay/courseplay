@@ -937,6 +937,9 @@ function AIDriver:tipIntoStandardTipTrigger()
 			end
 		end
 	end
+	if not self:getHasAllTippersClosed() then
+		stopForTipping = true
+	end
 	if siloIsFull then
 		self:setInfoText('FARM_SILO_IS_FULL')
 	end
@@ -1015,21 +1018,21 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 	end
 	-- done tipping?
-	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 then
+	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 and self:getHasAllTippersClosed() then
 		courseplay:resetTipTrigger(self.vehicle, true);
 	end
 
 	self:cleanUpMissedTriggerExit()
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	if self.vehicle.cp.totalFillLevel > 0 then
+	--if self.vehicle.cp.totalFillLevel > 0 then
 		if  self:hasTipTrigger()
 		and not self:isNearFillPoint() then
 			self:setSpeed(self.vehicle.cp.speeds.approach)
 			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 		end
-	end
+	--end
 	-- tractor reaches unloadPoint
 	if isNearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
@@ -1115,6 +1118,18 @@ function AIDriver:updateOffset()
 		self.ppc:setOffset(0, 0)
 	end
 end
+
+function AIDriver:getHasAllTippersClosed()
+	local allClosed = true
+	for _, tipper in pairs (self.vehicle.cp.workTools) do
+		if tipper.spec_dischargeable ~= nil and tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
+			allClosed = false
+		end
+
+	end
+	return allClosed
+end
+
 
 ------------------------------------------------------------------------------
 --- PATHFINDING
