@@ -392,12 +392,12 @@
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="Rivestimento balle" />
 		<text name="COURSEPLAY_FillType_Molasses" 							text="Melassa" />
 
-		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="Integrazione AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Non installato" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Non Attivo" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Attivo per scarico/Carico" />
 
-		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="Cartelle AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(Percorso di ritorno)" />
 	</texts>
 </l10n>
