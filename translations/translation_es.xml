@@ -150,8 +150,8 @@
 		<text name="COURSEPLAY_LANE_OFFSET" 								text="Decalaje del carril" />
 		<text name="COURSEPLAY_TOOL_OFFSET_X" 								text="Herramienta: decalaje lateral" />
 		<text name="COURSEPLAY_TOOL_OFFSET_Z" 								text="Herramienta: decalaje delante/atras" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 						text="Linea diferida horizontal para Cargar/Descargar" />
-		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 						text="Linea diferida vertical para Cargar/Descargar/Esperar" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 						text="Paralelo para Cargar/Descargar" />
+		<text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 						text="Perpendicular para Cargar/Descargar" />
 		<text name="COURSEPLAY_FRONT" 										text="Delante" />
 		<text name="COURSEPLAY_BACK" 										text="Detrás" />
 		<text name="COURSEPLAY_WORK_WIDTH" 									text="Ancho de trabajo" />
@@ -391,9 +391,9 @@
 		<text name="COURSEPLAY_FillType_Molasses"							text="Melaza" />
 
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="No instalado" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="No usar" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Para Descargar/Cargar" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
