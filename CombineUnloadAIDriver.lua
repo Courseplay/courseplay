@@ -18,11 +18,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class CombineUnloadAIDriver : AIDriver
 CombineUnloadAIDriver = CpObject(AIDriver)
 
+CombineUnloadAIDriver.myStates = {
+	ONFIELD = {},
+	ONSTREET = {}
+}
+
 --- Constructor
 function CombineUnloadAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_COMBI
+	self.combineUnloadState =self.states.ONSTREET
 	self:setHudContent()
 end
 
@@ -35,9 +41,29 @@ function CombineUnloadAIDriver:start(ix)
 end
 
 function CombineUnloadAIDriver:drive(dt)
-	AIDriver.drive(self, ix)
-
+	courseplay:updateFillLevelsAndCapacities(self.vehicle)
+	if self.combineUnloadState == self.states.ONSTREET then
+		if not  self:onUnLoadCourse(true, dt) then
+			self:hold()
+		end
+		self:searchForTipTriggers()
+		AIDriver.drive(self, dt)
+	end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function CombineUnloadAIDriver:onWhichFieldAmI(vehicle)
 	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);

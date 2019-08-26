@@ -19,13 +19,7 @@ function courseplay:setCpMode(vehicle, modeNum)
 		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
-
-		--if not CpManager.isDeveloper then
-			if modeNum == courseplay.MODE_COMBI then
-				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
-			else
-				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
-			end
+		vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
 		--end
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
@@ -41,8 +35,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
 		vehicle.cp.driver = GrainTransportAIDriver(vehicle)	
 	elseif mode == courseplay.MODE_COMBI then
-		CombineUnloadAIDriver:setHudContent(vehicle)
-	--	vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
+		vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		vehicle.cp.driver = ShovelModeAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
@@ -2125,7 +2118,7 @@ function DrivingModeSetting:checkAndSetValidValue(new)
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
 		and self.vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELD_SUPPLY
-		--and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
+		and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
 		and new == #self.values then
 		-- enable AI Driver for mode 1, 4, 5, 6 ,8 , 9 and 10 only until it can handle other modes
 		return 1
