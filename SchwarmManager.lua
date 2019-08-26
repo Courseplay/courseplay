@@ -97,6 +97,8 @@ function SchwarmManager:onInputEvent(unicode, symbol, modifier, isDown)
 			elseif Input.keyPressedState[SchwarmManager.inputBindings.toggleDebugMode] then
 				self.debug(("call self:toggleDebugMode()"))
 				self:toggleDebugMode()
+			elseif Input.keyPressedState[SchwarmManager.inputBindings.reloadSavegame] then
+				self:restartSavegame()
 			end
 
 		end
@@ -305,6 +307,10 @@ local targetVehicle = self:getVehicleFromId(g_currentMission.enterables,idToJump
 	if targetVehicle ~= nil then
 		courseplay:goToVehicle(nil, targetVehicle)
 	end
+end
+
+function SchwarmManager:restartSavegame()
+	restartApplication("-autoStartSavegameId 6")
 end
 
 --Debug
