@@ -300,7 +300,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": силосная яма заполнена!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 						text="В этом бункере нет такого продукта!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Забрать из бункера:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 							text="В бункере не осталось выбранного продукта! Подождите немного" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 							text="В бункере не осталось выбранного продукта! Подождём немного" />
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 							text=": Выбранное хранилище заполнено! Продолжить у следующего хранилища" />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="Запущено %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Показать первую точку" />
@@ -396,9 +396,7 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"						text="Не установлен" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"							text="Не использовать" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Для разгрузки/наполнеия" />
-
-		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
-
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"							text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"						text="(и вернуться)" />
 	</texts>
 </l10n>
