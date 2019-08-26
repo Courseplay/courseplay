@@ -355,3 +355,12 @@ function SchwarmManager:isNotActive(vehicle)
 	end
 	return true
 end
+
+local oldOnReadyToStart = MPLoadingScreen.onReadyToStart
+MPLoadingScreen.onReadyToStart = function(self)
+	oldOnReadyToStart(self)
+	if g_currentMission:canStartMission() then
+		self:onClickOk()
+	end
+
+end
