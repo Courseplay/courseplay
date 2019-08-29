@@ -292,7 +292,7 @@ function Course:enrichWaypointData()
 			-- and now back to x/z
 			self.waypoints[i].angle = courseGenerator.toCpAngle(angle)
 		end
-		self.waypoints[i].radius = self:calculateRadius(i)
+		self.waypoints[i].calculatedRadius = self:calculateRadius(i)
 	end
 	-- make the last waypoint point to the same direction as the previous so we don't
 	-- turn towards the first when ending the course. (the course generator points the last
@@ -303,7 +303,7 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dToNext = 0
 	self.waypoints[#self.waypoints].dToHere = self.length + self.waypoints[#self.waypoints - 1].dToNext
 	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
-	self.waypoints[#self.waypoints].radius = self:calculateRadius(#self.waypoints)
+	self.waypoints[#self.waypoints].calculatedRadius = self:calculateRadius(#self.waypoints)
 	-- now add distance to next turn for the combines
 	local dToNextTurn, lNextRow = 0, 0
 	local turnFound = false
@@ -443,6 +443,8 @@ function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].angle
 end
 
+-- This is the radius from the course generator. For now only island bypass waypoints nodes have a
+-- radius.
 function Course:getRadiusAtIx(ix)
 	local r = self.waypoints[ix].radius
 	if r ~= r then
@@ -453,6 +455,18 @@ function Course:getRadiusAtIx(ix)
 	end
 end
 
+-- This is the radius calculated when the course is created.
+function Course:getCalculatedRadiusAtIx(ix)
+	local r = self.waypoints[ix].calculatedRadius
+	if r ~= r then
+		-- radius can be nan
+		return nil
+	else
+		return r
+	end
+end
+
+
 --- Get the minimum radius within d distance from waypoint ix
 ---@param ix number waypoint index to start
 ---@param d number distance in meters to look forward
@@ -461,7 +475,7 @@ function Course:getMinRadiusWithinDistance(ix, d)
 	local ixAtD = self:getNextWaypointIxWithinDistance(ix, d) or ix
 	local minR, count = math.huge, 0
 	for i = ix, ixAtD do
-		local r = self:getRadiusAtIx(i)
+		local r = self:getCalculatedRadiusAtIx(i)
 		if r and r < minR then
 			count = count + 1
 			minR = r
