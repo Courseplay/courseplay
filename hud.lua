@@ -870,6 +870,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_DEACTIVATED');
 						end;			
 					end;
+				elseif entry.functionToCall == 'openAdvancedSettingsDialog' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPEN_ADVANCED_SETTINGS');
 				elseif entry.functionToCall == 'toggleFuelSaveOption' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FUELSAVEOPTION');
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.saveFuelOptionActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
@@ -2511,7 +2513,8 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleOpenHudWithMouse', 6, 2, 1 )
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
 	self:addRowButton(vehicle,'toggleIngameMapIconShowText', 6, 4, 1 )
-	
+	self:addRowButton(vehicle,'openAdvancedSettingsDialog', 6, 5, 1 )
+
 	--page 7 driving settings
 	self:enablePageButton(vehicle, 7)
 	self:addSettingsRow(vehicle,'changeWarningLightsMode', 7, 1, 1 )

@@ -190,5 +190,5 @@ function inputCourseNameDialogue:validateCourseName()
 end
 
 g_inputCourseNameDialogue = inputCourseNameDialogue:new();
-g_gui:loadGui(courseplay.path .. 'inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);
+g_gui:loadGui(courseplay.path .. 'gui/inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);
 FocusManager:setGui("MPLoadingScreen")

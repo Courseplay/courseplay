@@ -66,7 +66,6 @@ local function initialize()
 		'helpers',
 		'hud', 
 		'input', 
-		'inputCourseNameDialogue', 
 		'mode1',
 		'mode2',
 		'mode3', 
@@ -100,14 +99,18 @@ local function initialize()
 	'course-generator/Pathfinder',
     'course-generator/Island',
 	'course-generator/courseGenerator',
-    'course-generator/CourseGeneratorScreen',
-	'course-generator/CoursePlot',
     'course-generator/cp',
 	'course-generator/Genetic',
     'course-generator/track',
     'course-generator/center',
     'course-generator/headland',
-    'course-generator/geo'
+    'course-generator/geo',
+		'gui/CourseGeneratorScreen',
+		'gui/CoursePlot',
+		'gui/inputCourseNameDialogue',
+		'gui/AdvancedSettingsScreen',
+		'gui/GlobalSettingsPage',
+		'gui/VehicleSettingsPage',
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded

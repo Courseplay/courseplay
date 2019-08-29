@@ -442,6 +442,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:updateRemainingTime(ix)
 		self:calculateTightTurnOffset()
+		self:debug('Tight turn offset = %.1f', self.tightTurnOffset)
 		self.aiDriverOffsetZ = 0
 		if self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 			if not self.course:isOnConnectingTrack(ix) then
@@ -1194,7 +1195,6 @@ function FieldworkAIDriver:isValidAIImplement(object)
 		end
 	end
 end
-
 --[[
 function FieldworkAIDriver:startTurn(ix)
 	self:debug('Starting a fieldwork turn.')
@@ -1217,8 +1217,7 @@ function FieldworkAIDriver:startTurn(ix)
 		return
 	end
 end
-]]--
-
+]]
 function FieldworkAIDriver:canMakeKTurn(ix, turnContext)
 	if turnContext:isHeadlandCorner() then
 		self:debug('Headland turn, let turn.lua drive for now.')
@@ -1239,6 +1238,14 @@ function FieldworkAIDriver:isTurning()
 		self.fieldworkState == self.states.TURNING or
 		self.fieldworkState == self.states.FINISHING_ROW or
 		self.fieldworkState == self.states.ENDING_TURN
+end
+
+function FieldworkAIDriver:driveTurn()
+	if self.fieldworkState == self.states.FINISHING_ROW then
+	elseif self.fieldworkState == self.states.TURNING then
+	elseif self.fieldworkState == self.states.ENDING_TURN then
+
+	end
 end
 
 --- @param ix number

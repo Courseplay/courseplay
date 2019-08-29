@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<GUI onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+	<GuiElement type="bitmap" profile="uiFullInGameBackground" />
+
+    <GuiElement type="bitmap" profile="cpDialogBg" id="dialogBackground">
+        <GuiElement type="bitmap" profile="cpMenuHeader" id="header">
+            <GuiElement type="multiTextOption" profile="cpHeaderSelector" onClick="onClickPageSelection" id="pageSelector" soundDisabled="true">
+                <GuiElement type="button" profile="uiInGameMenuPagingButtonLeft" id="pagingButtonLeft" />
+                <GuiElement type="button" profile="uiInGameMenuPagingButtonRight" id="pagingButtonRight" />
+            </GuiElement>
+
+            <GuiElement type="list" profile="cpPagingTabList" id="pagingTabList" handleFocus="false">
+                <!-- Page tab template element, will be cloned for each known page: -->
+                <GuiElement type="listItem" id="pagingTabTemplate" profile="cpMenuPageTab" position="0px 0px" handleFocus="false">
+                    <GuiElement type="button" name="tabButton" profile="uiTabbedMenuPageTabButton" handleFocus="false" />
+                </GuiElement>
+            </GuiElement>
+        </GuiElement>
+
+        <!-- Body - Central -->
+        <GuiElement type="bitmap" profile="cpFullScreenSpanning" size="1800px 720px">
+            <GuiElement type="paging" profile="uiInGameMenuPaging" size="1800px 720px" position="0px 0px" onPageChange="onPageChange" onPageUpdate="onPageUpdate" id="pagingElement">
+                <GuiElement type="frameReference" ref="globalSettingsPage" name="globalSettingsPage" id="globalSettingsPage" />
+                <GuiElement type="frameReference" ref="vehicleSettingsPage" name="vehicleSettingsPage" id="vehicleSettingsPage" />
+            </GuiElement>
+        </GuiElement>
+    </GuiElement>
+
+    <!-- screenAlign="bottomLeft" positionOrigin="bottomLeft" -->
+    <GuiElement type="flowLayout" profile="cpButtonBoxDocked"  id="buttonsPanel" position="-130px 0px">
+        <GuiElement type="button" profile="buttonBack" text="$l10n_button_back" onClick="onClickBack" id="menuButton[1]" />
+        <GuiElement type="button" profile="buttonOK" text="$l10n_button_ok" onClick="onClickOk" id="menuButton[2]"  />
+        <GuiElement type="button" profile="buttonCancel" text="$l10n_button_reset" onClick="onClickResetButton" id="menuButton[3]"  />	
+    </GuiElement>
+</GUI>

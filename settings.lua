@@ -1901,7 +1901,10 @@ SettingList = CpObject()
 --- A setting that can have a predefined set of values
 -- @param values table with the valid values
 -- @texts text name in the translation XML files describing the corresponding value
-function SettingList:init(values, texts)
+function SettingList:init(name, label, toolTip, values, texts)
+	self.name = name
+	self.label = label
+	self.toolTip = toolTip
 	self.values = values
 	self.texts = texts
 	-- index of the current value/text
@@ -1926,6 +1929,14 @@ end
 -- Get the current text
 function SettingList:getText()
 	return courseplay:loc(self.texts[self.current])
+end
+
+function SettingList:getLabel()
+	return courseplay:loc(self.label)
+end
+
+function SettingList:getToolTip()
+	return courseplay:loc(self.toolTip)
 end
 
 --- Set the next value
@@ -1981,6 +1992,18 @@ function SettingList:getValueFromGuiElementState(state)
 	return self.values[state]
 end
 
+function SettingList:setGuiElement(element)
+	self.guiElement = element
+end
+
+function SettingList:getGuiElement()
+	return self.guiElement
+end
+
+function SettingList:getGuiElementState()
+	return self:getGuiElementStateFromValue(self.values[self.current])
+end
+
 function SettingList:getGuiElementStateFromValue(value)
 	for i = 1, #self.values do
 		if self.values[i] == value then
@@ -2009,14 +2032,14 @@ end
 ---@class BooleanSetting : SettingList
 BooleanSetting = CpObject(SettingList)
 
-function BooleanSetting:init(texts)
+function BooleanSetting:init(name, label, toolTip, texts)
 	if not texts then
 		texts = {
 			'COURSEPLAY_DEACTIVATED',
 			'COURSEPLAY_ACTIVATED'
 		}
 	end
-	SettingList.init(self,
+	SettingList.init(self, name, label, toolTip,
 		{
 			false,
 			true
@@ -2046,7 +2069,7 @@ AutoDriveModeSetting.UNLOAD_OR_REFILL 	= 2  -- Use AutoDrive for unload and refi
 
 function AutoDriveModeSetting:init(vehicle)
 	self.vehicle = vehicle
-	SettingList.init(self,
+	SettingList.init(self, 'autoDriveMode', 'COURSEPLAY_AUTODRIVE_MODE', '',
 		{
 			AutoDriveModeSetting.DONT_USE,
 			AutoDriveModeSetting.UNLOAD_OR_REFILL,
@@ -2073,7 +2096,7 @@ DrivingModeSetting.DRIVING_MODE_AIDRIVER = 2  -- AI driver
 
 --- Constructor needs a vehicle to be able to check CP mode
 function DrivingModeSetting:init(vehicle)
-	SettingList.init(self,
+	SettingList.init(self, 'drivingMode', 'COURSEPLAY_DRIVER', '',
 		{
 			DrivingModeSetting.DRIVING_MODE_NORMAL,
 			DrivingModeSetting.DRIVING_MODE_PPC,
@@ -2122,7 +2145,7 @@ end
 StartingLocationSetting = CpObject(SettingList)
 
 function StartingLocationSetting:init(vehicle)
-	SettingList.init(self,
+	SettingList.init(self, 'startingLocation', 'COURSEPLAY_STARTING_LOCATION', '',
 		{
 			courseGenerator.STARTING_LOCATION_VEHICLE_POSITION,
 			courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION,
@@ -2153,7 +2176,7 @@ end
 CenterModeSetting = CpObject(SettingList)
 
 function CenterModeSetting:init()
-	SettingList.init(self,
+	SettingList.init(self, 'centerMode', 'COURSEPLAY_CENTER_MODE', '',
 		{
 			courseGenerator.CENTER_MODE_UP_DOWN,
 			courseGenerator.CENTER_MODE_CIRCULAR,
@@ -2171,9 +2194,21 @@ end
 LoadCoursesAtStartupSetting = CpObject(BooleanSetting)
 
 function LoadCoursesAtStartupSetting:init()
-	BooleanSetting.init(self)
+	BooleanSetting.init(self, 'loadCoursesAtStartup', 'COURSEPLAY_LOAD_COURSES_AT_STARTUP', '')
 	self.xmlKey = 'loadCoursesAtStartup'
 	self.xmlAttribute = '#active'
+	--self.label = 'Load courses at startup'
+	--self.toolTip = 'Load all courses at startup, will slow down loading a saved game when enabled'
+	courseplay:addToGlobalSettings(self)
+end
+
+--- Add a setting to the list of global settings. These settings will automatically added to the Advanced Settinss
+--- page's Global tab.
+function courseplay:addToGlobalSettings(setting)
+	if not self.globalSettings then
+		self.globalSettings = {}
+	end
+	self.globalSettings[setting.name] = setting
 end
 
 -- do not remove this comment
