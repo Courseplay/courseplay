@@ -647,25 +647,32 @@ function FieldworkAIDriver:manageConvoy()
             self.vehicle:setCpVar('convoy.leadDist',courseplay:nodeToNodeDistance(self.vehicle.rootNode, vehLead.rootNode))
         -- If leading vechicle is on connecting track (a transfer path between a headland and the up/down rows)       
         elseif vehLead.cp.driver.course:isOnConnectingTrack(vehLead.cp.ppc:getCurrentWaypointIx()) then
-            -- Stop to allow the leading vechile perform the transfer (sometime they need to reverse, so better to stay back)
+            -- Stop to allow the leading vechile perform the transfer (sometimes they need to reverse, so better to stay back)
             self.vehicle:setCpVar('convoy.leadDist',courseplay:nodeToNodeDistance(self.vehicle.rootNode, vehLead.rootNode))
             self:setSpeed(0)
         -- Otherwise the leading vehicle is probably working
         else 
             -- Make sure we stay behind on the course
-            self.vehicle:setCpVar('convoy.leadDist',(vehLead.cp.ppc:getCurrentWaypointIx() - self.ppc:getCurrentWaypointIx()) * courseGenerator.waypointDistance)
+            if (vehLead.cp.ppc:getCurrentWaypointIx() >= self.ppc:getCurrentWaypointIx()) then
+                self.vehicle:setCpVar('convoy.leadDist',courseplay:nodeToNodeDistance(self.vehicle.rootNode, vehLead.rootNode))
+            else
+                self.vehicle:setCpVar('convoy.leadDist', 0)
+            end
+            --self.vehicle:setCpVar('convoy.leadDist',(vehLead.cp.ppc:getCurrentWaypointIx() - self.ppc:getCurrentWaypointIx()) * courseGenerator.waypointDistance)
         end
         
         -- If we're too close to the leading vehicle
-        if self.vehicle.cp.convoy.leadDist < self.vehicle.cp.convoy.minDistance then
-            --self:setSpeed(0)
-            local spdAdj = ((self.vehicle.cp.convoy.leadDist - self.vehicle.cp.convoy.minDistance) / (self.vehicle.cp.convoy.maxDistance - self.vehicle.cp.convoy.minDistance)) + 0.5
-            if spdAdj > 1 then
-                spdAdj = 1
+        -- If the leader has finished the course we don't need to keep the distance
+        if (vehLead.cp.ppc:getCurrentWaypointIx() >= vehLead.cp.driver.fieldworkCourse:getNumberOfWaypoints()) then
+            if self.vehicle.cp.convoy.leadDist < self.vehicle.cp.convoy.minDistance then
+                local spdAdj = ((self.vehicle.cp.convoy.leadDist - self.vehicle.cp.convoy.minDistance) / (self.vehicle.cp.convoy.maxDistance - self.vehicle.cp.convoy.minDistance)) + 0.5
+                if spdAdj > 1 then
+                    spdAdj = 1
+                end
+                self:setSpeed(self:getSpeed()*spdAdj)
+                -- For some reason this print generates a format nil error but haven't figured out why
+                --self:debugSparse('too close (%u) to leading vehicle, holding.', leadingDist)
             end
-            self:setSpeed(self:getSpeed()*spdAdj)
-            -- For some reason this print generates a format nil error but haven't figured out why
-            --self:debugSparse('too close (%u) to leading vehicle, holding.', leadingDist)
         end
     end
     
@@ -685,18 +692,18 @@ function FieldworkAIDriver:manageConvoy()
         -- Otherwise the trailing vehicle is probably working
         else 
             -- Make sure we stay behind on the course
-            self.vehicle:setCpVar('convoy.trailDist',(self.ppc:getCurrentWaypointIx() - vehTrail.cp.ppc:getCurrentWaypointIx()) * courseGenerator.waypointDistance)
+            self.vehicle:setCpVar('convoy.trailDist',courseplay:nodeToNodeDistance(self.vehicle.rootNode, vehTrail.rootNode))
+            --self.vehicle:setCpVar('convoy.trailDist',(self.ppc:getCurrentWaypointIx() - vehTrail.cp.ppc:getCurrentWaypointIx()) * courseGenerator.waypointDistance)
         end
         
         -- Make sure max distance is always greater than trailing vehicle's min distance
         if (self.vehicle.cp.convoy.maxDistance < vehTrail.cp.convoy.minDistance) then
-            self.vehicle.cp.convoy.maxDistance = vehTrail.cp.convoy.minDistance + 10
+            self.vehicle.cp.convoy.maxDistance = vehTrail.cp.convoy.minDistance + courseGenerator.waypointDistance
             courseplay.debugVehicle(self.debugChannel,self.vehicle,'Clamping maxDistance to %u', self.vehicle.cp.convoy.maxDistance)
         end
         
         -- If we're too far from the trailing vehicle
         if self.vehicle.cp.convoy.trailDist > self.vehicle.cp.convoy.maxDistance then
-            --self:setSpeed(0)
             local spdAdj = ((self.vehicle.cp.convoy.maxDistance - self.vehicle.cp.convoy.trailDist) / (self.vehicle.cp.convoy.maxDistance - self.vehicle.cp.convoy.minDistance)) + 0.5
             if spdAdj > 1 then
                 spdAdj = 1

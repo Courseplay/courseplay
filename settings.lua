@@ -123,9 +123,9 @@ end
 
 function courseplay:setConvoyMinDistance(vehicle, changeBy)
     if Input.keyPressedState[Input.KEY_lalt] then
-        vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*1, 20, vehicle.cp.convoy.maxDistance-1);
+        vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*1, 0, vehicle.cp.convoy.maxDistance-1);
     else
-        vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, vehicle.cp.convoy.maxDistance-10);
+        vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 0, vehicle.cp.convoy.maxDistance-10);
     end
 end
 
