@@ -18,7 +18,6 @@ function AdvancedSettingsScreen:new(target, custom_mt)
 end
 
 function AdvancedSettingsScreen:onGuiSetupFinished()
-	print('ONGUISETUPFINISHED')
     AdvancedSettingsScreen:superClass().onGuiSetupFinished(self)
 
     self:setupPages()
@@ -122,12 +121,9 @@ function courseplay:openAdvancedSettingsDialog( vehicle )
 		g_AdvancedSettingsGui.globalSettingsPage = GlobalSettingsPage:new()
 		g_gui:loadGui( self.path .. "gui/GlobalSettingsPage.xml", "GlobalSettingsFrame", g_AdvancedSettingsGui.globalSettingsPage, true)
 		g_AdvancedSettingsGui.vehicleSettingsPage = VehicleSettingsPage:new()
-			g_gui:loadGui( self.path .. "gui/VehicleSettingsPage.xml", "VehicleSettingsFrame", g_AdvancedSettingsGui.vehicleSettingsPage, true)
+		g_gui:loadGui( self.path .. "gui/VehicleSettingsPage.xml", "VehicleSettingsFrame", g_AdvancedSettingsGui.vehicleSettingsPage, true)
 		g_AdvancedSettingsGui.mainScreen = AdvancedSettingsScreen:new()
-		print('HERE')
 		g_gui:loadGui( self.path .. "gui/AdvancedSettingsScreen.xml", "AdvancedSettingsScreen", g_AdvancedSettingsGui.mainScreen)
-		print('NOW')
 	end
 	g_gui:showGui( 'AdvancedSettingsScreen' )
-	print('destruct')
 end

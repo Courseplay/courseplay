@@ -1,3 +1,8 @@
+
+-- This and VehicleSettingsPage has everything common except the list of settings. I tried to derive them
+-- from a common SettingsPage class but I believe that this does not work due to the way the Giant's GUI
+-- framework works.
+
 ---@class GlobalSettingsPage
 GlobalSettingsPage = {};
 
@@ -7,12 +12,9 @@ GlobalSettingsPage.CONTROLS = {
     CONTAINER = "container"
 }
 
-function GlobalSettingsPage:new(target)
-	print("NEWGLOBALSETTINGS")
-    local self = TabbedMenuFrameElement:new(target, GlobalSettingsPage_mt);
+function GlobalSettingsPage:new(target, mt)
+   local self = TabbedMenuFrameElement:new(target, GlobalSettingsPage_mt);
     self.returnScreenName = "";
-	self.settings = courseplay.globalSettings
-	print('over')
     self:registerControls(GlobalSettingsPage.CONTROLS)
     return self;	
 end
@@ -20,7 +22,7 @@ end
 function GlobalSettingsPage:onFrameOpen()
     GlobalSettingsPage:superClass().onFrameOpen(self);
     FocusManager:setFocus(self.backButton);
-    self:updateMyGUISettings();
+	self:updateMyGUISettings();
     self.callBackParent.activePageID = self.callBackParentWithID;
 end;
 
@@ -30,7 +32,7 @@ end;
 
 function GlobalSettingsPage:onCreateGlobalSettingsPage(element)
 	---@type SettingList
-    local setting = self.settings[element.name]
+    local setting = courseplay.globalSettings[element.name]
 	if setting then
 		setting:setGuiElement(element)
 		element.labelElement.text = setting:getLabel()
@@ -53,13 +55,13 @@ function GlobalSettingsPage:initialize()
 end
 
 function GlobalSettingsPage:onClickOk()
-	for _, setting in pairs(self.settings) do
+	for _, setting in pairs(courseplay.globalSettings) do
 		setting:setToIx(setting:getGuiElement():getState())
 	end
 end
 
 function GlobalSettingsPage:onClickReset()
-	for _, setting in pairs(self.settings) do
+	for _, setting in pairs(courseplay.globalSettings) do
 		setting:getGuiElement():setState(setting:getGuiElementState(), false)
 	end
 end
@@ -80,7 +82,7 @@ function GlobalSettingsPage:updateToolTipBoxVisibility(box)
 end
 
 function GlobalSettingsPage:updateMyGUISettings()
-    for _, setting in pairs(self.settings) do
+    for _, setting in pairs(courseplay.globalSettings) do
 		setting:getGuiElement():setState(setting:getGuiElementState(), false)
     end
 end

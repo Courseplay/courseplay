@@ -5,7 +5,6 @@ addModEventListener(CpManager);
 
 local modDirectory = g_currentModDirectory
 
-
 function CpManager:loadMap(name)
 	--print("CpManager:loadMap(name)")
 	self.isCourseplayManager = true;
@@ -35,8 +34,6 @@ function CpManager:loadMap(name)
 
 		-- Add / at end of path, so we dont save that in the courseManager.xml (Needs to be done after folder creation!)
 		self.cpCoursesFolderPath = self.cpCoursesFolderPath .. "/";
-		-- Load course on demand only by default
-		self.loadCoursesAtStartupSetting = LoadCoursesAtStartupSetting()
 	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP DEFAULT GLOBAL DATA
@@ -451,7 +448,7 @@ function CpManager.saveXmlSettings(self)
 		setXMLFloat(cpSettingsXml, key .. '#posY', 		CpManager.course2dPlotPosY);
 		setXMLFloat(cpSettingsXml, key .. '#opacity',	CpManager.course2dPdaMapOpacity);
 
-		CpManager.loadCoursesAtStartupSetting:saveToXml(cpSettingsXml, 'CPSettings')
+		courseplay:saveGlobalSettingsToXML(cpSettingsXml, 'CPSettings')
 
 		saveXMLFile(cpSettingsXml);
 		delete(cpSettingsXml);
@@ -1199,8 +1196,7 @@ function CpManager:loadXmlSettings()
 		self.course2dPlotField.x = self.course2dPlotPosX;
 		self.course2dPlotField.y = self.course2dPlotPosY;
 
-		self.loadCoursesAtStartupSetting:loadFromXml(cpSettingsXml, 'CPSettings')
-
+		courseplay:loadGlobalSettingsFromXML(cpSettingsXml, 'CPSettings')
 		--------------------------------------------------
 		delete(cpSettingsXml);
 	end;

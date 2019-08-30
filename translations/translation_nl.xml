@@ -397,5 +397,13 @@
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(en terug)" />
+
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

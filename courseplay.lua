@@ -357,7 +357,11 @@ local function setGlobalData()
 	[89]={name='self.cp.generationPosition.z',dataFormat='Float'},
 	[90]={name='self.cp.fertilizerEnabled',dataFormat='Bool'},
 	[91]={name='self.cp.turnOnField',dataFormat='Bool'}
-	}	
+	}
+
+	-- TODO: see where is the best to instantiate these settings. Maybe we need a container for all these
+	courseplay:addToGlobalSettings(LoadCoursesAtStartupSetting())
+	courseplay:addToGlobalSettings(UseAITurnsSetting())
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

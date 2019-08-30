@@ -2192,14 +2192,21 @@ end
 --- Load courses at startup?
 ---@class LoadCoursesAtStartupSetting : BooleanSetting
 LoadCoursesAtStartupSetting = CpObject(BooleanSetting)
-
 function LoadCoursesAtStartupSetting:init()
-	BooleanSetting.init(self, 'loadCoursesAtStartup', 'COURSEPLAY_LOAD_COURSES_AT_STARTUP', '')
+	BooleanSetting.init(self, 'loadCoursesAtStartup', 'COURSEPLAY_LOAD_COURSES_AT_STARTUP',
+		'COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP')
 	self.xmlKey = 'loadCoursesAtStartup'
 	self.xmlAttribute = '#active'
-	--self.label = 'Load courses at startup'
-	--self.toolTip = 'Load all courses at startup, will slow down loading a saved game when enabled'
-	courseplay:addToGlobalSettings(self)
+end
+
+--- Use AI Turns?
+---@class UseAITurnsSetting : BooleanSetting
+UseAITurnsSetting = CpObject(BooleanSetting)
+function UseAITurnsSetting:init()
+	BooleanSetting.init(self, 'useAITurns', 'COURSEPLAY_USE_AI_TURNS',
+		'COURSEPLAY_USE_AI_TURNS_TOOLTIP')
+	self.xmlKey = 'useAITurns'
+	self.xmlAttribute = '#active'
 end
 
 --- Add a setting to the list of global settings. These settings will automatically added to the Advanced Settinss
@@ -2210,6 +2217,19 @@ function courseplay:addToGlobalSettings(setting)
 	end
 	self.globalSettings[setting.name] = setting
 end
+
+function courseplay:loadGlobalSettingsFromXML(xml, parentKey)
+	for _, setting in pairs(self.globalSettings) do
+		setting:loadFromXml(xml, parentKey)
+	end
+end
+
+function courseplay:saveGlobalSettingsToXML(xml, parentKey)
+	for _, setting in pairs(self.globalSettings) do
+		setting:saveToXml(xml, parentKey)
+	end
+end
+
 
 -- do not remove this comment
 -- vim: set noexpandtab:

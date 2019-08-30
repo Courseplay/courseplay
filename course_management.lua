@@ -1332,7 +1332,7 @@ end
 
 function courseplay.courses:loadCoursesAndFoldersFromXml()
 	print('## Courseplay: loading courses and folders from "courseManager.xml"');
-	if CpManager.loadCoursesAtStartupSetting:is(false) then
+	if courseplay.globalSettings.loadCoursesAtStartup:is(false) then
 		print('##             Skip loading courses not assigned to any vehicle to speed up start time.');
 	end
 	local cpCManXml = self:getCourseManagerXML();
@@ -1404,7 +1404,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 				else
 					table.insert(courses_without_id, course);
 				end;
-				if CpManager.loadCoursesAtStartupSetting:is(true) then
+				if courseplay.globalSettings.loadCoursesAtStartup:is(true) then
 					courseplay.courses:loadCourseFromFile(course)
 				end
 			end;
