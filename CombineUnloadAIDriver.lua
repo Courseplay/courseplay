@@ -20,7 +20,13 @@ CombineUnloadAIDriver = CpObject(AIDriver)
 
 CombineUnloadAIDriver.myStates = {
 	ONFIELD = {},
-	ONSTREET = {}
+	ONSTREET = {},
+	FIND_COMBINE ={},
+	FINDPATH_TO_COMBINE={},
+	DRIVE_TO_COMBINE = {},
+	FINDPATH_TO_COURSE={},
+	DRIVE_TO_UNLOADCOURSE ={},
+	ALLIGN_TO_COMBINE = {}
 }
 
 --- Constructor
@@ -28,8 +34,10 @@ function CombineUnloadAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_COMBI
+	self:initStates(CombineUnloadAIDriver.myStates)
 	self.combineUnloadState =self.states.ONSTREET
 	self:setHudContent()
+	self:setNewOnFieldState(self.states.FIND_COMBINE)
 end
 
 function CombineUnloadAIDriver:setHudContent()
@@ -43,18 +51,86 @@ end
 function CombineUnloadAIDriver:drive(dt)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	if self.combineUnloadState == self.states.ONSTREET then
-		if not  self:onUnLoadCourse(true, dt) then
+		if not self:onUnLoadCourse(true, dt) then
 			self:hold()
 		end
 		self:searchForTipTriggers()
 		AIDriver.drive(self, dt)
+	elseif self.combineUnloadState == self.states.ONFIELD then
+		self:driveOnField(dt)
 	end
+end
+
+function CombineUnloadAIDriver:driveOnField(dt)
+	if self.onFieldState == self.states.FIND_COMBINE then
+		self.combineToUnload = g_combineUnloadManager:giveMeACombineToUnload()
+		if self.combineToUnload ~= nil then
+			--print("combine set")
+			self:setNewOnFieldState(self.states.FINDPATH_TO_COMBINE)
+		else
+			--print("no combine")
+		end
+		self:hold()
+
+	elseif self.onFieldState == self.states.FINDPATH_TO_COMBINE then
+		--get coords of the combine
+		local cx,cy,cz = getWorldTranslation(self.combineToUnload.rootNode)
+		if self:driveToPointWithPathfinding(cx, cz) then
+			self:setNewOnFieldState(self.states.DRIVE_TO_COMBINE)
+			self.lastCombinesCoords = { x=cx;
+										y=cy;
+										z=cz;
+			}
+		end
+
+	elseif self.onFieldState == self.states.DRIVE_TO_COMBINE then
+		--check whether the combine moved meanwhile
+		if courseplay:distanceToPoint(self.combineToUnload,self.lastCombinesCoords.x,self.lastCombinesCoords.y,self.lastCombinesCoords.z) > 30 then
+			self:setNewOnFieldState(self.states.FINDPATH_TO_COMBINE)
+		end
+
+		--if we are in range , change to drive directly
+		local cx,cy,cz = getWorldTranslation(self.combineToUnload.rootNode)
+		if courseplay:distanceToPoint(self.vehicle,cx,cy,cz) < 50 then
+			self:setNewOnFieldState(self.states.ALLIGN_TO_COMBINE)
+		end
+
+		-- maybe do obstacle avoiding
+	elseif self.onFieldState == self.states.ALLIGN_TO_COMBINE then
+
+		--TODO
+
+	elseif self.onFieldState == self.states.FINDPATH_TO_COURSE then
+		if self:startCourseWithPathfinding(self.mainCourse, 1) then
+			self:setNewOnFieldState(self.states.DRIVE_TO_UNLOADCOURSE)
+		end
+	elseif self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
+		--do nothing just drive
+		-- maybe do obstacle avoiding
+	end
+	AIDriver.drive(self, dt)
+
 end
 
 
 
+function CombineUnloadAIDriver:onEndCourse()
+	if self.combineUnloadState == self.states.ONFIELD then
+		if self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
+			self.combineUnloadState = self.states.ONSTREET
+			self:setNewOnFieldState(self.states.FIND_COMBINE)
+		end
+
+	else
+		self.combineUnloadState = self.states.ONFIELD
+	end
+
+end
 
 
+function CombineUnloadAIDriver:setNewOnFieldState(newState)
+	self.onFieldState = newState
+end
 
 
 
