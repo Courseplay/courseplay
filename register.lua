@@ -129,13 +129,10 @@ function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
 
 	courseplay:setNameVariable(self);
 
-	-- combines table
-	if courseplay.combines == nil then
-		courseplay.combines = {};
-	end;
-	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or courseplay:isAttachedCombine(self) then
-		courseplay.combines[self.rootNode] = self;
-	end;
+	-- combineUnloadManager
+	if courseplay:isCombine(self) or courseplay:isChopper(self) then
+		g_combineUnloadManager:addCombineToList(self)
+	end
 
 	return loadingState;
 end;
@@ -146,6 +143,10 @@ Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, coursepla
 function courseplay:prePreDelete(self)
 	if self.cp ~= nil then
 		courseplay:deleteMapHotspot(self);
+		-- combineUnloadManager
+		if courseplay:isCombine(self) or courseplay:isChopper(self) then
+			g_combineUnloadManager:addCombineToList(self)
+		end
 	end
 end;
 FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);

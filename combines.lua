@@ -1,3 +1,39 @@
+
+---@class CombineUnloadmanager
+CombineUnloadmanager = CpObject()
+
+-- Constructor
+function CombineUnloadmanager:init()
+	print("CombineUnloadmanager:init()")
+	self.combines = {}
+
+end
+
+g_combineUnloadManager = CombineUnloadmanager()
+
+
+function CombineUnloadmanager:addCombineToList(combine)
+	print(string.format("CombineUnloadmanager: added %s to list",tostring(combine.name)))
+	self.combines[combine]= {}
+
+end
+
+function CombineUnloadmanager:removeCombineFromList(combine)
+	print(string.format("CombineUnloadmanager: removed %s from list",tostring(combine.name)))
+	self.combines[combine] = nil
+end
+
+function CombineUnloadmanager:giveMeACombineToUnload()
+	local combineToUnload
+	for combine,data in pairs (self.combines) do
+		combineToUnload = combine
+	end
+	return combineToUnload
+end
+
+
+
+
 local curFile = 'combines.lua';
 local _;
 function courseplay:getAllCombines()
