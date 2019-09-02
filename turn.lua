@@ -2391,7 +2391,12 @@ TurnContext = CpObject()
 ---@param aiDriverData table to store the turn start/end waypoint nodes (which are created if nil passed in)
 --- we store the nodes some global, long lived table to avoid creating new nodes every time a TurnContext object
 --- is created
-function TurnContext:init(course, turnStartIx, aiDriverData)
+---@param frontMarkerDistance number distance of the frontmost work area from the vehicle's root node (positive is
+--- in front of the vehicle. We'll add a node (frontMarkerNode) offset by frontMarkerDistance from the turn end
+--- node so when the vehicle's rootnode reaches the frontMarkerNode, the front of the work area will exactly be on the
+--- turn end node. (The vehicle must be steered to the frontMarkerNode instead of the turn end node so the implements
+--- reach exactly the row end)
+function TurnContext:init(course, turnStartIx, aiDriverData, frontMarkerDistance)
 
 	---@type Waypoint
 	self.beforeTurnStartWp = course.waypoints[turnStartIx - 1]
@@ -2425,6 +2430,13 @@ function TurnContext:init(course, turnStartIx, aiDriverData)
 	aiDriverData.turnEndWpNode:setToWaypoint(course, turnStartIx + 1)
 	self.turnEndWpNode = aiDriverData.turnEndWpNode
 
+	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn end
+	if not aiDriverData.frontMarkerNode then
+		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, -frontMarkerDistance or 0, 0, self.turnEndWpNode.node )
+	end
+	setTranslation(aiDriverData.frontMarkerNode, 0, 0, -frontMarkerDistance or 0)
+	self.frontMarkerNode = aiDriverData.frontMarkerNode
+
 	---@type Waypoint
 	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
 
@@ -2434,6 +2446,16 @@ function TurnContext:init(course, turnStartIx, aiDriverData)
 
 	courseplay.debugFormat(12, 'Turn context: start ix = %d', turnStartIx)
 
+end
+
+-- node's position in the turn end wp node's coordinate system
+function TurnContext:getLocalPositionFromTurnEnd(node)
+	return localToLocal(node, self.frontMarkerNode, 0, 0, 0)
+end
+
+-- turn end wp node's position in node's coordinate system
+function TurnContext:getLocalPositionOfTurnEnd(node)
+	return localToLocal(self.frontMarkerNode, node, 0, 0, 0)
 end
 
 function TurnContext:isHeadlandCorner()

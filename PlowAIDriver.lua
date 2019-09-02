@@ -60,7 +60,7 @@ function PlowAIDriver:startWork()
 	end
 end
 
-function PlowAIDriver:driveFieldwork()
+function PlowAIDriver:driveFieldwork(dt)
 	if self.fieldworkState == self.states.ROTATING_PLOW then
 		self:setSpeed(0)
 		if not self.plow.spec_plow:getIsAnimationPlaying(self.plow.spec_plow.rotationPart.turnAnimation) then
@@ -78,7 +78,7 @@ function PlowAIDriver:driveFieldwork()
 			self.fieldworkState = self.states.ROTATING_PLOW
 		end
 	else
-		FieldworkAIDriver.driveFieldwork(self)
+		FieldworkAIDriver.driveFieldwork(self, dt)
 	end
 end
 

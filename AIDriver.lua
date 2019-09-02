@@ -108,7 +108,8 @@ Peter
 ---@class AIDriver
 AIDriver = CpObject()
 
-AIDriver.slowAngleLimit = 20
+-- steering angle (normalized, between 0 and 1) over which the speed is reduced
+AIDriver.slowAngleLimit = 0.3
 AIDriver.slowAcceleration = 0.5
 AIDriver.slowDownFactor = 0.5
 
@@ -392,6 +393,55 @@ function AIDriver:driveVehicleInDirection(dt, allowedToDrive, moveForwards, lx, 
 	local gx, gz = lx * self.ppc:getLookaheadDistance(), lz * self.ppc:getLookaheadDistance()
 	self:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
 
+end
+
+--- Drive vehicle by using a steering angle. This is similar to the Giants AIVehicleUtil.driveInDirection() but
+--- instead of the direction (lx, lz) uses a steering angle.
+--- @param dt number dt
+--- @param moveForwards boolean if true, we want the vehicle to move forwards, false for backwards
+--- @param steeringAngleNormalized number between 0 and 1, 1 being the maximum steering angle.
+--- @param turnLeft boolean true when turning to the left
+--- @param maxSpeed number speed we want the vehicle to drive
+function AIDriver:driveVehicleBySteeringAngle(dt, moveForwards, steeringAngleNormalized, turnLeft, maxSpeed)
+	if not moveForwards then
+		turnLeft = not turnLeft;
+	end
+	local targetRotTime = 0;
+	if turnLeft then
+		--rotate to the left
+		targetRotTime = self.vehicle.maxRotTime*math.min(steeringAngleNormalized, 1);
+	else
+		--rotate to the right
+		targetRotTime = self.vehicle.minRotTime*math.min(steeringAngleNormalized, 1);
+	end
+	if targetRotTime > self.vehicle.rotatedTime then
+		self.vehicle.rotatedTime = math.min(self.vehicle.rotatedTime + dt*self.vehicle:getAISteeringSpeed(), targetRotTime);
+	else
+		self.vehicle.rotatedTime = math.max(self.vehicle.rotatedTime - dt*self.vehicle:getAISteeringSpeed(), targetRotTime);
+	end
+	if self.vehicle.firstTimeRun then
+		local acc = self.acceleration;
+		if maxSpeed ~= nil and maxSpeed ~= 0 then
+			if steeringAngleNormalized >= self.slowAngleLimit then
+				maxSpeed = maxSpeed * self.slowDownFactor;
+			end
+			self.vehicle.spec_motorized.motor:setSpeedLimit(maxSpeed);
+			if self.vehicle.spec_drivable.cruiseControl.state ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
+				self.vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE);
+			end
+		else
+			if steeringAngleNormalized >= self.slowAngleLimit then
+				acc = self.slowAcceleration;
+			end
+		end
+		if not self.allowedToDrive then
+			acc = 0;
+		end
+		if not moveForwards then
+			acc = -acc;
+		end
+		WheelsUtil.updateWheelsPhysics(self.vehicle, dt, self.vehicle.lastSpeedReal*self.vehicle.movingDirection, acc, not self.allowedToDrive, true)
+	end
 end
 
 -- node pointing in the direction the driver is facing, even in case of reverse driving tractors
