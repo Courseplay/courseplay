@@ -2434,7 +2434,7 @@ function TurnContext:init(course, turnStartIx, aiDriverData, frontMarkerDistance
 	if not aiDriverData.frontMarkerNode then
 		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, -frontMarkerDistance or 0, 0, self.turnEndWpNode.node )
 	end
-	setTranslation(aiDriverData.frontMarkerNode, 0, 0, -frontMarkerDistance or 0)
+	setTranslation(aiDriverData.frontMarkerNode, 0, 0, frontMarkerDistance and -frontMarkerDistance or 0)
 	self.frontMarkerNode = aiDriverData.frontMarkerNode
 
 	---@type Waypoint

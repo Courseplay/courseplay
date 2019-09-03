@@ -971,7 +971,7 @@ function FieldworkAIDriver:startTurn(ix)
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
-	if courseplay.globalSettings.useAITurns then
+	if courseplay.globalSettings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
 			return
 		end
