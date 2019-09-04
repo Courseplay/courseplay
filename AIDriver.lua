@@ -1036,6 +1036,9 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					courseplay.debugVehicle(2,self.vehicle,"reset self.unloadSpeed")
 				end
 				self.unloadSpeed = nil
+				if tipper.cp.fillLevel == 0 then
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
+				end
 			end
 			self.speed = self.unloadSpeed or self.speed
 		end

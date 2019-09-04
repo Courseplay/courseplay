@@ -806,3 +806,14 @@ function Course:createLegacyCourse()
 	legacyCourse[#legacyCourse].crossing = true
 	return legacyCourse
 end
+
+function Course:getAllPointsAreOnField()
+	local allOnField = true
+	for i = 1, #self.waypoints do
+		local x, _, z = self:getWaypointPosition(i)
+		if not courseplay:isField(x, z, 1, 1) then
+			return false
+		end
+	end
+	return allOnField
+end
