@@ -2432,7 +2432,7 @@ function TurnContext:init(course, turnStartIx, aiDriverData, frontMarkerDistance
 
 	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn end
 	if not aiDriverData.frontMarkerNode then
-		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, -frontMarkerDistance or 0, 0, self.turnEndWpNode.node )
+		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, frontMarkerDistance and -frontMarkerDistance or 0, 0, self.turnEndWpNode.node )
 	end
 	setTranslation(aiDriverData.frontMarkerNode, 0, 0, frontMarkerDistance and -frontMarkerDistance or 0)
 	self.frontMarkerNode = aiDriverData.frontMarkerNode
