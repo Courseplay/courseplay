@@ -169,21 +169,6 @@ function courseplay:vehicleDelete()
 			end;
 			self.cp.notesToDelete = nil;
 		end;
-
-		if courseplay.combines[self.rootNode] then
-			for _, courseplayer in pairs(g_currentMission.enterables) do
-				if courseplayer.cp then
-					if courseplayer.cp.activeCombine and courseplayer.cp.activeCombine == self then
-						courseplay:unregisterFromCombine(courseplayer, self)
-					end
-					if courseplayer.cp.lastActiveCombine and courseplayer.cp.lastActiveCombine == self then
-						courseplay:removeFromVehicleLocalIgnoreList(self, courseplayer.cp.lastActiveCombine)
-						courseplayer.cp.lastActiveCombine = nil
-					end
-				end
-			end
-			courseplay.combines[self.rootNode] = nil;
-		end;
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
