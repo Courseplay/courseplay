@@ -300,7 +300,7 @@
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": силосная яма заполнена!" />
 		<text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 						text="В этом бункере нет такого продукта!" />
 		<text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Забрать из бункера:" />
-		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 							text="В бункере не осталось выбранного продукта! Подождите немного" />
+		<text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 							text="В бункере не осталось выбранного продукта! Подождём немного" />
 		<text name="COURSEPLAY_FARM_SILO_IS_FULL" 							text=": Выбранное хранилище заполнено! Продолжить у следующего хранилища" />
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="Запущено %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Показать первую точку" />
@@ -395,18 +395,18 @@
 		<text name="COURSEPLAY_AUTODRIVE_MODE"								text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"						text="Не установлен" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"							text="Не использовать" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Для разгрузки/наполнеия" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Для разгрузки/наполнения" />
 
-		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"							text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"						text="(и вернуться)" />
 
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Расширенные настройки..." />
 
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
-		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Загружать курсы при запуске" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Загружать все курсы при запуске. Если включено, тогда это замедлит загрузку сохраненной игры" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Использовать ИИ для поворота" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Использовать искусственный интеллект для маневры поворота вместо рассчётных траекторий поворота" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
