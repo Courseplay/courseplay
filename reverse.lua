@@ -81,6 +81,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 	if newTarget then
 		if newTarget.revPosX and newTarget.revPosZ then
+
 			tcx = newTarget.revPosX;
 			tcz = newTarget.revPosZ;
 		else

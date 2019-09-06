@@ -531,7 +531,7 @@ function CourseGeneratorScreen:onClickMap(element, posX, posZ)
 		self.coursePlot:setStartPosition(posX, posZ)
 	end
 
-	local fieldNum = courseplay:getFieldNumForPosition(posX, posZ)
+	local fieldNum = courseplay.fields:getFieldNumForPosition(posX, posZ)
 	if fieldNum > 0 and self.fields then
 		-- clicked on a field, set it as selected
 		for i, field in ipairs(self.fields) do
