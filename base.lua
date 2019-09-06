@@ -1121,27 +1121,8 @@ function courseplay:onUpdateTick(dt)
 		courseplay:resetTools(self)
 	end
 
-	-- TODO this must be removed, combines should be handled by the AIDriver, not some random piece of code somewhere
-	--get the combines filling rate in l/second
-	if self.cp.isCombine then
-		if courseplay:timerIsThrough(self, 'combineFillLevel') then 
-			courseplay:setCustomTimer(self, "combineFillLevel", 2);
-			local currentFillLevel = self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex)
-			local timeDiff = (g_currentMission.time - (self.cp.lastFillLevelTime or g_currentMission.time))/1000
-			self.cp.lastFillLevelTime = g_currentMission.time
-			if self.cp.lastFillLevel ~= nil then
-				if self.cp.lastFillLevel ~= currentFillLevel then
-					self.cp.fillLitersPerSecond = courseplay:round((currentFillLevel - self.cp.lastFillLevel) /timeDiff);
-					self.cp.lastFillLevel = currentFillLevel;
-				else
-					self.cp.fillLitersPerSecond = 0;
-				end
-				--print("time: "..tostring(timeDiff).."; self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
-			else
-				self.cp.lastFillLevel = currentFillLevel;
-			end	
-		end
-	end
+	g_combineUnloadManager:onUpdateTick()
+
 	self.timer = self.timer + dt;
 end
 

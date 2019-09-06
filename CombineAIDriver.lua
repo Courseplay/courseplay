@@ -599,8 +599,7 @@ function CombineAIDriver:handleChopperPipe()
 		local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 		--self:debug('filltype = %s, fillLevel = %.1f', self:getFillType(), fillLevel)
 		-- not using isFillableTrailerUnderPipe() as the chopper sometimes has FillType.UNKNOWN
-		if fillLevel > 0.01 and self:getFillType() ~= FillType.UNKNOWN and
-			not (self:isFillableTrailerUnderPipe() and self:canDischarge())	then
+		if self:getIsChopperWaitingForTrailer(fillLevel) then
 			self:debugSparse('Chopper waiting for trailer, fill level %f', fillLevel)
 			self:setSpeed(0)
 		end
@@ -608,6 +607,22 @@ function CombineAIDriver:handleChopperPipe()
 		self:closePipe()
 	end
 end
+
+function CombineAIDriver:getIsChopperWaitingForTrailer()
+	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
+	local dischargeNode = self.vehicle:getCurrentDischargeNode()
+	if fillLevel > 0.01 and self:getFillType() ~= FillType.UNKNOWN and not (self:isFillableTrailerUnderPipe() and self:canDischarge()) then
+		self.cantDischargeCount = self.cantDischargeCount and self.cantDischargeCount + 1 or 0
+		if self.cantDischargeCount > 10 then
+			return true
+		end
+	else
+		self.cantDischargeCount = 0
+	end
+
+	return false
+end
+
 
 function CombineAIDriver:openPipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
