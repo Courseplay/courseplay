@@ -2430,11 +2430,13 @@ function TurnContext:init(course, turnStartIx, aiDriverData, frontMarkerDistance
 	aiDriverData.turnEndWpNode:setToWaypoint(course, turnStartIx + 1)
 	self.turnEndWpNode = aiDriverData.turnEndWpNode
 
+	self.frontMarkerDistance = frontMarkerDistance or 0
+
 	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn end
 	if not aiDriverData.frontMarkerNode then
-		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, frontMarkerDistance and -frontMarkerDistance or 0, 0, self.turnEndWpNode.node )
+		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, - self.frontMarkerDistance, 0, self.turnEndWpNode.node )
 	end
-	setTranslation(aiDriverData.frontMarkerNode, 0, 0, frontMarkerDistance and -frontMarkerDistance or 0)
+	setTranslation(aiDriverData.frontMarkerNode, 0, 0, - self.frontMarkerDistance)
 	self.frontMarkerNode = aiDriverData.frontMarkerNode
 
 	---@type Waypoint
@@ -2468,6 +2470,48 @@ end
 
 function TurnContext:setTargetNode(node)
 	self.targetNode = node
+end
+
+function TurnContext:getNodeDirection(node)
+	local lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
+	return math.atan2( lx, lz )
+end
+
+--- Returns true if node1 is pointing approximately in node2's direction
+---@param thresholdDeg number defines what 'approximately' means, by default if the difference is less than 10 degrees
+function TurnContext:isSameDirection(node1, node2, thresholdDeg)
+	local lx, _, lz = localDirectionToLocal(node1, node2, 0, 0, 1)
+	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg or 5)
+end
+
+--- Returns true if node is pointing approximately in the turn start direction, that is, the direction from
+--- turn start waypoint to the turn end waypoint.
+function TurnContext:isDirectionCloseToStartDirection(node, thresholdDeg)
+	return self:isSameDirection(node, self.turnStartWpNode.node, thresholdDeg)
+end
+
+--- Returns true if node is pointing approximately in the turn's ending direction, that is, the direction of the turn
+--- end waypoint, the direction the vehicle will continue after the turn
+function TurnContext:isDirectionCloseToEndDirection(node, thresholdDeg)
+	return self:isSameDirection(node, self.turnEndWpNode.node, thresholdDeg)
+end
+
+--- Use to find out if we can make a turn: are we farther away from the next row than our turn radius
+--- @param dx number lateral distance from the next row (dx from turn end node)
+--- @return boolean True if dx is bigger than r, considering the turn's direction
+function TurnContext:isLateralDistanceGreater(dx, r)
+	if self:isLeftTurn() then
+		-- more than r meters to the left
+		return dx > r
+	else
+		-- more than r meters to the right
+		return dx < -r
+	end
+end
+
+function TurnContext:isDirectionPerpendicularToTurnEndDirection(node, thresholdDeg)
+	local lx, _, lz = localDirectionToLocal(self.turnEndWpNode.node, node, self:isLeftTurn() and -1 or 1, 0, 0)
+	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg or 5)
 end
 
 function TurnContext:createCorner(vehicle, r)
@@ -2511,6 +2555,16 @@ function TurnContext:createCornersForRowEndTurn(vehicle, r, frontMarkerDistance,
 	return corner1, corner2
 end
 
+---@return Course
+function TurnContext:createEndingTurnCourse(vehicle)
+	local waypoints = {}
+	-- make sure course reaches the front marker node
+	for d = -10, 0, 1 do
+		local x, _, z = localToWorld(self.frontMarkerNode, 0, 0, d)
+		table.insert(waypoints, {x = x, z = z})
+	end
+	return Course(vehicle,waypoints, true)
+end
 
 -- do not delete this line
 -- vim: set noexpandtab:

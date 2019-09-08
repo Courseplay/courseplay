@@ -40,6 +40,7 @@ FieldworkAIDriver.myStates = {
 	TURNING = {},
 	FINISHING_ROW = {},
 	ENDING_TURN = {},
+	STARTING_ROW = {},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
 	FORWARD1 = {},
 	FORWARD2 = {},
@@ -203,6 +204,7 @@ function FieldworkAIDriver:drive(dt)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		self:driveFieldwork(dt)
+		-- TODO: make this nicer, probably more generic in AIDriver?
 		if self:isAITurnDriving() then
 			-- AI turn is driving, no need for AIDriver
 			return
@@ -372,7 +374,14 @@ end
 
 function FieldworkAIDriver:onNextCourse()
 	if self.state == self.states.ON_FIELDWORK_COURSE then
-		self:changeToFieldwork()
+		if self.fieldworkState == self.states.TURNING then
+			-- a turn just ended, at this point all implements should already be lowered as the turn end course ended
+			-- but just in case, l	ower them now
+			self:lowerImplements()
+			self.fieldworkState = self.states.WORKING
+		else
+			self:changeToFieldwork()
+		end
 	end
 end
 
@@ -1211,7 +1220,7 @@ function FieldworkAIDriver:isValidAIImplement(object)
 	end
 end
 
-
+-- TODO: move turn stuff into its own class
 function FieldworkAIDriver:isAITurnDriving()
 	return self.fieldworkState == self.states.TURNING and
 		(self.turnState == self.states.TURNING or self.turnState == self.states.FINISHING_ROW)
@@ -1241,11 +1250,16 @@ function FieldworkAIDriver:canMakeKTurn(ix, turnContext)
 		self:debug('wide turn with no reversing (turn diameter = %.1f, dx = %.1f, let turn.lua do that for now.', self.vehicle.cp.turnDiameter, math.abs(turnContext.dx))
 		return false
 	end
+	if not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(self.vehicle) then
+		self:debug('Not all attached implements allow for reversing, let turn.lua handle this for now')
+		return false
+	end
 	return true
 end
 
 function FieldworkAIDriver:driveAITurn(dt)
 	self:setSpeed(self.vehicle.cp.speeds.turn)
+	-- Finishing the current
 	if self.turnState == self.states.FINISHING_ROW then
 		-- keep driving straight until we need to raise our implements
 		self:driveVehicleInDirection(dt, self.allowedToDrive, true, 0, 1, self:getSpeed())
@@ -1255,14 +1269,22 @@ function FieldworkAIDriver:driveAITurn(dt)
 			self:startKTurn()
 			self:debug('Row finished, starting turn.')
 		end
+	-- Performing the actual turn
 	elseif self.turnState == self.states.TURNING then
 		self:driveKTurn(dt)
+	-- Ending the turn (starting next row)
 	elseif self.turnState == self.states.ENDING_TURN then
-		-- keep driving straight until we need to raise our implements
-		if self:shouldLowerImplements(self.turnContext.turnEndWpNode.node, false) then
+		-- keep driving on the turn ending temporary course until we need to lower our implements
+		-- check implements only if we are more or less in the right direction (next row's direction)
+		if self.turnContext:isDirectionCloseToEndDirection(self:getDirectionNode()) and
+			self:shouldLowerImplements(self.turnContext.turnEndWpNode.node, false) then
+			self:lowerImplements()
 			self:debug('Turn ended, continue on row')
-			self.fieldworkState = self.states.WORKING
+			self.turnState = self.states.STARTING_ROW
 		end
+	elseif self.turnState == self.states.STARTING_ROW then
+		-- implements lowered, PPC is driving the temporary course ending the turn, onNextCourse will return to work
+		-- nothing to do here
 	end
 end
 
@@ -1271,70 +1293,40 @@ function FieldworkAIDriver:startKTurn()
 end
 
 function FieldworkAIDriver:driveKTurn(dt)
-	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self:getDirectionNode())
-	local lx, _, lz = localDirectionToWorld( self:getDirectionNode(), 0, 0, 1 )
-	local vehicleDirection = math.atan2( lx, lz )
-	local turnEndAngle = math.rad(self.turnContext.turnEndWp.angle)
-	local alpha = math.abs(getDeltaAngle(vehicleDirection, turnEndAngle))
-	local turnRadius = self.vehicle.cp.turnDiameter / 2
-	local distanceToTurnEnd = math.sqrt(dx * dx + dz * dz)
-	-- the radius of a circle defined by two points: the vehicle's position and the turn end point, assuming
-	-- that the tangent of the circle at the turn end point is the direction of the next row. Also, using the fact
-	-- that sin(alpha) = dx / distanceToTurnEnd, where alpha is the angle between the row direction (tangent) and
-	-- the section connecting the vehicle position with the turn end point
-	local turnRadiusToReachTurnEnd = math.abs((distanceToTurnEnd / 2) / math.sin(alpha))
-	self:debug('dx = %.1f, dz = %.1f, r = %s d = %.1f, alpha = %.1f, rot = %.1f', dx, dz, tostring(turnRadiusToReachTurnEnd), distanceToTurnEnd, math.deg(alpha), self.vehicle.rotatedTime)
-	if self.kTurnState == self.states.FORWARD1 then
-		-- full turn towards the turn end waypoint
-		self:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self:getSpeed())
+	local endTurn = function()
+		local endingTurnCourse = self.turnContext:createEndingTurnCourse(self.vehicle)
+		self.turnState = self.states.ENDING_TURN
+		self:startCourse(endingTurnCourse, 1, self.fieldworkCourse, self.turnContext.turnEndWpIx)
+	end
 
-		if math.abs(dx) < 0.1 then
-			self:debug('K Turn: start reversing now')
-			self.kTurnState = self.states.REVERSE
+	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self:getDirectionNode())
+	local turnRadius = self.vehicle.cp.turnDiameter / 2
+	if self.kTurnState == self.states.FORWARD1 then
+		if dz > 0 then
+			-- drive straight until we are beyond the turn end
+			self:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self:getSpeed())
+		elseif not self.turnContext:isDirectionPerpendicularToTurnEndDirection(self:getDirectionNode()) then
+			-- full turn towards the turn end waypoint
+			self:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self:getSpeed())
+		else
+			-- drive straight ahead until we cross turn end line
+			self:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self:getSpeed())
+			if self.turnContext:isLateralDistanceGreater(dx, turnRadius * 1.05) then
+				-- no need to reverse from here, we can make the turn
+				self:debug('K Turn: dx = %.1f, r = %.1f, no need to reverse.', dx, turnRadius)
+				endTurn()
+			else
+				-- reverse until we can make turn to the turn end point
+				self:debug('K Turn: dx = %.1f, r = %.1f, reversing now.', dx, turnRadius)
+				self.kTurnState = self.states.REVERSE
+			end
 		end
 	elseif self.kTurnState == self.states.REVERSE then
 		self:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self:getSpeed())
-
-		if math.abs(dx) > turnRadius then
+		if math.abs(dx) > turnRadius * 1.05 then
 			self:debug('K Turn forwarding again')
-			self.kTurnState = self.states.FORWARD2
-		end
-	elseif self.kTurnState == self.states.FORWARD2 then
-
-		local steeringFactor = math.min(turnRadius / turnRadiusToReachTurnEnd, 0.8) +
-			math.min(alpha / (math.pi / 2), 0.2)
-		self:debug('steeringFactor = %.1f', steeringFactor)
-		self:driveVehicleBySteeringAngle(dt, true, steeringFactor, self.turnContext:isLeftTurn(), self:getSpeed())
-
-		if self:shouldLowerImplements(self.turnContext.turnEndWpNode.node, false) then
-			self:lowerImplements()
-		end
-		if math.abs(dz) < 0.2 then
-			self:debug('Turn ended, continue on row')
-			self.fieldworkState = self.states.ENDING_TURN
+			endTurn()
 		end
 	end
 end
 
---- @param ix number
---- @param turnContext TurnContext
-function FieldworkAIDriver:createKTurn(turnContext)
-	local turnRadius = 1.1 * self.vehicle.cp.turnDiameter / 2
-	--- @type corner1 Corner
-	--- @type corner2 Corner
-	self.corner1, self.corner2 = turnContext:createCornersForRowEndTurn(self.vehicle, turnRadius, self.frontMarkerDistance, self.backMarkerDistance)
-	local turnWaypoints = {}
-	-- first point at the turn start
-	table.insert(turnWaypoints, {x = turnContext.turnStartWp.x, z = turnContext.turnStartWp.z})
-	-- next on the first corner
-	table.insert(turnWaypoints, self.corner1:getPointAtDistanceFromCornerEnd(0, 0))
-	table.insert(turnWaypoints, self.corner1:getPointAtDistanceFromArcEnd(0))
-	local wp = self.corner2:getPointAtDistanceFromArcStart(1)
-	wp.rev = true
-	wp.turnEnd = true
-	table.insert(turnWaypoints, wp)
-	--table.insert(turnWaypoints, self.corner2:getPointAtDistanceFromCornerEnd(1, 0))
-	table.insert(turnWaypoints, self.corner2:getPointAtDistanceFromArcEnd(0))
-	table.insert(turnWaypoints, self.corner2:getPointAtDistanceFromArcEnd(5))
-	return Course(self.vehicle, turnWaypoints, true), turnContext.turnEndWpIx
-end
