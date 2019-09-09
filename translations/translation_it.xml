@@ -400,13 +400,12 @@
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="Cartelle AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(Percorso di ritorno)" />
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Impostazioni avanzate..." />
 
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
-		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Carica percorsi all'avvio" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Caricare tutti i percorsi all'avvio, se attivata potrà rallentare il caricamento di una partita salvata" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Usa manovre di slovta AI" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Usa manovre di svlota AI invece di quelle calcolate" />
 		<!-- Replace marker, do not remove! -->
->>>>>>> Introduced Advanced Settings screen and global settings.
 	</texts>
 </l10n>
