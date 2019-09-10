@@ -52,9 +52,14 @@ function courseplay:isField(x, z, widthX, widthZ)
     --print(string.format("running courseplay:isField(%s, %s, %s, %s)",tostring(x),tostring(z),tostring(widthX),tostring(widthZ)))
 	widthX = widthX or 0.5
     widthZ = widthZ or 0.5
-    local startWorldX, startWorldZ   = x, z
-    local widthWorldX, widthWorldZ   = x - widthX, z - widthZ
-    local heightWorldX, heightWorldZ = x + widthX, z + widthZ
+	local startWorldX, startWorldZ   = x, z
+	local widthWorldX, widthWorldZ   = x - widthX, z - widthZ
+	local heightWorldX, heightWorldZ = x + widthX, z + widthZ
+	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, startWorldX, 1, startWorldZ)
+
+	--cpDebug:drawLine(startWorldX,y+1,startWorldZ, 0, 100, 0, widthWorldX,y+1,widthWorldZ)
+	--cpDebug:drawLine(widthWorldX,y+1,widthWorldZ, 0, 100, 0, heightWorldX,y+1,heightWorldZ)
+	--cpDebug:drawLine(heightWorldX,y+1,heightWorldZ, 0, 100, 0, startWorldX,y+1,startWorldZ)
 
     self.fieldMod.modifier:setParallelogramWorldCoords(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, "ppp")
     self.fieldMod.filter:setValueCompareParams("greater", 0)
