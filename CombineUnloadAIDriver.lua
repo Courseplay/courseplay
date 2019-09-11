@@ -216,7 +216,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHT_FROM_REVERSINGCOMBINE then
 		renderText(0.2,0.195,0.02,string.format("drive straight reverse :offset local :%s saved:%s",tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset)))
-		local dx,dy,dz = self.combineToUnload.cp.driver.course:getWaypointLocalPosition(self:getDirectionNode(), 4)
+		local dx,dy,dz = self.course:getWaypointLocalPosition(self:getDirectionNode(), 1)
 		if dz > 15 then
 			self:hold()
 		else
@@ -380,7 +380,7 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 	for i=1,#self.vehicle.cp.workTools do
 		local tipper = self.vehicle.cp.workTools[i]
 
-		tipper.spec_fillUnit.fillUnits[1].fillLevel =100
+		--tipper.spec_fillUnit.fillUnits[1].fillLevel =100
 
 		local fillUnits = tipper:getFillUnits()
 		for j=1,#fillUnits do
@@ -536,7 +536,7 @@ function CombineUnloadAIDriver:getSavedCombineOffset()
 end
 
 function CombineUnloadAIDriver:raycastFront()
-	local nx, ny, nz = localDirectionToWorld(self.vehicle.cp.DirectionNode, 0, 0, -1)
+	local nx, ny, nz = localDirectionToWorld(self:getDirectionNode(), 0, 0, -1)
 	local x, y, z = localToWorld(self.vehicle.cp.DirectionNode, 0, 1.5, 10)
 	raycastAll(x, y, z, nx, ny, nz, 'raycastFrontCallback', 10, self)
 end
@@ -546,7 +546,14 @@ function CombineUnloadAIDriver:raycastFrontCallback(hitObjectId, x, y, z, distan
 		local object = g_currentMission:getNodeObject(hitObjectId)
 		if object and object == self.vehicle and self.distanceToFront == nil then
 			self.distanceToFront = 10 - distance
-			print(string.format("self.distanceToFront(%s) = 15 - distance(%s)",tostring(self.distanceToFront),tostring(distance)))
+			local colliNode = self.vehicle.cp.driver.collisionDetector.trafficCollisionTriggers[1]
+			local nx,ny,nz = getWorldTranslation(colliNode)
+			local _,_,sz = worldToLocal(self:getDirectionNode(),nx,ny,nz)
+			local Tx,Ty,Tz = getTranslation(colliNode,self:getDirectionNode());
+			print(string.format("self.distanceToFront(%s) = 10 - distance(%s)",tostring(self.distanceToFront),tostring(distance)))
+			if sz < self.distanceToFront+ 0.8 then
+				setTranslation(colliNode, Tx,Ty,Tz+(self.distanceToFront+ 0.8-sz))
+			end
 		else
 			return true
 		end
@@ -579,4 +586,8 @@ end
 
 function CombineUnloadAIDriver:getCombinesMeasuredBackDistance()
 	return g_combineUnloadManager:getCombinesMeasuredBackDistance(self.combineToUnload)
+end
+
+function CombineUnloadAIDriver:getCanShowDriveOnButton()
+	return self.combineUnloadState == self.states.ONFIELD
 end

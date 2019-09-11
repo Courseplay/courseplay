@@ -78,6 +78,7 @@ function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then
 		return (combine.cp.workWidth/2)+2.5
 	end
+	return 0
 end
 
 function CombineUnloadManager:getCombinesMeasuredBackDistance(combine)
