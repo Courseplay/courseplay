@@ -1076,8 +1076,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'setDriveNow' then
 					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						if vehicle.cp.driver and vehicle.cp.driver.getCanShowDriveOnButton then
-							print(string.format("if vehicle:getIsCourseplayDriving()(%s) and vehicle.cp.driver:getCanShowDriveOnButton()(%s) and not vehicle.cp.driveUnloadNow(%s) then",
-							tostring(vehicle:getIsCourseplayDriving()),tostring(vehicle.cp.driver:getCanShowDriveOnButton()),tostring(vehicle.cp.driveUnloadNow)))
 							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and not vehicle.cp.driveUnloadNow then
 								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')

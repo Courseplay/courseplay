@@ -60,7 +60,9 @@ function CombineUnloadAIDriver:start(ix)
 		self.combineUnloadState = self.states.ONFIELD
 		self:setNewOnFieldState(self.states.FIND_COMBINE)
 		self:disableCollisionDetection()
+		self:setDriveUnloadNow(false)
 	end
+	self.distanceToFront = nil
 end
 
 function CombineUnloadAIDriver:drive(dt)
@@ -77,6 +79,13 @@ function CombineUnloadAIDriver:drive(dt)
 end
 
 function CombineUnloadAIDriver:driveOnField(dt)
+	if self:getDriveUnloadNow() then
+		if self.onFieldState ~= self.states.FINDPATH_TO_COURSE
+			and self.onFieldState ~= self.states.DRIVE_TO_UNLOADCOURSE then
+			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+		end
+	end
+
 	if self.onFieldState == self.states.FIND_COMBINE then
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
 
@@ -199,8 +208,11 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 
 	elseif self.onFieldState == self.states.FINDPATH_TO_COURSE then
+		print("self.onFieldState == self.states.FINDPATH_TO_COURSE")
 		if self:startCourseWithPathfinding(self.mainCourse, 1) then
 			self:setNewOnFieldState(self.states.DRIVE_TO_UNLOADCOURSE)
+		else
+			self:hold()
 		end
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
 		--do nothing just drive
@@ -276,6 +288,7 @@ end
 function CombineUnloadAIDriver:onEndCourse()
 	if self.combineUnloadState == self.states.ONSTREET then
 		self.combineUnloadState = self.states.ONFIELD
+		self:setDriveUnloadNow(false)
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 		self:disableCollisionDetection()
 	end
