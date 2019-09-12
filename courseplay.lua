@@ -360,8 +360,9 @@ local function setGlobalData()
 	}
 
 	-- TODO: see where is the best to instantiate these settings. Maybe we need a container for all these
-	courseplay:addToGlobalSettings(LoadCoursesAtStartupSetting())
-	courseplay:addToGlobalSettings(UseAITurnsSetting())
+	courseplay.globalSettings = SettingsContainer()
+	courseplay.globalSettings:addSetting(LoadCoursesAtStartupSetting)
+	courseplay.globalSettings:addSetting(UseAITurnsSetting)
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

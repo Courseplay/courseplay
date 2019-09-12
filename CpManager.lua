@@ -448,7 +448,7 @@ function CpManager.saveXmlSettings(self)
 		setXMLFloat(cpSettingsXml, key .. '#posY', 		CpManager.course2dPlotPosY);
 		setXMLFloat(cpSettingsXml, key .. '#opacity',	CpManager.course2dPdaMapOpacity);
 
-		courseplay:saveGlobalSettingsToXML(cpSettingsXml, 'CPSettings')
+		courseplay.globalSettings:saveToXML(cpSettingsXml, 'CPSettings')
 
 		saveXMLFile(cpSettingsXml);
 		delete(cpSettingsXml);
@@ -1196,7 +1196,7 @@ function CpManager:loadXmlSettings()
 		self.course2dPlotField.x = self.course2dPlotPosX;
 		self.course2dPlotField.y = self.course2dPlotPosY;
 
-		courseplay:loadGlobalSettingsFromXML(cpSettingsXml, 'CPSettings')
+		courseplay.globalSettings:loadFromXML(cpSettingsXml, 'CPSettings')
 		--------------------------------------------------
 		delete(cpSettingsXml);
 	end;

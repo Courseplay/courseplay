@@ -495,11 +495,12 @@ end
 --- Should we return to the first point of the course after we are done?
 function FieldworkAIDriver:shouldReturnToFirstPoint()
 	-- TODO: implement and check setting in course or HUD
-	if self.fieldworkCourse:isOnHeadland(self.fieldworkCourse:getNumberOfWaypoints()) then
-		self:debug('Course ends on headland, no return to first point')
-		return false
-	else
+	if self.vehicle.cp.settings.returnToFirstPoint:is(true) then
+		self:debug('Returning to first point.')
 		return true
+	else
+		self:debug('Not returning to first point.')
+		return false
 	end
 end
 

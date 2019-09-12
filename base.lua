@@ -269,37 +269,6 @@ function courseplay:onLoad(savegame)
 	self.cp.folder_settings = {}
 	courseplay.settings.update_folders(self)
 
---[[	moved to start_stop.lua
-	--aiTrafficCollisionTrigger
-	if self.aiTrafficCollisionTrigger == nil then
-		local index = self.i3dMappings.aiCollisionTrigger --getXMLString(xmlFile, "vehicle.aiTrafficCollisionTrigger#index");
-		if index then
-			local triggerObject = I3DUtil.indexToObject(self.components, index);
-			if triggerObject then
-				self.aiTrafficCollisionTrigger = triggerObject;
-			end;
-		end;
-	else
-		CpManager.trafficCollisionIgnoreList[self.aiTrafficCollisionTrigger] = true; --add AI traffic collision trigger to global ignore list
-	end;
-	
-	if self.aiTrafficCollisionTrigger == nil and getNumOfChildren(self.rootNode) > 0 then
-		if getChild(self.rootNode, "aiCollisionTrigger") ~= 0 then
-			self.aiTrafficCollisionTrigger = getChild(self.rootNode, "aiCollisionTrigger");
-		else
-			for i=0,getNumOfChildren(self.rootNode)-1 do
-				local child = getChildAt(self.rootNode, i);
-				if getChild(child, "aiCollisionTrigger") ~= 0 then
-					self.aiTrafficCollisionTrigger = getChild(child, "aiCollisionTrigger");
-					break;
-				end;
-			end;
-		end;
-	end;
-	if self.aiTrafficCollisionTrigger == nil then
-		print(string.format('## Courseplay: %s: aiTrafficCollisionTrigger missing. Traffic collision prevention will not work!', nameNum(self)));
-	end;
-]]
 	-- DIRECTION NODE SETUP
 	local DirectionNode;
 	if self.getAIVehicleDirectionNode ~= nil then -- Check if function exist before trying to use it
@@ -603,6 +572,11 @@ function courseplay:onLoad(savegame)
 		self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
 	end]]
 	courseplay:setAIDriver(self, self.cp.mode)
+
+	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
+	---@type SettingsContainer
+	self.cp.settings = SettingsContainer()
+	self.cp.settings:addSetting(ReturnToFirstPointSetting)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -1192,31 +1166,10 @@ function courseplay:onDelete()
 	if self.cp.driver and self.cp.driver.collisionDetector then
 		self.cp.driver.collisionDetector:deleteTriggers()
 	end
-	
---[[	
-	--TODO Tommi: remove this when we are completely on AIDriver
-	for i=#self.cp.trafficCollisionTriggers,1,-1 do
-		
-		local node = self.cp.trafficCollisionTriggers[i]
-		if node ~= nil then
-			removeTrigger(trigger);
-			if entityExists(node) then
-				unlink(node)
-				self:removeWashableNode(node)
-				self:removeWearableNode(node)
-				delete(node)
-			end
-		end
-	end;
-	if self.aiTrafficCollisionTrigger ~= nil then
-		removeTrigger(self.aiTrafficCollisionTrigger);
-	end;
-	---
-]]
+
 	local ret_removeLegacyCollisionTriggers = false
 	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self);
-	
-	
+
 	if self.cp ~= nil then
 		if self.cp.headland and self.cp.headland.tg then
 			unlink(self.cp.headland.tg);
@@ -1672,7 +1625,9 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticHeight'), true);
 		self.cp.mode10.bladeOffset = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#bladeOffset'), 0);
 		self.cp.mode10.drivingThroughtLoading = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#drivingThroughtLoading'), false);
-		
+
+		self.cp.settings:loadFromXML(xmlFile, key .. '.courseplay')
+
 		courseplay:validateCanSwitchMode(self);
 	end;
 	return BaseMission.VEHICLE_LOAD_OK;
@@ -1817,6 +1772,9 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 		setXMLBool(xmlFile, newKey..".combine #driverPriorityUseFillLevel", self.cp.driverPriorityUseFillLevel)
 		setXMLBool(xmlFile, newKey..".combine #stopWhenUnloading", self.cp.stopWhenUnloading)
 	end;
+
+	self.cp.settings:saveToXML(xmlFile, newKey)
+
 end
 --[[
 function courseplay:getSaveAttributesAndNodes(nodeIdent)

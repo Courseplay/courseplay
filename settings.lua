@@ -199,7 +199,6 @@ function courseplay:startStop(vehicle)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 end;
 
-
 function courseplay:startStopCourseplayer(combine)
 	local tractor = combine.courseplayers[1];
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
@@ -1135,7 +1134,8 @@ function courseplay:changeStartingDirection(vehicle)
 end;
 
 function courseplay:toggleReturnToFirstPoint(vehicle)
-	vehicle.cp.returnToFirstPoint = not vehicle.cp.returnToFirstPoint;
+	-- TODO refactor the HUD to enable calling non-courseplay functions (pass in object)
+	vehicle.cp.settings.returnToFirstPoint:toggle()
 end;
 
 function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
@@ -2028,7 +2028,7 @@ function SettingList:saveToXml(xml, parentKey)
 	setXMLInt(xml, self:getKey(parentKey), self:get())
 end
 
---- Generic boolean settign
+--- Generic boolean setting
 ---@class BooleanSetting : SettingList
 BooleanSetting = CpObject(SettingList)
 
@@ -2044,6 +2044,10 @@ function BooleanSetting:init(name, label, toolTip, texts)
 			false,
 			true
 		}, texts)
+end
+
+function BooleanSetting:toggle()
+	self:set(not self:get())
 end
 
 function BooleanSetting:loadFromXml(xml, parentKey)
@@ -2189,6 +2193,16 @@ function CenterModeSetting:init()
 		})
 end
 
+--- Return to first point after finishing fieldwork
+---@class ReturnToFirstPointSetting : BooleanSetting
+ReturnToFirstPointSetting = CpObject(BooleanSetting)
+function ReturnToFirstPointSetting:init()
+	BooleanSetting.init(self, 'returnToFirstPoint', 'COURSEPLAY_RETURN_TO_FIRST_POINT',
+		'COURSEPLAY_RETURN_TO_FIRST_POINT')
+	self.xmlKey = 'returnToFirstPoint'
+	self.xmlAttribute = '#active'
+end
+
 --- Load courses at startup?
 ---@class LoadCoursesAtStartupSetting : BooleanSetting
 LoadCoursesAtStartupSetting = CpObject(BooleanSetting)
@@ -2209,27 +2223,27 @@ function UseAITurnsSetting:init()
 	self.xmlAttribute = '#active'
 end
 
---- Add a setting to the list of global settings. These settings will automatically added to the Advanced Settinss
---- page's Global tab.
-function courseplay:addToGlobalSettings(setting)
-	if not self.globalSettings then
-		self.globalSettings = {}
-	end
-	self.globalSettings[setting.name] = setting
+--- Container for settings
+--- @class SettingsContainer
+SettingsContainer = CpObject()
+
+--- Add a setting which then can be addressed by its name like container['settingName'] or container.settingName
+function SettingsContainer:addSetting(settingClass)
+	local s = settingClass()
+	self[s.name] = s
 end
 
-function courseplay:loadGlobalSettingsFromXML(xml, parentKey)
-	for _, setting in pairs(self.globalSettings) do
-		setting:loadFromXml(xml, parentKey)
-	end
-end
-
-function courseplay:saveGlobalSettingsToXML(xml, parentKey)
-	for _, setting in pairs(self.globalSettings) do
+function SettingsContainer:saveToXML(xml, parentKey)
+	for _, setting in pairs(self) do
 		setting:saveToXml(xml, parentKey)
 	end
 end
 
+function SettingsContainer:loadFromXML(xml, parentKey)
+	for _, setting in pairs(self) do
+		setting:loadFromXml(xml, parentKey)
+	end
+end
 
 -- do not remove this comment
 -- vim: set noexpandtab:

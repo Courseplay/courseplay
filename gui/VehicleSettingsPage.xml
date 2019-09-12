@@ -3,7 +3,7 @@
 	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="0px -130px" id="container">
 		<!-- column 1 -->
 		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px 0px" >
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="pipeOffset" toolTipElementId="ingameMenuHelpBoxText">
+			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="returnToFirstPoint" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />

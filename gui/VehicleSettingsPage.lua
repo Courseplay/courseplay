@@ -25,9 +25,13 @@ function VehicleSettingsPage:onFrameClose()
 	VehicleSettingsPage:superClass().onFrameClose(self);
 end;
 
+function VehicleSettingsPage:getSettings()
+	return g_currentMission.controlledVehicle.cp.settings
+end
+
 function VehicleSettingsPage:onCreateVehicleSettingsPage(element)
 	---@type SettingList
-	local setting = courseplay.globalSettings[element.name]
+	local setting = self:getSettings()[element.name]
 	if setting then
 		setting:setGuiElement(element)
 		element.labelElement.text = setting:getLabel()
@@ -50,13 +54,13 @@ function VehicleSettingsPage:initialize()
 end
 
 function VehicleSettingsPage:onClickOk()
-	for _, setting in pairs(self.settings) do
+	for _, setting in pairs(self:getSettings()) do
 		setting:setToIx(setting:getGuiElement():getState())
 	end
 end
 
 function VehicleSettingsPage:onClickReset()
-	for _, setting in pairs(self.settings) do
+	for _, setting in pairs(self:getSettings()) do
 		setting:getGuiElement():setState(setting:getGuiElementState(), false)
 	end
 end
@@ -77,7 +81,7 @@ function VehicleSettingsPage:updateToolTipBoxVisibility(box)
 end
 
 function VehicleSettingsPage:updateMyGUISettings()
-	for _, setting in pairs(courseplay.globalSettings) do
+	for _, setting in pairs(self:getSettings()) do
 		setting:getGuiElement():setState(setting:getGuiElementState(), false)
 	end
 end
