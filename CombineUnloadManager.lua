@@ -1,4 +1,3 @@
-
 ---@class CombineUnloadmanager
 CombineUnloadManager = CpObject()
 
@@ -13,7 +12,17 @@ g_combineUnloadManager = CombineUnloadManager()
 
 function CombineUnloadManager:addCombineToList(combine)
 	print(string.format("CombineUnloadmanager: added %s to list",tostring(combine.name)))
-	self.combines[combine]= {}
+	self.combines[combine]= {
+		isChopper = courseplay:isChopper(combine);
+		isCombine = courseplay:isCombine(combine) and not courseplay:isChopper(combine);
+		isDriving = false;
+		isOnFieldNumber = 0;
+		leftOkToDrive = false;
+		rightOKToDrive = false;
+		pipeOffset = 0;
+		unloader = {};
+	}
+
 
 end
 
@@ -26,8 +35,10 @@ end
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	for combine,data in pairs (self.combines) do
-		if unloader.cp.searchCombineOnField == data.isOnFieldNumber then
-			data.unloader = unloader
+		local unloaderOnField = unloader.cp.searchCombineOnField > 0 and unloader.cp.searchCombineOnField or self:getFieldNumber(unloader)
+		if unloaderOnField  == data.isOnFieldNumber then
+			table.insert(data.unloader ,unloader)
+			print("return: "..tostring(combine.name))
 			return combine
 		end
 	end
@@ -42,8 +53,6 @@ end
 function CombineUnloadManager:updateCombinesAttributes()
 	--update attributes
 	for combine,attributes in pairs (self.combines) do
-		attributes.isChopper =  combine:getFillUnitCapacity(combine.spec_combine.fillUnitIndex) > 10000000
-		attributes.isCombine =  courseplay:isCombine(combine) and not attributes.isChopper
 		attributes.isDriving = combine:getIsCourseplayDriving()
 		attributes.isOnFieldNumber = self:getFieldNumber(combine)
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)
@@ -66,8 +75,6 @@ end
 function CombineUnloadManager:getPossibleSidesToDrive(combine)
 	return self.combines[combine].leftOkToDrive, self.combines[combine].rightOKToDrive;
 end
-
-
 
 function CombineUnloadManager:getFieldNumber(vehicle)
 	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);

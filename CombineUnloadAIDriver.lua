@@ -79,10 +79,17 @@ function CombineUnloadAIDriver:drive(dt)
 end
 
 function CombineUnloadAIDriver:driveOnField(dt)
-	if self:getDriveUnloadNow() then
+	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
 		if self.onFieldState ~= self.states.FINDPATH_TO_COURSE
-			and self.onFieldState ~= self.states.DRIVE_TO_UNLOADCOURSE then
-			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+		and self.onFieldState ~= self.states.DRIVE_TO_UNLOADCOURSE
+		and self.onFieldState ~= self.states.DRIVE_STRAIGHT_BACK_FULL then
+			if self.onFieldState == self.states.FOLLOW_CHOPPER then
+				local reverseCourse = self:getStraightReverseCourse()
+				AIDriver.startCourse(self,reverseCourse,1)
+				self:setNewOnFieldState(self.states.DRIVE_STRAIGHT_BACK_FULL)
+			else
+				self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+			end
 		end
 	end
 
@@ -145,11 +152,8 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 	elseif self.onFieldState == self.states.FOLLOW_CHOPPER then
 		--get target node and check whether trailers are full
-		local targetNode,allTrailersFull = self:getTrailersTargetNode()
-		if allTrailersFull then
-			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
-			return
-		end
+		local targetNode = self:getTrailersTargetNode()
+
 		self.combineOffset = self:getChopperOffset(self.combineToUnload)
 
 		if self.combineOffset ~= 0 then
@@ -208,7 +212,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 
 	elseif self.onFieldState == self.states.FINDPATH_TO_COURSE then
-		print("self.onFieldState == self.states.FINDPATH_TO_COURSE")
 		if self:startCourseWithPathfinding(self.mainCourse, 1) then
 			self:setNewOnFieldState(self.states.DRIVE_TO_UNLOADCOURSE)
 		else
@@ -218,6 +221,15 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		--do nothing just drive
 		-- maybe do obstacle avoiding
 	elseif self.onFieldState == self.states.PREPARE_TURN then
+
+	elseif self.onFieldState == self.states.DRIVE_STRAIGHT_BACK_FULL then
+		local z = self:getZOffsetToCoordsBehind()
+		print(string.format("z(%s)> self.vehicle.cp.turnDiameter * 2(%s)",tostring(z),tostring(self.vehicle.cp.turnDiameter * 2)))
+		if z> self.vehicle.cp.turnDiameter * 2 then
+			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+			self:recoverOriginalWaypoints()
+		end
+
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHT_FROM_TURNINGCOMBINE then
 		local z = self:getZOffsetToCoordsBehind()
 		if z > 5 then
@@ -398,7 +410,7 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 		local fillUnits = tipper:getFillUnits()
 		for j=1,#fillUnits do
 			local tipperFillType = tipper:getFillUnitFillType(j)
-			local combineFillType = self.combineToUnload:getFillUnitLastValidFillType(self.combineToUnload:getCurrentDischargeNode().fillUnitIndex)
+			local combineFillType = self.combineToUnload and self.combineToUnload:getFillUnitLastValidFillType(self.combineToUnload:getCurrentDischargeNode().fillUnitIndex) or 0
 			if tipper:getFillUnitFreeCapacity(j) > 0 then
 				allTrailersFull = false
 				if (tipperFillType == FillType.UNKNOWN or tipperFillType == combineFillType) then
@@ -603,4 +615,9 @@ end
 
 function CombineUnloadAIDriver:getCanShowDriveOnButton()
 	return self.combineUnloadState == self.states.ONFIELD
+end
+
+function CombineUnloadAIDriver:getAllTrailersFull()
+	local _, allFull = self:getTrailersTargetNode()
+	return allFull
 end
