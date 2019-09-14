@@ -39,7 +39,8 @@ CombineUnloadAIDriver.myStates = {
 	DRIVE_STRAIGHTBACK_FROM_TURNINGCHOPPER = {},
 	HANDLE_COMBINE_TURN ={},
 	HANDLE_CHOPPER_TURN = {},
-	WAIT_FOR_COMBINES_FILLLEVEL = {}
+	WAIT_FOR_COMBINES_FILLLEVEL = {},
+	WAIT_FOR_CHOPPER_TURNED = {}
 }
 
 --- Constructor
@@ -52,6 +53,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	self:setHudContent()
 	self:setNewOnFieldState(self.states.FIND_COMBINE)
 	self.combineOffset = 0
+	self.distanceToCombine = math.huge
 end
 
 function CombineUnloadAIDriver:setHudContent()
@@ -210,6 +212,12 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_REVERSING_CHOPPER )
 		end
 
+		if self.combineToUnload.cp.turnStage ~= nil then
+			if self.combineToUnload.cp.turnStage> 1 then
+				self:setNewOnFieldState(self.states.WAIT_FOR_CHOPPER_TURNED)
+			end
+		end
+
 		if self.combineOffset ~= 0 then
 			local z = self:getZOffsetToCoordsBehind()
 			local dirSelfX,_,dirSelfZ = localDirectionToWorld(self:getDirectionNode(),0,0,1)
@@ -254,7 +262,12 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
 		--do nothing just drive
 		-- maybe do obstacle avoiding
-	elseif self.onFieldState == self.states.PREPARE_TURN then
+	elseif self.onFieldState == self.states.WAIT_FOR_CHOPPER_TURNED then
+		--print("self.combineToUnload.cp.turnStage: "..tostring(self.combineToUnload.cp.turnStage))
+		self:hold()
+		if self.combineToUnload.cp.turnStage == 0 then
+			self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
+		end
 
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHTBACK_FULL then
 		local z = self:getZOffsetToCoordsBehind()
@@ -333,8 +346,12 @@ function CombineUnloadAIDriver:driveBesideChopper(dt,targetNode)
 	--get direction to drive to
 	local gx,gy,gz,isBeside = self:getDrivingCoordsBeside()
 	local z = self:getZOffsetToCoordsBehind()
-	if not isBeside and z > 0 then
+	if not isBeside and z > -2 then
 		speed = self:getSpeedBehindChopper()
+		if z < 0 and self.distanceToCombine <2 then
+			print("STOOOOOOP")
+			allowedToDrive = false
+		end
 	else
 		self:setSavedCombineOffset(self.combineOffset)
 	end
@@ -355,7 +372,7 @@ function CombineUnloadAIDriver:driveBehindChopper(dt)
 
 	--I'm not behind the combine and have to wait till i can get behind it
 	local z = self:getZOffsetToCoordsBehind()
-	if z < 0 then
+	if z < 0 and self.distanceToCombine <3 then
 		--print("STOOOOOOP")
 		allowedToDrive = false
 	else
