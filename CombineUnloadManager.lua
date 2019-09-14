@@ -5,24 +5,28 @@ CombineUnloadManager = CpObject()
 function CombineUnloadManager:init()
 	print("CombineUnloadManager:init()")
 	self.combines = {}
+	self.unloaders = {}
 end
 
 g_combineUnloadManager = CombineUnloadManager()
 
 
 function CombineUnloadManager:addCombineToList(combine)
+	if combine:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
+		return
+	end
 	print(string.format("CombineUnloadmanager: added %s to list",tostring(combine.name)))
 	self.combines[combine]= {
 		isChopper = courseplay:isChopper(combine);
 		isCombine = courseplay:isCombine(combine) and not courseplay:isChopper(combine);
 		isDriving = false;
 		isOnFieldNumber = 0;
+		fillLevel = 0;
 		leftOkToDrive = false;
 		rightOKToDrive = false;
 		pipeOffset = 0;
 		unloader = {};
 	}
-
 
 end
 
@@ -33,20 +37,26 @@ function CombineUnloadManager:removeCombineFromList(combine)
 	end
 end
 
+function CombineUnloadManager:addMeToUnloaders(unloader)
+	self.unloaders = {}
+end
+
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	for combine,data in pairs (self.combines) do
 		local unloaderOnField = unloader.cp.searchCombineOnField > 0 and unloader.cp.searchCombineOnField or self:getFieldNumber(unloader)
 		if unloaderOnField  == data.isOnFieldNumber then
-			table.insert(data.unloader ,unloader)
-			print("return: "..tostring(combine.name))
-			return combine
+			renderText(0.2,0.255,0.02,string.format("if data.fillLevel(%s) > unloader.cp.followAtFillLevel(%s) then",tostring(data.fillLevel),tostring(unloader.cp.followAtFillLevel)))
+			if data.fillLevel > unloader.cp.followAtFillLevel or data.isChopper then
+				table.insert(data.unloader ,unloader)
+				print("return: "..tostring(combine.name))
+				return combine
+			end
 		end
 	end
 end
 
 function CombineUnloadManager:onUpdateTick()
 	self:updateCombinesAttributes()
-
 
 end
 
@@ -57,6 +67,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 		attributes.isOnFieldNumber = self:getFieldNumber(combine)
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)
 		attributes.pipeOffset = self:getPipeOffset(combine)
+		attributes.fillLevel = self:getCombinesFillLevelPercent(combine)
 		if attributes.measuredBackDistance == nil then
 			self:raycastBack(combine)
 		end
@@ -69,6 +80,10 @@ end
 function CombineUnloadManager:getIsChopper(chopper)
 	return self.combines[chopper].isChopper
 end
+function CombineUnloadManager:getIsCombine(combine)
+	return self.combines[combine].isCombine
+end
+
 function CombineUnloadManager:getCombinesPipeOffset(combine)
 	return self.combines[combine].pipeOffset
 end
@@ -84,9 +99,52 @@ end
 function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then
 		return (combine.cp.workWidth/2)+2.5
+	elseif self:getIsCombine(combine) then
+		local dischargeNode = combine:getCurrentDischargeNode().node
+		local dnX,dnY,dnZ = getWorldTranslation(dischargeNode)
+		local baseNode = self:getPipesBaseNode(combine)
+		local tX,tY,tZ = getWorldTranslation(baseNode)
+		local pipeOffsetX = worldToLocal(combine.cp.DirectionNode,tX,tY,tZ)
+		local distance = courseplay:distance(dnX,dnZ, tX,tZ)
+		--print(string.format(" pipeOffsetX:%s; distance:%s = %s  measured:%s",tostring(pipeOffsetX),tostring(distance),tostring(distance+pipeOffsetX),tostring(measured)))
+		if pipeOffsetX > 0 then
+			return pipeOffsetX + distance
+		elseif pipeOffsetX < 0 then
+			return pipeOffsetX - distance
+		end
 	end
 	return 0
 end
+
+function CombineUnloadManager:getPipesBaseNode(combine)
+	if self:getIsChopper(combine) then
+		for i=1,#combine.spec_pipe.nodes do
+			local node = combine.spec_pipe.nodes[i]
+			if node.autoAimYRotation then
+				return node.node
+			end
+		end
+	elseif self:getIsCombine(combine) then
+		--TODO find a cleaner way to figure out the getPipesBaseNode
+		local dischargeNode = combine:getCurrentDischargeNode().node
+		local lastParent = dischargeNode
+		while true do
+			--print(string.format("   %s: %s",tostring(lastParent),tostring(getName(lastParent))))
+			if getName(lastParent) == 'pipe' then
+				return lastParent
+			end
+
+			lastParent = getParent(lastParent)
+		end
+	end
+end
+
+function CombineUnloadManager:getCombinesFillLevelPercent(combine)
+	local dischargeNode = combine:getCurrentDischargeNode()
+	return combine:getFillUnitFillLevelPercentage(dischargeNode.fillUnitIndex)*100
+end
+
+
 
 function CombineUnloadManager:getCombinesMeasuredBackDistance(combine)
 	return self.combines[combine].measuredBackDistance
@@ -108,7 +166,7 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	local rightDirX,_,rightDirZ = localDirectionToWorld(node, -1, 0, 0);
 	--set measurements of the box to check
 	local boxWidth = 3;
-	local boxLength = 6 + combine.cp.workWidth;
+	local boxLength = 6 + combine.cp.workWidth/2;
 	--to get the box centered divide the measurements by 2
 	local boxWidthCenter = boxWidth/2
 	local boxLengthCenter = boxLength/2

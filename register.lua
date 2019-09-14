@@ -144,9 +144,6 @@ function courseplay:prePreDelete(self)
 	if self.cp ~= nil then
 		courseplay:deleteMapHotspot(self);
 		-- combineUnloadManager
-		if courseplay:isCombine(self) or courseplay:isChopper(self) then
-			g_combineUnloadManager:addCombineToList(self)
-		end
 	end
 end;
 FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);
@@ -169,6 +166,11 @@ function courseplay:vehicleDelete()
 			end;
 			self.cp.notesToDelete = nil;
 		end;
+
+		if courseplay:isCombine(self) or courseplay:isChopper(self) then
+			g_combineUnloadManager:removeCombineFromList(self)
+		end
+
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
