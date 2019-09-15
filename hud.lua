@@ -1250,11 +1250,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					self:disableButtonWithFunction(vehicle,page, 'showCombineName')
 					--Line 4: current assigned combine
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CURRENT'); --always
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.activeCombine ~= nil and vehicle.cp.activeCombine.name or courseplay:loc('COURSEPLAY_NONE');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driver and vehicle.cp.driver.combineToUnload ~= nil and vehicle.cp.driver.combineToUnload.name or courseplay:loc('COURSEPLAY_NONE');
 
 				elseif entry.functionToCall == 'removeActiveCombineFromTractor' then
 					--Line 5: remove active combine from tractor
-					if vehicle.cp.activeCombine ~= nil then --only if activeCombine
+					if vehicle.cp.driver and vehicle.cp.driver.combineToUnload ~= nil then --only if activeCombine
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
 					end;
 					

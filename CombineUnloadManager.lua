@@ -5,7 +5,6 @@ CombineUnloadManager = CpObject()
 function CombineUnloadManager:init()
 	print("CombineUnloadManager:init()")
 	self.combines = {}
-	self.unloaders = {}
 end
 
 g_combineUnloadManager = CombineUnloadManager()
@@ -25,7 +24,7 @@ function CombineUnloadManager:addCombineToList(combine)
 		leftOkToDrive = false;
 		rightOKToDrive = false;
 		pipeOffset = 0;
-		unloader = {};
+		unloaders = {};
 	}
 
 end
@@ -37,27 +36,49 @@ function CombineUnloadManager:removeCombineFromList(combine)
 	end
 end
 
-function CombineUnloadManager:addMeToUnloaders(unloader)
-	self.unloaders = {}
+function CombineUnloadManager:releaseUnloaderFromCombine(unloader,combine)
+	if self.combines[combine] then
+		for i=1,#self.combines[combine].unloaders do
+			if self.combines[combine].unloaders[i] == unloader then
+				table.remove(self.combines[combine].unloaders,i)
+				print(string.format("CombineUnloadmanager: released nr%d from combine",i))
+			end
+		end
+	end
 end
+
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	for combine,data in pairs (self.combines) do
 		local unloaderOnField = unloader.cp.searchCombineOnField > 0 and unloader.cp.searchCombineOnField or self:getFieldNumber(unloader)
 		if unloaderOnField  == data.isOnFieldNumber then
-			renderText(0.2,0.255,0.02,string.format("if data.fillLevel(%s) > unloader.cp.followAtFillLevel(%s) then",tostring(data.fillLevel),tostring(unloader.cp.followAtFillLevel)))
-			if data.fillLevel > unloader.cp.followAtFillLevel or data.isChopper then
-				table.insert(data.unloader ,unloader)
-				print("return: "..tostring(combine.name))
-				return combine
+			if  data.isChopper then
+				if self:getNumUnloaders(combine) == 0 then
+					table.insert(data.unloaders ,unloader)
+					return combine
+				else
+					local prevUnloader = data.unloaders[self:getNumUnloaders(combine)]
+					renderText(0.2,0.255,0.02,string.format("if prevUnloader.fillLevel(%s) > unloader.cp.followAtFillLevel(%s) then",tostring(prevUnloader.cp.totalFillLevelPercent),tostring(unloader.cp.followAtFillLevel)))
+					if prevUnloader.cp.totalFillLevelPercent > unloader.cp.followAtFillLevel then
+						table.insert(data.unloaders ,unloader)
+						return combine
+					end
+				end
+			else
+				renderText(0.2,0.255,0.02,string.format("if data.fillLevel(%s) > unloader.cp.followAtFillLevel(%s) then",tostring(data.fillLevel),tostring(unloader.cp.followAtFillLevel)))
+				if data.fillLevel > unloader.cp.followAtFillLevel then
+					table.insert(data.unloaders ,unloader)
+					return combine
+				end
 			end
+
+
 		end
 	end
 end
 
 function CombineUnloadManager:onUpdateTick()
 	self:updateCombinesAttributes()
-
 end
 
 function CombineUnloadManager:updateCombinesAttributes()
@@ -74,6 +95,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 		for name,value in pairs (attributes) do
 			--print(string.format("%s: %s",tostring(name),tostring(value)))
 		end
+		renderText(0.2,0.105,0.02,string.format("leftOK: %s; rightOK:%s numUnloaders:%d",tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders))
 	end
 end
 
@@ -95,6 +117,26 @@ function CombineUnloadManager:getFieldNumber(vehicle)
 	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
 	return courseplay.fields:getFieldNumForPosition( positionX, positionZ )
 end
+
+function CombineUnloadManager:getNumUnloaders(combine)
+	return #self.combines[combine].unloaders
+end
+
+function CombineUnloadManager:getUnloadersNumber(unloader, combine)
+	local number = 0
+	for i=1,#self.combines[combine].unloaders do
+		if self.combines[combine].unloaders[i] == unloader then
+			number = i
+			break
+		end
+	end
+	return number
+end
+
+function CombineUnloadManager:getUnloaderByNumber(number, combine)
+	return self.combines[combine].unloaders[number]
+end
+
 
 function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then
@@ -219,7 +261,6 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 
 	local leftOK = leftField and leftFruit < totalAreaLeft*0.05
 	local rightOK = rightField and rightFruit < totalAreaRight*0.05
-	renderText(0.2,0.105,0.02,string.format("leftOK: %s; rightOK:%s",tostring(leftOK),tostring(rightOK)))
 	return leftOK,rightOK
 end
 

@@ -80,15 +80,6 @@ function courseplay:start(self)
 	if self.attachedCutters ~= nil then
 ]]
 
-	--calculate workwidth for combines in mode7
-	if self.cp.mode == 7 then
-		courseplay:calculateWorkWidth(self)
-	end
-	-- set default modeState if not in mode 2 or 3
-	if self.cp.mode ~= 2 and self.cp.mode ~= 3 then
-		courseplay:setModeState(self, 0);
-	end;
-
 	if self.cp.waypointIndex < 1 then
 		courseplay:setWaypointIndex(self, 1);
 	end

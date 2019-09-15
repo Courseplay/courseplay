@@ -259,6 +259,10 @@ function Course:setOffset(x, z)
 	self.offsetX, self.offsetZ = x, z
 end
 
+function Course:getOffset()
+	return self.offsetX, self.offsetZ
+end
+
 --- get number of waypoints in course
 function Course:getNumberOfWaypoints()
 	return #self.waypoints

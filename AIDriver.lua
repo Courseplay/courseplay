@@ -1069,8 +1069,7 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	local takeOverSteering = false
 	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
 	self:setSpeed(self:getRecordedSpeed())
-	
-	--handle cover 
+	--handle cover
 	if self:hasTipTrigger() or isNearUnloadPoint then
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 	end

@@ -668,11 +668,11 @@ function courseplay:selectAssignedCombine(vehicle, changeBy)
 end;
 
 function courseplay:removeActiveCombineFromTractor(vehicle)
-	if vehicle.cp.activeCombine ~= nil then
-		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
+	if vehicle.cp.driver.combineToUnload ~= nil then
+		g_combineUnloadManager:releaseUnloaderFromCombine(vehicle,vehicle.cp.driver.combineToUnload)
+		vehicle.cp.driver.combineToUnload = nil
 	end;
-	courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
-	vehicle.cp.lastActiveCombine = nil;
+	--courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
