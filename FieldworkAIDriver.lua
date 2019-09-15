@@ -38,9 +38,6 @@ FieldworkAIDriver.myStates = {
 	WAITING_FOR_LOWER_DELAYED = {},
 	WAITING_FOR_RAISE = {},
 	TURNING = {},
-	FINISHING_ROW = {},
-	ENDING_TURN = {},
-	STARTING_ROW = {},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
 	FORWARD1 = {},
 	FORWARD2 = {},
@@ -203,10 +200,8 @@ end
 function FieldworkAIDriver:drive(dt)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
-		self:driveFieldwork(dt)
-		-- TODO: make this nicer, probably more generic in AIDriver?
-		if self:isAITurnDriving() then
-			-- AI turn is driving, no need for AIDriver
+		if self:driveFieldwork(dt) then
+			-- driveFieldwork is driving, no need for AIDriver
 			return
 		end
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
@@ -246,7 +241,9 @@ end
 
 
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
+---@return true if driveFieldwork() is driving (no need to call ALDriver.drive())
 function FieldworkAIDriver:driveFieldwork(dt)
+	local iAmDriving = false
 	self:updateFieldworkOffset()
 	if self.fieldworkState == self.states.WAITING_FOR_LOWER_DELAYED then
 		-- getCanAIVehicleContinueWork() seems to return false when the implement being lowered/raised (moving) but
@@ -275,8 +272,9 @@ function FieldworkAIDriver:driveFieldwork(dt)
 	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkState == self.states.TURNING then
-		self:driveAITurn(dt)
+		iAmDriving = self.aiTurn:drive(dt)
 	end
+	return iAmDriving
 end
 
 function FieldworkAIDriver:checkFillLevels()
@@ -376,7 +374,7 @@ function FieldworkAIDriver:onNextCourse()
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.TURNING then
 			-- a turn just ended, at this point all implements should already be lowered as the turn end course ended
-			-- but just in case, l	ower them now
+			-- but just in case, lower them now
 			self:lowerImplements()
 			self.fieldworkState = self.states.WORKING
 		else
@@ -1221,113 +1219,23 @@ function FieldworkAIDriver:isValidAIImplement(object)
 	end
 end
 
--- TODO: move turn stuff into its own class
-function FieldworkAIDriver:isAITurnDriving()
-	return self.fieldworkState == self.states.TURNING and
-		(self.turnState == self.states.TURNING or self.turnState == self.states.FINISHING_ROW)
-end
-
-
 function FieldworkAIDriver:startAiTurn(ix)
 	self:debug('Starting an AI turn.')
 	self:setMarkers()
 	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.frontMarkerDistance)
-	if not self:canMakeKTurn(ix, self.turnContext) then
+	if AITurn.canMakeKTurn(self.vehicle, self.turnContext) then
+		self:debug('Starting a K turn')
+		---@type AITurn
+		self.aiTurn = KTurn(self.vehicle, self, self.turnContext)
+		self.fieldworkState = self.states.TURNING
+		return true
+	else
 		self:debug('Can\'t make K turn, reverting to turn.lua')
 		return false
 	end
-	self:debug('Starting a K turn')
-	self.fieldworkState = self.states.TURNING
-	self.turnState = self.states.FINISHING_ROW
-	return true
 end
 
-function FieldworkAIDriver:canMakeKTurn(ix, turnContext)
-	if turnContext:isHeadlandCorner() then
-		self:debug('Headland turn, let turn.lua drive for now.')
-		return false
-	end
-	if self.vehicle.cp.turnDiameter <= math.abs(turnContext.dx) then
-		self:debug('wide turn with no reversing (turn diameter = %.1f, dx = %.1f, let turn.lua do that for now.', self.vehicle.cp.turnDiameter, math.abs(turnContext.dx))
-		return false
-	end
-	if not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(self.vehicle) then
-		self:debug('Not all attached implements allow for reversing, let turn.lua handle this for now')
-		return false
-	end
-	return true
-end
-
-function FieldworkAIDriver:driveAITurn(dt)
-	self:setSpeed(self.vehicle.cp.speeds.turn)
-	-- Finishing the current
-	if self.turnState == self.states.FINISHING_ROW then
-		-- keep driving straight until we need to raise our implements
-		self:driveVehicleInDirection(dt, self.allowedToDrive, true, 0, 1, self:getSpeed())
-		if self:shouldRaiseImplements(self.turnContext.turnStartForwardWpNode.node) then
-			self:raiseImplements()
-			self.turnState = self.states.TURNING
-			self:startKTurn()
-			self:debug('Row finished, starting turn.')
-		end
-	-- Performing the actual turn
-	elseif self.turnState == self.states.TURNING then
-		self:driveKTurn(dt)
-	-- Ending the turn (starting next row)
-	elseif self.turnState == self.states.ENDING_TURN then
-		-- keep driving on the turn ending temporary course until we need to lower our implements
-		-- check implements only if we are more or less in the right direction (next row's direction)
-		if self.turnContext:isDirectionCloseToEndDirection(self:getDirectionNode()) and
-			self:shouldLowerImplements(self.turnContext.turnEndWpNode.node, false) then
-			self:lowerImplements()
-			self:debug('Turn ended, continue on row')
-			self.turnState = self.states.STARTING_ROW
-		end
-	elseif self.turnState == self.states.STARTING_ROW then
-		-- implements lowered, PPC is driving the temporary course ending the turn, onNextCourse will return to work
-		-- nothing to do here
-	end
-end
-
-function FieldworkAIDriver:startKTurn()
-	self.kTurnState = self.states.FORWARD1
-end
-
-function FieldworkAIDriver:driveKTurn(dt)
-	local endTurn = function()
-		local endingTurnCourse = self.turnContext:createEndingTurnCourse(self.vehicle)
-		self.turnState = self.states.ENDING_TURN
-		self:startCourse(endingTurnCourse, 1, self.fieldworkCourse, self.turnContext.turnEndWpIx)
-	end
-
-	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self:getDirectionNode())
-	local turnRadius = self.vehicle.cp.turnDiameter / 2
-	if self.kTurnState == self.states.FORWARD1 then
-		if dz > 0 then
-			-- drive straight until we are beyond the turn end
-			self:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self:getSpeed())
-		elseif not self.turnContext:isDirectionPerpendicularToTurnEndDirection(self:getDirectionNode()) then
-			-- full turn towards the turn end waypoint
-			self:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self:getSpeed())
-		else
-			-- drive straight ahead until we cross turn end line
-			self:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self:getSpeed())
-			if self.turnContext:isLateralDistanceGreater(dx, turnRadius * 1.05) then
-				-- no need to reverse from here, we can make the turn
-				self:debug('K Turn: dx = %.1f, r = %.1f, no need to reverse.', dx, turnRadius)
-				endTurn()
-			else
-				-- reverse until we can make turn to the turn end point
-				self:debug('K Turn: dx = %.1f, r = %.1f, reversing now.', dx, turnRadius)
-				self.kTurnState = self.states.REVERSE
-			end
-		end
-	elseif self.kTurnState == self.states.REVERSE then
-		self:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self:getSpeed())
-		if math.abs(dx) > turnRadius * 1.05 then
-			self:debug('K Turn forwarding again')
-			endTurn()
-		end
-	end
+function FieldworkAIDriver:startFieldworkCourseWithTemporaryCourse(temporaryCourse, fieldworkIx)
+	self:startCourse(temporaryCourse, 1, self.fieldworkCourse, fieldworkIx)
 end
 

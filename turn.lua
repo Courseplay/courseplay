@@ -2356,6 +2356,10 @@ function Corner:getArcCenter()
 	return self.center
 end
 
+function Corner:getEndAngleDeg()
+	return self.endAngleDeg
+end
+
 function Corner:debug(...)
 	courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
 end
