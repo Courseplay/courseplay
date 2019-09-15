@@ -119,6 +119,10 @@ function PurePursuitController:setOffset(x, z)
 	self.course:setOffset(x, z)
 end
 
+function PurePursuitController:getOffset()
+	return self.course:getOffset()
+end
+
 --- Use a different node to track/control, for example the root node of a trailed implement
 -- instead of the tractor's root node.
 function PurePursuitController:setControlledNode(node)
