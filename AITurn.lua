@@ -57,16 +57,16 @@ end
 
 function AITurn.canMakeKTurn(vehicle, turnContext)
 	if turnContext:isHeadlandCorner() then
-		self:debug('Headland turn, let turn.lua drive for now.')
+		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Headland turn, let turn.lua drive for now.')
 		return false
 	end
 	if vehicle.cp.turnDiameter <= math.abs(turnContext.dx) then
-		self:debug('wide turn with no reversing (turn diameter = %.1f, dx = %.1f, let turn.lua do that for now.',
+		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'wide turn with no reversing (turn diameter = %.1f, dx = %.1f, let turn.lua do that for now.',
 			vehicle.cp.turnDiameter, math.abs(turnContext.dx))
 		return false
 	end
 	if not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(vehicle) then
-		self:debug('Not all attached implements allow for reversing, let turn.lua handle this for now')
+		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Not all attached implements allow for reversing, let turn.lua handle this for now')
 		return false
 	end
 	return true
