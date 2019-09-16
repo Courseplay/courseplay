@@ -271,7 +271,7 @@ function FieldworkAIDriver:driveFieldwork(dt)
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 		self:setSpeed(self:getFieldSpeed())
-	elseif self.fieldworkState == self.states.TURNING then
+	elseif self.fieldworkState == self.states.TURNING and self.aiTurn then
 		iAmDriving = self.aiTurn:drive(dt)
 	end
 	return iAmDriving
