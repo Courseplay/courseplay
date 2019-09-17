@@ -669,7 +669,7 @@ end;
 
 function courseplay:removeActiveCombineFromTractor(vehicle)
 	if vehicle.cp.driver.combineToUnload ~= nil then
-		g_combineUnloadManager:releaseUnloaderFromCombine(vehicle,vehicle.cp.driver.combineToUnload)
+		vehicle.cp.driver:releaseUnloader()
 		vehicle.cp.driver.combineToUnload = nil
 	end;
 	--courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
