@@ -1,3 +1,64 @@
+---@class FieldManager
+FieldManager = CpObject()
+
+-- Constructor
+function FieldManager:init(number)
+	print("FieldManager:init "..tostring(number))
+	self.combinesOnField = {}
+	self.unloadersOnField ={}
+	self.myID = number
+end
+
+function FieldManager:addCombineToField(combine)
+	if not self.combinesOnField[combine] then
+		self.combinesOnField[combine] = g_combineUnloadManager.combines[combine]
+		print(self.myID..": add to field: "..tostring(combine.name))
+	end
+end
+
+function FieldManager:addUnloaderToField(unloader)
+	if not self.unloadersOnField[unloader] then
+		self.unloadersOnField[unloader] = {}
+		print(self.myID..":add to field: "..tostring(unloader.name))
+	end
+end
+
+function FieldManager:deleteUnloaderFromField(unloader)
+	if self.unloadersOnField[unloader] then
+		self.unloadersOnField[unloader] = nil
+		print(self.myID.."delete from field: "..tostring(unloader.name))
+	end
+end
+
+function FieldManager:getCombineToUnloader(unloader)
+	local combine = self:getChopperWithLeastUnloaders()
+	local unloaderNumber = g_combineUnloadManager:getNumUnloaders(combine)
+	if unloaderNumber == 0 then
+		return combine
+	elseif unloaderNumber <2 then
+		local prevTractor = g_combineUnloadManager:getUnloaderByNumber(unloaderNumber, combine)
+		if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
+			return combine
+		end
+	end
+end
+
+function FieldManager:getChopperWithLeastUnloaders()
+	local chopperToReturn = {}
+	local amountUnloaders = math.huge
+	for chopper,data in pairs(self.combinesOnField) do
+		if data.isChopper then
+			if amountUnloaders > #data.unloaders then
+				chopperToReturn = chopper
+				amountUnloaders = #data.unloaders
+			end
+		end
+	end
+	return chopperToReturn
+end
+
+
+
 ---@class CombineUnloadmanager
 CombineUnloadManager = CpObject()
 
@@ -5,10 +66,11 @@ CombineUnloadManager = CpObject()
 function CombineUnloadManager:init()
 	print("CombineUnloadManager:init()")
 	self.combines = {}
+	self.unloadersOnFields ={}
+
 end
 
 g_combineUnloadManager = CombineUnloadManager()
-
 
 function CombineUnloadManager:addCombineToList(combine)
 	if combine:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
@@ -26,7 +88,6 @@ function CombineUnloadManager:addCombineToList(combine)
 		pipeOffset = 0;
 		unloaders = {};
 	}
-
 end
 
 function CombineUnloadManager:removeCombineFromList(combine)
@@ -49,43 +110,55 @@ end
 
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
-	for combine,data in pairs (self.combines) do
-		local unloaderOnField = unloader.cp.searchCombineOnField > 0 and unloader.cp.searchCombineOnField or self:getFieldNumber(unloader)
-		if unloaderOnField  == data.isOnFieldNumber then
-			if  data.isChopper then
-				if self:getNumUnloaders(combine) == 0 then
-					table.insert(data.unloaders ,unloader)
-					return combine
-				else
-					local prevUnloader = data.unloaders[self:getNumUnloaders(combine)]
-					renderText(0.2,0.255,0.02,string.format("if prevUnloader.fillLevel(%s) > unloader.cp.followAtFillLevel(%s) then",tostring(prevUnloader.cp.totalFillLevelPercent),tostring(unloader.cp.followAtFillLevel)))
-					if prevUnloader.cp.totalFillLevelPercent > unloader.cp.followAtFillLevel then
-						table.insert(data.unloaders ,unloader)
-						return combine
-					end
-				end
-			else
-				renderText(0.2,0.255,0.02,string.format("if data.fillLevel(%s) > unloader.cp.followAtFillLevel(%s) then",tostring(data.fillLevel),tostring(unloader.cp.followAtFillLevel)))
-				if data.fillLevel > unloader.cp.followAtFillLevel then
-					table.insert(data.unloaders ,unloader)
-					return combine
-				end
-			end
-
-
-		end
+	local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
+	if combine ~= nil then
+		table.insert(self.combines[combine].unloaders,unloader)
+		return combine
 	end
+end
+
+function CombineUnloadManager:enterField(unloader)
+	local unloaderOnFieldNumber = unloader.cp.searchCombineOnField > 0 and unloader.cp.searchCombineOnField or self:getFieldNumber(unloader)
+	if self.unloadersOnFields[unloader] == nil then
+		if unloaderOnFieldNumber > 0  then
+			self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
+			self.unloadersOnFields[unloader] = unloaderOnFieldNumber
+		end
+	elseif unloaderOnFieldNumber ~= self.unloadersOnFields[unloader] then
+		self.fieldManagers[self.unloadersOnFields[unloader]]:deleteUnloaderFromField(unloader)
+		self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
+		self.unloadersOnFields[unloader]=unloaderOnFieldNumber
+	end
+end
+
+function CombineUnloadManager:leaveField(unloader)
+	self.fieldManagers[self.unloadersOnFields[unloader]]:deleteUnloaderFromField(unloader)
+	self.unloadersOnFields[unloader] = nil
 end
 
 function CombineUnloadManager:onUpdateTick()
 	self:updateCombinesAttributes()
+	self:updateFieldManagers()
 end
+
+function CombineUnloadManager:updateFieldManagers()
+	if self.fieldManagers == nil and #g_fieldManager:getFields() > 0 then
+		self.fieldManagers = {}
+		for i=1,#g_fieldManager:getFields() do
+			self.fieldManagers[i] = FieldManager(i)
+		end
+	end
+end
+
 
 function CombineUnloadManager:updateCombinesAttributes()
 	--update attributes
 	for combine,attributes in pairs (self.combines) do
 		attributes.isDriving = combine:getIsCourseplayDriving()
 		attributes.isOnFieldNumber = self:getFieldNumber(combine)
+		if attributes.isOnFieldNumber>0 then
+			self.fieldManagers[attributes.isOnFieldNumber]:addCombineToField(combine)
+		end
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)
 		attributes.pipeOffset = self:getPipeOffset(combine)
 		attributes.fillLevel = self:getCombinesFillLevelPercent(combine)
@@ -284,3 +357,7 @@ function CombineUnloadManager:raycastBackCallback(hitObjectId, x, y, z, distance
 		end
 	end
 end
+
+
+
+
