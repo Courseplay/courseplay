@@ -158,7 +158,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 	for combine,attributes in pairs (self.combines) do
 		attributes.isDriving = combine:getIsCourseplayDriving()
 		attributes.isOnFieldNumber = self:getFieldNumber(combine)
-		if attributes.isOnFieldNumber>0 then
+		if attributes.isOnFieldNumber>0 and self.fieldManagers then
 			self.fieldManagers[attributes.isOnFieldNumber]:addCombineToField(combine)
 		end
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)

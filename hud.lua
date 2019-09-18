@@ -1240,8 +1240,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'setSearchCombineOnField' then 
 					--Line 3: choose field for automatic search --only if automatic
 					if vehicle.cp.searchCombineAutomatically and courseplay.fields.numAvailableFields > 0 then
+						vehicle.cp.settings.searchCombineOnField:refresh()
 						self:enableButtonWithFunction(vehicle,page, 'setSearchCombineOnField')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SEARCH_COMBINE_ON_FIELD'):format(vehicle.cp.searchCombineOnField > 0 and tostring(vehicle.cp.searchCombineOnField) or '---');
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.searchCombineOnField:getLabel():format(vehicle.cp.settings.searchCombineOnField:getText())
 					else
 						self:disableButtonWithFunction(vehicle,page, 'setSearchCombineOnField')
 					end;
@@ -2445,7 +2446,7 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 	
 	--page 4 
 	self:enablePageButton(vehicle, 4)
-	
+
 	self:addRowButton(vehicle,'toggleSearchCombineMode', 4, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,'selectAssignedCombine', 4, 2, 1 )
 	self:addSettingsRowWithArrows(vehicle,'setSearchCombineOnField', 4, 3, 1 )
