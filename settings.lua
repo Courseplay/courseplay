@@ -1,5 +1,3 @@
-local curFile = 'settings.lua';
-
 local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 
 function courseplay:openCloseHud(vehicle, open)
@@ -593,13 +591,13 @@ function courseplay:toggleRealisticDriving(vehicle)
 end;
 
 function courseplay:toggleDrivingMode(vehicle)
-	vehicle.cp.drivingMode:next()
+	vehicle.cp.drivingMode:setNext()
 	courseplay.debugVehicle(12, vehicle, 'Driving mode: %d', vehicle.cp.drivingMode:get())
 end
 
 function courseplay:toggleAutoDriveMode(vehicle)
 	if vehicle.cp.driver then
-		vehicle.cp.aiDriverData.autoDriveMode:next()
+		vehicle.cp.aiDriverData.autoDriveMode:setNext()
 		courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.aiDriverData.autoDriveMode:get())
 	end
 end;
@@ -623,29 +621,20 @@ end;
 
 function courseplay:setSearchCombineOnField(vehicle, changeDir, force)
 	if courseplay.fields.numAvailableFields == 0 or not vehicle.cp.searchCombineAutomatically then
-		vehicle.cp.searchCombineOnField = 0;
-		return;
-	end;
+		vehicle.cp.settings.searchCombineOnField:set(0)
+		return
+	end
 	if force and courseplay.fields.fieldData[force] then
-		vehicle.cp.searchCombineOnField = force;
-		return;
-	end;
+		vehicle.cp.settings.searchCombineOnField:set(force)
+		return
+	end
 
-	local newFieldNum = vehicle.cp.searchCombineOnField + changeDir;
-	if newFieldNum == 0 then
-		vehicle.cp.searchCombineOnField = newFieldNum;
-		return;
-	end;
+	if changeDir > 0 then
+		vehicle.cp.settings.searchCombineOnField:setNext()
+	else
+		vehicle.cp.settings.searchCombineOnField:setPrevious()
+	end
 
-	while courseplay.fields.fieldData[newFieldNum] == nil do
-		if newFieldNum == 0 then
-			vehicle.cp.searchCombineOnField = newFieldNum;
-			return;
-		end;
-		newFieldNum = MathUtil.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
-	end;
-
-	vehicle.cp.searchCombineOnField = newFieldNum;
 end;
 
 function courseplay:selectAssignedCombine(vehicle, changeBy)
@@ -1905,13 +1894,24 @@ function SettingList:init(name, label, toolTip, values, texts)
 	-- index of the previous value/text
 	self.previous = 1
 	-- override
-	self.xmlKey = 'SettingsList'
+	self.xmlKey = 'SettingList'
 	self.xmlAttribute = '#value'
+	self.lastChangeTimeMilliseconds = 0
 end
 
 -- Get the current value
 function SettingList:get()
 	return self.values[self.current]
+end
+
+---@param seconds number if value changed within seconds than it should be considered invalid
+---@return nil if value changed in the last seconds seconds, otherwise the current value
+function SettingList:getIfNotChangedFor(seconds)
+	if self:getSecondsSinceLastChange() > seconds then
+		return self:get()
+	else
+		return nil
+	end
 end
 
 -- Is the current value same as the param?
@@ -1932,8 +1932,14 @@ function SettingList:getToolTip()
 	return courseplay:loc(self.toolTip)
 end
 
+--- Set the previous value
+function SettingList:setPrevious()
+	local new = self:checkAndSetValidValue(self.current - 1)
+	self:setToIx(new)
+end
+
 --- Set the next value
-function SettingList:next()
+function SettingList:setNext()
 	local new = self:checkAndSetValidValue(self.current + 1)
 	self:setToIx(new)
 end
@@ -1944,6 +1950,7 @@ function SettingList:setToIx(ix)
 		self.previous = self.current
 		self.current = ix
 		self:onChange()
+		self.lastChangeTimeMilliseconds = g_time
 	end
 end
 
@@ -1963,6 +1970,8 @@ end
 function SettingList:checkAndSetValidValue(new)
 	if new > #self.values then
 		return 1
+	elseif new < 1 then
+		return #self.values
 	else
 		return new
 	end
@@ -2020,6 +2029,17 @@ end
 function SettingList:saveToXml(xml, parentKey)
 	setXMLInt(xml, self:getKey(parentKey), self:get())
 end
+
+---@return number seconds since last change
+function SettingList:getSecondsSinceLastChange()
+	return self:getMilliSecondsSinceLastChange() / 1000
+end
+
+---@return number milliseconds since last change
+function SettingList:getMilliSecondsSinceLastChange()
+	return (g_time - self.lastChangeTimeMilliseconds) / 1000
+end
+
 
 --- Generic boolean setting
 ---@class BooleanSetting : SettingList
@@ -2204,6 +2224,60 @@ function LoadCoursesAtStartupSetting:init()
 		'COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP')
 	self.xmlKey = 'loadCoursesAtStartup'
 	self.xmlAttribute = '#active'
+end
+
+--- Setting to select a field
+---@class FieldNumberSetting : SettingList
+FieldNumberSetting = CpObject(SettingList)
+function FieldNumberSetting:init()
+	local values, texts = self:loadFields()
+	SettingList.init(self, 'fieldNumbers', 'COURSEPLAY_FIELD', 'COURSEPLAY_FIELD',
+		values, texts)
+end
+
+function FieldNumberSetting:loadFields()
+	local values = {}
+	local texts = {}
+	for fieldNumber, _ in pairs( courseplay.fields.fieldData ) do
+		table.insert(values, fieldNumber)
+		table.insert(texts, fieldNumber)
+	end
+	table.sort( values, function( a, b ) return a < b end )
+	table.sort( texts, function( a, b ) return a < b end )
+	return values, texts
+end
+
+--- Refresh current field numbers (as they may change when fields are bought/sold)
+function FieldNumberSetting:refresh()
+	local fieldNumbers
+	self.values, self.texts = self:loadFields()
+	self.current = math.min(self.current, #self.values)
+end
+
+--- Search combine on field
+---@class SearchCombineOnFieldSetting : FieldNumberSetting
+SearchCombineOnFieldSetting = CpObject(FieldNumberSetting)
+function SearchCombineOnFieldSetting:init()
+	FieldNumberSetting.init(self)
+	self.name = 'searchCombineOnField'
+	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.xmlKey = 'searchCombineOnField'
+	self.xmlAttribute = '#fieldNumber'
+	self:addNoneSelected()
+end
+
+function SearchCombineOnFieldSetting:addNoneSelected()
+	-- add value/text for nothing selected
+	table.insert(self.values, 1, 0)
+	table.insert(self.texts, 1, '--')
+end
+
+function SearchCombineOnFieldSetting:refresh()
+	local current = self.current
+	FieldNumberSetting.refresh(self)
+	self:addNoneSelected()
+	self.current = math.min(current, #self.values)
 end
 
 --- Use AI Turns?

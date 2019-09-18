@@ -577,6 +577,7 @@ function courseplay:onLoad(savegame)
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer()
 	self.cp.settings:addSetting(ReturnToFirstPointSetting)
+	self.cp.settings:addSetting(SearchCombineOnFieldSetting)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -1689,7 +1690,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".fieldWork #savedFieldNum", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.fieldNum,0)))
 	setXMLBool(xmlFile, newKey..".fieldWork #fertilizerEnabled", self.cp.fertilizerEnabled)
 	setXMLBool(xmlFile, newKey..".fieldWork #convoyActive", self.cp.convoyActive)
-	
+
 	--LevlingAndCompactingSettings
 	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
 	setXMLBool(xmlFile, newKey..".mode10 #CourseplayersOnly", self.cp.mode10.searchCourseplayersOnly)
