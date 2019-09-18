@@ -238,6 +238,10 @@ function CpManager:update(dt)
 		
 	end;
 
+	if courseplay.fieldMod == nil then
+		courseplay:initailzeFieldMod()
+	end
+
 	if g_gui.currentGui == nil then
 		-- SETUP FIELD INGAME DATA
 		if not courseplay.fields.ingameDataSetUp then
@@ -248,11 +252,7 @@ function CpManager:update(dt)
 		if self.startFieldScanAfter > 0 then
 			self.startFieldScanAfter = self.startFieldScanAfter - dt;
 		end;
-		
-		if courseplay.fieldMod == nil then 
-			courseplay:initailzeFieldMod()
-		end	
-		
+
 		if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 			courseplay.fields:setAllFieldEdges();
 		end;
@@ -266,6 +266,7 @@ function CpManager:update(dt)
 		end;
 	end;
 
+	g_combineUnloadManager:onUpdate()
 
 	-- REAL TIME 10 SECS CHANGER
 	if g_server ~= nil then
@@ -305,6 +306,14 @@ function CpManager:update(dt)
 		courseplay.fields.filter:setValueCompareParams("greater", 0) -- more than 0, so it is a field
 	end
 end;
+
+
+function CpManager:UpdateTick(dt)
+	print("CpManager:updateTick(dt)")
+end
+
+
+
 
 function CpManager:draw()
 	if g_currentMission.paused then

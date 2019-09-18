@@ -12,21 +12,21 @@ end
 function FieldManager:addCombineToField(combine)
 	if not self.combinesOnField[combine] then
 		self.combinesOnField[combine] = g_combineUnloadManager.combines[combine]
-		print(self.myID..": add to field: "..tostring(combine.name))
+		print("Manager"..self.myID..": add to field: "..tostring(combine.name))
 	end
 end
 
 function FieldManager:addUnloaderToField(unloader)
 	if not self.unloadersOnField[unloader] then
 		self.unloadersOnField[unloader] = {}
-		print(self.myID..":add to field: "..tostring(unloader.name))
+		print("Manager"..self.myID..":add to field: "..tostring(unloader.name))
 	end
 end
 
 function FieldManager:deleteUnloaderFromField(unloader)
 	if self.unloadersOnField[unloader] then
 		self.unloadersOnField[unloader] = nil
-		print(self.myID.."delete from field: "..tostring(unloader.name))
+		print("Manager"..self.myID.."delete from field: "..tostring(unloader.name))
 	end
 end
 
@@ -110,10 +110,12 @@ end
 
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
-	local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
-	if combine ~= nil then
-		table.insert(self.combines[combine].unloaders,unloader)
-		return combine
+	if self.unloadersOnFields[unloader] and self.unloadersOnFields[unloader] > 0 then
+		local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
+		if combine ~= nil then
+			table.insert(self.combines[combine].unloaders,unloader)
+			return combine
+		end
 	end
 end
 
@@ -136,7 +138,7 @@ function CombineUnloadManager:leaveField(unloader)
 	self.unloadersOnFields[unloader] = nil
 end
 
-function CombineUnloadManager:onUpdateTick()
+function CombineUnloadManager:onUpdate()
 	self:updateCombinesAttributes()
 	self:updateFieldManagers()
 end
@@ -213,7 +215,7 @@ end
 
 function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then
-		return (combine.cp.workWidth/2)+2.5
+		return (combine.cp.workWidth/2)+ 3
 	elseif self:getIsCombine(combine) then
 		local dischargeNode = combine:getCurrentDischargeNode().node
 		local dnX,dnY,dnZ = getWorldTranslation(dischargeNode)

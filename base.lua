@@ -1121,8 +1121,6 @@ function courseplay:onUpdateTick(dt)
 		courseplay:resetTools(self)
 	end
 
-	g_combineUnloadManager:onUpdateTick()
-
 	self.timer = self.timer + dt;
 end
 
