@@ -2020,9 +2020,11 @@ function SettingList:getKey(parentKey)
 end
 
 function SettingList:loadFromXml(xml, parentKey)
-	local value = getXMLInt(xml, self:getKey(parentKey))
-	if value then
-		self:set(value)
+	-- remember the value loaded from XML for those settings which aren't up to date when loading,
+	-- for example the field numbers
+	self.valueFromXml = getXMLInt(xml, self:getKey(parentKey))
+	if self.valueFromXml then
+		self:set(self.valueFromXml)
 	end
 end
 
@@ -2040,6 +2042,13 @@ function SettingList:getMilliSecondsSinceLastChange()
 	return (g_time - self.lastChangeTimeMilliseconds) / 1000
 end
 
+function SettingList:__tostring()
+	local result = string.format('%s:\n', self.name)
+	for i = 1, #self.values do
+		result = result .. string.format('\t%s%2d: %s\n', i == self.current and '*' or ' ', i, tostring(self.values[i]))
+	end
+	return result
+end
 
 --- Generic boolean setting
 ---@class BooleanSetting : SettingList
@@ -2249,8 +2258,13 @@ end
 
 --- Refresh current field numbers (as they may change when fields are bought/sold)
 function FieldNumberSetting:refresh()
-	local fieldNumbers
 	self.values, self.texts = self:loadFields()
+	-- if a value was loaded previously from XML and this is the first refresh after that, take over that
+	-- value now. This is because at game load the fields are not known yet.
+	if self.valueFromXml then
+		self:set(self.valueFromXml)
+		self.valueFromXml = nil
+	end
 	self.current = math.min(self.current, #self.values)
 end
 
