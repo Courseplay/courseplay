@@ -441,7 +441,6 @@ function courseplay:onLoad(savegame)
 	self.cp.searchCombineAutomatically = true;
 	self.cp.savedCombine = nil
 	self.cp.selectedCombineNumber = 0
-	self.cp.searchCombineOnField = 0;
 
 	--Copy course
 	self.cp.hasFoundCopyDriver = false;

@@ -2039,7 +2039,7 @@ end
 
 ---@return number milliseconds since last change
 function SettingList:getMilliSecondsSinceLastChange()
-	return (g_time - self.lastChangeTimeMilliseconds) / 1000
+	return (g_time - self.lastChangeTimeMilliseconds)
 end
 
 function SettingList:__tostring()

@@ -120,7 +120,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 end
 
 function CombineUnloadManager:enterField(unloader)
-	local unloaderOnFieldNumber = unloader.cp.searchCombineOnField > 0 and unloader.cp.searchCombineOnField or self:getFieldNumber(unloader)
+	local unloaderOnFieldNumber = unloader.cp.settings.searchCombineOnField:getIfNotChangedFor(5) or self:getFieldNumberByCurrentPosition(unloader)
 	if self.unloadersOnFields[unloader] == nil then
 		if unloaderOnFieldNumber > 0  then
 			self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
@@ -134,8 +134,10 @@ function CombineUnloadManager:enterField(unloader)
 end
 
 function CombineUnloadManager:leaveField(unloader)
-	self.fieldManagers[self.unloadersOnFields[unloader]]:deleteUnloaderFromField(unloader)
-	self.unloadersOnFields[unloader] = nil
+	if self.unloadersOnFields[unloader] then
+		self.fieldManagers[self.unloadersOnFields[unloader]]:deleteUnloaderFromField(unloader)
+		self.unloadersOnFields[unloader] = nil
+	end
 end
 
 function CombineUnloadManager:onUpdate()
@@ -157,7 +159,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 	--update attributes
 	for combine,attributes in pairs (self.combines) do
 		attributes.isDriving = combine:getIsCourseplayDriving()
-		attributes.isOnFieldNumber = self:getFieldNumber(combine)
+		attributes.isOnFieldNumber = self:getFieldNumberByCurrentPosition(combine)
 		if attributes.isOnFieldNumber>0 and self.fieldManagers then
 			self.fieldManagers[attributes.isOnFieldNumber]:addCombineToField(combine)
 		end
@@ -188,12 +190,14 @@ function CombineUnloadManager:getPossibleSidesToDrive(combine)
 	return self.combines[combine].leftOkToDrive, self.combines[combine].rightOKToDrive;
 end
 
-function CombineUnloadManager:getFieldNumber(vehicle)
+function CombineUnloadManager:getFieldNumberByCurrentPosition(vehicle)
 	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
 	return courseplay.fields:getFieldNumForPosition( positionX, positionZ )
 end
 
 function CombineUnloadManager:getNumUnloaders(combine)
+	--print(string.format("#self.combines(%s)[combine(%s)](%s)",tostring(self.combines),tostring(combine),tostring(self.combines[combine])))
+
 	return #self.combines[combine].unloaders
 end
 
