@@ -1860,6 +1860,13 @@ function courseplay:setCpVar(varName, value, noEventSend)
 			if CpManager.isMP and not noEventSend then
 				--print(courseplay.utils:getFnCallPath(2))
 				courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), 5);
+				print(string.format("SELF: %s",tostring(self)))
+				print(string.format("varName: %s",tostring(varName)))
+				print(string.format("value: %s",tostring(value)))
+				print(string.format("CPEvent: %s",tostring(CourseplayEvent)))
+					
+				print(string.format("JJ_Check: %s","BEFORE COURSEPLAY EVENT"))
+
 				CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
 			end
 			if varName == "isDriving" then

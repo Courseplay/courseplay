@@ -1285,7 +1285,7 @@ function courseplay:readStream(streamId, connection)
 		end
 		courseplay:setVarValueFromString(self, variable.name, value)
 	end
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
+	courseplay:debug("id: "..tostring(NetworkUtil.readNodeObject(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
 	
 	local savedFieldNum = streamDebugReadInt32(streamId)
 	if savedFieldNum > 0 then
@@ -1294,22 +1294,22 @@ function courseplay:readStream(streamId, connection)
 		
 	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
 	if copyCourseFromDriverId then
-		self.cp.copyCourseFromDriver = networkGetObject(copyCourseFromDriverId) 
+		self.cp.copyCourseFromDriver = NetworkUtil.readNodeObject(copyCourseFromDriverId) 
 	end
 		
 	local savedCombineId = streamDebugReadInt32(streamId)
 	if savedCombineId then
-		self.cp.savedCombine = networkGetObject(savedCombineId)
+		self.cp.savedCombine = NetworkUtil.readNodeObject(savedCombineId)
 	end
 
 	local activeCombineId = streamDebugReadInt32(streamId)
 	if activeCombineId then
-		self.cp.activeCombine = networkGetObject(activeCombineId)
+		self.cp.activeCombine = NetworkUtil.readNodeObject(activeCombineId)
 	end
 
 	local current_trailer_id = streamDebugReadInt32(streamId)
 	if current_trailer_id then
-		self.cp.currentTrailerToFill = networkGetObject(current_trailer_id)
+		self.cp.currentTrailerToFill = NetworkUtil.readNodeObject(current_trailer_id)
 	end
 
 	courseplay.courses:reinitializeCourses()
@@ -1378,37 +1378,37 @@ function courseplay:readStream(streamId, connection)
 end
 
 function courseplay:writeStream(streamId, connection)
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
+	courseplay:debug("id: "..tostring(self).."  base: write stream", 5)
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
 	end
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write courseplay.multiplayerSyncTable end", 5)
+	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
 
 	streamDebugWriteInt32(streamId, self.cp.generationPosition.fieldNum)
 	
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
-		copyCourseFromDriverID = networkGetObjectId(self.cp.copyCourseFromDriver)
+		copyCourseFromDriverID = self.cp.copyCourseFromDriver
 	end
 	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
 	
 	
 	local savedCombineId;
 	if self.cp.savedCombine ~= nil then
-		savedCombineId = networkGetObjectId(self.cp.savedCombine)
+		savedCombineId = self.cp.savedCombine
 	end
 	streamDebugWriteInt32(streamId, savedCombineId)
 
 	local activeCombineId;
 	if self.cp.activeCombine ~= nil then
-		activeCombineId = networkGetObjectId(self.cp.activeCombine)
+		activeCombineId = self.cp.activeCombine
 	end
 	streamDebugWriteInt32(streamId, activeCombineId)
 
 	local current_trailer_id;
 	if self.cp.currentTrailerToFill ~= nil then
-		current_trailer_id = networkGetObjectId(self.cp.currentTrailerToFill)
+		current_trailer_id = self.cp.currentTrailerToFill
 	end
 	streamDebugWriteInt32(streamId, current_trailer_id)
 
@@ -1421,7 +1421,7 @@ function courseplay:writeStream(streamId, connection)
 	
 	--print(string.format("%s:write: numCourses: %s loadedCourses: %s",tostring(self.name),tostring(self.cp.numCourses),tostring(#self.cp.loadedCourses)))
 	if self.cp.numCourses > #self.cp.loadedCourses then
-		courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  sync temp course", 5)
+		courseplay:debug("id: "..tostring(self).."  sync temp course", 5)
 		streamDebugWriteInt32(streamId, #(self.Waypoints))
 		for w = 1, #(self.Waypoints) do
 			--print("writing point "..tostring(w))
@@ -1443,7 +1443,7 @@ function courseplay:writeStream(streamId, connection)
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
 	
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream end", 5)
+	courseplay:debug("id: "..tostring(self).."  base: write stream end", 5)
 end
 
 

@@ -59,7 +59,7 @@ Courseplay является модом для Farming Simulator 19. Он поз�
 		</ru>
 	</description>
 
-	<multiplayer supported="false" />
+	<multiplayer supported="true" />
 	<iconFilename>img/store.dds</iconFilename>
 	<l10n filenamePrefix="translations/translation" /> <!-- load translations from "translations/translation_<language>.xml file -->
 
