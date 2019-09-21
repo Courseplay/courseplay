@@ -1003,6 +1003,7 @@ end
 
 function AIDriver:tipIntoBGASiloTipTrigger(dt)
 	local trigger = self.vehicle.cp.currentTipTrigger
+	self:setOffsetInBGASilo()
 	for _, tipper in pairs (self.vehicle.cp.workTools) do
 		if tipper.spec_dischargeable ~= nil and trigger ~= nil then
 			--figure out , when i'm in the silo area
@@ -1076,6 +1077,7 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	-- done tipping?
 	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 and self:getHasAllTippersClosed() then
 		courseplay:resetTipTrigger(self.vehicle, true);
+		self:resetBGASiloTables()
 	end
 
 	self:cleanUpMissedTriggerExit()
@@ -1186,6 +1188,27 @@ function AIDriver:getHasAllTippersClosed()
 	return allClosed
 end
 
+function AIDriver:setOffsetInBGASilo()
+	if self.BunkerSiloMap == nil then
+		self.BunkerSilo = g_bunkerSiloManager:getTargetBunkerSiloByPointOnCourse(self.course,self.ppc:getCurrentWaypointIx()+3)
+		if self.BunkerSilo ~= nil then
+			self.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(self.vehicle, self.BunkerSilo,3)
+		end
+	end
+	if self.BunkerSiloMap ~= nil then
+		if self.bestColumnToFill == nil then
+			self.bestColumnToFill = g_bunkerSiloManager:getBestColumnToFill(self.BunkerSiloMap)
+			self.ppc:initialize(g_bunkerSiloManager:setOffsetsPerWayPoint(self.course,self.BunkerSiloMap,self.bestColumnToFill,self.ppc:getCurrentWaypointIx()))
+		end
+	end
+end
+
+function AIDriver:resetBGASiloTables()
+	self.BunkerSilo = nil
+	self.BunkerSiloMap = nil
+	self.offsetsPerWayPoint = nil
+	self.bestColumnToFill = nil
+end
 
 ------------------------------------------------------------------------------
 --- PATHFINDING
@@ -1448,3 +1471,4 @@ end
 function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
 end
+
