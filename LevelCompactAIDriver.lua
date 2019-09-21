@@ -682,7 +682,7 @@ function LevelCompactAIDriver:getBestTargetFillUnitFillUp(Silo,actualTarget)
 	--print(string.format("courseplay:getActualTarget(vehicle) called by %s",tostring(courseplay.utils:getFnCallPath(3))))
 	local vehicle = self.vehicle
 	local firstLine = 0
-	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, Silo)
+	vehicle.cp.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(vehicle, Silo)
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local stopSearching = false
 		local mostFillLevelAtLine = 0
@@ -712,7 +712,7 @@ function LevelCompactAIDriver:getBestTargetFillUnitFillUp(Silo,actualTarget)
 		-- find column with most fillLevel and figure out whether its empty
 		for lineIndex, line in pairs(vehicle.cp.BunkerSiloMap) do
 			if stopSearching then
-				break
+			break
 			end
 			mostFillLevelAtLine = 0
 			for column, fillUnit in pairs(line) do
@@ -753,7 +753,7 @@ function LevelCompactAIDriver:getBestTargetFillUnitLeveling(Silo,lastDrivenColum
 	local vehicle = self.vehicle
 	local newApproach = lastDrivenColumn == nil 
 	local newBestTarget = {}
-	vehicle.cp.BunkerSiloMap = courseplay:createBunkerSiloMap(vehicle, Silo)
+	vehicle.cp.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(vehicle, Silo)
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local newColumn = math.ceil(#vehicle.cp.BunkerSiloMap[1]/2)
 		if newApproach then

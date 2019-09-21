@@ -407,7 +407,9 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 		if self:getImFirstOfTwoUnloaders() and self:getChopperOffset(self.combineToUnload) ~= 0 then
 			if not self:getCombineIsTurning() then
-				self:hold()
+				if not self.combineToUnload.cp.driver:isStopped() then
+					self:hold()
+				end
 			else
 				self.combineToUnload.cp.driver:hold()
 			end

@@ -31,24 +31,30 @@ function FieldManager:deleteUnloaderFromField(unloader)
 end
 
 function FieldManager:getCombineToUnloader(unloader)
+	--print("FieldManager:getCombineToUnloader")
 	local combine = self:getChopperWithLeastUnloaders()
-	local unloaderNumber = g_combineUnloadManager:getNumUnloaders(combine)
-	if unloaderNumber == 0 then
-		return combine
-	elseif unloaderNumber <2 then
-		local prevTractor = g_combineUnloadManager:getUnloaderByNumber(unloaderNumber, combine)
-		if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
+	if combine ~= nil then
+		local unloaderNumber = g_combineUnloadManager:getNumUnloaders(combine)
+		if unloaderNumber == 0 then
 			return combine
+		elseif unloaderNumber <2 then
+			local prevTractor = g_combineUnloadManager:getUnloaderByNumber(unloaderNumber, combine)
+			if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
+				return combine
+			end
 		end
 	end
 end
 
 function FieldManager:getChopperWithLeastUnloaders()
-	local chopperToReturn = {}
+	--print("FieldManager:getChopperWithLeastUnloaders")
+	local chopperToReturn
 	local amountUnloaders = math.huge
 	for chopper,data in pairs(self.combinesOnField) do
+		--print("data.isChopper: "..tostring(data.isChopper))
 		if data.isChopper then
-			if amountUnloaders > #data.unloaders then
+			--print(string.format("check %s, unloders:%s",tostring(chopper.name),tostring(#data.unloaders)))
+			if amountUnloaders > #data.unloaders or #data.unloaders == 0 then
 				chopperToReturn = chopper
 				amountUnloaders = #data.unloaders
 			end
@@ -110,6 +116,7 @@ end
 
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
+	--print("CombineUnloadManager:giveMeACombineToUnload")
 	if self.unloadersOnFields[unloader] and self.unloadersOnFields[unloader] > 0 then
 		local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
 		if combine ~= nil then
@@ -121,6 +128,7 @@ end
 
 function CombineUnloadManager:enterField(unloader)
 	local unloaderOnFieldNumber = unloader.cp.settings.searchCombineOnField:getIfNotChangedFor(5) or self:getFieldNumberByCurrentPosition(unloader)
+	print("CombineUnloadManager:enterField("..unloader.name.."): fieldNumber: "..tostring(unloaderOnFieldNumber))
 	if self.unloadersOnFields[unloader] == nil then
 		if unloaderOnFieldNumber > 0  then
 			self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
@@ -197,8 +205,7 @@ end
 
 function CombineUnloadManager:getNumUnloaders(combine)
 	--print(string.format("#self.combines(%s)[combine(%s)](%s)",tostring(self.combines),tostring(combine),tostring(self.combines[combine])))
-
-	return #self.combines[combine].unloaders
+	return self.combines[combine] and #self.combines[combine].unloaders
 end
 
 function CombineUnloadManager:getUnloadersNumber(unloader, combine)
