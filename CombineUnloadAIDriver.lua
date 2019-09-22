@@ -73,10 +73,12 @@ function CombineUnloadAIDriver:start(ix)
 	AIDriver.start(self, ix)
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if courseplay:isField(x, z) then
-		self:setNewCombineUnloadState(self.states.ONFIELD)
-		self:setNewOnFieldState(self.states.FIND_COMBINE)
-		self:disableCollisionDetection()
-		self:setDriveUnloadNow(false)
+		if not self.combineToUnload then
+			self:setNewCombineUnloadState(self.states.ONFIELD)
+			self:setNewOnFieldState(self.states.FIND_COMBINE)
+			self:disableCollisionDetection()
+			self:setDriveUnloadNow(false)
+		end
 	end
 	self.distanceToFront = 0
 end
@@ -178,6 +180,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		--if we are in range , change to align mode
 		local cx,cy,cz = getWorldTranslation(self.combineToUnload.rootNode)
 		if courseplay:distanceToPoint(self.vehicle,cx,cy,cz) < 50 then
+			g_trafficController:cancel(self.vehicle.rootNode)
 			self:setNewOnFieldState(self.states.GET_ALIGNCOURSE_TO_COMBINE)
 		end
 		--set Offset to avoid crashing into traffic moving to course
@@ -456,6 +459,12 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self:recoverOriginalWaypoints()
 		end
 	end
+	if not g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx()) then
+		--print(tostring(g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)].name))
+		if not g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)] == self.combineToUnload then
+			self:hold()
+		end
+	end
 	AIDriver.drive(self, dt)
 end
 
@@ -517,7 +526,7 @@ function CombineUnloadAIDriver:driveBesideChopper(dt,targetNode)
 	if not isBeside then
 		speed = self:getSpeedBehindChopper()
 		if self:getColliPointHitsTheCombine() then
-			print("STOOOOOOP")
+			--print("STOOOOOOP")
 			allowedToDrive = false
 		end
 	else
@@ -545,7 +554,7 @@ function CombineUnloadAIDriver:driveBehindChopper(dt)
 	local z = self:getZOffsetToCoordsBehind()
 	if backShiftNode < backShiftTarget then
 		if z < 0 then
-			print("STOOOOOOP")
+			--print("STOOOOOOP")
 			allowedToDrive = false
 		else
 			self:setSavedCombineOffset(self.combineOffset)

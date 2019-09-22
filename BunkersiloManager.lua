@@ -201,3 +201,4 @@ function BunkerSiloManager:setOffsetsPerWayPoint(course,siloMap,bestColumn,ix)
 	return foundFirst
 end
 
+
