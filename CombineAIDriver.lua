@@ -87,6 +87,10 @@ function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
 	self:handlePipe()
 	-- the rest is the same as the parent class
+	if not g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx()) then
+		--print(tostring(g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)].name))
+		self:hold()
+	end
 	UnloadableFieldworkAIDriver.drive(self, dt)
 end
 
@@ -421,15 +425,6 @@ function CombineAIDriver:shouldReturnToFirstPoint()
 	-- Combines stay where they are after finishing work
 	-- TODO: call unload driver
 	return false
-end
-
--- TODO: either implement these cleanly or remove them from AIDriver
-function CombineAIDriver:getHasCourseplayers()
-	return self.vehicle.courseplayers and #self.vehicle.courseplayers ~= 0
-end
-
-function CombineAIDriver:getFirstCourseplayer()
-	return self.vehicle.courseplayers and self.vehicle.courseplayers[1]
 end
 
 --- Interface for AutoDrive

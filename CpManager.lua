@@ -266,6 +266,7 @@ function CpManager:update(dt)
 		end;
 	end;
 
+	g_trafficController:update(dt)
 	g_combineUnloadManager:onUpdate()
 
 	-- REAL TIME 10 SECS CHANGER

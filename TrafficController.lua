@@ -68,25 +68,29 @@ end
 TrafficController = CpObject()
 
 function TrafficController:init()
-	self.prevTimeString = getDate(TrafficController.dateFormatString)
+	print("TrafficController:init()")
+	self.dateFormatString = '%H%M%S'
+	self.prevTimeString = getDate(self.dateFormatString)
 	self.clock = 0
 	-- this is our window of traffic awareness, we only plan for the next 30 seconds
-	self.lookaheadTimeSeconds = 30
+	self.lookaheadTimeSeconds = 15
 	-- the reservation table grid size in meters. This should be less than the maximum waypoint distance
 	self.gridSpacing = 2.5
 	-- every so often we clean up stale reservations
-	self.cleanUpIntervalSeconds = 30
+	self.cleanUpIntervalSeconds = 20
 	self.staleReservationTimeoutSeconds = 3 * self.lookaheadTimeSeconds
 	-- this holds all the reservations
 	self.reservations = {}
-	self.dateFormatString = '%H%M%S'
+	self.blockingVehicleId = {}
 end
+
+g_trafficController = TrafficController()
 
 --- Update our clock and take care of stale entries
 -- This should be called once in an update cycle (globally, not vehicle specific)
 function TrafficController:update(dt)
 	-- The Giants engine does not seem to provide a clock, so implement our own.
-	local currentTimeString = getDate(TrafficController.dateFormatString)
+	local currentTimeString = getDate(self.dateFormatString)
 	if self.prevTimeString ~= currentTimeString then
 		self.prevTimeString = currentTimeString
 		self.clock = self.clock + 1
@@ -94,6 +98,15 @@ function TrafficController:update(dt)
 	if self.clock % self.cleanUpIntervalSeconds == 0 then
 		self:cleanUp()
 	end
+
+	--self.reservations[point.x][point.z].vehicleId
+	for pointX,list in pairs (self.reservations) do
+		for pointZ,data in pairs(list) do
+			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode,pointX*self.gridSpacing,1,pointZ*self.gridSpacing)
+			Utils.renderTextAtWorldPosition(pointX*self.gridSpacing,y+1,pointZ*self.gridSpacing, tostring(data.vehicleId), getCorrectTextSize(0.012), 0)
+		end
+	end
+
 end
 
 --- Make a reservation for the next lookaheadTimeSeconds interval
@@ -106,7 +119,14 @@ end
 function TrafficController:reserve(vehicleId, course, fromIx, speed)
 	self:freePreviousTiles(vehicleId, course, fromIx, speed)
 	local ok = self:reserveNextTiles(vehicleId, course, fromIx, speed)
+	if ok then
+		self.blockingVehicleId[vehicleId] = nil
+	end
 	return ok
+end
+
+function TrafficController:getBlockingVehicleId(vehicleId)
+	return self.blockingVehicleId[vehicleId]
 end
 
 --- Free waypoints already passed
@@ -136,14 +156,15 @@ function TrafficController:getGridPointsUnderCourse(course, iterator, speed)
 	for i in iterator() do
 		local v = speed or course.waypoints[i].speed or 10
 		local s = course:getDistanceToNextWaypoint(i)
-		local x, z = self:getGridCoordinates(course.waypoints[i])
+		--local x, z = self:getGridCoordinates(course.waypoints[i])
+		local x, z = self:getGridCoordinates(course,i)
 		table.insert(tiles, Point(x, z))
 		-- if waypoints are further apart than our grid spacing then we need to add points
 		-- in between to not miss a tile
 		if s > self.gridSpacing then
 			local ips = self:getIntermediatePoints(course.waypoints[i], course.waypoints[i + 1])
-			for _, wp in ipairs(ips) do
-				x, z = self:getGridCoordinates(wp)
+			for index , wp in ipairs(ips) do
+				x, z = self:getGridCoordinates(course,index)
 				table.insert(tiles, Point(x, z))
 			end
 		end
@@ -154,7 +175,7 @@ function TrafficController:getGridPointsUnderCourse(course, iterator, speed)
 	end
 	-- if we ended up here then we went all the way to the waypoint before the last, so
 	-- add the last one here
-	local x, z = self:getGridCoordinates(course.waypoints[course:getNumberOfWaypoints()])
+	local x, z = self:getGridCoordinates(course ,course:getNumberOfWaypoints())
 	table.insert(tiles, Point(x, z))
 	return tiles
 end
@@ -220,6 +241,7 @@ end
 
 function TrafficController:reserveTile(point, reservation)
 	if not self.reservations[point.x] then
+		--print("make a new X:"..tostring(point.x))
 		self.reservations[point.x] = {}
 	end
 	if self.reservations[point.x][point.z] then
@@ -228,16 +250,20 @@ function TrafficController:reserveTile(point, reservation)
 			return true
 		else
 			-- reserved for another vehicle
+			self.blockingVehicleId[reservation.vehicleId] = self.reservations[point.x][point.z].vehicleId
 			return false
 		end
 	end
+	--print(string.format("self.reservations[%s][%s] = reservation",tostring(point.x),tostring(point.z)))
 	self.reservations[point.x][point.z] = reservation
 	return true
 end
 
-function TrafficController:getGridCoordinates(wp)
-	local gridX = math.floor(wp.x / self.gridSpacing)
-	local gridZ = math.floor(wp.z / self.gridSpacing)
+function TrafficController:getGridCoordinates(course,wp)
+	local offsetX,offsetZ = course:getOffset()
+	local x,y,z = course.waypoints[wp]:getOffsetPosition(offsetX, offsetZ)
+	local gridX = math.floor(x / self.gridSpacing)
+	local gridZ = math.floor(z / self.gridSpacing)
 	return gridX, gridZ
 end
 
