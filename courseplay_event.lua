@@ -5,17 +5,14 @@ local CourseplayEvent_mt = Class(CourseplayEvent, Event);
 InitEventClass(CourseplayEvent, "CourseplayEvent");
 
 function CourseplayEvent:emptyNew()
-	print(string.format("CP EVENT: %s","receive new event"))
-
-	courseplay:debug("recieve new event",5)
+	courseplay:debug("create new event",5)
 	local self = Event:new(CourseplayEvent_mt);
 	self.className = "CourseplayEvent";
 	return self;
 end
 
 function CourseplayEvent:new(vehicle, func, value, page)
-	print(string.format("CP EVENT: %s","new event"))
-
+	courseplay:debug("receive new event",5)
 	self.vehicle = vehicle;
 	self.messageNumber = Utils.getNoNil(self.messageNumber,0) +1
 	self.func = func
@@ -26,8 +23,6 @@ function CourseplayEvent:new(vehicle, func, value, page)
 end
 
 function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
-	print(string.format("CP EVENT: %s","read stream"))
-
 	local id = streamReadInt32(streamId);
 	self.vehicle = NetworkUtil.readNodeObject(id);
 	local messageNumber = streamReadFloat32(streamId);
@@ -52,16 +47,15 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 	else 
 		self.value = streamReadFloat32(streamId);
 	end
-	-- courseplay:debug("	readStream",5)
-	-- courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.page: "..tostring(self.page).."  self.type: "..self.type),5)
+	courseplay:debug("	readStream",5)
+	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.page: "..tostring(self.page).."  self.type: "..self.type),5)
 
 	self:run(connection);
 end
 
 function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
-	print(string.format("CP EVENT: %s","write stream"))
-	-- courseplay:debug("		writeStream",5)
-	-- courseplay:debug("			id: "..tostring(self.vehicle).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type).."  page: "..tostring(self.page)),5)
+	courseplay:debug("		writeStream",5)
+	courseplay:debug("			id: "..tostring(self.vehicle).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type).."  page: "..tostring(self.page)),5)
 	NetworkUtil.writeNodeObject(streamId, self.vehicle);
 	streamWriteFloat32(streamId, self.messageNumber);
 	streamWriteString(streamId, self.func);
@@ -88,10 +82,8 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 end
 
 function CourseplayEvent:run(connection) -- wir fuehren das empfangene event aus
-	print(string.format("CP EVENT: %s","run"))
-
 	courseplay:debug("\t\t\trun",5)
-	-- Ryan networkGetObjectId no longer exists courseplay:debug(('\t\t\t\tid=%s, function=%s, value=%s'):format(tostring(networkGetObjectId(self.vehicle)), tostring(self.func), tostring(self.value)), 5);
+	courseplay:debug(('\t\t\t\tid=%s, function=%s, value=%s'):format(tostring(self.vehicle), tostring(self.func), tostring(self.value)), 5);
 	self.vehicle:setCourseplayFunc(self.func, self.value, true, self.page);
 	if not connection:getIsServer() then
 		courseplay:debug("broadcast event feedback",5)
@@ -100,25 +92,22 @@ function CourseplayEvent:run(connection) -- wir fuehren das empfangene event aus
 end
 
 function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend, page) -- hilfsfunktion, die Events anst��te (wirde von setRotateDirection in der Spezi aufgerufen) 
-	print(string.format("CP EVENT: %s","send event"))
-
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then
-			-- courseplay:debug("broadcast event",5)
-			-- Ryan networkGetObjectId no longer exists courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
+			courseplay:debug("broadcast event",5)
+		    courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(vehicle), tostring(func), tostring(value), tostring(page)), 5);
 			g_server:broadcastEvent(CourseplayEvent:new(vehicle, func, value, page), nil, nil, vehicle);
 		else
-			-- courseplay:debug("send event",5)
-			--courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
+			courseplay:debug("send event",5)
+			courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(vehicle), tostring(func), tostring(value), tostring(page)), 5);
 			g_client:getServerConnection():sendEvent(CourseplayEvent:new(vehicle, func, value, page));
 		end;
 	end;
 end
 
 function courseplay:checkForChangeAndBroadcast(self, stringName, variable , variableMemory)
-	print(string.format("CP EVENT: %s","checkForChangeAndBroadcast"))
 	if variable ~= variableMemory then
-		print(string.format("checkForChangeAndBroadcast: %s = %s",stringName,tostring(variable))) 
+		courseplay:debug("checkForChangeAndBroadcast",5)
 		--CourseplayEvent.sendEvent(self, stringName, variable)
 		variableMemory = variable
 	end
@@ -147,9 +136,9 @@ local modName = g_currentModName;
 local Server_sendObjects_old = Server.sendObjects;
 
 function Server:sendObjects(connection, x, y, z, viewDistanceCoeff)
-	print(string.format("CP EVENT: %s","server send objects"))
 
 	connection:sendEvent(CourseplayJoinFixEvent:new());
+	courseplay:debug("server send objects",5)
 
 	Server_sendObjects_old(self, connection, x, y, z, viewDistanceCoeff);
 end
@@ -174,7 +163,7 @@ end
 function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
 	if not connection:getIsServer() then
-		--courseplay:debug("manager transfering courses", 8);
+		courseplay:debug("join fix event write stream", 5);
 		--transfer courses
 		local course_count = 0
 		for _,_ in pairs(g_currentMission.cp_courses) do
