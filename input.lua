@@ -155,11 +155,13 @@ end;
 function courseplay:setCourseplayFunc(func, value, noEventSend, page)
 	--print(string.format("courseplay:setCourseplayFunc( %s, %s, %s, %s)",tostring(func), tostring(value), tostring(noEventSend), tostring(page)))
 	if noEventSend ~= true then
+		courseplay:debug("					send event function",5)
 		--Tommi CourseplayEvent.sendEvent(self, func, value,noEventSend,page); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	if value == "nil" then
 		value = nil
 	end
+	courseplay:debug("					execute event function",5)
 	courseplay:executeFunction(self, func, value, page);
 	if page and self.cp.hud.reloadPage[page] ~= nil then
 		courseplay.hud:setReloadPageOrder(self, page, true);
