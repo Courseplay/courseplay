@@ -1222,7 +1222,7 @@ end
 function FieldworkAIDriver:startAiTurn(ix)
 	self:debug('Starting an AI turn.')
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.frontMarkerDistance)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
 	if AITurn.canMakeKTurn(self.vehicle, self.turnContext) then
 		self:debug('Starting a K turn')
 		---@type AITurn

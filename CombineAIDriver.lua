@@ -441,25 +441,39 @@ function CombineAIDriver:isWaitingForUnload()
 		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
 		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK)
 end
+
 function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
+
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData)
-	if not self.turnContext:isHeadlandCorner() then
-		self:debug('Non headland turn.')
-		return UnloadableFieldworkAIDriver.startTurn(self, ix)
-	end
-	local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
-	if cornerCourse then
-		self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
-			cornerCourse:getNumberOfWaypoints(), nextIx)
-		self.fieldworkState = self.states.TURNING
-		self:startCourse(cornerCourse, 1, self.course, nextIx)
-		-- tighter turns
-		self.ppc:setShortLookaheadDistance()
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth)
+
+	-- Combines drive special headland corner maneuvers
+	if self.turnContext:isHeadlandCorner() then
+		if courseplay.globalSettings.useAITurns:is(true) and
+			(not self.course:isOnOutermostHeadland(ix) or
+			(self.course:isOnOutermostHeadland(ix) and not self.vehicle.cp.turnOnField))
+		then
+			self:debug('Use AI turn in the headland corner.')
+			self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
+			self.fieldworkState = self.states.TURNING
+		else
+			local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
+			if cornerCourse then
+				self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
+					cornerCourse:getNumberOfWaypoints(), nextIx)
+				self.fieldworkState = self.states.TURNING
+				self:startCourse(cornerCourse, 1, self.course, nextIx)
+				-- tighter turns
+				self.ppc:setShortLookaheadDistance()
+			else
+				self:debug('Could not create a corner course, falling back to default headland turn')
+				UnloadableFieldworkAIDriver.startTurn(self, ix)
+			end
+		end
 	else
-		self:debug('Could not create a corner course, falling back to default headland turn')
-		return UnloadableFieldworkAIDriver.startTurn(self, ix)
+		self:debug('Non headland turn.')
+		UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
 end
 
@@ -499,6 +513,7 @@ function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
 	-- we properly generate offset courses as those have a problem at corners)
 	wp = corner:getPointAtDistanceFromCornerEnd(self.vehicle.cp.workWidth / 2, self.vehicle.cp.workWidth / 3)
 	table.insert(cornerWaypoints, wp)
+	corner:delete()
 	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
 end
 
@@ -531,6 +546,7 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius * 1.2, -offset * 0.9)
 	if not courseplay:isField(wp.x, wp.z) then
 		self:debug('No field where the pocket would be, this seems to be a 270 corner')
+		corner:delete()
 		return nil
 	end
 	table.insert(cornerWaypoints, wp)
@@ -547,6 +563,7 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	wp = corner:getPointAtDistanceFromCornerEnd(turnRadius, turnRadius / 4)
 	wp.speed = self.vehicle.cp.speeds.turn * 0.5
 	table.insert(cornerWaypoints, wp)
+	corner:delete()
 	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
 end
 

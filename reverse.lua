@@ -168,7 +168,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 				if distance <= 2 then
 					courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
 					if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
-						vehicle.cp.driver:resumeAt(vehicle.cp.waypointIndex)
+						vehicle.cp.driver:resumeAtOriginalIx(vehicle.cp.waypointIndex)
 					else
 						vehicle.cp.ppc:initialize()
 					end

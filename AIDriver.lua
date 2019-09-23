@@ -247,10 +247,14 @@ end
 
 --- Compatibility function for the legacy CP code so the course can be resumed
 -- at the index as originally was in vehicle.Waypoints.
-function AIDriver:resumeAt(cpIx)
+function AIDriver:resumeAtOriginalIx(cpIx)
 	local i = self.course:findOriginalIx(cpIx)
-	self:debug('resumeAt %d (legacy) %d (AIDriver', cpIx, i)
+	self:debug('resumeAtOriginalIx %d (legacy) %d (AIDriver', cpIx, i)
 	self.ppc:initialize(i)
+end
+
+function AIDriver:resumeAt(ix)
+	self.ppc:initialize(ix)
 end
 
 function AIDriver:setInfoText(msgReference)
@@ -696,7 +700,7 @@ function AIDriver:startTurn(ix)
 	-- as TurnContext() creates nodes when needed, store these nodes in the vehicle storage and on the the AIDriver
 	-- object, so the nodes are created only once and never destroyed (if this was a proper language with a destructor
 	-- then this would not be necessary)
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth)
 end
 
 function AIDriver:onTurnEnd()
