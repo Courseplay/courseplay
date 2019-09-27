@@ -970,6 +970,8 @@ function courseplay:onUpdate(dt)
 		courseplay:record(self);
 	end;
 
+	g_trafficController:reserveOwnPosition(self)
+
 	-- we are in drive mode and single player /MP server
 	if self.cp.isDriving and g_server ~= nil then
 		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do

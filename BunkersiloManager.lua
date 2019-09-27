@@ -155,9 +155,9 @@ function BunkerSiloManager:getBestColumnToFill(siloMap)
 		for lineIndex=1,#siloMap do
 			local fillUnit = siloMap[lineIndex][columnIndex]
 			currentFillLevel = currentFillLevel + fillUnit.fillLevel
-			print(string.format("check:line %s, column %s fillLevel:%s",tostring(lineIndex),tostring(columnIndex),tostring(fillUnit.fillLevel)))
+			--print(string.format("check:line %s, column %s fillLevel:%s",tostring(lineIndex),tostring(columnIndex),tostring(fillUnit.fillLevel)))
 		end
-		print("column:"..tostring(columnIndex).." :"..tostring(currentFillLevel))
+		--print("column:"..tostring(columnIndex).." :"..tostring(currentFillLevel))
 		if currentFillLevel<leastFillLevel then
 			leastFillLevel = currentFillLevel
 			leastColumnIndex = columnIndex
@@ -189,7 +189,7 @@ function BunkerSiloManager:setOffsetsPerWayPoint(course,siloMap,bestColumn,ix)
 			course.waypoints[index].z = cz
 			--local offsetX,_,offsetZ = course:worldToWaypointLocal(index, cx, y, cz)
 			points[index]= true
-			print(string.format("set %s new",tostring(index)))
+			--print(string.format("set %s new",tostring(index)))
 			if foundFirst == 0 then
 				foundFirst = index
 			end
