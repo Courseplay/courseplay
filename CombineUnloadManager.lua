@@ -16,6 +16,15 @@ function FieldManager:addCombineToField(combine)
 	end
 end
 
+function FieldManager:removeCombineFromField(combine)
+	if self.combinesOnField[combine] then
+		self.combinesOnField[combine] = nil
+		print("Manager"..self.myID..": removed from field: "..tostring(combine.name))
+	end
+end
+
+
+
 function FieldManager:addUnloaderToField(unloader)
 	if not self.unloadersOnField[unloader] then
 		self.unloadersOnField[unloader] = {}
@@ -128,7 +137,7 @@ end
 
 function CombineUnloadManager:enterField(unloader)
 	local unloaderOnFieldNumber = unloader.cp.settings.searchCombineOnField:getIfNotChangedFor(5) or self:getFieldNumberByCurrentPosition(unloader)
-	print("CombineUnloadManager:enterField("..unloader.name.."): fieldNumber: "..tostring(unloaderOnFieldNumber))
+	--print("CombineUnloadManager:enterField("..unloader.name.."): fieldNumber: "..tostring(unloaderOnFieldNumber))
 	if self.unloadersOnFields[unloader] == nil then
 		if unloaderOnFieldNumber > 0  then
 			self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
@@ -165,12 +174,20 @@ end
 
 function CombineUnloadManager:updateCombinesAttributes()
 	--update attributes
+	local number =1
 	for combine,attributes in pairs (self.combines) do
 		attributes.isDriving = combine:getIsCourseplayDriving()
-		attributes.isOnFieldNumber = self:getFieldNumberByCurrentPosition(combine)
-		if attributes.isOnFieldNumber>0 and self.fieldManagers then
-			self.fieldManagers[attributes.isOnFieldNumber]:addCombineToField(combine)
+		local fieldNum = self:getFieldNumberByCurrentPosition(combine)
+		if self.fieldManagers then
+			if fieldNum > 0 then
+				self.fieldManagers[fieldNum]:addCombineToField(combine)
+			else
+				if self.fieldManagers[attributes.isOnFieldNumber] then
+					self.fieldManagers[attributes.isOnFieldNumber]:removeCombineFromField(combine)
+				end
+			end
 		end
+		attributes.isOnFieldNumber = fieldNum
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)
 		attributes.pipeOffset = self:getPipeOffset(combine)
 		attributes.fillLevel = self:getCombinesFillLevelPercent(combine)
@@ -180,7 +197,8 @@ function CombineUnloadManager:updateCombinesAttributes()
 		for name,value in pairs (attributes) do
 			--print(string.format("%s: %s",tostring(name),tostring(value)))
 		end
-		renderText(0.2,0.105,0.02,string.format("leftOK: %s; rightOK:%s numUnloaders:%d",tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders))
+		renderText(0.2,0.175+(0.03*number) ,0.02,string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d",nameNum(combine),tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders))
+		number = number +1
 	end
 end
 
@@ -220,7 +238,7 @@ function CombineUnloadManager:getUnloadersNumber(unloader, combine)
 end
 
 function CombineUnloadManager:getUnloaderByNumber(number, combine)
-	return self.combines[combine].unloaders[number]
+	return self.combines[combine] and self.combines[combine].unloaders[number]
 end
 
 

@@ -87,12 +87,11 @@ function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
 	self:handlePipe()
 	-- the rest is the same as the parent class
-	if not g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx()) then
-		--print(tostring(g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)].name))
+	if not self:trafficContollOK() then
 		self:hold()
 	end
 	UnloadableFieldworkAIDriver.drive(self, dt)
-end
+	end
 
 function CombineAIDriver:onWaypointPassed(ix)
 	if self.turnIsDriving then
@@ -699,4 +698,15 @@ function CombineAIDriver:canDischarge()
 	local dischargeNode = self.combine:getCurrentDischargeNode()
 	local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
 	return targetObject
+end
+
+function CombineAIDriver:trafficContollOK()
+	local ok =  g_trafficController:reserveWithWorkwidth(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx(),speed,self.vehicle.cp.workWidth)
+	if not ok then
+		local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
+		if blockingVehicle and blockingVehicle == g_combineUnloadManager:getUnloaderByNumber(1,self.vehicle) then
+			ok = true
+		end
+	end
+	return ok
 end

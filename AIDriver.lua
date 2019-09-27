@@ -648,6 +648,10 @@ function AIDriver:getSpeed()
 	return self.speed or 15
 end
 
+function AIDriver:getTotalLength()
+	return self.vehicle.cp.totalLength
+end
+
 function AIDriver:getRecordedSpeed()
 	-- default is the street speed (reduced in corners)
 	local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
@@ -1472,3 +1476,6 @@ function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
 end
 
+function AIDriver:trafficContollOK()
+	return g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx())
+end
