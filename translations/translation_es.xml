@@ -396,14 +396,14 @@
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Para Descargar/Cargar" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(Y regresar)" />
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Ajustes Avanzados..." />
 
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
-		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Cargar rutas al iniciar" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Cargar todas las rutas al iniciar, ralentizará la carga de una partida guardada cuando se active" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Usar IA para maniobras de giro" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Usar IA para maniobras de giro en lugar de trayectorias calculadas" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
