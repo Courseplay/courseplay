@@ -99,7 +99,20 @@ function CombineUnloadAIDriver:drive(dt)
 	end
 end
 
+function CombineUnloadAIDriver:stopAndWait(dt)
+	self:driveInDirection(dt,0,1,true,0,false)
+end
+
+function CombineUnloadAIDriver:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
+end
+
 function CombineUnloadAIDriver:driveOnField(dt)
+	if self.vehicle.cp.forcedToStop then
+		self:stopAndWait(dt)
+		return
+	end
+
 	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
 		--print("unloadnow or trailer full")
 		if self.onFieldState ~= self.states.FINDPATH_TO_COURSE
@@ -528,7 +541,8 @@ function CombineUnloadAIDriver:driveBesideCombine(dt,targetNode)
 	end
 	self:setSavedCombineOffset(self.combineOffset)
 	local lx,lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx,gy,gz);
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
+	self:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	--AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
 end
 
 
@@ -551,7 +565,8 @@ function CombineUnloadAIDriver:driveBesideChopper(dt,targetNode)
 		self:setSavedCombineOffset(self.combineOffset)
 	end
 	local lx,lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, gx,gy,gz);
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
+	self:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	--AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
 end
 
 
@@ -578,7 +593,8 @@ function CombineUnloadAIDriver:driveBehindChopper(dt)
 			self:setSavedCombineOffset(self.combineOffset)
 		end
 	end
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
+	self:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	--AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
 end
 
 function CombineUnloadAIDriver:driveBehindCombine(dt)
@@ -601,8 +617,8 @@ function CombineUnloadAIDriver:driveBehindCombine(dt)
 	end
 
 
-
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
+	self:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	--AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
 end
 
 function CombineUnloadAIDriver:driveBehindTractor(dt)
@@ -619,7 +635,8 @@ function CombineUnloadAIDriver:driveBehindTractor(dt)
 	end
 	allowedToDrive = allowedToDrive and self.allowedToDrive
 	renderText(0.2,0.165,0.02,string.format("%s: driveBehindTractor distance: %.2f",nameNum(self.vehicle),courseplay:distanceToObject(self.vehicle, self.tractorToFollow)))
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
+	self:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	--AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
 end
 
 function CombineUnloadAIDriver:driveBesideTractor(dt)
@@ -635,7 +652,8 @@ function CombineUnloadAIDriver:driveBesideTractor(dt)
 	speed, allowedToDrive = self:getSpeedBesideChopper(targetNode)
 	allowedToDrive = allowedToDrive and self.allowedToDrive
 	renderText(0.2,0.165,0.02,string.format("driveBesideTractor distance: %.2f",courseplay:distanceToObject(self.vehicle, self.tractorToFollow)))
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
+	self:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
+	--AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
 end
 
 function CombineUnloadAIDriver:onEndCourse()
@@ -1117,3 +1135,4 @@ function CombineUnloadAIDriver:tractorIsReversing()
 	return self.tractorToFollow.movingDirection == -1 and self.tractorToFollow.lastSpeedReal*3600 > 1
 
 end
+

@@ -577,6 +577,8 @@ function courseplay:onLoad(savegame)
 	self.cp.settings = SettingsContainer()
 	self.cp.settings:addSetting(ReturnToFirstPointSetting)
 	self.cp.settings:addSetting(SearchCombineOnFieldSetting)
+	self.cp.settings:addSetting(SelectedCombineToUnloadSetting)
+
 end;
 
 function courseplay:onPostLoad(savegame)
