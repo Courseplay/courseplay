@@ -126,8 +126,16 @@ end
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	--print("CombineUnloadManager:giveMeACombineToUnload")
-	if self.unloadersOnFields[unloader] and self.unloadersOnFields[unloader] > 0 then
-		local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
+	if unloader.cp.searchCombineAutomatically then
+		if self.unloadersOnFields[unloader] and self.unloadersOnFields[unloader] > 0 then
+			local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
+			if combine ~= nil then
+				table.insert(self.combines[combine].unloaders,unloader)
+				return combine
+			end
+		end
+	else
+		local combine = unloader.cp.settings.selectedCombineToUnload:getIfNotChangedFor(5)
 		if combine ~= nil then
 			table.insert(self.combines[combine].unloaders,unloader)
 			return combine
@@ -241,6 +249,9 @@ function CombineUnloadManager:getUnloaderByNumber(number, combine)
 	return self.combines[combine] and self.combines[combine].unloaders[number]
 end
 
+function CombineUnloadManager:getHasUnloaders(combine)
+	return self:getNumUnloaders(combine) > 0
+end
 
 function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then

@@ -1096,12 +1096,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							end
 						end
 					end
-				
-				
 
-					
 				elseif entry.functionToCall == 'toggleWantsCourseplayer' then
-					if not vehicle.cp.driver:getHasCourseplayers() then
+					if not g_combineUnloadManager:getHasUnloaders(vehicle)  then
 						self:enableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
 						if vehicle.cp.wantsCourseplayer then
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_REQUESTED');
@@ -1109,15 +1106,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REQUEST_UNLOADING_DRIVER');
 						end
 					else
-						local courseplayer = vehicle.cp.driver:getFirstCourseplayer()
+						local courseplayer = g_combineUnloadManager:getUnloaderByNumber(1, vehicle)
 						self:disableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVER');
-						vehicle.cp.hud.content.pages[page][line][2].text =  courseplayer:getName();
+						vehicle.cp.hud.content.pages[page][line][2].text =  courseplayer.name;
 					end
 				elseif entry.functionToCall == 'startStopCourseplayer' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					if g_combineUnloadManager:getHasUnloaders(vehicle) then
 						self:enableButtonWithFunction(vehicle,page, 'startStopCourseplayer')
-						local courseplayer = vehicle.cp.driver:getFirstCourseplayer()
+						local courseplayer = g_combineUnloadManager:getUnloaderByNumber(1, vehicle)
 						if courseplayer.cp.forcedToStop then
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_START');
 						else
@@ -1127,7 +1124,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:disableButtonWithFunction(vehicle,page, 'startStopCourseplayer')
 					end
 				elseif entry.functionToCall == 'sendCourseplayerHome' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					print("g_combineUnloadManager:getHasUnloaders(vehicle):"..tostring(g_combineUnloadManager:getHasUnloaders(vehicle)))
+					if g_combineUnloadManager:getHasUnloaders(vehicle) then
 						self:enableButtonWithFunction(vehicle,page, 'sendCourseplayerHome')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_SEND_HOME');
 					else
@@ -1135,7 +1133,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 		
 				elseif entry.functionToCall == 'switchCourseplayerSide' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					if g_combineUnloadManager:getHasUnloaders(vehicle) and false then  --TODO do we need the manual setting ?????
 						self:enableButtonWithFunction(vehicle,page, 'switchCourseplayerSide')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_SIDE');
 						if vehicle.cp.forcedSide == 'left' then
@@ -1150,7 +1148,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 			
 				elseif entry.functionToCall == 'toggleTurnStage' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					if g_combineUnloadManager:getHasUnloaders(vehicle) then
 						--manual chopping: initiate/end turning maneuver
 						if not  vehicle:getIsCourseplayDriving()  then
 							self:enableButtonWithFunction(vehicle,page, 'toggleTurnStage')
@@ -1222,9 +1220,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					if not vehicle.cp.searchCombineAutomatically then
 						self:enableButtonWithFunction(vehicle,page, 'selectAssignedCombine')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CHOOSE_COMBINE'); --only if manual
-						if vehicle.cp.savedCombine ~= nil then
-							local name = vehicle.cp.savedCombine:getName()
-							local dist = courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine);
+						if vehicle.cp.settings.selectedCombineToUnload:get() ~= nil then
+							local name = vehicle.cp.settings.selectedCombineToUnload:get().name
+							local dist = courseplay:distanceToObject(vehicle, vehicle.cp.settings.selectedCombineToUnload:get());
 							if dist >= 1000 then
 								vehicle.cp.hud.content.pages[page][line][2].text = ('%s (%.1f%s)'):format(name, dist * 0.001, courseplay:getMeasuringUnit());
 							else

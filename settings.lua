@@ -191,7 +191,7 @@ function courseplay:startStop(vehicle)
 end;
 
 function courseplay:startStopCourseplayer(combine)
-	local tractor = combine.courseplayers[1];
+	local tractor = g_combineUnloadManager:getUnloaderByNumber(1, combine)
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
 
@@ -232,7 +232,7 @@ function courseplay:setDriveUnloadNow(vehicle, bool)
 end;
 
 function courseplay:sendCourseplayerHome(combine)
-	courseplay:setDriveUnloadNow(combine.courseplayers[1], true);
+	courseplay:setDriveUnloadNow(g_combineUnloadManager:getUnloaderByNumber(1, combine), true);
 end
 
 function courseplay:toggleTurnStage(combine)
@@ -638,28 +638,22 @@ function courseplay:setSearchCombineOnField(vehicle, changeDir, force)
 end;
 
 function courseplay:selectAssignedCombine(vehicle, changeBy)
-	local combines = courseplay:getAllCombines();
-	vehicle.cp.selectedCombineNumber = MathUtil.clamp(vehicle.cp.selectedCombineNumber + changeBy, 0, #combines);
-
-	if vehicle.cp.selectedCombineNumber == 0 then
-		vehicle.cp.savedCombine = nil;
-		vehicle:setCpVar('HUD4savedCombineName',"",courseplay.isClient);
+	vehicle.cp.settings.selectedCombineToUnload:refresh()
+	if changeBy > 0 then
+		vehicle.cp.settings.selectedCombineToUnload:setNext()
 	else
-		vehicle.cp.savedCombine = combines[vehicle.cp.selectedCombineNumber];
-		local combineName = vehicle.cp.savedCombine.name or courseplay:loc('COURSEPLAY_COMBINE');
-		local x1 = courseplay.hud.col2posX[4];
-		local x2 = courseplay.hud.buttonPosX[1] - getTextWidth(courseplay.hud.fontSizes.contentValue, ' (9999m)');
-		local shortenedName, firstChar, lastChar = Utils.limitTextToWidth(combineName, courseplay.hud.fontSizes.contentValue, x2 - x1, false, '...');
-		vehicle:setCpVar('HUD4savedCombineName',shortenedName,courseplay.isClient);
-	end;
-
-	courseplay:removeActiveCombineFromTractor(vehicle);
+		vehicle.cp.settings.selectedCombineToUnload:setPrevious()
+	end
+	courseplay:removeActiveCombineFromTractor(vehicle)
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 end;
 
 function courseplay:removeActiveCombineFromTractor(vehicle)
 	if vehicle.cp.driver.combineToUnload ~= nil then
-		vehicle.cp.driver:releaseUnloader()
-		vehicle.cp.driver.combineToUnload = nil
+		local driver = vehicle.cp.driver
+		driver:releaseUnloader()
+		driver.combineToUnload = nil
+		driver:setNewOnFieldState(driver.states.FIND_COMBINE)
 	end;
 	--courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
@@ -2293,6 +2287,40 @@ function SearchCombineOnFieldSetting:refresh()
 	self:addNoneSelected()
 	self.current = math.min(current, #self.values)
 end
+
+--- SelectedCombineToUnload on field
+---@class SelectedCombineToUnloadSetting : SettingList
+SelectedCombineToUnloadSetting = CpObject(SettingList)
+
+function SelectedCombineToUnloadSetting:init()
+	print("SelectedCombineToUnloadSetting:init()")
+	self.name = 'selectedCombineToUnload'
+	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.xmlKey = 'selectedCombineToUnload'
+	self.xmlAttribute = '#combineId'
+	self.current = 0
+	self:refresh()
+end
+
+function SelectedCombineToUnloadSetting:refresh()
+	self.values = {}
+	for combine,_ in pairs (g_combineUnloadManager.combines) do
+		table.insert(self.values,combine)
+	end
+end
+
+function SelectedCombineToUnloadSetting:checkAndSetValidValue(new)
+	if new > #self.values then
+		return 0
+	elseif new < 0 then
+		return #self.values
+	else
+		return new
+	end
+end
+
+
 
 --- Use AI Turns?
 ---@class UseAITurnsSetting : BooleanSetting
