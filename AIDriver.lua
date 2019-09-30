@@ -1309,10 +1309,10 @@ function AIDriver:onPathfindingDone(path)
 				local tx, _, tz = self.courseAfterPathfinding:getWaypointPosition(self.waypointIxAfterPathfinding)
 				local alignmentWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x, z, tx, tz,
 					math.rad(self.courseAfterPathfinding:getWaypointAngleDeg(self.waypointIxAfterPathfinding)), true)
-				-- remove the first waypoint of the alignment course so it does not overlap with the last wp of the
-				-- pathfinder course, causing unpredictable direction switches
-				table.remove(alignmentWaypoints, 1)
 				if alignmentWaypoints then
+					-- remove the first waypoint of the alignment course so it does not overlap with the last wp of the
+					-- pathfinder course, causing unpredictable direction switches
+					table.remove(alignmentWaypoints, 1)
 					self:debug('Append an alignment course with %d waypoints to the path', #alignmentWaypoints)
 					temporaryCourse:append(alignmentWaypoints)
 				else
