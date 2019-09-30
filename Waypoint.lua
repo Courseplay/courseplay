@@ -248,6 +248,7 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	-- only for logging purposes
 	self.vehicle = vehicle
 	self.temporary = temporary or false
+	self.currentWaypoint = 1
 end
 
 --- Current offset to apply. getWaypointPosition() will always return the position adjusted by the

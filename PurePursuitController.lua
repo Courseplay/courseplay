@@ -443,6 +443,7 @@ function PurePursuitController:setCurrentWaypoint(ix)
 			self.sendWaypointChange = { current = self.currentWpNode.ix, prev = prevIx }
 		end
 	end
+	self.course:setCurrentWaypointIx(self.currentWpNode.ix)
 end
 
 function PurePursuitController:showGoalpointDiag(case, ...)
