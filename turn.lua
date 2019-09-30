@@ -2261,8 +2261,9 @@ function Corner:findCornerNodes(startAngle)
 	-- line 1 through startWp at startAngle, and
 	-- line 2 through endWp at endAngle
 
-	-- So go ahead and find that point. First we need to make the lines long enough so they actually intersect1
-	local extensionDistance = 50 -- this should depend on the work width and turn radius
+	-- So go ahead and find that point. First we need to make the lines long enough so they actually intersect
+	-- must look far enough, start/end waypoints may be far away
+	local extensionDistance = math.max(50, 1.5 * courseplay:distance(self.startWp.x, self.startWp.z, self.endWp.x, self.endWp.z))
 	-- extend line 1 back and forth
 	local l1x1, _, l1z1 = localToWorld(self.startNode, 0, 0, -extensionDistance)
 	local l1x2, _, l1z2 = localToWorld(self.startNode, 0, 0, extensionDistance)
@@ -2290,6 +2291,7 @@ function Corner:findCornerNodes(startAngle)
 			is.x, is.z, startAngle, self.endAngleDeg)
 	else
 		self:debug('Could not find turn corner, using turn end waypoint')
+		self.cornerNode = self.endNode
 		self.cornerStartNode = self.startNode
 		self.cornerEndNode = self.startNode
 	end
