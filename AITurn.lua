@@ -74,9 +74,17 @@ function AITurn.canMakeKTurn(vehicle, turnContext)
 	return true
 end
 
+function AITurn:setForwardSpeed()
+	self.driver:setSpeed(math.min(self.vehicle.cp.speeds.turn, self.driver:getWorkSpeed()))
+end
+
+function AITurn:setReverseSpeed()
+	self.driver:setSpeed(self.vehicle.cp.speeds.reverse)
+end
+
 function AITurn:drive(dt)
 	local iAmDriving = true
-	self.driver:setSpeed(self.vehicle.cp.speeds.turn)
+	self:setForwardSpeed()
 	-- Finishing the current row
 	if self.state == self.states.FINISHING_ROW then
 		iAmDriving = self:finishRow(dt)
@@ -152,6 +160,7 @@ function KTurn:turn(dt)
 	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self.driver:getDirectionNode())
 	local turnRadius = self.vehicle.cp.turnDiameter / 2
 	if self.state == self.states.FORWARD then
+		self:setForwardSpeed()
 		if dz > 0 then
 			-- drive straight until we are beyond the turn end
 			self.driver:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
@@ -172,6 +181,7 @@ function KTurn:turn(dt)
 			end
 		end
 	elseif self.state == self.states.REVERSE then
+		self:setReverseSpeed()
 		self.driver:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 		if math.abs(dx) > turnRadius * 1.05 then
 			self:debug('K Turn forwarding again')
@@ -216,6 +226,7 @@ function CombineHeadlandTurn:turn(dt)
 	self:debug('%.1f %1.f %.1f', math.deg(angleToTurnEnd), math.deg(self.angleToTurnInReverse), dx)
 
 	if self.state == self.states.FORWARD then
+		self:setForwardSpeed()
 		if angleToTurnEnd > self.angleToTurnInReverse then --and not self.turnContext:isLateralDistanceLess(dx, self.dxToStartReverseTurn) then
 			-- full turn towards the turn end direction
 			self.driver:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self.driver:getSpeed())
@@ -226,6 +237,7 @@ function CombineHeadlandTurn:turn(dt)
 		end
 
 	elseif self.state == self.states.REVERSE_STRAIGHT then
+		self:setReverseSpeed()
 		self.driver:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 		if math.abs(dx) < 0.2  then
 			self:debug('Combine headland turn start reversing arc')
@@ -233,6 +245,7 @@ function CombineHeadlandTurn:turn(dt)
 		end
 
 	elseif self.state == self.states.REVERSE_ARC then
+		self:setReverseSpeed()
 		self.driver:driveVehicleBySteeringAngle(dt, false, 1, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 		--if self.turnContext:isPointingToTurnEnd(self.driver:getDirectionNode(), 5)  then
 		if angleToTurnEnd < math.rad(20) then

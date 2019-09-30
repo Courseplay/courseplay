@@ -660,6 +660,10 @@ function FieldworkAIDriver:hasSameCourse(otherVehicle)
 	end
 end
 
+function FieldworkAIDriver:getCurrentFieldworkWaypointIx()
+	return self.fieldworkCourse:getCurrentWaypointIx()
+end
+
 --- When working in a group (convoy), do I have to hold so I don't get too close to the
 -- other vehicles in front of me?
 function FieldworkAIDriver:manageConvoy()
@@ -670,8 +674,8 @@ function FieldworkAIDriver:manageConvoy()
 	local closestDistance = math.huge
 	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
 		if otherVehicle ~= self.vehicle and otherVehicle.cp.convoyActive and self:hasSameCourse(otherVehicle) then
-			local myWpIndex = self.ppc:getCurrentWaypointIx()
-			local otherVehicleWpIndex = otherVehicle.cp.ppc:getCurrentWaypointIx()
+			local myWpIndex = self:getCurrentFieldworkWaypointIx()
+			local otherVehicleWpIndex = otherVehicle.cp.driver:getCurrentFieldworkWaypointIx()
 			total = total + 1
 			if myWpIndex < otherVehicleWpIndex then
 				position = position + 1
