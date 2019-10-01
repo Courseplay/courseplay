@@ -98,6 +98,7 @@ local function initialize()
 		'LevelCompactAIDriver',
 		'ShovelModeAIDriver',
 		'TrafficController',
+		'TrafficControllerSolver',
 		'AITurn',
 	'course-generator/Pathfinder',
     'course-generator/Island',

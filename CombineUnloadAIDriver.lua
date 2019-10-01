@@ -187,8 +187,11 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if not self:trafficContollOK() then
 			local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
 			if blockingVehicle and blockingVehicle ~= self.tractorToFollow then
+				g_trafficController:solve(self.vehicle.rootNode)
 				self:hold()
 			end
+		else
+			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_TO_COMBINE then
@@ -208,8 +211,11 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if not self:trafficContollOK() then
 			local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
 			if blockingVehicle and blockingVehicle ~= self.combineToUnload  and blockingVehicle ~= self.tractorToFollow then
+				g_trafficController:solve(self.vehicle.rootNode)
 				self:hold()
 			end
+		else
+			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
 
 	elseif self.onFieldState == self.states.GET_ALIGNCOURSE_TO_COMBINE then
@@ -247,8 +253,11 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if not self:trafficContollOK() then
 			local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
 			if blockingVehicle and blockingVehicle ~= self.tractorToFollow  then
+				g_trafficController:solve(self.vehicle.rootNode)
 				self:hold()
 			end
+		else
+			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
 
 	elseif self.onFieldState == self.states.FOLLOW_COMBINE then
@@ -428,7 +437,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self.ppc:setOffset(3, 0)
 		--use trafficController
 		if not self:trafficContollOK() then
+			g_trafficController:solve(self.vehicle.rootNode)
 			self:hold()
+		else
+			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
 
 	elseif self.onFieldState == self.states.WAIT_FOR_CHOPPER_TURNED then
@@ -510,14 +522,14 @@ end
 
 function CombineUnloadAIDriver:getRecordedSpeed()
 	-- default is the street speed (reduced in corners)
-	if self.state == self.combineUnloadState == self.states.ONSTREET then
+	if self.combineUnloadState == self.states.ONSTREET then
 		local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
 		if self.vehicle.cp.speeds.useRecordingSpeed then
 			-- use default street speed if there's no recorded speed.
 			speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 		end
 		--course end
-		if self.ppc:getCurrentWaypointIx()+3 >= Course:getNumberOfWaypoints() then
+		if self.ppc:getCurrentWaypointIx()+3 >= self.course:getNumberOfWaypoints() then
 			speed= self.vehicle.cp.speeds.approach
 		end
 		return speed
