@@ -89,6 +89,7 @@ function TrafficController:init()
 	self.reservations = {}
 	-- this contains the vehicleId of the blocking vehicle
 	self.blockingVehicleId = {}
+	self.solvers = {}
 end
 
 g_trafficController = TrafficController()
@@ -176,6 +177,26 @@ function TrafficController:chancelOwnPosition(vehicleId)
 		end
 	end
 end
+
+function TrafficController:solve(vehicleId)
+	if not self.solvers[vehicleId] then
+		self.solvers[vehicleId] = TrafficControllerSolver(vehicleId)
+	end
+	self.solvers[vehicleId]:solveCollision()
+end
+
+
+function TrafficController:resetSolver(vehicleId)
+	if self.solvers[vehicleId] then
+		self.solvers[vehicleId]= nil
+	end
+end
+
+function TrafficController:getHasSolver(vehicleId)
+	return g_trafficController.solvers[vehicleId] ~= nil
+end
+
+
 
 
 function TrafficController:getBlockingVehicleId(vehicleId)
@@ -399,7 +420,7 @@ function TrafficController:cleanUp(vehicleId)
 	for row in pairs(self.reservations) do
 		for col in pairs(self.reservations[row]) do
 			local reservation = self.reservations[row][col]
-			if reservation then
+			if reservation and not reservation.ownPosition then
 				nTotalReservedTiles = nTotalReservedTiles + 1
 				if reservation.timeStamp <= (self.clock - self.staleReservationTimeoutSeconds) then
 					self.reservations[row][col] = nil

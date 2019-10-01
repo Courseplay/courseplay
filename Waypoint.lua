@@ -833,7 +833,7 @@ function Course:worldToWaypointLocal(ix, x, y, z)
 end
 
 function Course:waypointLocalToWorld(ix, x, y, z)
-	local tempNode = WaypointNode('worldToWaypointLocal')
+	local tempNode = WaypointNode('waypointLocalToWorld')
 	tempNode:setToWaypoint(self,ix)
 	setRotation(tempNode.node, 0, self:getWaypointYRotation(ix), 0);
 	local dx,dy,dz = localToWorld(tempNode.node,x, y, z)

@@ -2023,7 +2023,7 @@ function SettingList:loadFromXml(xml, parentKey)
 end
 
 function SettingList:saveToXml(xml, parentKey)
-	setXMLInt(xml, self:getKey(parentKey), self:get())
+	setXMLInt(xml, self:getKey(parentKey), Utils.getNoNil(self:get(),0))
 end
 
 ---@return number seconds since last change
