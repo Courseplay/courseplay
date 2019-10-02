@@ -393,14 +393,14 @@
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Nincs telepítve" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Ne használd" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/orefill" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(és visszatérés)" />
 
 		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Haladó beállítások..." />
 
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Útvonalak betöltése indításkor" />
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
