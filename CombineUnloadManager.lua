@@ -41,19 +41,51 @@ end
 
 function FieldManager:getCombineToUnloader(unloader)
 	--print("FieldManager:getCombineToUnloader")
-	local combine = self:getChopperWithLeastUnloaders()
-	if combine ~= nil then
-		local unloaderNumber = g_combineUnloadManager:getNumUnloaders(combine)
+	--first try to find a chopper
+	local chopper = self:getChopperWithLeastUnloaders()
+	if chopper ~= nil then
+		print("chopper: "..tostring(chopper.name))
+		local unloaderNumber = g_combineUnloadManager:getNumUnloaders(chopper)
 		if unloaderNumber == 0 then
-			return combine
+			return chopper
 		elseif unloaderNumber <2 then
-			local prevTractor = g_combineUnloadManager:getUnloaderByNumber(unloaderNumber, combine)
+			local prevTractor = g_combineUnloadManager:getUnloaderByNumber(unloaderNumber, chopper)
 			if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
+				return chopper
+			end
+		end
+	end
+	--then try to find a combine
+	local combine = self:getCombineWithMostFillLevel()
+	if combine ~= nil then
+		if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
+			if g_combineUnloadManager:getNumUnloaders(combine) == 0 then
 				return combine
 			end
 		end
 	end
+
 end
+
+function FieldManager:getCombineWithMostFillLevel()
+	local mostFillLevel = 0
+	local combineToReturn
+	for combine,data in pairs(self.combinesOnField) do
+		if data.isCombine then
+			courseplay:updateFillLevelsAndCapacities(combine)
+			if combine.cp.wantsCourseplayer then
+				return combine
+			end
+			local fillLevelPct = combine.cp.totalFillLevelPercent
+			if mostFillLevel < fillLevelPct then
+				mostFillLevel = fillLevelPct
+				combineToReturn = combine
+			end
+		end
+	end
+	return combineToReturn
+end
+
 
 function FieldManager:getChopperWithLeastUnloaders()
 	--print("FieldManager:getChopperWithLeastUnloaders")
