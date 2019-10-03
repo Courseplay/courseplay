@@ -9,8 +9,8 @@ function TrafficControllerSolver:init(vehicleID)
 	self.safetyDistance = 5 --minimal side distance between two vehicles rootNodes
 end
 function TrafficControllerSolver:solveCollision()
-	print("TrafficControllerSolver:solveCollision()")
-	print(string.format("%s blocks %s",nameNum(self.otherVehicle),nameNum(self.vehicle)))
+	--print("TrafficControllerSolver:solveCollision()")
+	--print(string.format("%s blocks %s",nameNum(self.otherVehicle),nameNum(self.vehicle)))
 	local driver = self.vehicle.cp.driver
 	local course = driver.course
 
@@ -20,6 +20,7 @@ function TrafficControllerSolver:solveCollision()
 			if self:vehicleIsMoving(self.otherVehicle) then
 				if self:courseHitsOtherVehicle(course,self.vehicle.cp.driver.ppc:getCurrentWaypointIx())then
 					--does it have the same direction ??
+					-- find a way to overtake or to prevent collision
 				else
 					--do nothing and wait till it moved out of the way
 				end
@@ -28,7 +29,7 @@ function TrafficControllerSolver:solveCollision()
 				self:modifyCourseArroundObstacle()
 			end
 		else
-
+		-- let the two solvers talk to each other
 		end
 
 	else

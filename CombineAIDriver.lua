@@ -244,16 +244,26 @@ function CombineAIDriver:onNextCourse(ix)
 end
 
 function CombineAIDriver:unloadFinished()
-	local discharging = false
+	local discharging = true
+	local tempDischarging = false
 	if self.pipe then
-		discharging = self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
+		tempDischarging = self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
+	end
+	--wait for 10 frames before taking discharging as false
+	if not tempDischarging then
+		self.cantDischargeCount = self.cantDischargeCount and self.cantDischargeCount + 1 or 0
+		if self.cantDischargeCount > 10 then
+			discharging = false
+		end
+	else
+		self.cantDischargeCount = 0
 	end
 	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 
 	-- unload is done when fill levels are ok (not full) and not discharging anymore (either because we
 	-- are empty or the trailer is full)
 	return (self:allFillLevelsOk() and not discharging) or fillLevel < 0.1
-end
+		end
 
 function CombineAIDriver:shouldMakePocket()
 	-- on the outermost headland clockwise (field edge) or fruit both sides
