@@ -114,23 +114,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		return
 	end
 
-	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
-		--print("unloadnow or trailer full")
-		if self.onFieldState ~= self.states.FINDPATH_TO_COURSE
-		and self.onFieldState ~= self.states.DRIVE_TO_UNLOADCOURSE
-		and self.onFieldState ~= self.states.DRIVE_STRAIGHTBACK_FULL then
-			if self.onFieldState == self.states.FOLLOW_CHOPPER
-			or self.onFieldState == self.states.FOLLOW_COMBINE then
-				local reverseCourse = self:getStraightReverseCourse()
-				AIDriver.startCourse(self,reverseCourse,1)
-				self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FULL)
-			else
-				self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
-			end
-			self.vehicle.isAssigned = false
-		end
-	end
-
 	if self.onFieldState == self.states.FIND_COMBINE then
 		g_combineUnloadManager:enterField(self.vehicle)
 		self.combineToUnload = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
@@ -144,6 +127,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
 		end
 		self:hold()
+
+		if self:getDriveUnloadNow() or self:getAllTrailersFull() or self:shouldDriveOn() then
+			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+		end
 
 	elseif self.onFieldState == self.states.FINDPATH_TO_COMBINE then
 		if self:getImSecondUnloader() then
@@ -279,6 +266,15 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		--decide where to drive, behind or beside
 		local targetNode = self:getTrailersTargetNode()
 		local leftOK = g_combineUnloadManager:getPossibleSidesToDrive(self.combineToUnload)
+
+		--when trailer is full then go to unload
+		if self:getDriveUnloadNow() or self:getAllTrailersFull() then
+			print(nameNum(self.vehicle)..": trailer full, set self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)")
+			self:releaseUnloader()
+			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+			return
+		end
+
 		if leftOK then
 			self:driveBesideCombine(dt,targetNode)
 		else
@@ -288,21 +284,24 @@ function CombineUnloadAIDriver:driveOnField(dt)
 				local reverseCourse = self:getStraightReverseCourse()
 				AIDriver.startCourse(self,reverseCourse,1)
 				self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_REVERSING_COMBINE_NOTURN)
+				return
 			end
 		end
 
 		--when the combine is empty, stop and wait for next combine
-		if self:getCombinesFillLevelPercent() == 0 then
+		if self:getCombinesFillLevelPercent() <= 0.1 then
 			--when the combine is in a pocket, make room to get back to course
 			if self:getCombineIsInPocket() then
-				print("combine empty, set self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_EMPTY_COMBINE)")
+				print(nameNum(self.vehicle)..": combine empty, set self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_EMPTY_COMBINE)")
 				local reverseCourse = self:getStraightReverseCourse()
 				AIDriver.startCourse(self,reverseCourse,1)
 				self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_EMPTY_COMBINE)
+				return
 			else
-				print("combine empty, set self:setNewOnFieldState(self.states.FIND_COMBINE)")
+				print(nameNum(self.vehicle)..": combine empty, set self:setNewOnFieldState(self.states.FIND_COMBINE)")
+				self:releaseUnloader()
 				self:setNewOnFieldState(self.states.FIND_COMBINE)
-
+				return
 			end
 		end
 
@@ -334,6 +333,15 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if self:getCombineIsTurning() then
 			self:setNewOnFieldState(self.states.HANDLE_CHOPPER_TURN)
 		end
+
+		--when trailer is full then go to unload
+		if self:getDriveUnloadNow() or self:getAllTrailersFull() then
+			local reverseCourse = self:getStraightReverseCourse()
+			AIDriver.startCourse(self,reverseCourse,1)
+			self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FULL)
+		end
+
+
 		return
 
 
@@ -399,7 +407,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 		--if the fillLevel is reached while turning go to Unload course
-		if self:getFillLevelPercent() > self:getDriveOnThreshold() then
+		if self:shouldDriveOn() then
 			local reverseCourse = self:getStraightReverseCourse()
 			AIDriver.startCourse(self,reverseCourse,1)
 			self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FULL)
@@ -449,7 +457,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self:startCourseWithAlignment(self.mainCourse, 1)
 			self:setNewOnFieldState(self.states.DRIVE_TO_UNLOADCOURSE)
 		end
-		self:releaseUnloader()
 		g_combineUnloadManager:leaveField(self.vehicle)
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
 		self.ppc:setOffset(3, 0)
@@ -473,8 +480,14 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		local _,_,z = worldToLocal(self:getDirectionNode(),cx,cy,cz)
 		--print(string.format("z(%s)> self.vehicle.cp.turnDiameter * 2(%s)",tostring(z),tostring(self.vehicle.cp.turnDiameter * 2)))
 		if z> self.vehicle.cp.turnDiameter * 2 then
+			self:releaseUnloader()
 			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
 			self:recoverOriginalWaypoints()
+		else
+			local zDist = self:getZOffsetToCoordsBehind()
+			if zDist < 5 then
+				self:holdCombine()
+			end
 		end
 		if self:getImFirstOfTwoUnloaders() and self:getChopperOffset(self.combineToUnload) ~= 0 then
 			if not self:getCombineIsTurning() then
@@ -490,9 +503,13 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		local dx,dy,dz = self.course:getWaypointLocalPosition(self:getDirectionNode(), 1)
 		if dz > 30 then
 			self:recoverOriginalWaypoints()
+			self:releaseUnloader()
 			self:setNewOnFieldState(self.states.FIND_COMBINE)
 		else
-			self:holdCombine()
+			local z = self:getZOffsetToCoordsBehind()
+			if z < 5 then
+				self:holdCombine()
+			end
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHTBACK_FROM_TURNINGCHOPPER then
@@ -557,8 +574,6 @@ end
 
 function CombineUnloadAIDriver:getCombineIsInPocket()
 	local driver = self.combineToUnload.cp.driver
-	print(string.format("ON_FIELDWORK_COURSE:%s; UNLOAD_OR_REFILL_ON_FIELD:%s, MAKING_POCKET:%s ",
-	tostring(driver.state == driver.states.ON_FIELDWORK_COURSE),tostring(driver.fieldworkState == driver.states.UNLOAD_OR_REFILL_ON_FIELD),tostring(driver.fieldWorkUnloadOrRefillState == driver.states.MAKING_POCKET)))
 	return driver.state == driver.states.ON_FIELDWORK_COURSE and
 		driver.fieldworkState == driver.states.UNLOAD_OR_REFILL_ON_FIELD and
 		driver.fieldWorkUnloadOrRefillState == driver.states.WAITING_FOR_UNLOAD_IN_POCKET
@@ -1157,6 +1172,10 @@ end
 function CombineUnloadAIDriver:getAllTrailersFull()
 	local _, allFull = self:getTrailersTargetNode()
 	return allFull
+end
+
+function CombineUnloadAIDriver:shouldDriveOn()
+	return self:getFillLevelPercent() > self:getDriveOnThreshold()
 end
 
 function CombineUnloadAIDriver:getCombinesFillLevelPercent()
