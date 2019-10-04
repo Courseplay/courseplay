@@ -58,8 +58,13 @@ function FieldManager:getCombineToUnloader(unloader)
 	--then try to find a combine
 	local combine = self:getCombineWithMostFillLevel()
 	if combine ~= nil then
-		if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
+		local distance = courseplay:distanceToObject(unloader, combine)
+		local timeToTarget = distance/(unloader.cp.speeds.field/3.6)
+		--print(string.format("full: %.1f; 80percent: %.1f  time: %.1f",g_combineUnloadManager:getSecondsTillFull(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
+		if timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine) and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
+		--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
 			if g_combineUnloadManager:getNumUnloaders(combine) == 0 then
+				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
 				return combine
 			end
 		end
@@ -71,7 +76,7 @@ function FieldManager:getCombineWithMostFillLevel()
 	local mostFillLevel = 0
 	local combineToReturn
 	for combine,data in pairs(self.combinesOnField) do
-		if data.isCombine then
+		if data.isCombine and g_combineUnloadManager:getNumUnloaders(combine) == 0 then
 			courseplay:updateFillLevelsAndCapacities(combine)
 			if combine.cp.wantsCourseplayer then
 				return combine
@@ -130,9 +135,14 @@ function CombineUnloadManager:addCombineToList(combine)
 		isDriving = false;
 		isOnFieldNumber = 0;
 		fillLevel = 0;
+		fillLevelPct = 0;
+		capacity = combine:getFillUnitCapacity(1);
 		leftOkToDrive = false;
 		rightOKToDrive = false;
 		pipeOffset = 0;
+		fillLitersPerSecond = 0;
+		lastCeckedfillLevel = 0;
+		lastCheckedTime = 0;
 		unloaders = {};
 	}
 end
@@ -197,7 +207,7 @@ function CombineUnloadManager:leaveField(unloader)
 	end
 end
 
-function CombineUnloadManager:onUpdate()
+function CombineUnloadManager:onUpdate(dt)
 	self:updateCombinesAttributes()
 	self:updateFieldManagers()
 end
@@ -227,10 +237,13 @@ function CombineUnloadManager:updateCombinesAttributes()
 				end
 			end
 		end
+
 		attributes.isOnFieldNumber = fieldNum
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)
 		attributes.pipeOffset = self:getPipeOffset(combine)
-		attributes.fillLevel = self:getCombinesFillLevelPercent(combine)
+		attributes.fillLevelPct = self:getCombinesFillLevelPercent(combine)
+		attributes.fillLevel = self:getCombinesFillLevel(combine)
+		self:updateFillSpeed(combine,attributes)
 		if attributes.measuredBackDistance == nil then
 			self:raycastBack(combine)
 		end
@@ -240,6 +253,32 @@ function CombineUnloadManager:updateCombinesAttributes()
 		renderText(0.2,0.175+(0.03*number) ,0.02,string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d",nameNum(combine),tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders))
 		number = number +1
 	end
+end
+
+function CombineUnloadManager:updateFillSpeed(combine,data)
+	if data.isCombine then
+		if g_updateLoopIndex % 500 == 0 then
+			local timeDiff = combine.timer - data.lastCheckedTime
+			data.lastCheckedTime = combine.timer
+			local fillDiff = data.fillLevel - data.lastCeckedfillLevel
+			data.lastCeckedfillLevel = data.fillLevel
+			data.fillLitersPerSecond =  fillDiff/timeDiff*1000 or 0
+		end
+	else
+		data.fillLitersPerSecond = 0
+	end
+end
+
+function CombineUnloadManager:getSecondsTillFull(combine)
+	local data = self.combines[combine]
+	local fillDiff = data.capacity -data.fillLevel
+	return fillDiff/ data.fillLitersPerSecond
+end
+
+function CombineUnloadManager:getSecondsTill80Percent(combine)
+	local data = self.combines[combine]
+	local fillDiff = data.capacity*0.8 -data.fillLevel
+	return fillDiff/ data.fillLitersPerSecond
 end
 
 function CombineUnloadManager:getIsChopper(chopper)
@@ -333,6 +372,10 @@ function CombineUnloadManager:getCombinesFillLevelPercent(combine)
 	return combine:getFillUnitFillLevelPercentage(dischargeNode.fillUnitIndex)*100
 end
 
+function CombineUnloadManager:getCombinesFillLevel(combine)
+	local dischargeNode = combine:getCurrentDischargeNode()
+	return combine:getFillUnitFillLevel(dischargeNode.fillUnitIndex)
+end
 
 
 function CombineUnloadManager:getCombinesMeasuredBackDistance(combine)

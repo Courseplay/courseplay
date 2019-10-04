@@ -43,6 +43,7 @@ function CombineAIDriver:init(vehicle)
 	self:initStates(CombineAIDriver.myStates)
 	self.fruitLeft, self.fruitRight = 0, 0
 	self.litersPerMeter = 0
+	self.litersPerSecond = 0
 	self.fillLevelAtLastWaypoint = 0
 	self.beaconLightsActive = false
 	-- distance keep to the right when pulling back to make room for the tractor
@@ -91,7 +92,7 @@ function CombineAIDriver:drive(dt)
 		self:hold()
 	end
 	UnloadableFieldworkAIDriver.drive(self, dt)
-	end
+end
 
 function CombineAIDriver:onWaypointPassed(ix)
 	if self.turnIsDriving then
@@ -313,6 +314,7 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 			self:debug('Will be full in the next row' )
 		end
 	end
+
 end
 
 function CombineAIDriver:updateLightsOnField()
