@@ -199,7 +199,7 @@ function courseplay:isFoldable(workTool) --is the tool foldable?
 	return workTool.cp.hasSpecializationFoldable and  workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
 end;
 function courseplay:isFrontloader(workTool)
-	return workTool.cp.hasSpecializationCylindered and workTool.cp.hasSpecializationAnimatedVehicle and not workTool.cp.hasSpecializationShovel and workTool.cp.capacity == nil;
+    return Utils.getNoNil(workTool.typeName == "attachableFrontloader", false);
 end;
 function courseplay:isHarvesterSteerable(workTool)
 	return Utils.getNoNil(workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isHarvesterSteerable, false);
