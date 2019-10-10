@@ -2,8 +2,8 @@
 TrafficControllerSolver = CpObject()
 
 function TrafficControllerSolver:init(vehicleID)
-	print("TrafficControllerSolver:init()")
 	self.vehicle = g_currentMission.nodeToObject[vehicleID]
+	print(nameNum(self.vehicle)..": TrafficControllerSolver:init()")
 	self.otherVehicleId = g_trafficController:getBlockingVehicleId(vehicleID)
 	self.otherVehicle = g_currentMission.nodeToObject[self.otherVehicleId]
 	self.safetyDistance = 5 --minimal side distance between two vehicles rootNodes
@@ -21,15 +21,22 @@ function TrafficControllerSolver:solveCollision()
 				if self:courseHitsOtherVehicle(course,self.vehicle.cp.driver.ppc:getCurrentWaypointIx())then
 					--does it have the same direction ??
 					-- find a way to overtake or to prevent collision
+					if g_updateLoopIndex % 500 == 0 then
+						print(string.format("TrafficControllerSolver: %s has traffic, situation known (cp, moving and course hits vehicle) but no solution provided yet",nameNum(self.vehicle)))
+					end
 				else
 					--do nothing and wait till it moved out of the way
 				end
 			else
+				print("call modifyCourseArroundObstacle")
 				--its driven but not moving so go arround it
 				self:modifyCourseArroundObstacle()
 			end
 		else
-		-- let the two solvers talk to each other
+			-- let the two solvers talk to each other
+			if g_updateLoopIndex % 500 == 0 then
+				print(string.format("TrafficControllerSolver: %s has traffic, situation known (cp, two solvers) but no solution provided yet",nameNum(self.vehicle)))
+			end
 		end
 
 	else
@@ -47,7 +54,7 @@ function TrafficControllerSolver:courseHitsOtherVehicle(course,ix)
 end
 
 function TrafficControllerSolver:vehicleIsMoving(vehicle)
-	return vehicle.lastSpeedReal *3600 > 0.1
+	return vehicle.lastSpeedReal*3600 > 0.1
 end
 
 function TrafficControllerSolver:modifyCourseArroundObstacle()
@@ -63,9 +70,9 @@ function TrafficControllerSolver:modifyCourseArroundObstacle()
 			local newOffset = 0
 			--print("pointData.ix: "..tostring(pointData.ix).."  pointData.dx: "..tostring(pointData.dx).."  waypoint.x: "..tostring(waypoint.x).."  waypoint.z: "..tostring(waypoint.z))
 			if pointData.dx > 0 then
-				newOffset = pointData.dx - self.safetyDistance
+				newOffset = pointData.dx - self.safetyDistance-(self.otherVehicle.cp.workWidth/2)
 			else
-				newOffset = pointData.dx + self.safetyDistance
+				newOffset = pointData.dx + self.safetyDistance+(self.otherVehicle.cp.workWidth/2)
 			end
 			local courseOffsetX = course:getOffset()
 			local newX,newY,newZ = course:waypointLocalToWorld(pointData.ix, newOffset+courseOffsetX, 0, 0)
@@ -108,5 +115,5 @@ function TrafficControllerSolver:checkWayPointHittingVehicle(course,ix)
 	local length = self.otherVehicle.cp.totalLength or courseplay:getTotalLengthOnWheels(self.otherVehicle)
 
 	local dx,dy,dz = course:worldToWaypointLocal(ix, x, y, z)
-	return  math.abs(dz)< self.vehicle.cp.turnDiameter+self.safetyDistance+length and math.abs(dx) < self.safetyDistance, dx, dy, dz
+	return  math.abs(dz)< self.vehicle.cp.turnDiameter+self.safetyDistance+length and math.abs(dx) < self.safetyDistance+(self.otherVehicle.cp.workWidth/2), dx, dy, dz
 end

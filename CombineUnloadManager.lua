@@ -42,9 +42,8 @@ end
 function FieldManager:getCombineToUnloader(unloader)
 	--print("FieldManager:getCombineToUnloader")
 	--first try to find a chopper
-	local chopper = self:getChopperWithLeastUnloaders()
+	local chopper = g_combineUnloadManager:getSelectedChopper(unloader) or self:getChopperWithLeastUnloaders()
 	if chopper ~= nil then
-		print("chopper: "..tostring(chopper.name))
 		local unloaderNumber = g_combineUnloadManager:getNumUnloaders(chopper)
 		if unloaderNumber == 0 then
 			return chopper
@@ -56,12 +55,20 @@ function FieldManager:getCombineToUnloader(unloader)
 		end
 	end
 	--then try to find a combine
-	local combine = self:getCombineWithMostFillLevel()
+	local combine = g_combineUnloadManager:getSelectedCombine(unloader) or self:getCombineWithMostFillLevel()
+	local unloaderToAssign
 	if combine ~= nil then
 		local distance = courseplay:distanceToObject(unloader, combine)
 		local timeToTarget = distance/(unloader.cp.speeds.field/3.6)
+		if combine.cp.driverPriorityUseFillLevel then
+			unloaderToAssign = self:getFullestUnloader()
+		else
+			unloaderToAssign = self:getClosestUnloader(combine)
+		end
 		--print(string.format("full: %.1f; 80percent: %.1f  time: %.1f",g_combineUnloadManager:getSecondsTillFull(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
-		if timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine) and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
+		if unloaderToAssign == unloader
+		and timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine)
+		and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
 		--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
 			if g_combineUnloadManager:getNumUnloaders(combine) == 0 then
 				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
@@ -71,6 +78,33 @@ function FieldManager:getCombineToUnloader(unloader)
 	end
 
 end
+
+function FieldManager:getClosestUnloader(combine)
+	local closestDistance = math.huge
+	local unloaderToAssign
+	for unloader,_ in pairs(self.unloadersOnField) do
+		local distance = courseplay:distanceToObject(unloader, combine)
+		if distance < closestDistance and not g_combineUnloadManager:getHasCombine(unloader) then
+			closestDistance = distance
+			unloaderToAssign = unloader
+		end
+	end
+	return unloaderToAssign
+end
+
+function FieldManager:getFullestUnloader()
+	local higestFillLevel = 0
+	local unloaderToAssign
+	for unloader,_ in pairs(self.unloadersOnField) do
+		local fillLevelPct = unloader.cp.driver:getFillLevelPercent()
+		if higestFillLevel < fillLevelPct and not g_combineUnloadManager:getHasCombine(unloader) then
+			higestFillLevel = fillLevelPct
+			unloaderToAssign = unloader
+		end
+	end
+	return unloaderToAssign
+end
+
 
 function FieldManager:getCombineWithMostFillLevel()
 	local mostFillLevel = 0
@@ -168,16 +202,8 @@ end
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	--print("CombineUnloadManager:giveMeACombineToUnload")
-	if unloader.cp.searchCombineAutomatically then
-		if self.unloadersOnFields[unloader] and self.unloadersOnFields[unloader] > 0 then
-			local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
-			if combine ~= nil then
-				table.insert(self.combines[combine].unloaders,unloader)
-				return combine
-			end
-		end
-	else
-		local combine = unloader.cp.settings.selectedCombineToUnload:getIfNotChangedFor(5)
+	if self.unloadersOnFields[unloader] and self.unloadersOnFields[unloader] > 0 then
+		local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
 		if combine ~= nil then
 			table.insert(self.combines[combine].unloaders,unloader)
 			return combine
@@ -185,9 +211,24 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	end
 end
 
+function CombineUnloadManager:getSelectedChopper(unloader)
+	return unloader.cp.settings.selectedCombineToUnload:get() and self:getIsChopper(unloader.cp.settings.selectedCombineToUnload:get()) and unloader.cp.settings.selectedCombineToUnload:getIfNotChangedFor(5)
+end
+
+function CombineUnloadManager:getSelectedCombine(unloader)
+	return unloader.cp.settings.selectedCombineToUnload:get() and self:getIsCombine(unloader.cp.settings.selectedCombineToUnload:get()) and unloader.cp.settings.selectedCombineToUnload:getIfNotChangedFor(5)
+end
+
+
 function CombineUnloadManager:enterField(unloader)
 	local unloaderOnFieldNumber = unloader.cp.settings.searchCombineOnField:getIfNotChangedFor(5) or self:getFieldNumberByCurrentPosition(unloader)
 	--print("CombineUnloadManager:enterField("..unloader.name.."): fieldNumber: "..tostring(unloaderOnFieldNumber))
+	if not unloader.cp.searchCombineAutomatically then
+		local combine = self:getSelectedCombine(unloader) or self:getSelectedChopper(unloader)
+		if combine ~= nil then
+			unloaderOnFieldNumber = self:getFieldNumberByCurrentPosition(combine)
+		end
+	end
 	if self.unloadersOnFields[unloader] == nil then
 		if unloaderOnFieldNumber > 0  then
 			self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
@@ -322,6 +363,20 @@ end
 
 function CombineUnloadManager:getHasUnloaders(combine)
 	return self:getNumUnloaders(combine) > 0
+end
+
+function CombineUnloadManager:getHasCombine(unloader)
+	local isAssigned = false
+	for combine,data in pairs(self.combines) do
+		for i=1,#self.combines[combine].unloaders do
+			local unloaderToCheck = self.combines[combine].unloaders[i]
+			if unloader == unloaderToCheck then
+				isAssigned = true
+			end
+
+		end
+	end
+	return isAssigned
 end
 
 function CombineUnloadManager:getPipeOffset(combine)

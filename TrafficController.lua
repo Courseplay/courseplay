@@ -271,15 +271,20 @@ function TrafficController:getGridPointsUnderCourseWithWorkWidth(course, iterato
 		local v = speed or course.waypoints[i].speed or 10
 		local s = course:getDistanceToNextWaypoint(i)
 		local x, z = self:getGridCoordinatesFromCourse(course,i)
-
 		table.insert(tiles, Point(x, z))
-
-		local pointXleft,_,pointZleft = course:waypointLocalToWorld(i, -workWidth/2, 0, 0)
-		local pointXright,_,pointZright = course:waypointLocalToWorld(i, workWidth/2, 0, 0)
-
-		table.insert(tiles, Point(self:getGridCoordinates(Point(pointXleft,pointZleft))))
-		table.insert(tiles, Point(self:getGridCoordinates(Point(pointXright,pointZright))))
-
+		if s > self.gridSpacing then
+			for offset=0,s,self.gridSpacing do
+				local pointXleft,_,pointZleft = course:waypointLocalToWorld(i, (-workWidth/2)+self.gridSpacing, 0, offset)
+				local pointXright,_,pointZright = course:waypointLocalToWorld(i, (workWidth/2)-self.gridSpacing, 0, offset)
+				table.insert(tiles, Point(self:getGridCoordinates(Point(pointXleft,pointZleft))))
+				table.insert(tiles, Point(self:getGridCoordinates(Point(pointXright,pointZright))))
+			end
+		else
+			local pointXleft,_,pointZleft = course:waypointLocalToWorld(i, (-workWidth/2)+self.gridSpacing, 0, 0)
+			local pointXright,_,pointZright = course:waypointLocalToWorld(i, (workWidth/2)-self.gridSpacing, 0, 0)
+			table.insert(tiles, Point(self:getGridCoordinates(Point(pointXleft,pointZleft))))
+			table.insert(tiles, Point(self:getGridCoordinates(Point(pointXright,pointZright))))
+		end
 		-- if waypoints are further apart than our grid spacing then we need to add points
 		-- in between to not miss a tile
 		if s > self.gridSpacing then
