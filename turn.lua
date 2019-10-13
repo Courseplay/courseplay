@@ -754,7 +754,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
 	else
 		dtpZ = dtpZ * 0.85;
-		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
+		courseplay.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
 	end
 
 	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
@@ -763,6 +763,69 @@ function courseplay:turn(vehicle, dt, turnContext)
 		courseplay:setTrafficCollision(vehicle, lx, lz,false)
 	end
 end;
+
+--[[
+
+This is a copy of the original Giants VehicleUtil.driveToPoint() with the speed adjustment removed. The original
+code slows down the vehicle according to the difference between the target steering angle and the current steering
+angle.
+
+This is generally a good thing but with this old turn code we do not have a pure pursuit controller yet and
+the vehicle is moving towards a fix point. This means that the steering angle is continuously changing while driving
+towards this waypoint (trending towards zero as we approach it) and when switching to the next waypoint, the target
+steering angle has a sudden jump, causing the speed adjustment to kick in. You can observe the changing steering angle
+when looking at the vehicle's wheels while in a turn.
+
+The speed adjustment causes a sudden slow down whenever the turn waypoint is changed, that is why we remove it here as
+the turn maneuver seems to work fine without it and it is a lot smoother.
+
+On the long term this should be solved by using the pure pursuit controller during the turns as well as the PPC has
+no fixed waypoint so the steering angle remains constant and the speed adjustment won't kick in, so the original
+Giants function can again be used.
+
+--]]
+function courseplay.driveToPoint(self, dt, acceleration, allowedToDrive, moveForwards, tX, tZ, maxSpeed, doNotSteer)
+	if self.firstTimeRun then
+		if allowedToDrive then
+			local tX_2 = tX * 0.5
+			local tZ_2 = tZ * 0.5
+			local d1X, d1Z = tZ_2, -tX_2
+			if tX > 0 then
+				d1X, d1Z = -tZ_2, tX_2
+			end
+			local hit,_,f2 = MathUtil.getLineLineIntersection2D(tX_2,tZ_2, d1X,d1Z, 0,0, tX, 0)
+			if doNotSteer == nil or not doNotSteer then
+				local rotTime = 0
+				if hit and math.abs(f2) < 100000 then
+					local radius = tX * f2
+					rotTime = self.wheelSteeringDuration * ( math.atan(1/radius) / math.atan(1/self.maxTurningRadius) )
+				end
+				local targetRotTime
+				if rotTime >= 0 then
+					targetRotTime = math.min(rotTime, self.maxRotTime)
+				else
+					targetRotTime = math.max(rotTime, self.minRotTime)
+				end
+				if targetRotTime > self.rotatedTime then
+					self.rotatedTime = math.min(self.rotatedTime + dt*self:getAISteeringSpeed(), targetRotTime)
+				else
+					self.rotatedTime = math.max(self.rotatedTime - dt*self:getAISteeringSpeed(), targetRotTime)
+				end
+			end
+		end
+		self:getMotor():setSpeedLimit(math.min(maxSpeed, self:getCruiseControlSpeed()))
+		if self:getCruiseControlState() ~= Drivable.CRUISECONTROL_STATE_ACTIVE then
+			self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_ACTIVE)
+		end
+		if not allowedToDrive then
+			acceleration = 0
+		end
+		if not moveForwards then
+			acceleration = -acceleration
+		end
+		WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal*self.movingDirection, acceleration, not allowedToDrive, true)
+	end
+end
 
 function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
