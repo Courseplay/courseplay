@@ -476,6 +476,10 @@ function Course:getMinRadiusWithinDistance(ix, d)
 	local ixAtD = self:getNextWaypointIxWithinDistance(ix, d) or ix
 	local minR, count = math.huge, 0
 	for i = ix, ixAtD do
+		if self:isTurnStartAtIx(i) or self:isTurnEndAtIx(i) then
+			-- the turn maneuver code will take care of speed
+			return nil
+		end
 		local r = self:getCalculatedRadiusAtIx(i)
 		if r and r < minR then
 			count = count + 1

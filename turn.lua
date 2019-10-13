@@ -2664,8 +2664,8 @@ end
 ---@return Course
 function TurnContext:createEndingTurnCourse(vehicle)
 	local waypoints = {}
-	-- make sure course reaches the front marker node
-	for d = -10, 0, 1 do
+	-- make sure course reaches the front marker node so end it 1m behind that node
+	for d = -10, 1, 1 do
 		local x, _, z = localToWorld(self.frontMarkerNode, 0, 0, d)
 		table.insert(waypoints, {x = x, z = z})
 	end

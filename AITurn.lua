@@ -142,6 +142,7 @@ function KTurn:init(vehicle, driver, turnContext)
 	AITurn.init(self, vehicle, driver, turnContext)
 	self:addState('FORWARD')
 	self:addState('REVERSE')
+	self:addState('FORWARD_ARC')
 end
 
 function KTurn:startTurn()
@@ -185,6 +186,13 @@ function KTurn:turn(dt)
 		self.driver:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 		if math.abs(dx) > turnRadius * 1.05 then
 			self:debug('K Turn forwarding again')
+			self.state = self.states.FORWARD_ARC
+		end
+	elseif self.state == self.states.FORWARD_ARC then
+		self:setForwardSpeed()
+		self.driver:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self.driver:getSpeed())
+		if self.turnContext:isDirectionCloseToEndDirection(self.driver:getDirectionNode(), 75) then
+			self:debug('K Turn ending turn')
 			endTurn()
 		end
 	end

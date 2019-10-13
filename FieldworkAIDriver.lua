@@ -309,7 +309,7 @@ end
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
 	if self.course:isTemporary() then
-		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
+		-- use the courseplay speed limit until we get to the actual unload course fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
 	else
 		-- just drive normally
