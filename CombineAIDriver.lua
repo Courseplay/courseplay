@@ -640,8 +640,13 @@ function CombineAIDriver:getIsChopperWaitingForTrailer()
 	return false
 end
 
+function CombineAIDriver:needToOpenPipe()
+	-- potato harvesters for instance don't need to open the pipe.
+	return self.pipe.numStates > 1
+end
 
 function CombineAIDriver:openPipe()
+	if not self:needToOpenPipe() then return end
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_OPEN then
 		self:debug('Opening pipe')
@@ -650,6 +655,7 @@ function CombineAIDriver:openPipe()
 end
 
 function CombineAIDriver:closePipe()
+	if not self:needToOpenPipe() then return end
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_CLOSED then
 		self:debug('Closing pipe')
@@ -660,8 +666,7 @@ end
 function CombineAIDriver:shouldStopForUnloading(pc)
 	local stop = false
 	if self.vehicle.cp.stopWhenUnloading and self.pipe then
-		if self.pipe.currentState == CombineAIDriver.PIPE_STATE_OPEN and
-			g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
+		if self:canDischarge() and g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
 			-- stop only if the pipe is open AND we have been emptied more than 1000 cycles ago.
 			-- this makes sure the combine will start driving after it is emptied but the trailer
 			-- is still under the pipe
@@ -670,6 +675,7 @@ function CombineAIDriver:shouldStopForUnloading(pc)
 	end
 	if pc and pc < 0.1 then
 		-- remember the time we were completely unloaded.
+		self:debug('############## empty')
 		self.lastEmptyTimestamp = g_updateLoopIndex
 	end
 	return stop
