@@ -325,7 +325,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Always &amp; Rear Diff on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Always &amp; Both Diffs on for Fieldwork" /> <!-- TODO: TRANSLATION! -->
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Ali želite da se polja skenirajo avtomatsko?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Ali želite da vaši delavi zaslužijo denar (%s/uro)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Ali želite da vaši delavi zaslužijo denar?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Kalkulator porabe semen" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Polje: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Vrsta semena: %s" />
@@ -406,6 +406,8 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

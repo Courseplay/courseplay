@@ -325,7 +325,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD an &amp; Hinterachssperrdiff auf dem Feld" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD an &amp; Sperrdifferential auf den Feld" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Möchtest du dass die Felder automatisch gescannt werden?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Möchtest du Löhne für deine Fahrer aktivieren?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Saatgut-Rechner" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Feld: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Saattyp: %s" />
@@ -405,6 +405,8 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

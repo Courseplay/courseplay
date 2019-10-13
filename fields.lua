@@ -441,7 +441,7 @@ end;
 --
 function courseplay.fields.updateFieldData(self, farmId) -- scan field when it's bought
 	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));
-	if g_currentMission.time > 0 and farmId ~= FarmlandManager.NO_OWNER_FARM_ID and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.fieldId] == nil then
+	if g_currentMission.time > 0 and farmId ~= FarmlandManager.NO_OWNER_FARM_ID and courseplay.globalSettings.autoFieldScan:is(true) and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.fieldId] == nil then
 		-- print(string.format('\tisOwned=true, automaticScan=true, onlyScanOwnedFields=true, fieldData[%d]=nil', fieldDef.fieldNumber));
 		local initObject = self.nameIndicator;
 		if initObject then	
@@ -449,7 +449,7 @@ function courseplay.fields.updateFieldData(self, farmId) -- scan field when it's
 			print('scanning')
 			courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, self.fieldId, false, 'scan');
 		end
-	elseif g_currentMission.time > 0 and farmId == FarmlandManager.NO_OWNER_FARM_ID and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.fieldId] then
+	elseif g_currentMission.time > 0 and farmId == FarmlandManager.NO_OWNER_FARM_ID and courseplay.globalSettings.autoFieldScan:is(true) and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.fieldId] then
 		print('deleting')
 		courseplay.fields.fieldData[self.fieldId] = nil
 		courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData)
@@ -459,7 +459,7 @@ Field.setFieldOwned = Utils.appendedFunction(Field.setFieldOwned, courseplay.fie
 
 function courseplay.fields.addContractField(self) -- scan field when we take a contract
 	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));
-	if g_currentMission.time > 0 and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.field.fieldId] == nil then
+	if g_currentMission.time > 0 and courseplay.globalSettings.autoFieldScan:is(true) and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.field.fieldId] == nil then
 		-- print(string.format('\tisOwned=true, automaticScan=true, onlyScanOwnedFields=true, fieldData[%d]=nil', fieldDef.fieldNumber));
 		local initObject = self.field.nameIndicator;
 		if initObject then	
@@ -474,7 +474,7 @@ AbstractFieldMission.addToMissionMap = Utils.appendedFunction(AbstractFieldMissi
 
 function courseplay.fields.removeContractField(self, success) -- scan field when we complete a contract
 	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));
-	if g_currentMission.time > 0 and courseplay.fields.automaticScan and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.field.fieldId] then
+	if g_currentMission.time > 0 and courseplay.globalSettings.autoFieldScan:is(true) and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.field.fieldId] then
 		print('deleting')
 		courseplay.fields.fieldData[self.field.fieldId] = nil 
 		courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData)

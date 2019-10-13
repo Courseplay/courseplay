@@ -404,6 +404,8 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

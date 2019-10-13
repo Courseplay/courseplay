@@ -321,7 +321,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="állandó 4WD &amp; hátsó diff.zár be" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="állandó 4WD &amp; mindkét diff.zár be" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Szeretnéd, hogy a mezők adatait automatikusan beolvassa?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Szeretnéd, hogy a munkásod bért kapjon?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Vetőmag szükséglet számítás" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Terület: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Vetőmag típusa: %s" />
@@ -404,6 +404,8 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

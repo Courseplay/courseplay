@@ -319,7 +319,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="总是 4WD &amp; 后差速器工作" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="总是 4WD &amp; 前后差速器工作" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="需要自动测量土地范围路径么？" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="你要支付雇人的工资么(%s/小时)？" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="你要支付雇人的工资么？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="种子使用量" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="地块编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="种子类型: %s" />
@@ -403,6 +403,8 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

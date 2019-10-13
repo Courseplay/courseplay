@@ -2223,6 +2223,28 @@ function UseAITurnsSetting:init()
 	self.xmlAttribute = '#active'
 end
 
+---@class AutoFieldScanSetting : BooleanSetting
+AutoFieldScanSetting = CpObject(BooleanSetting)
+function AutoFieldScanSetting:init()
+	BooleanSetting.init(self, 'autoFieldScan', 'COURSEPLAY_AUTO_FIELD_SCAN',
+		'COURSEPLAY_YES_NO_FIELDSCAN')
+	self.xmlKey = 'autoFieldScan'
+	self.xmlAttribute = '#active'
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(true)
+end
+
+---@class EarnWagesSetting : BooleanSetting
+EarnWagesSetting = CpObject(BooleanSetting)
+function EarnWagesSetting:init()
+	BooleanSetting.init(self, 'earnWages', 'COURSEPLAY_EARN_WAGES',
+		'COURSEPLAY_YES_NO_WAGES')
+	self.xmlKey = 'earnWages'
+	self.xmlAttribute = '#active'
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
+end
+
 --- Container for settings
 --- @class SettingsContainer
 SettingsContainer = CpObject()
