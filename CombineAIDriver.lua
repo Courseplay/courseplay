@@ -241,10 +241,7 @@ function CombineAIDriver:onNextCourse(ix)
 end
 
 function CombineAIDriver:unloadFinished()
-	local discharging = false
-	if self.pipe then
-		discharging = self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
-	end
+	local discharging = self:isDischarging()
 	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 
 	-- unload is done when fill levels are ok (not full) and not discharging anymore (either because we
@@ -666,8 +663,8 @@ end
 function CombineAIDriver:shouldStopForUnloading(pc)
 	local stop = false
 	if self.vehicle.cp.stopWhenUnloading and self.pipe then
-		if self:canDischarge() and g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
-			-- stop only if the pipe is open AND we have been emptied more than 1000 cycles ago.
+		if self:isDischarging() and g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
+			-- stop only if the pipe is discharging AND we have been emptied a while ago.
 			-- this makes sure the combine will start driving after it is emptied but the trailer
 			-- is still under the pipe
 			stop = true
@@ -675,7 +672,6 @@ function CombineAIDriver:shouldStopForUnloading(pc)
 	end
 	if pc and pc < 0.1 then
 		-- remember the time we were completely unloaded.
-		self:debug('############## empty')
 		self.lastEmptyTimestamp = g_updateLoopIndex
 	end
 	return stop
@@ -704,10 +700,19 @@ function CombineAIDriver:isFillableTrailerUnderPipe()
 end
 
 -- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
--- trailer and can start discharging.
+-- trailer and can start discharging. This returning true does not mean there's a trailer under the pipe,
+-- this seems more like for choppers to check if there's a potential target around
 function CombineAIDriver:canDischarge()
 	-- TODO: self.vehicle should be the combine, which may not be the vehicle in case of towed harvesters
 	local dischargeNode = self.combine:getCurrentDischargeNode()
 	local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
 	return targetObject
+end
+
+function CombineAIDriver:isDischarging()
+	if self.pipe then
+		return self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
+	else
+		return false
+	end
 end

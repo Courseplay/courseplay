@@ -231,7 +231,6 @@ end
 function CombineHeadlandTurn:turn(dt)
 	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self.driver:getDirectionNode())
 	local angleToTurnEnd = math.abs(self.turnContext:getAngleToTurnEndDirection(self.driver:getDirectionNode()))
-	self:debug('%.1f %1.f %.1f', math.deg(angleToTurnEnd), math.deg(self.angleToTurnInReverse), dx)
 
 	if self.state == self.states.FORWARD then
 		self:setForwardSpeed()
