@@ -2051,6 +2051,7 @@ function BooleanSetting:toggle()
 end
 
 function BooleanSetting:loadFromXml(xml, parentKey)
+	self:set(false)
 	local value = getXMLBool(xml, self:getKey(parentKey))
 	if value then
 		self:set(value)
