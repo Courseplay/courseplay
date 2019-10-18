@@ -410,12 +410,12 @@
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanear campos automaticamente" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay pagar salários para trabalhadores" />
 
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Primeiro" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Último" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Quando levantar o implemento" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Quando levantar o implemento ao terminar uma linha ou ao iniciar uma curva da cabeceira" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Quando baixar o implementos" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Quando baixar o implementos ao iniciar uma linha ou terminar uma curva da cabeceira" />
 
 		<!-- Replace marker, do not remove! -->
 	</texts>
