@@ -398,21 +398,21 @@
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(en terug)" />
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Geavanceerde instellingen..." />
 
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
-		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
-		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="laad routes bij opstarten" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Laad alle routes bij het opstarten, vertraagt het laden van een opgeslagen spel wanneer geactiveerd" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Gebruik AI bochtmanoeuvres" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Gebruik AI bochtmanoeuvres in plaats van berekende bochttrajecten" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan velden automatisch" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay werkers verdienen loon" />
 
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Vroeg" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Laat" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Wanneer moeten werktuigen worden opgeheven" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Wanneer moeten werktuigen worden opgeheven, bij het beëindigen van een rij of het starten van een kopakkerbocht" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Wanneer moeten werktuigen worden neergelaten" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Wanneer moeten werktuigen worden neergelaten, bij het beëindigen van een rij of het starten van een kopakkerbocht" />
 
 		<!-- Replace marker, do not remove! -->
 	</texts>
