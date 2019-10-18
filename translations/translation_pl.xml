@@ -406,8 +406,8 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Załaduj wszystkie kursy przy starcie (spowolni ładowanie zapisanej gry gdy włączone)" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Użyj manewrów zawracania AI" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Użyj manewrów zawracania AI zamiast wyliczonych trajektorii zawracania" />
-		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Skanuj pola automatycznie" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Pracownicy Courseplay dostają wynagrodzenie" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
