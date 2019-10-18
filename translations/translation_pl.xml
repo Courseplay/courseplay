@@ -414,7 +414,7 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Kiedy podnieść narzędzia" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Określa kiedy podnieść narzędzie, na końcu ścieżki albo rozpoczęciu zawracania" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Kiedy opuścić narzędzia" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Określa keidy opuścić narzędzie, na końcu ścieżki albo rozpoczęciu zawracania" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Określa keidy opuścić narzędzie, na początku ścieżki albo zakończeniu zawracania" />
 
 		<!-- Replace marker, do not remove! -->
 	</texts>
