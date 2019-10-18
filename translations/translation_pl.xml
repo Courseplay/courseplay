@@ -408,6 +408,14 @@
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Użyj manewrów zawracania AI zamiast wyliczonych trajektorii zawracania" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
+
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

@@ -2051,9 +2051,8 @@ function BooleanSetting:toggle()
 end
 
 function BooleanSetting:loadFromXml(xml, parentKey)
-	self:set(false)
 	local value = getXMLBool(xml, self:getKey(parentKey))
-	if value then
+	if value ~= nil then
 		self:set(value)
 	end
 end
@@ -2192,6 +2191,47 @@ function CenterModeSetting:init()
 			'COURSEPLAY_CENTER_MODE_CIRCULAR',
 			'COURSEPLAY_CENTER_MODE_SPIRAL'
 		})
+end
+
+--- Implement raise/lower  setting
+---@class ImplementRaiseLowerTimeSetting : SettingList
+ImplementRaiseLowerTimeSetting = CpObject(SettingList)
+
+-- Raise or lower implements early or late
+-- implement raised when the front marker reaches the end of the area to be worked
+-- implement lowered when the front marker reaches the end of the area to be worked
+ImplementRaiseLowerTimeSetting.EARLY	= 1
+-- implement raised when the back marker reaches the start of the area to be worked
+-- implement lowered when the back marker reaches the start of the area to be worked
+ImplementRaiseLowerTimeSetting.LATE		= 2
+
+function ImplementRaiseLowerTimeSetting:init(vehicle, name, label, tooltip)
+	self.vehicle = vehicle
+	SettingList.init(self,  name, label, tooltip,
+		{
+			ImplementRaiseLowerTimeSetting.EARLY,
+			ImplementRaiseLowerTimeSetting.LATE,
+		},
+		{
+			'COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY',
+			'COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE',
+		})
+	self.xmlKey = name
+	self.xmlAttribute = '#value'
+end
+
+---@class ImplementRaiseTimeSetting : ImplementRaiseLowerTimeSetting
+ImplementRaiseTimeSetting = CpObject(ImplementRaiseLowerTimeSetting)
+function ImplementRaiseTimeSetting:init(vehicle)
+	ImplementRaiseLowerTimeSetting.init(self, vehicle, 'implementRaiseTime', 'COURSEPLAY_IMPLEMENT_RAISE_TIME', 'COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP')
+	self:set(ImplementRaiseLowerTimeSetting.EARLY)
+end
+
+---@class ImplementLowerTimeSetting : ImplementRaiseLowerTimeSetting
+ImplementLowerTimeSetting = CpObject(ImplementRaiseLowerTimeSetting)
+function ImplementLowerTimeSetting:init(vehicle)
+	ImplementRaiseLowerTimeSetting.init(self, vehicle, 'implementLowerTime', 'COURSEPLAY_IMPLEMENT_LOWER_TIME', 'COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP')
+	self:set(ImplementRaiseLowerTimeSetting.LATE)
 end
 
 --- Return to first point after finishing fieldwork

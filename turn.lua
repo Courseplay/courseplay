@@ -2529,7 +2529,7 @@ function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData, workWidth
 		-- we need drive past the corner half workwidth to cover everything, plus,
 		-- if the headland is not perpendicular to the rows we must travel a little further than the end of the
 		-- row to have 100% coverage so move the work end node forward
-		local overshoot = workWidth / 2 * math.tan(headlandAngle) + workWidth / 2
+		local overshoot = workWidth / 2 * math.tan(headlandAngle) - workWidth / 2
 		local x, y, z = localToWorld(aiDriverData.workEndNode.node, 0, 0, math.min(overshoot, workWidth * 2))
 		setTranslation(aiDriverData.workEndNode.node, x, y, z)
 	else

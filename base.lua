@@ -577,6 +577,8 @@ function courseplay:onLoad(savegame)
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer()
 	self.cp.settings:addSetting(ReturnToFirstPointSetting)
+	self.cp.settings:addSetting(ImplementRaiseTimeSetting)
+	self.cp.settings:addSetting(ImplementLowerTimeSetting)
 end;
 
 function courseplay:onPostLoad(savegame)
