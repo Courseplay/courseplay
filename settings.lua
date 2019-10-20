@@ -1825,6 +1825,25 @@ function courseplay:getIsEngineReady(vehicle)
 	return (vehicle.spec_motorized.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.spec_motorized.motorStartTime == nil or vehicle.spec_motorized.motorStartTime < g_currentMission.time);
 end;
 
+
+function courseplay:toggleAssignCombineToTractor(vehicle,line)
+	local listIndex = line-2 + vehicle.cp.combinesListHUDOffset
+	local combine = vehicle.cp.possibleCombines[listIndex]
+	if vehicle.cp.assignedCombines[combine] then
+		vehicle.cp.assignedCombines[combine] = nil
+		combine.cp.assignedUnloaders[vehicle]= nil
+	else
+		vehicle.cp.assignedCombines[combine] = true
+		if combine.cp.assignedUnloaders == nil then
+			combine.cp.assignedUnloaders ={}
+		end
+		combine.cp.assignedUnloaders[vehicle]= true
+	end
+end
+
+function courseplay:shiftCombinesList(vehicle, change_by)
+	vehicle.cp.combinesListHUDOffset = MathUtil.clamp(vehicle.cp.combinesListHUDOffset+ change_by,0,#vehicle.cp.possibleCombines-6)
+end
 ----------------------------------------------------------------------------------------------------
 
 function courseplay:setCpVar(varName, value, noEventSend)

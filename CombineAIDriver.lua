@@ -125,6 +125,9 @@ function CombineAIDriver:onWaypointPassed(ix)
 	end
 	UnloadableFieldworkAIDriver.onWaypointPassed(self, ix)
 end
+function CombineAIDriver:isWaitingInPocket()
+ return self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET
+end
 
 function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 	if self.vehicle.cp.realisticDriving then

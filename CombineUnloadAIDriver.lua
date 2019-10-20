@@ -64,6 +64,9 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineOffset = 0
 	self.distanceToCombine = math.huge
 	self.distanceToFront = 0
+	self.vehicle.cp.possibleCombines ={}
+	self.vehicle.cp.assignedCombines ={}
+	self.vehicle.cp.combinesListHUDOffset = 0
 end
 
 function CombineUnloadAIDriver:setHudContent()
@@ -71,8 +74,9 @@ function CombineUnloadAIDriver:setHudContent()
 end
 
 function CombineUnloadAIDriver:start(ix)
+
+	AIDriver.start(self, ix)
 	if not self.combineToUnload then
-		AIDriver.start(self, ix)
 		local x,_,z = getWorldTranslation(self:getDirectionNode())
 		if courseplay:isField(x, z) then
 			self:setNewCombineUnloadState(self.states.ONFIELD)
@@ -120,7 +124,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			return
 		end
 
-		g_combineUnloadManager:enterField(self.vehicle)
 		self.combineToUnload = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 		if self.combineToUnload ~= nil then
 			--print("combine set")
@@ -289,7 +292,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			return
 		end
 
-		if leftOK then
+		if leftOK or self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isWaitingInPocket() then
 			self:driveBesideCombine(dt,targetNode)
 		else
 			self:driveBehindCombine(dt)
@@ -470,7 +473,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self:startCourseWithAlignment(self.mainCourse, 1)
 			self:setNewOnFieldState(self.states.DRIVE_TO_UNLOADCOURSE)
 		end
-		g_combineUnloadManager:leaveField(self.vehicle)
+
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
 		self.ppc:setOffset(3, 0)
 		--use trafficController

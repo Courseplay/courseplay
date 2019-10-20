@@ -1,150 +1,3 @@
----@class FieldManager
-FieldManager = CpObject()
-
--- Constructor
-function FieldManager:init(number)
-	print("FieldManager:init "..tostring(number))
-	self.combinesOnField = {}
-	self.unloadersOnField ={}
-	self.myID = number
-end
-
-function FieldManager:addCombineToField(combine)
-	if not self.combinesOnField[combine] then
-		self.combinesOnField[combine] = g_combineUnloadManager.combines[combine]
-		print("Manager"..self.myID..": add to field: "..tostring(combine.name))
-	end
-end
-
-function FieldManager:removeCombineFromField(combine)
-	if self.combinesOnField[combine] then
-		self.combinesOnField[combine] = nil
-		print("Manager"..self.myID..": removed from field: "..tostring(combine.name))
-	end
-end
-
-
-
-function FieldManager:addUnloaderToField(unloader)
-	if not self.unloadersOnField[unloader] then
-		self.unloadersOnField[unloader] = {}
-		print("Manager"..self.myID..":add to field: "..tostring(unloader.name))
-	end
-end
-
-function FieldManager:deleteUnloaderFromField(unloader)
-	if self.unloadersOnField[unloader] then
-		self.unloadersOnField[unloader] = nil
-		print("Manager"..self.myID.."delete from field: "..tostring(unloader.name))
-	end
-end
-
-function FieldManager:getCombineToUnloader(unloader)
-	--print("FieldManager:getCombineToUnloader")
-	--first try to find a chopper
-	local chopper = g_combineUnloadManager:getSelectedChopper(unloader) or self:getChopperWithLeastUnloaders()
-	if chopper ~= nil then
-		local unloaderNumber = g_combineUnloadManager:getNumUnloaders(chopper)
-		if unloaderNumber == 0 then
-			return chopper
-		elseif unloaderNumber <2 then
-			local prevTractor = g_combineUnloadManager:getUnloaderByNumber(unloaderNumber, chopper)
-			if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
-				return chopper
-			end
-		end
-	end
-	--then try to find a combine
-	local combine = g_combineUnloadManager:getSelectedCombine(unloader) or self:getCombineWithMostFillLevel()
-	local unloaderToAssign
-	if combine ~= nil then
-		local distance = courseplay:distanceToObject(unloader, combine)
-		local timeToTarget = distance/(unloader.cp.speeds.field/3.6)
-		if combine.cp.driverPriorityUseFillLevel then
-			unloaderToAssign = self:getFullestUnloader()
-		else
-			unloaderToAssign = self:getClosestUnloader(combine)
-		end
-		--print(string.format("full: %.1f; 80percent: %.1f  time: %.1f",g_combineUnloadManager:getSecondsTillFull(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
-		if unloaderToAssign == unloader
-		and timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine)
-		and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
-		--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
-			if g_combineUnloadManager:getNumUnloaders(combine) == 0 then
-				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
-				return combine
-			end
-		end
-	end
-
-end
-
-function FieldManager:getClosestUnloader(combine)
-	local closestDistance = math.huge
-	local unloaderToAssign
-	for unloader,_ in pairs(self.unloadersOnField) do
-		local distance = courseplay:distanceToObject(unloader, combine)
-		if distance < closestDistance and not g_combineUnloadManager:getHasCombine(unloader) then
-			closestDistance = distance
-			unloaderToAssign = unloader
-		end
-	end
-	return unloaderToAssign
-end
-
-function FieldManager:getFullestUnloader()
-	local higestFillLevel = 0
-	local unloaderToAssign
-	for unloader,_ in pairs(self.unloadersOnField) do
-		local fillLevelPct = unloader.cp.driver:getFillLevelPercent()
-		if higestFillLevel < fillLevelPct and not g_combineUnloadManager:getHasCombine(unloader) then
-			higestFillLevel = fillLevelPct
-			unloaderToAssign = unloader
-		end
-	end
-	return unloaderToAssign
-end
-
-
-function FieldManager:getCombineWithMostFillLevel()
-	local mostFillLevel = 0
-	local combineToReturn
-	for combine,data in pairs(self.combinesOnField) do
-		if data.isCombine and g_combineUnloadManager:getNumUnloaders(combine) == 0 then
-			courseplay:updateFillLevelsAndCapacities(combine)
-			if combine.cp.wantsCourseplayer then
-				return combine
-			end
-			local fillLevelPct = combine.cp.totalFillLevelPercent
-			if mostFillLevel < fillLevelPct then
-				mostFillLevel = fillLevelPct
-				combineToReturn = combine
-			end
-		end
-	end
-	return combineToReturn
-end
-
-
-function FieldManager:getChopperWithLeastUnloaders()
-	--print("FieldManager:getChopperWithLeastUnloaders")
-	local chopperToReturn
-	local amountUnloaders = math.huge
-	for chopper,data in pairs(self.combinesOnField) do
-		--print("data.isChopper: "..tostring(data.isChopper))
-		if data.isChopper then
-			--print(string.format("check %s, unloders:%s",tostring(chopper.name),tostring(#data.unloaders)))
-			if amountUnloaders > #data.unloaders or #data.unloaders == 0 then
-				chopperToReturn = chopper
-				amountUnloaders = #data.unloaders
-			end
-		end
-	end
-	return chopperToReturn
-end
-
-
-
 ---@class CombineUnloadmanager
 CombineUnloadManager = CpObject()
 
@@ -199,69 +52,128 @@ function CombineUnloadManager:releaseUnloaderFromCombine(unloader,combine)
 	end
 end
 
+function CombineUnloadManager:addUnloaderToCombine(unloader,combine)
+	table.insert(self.combines[combine].unloaders,unloader)
+	print(string.format("CombineUnloadmanager: added %s to combine",nameNum(unloader)))
+end
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	--print("CombineUnloadManager:giveMeACombineToUnload")
-	if self.unloadersOnFields[unloader] and self.unloadersOnFields[unloader] > 0 then
-		local combine = self.fieldManagers[self.unloadersOnFields[unloader]]:getCombineToUnloader(unloader)
-		if combine ~= nil then
-			table.insert(self.combines[combine].unloaders,unloader)
-			return combine
+	--first try to find a chopper
+	local chopper = self:getChopperWithLeastUnloaders(unloader)
+	if chopper ~= nil then
+		local unloaderNumber = self:getNumUnloaders(chopper)
+		if unloaderNumber == 0 then
+			self:addUnloaderToCombine(unloader,chopper)
+			return chopper
+		elseif unloaderNumber <2 then
+			local prevTractor = self:getUnloaderByNumber(unloaderNumber, chopper)
+			if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
+				self:addUnloaderToCombine(unloader,chopper)
+				return chopper
+			end
 		end
 	end
-end
 
-function CombineUnloadManager:getSelectedChopper(unloader)
-	return unloader.cp.settings.selectedCombineToUnload:get() and self:getIsChopper(unloader.cp.settings.selectedCombineToUnload:get()) and unloader.cp.settings.selectedCombineToUnload:getIfNotChangedFor(5)
-end
-
-function CombineUnloadManager:getSelectedCombine(unloader)
-	return unloader.cp.settings.selectedCombineToUnload:get() and self:getIsCombine(unloader.cp.settings.selectedCombineToUnload:get()) and unloader.cp.settings.selectedCombineToUnload:getIfNotChangedFor(5)
-end
-
-
-function CombineUnloadManager:enterField(unloader)
-	local unloaderOnFieldNumber = unloader.cp.settings.searchCombineOnField:getIfNotChangedFor(5) or self:getFieldNumberByCurrentPosition(unloader)
-	--print("CombineUnloadManager:enterField("..unloader.name.."): fieldNumber: "..tostring(unloaderOnFieldNumber))
-	if not unloader.cp.searchCombineAutomatically then
-		local combine = self:getSelectedCombine(unloader) or self:getSelectedChopper(unloader)
-		if combine ~= nil then
-			unloaderOnFieldNumber = self:getFieldNumberByCurrentPosition(combine)
+	--then try to find a combine
+	local combine = self:getCombineWithMostFillLevel(unloader)
+	local unloaderToAssign
+	if combine ~= nil then
+		local distance = courseplay:distanceToObject(unloader, combine)
+		local timeToTarget = distance/(unloader.cp.speeds.field/3.6)
+		if combine.cp.driverPriorityUseFillLevel then
+			unloaderToAssign = self:getFullestUnloader(combine)
+		else
+			unloaderToAssign = self:getClosestUnloader(combine)
+		end
+		--print(string.format("full: %.1f; 80percent: %.1f  time: %.1f",g_combineUnloadManager:getSecondsTillFull(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
+		if unloaderToAssign == unloader
+			and timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine)
+			and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
+			--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
+			if g_combineUnloadManager:getNumUnloaders(combine) == 0 then
+				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
+				return combine
+			end
 		end
 	end
-	if self.unloadersOnFields[unloader] == nil then
-		if unloaderOnFieldNumber > 0  then
-			self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
-			self.unloadersOnFields[unloader] = unloaderOnFieldNumber
-		end
-	elseif unloaderOnFieldNumber ~= self.unloadersOnFields[unloader] then
-		self.fieldManagers[self.unloadersOnFields[unloader]]:deleteUnloaderFromField(unloader)
-		self.fieldManagers[unloaderOnFieldNumber]:addUnloaderToField(unloader)
-		self.unloadersOnFields[unloader]=unloaderOnFieldNumber
-	end
+
+
 end
 
-function CombineUnloadManager:leaveField(unloader)
-	if self.unloadersOnFields[unloader] then
-		self.fieldManagers[self.unloadersOnFields[unloader]]:deleteUnloaderFromField(unloader)
-		self.unloadersOnFields[unloader] = nil
+
+function CombineUnloadManager:getChopperWithLeastUnloaders(unloader)
+	--print("FieldManager:getChopperWithLeastUnloaders")
+	--firat try to Find a chopper
+	local chopperToReturn
+	local amountUnloaders = math.huge
+	for chopper,_ in pairs(unloader.cp.assignedCombines) do
+		--print("data.isChopper: "..tostring(data.isChopper))
+		local data = self.combines[chopper]
+		if data.isChopper then
+			--print(string.format("check %s, unloders:%s",tostring(chopper.name),tostring(#data.unloaders)))
+			if amountUnloaders > #data.unloaders or #data.unloaders == 0 then
+				chopperToReturn = chopper
+				amountUnloaders = #data.unloaders
+			end
+		end
 	end
+	return chopperToReturn
+
+
 end
+
+function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
+	local mostFillLevel = 0
+	local combineToReturn
+	for combine,_ in pairs(unloader.cp.assignedCombines) do
+		local data = self.combines[combine]
+		if data.isCombine then
+			courseplay:updateFillLevelsAndCapacities(combine)
+			if combine.cp.wantsCourseplayer then
+				return combine
+			end
+			local fillLevelPct = combine.cp.totalFillLevelPercent
+			if mostFillLevel < fillLevelPct then
+				mostFillLevel = fillLevelPct
+				combineToReturn = combine
+			end
+		end
+	end
+	return combineToReturn
+end
+
+function CombineUnloadManager:getClosestUnloader(combine)
+	local closestDistance = math.huge
+	local unloaderToReturn
+	for unloader,_ in pairs(combine.cp.assignedUnloaders) do
+		local distance = courseplay:distanceToObject(unloader, combine)
+		if distance < closestDistance and not self:getHasCombine(unloader) then
+			closestDistance = distance
+			unloaderToReturn = unloader
+		end
+	end
+	return unloaderToReturn
+end
+
+function CombineUnloadManager:getFullestUnloader(combine)
+	local higestFillLevel = 0
+	local unloaderToReturn
+	for unloader,_ in pairs(combine.cp.assignedUnloaders) do
+		local fillLevelPct = unloader.cp.driver:getFillLevelPercent()
+		if higestFillLevel < fillLevelPct and not self:getHasCombine(unloader) then
+			higestFillLevel = fillLevelPct
+			unloaderToReturn = unloader
+		end
+	end
+	return unloaderToReturn
+end
+
+
 
 function CombineUnloadManager:onUpdate(dt)
 	self:updateCombinesAttributes()
-	self:updateFieldManagers()
 end
-
-function CombineUnloadManager:updateFieldManagers()
-	if self.fieldManagers == nil and #g_fieldManager:getFields() > 0 then
-		self.fieldManagers = {}
-		for i=1,#g_fieldManager:getFields() do
-			self.fieldManagers[i] = FieldManager(i)
-		end
-	end
-end
-
 
 function CombineUnloadManager:updateCombinesAttributes()
 	--update attributes
@@ -269,16 +181,6 @@ function CombineUnloadManager:updateCombinesAttributes()
 	for combine,attributes in pairs (self.combines) do
 		attributes.isDriving = combine:getIsCourseplayDriving()
 		local fieldNum = self:getFieldNumberByCurrentPosition(combine)
-		if self.fieldManagers then
-			if fieldNum > 0 then
-				self.fieldManagers[fieldNum]:addCombineToField(combine)
-			else
-				if self.fieldManagers[attributes.isOnFieldNumber] then
-					self.fieldManagers[attributes.isOnFieldNumber]:removeCombineFromField(combine)
-				end
-			end
-		end
-
 		attributes.isOnFieldNumber = fieldNum
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)
 		attributes.pipeOffset = self:getPipeOffset(combine)
