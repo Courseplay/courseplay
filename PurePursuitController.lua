@@ -109,6 +109,10 @@ function PurePursuitController:delete()
 	self.goalWpNode:destroy()
 end
 
+function PurePursuitController:debug(...)
+	courseplay.debugVehicle(12, self.vehicle, 'PPC: ' .. string.format( ... ))
+end
+
 ---@param course Course
 function PurePursuitController:setCourse(course)
 	self.course = course
@@ -155,7 +159,7 @@ function PurePursuitController:initialize(ix)
 	self.nextWpNode:setToWaypoint(self.course, self.firstIx)
 	self.wpBeforeGoalPointIx = self.nextWpNode.ix
 	self.currentWpNode:setToWaypoint(self.course, self.firstIx )
-	courseplay.debugVehicle(12, self.vehicle, 'PPC: initialized to waypoint %d of %d', self.firstIx, self.course:getNumberOfWaypoints())
+	self:debug('initialized to waypoint %d of %d', self.firstIx, self.course:getNumberOfWaypoints())
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
 	self.sendWaypointChange = nil
@@ -196,6 +200,44 @@ function PurePursuitController:getLastPassedWaypointIx()
 	return self.lastPassedWaypointIx
 end
 
+--- When reversing, use the towed implement's node as a reference
+function PurePursuitController:switchControlledNode()
+	local lastControlledNode = self.controlledNode
+	local debugText = 'vehicle forward direction/root'
+	if self:isReversing() then
+		-- if there's a reverser node on the tool, use that
+		local reverserDirectionNode = AIVehicleUtil.getAIToolReverserDirectionNode(self.vehicle)
+		if reverserDirectionNode then
+			self:setControlledNode(reverserDirectionNode)
+			debugText = 'implement reverse'
+		elseif self.vehicle.spec_articulatedAxis ~= nil then
+			-- articulated axis vehicles have a special reverser node
+			-- and yes, Giants has a typo in there...
+			if self.vehicle.spec_articulatedAxis.aiRevereserNode ~= nil then
+				self:setControlledNode(self.vehicle.spec_articulatedAxis.aiRevereserNode)
+				debugText = 'vehicle articulated axis reverese'
+			elseif self.vehicle.spec_articulatedAxis.aiReverserNode ~= nil then
+				self:setControlledNode(self.vehicle.spec_articulatedAxis.aiReverserNode)
+				debugText = 'vehicle articulated axis reverse'
+			end
+		else
+			-- otherwise see if the vehicle has a reverser node
+			if self.vehicle.getAIVehicleReverserNode then
+				reverserDirectionNode = self.vehicle:getAIVehicleReverserNode()
+				if reverserDirectionNode then
+					self:setControlledNode(reverserDirectionNode)
+					debugText = 'vehicle reverse'
+				end
+			end
+		end
+	else
+		self:resetControlledNode()
+	end
+	if self.controlledNode ~= lastControlledNode then
+		self:debug('Switching controlled node to %s', debugText)
+	end
+end
+
 --- Compatibility function to return the original waypoint index as in vehicle.Waypoints. This
 -- is the same as self.currentWpNode.ix unless we have combined courses where the legacy CP code
 -- concatenates all courses into one Waypoints array (as opposed to the AIDriver which splits these
@@ -206,6 +248,7 @@ function PurePursuitController:getCurrentOriginalWaypointIx()
 end
 
 function PurePursuitController:update()
+	self:switchControlledNode()
 	self:findRelevantSegment()
 	self:findGoalPoint()
 	self:notifyListeners()
@@ -237,7 +280,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 	local vx, vy, vz = getWorldTranslation(self.controlledNode)
 	local dx, _, dz = worldToLocal(wpNode.node, vx, vy, vz);
 	local dFromNext = MathUtil.vector2Length(dx, dz)
-	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking %d, dz: %.1f, dFromNext: %.1f', wpNode.ix, dz, dFromNext)
+	--self:debug('checking %d, dz: %.1f, dFromNext: %.1f', wpNode.ix, dz, dFromNext)
 	local result = false
 	if self.course:switchingDirectionAt(wpNode.ix) then
 		-- switching direction at this waypoint, so this is pointing into the opposite direction.
@@ -260,7 +303,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 	if result then --and not self:reachedLastWaypoint() then
 		if not self.lastPassedWaypointIx or (self.lastPassedWaypointIx ~= wpNode.ix) then
 			self.lastPassedWaypointIx = wpNode.ix
-			courseplay.debugVehicle(12, self.vehicle, 'PPC: waypoint %d passed, dz: %.1f %s %s', wpNode.ix, dz,
+			self:debug('waypoint %d passed, dz: %.1f %s %s', wpNode.ix, dz,
 				self.course.waypoints[wpNode.ix].rev and 'reversed' or '',
 				self.course:switchingDirectionAt(wpNode.ix) and 'switching direction' or '')
 			-- notify listeners about the passed waypoint
@@ -274,7 +317,7 @@ function PurePursuitController:havePassedAnyWaypointBetween(fromIx, toIx)
 	local node = WaypointNode( self.name .. '-node', false)
 	local result, passedWaypointIx = false, 0
 	-- math.max so we do one loop even if toIx < fromIx
-	--courseplay.debugVehicle(12, self.vehicle, 'PPC: checking between %d and %d', fromIx, toIx)
+	--self:debug('checking between %d and %d', fromIx, toIx)
 	for ix = fromIx, math.max(toIx, fromIx) do
 		node:setToWaypoint(self.course, ix)
 		if self:havePassedWaypoint(node) then
@@ -319,7 +362,7 @@ function PurePursuitController:findRelevantSegment()
 		if not self:reachedLastWaypoint() then
 			-- disable debugging once we reached the last waypoint. Otherwise we'd keep logging
 			-- until the user presses 'Stop driver'.
-			courseplay.debugVehicle(12, self.vehicle, 'PPC: relevant waypoint: %d, crosstrack error: %.1f', self.relevantWpNode.ix, self.crossTrackError)
+			self:debug('relevant waypoint: %d, crosstrack error: %.1f', self.relevantWpNode.ix, self.crossTrackError)
 		end
 	end
 	if courseplay.debugChannels[12] then
@@ -355,12 +398,12 @@ function PurePursuitController:findGoalPoint()
 		local q1 = courseplay:distance(x1, z1, vx, vz) -- distance from node 1
 		local q2 = courseplay:distance(x2, z2, vx, vz) -- distance from node 2
 		local l = courseplay:distance(x1, z1, x2, z2)  -- length of path segment (distance between node 1 and 2
-		--courseplay.debugVehicle(12, self.vehicle, 'PPC: ix=%d, q1=%.1f, q2=%.1f la=%.1f l=%.1f', ix, q1, q2, self.lookAheadDistance, l)
+		--self:debug('ix=%d, q1=%.1f, q2=%.1f la=%.1f l=%.1f', ix, q1, q2, self.lookAheadDistance, l)
 
 		-- case i (first node outside virtual circle but not yet reached) or (not the first node but we are way off the track)
 		if (ix == self.firstIx and ix ~= self.lastPassedWaypointIx) and
 			q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
-			self:showGoalpointDiag(1, 'PPC: initializing, ix=%d, q1=%.1f, q2=%.1f, la=%.1f', ix, q1, q2, self.lookAheadDistance)
+			self:showGoalpointDiag(1, 'initializing, ix=%d, q1=%.1f, q2=%.1f, la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			-- If we weren't on track yet (after initialization, on our way to the first/initialized waypoint)
 			-- set the goal to the relevant WP
 			self.goalWpNode:setToWaypoint(self.course, self.relevantWpNode.ix)
@@ -371,7 +414,12 @@ function PurePursuitController:findGoalPoint()
 
 		-- case ii (common case)
 		if q1 <= self.lookAheadDistance and q2 >= self.lookAheadDistance then
-			self:showGoalpointDiag(2, 'PPC: common case, ix=%d, q1=%.1f, q2=%.1f la=%.1f', ix, q1, q2, self.lookAheadDistance)
+			self:showGoalpointDiag(2, 'common case, ix=%d, q1=%.1f, q2=%.1f la=%.1f', ix, q1, q2, self.lookAheadDistance)
+			-- in some weird cases q1 may be 0 (when we calculate a course based on the vehicle position) so fix that
+			-- to avoid a nan
+			if q1 < 0.0001 then
+				q1 = 0.1
+			end
 			local cosGamma = ( q2 * q2 - q1 * q1 - l * l ) / (-2 * l * q1)
 			local p = q1 * cosGamma + math.sqrt(q1 * q1 * (cosGamma * cosGamma - 1) + self.lookAheadDistance * self.lookAheadDistance)
 			local gx, gy, gz = localToWorld(node1.node, 0, 0, p)
@@ -389,7 +437,7 @@ function PurePursuitController:findGoalPoint()
 		if ix == self.relevantWpNode.ix and q1 >= self.lookAheadDistance and q2 >= self.lookAheadDistance then
 			if math.abs(self.crossTrackError) <= self.lookAheadDistance then
 				-- case iii (two intersection points)
-				self:showGoalpointDiag(3, 'PPC: two intersection points, ix=%d, q1=%.1f, q2=%.1f, la=%.1f, cte=%.1f', ix, q1, q2, 
+				self:showGoalpointDiag(3, 'two intersection points, ix=%d, q1=%.1f, q2=%.1f, la=%.1f, cte=%.1f', ix, q1, q2,
 					self.lookAheadDistance, self.crossTrackError)
 				local p = math.sqrt(self.lookAheadDistance * self.lookAheadDistance - self.crossTrackError * self.crossTrackError)
 				local gx, gy, gz = localToWorld(self.projectedPosNode, 0, 0, p)
@@ -400,7 +448,7 @@ function PurePursuitController:findGoalPoint()
 			else
 				-- case iv (no intersection points)
 				-- case v ( goal point dead zone)
-				self:showGoalpointDiag(4, 'PPC: no intersection points, ix=%d, q1=%.1f, q2=%.1f, la=%.1f, cte=%.1f', ix, q1, q2, 
+				self:showGoalpointDiag(4, 'no intersection points, ix=%d, q1=%.1f, q2=%.1f, la=%.1f, cte=%.1f', ix, q1, q2,
 					self.lookAheadDistance, self.crossTrackError)
 				-- set the goal to the projected position
 				local gx, gy, gz = localToWorld(self.projectedPosNode, 0, 0, 0)
@@ -431,7 +479,7 @@ function PurePursuitController:setCurrentWaypoint(ix)
 	-- but never, ever go back. Instead just leave this loop and keep driving to the current goal node
 	if ix < self.currentWpNode.ix then
 		if g_updateLoopIndex % 60 == 0 then
-			courseplay.debugVehicle(12, self.vehicle, "PPC: Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix)
+			self:debug("Won't step current waypoint back from %d to %d.", self.currentWpNode.ix, ix)
 		end
 	elseif ix >= self.currentWpNode.ix then
 		local prevIx = self.currentWpNode.ix
@@ -452,7 +500,7 @@ function PurePursuitController:showGoalpointDiag(case, ...)
 		DebugUtil.drawDebugNode(self.goalWpNode.node, diagText)
 	end
 	if case ~= self.case then
-		courseplay.debugVehicle(12, self.vehicle, ...)
+		self:debug(...)
 		self.case = case
 	end
 end
@@ -467,14 +515,14 @@ end
 
 function PurePursuitController:disable()
 	if self.enabled then
-		courseplay.debugVehicle(12, self.vehicle, 'PPC: disabled.', self.currentWpNode.ix)
+		self:debug('disabled.', self.currentWpNode.ix)
 	end
 	self.enabled = false
 end
 
 function PurePursuitController:enable()
 	if not self.enabled then
-		courseplay.debugVehicle(12, self.vehicle, 'PPC: enabled.', self.currentWpNode.ix)
+		self:debug('enabled.', self.currentWpNode.ix)
 	end
 	self.enabled = true
 end

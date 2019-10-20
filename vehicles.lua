@@ -496,7 +496,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 					end;
 				end;
 			else
-				-- Greate an new linked node.
+				-- Create an new linked node.
 				node = courseplay:createNewLinkedNode(object, "realTurningNode", object.rootNode);
 
 				-- Find the pivot point on articulated vehicle
@@ -1135,7 +1135,7 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	TR = ceil(courseplay:calculateTurnRadius(steeringType, wheelBase, rotMax, CPRatio) * radiusMultiplier);
 
 	if TR > 0 then
-		if vehicle.maxTurningRadius and vehicle.maxTurningRadius > TR then
+		if vehicle.maxTurningRadius then
 			turnRadius = vehicle.maxTurningRadius;
 			courseplay:debug(('%s -> TurnRadius: Using Giants maxTurningRadius: %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
 		else

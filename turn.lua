@@ -93,7 +93,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 						end;
 					else
 						local color = { r = 0, g = 1, b = 1}; -- Light Blue Line
-						if nextTurnTarget.changeWhenPosible then
+						if nextTurnTarget.changeDirectionWhenAligned then
 							color["r"], color["g"], color["b"] = 1, 0.706, 0; -- Orange Line
 						end
 						cpDebug:drawLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ);  -- Light Blue Line
@@ -148,8 +148,10 @@ function courseplay:turn(vehicle, dt, turnContext)
 			turnInfo.backMarker						= backMarker;
 			turnInfo.halfVehicleWidth 				= 2.5;
 			turnInfo.directionNodeToTurnNodeLength  = directionNodeToTurnNodeLength + 0.5; -- 0.5 is to make the start turn point just a tiny in front of the tractor
-			turnInfo.wpChangeDistance				= wpChangeDistance;
-			turnInfo.reverseWPChangeDistance 		= reverseWPChangeDistance;
+			-- when PPC is driving we don't have to care about wp change distances, PPC takes care of that. Still use
+			-- a small value to make sure none of the turn generator functions end up with overlapping waypoints
+			turnInfo.wpChangeDistance				= 0.5
+			turnInfo.reverseWPChangeDistance 		= 0.5
 			turnInfo.direction 						= -1;
 			turnInfo.haveHeadlands 					= courseplay:haveHeadlands(vehicle);
 			-- Headland height in the waypoint overrides the generic headland height calculation. This is for the
@@ -467,7 +469,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 
 				-- Start reversing before time if we are allowed and if we can
-				if curTurnTarget.changeWhenPosible then
+				if curTurnTarget.changeDirectionWhenAligned then
 					-- Get the world rotation of the next lane
 					local laneRot = MathUtil.getYRotationFromDirection(turnContext.turnEndWp.dx, turnContext.turnEndWp.dz);
 					laneRot = deg(laneRot);
@@ -486,7 +488,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 					-- Get the angle difference
 					local angleDifference = min( abs((toolRot + 180 - laneRot) %360 - 180), abs((laneRot + 180 - toolRot) %360 - 180) )
 
-					-- If the angle diff is less than the allowed angle, then goto the first wp in oposite drive direction
+					-- If the angle diff is less than the allowed angle, then goto the first wp in opposite drive direction
 					if angleDifference then
 						courseplay:debug(("%s:(Turn) Change direction when anglediff(%.2f) <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
 						if angleDifference <= allowedAngle then
@@ -629,7 +631,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
 		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
-		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.workEndNode.node) then
+		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.workEndNode) then
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
 			if not turnContext:isHeadlandCorner() then
@@ -1339,7 +1341,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	if turnInfo.frontMarker > 0 then
 		frontOffset = frontOffset - turnInfo.frontMarker;
 	end;
-	-- getAttachedImplementsAllowTurnBackward will return true for anything easy to reverse, that is has now towed implement,
+	-- getAttachedImplementsAllowTurnBackward will return true for anything easy to reverse, that is has no towed implement,
 	-- like combines or tractors with implements mounted on the 3 point hitch. Those should make the same turn (fishtail or K-turn)
 	-- as combines do as it takes up a lot less space on the headland. Our calculation of how much space is needed is still off a bit
 	-- so you may have to turn off 'turn on field' for this to work for tractors.
@@ -1850,7 +1852,7 @@ function courseplay:haveHeadlands(vehicle)
 	return vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0;
 end;
 
-function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeWhenPosible, doNotAddLastPoint)
+function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeDirectionWhenAligned, doNotAddLastPoint)
 	local endTurn = false;
 	local wpDistance = wpDistance;
 	local dist = courseplay:distance(fromPoint.x, fromPoint.z, toPoint.x, toPoint.z);
@@ -1862,7 +1864,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 	end;
 
 	-- add first point
-	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, endTurn, reverse, nil, nil, nil, changeWhenPosible);
+	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, endTurn, reverse, nil, nil, nil, changeDirectionWhenAligned);
 
 	-- add points between the first and last
 	local posX, posZ;
@@ -1872,7 +1874,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 			posX = fromPoint.x + (i * wpDistance * dx);
 			posZ = fromPoint.z + (i * wpDistance * dz);
 
-			courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, nil, nil, nil, changeWhenPosible);
+			courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, nil, nil, nil, changeDirectionWhenAligned);
 		end;
 	end;
 
@@ -1888,7 +1890,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 	posX = toPoint.x;
 	posZ = toPoint.z;
 
-	courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, revPosX, revPosZ, nil, changeWhenPosible);
+	courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, revPosX, revPosZ, nil, changeDirectionWhenAligned);
 
 end;
 
@@ -1979,7 +1981,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	delete(point);
 end;
 
-function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, changeWhenPosible)
+function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, changeDirectionWhenAligned)
 	local target = {};
 	target.posX 			  = posX;
 	target.posZ 			  = posZ;
@@ -1987,11 +1989,11 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, rev
 	target.turnReverse		  = turnReverse;
 	target.revPosX 			  = revPosX;
 	target.revPosZ 			  = revPosZ;
-	target.changeWhenPosible = changeWhenPosible;
+	target.changeDirectionWhenAligned = changeDirectionWhenAligned;
 	table.insert(vehicle.cp.turnTargets, target);
 
 	if not dontPrint then
-		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeWhenPosible=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeWhenPosible and true or false)), 14);
+		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeDirectionWhenAligned=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeDirectionWhenAligned and true or false)), 14);
 	end;
 end
 
@@ -2459,6 +2461,7 @@ TurnContext = CpObject()
 
 --- All data needed to create a turn
 -- TODO: this uses a bit too many course internal info, should maybe moved into Course?
+-- TODO: could this be done a lot easier with child nodes sitting on a single corner node?
 ---@param course Course
 ---@param turnStartIx number
 ---@param aiDriverData table to store the turn start/end waypoint nodes (which are created if nil passed in)
@@ -2471,7 +2474,8 @@ TurnContext = CpObject()
 --- turn end node. (The vehicle must be steered to the frontMarkerNode instead of the turn end node so the implements
 --- reach exactly the row end)
 function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMarkerDistance)
-
+	self.debugChannel = 14
+	self.workWidth = workWidth
 	---@type Waypoint
 	self.beforeTurnStartWp = course.waypoints[turnStartIx - 1]
 
@@ -2508,40 +2512,78 @@ function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMar
 	---@type Waypoint
 	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
 
-	self:setWorkEndNode(course, turnStartIx, aiDriverData, workWidth)
-	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode.node, 0, 0, 0)
+	self:setWorkStartNode(course, self.turnEndWpIx, aiDriverData)
+	self:setWorkEndNode(course, turnStartIx, aiDriverData)
+	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode, 0, 0, 0)
 	self.leftTurn = self.dx > 0
-	courseplay.debugFormat(12, 'Turn context: start ix = %d', turnStartIx)
+	courseplay.debugFormat(self.debugChannel, 'Turn context: start ix = %d', turnStartIx)
+end
+
+--- Get overshoot for a headland corner (how far further we need to drive if the corner isn't 90 degrees 
+--- for full coverage
+function TurnContext:getOvershootForHeadlandCorner()
+	local headlandAngle = math.rad(math.abs(math.abs(self.directionChangeDeg) - 90))
+	local overshoot = self.workWidth / 2 * math.tan(headlandAngle)
+	courseplay.debugFormat(self.debugChannel, 'Turn context: work start node headland angle = %.1f, overshoot = %.1f',
+		math.deg(headlandAngle), overshoot)
+	return overshoot
+end
+
+--- Set up a node where the implement must be lowered when starting to work after the turn maneuver
+function TurnContext:setWorkStartNode(course, turnEndIx, aiDriverData)
+	if not aiDriverData.workStartNode then
+		aiDriverData.workStartNode = courseplay.createNode('workStart', 0, 0, 0)
+	end
+	if not aiDriverData.lateWorkStartNode then
+		-- this is for the headland turns where we want to cover the corner in the inbound direction (before turning)
+		-- so we can start working later after the turn
+		aiDriverData.lateWorkStartNode = courseplay.createNode('lateWorkStartNode', 0, 0, 0, aiDriverData.workStartNode)
+	end
+	course:setNodeToWaypoint(aiDriverData.workStartNode, turnEndIx)
+	if self:isHeadlandCorner() then
+		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
+		-- for headland turns, when we cover the corner in the outbound direction, which is half self.workWidth behind
+		-- the turn end node
+		local x, y, z = localToWorld(aiDriverData.workStartNode, 0, 0, - self.workWidth / 2 - overshoot)
+		setTranslation(aiDriverData.workStartNode, x, y, z)
+		setTranslation(aiDriverData.lateWorkStartNode, 0, 0, self.workWidth)
+	end
+	self.workStartNode = aiDriverData.workStartNode
+	self.lateWorkStartNode = aiDriverData.lateWorkStartNode
 end
 
 --- Set up a node where the implement must be raised when finishing a row before the turn
-function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData, workWidth)
+function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData)
 	if not aiDriverData.workEndNode then
-		aiDriverData.workEndNode = WaypointNode('workEnd')
+		aiDriverData.workEndNode = courseplay.createNode('workEnd', 0, 0, 0)
+	end
+	if not aiDriverData.lateWorkEndNode then
+		-- this is for the headland turns where we want to cover the corner in the inbound direction (before turning)
+		aiDriverData.lateWorkEndNode = courseplay.createNode('lateWorkEnd', 0, 0, 0, aiDriverData.workEndNode)
 	end
 	if self:isHeadlandCorner() then
 		-- for headland turns (about 45-135 degrees) the turn end node is on the corner but pointing to
 		-- the direction after the turn. So create a node at the same location but pointing into the incoming direction
 		-- to be used to find out when to raise the implements during a headland turn
-		aiDriverData.workEndNode:setToWaypoint(course, self.turnEndWpIx)
-		setRotation(aiDriverData.workEndNode.node, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
-		local headlandAngle = math.rad(math.abs(self.directionChangeDeg) - 90)
-		-- we need drive past the corner half workwidth to cover everything, plus,
-		-- if the headland is not perpendicular to the rows we must travel a little further than the end of the
-		-- row to have 100% coverage so move the work end node forward
-		local overshoot = workWidth / 2 * math.tan(headlandAngle) - workWidth / 2
-		local x, y, z = localToWorld(aiDriverData.workEndNode.node, 0, 0, math.min(overshoot, workWidth * 2))
-		setTranslation(aiDriverData.workEndNode.node, x, y, z)
+		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnEndWpIx)
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx), 0)
+		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
+		-- for headland turns, we cover the corner in the outbound direction, so here we can end work when 
+		-- the implement is half self.workWidth before the turn end node
+		local x, y, z = localToWorld(aiDriverData.workEndNode, 0, 0, - self.workWidth / 2 + overshoot)
+		setTranslation(aiDriverData.workEndNode, x, y, z)
+		setTranslation(aiDriverData.lateWorkEndNode, 0, 0, self.workWidth)
 	else
 		-- For 180 turns, create a node pointing in the incoming direction of the turn start waypoint. This will be used
 		-- to determine relative position to the turn start. (the turn start WP can't be used as it is
 		-- pointing towards the turn end waypoint which may be anything around 90 degrees)
-		-- there's no eed for an overshoot as it is being taken care during the course generation
-		aiDriverData.workEndNode:setToWaypoint(course, self.turnStartWpIx)
-		setRotation(aiDriverData.workEndNode.node, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
+		-- there's no need for an overshoot as it is being taken care during the course generation
+		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnStartWpIx)
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
 	end
 
 	self.workEndNode = aiDriverData.workEndNode
+	self.lateWorkEndNode = aiDriverData.lateWorkEndNode
 end
 
 -- node's position in the turn end wp node's coordinate system
@@ -2584,7 +2626,7 @@ end
 
 --- Returns true if node1 is pointing approximately in node2's direction
 ---@param thresholdDeg number defines what 'approximately' means, by default if the difference is less than 10 degrees
-function TurnContext:isSameDirection(node1, node2, thresholdDeg)
+function TurnContext.isSameDirection(node1, node2, thresholdDeg)
 	local lx, _, lz = localDirectionToLocal(node1, node2, 0, 0, 1)
 	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg or 5)
 end
@@ -2592,13 +2634,13 @@ end
 --- Returns true if node is pointing approximately in the turn start direction, that is, the direction from
 --- turn start waypoint to the turn end waypoint.
 function TurnContext:isDirectionCloseToStartDirection(node, thresholdDeg)
-	return self:isSameDirection(node, self.turnStartWpNode.node, thresholdDeg)
+	return TurnContext.isSameDirection(node, self.turnStartWpNode.node, thresholdDeg)
 end
 
 --- Returns true if node is pointing approximately in the turn's ending direction, that is, the direction of the turn
 --- end waypoint, the direction the vehicle will continue after the turn
 function TurnContext:isDirectionCloseToEndDirection(node, thresholdDeg)
-	return self:isSameDirection(node, self.turnEndWpNode.node, thresholdDeg)
+	return TurnContext.isSameDirection(node, self.turnEndWpNode.node, thresholdDeg)
 end
 
 --- Use to find out if we can make a turn: are we farther away from the next row than our turn radius
@@ -2661,15 +2703,60 @@ function TurnContext:createCorner(vehicle, r)
 	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, vehicle.cp.totalOffsetX)
 end
 
+--- Course to end a turn, just a few meters straight leading into the next row
 ---@return Course
 function TurnContext:createEndingTurnCourse(vehicle)
 	local waypoints = {}
-	-- make sure course reaches the front marker node so end it 1m behind that node
-	for d = -10, 1, 1 do
+	-- make sure course reaches the front marker node so end it well behind that node
+	for d = -10, 3, 1 do
 		local x, _, z = localToWorld(self.frontMarkerNode, 0, 0, d)
 		table.insert(waypoints, {x = x, z = z})
 	end
 	return Course(vehicle,waypoints, true)
+end
+
+--- Course to finish a row before the turn, just straight ahead, ignoring the corner
+---@return Course
+function TurnContext:createFinishingRowCourse(vehicle)
+	local waypoints = {}
+	-- must be at least as long as the front marker distance so we are not reaching the end of the course before
+	-- the implement reaches the field edge (a negative frontMarkerDistance means the implement is behind the
+	-- vehicle, this isn't a problem for a positive frontMarkerDistance as the implement reaches the field edge
+	-- before the vehicle (except for very wide work widths of course, so make sure we have enough course to cross
+	-- the headland)
+	for d = 0, math.max(self.workWidth * 1.5, -self.frontMarkerDistance * 2), 1 do
+		local x, _, z = localToWorld(self.workEndNode, 0, 0, d)
+		table.insert(waypoints, {x = x, z = z})
+	end
+	return Course(vehicle,waypoints, true)
+end
+
+function TurnContext:drawDebug()
+	if courseplay.debugChannels[self.debugChannel] then
+		local cx, cy, cz
+		local nx, ny, nz
+		local height = 1
+		if self.workStartNode then
+			cx, cy, cz = localToWorld(self.workStartNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.workStartNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0, 1, 0, nx, ny + height, nz)
+		end
+		if self.lateWorkStartNode then
+			cx, cy, cz = localToWorld(self.lateWorkStartNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.lateWorkStartNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0, 0.7, 0, nx, ny + height, nz)
+		end
+		if self.workEndNode then
+			cx, cy, cz = localToWorld(self.workEndNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.workEndNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 1, 0, 0, nx, ny + height, nz)
+		end
+		if self.lateWorkEndNode then
+			cx, cy, cz = localToWorld(self.lateWorkEndNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.lateWorkEndNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0.7, 0, 0, nx, ny + height, nz)
+		end
+	end
 end
 
 -- do not delete this line

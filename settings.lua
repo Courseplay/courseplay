@@ -2264,6 +2264,16 @@ function UseAITurnsSetting:init()
 	self.xmlAttribute = '#active'
 end
 
+--- Use PPC during turns?
+---@class UsePPCTurnsSetting : BooleanSetting
+UsePPCTurnsSetting = CpObject(BooleanSetting)
+function UsePPCTurnsSetting:init()
+	BooleanSetting.init(self, 'usePPCTurns', 'COURSEPLAY_USE_PPC_TURNS',
+		'COURSEPLAY_USE_PPC_TURNS_TOOLTIP')
+	self.xmlKey = 'usePPCTurns'
+	self.xmlAttribute = '#active'
+end
+
 ---@class AutoFieldScanSetting : BooleanSetting
 AutoFieldScanSetting = CpObject(BooleanSetting)
 function AutoFieldScanSetting:init()

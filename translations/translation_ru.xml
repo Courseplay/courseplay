@@ -417,6 +417,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"						text="Опускать оборудование" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Опускать оборудование при начале прохода или в конце разворота на поворотной полосе." />
 
+		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Use virtual waypoints (PPC) in turns" />
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Use a better course tracking algorithm (pure pursuit controller) during turns" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

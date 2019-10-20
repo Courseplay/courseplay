@@ -438,7 +438,7 @@ function AIDriver:driveVehicleBySteeringAngle(dt, moveForwards, steeringAngleNor
 				acc = self.slowAcceleration;
 			end
 		end
-		if not self.allowedToDrive then
+		if not self.allowedToDrive or math.abs(maxSpeed) < 0.0001 then
 			acc = 0;
 		end
 		if not moveForwards then
@@ -468,6 +468,10 @@ function AIDriver:startCourse(course, ix, nextCourse, nextWpIx)
 	self.course = course
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize(ix)
+end
+
+function AIDriver:getCurrentCourse()
+	return self.course
 end
 
 --- Start course (with alignment if needed) and set course as the current one
@@ -753,12 +757,14 @@ end
 function AIDriver:drawTemporaryCourse()
 	if not self.course:isTemporary() then return end
 	if not courseplay.debugChannels[self.debugChannel] then return end
-	for i = 1, self.course:getNumberOfWaypoints() - 1 do
+	for i = 1, self.course:getNumberOfWaypoints() do
 		local x, y, z = self.course:getWaypointPosition(i)
-		local nx, ny, nz = self.course:getWaypointPosition(i + 1)
 		cpDebug:drawPoint(x, y + 3, z, 10, 0, 0)
-		cpDebug:drawLine(x, y + 3, z, 0, 0, 100, nx, ny + 3, nz)
 		Utils.renderTextAtWorldPosition(x, y + 3.2, z, tostring(i), getCorrectTextSize(0.012), 0)
+		if i < self.course:getNumberOfWaypoints() then
+			local nx, ny, nz = self.course:getWaypointPosition(i + 1)
+			cpDebug:drawLine(x, y + 3, z, 0, 0, 100, nx, ny + 3, nz)
+		end
 	end
 end
 

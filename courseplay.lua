@@ -363,7 +363,6 @@ local function setGlobalData()
 	-- TODO: see where is the best to instantiate these settings. Maybe we need a container for all these
 	courseplay.globalSettings = SettingsContainer()
 	courseplay.globalSettings:addSetting(LoadCoursesAtStartupSetting)
-	courseplay.globalSettings:addSetting(UseAITurnsSetting)
 	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
 	courseplay.globalSettings:addSetting(EarnWagesSetting)
 
