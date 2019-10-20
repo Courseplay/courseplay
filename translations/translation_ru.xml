@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Ожидаю пока отъедет комбайн" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Возвращение к %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Еду на временную стоянку %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Жду заполнения бункера" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Жду заполнения бункера (%s %dc)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Ищу комбайн для работы" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Жду завершения маневра комбайна" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Ожидаю новой путевой точки" />

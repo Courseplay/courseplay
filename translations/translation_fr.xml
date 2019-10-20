@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Attends que la position d'attente se libére" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 					 		text="Tourne en direction de %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 		text="Conduit vers le points %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Attend que le niveau soit atteint" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Attend que le niveau soit atteint (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Pas de Batteuse en vue" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Attend que la batteuse finisse de tourner" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Attend pour le nouveau point" />

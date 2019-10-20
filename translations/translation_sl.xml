@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Čakam da se čakalna pozicija sprosti" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Obračam na smer %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Vozi na točko %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čakam da se doseže polnilni nivo" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čakam da se doseže polnilni nivo (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Nobenega kombajna v dosegu" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Čakam da kombajn obrne" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Čakam na novo točko" />

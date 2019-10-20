@@ -1217,7 +1217,7 @@ function courseplay:renderInfoText(vehicle)
 			if what[3] then	 
 				text = string.format(courseplay:loc(what[1]), tonumber(what[2]), tonumber(what[3]));
 			end		
-		elseif what[1] == "COURSEPLAY_STARTING_UP_TOOL" 
+		elseif what[1] == "COURSEPLAY_STARTING_UP_TOOL"
 		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_FEW"
 		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_MANY"
 		or what[1] == "COURSEPLAY_UNLOADING_POINTS_TOO_FEW"
@@ -1225,7 +1225,11 @@ function courseplay:renderInfoText(vehicle)
 			if what[2] then
 				text = string.format(courseplay:loc(what[1]), what[2]);
 			end
-		elseif what[1] == "COURSEPLAY_DISTANCE" then  
+		elseif what[1] == "COURSEPLAY_WAITING_FOR_FILL_LEVEL" then
+			if what[3] then
+				text = string.format(courseplay:loc(what[1]), what[2], tonumber(what[3]));
+			end
+		elseif what[1] == "COURSEPLAY_DISTANCE" then
 			if what[2] then
 				local dist = tonumber(what[2]);
 				if dist >= 1000 then

@@ -1942,6 +1942,7 @@ function courseplay.hud:setupCombinesListPageButtons(vehicle,page)
 		height = self.linesPosY[3] + self.lineHeight - self.linesPosY[self.numLines]
 	};
 	vehicle.cp.hud.combinesListMouseArea= courseplay.button:new(vehicle, 'global', nil, 'shiftCombinesList', -1, combinesListMouseWheelArea.x, combinesListMouseWheelArea.y, combinesListMouseWheelArea.width, combinesListMouseWheelArea.height, nil, -self.numLines, true, true);
+	print("vehicle.cp.hud.combinesListMouseArea: "..tostring(vehicle.cp.hud.combinesListMouseArea))
 end
 
 function courseplay.hud:setupCoursePageButtons(vehicle,page)

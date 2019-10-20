@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="スペースがあくまで停止" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="目標へターン %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="ウェイポイントへ %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="充填レベルに到達するまで待機" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="充填レベルに到達するまで待機 (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="コンバインとの距離がありません" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="コンバインのターン待ち" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="新しいウェイポイントを待っています" />

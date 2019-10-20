@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Warte bis die Warteposition frei ist" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="wende in Richtung Koordinaten %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="fahre zu Wegpunkt %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Warte bis Füllstand erreicht ist" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Warte bis Füllstand erreicht ist (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Kein Drescher in Reichweite" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Warte bis Drescher gewendet hat" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Warte auf neuen Wegpunkt" />

@@ -130,7 +130,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="A aguardar que o ponto de espera esteja livre" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 					 		text="A virar na direção %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 		text="Conduzir para o ponto %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="A Aguardar que o enchimento chegue ao nível" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="A Aguardar que o enchimento chegue ao nível (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Nenhuma ceifeira ao alcance" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="A esperar que a ceifeira vire" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="A esperar pelo novo ponto" />

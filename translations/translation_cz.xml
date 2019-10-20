@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Čekám, než se uvolní bod k čekání" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Otočím se ve směru %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Jedu na souřadnice %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čekám, než bude kombajn naplněn" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čekám, než bude kombajn naplněn (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Kombajn/řezačka není v dosahu" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Čekám, než se kombajn/řezačka otočí" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Čekám na další orientační bod" />

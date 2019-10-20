@@ -79,6 +79,10 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	local combine = self:getCombineWithMostFillLevel(unloader)
 	local unloaderToAssign
 	if combine ~= nil then
+		if combine.cp.wantsCourseplayer then
+			self:addUnloaderToCombine(unloader,combine)
+			return combine
+		end
 		local distance = courseplay:distanceToObject(unloader, combine)
 		local timeToTarget = distance/(unloader.cp.speeds.field/3.6)
 		if combine.cp.driverPriorityUseFillLevel then
@@ -87,18 +91,19 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			unloaderToAssign = self:getClosestUnloader(combine)
 		end
 		--print(string.format("full: %.1f; 80percent: %.1f  time: %.1f",g_combineUnloadManager:getSecondsTillFull(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
-		if unloaderToAssign == unloader
-			and timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine)
-			and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
-			--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
-			if g_combineUnloadManager:getNumUnloaders(combine) == 0 then
+		if unloaderToAssign == unloader then
+			local timeTillStartUnloading = g_combineUnloadManager:getSecondsTill80Percent(combine) - timeToTarget
+			if timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine)
+				and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
+				--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
 				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
+				self:addUnloaderToCombine(unloader,combine)
 				return combine
+			else
+				return nil,combine,timeTillStartUnloading
 			end
 		end
 	end
-
-
 end
 
 
@@ -128,7 +133,7 @@ function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	local combineToReturn
 	for combine,_ in pairs(unloader.cp.assignedCombines) do
 		local data = self.combines[combine]
-		if data.isCombine then
+		if data.isCombine and self:getNumUnloaders(combine) == 0 then
 			courseplay:updateFillLevelsAndCapacities(combine)
 			if combine.cp.wantsCourseplayer then
 				return combine

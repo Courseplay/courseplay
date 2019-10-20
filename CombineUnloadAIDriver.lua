@@ -54,12 +54,12 @@ CombineUnloadAIDriver.myStates = {
 
 --- Constructor
 function CombineUnloadAIDriver:init(vehicle)
+	print("CombineUnloadAIDriver:init()")
 	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_COMBI
 	self:initStates(CombineUnloadAIDriver.myStates)
 	self:setNewCombineUnloadState(self.states.ONSTREET)
-	self:setHudContent()
 	self:setNewOnFieldState(self.states.FIND_COMBINE)
 	self.combineOffset = 0
 	self.distanceToCombine = math.huge
@@ -76,16 +76,26 @@ end
 function CombineUnloadAIDriver:start(ix)
 
 	AIDriver.start(self, ix)
-	if not self.combineToUnload then
-		local x,_,z = getWorldTranslation(self:getDirectionNode())
-		if courseplay:isField(x, z) then
-			self:setNewCombineUnloadState(self.states.ONFIELD)
-			self:setNewOnFieldState(self.states.FIND_COMBINE)
-			self:disableCollisionDetection()
-			self:setDriveUnloadNow(false)
-		end
+	local x,_,z = getWorldTranslation(self:getDirectionNode())
+	if courseplay:isField(x, z) then
+		self:setNewCombineUnloadState(self.states.ONFIELD)
+		self:setNewOnFieldState(self.states.FIND_COMBINE)
+		self:disableCollisionDetection()
+		self:setDriveUnloadNow(false)
 	end
 	self.distanceToFront = 0
+end
+
+function CombineUnloadAIDriver:dismiss()
+	local x,_,z = getWorldTranslation(self:getDirectionNode())
+	if self.combineToUnload then
+		self:releaseUnloader()
+	end
+	if courseplay:isField(x, z) then
+		self:setNewCombineUnloadState(self.states.ONFIELD)
+		self:setNewOnFieldState(self.states.FIND_COMBINE)
+	end
+	AIDriver.dismiss(self)
 end
 
 function CombineUnloadAIDriver:drive(dt)
@@ -117,14 +127,14 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:stopAndWait(dt)
 		return
 	end
-
+	local timeTillStartUnloading,combineToWaitFor
 	if self.onFieldState == self.states.FIND_COMBINE then
 		if self:getDriveUnloadNow() or self:getAllTrailersFull() or self:shouldDriveOn() then
 			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
 			return
 		end
 
-		self.combineToUnload = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
+		self.combineToUnload, combineToWaitFor, timeTillStartUnloading  = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 		if self.combineToUnload ~= nil then
 			--print("combine set")
 			self:refreshHUD()
@@ -133,7 +143,11 @@ function CombineUnloadAIDriver:driveOnField(dt)
 				self.tractorToFollow = g_combineUnloadManager:getUnloaderByNumber(1, self.combineToUnload)
 			end
 		else
-			courseplay:setInfoText(self.vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
+			if combineToWaitFor then
+				courseplay:setInfoText(self.vehicle,string.format("COURSEPLAY_WAITING_FOR_FILL_LEVEL;%s;%d",nameNum(combineToWaitFor),timeTillStartUnloading));
+			else
+				courseplay:setInfoText(self.vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
+			end
 		end
 		self:hold()
 
@@ -593,6 +607,8 @@ end
 
 function CombineUnloadAIDriver:getCombineIsInPocket()
 	local driver = self.combineToUnload.cp.driver
+	--print(string.format("ON_FIELDWORK_COURSE (%s);UNLOAD_OR_REFILL_ON_FIELD (%s);WAITING_FOR_UNLOAD_IN_POCKET (%s)",
+	--tostring(driver.state == driver.states.ON_FIELDWORK_COURSE),tostring(driver.fieldworkState == driver.states.UNLOAD_OR_REFILL_ON_FIELD),tostring(driver.fieldWorkUnloadOrRefillState == driver.states.WAITING_FOR_UNLOAD_IN_POCKET)))
 	return driver.state == driver.states.ON_FIELDWORK_COURSE and
 		driver.fieldworkState == driver.states.UNLOAD_OR_REFILL_ON_FIELD and
 		driver.fieldWorkUnloadOrRefillState == driver.states.WAITING_FOR_UNLOAD_IN_POCKET
@@ -908,7 +924,8 @@ function CombineUnloadAIDriver:getDrivingCoordsBeside()
 	local tx,ty,tz = localToWorld(self:getDirectionNode(),0,0,5)
 	local sideShift,_,backShift = worldToLocal(self.combineToUnload.cp.DirectionNode,tx,ty,tz)
 	local backDistance = self:getCombinesMeasuredBackDistance() +3
-	local lx,lz = AIVehicleUtil.getDriveDirection(self.combineToUnload.cp.DirectionNode, tx,ty,tz);
+	local origLx,origLz = AIVehicleUtil.getDriveDirection(self.combineToUnload.cp.DirectionNode, tx,ty,tz);
+	local lx,lz = origLx,origLz
 	local isBeside = false
 	if self.combineOffset > 0 then
 		lx = math.max(0.25,lx)
@@ -934,12 +951,12 @@ function CombineUnloadAIDriver:getDrivingCoordsBeside()
 	local distanceToTarget = courseplay:distance(tx, tz, x, z)
 	--we are on the correct side but not close to the target point, so got dirctely to the offsetTarget
 	if self.combineOffset > 0 then
-		if lx > 0.25 then
+		if origLx > 0 then
 			--print("distanceToTarget: "..tostring(distanceToTarget))
 			isBeside = distanceToTarget > 4
 		end
 	else
-		if lx < -0.25 then
+		if origLx < 0 then
 			--print("distanceToTarget: "..tostring(distanceToTarget))
 			isBeside = distanceToTarget > 4
 		end
