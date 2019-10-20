@@ -19,6 +19,14 @@
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
 
+			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="usePPCTurns" toolTipElementId="ingameMenuHelpBoxText">
+				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
+				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
+				<GuiElement type="text" profile="multiTextOptionSettingsText" />
+				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
+				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
+			</GuiElement>
+
 			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="autoFieldScan" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />

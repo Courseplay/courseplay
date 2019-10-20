@@ -364,6 +364,7 @@ local function setGlobalData()
 	courseplay.globalSettings = SettingsContainer()
 	courseplay.globalSettings:addSetting(LoadCoursesAtStartupSetting)
 	courseplay.globalSettings:addSetting(UseAITurnsSetting)
+	courseplay.globalSettings:addSetting(UsePPCTurnsSetting)
 	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
 	courseplay.globalSettings:addSetting(EarnWagesSetting)
 

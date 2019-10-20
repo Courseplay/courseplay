@@ -81,9 +81,12 @@ function Waypoint:set(cpWp, cpIndex)
 	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ
 	self.x = cpWp.cx or cpWp.posX or cpWp.x or 0
 	self.z = cpWp.cz or cpWp.posZ or cpWp.z or 0
+	-- for backwards compatibility only
+	self.cx = self.x
+	self.cz = self.z
 	self.angle = cpWp.angle or nil
 	self.radius = cpWp.radius or nil
-	self.rev = cpWp.rev or false
+	self.rev = cpWp.rev or cpWp.turnReverse or false
 	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
 	self.turnStart = cpWp.turnStart

@@ -476,7 +476,8 @@ function FieldworkAIDriver:onWaypointChange(ix)
 				self:startWork()
 			end
 		-- towards the end of the field course make sure the implement reaches the last waypoint
-		elseif ix > self.course:getNumberOfWaypoints() - 3 then
+		-- TODO: this needs refactoring, for now don't do this for temporary courses like a turn as it messes up reversing
+		elseif ix > self.course:getNumberOfWaypoints() - 3 and not self.course:isTemporary() then
 			if self.frontMarkerDistance then
 				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.frontMarkerDistance)
 				self.aiDriverOffsetZ = -self.frontMarkerDistance
@@ -983,13 +984,20 @@ function FieldworkAIDriver:startTurn(ix)
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
 	if courseplay.globalSettings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
 			return
 		end
 	end
-
-	AIDriver.startTurn(self, ix)
+	if courseplay.globalSettings.usePPCTurns:is(true) then
+		self.aiTurn = CourseTurn(self.vehicle, self, self.turnContext)
+		self.fieldworkState = self.states.TURNING
+		--self:debug('Can\'t make K turn, reverting to turn.lua')
+		self:debug('Generating turn course...')
+	else
+		AIDriver.startTurn(self, ix)
+	end
 end
 
 --- Find the foremost and rearmost AI marker
@@ -1094,29 +1102,30 @@ end
 --- when we are _behind_ the turn end node (dz < 0), otherwise once we reach it (dz > 0)
 ---@return boolean, boolean the second one is true when the first is valid
 function FieldworkAIDriver:shouldLowerThisImplement(object, turnEndNode, reversing)
-	local aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkers(object)
+	local aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkers(object, true)
 	if not aiLeftMarker then return false, false end
 	local _, _, dzLeft = localToLocal(aiLeftMarker, turnEndNode, 0, 0, 0)
 	local _, _, dzRight = localToLocal(aiRightMarker, turnEndNode, 0, 0, 0)
 	local _, _, dzBack = localToLocal(aiBackMarker, turnEndNode, 0, 0, 0)
 	local loweringDistance
 	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
-		-- sowing machines are stopped while lowering
-		loweringDistance = 0
+		-- sowing machines are stopped while lowering, but leave a little reserve to allow for stopping
+		-- TODO: rather slow down while approaching the lowering point
+		loweringDistance = 0.5
 	else
 		-- others can be lowered without stopping so need to start lowering before we get to the turn end to be
 		-- in the working position by the time we get to the first waypoint of the next row
 		loweringDistance = self.vehicle.lastSpeed * self:getLoweringDurationMs() + 0.5 -- vehicle.lastSpeed is in meters per millisecond
 	end
 	local dzFront = (dzLeft + dzRight) / 2
-	self:debug('%s: dzLeft = %.1f, dzRight = %.1f, dzFront = %.1f, dzBack = %.1f, loweringDistance = %.1f, reversing %s',
+	self:debugSparse('%s: dzLeft = %.1f, dzRight = %.1f, dzFront = %.1f, dzBack = %.1f, loweringDistance = %.1f, reversing %s',
 		nameNum(object), dzLeft, dzRight, dzFront, dzBack, loweringDistance, tostring(reversing))
 	local dz = self.vehicle.cp.settings.implementLowerTime:is(ImplementRaiseLowerTimeSetting.EARLY) and dzFront or dzBack
 	if reversing then
 		return dz < 0 , true
 	else
 		-- dz will be negative as we are behind the target node
-		return dz > - loweringDistance and dz > - loweringDistance, true
+		return dz > - loweringDistance, true
 	end
 end
 
@@ -1134,7 +1143,7 @@ end
 ---@param turnStartNode node at the last waypoint of the row, pointing in the direction of travel. This is where
 --- the implement should be raised when beginning a turn
 function FieldworkAIDriver:shouldRaiseThisImplement(object, turnStartNode)
-	local aiFrontMarker, _, aiBackMarker = self:getAIMarkers(object)
+	local aiFrontMarker, _, aiBackMarker = self:getAIMarkers(object, true)
 	-- if something (like a combine) does not have an AI marker it should not prevent from raising other implements
 	-- like the header, which does have markers), therefore, return true here
 	if not aiBackMarker or not aiFrontMarker then return true end
@@ -1229,8 +1238,6 @@ end
 
 function FieldworkAIDriver:startAiTurn(ix)
 	self:debug('Starting an AI turn.')
-	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
 	if AITurn.canMakeKTurn(self.vehicle, self.turnContext) then
 		self:debug('Starting a K turn')
 		---@type AITurn
@@ -1247,3 +1254,9 @@ function FieldworkAIDriver:startFieldworkCourseWithTemporaryCourse(temporaryCour
 	self:startCourse(temporaryCourse, 1, self.fieldworkCourse, fieldworkIx)
 end
 
+-- switch back to fieldwork after the turn ended.
+function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
+	self.fieldworkState = self.states.WORKING
+	self:lowerImplements()
+	self:startCourse( self.fieldworkCourse, ix)
+end

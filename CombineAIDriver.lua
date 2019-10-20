@@ -443,7 +443,7 @@ function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
 
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
 
 	-- Combines drive special headland corner maneuvers
 	if self.turnContext:isHeadlandCorner() then
