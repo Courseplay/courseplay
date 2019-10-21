@@ -612,7 +612,6 @@ function CombineAIDriver:handleCombinePipe()
 end
 
 function CombineAIDriver:has80Percent()
-	self.vehicle:setCrabSteering(1);
 	return self.vehicle:getFillUnitFillLevelPercentage(self.combine.fillUnitIndex)*100 >= 80
 end
 
