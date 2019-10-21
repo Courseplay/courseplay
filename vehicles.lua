@@ -1135,7 +1135,7 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	TR = ceil(courseplay:calculateTurnRadius(steeringType, wheelBase, rotMax, CPRatio) * radiusMultiplier);
 
 	if TR > 0 then
-		if vehicle.maxTurningRadius and vehicle.maxTurningRadius > TR then
+		if vehicle.maxTurningRadius then
 			turnRadius = vehicle.maxTurningRadius;
 			courseplay:debug(('%s -> TurnRadius: Using Giants maxTurningRadius: %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
 		else
