@@ -60,7 +60,6 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	if mode2 then
 		vehicle.cp.toolsRealTurningNode = node;
 	end
-	local isPivot = workTool.cp.isPivot;
 	local xTipper,yTipper,zTipper = getWorldTranslation(node);
 	if debugActive then cpDebug:drawPoint(xTipper, yTipper+5, zTipper, 1, 0 , 0) end;
 	local frontNode = workTool.cp.frontNode;
@@ -232,11 +231,22 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 	local maxTractorAngle = rad(60);
 
-	if isPivot then
+	-- for articulated vehicles use the articulated axis' rotation node as it is a better indicator or the
+	-- vehicle's orientation than the direction node which often turns/moves with an articulated vehicle part
+	-- TODO: consolidate this with AITurn:getTurnNode()
+	local turnNode
+	local useArticulatedAxisRotationNode = SpecializationUtil.hasSpecialization(ArticulatedAxis, vehicle.specializations) and vehicle.spec_articulatedAxis.rotationNode
+	if useArticulatedAxisRotationNode then
+		turnNode = vehicle.spec_articulatedAxis.rotationNode
+	else
+		turnNode = vehicle.cp.DirectionNode
+	end
+
+	if workTool.cp.isPivot then
 		courseplay:showDirection(frontNode,lxFrontNode, lzFrontNode, 0, 1, 0);
 
-		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, xFrontNode,yFrontNode,zFrontNode);
-		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor, 0, 0.7, 0);
+		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(turnNode, xFrontNode,yFrontNode,zFrontNode);
+		courseplay:showDirection(turnNode,lxTractor, lzTractor, 0, 0.7, 0);
 
 		local rotDelta = (workTool.cp.nodeDistance * (0.5 - (0.023 * workTool.cp.nodeDistance - 0.073)));
 		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
@@ -244,7 +254,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 		local dollyToTrailerAngle = courseplay:getLocalYRotationToPoint(frontNode, xTipper, yTipper, zTipper, -1);
 
-		local tractorToDollyAngle = courseplay:getLocalYRotationToPoint(vehicle.cp.DirectionNode, xFrontNode, yFrontNode, zFrontNode, -1);
+		local tractorToDollyAngle = courseplay:getLocalYRotationToPoint(turnNode, xFrontNode, yFrontNode, zFrontNode, -1);
 
 		local rearAngleDiff	= (dollyToTrailerAngle - trailerToWaypointAngle);
 		rearAngleDiff = MathUtil.clamp(rearAngleDiff, -rad(45), rad(45));
@@ -257,13 +267,13 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 		lx, lz = MathUtil.getDirectionFromYRotation(angleDiff);
 	else
-		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, xTipper,yTipper,zTipper);
-		courseplay:showDirection(vehicle.cp.DirectionNode,lxTractor, lzTractor, 1, 1, 0);
+		lxTractor, lzTractor = AIVehicleUtil.getDriveDirection(turnNode, xTipper,yTipper,zTipper);
+		courseplay:showDirection(turnNode,lxTractor, lzTractor, 1, 1, 0);
 
 		local rotDelta = workTool.cp.nodeDistance * 0.3;
 		local trailerToWaypointAngle = courseplay:getLocalYRotationToPoint(node, tcx, yTipper, tcz, -1) * rotDelta;
 		trailerToWaypointAngle = MathUtil.clamp(trailerToWaypointAngle, -math.rad(90), math.rad(90));
-		local tractorToTrailerAngle = courseplay:getLocalYRotationToPoint(vehicle.cp.DirectionNode, xTipper, yTipper, zTipper, -1);
+		local tractorToTrailerAngle = courseplay:getLocalYRotationToPoint(turnNode, xTipper, yTipper, zTipper, -1);
 
 		local angleDiff = (tractorToTrailerAngle - trailerToWaypointAngle) * (1 + rotDelta);
 
@@ -281,8 +291,10 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, -0.1, lzTipper);
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;
-	courseplay:showDirection(vehicle.cp.DirectionNode,lx,lz, 0.7, 0, 1);
-
+	courseplay:showDirection(turnNode,lx,lz, 0.7, 0, 1);
+	-- do a little bit of damping if using the articulated axis as lx tends to oscillate around 0 which results in the
+	-- speed adjustment kicking in and slowing down the vehicle.
+	if useArticulatedAxisRotationNode and math.abs(lx) < 0.04 then lx = 0 end
 	-- true means this code is taking care of the reversing as this is not a trivial case
 	-- for instance because of a trailer
 	return lx,lz,fwd, true;
