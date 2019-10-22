@@ -2705,7 +2705,11 @@ end
 ---@return Course
 function TurnContext:createFinishingRowCourse(vehicle)
 	local waypoints = {}
-	for d = 0, 10, 1 do
+	-- must be at least as long as the front marker distance so we are not reaching the end of the course before
+	-- the implement reaches the field edge (a negative frontMarkerDistance means the implement is behind the
+	-- vehicle, this isn't a problem for a positive frontMarkerDistance as the implement reaches the field edge
+	-- before the vehicle.
+	for d = 0, math.max(10, -self.frontMarkerDistance * 2), 1 do
 		local x, _, z = localToWorld(self.workEndNode.node, 0, 0, d)
 		table.insert(waypoints, {x = x, z = z})
 	end
