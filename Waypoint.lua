@@ -78,9 +78,10 @@ end
 function Waypoint:set(cpWp, cpIndex)
 	-- we initialize explicitly, no table copy as we want to have
 	-- full control over what is used in this object
-	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ
-	self.x = cpWp.cx or cpWp.posX or cpWp.x or 0
-	self.z = cpWp.cz or cpWp.posZ or cpWp.z or 0
+	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ (but if revPos exists, that takes precedence
+	-- just like in the original turn code, don't ask me why there are two different values if we only use one...)
+	self.x = cpWp.cx or cpWp.revPosX or cpWp.posX or cpWp.x or 0
+	self.z = cpWp.cz or cpWp.revPosZ or cpWp.posZ or cpWp.z or 0
 	-- for backwards compatibility only
 	self.cx = self.x
 	self.cz = self.z
@@ -99,6 +100,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.mustReach = cpWp.mustReach
 	self.align = cpWp.align
 	self.headlandHeightForTurn = cpWp.headlandHeightForTurn
+	self.changeDirectionWhenAligned = cpWp.changeDirectionWhenAligned
 end
 
 --- Get the (original, non-offset) position of a waypoint
@@ -386,6 +388,14 @@ function Course:switchingDirectionAt(ix)
 	return self:switchingToForwardAt(ix) or self:switchingToReverseAt(ix)
 end
 
+function Course:getNextDirectionChangeFromIx(ix)
+	for i = ix, #self.waypoints do
+		if self:switchingDirectionAt(i) then
+			return i
+		end
+	end
+end
+
 function Course:switchingToReverseAt(ix)
 	return not self:isReverseAt(ix) and self:isReverseAt(ix + 1)
 end
@@ -409,6 +419,11 @@ end
 function Course:isOnOutermostHeadland(ix)
 	return self.waypoints[ix].lane and self.waypoints[ix].lane == -1
 end
+
+function Course:isChangeDirectionWhenAligned(ix)
+	return self.waypoints[ix].changeDirectionWhenAligned
+end
+
 
 --- Returns the position of the waypoint at ix with the current offset applied.
 function Course:getWaypointPosition(ix)

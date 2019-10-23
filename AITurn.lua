@@ -319,6 +319,7 @@ function CourseTurn:turn()
 
 	AITurn.turn(self)
 	self:updateTurnProgress()
+	self:changeDirectionWhenAligned()
 
 	if self.turnCourse:isTurnEndAtIx(self.turnCourse:getCurrentWaypointIx()) then
 		self.state = self.states.ENDING_TURN
@@ -340,4 +341,25 @@ end
 function CourseTurn:updateTurnProgress()
 	local progress = self.turnCourse:getCurrentWaypointIx() / #self.turnCourse
 	self.vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", progress, self.turnContext:isLeftTurn())
+end
+
+--- When switching direction during a turn, especially when switching to reverse we want to make sure
+--- that a towed implement is aligned with the reverse direction (already straight behind the tractor when
+--- starting to reverse). Turn courses are generated with a very long alignment section to allow for this with
+--- the changeDirectionWhenAligned property set, indicating that we don't have to travel along the path, we can
+--- change direction as soon as the implement is aligned.
+--- So check that here and force a direction change when possible.
+function CourseTurn:changeDirectionWhenAligned()
+	if self.turnCourse:isChangeDirectionWhenAligned(self.turnCourse:getCurrentWaypointIx()) then
+		local aligned = self.driver:areAllImplementsAligned(self.turnContext.turnEndWpNode.node)
+		self:debug('aligned: %s', tostring(aligned))
+		if aligned then
+			-- find the next direction switch and continue course from there
+			local nextDirectionChangeIx = self.turnCourse:getNextDirectionChangeFromIx(self.turnCourse:getCurrentWaypointIx())
+			if nextDirectionChangeIx then
+				self:debug('skipping to next direction change at %d', nextDirectionChangeIx + 1)
+				self.driver:resumeAt(nextDirectionChangeIx + 1)
+			end
+		end
+	end
 end

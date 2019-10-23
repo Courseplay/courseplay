@@ -93,7 +93,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 						end;
 					else
 						local color = { r = 0, g = 1, b = 1}; -- Light Blue Line
-						if nextTurnTarget.changeWhenPosible then
+						if nextTurnTarget.changeDirectionWhenAligned then
 							color["r"], color["g"], color["b"] = 1, 0.706, 0; -- Orange Line
 						end
 						cpDebug:drawLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ);  -- Light Blue Line
@@ -469,7 +469,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 
 				-- Start reversing before time if we are allowed and if we can
-				if curTurnTarget.changeWhenPosible then
+				if curTurnTarget.changeDirectionWhenAligned then
 					-- Get the world rotation of the next lane
 					local laneRot = MathUtil.getYRotationFromDirection(turnContext.turnEndWp.dx, turnContext.turnEndWp.dz);
 					laneRot = deg(laneRot);
@@ -488,7 +488,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 					-- Get the angle difference
 					local angleDifference = min( abs((toolRot + 180 - laneRot) %360 - 180), abs((laneRot + 180 - toolRot) %360 - 180) )
 
-					-- If the angle diff is less than the allowed angle, then goto the first wp in oposite drive direction
+					-- If the angle diff is less than the allowed angle, then goto the first wp in opposite drive direction
 					if angleDifference then
 						courseplay:debug(("%s:(Turn) Change direction when anglediff(%.2f) <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
 						if angleDifference <= allowedAngle then
@@ -1341,7 +1341,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	if turnInfo.frontMarker > 0 then
 		frontOffset = frontOffset - turnInfo.frontMarker;
 	end;
-	-- getAttachedImplementsAllowTurnBackward will return true for anything easy to reverse, that is has now towed implement,
+	-- getAttachedImplementsAllowTurnBackward will return true for anything easy to reverse, that is has no towed implement,
 	-- like combines or tractors with implements mounted on the 3 point hitch. Those should make the same turn (fishtail or K-turn)
 	-- as combines do as it takes up a lot less space on the headland. Our calculation of how much space is needed is still off a bit
 	-- so you may have to turn off 'turn on field' for this to work for tractors.
@@ -1852,7 +1852,7 @@ function courseplay:haveHeadlands(vehicle)
 	return vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0;
 end;
 
-function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeWhenPosible, doNotAddLastPoint)
+function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeDirectionWhenAligned, doNotAddLastPoint)
 	local endTurn = false;
 	local wpDistance = wpDistance;
 	local dist = courseplay:distance(fromPoint.x, fromPoint.z, toPoint.x, toPoint.z);
@@ -1864,7 +1864,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 	end;
 
 	-- add first point
-	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, endTurn, reverse, nil, nil, nil, changeWhenPosible);
+	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, endTurn, reverse, nil, nil, nil, changeDirectionWhenAligned);
 
 	-- add points between the first and last
 	local posX, posZ;
@@ -1874,7 +1874,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 			posX = fromPoint.x + (i * wpDistance * dx);
 			posZ = fromPoint.z + (i * wpDistance * dz);
 
-			courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, nil, nil, nil, changeWhenPosible);
+			courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, nil, nil, nil, changeDirectionWhenAligned);
 		end;
 	end;
 
@@ -1890,7 +1890,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 	posX = toPoint.x;
 	posZ = toPoint.z;
 
-	courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, revPosX, revPosZ, nil, changeWhenPosible);
+	courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, revPosX, revPosZ, nil, changeDirectionWhenAligned);
 
 end;
 
@@ -1981,7 +1981,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	delete(point);
 end;
 
-function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, changeWhenPosible)
+function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, changeDirectionWhenAligned)
 	local target = {};
 	target.posX 			  = posX;
 	target.posZ 			  = posZ;
@@ -1989,11 +1989,11 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, rev
 	target.turnReverse		  = turnReverse;
 	target.revPosX 			  = revPosX;
 	target.revPosZ 			  = revPosZ;
-	target.changeWhenPosible = changeWhenPosible;
+	target.changeDirectionWhenAligned = changeDirectionWhenAligned;
 	table.insert(vehicle.cp.turnTargets, target);
 
 	if not dontPrint then
-		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeWhenPosible=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeWhenPosible and true or false)), 14);
+		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeDirectionWhenAligned=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeDirectionWhenAligned and true or false)), 14);
 	end;
 end
 
@@ -2612,7 +2612,7 @@ end
 
 --- Returns true if node1 is pointing approximately in node2's direction
 ---@param thresholdDeg number defines what 'approximately' means, by default if the difference is less than 10 degrees
-function TurnContext:isSameDirection(node1, node2, thresholdDeg)
+function TurnContext.isSameDirection(node1, node2, thresholdDeg)
 	local lx, _, lz = localDirectionToLocal(node1, node2, 0, 0, 1)
 	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg or 5)
 end
@@ -2620,13 +2620,13 @@ end
 --- Returns true if node is pointing approximately in the turn start direction, that is, the direction from
 --- turn start waypoint to the turn end waypoint.
 function TurnContext:isDirectionCloseToStartDirection(node, thresholdDeg)
-	return self:isSameDirection(node, self.turnStartWpNode.node, thresholdDeg)
+	return TurnContext.isSameDirection(node, self.turnStartWpNode.node, thresholdDeg)
 end
 
 --- Returns true if node is pointing approximately in the turn's ending direction, that is, the direction of the turn
 --- end waypoint, the direction the vehicle will continue after the turn
 function TurnContext:isDirectionCloseToEndDirection(node, thresholdDeg)
-	return self:isSameDirection(node, self.turnEndWpNode.node, thresholdDeg)
+	return TurnContext.isSameDirection(node, self.turnEndWpNode.node, thresholdDeg)
 end
 
 --- Use to find out if we can make a turn: are we farther away from the next row than our turn radius

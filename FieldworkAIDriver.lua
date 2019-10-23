@@ -895,8 +895,9 @@ function FieldworkAIDriver:lowerImplements()
 		implement.object:aiImplementStartLine()
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
-	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
+	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) or self.ppc:isReversing() then
 		-- sowing machines want to stop while the implement is being lowered
+		-- also, when reversing, we assume that we'll switch to forward, so stop while lowering, then start forward
 		self.fieldworkState = self.states.WAITING_FOR_LOWER_DELAYED
 	end
 end
@@ -1075,6 +1076,7 @@ function FieldworkAIDriver:getAIMarkers(object, suppressLog)
 end
 
 --- When finishing a turn, is it time to lower all implements here?
+-- TODO: remove the reversing parameter and use ppc to find out once not called from turn.lua
 function FieldworkAIDriver:shouldLowerImplements(turnEndNode, reversing)
 	-- see if the vehicle has AI markers -> has work areas (built-in implements like a mower or cotton harvester)
 	local doLower, vehicleHasMarkers = self:shouldLowerThisImplement(self.vehicle, turnEndNode, reversing)
@@ -1153,6 +1155,25 @@ function FieldworkAIDriver:shouldRaiseThisImplement(object, turnStartNode)
 	self:debug('%s: shouldRaiseImplements: dz = %.1f', nameNum(object), dz)
 	-- marker is just in front of the turn start node
 	return dz > 0
+end
+
+--- Are all implements now aligned with the node? Can be used to find out if we are for instance aligned with the
+--- turn end node direction in a question mark turn and can start reversing.
+function FieldworkAIDriver:areAllImplementsAligned(node)
+	-- see if the vehicle has AI markers -> has work areas (built-in implements like a mower or cotton harvester)
+	local allAligned = self:isThisImplementAligned(self.vehicle, node)
+	-- and then check all implements
+	for _, implement in ipairs(self:getAllAIImplements(self.vehicle)) do
+		-- _all_ implements must be aligned, hence the 'and'
+		allAligned = allAligned and self:isThisImplementAligned(implement.object, node)
+	end
+	return allAligned
+end
+
+function FieldworkAIDriver:isThisImplementAligned(object, node)
+	local aiFrontMarker, _, _ = self:getAIMarkers(object, true)
+	if not aiFrontMarker then return true end
+	return TurnContext.isSameDirection(aiFrontMarker, node, 5)
 end
 
 function FieldworkAIDriver:onDraw()

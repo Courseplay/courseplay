@@ -496,7 +496,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 					end;
 				end;
 			else
-				-- Greate an new linked node.
+				-- Create an new linked node.
 				node = courseplay:createNewLinkedNode(object, "realTurningNode", object.rootNode);
 
 				-- Find the pivot point on articulated vehicle
