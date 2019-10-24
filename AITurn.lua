@@ -110,6 +110,8 @@ function AITurn:drive(dt)
 		iAmDriving = self:turn(dt)
 	end
 	self.turnContext:drawDebug()
+	-- TODO: this needs a clean solution. THe speed must be reset to math.huge in every loop, this is normally done by AIDriver:drive()
+	if iAmDriving then self.driver:resetSpeed() end
 	return iAmDriving
 end
 
@@ -127,7 +129,7 @@ function AITurn:finishRow(dt)
 		self:debug('Row finished, starting turn.')
 	end
 	if self.driver:holdInTurnManeuver(true) then
-		-- tell driver to stop until straw swath is active
+		-- tell driver to stop while straw swath is active
 		self.driver:setSpeed(0)
 	end
 	return false
@@ -253,9 +255,7 @@ end
 
 
 function CombineHeadlandTurn:turn(dt)
-
 	AITurn.turn(self)
-
 	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self.driver:getDirectionNode())
 	local angleToTurnEnd = math.abs(self.turnContext:getAngleToTurnEndDirection(self.driver:getDirectionNode()))
 
@@ -288,8 +288,7 @@ function CombineHeadlandTurn:turn(dt)
 			-- lower implements here unconditionally (regardless of the direction, self:endTurn() would wait until we
 			-- are pointing to the turn target direction)
 			self.driver:lowerImplements()
-			-- just in case let the driver know where to continue
-			self.driver:resumeAt(self.turnContext.turnEndWpIx)
+			self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
 		end
 	end
 	return true

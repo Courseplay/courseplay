@@ -438,7 +438,7 @@ function AIDriver:driveVehicleBySteeringAngle(dt, moveForwards, steeringAngleNor
 				acc = self.slowAcceleration;
 			end
 		end
-		if not self.allowedToDrive then
+		if not self.allowedToDrive or math.abs(maxSpeed) < 0.0001 then
 			acc = 0;
 		end
 		if not moveForwards then
