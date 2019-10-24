@@ -829,3 +829,9 @@ function Course:createLegacyCourse()
 	legacyCourse[#legacyCourse].crossing = true
 	return legacyCourse
 end
+
+function Course:setNodeToWaypoint(node, ix)
+	local x, y, z = self:getWaypointPosition(ix)
+	setTranslation(node, x, y, z)
+	setRotation(node, 0, self:getWaypointYRotation(ix), 0)
+end

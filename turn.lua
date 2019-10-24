@@ -631,7 +631,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
 		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
-		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.workEndNode.node) then
+		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.workEndNode) then
 			-- raise implements only if this is not a headland turn; in headland
 			-- turns the turn waypoint attribute will control when to raise/lower implements
 			if not turnContext:isHeadlandCorner() then
@@ -2461,6 +2461,7 @@ TurnContext = CpObject()
 
 --- All data needed to create a turn
 -- TODO: this uses a bit too many course internal info, should maybe moved into Course?
+-- TODO: could this be done a lot easier with child nodes sitting on a single corner node?
 ---@param course Course
 ---@param turnStartIx number
 ---@param aiDriverData table to store the turn start/end waypoint nodes (which are created if nil passed in)
@@ -2513,7 +2514,7 @@ function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMar
 
 	self:setWorkStartNode(course, self.turnEndWpIx, aiDriverData)
 	self:setWorkEndNode(course, turnStartIx, aiDriverData)
-	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode.node, 0, 0, 0)
+	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode, 0, 0, 0)
 	self.leftTurn = self.dx > 0
 	courseplay.debugFormat(self.debugChannel, 'Turn context: start ix = %d', turnStartIx)
 end
@@ -2531,45 +2532,58 @@ end
 --- Set up a node where the implement must be lowered when starting to work after the turn maneuver
 function TurnContext:setWorkStartNode(course, turnEndIx, aiDriverData)
 	if not aiDriverData.workStartNode then
-		aiDriverData.workStartNode = WaypointNode('workStart')
+		aiDriverData.workStartNode = courseplay.createNode('workStart', 0, 0, 0)
 	end
-	aiDriverData.workStartNode:setToWaypoint(course, turnEndIx)
+	if not aiDriverData.lateWorkStartNode then
+		-- this is for the headland turns where we want to cover the corner in the inbound direction (before turning)
+		-- so we can start working later after the turn
+		aiDriverData.lateWorkStartNode = courseplay.createNode('lateWorkStartNode', 0, 0, 0, aiDriverData.workStartNode)
+	end
+	course:setNodeToWaypoint(aiDriverData.workStartNode, turnEndIx)
 	if self:isHeadlandCorner() then
 		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
-		-- for headland turns, we cover the corner in the outbound direction, which is half self.workWidth behind 
+		-- for headland turns, when we cover the corner in the outbound direction, which is half self.workWidth behind
 		-- the turn end node
-		local x, y, z = localToWorld(aiDriverData.workStartNode.node, 0, 0, - self.workWidth / 2 - overshoot)
-		setTranslation(aiDriverData.workStartNode.node, x, y, z)
+		local x, y, z = localToWorld(aiDriverData.workStartNode, 0, 0, - self.workWidth / 2 - overshoot)
+		setTranslation(aiDriverData.workStartNode, x, y, z)
+		setTranslation(aiDriverData.lateWorkStartNode, 0, 0, self.workWidth)
 	end
 	self.workStartNode = aiDriverData.workStartNode
+	self.lateWorkStartNode = aiDriverData.lateWorkStartNode
 end
 
 --- Set up a node where the implement must be raised when finishing a row before the turn
 function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData)
 	if not aiDriverData.workEndNode then
-		aiDriverData.workEndNode = WaypointNode('workEnd')
+		aiDriverData.workEndNode = courseplay.createNode('workEnd', 0, 0, 0)
+	end
+	if not aiDriverData.lateWorkEndNode then
+		-- this is for the headland turns where we want to cover the corner in the inbound direction (before turning)
+		aiDriverData.lateWorkEndNode = courseplay.createNode('lateWorkEnd', 0, 0, 0, aiDriverData.workEndNode)
 	end
 	if self:isHeadlandCorner() then
 		-- for headland turns (about 45-135 degrees) the turn end node is on the corner but pointing to
 		-- the direction after the turn. So create a node at the same location but pointing into the incoming direction
 		-- to be used to find out when to raise the implements during a headland turn
-		aiDriverData.workEndNode:setToWaypoint(course, self.turnEndWpIx)
-		setRotation(aiDriverData.workEndNode.node, 0, course:getWaypointYRotation(turnStartIx), 0)
+		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnEndWpIx)
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx), 0)
 		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
 		-- for headland turns, we cover the corner in the outbound direction, so here we can end work when 
 		-- the implement is half self.workWidth before the turn end node
-		local x, y, z = localToWorld(aiDriverData.workEndNode.node, 0, 0, - self.workWidth / 2 + overshoot)
-		setTranslation(aiDriverData.workEndNode.node, x, y, z)
+		local x, y, z = localToWorld(aiDriverData.workEndNode, 0, 0, - self.workWidth / 2 + overshoot)
+		setTranslation(aiDriverData.workEndNode, x, y, z)
+		setTranslation(aiDriverData.lateWorkEndNode, 0, 0, self.workWidth)
 	else
 		-- For 180 turns, create a node pointing in the incoming direction of the turn start waypoint. This will be used
 		-- to determine relative position to the turn start. (the turn start WP can't be used as it is
 		-- pointing towards the turn end waypoint which may be anything around 90 degrees)
-		-- there's no eed for an overshoot as it is being taken care during the course generation
-		aiDriverData.workEndNode:setToWaypoint(course, self.turnStartWpIx)
-		setRotation(aiDriverData.workEndNode.node, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
+		-- there's no need for an overshoot as it is being taken care during the course generation
+		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnStartWpIx)
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
 	end
 
 	self.workEndNode = aiDriverData.workEndNode
+	self.lateWorkEndNode = aiDriverData.lateWorkEndNode
 end
 
 -- node's position in the turn end wp node's coordinate system
@@ -2710,7 +2724,7 @@ function TurnContext:createFinishingRowCourse(vehicle)
 	-- vehicle, this isn't a problem for a positive frontMarkerDistance as the implement reaches the field edge
 	-- before the vehicle.
 	for d = 0, math.max(10, -self.frontMarkerDistance * 2), 1 do
-		local x, _, z = localToWorld(self.workEndNode.node, 0, 0, d)
+		local x, _, z = localToWorld(self.workEndNode, 0, 0, d)
 		table.insert(waypoints, {x = x, z = z})
 	end
 	return Course(vehicle,waypoints, true)
@@ -2720,15 +2734,26 @@ function TurnContext:drawDebug()
 	if courseplay.debugChannels[self.debugChannel] then
 		local cx, cy, cz
 		local nx, ny, nz
+		local height = 1
 		if self.workStartNode then
-			cx, cy, cz = localToWorld(self.workStartNode.node, -self.workWidth / 2, 0, 0)
-			nx, ny, nz = localToWorld(self.workStartNode.node, self.workWidth / 2, 0, 0)
-			cpDebug:drawLine(cx, cy + 0.3, cz, 0, 1, 0, nx, ny + 0.3, nz)
+			cx, cy, cz = localToWorld(self.workStartNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.workStartNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0, 1, 0, nx, ny + height, nz)
+		end
+		if self.lateWorkStartNode then
+			cx, cy, cz = localToWorld(self.lateWorkStartNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.lateWorkStartNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0, 0.7, 0, nx, ny + height, nz)
 		end
 		if self.workEndNode then
-			cx, cy, cz = localToWorld(self.workEndNode.node, -self.workWidth / 2, 0, 0)
-			nx, ny, nz = localToWorld(self.workEndNode.node, self.workWidth / 2, 0, 0)
-			cpDebug:drawLine(cx, cy + 0.3, cz, 1, 0, 0, nx, ny + 0.3, nz)
+			cx, cy, cz = localToWorld(self.workEndNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.workEndNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 1, 0, 0, nx, ny + height, nz)
+		end
+		if self.lateWorkEndNode then
+			cx, cy, cz = localToWorld(self.lateWorkEndNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.lateWorkEndNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0.7, 0, 0, nx, ny + height, nz)
 		end
 	end
 end

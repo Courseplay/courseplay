@@ -39,7 +39,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
 		-- Simple reversing, no trailer to back up, so set the direction and get out of here, no need for
-		-- all the sophisticated reversing
+		-- all the sophisticated reversing	
 		if newTarget then
 			-- If we have the revPosX, revPosZ set, use those
 			if newTarget.revPosX and newTarget.revPosZ then

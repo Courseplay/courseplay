@@ -1173,7 +1173,7 @@ end
 function FieldworkAIDriver:isThisImplementAligned(object, node)
 	local aiFrontMarker, _, _ = self:getAIMarkers(object, true)
 	if not aiFrontMarker then return true end
-	return TurnContext.isSameDirection(aiFrontMarker, node, 5)
+	return TurnContext.isSameDirection(aiFrontMarker, node, 2)
 end
 
 function FieldworkAIDriver:onDraw()

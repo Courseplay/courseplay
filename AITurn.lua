@@ -116,7 +116,7 @@ end
 -- default for 180 turns: we need to raise the implement (when finishing a row) when we reach the
 -- workEndNode.
 function AITurn:getRaiseImplementNode()
-	return self.turnContext.workEndNode.node
+	return self.turnContext.workEndNode
 end
 
 function AITurn:finishRow(dt)
@@ -245,6 +245,13 @@ function CombineHeadlandTurn:startTurn()
 	self:debug('Starting combine headland turn')
 end
 
+-- in a combine headland turn we want to raise the header after it reached the field edge (or headland edge on an inner
+-- headland.
+function CombineHeadlandTurn:getRaiseImplementNode()
+	return self.turnContext.lateWorkEndNode
+end
+
+
 function CombineHeadlandTurn:turn(dt)
 
 	AITurn.turn(self)
@@ -331,7 +338,7 @@ end
 
 function CourseTurn:endTurn(dt)
 -- keep driving on the turn course until we need to lower our implements
-	if self.driver:shouldLowerImplements(self.turnContext.workStartNode.node, self.driver.ppc:isReversing()) then
+	if self.driver:shouldLowerImplements(self.turnContext.workStartNode, self.driver.ppc:isReversing()) then
 		self:debug('Turn ended, resume fieldwork')
 		self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
 	end
