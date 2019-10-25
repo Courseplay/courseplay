@@ -2724,7 +2724,8 @@ function TurnContext:createFinishingRowCourse(vehicle)
 	-- vehicle, this isn't a problem for a positive frontMarkerDistance as the implement reaches the field edge
 	-- before the vehicle (except for very wide work widths of course, so make sure we have enough course to cross
 	-- the headland)
-	for d = 0, math.max(self.workWidth * 1.5, -self.frontMarkerDistance * 2), 1 do
+	-- TODO: fix this properly, may be we should check the end course during turns instead
+	for d = 0, math.max(self.workWidth * 1.5, -self.frontMarkerDistance * 6), 1 do
 		local x, _, z = localToWorld(self.workEndNode, 0, 0, d)
 		table.insert(waypoints, {x = x, z = z})
 	end
