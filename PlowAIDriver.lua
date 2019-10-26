@@ -78,8 +78,9 @@ function PlowAIDriver:driveFieldwork(dt)
 			self.fieldworkState = self.states.ROTATING_PLOW
 		end
 	else
-		FieldworkAIDriver.driveFieldwork(self, dt)
+		return FieldworkAIDriver.driveFieldwork(self, dt)
 	end
+	return false
 end
 
 function PlowAIDriver:onWaypointPassed(ix)
