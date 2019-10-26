@@ -1277,5 +1277,5 @@ end
 function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
 	self.fieldworkState = self.states.WORKING
 	self:lowerImplements()
-	self:startCourse( self.fieldworkCourse, ix)
+	self:startCourse( self.fieldworkCourse, self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(ix, self.ppc:getForwardDrivingControlledNode(), 0))
 end
