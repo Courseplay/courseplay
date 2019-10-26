@@ -207,9 +207,13 @@ function PurePursuitController:switchControlledNode()
 	if self:isReversing() then
 		-- if there's a reverser node on the tool, use that
 		local reverserDirectionNode = AIVehicleUtil.getAIToolReverserDirectionNode(self.vehicle)
+		local reversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
 		if reverserDirectionNode then
 			self:setControlledNode(reverserDirectionNode)
-			debugText = 'implement reverse'
+			debugText = 'implement reverse (Giants)'
+		elseif reversingWheeledWorkTool and reversingWheeledWorkTool.cp.realTurningNode then
+			self:setControlledNode(reversingWheeledWorkTool.cp.realTurningNode)
+			debugText = 'implement reverse (Courseplay)'
 		elseif self.vehicle.spec_articulatedAxis ~= nil then
 			-- articulated axis vehicles have a special reverser node
 			-- and yes, Giants has a typo in there...
