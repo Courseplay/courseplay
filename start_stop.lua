@@ -801,10 +801,7 @@ function courseplay:stop(self)
 	self.cp.rotateablePlow = nil;
 	self.cp.hasSowingMachine = false;
 	self.cp.hasSprayer = false;
-	if self.cp.tempToolOffsetX ~= nil then
-		courseplay:changeToolOffsetX(self, nil, self.cp.tempToolOffsetX, true);
-		self.cp.tempToolOffsetX = nil
-	end;
+
 	if self.cp.manualWorkWidth ~= nil then
 		courseplay:changeWorkWidth(self, nil, self.cp.manualWorkWidth, true)
 		if self.cp.hud.currentPage == courseplay.hud.PAGE_COURSE_GENERATION then

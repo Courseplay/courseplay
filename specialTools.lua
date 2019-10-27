@@ -866,7 +866,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 end
 
 -- TODO: this screams for refactoring. Those self.cp.is<some special tool> are completely wrong. We should set the
--- attributes (like offst, noStopOnEdge etc,) which needs to be set for that specfic tool and that's it, no need for this
+-- attributes (like offset, noStopOnEdge etc,) which needs to be set for that specific tool and that's it, no need for this
 -- tool specific variable. (Or better yet, the whole special tool config should be read from an XML file)
 function courseplay:askForSpecialSettings(self, object)
 	--- SPECIAL VARIABLES THAT CAN BE USED:
@@ -1012,8 +1012,9 @@ function courseplay:askForSpecialSettings(self, object)
 		object.cp.lastFillLevel = object.cp.fillLevel;
 	end;
 ]]
-	if automaticToolOffsetX ~= nil and self.cp.tempToolOffsetX == nil then
-		self.cp.tempToolOffsetX = self.cp.toolOffsetX;
+	-- if we never set the auto tool offset yet (after startup?) do it now once
+	if automaticToolOffsetX ~= nil and self.cp.automaticToolOffsetX == nil then
+		self.cp.automaticToolOffsetX = automaticToolOffsetX
 		courseplay:changeToolOffsetX(self, nil, automaticToolOffsetX, true);
 	end;
 

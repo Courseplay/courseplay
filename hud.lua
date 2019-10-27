@@ -1,3 +1,4 @@
+---@class courseplay.hud
 courseplay.hud = {};
 
 local abs, ceil, floor, max = math.abs, math.ceil, math.floor, math.max;
@@ -2011,6 +2012,10 @@ function courseplay.hud:setupCalculateWorkWidthButton(vehicle,page,line)
 	courseplay.button:new(vehicle, page, { 'iconSprite.png', 'calculator' }, 'calculateWorkWidth', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
 end
 
+function courseplay.hud:setupSetAutoToolOffsetXButton(vehicle,page,line)
+	courseplay.button:new(vehicle, page, { 'iconSprite.png', 'calculator' }, 'setAutoToolOffsetX', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
+end
+
 function courseplay.hud:setupShovelModeButtons(vehicle, pg)
 -- Page 9: Shovel settings
 	local hSmall = self.buttonSize.small.h;
@@ -2409,6 +2414,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleTurnOnField', 8, 3, 1 )
 	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetX', 8, 5, 1 )
+	self:setupSetAutoToolOffsetXButton(vehicle,8,5)
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
 	self:addRowButton(vehicle,'toggleOppositeTurnMode', 8, 7, 1 )
 	self:addRowButton(vehicle,'togglePlowFieldEdge', 8, 8, 1 )
