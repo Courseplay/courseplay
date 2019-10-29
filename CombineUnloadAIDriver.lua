@@ -127,8 +127,8 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:stopAndWait(dt)
 		return
 	end
-	local timeTillStartUnloading,combineToWaitFor
 	if self.onFieldState == self.states.FIND_COMBINE then
+		local timeTillStartUnloading,combineToWaitFor
 		if self:getDriveUnloadNow() or self:getAllTrailersFull() or self:shouldDriveOn() then
 			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
 			return
@@ -322,7 +322,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		--when the combine is empty, stop and wait for next combine
 		if self:getCombinesFillLevelPercent() <= 0.1 then
 			--when the combine is in a pocket, make room to get back to course
-			if self:getCombineIsInPocket() then
+			if self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isWaitingInPocket() then
 				print(nameNum(self.vehicle)..": combine empty, set self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_EMPTY_COMBINE)")
 				local reverseCourse = self:getStraightReverseCourse()
 				AIDriver.startCourse(self,reverseCourse,1)
@@ -603,15 +603,6 @@ end
 
 function CombineUnloadAIDriver:holdCombine()
 	self.combineToUnload.cp.driver:hold()
-end
-
-function CombineUnloadAIDriver:getCombineIsInPocket()
-	local driver = self.combineToUnload.cp.driver
-	--print(string.format("ON_FIELDWORK_COURSE (%s);UNLOAD_OR_REFILL_ON_FIELD (%s);WAITING_FOR_UNLOAD_IN_POCKET (%s)",
-	--tostring(driver.state == driver.states.ON_FIELDWORK_COURSE),tostring(driver.fieldworkState == driver.states.UNLOAD_OR_REFILL_ON_FIELD),tostring(driver.fieldWorkUnloadOrRefillState == driver.states.WAITING_FOR_UNLOAD_IN_POCKET)))
-	return driver.state == driver.states.ON_FIELDWORK_COURSE and
-		driver.fieldworkState == driver.states.UNLOAD_OR_REFILL_ON_FIELD and
-		driver.fieldWorkUnloadOrRefillState == driver.states.WAITING_FOR_UNLOAD_IN_POCKET
 end
 
 function CombineUnloadAIDriver:getRecordedSpeed()

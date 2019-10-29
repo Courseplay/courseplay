@@ -31,6 +31,7 @@ function CombineUnloadManager:addCombineToList(combine)
 		lastCeckedfillLevel = 0;
 		lastCheckedTime = 0;
 		unloaders = {};
+		secondsTill80Percent = 999
 	}
 end
 
@@ -81,6 +82,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	if combine ~= nil then
 		if combine.cp.wantsCourseplayer then
 			self:addUnloaderToCombine(unloader,combine)
+			combine.cp.wantsCourseplayer = false
 			return combine
 		end
 		local distance = courseplay:distanceToObject(unloader, combine)
@@ -92,9 +94,8 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 		end
 		--print(string.format("full: %.1f; 80percent: %.1f  time: %.1f",g_combineUnloadManager:getSecondsTillFull(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
 		if unloaderToAssign == unloader then
-			local timeTillStartUnloading = g_combineUnloadManager:getSecondsTill80Percent(combine) - timeToTarget
-			if timeToTarget > g_combineUnloadManager:getSecondsTill80Percent(combine)
-				and g_combineUnloadManager:getSecondsTill80Percent(combine) >0 then
+			local timeTillStartUnloading = self.combines[combine].secondsTill80Percent - timeToTarget
+			if timeTillStartUnloading < 0 then
 				--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
 				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
 				self:addUnloaderToCombine(unloader,combine)
@@ -191,6 +192,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 		attributes.pipeOffset = self:getPipeOffset(combine)
 		attributes.fillLevelPct = self:getCombinesFillLevelPercent(combine)
 		attributes.fillLevel = self:getCombinesFillLevel(combine)
+		attributes.secondsTill80Percent = self:getSecondsTill80Percent(combine) and self:getSecondsTill80Percent(combine) or attributes.secondsTill80Percent
 		self:updateFillSpeed(combine,attributes)
 		if attributes.measuredBackDistance == nil then
 			self:raycastBack(combine)
@@ -198,7 +200,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 		for name,value in pairs (attributes) do
 			--print(string.format("%s: %s",tostring(name),tostring(value)))
 		end
-		renderText(0.2,0.175+(0.03*number) ,0.02,string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d",nameNum(combine),tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders))
+		renderText(0.2,0.175+(0.03*number) ,0.02,string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d timeTill80: %d",nameNum(combine),tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders,attributes.secondsTill80Percent))
 		number = number +1
 	end
 end
@@ -220,13 +222,15 @@ end
 function CombineUnloadManager:getSecondsTillFull(combine)
 	local data = self.combines[combine]
 	local fillDiff = data.capacity -data.fillLevel
-	return fillDiff/ data.fillLitersPerSecond
+	local time = fillDiff/ data.fillLitersPerSecond
+	return time >0 and time or 999
 end
 
 function CombineUnloadManager:getSecondsTill80Percent(combine)
 	local data = self.combines[combine]
 	local fillDiff = data.capacity*0.8 -data.fillLevel
-	return fillDiff/ data.fillLitersPerSecond
+	local time = fillDiff/ data.fillLitersPerSecond
+	return data.fillLitersPerSecond > 0 and time or nil
 end
 
 function CombineUnloadManager:getIsChopper(chopper)
