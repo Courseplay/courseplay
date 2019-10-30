@@ -981,9 +981,14 @@ function FieldworkAIDriver:isAutoContinueAtWaitPointEnabled()
 	return false
 end
 
+-- instantiate generic turn course, derived classes may override
+function FieldworkAIDriver:createTurnCourse()
+	return CourseTurn(self.vehicle, self, self.turnContext)
+end
+
 function FieldworkAIDriver:startTurn(ix)
 	-- set a short lookahead distance for PPC to increase accuracy, especially after switching back from
-	-- turn.lua. That often happens too early (when lowering the implement) when we still have a crosstrack error,
+	-- turn.lua. That often happens too early (when lowering the implement) when we still have a cross track error,
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
@@ -993,9 +998,8 @@ function FieldworkAIDriver:startTurn(ix)
 			return
 		end
 	end
-	self.aiTurn = CourseTurn(self.vehicle, self, self.turnContext)
+	self.aiTurn = self:createTurnCourse()
 	self.fieldworkState = self.states.TURNING
-	--self:debug('Can\'t make K turn, reverting to turn.lua')
 	self:debug('Generating turn course...')
 end
 
@@ -1118,7 +1122,7 @@ function FieldworkAIDriver:shouldLowerThisImplement(object, turnEndNode, reversi
 		loweringDistance = self.vehicle.lastSpeed * self:getLoweringDurationMs() + 0.5 -- vehicle.lastSpeed is in meters per millisecond
 	end
 	local dzFront = (dzLeft + dzRight) / 2
-	self:debugSparse('%s: dzLeft = %.1f, dzRight = %.1f, dzFront = %.1f, dzBack = %.1f, loweringDistance = %.1f, reversing %s',
+	self:debug('%s: dzLeft = %.1f, dzRight = %.1f, dzFront = %.1f, dzBack = %.1f, loweringDistance = %.1f, reversing %s',
 		nameNum(object), dzLeft, dzRight, dzFront, dzBack, loweringDistance, tostring(reversing))
 	local dz = self.vehicle.cp.settings.implementLowerTime:is(ImplementRaiseLowerTimeSetting.EARLY) and dzFront or dzBack
 	if reversing then

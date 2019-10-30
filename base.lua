@@ -1655,7 +1655,13 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	local runCounter = self.cp.driver and self.cp.driver.runCounter or 0
 	--CP basics
 	setXMLInt(xmlFile, newKey..".basics #aiMode", self.cp.mode)
-	setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
+	if #self.cp.loadedCourses == 0 and self.cp.currentCourseId ~= 0 then
+		-- this is the case when a course has been generated and than saved, it is not in loadedCourses (should probably
+		-- fix it there), so make sure it is in the savegame
+		setXMLString(xmlFile, newKey..".basics #courses", tostring(self.cp.currentCourseId))
+	else
+		setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
+	end
 	setXMLString(xmlFile, newKey..".basics #lights", tostring(self.cp.warningLightsMode))
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsStartEnd", self.cp.visualWaypointsStartEnd)
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsAll", self.cp.visualWaypointsAll)

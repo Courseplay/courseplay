@@ -3,7 +3,7 @@ AdvancedSettingsScreen = {};
 
 local AdvancedSettingsScreen_mt = Class(AdvancedSettingsScreen, TabbedMenu);
 
-AdvancedSettingsScreen.CONTROLS = {"globalSettingsPage", "vehicleSettingsPage"}
+AdvancedSettingsScreen.CONTROLS = {"vehicleSettingsPage", "globalSettingsPage"}
 
 
 function AdvancedSettingsScreen:new(target, custom_mt)
@@ -33,8 +33,8 @@ function AdvancedSettingsScreen:setupPages()
     local alwaysVisiblePredicate = self:makeIsAlwaysVisiblePredicate()
 
     local orderedPages = {
-        { self.globalSettingsPage, alwaysVisiblePredicate, g_baseUIFilename, AdvancedSettingsScreen.TAB_UV.SETTINGS_GLOBAL, "GlobalSettingsPage" },
         { self.vehicleSettingsPage, alwaysVisiblePredicate, g_baseUIFilename, AdvancedSettingsScreen.TAB_UV.SETTINGS_VEHICLE, "vehicleSettingsPage" },
+        { self.globalSettingsPage, alwaysVisiblePredicate, g_baseUIFilename, AdvancedSettingsScreen.TAB_UV.SETTINGS_GLOBAL, "GlobalSettingsPage" },
     }
 
     for i, pageDef in ipairs(orderedPages) do
@@ -57,8 +57,8 @@ end
 
 --- Page tab UV coordinates for display elements.
 AdvancedSettingsScreen.TAB_UV = {
-    SETTINGS_GLOBAL = { 390, 148, 65, 65 },
     SETTINGS_VEHICLE = { 0, 209, 65, 65 },
+	SETTINGS_GLOBAL = { 390, 148, 65, 65 },
 }
 
 function AdvancedSettingsScreen:onCreateAdvancedSettingsScreenGuiHeader(element)
@@ -79,11 +79,9 @@ end
 
 function AdvancedSettingsScreen:onClickBack()
     AdvancedSettingsScreen:superClass().onClickBack(self);
-	--AutoDrive:guiClosed();
 end
 
 function AdvancedSettingsScreen:onClickOk()
-    --AdvancedSettingsScreen:superClass().onClickOk(self);
     local page = self:getActivePage()
     if page == nil then
         return;

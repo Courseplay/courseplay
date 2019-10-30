@@ -361,15 +361,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 				vehicle.cp.turnCorner = turnContext:createCorner(vehicle, turnInfo.turnRadius)
 
-				if turnInfo.isHarvester then
-					if vehicle.cp.headland.reverseManeuverType == courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT then
-						courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle, turnInfo)
-					elseif vehicle.cp.headland.reverseManeuverType == courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_CURVE then
-						courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turnInfo)
-					end
-				else
-					courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
-				end
+				courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
 			end
 
 			cpPrintLine(14, 1);
@@ -1770,11 +1762,10 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 
 	-- Drive forward until our implement reaches the circle end and a bit more so it is hopefully aligned with the tractor
 	-- and we can start reversing more or less straight.
+	fromPoint = vehicle.cp.turnCorner:getPointAtDistanceFromArcEnd((turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + buffer) * 0.2)
 	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromArcEnd(turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + buffer)
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), from ( %.2f %.2f ), to ( %.2f %.2f)"):format(
 		nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z), 14);
-	fromPoint = vehicle.cp.turnTargets[#vehicle.cp.turnTargets]
-	fromPoint.x, fromPoint.z = fromPoint.posX, fromPoint.posZ
 	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, false, false );
 
 	-- now back up the implement to the edge of the field (or headland)
@@ -1782,12 +1773,12 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 
 	if turnInfo.reversingWorkTool and turnInfo.reversingWorkTool.cp.realTurningNode then
 		-- with towed reversing tools the reference point is the tool, not the tractor so don't care about frontMarker and such
-		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.reverseWPChangeDistance - 1)
+		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.reverseWPChangeDistance - 10)
 	else
-		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.frontMarker - turnInfo.reverseWPChangeDistance - 1)
+		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.frontMarker - turnInfo.reverseWPChangeDistance - 10)
 	end
 
-	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, false, turnInfo.reverseWPChangeDistance);
+	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, true, turnInfo.reverseWPChangeDistance);
 
 	-- lower the implement 
 	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].lowerImplement = true
@@ -1795,7 +1786,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	--- Finish the turn
 	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromArcEnd(3)
 	-- add just one target well forward, making sure it is in front of the tractor
-	courseplay:addTurnTarget(vehicle, toPoint.x, toPoint.z, true, false)
+	--courseplay:addTurnTarget(vehicle, toPoint.x, toPoint.z, true, false)
 end
 
 function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftTurn)

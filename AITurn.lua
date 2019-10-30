@@ -18,6 +18,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --[[
 Turn maneuvers for the AI driver
+
+All turns have three phases:
+
+1. Finishing Row
+
+Keep driving until it is time to raise the implements.
+
+2. Turn
+
+The actual turn maneuver starts at the moment when the implements are raised. The turn maneuver can be dynamically
+controlled based on the vehicle's current position or follow a calculated course. Not all turns can be run dynamically,
+and this also has to be enabled by the vehicle.cp.settings.useAiTurns.
+
+Turn courses are calculated by the code in turn.lua (which historically also did the driving) and passed on the
+PPC to follow.
+
+3. Ending Turn
+
+In this phase we put the vehicle on a path to align with the course following the turn and initiate the lowering
+of implements when needed. From this point on, control is passed back to the AIDriver.
+
 ]]
 
 ---@class AITurn
@@ -26,18 +47,18 @@ Turn maneuvers for the AI driver
 AITurn = CpObject()
 AITurn.debugChannel = 12
 
-function AITurn:init(vehicle, driver, turnContext)
+function AITurn:init(vehicle, driver, turnContext, name)
 	self:addState('INITIALIZING')
 	self:addState('FINISHING_ROW')
 	self:addState('TURNING')
 	self:addState('ENDING_TURN')
-	self:addState('STARTING_ROW')
 	self.vehicle = vehicle
 	---@type AIDriver
 	self.driver = driver
 	---@type TurnContext
 	self.turnContext = turnContext
 	self.state = self.states.INITIALIZING
+	self.name = name or 'AITurn'
 end
 
 function AITurn:addState(state)
@@ -46,12 +67,12 @@ function AITurn:addState(state)
 end
 
 function AITurn:debug(...)
-	courseplay.debugVehicle(self.debugChannel, self.vehicle, 'turn state: ' .. self.state.name .. ' ' .. string.format( ... ))
+	courseplay.debugVehicle(self.debugChannel, self.vehicle, self.name .. ' state: ' .. self.state.name .. ' ' .. string.format( ... ))
 end
 
 --- Start the actual turn maneuver after the row is finished
 function AITurn:startTurn()
-
+	-- implement in derived classes
 end
 
 --- Stuff we need to do during the turn no matter what turn type we are using
@@ -101,10 +122,6 @@ function AITurn:drive(dt)
 	elseif self.state == self.states.ENDING_TURN then
 		-- Ending the turn (starting next row)
 		iAmDriving = self:endTurn(dt)
-	elseif self.state == self.states.STARTING_ROW then
-		-- implements lowered, PPC is driving the temporary course ending the turn, onNextCourse will return to work
-		-- nothing to do here
-		iAmDriving = false
 	else
 		-- Performing the actual turn
 		iAmDriving = self:turn(dt)
@@ -152,7 +169,7 @@ A K (3 point) turn to make a 180 to continue on the next row.addState
 KTurn = CpObject(AITurn)
 
 function KTurn:init(vehicle, driver, turnContext)
-	AITurn.init(self, vehicle, driver, turnContext)
+	AITurn.init(self, vehicle, driver, turnContext, 'KTurn')
 	self:addState('FORWARD')
 	self:addState('REVERSE')
 	self:addState('FORWARD_ARC')
@@ -230,7 +247,7 @@ CombineHeadlandTurn = CpObject(AITurn)
 ---@param driver AIDriver
 ---@param turnContext TurnContext
 function CombineHeadlandTurn:init(vehicle, driver, turnContext)
-	AITurn.init(self, vehicle, driver, turnContext)
+	AITurn.init(self, vehicle, driver, turnContext, 'CombineHeadlandTurn')
 	self:addState('FORWARD')
 	self:addState('REVERSE_STRAIGHT')
 	self:addState('REVERSE_ARC')
@@ -299,8 +316,8 @@ A turn maneuver following a course (waypoints created by turn.lua)
 ---@class CourseTurn : AITurn
 CourseTurn = CpObject(AITurn)
 
-function CourseTurn:init(vehicle, driver, turnContext)
-	AITurn.init(self, vehicle, driver, turnContext)
+function CourseTurn:init(vehicle, driver, turnContext, name)
+	AITurn.init(self, vehicle, driver, turnContext, name or 'CourseTurn')
 end
 
 -- this turn starts when the vehicle reached the point where the implements are raised.
@@ -366,4 +383,21 @@ function CourseTurn:changeDirectionWhenAligned()
 			end
 		end
 	end
+end
+
+--- Combines (in general, when harvesting) in headland corners we want to work the corner first, then back up and then
+--- turn so we harvest any area before we drive over it
+---@class CombineCourseTurn : CourseTurn
+CombineCourseTurn = CpObject(CourseTurn)
+
+---@param driver AIDriver
+---@param turnContext TurnContext
+function CombineCourseTurn:init(vehicle, driver, turnContext)
+	CourseTurn.init(self, vehicle, driver, turnContext, 'CombineCourseTurn')
+end
+
+-- in a combine headland turn we want to raise the header after it reached the field edge (or headland edge on an inner
+-- headland.
+function CombineCourseTurn:getRaiseImplementNode()
+	return self.turnContext.lateWorkEndNode
 end

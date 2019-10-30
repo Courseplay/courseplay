@@ -439,15 +439,22 @@ function CombineAIDriver:isWaitingForUnload()
 		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK)
 end
 
+function CombineAIDriver:createTurnCourse()
+	return CombineCourseTurn(self.vehicle, self, self.turnContext)
+end
+
 function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
 
 	self:setMarkers()
 	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
 
-	-- Combines drive special headland corner maneuvers
+	-- Combines drive special headland corner maneuvers, except potato and sugarbeet harvesters
 	if self.turnContext:isHeadlandCorner() then
-		if self.vehicle.cp.settings.useAITurns:is(true) and
+		if self:isPotatoOrSugarBeetHarvester() then
+			self:debug('Headland turn but this harvester uses normal turn maneuvers.')
+			UnloadableFieldworkAIDriver.startTurn(self, ix)
+		elseif self.vehicle.cp.settings.useAITurns:is(true) and
 			(not self.course:isOnOutermostHeadland(ix) or
 			(self.course:isOnOutermostHeadland(ix) and not self.vehicle.cp.turnOnField))
 		then
@@ -715,4 +722,15 @@ function CombineAIDriver:isDischarging()
 	else
 		return false
 	end
+end
+
+function CombineAIDriver:isPotatoOrSugarBeetHarvester()
+	for i, fillUnit in ipairs(self.vehicle:getFillUnits()) do
+		if self.vehicle:getFillUnitSupportsFillType(i, FillType.POTATO) or
+			self.vehicle:getFillUnitSupportsFillType(i, FillType.SUGARBEET) then
+			self:debug('This is a potato or sugar beet harvester.')
+			return true
+		end
+	end
+	return false
 end
