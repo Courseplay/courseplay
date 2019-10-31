@@ -102,14 +102,25 @@ function PlowAIDriver:rotatePlow()
 	self.plow.spec_plow:setRotationMax(plowShouldBeOnTheLeft)
 end
 
+--- Attempt to set the tool offset automatically, assuming the attacher joint of the tool is in the middle (the axis
+--- of the tractor). Then find the relative distance of the attacher node to the left/right AI markers:
+--- a tool with no offset will have the same distance from left and right
+--- a tool with offset will be closer to either left or right AI marker.
 function PlowAIDriver:setOffsetX()
 	local aiLeftMarker, aiRightMarker, aiBackMarker = self.plow.spec_plow:getAIMarkers()
 	if aiLeftMarker and aiBackMarker and aiRightMarker then
-		local leftMarkerDistance, _, _ = localToLocal(aiLeftMarker, self:getDirectionNode(), 0, 0, 0)
-		local rightMarkerDistance, _, _ = localToLocal(aiRightMarker, self:getDirectionNode(), 0, 0, 0)
+		local attacherJoint = self.plow:getActiveInputAttacherJoint()
+		local referenceNode = attacherJoint and attacherJoint.node or self:getDirectionNode()
+		-- attacher joint node in the coordinate system of markers as the markers seem always point forward whereas
+		-- the attacher joint's orientation isn't clear.
+		local leftMarkerDistance, _, _ = -localToLocal(referenceNode, aiLeftMarker, 0, 0, 0)
+		local rightMarkerDistance, _, _ = -localToLocal(referenceNode, aiRightMarker, 0, 0, 0)
 		-- TODO: Fix this offset dependency and copy paste
-		self.vehicle.cp.toolOffsetX = (leftMarkerDistance + rightMarkerDistance) / 2
+		local newToolOffsetX = (leftMarkerDistance + rightMarkerDistance) / 2
+		-- set to the average of old and new to smooth a little bit to avoid oscillations
+		self.vehicle.cp.toolOffsetX = (self.vehicle.cp.toolOffsetX + newToolOffsetX) / 2
 		self.vehicle.cp.totalOffsetX = self.vehicle.cp.laneOffset + self.vehicle.cp.toolOffsetX;
-		self:debug('%s: left = %.1f, right = %.1f, setting tool offsetX to %.1f', nameNum(self.plow), leftMarkerDistance, rightMarkerDistance, self.vehicle.cp.toolOffsetX)
+		self:debug('%s: left = %.1f, right = %.1f, setting tool offsetX to %.2f (total offset %.2f)',
+			nameNum(self.plow), leftMarkerDistance, rightMarkerDistance, self.vehicle.cp.toolOffsetX, self.vehicle.cp.totalOffsetX)
 	end
 end
