@@ -34,6 +34,7 @@ CombineAIDriver.myStates = {
 	REVERSING_TO_MAKE_A_POCKET = {},
 	MAKING_POCKET = {},
 	WAITING_FOR_UNLOAD_IN_POCKET = {},
+	WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED = {},
 	RETURNING_FROM_POCKET = {}
 }
 
@@ -88,6 +89,19 @@ function CombineAIDriver:drive(dt)
 	self:handlePipe()
 	-- the rest is the same as the parent class
 	UnloadableFieldworkAIDriver.drive(self, dt)
+end
+
+function CombineAIDriver:onEndCourse()
+	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
+	if self.state == self.states.ON_FIELDWORK_COURSE and fillLevel > 0 then
+		self:setInfoText(self:getFillLevelInfoText())
+		-- let AutoDrive know we are done and can unload
+		self:debug('Fieldwork done, fill level is %.1f, now waiting to be unloaded.', fillLevel)
+		self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
+		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED
+	else
+		UnloadableFieldworkAIDriver.onEndCourse(self)
+	end
 end
 
 function CombineAIDriver:onWaypointPassed(ix)
@@ -206,6 +220,15 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 				self.ppc:setNormalLookaheadDistance()
 				self:changeToFieldwork()
 			end
+		else
+			self:setSpeed(0)
+		end
+	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED then
+		local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
+		if fillLevel < 0.01 then
+			self:clearInfoText(self:getFillLevelInfoText())
+			self:debug('Unloading finished after fieldwork ended, end course')
+			UnloadableFieldworkAIDriver.onEndCourse(self)
 		else
 			self:setSpeed(0)
 		end
@@ -435,8 +458,9 @@ function CombineAIDriver:isWaitingForUnload()
 	return self.state == self.states.ON_FIELDWORK_COURSE and
 		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
 		(self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL or
-		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
-		 self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK)
+			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
+			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK or
+			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED)
 end
 
 function CombineAIDriver:createTurnCourse()
