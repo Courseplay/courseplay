@@ -46,14 +46,6 @@ function CombineAIDriver:init(vehicle)
 	self.litersPerMeter = 0
 	self.fillLevelAtLastWaypoint = 0
 	self.beaconLightsActive = false
-	-- distance keep to the right when pulling back to make room for the tractor
-	self.pullBackSideOffset = math.min(self.vehicle.cp.workWidth, 6)
-	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
-	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter * 0.7
-	-- and back up another bit
-	self.pullBackDistanceEnd = self.pullBackDistanceStart + 10
-	-- when making a pocket, how far to back up before changing to forward
-	self.pocketReverseDistance = 25
 	self.lastEmptyTimestamp = 0
 
 	if self.vehicle.spec_combine then
@@ -77,6 +69,21 @@ function CombineAIDriver:init(vehicle)
 			self:info('Could not find implement with pipe')
 		end
 	end
+
+	local dischargeNode = self.combine:getCurrentDischargeNode()
+	local dx, _, _ = localToLocal(dischargeNode.node, self.vehicle.rootNode, 0, 0, 0)
+	self.pipeOnLeftSide = dx > 0
+	self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
+
+	-- distance keep to the right when pulling back to make room for the tractor
+	self.pullBackSideOffset = math.min(self.vehicle.cp.workWidth, 6)
+	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
+	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
+	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter * 0.7
+	-- and back up another bit
+	self.pullBackDistanceEnd = self.pullBackDistanceStart + 10
+	-- when making a pocket, how far to back up before changing to forward
+	self.pocketReverseDistance = 25
 end
 
 function CombineAIDriver:setHudContent()
@@ -273,13 +280,25 @@ function CombineAIDriver:unloadFinished()
 end
 
 function CombineAIDriver:shouldMakePocket()
-	-- on the outermost headland clockwise (field edge) or fruit both sides
-	return not self.fieldOnLeft or (self.fruitLeft > 0.75 and self.fruitRight > 0.75)
+	if self.fruitLeft > 0.75 and self.fruitRight > 0.75 then
+		-- fruit both sides
+		return true
+	elseif self.pipeOnLeftSide then
+		-- on the outermost headland clockwise (field edge)
+		return not self.fieldOnLeft
+	else
+		-- on the outermost headland counterclockwise (field edge)
+		return not self.fieldOnRight
+	end
 end
 
 function CombineAIDriver:shouldPullBack()
-	-- is our pipe in the fruit? (assuming pipe is on the left side)
-	return self.fruitLeft > self.fruitRight
+	-- is our pipe in the fruit?
+	if self.pipeOnLeftSide then
+		return self.fruitLeft > self.fruitRight
+	else
+		return self.fruitLeft < self.fruitRight
+	end
 end
 
 function CombineAIDriver:checkFruit()
@@ -290,10 +309,12 @@ function CombineAIDriver:checkFruit()
 	dz = dz / length
 	self.vehicle.aiDriveDirection = {dx, dz}
 	self.fruitLeft, self.fruitRight = AIVehicleUtil.getValidityOfTurnDirections(self.vehicle)
-	-- Is there field on my left side?
 	local x, _, z = localToWorld(self:getDirectionNode(), self.vehicle.cp.workWidth, 0, 0)
 	self.fieldOnLeft = courseplay:isField(x, z, 1, 1)
-	self:debug('Fruit left: %.2f right %.2f, field on left %s', self.fruitLeft, self.fruitRight, tostring(self.fieldOnLeft))
+	x, _, z = localToWorld(self:getDirectionNode(), -self.vehicle.cp.workWidth, 0, 0)
+	self.fieldOnRight = courseplay:isField(x, z, 1, 1)
+	self:debug('Fruit left: %.2f right %.2f, field on left %s, right %s',
+		self.fruitLeft, self.fruitRight, tostring(self.fieldOnLeft), tostring(self.fieldOnRight))
 end
 
 function CombineAIDriver:checkDistanceUntilFull(ix)
@@ -388,10 +409,10 @@ function CombineAIDriver:createPullBackReturnCourse()
 	return Course(self.vehicle, pullBackReturnWaypoints, true)
 end
 
---- Create a temporary course to make a pocket in the fruit on the right, so we can move into that pocket and
+--- Create a temporary course to make a pocket in the fruit on the right (or left), so we can move into that pocket and
 --- wait for the unload there. This way the unload tractor does not have to leave the field.
 --- We create a temporary course to reverse back far enough. After that, we return to the main course but
---- set an offset to the right
+--- set an offset to the right (or left)
 function CombineAIDriver:createPocketCourse()
 	local startIx = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
 	-- find the waypoint we want to back up to
