@@ -70,10 +70,14 @@ function CombineAIDriver:init(vehicle)
 		end
 	end
 
-	local dischargeNode = self.combine:getCurrentDischargeNode()
-	local dx, _, _ = localToLocal(dischargeNode.node, self.vehicle.rootNode, 0, 0, 0)
-	self.pipeOnLeftSide = dx > 0
-	self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
+	if self.pipe then
+		local dischargeNode = self.combine:getCurrentDischargeNode()
+		local dx, _, _ = localToLocal(dischargeNode.node, self.vehicle.rootNode, 0, 0, 0)
+		self.pipeOnLeftSide = dx > 0
+		self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
+	else
+		self.pipeOnLeftSide = true
+	end
 
 	-- distance keep to the right when pulling back to make room for the tractor
 	self.pullBackSideOffset = math.min(self.vehicle.cp.workWidth, 6)
