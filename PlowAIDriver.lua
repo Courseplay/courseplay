@@ -113,14 +113,22 @@ function PlowAIDriver:setOffsetX()
 		local referenceNode = attacherJoint and attacherJoint.node or self:getDirectionNode()
 		-- attacher joint node in the coordinate system of markers as the markers seem always point forward whereas
 		-- the attacher joint's orientation isn't clear.
-		local leftMarkerDistance, _, _ = -localToLocal(referenceNode, aiLeftMarker, 0, 0, 0)
-		local rightMarkerDistance, _, _ = -localToLocal(referenceNode, aiRightMarker, 0, 0, 0)
+		local leftMarkerDistance, _, _ = localToLocal(referenceNode, aiLeftMarker, 0, 0, 0)
+		local rightMarkerDistance, _, _ = localToLocal(referenceNode, aiRightMarker, 0, 0, 0)
+		-- some plows rotate the markers with the plow, so swap left and right when needed
+		-- so find out if the left is really on the left of the vehicle's root node or not
+		local leftDx, _, _ = localToLocal(aiLeftMarker, self:getDirectionNode(), 0, 0, 0)
+		local rightDx, _, _ = localToLocal(aiRightMarker, self:getDirectionNode(), 0, 0, 0)
+		if leftDx < rightDx then
+			-- left is positive x, so looks like the plow is inverted, swap left/right then
+			leftMarkerDistance, rightMarkerDistance = -rightMarkerDistance, -leftMarkerDistance
+		end
 		-- TODO: Fix this offset dependency and copy paste
-		local newToolOffsetX = (leftMarkerDistance + rightMarkerDistance) / 2
+		local newToolOffsetX = -(leftMarkerDistance + rightMarkerDistance) / 2
 		-- set to the average of old and new to smooth a little bit to avoid oscillations
 		self.vehicle.cp.toolOffsetX = (self.vehicle.cp.toolOffsetX + newToolOffsetX) / 2
 		self.vehicle.cp.totalOffsetX = self.vehicle.cp.laneOffset + self.vehicle.cp.toolOffsetX;
-		self:debug('%s: left = %.1f, right = %.1f, setting tool offsetX to %.2f (total offset %.2f)',
-			nameNum(self.plow), leftMarkerDistance, rightMarkerDistance, self.vehicle.cp.toolOffsetX, self.vehicle.cp.totalOffsetX)
+		self:debug('%s: left = %.1f, right = %.1f, leftDx = %.1f, rightDx = %.1f, setting tool offsetX to %.2f (total offset %.2f)',
+			nameNum(self.plow), leftMarkerDistance, rightMarkerDistance, leftDx, rightDx, self.vehicle.cp.toolOffsetX, self.vehicle.cp.totalOffsetX)
 	end
 end
