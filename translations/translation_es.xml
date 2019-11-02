@@ -159,7 +159,7 @@
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 								text="Abrir Courseplay:" />
 		<text name="COURSEPLAY_DEBUG_CHANNELS" 								text="Canales de depuración" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 				text="Generación de una ruta" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 			text="Advanced course generator settings" />
+		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 			text="Configuracion avanzada de generacion de rutas" />
     	<text name="COURSEPLAY_STARTING_LOCATION" 							text="Ubicación Inicial" />
     	<text name="COURSEPLAY_ENDING_LOCATION" 							text="Punto Final" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Salida dirección hacia el:" />
@@ -343,7 +343,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 								text="CP: modo anterior" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					text="CP: acción del ratón" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 				text="CP: acción secundaria del ratón" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="CP: fije un marcador de posicion que aparezca en el log " />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		text="CP: Mover pala a posición de carga" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text="CP: Mover pala a posición de transporte" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Mover pala a posición de pre-descarga" />
@@ -404,18 +404,18 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Cargue todas las rutas al inicio, si lo activa, la carga inicial será más lenta" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use maniobras del asistente del juego AI" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use maniobras de IA en vez de las calculadas por CP" />
-		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Sus campos se escanearan automaticamente" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Sus trabajadores recibiran un salario" />
 
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Antes" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Despues" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Cuando subir aperos" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Cuando subir aperos al acabar la fila o empezar la cabecera" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Cuando bajar los aperos" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Cuando bajar los aperos al empezar la fila o al finalizar la cabecera" />
 
-		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Use virtual waypoints (PPC) in turns" />
-		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Use a better course tracking algorithm (pure pursuit controller) during turns" />
+		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utilizar puntos virtuales (PPC)" />
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utilizar algoritmo mejorado (PPC) en el giro o media vuelta" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
