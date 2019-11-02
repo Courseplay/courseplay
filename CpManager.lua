@@ -48,8 +48,6 @@ function CpManager:loadMap(name)
 	if g_server ~= nil then
 		self:loadXmlSettings();
 	end
-	self:setupWages();
-
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
@@ -256,12 +254,9 @@ function CpManager:update(dt)
 			courseplay.fields:setAllFieldEdges();
 		end;
 
-		-- Field scan, wages yes/no dialogue
+		-- Field scan yes/no dialogue
 		if self.showFieldScanYesNoDialogue then
 			self:showYesNoDialogue('Courseplay', courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'), self.fieldScanDialogueCallback);
-		elseif self.showWagesYesNoDialogue then
-			local txt = courseplay:loc('COURSEPLAY_YES_NO_WAGES'):format(g_i18n:formatMoney(g_i18n:getCurrency(self.wagePerHour * self.wageDifficultyMultiplier), 2));
-			self:showYesNoDialogue('Courseplay', txt, self.wagesDialogueCallback);
 		end;
 	end;
 
@@ -417,10 +412,6 @@ function CpManager.saveXmlSettings(self)
 		setXMLBool(cpSettingsXml, key .. '#debugScannedFields',			courseplay.fields.debugScannedFields);
 		setXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields',	courseplay.fields.debugCustomLoadedFields);
 		setXMLInt (cpSettingsXml, key .. '#scanStep',					courseplay.fields.scanStep);
-
-		-- Save Wages Settings
-		key = 'CPSettings.courseplayWages';
-		setXMLInt (cpSettingsXml, key .. '#wagePerHour',	CpManager.wagePerHour);
 
 		-- Save Ingame Map Settings
 		key = 'CPSettings.courseplayIngameMap';
@@ -801,22 +792,6 @@ function CpManager:fieldScanDialogueCallback(setActive)
 	self.showFieldScanYesNoDialogue = false
 end;
 
-
--- ####################################################################################################
--- WAGES
-function CpManager:setupWages()
-	self.wageDifficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier;
-	self.wagePerHour = 1500;
-	self.wagePer10Secs  = self.wagePerHour / 360;
-	self.showWagesYesNoDialogue = false;
-end;
-
-function CpManager:wagesDialogueCallback(setActive)
-	courseplay.globalSettings.earnWages:set(setActive)
-	self.showWagesYesNoDialogue = false
-end;
-
-
 -- ####################################################################################################
 -- INGAME MAP
 function CpManager:setupIngameMap()
@@ -1064,7 +1039,6 @@ function CpManager:loadXmlSettings()
 	else
 		print('## Courseplay: loading default settings');
 		self.showFieldScanYesNoDialogue = true;
-		self.showWagesYesNoDialogue = true;
 		return;
 	end;
 
@@ -1128,16 +1102,6 @@ function CpManager:loadXmlSettings()
 		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
 		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
 		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpSettingsXml, key .. '#scanStep'),				 courseplay.fields.scanStep);
-
-		-- wages
-		key = 'CPSettings.courseplayWages';
-		local wagePerHour = getXMLInt(cpSettingsXml, key .. '#wagePerHour');
-		if wagePerHour ~= nil then
-			self.wagePerHour = wagePerHour;
-		else
-			self.showWagesYesNoDialogue = true;
-		end;
-		self.wagePer10Secs = self.wagePerHour / 360;
 
 		-- ingame map
 		key = 'CPSettings.courseplayIngameMap';

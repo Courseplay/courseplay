@@ -533,7 +533,7 @@ function Course:getAverageSpeed(ix, n)
 	local total, count = 0, 0
 	for i = ix, ix + n - 1 do
 		local index = self:getIxRollover(i)
-		if self.waypoints[index].speed ~= nil then
+		if self.waypoints[index].speed ~= nil and self.waypoints[index].speed ~= 0 then
 			total = total + self.waypoints[index].speed
 			count = count + 1
 		end
