@@ -418,6 +418,8 @@
 
 		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Usa i waypoint virtuali (PPC) a turno" />
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utilizzare un algoritmo di tracciamento del percorso migliore (controllore dell'inseguimento puro) durante i turni" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

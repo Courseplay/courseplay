@@ -365,6 +365,7 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(LoadCoursesAtStartupSetting)
 	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
 	courseplay.globalSettings:addSetting(EarnWagesSetting)
+	courseplay.globalSettings:addSetting(WorkerWages)
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

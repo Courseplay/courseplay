@@ -1916,7 +1916,7 @@ function SettingList:init(name, label, toolTip, values, texts)
 	-- index of the previous value/text
 	self.previous = 1
 	-- override
-	self.xmlKey = 'SettingsList'
+	self.xmlKey = name
 	self.xmlAttribute = '#value'
 end
 
@@ -2048,6 +2048,7 @@ function BooleanSetting:init(name, label, toolTip, texts)
 			false,
 			true
 		}, texts)
+	self.xmlAttribute = '#active'
 end
 
 function BooleanSetting:toggle()
@@ -2220,8 +2221,6 @@ function ImplementRaiseLowerTimeSetting:init(vehicle, name, label, tooltip)
 			'COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY',
 			'COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE',
 		})
-	self.xmlKey = name
-	self.xmlAttribute = '#value'
 end
 
 ---@class ImplementRaiseTimeSetting : ImplementRaiseLowerTimeSetting
@@ -2244,8 +2243,6 @@ ReturnToFirstPointSetting = CpObject(BooleanSetting)
 function ReturnToFirstPointSetting:init()
 	BooleanSetting.init(self, 'returnToFirstPoint', 'COURSEPLAY_RETURN_TO_FIRST_POINT',
 		'COURSEPLAY_RETURN_TO_FIRST_POINT')
-	self.xmlKey = 'returnToFirstPoint'
-	self.xmlAttribute = '#active'
 end
 
 --- Load courses at startup?
@@ -2254,8 +2251,6 @@ LoadCoursesAtStartupSetting = CpObject(BooleanSetting)
 function LoadCoursesAtStartupSetting:init()
 	BooleanSetting.init(self, 'loadCoursesAtStartup', 'COURSEPLAY_LOAD_COURSES_AT_STARTUP',
 		'COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP')
-	self.xmlKey = 'loadCoursesAtStartup'
-	self.xmlAttribute = '#active'
 end
 
 --- Use AI Turns?
@@ -2264,8 +2259,6 @@ UseAITurnsSetting = CpObject(BooleanSetting)
 function UseAITurnsSetting:init()
 	BooleanSetting.init(self, 'useAITurns', 'COURSEPLAY_USE_AI_TURNS',
 		'COURSEPLAY_USE_AI_TURNS_TOOLTIP')
-	self.xmlKey = 'useAITurns'
-	self.xmlAttribute = '#active'
 end
 
 --- Use PPC during turns?
@@ -2274,8 +2267,6 @@ UsePPCTurnsSetting = CpObject(BooleanSetting)
 function UsePPCTurnsSetting:init()
 	BooleanSetting.init(self, 'usePPCTurns', 'COURSEPLAY_USE_PPC_TURNS',
 		'COURSEPLAY_USE_PPC_TURNS_TOOLTIP')
-	self.xmlKey = 'usePPCTurns'
-	self.xmlAttribute = '#active'
 end
 
 ---@class AutoFieldScanSetting : BooleanSetting
@@ -2283,8 +2274,6 @@ AutoFieldScanSetting = CpObject(BooleanSetting)
 function AutoFieldScanSetting:init()
 	BooleanSetting.init(self, 'autoFieldScan', 'COURSEPLAY_AUTO_FIELD_SCAN',
 		'COURSEPLAY_YES_NO_FIELDSCAN')
-	self.xmlKey = 'autoFieldScan'
-	self.xmlAttribute = '#active'
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
 end
@@ -2294,10 +2283,18 @@ EarnWagesSetting = CpObject(BooleanSetting)
 function EarnWagesSetting:init()
 	BooleanSetting.init(self, 'earnWages', 'COURSEPLAY_EARN_WAGES',
 		'COURSEPLAY_YES_NO_WAGES')
-	self.xmlKey = 'earnWages'
-	self.xmlAttribute = '#active'
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
+end
+
+---@class HourlyWages : SettingList
+WorkerWages = CpObject(SettingList)
+function WorkerWages:init()
+	SettingList.init(self, 'workerWages', 'COURSEPLAY_WORKER_WAGES', 'COURSEPLAY_WORKER_WAGES_TOOLTIP',
+			{ 50, 100, 250, 500, 1000},
+			{'50%', '100%', '250%', '500%', '1000%'}
+		)
+	self:set(100)
 end
 
 --- Container for settings

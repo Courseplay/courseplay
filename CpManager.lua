@@ -93,7 +93,6 @@ function CpManager:loadMap(name)
 	-- TIMERS
 	g_currentMission.environment:addMinuteChangeListener(self);
 	self.realTimeMinuteTimer = 0;
-	self.realTime10SecsTimer = 0;
 	self.realTime5SecsTimer = 0;
 	self.realTime5SecsTimerThrough = 0;
 	self.startFieldScanAfter = 1500; -- Start field scanning after specified milliseconds
@@ -263,17 +262,6 @@ function CpManager:update(dt)
 		elseif self.showWagesYesNoDialogue then
 			local txt = courseplay:loc('COURSEPLAY_YES_NO_WAGES'):format(g_i18n:formatMoney(g_i18n:getCurrency(self.wagePerHour * self.wageDifficultyMultiplier), 2));
 			self:showYesNoDialogue('Courseplay', txt, self.wagesDialogueCallback);
-		end;
-	end;
-
-
-	-- REAL TIME 10 SECS CHANGER
-	if g_server ~= nil then
-		if self.realTime10SecsTimer < 10000 then
-			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
-		else
-			self:realTime10SecsChanged();
-			self.realTime10SecsTimer = self.realTime10SecsTimer - 10000;
 		end;
 	end;
 
@@ -792,21 +780,6 @@ function CpManager:minuteChanged()
 	-- WEATHER
 	local env = g_currentMission.environment;
 	self.lightsNeeded = true --Tommi env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
-end;
-
-function CpManager:realTime10SecsChanged()
-	-- WAGES
-	if courseplay.globalSettings.earnWages:is(true) and g_server ~= nil then
-		local totalWages = 0;
-		local farmID = 0
-		for vehicleNum, vehicle in pairs(self.activeCoursePlayers) do
-			totalWages = totalWages + self.wagePer10Secs;
-			farmID = vehicle.ownerFarmId
-		end;
-		if totalWages > 0 then
-			g_currentMission:addMoney(-totalWages * self.wageDifficultyMultiplier, farmID, MoneyType.AI, true);
-		end;
-	end;
 end;
 
 function CpManager:showYesNoDialogue(title, text, callbackFn)

@@ -117,7 +117,8 @@ AIDriver.slowDownFactor = 0.5
 AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
 	RUNNING = {},
-	STOPPED = {}
+	STOPPED = {},
+	DONE = {}
 }
 
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
@@ -237,6 +238,14 @@ function AIDriver:stop(msgReference)
 	self.turnIsDriving = false
 end
 
+--- Stop the driver when the work is done. Could just dismiss at this point,
+--- the only reason we are still active is that we are displaying the info text while waiting to be dismissed
+function AIDriver:setDone(msgReference)
+	self:deleteCollisionDetector()
+	self:setInfoText(msgReference)
+	self.state = self.states.DONE
+end
+
 function AIDriver:continue()
 	self:debug('Continuing...')
 	self.state = self.states.RUNNING
@@ -281,6 +290,13 @@ function AIDriver:updateInfoText()
 	end
 end
 
+--- Update AI driver, everything that needs to run in every loop
+function AIDriver:update(dt)
+	self:drive(dt)
+	self:payWages(dt)
+	self:resetSpeed()
+end
+
 --- Main driving function
 -- should be called from update()
 -- This base implementation just follows the waypoints, anything more than that
@@ -301,7 +317,6 @@ function AIDriver:drive(dt)
 	self:driveCourse(dt)
 	self:checkIfBlocked()
 	self:drawTemporaryCourse()
-	self:resetSpeed()
 end
 
 --- Normal driving according to the course waypoints, using	 courseplay:goReverse() when needed
@@ -1451,4 +1466,20 @@ end
 
 function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
+end
+
+function AIDriver:payWages(dt)
+	local spec = self.vehicle.spec_aiVehicle
+	if spec and courseplay.globalSettings.earnWages:is(true) and g_server ~= nil then
+		if self:shouldPayWages() then
+			local difficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier
+			local wage = -dt * difficultyMultiplier * courseplay.globalSettings.workerWages:get() / 100 * spec.pricePerMS
+			g_currentMission:addMoney(wage, self.vehicle.ownerFarmId, MoneyType.AI, true)
+		end
+	end
+end
+
+--- By default, do pay wages when enabled. Some derived classes may decide not to pay under circumstances
+function AIDriver:shouldPayWages()
+	return true
 end

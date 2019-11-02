@@ -418,6 +418,8 @@
 
 		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Użyj wirtualnych punktów trasy (PPC) podczas skręcania." />
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Używa lepszego algorytmu śledzenia kursu (pure pursuit controller) podczas skręcania" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

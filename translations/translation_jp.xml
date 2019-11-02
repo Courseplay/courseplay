@@ -418,6 +418,8 @@
 
 		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Use virtual waypoints (PPC) in turns" />
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Use a better course tracking algorithm (PPC - pure pursuit controller) during turns" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

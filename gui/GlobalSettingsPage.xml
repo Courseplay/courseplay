@@ -27,6 +27,14 @@
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
 
+			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="workerWages" toolTipElementId="ingameMenuHelpBoxText">
+				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
+				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
+				<GuiElement type="text" profile="multiTextOptionSettingsText" />
+				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
+				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
+			</GuiElement>
+
 		</GuiElement>
 
 		<GuiElement type="bitmap" profile="cpIngameMenuHelpRowBg" position="80px 80px" id="ingameMenuHelpBox" visible="true">

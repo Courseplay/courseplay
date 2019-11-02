@@ -8,7 +8,7 @@ local avoidWorkAreaType = {};
 function courseplay:drive(self, dt)
 
 	if self.cp.drivingMode:is(DrivingModeSetting.DRIVING_MODE_AIDRIVER) and self.cp.driver then
-		self.cp.driver:drive(dt)
+		self.cp.driver:update(dt)
 		return
 	end
 

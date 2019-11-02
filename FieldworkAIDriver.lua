@@ -202,13 +202,11 @@ function FieldworkAIDriver:drive(dt)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self:driveFieldwork(dt) then
 			-- driveFieldwork is driving, no need for AIDriver
-			self:resetSpeed()
 			return
 		end
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		if self:driveUnloadOrRefill(dt) then
 			-- someone else is driving, no need to call AIDriver.drive()
-			self:resetSpeed()
 			return
 		end
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
@@ -1282,4 +1280,9 @@ function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
 	self.fieldworkState = self.states.WORKING
 	self:lowerImplements()
 	self:startCourse( self.fieldworkCourse, self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(ix, self.ppc:getForwardDrivingControlledNode(), 0))
+end
+
+--- Don't pay worker double when AutoDrive is driving
+function FieldworkAIDriver:shouldPayWages()
+	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
 end
