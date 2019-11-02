@@ -71,8 +71,8 @@
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="транспортировка закончена." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="закончил перевозку жидкостей." />
 		<text name="COURSEPLAY_WORK_END" 									text="завершил работу на маршруте." />
-		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": нуждается в разгрузке " />
-		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": нуждается в заправке " />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text="нуждается в разгрузке " />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 							text="нуждается в заправке " />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="выгрузка тюков." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Достигнут пункт разгрузки" />
@@ -117,13 +117,13 @@
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="постоянно - маячок" />
 		<text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 						text="УПРАВЛЕНИЕ МАРШРУТОМ" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="УПРАВЛЕНИЕ ТРАНСПОРТОМ" />
-		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="ЗАГРУЗИТЬ МАРШРУТ" />
+		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="МЕНЕДЖЕР МАРШРУТОВ" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="СОДЕРЖИМОЕ ПАПКИ" />
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="ОСОБЫЕ НАСТРОЙКИ ТЕХНИКИ" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="ВЫБОР КОМБАЙНА" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="ПАРАМЕТРЫ СКОРОСТИ" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="ОБЩИЕ НАСТРОЙКИ ВОЖДЕНИЯ" />
-		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="ДОПОЛНИТЕЛЬНЫЕ ПАРАМЕТРЫ" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="ОБЩИЕ НАСТРОЙКИ ДВИЖЕНИЯ" />
+		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="ОБЩИЕ НАСТРОЙКИ COURSPLAY" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Комбайн поворачивает" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="у этого маршрута нет рабочей области" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 							text="- комбинированный" />
@@ -161,13 +161,13 @@
 		<text name="COURSEPLAY_WORK_WIDTH" 									text="Рабочая ширина:" />
 		<text name="COURSEPLAY_WATER_WARNING" 								text="не хотелось бы намокнуть" />
 		<text name="COURSEPLAY_OPEN_HUD_MODE" 								text="Открыть Courseplay:" />
-		<text name="COURSEPLAY_DEBUG_CHANNELS" 								text="Режимы отладки:" />
+		<text name="COURSEPLAY_DEBUG_CHANNELS" 								text="Режимы отладки" />
 		<text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 				text="ГЕНЕРАЦИЯ МАРШРУТА" />
 		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 			text="Настройки генератора маршрутов" />
 		<text name="COURSEPLAY_STARTING_LOCATION" 							text="Расположение старта:" />
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="Расположение финиша:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Направление:" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Возврат на старт:" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Возврат на старт" />
 		<text name="COURSEPLAY_CORNER_1" 									text="Юго-Запад" />
 		<text name="COURSEPLAY_CORNER_2" 									text="Северо-Запад" />
 		<text name="COURSEPLAY_CORNER_3" 									text="Северо-Восток" />
@@ -224,7 +224,7 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"					text="сглаживать" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"					text="с разворотом" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"					text="скруглять" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Разворот в конце поля:"/>
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Разворот в конце поля:"/>		
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="по прямой (с реверсом)" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="по дуге (без реверса)" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Способ движения (экспериментальный)" />
@@ -405,7 +405,7 @@
 
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"						text="Загружать маршруты при запуске" />
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Загружать все маршруты при запуске игры. Если включено, тогда это замедлит загрузку сохраненной игры." />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Использовать ИИ для поворота" />
+		<text name="COURSEPLAY_USE_AI_TURNS"								text="Использовать ИИ для поворота" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Использовать искусственный интеллект для выполнения манёвры поворота вместо расчётных траекторий поворота." />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"								text="Автосканирование полей" />
 		<text name="COURSEPLAY_EARN_WAGES"									text="Зарплата рабочим на Courseplay" />
@@ -417,10 +417,10 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"						text="Опускать оборудование" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Опускать оборудование при начале прохода или в конце разворота на поворотной полосе." />
 
-		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Use virtual waypoints (PPC) in turns" />
-		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Use a better course tracking algorithm (pure pursuit controller) during turns" />
-		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
-		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
+		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="КЧС. Использовать виртуальные путевые точки для выполнения поворота." />
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Во время поворотов использовать лучший алгоритм отслеживания маршрута (КЧС - контроллер чистого следования)." /> <!-- Use a better course tracking algorithm (PPC pure pursuit controller) during turns -->
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Уровень зарплаты на Courseplay" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Заработная плата рабочего на Courseplay в процентах от заработной платы обычного работника." />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
