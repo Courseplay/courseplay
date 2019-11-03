@@ -1389,7 +1389,7 @@ function AIDriver:startEngineIfNeeded()
 	end
 	-- reset motor auto stop timer when someone starts the engine so we won't stop it for a while just because
 	-- our speed is 0 (for example while waiting for the implements to lower)
-	AIDriver:setLastMoveCommandTime(self.vehicle.timer)
+	self:setLastMoveCommandTime(self.vehicle.timer)
 end
 
 function AIDriver:getIsEngineReady()
