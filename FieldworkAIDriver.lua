@@ -1286,3 +1286,9 @@ end
 function FieldworkAIDriver:shouldPayWages()
 	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
 end
+
+function FieldworkAIDriver:onBlocked()
+	if self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.TURNING and self.aiTurn then
+		self.aiTurn:onBlocked()
+	end
+end

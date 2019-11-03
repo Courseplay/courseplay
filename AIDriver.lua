@@ -293,6 +293,7 @@ end
 --- Update AI driver, everything that needs to run in every loop
 function AIDriver:update(dt)
 	self:drive(dt)
+	self:checkIfBlocked()
 	self:payWages(dt)
 	self:resetSpeed()
 end
@@ -315,7 +316,6 @@ function AIDriver:drive(dt)
 	end
 
 	self:driveCourse(dt)
-	self:checkIfBlocked()
 	self:drawTemporaryCourse()
 end
 
@@ -638,7 +638,7 @@ end
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
 	if self.speed > 0 and self.allowedToDrive then
-		AIDriver:setLastMoveCommandTime(self.vehicle.timer)
+		self:setLastMoveCommandTime(self.vehicle.timer)
 		if self.vehicle:getLastSpeed() > 0.5 then
 			self.lastRealMovingTime = self.vehicle.timer
 		end

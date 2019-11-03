@@ -2557,7 +2557,9 @@ function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData)
 		-- the direction after the turn. So create a node at the same location but pointing into the incoming direction
 		-- to be used to find out when to raise the implements during a headland turn
 		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnEndWpIx)
-		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx), 0)
+		-- use the rotation of the waypoint before the turn start as there's some logic for the turn
+		-- start waypoints with offset which messes things up.
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
 		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
 		-- for headland turns, we cover the corner in the outbound direction, so here we can end work when 
 		-- the implement is half self.workWidth before the turn end node

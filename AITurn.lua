@@ -52,6 +52,7 @@ function AITurn:init(vehicle, driver, turnContext, name)
 	self:addState('FINISHING_ROW')
 	self:addState('TURNING')
 	self:addState('ENDING_TURN')
+	self:addState('REVERSING_AFTER_BLOCKED')
 	self.vehicle = vehicle
 	---@type AIDriver
 	self.driver = driver
@@ -82,6 +83,11 @@ function AITurn:turn()
 		self.driver:setSpeed(0)
 	end
 end
+
+function AITurn:onBlocked()
+	self:debug('onBlocked()')
+end
+
 
 function AITurn.canMakeKTurn(vehicle, turnContext)
 	if turnContext:isHeadlandCorner() then
@@ -229,9 +235,24 @@ function KTurn:turn(dt)
 			endTurn()
 			self:debug('K Turn ending turn')
 		end
+	elseif self.state == self.states.REVERSING_AFTER_BLOCKED then
+		self:setReverseSpeed()
+		self.driver:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
+		if self.vehicle.timer > self.reverseAfterBlockedTimer + 2500 then
+			self.state = self.stateAfterBlocked
+			self:debug('Trying again after reversed due to being blocked')
+		end
 	end
 	return true
 end
+
+function KTurn:onBlocked()
+	self.state = self.states.REVERSING_AFTER_BLOCKED
+	self:debug('Blocked, try reversing a bit')
+	self.reverseAfterBlockedTimer = self.vehicle.timer
+	self.stateAfterBlocked = self.states.FORWARD
+end
+
 
 --[[
   Headland turn for combines:
