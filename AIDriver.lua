@@ -202,6 +202,7 @@ function AIDriver:beforeStart()
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
 	self:startEngineIfNeeded()
+	self:initWages()
 end
 
 --- Start driving
@@ -1468,14 +1469,29 @@ function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
 end
 
+function AIDriver:initWages()
+	local spec = self.vehicle.spec_aiVehicle
+	if spec.startedFarmId == nil or spec.startedFarmId == 0 then
+		-- to make the wage paying in AIVehicle work it needs to have the correct farm ID
+		spec.startedFarmId = g_currentMission.player.farmId
+	end
+end
+
 function AIDriver:payWages(dt)
 	local spec = self.vehicle.spec_aiVehicle
-	if spec and courseplay.globalSettings.earnWages:is(true) and g_server ~= nil then
-		if self:shouldPayWages() then
-			local difficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier
-			local wage = -dt * difficultyMultiplier * courseplay.globalSettings.workerWages:get() / 100 * spec.pricePerMS
-			g_currentMission:addMoney(wage, self.vehicle.ownerFarmId, MoneyType.AI, true)
-		end
+	local courseplayMultiplier
+	-- The Giants AIVehicle always pays wages so we need to take that into account and compensate for it
+	-- when paying less than 100% (hence the -1)
+	if courseplay.globalSettings.earnWages:is(true) and self:shouldPayWages() then
+		courseplayMultiplier = courseplay.globalSettings.workerWages:get() / 100 - 1
+	else
+		-- compensate for all the Giants wage paying
+		courseplayMultiplier = -1
+	end
+	if spec and g_server ~= nil then
+		local difficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier
+		local wage = -dt * difficultyMultiplier * courseplayMultiplier * spec.pricePerMS
+		g_currentMission:addMoney(wage, spec.startedFarmId, MoneyType.AI, true)
 	end
 end
 
