@@ -84,6 +84,7 @@ local function initialize()
 		'PurePursuitController',
 		'Waypoint',
 		'AIDriver',
+		'AITurn',
 		'GrainTransportAIDriver',
 		'FieldworkAIDriver',
 		'FillableFieldworkAIDriver',
