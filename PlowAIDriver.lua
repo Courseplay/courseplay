@@ -111,10 +111,10 @@ function PlowAIDriver:setOffsetX()
 	if aiLeftMarker and aiBackMarker and aiRightMarker then
 		local attacherJoint = self.plow:getActiveInputAttacherJoint()
 		local referenceNode = attacherJoint and attacherJoint.node or self:getDirectionNode()
-		-- attacher joint node in the coordinate system of markers as the markers seem always point forward whereas
-		-- the attacher joint's orientation isn't clear.
-		local leftMarkerDistance, _, _ = localToLocal(referenceNode, aiLeftMarker, 0, 0, 0)
-		local rightMarkerDistance, _, _ = localToLocal(referenceNode, aiRightMarker, 0, 0, 0)
+		-- find out the left/right AI markers distance from the attacher joint (or, if does not exist, the
+		-- vehicle's root node) to calculate the offset.
+		self.plowReferenceNode = referenceNode
+		local leftMarkerDistance, rightMarkerDistance = self:getOffsets(referenceNode, aiLeftMarker, aiRightMarker)
 		-- some plows rotate the markers with the plow, so swap left and right when needed
 		-- so find out if the left is really on the left of the vehicle's root node or not
 		local leftDx, _, _ = localToLocal(aiLeftMarker, self:getDirectionNode(), 0, 0, 0)
@@ -131,4 +131,23 @@ function PlowAIDriver:setOffsetX()
 		self:debug('%s: left = %.1f, right = %.1f, leftDx = %.1f, rightDx = %.1f, setting tool offsetX to %.2f (total offset %.2f)',
 			nameNum(self.plow), leftMarkerDistance, rightMarkerDistance, leftDx, rightDx, self.vehicle.cp.toolOffsetX, self.vehicle.cp.totalOffsetX)
 	end
+end
+
+-- If the left/right AI markers had a consistent orientation (rotation) we could use localToLocal to get the
+-- referenceNode's distance in the marker's coordinate system. But that's not the case, so we'll use some vector
+-- algebra to calculate how far left/right are the markers from the referenceNode.
+function PlowAIDriver:getOffsets(referenceNode, aiLeftMarker, aiRightMarker)
+	local refX, _, refZ = getWorldTranslation(referenceNode)
+	local lx, _, lz = getWorldTranslation(aiLeftMarker)
+	local rx, _, rz = getWorldTranslation(aiRightMarker)
+	local leftOffset = -self:getScalarProjection(lx - refX, lz - refZ, lx - rx, lz - rz)
+	local rightOffset = self:getScalarProjection(rx - refX, rz - refZ, rx - lx, rz - lz)
+	return leftOffset, rightOffset
+end
+
+--- Get scalar projection of vector v onto vector u
+function PlowAIDriver:getScalarProjection(vx, vz, ux, uz)
+	local dotProduct = vx * ux + vz * uz
+	local length = math.sqrt(ux * ux + uz * uz)
+	return dotProduct / length
 end

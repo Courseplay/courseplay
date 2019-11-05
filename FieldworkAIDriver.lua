@@ -1204,6 +1204,12 @@ function FieldworkAIDriver:onDraw()
 			showAIMarkersOfObject(implement.object)
 		end
 	end
+
+	if self.plowReferenceNode then
+		DebugUtil.drawDebugNode(self.plowReferenceNode, 'Plow reference')
+	end
+
+
 	AIDriver.onDraw(self)
 end
 
