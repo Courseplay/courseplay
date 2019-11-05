@@ -389,34 +389,34 @@
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="覆膜" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
 		<text name="COURSEPLAY_FillType_Molasses"							text="糖浆" /> <!-- TODO TRANSLATION  supply fill types for straw harvest addon-->
 
-		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="自动驾驶" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="未安装" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="不要使用" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="卸载/填充" />
 
-		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="自动驾驶" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(返回)" />
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="高级设置..." />
 
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
-		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
-		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="启动后载入脚本" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="启动时加载所有脚本,Load all courses at startup, will slow down loading a saved game when activated" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="使用AI转向" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="使用AI转向而不是计算的" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="自动扫描地块" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay 赚取工资" />
 
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="早期" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="晚期" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="举起工具" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="在尽头举起工具" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="放下工具" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="开始或结束时放下工具" />
 
-		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Use virtual waypoints (PPC) in turns" />
-		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Use a better course tracking algorithm (pure pursuit controller) during turns" />
-		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
-		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
+		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="轮流使用路径点 (PPC) " />
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="使用跟踪算法" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay工资" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay 工资是工人工资的百分比" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
