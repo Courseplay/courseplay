@@ -166,7 +166,6 @@ function WaypointNode:setToWaypoint(course, ix, suppressLog)
 	setRotation(self.node, 0, course:getWaypointYRotation(self.ix), 0)
 end
 
-
 -- Allow ix > #Waypoints, in that case move the node lookAheadDistance beyond the last WP
 function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
 	--if self.ix and self.ix > ix then return end
@@ -431,10 +430,15 @@ function Course:getWaypointPosition(ix)
 		-- turn start waypoints point to the turn end wp, for example at the row end they point 90 degrees to the side
 		-- from the row direction. This is a problem when there's an offset so use the direction of the previous wp
 		-- when calculating the offset for a turn start wp.
-		return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ, self.waypoints[ix - 1].dx, self.waypoints[ix - 1].dz)
+		return self:getOffsetPositionWithOtherWaypointDirection(ix, ix - 1)
 	else
 		return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
 	end
+end
+
+---Return the offset coordinates of waypoint ix as if it was pointing to the same direction as waypoint ixDir
+function Course:getOffsetPositionWithOtherWaypointDirection(ix, ixDir)
+	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ, self.waypoints[ixDir].dx, self.waypoints[ixDir].dz)
 end
 
 -- distance between (px,pz) and the ix waypoint

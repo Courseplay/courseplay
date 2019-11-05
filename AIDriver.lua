@@ -398,6 +398,10 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 	end
 		-- TODO: remove allowedToDrive parameter and only use self.allowedToDrive
 	if not self.allowedToDrive then allowedToDrive = false end
+	-- driveToPoint does not like speeds under 1.5 (will stop) so make sure we set at least 2
+	if maxSpeed > 0.01 and maxSpeed < 2 then
+		maxSpeed = 2
+	end
 	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f allowed=%s fwd=%s', maxSpeed, gx, gz, l, ax, az,
 		allowedToDrive, moveForwards)
 	if self.collisionDetector then
