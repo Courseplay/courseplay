@@ -37,8 +37,8 @@ FieldworkAIDriver.myStates = {
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_LOWER_DELAYED = {},
 	WAITING_FOR_RAISE = {},
-	TURNING = {},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
+	TURNING = {},
 	FORWARD1 = {},
 	FORWARD2 = {},
 	REVERSE = {},
@@ -413,10 +413,6 @@ end
 
 function FieldworkAIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
-	if self.turnIsDriving then
-		self:debug('onWaypointPassed %d, ignored as turn is driving now', ix)
-		return
-	end
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.WORKING then
 			-- check for transition to connecting track
@@ -483,8 +479,14 @@ function FieldworkAIDriver:onWaypointChange(ix)
 				self.aiDriverOffsetZ = -self.frontMarkerDistance
 			end
 		end
+		if self.fieldworkState ~= self.states.TURNING and self.course:isTurnStartAtIx(ix) then
+			self:startTurn(ix)
+		end
 	end
-	AIDriver.onWaypointChange(self, ix)
+	-- update the legacy waypoint counter on the HUD
+	if self.state == self.states.ON_FIELDWORK_COURSE or self.states.ON_UNLOAD_OR_REFILL_COURSE then
+		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
+	end
 end
 
 function FieldworkAIDriver:onTowedImplementPassedWaypoint(ix)
@@ -632,9 +634,10 @@ end
 
 function FieldworkAIDriver:setRidgeMarkers()
 	if not self.vehicle.cp.ridgeMarkersAutomatic then return end
-	local active = self.state == self.states.FIELDWORK and not self.turnIsDriving
+	local active = self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState ~= self.states.TURNING
 	for _, workTool in ipairs(self.vehicle.cp.workTools) do
-		if workTool.spec_ridgeMarker then
+		-- yes, another Giants typo. And not sure why implements with no ridge markers even have the spec_ridgeMarker
+		if workTool.spec_ridgeMarker and workTool.spec_ridgeMarker.numRigdeMarkers > 0 then
 			local state = active and self.course:getRidgeMarkerState(self.ppc:getCurrentWaypointIx()) or 0
 			if workTool.spec_ridgeMarker.ridgeMarkerState ~= state then
 				self:debug('Setting ridge markers to %d', state)
@@ -762,7 +765,8 @@ function FieldworkAIDriver:updateRemainingTime(ix)
 end
 
 function FieldworkAIDriver:measureTurnTime()
-	if self.turnWasDriving and not self.turnIsDriving then
+	local isTurning = self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.TURNING
+	if self.wasTurning and not isTurning then
 		-- end of turn
 		if self.turnStartedAt then
 			-- use sliding average to smooth jumps
@@ -770,11 +774,11 @@ function FieldworkAIDriver:measureTurnTime()
 			self.realTurnDurationMs = self.vehicle.timer - self.turnStartedAt
 			self:debug('Measured turn duration is %.0f ms', self.turnDurationMs)
 		end
-	elseif not self.turnWasDriving and self.turnIsDriving then
+	elseif not self.wasTurning and isTurning then
 		-- start of turn
 		self.turnStartedAt = self.vehicle.timer
 	end
-	self.turnWasDriving = self.turnIsDriving
+	self.wasTurning = isTurning
 end
 
 function FieldworkAIDriver:checkWeather()
@@ -1285,6 +1289,8 @@ end
 function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
 	self.fieldworkState = self.states.WORKING
 	self:lowerImplements()
+	-- restore our own listeners for waypoint changes
+	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	self:startCourse( self.fieldworkCourse, self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(ix, self.ppc:getForwardDrivingControlledNode(), 0))
 end
 

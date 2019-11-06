@@ -116,10 +116,6 @@ function CombineAIDriver:onEndCourse()
 end
 
 function CombineAIDriver:onWaypointPassed(ix)
-	if self.turnIsDriving then
-		self:debug('onWaypointPassed %d, ignored as turn is driving now', ix)
-		return
-	end
 	self:checkFruit()
 	-- make sure we start making a pocket while we still have some fill capacity left as we'll be
 	-- harvesting fruit while making the pocket
@@ -487,6 +483,15 @@ function CombineAIDriver:isWaitingForUnload()
 			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK or
 			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED)
 end
+
+--- Interface for AutoDrive
+---@return boolean true when the combine is waiting to be unloaded after it ended the course
+function CombineAIDriver:isWaitingForUnloadAfterCourseEnded()
+	return self.state == self.states.ON_FIELDWORK_COURSE and
+		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED
+end
+
 
 function CombineAIDriver:createTurnCourse()
 	return CombineCourseTurn(self.vehicle, self, self.turnContext)

@@ -172,12 +172,12 @@ end
 
 -- TODO: make this more generic and allow registering multiple listeners?
 -- could also implement listeners for events like notify me when within x meters of a waypoint, etc.
-function PurePursuitController:setAIDriver(aiDriver, onWaypointPassedFunc, onWaypointChangeFunc)
+function PurePursuitController:registerListeners(waypointListener, onWaypointPassedFunc, onWaypointChangeFunc)
 	-- for backwards compatibility, PPC currently is initialized by the legacy code so
 	-- by the time AIDriver takes over, it is already there. So let AIDriver tell PPC who's driving.
-	self.aiDriver = aiDriver
-	table.insert(self.waypointPassedListeners, onWaypointPassedFunc)
-	table.insert(self.waypointChangeListeners, onWaypointChangeFunc)
+	self.waypointListener = waypointListener
+	self.waypointPassedListenerFunc = onWaypointPassedFunc
+	self.waypointChangeListenerFunc = onWaypointChangeFunc
 end
 
 function PurePursuitController:setLookaheadDistance(d)
@@ -263,20 +263,16 @@ function PurePursuitController:update()
 end
 
 function PurePursuitController:notifyListeners()
-	if self.aiDriver then
+	if self.waypointListener then
 		if self.sendWaypointChange then
 			-- send waypoint change event for all waypoints between the previous and current to make sure
 			-- we don't miss any
 			for ix = self.sendWaypointChange.prev + 1, self.sendWaypointChange.current do
-				for _, listener in ipairs(self.waypointChangeListeners) do
-					self.aiDriver[listener](self.aiDriver, ix)
-				end
+				self.waypointListener[self.waypointChangeListenerFunc](self.waypointListener, ix, self.course)
 			end
 		end
 		if self.sendWaypointPassed then
-			for _, listener in ipairs(self.waypointPassedListeners) do
-				self.aiDriver[listener](self.aiDriver, self.sendWaypointPassed)
-			end
+			self.waypointListener[self.waypointPassedListenerFunc](self.waypointListener, self.sendWaypointPassed, self.course)
 		end
 	end
 	self.sendWaypointChange = nil

@@ -56,6 +56,8 @@ function AITurn:init(vehicle, driver, turnContext, name)
 	self.vehicle = vehicle
 	---@type AIDriver
 	self.driver = driver
+	-- turn handles its own waypoint changes
+	self.driver.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	---@type TurnContext
 	self.turnContext = turnContext
 	self.state = self.states.INITIALIZING
@@ -88,6 +90,17 @@ function AITurn:onBlocked()
 	self:debug('onBlocked()')
 end
 
+function AITurn:onWaypointChange(ix)
+	self:debug('onWaypointChange %d', ix)
+end
+
+function AITurn:onWaypointPassed(ix, course)
+	self:debug('onWaypointPassed %d', ix)
+	if ix == course:getNumberOfWaypoints() then
+		self:debug('Last waypoint reached, this should not happen, resuming fieldwork')
+		self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
+	end
+end
 
 function AITurn.canMakeKTurn(vehicle, turnContext)
 	if turnContext:isHeadlandCorner() then

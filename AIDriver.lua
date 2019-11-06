@@ -140,11 +140,10 @@ function AIDriver:init(vehicle)
 	---@type PurePursuitController
 	self.ppc = PurePursuitController(self.vehicle)
 	self.vehicle.cp.ppc = self.ppc
-	self.ppc:setAIDriver(self, 'onWaypointPassed', 'onWaypointChange')
+	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	self.ppc:enable()
 	self.nextWpIx = 1
 	self.acceleration = 1
-	self.turnIsDriving = false -- code in turn.lua is driving
 	self.state = self.states.STOPPED
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
 	-- AIDriver and its derived classes set the self.speed in various locations in
@@ -196,7 +195,6 @@ end
 --- If you have your own start() implementation and you do not call AIDriver.start() then
 -- make sure this is called from the derived start() to initialize all common stuff
 function AIDriver:beforeStart()
-	self.turnIsDriving = false
 	self.nextCourse = nil
 	if self.collisionDetector == nil then
 		self.collisionDetector = CollisionDetector(self.vehicle)
@@ -236,7 +234,6 @@ function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
-	self.turnIsDriving = false
 end
 
 --- Stop the driver when the work is done. Could just dismiss at this point,
@@ -357,10 +354,6 @@ function AIDriver:driveCourse(dt)
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
 		self:driveVehicleInDirection(dt, self.allowedToDrive, moveForwards, lx, lz, self:getSpeed())
-	elseif self.turnIsDriving then
-		-- let the code in turn drive the turn maneuvers
-		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
-		courseplay:turn(self.vehicle, dt, self.turnContext)
 	elseif self.useDirection then
 		lx, lz = self.ppc:getGoalPointDirection()
 		self:debug('%.1f %.1f', lx, lz)
@@ -499,8 +492,7 @@ end
 ---@param ix number
 ---@return boolean true when an alignment course was added
 function AIDriver:startCourseWithAlignment(course, ix)
-	self.turnIsDriving = false
-	local alignmentCourse = nil
+	local alignmentCourse
 	if self:isAlignmentCourseNeeded(course, ix) then
 		alignmentCourse = self:setUpAlignmentCourse(course, ix)
 	end
@@ -567,14 +559,7 @@ end
 
 function AIDriver:onWaypointChange(newIx)
 	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
-	-- except while turn is driving as that does not like changing the waypoint during the turn
-	if not self.turnIsDriving then
-		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
-		if self.course:isTurnStartAtIx(newIx) then
-			-- a turn is coming up, relinquish control to turn.lua
-			self:startTurn(newIx)
-		end
-	end
+	courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
 	-- rest is implemented by the derived classes
 end
 
@@ -719,18 +704,7 @@ function AIDriver:isAlignmentCourseNeeded(course, ix)
 end
 
 function AIDriver:startTurn(ix)
-	self.turnIsDriving = true
-	self:debug('Starting a turn.')
-	-- as TurnContext() creates nodes when needed, store these nodes in the vehicle storage and on the the AIDriver
-	-- object, so the nodes are created only once and never destroyed (if this was a proper language with a destructor
-	-- then this would not be necessary)
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth)
-end
-
-function AIDriver:onTurnEnd()
-	self.turnIsDriving = false
-	self:debug('Turn ended, continue at waypoint %d.', self.turnContext.turnEndWpIx)
-	self.ppc:initialize(self.turnContext.turnEndWpIx)
+	self:debug('Attempting to starting a turn which is not implemented in this mode')
 end
 
 ---@param course Course
@@ -1259,7 +1233,6 @@ end
 ---@param ix number course to start at after pathfinding, can be nil
 ---@return boolean true when a pathfinding successfully started
 function AIDriver:driveToPointWithPathfinding(tx, tz, course, ix)
-	self.turnIsDriving = false
 	if self.vehicle.cp.realisticDriving then
 		local vx, _, vz = getWorldTranslation(self.vehicle.rootNode)
 

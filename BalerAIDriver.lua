@@ -40,8 +40,8 @@ function BalerAIDriver:allFillLevelsOk()
 end
 
 function BalerAIDriver:isHandlingAllowed()
-	if self.turnIsDriving or self.fieldworkState == self.states.ON_CONNECTING_TRACK or
-		self.fieldworkState == self.states.TEMPORARY  or self.fieldworkState == self.states.TURNING then
+	if self.fieldworkState == self.states.ON_CONNECTING_TRACK or
+		self.fieldworkState == self.states.TEMPORARY or self.fieldworkState == self.states.TURNING then
 		return false
 	end
 	return true
