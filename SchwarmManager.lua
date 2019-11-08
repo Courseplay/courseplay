@@ -310,7 +310,7 @@ local targetVehicle = self:getVehicleFromId(g_currentMission.enterables,idToJump
 end
 
 function SchwarmManager:restartSavegame()
-	restartApplication("-autoStartSavegameId 6")
+	restartApplication(" -autoStartSavegameId 6")
 end
 
 --Debug
@@ -326,7 +326,7 @@ end
 
 -- helpers
 function SchwarmManager:getNumberFromSymbol(symbol)
-local number = tonumber(string.sub(Input.keyIdToIdName[symbol], 8))
+local number = tonumber(string.sub(Input.keyIdToIdName[symbol], 5))
 	return number
 end
 
