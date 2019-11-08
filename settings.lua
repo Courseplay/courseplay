@@ -609,11 +609,9 @@ function courseplay:toggleDrivingMode(vehicle)
 end
 
 function courseplay:toggleAutoDriveMode(vehicle)
-	if vehicle.cp.driver then
-		vehicle.cp.aiDriverData.autoDriveMode:next()
-		courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.aiDriverData.autoDriveMode:get())
-	end
-end;
+	vehicle.cp.settings.autoDriveMode:next()
+	courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.settings.autoDriveMode:get())
+end
 
 
 function courseplay:toggleAlignmentWaypoint( vehicle )
@@ -1974,6 +1972,8 @@ end
 function SettingList:checkAndSetValidValue(new)
 	if new > #self.values then
 		return 1
+	elseif new < 1 then
+		return #self.values
 	else
 		return new
 	end
@@ -2071,10 +2071,12 @@ end
 ---@class AutoDriveModeSetting : SettingList
 AutoDriveModeSetting = CpObject(SettingList)
 
--- Driving modes
-AutoDriveModeSetting.NO_AUTODRIVE		= 0  -- AutoDrive not found
-AutoDriveModeSetting.DONT_USE			= 1  -- Don't use AutoDrive
-AutoDriveModeSetting.UNLOAD_OR_REFILL 	= 2  -- Use AutoDrive for unload and refill
+-- How to use AutoDrive
+AutoDriveModeSetting.NO_AUTODRIVE			= 0  -- AutoDrive not found
+AutoDriveModeSetting.DONT_USE				= 1  -- Don't use AutoDrive
+AutoDriveModeSetting.UNLOAD_OR_REFILL 		= 2  -- Use AutoDrive for unload and refill
+AutoDriveModeSetting.PARK 					= 3  -- Use AutoDrive to park vehicle after work is done
+AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK 	= 4  -- Use AutoDrive for unload and refill and park after work is done
 
 function AutoDriveModeSetting:init(vehicle)
 	self.vehicle = vehicle
@@ -2087,11 +2089,38 @@ function AutoDriveModeSetting:init(vehicle)
 			'COURSEPLAY_AUTODRIVE_DONT_USE',
 			'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL',
 		})
-
+	self:update()
 end
 
-function AutoDriveModeSetting.isAutoDriveAvailable(vehicle)
-	return vehicle.spec_autodrive and vehicle.spec_autodrive.StartDriving
+function AutoDriveModeSetting:isAutoDriveAvailable()
+	return self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.StartDriving
+end
+
+function AutoDriveModeSetting:update()
+	if self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.GetParkDestination then
+		local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
+		if parkDestination and #self.values == 2 then
+			-- add park options when the available
+			table.insert(self.values, AutoDriveModeSetting.PARK)
+			table.insert(self.values, AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK)
+			table.insert(self.texts, 'COURSEPLAY_AUTODRIVE_PARK')
+			table.insert(self.texts, 'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK')
+		elseif not parkDestination and #self.values == 4 then
+			-- remove park options if they are on our list but are not available
+			table.remove(self.values, 3)
+			table.remove(self.values, 3)
+			table.remove(self.texts, 3)
+			table.remove(self.texts, 3)
+		end
+	end
+end
+
+function AutoDriveModeSetting:useForUnloadOrRefill()
+	return self:is(AutoDriveModeSetting.UNLOAD_OR_REFILL) or self:is(AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK)
+end
+
+function AutoDriveModeSetting:useForParkVehicle()
+	return self:is(AutoDriveModeSetting.PARK) or self:is(AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK)
 end
 
 --- Driving mode setting
@@ -2302,8 +2331,8 @@ end
 SettingsContainer = CpObject()
 
 --- Add a setting which then can be addressed by its name like container['settingName'] or container.settingName
-function SettingsContainer:addSetting(settingClass)
-	local s = settingClass()
+function SettingsContainer:addSetting(settingClass, ...)
+	local s = settingClass(...)
 	self[s.name] = s
 end
 

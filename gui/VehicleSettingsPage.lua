@@ -55,7 +55,9 @@ end
 
 function VehicleSettingsPage:onClickOk()
 	for _, setting in pairs(self:getSettings()) do
-		setting:setToIx(setting:getGuiElement():getState())
+		if setting:getGuiElement() then
+			setting:setToIx(setting:getGuiElement():getState())
+		end
 	end
 end
 

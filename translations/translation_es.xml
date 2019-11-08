@@ -394,6 +394,8 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="No instalado" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="No usar" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Para Descargar/Cargar" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="To park vehicle" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="For unload/refill and park" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(y retorno)" />

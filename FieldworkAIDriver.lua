@@ -36,7 +36,7 @@ FieldworkAIDriver.myStates = {
 	ON_CONNECTING_TRACK = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_LOWER_DELAYED = {},
-	WAITING_FOR_RAISE = {},
+	WAITING_FOR_STOP = {},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
 	TURNING = {},
 	FORWARD1 = {},
@@ -290,7 +290,7 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 		self:changeToUnloadOrRefill()
 		self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 	else
-		if self.aiDriverData.autoDriveMode:is(AutoDriveModeSetting.UNLOAD_OR_REFILL) then
+		if self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
 			-- Switch to AutoDrive when enabled 
 			self:rememberWaypointToContinueFieldwork()
 			self:stopWork()
@@ -326,7 +326,7 @@ end
 function FieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 	if self.stopImplementsWhileUnloadOrRefillOnField then
-		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_RAISE
+		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_STOP
 	else
 		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
 	end
@@ -336,7 +336,7 @@ end
 function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 	-- don't move while empty
 	self:setSpeed(0)
-	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_RAISE then
+	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_STOP then
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
 			self:debug('implements raised, stop')

@@ -578,8 +578,9 @@ function courseplay:onLoad(savegame)
 	self.cp.settings = SettingsContainer()
 	self.cp.settings:addSetting(ReturnToFirstPointSetting)
 	self.cp.settings:addSetting(UseAITurnsSetting)
-	self.cp.settings:addSetting(ImplementRaiseTimeSetting)
-	self.cp.settings:addSetting(ImplementLowerTimeSetting)
+	self.cp.settings:addSetting(ImplementRaiseTimeSetting, self)
+	self.cp.settings:addSetting(ImplementLowerTimeSetting, self)
+	self.cp.settings:addSetting(AutoDriveModeSetting, self)
 end;
 
 function courseplay:onPostLoad(savegame)

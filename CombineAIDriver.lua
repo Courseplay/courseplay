@@ -154,6 +154,8 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 				self:debug('No room to the left, making a pocket for unload')
 				self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 				self.fieldWorkUnloadOrRefillState = self.states.REVERSING_TO_MAKE_A_POCKET
+				-- raise header for reversing
+				self:raiseImplements()
 				self:startCourse(pocketCourse, 1, self.course, nextIx)
 				-- tighter turns
 				self.ppc:setShortLookaheadDistance()
@@ -167,7 +169,7 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 			if pullBackCourse then
 				self:debug('Pipe in fruit, pulling back to make room for unloading')
 				self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
-				self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_RAISE
+				self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_STOP
 				self.courseAfterPullBack = self.course
 				self.ixAfterPullBack = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
 				-- tighter turns
@@ -188,11 +190,11 @@ end
 
 --- Stop for unload/refill while driving the fieldwork course
 function CombineAIDriver:driveFieldworkUnloadOrRefill()
-	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_RAISE then
+	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_STOP then
 		self:setSpeed(0)
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
-			self:debug('implements raised, start pulling back')
+			self:debug('Raise implements and start pulling back')
 			self:stopWork()
 			self.fieldWorkUnloadOrRefillState = self.states.PULLING_BACK_FOR_UNLOAD
 		end
@@ -256,6 +258,7 @@ function CombineAIDriver:onNextCourse(ix)
 			self:changeToFieldwork()
 		elseif self.fieldWorkUnloadOrRefillState == self.states.REVERSING_TO_MAKE_A_POCKET then
 			self:debug('Reversed, now start making a pocket to waypoint %d', self.unloadInPocketIx)
+			self:lowerImplements()
 			self.fieldWorkUnloadOrRefillState = self.states.MAKING_POCKET
 			self.aiDriverOffsetX = self.pullBackSideOffset
 		end

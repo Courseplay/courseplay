@@ -157,9 +157,6 @@ function AIDriver:init(vehicle)
 	-- list of active messages to display
 	self.activeMsgReferences = {}
 	self.pathfinder = Pathfinder()
-	if not self.aiDriverData.autoDriveMode then
-		self.aiDriverData.autoDriveMode = AutoDriveModeSetting(self.vehicle)
-	end
 	self:setHudContent()
 end
 
@@ -517,7 +514,17 @@ end
 
 --- Course ended
 function AIDriver:onEndCourse()
-	if self.vehicle.cp.stopAtEnd then
+	if self.vehicle.cp.settings.autoDriveMode:useForParkVehicle() then
+		-- use AutoDrive to send the vehicle to its parking spot
+		if self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.GetParkDestination then
+			self:debug('Let AutoDrive park this vehicle')
+			-- we are not needed here anymore
+			courseplay:stop(self.vehicle)
+			-- TODO: encapsulate this in an AutoDriveInterface class
+			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
+			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, 0, nil, nil, nil)
+		end
+	elseif self.vehicle.cp.stopAtEnd then
 		if self.state ~= self.states.STOPPED then
 			self:stop('END_POINT')
 		end
