@@ -1280,7 +1280,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 					
 				elseif entry.functionToCall == 'toggleRidgeMarkersAutomatic' then
-					if vehicle.cp.hasSowingMachine then
+					if FieldworkAIDriver.hasImplementWithSpecialization(vehicle, SowingMachine) then
 						self:enableButtonWithFunction(vehicle,page, 'toggleRidgeMarkersAutomatic')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
@@ -2400,8 +2400,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:setupCalculateWorkWidthButton(vehicle,3, 2)
 	self:addRowButton(vehicle,'toggleConvoyActive', 3, 3, 1 )
 	self:addSettingsRow(vehicle,'setConvoyMinDistance', 3, 4, 1 )
-	--self:addSettingsRow(vehicle,'setConvoyMaxDistance', 3, 5, 1 )
-	self:addSettingsRow(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
+	self:addRowButton(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
 
 	
 	--page 7
@@ -2419,8 +2418,8 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:setupSetAutoToolOffsetXButton(vehicle,8,5)
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
 	self:addRowButton(vehicle,'toggleOppositeTurnMode', 8, 7, 1 )
-	self:addRowButton(vehicle,'togglePlowFieldEdge', 8, 8, 1 )
-	
+	self:addRowButton(vehicle,'toggleRidgeMarkersAutomatic', 8, 8, 1 )
+
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
