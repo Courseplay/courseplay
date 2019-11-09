@@ -110,7 +110,7 @@ function AITurn.canMakeKTurn(vehicle, turnContext)
 	if vehicle.cp.turnDiameter <= math.abs(turnContext.dx) then
 		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'wide turn with no reversing (turn diameter = %.1f, dx = %.1f, let turn.lua do that for now.',
 			vehicle.cp.turnDiameter, math.abs(turnContext.dx))
-		return false
+		return true
 	end
 	if not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(vehicle) then
 		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Not all attached implements allow for reversing, let turn.lua handle this for now')
@@ -204,7 +204,7 @@ function KTurn:turn(dt)
 	local endTurn = function()
 		self.vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", 100, self.turnContext:isLeftTurn())
 		self.state = self.states.ENDING_TURN
-		local endingTurnCourse = self.turnContext:createEndingTurnCourse(self.vehicle)
+		local endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
 		self.driver:startFieldworkCourseWithTemporaryCourse(endingTurnCourse, self.turnContext.turnEndWpIx)
 	end
 
@@ -238,13 +238,7 @@ function KTurn:turn(dt)
 		self:setReverseSpeed()
 		self.driver:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 		if math.abs(dx) > turnRadius * 1.05 then
-			self.state = self.states.FORWARD_ARC
-			self:debug('K Turn forwarding again')
-		end
-	elseif self.state == self.states.FORWARD_ARC then
-		self:setForwardSpeed()
-		self.driver:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self.driver:getSpeed())
-		if self.turnContext:isDirectionCloseToEndDirection(self.driver:getDirectionNode(), 75) then
+			-- we can make the turn from here
 			endTurn()
 			self:debug('K Turn ending turn')
 		end

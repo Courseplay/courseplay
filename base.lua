@@ -301,11 +301,11 @@ function courseplay:onLoad(savegame)
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
 		setTranslation(DirectionNode, 0, 0, directionNodeOffset);
 	end;
-	self.cp.DirectionNode = DirectionNode;
+	self.cp.directionNode = DirectionNode;
 
 	-- REVERSE DRIVING SETUP
 	if self.cp.hasSpecializationReverseDriving then
-		self.cp.reverseDrivingDirectionNode = courseplay:createNewLinkedNode(self, "realReverseDrivingDirectionNode", self.cp.DirectionNode);
+		self.cp.reverseDrivingDirectionNode = courseplay:createNewLinkedNode(self, "realReverseDrivingDirectionNode", self.cp.directionNode);
 		setRotation(self.cp.reverseDrivingDirectionNode, 0, math.rad(180), 0);
 	end;
 
@@ -581,6 +581,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(ImplementRaiseTimeSetting, self)
 	self.cp.settings:addSetting(ImplementLowerTimeSetting, self)
 	self.cp.settings:addSetting(AutoDriveModeSetting, self)
+	self.cp.settings:addSetting(SelfUnloadSetting)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -727,7 +728,7 @@ function courseplay:onDraw()
 	end
 	
 	if courseplay.debugChannels[10] and self.cp.tempMOde9PointX ~= nil then
-		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
+		local x,y,z = getWorldTranslation(self.cp.directionNode)
 		cpDebug:drawLine(self.cp.tempMOde9PointX2,self.cp.tempMOde9PointY2+2,self.cp.tempMOde9PointZ2, 1, 0, 0, self.cp.tempMOde9PointX,self.cp.tempMOde9PointY+2,self.cp.tempMOde9PointZ);
 		local bunker = self.cp.mode9TargetSilo
 		if bunker ~= nil then
@@ -753,7 +754,7 @@ function courseplay:onDraw()
 		if self.cp.driver then
 			self.cp.driver:onDraw()
 		end
-		local nx,ny,nz = getWorldTranslation(self.cp.DirectionNode);
+		local nx,ny,nz = getWorldTranslation(self.cp.directionNode);
 		cpDebug:drawPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0);
 	end;
 
@@ -885,11 +886,11 @@ function courseplay:showWorkWidth(vehicle)
 	local right = (vehicle.cp.workWidth * -0.5) + offsX;
 
 
-	if vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
-		local p1x, p1y, p1z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.backMarkerOffset - offsZ);
-		local p2x, p2y, p2z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.backMarkerOffset - offsZ);
-		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
-		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
+	if vehicle.cp.directionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
+		local p1x, p1y, p1z = localToWorld(vehicle.cp.directionNode, left,  1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p2x, p2y, p2z = localToWorld(vehicle.cp.directionNode, right, 1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p3x, p3y, p3z = localToWorld(vehicle.cp.directionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
+		local p4x, p4y, p4z = localToWorld(vehicle.cp.directionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
 
 		cpDebug:drawPoint(p1x, p1y, p1z, 1, 1, 0);
 		cpDebug:drawPoint(p2x, p2y, p2z, 1, 1, 0);

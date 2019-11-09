@@ -1621,7 +1621,7 @@ function courseplay:addNewTargetVector(vehicle, x, z, trailer,node,rev)
 	elseif trailer ~= nil then
 		tx, ty, tz = localToWorld(trailer.rootNode, x, 0, z);
 	else
-		tx, ty, tz = localToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, x, 0, z);
+		tx, ty, tz = localToWorld(vehicle.cp.directionNode or vehicle.rootNode, x, 0, z);
 	end
 	if rev then
 		pointReverse = true
@@ -2324,6 +2324,13 @@ function WorkerWages:init()
 			{'50%', '100%', '250%', '500%', '1000%'}
 		)
 	self:set(100)
+end
+
+---@class SelfUnloadSetting : BooleanSetting
+SelfUnloadSetting = CpObject(BooleanSetting)
+function SelfUnloadSetting:init()
+	BooleanSetting.init(self, 'selfUnload', 'COURSEPLAY_SELF_UNLOAD',
+		'COURSEPLAY_SELF_UNLOAD')
 end
 
 --- Container for settings

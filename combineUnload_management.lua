@@ -4,7 +4,7 @@ function CombineUnloadAIDriver:calculateCombineOffset(vehicle, combine)
 	local curFile = "mode2.lua";
 	local offs = vehicle.cp.combineOffset
 	local offsPos = math.abs(vehicle.cp.combineOffset)
-	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
+	local combineDirNode = combine.cp.directionNode or combine.rootNode;
 	
 	local prnX,prnY,prnZ, prnwX,prnwY,prnwZ, combineToPrnX,combineToPrnY,combineToPrnZ = 0,0,0, 0,0,0, 0,0,0;
 	if combine.spec_dischargeable ~= nil then
@@ -101,13 +101,13 @@ end;
 
 function CombineUnloadAIDriver:calculateVerticalOffset(vehicle, combine)
 	local cwX, cwY, cwZ = getWorldTranslation( combine.spec_dischargeable.currentRaycastDischargeNode.node);
-	local _, _, prnToCombineZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, cwX, cwY, cwZ);
+	local _, _, prnToCombineZ = worldToLocal(combine.cp.directionNode or combine.rootNode, cwX, cwY, cwZ);
 	
 	return prnToCombineZ;
 end;
 
 function CombineUnloadAIDriver:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ)
-	local sourceRootNode = combine.cp.DirectionNode or combine.rootNode;
+	local sourceRootNode = combine.cp.directionNode or combine.rootNode;
 
 	if combine.cp.isChopper then
 		prnToCombineZ = 0;
@@ -146,17 +146,17 @@ function CombineUnloadAIDriver:createTurnAwayCourse(vehicle,direction,sentDiamet
 		local centerHeight = math.sqrt(sideC^2 - sideB^2);
 				
 		--- Get the 2 circle center cordinate
-		center1.x,_,center1.z = localToWorld(vehicle.cp.DirectionNode, center1SideOffset, 0, 0-additionalZOffset);
-		center2.x,_,center2.z = localToWorld(vehicle.cp.DirectionNode, center2SideOffset, 0, -centerHeight-additionalZOffset);
+		center1.x,_,center1.z = localToWorld(vehicle.cp.directionNode, center1SideOffset, 0, 0-additionalZOffset);
+		center2.x,_,center2.z = localToWorld(vehicle.cp.directionNode, center2SideOffset, 0, -centerHeight-additionalZOffset);
 
 		
 		
 		--- Generate first turn circle
-		startDir.x,_,startDir.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, 0);
+		startDir.x,_,startDir.z = localToWorld(vehicle.cp.directionNode, 0, 0, 0);
 		courseplay:generateTurnCircle(vehicle, center1, startDir, center2, radius, direction);
 
 		--- Generate second turn circle
-		stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.DirectionNode, -centerHeight*direction, 0, -centerHeight+radius-additionalZOffset);
+		stopDir.x,_,stopDir.z = localToWorld(vehicle.cp.directionNode, -centerHeight*direction, 0, -centerHeight+radius-additionalZOffset);
 		courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, radius, -direction, true);
 		
 		targets = self:convertTable(vehicle.cp.turnTargets)
@@ -185,7 +185,7 @@ function CombineUnloadAIDriver:calculateAstarPathToCoords( vehicle, combine, tx,
 	end
 	courseplay:setCustomTimer( vehicle, 'pathfinder', 5 )
 
-	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.DirectionNode,nil, nil, cx, cz, fixedFruitType )
+	local hasFruit, density, fruitType, fruitName = courseplay:hasLineFruit( vehicle.cp.directionNode,nil, nil, cx, cz, fixedFruitType )
 	--Ingore this condintal if I am being used by Mode4/6
 	if not hasFruit and not mode4_6 then
 		-- no fruit between tractor and combine, can continue in STATE_DRIVE_TO_COMBINE 
@@ -197,7 +197,7 @@ function CombineUnloadAIDriver:calculateAstarPathToCoords( vehicle, combine, tx,
 	end
   
 	-- tractor coordinates
-	local vx,vy,vz =	getWorldTranslation( vehicle.cp.DirectionNode )
+	local vx,vy,vz =	getWorldTranslation( vehicle.cp.directionNode )
 
 	-- where am I ?
 	if courseplay.fields == nil then
@@ -269,7 +269,7 @@ function CombineUnloadAIDriver:calculateAstarPathToCoords( vehicle, combine, tx,
   -- make sure path begins far away from the tractor so it won't circle around
   local pointFarEnoughIx = 1
   for _, point in ipairs( path ) do 
-		local lx, ly, lz = worldToLocal( vehicle.cp.DirectionNode, point.x, point.y, point.z )
+		local lx, ly, lz = worldToLocal( vehicle.cp.directionNode, point.x, point.y, point.z )
 		local d = MathUtil.vector2Length(lx, lz)
     if d > Utils.getNoNil( vehicle.cp.turnDiameter, 5 ) then break end
     pointFarEnoughIx = pointFarEnoughIx + 1
@@ -301,7 +301,7 @@ end
 
 
 function CombineUnloadAIDriver:onWhichFieldAmI(vehicle)
-	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
+	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode);
 	return self:getFieldNumForPosition( positionX, positionZ )
 end
 
@@ -325,11 +325,11 @@ function CombineUnloadAIDriver:getWaypointShift(vehicle,tractor)
 	else
 		local px,pz = tractor.Waypoints[tractor.cp.waypointIndex].cx, tractor.Waypoints[tractor.cp.waypointIndex].cz
 		local py = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, px, 0, pz)
-		local _,_,vehicleShift = worldToLocal(tractor.cp.DirectionNode,px,py,pz)
+		local _,_,vehicleShift = worldToLocal(tractor.cp.directionNode,px,py,pz)
 
 		local nx,nz = tractor.Waypoints[tractor.cp.waypointIndex+1].cx, tractor.Waypoints[tractor.cp.waypointIndex+1].cz
 		local ny = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, nx, 0, nz)
-		local _,_,npShift = worldToLocal(tractor.cp.DirectionNode,nx,ny,nz)
+		local _,_,npShift = worldToLocal(tractor.cp.directionNode,nx,ny,nz)
 		return npShift-vehicleShift+tractor.sizeLength*0.5;
 	end
 end

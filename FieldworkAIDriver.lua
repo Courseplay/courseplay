@@ -142,6 +142,7 @@ end
 --- Start the course and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	self:debug('Starting in mode %d', self.mode)
+	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	self:setMarkers()
 	self:beforeStart()
 	-- time to lower all implements
@@ -1196,7 +1197,7 @@ function FieldworkAIDriver:onDraw()
 			if aiBackMarker then
 				DebugUtil.drawDebugNode(aiBackMarker, object:getName() .. ' AI Back')
 			end
-			DebugUtil.drawDebugNode(object.cp.DirectionNode or object.rootNode, object:getName() .. ' root')
+			DebugUtil.drawDebugNode(object.cp.directionNode or object.rootNode, object:getName() .. ' root')
 		end
 	end
 

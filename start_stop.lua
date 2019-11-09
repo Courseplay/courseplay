@@ -105,7 +105,7 @@ function courseplay:start(self)
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
-	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
+	local ctx, cty, ctz = getWorldTranslation(self.cp.directionNode);
 	-- position of next waypoint
 	local cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
 	-- distance (in any direction)
@@ -129,7 +129,7 @@ function courseplay:start(self)
 		end;
 		if self.cp.mode == 10 then
 			local x,y,z = getWorldTranslation(workTool.rootNode)  
-			local _,_,tz = worldToLocal(self.cp.DirectionNode,x,y,z)
+			local _,_,tz = worldToLocal(self.cp.directionNode,x,y,z)
 			if tz > 0 then
 				isFrontAttached = true
 			end
@@ -180,7 +180,7 @@ function courseplay:start(self)
 	local lookForNearestWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
 
 	local lookForNextWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEXT_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); 
-	local nx, _, nz = localDirectionToWorld( self.cp.DirectionNode, 0, 0, 1 )
+	local nx, _, nz = localDirectionToWorld( self.cp.directionNode, 0, 0, 1 )
 	local myDirection = math.atan2( nx, nz ) 
 	-- one of the remaining waypoints of the course, closest in front of us
 	local nextWaypointIx = 1
@@ -206,7 +206,7 @@ function courseplay:start(self)
 
 		-- find next waypoint 
 		if lookForNextWaypoint then
-			local _, _, dz = worldToLocal( self.cp.DirectionNode, cx, 0, cz )
+			local _, _, dz = worldToLocal( self.cp.directionNode, cx, 0, cz )
 			local deltaAngle = math.huge	
 			if wp.angle ~= nil then 
 				deltaAngle = math.abs( getDeltaAngle( math.rad( wp.angle ), myDirection ))

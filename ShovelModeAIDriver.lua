@@ -164,8 +164,8 @@ function ShovelModeAIDriver:drive(dt)
 				self.tempTarget = self:getTargetToStraightOut()
 				self:setShovelState(self.states.STATE_REVERSE_STRAIGHT_OUT_OF_SILO)
 			else
-				local _,_,Zoffset = self.course:getWaypointLocalPosition(self.vehicle.cp.DirectionNode, self.shovelFillStartPoint)
-				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.DirectionNode,-Zoffset)
+				local _,_,Zoffset = self.course:getWaypointLocalPosition(self.vehicle.cp.directionNode, self.shovelFillStartPoint)
+				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.directionNode,-Zoffset)
 				self.ppc:initialize(newPoint)
 				self:setShovelState(self.states.STATE_REVERSE_OUT_OF_SILO)
 				self.bestTarget = nil
@@ -176,8 +176,8 @@ function ShovelModeAIDriver:drive(dt)
 	elseif self.shovelState == self.states.STATE_REVERSE_STRAIGHT_OUT_OF_SILO then
 		self.refSpeed = self.vehicle.cp.speeds.reverse
 		if self:getIsReversedOutOfSilo() then
-			local _,_,Zoffset = self.course:getWaypointLocalPosition(self.vehicle.cp.DirectionNode, self.shovelFillStartPoint)
-			local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.DirectionNode,-Zoffset)
+			local _,_,Zoffset = self.course:getWaypointLocalPosition(self.vehicle.cp.directionNode, self.shovelFillStartPoint)
+			local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.directionNode,-Zoffset)
 			self.ppc:initialize(newPoint)
 			self:setShovelState(self.states.STATE_TRANSPORT)
 			self.bestTarget = nil
@@ -186,7 +186,7 @@ function ShovelModeAIDriver:drive(dt)
 		if self.tempTarget then
 			local cx,cz = self.tempTarget.cx,self.tempTarget.cz
 			local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
-			local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
+			local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, cx,cy,cz);
 			lx,lz = -lx,-lz;
 			self:driveInDirection(dt,lx,lz,false,self:getSpeed(),true)
 			self:debugRouting()
@@ -237,7 +237,7 @@ function ShovelModeAIDriver:drive(dt)
 		local dischargeNode = self.vehicle.cp.shovel:getCurrentDischargeNode()
 		if self:getIsShovelEmpty() or not self.vehicle.cp.shovel:getCanDischargeToObject(dischargeNode) then
 			if self:setShovelToPositionFinshed(4,dt) then
-				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.DirectionNode, 3 )
+				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.directionNode, 3 )
 				self.ppc:initialize(newPoint)
 				self:setShovelState(self.states.STATE_GO_BACK_FROM_EMPTYPOINT);
 			end
@@ -285,7 +285,7 @@ function ShovelModeAIDriver:driveIntoSilo(dt)
 	end
 
 	--drive
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, cx,cy,cz);
 	self:debugRouting()
 	self:driveInDirection(dt,lx,lz,fwd,self:getSpeed(),allowedToDrive)
 end
@@ -335,11 +335,11 @@ function ShovelModeAIDriver:searchForShovelEmptyTrigger()
 	local vehicle = self.vehicle
 	vehicle.cp.shovel.targetFound = nil;
 	local rx, ry, rz = self.course:getWaypointPosition(self.shovelEmptyPoint)
-	local nx, nz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, rx, ry, rz);
-	local lx7,ly7,lz7 = localDirectionToWorld(vehicle.cp.DirectionNode, nx, -1, nz);
+	local nx, nz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, rx, ry, rz);
+	local lx7,ly7,lz7 = localDirectionToWorld(vehicle.cp.directionNode, nx, -1, nz);
 	for i=6,12 do
 		if vehicle.cp.shovel.targetFound == nil then
-			local x,y,z = localToWorld(vehicle.cp.DirectionNode,0,4,i);
+			local x,y,z = localToWorld(vehicle.cp.directionNode,0,4,i);
 			raycastAll(x, y, z, lx7, ly7, lz7, "findTrailerRaycastCallback", 10, vehicle);
 			if courseplay.debugChannels[10] then
 				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx7*10, y+ly7*10, z+lz7*10);
@@ -385,9 +385,9 @@ end
 
 function ShovelModeAIDriver:findNextRevWaypoint(currentPoint)
 	local vehicle = self.vehicle;
-	local _,ty,_ = getWorldTranslation(vehicle.cp.DirectionNode);
+	local _,ty,_ = getWorldTranslation(vehicle.cp.directionNode);
 	for i= currentPoint, self.vehicle.cp.numWaypoints do
-		local _,_,z = worldToLocal(vehicle.cp.DirectionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
+		local _,_,z = worldToLocal(vehicle.cp.directionNode, vehicle.Waypoints[i].cx , ty , vehicle.Waypoints[i].cz);
 		if z < -3 and vehicle.Waypoints[i].rev  then
 			return i
 		end;
@@ -449,6 +449,6 @@ end
 
 function ShovelModeAIDriver:getIsReversedOutOfSilo()
 	local x,z = self.vehicle.cp.BunkerSiloMap[1][self.bestTarget.column].cx,self.vehicle.cp.BunkerSiloMap[1][self.bestTarget.column].cz
-	local px,py,pz = worldToLocal(self.vehicle.cp.DirectionNode,x,0,z)
+	local px,py,pz = worldToLocal(self.vehicle.cp.directionNode,x,0,z)
 	return pz > 4
 end

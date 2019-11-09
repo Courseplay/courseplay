@@ -132,7 +132,7 @@ function Waypoint:getDistanceFromPoint(x, z)
 end
 
 function Waypoint:getDistanceFromVehicle(vehicle)
-	local vx, _, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
+	local vx, _, vz = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode)
 	return self:getDistanceFromPoint(vx, vz)
 end
 
@@ -795,7 +795,7 @@ function Course:getDirectionToWPInDistance(ix, vehicle, distance)
 	for i = ix, #self.waypoints do
 		if self:getDistanceBetweenVehicleAndWaypoint(vehicle, i) > distance then
 			local x,y,z = self:getWaypointPosition(i)
-			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z)
+			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, x, y, z)
 			break
 		end
 	end

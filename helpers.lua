@@ -1195,7 +1195,7 @@ function courseplay:drawCourse2D(vehicle, doLoop)
 		return;
 	end;
 
-	local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, 0, 0, 1);
+	local dx,_,dz = localDirectionToWorld(vehicle.cp.directionNode or vehicle.rootNode, 0, 0, 1);
 	if dx ~= vehicle.cp.course2dDirectionX or dz ~= vehicle.cp.course2dDirectionZ then
 		vehicle.cp.course2dDirectionX = dx;
 		vehicle.cp.course2dDirectionZ = dz;

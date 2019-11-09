@@ -171,7 +171,7 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 
 				if vehicle.cp.combineOffset > 0 then -- I'm left of chopper
 					courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm left", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.directionNode, 0, 0, turnDiameter);
 					vehicle.cp.curTarget.rev = false
 					courseplay:addNewTargetVector(vehicle, 2*turnDiameter*-1 ,  turnDiameter);
 					vehicle.cp.chopperIsTurning = true
@@ -182,7 +182,7 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 						local maxDiameter = math.max(20,vehicle.cp.turnDiameter)
 						local verticalWaypointShift = self:getWaypointShift(vehicle,combine)
 						combine.cp.verticalWaypointShift = verticalWaypointShift
-						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
+						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.directionNode, 0,0,3);
 						--vehicle.cp.curTarget.rev = false
 						vehicle.cp.nextTargets  = self:createTurnAwayCourse(vehicle,-1,maxDiameter,combine.cp.workWidth)
 									
@@ -190,7 +190,7 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 						courseplay:addNewTargetVector(vehicle,combine.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
 					else
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns left, I'm right. Turning the Old Way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter*-1, 0, turnDiameter);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.directionNode, turnDiameter*-1, 0, turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					end
 				end
@@ -198,7 +198,7 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 			else -- chopper will turn right
 				if vehicle.cp.combineOffset < 0 then -- I'm right of chopper
 					courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm right", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0, 0, turnDiameter);
+					vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.directionNode, 0, 0, turnDiameter);
 					vehicle.cp.curTarget.rev = false
 					courseplay:addNewTargetVector(vehicle, 2*turnDiameter,     turnDiameter);
 					vehicle.cp.chopperIsTurning = true
@@ -208,7 +208,7 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 						local maxDiameter = math.max(20,vehicle.cp.turnDiameter)
 						local verticalWaypointShift = self:getWaypointShift(vehicle,combine)
 						combine.cp.verticalWaypointShift = verticalWaypointShift
-						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, 0,0,3);
+						--vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.directionNode, 0,0,3);
 						--vehicle.cp.curTarget.rev = false
 						vehicle.cp.nextTargets  = self:createTurnAwayCourse(vehicle,1,maxDiameter,combine.cp.workWidth)
 
@@ -216,7 +216,7 @@ function CombineUnloadAIDriver:checkTurnOnFieldEdge(dt)
 						courseplay:addNewTargetVector(vehicle,-combine.cp.workWidth, 2 +verticalWaypointShift,nil,nil,true);
 					else
 						courseplay:debug(string.format("%s(%i): %s @ %s: combine turns right, I'm left. Turning the old way", curFile, debug.getinfo(1).currentline, nameNum(vehicle), tostring(combine.name)), 4);
-						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.DirectionNode, turnDiameter, 0, turnDiameter);
+						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.directionNode, turnDiameter, 0, turnDiameter);
 						vehicle.cp.chopperIsTurning = true
 					end
 				end
@@ -289,10 +289,10 @@ function CombineUnloadAIDriver:followPipe(dt)
 	self:checkTurnOnFieldEdge(dt)
 	local vehicle = self.vehicle
 	local combine = vehicle.cp.activeCombine
-	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
+	local combineDirNode = combine.cp.directionNode or combine.rootNode;
 	local refSpeed = vehicle.cp.speeds.field
 	local combineIsStopped = combine.lastSpeedReal*3600 < 0.5
-	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local x, y, z = getWorldTranslation(vehicle.cp.directionNode)
 	local allowedToDrive = true
 	
 	speedDebugLine = ("mode2("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
@@ -341,7 +341,7 @@ function CombineUnloadAIDriver:followPipe(dt)
 	--SET TARGET UNLOADING COORDINATES @ COMBINE
 	local ttX, ttZ = self:getTargetUnloadingCoords(vehicle, combine, trailerOffset, prnToCombineZ);
 
-	local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, ttX, y, ttZ)
+	local lx, ly, lz = worldToLocal(vehicle.cp.directionNode, ttX, y, ttZ)
 	dod = MathUtil.vector2Length(lx, lz)
 	if dod > 40 or vehicle.cp.chopperIsTurning == true then
 		self:setModeState(self.STATE_DRIVE_TO_COMBINE);
@@ -418,7 +418,7 @@ function CombineUnloadAIDriver:followPipe(dt)
 	end
 	
 	cpDebug:drawLine(x, y, z, 1, 0, 0, ttX, y, ttZ);
-	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, ttX, currentY, ttZ)
+	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, ttX, currentY, ttZ)
 	AIDriver.driveVehicleInDirection(self,dt, allowedToDrive, true, lx, lz, refSpeed)
 	
 end
@@ -426,7 +426,7 @@ end
 function CombineUnloadAIDriver:driveNextToCombine(dt)
 	local vehicle = self.vehicle
 	local combine = vehicle.cp.activeCombine
-	local combineDirNode = combine.cp.DirectionNode or combine.rootNode;
+	local combineDirNode = combine.cp.directionNode or combine.rootNode;
 	local refSpeed = vehicle.cp.speeds.field
 	local allowedToDrive = true
 	courseplay:setInfoText(vehicle, "COURSEPLAY_DRIVE_TO_COMBINE"); 
@@ -449,7 +449,7 @@ function CombineUnloadAIDriver:driveNextToCombine(dt)
 		currentX, currentY, currentZ = localToWorld(combineDirNode, vehicle.cp.combineOffset, 0, -5);
 	end
 
-	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
+	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, currentX, currentY, currentZ)
 	AIDriver.driveVehicleInDirection(self,dt, true, true, lx, lz, refSpeed)
 	
 	local distanceToPoint = courseplay:distanceToPoint(vehicle, currentX, currentY, currentZ)
@@ -461,9 +461,9 @@ function CombineUnloadAIDriver:driveNextToCombine(dt)
 		self:setModeState(self.STATE_FOLLOW_PIPE);
 		vehicle.cp.chopperIsTurning = false
 	end
-	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local x, y, z = getWorldTranslation(vehicle.cp.directionNode)
 	cpDebug:drawLine(x, y, z, 1, 0, 0, currentX,currentY, currentZ);
-	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
+	local lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, currentX, currentY, currentZ)
 	AIDriver.driveVehicleInDirection(self,dt, allowedToDrive, true, lx, lz, refSpeed)
 end
 
@@ -478,27 +478,27 @@ function CombineUnloadAIDriver:driveToCombine(dt)
 		-- calculate a world position (currentX/Y/Z) and a vector (lx/lz) to a point near the combine (which is sometimes called 'tractor')
 		-- here, 'tractor' is the combine, x, y, z is the tractor unloading the combine, z1, y1, z1 is the tractor's local coordinates from 
 		-- the combine
-		local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
-		local x1, y1, z1 = worldToLocal(combine.cp.DirectionNode or combine.rootNode, x, y, z)
+		local x, y, z = getWorldTranslation(vehicle.cp.directionNode)
+		local x1, y1, z1 = worldToLocal(combine.cp.directionNode or combine.rootNode, x, y, z)
 		x1,z1 = x1,z1;
 
 		if not combine.cp.isChopper then
-			cx_behind, cy_behind, cz_behind = localToWorld(combine.cp.DirectionNode or combine.rootNode, vehicle.cp.combineOffset, 0, -(turnDiameter + safetyDistance))
+			cx_behind, cy_behind, cz_behind = localToWorld(combine.cp.directionNode or combine.rootNode, vehicle.cp.combineOffset, 0, -(turnDiameter + safetyDistance))
 		else
-			cx_behind, cy_behind, cz_behind = localToWorld(combine.cp.DirectionNode or combine.rootNode, 0, 0, -(turnDiameter + safetyDistance))
+			cx_behind, cy_behind, cz_behind = localToWorld(combine.cp.directionNode or combine.rootNode, 0, 0, -(turnDiameter + safetyDistance))
 		end
 		
 		if z1 > -(turnDiameter + safetyDistance) then 
 			-- tractor in front of combine, drive to a position where we can safely transfer to STATE_DRIVE_TO_REAR mode
 			-- left side of combine, 30 meters back, 20 to the left
-			local cx_left, cy_left, cz_left = localToWorld(combine.cp.DirectionNode or combine.rootNode, 20, 0, -30)
+			local cx_left, cy_left, cz_left = localToWorld(combine.cp.directionNode or combine.rootNode, 20, 0, -30)
 			-- righ side of combine, 30 meters back, 20 to the right
-			local cx_right, cy_right, cz_right = localToWorld(combine.cp.DirectionNode or combine.rootNode, -20, 0, -30)
+			local cx_right, cy_right, cz_right = localToWorld(combine.cp.directionNode or combine.rootNode, -20, 0, -30)
 
-			local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx_left, y, cz_left)
+			local lx, ly, lz = worldToLocal(vehicle.cp.directionNode, cx_left, y, cz_left)
 			-- distance to left position
 			local disL = MathUtil.vector2Length(lx, lz)
-			local rx, ry, rz = worldToLocal(vehicle.cp.DirectionNode, cx_right, y, cz_right)
+			local rx, ry, rz = worldToLocal(vehicle.cp.directionNode, cx_right, y, cz_right)
 			-- distance to right position
 			local disR = MathUtil.vector2Length(rx, rz)
 
@@ -517,12 +517,12 @@ function CombineUnloadAIDriver:driveToCombine(dt)
 		-- at this point, currentX/Y/Z is a world position near the combine
 		
 		-- with no path finding, get vector to currentX/currentZ
-		local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, currentX, currentY, currentZ)
+		local lx, ly, lz = worldToLocal(vehicle.cp.directionNode, currentX, currentY, currentZ)
 		lx,lz = lx,lz
 		
 		dod = MathUtil.vector2Length(lx, lz)
 		
-		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
+		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, currentX, y, currentZ)
 		-- PATHFINDING / REALISTIC DRIVING -
 		-- if it is enabled and we are not too close to the combine, we abort STATE_DRIVE_TO_COMBINE mode and 
 		-- switch to follow course mode to avoid fruit instead of driving directly 
@@ -808,7 +808,7 @@ function CombineUnloadAIDriver:cleanUpMissedTriggerExit() -- at least that's wha
 
 		if trigger_id ~= nil then
 			local trigger_x, _, trigger_z = getWorldTranslation(trigger_id)
-			local ctx, _, ctz = getWorldTranslation(self.vehicle.cp.DirectionNode)
+			local ctx, _, ctz = getWorldTranslation(self.vehicle.cp.directionNode)
 			local distToTrigger = courseplay:distance(ctx, ctz, trigger_x, trigger_z)
 
 			-- Start reversing value is to check if we have started to reverse

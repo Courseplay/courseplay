@@ -145,7 +145,7 @@ function PurePursuitController:getForwardDrivingControlledNode()
 		-- direction the driver seat is facing
 		return self.vehicle.cp.reverseDrivingDirectionNode
 	else
-		return self.vehicle.cp.DirectionNode or self.vehicle.rootNode
+		return self.vehicle.cp.directionNode or self.vehicle.rootNode
 	end
 end
 

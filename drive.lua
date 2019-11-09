@@ -52,7 +52,7 @@ function courseplay:drive(self, dt)
 	-- debug for workAreas
 	if courseplay.debugChannels[6] then
 		if self.cp.aiFrontMarker and self.cp.backMarkerOffset then
-			local directionNode	= self.isReverseDriving and self.cp.reverseDrivingDirectionNode or self.cp.DirectionNode;
+			local directionNode	= self.isReverseDriving and self.cp.reverseDrivingDirectionNode or self.cp.directionNode;
 			local tx1, ty1, tz1 = localToWorld(directionNode,3,1,self.cp.aiFrontMarker)
 			local tx2, ty2, tz2 = localToWorld(directionNode,3,1,self.cp.backMarkerOffset)
 			local nx, ny, nz = localDirectionToWorld(directionNode, -1, 0, 0)
@@ -110,7 +110,7 @@ function courseplay:drive(self, dt)
 
 	-- === CURRENT VEHICLE POSITION ===
 	-- cty is used throughout this function as the terrain height. 
-	local ctx, cty, ctz = getWorldTranslation(self.cp.DirectionNode);
+	local ctx, cty, ctz = getWorldTranslation(self.cp.directionNode);
 	if self.Waypoints[self.cp.waypointIndex].rev and self.cp.oldDirectionNode then
 		ctx, cty, ctz = getWorldTranslation(self.cp.oldDirectionNode);
 	end;
@@ -155,7 +155,7 @@ function courseplay:drive(self, dt)
 	end;
 	if CpManager.isDeveloper and self.spec_articulatedAxis and self.spec_articulatedAxis.rotMin and courseplay.debugChannels[12] then
 		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
-		local desX, _, desZ = localToWorld(self.cp.DirectionNode, 0, 0, 5);
+		local desX, _, desZ = localToWorld(self.cp.directionNode, 0, 0, 5);
 		cpDebug:drawLine(ctx, cty + 3.5, ctz, 0, 0, 1, desX, cty + 3.5, desZ);
 	end;
 
@@ -167,15 +167,15 @@ function courseplay:drive(self, dt)
 	local distToChange;
 
 	-- coordinates of coli
-	local tx, ty, tz = localToWorld(self.cp.DirectionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
+	local tx, ty, tz = localToWorld(self.cp.directionNode, 0, 1, 3); --local tx, ty, tz = getWorldTranslation(self.aiTrafficCollisionTrigger)
 	-- local direction of from DirectionNode to waypoint
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode, cx, cty, cz);
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.cp.directionNode, cx, cty, cz);
 	
 	-- at this point, we used the current waypoint position and the current vehicle position to calculate 
 	-- lx, lz, that is, the direction we want to drive.
 	
 	-- world direction of from DirectionNode to waypoint
-	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, -0.1, lz);
+	local nx, ny, nz = localDirectionToWorld(self.cp.directionNode, lx, -0.1, lz);
 
 	if self.cp.mode == 4 or self.cp.mode == 6 then
 		if self.Waypoints[self.cp.waypointIndex].turnStart then
@@ -391,7 +391,7 @@ function courseplay:drive(self, dt)
 		end
 		isCrawlingToWait = true
 		if wayPointIsWait or wayPointIsRevUnload then
-			local _,_,zDist = worldToLocal(self.cp.DirectionNode, self.Waypoints[self.cp.previousWaypointIndex].cx, cty, self.Waypoints[self.cp.previousWaypointIndex].cz);
+			local _,_,zDist = worldToLocal(self.cp.directionNode, self.Waypoints[self.cp.previousWaypointIndex].cx, cty, self.Waypoints[self.cp.previousWaypointIndex].cz);
 			if zDist < 1 then -- don't stop immediately when hitting the waitPoints waypointIndex, but rather wait until we're close enough (1m)
 				allowedToDrive = false;
 			end;
@@ -652,8 +652,8 @@ function courseplay:drive(self, dt)
 
 	if WpUnload then
 		local i = self.cp.shovelEmptyPoint
-		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
-		local _,_,ez = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		local x,y,z = getWorldTranslation(self.cp.directionNode)
+		local _,_,ez = worldToLocal(self.cp.directionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0 then
 			allowedToDrive = false
 		end
@@ -665,8 +665,8 @@ function courseplay:drive(self, dt)
 	end
 	if WpLoadEnd then
 		local i = self.cp.shovelFillEndPoint
-		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
-		local _,_,ez = worldToLocal(self.cp.DirectionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
+		local x,y,z = getWorldTranslation(self.cp.directionNode)
+		local _,_,ez = worldToLocal(self.cp.directionNode, self.Waypoints[i].cx , y , self.Waypoints[i].cz)
 		if  ez < 0.2 then
 			if self.cp.totalFillLevelPercent == 0 then
 				allowedToDrive = false
@@ -867,7 +867,7 @@ function courseplay:drive(self, dt)
 		lx = lx * -1;
 	elseif self.cp.isReverseBackToPoint then
 		if self.cp.reverseBackToPoint then
-			local _, _, zDis = worldToLocal(self.cp.DirectionNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
+			local _, _, zDis = worldToLocal(self.cp.directionNode, self.cp.reverseBackToPoint.x, self.cp.reverseBackToPoint.y, self.cp.reverseBackToPoint.z);
 			if zDis < 0 then
 				fwd = false;
 				lx = 0
@@ -1015,7 +1015,7 @@ function courseplay:drive(self, dt)
 				--print(string.format('self = %s dt = %d acceleration = %.1f self.cp.steeringAngle = %s moveForwards =%s lx = %.2f lz = %.2f refSpeed = %.2f',tostring(self),dt,acceleration,tostring(self.cp.steeringAngle),tostring(fwd),lx,lz,refSpeed))
 				AIVehicleUtil.driveInDirection(self, dt, self.cp.steeringAngle, acceleration, 0.5, 20, true, fwd, lx, lz, refSpeed, 1);
 			else 
-				local directionNode = self.aiVehicleDirectionNode or self.cp.DirectionNode;
+				local directionNode = self.aiVehicleDirectionNode or self.cp.directionNode;
 				local tX,_,tZ = worldToLocal(directionNode, cx, cty, cz);
 				if courseplay:isWheelloader(self) then
 					tZ = tZ * 0.5; -- wheel loaders need to turn more
@@ -1356,7 +1356,7 @@ function courseplay.calculateTightTurnOffset( vehicle )
 	end
 	-- get the distance between the tractor and the towed implement's turn node
 	-- (not quite accurate when the angle between the tractor and the tool is high)
-	local tractorX, _, tractorZ = getWorldTranslation( vehicle.cp.DirectionNode )
+	local tractorX, _, tractorZ = getWorldTranslation( vehicle.cp.directionNode )
 	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
 	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
 
@@ -1490,10 +1490,10 @@ end;
 			vehicle.cp.curMapWeightStation = station;
 
 			-- CHECK IF WE'RE DRIVING IN THE CORRECT DIRECTION
-			_, _, vehToCenterZ = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+			_, _, vehToCenterZ = worldToLocal(vehicle.cp.directionNode, x, y, z);
 			--local displayX, displayY, displayZ = getWorldTranslation(vehicle.cp.curMapWeightStation.digits[1]);
 			local displayX, displayY, displayZ = getWorldTranslation(vehicle.cp.curMapWeightStation.displayNumbers);
-			local _, _, vehToDisZ = worldToLocal(vehicle.cp.DirectionNode, displayX, displayY, displayZ);
+			local _, _, vehToDisZ = worldToLocal(vehicle.cp.directionNode, displayX, displayY, displayZ);
 			if vehToDisZ < vehToCenterZ then -- display is closer than weightStation center
 				vehicle.cp.curMapWeightStation = nil;
 				courseplay:debug(('%s: station=%s, vehToCenterZ=%.1f, vehToDisZ=%.1f [display closer than center] -> wrong direction: set curMapWeightStation to nil, return allowedToDrive=%s'):format(nameNum(vehicle), name, vehToCenterZ, vehToDisZ, tostring(allowedToDrive)), 20);
@@ -1511,7 +1511,7 @@ end;
 		name = tostring(getName(vehicle.cp.curMapWeightStation.triggerId));
 		vehicle.cp.fillTrigger = nil; -- really make sure fillTrigger is nil
 		x, y, z = getWorldTranslation(vehicle.cp.curMapWeightStation.triggerId);
-		vehToCenterX, _, vehToCenterZ = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+		vehToCenterX, _, vehToCenterZ = worldToLocal(vehicle.cp.directionNode, x, y, z);
 
 		-- make sure to abort in case we somehow missed the stopping point
 		if vehToCenterZ <= -45 or MathUtil.vector2Length(vehToCenterX, vehToCenterZ) > 45 then
@@ -1568,7 +1568,7 @@ function courseplay:setReverseBackDistance(vehicle, metersBack)
 	if not vehicle or not metersBack then return; end;
 
 	if not vehicle.cp.reverseBackToPoint then
-		local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 0, -metersBack);
+		local x, y, z = localToWorld(vehicle.cp.directionNode, 0, 0, -metersBack);
 		vehicle.cp.reverseBackToPoint = {};
 		vehicle.cp.reverseBackToPoint.x = x;
 		vehicle.cp.reverseBackToPoint.y = y;
@@ -1878,7 +1878,7 @@ end;
 function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 	-- This function allows CP to naviagte to the start of the UnloadingCourse without leaving the field if pathfinding option is enabled
 	local min = math.min
-	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local x, y, z = getWorldTranslation(vehicle.cp.directionNode)
 	local currentX, currentY, currentZ;
 	local refSpeed;
 	local handleTurn = false
@@ -1965,7 +1965,7 @@ function courseplay:navigatePathToUnloadCourse(vehicle, dt, allowedToDrive)
 		local moveForwards = true
 		if currentX ~= nil and currentZ ~= nil then
 			print('broken 2030')
-			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, currentX, y, currentZ)
+			lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, currentX, y, currentZ)
 		else
 			allowedToDrive = false
 		end
@@ -2059,8 +2059,8 @@ function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
 		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
 		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.allwaysSearchFuel and currentFuelPercentage < 99 or currentFuelPercentage < 20); 
 		if searchForFuel and not vehicle.cp.fuelFillTrigger then
-			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, 0, lz);
-			local tx, ty, tz = getWorldTranslation(vehicle.cp.DirectionNode)
+			local nx, ny, nz = localDirectionToWorld(vehicle.cp.directionNode, lx, 0, lz);
+			local tx, ty, tz = getWorldTranslation(vehicle.cp.directionNode)
 			courseplay:doTriggerRaycasts(vehicle, 'fuelTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
 		end
 		

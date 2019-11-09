@@ -132,7 +132,7 @@ function courseplay:getDistances(object)
 		local distances = {};
 
 		-- STEERABLES
-		if object.cp.DirectionNode then
+		if object.cp.directionNode then
 			-- Finde the front and rear distance from the direction node
 			local front, rear = 0, 0;
 			local haveRunnedOnce = false
@@ -142,7 +142,7 @@ function courseplay:getDistances(object)
 				local wreprxTemp, wrepryTemp, wreprzTemp = getRotation(wheel.repr);
 				setRotation(wheel.repr, 0, 0, 0);
 				local xw, yw, zw = getWorldTranslation(wheel.driveNode);
-				local _,_,dis = worldToLocal(object.cp.DirectionNode, xw, yw, zw);
+				local _,_,dis = worldToLocal(object.cp.directionNode, xw, yw, zw);
 				setRotation(wheel.repr, wreprxTemp, wrepryTemp, wreprzTemp);
 				setRotation(wheel.driveNode, wdnrxTemp, wdnryTemp, wdnrzTemp);
 				if haveRunnedOnce then
@@ -162,7 +162,7 @@ function courseplay:getDistances(object)
 			-- Finde the attacherJoints distance from the direction node
 			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 				local xj, yj, zj = getWorldTranslation(attacherJoint.jointTransform);
-				local _,_,dis = worldToLocal(object.cp.DirectionNode, xj, yj, zj);
+				local _,_,dis = worldToLocal(object.cp.directionNode, xj, yj, zj);
 				if dis < front then
 					if not distances.frontWheelToRearTrailerAttacherJoints then
 						distances.frontWheelToRearTrailerAttacherJoints = {};
@@ -176,7 +176,7 @@ function courseplay:getDistances(object)
 			local turningNode = courseplay:getRealTurningNode(object);
 			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 				local xj, yj, zj = getWorldTranslation(attacherJoint.jointTransform);
-				local _, _, deltaZ = worldToLocal(object.cp.DirectionNode, xj, yj, zj);
+				local _, _, deltaZ = worldToLocal(object.cp.directionNode, xj, yj, zj);
 
 				-- If we are behind the front wheel, then it should be an attacherJoing on the rear
 				if deltaZ < front then
@@ -367,7 +367,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 			end;
 		end;
 
-		if vehicle.cp.DirectionNode and totalDistance > 0 then
+		if vehicle.cp.directionNode and totalDistance > 0 then
 			for _, imp in ipairs(vehicle:getAttachedImplements()) do
 				if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 					local workTool = imp.object;
@@ -472,7 +472,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 		local Distance = 0;
 
 		-- STEERABLES
-		if object.cp.DirectionNode then
+		if object.cp.directionNode then
 			-- Giants have provided us with steeringCenterNode, so use it.
 			if object.steeringCenterNode then
 				-- The steeringCenterNode is already set for us to use.
@@ -1006,10 +1006,10 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 	end;
 
 	-- STEERABLES
-	if vehicle.cp.DirectionNode then
+	if vehicle.cp.directionNode then
 		directionNodeToFrontWheelOffset = vehicle.cp.distances.frontWheelToDirectionNodeOffset;
 
-		local _, y, _ = getWorldTranslation(vehicle.cp.DirectionNode);
+		local _, y, _ = getWorldTranslation(vehicle.cp.directionNode);
 
 		local hasRearAttach = false;
 		local jointType = 0;
@@ -1312,7 +1312,7 @@ end
 
 function courseplay:isInvertedToolNode(workTool, node)
 	-- Only check trailers
-	if workTool.cp.DirectionNode then
+	if workTool.cp.directionNode then
 		return false;
 	end;
 
@@ -1333,7 +1333,7 @@ function courseplay:isPartOfNode(node, partOfNode)
 end;
 
 function courseplay:isRearAttached(object, jointDescIndex)
-	local turningNode = object.cp.DirectionNode or courseplay:getRealTurningNode(object);
+	local turningNode = object.cp.directionNode or courseplay:getRealTurningNode(object);
 	local x, y, z = localToWorld(turningNode, 0, 0, 50);
 	local deltaX, _, _ = worldToLocal(object.spec_attacherJoints.attacherJoints[jointDescIndex].jointTransform, x, y, z);
 
@@ -1484,9 +1484,9 @@ end
 
 function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 	--get raycast direction x and z
-	local nx,_, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx or 0, 0, lz or 1)
+	local nx,_, nz = localDirectionToWorld(vehicle.cp.directionNode, lx or 0, 0, lz or 1)
 	-- get raycast start point in front of vehicle
-	local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 1, 3)
+	local x, y, z = localToWorld(vehicle.cp.directionNode, 0, 1, 3)
 	--get the raycast direction y to a point 1m below terrain at raycast tip 
 	local xt,zt = x+(nx*distance), z+(nz*distance)
 	local yt = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, xt, 0, zt);
@@ -1495,7 +1495,7 @@ function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 end
 
 function courseplay:isNodeTurnedWrongWay(vehicle,dischargeNode)
-	local x,y,z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local x,y,z = getWorldTranslation(vehicle.cp.directionNode)
 	local _,_, nz = worldToLocal(dischargeNode,x,y,z)
 	return nz < 0
 end

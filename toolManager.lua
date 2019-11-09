@@ -552,7 +552,7 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end;
 
-	local realDirectionNode		= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
+	local realDirectionNode		= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.directionNode;
 	local aLittleBitMore 		= 1;
 	local pivotJointNode 		= courseplay:getPivotJointNode(object);
 	object.cp.backMarkerOffset 	= nil;
@@ -811,7 +811,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	
 	if (vehicle.cp.tipperLoadMode == 0 or vehicle.cp.tipperLoadMode == 3) and not driveOn then
 		--if vehicle.cp.ppc:haveJustPassedWaypoint(1) and currentTrailer.cp.currentSiloTrigger == nil then  --vehicle.cp.ppc:haveJustPassedWaypoint(1) doesn't work here
-		if vehicle.cp.driver.course:havePhysicallyPassedWaypoint(vehicle.cp.DirectionNode, 1) and currentTrailer.cp.currentSiloTrigger == nil then
+		if vehicle.cp.driver.course:havePhysicallyPassedWaypoint(vehicle.cp.directionNode, 1) and currentTrailer.cp.currentSiloTrigger == nil then
 		--- We must be on an loading point at a field so we stop under wp1 and wait for trailer to be filled up
 			vehicle.cp.tipperLoadMode = 2;
 		elseif currentTrailer.cp.currentSiloTrigger then
@@ -831,7 +831,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	
 	if not driveOn then
 		if vehicle.cp.tipperLoadMode == 1 then
-			local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
+			local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.directionNode;
 			local _,vehicleY,_ = getWorldTranslation(directionNode);
 
 			local _,_,z = worldToLocal(directionNode, trailerX, vehicleY, trailerZ);
@@ -1439,7 +1439,7 @@ function courseplay:resetFillTrigger(vehicle)
 		end
 		--setting the next fwd waypoint for reverse filling. should not cause problems in fwd filling. if it does, find an other way 
 		local driver = vehicle.cp.driver
-		driver.ppc:initialize(driver.course:getNextFwdWaypointIxFromVehiclePosition(driver.ppc:getCurrentWaypointIx(),vehicle.cp.DirectionNode,driver.ppc:getLookaheadDistance()));
+		driver.ppc:initialize(driver.course:getNextFwdWaypointIxFromVehiclePosition(driver.ppc:getCurrentWaypointIx(),vehicle.cp.directionNode,driver.ppc:getLookaheadDistance()));
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end
@@ -1794,7 +1794,7 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 		local fwdWayoint = courseplay:getNextFwdPoint(vehicle)
 		local x,z = vehicle.Waypoints[fwdWayoint].cx, vehicle.Waypoints[fwdWayoint].cz;
 		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
-		local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
+		local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, x, y, z);
 		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
 	end
 	return vehicle.cp.takeOverSteering
@@ -1900,8 +1900,8 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 	if object.getAIMarkers then
 		local aiLeftMarker, aiRightMarker = object:getAIMarkers()
 		if aiLeftMarker and aiRightMarker then
-			local left, _, _ = localToLocal(aiLeftMarker, object.cp.DirectionNode or object.rootNode, 0, 0, 0);
-			local right, _, _ = localToLocal(aiRightMarker, object.cp.DirectionNode or object.rootNode, 0, 0, 0);
+			local left, _, _ = localToLocal(aiLeftMarker, object.cp.directionNode or object.rootNode, 0, 0, 0);
+			local right, _, _ = localToLocal(aiRightMarker, object.cp.directionNode or object.rootNode, 0, 0, 0);
 			local width, _, _ = localToLocal(aiLeftMarker, aiRightMarker, 0, 0, 0)
 			courseplay.debugFormat( 6, '%s%s aiMarkers: left=%.2f, right=%.2f (width %.2f)', logPrefix, nameNum(object), left, right, width)
 

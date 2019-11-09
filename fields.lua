@@ -721,7 +721,7 @@ end
 
 
 function courseplay.fields:onWhichFieldAmI(vehicle)
-	local positionX, _, positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
+	local positionX, _, positionZ = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode);
 	return self:getFieldNumForPosition( positionX, positionZ )
 end
 

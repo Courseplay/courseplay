@@ -43,13 +43,13 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		if newTarget then
 			-- If we have the revPosX, revPosZ set, use those
 			if newTarget.revPosX and newTarget.revPosZ then
-				local _, vehicleY, _ = getWorldTranslation(vehicle.cp.DirectionNode);
-				lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, newTarget.revPosX, vehicleY, newTarget.revPosZ);
+				local _, vehicleY, _ = getWorldTranslation(vehicle.cp.directionNode);
+				lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, newTarget.revPosX, vehicleY, newTarget.revPosZ);
 			end;
 		elseif vehicle.cp.mode ~= 9 then
 			-- Start: Fixes issue #525
-			local tx, ty, tz = localToWorld(vehicle.cp.DirectionNode, 0, 1, -3);
-			local nx, ny, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx, -0,1, lz);
+			local tx, ty, tz = localToWorld(vehicle.cp.directionNode, 0, 1, -3);
+			local nx, ny, nz = localDirectionToWorld(vehicle.cp.directionNode, lx, -0,1, lz);
 			courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, tx, ty, tz, nx, ny, nz);
 			--  End:  Fixes issue #525
 		end
@@ -239,7 +239,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	if useArticulatedAxisRotationNode then
 		turnNode = vehicle.spec_articulatedAxis.rotationNode
 	else
-		turnNode = vehicle.cp.DirectionNode
+		turnNode = vehicle.cp.directionNode
 	end
 
 	if workTool.cp.isPivot then
@@ -337,7 +337,7 @@ end
 
 -- Find the first forward waypoint ahead of the vehicle
 function courseplay:getNextFwdPoint(vehicle, isTurning)
-	local directionNode	= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
+	local directionNode	= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.directionNode;
 	if isTurning then
 		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 14);
     -- scan only the next few waypoints, we don't want to end up way further in the course, missing 

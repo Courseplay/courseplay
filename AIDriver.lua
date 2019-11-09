@@ -909,7 +909,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 					takeOverSteering = true
 					local fwdWaypoint = self.course:getNextFwdWaypointIxFromVehiclePosition(unloadPointIx, self:getDirectionNode(), self.ppc:getLookaheadDistance())
 					local x,y,z = self.course:getWaypointPosition(fwdWaypoint)
-					local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
+					local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, x, y, z);
 					AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
 				end
 			end

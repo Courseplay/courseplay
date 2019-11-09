@@ -23,7 +23,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		return;
 	end
 
-	local realDirectionNode					= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
+	local realDirectionNode					= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.directionNode;
 	local allowedToDrive 					= true;
 	local moveForwards 						= true;
 	local refSpeed 							= vehicle.cp.speeds.turn;
@@ -638,14 +638,14 @@ function courseplay:turn(vehicle, dt, turnContext)
 	----------------------------------------------------------
 	if curTurnTarget then
 		local posX, posZ = curTurnTarget.revPosX or curTurnTarget.posX, curTurnTarget.revPosZ or curTurnTarget.posZ;
-		local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
+		local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.directionNode;
 		dtpX,_,dtpZ = worldToLocal(directionNode, posX, vehicleY, posZ);
 		if courseplay:isWheelloader(vehicle) then
 			dtpZ = dtpZ * 0.5; -- wheel loaders need to turn more
 		end;
 		--print( ("dtp %.1f, %.1f, %.1f"):format( dtpX, dtpZ, refSpeed ))
 
-		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, posX, vehicleY, posZ);
+		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, posX, vehicleY, posZ);
 		if curTurnTarget.turnReverse then
 			lx, lz, moveForwards = courseplay:goReverse(vehicle,lx,lz);
 		end;
@@ -674,12 +674,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 	if vehicle.cp.turnCorner then
 		vehicle.cp.turnCorner:drawDebug()
 	end
-
-	----------------------------------------------------------
-	-- Need to wait for tools to lower? (this is now handled in the turn generation by getWpIxInDistanceFromEnd
-	----------------------------------------------------------
-	--allowedToDrive = allowedToDrive and not courseplay:needToWaitForTools(vehicle)
-
 
 	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
 		-- in AIDriver based modes do not call / use legacy collision code
@@ -2072,54 +2066,6 @@ function courseplay.destroyNode( node )
 	end
 end
 
---- Find the waypoint at the given distance from the turn end
--- @param turnTargets list of (turn target) waypoints
--- @param d distance if < 0 it is behind the turn end node, if > 0 it is in front of it
--- @return index of first waypoint in d or greater distance from the turn end waypoint
-function courseplay.getWpIxInDistanceFromEnd(turnTargets, d, targetIx)
-	local x, z = turnTargets[targetIx].posX, turnTargets[targetIx].posZ
-	if d >= 0 then
-		-- we must lower the implement after we passed the turn end waypoint (towing a cultivator for example)
-		local dFromTarget = 0
-		-- so start at the turn end and go forward
-		for i = targetIx + 1, #turnTargets do
-			dFromTarget = dFromTarget + courseplay:distance(x, z, turnTargets[i].posX, turnTargets[i].posZ)
-			if dFromTarget > d then
-				return i
-			end
-		end
-	else
-		-- we must lower the implement before we get to the turn end waypoint (combine, header is in front)
-		local dFromTarget = 0
-		-- so start at the turn end and go backwards
-		for i = targetIx, 2, -1 do
-			dFromTarget = dFromTarget + courseplay:distance(x, z, turnTargets[i].posX, turnTargets[i].posZ)
-			if dFromTarget > -d then
-				return i
-			end
-		end
-	end
-	return nil
-end
-
---- Find the waypoint closest to the turn target (turn end waypoint)
--- This is in some cases known when we generate the turn as we use the turn end node as one of the endpoints of the
--- turn course segments, but not always, so, ugly as it is, we now go ahead and find that again based on the distance
-function courseplay:findTurnTargetWaypointIx(vehicle, turnEndNode)
-	local x, _, z = getWorldTranslation(turnEndNode)
-	local minD = math.huge
-	local targetIx
-	for i = #vehicle.cp.turnTargets, 2, -1 do
-		local d = courseplay:distance(x, z, vehicle.cp.turnTargets[i].posX, vehicle.cp.turnTargets[i].posZ)
-		if d < minD then
-			minD = d
-			targetIx = i
-		end
-	end
-	courseplay:debug(string.format("%s:(Turn) turn target is at waypoint index %d", nameNum(vehicle), targetIx and targetIx or -1), 14)
-	return targetIx
-end
-
 --[[
 The vehicle at vehiclePos moving into the direction of WP waypoint. 
 The direction it should be when reaching the waypoint is wpAngle. 
@@ -2202,7 +2148,7 @@ function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
 		targetWaypoint.cx, targetWaypoint.cz = courseplay:getVehicleOffsettedCoords(vehicle, targetWaypoint.cx, targetWaypoint.cz);
 	end;
 
-	local vx, _, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
+	local vx, _, vz = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode)
 	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
 	if not points then
 		courseplay.debugVehicle( 14, vehicle, "(Align) can't find an alignment course, may be too close to target wp?" )
@@ -2698,6 +2644,31 @@ function TurnContext:createCorner(vehicle, r)
 	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, vehicle.cp.totalOffsetX)
 end
 
+---@return Course
+function TurnContext:createEndingTurnCourse2(vehicle)
+	local startAngle = math.deg(self:getNodeDirection(vehicle.cp.directionNode))
+	local r = vehicle.cp.turnDiameter / 2
+	local startPos, endPos = {}, {}
+	startPos.x, _, startPos.z = getWorldTranslation(vehicle.cp.directionNode)
+	endPos.x, _, endPos.z = getWorldTranslation(self.frontMarkerNode)
+	local corner = Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos, r, vehicle.cp.totalOffsetX)
+	self.corner = corner
+	courseplay:clearTurnTargets(vehicle)
+	local center = corner:getArcCenter()
+	local startArc = corner:getArcStart()
+	local endArc = corner:getArcEnd()
+	courseplay:generateTurnCircle(vehicle, center, startArc, endArc, r, self:isLeftTurn() and 1 or -1, false);
+	-- make sure course reaches the front marker node so end it well behind that node
+	local endStraight = {}
+	endStraight.x, _, endStraight.z = localToWorld(self.frontMarkerNode, 0, 0, 3)
+	courseplay:generateTurnStraightPoints(vehicle, endArc, endStraight)
+	local course = Course(vehicle, vehicle.cp.turnTargets, true)
+	--	corner:delete()
+	courseplay:clearTurnTargets(vehicle)
+	return course
+end
+
+
 --- Course to end a turn, just a few meters straight leading into the next row
 ---@return Course
 function TurnContext:createEndingTurnCourse(vehicle)
@@ -2751,6 +2722,9 @@ function TurnContext:drawDebug()
 			cx, cy, cz = localToWorld(self.lateWorkEndNode, -self.workWidth / 2, 0, 0)
 			nx, ny, nz = localToWorld(self.lateWorkEndNode, self.workWidth / 2, 0, 0)
 			cpDebug:drawLine(cx, cy + height, cz, 0.7, 0, 0, nx, ny + height, nz)
+		end
+		if self.corner then
+			self.corner:drawDebug()
 		end
 	end
 end
