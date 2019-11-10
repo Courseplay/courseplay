@@ -90,8 +90,6 @@ function PurePursuitController:init(vehicle)
 	self.isReverseActive = false
 	-- enable PPC by default for developers only
 	self.enabled = CpManager.isDeveloper
-	-- current goal point search case as described in the paper, for diagnostics only
-	self.case = 0
 	-- index of the first node of the path (where PPC is initialized and starts driving
 	self.firstIx = 1
 	self.crossTrackError = 0
@@ -168,6 +166,8 @@ function PurePursuitController:initialize(ix)
 	self.lastPassedWaypointIx = nil
 	self.sendWaypointChange = nil
 	self.sendWaypointPassed = nil
+	-- current goal point search case as described in the paper, for diagnostics only
+	self.case = 0
 end
 
 -- TODO: make this more generic and allow registering multiple listeners?
@@ -402,7 +402,7 @@ function PurePursuitController:findGoalPoint()
 		local q1 = courseplay:distance(x1, z1, vx, vz) -- distance from node 1
 		local q2 = courseplay:distance(x2, z2, vx, vz) -- distance from node 2
 		local l = courseplay:distance(x1, z1, x2, z2)  -- length of path segment (distance between node 1 and 2
-		--self:debug('ix=%d, q1=%.1f, q2=%.1f la=%.1f l=%.1f', ix, q1, q2, self.lookAheadDistance, l)
+		-- self:debug('ix=%d, q1=%.1f, q2=%.1f la=%.1f l=%.1f', ix, q1, q2, self.lookAheadDistance, l)
 
 		-- case i (first node outside virtual circle but not yet reached) or (not the first node but we are way off the track)
 		if (ix == self.firstIx and ix ~= self.lastPassedWaypointIx) and
@@ -465,6 +465,16 @@ function PurePursuitController:findGoalPoint()
 		end
 		-- none of the above, continue search with the next path segment
 		ix = ix + 1
+		-- unless there's a direction change here. This should only happen right after initialization and when
+		-- the reference node is already beyond the direction switch waypoint. We should not skip that being
+		-- the current waypoint otherwise the relevant waypoint won't be moved over the direction switch
+		if self.course:switchingDirectionAt(ix)  then
+			-- force waypoint change
+			self:showGoalpointDiag(100, 'switching direction while looking for goal point, ix=%d', ix)
+			self.wpBeforeGoalPointIx = ix - 1
+			self:setCurrentWaypoint(ix)
+			break
+		end
 	end
 	
 	node1:destroy()

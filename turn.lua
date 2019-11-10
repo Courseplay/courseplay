@@ -1883,13 +1883,13 @@ end;
 -- to startDir intersects the circle and ends where the line from the center of the circle to stopDir
 -- intersects the circle.
 --
-function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radius, clockWice, addEndPoint, reverse)
-	-- Convert clockWice to the right format
-	if clockWice == nil then clockWice = 1 end;
-	if clockWice == false or clockWice < 0 then
-		clockWice = -1;
+function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radius, clockwise, addEndPoint, reverse)
+	-- Convert clockwise to the right format
+	if clockwise == nil then clockwise = 1 end;
+	if clockwise == false or clockwise < 0 then
+		clockwise = -1;
 	else
-		clockWice = 1;
+		clockwise = 1;
 	end;
 
 	-- Define some basic values to use
@@ -1918,27 +1918,27 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	setRotation(point, 0, rad(startRot), 0);
 
 	-- Fix the rotation values in some special cases
-	if clockWice == 1 then
-		--(Turn:generateTurnCircle) startRot=90, endRot=-29, degreeStep=20, degreeToTurn=240, clockWice=1
+	if clockwise == 1 then
+		--(Turn:generateTurnCircle) startRot=90, endRot=-29, degreeStep=20, degreeToTurn=240, clockwise=1
 		if startRot > endRot then
 			degreeToTurn = endRot + 360 - startRot;
 		else
 			degreeToTurn = endRot - startRot;
 		end;
 	else
-		--(Turn:generateTurnCircle) startRot=150, endRot=90, degreeStep=-20, degreeToTurn=60, clockWice=-1
+		--(Turn:generateTurnCircle) startRot=150, endRot=90, degreeStep=-20, degreeToTurn=60, clockwise=-1
 		if startRot < endRot then
 			degreeToTurn = startRot + 360 - endRot;
 		else
 			degreeToTurn = startRot - endRot;
 		end;
 	end;
-	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) startRot=%d, endRot=%d, degreeStep=%d, degreeToTurn=%d, clockWice=%d", nameNum(vehicle), startRot, endRot, (degreeStep * clockWice), degreeToTurn, clockWice), 14);
+	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) startRot=%d, endRot=%d, degreeStep=%d, degreeToTurn=%d, clockwise=%d", nameNum(vehicle), startRot, endRot, (degreeStep * clockwise), degreeToTurn, clockwise), 14);
 
 	-- Get the number of waypoints
 	numWP = ceil(degreeToTurn / degreeStep);
 	-- Recalculate degreeStep
-	degreeStep = (degreeToTurn / numWP) * clockWice;
+	degreeStep = (degreeToTurn / numWP) * clockwise;
 	-- Add extra waypoint if addEndPoint is true
 	if addEndPoint then numWP = numWP + 1; end;
 
@@ -2663,7 +2663,7 @@ function TurnContext:createEndingTurnCourse2(vehicle)
 	endStraight.x, _, endStraight.z = localToWorld(self.frontMarkerNode, 0, 0, 3)
 	courseplay:generateTurnStraightPoints(vehicle, endArc, endStraight)
 	local course = Course(vehicle, vehicle.cp.turnTargets, true)
-	--	corner:delete()
+	corner:delete()
 	courseplay:clearTurnTargets(vehicle)
 	return course
 end
@@ -2722,9 +2722,6 @@ function TurnContext:drawDebug()
 			cx, cy, cz = localToWorld(self.lateWorkEndNode, -self.workWidth / 2, 0, 0)
 			nx, ny, nz = localToWorld(self.lateWorkEndNode, self.workWidth / 2, 0, 0)
 			cpDebug:drawLine(cx, cy + height, cz, 0.7, 0, 0, nx, ny + height, nz)
-		end
-		if self.corner then
-			self.corner:drawDebug()
 		end
 	end
 end

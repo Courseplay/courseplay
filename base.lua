@@ -166,7 +166,7 @@ function courseplay:onLoad(savegame)
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
-	self.cp.startAtPoint = courseplay.START_AT_NEXT_POINT;
+	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 	self.cp.fertilizerEnabled = true
 	self.cp.convoyActive = false
 	self.cp.convoy= {

@@ -84,6 +84,8 @@ end
 
 function VehicleSettingsPage:updateMyGUISettings()
 	for _, setting in pairs(self:getSettings()) do
-		setting:getGuiElement():setState(setting:getGuiElementState(), false)
+		if setting:getGuiElement() then
+			setting:getGuiElement():setState(setting:getGuiElementState(), false)
+		end
 	end
 end
