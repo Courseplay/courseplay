@@ -4,8 +4,8 @@
 		<text name="COURSEPLAY_RECORDING_START" 							text="Начать запись маршрута" />
 		<text name="COURSEPLAY_DRIVER" 										text="Транспорт" />
 		<text name="COURSEPLAY_PPC_OFF" 									text="Обычный режим" />
-		<text name="COURSEPLAY_PPC_ON" 										text="Экспериментальный режим" /> <!-- a new driving algorithm using a pure pursuit controller -->
-		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- enable new AI driver -->
+		<text name="COURSEPLAY_PPC_ON" 										text="Экспериментальный режим" />
+		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Отправить транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Остановить в триггере/конечной точке:" />
@@ -224,7 +224,7 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"					text="сглаживать" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"					text="с разворотом" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"					text="скруглять" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Разворот в конце поля:"/>		
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Разворот в конце поля:"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="по прямой (с реверсом)" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="по дуге (без реверса)" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Способ движения (экспериментальный)" />
@@ -396,8 +396,8 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"						text="Не установлен" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"							text="Не использовать" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Для разгрузки/наполнения" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="To park vehicle" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="For unload/refill and park" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Для парковки" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Для разгрузки/наполнения/парковки" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"							text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"						text="(и обратно)" />
@@ -420,7 +420,7 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Опускать оборудование при начале прохода или в конце разворота на поворотной полосе." />
 
 		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="КЧС. Использовать виртуальные путевые точки для выполнения поворота." />
-		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Во время поворотов использовать лучший алгоритм отслеживания маршрута (КЧС - контроллер чистого следования)." /> <!-- Use a better course tracking algorithm (PPC pure pursuit controller) during turns -->
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Во время поворотов использовать лучший алгоритм отслеживания маршрута (КЧС - контроллер чистого следования)." />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Уровень зарплаты на Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Заработная плата рабочего на Courseplay в процентах от заработной платы обычного работника." />
 		<!-- Replace marker, do not remove! -->
