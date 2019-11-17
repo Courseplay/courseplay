@@ -2521,6 +2521,7 @@ function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData)
 		-- there's no need for an overshoot as it is being taken care during the course generation
 		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnStartWpIx)
 		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
+		setTranslation(aiDriverData.lateWorkEndNode, 0, 0, 0)
 	end
 
 	self.workEndNode = aiDriverData.workEndNode
