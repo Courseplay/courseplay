@@ -1320,7 +1320,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 	end
 	for _,workTool in ipairs(vehicle.cp.workTools) do
 		local isFilling = false
-		if vehicle.cp.fillTrigger then
+		if (vehicle.cp.fillTrigger) and (workTool.cp.capacity ~= nil) and (workTool.cp.capacity > 0) then
 			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
 			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, workTool) then
 				courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
