@@ -423,6 +423,7 @@
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Usar algoritmo de rastreamento de rota (controlador de busca) durante as manobras" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay salários dos trabalhadores" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay pagamento do trabalhador como porcentagem do salário normal" />
-		<!-- Replace marker, do not remove! -->
-	</texts>
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
+<!-- Replace marker, do not remove! --></texts>
 </l10n>

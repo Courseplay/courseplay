@@ -97,7 +97,7 @@ end
 -- for example, io.flush is not available from within the game.
 --
 function courseGenerator.isRunningInGame()
-	return courseplay ~= nil;
+	return g_currentMission ~= nil;
 end
 
 function courseGenerator.getCurrentTime()
@@ -126,6 +126,16 @@ function courseGenerator.pointsToXz( points )
 	return result
 end
 
+--- Convert an array of points from x/y to x/z in place (also keeping other attributes)
+function courseGenerator.pointsToXzInPlace(points)
+	for _, point in ipairs(points) do
+		point.z = -point.y
+		-- wipe y as it is a different coordinate in this system
+		point.y = nil
+	end
+	return points
+end
+
 function courseGenerator.pointsToCxCz( points )
 	local result = {}
 	for _, point in ipairs( points) do
@@ -145,13 +155,40 @@ end
 --- Convert our angle representation (measured from the x axis up in radians)
 -- into CP's, where 0 is to the south, to our negative y axis.
 --
-function courseGenerator.toCpAngle( angle )
+function courseGenerator.toCpAngleDeg( angle )
 	local a = math.deg( angle ) + 90
 	if a > 180 then
 		a = a - 360
 	end
 	return a
 end
+
+function courseGenerator.toCpAngle( angle )
+	local a = angle + math.pi / 2
+	if a > math.pi then
+		a = a - 2 * math.pi
+	end
+	return a
+end
+
+
+--- Convert the Courseplay angle to the Cartesian representation
+function courseGenerator.fromCpAngleDeg(angleDeg)
+	local a = angleDeg - 90
+	if a < 0 then
+		a = 360 + a
+	end
+	return math.rad(a)
+end
+
+function courseGenerator.fromCpAngle(angle)
+	local a = angle - math.pi / 2
+	if a < 0 then
+		a = 2 * math.pi + a
+	end
+	return a
+end
+
 
 
 --- Pathfinder wrapper for CP 
@@ -207,3 +244,25 @@ function courseGenerator.getCompassAngleDeg( gameAngleDeg )
 	return ( 360 + gameAngleDeg - 90 ) % 360
 end
 
+local function xzToXy(point)
+	point.y, point.z = -point.z, point.y or 0
+end
+
+local function xyToXz(point)
+	point.y, point.z = point.z or 0, -point.y
+end
+
+function courseGenerator.findDubinsPath(vehicle, goalNode, turnRadius)
+	local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, 1)
+	local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
+	x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, 0, -2)
+	local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
+	local path = dubins_shortest_path(start, goal, turnRadius)
+	local dubinsPath = dubins_path_sample_many(path, 1)
+	if dubinsPath then
+		for i = 1, #dubinsPath do
+			xyToXz(dubinsPath[i])
+		end
+	end
+	return dubinsPath
+end

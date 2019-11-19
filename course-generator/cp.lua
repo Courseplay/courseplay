@@ -11,7 +11,7 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 
 		wp.generated = true
 		wp.ridgeMarker = point.ridgeMarker
-		wp.angle = courseGenerator.toCpAngle( point.nextEdge.angle )
+		wp.angle = courseGenerator.toCpAngleDeg( point.nextEdge.angle )
 		wp.cx = point.x
 		wp.cz = -point.y
 		wp.wait = nil

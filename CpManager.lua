@@ -103,7 +103,6 @@ function CpManager:loadMap(name)
 	end;
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
-	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'printVehicleVariable', 'Print g_currentMission.controlledVehicle.variable', 'printVehicleVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
@@ -111,6 +110,8 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
+	addConsoleCommand( 'cpTogglePathfindingDebug', 'Toggle pathfinding visual debug info', 'togglePathfindingDebug', self )
+	addConsoleCommand( 'cpToggleDevhelperDebug', 'Toggle development helper visual debug info', 'toggleDevhelperDebug', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -287,6 +288,7 @@ function CpManager:update(dt)
 		courseplay.fields.filter = DensityMapFilter:new(courseplay.fields.modifier) -- filter on terrain type
 		courseplay.fields.filter:setValueCompareParams("greater", 0) -- more than 0, so it is a field
 	end
+	g_devHelper:update()
 end;
 
 function CpManager:draw()
@@ -315,6 +317,8 @@ function CpManager:draw()
 	if courseplay.fields.fieldDefinitionBase and courseplay.globalSettings.autoFieldScan:is(true) and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 		self:renderFieldScanInfo();
 	end;
+
+	g_devHelper:draw()
 end;
 
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
@@ -379,10 +383,12 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 			end;
 		end;
 	end;
+	g_devHelper:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 end;
 
 function CpManager:keyEvent(unicode, sym, modifier, isDown) 
 	courseplay:onKeyEvent(unicode, sym, modifier, isDown)
+	g_devHelper:keyEvent(unicode, sym, modifier, isDown)
 end;
 
 
@@ -593,6 +599,7 @@ function CpManager:getVariable(variableName)
 end
 
 function CpManager:loadFile(fileName)
+	fileName = fileName or 'reload.xml'
 	local path = courseplay.path .. fileName
 	if fileExists(path) then
 		g_xmlFile = loadXMLFile('loadFile', path)
@@ -604,9 +611,9 @@ function CpManager:loadFile(fileName)
 		local f = getfenv(0).loadstring('setfenv(1, courseplay); ' .. code)
 		if f then
 			f()
-			return path .. ' loaded.'
+			return 'OK: ' .. path .. ' loaded.'
 		else
-			return path .. ' could not be compiled.'
+			return 'ERROR: ' .. path .. ' could not be compiled.'
 		end
 	end
 end
@@ -634,6 +641,15 @@ function CpManager:callVehicleFunction(funcName, ...)
 	end
 	return 'Error when calling vehicle:' .. funcName
 end
+
+function CpManager:togglePathfindingDebug()
+	PathfinderUtil.toggleVisualDebug()
+end
+
+function CpManager:toggleDevhelperDebug()
+	g_devHelper:toggleVisualDebug()
+end
+
 
 function CpManager:setupFieldScanInfo()
 	--print("CpManager:setupFieldScanInfo()")

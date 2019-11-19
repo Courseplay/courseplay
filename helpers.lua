@@ -465,13 +465,16 @@ function table.map(t, func)
 	return newArray;
 end;
 
+-- reverse order of elements in table in place
 function table.reverse(t)
-	local reversedTable = {};
-	local itemCount = #t;
-	for k,v in ipairs(t) do
-		reversedTable[itemCount + 1 - k] = v;
-	end;
-	return reversedTable;
+	local i, j = 1, #t
+
+	while i < j do
+		t[i], t[j] = t[j], t[i]
+
+		i = i + 1
+		j = j - 1
+	end
 end;
 
 function table.getLast(t)

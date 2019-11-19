@@ -2342,8 +2342,7 @@ end
 ---@class SelfUnloadSetting : BooleanSetting
 SelfUnloadSetting = CpObject(BooleanSetting)
 function SelfUnloadSetting:init(vehicle)
-	BooleanSetting.init(self, 'selfUnload', 'COURSEPLAY_SELF_UNLOAD',
-		'COURSEPLAY_SELF_UNLOAD', vehicle)
+	BooleanSetting.init(self, 'selfUnload', 'COURSEPLAY_SELF_UNLOAD', 'COURSEPLAY_SELF_UNLOAD_TOOLTIP', vehicle)
 end
 
 --- Container for settings
