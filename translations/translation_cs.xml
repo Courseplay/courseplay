@@ -419,6 +419,7 @@
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="使用跟踪算法" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay工资" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay 工资是工人工资的百分比" />
-		<!-- Replace marker, do not remove! -->
-	</texts>
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Self unload" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload when full and there's a trailer around" />
+		<!-- Replace marker, do not remove! --></texts>
 </l10n>

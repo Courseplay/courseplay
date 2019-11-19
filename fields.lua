@@ -319,8 +319,6 @@ function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDime
 	local x,z = useC and 'cx' or 'x', useC and 'cz' or 'z';
 	local numPoints = #poly;
 	local cp,np,pp;
-	local fp = poly[1];
-
 	-- POINT IN POLYGON (Jordan method) -- @src: http://de.wikipedia.org/wiki/Punkt-in-Polygon-Test_nach_Jordan
 	-- returns:
 	--	 1	point is inside of poly
@@ -342,24 +340,6 @@ function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDime
 		minZ =  999999,
 		maxZ = -999999
 	};
-
-	--[[
-	-- DIRECTION
-	-- offset test points
-	local dirX,dirZ = self:getPointDirection(poly[1], poly[2], useC);
-	local offsetRight = {
-		[x] = poly[2][x] - dirZ,
-		[z] = poly[2][z] + dirX,
-		isInPoly = false
-	};
-	local offsetLeft = {
-		[x] = poly[2][x] + dirZ,
-		[z] = poly[2][z] - dirX,
-		isInPoly = false
-	};
-	-- clockwise vs counterclockwise variables
-	local dirArea, dirSuccess, dirTries = 0, false, 1;
-	]]
 
 	-- ############################################################
 
@@ -386,31 +366,6 @@ function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDime
 			if cp[z] < dimensions.minZ then dimensions.minZ = cp[z]; end;
 			if cp[z] > dimensions.maxZ then dimensions.maxZ = cp[z]; end;
 		end;
-
-		--[[
-		-- direction
-		if i < numPoints then
-			local pointStart = {
-				[x] = cp[x] - fp[x];
-				[z] = cp[z] - fp[z];
-			};
-			local pointEnd = {
-				[x] = np[x] - fp[x];
-				[z] = np[z] - fp[z];
-			};
-			dirArea = dirArea + (pointStart[x] * -pointEnd[z]) - (pointEnd[x] * -pointStart[z]);
-		end;
-
-		-- offset right point in poly
-		if ((cp[z] > offsetRight[z]) ~= (pp[z] > offsetRight[z])) and (offsetRight[x] < (pp[x] - cp[x]) * (offsetRight[z] - cp[z]) / (pp[z] - cp[z]) + cp[x]) then
-			offsetRight.isInPoly = not offsetRight.isInPoly;
-		end;
-
-		-- offset left point in poly
-		if ((cp[z] > offsetLeft[z])  ~= (pp[z] > offsetLeft[z]))  and (offsetLeft[x]  < (pp[x] - cp[x]) * (offsetLeft[z]  - cp[z]) / (pp[z] - cp[z]) + cp[x]) then
-			offsetLeft.isInPoly = not offsetLeft.isInPoly;
-		end;
-		]]
 	end;
 
 	if getPointInPoly then
@@ -435,7 +390,7 @@ function courseplay.fields:getPolygonData(poly, px, pz, useC, skipArea, skipDime
 		isClockwise = nil;
 	end;
 
-	return area, pointInPoly, dimensions, isClockwise;
+	return area, pointInPoly, dimensions, isClockwise
 end;
 
 --
@@ -444,7 +399,7 @@ function courseplay.fields.updateFieldData(self, farmId) -- scan field when it's
 	if g_currentMission.time > 0 and farmId ~= FarmlandManager.NO_OWNER_FARM_ID and courseplay.globalSettings.autoFieldScan:is(true) and courseplay.fields.onlyScanOwnedFields and courseplay.fields.fieldData[self.fieldId] == nil then
 		-- print(string.format('\tisOwned=true, automaticScan=true, onlyScanOwnedFields=true, fieldData[%d]=nil', fieldDef.fieldNumber));
 		local initObject = self.nameIndicator;
-		if initObject then	
+		if initObject then
 			local x,_,z = getWorldTranslation(initObject);
 			print('scanning')
 			courseplay.fields:setSingleFieldEdgePath(initObject, x, z, courseplay.fields.scanStep, 2000, 10, self.fieldId, false, 'scan');
@@ -726,7 +681,7 @@ function courseplay.fields:onWhichFieldAmI(vehicle)
 end
 
 function courseplay.fields:getFieldNumForPosition(positionX, positionZ)
-	local fieldNum = 0;
+	local fieldNum = 0
 	for index, field in pairs(courseplay.fields.fieldData) do
 		if positionX >= field.dimensions.minX and positionX <= field.dimensions.maxX and positionZ >= field.dimensions.minZ and positionZ <= field.dimensions.maxZ then
 			local _, pointInPoly, _, _ = self:getPolygonData(field.points, positionX, positionZ, true, true, true);
@@ -737,4 +692,15 @@ function courseplay.fields:getFieldNumForPosition(positionX, positionZ)
 		end
 	end
 	return fieldNum
+end
+
+function courseplay.fields:getClosestDistanceToFieldEdge(fieldNum, x, z)
+	local closestDistance = math.huge
+	if courseplay.fields.fieldData[fieldNum] then
+		for _, p in ipairs(courseplay.fields.fieldData[fieldNum].points) do
+			local d = courseplay:distance(x, z, p.cx, p.cz)
+			closestDistance = d < closestDistance and d or closestDistance
+		end
+	end
+	return closestDistance
 end

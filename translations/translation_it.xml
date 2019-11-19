@@ -422,6 +422,7 @@
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP" 						text="Utilizza un algoritmo di tracciamento percorso migliore (controllore dell'inseguimento puro) durante le svolte" />
 		<text name="COURSEPLAY_WORKER_WAGES" 								text="Salario lavoratori Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP" 						text="I salari dei lavoratori Courseplay come percentuale dei salari dei lavoratori normali" />
-		<!-- Replace marker, do not remove! -->
-	</texts>
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Self unload" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload when full and there's a trailer around" />
+		<!-- Replace marker, do not remove! --></texts>
 </l10n>

@@ -34,9 +34,14 @@ CombineAIDriver.myStates = {
 	REVERSING_TO_MAKE_A_POCKET = {},
 	MAKING_POCKET = {},
 	WAITING_FOR_UNLOAD_IN_POCKET = {},
-	WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED = {},
+	WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED = {},
 	WAITING_FOR_UNLOADER_TO_LEAVE = {},
-	RETURNING_FROM_POCKET = {}
+	RETURNING_FROM_POCKET = {},
+	DRIVING_TO_SELF_UNLOAD = {},
+	SELF_UNLOADING = {},
+	DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED = {},
+	SELF_UNLOADING_AFTER_FIELDWORK_ENDED = {},
+	RETURNING_FROM_SELF_UNLOAD = {}
 }
 
 function CombineAIDriver:init(vehicle)
@@ -76,6 +81,40 @@ function CombineAIDriver:init(vehicle)
 		local dx, _, _ = localToLocal(dischargeNode.node, self.vehicle.rootNode, 0, 0, 0)
 		self.pipeOnLeftSide = dx > 0
 		self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
+		-- check the pipe length:
+		-- unfold everything, open the pipe, check the side offset, then close pipe, fold everything back (if it was folded)
+		local wasFolded, wasClosed
+		if self.vehicle.spec_foldable then
+			wasFolded = not self.vehicle.spec_foldable:getIsUnfolded()
+			if wasFolded then
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 1, true)
+			end
+		end
+		if self.pipe.currentState == CombineAIDriver.PIPE_STATE_CLOSED then
+			wasClosed = true
+			if self.pipe.animation.name then
+				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
+			else
+				-- if there's no animation we have to use this, as seen in the Giants pipe code
+				self.pipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
+				self.pipe:updatePipeNodes(999999, nil)
+			end
+		end
+		self.pipeOffsetX, _, self.pipeOffsetZ = localToLocal(dischargeNode.node, AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
+		self:debug('Pipe offset: x = %.1f, z = %.1f', self.pipeOffsetX, self.pipeOffsetZ)
+		if wasClosed then
+			if self.pipe.animation.name then
+				self.pipe:setAnimationTime(self.pipe.animation.name, 0, true)
+			else
+				self.pipe:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
+				self.pipe:updatePipeNodes(999999, nil)
+			end
+		end
+		if self.vehicle.spec_foldable then
+			if wasFolded then
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 0, true)
+			end
+		end
 	else
 		self.pipeOnLeftSide = true
 	end
@@ -105,18 +144,42 @@ end
 
 function CombineAIDriver:onEndCourse()
 	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
-	if self.state == self.states.ON_FIELDWORK_COURSE and fillLevel > 0 then
-		self:setInfoText(self:getFillLevelInfoText())
-		-- let AutoDrive know we are done and can unload
-		self:debug('Fieldwork done, fill level is %.1f, now waiting to be unloaded.', fillLevel)
-		self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
-		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED
+	if self.state == self.states.ON_FIELDWORK_COURSE and
+			self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
+		if self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD then
+			self:debug('Self unloading point reached, fill level %.1f.', fillLevel)
+			self.fieldWorkUnloadOrRefillState = self.states.SELF_UNLOADING
+		elseif 	self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED then
+			self:debug('Self unloading point reached after fieldwork ended, fill level %.1f.', fillLevel)
+			self.fieldWorkUnloadOrRefillState = self.states.SELF_UNLOADING_AFTER_FIELDWORK_ENDED
+		end
+	elseif self.state == self.states.ON_FIELDWORK_COURSE and fillLevel > 0 then
+		if self.vehicle.cp.settings.selfUnload:is(true) and self:startSelfUnload() then
+			self:raiseImplements()
+			self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
+			self.fieldWorkUnloadOrRefillState = self.states.DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED
+			self.ppc:setShortLookaheadDistance()
+			self:disableCollisionDetection()
+		else
+			self:setInfoText(self:getFillLevelInfoText())
+			-- let AutoDrive know we are done and can unload
+			self:debug('Fieldwork done, fill level is %.1f, now waiting to be unloaded.', fillLevel)
+			self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
+			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED
+		end
 	else
 		UnloadableFieldworkAIDriver.onEndCourse(self)
 	end
 end
 
 function CombineAIDriver:onWaypointPassed(ix)
+	if self.state == self.states.ON_FIELDWORK_COURSE and
+			(self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD or
+			self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED or
+			self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD) then
+		-- nothing to do while driving to unload and back
+		return UnloadableFieldworkAIDriver.onWaypointPassed(self, ix)
+	end
 	self:checkFruit()
 	-- make sure we start making a pocket while we still have some fill capacity left as we'll be
 	-- harvesting fruit while making the pocket
@@ -148,7 +211,14 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 	if self.vehicle.cp.realisticDriving then
 		self:checkFruit()
 		-- TODO: check around turn maneuvers we may not want to pull back before a turn
-		if self:shouldMakePocket() then
+		if self.vehicle.cp.settings.selfUnload:is(true) and self:startSelfUnload() then
+			self:raiseImplements()
+			self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
+			self.fieldWorkUnloadOrRefillState = self.states.DRIVING_TO_SELF_UNLOAD
+			self.ppc:setShortLookaheadDistance()
+			self:disableCollisionDetection()
+			self:rememberWaypointToContinueFieldwork()
+		elseif self:shouldMakePocket() then
 			-- I'm on the edge of the field or fruit is on both sides, make a pocket on the right side and wait there for the unload
 			local pocketCourse, nextIx = self:createPocketCourse()
 			if pocketCourse then
@@ -219,7 +289,7 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 		else
 			self:setSpeed(0)
 		end
-	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED then
+	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED then
 		local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 		if fillLevel < 0.01 then
 			self:clearInfoText(self:getFillLevelInfoText())
@@ -249,6 +319,29 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 				self:changeToFieldwork()
 			end
 		end
+	elseif self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD then
+		self:setSpeed(self.vehicle.cp.speeds.field)
+	elseif self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED then
+		self:setSpeed(self.vehicle.cp.speeds.field)
+	elseif self.fieldWorkUnloadOrRefillState == self.states.SELF_UNLOADING then
+		self:setSpeed(0)
+		if self:unloadFinished() then
+			self:debug('Self unloading finished, returning to fieldwork')
+			if self:returnToFieldworkAfterSelfUnloading() then
+				self.fieldWorkUnloadOrRefillState = self.states.RETURNING_FROM_SELF_UNLOAD
+			else
+				self:startFieldworkWithPathfinding(self.aiDriverData.continueFieldworkAtWaypoint)
+			end
+			self.ppc:setNormalLookaheadDistance()
+		end
+	elseif self.fieldWorkUnloadOrRefillState == self.states.SELF_UNLOADING_AFTER_FIELDWORK_ENDED then
+		self:setSpeed(0)
+		if self:unloadFinished() then
+			self:debug('Self unloading finished, returning to fieldwork')
+			UnloadableFieldworkAIDriver.onEndCourse(self)
+		end
+	elseif self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD then
+		self:setSpeed(self.vehicle.cp.speeds.field)
 	else
 		UnloadableFieldworkAIDriver.driveFieldworkUnloadOrRefill(self)
 	end
@@ -263,6 +356,9 @@ function CombineAIDriver:onNextCourse(ix)
 			self:setInfoText(self:getFillLevelInfoText())
 		elseif self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_PULL_BACK then
 			self:debug('Pull back finished, returning to fieldwork')
+			self:changeToFieldwork()
+		elseif self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD then
+			self:debug('Back from self unload, returning to fieldwork')
 			self:changeToFieldwork()
 		elseif self.fieldWorkUnloadOrRefillState == self.states.REVERSING_TO_MAKE_A_POCKET then
 			self:debug('Reversed, now start making a pocket to waypoint %d', self.unloadInPocketIx)
@@ -492,7 +588,7 @@ function CombineAIDriver:isWaitingForUnload()
 		(self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL or
 			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
 			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK or
-			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED)
+			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED)
 end
 
 --- Interface for AutoDrive
@@ -500,7 +596,7 @@ end
 function CombineAIDriver:isWaitingForUnloadAfterCourseEnded()
 	return self.state == self.states.ON_FIELDWORK_COURSE and
 		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
-		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED
+		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED
 end
 
 
@@ -636,19 +732,6 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
 end
 
-function CombineAIDriver:onBlocked()
-	self:debug('Combine blocked, trying to switch to next waypoint...')
-	local nextWpIx = self.ppc:getCurrentWaypointIx() + 1
-	if nextWpIx > self.course:getNumberOfWaypoints() then
-		self:debug('Combine blocked, already at last waypoint, ending course.')
-		self:onLastWaypoint()
-	else
-		self:debug('Combine blocked, trying to switch to next (%d) waypoint', nextWpIx)
-		self.ppc:initialize(nextWpIx)
-	end
-end
-
-
 function CombineAIDriver:isChopper()
 	return self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) > 10000000
 end
@@ -750,25 +833,31 @@ function CombineAIDriver:shouldStopForUnloading(pc)
 end
 
 function CombineAIDriver:isFillableTrailerUnderPipe()
-	local canLoad = false
 	if self.pipe then
 		for trailer, value in pairs(self.pipe.objectsInTriggers) do
 			if value > 0 then
-				local fillType = self:getFillType()
-				--self:debug('ojects = %d, fillType = %s fus=%s', value, tostring(fillType), tostring(trailer:getFillUnits()))
-				if fillType then
-					local fillUnits = trailer:getFillUnits()
-					for i=1, #fillUnits do
-						local supportedFillTypes = trailer:getFillUnitSupportedFillTypes(i)
-						if supportedFillTypes[fillType] and trailer:getFillUnitFreeCapacity(i) > 0 then
-							canLoad = true
-						end
-					end
+				if self:canLoadTrailer(trailer) then
+					return true
 				end
 			end
 		end
 	end
-	return canLoad
+	return false
+end
+
+function CombineAIDriver:canLoadTrailer(trailer)
+	local fillType = self:getFillType()
+	if fillType then
+		local fillUnits = trailer:getFillUnits()
+		for i = 1, #fillUnits do
+			local supportedFillTypes = trailer:getFillUnitSupportedFillTypes(i)
+			local freeCapacity =  trailer:getFillUnitFreeCapacity(i)
+			if supportedFillTypes[fillType] and freeCapacity > 0 then
+				return true, freeCapacity, i
+			end
+		end
+	end
+	return false, 0
 end
 
 -- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
@@ -798,4 +887,109 @@ function CombineAIDriver:isPotatoOrSugarBeetHarvester()
 		end
 	end
 	return false
+end
+
+--- Find a trailer we can use for self unloading
+function CombineAIDriver:findBestTrailer()
+	local bestTrailer, bestFillUnitIndex
+	local minDistance = math.huge
+	local maxCapacity = 0
+	for _, vehicle in pairs(g_currentMission.vehicles) do
+		if SpecializationUtil.hasSpecialization(Trailer, vehicle.specializations) then
+			local rootVehicle = vehicle:getRootVehicle()
+			local attacherVehicle
+			if SpecializationUtil.hasSpecialization(Attachable, vehicle.specializations) then
+				attacherVehicle = vehicle.spec_attachable:getAttacherVehicle()
+			end
+			local fieldNum = courseplay.fields:onWhichFieldAmI(vehicle)
+			local myFieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
+			local x, _, z = getWorldTranslation(vehicle.rootNode)
+			local closestDistance = courseplay.fields:getClosestDistanceToFieldEdge(myFieldNum, x, z)
+			local lastSpeed = rootVehicle:getLastSpeed()
+			self:debug('%s is a trailer on field %d, closest distance to %d is %.1f, attached to %s, root vehicle is %s, last speed %.1f', vehicle:getName(),
+					fieldNum, myFieldNum, closestDistance, attacherVehicle and attacherVehicle:getName() or 'none', rootVehicle:getName(), lastSpeed)
+			-- consider only trailer on my field or close to my field
+			if fieldNum == myFieldNum or myFieldNum == 0 or closestDistance < 20 and lastSpeed < 0.1 then
+				local d = courseplay:distanceToObject(self.vehicle, vehicle)
+				local canLoad, freeCapacity, fillUnitIndex = self:canLoadTrailer(vehicle)
+				if d < minDistance and canLoad then
+					bestTrailer = vehicle
+					bestFillUnitIndex = fillUnitIndex
+					minDistance = d
+					maxCapacity = freeCapacity
+				end
+			end
+		end
+	end
+	local fillRootNode
+	if bestTrailer then
+		fillRootNode = bestTrailer:getFillUnitExactFillRootNode()
+		self:debug('Best trailer is %s at %.1f meters, free capacity %d', bestTrailer:getName(), minDistance, maxCapacity)
+	else
+		self:info('Found no trailer to unload to.')
+	end
+	return bestTrailer, fillRootNode
+end
+
+--- Find a path to the best trailer to unload
+function CombineAIDriver:startSelfUnload()
+	local bestTrailer, fillRootNode = self:findBestTrailer()
+	if not bestTrailer then return false end
+
+	if not self.pathfinder or not self.pathfinder:isActive() then
+		self.pathFindingStartedAt = self.vehicle.timer
+		self.courseAfterPathfinding = nil
+		self.waypointIxAfterPathfinding = nil
+		local fieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
+		local done, path
+		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
+				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ, true, fieldNum)
+		if done then
+			return self:onPathfindingDone(path)
+		else
+			self:setPathfindingDoneCallback(self, self.onPathfindingDone)
+		end
+	else
+		self:debug('Pathfinder already active')
+	end
+	return true
+end
+
+--- Back to fieldwork after self unloading
+function CombineAIDriver:returnToFieldworkAfterSelfUnloading()
+	if not self.pathfinder or not self.pathfinder:isActive() then
+		self.pathFindingStartedAt = self.vehicle.timer
+		self.courseAfterPathfinding = self.fieldworkCourse
+		self.waypointIxAfterPathfinding = self.aiDriverData.continueFieldworkAtWaypoint
+		local done, path
+		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
+				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), true, nil)
+		if done then
+			return self:onPathfindingDone(path)
+		else
+			self:setPathfindingDoneCallback(self, self.onPathfindingDone)
+		end
+	else
+		self:debug('Pathfinder already active')
+	end
+	return true
+end
+
+function CombineAIDriver:onPathfindingDone(path)
+	if path and #path > 2 then
+		self:debug('(CombineAIDriver) Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathFindingStartedAt or 0))
+		local selfUnloadCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
+		self:startCourse(selfUnloadCourse, 1, self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
+		return true
+	else
+		self:debug('No path found in %d ms, no self unloading', self.vehicle.timer - (self.pathFindingStartedAt or 0))
+		if self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD then
+			self:startFieldworkWithPathfinding(self.aiDriverData.continueFieldworkAtWaypoint)
+		elseif self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD then
+			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
+		elseif self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED then
+			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED
+		end
+		return false
+	end
 end
