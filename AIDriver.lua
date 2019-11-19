@@ -1183,9 +1183,11 @@ end
 function AIDriver:getHasAllTippersClosed()
 	local allClosed = true
 	for _, tipper in pairs (self.vehicle.cp.workTools) do
-		if tipper.spec_dischargeable ~= nil and tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
-			allClosed = false
-		end
+    if courseplay:isTrailer(tipper) then
+      if tipper.spec_dischargeable ~= nil and tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
+        allClosed = false
+      end
+    end
 
 	end
 	return allClosed
