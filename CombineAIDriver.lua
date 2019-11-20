@@ -35,6 +35,7 @@ CombineAIDriver.myStates = {
 	MAKING_POCKET = {},
 	WAITING_FOR_UNLOAD_IN_POCKET = {},
 	WAITING_FOR_UNLOAD_AFTER_COURSE_ENDED = {},
+	WAITING_FOR_UNLOADER_TO_LEAVE = {},
 	RETURNING_FROM_POCKET = {}
 }
 
@@ -206,29 +207,15 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 		self:setSpeed(self:getWorkSpeed())
 	elseif self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_PULL_BACK then
 		self:setSpeed(self.vehicle.cp.speeds.turn)
-	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET then
+	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
+			self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK then
 		if self:unloadFinished() then
 			self:clearInfoText(self:getFillLevelInfoText())
-			self:debug('Unloading in pocket finished, returning to fieldwork')
-			self.fillLevelFullPercentage = self.normalFillLevelFullPercentage
-			self:changeToFieldwork()
-		else
-			self:setSpeed(0)
-		end
-	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK then
-		-- don't move when pulled back until unloading is finished
-		if self:unloadFinished() then
-			self:clearInfoText(self:getFillLevelInfoText())
-			local pullBackReturnCourse = self:createPullBackReturnCourse()
-			if pullBackReturnCourse then
-				self.fieldWorkUnloadOrRefillState = self.states.RETURNING_FROM_PULL_BACK
-				self:debug('Unloading finished, returning to fieldwork on return course')
-				self:startCourse(pullBackReturnCourse, 1, self.courseAfterPullBack, self.ixAfterPullBack)
-			else
-				self:debug('Unloading finished, returning to fieldwork directly')
-				self.ppc:setNormalLookaheadDistance()
-				self:changeToFieldwork()
-			end
+			-- wait a bit after the unload finished to give a chance to the unloader to move away
+			self.stateBeforeWaitingForUnloaderToLeave = self.fieldWorkUnloadOrRefillState
+			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOADER_TO_LEAVE
+			self.waitingForUnloaderSince = self.vehicle.timer
+			self:debug('Unloading finished, wait for the unloader to leave...')
 		else
 			self:setSpeed(0)
 		end
@@ -240,6 +227,27 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 			UnloadableFieldworkAIDriver.onEndCourse(self)
 		else
 			self:setSpeed(0)
+		end
+	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOADER_TO_LEAVE then
+		self:setSpeed(0)
+		-- TODO: instead of just wait a few seconds we could check if the unloader has actually left
+		if self.waitingForUnloaderSince + 5000 < self.vehicle.timer then
+			if self.stateBeforeWaitingForUnloaderToLeave == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK then
+				local pullBackReturnCourse  = self:createPullBackReturnCourse()
+				if pullBackReturnCourse then
+					self.fieldWorkUnloadOrRefillState = self.states.RETURNING_FROM_PULL_BACK
+					self:debug('Unloading finished, returning to fieldwork on return course')
+					self:startCourse(pullBackReturnCourse, 1, self.courseAfterPullBack, self.ixAfterPullBack)
+				else
+					self:debug('Unloading finished, returning to fieldwork directly')
+					self.ppc:setNormalLookaheadDistance()
+					self:changeToFieldwork()
+				end
+			elseif self.stateBeforeWaitingForUnloaderToLeave == self.states.WAITING_FOR_UNLOAD_IN_POCKET then
+				self:debug('Unloading in pocket finished, returning to fieldwork')
+				self.fillLevelFullPercentage = self.normalFillLevelFullPercentage
+				self:changeToFieldwork()
+			end
 		end
 	else
 		UnloadableFieldworkAIDriver.driveFieldworkUnloadOrRefill(self)
