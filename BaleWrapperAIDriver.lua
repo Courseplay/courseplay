@@ -65,5 +65,5 @@ function BaleWrapperAIDriver:driveFieldwork(dt)
 			end
 		end
 	end
-	BalerAIDriver.driveFieldwork(self, dt)
+	return BalerAIDriver.driveFieldwork(self, dt)
 end

@@ -204,8 +204,7 @@ function KTurn:turn(dt)
 	local endTurn = function()
 		self.vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", 100, self.turnContext:isLeftTurn())
 		self.state = self.states.ENDING_TURN
-		local endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
-		self.driver:startFieldworkCourseWithTemporaryCourse(endingTurnCourse, self.turnContext.turnEndWpIx)
+		self.driver:startFieldworkCourseWithTemporaryCourse(self.endingTurnCourse, self.turnContext.turnEndWpIx)
 	end
 
 	AITurn.turn(self)
@@ -217,7 +216,7 @@ function KTurn:turn(dt)
 		if dz > 0 then
 			-- drive straight until we are beyond the turn end
 			self.driver:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
-		elseif not self.turnContext:isDirectionPerpendicularToTurnEndDirection(self.driver:getDirectionNode()) then
+		elseif not self.turnContext:isDirectionCloseToStartDirection(self.driver:getDirectionNode()) then
 			-- full turn towards the turn end waypoint
 			self.driver:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 		else
@@ -225,22 +224,26 @@ function KTurn:turn(dt)
 			self.driver:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 			if self.turnContext:isLateralDistanceGreater(dx, turnRadius * 1.05) then
 				-- no need to reverse from here, we can make the turn
-				endTurn()
+				self.endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
 				self:debug('K Turn: dx = %.1f, r = %.1f, no need to reverse.', dx, turnRadius)
+				endTurn()
 			else
 				-- reverse until we can make turn to the turn end point
 				self.vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", 50, self.turnContext:isLeftTurn())
 				self.state = self.states.REVERSE
+				self.endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
 				self:debug('K Turn: dx = %.1f, r = %.1f, reversing now.', dx, turnRadius)
 			end
 		end
 	elseif self.state == self.states.REVERSE then
+		-- reversing parallel to the direction between the turn start and turn end waypoints
 		self:setReverseSpeed()
 		self.driver:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
-		if math.abs(dx) > turnRadius * 1.05 then
+		local _, _, dz = self.endingTurnCourse:getWaypointLocalPosition(self.driver:getDirectionNode(), 1)
+		if dz > 0  then
 			-- we can make the turn from here
-			endTurn()
 			self:debug('K Turn ending turn')
+			endTurn()
 		end
 	elseif self.state == self.states.REVERSING_AFTER_BLOCKED then
 		self:setReverseSpeed()

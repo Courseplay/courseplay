@@ -2533,6 +2533,11 @@ function TurnContext:getLocalPositionFromTurnEnd(node)
 	return localToLocal(node, self.frontMarkerNode, 0, 0, 0)
 end
 
+-- node's position in the turn start wp node's coordinate system
+function TurnContext:getLocalPositionFromTurnStart(node)
+	return localToLocal(node, self.turnStartWpNode.node, 0, 0, 0)
+end
+
 -- turn end wp node's position in node's coordinate system
 function TurnContext:getLocalPositionOfTurnEnd(node)
 	return localToLocal(self.frontMarkerNode, node, 0, 0, 0)
@@ -2619,6 +2624,13 @@ function TurnContext:isDirectionPerpendicularToTurnEndDirection(node, thresholdD
 	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg or 5)
 end
 
+--- An angle of 0 means the headland is perpendicular to the up/down rows
+function TurnContext:getHeadlandAngle()
+	local lx, _, lz = localDirectionToLocal(self.turnEndWpNode.node, self.turnStartWpNode.node, self:isLeftTurn() and -1 or 1, 0, 0)
+	return math.abs(math.atan2(lx, lz))
+end
+
+
 function TurnContext:getAverageEndAngleDeg()
 	-- use the average angle of the turn end and the next wp as there is often a bend there
 	return math.deg(getAverageAngle(math.rad(self.turnEndWp.angle), math.rad(self.afterTurnEndWp.angle)))
@@ -2645,6 +2657,8 @@ function TurnContext:createCorner(vehicle, r)
 	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, vehicle.cp.totalOffsetX)
 end
 
+--- Create a turn ending course using the vehicle's current position and the front marker node (where the vehicle must
+--- be in the moment it starts on the next row. Use the Corner class to generate a nice arc.
 ---@return Course
 function TurnContext:createEndingTurnCourse2(vehicle)
 	local startAngle = math.deg(self:getNodeDirection(vehicle.cp.directionNode))
@@ -2653,7 +2667,6 @@ function TurnContext:createEndingTurnCourse2(vehicle)
 	startPos.x, _, startPos.z = getWorldTranslation(vehicle.cp.directionNode)
 	endPos.x, _, endPos.z = getWorldTranslation(self.frontMarkerNode)
 	local corner = Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos, r, vehicle.cp.totalOffsetX)
-	self.corner = corner
 	courseplay:clearTurnTargets(vehicle)
 	local center = corner:getArcCenter()
 	local startArc = corner:getArcStart()

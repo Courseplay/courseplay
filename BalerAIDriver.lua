@@ -31,7 +31,7 @@ function BalerAIDriver:driveFieldwork(dt)
 	if self.baler then
 		self:handleBaler()
 	end
-	UnloadableFieldworkAIDriver.driveFieldwork(self, dt)
+	return UnloadableFieldworkAIDriver.driveFieldwork(self, dt)
 end
 
 function BalerAIDriver:allFillLevelsOk()
