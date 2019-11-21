@@ -196,8 +196,14 @@ function PurePursuitController:getLookaheadDistance()
 	return self.baseLookAheadDistance
 end
 
+--- get index of current waypoint (one we are driving towards)
 function PurePursuitController:getCurrentWaypointIx()
 	return self.currentWpNode.ix
+end
+
+--- get index of relevant waypoint (one we are close to)
+function PurePursuitController:getRelevantWaypointIx()
+	return self.relevantWpNode.ix
 end
 
 function PurePursuitController:getLastPassedWaypointIx()
