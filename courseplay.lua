@@ -55,6 +55,7 @@ local function initialize()
 		'bypass',
 		'combines',
 		'courseplay_event',
+		,combineUnload_management',
 		'course_management',
 		'debug', 
 		'distance', 
