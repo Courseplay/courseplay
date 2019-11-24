@@ -1305,3 +1305,7 @@ function FieldworkAIDriver:onBlocked()
 		self.aiTurn:onBlocked()
 	end
 end
+
+function FieldworkAIDriver:setOffsetX()
+	-- implement in derived classes if needed
+end

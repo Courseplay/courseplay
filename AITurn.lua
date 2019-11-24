@@ -53,6 +53,7 @@ function AITurn:init(vehicle, driver, turnContext, name)
 	self:addState('TURNING')
 	self:addState('ENDING_TURN')
 	self:addState('REVERSING_AFTER_BLOCKED')
+	self:addState('FORWARDING_AFTER_BLOCKED')
 	self.vehicle = vehicle
 	---@type AIDriver
 	self.driver = driver
@@ -92,6 +93,8 @@ end
 
 function AITurn:onWaypointChange(ix)
 	self:debug('onWaypointChange %d', ix)
+	-- make sure to set the proper X offset if applicable (for turning plows for example)
+	self.driver:setOffsetX()
 end
 
 function AITurn:onWaypointPassed(ix, course)
@@ -209,14 +212,14 @@ function KTurn:turn(dt)
 
 	AITurn.turn(self)
 
-	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self.driver:getDirectionNode())
 	local turnRadius = self.vehicle.cp.turnDiameter / 2
 	if self.state == self.states.FORWARD then
+		local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self.driver:getDirectionNode())
 		self:setForwardSpeed()
 		if dz > 0 then
 			-- drive straight until we are beyond the turn end
 			self.driver:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
-		elseif not self.turnContext:isDirectionCloseToStartDirection(self.driver:getDirectionNode()) then
+		elseif not self.turnContext:isDirectionPerpendicularToTurnEndDirection(self.driver:getDirectionNode()) then
 			-- full turn towards the turn end waypoint
 			self.driver:driveVehicleBySteeringAngle(dt, true, 1, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 		else
@@ -247,20 +250,32 @@ function KTurn:turn(dt)
 		end
 	elseif self.state == self.states.REVERSING_AFTER_BLOCKED then
 		self:setReverseSpeed()
-		self.driver:driveVehicleBySteeringAngle(dt, false, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
-		if self.vehicle.timer > self.reverseAfterBlockedTimer + 2500 then
+		self.driver:driveVehicleBySteeringAngle(dt, false, 0.6, self.turnContext:isLeftTurn(), self.driver:getSpeed())
+		if self.vehicle.timer > self.blockedTimer + 3500 then
 			self.state = self.stateAfterBlocked
 			self:debug('Trying again after reversed due to being blocked')
+		end
+	elseif self.state == self.states.FORWARDING_AFTER_BLOCKED then
+		self:setForwardSpeed()
+		self.driver:driveVehicleBySteeringAngle(dt, true, 0.6, self.turnContext:isLeftTurn(), self.driver:getSpeed())
+		if self.vehicle.timer > self.blockedTimer + 3500 then
+			self.state = self.stateAfterBlocked
+			self:debug('Trying again after forwarded due to being blocked')
 		end
 	end
 	return true
 end
 
 function KTurn:onBlocked()
-	self.state = self.states.REVERSING_AFTER_BLOCKED
-	self:debug('Blocked, try reversing a bit')
-	self.reverseAfterBlockedTimer = self.vehicle.timer
-	self.stateAfterBlocked = self.states.FORWARD
+	self.stateAfterBlocked = self.state
+	self.blockedTimer = self.vehicle.timer
+	if self.state == self.states.REVERSE then
+		self.state = self.states.FORWARDING_AFTER_BLOCKED
+		self:debug('Blocked, try forwarding a bit')
+	else
+		self.state = self.states.REVERSING_AFTER_BLOCKED
+		self:debug('Blocked, try reversing a bit')
+	end
 end
 
 

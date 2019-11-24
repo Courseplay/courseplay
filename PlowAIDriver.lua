@@ -65,6 +65,7 @@ function PlowAIDriver:driveFieldwork(dt)
 		self:setSpeed(0)
 		if not self.plow.spec_plow:getIsAnimationPlaying(self.plow.spec_plow.rotationPart.turnAnimation) then
 			self:debug('Plow rotation finished, ')
+			self:setOffsetX()
 			self:lowerImplements(self.vehicle)
 			self.fieldworkState = self.states.WAITING_FOR_LOWER
 		end
