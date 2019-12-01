@@ -158,6 +158,7 @@ function FieldworkAIDriver:start(ix)
 	self.aiDriverOffsetZ = 0
 
 	self:setUpCourses()
+	self.ppc:setNormalLookaheadDistance()
 
 	self.waitingForTools = true
 	-- on which course are we starting?
@@ -437,10 +438,6 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 				self:startFieldworkWithAlignment(firstUpDownWpIx)
 			end
 		end
-	end
-	-- Reset lookahead distance if we are past a turn
-	if self.course:isTurnEndAtIx(ix - 1) then
-		self.ppc:setNormalLookaheadDistance()
 	end
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
 	-- or stop.
@@ -1288,6 +1285,7 @@ end
 
 -- switch back to fieldwork after the turn ended.
 function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
+	self.ppc:setNormalLookaheadDistance()
 	self.fieldworkState = self.states.WORKING
 	self:lowerImplements()
 	-- restore our own listeners for waypoint changes
