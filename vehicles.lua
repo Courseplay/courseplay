@@ -1601,3 +1601,22 @@ function courseplay:addToVehicleLocalIgnoreList(vehicle, targetVehicle)
 		end;
 	end;
 end
+
+-- TODO: move this to a separate file and move everything vehicle related and not dependent on other classes out of
+-- courseplay int this
+AIDriverUtil = {}
+
+function AIDriverUtil.isReverseDriving(vehicle)
+	return vehicle.spec_reverseDriving and vehicle.spec_reverseDriving.isReverseDriving
+end
+
+function AIDriverUtil.getDirectionNode(vehicle)
+	-- our reference node we are tracking/controlling, by default it is the vehicle's root/direction node
+	if AIDriverUtil.isReverseDriving(vehicle) then
+		-- reverse driving tractor, use the CP calculated reverse driving direction node pointing in the
+		-- direction the driver seat is facing
+		return vehicle.cp.reverseDrivingDirectionNode
+	else
+		return vehicle.cp.directionNode or vehicle.rootNode
+	end
+end

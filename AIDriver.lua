@@ -382,12 +382,13 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	if self.vehicle.spec_reverseDriving and self.vehicle.spec_reverseDriving.isReverseDriving then
+	if AIDriverUtil.isReverseDriving(self.vehicle) then
 		self:debugSparse('reverse driving, reversing steering')
 		ax = -ax
 	end
 		-- TODO: remove allowedToDrive parameter and only use self.allowedToDrive
 	if not self.allowedToDrive then allowedToDrive = false end
+
 	-- driveToPoint does not like speeds under 1.5 (will stop) so make sure we set at least 2
 	if maxSpeed > 0.01 and maxSpeed < 2 then
 		maxSpeed = 2
@@ -418,6 +419,10 @@ end
 --- @param maxSpeed number speed we want the vehicle to drive
 function AIDriver:driveVehicleBySteeringAngle(dt, moveForwards, steeringAngleNormalized, turnLeft, maxSpeed)
 	if not moveForwards then
+		turnLeft = not turnLeft;
+	end
+	-- flip it again if in reverse driving vehicle
+	if AIDriverUtil.isReverseDriving(self.vehicle) then
 		turnLeft = not turnLeft;
 	end
 	local targetRotTime = 0;

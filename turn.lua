@@ -23,7 +23,8 @@ function courseplay:turn(vehicle, dt, turnContext)
 		return;
 	end
 
-	local realDirectionNode					= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.directionNode;
+	-- TODO: move this to TurnContext?
+	local realDirectionNode					= AIDriverUtil.getDirectionNode(vehicle)
 	local allowedToDrive 					= true;
 	local moveForwards 						= true;
 	local refSpeed 							= vehicle.cp.speeds.turn;
@@ -34,7 +35,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local turnTimer 						= 1500;
 	local wpChangeDistance 					= 3;
 	local reverseWPChangeDistance			= 5;
-	local reverseWPChangeDistanceWithTool	= vehicle.isReverseDriving and 3 or 3;
+	local reverseWPChangeDistanceWithTool	= 3;
 	local isHarvester						= Utils.getNoNil(courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle), false);
 	local allowedAngle						= vehicle.cp.changeDirAngle or isHarvester and 15 or 3; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
 	if vehicle.cp.noStopOnEdge then
@@ -2661,7 +2662,7 @@ end
 --- be in the moment it starts on the next row. Use the Corner class to generate a nice arc.
 ---@return Course
 function TurnContext:createEndingTurnCourse2(vehicle)
-	local startAngle = math.deg(self:getNodeDirection(vehicle.cp.directionNode))
+	local startAngle = math.deg(self:getNodeDirection(AIDriverUtil.getDirectionNode(vehicle)))
 	local r = vehicle.cp.turnDiameter / 2
 	local startPos, endPos = {}, {}
 	startPos.x, _, startPos.z = getWorldTranslation(vehicle.cp.directionNode)

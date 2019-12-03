@@ -555,7 +555,7 @@ function courseplay:setMarkers(vehicle, object)
 		return;
 	end;
 
-	local realDirectionNode		= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.directionNode;
+	local realDirectionNode		= AIDriverUtil.getDirectionNode(vehicle)
 	local aLittleBitMore 		= 1;
 	local pivotJointNode 		= courseplay:getPivotJointNode(object);
 	object.cp.backMarkerOffset 	= nil;

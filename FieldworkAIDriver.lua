@@ -1290,7 +1290,7 @@ function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
 	self:lowerImplements()
 	-- restore our own listeners for waypoint changes
 	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
-	self:startCourse( self.fieldworkCourse, self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(ix, self.ppc:getForwardDrivingControlledNode(), 0))
+	self:startCourse( self.fieldworkCourse, self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(ix, AIDriverUtil.getDirectionNode(self.vehicle), 0))
 end
 
 --- Don't pay worker double when AutoDrive is driving
