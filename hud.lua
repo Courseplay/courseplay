@@ -2009,7 +2009,7 @@ end
 function courseplay.hud:setupCourseGeneratorButton(vehicle)
 	local toolTip = courseplay:loc('COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS');
 	vehicle.cp.hud.advancedCourseGeneratorSettingsButton =
-		courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseGenSettings' }, 'openAdvancedCourseGeneratorSettings', nil, topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, toolTip);
+		courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseGenSettings' }, 'openAdvancedCourseGeneratorSettings', nil, topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, toolTip, true);
 end
 
 function courseplay.hud:setupCalculateWorkWidthButton(vehicle,page,line)
@@ -2387,7 +2387,8 @@ end
 function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:debug(vehicle,"setFieldWorkAIDriverContent")
 	--self:setupCourseGeneratorButton(vehicle)
-	self:addRowButton(vehicle,'openAdvancedCourseGeneratorSettings', 1, 4, 1 )
+	local openAdvancedCourseGeneratorSettingsButton = self:addRowButton(vehicle,'openAdvancedCourseGeneratorSettings', 1, 4, 1 )
+	openAdvancedCourseGeneratorSettingsButton.onlyCallLocal = true
 	self:addRowButton(vehicle,'setCustomSingleFieldEdge', 1, 5, 1 )
 	self:addSettingsRow(vehicle,'setCustomFieldEdgePathNumber', 1, 5, 2 )
 	self:setupCustomFieldEdgeButtons(vehicle,1,5)
@@ -2544,8 +2545,9 @@ function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
 					}
   
   --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
-	courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
+	button = courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
 	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
+	return button
 end
 
 function courseplay.hud:addSettingsRow(vehicle,funct, hudPage, line, column )

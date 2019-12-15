@@ -120,8 +120,12 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		end
 
 		if not g_currentMission.cp_courses[id].waypoints and not g_currentMission.cp_courses[id].virtual then
-			courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
-			courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
+			if not CpManager.isMP or not courseplay.isClient then
+				courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
+				courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
+			else
+				g_currentMission.cp_courses[id].waypoints = {}
+			end
 		end
 
 		local course
@@ -302,7 +306,11 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 
 		-- SETUP 2D COURSE DRAW DATA
 		vehicle.cp.course2dUpdateDrawData = true;
-		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, vehicle.Waypoints)
+
+		if CpManager.isMP then
+			CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints, courseplay.isClient);
+		end
 	end
 end
 

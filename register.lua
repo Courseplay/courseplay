@@ -17,6 +17,8 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onDelete", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onPostDetachImplement", courseplay)
+    SpecializationUtil.registerEventListener(vehicleType, "onReadStream", courseplay)
+    SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", courseplay)
 end
 
 function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)

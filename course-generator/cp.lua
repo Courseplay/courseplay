@@ -194,6 +194,11 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
+
+	if CpManager.isMP then
+		CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints);
+	end
+	
 	return status, ok
 end
 

@@ -123,6 +123,7 @@ end
 
 function courseplay:toggleConvoyActive(vehicle)
 	vehicle.cp.convoyActive =  not vehicle.cp.convoyActive
+	--self:setCpVar('convoyActive', self.cp.convoyActive, courseplay.isClient);
 end
 
 function courseplay:setConvoyMinDistance(vehicle, changeBy)
@@ -135,47 +136,58 @@ end
 
 function courseplay:toggleFuelSaveOption(self)
 	self.cp.saveFuelOptionActive = not self.cp.saveFuelOptionActive 
+	--self:setCpVar('saveFuelOptionActive', self.cp.saveFuelOptionActive, courseplay.isClient);
 end
 
 function courseplay:toggleFertilizeOption(self)
 	self.cp.fertilizerEnabled = not self.cp.fertilizerEnabled
+	--self:setCpVar('fertilizerEnabled', self.cp.fertilizerEnabled, courseplay.isClient);
 end
 
 function courseplay:toggleRidgeMarkersAutomatic(self)
 	self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic
+	--self:setCpVar('ridgeMarkersAutomatic', self.cp.ridgeMarkersAutomatic, courseplay.isClient);
 end
 
 function courseplay:toggleAutomaticUnloadingOnField(self)
 	self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
+	--self:setCpVar('automaticUnloadingOnField', self.cp.automaticUnloadingOnField, courseplay.isClient);
 end
 
 function courseplay:toggleAutoRefuel(self)
 	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 
+	--self:setCpVar('allwaysSearchFuel', self.cp.allwaysSearchFuel, courseplay.isClient);
 end
 
 function courseplay:toggleAutomaticCoverHandling (self)
 	self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling 
+	--self:setCpVar('automaticCoverHandling', self.cp.automaticCoverHandling, courseplay.isClient);
 end
 
 function courseplay:toggleMode10automaticSpeed(self)
 	if self.cp.mode10.leveling then
 		self.cp.mode10.automaticSpeed = not self.cp.mode10.automaticSpeed
+	--self:setCpVar('mode10.automaticSpeed', self.cp.mode10.automaticSpeed, courseplay.isClient);
 	end
 end
 function courseplay:toggleMode10drivingThroughtLoading(self)
 	self.cp.mode10.drivingThroughtLoading = not self.cp.mode10.drivingThroughtLoading
+	--self:setCpVar('mode10.drivingThroughtLoading', self.cp.mode10.drivingThroughtLoading, courseplay.isClient);
 end
 
 function courseplay:toggleMode10AutomaticHeight(self)
 	self.cp.mode10.automaticHeigth = not self.cp.mode10.automaticHeigth 
+	--self:setCpVar('mode10.automaticHeigth', self.cp.mode10.automaticHeigth, courseplay.isClient);
 end
 
 function courseplay:toggleMode10Mode(self)
 	self.cp.mode10.leveling = not self.cp.mode10.leveling
+	--self:setCpVar('mode10.leveling', self.cp.mode10.leveling, courseplay.isClient);
 end
 
 function courseplay:toggleMode10SearchMode(self)
 	self.cp.mode10.searchCourseplayersOnly = not self.cp.mode10.searchCourseplayersOnly
+	--self:setCpVar('mode10.searchCourseplayersOnly', self.cp.mode10.searchCourseplayersOnly, courseplay.isClient);
 end
 
 function courseplay:toggleWantsCourseplayer(combine)
@@ -184,6 +196,7 @@ end;
 
 function courseplay:toggleOppositeTurnMode(vehicle)
 	vehicle.cp.oppositeTurnMode = not vehicle.cp.oppositeTurnMode
+	--vehicle:setCpVar('oppositeTurnMode', self.cp.oppositeTurnMode, courseplay.isClient);
 end
 
 function courseplay:startStop(vehicle)
@@ -230,6 +243,7 @@ function courseplay:setStopAtEnd(vehicle, bool)
 	else
 		vehicle.cp.stopAtEnd = bool;
 	end
+	--vehicle:setCpVar('stopAtEnd', vehicle.cp.stopAtEnd, courseplay.isClient);
 end;
 
 function courseplay:setDriveUnloadNow(vehicle, bool)
@@ -264,6 +278,7 @@ function courseplay:switchCourseplayerSide(combine)
 		else
 			combine.cp.forcedSide = nil;
 		end;
+		combine:setCpVar('stopAtEnd', combine.cp.stopAtEnd, courseplay.isClient);
 	end;
 end;
 

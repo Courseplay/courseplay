@@ -4,7 +4,7 @@
 courseplay.button = {};
 cpButton_mt = Class(courseplay.button);
 
-function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
+function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip, onlyCallLocal)
 	local self = setmetatable({}, cpButton_mt);
 
 	if img then
@@ -27,6 +27,10 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	if isToggleButton == nil then
 		isToggleButton = false;
 	end;
+	if onlyCallLocal == nil then
+		onlyCallLocal = false;
+	end;
+
 
 	if not vehicle.isCourseplayManager then
 		self.vehicle = vehicle;
@@ -48,6 +52,7 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	self:setToolTip(toolTip);
 	self.isMouseWheelArea = isMouseWheelArea and functionToCall ~= nil;
 	self.isToggleButton = isToggleButton;
+	self.onlyCallLocal = onlyCallLocal;
 	self:setCanBeClicked(not isMouseWheelArea and functionToCall ~= nil);
 	self:setShow(true);
 	self:setClicked(false);
@@ -73,6 +78,7 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	else
 		table.insert(vehicle.cp.buttons[hudPage], self);
 	end;
+
 	return self;
 end;
 
@@ -231,7 +237,7 @@ function courseplay.button:handleMouseClick(vehicle)
 		if self.functionToCall == "goToVehicle" then
 			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
 		else
-			vehicle:setCourseplayFunc(self.functionToCall, parameter, false, self.page);
+			vehicle:setCourseplayFunc(self.functionToCall, parameter, self.onlyCallLocal, self.page);
 		end
 		-- self:setClicked(false);
 	end;
