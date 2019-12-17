@@ -78,12 +78,16 @@ end
 function Waypoint:set(cpWp, cpIndex)
 	-- we initialize explicitly, no table copy as we want to have
 	-- full control over what is used in this object
-	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ
-	self.x = cpWp.cx or cpWp.posX or cpWp.x or 0
-	self.z = cpWp.cz or cpWp.posZ or cpWp.z or 0
+	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ (but if revPos exists, that takes precedence
+	-- just like in the original turn code, don't ask me why there are two different values if we only use one...)
+	self.x = cpWp.cx or cpWp.revPosX or cpWp.posX or cpWp.x or 0
+	self.z = cpWp.cz or cpWp.revPosZ or cpWp.posZ or cpWp.z or 0
+	-- for backwards compatibility only
+	self.cx = self.x
+	self.cz = self.z
 	self.angle = cpWp.angle or nil
 	self.radius = cpWp.radius or nil
-	self.rev = cpWp.rev or false
+	self.rev = cpWp.rev or cpWp.turnReverse or false
 	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
 	self.turnStart = cpWp.turnStart
@@ -96,6 +100,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.mustReach = cpWp.mustReach
 	self.align = cpWp.align
 	self.headlandHeightForTurn = cpWp.headlandHeightForTurn
+	self.changeDirectionWhenAligned = cpWp.changeDirectionWhenAligned
 end
 
 --- Get the (original, non-offset) position of a waypoint
@@ -127,7 +132,7 @@ function Waypoint:getDistanceFromPoint(x, z)
 end
 
 function Waypoint:getDistanceFromVehicle(vehicle)
-	local vx, _, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
+	local vx, _, vz = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode)
 	return self:getDistanceFromPoint(vx, vz)
 end
 
@@ -160,7 +165,6 @@ function WaypointNode:setToWaypoint(course, ix, suppressLog)
 	setTranslation(self.node, x, y, z)
 	setRotation(self.node, 0, course:getWaypointYRotation(self.ix), 0)
 end
-
 
 -- Allow ix > #Waypoints, in that case move the node lookAheadDistance beyond the last WP
 function WaypointNode:setToWaypointOrBeyond(course, ix, distance)
@@ -387,6 +391,14 @@ function Course:switchingDirectionAt(ix)
 	return self:switchingToForwardAt(ix) or self:switchingToReverseAt(ix)
 end
 
+function Course:getNextDirectionChangeFromIx(ix)
+	for i = ix, #self.waypoints do
+		if self:switchingDirectionAt(i) then
+			return i
+		end
+	end
+end
+
 function Course:switchingToReverseAt(ix)
 	return not self:isReverseAt(ix) and self:isReverseAt(ix + 1)
 end
@@ -411,16 +423,26 @@ function Course:isOnOutermostHeadland(ix)
 	return self.waypoints[ix].lane and self.waypoints[ix].lane == -1
 end
 
+function Course:isChangeDirectionWhenAligned(ix)
+	return self.waypoints[ix].changeDirectionWhenAligned
+end
+
+
 --- Returns the position of the waypoint at ix with the current offset applied.
 function Course:getWaypointPosition(ix)
 	if self:isTurnStartAtIx(ix) then
 		-- turn start waypoints point to the turn end wp, for example at the row end they point 90 degrees to the side
 		-- from the row direction. This is a problem when there's an offset so use the direction of the previous wp
 		-- when calculating the offset for a turn start wp.
-		return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ, self.waypoints[ix - 1].dx, self.waypoints[ix - 1].dz)
+		return self:getOffsetPositionWithOtherWaypointDirection(ix, ix - 1)
 	else
 		return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
 	end
+end
+
+---Return the offset coordinates of waypoint ix as if it was pointing to the same direction as waypoint ixDir
+function Course:getOffsetPositionWithOtherWaypointDirection(ix, ixDir)
+	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ, self.waypoints[ixDir].dx, self.waypoints[ixDir].dz)
 end
 
 -- distance between (px,pz) and the ix waypoint
@@ -480,6 +502,10 @@ function Course:getMinRadiusWithinDistance(ix, d)
 	local ixAtD = self:getNextWaypointIxWithinDistance(ix, d) or ix
 	local minR, count = math.huge, 0
 	for i = ix, ixAtD do
+		if self:isTurnStartAtIx(i) or self:isTurnEndAtIx(i) then
+			-- the turn maneuver code will take care of speed
+			return nil
+		end
 		local r = self:getCalculatedRadiusAtIx(i)
 		if r and r < minR then
 			count = count + 1
@@ -515,7 +541,7 @@ function Course:getAverageSpeed(ix, n)
 	local total, count = 0, 0
 	for i = ix, ix + n - 1 do
 		local index = self:getIxRollover(i)
-		if self.waypoints[index].speed ~= nil then
+		if self.waypoints[index].speed ~= nil and self.waypoints[index].speed ~= 0 then
 			total = total + self.waypoints[index].speed
 			count = count + 1
 		end
@@ -773,7 +799,7 @@ function Course:getDirectionToWPInDistance(ix, vehicle, distance)
 	for i = ix, #self.waypoints do
 		if self:getDistanceBetweenVehicleAndWaypoint(vehicle, i) > distance then
 			local x,y,z = self:getWaypointPosition(i)
-			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z)
+			lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, x, y, z)
 			break
 		end
 	end
@@ -839,4 +865,9 @@ function Course:waypointLocalToWorld(ix, x, y, z)
 	local dx,dy,dz = localToWorld(tempNode.node,x, y, z)
 	tempNode:destroy()
 	return dx,dy,dz
+
+function Course:setNodeToWaypoint(node, ix)
+	local x, y, z = self:getWaypointPosition(ix)
+	setTranslation(node, x, y, z)
+	setRotation(node, 0, self:getWaypointYRotation(ix), 0)
 end

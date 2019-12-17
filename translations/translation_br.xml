@@ -397,16 +397,32 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Não instalado" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Não usar" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Para descarregar / reabastecer" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Estacionar o veículo" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Descarregar / reabastecer e estacionar" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(retorno)" />
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Configurações Avançadas..." />
 
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
-		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Carregar rotas ao iniciar" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Carregar todos as rotas ao iniciar, quando ativado ficará mais lento ao carregar um jogo salvo " />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Usar AI para manobras" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Usar AI para manobras em vez de trajetórias calculadas" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanear campos automaticamente" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay pagar salários para trabalhadores" />
+
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Primeiro" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Último" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Quando levantar o implemento" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Quando levantar o implemento ao terminar uma linha ou ao iniciar uma curva da cabeceira" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Quando baixar o implementos" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Quando baixar o implementos ao iniciar uma linha ou terminar uma curva da cabeceira" />
+
+		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Usar waypoints virtuais (PPC) em manobras" />
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Usar algoritmo de rastreamento de rota (controlador de busca) durante as manobras" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay salários dos trabalhadores" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay pagamento do trabalhador como porcentagem do salário normal" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

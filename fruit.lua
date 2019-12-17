@@ -168,8 +168,8 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	end;
 
 	-- COMBINE DIRECTION
-	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance);
-	local node = combine.cp.DirectionNode or combine.rootNode;
+	local x, y, z = localToWorld(tractor.cp.directionNode, 0, 0, distance);
+	local node = combine.cp.directionNode or combine.rootNode;
 	local dx,_,dz = localDirectionToWorld(node, 0, 0, 2);
 	local length = MathUtil.vector2Length(dx,dz);
 	local dirX = dx/length;

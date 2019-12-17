@@ -9,15 +9,15 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 	local heigth = 0.5
   -- a world point 4 m in front of the vehicle center, 0.5 m higher
   -- This is where we start checking for obstacles
-	local tx, ty, tz = localToWorld(self.cp.DirectionNode,0,heigth,4)
+	local tx, ty, tz = localToWorld(self.cp.directionNode,0,heigth,4)
   -- world direction 
-	local nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, 0, lz)
+	local nx, ny, nz = localDirectionToWorld(self.cp.directionNode, lx, 0, lz)
   -- terrain height at 30 m further ahead of the 4 m point (not sure why can't we directly localToWorld to it, why nx,nz?)
 	local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, tx+(nx*distance), 0, tz+(nz*distance))
-	local _, ly,_ = courseplay:getDriveDirection(self.cp.DirectionNode, tx+(nx*distance), terrainHeight, tz+(nz*distance))
+	local _, ly,_ = courseplay:getDriveDirection(self.cp.directionNode, tx+(nx*distance), terrainHeight, tz+(nz*distance))
 	local isField = courseplay:isField(tx+(nx*distance), tz+(nz*distance), 1, 1)
   -- world normal vector towards a point 30 m ahead, considering terrain height.
-	nx, ny, nz = localDirectionToWorld(self.cp.DirectionNode, lx, ly, lz)
+	nx, ny, nz = localDirectionToWorld(self.cp.directionNode, lx, ly, lz)
   -- if there's a target waypoint and the point in distance is not on the field, check the way to that point, not just dead ahead.
 	if not isField and targetX and targetZ then
 		local targetY = getTerrainHeightAtWorldPos( g_currentMission.terrainRootNode, targetX, 0, targetZ )
@@ -44,11 +44,11 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 			vehicle = g_currentMission.nodeToObject[parent]
 		end
     -- this is where the obstacle is in local coordinates
-		local x,y,z = worldToLocal(self.cp.DirectionNode,self.cp.foundColli[1].x, self.cp.foundColli[1].y, self.cp.foundColli[1].z)
+		local x,y,z = worldToLocal(self.cp.directionNode,self.cp.foundColli[1].x, self.cp.foundColli[1].y, self.cp.foundColli[1].z)
 		local bypass = Utils.getNoNil(self.cp.foundColli[1].bp,5)
 		local sideStep = x +(bypass* self.cp.foundColli[1].s)
 		--y = math.max(y,4)
-		xC,yC,zC = localToWorld(self.cp.DirectionNode,sideStep,y,z+bypass)
+		xC,yC,zC = localToWorld(self.cp.directionNode,sideStep,y,z+bypass)
 		if vehicleSpeed == 0 then
 			if not self.cp.bypassWaypointsSet then
 				courseplay:debug(string.format("%s setting bypassing point at x:%s, y%s, z:%s",nameNum(self) ,tostring(sideStep),tostring(y),tostring(z+bypass)),3)
@@ -72,7 +72,7 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
 			end
 		end
 		if courseplay.debugChannels[3] then cpDebug:drawPoint(xC,yC,zC, 1, 1, 1) end;
-		local lxC, lzC = AIVehicleUtil.getDriveDirection(self.cp.DirectionNode,xC,yC,zC );
+		local lxC, lzC = AIVehicleUtil.getDriveDirection(self.cp.directionNode,xC,yC,zC );
 		if z < 0 then
 			--reset current because we passed some points already and don't want to go back there
 			local targetsIndex = #self.cp.nextTargets
@@ -95,7 +95,7 @@ function courseplay:isTheWayToTargetFree(self,lx,lz, targetX, targetZ,dod )
     -- no obstacles found yet
 		for i = -2 ,2,0.5 do
             -- from a world position 4 m ahead, 0.5 m higher, right, left and middle ...
-			local tx, ty, tz = localToWorld(self.cp.DirectionNode,i,heigth,4)
+			local tx, ty, tz = localToWorld(self.cp.directionNode,i,heigth,4)
 			if courseplay.debugChannels[3] then cpDebug:drawLine(tx, ty, tz, 1, 0, 0, tx+(nx*distance), ty+(ny*distance), tz+(nz*distance)) end ;
             -- ... look forward into the driving direction (taking into account the terrain height)
 			if i < 0 then

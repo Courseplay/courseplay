@@ -158,7 +158,7 @@ function LevelCompactAIDriver:lookOutForCourseplayers()
 	if vehicle.cp.mode10.searchCourseplayersOnly then
 		for rootNode,courseplayer in pairs (CpManager.activeCoursePlayers) do
 			local cx,cy,cz = self.course:getWaypointPosition(1)
-			local distance = courseplay:distanceToPoint(courseplayer,cx,cy,cz) --courseplay:nodeToNodeDistance(vehicle.cp.DirectionNode, rootNode)
+			local distance = courseplay:distanceToPoint(courseplayer,cx,cy,cz) --courseplay:nodeToNodeDistance(vehicle.cp.directionNode, rootNode)
 			--print(string.format("%s: distance = %s",tostring(rootNode),tostring(distance)))
 			if distance  < vehicle.cp.mode10.searchRadius and courseplayer ~= vehicle and  courseplayer.cp.totalFillLevel ~= nil then
 				local insert = true
@@ -341,7 +341,7 @@ function LevelCompactAIDriver:drivePush(dt)
 		refSpeed = math.min(20,vehicle.cp.speeds.bunkerSilo)
 	end		
 	--drive
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, cx,cy,cz);
 	if not fwd then
 		lx, lz = -lx,-lz
 	end
@@ -355,7 +355,7 @@ function LevelCompactAIDriver:drivePull(dt)
 	local refSpeed = math.min(20,self.vehicle.cp.speeds.bunkerSilo)
 	local allowedToDrive = true 
 	local cx,cy,cz = self.course:getWaypointPosition(self.course:getNumberOfWaypoints())
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.DirectionNode, cx,cy,cz);
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, cx,cy,cz);
 	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
 	--end if I moved over the last way point
 	if lz < 0 then
@@ -366,8 +366,8 @@ end
 
 function LevelCompactAIDriver:getHasMovedToFrontLine(dt)
 	local startUnit = self.vehicle.cp.BunkerSiloMap[self.firstLine][1]
-	local _,ty,_ = getWorldTranslation(self.vehicle.cp.DirectionNode);
-	local _,_,z = worldToLocal(self.vehicle.cp.DirectionNode, startUnit.cx , ty , startUnit.cz);
+	local _,ty,_ = getWorldTranslation(self.vehicle.cp.directionNode);
+	local _,_,z = worldToLocal(self.vehicle.cp.directionNode, startUnit.cx , ty , startUnit.cz);
 	if z < -15 then
 		return true;			
 	end
@@ -522,7 +522,7 @@ function LevelCompactAIDriver:onEndCourse()
 end
 
 function LevelCompactAIDriver:updateLastMoveCommandTime()
-	AIDriver.setLastMoveCommandTime(self, self.vehicle.timer)
+	self:setLastMoveCommandTime(self.vehicle.timer)
 end
 
 function LevelCompactAIDriver:changeLevelState(newState)
@@ -805,7 +805,7 @@ function LevelCompactAIDriver:debugRouting()
 		local wx,wz = fillUnit.wx,fillUnit.wz
 		local bx,bz = fillUnit.bx,fillUnit.bz
 		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
-		local _,tractorHeight,_ = getWorldTranslation(self.vehicle.cp.DirectionNode)
+		local _,tractorHeight,_ = getWorldTranslation(self.vehicle.cp.directionNode)
 		local y = tractorHeight + 1.5;
 
 		cpDebug:drawLine(sx, y, sz, 1, 0, 0, wx, y, wz);

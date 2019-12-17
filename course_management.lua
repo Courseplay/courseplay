@@ -1815,7 +1815,7 @@ function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 		return nil
 	end
 	local x, _, z = getWorldTranslation(vehicle.rootNode)
-	local nx, _, nz = localDirectionToWorld( vehicle.cp.DirectionNode, 0, 0, 1 )
+	local nx, _, nz = localDirectionToWorld( vehicle.cp.directionNode, 0, 0, 1 )
 	local yRot = math.atan2( nx, nz )  -- because getWorldRotation() is only -pi/2 - +pi/2
 	local options = {minDistance = 1, maxDistance = 20}
 	local adCourse

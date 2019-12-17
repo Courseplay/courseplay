@@ -36,9 +36,9 @@ FieldworkAIDriver.myStates = {
 	ON_CONNECTING_TRACK = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_LOWER_DELAYED = {},
-	WAITING_FOR_RAISE = {},
-	TURNING = {},
+	WAITING_FOR_STOP = {},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
+	TURNING = {},
 	FORWARD1 = {},
 	FORWARD2 = {},
 	REVERSE = {},
@@ -142,6 +142,7 @@ end
 --- Start the course and turn on all implements when needed
 function FieldworkAIDriver:start(ix)
 	self:debug('Starting in mode %d', self.mode)
+	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	self:setMarkers()
 	self:beforeStart()
 	-- time to lower all implements
@@ -157,6 +158,7 @@ function FieldworkAIDriver:start(ix)
 	self.aiDriverOffsetZ = 0
 
 	self:setUpCourses()
+	self.ppc:setNormalLookaheadDistance()
 
 	self.waitingForTools = true
 	-- on which course are we starting?
@@ -290,7 +292,7 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 		self:changeToUnloadOrRefill()
 		self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 	else
-		if self.aiDriverData.autoDriveMode:is(AutoDriveModeSetting.UNLOAD_OR_REFILL) then
+		if self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
 			-- Switch to AutoDrive when enabled 
 			self:rememberWaypointToContinueFieldwork()
 			self:stopWork()
@@ -309,7 +311,7 @@ end
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
 	if self.course:isTemporary() then
-		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
+		-- use the courseplay speed limit until we get to the actual unload course fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
 	else
 		-- just drive normally
@@ -326,7 +328,7 @@ end
 function FieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 	if self.stopImplementsWhileUnloadOrRefillOnField then
-		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_RAISE
+		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_STOP
 	else
 		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
 	end
@@ -336,7 +338,7 @@ end
 function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 	-- don't move while empty
 	self:setSpeed(0)
-	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_RAISE then
+	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_STOP then
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
 			self:debug('implements raised, stop')
@@ -413,10 +415,6 @@ end
 
 function FieldworkAIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
-	if self.turnIsDriving then
-		self:debug('onWaypointPassed %d, ignored as turn is driving now', ix)
-		return
-	end
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.WORKING then
 			-- check for transition to connecting track
@@ -440,10 +438,6 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 				self:startFieldworkWithAlignment(firstUpDownWpIx)
 			end
 		end
-	end
-	-- Reset lookahead distance if we are past a turn
-	if self.course:isTurnEndAtIx(ix - 1) then
-		self.ppc:setNormalLookaheadDistance()
 	end
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
 	-- or stop.
@@ -476,14 +470,21 @@ function FieldworkAIDriver:onWaypointChange(ix)
 				self:startWork()
 			end
 		-- towards the end of the field course make sure the implement reaches the last waypoint
-		elseif ix > self.course:getNumberOfWaypoints() - 3 then
+		-- TODO: this needs refactoring, for now don't do this for temporary courses like a turn as it messes up reversing
+		elseif ix > self.course:getNumberOfWaypoints() - 3 and not self.course:isTemporary() then
 			if self.frontMarkerDistance then
 				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.frontMarkerDistance)
 				self.aiDriverOffsetZ = -self.frontMarkerDistance
 			end
 		end
+		if self.fieldworkState ~= self.states.TURNING and self.course:isTurnStartAtIx(ix) then
+			self:startTurn(ix)
+		end
 	end
-	AIDriver.onWaypointChange(self, ix)
+	-- update the legacy waypoint counter on the HUD
+	if self.state == self.states.ON_FIELDWORK_COURSE or self.states.ON_UNLOAD_OR_REFILL_COURSE then
+		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
+	end
 end
 
 function FieldworkAIDriver:onTowedImplementPassedWaypoint(ix)
@@ -631,9 +632,10 @@ end
 
 function FieldworkAIDriver:setRidgeMarkers()
 	if not self.vehicle.cp.ridgeMarkersAutomatic then return end
-	local active = self.state == self.states.FIELDWORK and not self.turnIsDriving
+	local active = self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState ~= self.states.TURNING
 	for _, workTool in ipairs(self.vehicle.cp.workTools) do
-		if workTool.spec_ridgeMarker then
+		-- yes, another Giants typo. And not sure why implements with no ridge markers even have the spec_ridgeMarker
+		if workTool.spec_ridgeMarker and workTool.spec_ridgeMarker.numRigdeMarkers > 0 then
 			local state = active and self.course:getRidgeMarkerState(self.ppc:getCurrentWaypointIx()) or 0
 			if workTool.spec_ridgeMarker.ridgeMarkerState ~= state then
 				self:debug('Setting ridge markers to %d', state)
@@ -761,7 +763,8 @@ function FieldworkAIDriver:updateRemainingTime(ix)
 end
 
 function FieldworkAIDriver:measureTurnTime()
-	if self.turnWasDriving and not self.turnIsDriving then
+	local isTurning = self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.TURNING
+	if self.wasTurning and not isTurning then
 		-- end of turn
 		if self.turnStartedAt then
 			-- use sliding average to smooth jumps
@@ -769,11 +772,11 @@ function FieldworkAIDriver:measureTurnTime()
 			self.realTurnDurationMs = self.vehicle.timer - self.turnStartedAt
 			self:debug('Measured turn duration is %.0f ms', self.turnDurationMs)
 		end
-	elseif not self.turnWasDriving and self.turnIsDriving then
+	elseif not self.wasTurning and isTurning then
 		-- start of turn
 		self.turnStartedAt = self.vehicle.timer
 	end
-	self.turnWasDriving = self.turnIsDriving
+	self.wasTurning = isTurning
 end
 
 function FieldworkAIDriver:checkWeather()
@@ -894,8 +897,9 @@ function FieldworkAIDriver:lowerImplements()
 		implement.object:aiImplementStartLine()
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
-	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
+	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) or self.ppc:isReversing() then
 		-- sowing machines want to stop while the implement is being lowered
+		-- also, when reversing, we assume that we'll switch to forward, so stop while lowering, then start forward
 		self.fieldworkState = self.states.WAITING_FOR_LOWER_DELAYED
 	end
 end
@@ -977,19 +981,26 @@ function FieldworkAIDriver:isAutoContinueAtWaitPointEnabled()
 	return false
 end
 
+-- instantiate generic turn course, derived classes may override
+function FieldworkAIDriver:createTurnCourse()
+	return CourseTurn(self.vehicle, self, self.turnContext)
+end
+
 function FieldworkAIDriver:startTurn(ix)
 	-- set a short lookahead distance for PPC to increase accuracy, especially after switching back from
-	-- turn.lua. That often happens too early (when lowering the implement) when we still have a crosstrack error,
+	-- turn.lua. That often happens too early (when lowering the implement) when we still have a cross track error,
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
-	if courseplay.globalSettings.useAITurns:is(true) then
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
+	if self.vehicle.cp.settings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
 			return
 		end
 	end
-
-	AIDriver.startTurn(self, ix)
+	self.aiTurn = self:createTurnCourse()
+	self.fieldworkState = self.states.TURNING
+	self:debug('Generating turn course...')
 end
 
 --- Find the foremost and rearmost AI marker
@@ -1067,6 +1078,7 @@ function FieldworkAIDriver:getAIMarkers(object, suppressLog)
 end
 
 --- When finishing a turn, is it time to lower all implements here?
+-- TODO: remove the reversing parameter and use ppc to find out once not called from turn.lua
 function FieldworkAIDriver:shouldLowerImplements(turnEndNode, reversing)
 	-- see if the vehicle has AI markers -> has work areas (built-in implements like a mower or cotton harvester)
 	local doLower, vehicleHasMarkers = self:shouldLowerThisImplement(self.vehicle, turnEndNode, reversing)
@@ -1094,26 +1106,30 @@ end
 --- when we are _behind_ the turn end node (dz < 0), otherwise once we reach it (dz > 0)
 ---@return boolean, boolean the second one is true when the first is valid
 function FieldworkAIDriver:shouldLowerThisImplement(object, turnEndNode, reversing)
-	local aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkers(object)
+	local aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkers(object, true)
 	if not aiLeftMarker then return false, false end
 	local _, _, dzLeft = localToLocal(aiLeftMarker, turnEndNode, 0, 0, 0)
 	local _, _, dzRight = localToLocal(aiRightMarker, turnEndNode, 0, 0, 0)
+	local _, _, dzBack = localToLocal(aiBackMarker, turnEndNode, 0, 0, 0)
 	local loweringDistance
 	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
-		-- sowing machines are stopped while lowering
-		loweringDistance = 0
+		-- sowing machines are stopped while lowering, but leave a little reserve to allow for stopping
+		-- TODO: rather slow down while approaching the lowering point
+		loweringDistance = 0.5
 	else
 		-- others can be lowered without stopping so need to start lowering before we get to the turn end to be
 		-- in the working position by the time we get to the first waypoint of the next row
 		loweringDistance = self.vehicle.lastSpeed * self:getLoweringDurationMs() + 0.5 -- vehicle.lastSpeed is in meters per millisecond
 	end
-	self:debug('%s: dzLeft = %.1f, dzRight = %.1f, loweringDistance = %.1f, reversing %s', nameNum(object), dzLeft, dzRight, loweringDistance, tostring(reversing))
-	-- both left and right sides should reach the turn end node
+	local dzFront = (dzLeft + dzRight) / 2
+	self:debug('%s: dzLeft = %.1f, dzRight = %.1f, dzFront = %.1f, dzBack = %.1f, loweringDistance = %.1f, reversing %s',
+		nameNum(object), dzLeft, dzRight, dzFront, dzBack, loweringDistance, tostring(reversing))
+	local dz = self.vehicle.cp.settings.implementLowerTime:is(ImplementRaiseLowerTimeSetting.EARLY) and dzFront or dzBack
 	if reversing then
-		return dzLeft < 0 and dzRight < 0, true
+		return dz < 0 , true
 	else
 		-- dz will be negative as we are behind the target node
-		return dzLeft > - loweringDistance and dzRight > - loweringDistance, true
+		return dz > - loweringDistance, true
 	end
 end
 
@@ -1131,15 +1147,35 @@ end
 ---@param turnStartNode node at the last waypoint of the row, pointing in the direction of travel. This is where
 --- the implement should be raised when beginning a turn
 function FieldworkAIDriver:shouldRaiseThisImplement(object, turnStartNode)
-	local _, _, aiBackMarker = self:getAIMarkers(object)
+	local aiFrontMarker, _, aiBackMarker = self:getAIMarkers(object, true)
 	-- if something (like a combine) does not have an AI marker it should not prevent from raising other implements
 	-- like the header, which does have markers), therefore, return true here
-	if not aiBackMarker then return true end
+	if not aiBackMarker or not aiFrontMarker then return true end
+	local marker = self.vehicle.cp.settings.implementRaiseTime:is(ImplementRaiseLowerTimeSetting.EARLY) and aiFrontMarker or aiBackMarker
 	-- turn start node in the back marker node's coordinate system
-	local _, _, dzBack = localToLocal(aiBackMarker, turnStartNode, 0, 0, 0)
-	self:debug('%s: shouldRaiseImplements: dz = %.1f', nameNum(object), dzBack)
+	local _, _, dz = localToLocal(marker, turnStartNode, 0, 0, 0)
+	self:debug('%s: shouldRaiseImplements: dz = %.1f', nameNum(object), dz)
 	-- marker is just in front of the turn start node
-	return dzBack > 0
+	return dz > 0
+end
+
+--- Are all implements now aligned with the node? Can be used to find out if we are for instance aligned with the
+--- turn end node direction in a question mark turn and can start reversing.
+function FieldworkAIDriver:areAllImplementsAligned(node)
+	-- see if the vehicle has AI markers -> has work areas (built-in implements like a mower or cotton harvester)
+	local allAligned = self:isThisImplementAligned(self.vehicle, node)
+	-- and then check all implements
+	for _, implement in ipairs(self:getAllAIImplements(self.vehicle)) do
+		-- _all_ implements must be aligned, hence the 'and'
+		allAligned = allAligned and self:isThisImplementAligned(implement.object, node)
+	end
+	return allAligned
+end
+
+function FieldworkAIDriver:isThisImplementAligned(object, node)
+	local aiFrontMarker, _, _ = self:getAIMarkers(object, true)
+	if not aiFrontMarker then return true end
+	return TurnContext.isSameDirection(aiFrontMarker, node, 2)
 end
 
 function FieldworkAIDriver:onDraw()
@@ -1158,7 +1194,7 @@ function FieldworkAIDriver:onDraw()
 			if aiBackMarker then
 				DebugUtil.drawDebugNode(aiBackMarker, object:getName() .. ' AI Back')
 			end
-			DebugUtil.drawDebugNode(object.cp.DirectionNode or object.rootNode, object:getName() .. ' root')
+			DebugUtil.drawDebugNode(object.cp.directionNode or object.rootNode, object:getName() .. ' root')
 		end
 	end
 
@@ -1170,6 +1206,12 @@ function FieldworkAIDriver:onDraw()
 			showAIMarkersOfObject(implement.object)
 		end
 	end
+
+	if self.plowReferenceNode then
+		DebugUtil.drawDebugNode(self.plowReferenceNode, 'Plow reference')
+	end
+
+
 	AIDriver.onDraw(self)
 end
 
@@ -1225,8 +1267,6 @@ end
 
 function FieldworkAIDriver:startAiTurn(ix)
 	self:debug('Starting an AI turn.')
-	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
 	if AITurn.canMakeKTurn(self.vehicle, self.turnContext) then
 		self:debug('Starting a K turn')
 		---@type AITurn
@@ -1243,3 +1283,27 @@ function FieldworkAIDriver:startFieldworkCourseWithTemporaryCourse(temporaryCour
 	self:startCourse(temporaryCourse, 1, self.fieldworkCourse, fieldworkIx)
 end
 
+-- switch back to fieldwork after the turn ended.
+function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
+	self.ppc:setNormalLookaheadDistance()
+	self.fieldworkState = self.states.WORKING
+	self:lowerImplements()
+	-- restore our own listeners for waypoint changes
+	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
+	self:startCourse( self.fieldworkCourse, self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(ix, AIDriverUtil.getDirectionNode(self.vehicle), 0))
+end
+
+--- Don't pay worker double when AutoDrive is driving
+function FieldworkAIDriver:shouldPayWages()
+	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+end
+
+function FieldworkAIDriver:onBlocked()
+	if self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.TURNING and self.aiTurn then
+		self.aiTurn:onBlocked()
+	end
+end
+
+function FieldworkAIDriver:setOffsetX()
+	-- implement in derived classes if needed
+end

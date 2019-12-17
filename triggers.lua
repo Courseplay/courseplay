@@ -36,7 +36,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
 		or (triggerType == 'specialTrigger') 
 		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
-			local x, _, z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.cp.directionNode, vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
@@ -44,7 +44,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
 		or (triggerType == 'specialTrigger') 
 		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
-			local x, _, z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.cp.directionNode, -vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
 		end;
@@ -152,7 +152,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.DirectionNode or self.rootNode, trigger.triggerId)*2
+						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.directionNode or self.rootNode, trigger.triggerId)*2
 						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
 					end;

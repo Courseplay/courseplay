@@ -181,7 +181,7 @@ function CollisionDetector:getStatus(dt)
 end
 
 function CollisionDetector:doesVehicleGoMyDirection(collidingVehicleId)
-	local x, y, z = getWorldTranslation(self.vehicle.cp.DirectionNode);
+	local x, y, z = getWorldTranslation(self.vehicle.cp.directionNode);
 	local x1,z1 = AIVehicleUtil.getDriveDirection(collidingVehicleId, x, y, z);
 	if z1 > -0.9 then 
 		-- I'm in front of vehicle, face2face or beside < 4 o'clock
@@ -207,7 +207,7 @@ function CollisionDetector:findTheValidCollisionVehicle()
 				if self:isItARailCrossing(collisionVehicle) then
 					local _,transY,_ = getTranslation(targetId);
 					if transY > 0 then
-						distance = courseplay:nodeToNodeDistance(self.vehicle.cp.DirectionNode or self.vehicle.rootNode, targetId)
+						distance = courseplay:nodeToNodeDistance(self.vehicle.cp.directionNode or self.vehicle.rootNode, targetId)
 					end
 				else
 					distance = courseplay:distanceToObject(self.vehicle, collisionVehicle)
@@ -222,7 +222,7 @@ function CollisionDetector:findTheValidCollisionVehicle()
 				self:isItATrafficVehicle(targetId)
 --[[
 				if self:isItATrafficVehicle(targetId) then
-					distance = courseplay:nodeToNodeDistance(self.vehicle.cp.DirectionNode or self.vehicle.rootNode, targetId)
+					distance = courseplay:nodeToNodeDistance(self.vehicle.cp.directionNode or self.vehicle.rootNode, targetId)
 					if distanceToCollisionVehicle > distance then
 						--print(string.format("   %d is closer (%.2f m)",targetId,distance));
 						distanceToCollisionVehicle = distance
@@ -279,7 +279,7 @@ function CollisionDetector:update(course, ix, lx, lz, disableLongCheck)
 	self:debugSparse('has %d colliding object(s)', self.nCollidingObjects)
 
 	if self.trafficCollisionTriggers[1] ~= nil then
-		self:setCollisionDirection(self.vehicle.cp.DirectionNode, self.trafficCollisionTriggers[1], colDirX, colDirZ)
+		self:setCollisionDirection(self.vehicle.cp.directionNode, self.trafficCollisionTriggers[1], colDirX, colDirZ)
 		local recordNumber = ix
 		for i = 2, self.vehicle.cp.numTrafficCollisionTriggers do
 			-- if disableLongCheck or recordNumber + i >= course:getNumberOfWaypoints() or recordNumber < 2 then
@@ -384,7 +384,7 @@ function CollisionDetector:adaptCollisHeight()
 			for index, implement in pairs(vehicle:getAttachedImplements()) do
 				local tool = implement.object
 				local x,y,z = getWorldTranslation(tool.rootNode);
-			    local _,_,nz =  worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+			    local _,_,nz =  worldToLocal(vehicle.cp.directionNode, x, y, z);
 				if nz > 0 then
 					stepFront = stepFront + (tool.sizeLength)+2				
 				else

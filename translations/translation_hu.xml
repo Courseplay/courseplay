@@ -118,7 +118,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="jármű specifikus beállítások" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Kombájn kezelés" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="Sebességhatár" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="general driving settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="általános vezetési beállítások" />  <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Beállitások" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="Kombájn éppen fordul" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="Nincs munkaterülete a vezetőnek" />
@@ -244,7 +244,7 @@
 		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximális távolság" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimális távolság" /> <!-- TODO: translate -->
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="A kombájn csöve termény felett van" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mód specifikus beállítások" /> <!-- TODO: translate -->
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Kanál nem található" />
@@ -321,7 +321,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="állandó 4WD &amp; hátsó diff.zár be" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="állandó 4WD &amp; mindkét diff.zár be" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Szeretnéd, hogy a mezők adatait automatikusan beolvassa?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Szeretnéd, hogy a munkásod bért kapjon (%s/óra)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Szeretnéd, hogy a munkásod bért kapjon?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Vetőmag szükséglet számítás" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Terület: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Vetőmag típusa: %s" />
@@ -393,7 +393,9 @@
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Nincs telepítve" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Ne használd" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Kiürítés/újratöltés" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Jármű leparkolása" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Kiürítés/újratöltés és parkolás" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(és visszatérés)" />
@@ -401,9 +403,23 @@
 		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Haladó beállítások..." />
 
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Útvonalak betöltése indításkor" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
-		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
-		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Az útvonalak betöltése indításkor lelassítja a mentett játék betöltését, ha aktiválva van." />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="AI fordulómanőver használata" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="AI fordulómanőver használata kiszámított pályák helyett" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Mezők automatikus beolvasása" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay munkások bérezése" />
+
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="korán" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="későn" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Munkagépek emelése" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Munkagépek emelése a sor végén, vagy fordulómanőver kezdetekor." />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Munkagépek leeresztése" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Munkagépek leeresztése a sor elején, vagy fordulómanőver után." />
+
+		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Virtuális fordulópontok használata (PPC) kanyarodásnál" />
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Jobb követési algoritmus használata (pure pursuit controller) kanyarodás közben" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay munkás bére" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay munkás bére ennyi százaléka a normál munkás bérének" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

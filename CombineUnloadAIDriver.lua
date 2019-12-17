@@ -1109,7 +1109,6 @@ function CombineUnloadAIDriver:getChopperOffset(combine)
 	if not leftOk and not rightOK then
 		return 0
 	end
-
 	if leftOk and not rightOK then
 		if savedOffset >= 0 then
 			return offset

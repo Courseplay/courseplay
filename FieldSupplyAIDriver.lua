@@ -70,10 +70,6 @@ function FieldSupplyAIDriver:drive(dt)
 	end
 end
 
-function FieldSupplyAIDriver:onEndCourse()
-	AIDriver.onEndCourse(self)
-end
-
 function FieldSupplyAIDriver:continue()
 	self:changeSupplyState(self.states.ON_REFILL_COURSE )
 	self.state = self.states.RUNNING

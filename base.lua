@@ -166,7 +166,7 @@ function courseplay:onLoad(savegame)
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
-	self.cp.startAtPoint = courseplay.START_AT_NEXT_POINT;
+	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 	self.cp.fertilizerEnabled = true
 	self.cp.convoyActive = false
 	self.cp.convoy= {
@@ -301,11 +301,11 @@ function courseplay:onLoad(savegame)
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
 		setTranslation(DirectionNode, 0, 0, directionNodeOffset);
 	end;
-	self.cp.DirectionNode = DirectionNode;
+	self.cp.directionNode = DirectionNode;
 
 	-- REVERSE DRIVING SETUP
 	if self.cp.hasSpecializationReverseDriving then
-		self.cp.reverseDrivingDirectionNode = courseplay:createNewLinkedNode(self, "realReverseDrivingDirectionNode", self.cp.DirectionNode);
+		self.cp.reverseDrivingDirectionNode = courseplay:createNewLinkedNode(self, "realReverseDrivingDirectionNode", self.cp.directionNode);
 		setRotation(self.cp.reverseDrivingDirectionNode, 0, math.rad(180), 0);
 	end;
 
@@ -578,7 +578,11 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(ReturnToFirstPointSetting)
 	self.cp.settings:addSetting(SearchCombineOnFieldSetting)
 	self.cp.settings:addSetting(SelectedCombineToUnloadSetting)
-
+	self.cp.settings:addSetting(UseAITurnsSetting)
+	self.cp.settings:addSetting(ImplementRaiseTimeSetting, self)
+	self.cp.settings:addSetting(ImplementLowerTimeSetting, self)
+	self.cp.settings:addSetting(AutoDriveModeSetting, self)
+	self.cp.settings:addSetting(SelfUnloadSetting)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -725,7 +729,7 @@ function courseplay:onDraw()
 	end
 	
 	if courseplay.debugChannels[10] and self.cp.tempMOde9PointX ~= nil then
-		local x,y,z = getWorldTranslation(self.cp.DirectionNode)
+		local x,y,z = getWorldTranslation(self.cp.directionNode)
 		cpDebug:drawLine(self.cp.tempMOde9PointX2,self.cp.tempMOde9PointY2+2,self.cp.tempMOde9PointZ2, 1, 0, 0, self.cp.tempMOde9PointX,self.cp.tempMOde9PointY+2,self.cp.tempMOde9PointZ);
 		local bunker = self.cp.mode9TargetSilo
 		if bunker ~= nil then
@@ -751,7 +755,7 @@ function courseplay:onDraw()
 		if self.cp.driver then
 			self.cp.driver:onDraw()
 		end
-		local nx,ny,nz = getWorldTranslation(self.cp.DirectionNode);
+		local nx,ny,nz = getWorldTranslation(self.cp.directionNode);
 		cpDebug:drawPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0);
 	end;
 
@@ -883,11 +887,11 @@ function courseplay:showWorkWidth(vehicle)
 	local right = (vehicle.cp.workWidth * -0.5) + offsX;
 
 
-	if vehicle.cp.DirectionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
-		local p1x, p1y, p1z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.backMarkerOffset - offsZ);
-		local p2x, p2y, p2z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.backMarkerOffset - offsZ);
-		local p3x, p3y, p3z = localToWorld(vehicle.cp.DirectionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
-		local p4x, p4y, p4z = localToWorld(vehicle.cp.DirectionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
+	if vehicle.cp.directionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
+		local p1x, p1y, p1z = localToWorld(vehicle.cp.directionNode, left,  1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p2x, p2y, p2z = localToWorld(vehicle.cp.directionNode, right, 1.6, vehicle.cp.backMarkerOffset - offsZ);
+		local p3x, p3y, p3z = localToWorld(vehicle.cp.directionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
+		local p4x, p4y, p4z = localToWorld(vehicle.cp.directionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
 
 		cpDebug:drawPoint(p1x, p1y, p1z, 1, 1, 0);
 		cpDebug:drawPoint(p2x, p2y, p2z, 1, 1, 0);
@@ -1639,7 +1643,13 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	local runCounter = self.cp.driver and self.cp.driver.runCounter or 0
 	--CP basics
 	setXMLInt(xmlFile, newKey..".basics #aiMode", self.cp.mode)
-	setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
+	if #self.cp.loadedCourses == 0 and self.cp.currentCourseId ~= 0 then
+		-- this is the case when a course has been generated and than saved, it is not in loadedCourses (should probably
+		-- fix it there), so make sure it is in the savegame
+		setXMLString(xmlFile, newKey..".basics #courses", tostring(self.cp.currentCourseId))
+	else
+		setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
+	end
 	setXMLString(xmlFile, newKey..".basics #lights", tostring(self.cp.warningLightsMode))
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsStartEnd", self.cp.visualWaypointsStartEnd)
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsAll", self.cp.visualWaypointsAll)

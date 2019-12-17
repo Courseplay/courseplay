@@ -117,7 +117,8 @@ AIDriver.slowDownFactor = 0.5
 AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
 	RUNNING = {},
-	STOPPED = {}
+	STOPPED = {},
+	DONE = {}
 }
 
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
@@ -139,11 +140,10 @@ function AIDriver:init(vehicle)
 	---@type PurePursuitController
 	self.ppc = PurePursuitController(self.vehicle)
 	self.vehicle.cp.ppc = self.ppc
-	self.ppc:setAIDriver(self, 'onWaypointPassed', 'onWaypointChange')
+	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	self.ppc:enable()
 	self.nextWpIx = 1
 	self.acceleration = 1
-	self.turnIsDriving = false -- code in turn.lua is driving
 	self.state = self.states.STOPPED
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
 	-- AIDriver and its derived classes set the self.speed in various locations in
@@ -157,9 +157,6 @@ function AIDriver:init(vehicle)
 	-- list of active messages to display
 	self.activeMsgReferences = {}
 	self.pathfinder = Pathfinder()
-	if not self.aiDriverData.autoDriveMode then
-		self.aiDriverData.autoDriveMode = AutoDriveModeSetting(self.vehicle)
-	end
 	self:setHudContent()
 end
 
@@ -195,12 +192,12 @@ end
 --- If you have your own start() implementation and you do not call AIDriver.start() then
 -- make sure this is called from the derived start() to initialize all common stuff
 function AIDriver:beforeStart()
-	self.turnIsDriving = false
 	self.nextCourse = nil
 	if self.collisionDetector == nil then
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
 	self:startEngineIfNeeded()
+	self:initWages()
 end
 
 --- Start driving
@@ -234,7 +231,14 @@ function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
-	self.turnIsDriving = false
+end
+
+--- Stop the driver when the work is done. Could just dismiss at this point,
+--- the only reason we are still active is that we are displaying the info text while waiting to be dismissed
+function AIDriver:setDone(msgReference)
+	self:deleteCollisionDetector()
+	self:setInfoText(msgReference)
+	self.state = self.states.DONE
 end
 
 function AIDriver:continue()
@@ -281,6 +285,14 @@ function AIDriver:updateInfoText()
 	end
 end
 
+--- Update AI driver, everything that needs to run in every loop
+function AIDriver:update(dt)
+	self:drive(dt)
+	self:checkIfBlocked()
+	self:payWages(dt)
+	self:resetSpeed()
+end
+
 --- Main driving function
 -- should be called from update()
 -- This base implementation just follows the waypoints, anything more than that
@@ -299,9 +311,7 @@ function AIDriver:drive(dt)
 	end
 
 	self:driveCourse(dt)
-	self:checkIfBlocked()
 	self:drawTemporaryCourse()
-	self:resetSpeed()
 end
 
 --- Normal driving according to the course waypoints, using	 courseplay:goReverse() when needed
@@ -341,10 +351,6 @@ function AIDriver:driveCourse(dt)
 	if isReverseActive then
 		-- we go wherever goReverse() told us to go
 		self:driveVehicleInDirection(dt, self.allowedToDrive, moveForwards, lx, lz, self:getSpeed())
-	elseif self.turnIsDriving then
-		-- let the code in turn drive the turn maneuvers
-		-- TODO: refactor turn so it does not actually drives but only gives us the direction like goReverse()
-		courseplay:turn(self.vehicle, dt, self.turnContext)
 	elseif self.useDirection then
 		lx, lz = self.ppc:getGoalPointDirection()
 		self:debug('%.1f %.1f', lx, lz)
@@ -376,12 +382,17 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- make sure point is not behind us (no matter if driving reverse or forward)
 		az = 0
 	end
-	if self.vehicle.spec_reverseDriving and self.vehicle.spec_reverseDriving.isReverseDriving then
+	if AIDriverUtil.isReverseDriving(self.vehicle) then
 		self:debugSparse('reverse driving, reversing steering')
 		ax = -ax
 	end
 		-- TODO: remove allowedToDrive parameter and only use self.allowedToDrive
 	if not self.allowedToDrive then allowedToDrive = false end
+
+	-- driveToPoint does not like speeds under 1.5 (will stop) so make sure we set at least 2
+	if maxSpeed > 0.01 and maxSpeed < 2 then
+		maxSpeed = 2
+	end
 	self:debugSparse('Speed = %.1f, gx=%.1f gz=%.1f l=%.1f ax=%.1f az=%.1f allowed=%s fwd=%s', maxSpeed, gx, gz, l, ax, az,
 		allowedToDrive, moveForwards)
 	if self.collisionDetector then
@@ -408,6 +419,10 @@ end
 --- @param maxSpeed number speed we want the vehicle to drive
 function AIDriver:driveVehicleBySteeringAngle(dt, moveForwards, steeringAngleNormalized, turnLeft, maxSpeed)
 	if not moveForwards then
+		turnLeft = not turnLeft;
+	end
+	-- flip it again if in reverse driving vehicle
+	if AIDriverUtil.isReverseDriving(self.vehicle) then
 		turnLeft = not turnLeft;
 	end
 	local targetRotTime = 0;
@@ -438,7 +453,7 @@ function AIDriver:driveVehicleBySteeringAngle(dt, moveForwards, steeringAngleNor
 				acc = self.slowAcceleration;
 			end
 		end
-		if not self.allowedToDrive then
+		if not self.allowedToDrive or math.abs(maxSpeed) < 0.0001 then
 			acc = 0;
 		end
 		if not moveForwards then
@@ -470,13 +485,16 @@ function AIDriver:startCourse(course, ix, nextCourse, nextWpIx)
 	self.ppc:initialize(ix)
 end
 
+function AIDriver:getCurrentCourse()
+	return self.course
+end
+
 --- Start course (with alignment if needed) and set course as the current one
 ---@param course Course
 ---@param ix number
 ---@return boolean true when an alignment course was added
 function AIDriver:startCourseWithAlignment(course, ix)
-	self.turnIsDriving = false
-	local alignmentCourse = nil
+	local alignmentCourse
 	if self:isAlignmentCourseNeeded(course, ix) then
 		alignmentCourse = self:setUpAlignmentCourse(course, ix)
 	end
@@ -501,7 +519,17 @@ end
 
 --- Course ended
 function AIDriver:onEndCourse()
-	if self.vehicle.cp.stopAtEnd then
+	if self.vehicle.cp.settings.autoDriveMode:useForParkVehicle() then
+		-- use AutoDrive to send the vehicle to its parking spot
+		if self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.GetParkDestination then
+			self:debug('Let AutoDrive park this vehicle')
+			-- we are not needed here anymore
+			courseplay:stop(self.vehicle)
+			-- TODO: encapsulate this in an AutoDriveInterface class
+			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
+			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, 0, nil, nil, nil)
+		end
+	elseif self.vehicle.cp.stopAtEnd then
 		if self.state ~= self.states.STOPPED then
 			self:stop('END_POINT')
 		end
@@ -543,14 +571,7 @@ end
 
 function AIDriver:onWaypointChange(newIx)
 	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
-	-- except while turn is driving as that does not like changing the waypoint during the turn
-	if not self.turnIsDriving then
-		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
-		if self.course:isTurnStartAtIx(newIx) then
-			-- a turn is coming up, relinquish control to turn.lua
-			self:startTurn(newIx)
-		end
-	end
+	courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
 	-- rest is implemented by the derived classes
 end
 
@@ -619,7 +640,7 @@ end
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
 	if self.speed > 0 and self.allowedToDrive then
-		AIDriver:setLastMoveCommandTime(self.vehicle.timer)
+		self:setLastMoveCommandTime(self.vehicle.timer)
 		if self.vehicle:getLastSpeed() > 0.5 then
 			self.lastRealMovingTime = self.vehicle.timer
 		end
@@ -699,18 +720,7 @@ function AIDriver:isAlignmentCourseNeeded(course, ix)
 end
 
 function AIDriver:startTurn(ix)
-	self.turnIsDriving = true
-	self:debug('Starting a turn.')
-	-- as TurnContext() creates nodes when needed, store these nodes in the vehicle storage and on the the AIDriver
-	-- object, so the nodes are created only once and never destroyed (if this was a proper language with a destructor
-	-- then this would not be necessary)
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth)
-end
-
-function AIDriver:onTurnEnd()
-	self.turnIsDriving = false
-	self:debug('Turn ended, continue at waypoint %d.', self.turnContext.turnEndWpIx)
-	self.ppc:initialize(self.turnContext.turnEndWpIx)
+	self:debug('Attempting to starting a turn which is not implemented in this mode')
 end
 
 ---@param course Course
@@ -757,12 +767,14 @@ end
 function AIDriver:drawTemporaryCourse()
 	if not self.course:isTemporary() then return end
 	if not courseplay.debugChannels[self.debugChannel] then return end
-	for i = 1, self.course:getNumberOfWaypoints() - 1 do
+	for i = 1, self.course:getNumberOfWaypoints() do
 		local x, y, z = self.course:getWaypointPosition(i)
-		local nx, ny, nz = self.course:getWaypointPosition(i + 1)
 		cpDebug:drawPoint(x, y + 3, z, 10, 0, 0)
-		cpDebug:drawLine(x, y + 3, z, 0, 0, 100, nx, ny + 3, nz)
 		Utils.renderTextAtWorldPosition(x, y + 3.2, z, tostring(i), getCorrectTextSize(0.012), 0)
+		if i < self.course:getNumberOfWaypoints() then
+			local nx, ny, nz = self.course:getWaypointPosition(i + 1)
+			cpDebug:drawLine(x, y + 3, z, 0, 0, 100, nx, ny + 3, nz)
+		end
 	end
 end
 
@@ -906,7 +918,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 					takeOverSteering = true
 					local fwdWaypoint = self.course:getNextFwdWaypointIxFromVehiclePosition(unloadPointIx, self:getDirectionNode(), self.ppc:getLookaheadDistance())
 					local x,y,z = self.course:getWaypointPosition(fwdWaypoint)
-					local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, x, y, z);
+					local lx,lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, x, y, z);
 					AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, true, true, lx, lz, 5, 1)
 				end
 			end
@@ -1184,9 +1196,11 @@ end
 function AIDriver:getHasAllTippersClosed()
 	local allClosed = true
 	for _, tipper in pairs (self.vehicle.cp.workTools) do
-		if tipper.spec_dischargeable ~= nil and tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
-			allClosed = false
-		end
+    if courseplay:isTrailer(tipper) then
+      if tipper.spec_dischargeable ~= nil and tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
+        allClosed = false
+      end
+    end
 
 	end
 	return allClosed
@@ -1262,7 +1276,6 @@ end
 ---@param ix number course to start at after pathfinding, can be nil
 ---@return boolean true when a pathfinding successfully started
 function AIDriver:driveToPointWithPathfinding(tx, tz, course, ix)
-	self.turnIsDriving = false
 	if self.vehicle.cp.realisticDriving then
 		local vx, _, vz = getWorldTranslation(self.vehicle.rootNode)
 
@@ -1397,7 +1410,7 @@ function AIDriver:startEngineIfNeeded()
 	end
 	-- reset motor auto stop timer when someone starts the engine so we won't stop it for a while just because
 	-- our speed is 0 (for example while waiting for the implements to lower)
-	AIDriver:setLastMoveCommandTime(self.vehicle.timer)
+	self:setLastMoveCommandTime(self.vehicle.timer)
 end
 
 function AIDriver:getIsEngineReady()
@@ -1478,4 +1491,35 @@ end
 
 function AIDriver:trafficContollOK()
 	return g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx())
+end
+
+function AIDriver:initWages()
+	local spec = self.vehicle.spec_aiVehicle
+	if spec.startedFarmId == nil or spec.startedFarmId == 0 then
+		-- to make the wage paying in AIVehicle work it needs to have the correct farm ID
+		spec.startedFarmId = g_currentMission.player.farmId
+	end
+end
+
+function AIDriver:payWages(dt)
+	local spec = self.vehicle.spec_aiVehicle
+	local courseplayMultiplier
+	-- The Giants AIVehicle always pays wages so we need to take that into account and compensate for it
+	-- when paying less than 100% (hence the -1)
+	if courseplay.globalSettings.earnWages:is(true) and self:shouldPayWages() then
+		courseplayMultiplier = courseplay.globalSettings.workerWages:get() / 100 - 1
+	else
+		-- compensate for all the Giants wage paying
+		courseplayMultiplier = -1
+	end
+	if spec and g_server ~= nil then
+		local difficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier
+		local wage = -dt * difficultyMultiplier * courseplayMultiplier * spec.pricePerMS
+		g_currentMission:addMoney(wage, spec.startedFarmId, MoneyType.AI, true)
+	end
+end
+
+--- By default, do pay wages when enabled. Some derived classes may decide not to pay under circumstances
+function AIDriver:shouldPayWages()
+	return true
 end

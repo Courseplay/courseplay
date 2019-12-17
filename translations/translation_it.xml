@@ -10,7 +10,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Ferma autista" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Ferma alla fine o al punto di scarico" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Numero di corse da effettuare" />
-		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Resetta il numero attuale di corse"/>
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Resetta il numero attuale di corse" />
 		<text name="COURSEPLAY_UNLIMITED" 									text="Illimitate" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 								text="Lato scarico" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="Nessun lato di scarico" />
@@ -396,6 +396,8 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE" 						text="Non installato" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE" 							text="Non Attivo" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL" 					text="Attivo per scarico/Carico" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Parcheggia veicolo" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Per Scarico/Carico e Parcheggio" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER" 							text="Cartelle AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE" 					text="(Percorso di ritorno)" />
@@ -406,6 +408,20 @@
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP" 			text="Quando attivo, caricare tutti i percorsi all'avvio, potrebbe rallentare il caricamento del salvataggio." />
 		<text name="COURSEPLAY_USE_AI_TURNS" 								text="Utilizza AI manovre di svolta" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP" 						text="Utilizza AI manovre di svolta al posto delle traiettorie calcolate di svolta" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN" 							text="Scansione automatica dei campi" />
+		<text name="COURSEPLAY_EARN_WAGES" 									text="I lavoratori Courseplay ricevono il salario" />
+
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY" 				text="Prima" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE" 					text="Dopo" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME" 						text="Quando sollevare gli attrezzi" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP" 				text="Quando sollevare attrezzi quando si termina una fila o si inizia una svolta a fine campo" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME" 						text="Quando abbassare gli attrezzi" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP" 				text="Quando abbassare attrezzi quando si termina una fila o si inizia una svolta a fine campo" />
+
+		<text name="COURSEPLAY_USE_PPC_TURNS" 								text="Usa waypoint virtuali (PPC) in svolta" />
+		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP" 						text="Utilizza un algoritmo di tracciamento percorso migliore (controllore dell'inseguimento puro) durante le svolte" />
+		<text name="COURSEPLAY_WORKER_WAGES" 								text="Salario lavoratori Courseplay" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP" 						text="I salari dei lavoratori Courseplay come percentuale dei salari dei lavoratori normali" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

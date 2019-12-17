@@ -40,7 +40,6 @@ function CpManager:loadMap(name)
 	courseplay.signs:setup();
 	courseplay.fields:setup();
 	self.showFieldScanYesNoDialogue = false;
-	self:setupWages();
 	self:setupIngameMap();
 	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
 
@@ -81,8 +80,7 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- FIELDS
-	print(string.format("courseplay.fields.automaticScan: %s",tostring(courseplay.fields.automaticScan)))
-	if courseplay.fields.automaticScan then
+	if courseplay.globalSettings.autoFieldScan:is(true) then
 		self:setupFieldScanInfo();
 	end;
 	if g_server ~= nil then
@@ -93,7 +91,6 @@ function CpManager:loadMap(name)
 	-- TIMERS
 	g_currentMission.environment:addMinuteChangeListener(self);
 	self.realTimeMinuteTimer = 0;
-	self.realTime10SecsTimer = 0;
 	self.realTime5SecsTimer = 0;
 	self.realTime5SecsTimerThrough = 0;
 	self.startFieldScanAfter = 1500; -- Start field scanning after specified milliseconds
@@ -108,7 +105,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
-	addConsoleCommand( 'printVehicleVariable', 'Print a variable', 'printVehicleVariable', self )
+	addConsoleCommand( 'printVehicleVariable', 'Print g_currentMission.controlledVehicle.variable', 'printVehicleVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
@@ -252,32 +249,22 @@ function CpManager:update(dt)
 		if self.startFieldScanAfter > 0 then
 			self.startFieldScanAfter = self.startFieldScanAfter - dt;
 		end;
-
-		if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+		
+		if courseplay.fieldMod == nil then 
+			courseplay:initailzeFieldMod()
+		end	
+		
+		if courseplay.fields.fieldDefinitionBase and courseplay.globalSettings.autoFieldScan:is(true) and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 			courseplay.fields:setAllFieldEdges();
 		end;
 
-		-- Field scan, wages yes/no dialogue
+		-- Field scan yes/no dialogue
 		if self.showFieldScanYesNoDialogue then
 			self:showYesNoDialogue('Courseplay', courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'), self.fieldScanDialogueCallback);
-		elseif self.showWagesYesNoDialogue then
-			local txt = courseplay:loc('COURSEPLAY_YES_NO_WAGES'):format(g_i18n:formatMoney(g_i18n:getCurrency(self.wagePerHour * self.wageDifficultyMultiplier), 2));
-			self:showYesNoDialogue('Courseplay', txt, self.wagesDialogueCallback);
 		end;
 	end;
-
 	g_trafficController:update(dt)
 	g_combineUnloadManager:onUpdate()
-
-	-- REAL TIME 10 SECS CHANGER
-	if g_server ~= nil then
-		if self.realTime10SecsTimer < 10000 then
-			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
-		else
-			self:realTime10SecsChanged();
-			self.realTime10SecsTimer = self.realTime10SecsTimer - 10000;
-		end;
-	end;
 
 	-- REAL TIME 5 SECS CHANGER
 	if self.realTime5SecsTimer < 5000 then
@@ -339,7 +326,7 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY FIELD SCAN MSG
-	if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+	if courseplay.fields.fieldDefinitionBase and courseplay.globalSettings.autoFieldScan:is(true) and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 		self:renderFieldScanInfo();
 	end;
 end;
@@ -435,16 +422,10 @@ function CpManager.saveXmlSettings(self)
 
 		-- Save Fields Settings
 		key = 'CPSettings.courseplayFields';
-		setXMLBool(cpSettingsXml, key .. '#automaticScan',				courseplay.fields.automaticScan);
 		setXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields',		courseplay.fields.onlyScanOwnedFields);
 		setXMLBool(cpSettingsXml, key .. '#debugScannedFields',			courseplay.fields.debugScannedFields);
 		setXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields',	courseplay.fields.debugCustomLoadedFields);
 		setXMLInt (cpSettingsXml, key .. '#scanStep',					courseplay.fields.scanStep);
-
-		-- Save Wages Settings
-		key = 'CPSettings.courseplayWages';
-		setXMLBool(cpSettingsXml, key .. '#active', 		CpManager.wagesActive);
-		setXMLInt (cpSettingsXml, key .. '#wagePerHour',	CpManager.wagePerHour);
 
 		-- Save Ingame Map Settings
 		key = 'CPSettings.courseplayIngameMap';
@@ -806,21 +787,6 @@ function CpManager:minuteChanged()
 	self.lightsNeeded = true --Tommi env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
 end;
 
-function CpManager:realTime10SecsChanged()
-	-- WAGES
-	if self.wagesActive and g_server ~= nil then
-		local totalWages = 0;
-		local farmID = 0
-		for vehicleNum, vehicle in pairs(self.activeCoursePlayers) do
-			totalWages = totalWages + self.wagePer10Secs;
-			farmID = vehicle.ownerFarmId
-		end;
-		if totalWages > 0 then
-			g_currentMission:addMoney(-totalWages * self.wageDifficultyMultiplier, farmID, MoneyType.AI, true);
-		end;
-	end;
-end;
-
 function CpManager:showYesNoDialogue(title, text, callbackFn)
 	-- don't show anything if the tutorial dialog is open (it takes a while until is isOpen shows true after startup, hence the clock)
 	--courseplay.debugFormat(12, "clock %d %s", courseplay.clock, tostring(g_gui.guis.YesNoDialog.target and g_gui.guis.YesNoDialog.target.isOpen))
@@ -836,26 +802,9 @@ end;
 -- FIELD SCAN Y/N DIALOGUE
 function CpManager:fieldScanDialogueCallback(setActive)
 	--print(string.format("CpManager:fieldScanDialogueCallback(setActive(%s))",tostring(setActive)))
-	courseplay.fields.automaticScan = setActive;
+	courseplay.globalSettings.autoFieldScan:set(setActive)
 	self.showFieldScanYesNoDialogue = false
 end;
-
-
--- ####################################################################################################
--- WAGES
-function CpManager:setupWages()
-	self.wageDifficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier;
-	self.wagesActive = true;
-	self.wagePerHour = 1500;
-	self.wagePer10Secs  = self.wagePerHour / 360;
-	self.showWagesYesNoDialogue = false;
-end;
-
-function CpManager:wagesDialogueCallback(setActive)
-	self.wagesActive = setActive;
-	self.showWagesYesNoDialogue = false
-end;
-
 
 -- ####################################################################################################
 -- INGAME MAP
@@ -1104,7 +1053,6 @@ function CpManager:loadXmlSettings()
 	else
 		print('## Courseplay: loading default settings');
 		self.showFieldScanYesNoDialogue = true;
-		self.showWagesYesNoDialogue = true;
 		return;
 	end;
 
@@ -1164,31 +1112,10 @@ function CpManager:loadXmlSettings()
 
 		-- fields settings
 		key = 'CPSettings.courseplayFields';
-		local fieldsAutomaticScan = getXMLBool(cpSettingsXml, key .. '#automaticScan');
-		if fieldsAutomaticScan ~= nil then
-			courseplay.fields.automaticScan = fieldsAutomaticScan;
-		else
-			self.showFieldScanYesNoDialogue = true;
-		end;
 		courseplay.fields.onlyScanOwnedFields	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields'),	 courseplay.fields.onlyScanOwnedFields);
 		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
 		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
 		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpSettingsXml, key .. '#scanStep'),				 courseplay.fields.scanStep);
-
-		-- wages
-		key = 'CPSettings.courseplayWages';
-		local wagesActive, wagePerHour = getXMLBool(cpSettingsXml, key .. '#active'), getXMLInt(cpSettingsXml, key .. '#wagePerHour');
-		if wagesActive ~= nil then
-			self.wagesActive = wagesActive;
-		else
-			self.showWagesYesNoDialogue = true;
-		end;
-		if wagePerHour ~= nil then
-			self.wagePerHour = wagePerHour;
-		else
-			self.showWagesYesNoDialogue = true;
-		end;
-		self.wagePer10Secs = self.wagePerHour / 360;
 
 		-- ingame map
 		key = 'CPSettings.courseplayIngameMap';

@@ -21,8 +21,8 @@
         <!-- Body - Central -->
         <GuiElement type="bitmap" profile="cpFullScreenSpanning" size="1800px 720px">
             <GuiElement type="paging" profile="uiInGameMenuPaging" size="1800px 720px" position="0px 0px" onPageChange="onPageChange" onPageUpdate="onPageUpdate" id="pagingElement">
-                <GuiElement type="frameReference" ref="globalSettingsPage" name="globalSettingsPage" id="globalSettingsPage" />
                 <GuiElement type="frameReference" ref="vehicleSettingsPage" name="vehicleSettingsPage" id="vehicleSettingsPage" />
+                <GuiElement type="frameReference" ref="globalSettingsPage" name="globalSettingsPage" id="globalSettingsPage" />
             </GuiElement>
         </GuiElement>
     </GuiElement>

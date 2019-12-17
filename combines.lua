@@ -47,7 +47,7 @@ function courseplay:updateReachableCombines(vehicle)
 	if courseplay.fields.numAvailableFields > 0 and vehicle.cp.searchCombineOnField > 0 then
 		local fieldData = courseplay.fields.fieldData[vehicle.cp.searchCombineOnField];
 		for k,combine in pairs(allCombines) do
-			local combineX,_,combineZ = getWorldTranslation(combine.cp.DirectionNode or combine.rootNode);
+			local combineX,_,combineZ = getWorldTranslation(combine.cp.directionNode or combine.rootNode);
 			if combineX >= fieldData.dimensions.minX and combineX <= fieldData.dimensions.maxX and combineZ >= fieldData.dimensions.minZ and combineZ <= fieldData.dimensions.maxZ then
 				courseplay:debug(string.format('%s: combine %q is in field %d\'s dimensions', nameNum(vehicle), nameNum(combine), vehicle.cp.searchCombineOnField), 4);
 				-- if courseplay:pointInPolygonV2b(fieldData.points, combineX, combineZ, true) then
@@ -69,9 +69,9 @@ function courseplay:updateReachableCombines(vehicle)
 	-- go through found combines
 	local lx, ly, lz;
 	for k, combine in pairs(allCombines) do
-		lx, ly, lz = getWorldTranslation(combine.cp.DirectionNode or combine.rootNode)
+		lx, ly, lz = getWorldTranslation(combine.cp.directionNode or combine.rootNode)
 
-		if courseplay:isLineField(vehicle.cp.DirectionNode, nil, nil, lx, lz) then
+		if courseplay:isLineField(vehicle.cp.directionNode, nil, nil, lx, lz) then
 			courseplay:debug(string.format('%s: adding %q to reachableCombines table', nameNum(vehicle), nameNum(combine)), 4);
 			table.insert(vehicle.cp.reachableCombines, combine);
 		end;
@@ -322,7 +322,7 @@ function courseplay:calculateInitialCombineOffset(vehicle, combine) --TODO (Jako
 	if dischargeNode ~= nil then
 		prnwX, prnwY, prnwZ = getWorldTranslation(dischargeNode.node)
 		prnX, prnY, prnZ = getTranslation(dischargeNode.node)
-		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
+		combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.directionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 		if combine.cp.pipeSide == nil then
 			courseplay:getCombinesPipeSide(combine)
 		end
@@ -437,7 +437,7 @@ function courseplay:getSpecialCombineOffset(combine)
 	
 	if combine.cp.isSugarBeetLoader and combine.cp.isHolmerTerraFelis2 then
 		local utwX,utwY,utwZ = getWorldTranslation(combine.pipeRaycastNode);
-		local combineToUtwX,_,_ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, utwX,utwY,utwZ);
+		local combineToUtwX,_,_ = worldToLocal(combine.cp.directionNode or combine.rootNode, utwX,utwY,utwZ);
 		return combineToUtwX;
 	end;
 
@@ -447,7 +447,7 @@ end;
 function courseplay:getCombinesPipeSide(combine)
 	local dischargeNode = combine:getCurrentDischargeNode()
 	local prnwX, prnwY, prnwZ = getWorldTranslation(dischargeNode.node)
-	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.DirectionNode or combine.rootNode, prnwX, prnwY, prnwZ)
+	local combineToPrnX, combineToPrnY, combineToPrnZ = worldToLocal(combine.cp.directionNode or combine.rootNode, prnwX, prnwY, prnwZ)
 	
 	if combineToPrnX >= 0 then
 		combine.cp.pipeSide = 1; --left

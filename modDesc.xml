@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="40">
-	<version>6.01.00304</version>
+	<version>6.01.00344</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<br>CoursePlay SIX</br>
@@ -32,6 +32,11 @@ Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 19, die es 
 Courseplay is a modification for Farming Simulator 19. It allows you to have many different vehicles driving around autonomously and automatically, have them do field work, unload combines, drive fruit to selling points, fill a bunker or a trailer with a shovel, level and compact silage and much more...
 ]]>
 		</en>
+		<pl>
+<![CDATA[
+Courseplay to modyfikacja dla gry Farming Simulator 19. Pozwala ona wielu pojazdom na poruszanie się w sposób całkowicie autonomiczny i automatyczny - pracować na polach, wyładowywać kombajny, dowozić produkty do punktów sprzedaży, wypełniać silosy przejazdowe lub naczepę samoładującą, wyrównywać czy ugniatać kiszonkę, oraz wiele więcej...
+]]>
+		</pl>
 		<it>
 <![CDATA[
 Courseplay è una mod per Farming Simulator 19. Ti permette di avere molti veicoli diversi che guidano in modo autonomo e automatico, che fanno lavoro sul campo, scaricano le mietitrebbie, guidano verso i punti vendita, riempiono una trincea o un rimorchio con una pala, livellano e compattano l'insilato e molto altro ...

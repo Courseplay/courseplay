@@ -31,7 +31,7 @@ function BalerAIDriver:driveFieldwork(dt)
 	if self.baler then
 		self:handleBaler()
 	end
-	UnloadableFieldworkAIDriver.driveFieldwork(self, dt)
+	return UnloadableFieldworkAIDriver.driveFieldwork(self, dt)
 end
 
 function BalerAIDriver:allFillLevelsOk()
@@ -40,7 +40,8 @@ function BalerAIDriver:allFillLevelsOk()
 end
 
 function BalerAIDriver:isHandlingAllowed()
-	if self.turnIsDriving or self.fieldworkState == self.states.ON_CONNECTING_TRACK or self.fieldworkState == self.states.TEMPORARY  then
+	if self.fieldworkState == self.states.ON_CONNECTING_TRACK or
+		self.fieldworkState == self.states.TEMPORARY or self.fieldworkState == self.states.TURNING then
 		return false
 	end
 	return true

@@ -90,9 +90,9 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 		-- 'cause reverse does the raycasting for us
 		self:searchForTipTriggers()
 	end
-	-- TODO: forward/backward should be in meters, not number of waypoints
-	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(), 20)
-
+	-- use the relevant node, not the current one to determine we are around the unload point as the current changes
+	-- when we change direction
+	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getRelevantWaypointIx(), 25)
 	if self:hasTipTrigger() or nearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 		self:raycast()

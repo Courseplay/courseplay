@@ -1,3 +1,4 @@
+---@class courseplay.hud
 courseplay.hud = {};
 
 local abs, ceil, floor, max = math.abs, math.ceil, math.floor, math.max;
@@ -1272,7 +1273,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 					
 				elseif entry.functionToCall == 'toggleRidgeMarkersAutomatic' then
-					if vehicle.cp.hasSowingMachine then
+					if FieldworkAIDriver.hasImplementWithSpecialization(vehicle, SowingMachine) then
 						self:enableButtonWithFunction(vehicle,page, 'toggleRidgeMarkersAutomatic')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
@@ -1302,9 +1303,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:disableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
 					end
 
-				elseif entry.functionToCall == 'toggleAutoDriveMode' and vehicle.cp.driver and AutoDriveModeSetting.isAutoDriveAvailable(vehicle) then
+				elseif entry.functionToCall == 'toggleAutoDriveMode' and vehicle.cp.driver and vehicle.cp.settings.autoDriveMode:isAutoDriveAvailable() then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_AUTODRIVE_MODE');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.aiDriverData.autoDriveMode:getText()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.autoDriveMode:getText()
 				
 				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
 					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
@@ -1587,6 +1588,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		end
 	end; -- END if page == n
 ]]
+	-- make sure AutoDrive mode has all options currently available for the vehicle
+	vehicle.cp.settings.autoDriveMode:update()
 	self:setReloadPageOrder(vehicle, page, forceUpdate);
 end;
 --END updatePageContent
@@ -2018,6 +2021,10 @@ function courseplay.hud:setupCalculateWorkWidthButton(vehicle,page,line)
 	courseplay.button:new(vehicle, page, { 'iconSprite.png', 'calculator' }, 'calculateWorkWidth', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
 end
 
+function courseplay.hud:setupSetAutoToolOffsetXButton(vehicle,page,line)
+	courseplay.button:new(vehicle, page, { 'iconSprite.png', 'calculator' }, 'setAutoToolOffsetX', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
+end
+
 function courseplay.hud:setupShovelModeButtons(vehicle, pg)
 -- Page 9: Shovel settings
 	local hSmall = self.buttonSize.small.h;
@@ -2422,8 +2429,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:setupCalculateWorkWidthButton(vehicle,3, 2)
 	self:addRowButton(vehicle,'toggleConvoyActive', 3, 3, 1 )
 	self:addSettingsRow(vehicle,'setConvoyMinDistance', 3, 4, 1 )
-	--self:addSettingsRow(vehicle,'setConvoyMaxDistance', 3, 5, 1 )
-	self:addSettingsRow(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
+	self:addRowButton(vehicle,'toggleAutoDriveMode', 3, 8, 1 )
 
 	
 	--page 7
@@ -2438,10 +2444,11 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleTurnOnField', 8, 3, 1 )
 	self:addRowButton(vehicle,'toggleRealisticDriving', 8, 4, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetX', 8, 5, 1 )
+	self:setupSetAutoToolOffsetXButton(vehicle,8,5)
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
 	self:addRowButton(vehicle,'toggleOppositeTurnMode', 8, 7, 1 )
-	self:addRowButton(vehicle,'togglePlowFieldEdge', 8, 8, 1 )
-	
+	self:addRowButton(vehicle,'toggleRidgeMarkersAutomatic', 8, 8, 1 )
+
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
