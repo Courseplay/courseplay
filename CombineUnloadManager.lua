@@ -248,7 +248,7 @@ function CombineUnloadManager:getPossibleSidesToDrive(combine)
 end
 
 function CombineUnloadManager:getFieldNumberByCurrentPosition(vehicle)
-	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
+	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode);
 	return courseplay.fields:getFieldNumForPosition( positionX, positionZ )
 end
 
@@ -298,7 +298,7 @@ function CombineUnloadManager:getPipeOffset(combine)
 		local dnX,dnY,dnZ = getWorldTranslation(dischargeNode)
 		local baseNode = self:getPipesBaseNode(combine)
 		local tX,tY,tZ = getWorldTranslation(baseNode)
-		local pipeOffsetX = worldToLocal(combine.cp.DirectionNode,tX,tY,tZ)
+		local pipeOffsetX = worldToLocal(combine.cp.directionNode,tX,tY,tZ)
 		local distance = courseplay:distance(dnX,dnZ, tX,tZ)
 		--print(string.format(" pipeOffsetX:%s; distance:%s = %s  measured:%s",tostring(pipeOffsetX),tostring(distance),tostring(distance+pipeOffsetX),tostring(measured)))
 		if pipeOffsetX > 0 then
@@ -358,7 +358,7 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 
 	-- get world directions
 
-	local node = combine.cp.DirectionNode or combine.rootNode;
+	local node = combine.cp.directionNode or combine.rootNode;
 	local straightDirX,_,straightDirZ = localDirectionToWorld(node, 0, 0, 1);
 	local leftDirX,_,leftDirZ = localDirectionToWorld(node, 1, 0, 0);
 	local rightDirX,_,rightDirZ = localDirectionToWorld(node, -1, 0, 0);
@@ -370,7 +370,7 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	local boxLengthCenter = boxLength/2
 
 	--get the coords of the 3 left box points
-	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, 0)-- -boxLengthCenter+);
+	local x, y, z = localToWorld(tractor.cp.directionNode, 0, 0, 0)-- -boxLengthCenter+);
 	local lStartX = x + (leftDirX * (math.abs(offset)-boxWidthCenter))
 	local lStartZ = z + (leftDirZ * (math.abs(offset)-boxWidthCenter))
 	local lWidthX = lStartX + (leftDirX*boxWidth);
@@ -421,8 +421,8 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 end
 
 function CombineUnloadManager:raycastBack(chopper)
-	local nx, ny, nz = localDirectionToWorld(chopper.cp.DirectionNode, 0, 0, 1)
-	local x, y, z = localToWorld(chopper.cp.DirectionNode, 0, 1.5, -10)
+	local nx, ny, nz = localDirectionToWorld(chopper.cp.directionNode, 0, 0, 1)
+	local x, y, z = localToWorld(chopper.cp.directionNode, 0, 1.5, -10)
 	cpDebug:drawLine(x, y, z, 0, 100, 0, x+(nx*10), y+(ny*10), z+(nz*10))
 	raycastAll(x, y, z, nx, ny, nz, 'raycastBackCallback', 10, self)
 end

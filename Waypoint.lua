@@ -865,7 +865,7 @@ function Course:waypointLocalToWorld(ix, x, y, z)
 	local dx,dy,dz = localToWorld(tempNode.node,x, y, z)
 	tempNode:destroy()
 	return dx,dy,dz
-
+end
 function Course:setNodeToWaypoint(node, ix)
 	local x, y, z = self:getWaypointPosition(ix)
 	setTranslation(node, x, y, z)
