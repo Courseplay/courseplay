@@ -111,7 +111,7 @@ function courseplay:drive(self, dt)
 	-- === CURRENT VEHICLE POSITION ===
 	-- cty is used throughout this function as the terrain height. 
 	local ctx, cty, ctz = getWorldTranslation(self.cp.directionNode);
-	if self.Waypoints[self.cp.waypointIndex].rev and self.cp.oldDirectionNode then
+	if self.cp.waypointIndex ~= nil and self.Waypoints[self.cp.waypointIndex].rev and self.cp.oldDirectionNode then
 		ctx, cty, ctz = getWorldTranslation(self.cp.oldDirectionNode);
 	end;
 	if self.cp.waypointIndex > self.cp.numWaypoints then
