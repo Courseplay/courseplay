@@ -103,7 +103,7 @@ function courseplay:onLoad(savegame)
 	self.cp.visualWaypointsStartEnd = true;
 	self.cp.visualWaypointsAll = true;
 	self.cp.visualWaypointsCrossing = false;
-	self.cp.warningLightsMode = WARNING_LIGHTS_NEVER;
+	self.cp.warningLightsMode = courseplay.WARNING_LIGHTS_NEVER;
 	self.cp.hasHazardLights = self.spec_lights.turnLightState ~= nil and self.setTurnLightState ~= nil;
 
 
