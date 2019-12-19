@@ -506,9 +506,9 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	print(" ")
 	print(" ")
 	print(" ")
-	print("nHeadlandsToUse: ", type(nHeadlandsToUse))
+	print("nHeadlandsToUse: " .. type(nHeadlandsToUse))
 	for i = 1, nHeadlandsToUse do
-		print("headlands: ", type(headlands))
+		print("headlands(" .. table.getn(headlands) .. "): " ..  type(headlands))
 		
 		for ii, vv in ipairs(headlands) do
 			print(ii .. ": " .. vv)
