@@ -757,11 +757,12 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'toggleReturnToFirstPoint' then
 					if vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'toggleReturnToFirstPoint')
+						self:disableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.returnToFirstPoint:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.returnToFirstPoint:getText()
 					else
 						self:disableButtonWithFunction(vehicle,page, 'toggleReturnToFirstPoint')
-						forceUpdate = entry.functionToCall ~= 'setCustomSingleFieldEdge' -- force reload of this page if functionToCall changed
+						forceUpdate = true -- force reload of this page if functionToCall changed
 						entry.functionToCall = 'setCustomSingleFieldEdge'
 						self:enableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 						courseplay.hud:setReloadPageOrder(vehicle, page, true);
@@ -975,10 +976,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					and not vehicle.cp.isRecording 
 					and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
+						self:disableButtonWithFunction(vehicle,page, 'toggleReturnToFirstPoint')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SCAN_CURRENT_FIELD_EDGES');
 					else
 						self:disableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
-						forceUpdate = entry.functionToCall ~= 'toggleReturnToFirstPoint' -- force reload of this page if functionToCall changed
+						forceUpdate = true -- force reload of this page if functionToCall changed
 						entry.functionToCall = 'toggleReturnToFirstPoint'
 						self:enableButtonWithFunction(vehicle, page, 'toggleReturnToFirstPoint')
 						courseplay.hud:setReloadPageOrder(vehicle, page, true);
