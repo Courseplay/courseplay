@@ -509,8 +509,20 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	print("nHeadlandsToUse: ", type(nHeadlandsToUse))
 	for i = 1, nHeadlandsToUse do
 		print("headlands: ", type(headlands))
+		
+		for ii, vv in ipairs(headlands) do
+			print(ii .. ": " .. vv)
+		end
+		
 		for j, node in ipairs(headlands[1]) do
+
+			print("node: ", type(node))
+			for ii, vv in ipairs(headlands) do
+				print(ii .. ": " .. vv)
+			end
+		
 			local newNode = PointXY:copy(node)
+			print("newNode: ", type(newNode))		
 			-- add metadata for isValidNeighbor()
 			newNode.headlandNumber = i
 			newNode.index = j

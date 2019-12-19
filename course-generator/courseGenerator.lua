@@ -157,6 +157,8 @@ end
 --- Pathfinder wrapper for CP 
 -- Expects FS coordinates (x,-z)
 function courseGenerator.findPath( from, to, cpPolygon, fruit )
+
+	print("bingo")
 	local path, grid = courseGenerator.pathFinder:findPath( courseGenerator.pointToXy( from ), courseGenerator.pointToXy( to ),
 		Polygon:new( courseGenerator.pointsToXy( cpPolygon )), fruit, nil, nil )
 	if path then

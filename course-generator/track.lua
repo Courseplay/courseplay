@@ -310,6 +310,9 @@ end
 ---@param course Polyline course waypoints, in the order of driving
 ---@param i number index of a waypoint which is a start of an up/down row block
 function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings, turnRadius, islands, headlands, width)
+
+	print("headlands: ", type(headlands))
+
 	course:calculateData()
 	local i = 2
 		while i < #course do
@@ -327,6 +330,13 @@ function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 						break
 					end
 				end
+				--print("track")
+				--print("course[replaceFromHere]: ", type(course[replaceFromHere]))
+				--print("1: ", course[replaceFromHere][1])
+				--print("2: ", course[replaceFromHere][2])
+				--print("course[i]: ", type(course[i]))
+				--print("1: ", course[i][1])
+				--print("2: ", course[i][1])
 				local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(course[replaceFromHere], course[i],
 					getAllHeadlands(headlands, islands), width, true)
 				if pathToNextRow then
