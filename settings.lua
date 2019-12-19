@@ -1055,7 +1055,7 @@ function courseplay:switchStartingCorner(vehicle)
 		newStartingCorner = newStartingCorner + 1
 	end
 	if newStartingCorner > courseGenerator.STARTING_LOCATION_MAX then
-		newStartingCorner = courseGenerator.STARTING_LOCATION_MIN
+		newStartingCorner = courseGenerator.STARTING_LOCATION_DEFAULT
 	end;
 	self:setStartingCorner( vehicle, newStartingCorner )
 end
