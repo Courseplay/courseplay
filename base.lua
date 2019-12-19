@@ -103,7 +103,7 @@ function courseplay:onLoad(savegame)
 	self.cp.visualWaypointsStartEnd = true;
 	self.cp.visualWaypointsAll = true;
 	self.cp.visualWaypointsCrossing = false;
-	self.cp.warningLightsMode = 1;
+	self.cp.warningLightsMode = WARNING_LIGHTS_NEVER;
 	self.cp.hasHazardLights = self.spec_lights.turnLightState ~= nil and self.setTurnLightState ~= nil;
 
 
@@ -166,7 +166,7 @@ function courseplay:onLoad(savegame)
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
-	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
+	self.cp.startAtPoint = courseplay.START_AT_NEXT_POINT;
 	self.cp.fertilizerEnabled = true
 	self.cp.convoyActive = false
 	self.cp.convoy= {
@@ -243,10 +243,10 @@ function courseplay:onLoad(savegame)
 
 	-- speed limits
 	self.cp.speeds = {
-		useRecordingSpeed = true;
-		reverse =  6;
-		turn =   10;
-		field =  24;
+		useRecordingSpeed = false;
+		reverse =  10;
+		turn =   15;
+		field =  25;
 		street = self:getCruiseControlMaxSpeed() or 50;
 		crawl = 3;
 		discharge = 8;
@@ -460,7 +460,7 @@ function courseplay:onLoad(savegame)
 	self.cp.rowDirectionMode = courseGenerator.ROW_DIRECTION_AUTOMATIC
 	self.cp.hasStartingDirection = false;
 	self.cp.isNewCourseGenSelected = function()
-		return self.cp.hasStartingCorner and self.cp.startingCorner > courseGenerator.STARTING_LOCATION_SE_LEGACY
+		return self.cp.hasStartingCorner and self.cp.startingCorner > courseGenerator.STARTING_LOCATION_SELECT_ON_MAP
 	end
 	self.cp.returnToFirstPoint = false;
 	self.cp.hasGeneratedCourse = false;
@@ -509,7 +509,7 @@ function courseplay:onLoad(savegame)
 		getMaxNumLanes = function()
 			return self.cp.isNewCourseGenSelected() and self.cp.headland.autoDirMaxNumLanes or self.cp.headland.manuDirMaxNumLanes
 		end,
-		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
+		turnType = courseplay.HEADLAND_CORNER_TYPE_ROUND;
 		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
 
 		tg = createTransformGroup('cpPointOrig_' .. tostring(self.rootNode));
