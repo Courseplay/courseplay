@@ -70,7 +70,7 @@ function courseplay:onLoad(savegame)
 	self.cp.combineOffsetAutoMode = true
 	self.cp.isDriving = false;
 	self.cp.runOnceStartCourse = false;
-	self.cp.stopAtEnd = false;
+	self.cp.stopAtEnd = true;
 	self.cp.stopAtEndMode1 = false;
 	self.cp.calculatedCourseToCombine = false
 
