@@ -56,6 +56,7 @@ courseGenerator.STARTING_LOCATION_NW = 8
 courseGenerator.STARTING_LOCATION_NE = 9
 courseGenerator.STARTING_LOCATION_SE = 10
 courseGenerator.STARTING_LOCATION_SELECT_ON_MAP = 11
+courseGenerator.STARTING_LOCATION_DEFAULT = courseGenerator.STARTING_LOCATION_SELECT_ON_MAP
 courseGenerator.STARTING_LOCATION_MAX = 11
 
 -- headland modes
