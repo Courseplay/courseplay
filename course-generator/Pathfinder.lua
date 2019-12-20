@@ -509,11 +509,10 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	--print("headlands: " .. nHeadlandsToUse)
 	--print("nHeadlandsToUse: " .. nHeadlandsToUse)
 
-    if(nHeadlandsToUse < 1)
-    {
+    if nHeadlandsToUse < 1 then
         -- No path/course, heading towards an error, return null
 	    return nil
-    }
+    end
 
 	for i = 1, nHeadlandsToUse do
 		--print("headlands(" .. table.getn(headlands) .. "): " ..  type(headlands))
