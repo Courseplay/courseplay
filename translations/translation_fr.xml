@@ -3,26 +3,26 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 					 		text="Commencer l'enregistrement de la course" />
 		<text name="COURSEPLAY_DRIVER" 							 			text="Chauffeur" />
-		<text name="COURSEPLAY_PPC_OFF" 									text="normal mode" />
-		<text name="COURSEPLAY_PPC_ON" 										text="experimental mode" /> <!-- a new driving algorithm using a pure pursuit controller -->
-		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- enable new AI driver -->
+		<text name="COURSEPLAY_PPC_OFF" 									text="Mode normal" />
+		<text name="COURSEPLAY_PPC_ON" 										text="Mode expérimental" /> <!-- a new driving algorithm using a pure pursuit controller -->
+		<text name="COURSEPLAY_AIDRIVER" 									text="Conducteur AI" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Démarrer le chauffeur" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Arrêter le chauffeur" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 					 		text="Arrêter au prochain point ou trigger" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 					 		text="Arrêter au prochain point déclencheur" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Nombre de tours à effectuer" />
-		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="reset current number of runs"/>  <!-- Todo translate -->
+		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Réinitialiser le nombre de tours"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="Illimité" />
 		<text name="COURSEPLAY_UNLOADING_SIDE" 						 		text="Côté du chauffeur:" />
 		<text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="automatique" />
 		<text name="COURSEPLAY_LEFT" 							 			text="gauche" />
 		<text name="COURSEPLAY_RIGHT" 							 			text="droite" />
 		<text name="COURSEPLAY_CENTER" 										text="centre" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 					text="Renvoyer le chauffeur au début" />
-		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Appeler un chauffeur" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Chauffeur appelé" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 					text="Renvoyer chauffeur à la maison" />
+		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Demander un chauffeur" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Chauffeur demandé" />
 		<text name="COURSEPLAY_START_COURSE" 						 		text="Démarrer la course" />
 		<text name="COURSEPLAY_STOP_COURSE" 						 		text="Arrêter la course" />
-		<text name="COURSEPLAY_MODE_1" 							 			text="Type: Aide à la conduite (Chargement au démarrage)" />
+		<text name="COURSEPLAY_MODE_1" 							 			text="Type: Aide à la conduite (Chargement au début)" />
 		<text name="COURSEPLAY_MODE_2" 							 			text="Type: Batteuse (La remorque suit la Batteuse)" />
 		<text name="COURSEPLAY_MODE_3" 							 			text="Type: Transbordeur (Déchargement de la Batteuse)" />
 		<text name="COURSEPLAY_MODE_4" 							 			text="Type: Fertiliser et semer" />
@@ -31,11 +31,11 @@
 		<text name="COURSEPLAY_MODE_7" 							 			text="Type: Batteuse va à la remorque pour vider" />
 		<text name="COURSEPLAY_MODE_8" 							 			text="Type: Transport de liquides" />
 		<text name="COURSEPLAY_MODE_9" 							 			text="Type: Charger et décharger un godet" />
-		<text name="COURSEPLAY_MODE_10" 									text="Type: leveling and compacting" />
-		<text name="COURSEPLAY_CONTINUE" 						 			text="Début" />
+		<text name="COURSEPLAY_MODE_10" 									text="Type: nivellement et compactage" />
+		<text name="COURSEPLAY_CONTINUE" 						 			text="Continuer" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 						 		text="Réinitialiser la course" />
 		<text name="COURSEPLAY_DRIVE_NOW" 						 			text="Démarrer maintenant" />
-		<text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Partir à:" />
+		<text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Démarrer à:" />
 		<text name="UNKNOWN" 								 				text="inconnu" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Direction de la fourrière" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Fourrière avant/après le travail du champ" />
@@ -52,53 +52,53 @@
 		<text name="COURSEPLAY_BUTTON_RETURN" 								text="Entrée" />
 		<text name="COURSEPLAY_BUTTON_ESC" 									text="Echap" />
 		<text name="COURSEPLAY_CANCEL_WITH" 								text="%s pour Annuler" />
-		<text name="COURSEPLAY_SAVE_COURSE_WITH" 							text="%s pour Enregistrer la course" />
-		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 						text="%s pour Enregistrer le dossier" />
-		<text name="COURSEPLAY_FILTER_COURSE_WITH" 							text="%s pour Filtrer les courses" />
+		<text name="COURSEPLAY_SAVE_COURSE_WITH" 							text="%s pour Enregistrer la Course" />
+		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 						text="%s pour Enregistrer le Dossier" />
+		<text name="COURSEPLAY_FILTER_COURSE_WITH" 							text="%s pour Filtrer les Courses" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 						text="Courses: %q" />
-		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Charger la course/la fusionner avec celle chargée" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Charger la course/fusionner avec celle chargée" />
 		<text name="COURSEPLAY_APPEND_COURSE" 					 	 		text="Ajouter la course à la fin" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 					 	 		text="Déplacer dans un dossier" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 					 	 		text="Déplacer vers un dossier" />
 		<text name="COURSEPLAY_DELETE_COURSE" 					 	 		text="Supprimer la course/le dossier" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 						 		text="Créer un nouveau dossier" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 				text="Recherche de course et de dossier" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 					 		text="Désactive les filtres" />
-		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 					text="a atteint le point de déchargement." />
-		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="Enregistrer la position de la vis" />
-		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="Positionner la vis" />
-		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="a atteint le point d'attente" />
-		<text name="COURSEPLAY_REACHED_END_POINT" 					 		text="a atteint la fin de la course" />
+		<text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 					text="a atteint le point de surcharge." />
+		<text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="Enregistrer la position du tuyau" />
+		<text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="Positionner le tuyau" />
+		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="est arrivé au point d'attente" />
+		<text name="COURSEPLAY_REACHED_END_POINT" 					 		text="est arrivé au déclencheur/à fin de la course" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="a terminé le transport de grains." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="a terminé le transport de liquides." />
 		<text name="COURSEPLAY_WORK_END" 							 		text="a terminé le travail." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": l'outil a besoin d'être vidé." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": l'outil a besoin d'être rechargé." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
-		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est coincé." />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="Le trigger est atteint" />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est dans le traffic." />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="Le déclencheur est atteint" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist. point de décharge:" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
-		<text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Montrer les points" />
+		<text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="afficher les 	points de repère" />
 		<text name="COURSEPLAY_PATHFINDING" 						 		text="Evite les cultures" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Distance latéral:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Décalage latéral:" />
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières:" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Alignt. sur 1er point:" />
-		<text name="COURSEPLAY_START_AT" 						 			text="Démarrer à:" />
+		<text name="COURSEPLAY_START_AT" 						 			text="Débuter à:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Tourne dans le champ:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Manoeuvre:" />
-		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="dans zone à travailler" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Sens de virage opposé" />
+		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="dans les dernière lignes" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="dès que possible" />
-		<text name="COURSEPLAY_TURN_RADIUS" 						 		text="Rayon de braquage:" />
-		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Distance verticale:" />
+		<text name="COURSEPLAY_TURN_RADIUS" 						 		text="Rayon de virage:" />
+		<text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Décalage verticale:" />
 		<text name="COURSEPLAY_COMBINE" 						 			text="Batteuse" />
 		<text name="COURSEPLAY_NONE" 							 			text="Aucun" />
 		<text name="COURSEPLAY_CHOOSE_COMBINE" 						 		text="Choix de Batteuse:" />
-		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Type de recherche:" />
+		<text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Recherche de Batteuse:" />
 		<text name="COURSEPLAY_CURRENT" 						 			text="Actuelle:" />
 		<text name="COURSEPLAY_AUTOMATIC_SEARCH" 					 		text="recherche automatique" />
-		<text name="COURSEPLAY_MANUAL_SEARCH" 						 		text="choisir manuellement" />
-		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Recherche sur le champ %s" />
-		<text name="COURSEPLAY_COPY_COURSE" 						 		text="Importer course:" />
+		<text name="COURSEPLAY_MANUAL_SEARCH" 						 		text="recherche manuellement" />
+		<text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Rechercher une batteuse dans le champ %s" />
+		<text name="COURSEPLAY_COPY_COURSE" 						 		text="Copier la course:" />
 		<text name="COURSEPLAY_VEHICLE" 						 			text="Véhicule" />
 		<text name="COURSEPLAY_TEMP_COURSE" 						 		text="course temporaire" />
 		<text name="COURSEPLAY_SPEED_TURN" 						 			text="Vitesse de virage:" />
@@ -119,11 +119,11 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Gestion de la conduite" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gestion des courses" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Choisir le dossier" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="vehicle specific settings" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Paramètres spécifiques au véhicule" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gestion des batteuses" />
-		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 					 		text="Vitesse limite" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"					text="general driving settings" />  <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Paramètres" />
+		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 					 		text="Limites de vitesse" />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"					text="Paramètres de conduite />
+		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Paramètres général" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 					 		text="La batteuse tourne" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 						 		text="Pas de zone de travail" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 					 		text="Courses combinées" />
@@ -131,11 +131,11 @@
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 						text="Conduit à coté de la batteuse" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 					 		text="Conduit vers la batteuse" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 					text="La batteuse me demande de m'arrêter" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Attends que la position d'attente se libére" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Attend que la position d'attente se libére" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 					 		text="Tourne en direction de %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 		text="Conduit vers le points %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Attend que le niveau soit atteint" />
-		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Pas de Batteuse en vue" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Pas de Batteuse à portée" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Attend que la batteuse finisse de tourner" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Attend pour le nouveau point" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 					 		text="Suit le tracteur" />
@@ -221,12 +221,12 @@
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="Désactivé" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="Simple" />
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="Circulaire" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Lissés" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Doux" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="Manoeuvres" />
-		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Ronds" />
+		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Ronds (rayon de virage)" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Manoeuvre arrière dans les fourrières"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Ligne droite" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Circulaire" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droit" />
+		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Coubé" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Field center (experimental)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
@@ -241,27 +241,27 @@
 		<text name="COURSEPLAY_MANUAL" 							 			text="manuel" />
 		<text name="COURSEPLAY_TURN_MANEUVER" 						 		text="Manœuvre de demi-tour:" />
 		<text name="COURSEPLAY_START" 							 			text="Démarrer" />
-		<text name="COURSEPLAY_FINISH" 							 			text="Arrêter" />
+		<text name="COURSEPLAY_FINISH" 							 			text="Tarminer" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 					 		text="La course n'est pas valide" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Fonction engrais du semoir" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="vehicle convoy" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximum distance" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimum distance" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="convoi de véhicules" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="distance maximum" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="distance minimum" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Tuyau de la batteuse dans les fruits" /> <!-- this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Paramètres du mod" />
 		
-		<!-- shovel stuff -->
-		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de godet trouvé" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS" 					 		text="Positions du godet" />
-		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 					text="Il faut enregistrer les positions du godet" />
+		<!-- shovel stuff -->shocel
+		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de pelle trouvé" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS" 					 		text="Positions de la pelle" />
+		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 					text="Positions de la pelle manquantes" />
 		<text name="COURSEPLAY_SHOVEL_LOADING_POSITION" 					text="Position de chargement" />
 		<text name="COURSEPLAY_SHOVEL_TRANSPORT_POSITION" 					text="Position de transport" />
-		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 				text="Position avant de décharger" />
+		<text name="COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION" 				text="Position de pré-décharger" />
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 					text="Position de déchargement" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 				text="Enregistrer la position de chargement" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 				text="Enregistrer la position de transport" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 			text="Enregistrer la position de pre-dechargement" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 				text="Enregistrer la position de déchargement" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 				text="Sauvegarder la position de chargement" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 				text="Sauvegarder la position de transport" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 			text="Sauvegarder la position de pre-dechargement" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 				text="Sauvegarder la position de déchargement" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 			text="Se mettre en position de chargement" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 			text="Se mettre en position de transport" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Se mettre en position de pre-dechargement" />
@@ -355,10 +355,10 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="Courseplay: Se mettre en position de déchargement" />
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 					 		text="Afficher le curseur" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 					 		text="Cacher le curseur" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Left Mouse Button" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Right Mouse Button" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Middle Mouse Button" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Mouse Button %d" /> <!-- TODO TRANSLATE: %s = number -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Bouton Gauche de la Souris" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Bouton Droit de la Souris" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Bouton Central de la Souris" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la Souris" /> <!-- %s = number ( could be "%de Bouton de la Souris" for "mouse #th button" ) -->
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Mode" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="nivellement et tassement" />
@@ -410,9 +410,9 @@
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Tôt" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Tard" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Quand monter les instruments/outils" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
