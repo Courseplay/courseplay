@@ -26,12 +26,12 @@
 		<text name="COURSEPLAY_MODE_2" 							 			text="Type: Batteuse (La remorque suit la Batteuse)" />
 		<text name="COURSEPLAY_MODE_3" 							 			text="Type: Transbordeur (Déchargement de la Batteuse)" />
 		<text name="COURSEPLAY_MODE_4" 							 			text="Type: Fertiliser et semer" />
-		<text name="COURSEPLAY_MODE_5" 							 			text="Type: Route (voyage du début jusqu'à la fin de la course)" />
+		<text name="COURSEPLAY_MODE_5" 							 			text="Type: Transfère (conduire du début à la fin)" />
 		<text name="COURSEPLAY_MODE_6" 							 			text="Type: Travail des champs" />
-		<text name="COURSEPLAY_MODE_7" 							 			text="Type: Batteuse va à la remorque pour vider" />
+		<text name="COURSEPLAY_MODE_7" 							 			text="Type: Batteuse auto-déchargement" />
 		<text name="COURSEPLAY_MODE_8" 							 			text="Type: Transport de liquides" />
 		<text name="COURSEPLAY_MODE_9" 							 			text="Type: Charger et décharger un godet" />
-		<text name="COURSEPLAY_MODE_10" 									text="Type: nivellement et compactage" />
+		<text name="COURSEPLAY_MODE_10" 									text="Type: Nivellement et compactage" />
 		<text name="COURSEPLAY_CONTINUE" 						 			text="Continuer" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 						 		text="Réinitialiser la course" />
 		<text name="COURSEPLAY_DRIVE_NOW" 						 			text="Démarrer maintenant" />
@@ -78,7 +78,7 @@
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="Le déclencheur est atteint" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist. point de décharge:" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
-		<text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="afficher les 	points de repère" />
+		<text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="afficher les points de repère" />
 		<text name="COURSEPLAY_PATHFINDING" 						 		text="Evite les cultures" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Décalage latéral:" />
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières:" />
@@ -122,7 +122,7 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Paramètres spécifiques au véhicule" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gestion des batteuses" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 					 		text="Limites de vitesse" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"					text="Paramètres de conduite />
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"					text="Paramètres de conduite" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Paramètres général" />
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 					 		text="La batteuse tourne" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 						 		text="Pas de zone de travail" />
@@ -241,7 +241,7 @@
 		<text name="COURSEPLAY_MANUAL" 							 			text="manuel" />
 		<text name="COURSEPLAY_TURN_MANEUVER" 						 		text="Manœuvre de demi-tour:" />
 		<text name="COURSEPLAY_START" 							 			text="Démarrer" />
-		<text name="COURSEPLAY_FINISH" 							 			text="Tarminer" />
+		<text name="COURSEPLAY_FINISH" 							 			text="Terminer" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 					 		text="La course n'est pas valide" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Fonction engrais du semoir" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="convoi de véhicules" />
@@ -260,11 +260,11 @@
 		<text name="COURSEPLAY_SHOVEL_UNLOADING_POSITION" 					text="Position de déchargement" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION" 				text="Sauvegarder la position de chargement" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION" 				text="Sauvegarder la position de transport" />
-		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 			text="Sauvegarder la position de pre-dechargement" />
+		<text name="COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION" 			text="Sauvegarder la position de pre-déchargement" />
 		<text name="COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION" 				text="Sauvegarder la position de déchargement" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 			text="Se mettre en position de chargement" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 			text="Se mettre en position de transport" />
-		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Se mettre en position de pre-dechargement" />
+		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Se mettre en position de pre-déchargement" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="Se mettre en position de déchargement" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 					 		text="Arrêter et aller charger" />
 
@@ -287,7 +287,7 @@
 		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 					text="Calculer le tour du champ actuel" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Tour du champ numéro" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Ajoute le tour du champ %d à la liste" />
-		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Ecraser le tour du champ %d dans la liste" />
+		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Écraser le tour du champ %d dans la liste" />
 		<text name="COURSEPLAY_USER" 							 			text="utilisateur" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="doit bientôt être réparé" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="doit être réparé" />
@@ -307,17 +307,17 @@
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 						text="Sauvegarder la course actuelle" />
 		<text name="COURSEPLAY_RECORDING_STOP" 						 		text="Arrêter l'enregistrement" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 					 		text="Pauser l'enregistrement" />
-		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="Reprendre l'enregistrement" />
+		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="Sauvegarder la course" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 					 		text="Supprimer le dernier point" />
 		<text name="COURSEPLAY_RECORDING_SET_WAIT" 					 		text="Placer un point d'attente" />
 		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 						text="Placer un point de déchargement" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 						text="Placer un point de croisement" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 						text="Commencer la manœuvre de demi-tour" />
 		<text name="COURSEPLAY_RECORDING_TURN_END" 					 		text="Terminer la manœuvre de demi-tour" />
-		<text name="COURSEPLAY_RECORDING_REVERSE_START" 					text="Marche arrière" />
-		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 						text="Marche avant" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_START" 					text="Commencer la marche arrière" />
+		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 						text="Arrêter la marche arrière" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"					text="Ajouter des points intermédiaires" />
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 					text="Icones sur la carte: afficher le texte" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 					text="Icônes sur la carte: afficher le texte" />
 		<text name="COURSEPLAY_DRIVECONTROL" 								text="Options Drive Control" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 						text="automatique" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 						text="4x4 permanent" />
@@ -334,18 +334,18 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"					 		text="Montrer/cacher tous les points" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"					text="Montrer/cacher les points de croisements" />
 
-		<text name="COURSEPLAY_HUD_OPEN" 						 			text="Montrer le Courseplay HUD" />
-		<text name="COURSEPLAY_HUD_CLOSE" 						 			text="Cacher le Courseplay HUD" />
+		<text name="COURSEPLAY_HUD_OPEN" 						 			text="Montrer la fenêtre de Courseplay" />
+		<text name="COURSEPLAY_HUD_CLOSE" 						 			text="Cacher la fenêtre de Courseplay" />
 		<text name="COURSEPLAY_FUNCTIONS" 						 			text="Fonctions de Courseplay" />
-		<text name="input_COURSEPLAY_MODIFIER" 					 			text="Courseplay: modifier" />
+		<text name="input_COURSEPLAY_MODIFIER" 					 			text="Courseplay: Modificateur" />
 		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 				text="Courseplay: Accepter les pop-ups" />
 		<text name="input_COURSEPLAY_HUD" 						 			text="Courseplay: Montrer/cacher l'interface" />
 		<text name="input_COURSEPLAY_START_STOP" 				 			text="Courseplay: Démarrer/arrêter la course" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 				 			text="Courseplay: Continue" />
+		<text name="input_COURSEPLAY_CANCELWAIT" 				 			text="Courseplay: Continuer" />
 		<text name="input_COURSEPLAY_DRIVENOW" 					 			text="Courseplay: Démarrer maintenant" />
-		<text name="input_COURSEPLAY_STOP_AT_END" 				 			text="Courseplay: Arrêter au prochain point ou trigger" />
+		<text name="input_COURSEPLAY_STOP_AT_END" 				 			text="Courseplay: Arrêter au prochain point ou déclencheur" />
 		<text name="input_COURSEPLAY_NEXTMODE" 					 			text="Courseplay: mode suivant" />
-		<text name="input_COURSEPLAY_PREVMODE" 					 			text="Courseplay: mode précedent" />
+		<text name="input_COURSEPLAY_PREVMODE" 					 			text="Courseplay: mode précédent" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					text="Courseplay: Action de la souris" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY"					text="Courseplay: Action secondaire de la souris" />
 		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="Courseplay: place debug marker in log" />
@@ -360,13 +360,13 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Bouton Central de la Souris" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la Souris" /> <!-- %s = number ( could be "%de Bouton de la Souris" for "mouse #th button" ) -->
 
-		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Mode" />
+		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Mod" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="nivellement et tassement" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="remplissage" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Stopper automatiquent " />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Stopper automatiquement " />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="courseplayers" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="tout véhicule" />
-		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Déctection des véhicules dans un rayon de " />
+		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Détection des véhicules dans un rayon de " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Vitesse max pendant le remplissage" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Hauteur de la lame" />
 		<text name="COURSEPLAY_MODE10_NOSILO"						 		text="Le point de départ n'est pas dans le bunkersilo" />
@@ -376,32 +376,32 @@
 		<text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 		text="Largeur de la lame" />
 		<text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 						text="Remplissage du silo" />
 		<text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 						text="en le traversant" />
-		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 		text="en marche arrière" />
+		<text name="COURSEPLAY_MODE10_REVERSE_UNLOADING" 			 		text="Déchargement de reculons" />
 		
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"								text="Faire le plein à la station" />
-		<text name="COURSEPLAY_FUEL_ALWAYS"									text="toujours" />
-		<text name="COURSEPLAY_FUEL_BELOW_20PCT"							text="en dessous de 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"								text="Eco. carburant:" />
+		<text name="COURSEPLAY_FUEL_ALWAYS"									text="Toujours" />
+		<text name="COURSEPLAY_FUEL_BELOW_20PCT"							text="En dessous de 20%" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"								text="Économie carburant:" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 							text="Recharger la liste de courses" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 					text="Impossible de générer la course. Essayez de modifier les paramètres ou de déplacer le véhicule."/>
 		
-		<text name="COURSEPLAY_FillType_BaleTwine" 							text="Ficelle pour balle" />
-		<text name="COURSEPLAY_FillType_BaleNet" 							text="Filet pour balle" />
+		<text name="COURSEPLAY_FillType_BaleTwine" 							text="Boule de ficelle" />
+		<text name="COURSEPLAY_FillType_BaleNet" 							text="Filet à balles" />
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="Film d'enrubannage" />
 		<text name="COURSEPLAY_FillType_Molasses"							text="Mélasse" />
 
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="To park vehicle" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="For unload/refill and park" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Non-installé" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Ne pas Utiliser" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Pour Déchargement/Chargement" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Pour Stationner un Véhicule" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Pour Déchargement/Chargement et Stationner" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(et retour)" />
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Paramètres avancés..." />
 
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
@@ -413,13 +413,13 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Tôt" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Tard" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Quand monter les instruments/outils" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Quand monter les outils en finissant une rangée ou en commençant un virage dans les fourrières" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Quand descendre les outils" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Quand descendre les outils en commençant une rangé ou finissant un virage dans les fourrières" />
 
-		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Use virtual waypoints (PPC) in turns" />
+		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utilisé des points de rérérences virtualles (PPC) dans les virages" />
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Use a better course tracking algorithm (pure pursuit controller) during turns" />
-		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Salaire des travailleurs Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
