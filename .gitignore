@@ -39,3 +39,4 @@ TriangleCalculation.lua
 !*.sln
 !*.vcproj
 *.sln
+*.phpproj
