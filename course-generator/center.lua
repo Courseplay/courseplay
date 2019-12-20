@@ -569,7 +569,6 @@ end
 
 function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, workWidth)
 	local allHeadlands = getAllHeadlands(headlands, islands)
-	print("center")
 	local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
 	if not pathToNextRow then
 		-- should not happen, safety harness only
