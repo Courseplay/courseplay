@@ -36,7 +36,3 @@ TriangleCalculation.lua
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
-!*.sln
-!*.vcproj
-*.sln
-*.phpproj

@@ -2256,14 +2256,14 @@ end
 ImplementRaiseTimeSetting = CpObject(ImplementRaiseLowerTimeSetting)
 function ImplementRaiseTimeSetting:init(vehicle)
 	ImplementRaiseLowerTimeSetting.init(self, vehicle, 'implementRaiseTime', 'COURSEPLAY_IMPLEMENT_RAISE_TIME', 'COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP')
-	self:set(ImplementRaiseLowerTimeSetting.EARLY)
+	self:set(ImplementRaiseLowerTimeSetting.LATE)
 end
 
 ---@class ImplementLowerTimeSetting : ImplementRaiseLowerTimeSetting
 ImplementLowerTimeSetting = CpObject(ImplementRaiseLowerTimeSetting)
 function ImplementLowerTimeSetting:init(vehicle)
 	ImplementRaiseLowerTimeSetting.init(self, vehicle, 'implementLowerTime', 'COURSEPLAY_IMPLEMENT_LOWER_TIME', 'COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP')
-	self:set(ImplementRaiseLowerTimeSetting.LATE)
+	self:set(ImplementRaiseLowerTimeSetting.EARLY)
 end
 
 --- Return to first point after finishing fieldwork
