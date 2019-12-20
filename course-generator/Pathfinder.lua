@@ -493,37 +493,37 @@ end
 -- @param dontUseInnermostHeadland - if true, won't use the innermost headland
 function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, dontUseInnermostHeadland)
 
-	print("fromNode:", type(fromNode))
-	print("toNode:", type(toNode))
-	print("headlands:", type(headlands))
-	print("workWidth:", type(workWidth))
-	print("dontUseInnermostHeadland:", type(dontUseInnermostHeadland))
+	--print("fromNode:", type(fromNode))
+	--print("toNode:", type(toNode))
+	--print("headlands:", type(headlands))
+	--print("workWidth:", type(workWidth))
+	--print("dontUseInnermostHeadland:", type(dontUseInnermostHeadland))
 
 	-- list of nodes for pathfinding are all the waypoints on the headland
 	local nodes = {}
 	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
 
-	print(" ")
-	print(" ")
-	print(" ")
-	print("headlands: " .. nHeadlandsToUse)
-	print("nHeadlandsToUse: " .. nHeadlandsToUse)
+	--print(" ")
+	--print(" ")
+	--print(" ")
+	--print("headlands: " .. nHeadlandsToUse)
+	--print("nHeadlandsToUse: " .. nHeadlandsToUse)
 	for i = 1, nHeadlandsToUse do
-		print("headlands(" .. table.getn(headlands) .. "): " ..  type(headlands))
+		--print("headlands(" .. table.getn(headlands) .. "): " ..  type(headlands))
 		
-		for ii, vv in ipairs(headlands) do
-			print(ii .. ": " .. type(vv))
-		end
+		--for ii, vv in ipairs(headlands) do
+			--print(ii .. ": " .. type(vv))
+		--end
 		
 		for j, node in ipairs(headlands[1]) do
 
-			print("node: ", type(node))
-			for ii, vv in ipairs(headlands) do
-				print(ii .. ": " .. vv)
-			end
+			--print("node: ", type(node))
+			--for ii, vv in ipairs(headlands) do
+				--print(ii .. ": " .. vv)
+			--end
 		
 			local newNode = PointXY:copy(node)
-			print("newNode: ", type(newNode))		
+			--print("newNode: ", type(newNode))		
 			-- add metadata for isValidNeighbor()
 			newNode.headlandNumber = i
 			newNode.index = j
@@ -533,9 +533,9 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 			table.insert(nodes, newNode)
 		end
 	end
-	print(" ")
-	print(" ")
-	print(" ")
+	--print(" ")
+	--print(" ")
+	--print(" ")
 
 	local from, to = PointXY:copy(fromNode), PointXY:copy(toNode)
 	table.insert(nodes, from)
