@@ -507,9 +507,10 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	--print(" ")
 	--print(" ")
 	--print("headlands: " .. nHeadlandsToUse)
-	--print("nHeadlandsToUse: " .. nHeadlandsToUse)
+	print("nHeadlandsToUse: " .. nHeadlandsToUse)
+	print("nHeadlandsToUse[1]: " .. nHeadlandsToUse[1])
 
-    if nHeadlandsToUse < 1 then
+    if nHeadlandsToUse < 1 then	
         -- No path/course, heading towards an error, return null
 	    return nil
     end
