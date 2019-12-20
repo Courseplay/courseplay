@@ -1,0 +1,38 @@
+.project
+*~
+*.gitattributes
+*.idea
+*.vs
+*.iml
+out
+reload/venv
+reload.xml
+.vbproj
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# horoman
+.builtpath
+
+# Satis
+TurnRadiusCalculation.lua
+TriangleCalculation.lua
+
+# Jakob
+*.WinMerge
+
+# Visual Studio
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
