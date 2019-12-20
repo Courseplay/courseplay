@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Chauffeur appelé" />
 		<text name="COURSEPLAY_START_COURSE" 						 		text="Démarrer la course" />
 		<text name="COURSEPLAY_STOP_COURSE" 						 		text="Arrêter la course" />
-		<text name="COURSEPLAY_MODE_1" 							 			text="Type: Aide à la conduite (Chargement au démarrage)" />
+		<text name="COURSEPLAY_MODE_1" 							 			text="Type: Transport de grains (Chargement et départ)" />
 		<text name="COURSEPLAY_MODE_2" 							 			text="Type: Batteuse (La remorque suit la Batteuse)" />
 		<text name="COURSEPLAY_MODE_3" 							 			text="Type: Transbordeur (Déchargement de la Batteuse)" />
 		<text name="COURSEPLAY_MODE_4" 							 			text="Type: Fertiliser et semer" />
@@ -74,8 +74,8 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": l'outil a besoin d'être vidé." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": l'outil a besoin d'être rechargé." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
-		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est coincé." />
-		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="Le trigger est atteint" />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est dans le trafic." />
+		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="Le déclencheur est atteint" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist. point de décharge:" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Montrer les points" />
@@ -250,7 +250,7 @@
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="combines pipe is in fruit" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mode specific settings" /> <!-- TODO: translate -->
 		
-    <!-- shovel stuff -->
+		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de pelle trouvé" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS" 					 		text="Positions de la pelle" />
 		<text name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 					text="Positions de la pelle manquantes" />
