@@ -2,11 +2,12 @@
 *~
 *.gitattributes
 *.idea
+*.vs
 *.iml
 out
 reload/venv
 reload.xml
-
+.vbproj
 
 # Windows image file caches
 Thumbs.db
