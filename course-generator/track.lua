@@ -130,8 +130,6 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 	courseGenerator.debug("Headland mode %s, number of passes %d, center mode %s", courseGenerator.headlandModeTexts[headlandSettings.mode],
 		headlandSettings.nPasses, courseGenerator.centerModeTexts[centerSettings.mode])
 
-	print("headlandSettings.mode: " .. headlandSettings.mode)
-	print("centerSettings.mode: " .. centerSettings.mode)
 	if headlandSettings.nPasses > 0 and
 		(headlandSettings.mode == courseGenerator.HEADLAND_MODE_NORMAL or
 			headlandSettings.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD) then
