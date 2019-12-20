@@ -130,6 +130,8 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 	courseGenerator.debug("Headland mode %s, number of passes %d, center mode %s", courseGenerator.headlandModeTexts[headlandSettings.mode],
 		headlandSettings.nPasses, courseGenerator.centerModeTexts[centerSettings.mode])
 
+	print("headlandSettings.mode: " .. headlandSettings.mode)
+	print("centerSettings.mode: " .. centerSettings.mode)
 	if headlandSettings.nPasses > 0 and
 		(headlandSettings.mode == courseGenerator.HEADLAND_MODE_NORMAL or
 			headlandSettings.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD) then
@@ -142,6 +144,7 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 			implementWidth, extendTracks, headlandSettings.nPasses, centerSettings )
 	elseif headlandSettings.nPasses == 0 or -- TODO: use the mode only, not nPasses, this is only for backwards compatibility
 		headlandSettings.mode == courseGenerator.HEADLAND_MODE_NONE then
+		print("HEADLAND_MODE_NONE")
 		-- no headland pass wanted, still generate a dummy one on the field boundary so
 		-- we have something to work with when generating the up/down tracks
 		field.headlandTracks[ 1 ] = calculateHeadlandTrack( field.boundary, courseGenerator.HEADLAND_MODE_NORMAL, field.boundary.isClockwise, 0, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, 0, doSmooth, not fromInside, nil, nil )
@@ -149,6 +152,7 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks( field.headlandTracks, field.bigIslands,
 			implementWidth, extendTracks, headlandSettings.nPasses, centerSettings )
 	elseif headlandSettings.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
+		print("HEADLAND_MODE_NONE")
 		-- force headland corners
 		headlandSettings.minHeadlandTurnAngleDeg = 60
 		-- start with rows over the field with no headland.
@@ -311,7 +315,8 @@ end
 ---@param i number index of a waypoint which is a start of an up/down row block
 function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings, turnRadius, islands, headlands, width)
 
-	print("headlands: ", type(headlands))
+	print("headlands(" .. table.getn(headlands) .. "): " .. type(headlands))
+	print("islands(" .. table.getn(islands) .. "): " .. type(islands))
 
 	course:calculateData()
 	local i = 2
@@ -337,6 +342,7 @@ function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 				--print("course[i]: ", type(course[i]))
 				--print("1: ", course[i][1])
 				--print("2: ", course[i][1])
+				print("getAllHeadlands(headlands, islands): (" .. table.getn(getAllHeadlands(headlands, islands)) .. ")")
 				local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(course[replaceFromHere], course[i],
 					getAllHeadlands(headlands, islands), width, true)
 				if pathToNextRow then
