@@ -496,6 +496,11 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	local nodes = {}
 	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
 
+	if not headlands[1] or nHeadlandsToUse < 1 then
+			-- No path/course, heading towards an error, return null
+		return nil
+	end
+	
 	for i = 1, nHeadlandsToUse do
 		for j, node in ipairs(headlands[i]) do
 			local newNode = PointXY:copy(node)
