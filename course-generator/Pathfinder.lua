@@ -498,7 +498,6 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 
 	-- if nothing to show, just return 'nil'
 	if not headlands[1] or nHeadlandsToUse < 1 then
-			-- No path/course, heading towards an error, return null
 		return nil
 	end
 	
