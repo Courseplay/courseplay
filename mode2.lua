@@ -1682,6 +1682,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 	end
 
   courseplay.debugVehicle( 9, vehicle, "Finding path between %.2f, %.2f and %.2f, %.2f", vx, vz, cx, cz )
+  
   local path = courseGenerator.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
                                     courseplay.fields.fieldData[fieldNum].points, fruitType )
    
@@ -1689,6 +1690,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
     courseplay.debugVehicle( 9, vehicle, "Path found with %d waypoints", #path )
   elseif path == nil and mode4_6 then
 	-- I couldn't find a path but I still really want a path because I really want to stay on the field but don't care about fruit
+	
 	path = courseGenerator.findPath( { x = vx, z = vz }, { x = cx, z = cz }, 
 									courseplay.fields.fieldData[fieldNum].points, function() return false end )
 	courseplay.debugVehicle( 9, vehicle, "Path found with %d waypoints ingore fruit cause first attempt failed", #path )

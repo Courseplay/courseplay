@@ -70,7 +70,7 @@ function courseplay:onLoad(savegame)
 	self.cp.combineOffsetAutoMode = true
 	self.cp.isDriving = false;
 	self.cp.runOnceStartCourse = false;
-	self.cp.stopAtEnd = false;
+	self.cp.stopAtEnd = true;
 	self.cp.stopAtEndMode1 = false;
 	self.cp.calculatedCourseToCombine = false
 
@@ -101,9 +101,9 @@ function courseplay:onLoad(savegame)
 	self.cp.numCrossingPoints = 0;
 
 	self.cp.visualWaypointsStartEnd = true;
-	self.cp.visualWaypointsAll = false;
+	self.cp.visualWaypointsAll = true;
 	self.cp.visualWaypointsCrossing = false;
-	self.cp.warningLightsMode = 1;
+	self.cp.warningLightsMode = 0;
 	self.cp.hasHazardLights = self.spec_lights.turnLightState ~= nil and self.setTurnLightState ~= nil;
 
 
@@ -166,7 +166,7 @@ function courseplay:onLoad(savegame)
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
-	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
+	self.cp.startAtPoint = courseplay.START_AT_NEXT_POINT;
 	self.cp.fertilizerEnabled = true
 	self.cp.convoyActive = false
 	self.cp.convoy= {
@@ -243,10 +243,10 @@ function courseplay:onLoad(savegame)
 
 	-- speed limits
 	self.cp.speeds = {
-		useRecordingSpeed = true;
-		reverse =  6;
-		turn =   10;
-		field =  24;
+		useRecordingSpeed = false;
+		reverse =  10;
+		turn =   15;
+		field =  25;
 		street = self:getCruiseControlMaxSpeed() or 50;
 		crawl = 3;
 		discharge = 8;
