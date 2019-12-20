@@ -515,9 +515,6 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 			table.insert(nodes, newNode)
 		end
 	end
-	--print(" ")
-	--print(" ")
-	--print(" ")
 
 	local from, to = PointXY:copy(fromNode), PointXY:copy(toNode)
 	table.insert(nodes, from)
