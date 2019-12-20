@@ -315,8 +315,8 @@ end
 ---@param i number index of a waypoint which is a start of an up/down row block
 function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings, turnRadius, islands, headlands, width)
 
-	print("headlands(" .. table.getn(headlands) .. "): " .. type(headlands))
-	print("islands(" .. table.getn(islands) .. "): " .. type(islands))
+	--print("headlands(" .. table.getn(headlands) .. "): " .. type(headlands))
+	--print("islands(" .. table.getn(islands) .. "): " .. type(islands))
 
 	course:calculateData()
 	local i = 2
@@ -342,7 +342,7 @@ function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 				--print("course[i]: ", type(course[i]))
 				--print("1: ", course[i][1])
 				--print("2: ", course[i][1])
-				print("getAllHeadlands(headlands, islands): (" .. table.getn(getAllHeadlands(headlands, islands)) .. ")")
+				--print("getAllHeadlands(headlands, islands): (" .. table.getn(getAllHeadlands(headlands, islands)) .. ")")
 				local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(course[replaceFromHere], course[i],
 					getAllHeadlands(headlands, islands), width, true)
 				if pathToNextRow then
