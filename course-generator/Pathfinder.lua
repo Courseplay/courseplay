@@ -497,7 +497,8 @@ function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, don
 	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
 
 	-- if nothing to show, just return 'nil'
-	if nHeadlandsToUse < 1 then
+	if not headlands[1] or nHeadlandsToUse < 1 then
+			-- No path/course, heading towards an error, return null
 		return nil
 	end
 	
