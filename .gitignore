@@ -2,12 +2,11 @@
 *~
 *.gitattributes
 *.idea
-*.vs
 *.iml
 out
 reload/venv
 reload.xml
-.vbproj
+
 
 # Windows image file caches
 Thumbs.db
@@ -28,15 +27,3 @@ TriangleCalculation.lua
 
 # Jakob
 *.WinMerge
-
-# Visual Studio
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-!*.sln
-!*.vcproj
-*.sln
-*.phpproj
