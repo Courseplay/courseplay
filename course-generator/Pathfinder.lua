@@ -492,13 +492,20 @@ end
 -- @param workWidth work width of the headlands
 -- @param dontUseInnermostHeadland - if true, won't use the innermost headland
 function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, dontUseInnermostHeadland)
+
 	-- list of nodes for pathfinding are all the waypoints on the headland
 	local nodes = {}
 	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
 
+	-- No path/course, heading towards an error, return null
+	if not headlands[1] or nHeadlandsToUse < 1 then
+		return nil
+	end
+
 	for i = 1, nHeadlandsToUse do
-		for j, node in ipairs(headlands[i]) do
+		for j, node in ipairs(headlands[1]) do
 			local newNode = PointXY:copy(node)
+			--print("newNode: ", type(newNode))		
 			-- add metadata for isValidNeighbor()
 			newNode.headlandNumber = i
 			newNode.index = j
