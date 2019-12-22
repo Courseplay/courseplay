@@ -22,7 +22,7 @@
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Chauffeur demandé" />
 		<text name="COURSEPLAY_START_COURSE" 						 		text="Démarrer la course" />
 		<text name="COURSEPLAY_STOP_COURSE" 						 		text="Arrêter la course" />
-		<text name="COURSEPLAY_MODE_1" 							 			text="Type: Aide à la conduite (Chargement au début)" />
+		<text name="COURSEPLAY_MODE_1" 							 			text="Type: Transport de grains (Chargement et départ)" />
 		<text name="COURSEPLAY_MODE_2" 							 			text="Type: Batteuse (La remorque suit la Batteuse)" />
 		<text name="COURSEPLAY_MODE_3" 							 			text="Type: Transbordeur (Déchargement de la Batteuse)" />
 		<text name="COURSEPLAY_MODE_4" 							 			text="Type: Fertiliser et semer" />
@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": l'outil a besoin d'être vidé." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": l'outil a besoin d'être rechargé." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
-		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est dans le traffic." />
+		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est dans le trafic." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="Le déclencheur est atteint" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist. point de décharge:" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
@@ -382,7 +382,6 @@
 		<text name="COURSEPLAY_FUEL_ALWAYS"									text="Toujours" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"							text="En dessous de 20%" />
 		<text name="COURSEPLAY_FUELSAVEOPTION"								text="Options d'économie de carburant" />
-		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 							text="Recharger la liste de courses" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 					text="Impossible de générer la course. Essayez de modifier les paramètres ou de déplacer le véhicule."/>
 		
