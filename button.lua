@@ -82,6 +82,11 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 	return self;
 end;
 
+function courseplay.button:setOnlyCallLocal()
+	self.onlyCallLocal = true
+	return self;
+end;
+
 function courseplay.button:setSpriteSectionUVs(spriteSection)
 	if not spriteSection or courseplay.hud.buttonUVsPx[spriteSection] == nil then return; end;
 

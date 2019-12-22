@@ -2348,7 +2348,8 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleOpenHudWithMouse', 6, 2, 1 )
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
 	self:addRowButton(vehicle,'toggleIngameMapIconShowText', 6, 4, 1 )
-	self:addRowButton(vehicle,'openAdvancedSettingsDialog', 6, 5, 1 )
+	self:addRowButton(vehicle,'openAdvancedSettingsDialog', 6, 5, 1 ):setOnlyCallLocal()
+
 
 	--page 7 driving settings
 	self:enablePageButton(vehicle, 7)
@@ -2387,8 +2388,7 @@ end
 function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:debug(vehicle,"setFieldWorkAIDriverContent")
 	--self:setupCourseGeneratorButton(vehicle)
-	local openAdvancedCourseGeneratorSettingsButton = self:addRowButton(vehicle,'openAdvancedCourseGeneratorSettings', 1, 4, 1 )
-	openAdvancedCourseGeneratorSettingsButton.onlyCallLocal = true
+	self:addRowButton(vehicle,'openAdvancedCourseGeneratorSettings', 1, 4, 1 ):setOnlyCallLocal()
 	self:addRowButton(vehicle,'setCustomSingleFieldEdge', 1, 5, 1 )
 	self:addSettingsRow(vehicle,'setCustomFieldEdgePathNumber', 1, 5, 2 )
 	self:setupCustomFieldEdgeButtons(vehicle,1,5)

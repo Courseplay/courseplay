@@ -576,12 +576,12 @@ function courseplay:onLoad(savegame)
 	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer()
-	self.cp.settings:addSetting(ReturnToFirstPointSetting)
-	self.cp.settings:addSetting(UseAITurnsSetting)
+	self.cp.settings:addSetting(ReturnToFirstPointSetting, self)
+	self.cp.settings:addSetting(UseAITurnsSetting, self)
 	self.cp.settings:addSetting(ImplementRaiseTimeSetting, self)
 	self.cp.settings:addSetting(ImplementLowerTimeSetting, self)
 	self.cp.settings:addSetting(AutoDriveModeSetting, self)
-	self.cp.settings:addSetting(SelfUnloadSetting)
+	self.cp.settings:addSetting(SelfUnloadSetting, self)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -1303,7 +1303,13 @@ function courseplay:onReadStream(streamId, connection)
 		courseplay:setVarValueFromString(self, variable.name, value)
 	end
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
-	
+
+	while streamDebugReadBool(streamId) do
+		local name = streamDebugReadString(streamId)
+		local value = streamDebugReadInt32(streamId)
+		self.cp.settings[name]:setFromNetwork(value)
+	end
+
 	local savedFieldNum = streamDebugReadInt32(streamId)
 	if savedFieldNum > 0 then
 		self.cp.generationPosition.fieldNum = savedFieldNum
@@ -1401,6 +1407,13 @@ function courseplay:onWriteStream(streamId, connection)
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
 	end
 	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
+
+	for name, setting in pairs(self.cp.settings) do
+		streamDebugWriteBool(streamId, true)
+		streamDebugWriteString(streamId, name)
+		streamDebugWriteInt32(streamId, setting.current)
+	end
+	streamDebugWriteBool(streamId, false)
 
 	streamDebugWriteInt32(streamId, self.cp.generationPosition.fieldNum)
 	

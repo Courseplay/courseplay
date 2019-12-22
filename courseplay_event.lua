@@ -1,6 +1,5 @@
 CoursePlayNetworkHelper = {};
 
-local curFile = 'courseplay_event.lua';
 CourseplayEvent = {};
 local CourseplayEvent_mt = Class(CourseplayEvent, Event);
 
@@ -62,14 +61,14 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 		self.value = streamReadFloat32(streamId);
 	end
 	courseplay:debug("	readStream",5)
-	courseplay:debug("		id: "..tostring(NetworkUtil.getObjectId(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.page: "..tostring(self.page).."  self.type: "..self.type),5)
+	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.page: "..tostring(self.page).."  self.type: "..self.type, 5)
 
 	self:run(connection);
 end
 
 function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	courseplay:debug("		writeStream",5)
-	courseplay:debug("			id: "..tostring(NetworkUtil.getObjectId(self.vehicle)).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type).."  page: "..tostring(self.page),5)
+	courseplay:debug("			id: "..tostring(NetworkUtil.getObjectId(self.vehicle)).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type).."  page: "..tostring(self.page), 5)
 	NetworkUtil.writeNodeObject(streamId, self.vehicle);
 	streamWriteFloat32(streamId, self.messageNumber);
 	streamWriteString(streamId, self.func);
@@ -91,7 +90,7 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 	elseif self.type == "nil" then
 		streamWriteString(streamId, "nil");
 	elseif self.type == "waypointList" then
-		streamDebugWriteInt32(streamId, #(self.value))
+		streamWriteInt32(streamId, #(self.value))
 		for w = 1, #(self.value) do
 			CoursePlayNetworkHelper:writeWaypoint(streamId, self.value[w])
 		end
@@ -181,6 +180,14 @@ end
 function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
 	if not connection:getIsServer() then
+		for name, setting in pairs(courseplay.globalSettings) do
+			streamDebugWriteBool(streamId, true)
+			streamDebugWriteString(streamId, name)
+			streamDebugWriteInt32(streamId, setting.previous)
+			streamDebugWriteInt32(streamId, setting.current)
+		end
+		streamDebugWriteBool(streamId, false)
+
 		--courseplay:debug("manager transfering courses", 8);
 		--transfer courses
 		local course_count = 0
@@ -249,6 +256,14 @@ end
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
 	if connection:getIsServer() then
+		while streamDebugReadBool(streamId) do
+			local name = streamDebugReadString(streamId)
+			local previous = streamDebugReadInt32(streamId)
+			local value = streamDebugReadInt32(streamId)
+			courseplay.globalSettings[name]:setFromNetwork(value)
+			courseplay.globalSettings[name].previous = previous
+		end
+
 		local course_count = streamDebugReadInt32(streamId)
 		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
@@ -320,6 +335,89 @@ function CourseplayJoinFixEvent:run(connection)
 end;
 
 
+---------------------------------
+
+
+
+CourseplaySettingsSyncEvent = {};
+local CourseplaySettingsSyncEvent_mt = Class(CourseplaySettingsSyncEvent, Event);
+
+InitEventClass(CourseplaySettingsSyncEvent, "CourseplaySettingsSyncEvent");
+
+function CourseplaySettingsSyncEvent:emptyNew()
+	local self = Event:new(CourseplaySettingsSyncEvent_mt);
+	self.className = "CourseplaySettingsSyncEvent";
+	return self;
+end
+
+function CourseplaySettingsSyncEvent:new(vehicle, name, value)
+	courseplay:debug(string.format("courseplay:CourseplaySettingsSyncEvent:new(%s, %s)", tostring(name), tostring(value)), 5)
+	self.vehicle = vehicle;
+	self.messageNumber = Utils.getNoNil(self.messageNumber, 0) + 1
+	self.name = name
+	self.value = value;
+	return self;
+end
+
+function CourseplaySettingsSyncEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
+	if streamReadBool(streamId) then
+		self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
+	else
+		self.vehicle = nil
+	end
+	local messageNumber = streamReadFloat32(streamId)
+	self.name = streamReadString(streamId)
+	self.value = streamReadInt32(streamId)
+
+	courseplay:debug("	readStream",5)
+	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  self.name: "..tostring(self.name).."  self.value: "..tostring(self.value),5)
+
+	self:run(connection);
+end
+
+function CourseplaySettingsSyncEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
+	courseplay:debug("		writeStream",5)
+	courseplay:debug("			id: "..tostring(self.vehicle).."/"..tostring(self.messageNumber).."  self.name: "..tostring(self.name).."  value: "..tostring(self.value),5)
+
+	if self.vehicle ~= nil then
+		streamWriteBool(streamId, true)
+		streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
+	else
+		streamWriteBool(streamId, false)
+	end
+	streamWriteFloat32(streamId, self.messageNumber)
+	streamWriteString(streamId, self.name)
+	streamWriteInt32(streamId, self.value)
+end
+
+function CourseplaySettingsSyncEvent:run(connection) -- wir fuehren das empfangene event aus
+	courseplay:debug("\t\t\trun",5)
+	courseplay:debug(('\t\t\t\tid=%s, name=%s, value=%s'):format(tostring(self.vehicle), tostring(self.name), tostring(self.value)), 5);
+
+	if self.vehicle ~= nil then
+		self.vehicle.cp.settings[self.name]:setFromNetwork(self.value)
+	else
+		courseplay.globalSettings[self.name]:setFromNetwork(self.value)
+	end
+	if not connection:getIsServer() then
+		courseplay:debug("broadcast settings event feedback",5)
+		g_server:broadcastEvent(CourseplaySettingsSyncEvent:new(self.vehicle, self.name, self.value), nil, connection, self.vehicle);
+	end;
+end
+
+function CourseplaySettingsSyncEvent.sendEvent(vehicle, name, value)
+	if g_server ~= nil then
+		courseplay:debug("broadcast settings event", 5)
+		courseplay:debug(('\tid=%s, name=%s, value=%s'):format(tostring(vehicle), tostring(name), tostring(value)), 5);
+		g_server:broadcastEvent(CourseplaySettingsSyncEvent:new(vehicle, name, value), nil, nil, self);
+	else
+		courseplay:debug("send settings event", 5)
+		courseplay:debug(('\tid=%s, name=%s, value=%s'):format(tostring(vehicle), tostring(name), tostring(value)), 5);
+		g_client:getServerConnection():sendEvent(CourseplaySettingsSyncEvent:new(vehicle, name, value));
+	end;
+end
+
+---------------------------------
 
 function CoursePlayNetworkHelper:writeWaypoint(streamId, waypoint)
 	streamDebugWriteFloat32(streamId, waypoint.cx)

@@ -1905,12 +1905,15 @@ SettingList = CpObject()
 --- A setting that can have a predefined set of values
 -- @param values table with the valid values
 -- @texts text name in the translation XML files describing the corresponding value
-function SettingList:init(name, label, toolTip, values, texts)
+function SettingList:init(name, label, toolTip, vehicle, values, texts)
 	self.name = name
 	self.label = label
 	self.toolTip = toolTip
 	self.values = values
 	self.texts = texts
+	-- Required to send sync events for settings changes
+	self.vehicle = vehicle
+	self.syncValue = false
 	-- index of the current value/text
 	self.current = 1
 	-- index of the previous value/text
@@ -1951,6 +1954,18 @@ end
 
 -- private function to set to the value at ix
 function SettingList:setToIx(ix)
+	if ix ~= self.current then
+		self.previous = self.current
+		self.current = ix
+		self:onChange()
+		if self.syncValue then
+			CourseplaySettingsSyncEvent.sendEvent(self.vehicle, self.name, self.current)
+		end
+	end
+end
+
+-- function only called from network to set synced setting
+function SettingList:setFromNetwork(ix)
 	if ix ~= self.current then
 		self.previous = self.current
 		self.current = ix
@@ -2038,14 +2053,14 @@ end
 ---@class BooleanSetting : SettingList
 BooleanSetting = CpObject(SettingList)
 
-function BooleanSetting:init(name, label, toolTip, texts)
+function BooleanSetting:init(name, label, toolTip, vehicle, texts)
 	if not texts then
 		texts = {
 			'COURSEPLAY_DEACTIVATED',
 			'COURSEPLAY_ACTIVATED'
 		}
 	end
-	SettingList.init(self, name, label, toolTip,
+	SettingList.init(self, name, label, toolTip, vehicle,
 		{
 			false,
 			true
@@ -2081,8 +2096,7 @@ AutoDriveModeSetting.PARK 					= 3  -- Use AutoDrive to park vehicle after work 
 AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK 	= 4  -- Use AutoDrive for unload and refill and park after work is done
 
 function AutoDriveModeSetting:init(vehicle)
-	self.vehicle = vehicle
-	SettingList.init(self, 'autoDriveMode', 'COURSEPLAY_AUTODRIVE_MODE', '',
+	SettingList.init(self, 'autoDriveMode', 'COURSEPLAY_AUTODRIVE_MODE', '', vehicle,
 		{
 			AutoDriveModeSetting.DONT_USE,
 			AutoDriveModeSetting.UNLOAD_OR_REFILL,
@@ -2136,7 +2150,7 @@ DrivingModeSetting.DRIVING_MODE_AIDRIVER = 2  -- AI driver
 
 --- Constructor needs a vehicle to be able to check CP mode
 function DrivingModeSetting:init(vehicle)
-	SettingList.init(self, 'drivingMode', 'COURSEPLAY_DRIVER', '',
+	SettingList.init(self, 'drivingMode', 'COURSEPLAY_DRIVER', '', vehicle,
 		{
 			DrivingModeSetting.DRIVING_MODE_NORMAL,
 			DrivingModeSetting.DRIVING_MODE_PPC,
@@ -2147,7 +2161,6 @@ function DrivingModeSetting:init(vehicle)
 			'COURSEPLAY_PPC_ON',
 			'COURSEPLAY_AIDRIVER'
 		})
-	self.vehicle = vehicle
 	-- make sure the vehicle's settings are in sync
 	self:onChange()
 end
@@ -2185,7 +2198,7 @@ end
 StartingLocationSetting = CpObject(SettingList)
 
 function StartingLocationSetting:init(vehicle)
-	SettingList.init(self, 'startingLocation', 'COURSEPLAY_STARTING_LOCATION', '',
+	SettingList.init(self, 'startingLocation', 'COURSEPLAY_STARTING_LOCATION', '', vehicle,
 		{
 			courseGenerator.STARTING_LOCATION_VEHICLE_POSITION,
 			courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION,
@@ -2204,7 +2217,6 @@ function StartingLocationSetting:init(vehicle)
 			'COURSEPLAY_CORNER_10',
 			'COURSEPLAY_CORNER_11'
 		})
-	self.vehicle = vehicle
 	if not self.vehicle.cp.generationPosition.hasSavedPosition then
 		table.remove(self.values, 2)
 		table.remove(self.texts, 2)
@@ -2216,7 +2228,7 @@ end
 CenterModeSetting = CpObject(SettingList)
 
 function CenterModeSetting:init()
-	SettingList.init(self, 'centerMode', 'COURSEPLAY_CENTER_MODE', '',
+	SettingList.init(self, 'centerMode', 'COURSEPLAY_CENTER_MODE', '', nil,
 		{
 			courseGenerator.CENTER_MODE_UP_DOWN,
 			courseGenerator.CENTER_MODE_CIRCULAR,
@@ -2242,8 +2254,7 @@ ImplementRaiseLowerTimeSetting.EARLY	= 1
 ImplementRaiseLowerTimeSetting.LATE		= 2
 
 function ImplementRaiseLowerTimeSetting:init(vehicle, name, label, tooltip)
-	self.vehicle = vehicle
-	SettingList.init(self,  name, label, tooltip,
+	SettingList.init(self,  name, label, tooltip, vehicle,
 		{
 			ImplementRaiseLowerTimeSetting.EARLY,
 			ImplementRaiseLowerTimeSetting.LATE,
@@ -2271,9 +2282,9 @@ end
 --- Return to first point after finishing fieldwork
 ---@class ReturnToFirstPointSetting : BooleanSetting
 ReturnToFirstPointSetting = CpObject(BooleanSetting)
-function ReturnToFirstPointSetting:init()
+function ReturnToFirstPointSetting:init(vehicle)
 	BooleanSetting.init(self, 'returnToFirstPoint', 'COURSEPLAY_RETURN_TO_FIRST_POINT',
-		'COURSEPLAY_RETURN_TO_FIRST_POINT')
+		'COURSEPLAY_RETURN_TO_FIRST_POINT', vehicle)
 end
 
 --- Load courses at startup?
@@ -2281,30 +2292,30 @@ end
 LoadCoursesAtStartupSetting = CpObject(BooleanSetting)
 function LoadCoursesAtStartupSetting:init()
 	BooleanSetting.init(self, 'loadCoursesAtStartup', 'COURSEPLAY_LOAD_COURSES_AT_STARTUP',
-		'COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP')
+		'COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP', nil)
 end
 
 --- Use AI Turns?
 ---@class UseAITurnsSetting : BooleanSetting
 UseAITurnsSetting = CpObject(BooleanSetting)
-function UseAITurnsSetting:init()
+function UseAITurnsSetting:init(vehicle)
 	BooleanSetting.init(self, 'useAITurns', 'COURSEPLAY_USE_AI_TURNS',
-		'COURSEPLAY_USE_AI_TURNS_TOOLTIP')
+		'COURSEPLAY_USE_AI_TURNS_TOOLTIP', vehicle)
 end
 
 --- Use PPC during turns?
 ---@class UsePPCTurnsSetting : BooleanSetting
 UsePPCTurnsSetting = CpObject(BooleanSetting)
-function UsePPCTurnsSetting:init()
+function UsePPCTurnsSetting:init(vehicle)
 	BooleanSetting.init(self, 'usePPCTurns', 'COURSEPLAY_USE_PPC_TURNS',
-		'COURSEPLAY_USE_PPC_TURNS_TOOLTIP')
+		'COURSEPLAY_USE_PPC_TURNS_TOOLTIP', vehicle)
 end
 
 ---@class AutoFieldScanSetting : BooleanSetting
 AutoFieldScanSetting = CpObject(BooleanSetting)
 function AutoFieldScanSetting:init()
 	BooleanSetting.init(self, 'autoFieldScan', 'COURSEPLAY_AUTO_FIELD_SCAN',
-		'COURSEPLAY_YES_NO_FIELDSCAN')
+		'COURSEPLAY_YES_NO_FIELDSCAN', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
 end
@@ -2313,7 +2324,7 @@ end
 EarnWagesSetting = CpObject(BooleanSetting)
 function EarnWagesSetting:init()
 	BooleanSetting.init(self, 'earnWages', 'COURSEPLAY_EARN_WAGES',
-		'COURSEPLAY_YES_NO_WAGES')
+		'COURSEPLAY_YES_NO_WAGES', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
 end
@@ -2321,7 +2332,7 @@ end
 ---@class HourlyWages : SettingList
 WorkerWages = CpObject(SettingList)
 function WorkerWages:init()
-	SettingList.init(self, 'workerWages', 'COURSEPLAY_WORKER_WAGES', 'COURSEPLAY_WORKER_WAGES_TOOLTIP',
+	SettingList.init(self, 'workerWages', 'COURSEPLAY_WORKER_WAGES', 'COURSEPLAY_WORKER_WAGES_TOOLTIP', nil,
 			{ 50, 100, 250, 500, 1000},
 			{'50%', '100%', '250%', '500%', '1000%'}
 		)
@@ -2330,9 +2341,9 @@ end
 
 ---@class SelfUnloadSetting : BooleanSetting
 SelfUnloadSetting = CpObject(BooleanSetting)
-function SelfUnloadSetting:init()
+function SelfUnloadSetting:init(vehicle)
 	BooleanSetting.init(self, 'selfUnload', 'COURSEPLAY_SELF_UNLOAD',
-		'COURSEPLAY_SELF_UNLOAD')
+		'COURSEPLAY_SELF_UNLOAD', vehicle)
 end
 
 --- Container for settings
@@ -2342,6 +2353,7 @@ SettingsContainer = CpObject()
 --- Add a setting which then can be addressed by its name like container['settingName'] or container.settingName
 function SettingsContainer:addSetting(settingClass, ...)
 	local s = settingClass(...)
+	s.syncValue = true -- Only sync values that are part of a SettingsContainer
 	self[s.name] = s
 end
 
