@@ -243,6 +243,10 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.numPoints)
 				streamDebugWriteBool(streamId, course.isCustom)
 				streamDebugWriteInt32(streamId, course.fieldNum)
+				streamDebugWriteInt32(streamId, course.dimensions.minX)
+				streamDebugWriteInt32(streamId, course.dimensions.maxX)
+				streamDebugWriteInt32(streamId, course.dimensions.minZ)
+				streamDebugWriteInt32(streamId, course.dimensions.maxZ)
 				streamDebugWriteInt32(streamId, #(course.points))
 				for p = 1, #(course.points) do
 					streamDebugWriteFloat32(streamId, course.points[p].cx)
@@ -314,6 +318,10 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local numPoints = streamDebugReadInt32(streamId)
 			local isCustom = streamDebugReadBool(streamId)
 			local fieldNum = streamDebugReadInt32(streamId)
+			local minX = streamDebugReadInt32(streamId)
+			local maxX = streamDebugReadInt32(streamId)
+			local minZ = streamDebugReadInt32(streamId)
+			local maxZ = streamDebugReadInt32(streamId)
 			local ammountPoints = streamDebugReadInt32(streamId)
 			local waypoints = {}
 			for w = 1, ammountPoints do 
@@ -323,7 +331,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				local wp = { cx = cx, cy = cy, cz = cz}
 				table.insert(waypoints, wp)
 			end
-			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints}
+			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints, dimensions = {minX = minX, maxX = maxX, minZ = minZ, maxZ = maxZ}}
 			courseplay.fields.fieldData[fieldNum] = field
 		end
 		print("\t### CourseplayMultiplayer: courses/folders reading end")
