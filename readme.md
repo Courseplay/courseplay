@@ -2,7 +2,7 @@
 
  **[Download the latest developer version](https://github.com/Courseplay/courseplay/releases)** (the file Courseplay_[version].zip).
 
-## Note that the current version has limited multiplayer!
+## Note that the current version has limited multiplayer support!
 
 ### Important Update Information™
 We've got an out of date website for Courseplay, certainly not containing all the glorious information you might ever need. If there is something you find missing, just holler, we are always looking for volunteers to update it.
