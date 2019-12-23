@@ -2041,7 +2041,10 @@ end
 function SettingList:loadFromXml(xml, parentKey)
 	local value = getXMLInt(xml, self:getKey(parentKey))
 	if value then
+		local tmp = self.syncValue
+		self.syncValue = false -- Make sure there are not network calls during settings loading. Debug channels have not been initialized at that point but the network code contains debug calls
 		self:set(value)
+		self.syncValue = tmp
 	end
 end
 
@@ -2075,7 +2078,10 @@ end
 function BooleanSetting:loadFromXml(xml, parentKey)
 	local value = getXMLBool(xml, self:getKey(parentKey))
 	if value ~= nil then
+		local tmp = self.syncValue
+		self.syncValue = false -- Make sure there are not network calls during settings loading. Debug channels have not been initialized at that point but the network code contains debug calls
 		self:set(value)
+		self.syncValue = tmp
 	end
 end
 
