@@ -1483,7 +1483,7 @@ function AIDriver:initWages()
 	local spec = self.vehicle.spec_aiVehicle
 	if spec.startedFarmId == nil or spec.startedFarmId == 0 then
 		-- to make the wage paying in AIVehicle work it needs to have the correct farm ID
-		spec.startedFarmId = g_currentMission.player.farmId
+		spec.startedFarmId = self.vehicle.controllerFarmId
 	end
 end
 
