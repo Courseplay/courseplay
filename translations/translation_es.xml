@@ -418,9 +418,10 @@
 
 		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utilizar puntos virtuales (PPC)" />
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utilizar algoritmo mejorado (PPC) en el giro o media vuelta" />
-		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
-		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
-		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" />
-		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Salario Trabajadores Courseplay" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="El Salario de los Trabajadores de Courseplay es como un porcentaje del salario de los trabajadores del juego." />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Autodescarga Cosechadora" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Se autodescarga una cosechadora cuando este llena y haya en los alrededores un remolque." />
+
 <!-- Replace marker, do not remove! --></texts>
 </l10n>
