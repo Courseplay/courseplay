@@ -558,6 +558,7 @@ function HybridAStarWithAStarInTheMiddle:fixReverseForCourseplay(path)
     -- we rely here on the fact that the start waypoint will be approximately aligned with the vehicle either forward or backward
     -- (about 0 or 180 degrees)
     local angleBetweenStartAndFirstWp = math.abs(path[1].nextEdge.angle - self.originalStartNode.t)
+	if angleBetweenStartAndFirstWp > math.pi * 2 then angleBetweenStartAndFirstWp = angleBetweenStartAndFirstWp - math.pi * 2 end
     self:debug('Angle between start (%.1f) and first wp (%.1f) is %.1f', math.deg(self.originalStartNode.t), math.deg(path[1].nextEdge.angle), math.deg(angleBetweenStartAndFirstWp))
 	local maxDeltaAngle = math.pi / 2
 	-- if not approximately the same angle then start in reverse
