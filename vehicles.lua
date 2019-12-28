@@ -1620,3 +1620,77 @@ function AIDriverUtil.getDirectionNode(vehicle)
 		return vehicle.cp.directionNode or vehicle.rootNode
 	end
 end
+
+--- If we are towing an implement, move to a bigger radius in tight turns
+--- making sure that the towed implement's trajectory remains closer to the
+--- course.
+---@param course Course
+function AIDriverUtil.calculateTightTurnOffset(vehicle, course, previousOffset, useCalculatedRadius)
+    local tightTurnOffset
+
+    local function smoothOffset(offset)
+        return (offset + 3 * (previousOffset or 0 )) / 4
+    end
+
+    -- first of all, does the current waypoint have radius data?
+    local r
+	if useCalculatedRadius then
+		r = course:getCalculatedRadiusAtIx(course:getCurrentWaypointIx())
+	else
+		r = course:getRadiusAtIx(course:getCurrentWaypointIx())
+	end
+
+    if not r then
+        return smoothOffset(0)
+    end
+
+    local towBarLength = AIDriverUtil.getTowBarLength(vehicle)
+
+    -- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
+    -- we ignore it.
+    if towBarLength < r / 3 then
+        return smoothOffset(0)
+    end
+
+    -- Ok, looks like a tight turn, so we need to move a bit left or right of the course
+    -- to keep the tool on the course.
+    local offset = AIDriverUtil.getOffsetForTowBarLength(r, towBarLength)
+    if offset ~= offset then
+        -- check for nan
+        return smoothOffset(0)
+    end
+    -- figure out left or right now?
+    local nextAngle = course:getWaypointAngleDeg(course:getCurrentWaypointIx() + 1)
+    local currentAngle = course:getWaypointAngleDeg(course:getCurrentWaypointIx())
+    if not nextAngle or not currentAngle then
+        return smoothOffset(0)
+    end
+
+    if getDeltaAngle(math.rad(nextAngle), math.rad(currentAngle)) > 0 then offset = -offset end
+
+    -- smooth the offset a bit to avoid sudden changes
+    tightTurnOffset = smoothOffset(offset)
+    courseplay.debugVehicle(14, vehicle, 'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, tightTurnOffset )
+    -- remember the last value for smoothing
+    return tightTurnOffset
+end
+
+function AIDriverUtil.getTowBarLength(vehicle)
+    -- is there a wheeled implement behind the tractor and is it on a pivot?
+    local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle)
+    if not workTool or not workTool.cp.realTurningNode then
+        return 0
+    end
+    -- get the distance between the tractor and the towed implement's turn node
+    -- (not quite accurate when the angle between the tractor and the tool is high)
+    local tractorX, _, tractorZ = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
+    local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
+    local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+    return towBarLength
+end
+
+function AIDriverUtil.getOffsetForTowBarLength(r, towBarLength)
+    local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
+    return rTractor - r
+end
+

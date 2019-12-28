@@ -47,20 +47,23 @@ end
 function PathfinderUtil.VehicleData:calculateSizeOfObjectList(vehicle, implements, buffer, rectangles)
     for _, implement in ipairs(implements) do
         --print(implement.object:getName())
-        local _, _, rootToDirectionNodeDistance = localToLocal(implement.object.rootNode, AIDriverUtil.getDirectionNode(vehicle), 0, 0, 0)
+        local referenceNode = AIDriverUtil.getDirectionNode(vehicle)
+        local rootToDirectionNodeDistance  = 0
+        _, _, rootToDirectionNodeDistance = localToLocal(implement.object.rootNode, referenceNode, 0, 0, 0)
         local rectangle = {
             dFront = rootToDirectionNodeDistance + implement.object.sizeLength / 2 + implement.object.lengthOffset + (buffer or 0),
             dRear = rootToDirectionNodeDistance - implement.object.sizeLength / 2 - implement.object.lengthOffset + (buffer or 0),
+            dLeft = implement.object.sizeWidth / 2,
+            dRight = -implement.object.sizeWidth / 2
         }
         -- for combine headers check the AI markers to get the unfolded size. Also, with these headers, sizeWidth may
         -- also include the header trailer, meaning it is bigger than the header itself which prevents pathfinding to succeed.
         if implement.object.spec_cutter and implement.object.getAIMarkers then
             local aiLeftMarker, aiRightMarker, aiBackMarker = implement.object:getAIMarkers()
-            rectangle.dLeft, _, _ = localToLocal(aiLeftMarker, AIDriverUtil.getDirectionNode(vehicle), 0, 0, 0)
-            rectangle.dRight, _, _ = localToLocal(aiRightMarker, AIDriverUtil.getDirectionNode(vehicle), 0, 0, 0)
-        else
-            rectangle.dLeft = implement.object.sizeWidth / 2
-            rectangle.dRight = -implement.object.sizeWidth / 2
+            if referenceNode and aiLeftMarker and aiRightMarker then
+                rectangle.dLeft, _, _ = localToLocal(aiLeftMarker, referenceNode, 0, 0, 0)
+                rectangle.dRight, _, _ = localToLocal(aiRightMarker, referenceNode, 0, 0, 0)
+            end
         end
         table.insert(rectangles, rectangle)
         self.dFront = math.max(self.dFront, rectangle.dFront)
@@ -313,13 +316,17 @@ end
 
 --- Interface function to start the pathfinder for a turn maneuver
 ---@param vehicle table
----@param goalNode table goal node
+---@param startOffset number offset in meters relative to the vehicle position (forward positive, backward negative) where
+--- we want the turn to start
+---@param goalReferenceNode table node used to determine the goal
+---@param goalOffset number offset in meters relative to the goal node (forward positive, backward negative)
+--- Together with the goalReferenceNode defines the goal
 ---@param turnRadius number vehicle turning radius
 ---@param allowReverse boolean allow reverse driving
-function PathfinderUtil.findPathForTurn(vehicle, goalNode, turnRadius, allowReverse)
-    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, 1)
+function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode, goalOffset, turnRadius, allowReverse)
+    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, startOffset or 0)
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, 0, -2)
+    x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, 0, goalOffset or 0)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     local pathfinder = HybridAStarWithAStarInTheMiddle(20)
     local done, path = pathfinder:start(start, goal, turnRadius, nil, allowReverse, PathfinderUtil.getNodePenalty, nil)

@@ -824,68 +824,8 @@ function FieldworkAIDriver:getLoweringDurationMs()
 	return self.loweringDurationMs
 end
 
---- If we are towing an implement, move to a bigger radius in tight turns
--- making sure that the towed implement's trajectory remains closer to the
--- course.
 function FieldworkAIDriver:calculateTightTurnOffset()
-	local function smoothOffset(offset)
-		self.tightTurnOffset = (offset + 3 * (self.tightTurnOffset or 0 )) / 4
-		return self.tightTurnOffset
-	end
-	-- first of all, does the current waypoint have radius data?
-	local r = self.course:getRadiusAtIx(self.ppc:getCurrentWaypointIx())
-	if not r then
-		return smoothOffset(0)
-	end
-
-	local towBarLength = self:getTowBarLength()
-
-	-- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
-	-- we ignore it.
-	if towBarLength < r / 3 then
-		return smoothOffset(0)
-	end
-
-	-- Ok, looks like a tight turn, so we need to move a bit left or right of the course
-	-- to keep the tool on the course.
-	local offset = self:getOffsetForTowBarLength(r, towBarLength)
-	if offset ~= offset then
-		-- check for nan
-		return smoothOffset(0)
-	end
-	-- figure out left or right now?
-	local nextAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx() + 1)
-	local currentAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx())
-	if not nextAngle or not currentAngle then
-		return smoothOffset(0)
-	end
-
-	if getDeltaAngle(math.rad(nextAngle), math.rad(currentAngle)) > 0 then offset = -offset end
-
-	-- smooth the offset a bit to avoid sudden changes
-	smoothOffset(offset)
-	self:debug('Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, self.tightTurnOffset )
-	-- remember the last value for smoothing
-	return self.tightTurnOffset
-end
-
-function FieldworkAIDriver:getTowBarLength()
-	-- is there a wheeled implement behind the tractor and is it on a pivot?
-	local workTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
-	if not workTool or not workTool.cp.realTurningNode then
-		return 0
-	end
-	-- get the distance between the tractor and the towed implement's turn node
-	-- (not quite accurate when the angle between the tractor and the tool is high)
-	local tractorX, _, tractorZ = getWorldTranslation( self:getDirectionNode() )
-	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
-	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
-	return towBarLength
-end
-
-function FieldworkAIDriver:getOffsetForTowBarLength(r, towBarLength)
-	local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
-	return rTractor - r
+    self.tightTurnOffset = AIDriverUtil.calculateTightTurnOffset(self.vehicle, self.course, self.tightTurnOffset)
 end
 
 function FieldworkAIDriver:getFillLevelInfoText()
@@ -1020,7 +960,7 @@ function FieldworkAIDriver:setMarkers()
 		end
 	end
 
-	local referenceNode = self:getDirectionNode()
+	local referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
 	-- now go ahead and try to find the real markers
 	-- work areas of the vehicle itself
 	addMarkers(self.vehicle, referenceNode)
