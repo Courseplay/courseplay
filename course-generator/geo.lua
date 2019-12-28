@@ -657,6 +657,10 @@ function Polyline:iterator( from, to, step )
 	end
 end
 
+function Polyline:add(p)
+	table.insert(self, p)
+end
+
 function Polyline:getClosestPointIndex(p)
 	local minDistance = math.huge
 	local ix
@@ -1047,6 +1051,7 @@ end
 
 --- Trim section of polyline between its end and intersection with otherLine
 ---@param otherLine Polyline
+---@param d number
 function Polyline:trimEnd(otherLine, insertIntersectionPoint)
 	local i = #self
 	local from, to, is
@@ -1066,8 +1071,9 @@ function Polyline:trimEnd(otherLine, insertIntersectionPoint)
 end
 
 --- Shorten polyline by d
----@param otherLine Polyline
-function Polyline:shortenEnd(d)
+---@param d number
+---@param cutOnly boolean Do not add a point at d, just remove everything in d distance
+function Polyline:shortenEnd(d, cutOnly)
 	local dCut = d
 	local from = #self
 	for i = from, 2, -1 do
@@ -1076,7 +1082,9 @@ function Polyline:shortenEnd(d)
 		if dCut < -0.1 then
 			local p = addPolarVectorToPoint(self[i - 1], self[i - 1].nextEdge.angle, - dCut)
 			table.remove(self)
-			table.insert(self, p)
+			if not cutOnly then
+				table.insert(self, p)
+			end
 			self:calculateData()
 			return true
 		end
@@ -1085,7 +1093,7 @@ function Polyline:shortenEnd(d)
 end
 
 --- Shorten polyline by d from start
----@param otherLine Polyline
+---@param d number
 function Polyline:shortenStart(d)
 	local dCut = d
 	local to = #self

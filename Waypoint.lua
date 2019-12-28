@@ -120,9 +120,11 @@ function Waypoint:getOffsetPosition(offsetX, offsetZ, dx, dz)
 	local x, y, z = self:getPosition()
 	local deltaX = dx or self.dx
 	local deltaZ = dz or self.dz
+	-- X offset should be inverted if we drive reverse here (left is always left regardless of the driving direction)
+	local reverse = self.reverseOffset and -1 or 1
 	if deltaX and deltaZ then
-		x = x - deltaZ * offsetX + deltaX * offsetZ
-		z = z + deltaX * offsetX + deltaZ * offsetZ
+		x = x - deltaZ * reverse * offsetX + deltaX * offsetZ
+		z = z + deltaX * reverse * offsetX + deltaZ * offsetZ
 	end
 	return x, y, z
 end
@@ -248,6 +250,8 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	end
 	-- offset to apply to every position
 	self.offsetX, self.offsetZ = 0, 0
+	self.numberOfHeadlands = 0
+	self.workWidth = 0
 	self:enrichWaypointData()
 	-- only for logging purposes
 	self.vehicle = vehicle
@@ -261,6 +265,18 @@ end
 -- looking in the drive direction)
 function Course:setOffset(x, z)
 	self.offsetX, self.offsetZ = x, z
+end
+
+function Course:setWorkWidth(w)
+	self.workWidth = w
+end
+
+function Course:getWorkWidth()
+	return self.workWidth
+end
+
+function Course:getNumberOfHeadlands()
+	return self.numberOfHeadlands
 end
 
 --- get number of waypoints in course
@@ -294,12 +310,19 @@ function Course:enrichWaypointData()
 		self.waypoints[i].dToHere = self.length
 		self.waypoints[i].turnsToHere = self.totalTurns
 		self.waypoints[i].dx, _, self.waypoints[i].dz, _ = courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
-    -- TODO: fix this weird coordinate system transformation from x/z to x/y
-    local dx, dz = nx - cx, -nz - (-cz)
-    local angle = toPolar(dx, dz)
-    -- and now back to x/z
-    self.waypoints[i].angle = courseGenerator.toCpAngleDeg(angle)
+		-- TODO: fix this weird coordinate system transformation from x/z to x/y
+		local dx, dz = nx - cx, -nz - (-cz)
+		local angle = toPolar(dx, dz)
+		-- and now back to x/z
+		self.waypoints[i].angle = courseGenerator.toCpAngleDeg(angle)
 		self.waypoints[i].calculatedRadius = self:calculateRadius(i)
+		if (self:isReverseAt(i) and not self:switchingToForwardAt(i)) or self:switchingToReverseAt(i) then
+			-- X offset must be reversed at waypoints where we are driving in reverse
+			self.waypoints[i].reverseOffset = true
+		end
+		if self.waypoints[i].lane and self.waypoints[i].lane < 0 then
+			self.numberOfHeadlands = math.max(self.numberOfHeadlands, -self.waypoints[i].lane)
+		end
 	end
 	-- make the last waypoint point to the same direction as the previous so we don't
 	-- turn towards the first when ending the course. (the course generator points the last
@@ -311,6 +334,7 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dToHere = self.length + self.waypoints[#self.waypoints - 1].dToNext
 	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
 	self.waypoints[#self.waypoints].calculatedRadius = self:calculateRadius(#self.waypoints)
+	self.waypoints[#self.waypoints].reverseOffset = self:isReverseAt(#self.waypoints)
 	-- now add distance to next turn for the combines
 	local dToNextTurn, lNextRow = 0, 0
 	local turnFound = false
@@ -425,8 +449,12 @@ function Course:isChangeDirectionWhenAligned(ix)
 	return self.waypoints[ix].changeDirectionWhenAligned
 end
 
+function Course:useTightTurnOffset(ix)
+	return self.waypoints[ix].useTightTurnOffset
+end
 
 --- Returns the position of the waypoint at ix with the current offset applied.
+---@return number, number, number x, y, z
 function Course:getWaypointPosition(ix)
 	if self:isTurnStartAtIx(ix) then
 		-- turn start waypoints point to the turn end wp, for example at the row end they point 90 degrees to the side
@@ -570,6 +598,10 @@ end
 
 function Course:getDistanceToNextWaypoint(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].dToNext
+end
+
+function Course:getDistanceFromFirstWaypoint(ix)
+	return self.waypoints[ix].dToHere
 end
 
 function Course:getDistanceToLastWaypoint(ix)
@@ -841,3 +873,23 @@ function Course:setNodeToWaypoint(node, ix)
 	setTranslation(node, x, y, z)
 	setRotation(node, 0, self:getWaypointYRotation(ix), 0)
 end
+
+--- Run a function for all waypoints of the course within the last d meters
+---@param d number
+---@param lambda function(waypoint)
+function Course:executeFunctionForLastWaypoints(d, lambda)
+	local i = self:getNumberOfWaypoints()
+	while i > 1 and self:getDistanceToLastWaypoint(i) < d do
+		lambda(self.waypoints[i])
+		i = i - 1
+	end
+end
+
+function Course:setTurnEndForLastWaypoints(d)
+	self:executeFunctionForLastWaypoints(d, function(wp) wp.turnEnd = true end)
+end
+
+function Course:setUseTightTurnOffsetForLastWaypoints(d)
+	self:executeFunctionForLastWaypoints(d, function(wp) wp.useTightTurnOffset = true end)
+end
+

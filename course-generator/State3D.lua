@@ -26,7 +26,8 @@ State3D = CpObject()
 ---@param r number turn radius
 ---@param pred State3D predecessor node
 ---@param motionPrimitive HybridAstar.MotionPrimitive straight/left/right
-function State3D:init(x, y, t, g, pred, motionPrimitive)
+---@param userData table any data the user wants to associate with this state
+function State3D:init(x, y, t, g, pred, motionPrimitive, userData)
     self.x = x
     self.y = y
     self.t = self:normalizeHeadingRad(t)
@@ -38,6 +39,7 @@ function State3D:init(x, y, t, g, pred, motionPrimitive)
     self.onOpenList = false
     self.open = false
     self.closed = false
+    self.userData = userData
     self.motionPrimitive = motionPrimitive
     if motionPrimitive and HybridAStar.MotionPrimitives.isReverse(motionPrimitive) then
         self.reverse = true
@@ -47,13 +49,14 @@ function State3D:init(x, y, t, g, pred, motionPrimitive)
 end
 
 function State3D:copy(other)
-    local this = State3D(other.x, other.y, other.t, other.g, other.pred, other.motionPrimitive)
+    local this = State3D(other.x, other.y, other.t, other.g, other.pred, other.motionPrimitive, other.userData)
     this.h = other.h
     this.cost = other.cost
     this.goal = other.goal
     this.onOpenList = other.onOpenList
     this.closed = other.closed
     this.nodePenalty = other.nodePenalty
+    self.userData = userData
     return this
 end
 
@@ -166,13 +169,6 @@ function State3D:normalizeHeadingRad(t)
     else
         return t
     end
-end
-
-function State3D:createSuccessor(primitive)
-    local xSucc = self.x + primitive.dx * math.cos(self.t) - primitive.dy * math.sin(self.t)
-    local ySucc = self.y + primitive.dx * math.sin(self.t) + primitive.dy * math.cos(self.t)
-    local tSucc = self:normalizeHeadingRad(self.t + primitive.dt)
-    return State3D(xSucc, ySucc, tSucc, self.g, self, primitive)
 end
 
 function State3D:__tostring()
