@@ -694,11 +694,11 @@ end
 function AIDriver:getDefaultStreetSpeed(ix)
 	-- reduce speed before the end of the course
 	local dToEnd = self.course:getDistanceToLastWaypoint(ix)
-	if dToEnd < 20 then
+	if dToEnd < 15 then
 		-- TODO make this smoother depending on the remaining distance?
 		return self.vehicle.cp.speeds.turn
 	end
-	local radius = self.course:getMinRadiusWithinDistance(ix, 25)
+	local radius = self.course:getMinRadiusWithinDistance(ix, 15)
 	if radius then
 		return math.max(self.vehicle.cp.speeds.turn, math.min(radius / 20 * self.vehicle.cp.speeds.street, self.vehicle.cp.speeds.street))
 	end

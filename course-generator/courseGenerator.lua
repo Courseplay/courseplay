@@ -251,18 +251,3 @@ end
 local function xyToXz(point)
 	point.y, point.z = point.z or 0, -point.y
 end
-
-function courseGenerator.findDubinsPath(vehicle, goalNode, turnRadius)
-	local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, 1)
-	local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-	x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, 0, -2)
-	local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-	local path = dubins_shortest_path(start, goal, turnRadius)
-	local dubinsPath = dubins_path_sample_many(path, 1)
-	if dubinsPath then
-		for i = 1, #dubinsPath do
-			xyToXz(dubinsPath[i])
-		end
-	end
-	return dubinsPath
-end
