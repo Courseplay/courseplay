@@ -643,6 +643,12 @@ function AIDriver:setLastMoveCommandTime(timer)
 	self.lastMoveCommandTime = timer
 end
 
+--- Don't auto stop engine. Keep calling this when you do something where the vehicle has a planned stop for a while
+--- and you don't want to engine auto stop to engage (for example waiting in the convoy)
+function AIDriver:overrideAutoEngineStop()
+	self:setLastMoveCommandTime(self.vehicle.timer)
+end
+
 --- Reset drive controls at the end of each loop
 function AIDriver:resetSpeed()
 	if self.speed > 0 and self.allowedToDrive then
@@ -655,6 +661,7 @@ function AIDriver:resetSpeed()
 			self.stoppedButShouldBeMoving = true
 		end
 	else
+		self.stoppedButShouldBeMoving = false
 		self.lastStopCommandTime = self.vehicle.timer
 	end
 	-- reset speed limit for the next loop
