@@ -418,11 +418,11 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME" 						text="Quando abbassare gli attrezzi" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP" 				text="Quando abbassare attrezzi quando si termina una fila o si inizia una svolta a fine campo" />
 
-		<text name="COURSEPLAY_USE_PPC_TURNS" 								text="Usa waypoint virtuali (PPC) in svolta" />
+		<text name="COURSEPLAY_USE_PPC_TURNS" 								text="Usa punti di passaggio virtuali (PPC) in svolta" />
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP" 						text="Utilizza un algoritmo di tracciamento percorso migliore (controllore dell'inseguimento puro) durante le svolte" />
 		<text name="COURSEPLAY_WORKER_WAGES" 								text="Salario lavoratori Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP" 						text="I salari dei lavoratori Courseplay come percentuale dei salari dei lavoratori normali" />
-		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" />
-		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Scarico automatico mietitrebbia" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Scarica automaticamente una mietitrebbia quando è piena e c'è un rimorchio in giro" />
 <!-- Replace marker, do not remove! --></texts>
 </l10n>
