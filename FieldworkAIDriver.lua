@@ -694,6 +694,7 @@ function FieldworkAIDriver:manageConvoy()
 		if closestDistance < self.vehicle.cp.convoy.minDistance then
 			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
 			self:setSpeed(0)
+			self:overrideAutoEngineStop()
 		end
 	else
 		closestDistance = 0

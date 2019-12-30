@@ -108,6 +108,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
+	addConsoleCommand( 'cpRestartSaveGame', 'Load and start a savegame', 'restartSaveGame', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
 	addConsoleCommand( 'cpTogglePathfindingDebug', 'Toggle pathfinding visual debug info', 'togglePathfindingDebug', self )
@@ -616,6 +617,10 @@ function CpManager:loadFile(fileName)
 			return 'ERROR: ' .. path .. ' could not be compiled.'
 		end
 	end
+end
+
+function CpManager:restartSaveGame(saveGameNumber)
+	restartApplication(" -autoStartSavegameId " .. saveGameNumber)
 end
 
 function CpManager:setLookaheadDistance(d)

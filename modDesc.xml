@@ -17,9 +17,9 @@
 		<nl>CoursePlay SIX</nl>
 		<hu>CoursePlay SIX - A Vezetősegéd</hu>
 		<jp>コースプレイ SIX</jp>
-        <kr>코스 플레이 SIX</kr>
+    <kr>코스 플레이 SIX</kr>
 		<pt>CoursePlay SIX</pt>
-        <ro>CoursePlay SIX</ro>
+    <ro>CoursePlay SIX</ro>
 		<tr>CoursePlay SIX</tr>
 		<sl>CoursePlay SIX</sl>
 	</title>
@@ -90,7 +90,7 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 		<action name="COURSEPLAY_MOUSEACTION_PRIMARY" axisType="HALF"  />
 		<action name="COURSEPLAY_MOUSEACTION_SECONDARY" axisType="HALF"  />
 		<action name="COURSEPLAY_DEBUG_MARKER" axisType="HALF"  />
-    	<action name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" axisType="HALF"  />
+    <action name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" axisType="HALF"  />
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" axisType="HALF"  />
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" axisType="HALF"  />
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" axisType="HALF"  />
