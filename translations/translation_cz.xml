@@ -422,7 +422,7 @@
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Použijte lepší algoritmus sledování kurzu (čistě pronásledovatel) během zatáček" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Mzdy pomocníků" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Mzdové náklady na pomocníky jako procento běžných mezd pracovníků" />
-		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" />
-		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Kombajn se vyloží samostatně" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Samostatné vyložení kombajnu do vleku co je poblíž." />
 <!-- Replace marker, do not remove! --></texts>
 </l10n>
