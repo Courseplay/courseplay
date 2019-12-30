@@ -522,7 +522,7 @@ function LevelCompactAIDriver:onEndCourse()
 end
 
 function LevelCompactAIDriver:updateLastMoveCommandTime()
-	self:setLastMoveCommandTime(self.vehicle.timer)
+	self:resetLastMoveCommandTime()
 end
 
 function LevelCompactAIDriver:changeLevelState(newState)

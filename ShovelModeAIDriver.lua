@@ -380,7 +380,7 @@ function ShovelModeAIDriver:checkLastWaypoint()
 end
 
 function ShovelModeAIDriver:updateLastMoveCommandTime()
-	self:setLastMoveCommandTime(self.vehicle.timer)
+	self:resetLastMoveCommandTime()
 end
 
 function ShovelModeAIDriver:findNextRevWaypoint(currentPoint)

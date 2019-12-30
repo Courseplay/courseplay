@@ -640,15 +640,15 @@ end
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
 	if self.speed > 0 and self.allowedToDrive then
-		self:setLastMoveCommandTime(self.vehicle.timer)
+		self:resetLastMoveCommandTime()
 		if self.vehicle:getLastSpeed() > 0.5 then
 			self.lastRealMovingTime = self.vehicle.timer
 		end
 	end
 end
 
-function AIDriver:setLastMoveCommandTime(timer)
-	self.lastMoveCommandTime = timer
+function AIDriver:resetLastMoveCommandTime()
+	self.lastMoveCommandTime = self.vehicle.timer
 end
 
 --- Reset drive controls at the end of each loop
@@ -661,6 +661,8 @@ end
 --- Anyone wants to temporarily stop driving for whatever reason, call this
 function AIDriver:hold()
 	self.allowedToDrive = false
+	-- prevent detecting this state as blocked. TODO: rethink this whole blocking logic, is now confusing as hell
+	self:resetLastMoveCommandTime()
 end
 
 --- Function used by the driver to get the speed it is supposed to drive at
@@ -1410,7 +1412,7 @@ function AIDriver:startEngineIfNeeded()
 	end
 	-- reset motor auto stop timer when someone starts the engine so we won't stop it for a while just because
 	-- our speed is 0 (for example while waiting for the implements to lower)
-	self:setLastMoveCommandTime(self.vehicle.timer)
+	self:resetLastMoveCommandTime()
 end
 
 function AIDriver:getIsEngineReady()
