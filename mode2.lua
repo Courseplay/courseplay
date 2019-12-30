@@ -1651,11 +1651,11 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		return false
 	end
 
-	local fieldNum = courseplay:onWhichFieldAmI( vehicle ); 
+	local fieldNum = courseplay.fields:onWhichFieldAmI( vehicle );
 		
 	if fieldNum == 0 then														-- No combines are aviable use us again
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine or vehicle;
-		fieldNum = courseplay:onWhichFieldAmI( combine );
+		fieldNum = courseplay.fields:onWhichFieldAmI( combine );
 		if fieldNum == 0 and mode4_6 then
 			-- My unloading course doesn't end on a field so I need to know on which field I am returning to by using the waypoint x and z
 			fieldNum = courseplay:getFieldNumForPosition( tx, tz )
