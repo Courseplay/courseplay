@@ -89,6 +89,7 @@ end
 
 function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay because it's vehicle based
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
+    courseplay:reloadCoursesFromXML(vehicle)
 		local id = vehicle.cp.hud.courses[index].id
 		courseplay:loadCourse(vehicle, id, true)
 	end	
@@ -700,7 +701,7 @@ function courseplay.courses:getFreeSaveSlot(course_id)
 	return freeSlot, isOwnSaveSlot;
 end
 
-function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
+function courseplay.courses:saveCourseToXml(course_id, cpCManXml, forceCourseSave)
 	-- save course to xml file
 	if g_server == nil then
 		return
@@ -737,7 +738,7 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 
 
 	-- Dont save course if we already have a saveSlot.
-	if not isOwnSaveSlot then
+	if not isOwnSaveSlot or forceCourseSave then
 		-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; speed may be nil!
 		-- from xml: rev=int wait=int crossing=int generated=bool, turnstart=int turnend=int ridgemarker=int
 		-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2

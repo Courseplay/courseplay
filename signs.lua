@@ -127,7 +127,7 @@ function courseplay.signs:setWaypointSignLine(sign, distance, vis)
 	end;
 end;
 
-function courseplay.signs:updateWaypointSigns(vehicle, section)
+function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
 	section = section or 'all'; --section: 'all', 'crossing', 'current'
 	courseplay.debugVehicle(8, vehicle, 'Updating waypoint display for %s', section)
 	vehicle.cp.numWaitPoints = 0;
@@ -147,85 +147,87 @@ function courseplay.signs:updateWaypointSigns(vehicle, section)
 
 		local np;
 		for i,wp in pairs(vehicle.Waypoints) do
-			local neededSignType = 'normal';
-			if i == 1 then
-				neededSignType = 'start';
-			elseif i == vehicle.cp.numWaypoints then
-				neededSignType = 'stop';
-			elseif wp.wait then
-				neededSignType = 'wait';
-			elseif wp.unload then
-				neededSignType = 'unload';
-			end;
+      if idx == nil or i == idx then  -- add this for courseEditor
+        local neededSignType = 'normal';
+        if i == 1 then
+          neededSignType = 'start';
+        elseif i == vehicle.cp.numWaypoints then
+          neededSignType = 'stop';
+        elseif wp.wait then
+          neededSignType = 'wait';
+        elseif wp.unload then
+          neededSignType = 'unload';
+        end;
 
-			-- direction + angle
-			if wp.rotX == nil then wp.rotX = 0; end;
-			if wp.cy == nil or wp.cy == 0 then
-				wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 0, wp.cz);
-			end;
+        -- direction + angle
+        if wp.rotX == nil then wp.rotX = 0; end;
+        if wp.cy == nil or wp.cy == 0 then
+          wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 0, wp.cz);
+        end;
 
-			if i < vehicle.cp.numWaypoints then
-				np = vehicle.Waypoints[i + 1];
-				if np.cy == nil or np.cy == 0 then
-					np.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.cx, 0, np.cz);
-				end;
+        if i < vehicle.cp.numWaypoints then
+          np = vehicle.Waypoints[i + 1];
+          if np.cy == nil or np.cy == 0 then
+            np.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.cx, 0, np.cz);
+          end;
 
-				wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = courseplay:getWorldDirection(wp.cx, wp.cy, wp.cz, np.cx, np.cy, np.cz);
-				if wp.distToNextPoint <= 0.01 and i > 1 then
-					local pp = vehicle.Waypoints[i - 1];
-					wp.dirX, wp.dirY, wp.dirZ = pp.dirX, pp.dirY, pp.dirZ;
-				end;
-				wp.rotY = MathUtil.getYRotationFromDirection(wp.dirX, wp.dirZ);
-				wp.angle = deg(wp.rotY);
+          wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = courseplay:getWorldDirection(wp.cx, wp.cy, wp.cz, np.cx, np.cy, np.cz);
+          if wp.distToNextPoint <= 0.01 and i > 1 then
+            local pp = vehicle.Waypoints[i - 1];
+            wp.dirX, wp.dirY, wp.dirZ = pp.dirX, pp.dirY, pp.dirZ;
+          end;
+          wp.rotY = MathUtil.getYRotationFromDirection(wp.dirX, wp.dirZ);
+          wp.angle = deg(wp.rotY);
 
-				local dy = np.cy - wp.cy;
-				local dist2D = MathUtil.vector2Length(np.cx - wp.cx, np.cz - wp.cz);
-				wp.rotX = -MathUtil.getYRotationFromDirection(dy, dist2D);
-			else
-				local pp = vehicle.Waypoints[i - 1];
-				wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = pp.dirX, pp.dirY, pp.dirZ, 0;
-				wp.rotX = 0;
-				wp.rotY = pp.rotY;
-			end;
+          local dy = np.cy - wp.cy;
+          local dist2D = MathUtil.vector2Length(np.cx - wp.cx, np.cz - wp.cz);
+          wp.rotX = -MathUtil.getYRotationFromDirection(dy, dist2D);
+        else
+          local pp = vehicle.Waypoints[i - 1];
+          wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = pp.dirX, pp.dirY, pp.dirZ, 0;
+          wp.rotX = 0;
+          wp.rotY = pp.rotY;
+        end;
 
-			local diamondColor = 'regular';
-			if wp.turnStart then
-				diamondColor = 'turnStart';
-			elseif wp.turnEnd then
-				diamondColor = 'turnEnd';
-			end;
+        local diamondColor = 'regular';
+        if wp.turnStart then
+          diamondColor = 'turnStart';
+        elseif wp.turnEnd then
+          diamondColor = 'turnEnd';
+        end;
 
-			local existingSignData = vehicle.cp.signs.current[i];
-			if existingSignData ~= nil then
-				if existingSignData.type == neededSignType then
-					self:setTranslation(existingSignData.sign, existingSignData.type, wp.cx, wp.cz);
-					if wp.rotX and wp.rotY then
-						setRotation(existingSignData.sign, wp.rotX, wp.rotY, 0);
-						if neededSignType == 'normal' or neededSignType == 'start' or neededSignType == 'wait' or neededSignType == 'unload' then
-							if neededSignType == 'start' or neededSignType == 'wait' or neededSignType == 'unload' then
-								local signPart = getChildAt(existingSignData.sign, 1);
-								setRotation(signPart, -wp.rotX, 0, 0);
-							end;
-							self:setWaypointSignLine(existingSignData.sign, wp.distToNextPoint, true);
-						end;
-						if neededSignType ~= 'cross' then
-							self:setSignColor(existingSignData, diamondColor);
-						end;
-					end;
-				else
-					self:moveToBuffer(vehicle, i, existingSignData);
-					self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
-				end;
-			else
-				self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
-			end;
+        local existingSignData = vehicle.cp.signs.current[i];
+        if existingSignData ~= nil then
+          if existingSignData.type == neededSignType then
+            self:setTranslation(existingSignData.sign, existingSignData.type, wp.cx, wp.cz);
+            if wp.rotX and wp.rotY then
+              setRotation(existingSignData.sign, wp.rotX, wp.rotY, 0);
+              if neededSignType == 'normal' or neededSignType == 'start' or neededSignType == 'wait' or neededSignType == 'unload' then
+                if neededSignType == 'start' or neededSignType == 'wait' or neededSignType == 'unload' then
+                  local signPart = getChildAt(existingSignData.sign, 1);
+                  setRotation(signPart, -wp.rotX, 0, 0);
+                end;
+                self:setWaypointSignLine(existingSignData.sign, wp.distToNextPoint, true);
+              end;
+              if neededSignType ~= 'cross' then
+                self:setSignColor(existingSignData, diamondColor);
+              end;
+            end;
+          else
+            self:moveToBuffer(vehicle, i, existingSignData);
+            self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
+          end;
+        else
+          self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
+        end;
 
-			if wp.wait then
-				vehicle.cp.numWaitPoints = vehicle.cp.numWaitPoints + 1;
-			end;
-			if wp.crossing then
-				vehicle.cp.numCrossingPoints = vehicle.cp.numCrossingPoints + 1;
-			end;
+        if wp.wait then
+          vehicle.cp.numWaitPoints = vehicle.cp.numWaitPoints + 1;
+        end;
+        if wp.crossing then
+          vehicle.cp.numCrossingPoints = vehicle.cp.numCrossingPoints + 1;
+        end;
+      end
 		end;
 	end;
 

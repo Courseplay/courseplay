@@ -334,7 +334,6 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"					text="Show/hide start and end points" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"							text="Show/hide all points" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"					text="Show/hide crossing points" />
-
 		<text name="COURSEPLAY_HUD_OPEN" 									text="Show Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 									text="Hide Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 									text="Courseplay functions" />
@@ -354,6 +353,26 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="CP: Move to transport position" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Move to pre-unloading position" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="CP: Move to unloading position" />
+		
+    <text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Toggle course editor" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Undo last course edit" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Save course changes" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"							text="Courseplay Editor: Increase waypoint speed" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"							text="Courseplay Editor: Decrease waypoint speed" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"						text="Courseplay Editor: Delete waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"						text="Courseplay Editor: Delete next waypoint" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"						text="Courseplay Editor: Delete all waypoints to start" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"						text="Courseplay Editor: Delete all waypoints to end" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"						text="Courseplay Editor: Insert waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"						text="Courseplay Editor: Change waypoint type" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 							text="Normal" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 							text="Wait" />
+		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Crossing" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 							text="Unload" />
+		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Turn Start" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 							text="Turn End" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 							text="Reverse" />
+
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Show mouse cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Hide mouse cursor" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Left Mouse Button" />
