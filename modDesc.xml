@@ -94,6 +94,17 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" axisType="HALF"  />
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" axisType="HALF"  />
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_TOGGLE" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_UNDO" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_SAVE" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_SPEED_INCREASE" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_SPEED_DECREASE" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_DELETE_WAYPOINT" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT" axisType="HALF"  />    
+    <action name="COURSEPLAY_EDITOR_DELETE_TO_START" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_DELETE_TO_END" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_INSERT_WAYPOINT" axisType="HALF"  />
+    <action name="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  />    
     </actions>
 
 	<inputBinding>
@@ -114,6 +125,39 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
         </actionBinding>
 		<actionBinding action="COURSEPLAY_DRIVENOW">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_9" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_EDITOR_TOGGLE">
+            <binding device="KB_MOUSE_DEFAULT" input="e" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_EDITOR_UNDO">
+            <binding device="KB_MOUSE_DEFAULT" input="z" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_EDITOR_SAVE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f6" />
+        </actionBinding>
+  <actionBinding action="COURSEPLAY_EDITOR_SPEED_INCREASE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_2" />
+        </actionBinding>
+ 	<actionBinding action="COURSEPLAY_EDITOR_SPEED_DECREASE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_1" />
+        </actionBinding>
+  <actionBinding action="COURSEPLAY_EDITOR_DELETE_WAYPOINT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_5" />
+        </actionBinding>
+  <actionBinding action="COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_6" />
+        </actionBinding>
+  <actionBinding action="COURSEPLAY_EDITOR_DELETE_TO_START">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_leftbracket" />
+        </actionBinding>
+  <actionBinding action="COURSEPLAY_EDITOR_DELETE_TO_END">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_rightbracket" />
+        </actionBinding>
+ 	<actionBinding action="COURSEPLAY_EDITOR_INSERT_WAYPOINT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_7" />
+        </actionBinding>
+  <actionBinding action="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_8" />
         </actionBinding>
 		<!-- Possible to delete blank input bindings -->
 		<actionBinding action="COURSEPLAY_STOP_AT_END">

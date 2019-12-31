@@ -617,6 +617,7 @@ end;
 function courseplay:onLeaveVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, false);
+    courseEditor:reset()
 	end
 
 	--hide visual i3D waypoint signs when not in vehicle
@@ -624,6 +625,7 @@ function courseplay:onLeaveVehicle()
 end
 
 function courseplay:onEnterVehicle()
+  courseEditor:reset()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
 	end;
@@ -637,6 +639,7 @@ function courseplay:onEnterVehicle()
 end
 
 function courseplay:onDraw()
+  courseEditor:draw(self, self.cp.directionNode)
 
 	courseplay:showAIMarkers(self)
 	courseplay:showTemporaryMarkers(self)

@@ -58,6 +58,7 @@ local function initialize()
 		'combineUnload_management',
 		'courseplay_event', 
 		'course_management',
+    'courseeditor',
 		'debug', 
 		'distance', 
 		'drive', 

@@ -294,13 +294,11 @@ function Course:enrichWaypointData()
 		self.waypoints[i].dToHere = self.length
 		self.waypoints[i].turnsToHere = self.totalTurns
 		self.waypoints[i].dx, _, self.waypoints[i].dz, _ = courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
-		if not self.waypoints[i].angle then
-			-- TODO: fix this weird coordinate system transformation from x/z to x/y
-			local dx, dz = nx - cx, -nz - (-cz)
-			local angle = toPolar(dx, dz)
-			-- and now back to x/z
-			self.waypoints[i].angle = courseGenerator.toCpAngleDeg(angle)
-		end
+    -- TODO: fix this weird coordinate system transformation from x/z to x/y
+    local dx, dz = nx - cx, -nz - (-cz)
+    local angle = toPolar(dx, dz)
+    -- and now back to x/z
+    self.waypoints[i].angle = courseGenerator.toCpAngleDeg(angle)
 		self.waypoints[i].calculatedRadius = self:calculateRadius(i)
 	end
 	-- make the last waypoint point to the same direction as the previous so we don't
