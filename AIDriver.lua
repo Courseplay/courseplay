@@ -156,7 +156,6 @@ function AIDriver:init(vehicle)
 	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
-	self.pathfinder = Pathfinder()
 	self:setHudContent()
 end
 
@@ -287,6 +286,7 @@ end
 
 --- Update AI driver, everything that needs to run in every loop
 function AIDriver:update(dt)
+	self:updatePathfinding()
 	self:drive(dt)
 	self:checkIfBlocked()
 	self:payWages(dt)
@@ -343,8 +343,6 @@ function AIDriver:driveCourse(dt)
 	end
 
 	self:slowDownForWaitPoints()
-
-	self:updatePathfinding()
 
 	self:stopEngineIfNotNeeded()
 
@@ -639,20 +637,33 @@ end
 -- speed set in this loop.
 function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
-	if self.speed > 0 and self.allowedToDrive then
-		self:resetLastMoveCommandTime()
-		if self.vehicle:getLastSpeed() > 0.5 then
-			self.lastRealMovingTime = self.vehicle.timer
-		end
-	end
 end
 
 function AIDriver:resetLastMoveCommandTime()
 	self.lastMoveCommandTime = self.vehicle.timer
 end
 
+--- Don't auto stop engine. Keep calling this when you do something where the vehicle has a planned stop for a while
+--- and you don't want to engine auto stop to engage (for example waiting in the convoy)
+function AIDriver:overrideAutoEngineStop()
+	self:setLastMoveCommandTime(self.vehicle.timer)
+end
+
 --- Reset drive controls at the end of each loop
 function AIDriver:resetSpeed()
+	if self.speed > 0 and self.allowedToDrive then
+		self:setLastMoveCommandTime(self.vehicle.timer)
+		if self.vehicle:getLastSpeed() > 0.5 then
+			self.lastRealMovingTime = self.vehicle.timer
+			self.stoppedButShouldBeMoving = false
+		elseif not self.stoppedButShouldBeMoving then
+			self.stoppedMovingAt = self.vehicle.timer
+			self.stoppedButShouldBeMoving = true
+		end
+	else
+		self.stoppedButShouldBeMoving = false
+		self.lastStopCommandTime = self.vehicle.timer
+	end
 	-- reset speed limit for the next loop
 	self.speed = math.huge
 	self.allowedToDrive = true
@@ -1279,6 +1290,7 @@ end
 ---@return boolean true when a pathfinding successfully started
 function AIDriver:driveToPointWithPathfinding(tx, tz, course, ix)
 	if self.vehicle.cp.realisticDriving then
+		self.pathfinder = Pathfinder()
 		local vx, _, vz = getWorldTranslation(self.vehicle.rootNode)
 
 		local fieldNumVehicle = courseplay.fields:getFieldNumForPosition(vx, vz)
@@ -1309,6 +1321,8 @@ function AIDriver:driveToPointWithPathfinding(tx, tz, course, ix)
 					Polygon:new(courseGenerator.pointsToXy(courseplay.fields.fieldData[fieldNum].points)))
 				if done then
 					return self:onPathfindingDone(path)
+				else
+					self:setPathfindingDoneCallback(self, self.onPathfindingDone)
 				end
 			else
 				self:debug('Pathfinder already active')
@@ -1326,14 +1340,19 @@ function AIDriver:driveToPointWithPathfinding(tx, tz, course, ix)
 end
 
 function AIDriver:updatePathfinding()
-	if self.pathfinder:isActive() then
+	if self.pathfinder and self.pathfinder:isActive() then
 		-- stop while pathfinding is running
 		self:setSpeed(0)
 		local done, path = self.pathfinder:resume()
 		if done then
-			self:onPathfindingDone(path)
+			self.pathfindingDoneCallbackFunc(self.pathfindingDoneObject, path)
 		end
 	end
+end
+
+function AIDriver:setPathfindingDoneCallback(object, func)
+	self.pathfindingDoneObject = object
+	self.pathfindingDoneCallbackFunc = func
 end
 
 --- If we have a path now then set it up as a temporary course, also appending an alignment between the end
@@ -1455,6 +1474,10 @@ function AIDriver:onDraw()
 		(self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH)  then
 		self.course:draw()
 	end
+	if CpManager.isDeveloper and self.pathfinder then
+		PathfinderUtil.showNodes(self.pathfinder)
+	end
+
 end
 
 function AIDriver:setDriveUnloadNow(driveUnloadNow)
@@ -1470,7 +1493,10 @@ function AIDriver:refreshHUD()
 end
 
 function AIDriver:checkIfBlocked()
-	if self.lastRealMovingTime and self.lastMoveCommandTime and self.lastRealMovingTime < self.lastMoveCommandTime - 3000 then
+	if self.stoppedButShouldBeMoving and self.stoppedMovingAt then
+		self:debugSparse('stopped moving at %d (%d)', self.stoppedMovingAt, self.vehicle.timer - self.stoppedMovingAt)
+	end
+	if self.stoppedButShouldBeMoving and self.stoppedMovingAt and self.stoppedMovingAt + 3000 < self.vehicle.timer then
 		if not self.blocked then
 			self:onBlocked()
 		end
@@ -1499,7 +1525,7 @@ function AIDriver:initWages()
 	local spec = self.vehicle.spec_aiVehicle
 	if spec.startedFarmId == nil or spec.startedFarmId == 0 then
 		-- to make the wage paying in AIVehicle work it needs to have the correct farm ID
-		spec.startedFarmId = g_currentMission.player.farmId
+		spec.startedFarmId = self.vehicle.controllerFarmId
 	end
 end
 

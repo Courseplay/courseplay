@@ -273,7 +273,7 @@ end
 function Pathfinder:getNeighbors( theNode, grid )
 	local neighbors = {}
 	self.count = self.count + 1
-	if self.finder and self.count % 20 == 0 then
+	if self.coroutine and self.count % 20 == 0 then
 		self.yields = self.yields + 1
 		coroutine.yield(false)
 	end
@@ -351,7 +351,7 @@ end
 -- @param fromNode starting node {x, y} of the path
 -- @param toNode destination node
 ---@param polygon : Polygon polygon representing the field boundary
--- @param fruit the fruit to avoid, all fruit will be avoided if nil
+---@param fruit the fruit to avoid, all fruit will be avoided if nil
 -- @param customHasFruitFunc function(node, width) custom function to tell if an area
 -- width wide around node has a function. If nil, courseplay:areaHasFruit() will be used
 -- @param addFruit if true, will add fruit to the field. Only for test purposes
@@ -408,8 +408,8 @@ end
 -- After start(), call resume() until it returns done == true.
 ---@see Pathfinder#findPath also on how to use.
 function Pathfinder:start(...)
-	if not self.finder then
-		self.finder = coroutine.create(self.run)
+	if not self.coroutine then
+		self.coroutine = coroutine.create(self.run)
 	end
 	return self:resume(...)
 end
@@ -417,17 +417,17 @@ end
 --- Is a pathfinding currently active?
 -- @return true if the pathfinding has started and not yet finished
 function Pathfinder:isActive()
-	return self.finder ~= nil
+	return self.coroutine ~= nil
 end
 
 --- Resume the pathfinding
--- @return true if the pathfinding is done, false if it isn't ready. In this case you'll have to call resume() again
----@return path : Polyline the path found or nil if none found.
+---@return boolean true if the pathfinding is done, false if it isn't ready. In this case you'll have to call resume() again
+---@return Polyline path if the path found or nil if none found.
 -- @return array of the points of the grid used for the pathfinding, for test purposes only
 function Pathfinder:resume(...)
-	local ok, done, path, grid = coroutine.resume(self.finder, self, ...)
+	local ok, done, path, grid = coroutine.resume(self.coroutine, self, ...)
 	if not ok or done then
-		self.finder = nil
+		self.coroutine = nil
 		return true, path, grid
 	end
 	return false

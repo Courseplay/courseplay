@@ -307,7 +307,8 @@ function courseplay:turn(vehicle, dt, turnContext)
 						courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo);
 					else
 						courseplay:generateTurnTypeWideTurn(vehicle, turnInfo);
-					end;
+					end
+
 					----------------------------------------------------------
 					-- NAROW TURNS (Turns where the distance to next lane is smaller than the turning Diameter)
 					----------------------------------------------------------
@@ -815,6 +816,7 @@ function courseplay.driveToPoint(self, dt, acceleration, allowedToDrive, moveFor
 		WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal*self.movingDirection, acceleration, not allowedToDrive, true)
 	end
 end
+
 
 function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
@@ -2552,6 +2554,10 @@ end
 function TurnContext:isHeadlandCorner()
 	-- TODO: there should be a better way to find this out
 	return math.abs( self.directionChangeDeg ) < laneTurnAngleThreshold
+end
+
+function TurnContext:isWideTurn(turnDiameter)
+	return not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter
 end
 
 function TurnContext:isLeftTurn()

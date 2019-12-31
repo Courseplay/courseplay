@@ -420,6 +420,7 @@
 		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Jobb követési algoritmus használata (pure pursuit controller) kanyarodás közben" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay munkás bére" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay munkás bére ennyi százaléka a normál munkás bérének" />
-		<!-- Replace marker, do not remove! -->
-	</texts>
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
+<!-- Replace marker, do not remove! --></texts>
 </l10n>

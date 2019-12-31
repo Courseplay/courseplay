@@ -892,6 +892,10 @@ function courseplay:generateCourse(vehicle, silent)
 	vehicle.cp.course2dUpdateDrawData = true;
 
 	courseplay:debug(string.format("generateCourse() finished: %d lanes, %d headland %s", numLanes, numHeadlandLanesCreated, numHeadlandLanesCreated == 1 and 'lane' or 'lanes'), 7);
+	
+	if CpManager.isMP then
+		CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints);
+	end
 end;
 
 

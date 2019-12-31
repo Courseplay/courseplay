@@ -11,7 +11,7 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 
 		wp.generated = true
 		wp.ridgeMarker = point.ridgeMarker
-		wp.angle = courseGenerator.toCpAngle( point.nextEdge.angle )
+		wp.angle = courseGenerator.toCpAngleDeg( point.nextEdge.angle )
 		wp.cx = point.x
 		wp.cz = -point.y
 		wp.wait = nil
@@ -194,6 +194,11 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
+
+	if CpManager.isMP then
+		CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints);
+	end
+	
 	return status, ok
 end
 

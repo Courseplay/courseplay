@@ -3,19 +3,20 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	widthX = widthX or 0.5;
 	widthZ = widthZ or 0.5;
 	if not courseplay:isField(x, z, widthX, widthZ) then
-		return false;
+		return false, nil, 0, 0;
 	end;
 
 	local density = 0;
+	local totalArea = 0
 	local maxDensity = 0;
 	local maxFruitType = 0
 	if fruitType ~= nil and fruitType ~= FruitType.UNKNOWN then
 		local minHarvestable, maxHarvestable = 1, fruitType.numGrowthStates
 	
-		density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
+		density, totalArea = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
-			return true,fruitType;
+			return true, fruitType, density, totalArea
 		end;
 	else
 		for i = 1, #g_fruitTypeManager.fruitTypes do
@@ -33,12 +34,12 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 		if maxDensity > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			--print("areaHasFruit: return "..tostring(maxFruitType))
-			return true, maxFruitType;
+			return true, maxFruitType, maxDensity, totalArea
 		end;
 	end;
 
 	--courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), 3)
-	return false;
+	return false, nil, 0, 0;
 end;
 
 function courseplay:initailzeFieldMod()
@@ -66,7 +67,7 @@ function courseplay:isField(x, z, widthX, widthZ)
 
     local _, area, totalArea = self.fieldMod.modifier:executeGet( self.fieldMod.filter)
 	local isField = area > 0
-	return  isField
+	return isField, area, totalArea
 end
 
 
