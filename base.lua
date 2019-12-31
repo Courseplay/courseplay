@@ -575,7 +575,7 @@ function courseplay:onLoad(savegame)
 	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer()
-	self.cp.settings:addSetting(SearchCombineOnFieldSetting)
+	self.cp.settings:addSetting(SearchCombineOnFieldSetting, self)
 	self.cp.settings:addSetting(SelectedCombineToUnloadSetting)
 	self.cp.settings:addSetting(ReturnToFirstPointSetting, self)
 	self.cp.settings:addSetting(UseAITurnsSetting, self)

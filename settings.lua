@@ -2330,10 +2330,10 @@ end
 --- Setting to select a field
 ---@class FieldNumberSetting : SettingList
 FieldNumberSetting = CpObject(SettingList)
-function FieldNumberSetting:init()
+function FieldNumberSetting:init(vehicle)
 	local values, texts = self:loadFields()
 	SettingList.init(self, 'fieldNumbers', 'COURSEPLAY_FIELD', 'COURSEPLAY_FIELD',
-		values, texts)
+		vehicle, values, texts)
 end
 
 function FieldNumberSetting:loadFields()
@@ -2363,8 +2363,8 @@ end
 --- Search combine on field
 ---@class SearchCombineOnFieldSetting : FieldNumberSetting
 SearchCombineOnFieldSetting = CpObject(FieldNumberSetting)
-function SearchCombineOnFieldSetting:init()
-	FieldNumberSetting.init(self)
+function SearchCombineOnFieldSetting:init(vehicle)
+	FieldNumberSetting.init(self, vehicle)
 	self.name = 'searchCombineOnField'
 	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
 	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
