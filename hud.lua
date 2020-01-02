@@ -2545,7 +2545,7 @@ function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
 					}
   
   --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
-	button = courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
+	local button = courseplay.button:new(vehicle, hudPage, nil, funct, line, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
 	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
 	return button
 end
