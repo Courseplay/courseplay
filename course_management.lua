@@ -89,7 +89,6 @@ end
 
 function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay because it's vehicle based
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
-    courseplay:reloadCoursesFromXML(vehicle)
 		local id = vehicle.cp.hud.courses[index].id
 		courseplay:loadCourse(vehicle, id, true)
 	end	

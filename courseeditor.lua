@@ -67,28 +67,31 @@ NOTES
 TEST SCRIPT
 1) Record a course consisting of all waypoint types (wait, unload, crossing, turn start, turn end and reverse).
 2) Drive the course (Use a pickup in transfer mode)
-3) Enable the editor and drag one waypoint to a new position. Increase it's speed by 1.
-4) Drag another waypoint to a new position.  Decrease it's speed by 1.
+3) Enable the editor and drag one waypoint to a new position.
+4) Drag another waypoint to a new position.
 5) Delete a waypoint.
 6) Insert a waypoint.
 7) Delete a next waypoint.
 8) Undo all changes.  It should return to as you left it in step 2.
-9) Try changing waypoint types.
-10) Delete waypoints to the end.
-11) Delete waypoints to the beginning.
-12) Save as filename 'test'.
-13) Drag another waypoint.
-14) Save and overwrite (CTRL-F6)
-16) Clear course.
-17) Load course 'test'.
-18) Course should be as you left it in step 13.
-19) Drive the course.
-20) Enable the editor and make sure the waypoint info panel is working.
-21) Make sure the default hotkeys are shown in F1.
-22) Try to change a hotkey mapping.
-23) After editing course 'test' and saving it, save the game and then reload the game and see if the course still works.
-24) Make sure editor handles are visible in daylight and darkness.
-25) Load a large course and make sure framerate is ok.
+9) Select a waypoint and increase the speed by 1.
+10) Select a waypoint and decrease the speed by 1.
+11) Try changing waypoint types.
+12) Delete waypoints to the end.
+13) Delete waypoints to the beginning.
+14) Save as filename 'test'.
+15) Drag another waypoint.
+16) Save and overwrite (CTRL-F6)
+17) Clear course.
+18) Load course 'test'.
+19) Course should be as you left it in step 15.
+20) Drive the course.
+21) Enable the editor and make sure the waypoint info panel is working.
+22) Make sure the default hotkeys are shown in F1.
+23) Try to change a hotkey mapping.
+24) After editing course 'test' and saving it, save the game and then reload the game and see if the course still works.
+25) Make sure editor handles are visible in daylight and darkness.
+26) Load a large course and make sure framerate is ok.
+27) Launch game with Autodrive. You should not be able to edit an autodrive course.
 
 ]]
 
@@ -103,7 +106,7 @@ courseEditor.guiMouseisDown = false
 courseEditor.guiMouseisUp = false
 courseEditor.guiMouseButton = 0
 -- mouse state 
-courseEditor.isPressed = {btn1 = false, btn2 = false, btn3 = false}  -- state of the mouse buttons, not using 2 or 3 for anything yet
+courseEditor.isPressed = {primary = false, secondary = false}  -- state of the mouse buttons
 courseEditor.rayCastHitWorldPos = {x = 0, y = 0, z = 0}  -- the world coordinates of the ground on which the cursor is pointed at
 -- waypoints
 courseEditor.maxWpDistVisible = 150  -- only draw waypoint handles within this distance from the camera, essential for large courses
@@ -131,22 +134,36 @@ courseEditor.pointScale = {x=7, y=7, z=7}  -- scaling for the top and bottom han
 courseEditor.isDragging = false -- whether dragging is occurring
 courseEditor.historyAdded = false -- whether we have added the pre-drag position of this waypoint to the history
 courseEditor.dragIgnoreDist = 0.0 --0.0025  -- you have to drag it this far before it actually starts to drag, like a deadzone
-courseEditor.btn1Origin = {x = 0, y=0} -- mouse coords where dragging started with left mouse button
+courseEditor.dragOrigin = {x = 0, y = 0} -- mouse coords where dragging started with left mouse button
 courseEditor.history = {} -- when dragging starts, the waypoint's pre-drag coordinates are added to the history table. 
 -- wp info panel
 courseEditor.overlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds') 
 
+-- determine if the current course is an autodrive course
+function courseEditor:isAutoDriveCourse(vehicle)
+  local cID = nil
+  if g_currentMission.cp_courses ~= nil then
+    for _, course in pairs(g_currentMission.cp_courses) do
+      if course.name == vehicle.cp.currentCourseName then
+        cID = course.id
+        break
+      end
+    end
+  end
+  return  (cID ~= nil and cID > 9999)
+end
+
 -- enable/disable editor via hotkey
 function courseEditor:setEnabled(value, vehicle)
   if value then
-    if not vehicle.cp.isRecording and #vehicle.Waypoints > 0 then  
-      self.enabled = value 
+    if not vehicle.cp.isRecording and not self:isAutoDriveCourse(vehicle) and #vehicle.Waypoints > 0 then
+      self.enabled = value
       courseplay:toggleShowVisualWaypointsAll(vehicle, true, true)
       self:addInputHelp()
     end
   else
-    self.enabled = value 
-    vehicle.cp.visualWaypointsAl = false    
+    self.enabled = value
+    vehicle.cp.visualWaypointsAl = false
     self:clearInputHelp()
     self:reset()
   end
@@ -184,12 +201,12 @@ function courseEditor:reset()
   self.queueDeleteNext = false
   self.queueCycleType = false
   self.queueInsert = false
-  self.isPressed = {btn1 = false, btn2 = false, btn3 = false, btn4 = false}
+  self.isPressed = {primary = false, secondary = false}
   self.rayCastHitWorldPos = {x = 0, y = 0, z = 0} 
   self.guiWpSelected = 0 
   self.guiWpSelectedSpeed = 0
   self.isDragging = false 
-  self.btn1Origin = {x = 0, y=0}
+  self.dragOrigin = {x = 0, y=0}
   self.queueUndo = false
   self.historyAdded = false
   self.waypointTypeIndex = 0
@@ -214,7 +231,7 @@ end
 -- save the course (overwrites the current course file)
 function courseEditor:save()
   if self.enabled and not self.queueSave and not self.isSaving then
-    self.queueSave = true 
+    self.queueSave = true
   end
 end
 
@@ -287,25 +304,34 @@ function courseEditor:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseB
   self.guiMouseisUp = isUp
   self.guiMouseButton = mouseButton  
   --which buttons are pressed?
-  if self.guiMouseButton == 1 and self.guiMouseisDown then 
-    self.isPressed.btn1 = true
-    self.btn1Origin.x = self.guiMouseX
-    self.btn1Origin.y = self.guiMouseY    
+  if self.guiMouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.guiMouseisDown then
+    self.isPressed.primary = true
+    self.dragOrigin.x = self.guiMouseX
+    self.dragOrigin.y = self.guiMouseY
   end
-  if self.guiMouseButton == 1 and self.guiMouseisUp then 
-    self.isPressed.btn1 = false
+  if self.guiMouseButton == courseplay.inputBindings.mouse.primaryButtonId and self.guiMouseisUp then
+    self.isPressed.primary = false
   end
-  -- button 2 and 3 are unused. May use them in the future.
-  if self.guiMouseButton == 2 and self.guiMouseisDown then self.isPressed.btn2 = true end 
-  if self.guiMouseButton == 2 and self.guiMouseisUp then self.isPressed.btn2 = false end
-  if self.guiMouseButton == 3 and self.guiMouseisDown then self.isPressed.btn3 = true end
-  if self.guiMouseButton == 3 and self.guiMouseisUp then self.isPressed.btn3 = false end
   -- reset history flag?
-  if self.historyAdded and self.isDragging and not self.isPressed.btn1 then
+  if self.historyAdded and self.isDragging and not self.isPressed.primary then
     self.historyAdded = false
   end
 end  
 
+-- calc the current courseid from course name
+function courseEditor:getCurrentCourseID(vehicle)
+  local cID = nil
+  if g_currentMission.cp_courses ~= nil then
+    for _, course in pairs(g_currentMission.cp_courses) do
+      if not course.virtual and course.name == vehicle.cp.currentCourseName then
+        cID = course.id
+        break
+      end
+    end
+  end 
+  return cID
+end
+      
 -- this is called when the raycast has detected the ground under the mouse cursor
 -- this will tell us where on the ground we are pointing to
 function courseEditor:groundRaycastCallback(hitObjectId, x, y, z, distance)
@@ -424,7 +450,7 @@ function courseEditor:draw(vehicle)
     
     -- lower sphere
     if not isDragging then
-      cpDebug:drawPoint(wpMe.cx, wpMe.cy, wpMe.cz, color.r, color.g, color.b) 
+      cpDebug:drawPoint(wpMe.cx, wpMe.cy, wpMe.cz, color.r, color.g, color.b)
     end
   end
   
@@ -433,16 +459,7 @@ function courseEditor:draw(vehicle)
   if self.isSaving then
     if courseplay:timerIsThrough(vehicle, 'courseEditorSaving') then
       courseplay:resetCustomTimer(vehicle, "courseEditorSaving", true);
-      
-      local cID = nil
-      if g_currentMission.cp_courses ~= nil then
-        for _, course in pairs(g_currentMission.cp_courses) do
-          if not course.virtual and course.name == vehicle.cp.currentCourseName then
-            cID = course.id
-            break
-          end
-        end
-      end    
+     local cID = self:getCurrentCourseID(vehicle)
       if cID ~= nil then
         self.isSaving = false
         -- save it
@@ -462,9 +479,9 @@ function courseEditor:draw(vehicle)
   -------------------------------------------------------------------------------  
   
   -- are we dragging?
-  if self.isPressed.btn1 then
+  if self.isPressed.primary then
     self.historyReverted = false
-    self.isDragging = (abs(self.btn1Origin.x - self.guiMouseX) > self.dragIgnoreDist) or (math.abs(self.btn1Origin.y - self.guiMouseY) >  self.dragIgnoreDist)  
+    self.isDragging = (abs(self.dragOrigin.x - self.guiMouseX) > self.dragIgnoreDist) or (math.abs(self.dragOrigin.y - self.guiMouseY) >  self.dragIgnoreDist)
   else
     self.isDragging = false
     self.guiWpSelected = 0
@@ -532,27 +549,31 @@ function courseEditor:draw(vehicle)
           if isHit then
             self.waypointTypeIndex = calcWaypointTypeIdx(i)
             -- is hotkey pressed to increase speed?
-            if self.queueIncreaseSpeed then 
-              wp.speed = wp.speed + 1 
+            if self.queueIncreaseSpeed then
+              wp.speed = wp.speed + 1
               self.queueIncreaseSpeed = false
             end
             -- is hotkey pressed to decrease speed?
-            if self.queueDecreaseSpeed then 
-              wp.speed = wp.speed - 1 
+            if self.queueDecreaseSpeed then
+              wp.speed = wp.speed - 1
               self.queueDecreaseSpeed = false
             end
             self.guiWpSelectedSpeed = wp.speed
             -- draw the waypointnumber:speed:sign info panel
-            local saction = "" 
-            local speedUnit = utf8ToUpper(g_i18n:getSpeedMeasuringUnit())
-            saction = string.format("%d:%d %s:%s", i, wp.speed, speedUnit, sign)
+            local saction = ''
+            if wp.generated and wp.speed == 0 then
+              saction = string.format("%d:auto:%s", i, sign)
+            else
+              local speedUnit = utf8ToUpper(g_i18n:getSpeedMeasuringUnit())
+              saction = string.format("%d:%d %s:%s", i, wp.speed, speedUnit, sign)
+            end
             local theight = 0.025
             local overlayColor = {r = 0, g = 0, b = 0, a = 0.85}
             local overlayWidth = getTextWidth(theight, saction) + 0.015
-            local overlayHeight = 0.045 
+            local overlayHeight = 0.045
             -- render text background
             setOverlayColor(self.overlayId, overlayColor.r, overlayColor.g, overlayColor.b, overlayColor.a )
-            renderOverlay(self.overlayId, (0.5 - (overlayWidth) / 2), 0.99 - overlayHeight, overlayWidth, overlayHeight) 
+            renderOverlay(self.overlayId, (0.5 - (overlayWidth) / 2), 0.99 - overlayHeight, overlayWidth, overlayHeight)
             -- render text
             setTextAlignment(1)
             setTextColor(1, 1, 1, 1)
@@ -574,7 +595,7 @@ function courseEditor:draw(vehicle)
               vehicle.cp.course2dUpdateDrawData = true;
             end
             self.guiWpSelected = i  -- this is the selected waypoint
-          end    
+          end
           -- draw handles
           drawHandle(wp, i, (self.guiWpSelected == i), self.isDragging, self.isSaving, signColor) 
         end
@@ -626,12 +647,15 @@ function courseEditor:draw(vehicle)
   
   -------------------------------------------------------------------------------  
 
-  -- do we need to save? (initiated by hotkey)
+  -- do we need to save? (initiated by hotkey, not the disk icon on hud)
   if self.queueSave and not self.isSaving then
-    -- the timer will give it a chance to paint the handles in the saving color
-    -- before the actual potentially-lengthy saving begins
-    courseplay:setCustomTimer(vehicle, 'courseEditorSaving', 0.2);
-    self.isSaving = true
+    local cID = self:getCurrentCourseID(vehicle)
+    if cID ~= nil then -- don't save an unsaved course
+      -- the timer will give it a chance to paint the handles in the saving color
+      -- before the actual potentially-lengthy saving begins
+      courseplay:setCustomTimer(vehicle, 'courseEditorSaving', 0.2);
+      self.isSaving = true
+    end
     self.queueSave = false
   end
   
@@ -828,7 +852,8 @@ end
 -- add the following to courseplay.lua (so that the course editor code is loaded)
 
 local function initialize()
-	local fileList = {	.
+	local fileList = {	
+.
 .
     'course_management',
     'courseeditor',             -- add this for course editor
@@ -919,21 +944,6 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml, forceCourseSav
 .
 .
 if not isOwnSaveSlot or forceCourseSave then  -- added 'or forceCourseSave' for editor
-.
-.
-
----------------------------
----------------------------
-
--- add the following to course_management.lua (to ensure that the course data is refreshed before loading it)
-
-function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay because it's vehicle based
-	if type(vehicle.cp.hud.courses[index]) ~= nil then
-    courseplay:reloadCoursesFromXML(vehicle) -- add this for courseEditor
-		local id = vehicle.cp.hud.courses[index].id
-		courseplay:loadCourse(vehicle, id, true)
-	end	
-end
 .
 .
 
