@@ -182,8 +182,8 @@ function CombineAIDriver:onWaypointPassed(ix)
 	end
 	self:checkFruit()
 	-- make sure we start making a pocket while we still have some fill capacity left as we'll be
-	-- harvesting fruit while making the pocket
-	if self:shouldMakePocket() then
+	-- harvesting fruit while making the pocket unless we have self unload turned on
+	if self:shouldMakePocket() and self.vehicle.cp.settings.selfUnload:is(false) then
 		self.fillLevelFullPercentage = self.pocketFillLevelFullPercentage
 	end
 	self:checkDistanceUntilFull(ix)
