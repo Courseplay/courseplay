@@ -428,6 +428,8 @@
     <text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Utiliser les manœuvres de virage AI au lieu des trajectoires de virage calculées" />
     <text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Analyse automatique des Champs" />
     <text name="COURSEPLAY_EARN_WAGES"					   				text="Les employés Courseplay gagnent un salaire" />
+    <text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
+    <text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
 
     <text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Tôt" />
     <text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Tard" />

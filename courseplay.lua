@@ -59,6 +59,7 @@ local function initialize()
 		'courseplay_event', 
 		'course_management',
     'courseeditor',
+    'clicktoswitch',
 		'debug', 
 		'distance', 
 		'drive', 
@@ -373,6 +374,7 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
 	courseplay.globalSettings:addSetting(EarnWagesSetting)
 	courseplay.globalSettings:addSetting(WorkerWages)
+	courseplay.globalSettings:addSetting(ClickToSwitchSetting)
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

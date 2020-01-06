@@ -2320,6 +2320,15 @@ function AutoFieldScanSetting:init()
 	self:set(true)
 end
 
+---@class ClickToSwitchSetting : BooleanSetting
+ClickToSwitchSetting = CpObject(BooleanSetting)
+function ClickToSwitchSetting:init()
+	BooleanSetting.init(self, 'clickToSwitch', 'COURSEPLAY_CLICK_TO_SWITCH',
+				'COURSEPLAY_YES_NO_CLICK_TO_SWITCH', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
+end
+
 ---@class EarnWagesSetting : BooleanSetting
 EarnWagesSetting = CpObject(BooleanSetting)
 function EarnWagesSetting:init()
