@@ -97,7 +97,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			local timeTillStartUnloading = self.combines[combine].secondsTill80Percent - timeToTarget
 			if timeTillStartUnloading < 0 then
 				--if combine.cp.totalFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() then
-				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine),timeToTarget))
+				print(string.format("%s: 80percent: %.1f  time: %.1f",nameNum(combine),g_combineUnloadManager:getSecondsTill80Percent(combine) or -1,timeToTarget))
 				self:addUnloaderToCombine(unloader,combine)
 				return combine
 			else
