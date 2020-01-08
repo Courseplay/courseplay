@@ -266,7 +266,7 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
 			self:debug('Raise implements and start pulling back')
-			self:stopWork()
+			self:raiseImplements()
 			self.fieldWorkUnloadOrRefillState = self.states.PULLING_BACK_FOR_UNLOAD
 		end
 	elseif self.fieldWorkUnloadOrRefillState == self.states.PULLING_BACK_FOR_UNLOAD then
