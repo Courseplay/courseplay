@@ -243,7 +243,7 @@ end
 
 
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
----@return true if driveFieldwork() is driving (no need to call ALDriver.drive())
+---@return boolean true if driveFieldwork() is driving (no need to call ALDriver.drive())
 function FieldworkAIDriver:driveFieldwork(dt)
 	local iAmDriving = false
 	self:updateFieldworkOffset()
@@ -394,7 +394,7 @@ function FieldworkAIDriver:onEndCourse()
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		AIDriver.onEndCourse(self)
 	else
-		self:debug('Fieldwork AI driver in mode %d ending course', self:getMode())
+		self:debug('Fieldwork AI driver in mode %d ending fieldwork course', self:getMode())
 		if self:shouldReturnToFirstPoint() then
 			self:debug('Returning to first point')
 			local x, _, z = self.fieldworkCourse:getWaypointPosition(1)
@@ -406,9 +406,13 @@ function FieldworkAIDriver:onEndCourse()
 			else
 				-- no path or too short, stop here.
 				AIDriver.onEndCourse(self)
+				-- (onEndCourse calls stopWork which raises the implements, fold must be called after that)
+				-- TODO: add an option to enable fold implement on work end and make it part of stopWork()
+				self:foldImplements()
 			end
 		else
 			AIDriver.onEndCourse(self)
+			self:foldImplements()
 		end
 	end
 end
@@ -1100,8 +1104,8 @@ function FieldworkAIDriver:shouldLowerImplements(turnEndNode, reversing)
 	return doLower
 end
 
----@param object ... is a vehicle or implement object with AI markers (marking the working area of the implement)
----@param turnEndNode node at the first waypoint of the row, pointing in the direction of travel. This is where
+---@param object table is a vehicle or implement object with AI markers (marking the working area of the implement)
+---@param turnEndNode number node at the first waypoint of the row, pointing in the direction of travel. This is where
 --- the implement should be in the working position after a turn
 ---@param reversing boolean are we reversing? When reversing towards the turn end point, we must lower the implements
 --- when we are _behind_ the turn end node (dz < 0), otherwise once we reach it (dz > 0)
