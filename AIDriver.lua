@@ -712,7 +712,11 @@ end
 
 -- TODO: review this whole fillpoint/filltrigger thing.
 function AIDriver:isNearFillPoint()
-	return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
+	if course == nil then
+		return false
+	else
+		return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
+	end
 end
 
 function AIDriver:getIsInFilltrigger()
