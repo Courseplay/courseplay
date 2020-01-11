@@ -1350,7 +1350,7 @@ function AIDriver:onPathfindingDone(path)
 					-- pathfinder course, causing unpredictable direction switches
 					table.remove(alignmentWaypoints, 1)
 					self:debug('Append an alignment course with %d waypoints to the path', #alignmentWaypoints)
-					temporaryCourse:append(alignmentWaypoints)
+					temporaryCourse:appendWaypoints(alignmentWaypoints)
 				else
 					self:debug('Could not append an alignment course to the path')
 				end

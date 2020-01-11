@@ -784,11 +784,16 @@ function Course:shorten(d)
 end
 
 --- Append waypoints to the course
-function Course:append(waypoints)
+function Course:appendWaypoints(waypoints)
 	for i =1, #waypoints do
 		table.insert(self.waypoints, Waypoint(waypoints[i], #self.waypoints + 1))
 	end
 	self:enrichWaypointData()
+end
+
+--- Append another course to the course
+function Course:append(other)
+	self:appendWaypoints(other.waypoints)
 end
 
 

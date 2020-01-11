@@ -2666,25 +2666,29 @@ end
 
 --- Create a turn ending course using the vehicle's current position and the front marker node (where the vehicle must
 --- be in the moment it starts on the next row. Use the Corner class to generate a nice arc.
+-- TODO: use Dubins instead?
+---@param vehicle table
+---@param corner Corner if caller already has a corner to use, can pass in here. If nil, we will create our own
 ---@return Course
-function TurnContext:createEndingTurnCourse2(vehicle)
+function TurnContext:createEndingTurnCourse2(vehicle, corner)
 	local startAngle = math.deg(self:getNodeDirection(AIDriverUtil.getDirectionNode(vehicle)))
 	local r = vehicle.cp.turnDiameter / 2
 	local startPos, endPos = {}, {}
-	startPos.x, _, startPos.z = getWorldTranslation(vehicle.cp.directionNode)
+	startPos.x, _, startPos.z = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
 	endPos.x, _, endPos.z = getWorldTranslation(self.frontMarkerNode)
-	local corner = Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos, r, vehicle.cp.totalOffsetX)
+	local myCorner = corner or Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos, r, vehicle.cp.totalOffsetX)
 	courseplay:clearTurnTargets(vehicle)
-	local center = corner:getArcCenter()
-	local startArc = corner:getArcStart()
-	local endArc = corner:getArcEnd()
+	local center = myCorner:getArcCenter()
+	local startArc = myCorner:getArcStart()
+	local endArc = myCorner:getArcEnd()
 	courseplay:generateTurnCircle(vehicle, center, startArc, endArc, r, self:isLeftTurn() and 1 or -1, false);
 	-- make sure course reaches the front marker node so end it well behind that node
 	local endStraight = {}
 	endStraight.x, _, endStraight.z = localToWorld(self.frontMarkerNode, 0, 0, 3)
 	courseplay:generateTurnStraightPoints(vehicle, endArc, endStraight)
 	local course = Course(vehicle, vehicle.cp.turnTargets, true)
-	corner:delete()
+	-- if we created our corner, delete it now.
+	if not corner then myCorner:delete() end
 	courseplay:clearTurnTargets(vehicle)
 	return course
 end
