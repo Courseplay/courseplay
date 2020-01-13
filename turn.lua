@@ -2204,14 +2204,15 @@ end
 ---@class Corner
 Corner = CpObject()
 
--- @param vehicle the vehicle
--- @param startAngleDeg the angle we are arriving at the turn start waypoint (not the angle of the turn start wp, the angle
--- of the one before!)
+---@param vehicle table the vehicle
+---@param startAngleDeg number the angle we are arriving at the turn start waypoint (not the angle of the turn start wp, the angle
+---of the one before!)
 ---@param startWp Waypoint turn start waypoint
--- @param endAngleDeg the direction we want to end the turn
+---@param endAngleDeg number direction we want to end the turn
 ---@param endWp Waypoint turn end waypoint
--- @param turnRadius radius to use in this turn
--- @param offsetX left/right offset of the course
+---@param turnRadius number radius to use in this turn
+---@param offsetX number left/right offset of the course. The Corner uses the un-offset coordinates of the start/end
+--- waypoints and the offsetX to move the corner point diagonally inward or outward if the course has a side offset
 function Corner:init(vehicle, startAngleDeg, startWp, endAngleDeg, endWp, turnRadius, offsetX)
 	self.debugChannel = 14
 	self.vehicle = vehicle
@@ -2410,53 +2411,49 @@ TurnContext = CpObject()
 ---@param workWidth number working width
 ---@param frontMarkerDistance number distance of the frontmost work area from the vehicle's root node (positive is
 --- in front of the vehicle. We'll add a node (frontMarkerNode) offset by frontMarkerDistance from the turn end
---- node so when the vehicle's rootnode reaches the frontMarkerNode, the front of the work area will exactly be on the
+--- node so when the vehicle's root node reaches the frontMarkerNode, the front of the work area will exactly be on the
 --- turn end node. (The vehicle must be steered to the frontMarkerNode instead of the turn end node so the implements
 --- reach exactly the row end)
-function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMarkerDistance)
+---@param turnEndSideOffset number offset of the turn end in meters to left (>0) or right (<0) to end the turn left or
+--- right of the turn end node. Used when there's an offset to consider, for example because the implement is not
+--- in the middle, like plows.
+function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMarkerDistance, turnEndSideOffset)
 	self.debugChannel = 14
 	self.workWidth = workWidth
+
+	--- Setting up turn waypoints
+	---
 	---@type Waypoint
 	self.beforeTurnStartWp = course.waypoints[turnStartIx - 1]
-
 	---@type Waypoint
 	self.turnStartWp = course.waypoints[turnStartIx]
 	self.turnStartWpIx = turnStartIx
-	if not aiDriverData.turnStartWpNode then
-		aiDriverData.turnStartWpNode = WaypointNode('turnStart')
-	end
-	-- Turn start waypoint node, pointing to the direction or the turn end node
-	aiDriverData.turnStartWpNode:setToWaypoint(course, turnStartIx)
-	self.turnStartWpNode = aiDriverData.turnStartWpNode
-
 	---@type Waypoint
 	self.turnEndWp = course.waypoints[turnStartIx + 1]
 	self.turnEndWpIx = turnStartIx + 1
-	if not aiDriverData.turnEndWpNode then
-		aiDriverData.turnEndWpNode = WaypointNode('turnEnd')
-	end
-	-- Turn end waypoint node, pointing to the direction after the turn
-	aiDriverData.turnEndWpNode:setToWaypoint(course, turnStartIx + 1)
-	self.turnEndWpNode = aiDriverData.turnEndWpNode
-
+	---@type Waypoint
+	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
 	self.directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle), math.rad(self.beforeTurnStartWp.angle)))
-	self.frontMarkerDistance = frontMarkerDistance or 0
+
+	self:setupTurnStart(course, aiDriverData)
+
+	self:setupTurnEnd(course, aiDriverData, turnEndSideOffset)
 
 	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn end
+	self.frontMarkerDistance = frontMarkerDistance or 0
 	if not aiDriverData.frontMarkerNode then
 		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, - self.frontMarkerDistance, 0, self.turnEndWpNode.node )
 	end
 	setTranslation(aiDriverData.frontMarkerNode, 0, 0, - self.frontMarkerDistance)
 	self.frontMarkerNode = aiDriverData.frontMarkerNode
 
-	---@type Waypoint
-	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
-
-	self:setWorkStartNode(course, self.turnEndWpIx, aiDriverData)
-	self:setWorkEndNode(course, turnStartIx, aiDriverData)
 	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode, 0, 0, 0)
 	self.leftTurn = self.dx > 0
-	courseplay.debugFormat(self.debugChannel, 'Turn context: start ix = %d', turnStartIx)
+	self:debug('start ix = %d', turnStartIx)
+end
+
+function TurnContext:debug(...)
+	courseplay.debugFormat(self.debugChannel, 'Turn context: ' .. string.format(...))
 end
 
 --- Get overshoot for a headland corner (how far further we need to drive if the corner isn't 90 degrees 
@@ -2464,36 +2461,59 @@ end
 function TurnContext:getOvershootForHeadlandCorner()
 	local headlandAngle = math.rad(math.abs(math.abs(self.directionChangeDeg) - 90))
 	local overshoot = self.workWidth / 2 * math.tan(headlandAngle)
-	courseplay.debugFormat(self.debugChannel, 'Turn context: work start node headland angle = %.1f, overshoot = %.1f',
+	self:debug('work start node headland angle = %.1f, overshoot = %.1f',
 		math.deg(headlandAngle), overshoot)
 	return overshoot
 end
 
---- Set up a node where the implement must be lowered when starting to work after the turn maneuver
-function TurnContext:setWorkStartNode(course, turnEndIx, aiDriverData)
+--- Set up the turn end node and all related nodes (relative to the turn end node)
+function TurnContext:setupTurnEnd(course, aiDriverData, turnEndSideOffset)
+	-- making sure we have the nodes created, and created only once
+	if not aiDriverData.turnEndWpNode then
+		aiDriverData.turnEndWpNode = WaypointNode('turnEnd')
+	end
+	-- Turn end waypoint node, pointing to the direction after the turn
+	aiDriverData.turnEndWpNode:setToWaypoint(course, self.turnEndWpIx)
+	self.turnEndWpNode = aiDriverData.turnEndWpNode
+
+	-- if there's an offset move the turn end node (and all others based on it)
+	if turnEndSideOffset and turnEndSideOffset ~= 0 then
+		self:debug('Applying %.1f side offset to turn end', turnEndSideOffset)
+		local x, y, z = localToWorld(self.turnEndWpNode.node, turnEndSideOffset, 0, 0)
+		setTranslation(self.turnEndWpNode.node, x, y, z)
+	end
+
+	-- Set up a node where the implement must be lowered when starting to work after the turn maneuver
 	if not aiDriverData.workStartNode then
-		aiDriverData.workStartNode = courseplay.createNode('workStart', 0, 0, 0)
+		aiDriverData.workStartNode = courseplay.createNode('workStart', 0, 0, 0, aiDriverData.turnEndWpNode.node)
 	end
 	if not aiDriverData.lateWorkStartNode then
 		-- this is for the headland turns where we want to cover the corner in the inbound direction (before turning)
 		-- so we can start working later after the turn
 		aiDriverData.lateWorkStartNode = courseplay.createNode('lateWorkStartNode', 0, 0, 0, aiDriverData.workStartNode)
 	end
-	course:setNodeToWaypoint(aiDriverData.workStartNode, turnEndIx)
+
 	if self:isHeadlandCorner() then
 		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
 		-- for headland turns, when we cover the corner in the outbound direction, which is half self.workWidth behind
 		-- the turn end node
-		local x, y, z = localToWorld(aiDriverData.workStartNode, 0, 0, - self.workWidth / 2 - overshoot)
-		setTranslation(aiDriverData.workStartNode, x, y, z)
+		setTranslation(aiDriverData.workStartNode, 0, 0, - self.workWidth / 2 - overshoot)
 		setTranslation(aiDriverData.lateWorkStartNode, 0, 0, self.workWidth)
 	end
 	self.workStartNode = aiDriverData.workStartNode
 	self.lateWorkStartNode = aiDriverData.lateWorkStartNode
 end
 
---- Set up a node where the implement must be raised when finishing a row before the turn
-function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData)
+--- Set up the turn end node and all related nodes (relative to the turn end node)
+function TurnContext:setupTurnStart(course, aiDriverData)
+	if not aiDriverData.turnStartWpNode then
+		aiDriverData.turnStartWpNode = WaypointNode('turnStart')
+	end
+	-- Turn start waypoint node, pointing to the direction or the turn end node
+	aiDriverData.turnStartWpNode:setToWaypoint(course, self.turnStartWpIx)
+	self.turnStartWpNode = aiDriverData.turnStartWpNode
+
+	-- Set up a node where the implement must be raised when finishing a row before the turn
 	if not aiDriverData.workEndNode then
 		aiDriverData.workEndNode = courseplay.createNode('workEnd', 0, 0, 0)
 	end
@@ -2508,8 +2528,8 @@ function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData)
 		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnEndWpIx)
 		-- use the rotation and offset of the waypoint before the turn start to make sure that we continue straight
 		-- until the implements are raised
-		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
-		local x, y, z = course:getOffsetPositionWithOtherWaypointDirection(self.turnEndWpIx, turnStartIx)
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(self.turnStartWpIx - 1), 0)
+		local x, y, z = course:getOffsetPositionWithOtherWaypointDirection(self.turnEndWpIx, self.turnStartWpIx)
 		setTranslation(aiDriverData.workEndNode, x, y, z)
 		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
 		-- for headland turns, we cover the corner in the outbound direction, so here we can end work when 
@@ -2523,7 +2543,7 @@ function TurnContext:setWorkEndNode(course, turnStartIx, aiDriverData)
 		-- pointing towards the turn end waypoint which may be anything around 90 degrees)
 		-- there's no need for an overshoot as it is being taken care during the course generation
 		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnStartWpIx)
-		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(self.turnStartWpIx - 1), 0)
 		setTranslation(aiDriverData.lateWorkEndNode, 0, 0, 0)
 	end
 
@@ -2656,12 +2676,17 @@ function TurnContext:getCornerAngleToTurn()
 	return getDeltaAngle(math.rad(endAngleDeg), math.rad(self.turnStartWp.angle))
 end
 
-function TurnContext:createCorner(vehicle, r)
+--- Create a corner based on the turn context's start and end waypoints
+---@param vehicle table
+---@param r number turning radius in m
+---@param sideOffset number (left < 0, right > 0) side offset to use when the course has an offset, for example
+--- due to a tool or multi tool setting. When not supplied the total offset X set for the vehicle is used
+function TurnContext:createCorner(vehicle, r, sideOffset)
 	-- use the average angle of the turn end and the next wp as there is often a bend there
 	local endAngleDeg = self:getAverageEndAngleDeg()
 	courseplay.debugVehicle(14, vehicle, 'start angle: %.1f, end angle: %.1f (from %.1f and %.1f)', self.beforeTurnStartWp.angle,
 		endAngleDeg, self.turnEndWp.angle, self.afterTurnEndWp.angle)
-	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, vehicle.cp.totalOffsetX)
+	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, sideOffset or vehicle.cp.totalOffsetX)
 end
 
 --- Create a turn ending course using the vehicle's current position and the front marker node (where the vehicle must
@@ -2676,7 +2701,8 @@ function TurnContext:createEndingTurnCourse2(vehicle, corner)
 	local startPos, endPos = {}, {}
 	startPos.x, _, startPos.z = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
 	endPos.x, _, endPos.z = getWorldTranslation(self.frontMarkerNode)
-	local myCorner = corner or Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos, r, vehicle.cp.totalOffsetX)
+	-- use side offset 0 as all the offsets is already included in the frontMarkerNode
+	local myCorner = corner or Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos	, r, 0)
 	courseplay:clearTurnTargets(vehicle)
 	local center = myCorner:getArcCenter()
 	local startArc = myCorner:getArcStart()
@@ -2747,6 +2773,10 @@ function TurnContext:drawDebug()
 			cx, cy, cz = localToWorld(self.lateWorkEndNode, -self.workWidth / 2, 0, 0)
 			nx, ny, nz = localToWorld(self.lateWorkEndNode, self.workWidth / 2, 0, 0)
 			cpDebug:drawLine(cx, cy + height, cz, 0.7, 0, 0, nx, ny + height, nz)
+		end
+		if self.frontMarkerNode then
+			cx, cy, cz = localToWorld(self.frontMarkerNode, 0, 0, 0)
+			cpDebug:drawLine(cx, cy, cz, 1, 1, 0, cx, cy + 2, cz)
 		end
 	end
 end

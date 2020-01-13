@@ -1307,6 +1307,7 @@ function courseplay:onReadStream(streamId, connection)
 	end
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
 
+	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
 	while streamDebugReadBool(streamId) do
 		local name = streamDebugReadString(streamId)
 		local value = streamDebugReadInt32(streamId)
@@ -1411,6 +1412,7 @@ function courseplay:onWriteStream(streamId, connection)
 	end
 	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
 
+	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
 	for name, setting in pairs(self.cp.settings) do
 		streamDebugWriteBool(streamId, true)
 		streamDebugWriteString(streamId, name)
@@ -1588,7 +1590,8 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
 		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
-		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == 'true');
+		-- TODO: move this (as all others) into its own class and get rid of the toggle force madness
+		self.cp.symmetricLaneChange = offsetData[4] == 'true';
 		if not offsetData[5] then offsetData[5] = 0; end;
 		courseplay:changeLoadUnloadOffsetX(self, nil, tonumber(offsetData[5]));
 		if not offsetData[6] then offsetData[6] = 0; end;

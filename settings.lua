@@ -1378,8 +1378,8 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 	--courseplay.buttons:setActiveEnabled(vehicle, 'debug');
 end;
 
-function courseplay:toggleSymmetricLaneChange(vehicle, force)
-	vehicle.cp.symmetricLaneChange = Utils.getNoNil(force, not vehicle.cp.symmetricLaneChange);
+function courseplay:toggleSymmetricLaneChange(vehicle)
+	vehicle.cp.symmetricLaneChange = not vehicle.cp.symmetricLaneChange;
 	vehicle.cp.switchLaneOffset = vehicle.cp.symmetricLaneChange;
 end;
 
@@ -1899,28 +1899,126 @@ function courseplay:setCpVar(varName, value, noEventSend)
 	end
 end;
 
----@class SettingList
-SettingList = CpObject()
+---@class Setting
+Setting = CpObject()
 
---- A setting that can have a predefined set of values
--- @param values table with the valid values
--- @texts text name in the translation XML files describing the corresponding value
-function SettingList:init(name, label, toolTip, vehicle, values, texts)
+--- Interface for settings
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+function Setting:init(name, label, toolTip, vehicle, value)
 	self.name = name
 	self.label = label
 	self.toolTip = toolTip
-	self.values = values
-	self.texts = texts
+	self.value = value
 	-- Required to send sync events for settings changes
 	self.vehicle = vehicle
 	self.syncValue = false
+	-- override
+	self.xmlKey = name
+	self.xmlAttribute = '#value'
+end
+
+-- Get the current value
+function Setting:get()
+	return self.value
+end
+
+-- Is the current value same as the param?
+function Setting:is(value)
+	return self.value == value
+end
+
+function Setting:equals(value)
+	return self.value == value
+end
+
+-- Get the current text to be shown on the UI
+function Setting:getText()
+	return tostring(self.value)
+end
+
+function Setting:getLabel()
+	return courseplay:loc(self.label)
+end
+
+function Setting:getToolTip()
+	return courseplay:loc(self.toolTip)
+end
+
+-- function only called from network to set synced setting
+function Setting:setFromNetwork(value)
+	self:set(value)
+	self:onChange()
+end
+
+function Setting:onWriteStream(stream)
+	streamDebugWriteBool(stream, true)
+	streamDebugWriteString(stream, self.name)
+	-- rest is override
+end
+
+--- Set to a specific value
+function Setting:set(value)
+	self.value = value
+end
+
+function Setting:onChange()
+	-- setting specific implementation in the derived classes
+end
+
+function Setting:getKey(parentKey)
+	return parentKey .. '.' .. self.xmlKey .. self.xmlAttribute
+end
+
+function Setting:loadFromXml(xml, parentKey)
+	-- override
+end
+
+function Setting:saveToXml(xml, parentKey)
+	-- override
+end
+
+---@class FloatSetting
+FloatSetting = CpObject(Setting)
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+function FloatSetting:init(name, label, toolTip, vehicle, value)
+	Setting.init(self, name, label, toolTip, vehicle, value)
+end
+
+function FloatSetting:loadFromXml(xml, parentKey)
+	local value = getXMLFloat(xml, self:getKey(parentKey))
+	if value then
+		self:set(value)
+	end
+end
+
+function FloatSetting:saveToXml(xml, parentKey)
+	setXMLFloat(xml, self:getKey(parentKey), self:get())
+end
+
+---@class SettingList
+SettingList = CpObject(Setting)
+
+--- A setting that can have a predefined set of values
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+--- @param values table with the valid values
+--- @param texts string[] name in the translation XML files describing the corresponding value
+function SettingList:init(name, label, toolTip, vehicle, values, texts)
+	Setting.init(self, name, label, toolTip, vehicle)
+	self.values = values
+	self.texts = texts
 	-- index of the current value/text
 	self.current = 1
 	-- index of the previous value/text
 	self.previous = 1
-	-- override
-	self.xmlKey = name
-	self.xmlAttribute = '#value'
 end
 
 -- Get the current value
@@ -1931,19 +2029,6 @@ end
 -- Is the current value same as the param?
 function SettingList:is(value)
 	return self.values[self.current] == value
-end
-
--- Get the current text
-function SettingList:getText()
-	return courseplay:loc(self.texts[self.current])
-end
-
-function SettingList:getLabel()
-	return courseplay:loc(self.label)
-end
-
-function SettingList:getToolTip()
-	return courseplay:loc(self.toolTip)
 end
 
 --- Set the next value
