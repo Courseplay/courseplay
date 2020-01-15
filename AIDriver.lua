@@ -1390,7 +1390,7 @@ function AIDriver:getClosestPointOnFieldBoundary(x, z, fieldNum)
 	if fieldNum > 0 and not courseplay:isField(x, z) then
 		-- the pathfinder needs both from/to positions to be on the field so if a  point is not on the
 		-- field, we need to use the closest point on the field boundary instead.
-		local closestPointToTargetIx = courseplay.generation:getClosestPolyPoint(courseplay.fields.fieldData[fieldNum].points, x, z)
+		local closestPointToTargetIx = courseplay:getClosestPolyPoint(courseplay.fields.fieldData[fieldNum].points, x, z)
 		return courseplay.fields.fieldData[ fieldNum ].points[ closestPointToTargetIx ].cx,
 			courseplay.fields.fieldData[ fieldNum ].points[ closestPointToTargetIx ].cz
 	else

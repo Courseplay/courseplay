@@ -103,7 +103,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 				tcx = waypoints[i].cx;
 				tcz = waypoints[i].cz;
 			else
-				local dx, dz, _ = courseplay.generation:getPointDirection(waypoints[i-2], waypoints[i-1]);
+				local dx, dz, _ = courseplay:getPointDirection(waypoints[i-2], waypoints[i-1]);
 				tcx = waypoints[i-1].cx + dx * (waypoints[i-1].wait and 15 or 30);
 				tcz = waypoints[i-1].cz + dz * (waypoints[i-1].wait and 15 or 30);
 			end;

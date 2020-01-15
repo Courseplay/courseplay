@@ -1374,7 +1374,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		courseplay:generateTurnCircle(vehicle, center1, startDir, center2, turnInfo.turnRadius, turnInfo.direction, true);
 
 		--- Move a little bit more forward, so we can reverse properly
-		local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
+		local dx, dz = courseplay:getPointDirection(center1, center2, false);
 		local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 		rotationDeg = rotationDeg + (90 * turnInfo.direction);
 		dx, dz = MathUtil.getDirectionFromYRotation(rad(rotationDeg));
@@ -1425,7 +1425,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		courseplay:generateTurnCircle(vehicle, center1, startDir, intersect1, turnInfo.turnRadius, turnInfo.direction, true);
 
 		--- Move a little bit more forward, so we can reverse properly
-		local dx, dz = courseplay.generation:getPointDirection(intersect2, intersect1, false);
+		local dx, dz = courseplay:getPointDirection(intersect2, intersect1, false);
 		toPoint.x = intersect1.x + (turnInfo.wpChangeDistance * dx);
 		toPoint.z = intersect1.z + (turnInfo.wpChangeDistance * dz);
 		courseplay:generateTurnStraightPoints(vehicle, intersect1, toPoint);
@@ -1492,7 +1492,7 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	courseplay:generateTurnCircle(vehicle, center1, startDir, center2, turnInfo.turnRadius, turnInfo.direction * -1, true, true);
 
 	--- Move a little bit more back, so we can align better when going forward
-	local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
+	local dx, dz = courseplay:getPointDirection(center1, center2, false);
 	local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 	rotationDeg = rotationDeg + (90 * turnInfo.direction);
 	dx, dz = MathUtil.getDirectionFromYRotation(rad(rotationDeg));
@@ -1787,7 +1787,7 @@ function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftT
 	link(g_currentMission.terrainRootNode, point);
 
 	-- Rotate it in the right direction
-	local dx, dz = courseplay.generation:getPointDirection(cp, np, false);
+	local dx, dz = courseplay:getPointDirection(cp, np, false);
 	local yRot = MathUtil.getYRotationFromDirection(dx, dz);
 	setRotation(point, 0, yRot, 0);
 
@@ -1900,9 +1900,9 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	local endRot		= 0;
 
 	-- Get the start and end rotation
-	local dx, dz = courseplay.generation:getPointDirection(center, startDir, false);
+	local dx, dz = courseplay:getPointDirection(center, startDir, false);
 	startRot = deg(MathUtil.getYRotationFromDirection(dx, dz));
-	dx, dz = courseplay.generation:getPointDirection(center, stopDir, false);
+	dx, dz = courseplay:getPointDirection(center, stopDir, false);
 	endRot = deg(MathUtil.getYRotationFromDirection(dx, dz));
 
 	-- Create new transformGroupe to use for placing waypoints
