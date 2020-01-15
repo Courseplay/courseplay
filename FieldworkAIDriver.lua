@@ -1145,8 +1145,20 @@ function FieldworkAIDriver:onDraw()
 			if aiBackMarker then
 				DebugUtil.drawDebugNode(aiBackMarker, object:getName() .. ' AI Back')
 			end
-			DebugUtil.drawDebugNode(object.cp.directionNode or object.rootNode, object:getName() .. ' root')
 		end
+		if object.getAISizeMarkers then
+			local aiSizeLeftMarker, aiSizeRightMarker, aiSizeBackMarker = object:getAISizeMarkers()
+			if aiSizeLeftMarker then
+				DebugUtil.drawDebugNode(aiSizeLeftMarker, object:getName() .. ' AI Size Left')
+			end
+			if aiSizeRightMarker then
+				DebugUtil.drawDebugNode(aiSizeRightMarker, object:getName() .. ' AI Size Right')
+			end
+			if aiSizeBackMarker then
+				DebugUtil.drawDebugNode(aiSizeBackMarker, object:getName() .. ' AI Size Back')
+			end
+		end
+		DebugUtil.drawDebugNode(object.cp.directionNode or object.rootNode, object:getName() .. ' root')
 	end
 
 	showAIMarkersOfObject(self.vehicle)

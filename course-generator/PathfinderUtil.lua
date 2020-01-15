@@ -50,20 +50,31 @@ function PathfinderUtil.VehicleData:calculateSizeOfObjectList(vehicle, implement
         local referenceNode = AIDriverUtil.getDirectionNode(vehicle)
         local rootToDirectionNodeDistance  = 0
         _, _, rootToDirectionNodeDistance = localToLocal(implement.object.rootNode, referenceNode, 0, 0, 0)
+        -- default size, used by Giants to determine the drop area when buying something
         local rectangle = {
             dFront = rootToDirectionNodeDistance + implement.object.sizeLength / 2 + implement.object.lengthOffset + (buffer or 0),
             dRear = rootToDirectionNodeDistance - implement.object.sizeLength / 2 - implement.object.lengthOffset + (buffer or 0),
             dLeft = implement.object.sizeWidth / 2,
             dRight = -implement.object.sizeWidth / 2
         }
-        -- for combine headers check the AI markers to get the unfolded size. Also, with these headers, sizeWidth may
-        -- also include the header trailer, meaning it is bigger than the header itself which prevents pathfinding to succeed.
-        if implement.object.spec_cutter and implement.object.getAIMarkers then
+        -- now see if we have something better, then use that. Since any of the six markers may be missing, we
+        -- check them one by one.
+        if implement.object.getAIMarkers then
+            -- otherwise try the AI markers (work area), this will be bigger than the vehicle's physical size, for example
+            -- in case of sprayers
             local aiLeftMarker, aiRightMarker, aiBackMarker = implement.object:getAIMarkers()
-            if referenceNode and aiLeftMarker and aiRightMarker then
-                rectangle.dLeft, _, _ = localToLocal(aiLeftMarker, referenceNode, 0, 0, 0)
+            if aiLeftMarker and aiRightMarker then
+                rectangle.dLeft, _, rectangle.dFront = localToLocal(aiLeftMarker, referenceNode, 0, 0, 0)
                 rectangle.dRight, _, _ = localToLocal(aiRightMarker, referenceNode, 0, 0, 0)
+                if aiBackMarker then _, _, rectangle.dRear = localToLocal(aiBackMarker, referenceNode, 0, 0, 0) end
             end
+        end
+        if implement.object.getAISizeMarkers then
+            -- but the best case is if we have the AI size markers
+            local aiSizeLeftMarker, aiSizeRightMarker, aiSizeBackMarker = implement.object:getAISizeMarkers()
+            if aiSizeLeftMarker then rectangle.dLeft, _, rectangle.dFront = localToLocal(aiSizeLeftMarker, referenceNode, 0, 0, 0) end
+            if aiSizeRightMarker then rectangle.dRight, _, _ = localToLocal(aiSizeRightMarker, referenceNode, 0, 0, 0) end
+            if aiSizeBackMarker then _, _, rectangle.dRear = localToLocal(aiSizeBackMarker, referenceNode, 0, 0, 0) end
         end
         table.insert(rectangles, rectangle)
         self.dFront = math.max(self.dFront, rectangle.dFront)
