@@ -547,7 +547,7 @@ function CourseTurn:onPathfindingDone(path)
 		self:debug('Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathFindingStartedAt or 0))
 		if self.reverseBeforeStartingTurnWaypoints and #self.reverseBeforeStartingTurnWaypoints > 0 then
 			self.turnCourse = Course(self.vehicle, self.reverseBeforeStartingTurnWaypoints, true)
-			self.turnCourse:append(courseGenerator.pointsToXzInPlace(path))
+			self.turnCourse:appendWaypoints(courseGenerator.pointsToXzInPlace(path))
 		else
 			self.turnCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		end

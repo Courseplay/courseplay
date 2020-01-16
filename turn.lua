@@ -2757,7 +2757,7 @@ function TurnContext:appendEndingTurnCourse(course)
 		local x, y, z = localToWorld(startNode, 0, 0, d)
 		table.insert(waypoints, {x = x, y = y, z = z, turnEnd = true})
 	end
-	course:append(waypoints)
+	course:appendWaypoints(waypoints)
 end
 
 
