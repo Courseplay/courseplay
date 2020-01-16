@@ -205,7 +205,11 @@ function PurePursuitController:switchControlledNode()
 	local reverserNode, debugText = nil, 'vehicle forward direction/root'
 	if self:isReversing() then
 		reverserNode, debugText = AIDriverUtil.getReverserNode(self.vehicle)
-		self:setControlledNode(reverserNode)
+		if reverserNode then
+			self:setControlledNode(reverserNode)
+		else
+			self:resetControlledNode()
+		end
 	else
 		self:resetControlledNode()
 	end

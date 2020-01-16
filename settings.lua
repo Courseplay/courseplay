@@ -2031,6 +2031,11 @@ function SettingList:is(value)
 	return self.values[self.current] == value
 end
 
+-- Get the current text
+function SettingList:getText()
+	return courseplay:loc(self.texts[self.current])
+end
+
 --- Set the next value
 function SettingList:next()
 	local new = self:checkAndSetValidValue(self.current + 1)
