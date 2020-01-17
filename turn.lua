@@ -2733,7 +2733,7 @@ end
 --- @param reverseDistance number distance to reverse in meters
 function TurnContext:createReverseWaypointsBeforeStartingTurn(vehicle, reverseDistance)
 	local reverserNode = AIDriverUtil.getReverserNode(vehicle)
-	local _, _, dStart = localToLocal(reverserNode or AIDriverUtil.getDirectionNode(), self.workEndNode, 0, 0, 0)
+	local _, _, dStart = localToLocal(reverserNode or AIDriverUtil.getDirectionNode(vehicle), self.workEndNode, 0, 0, 0)
 	local waypoints = {}
 	for d = dStart, dStart - reverseDistance - 1, -1 do
 		local x, y, z = localToWorld(self.workEndNode, 0, 0, d)
