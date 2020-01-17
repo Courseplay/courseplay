@@ -599,6 +599,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 			self:fixReverseForCourseplay(result)
 			return true, result
 		elseif self.phase == self.MIDDLE then
+			if not path or #path == 0 then return true, nil end
             -- middle part ready, now trim start and end to make room for the hybrid parts
 			self.middlePath = Polyline:new(path)
 			self.middlePath:calculateData()
