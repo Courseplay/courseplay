@@ -30,9 +30,6 @@ function courseplay:start(self)
 		self:setRandomVehicleCharacter()
 	end
 
-    -- Start the reset character timer.
-	courseplay:setCustomTimer(self, "resetCharacter", 300);
-
 	if courseplay.isClient then
 		return
 	end
@@ -624,9 +621,6 @@ function courseplay:stop(self)
 		--print("reset existing timer")
 		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
 	end
-
-	-- Reset the reset character timer.
-	courseplay:resetCustomTimer(self, "resetCharacter", true);
 
 	if self.restoreVehicleCharacter ~= nil then
 		self:restoreVehicleCharacter()
