@@ -570,8 +570,8 @@ CombineCourseTurn = CpObject(CourseTurn)
 
 ---@param driver AIDriver
 ---@param turnContext TurnContext
-function CombineCourseTurn:init(vehicle, driver, turnContext)
-	CourseTurn.init(self, vehicle, driver, turnContext, 'CombineCourseTurn')
+function CombineCourseTurn:init(vehicle, driver, turnContext, fieldworkCourse)
+	CourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,'CombineCourseTurn')
 end
 
 -- in a combine headland turn we want to raise the header after it reached the field edge (or headland edge on an inner

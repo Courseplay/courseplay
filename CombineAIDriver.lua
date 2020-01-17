@@ -601,7 +601,7 @@ end
 
 
 function CombineAIDriver:createTurnCourse()
-	return CombineCourseTurn(self.vehicle, self, self.turnContext)
+	return CombineCourseTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
 end
 
 function CombineAIDriver:startTurn(ix)
