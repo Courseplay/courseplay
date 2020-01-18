@@ -367,7 +367,7 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 		local pred = State3D.pop(openList)
 
 		if pred.motionPrimitive and pred.motionPrimitive.d == 0 then
-			self:debug('popped %s', tostring(pred))
+			--self:debug('popped %s', tostring(pred))
 		end
 
 		if pred:equals(goal, self.deltaPosGoal, math.rad(self.deltaThetaDegGoal)) then
@@ -402,7 +402,7 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 						succ:updateG(primitive, getNodePenaltyFunc(succ))
 						succ:updateH(goal, turnRadius)
 						if succ.motionPrimitive.d == 0 then
-							self:debug('updated %s', tostring(succ))
+							--self:debug('updated %s', tostring(succ))
 						end
 						if existingSuccNode then
 							-- there is already a node at this (discretized) position
@@ -525,7 +525,7 @@ function HybridAStarWithAStarInTheMiddle:init(hybridRange, yieldAfter, maxIterat
 	self.MIDDLE_TO_END = 3
 	self.ALL_HYBRID = 4 -- start and goal close enough, we only need a single phase with hybrid
 	self.hybridRange = hybridRange
-	self.yieldAfter = yieldAfter or 200
+	self.yieldAfter = yieldAfter or 100
 	self.hybridAStarPathFinder = HybridAStar(self.yieldAfter, maxIterations)
 	self.aStarPathFinder = self:getAStar()
 end
@@ -709,9 +709,12 @@ HybridAStarWithPolygonInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
 --- far from the outermost headland
 function HybridAStarWithPolygonInTheMiddle:init(hybridRange, yieldAfter, polygon, deltaPosGoal)
 	self.polygon = polygon
+	-- make sure all points are distinct, if we have more than one point with the same coordinates A* will never
+	-- end...
+	self.polygon:removeOverlaps()
 	self.deltaPosGoal = deltaPosGoal
-	self:debug('Hybrid A* range is %.1f, delta pos for goal %.1f', hybridRange, deltaPosGoal)
-	HybridAStarWithAStarInTheMiddle.init(self, hybridRange, yieldAfter, 5000)
+	self:debug('Hybrid A* range is %.1f, delta pos for goal %.1f, polygon has %d points', hybridRange, deltaPosGoal, #polygon)
+	HybridAStarWithAStarInTheMiddle.init(self, hybridRange, yieldAfter, 10000)
 end
 
 function HybridAStarWithPolygonInTheMiddle:getAStar()

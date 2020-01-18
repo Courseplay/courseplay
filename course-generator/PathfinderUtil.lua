@@ -274,7 +274,7 @@ function PathfinderUtil.getNodePenalty(node)
     local penalty = 0
     local isField, area, totalArea = courseplay:isField(node.x, -node.y, areaSize, areaSize)
     if area / totalArea < minRequiredAreaRatio then
-        penalty = penalty + 2
+        penalty = penalty + 1
     end
     if isField then
         local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, areaSize, areaSize)
@@ -318,6 +318,19 @@ function PathfinderUtil.getOutermostHeadland(course)
         end
     end
     return headland
+end
+
+---@param course Course
+---@return Polygon all headlands of the course as polyline (x, y)
+function PathfinderUtil.getAllHeadlands(course)
+    local headlands = Polyline:new()
+    for i = 1, course:getNumberOfWaypoints() do
+        if course:isOnHeadland(i) then
+            local x, y, z = course:getWaypointPosition(i)
+            headlands:add({x = x, y = -z})
+        end
+    end
+    return headlands
 end
 
 --- Interface function to start the pathfinder
@@ -418,25 +431,33 @@ end
 
 function PathfinderUtil.showNodes(pathfinder)
     if not PathfinderUtil.isVisualDebugEnabled then return end
-    if pathfinder and pathfinder.hybridAStarPathFinder and pathfinder.hybridAStarPathFinder.nodes then
-        for _, row in pairs(pathfinder.hybridAStarPathFinder.nodes.nodes) do
-            for _, column in pairs(row) do
-                for _, cell in pairs(column) do
-                    if cell.x and cell.y then
-                        local range = pathfinder.hybridAStarPathFinder.nodes.highestCost - pathfinder.hybridAStarPathFinder.nodes.lowestCost
-                        local color = (cell.cost - pathfinder.hybridAStarPathFinder.nodes.lowestCost) * 250 / range
-                        local r, g, b
-                        if cell:isClosed() or true then
-                            r, g, b = 100 + color, 250 - color, 0
-                        else
-                            r, g, b = cell.cost *3, 80, 0
-                        end
-                        local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cell.x, 0, -cell.y)
-                        if cell.pred and cell.pred.y then
-                            cpDebug:drawLineRGB(cell.x, y + 1, -cell.y, r, g, b, cell.pred.x, y + 1, -cell.pred.y)
-                        end
-                        if cell.isColliding then
-                            cpDebug:drawPoint(cell.x, y + 1.2, -cell.y, 100, 0, 0)
+    if pathfinder then
+        local nodes
+        if pathfinder.hybridAStarPathFinder and pathfinder.hybridAStarPathFinder.nodes then
+            nodes = pathfinder.hybridAStarPathFinder.nodes
+        elseif pathfinder.aStarPathFinder and pathfinder.aStarPathFinder.nodes then
+            nodes = pathfinder.aStarPathFinder.nodes
+        end
+        if nodes then
+            for _, row in pairs(nodes.nodes) do
+                for _, column in pairs(row) do
+                    for _, cell in pairs(column) do
+                        if cell.x and cell.y then
+                            local range = nodes.highestCost - nodes.lowestCost
+                            local color = (cell.cost - nodes.lowestCost) * 250 / range
+                            local r, g, b
+                            if cell:isClosed() or true then
+                                r, g, b = 100 + color, 250 - color, 0
+                            else
+                                r, g, b = cell.cost *3, 80, 0
+                            end
+                            local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cell.x, 0, -cell.y)
+                            if cell.pred and cell.pred.y then
+                                cpDebug:drawLineRGB(cell.x, y + 1, -cell.y, r, g, b, cell.pred.x, y + 1, -cell.pred.y)
+                            end
+                            if cell.isColliding then
+                                cpDebug:drawPoint(cell.x, y + 1.2, -cell.y, 100, 0, 0)
+                            end
                         end
                     end
                 end

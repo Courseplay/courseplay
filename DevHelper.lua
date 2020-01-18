@@ -169,8 +169,12 @@ end
 
 ---@param path State3D[]
 function DevHelper:loadPath(path)
-    self:debug('Path with %d waypoint found, finished in %d ms', #path, g_time - self.pathfinderStartTime)
-    self.course = Course(nil, courseGenerator.pointsToXzInPlace(path), true)
+    if path then
+        self:debug('Path with %d waypoint found, finished in %d ms', #path, g_time - self.pathfinderStartTime)
+        self.course = Course(nil, courseGenerator.pointsToXzInPlace(path), true)
+    else
+        self:debug('No path!')
+    end
 end
 
 function DevHelper:drawCourse()

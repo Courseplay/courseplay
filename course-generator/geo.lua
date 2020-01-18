@@ -942,6 +942,20 @@ function Polyline:removeGlitches()
 	self:calculateData()
 end
 
+-- Remove neighbor with the same coordinates
+function Polyline:removeOverlaps()
+	local i = 2
+	while i <= #self do
+		local cp, pp = self[ i ], self[ i - 1 ]
+		if cp.x == pp.x and cp.y == pp.y then
+			table.remove( self, i )
+		else
+			i = i + 1
+		end
+	end
+	self:calculateData()
+end
+
 --- Remove vertices between (and including) two indexes
 --
 function Polyline:removeElementsBetween( fromIx, toIx )
