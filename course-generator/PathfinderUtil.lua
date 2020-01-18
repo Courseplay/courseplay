@@ -299,7 +299,7 @@ function PathfinderUtil.isValidNode(node, context)
     setTranslation(PathfinderUtil.helperNode, node.x, y + 0.5, -node.y)
     local heading = context.reverseHeading and courseGenerator.toCpAngle(node:getReverseHeading()) or courseGenerator.toCpAngle(node.t)
     setRotation(PathfinderUtil.helperNode, 0, heading, 0)
-    myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, context.vehicleData, 'me')
+    local myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, context.vehicleData, 'me')
     local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(PathfinderUtil.helperNode)
     -- for debug purposes only, store validity info on node
     node.collidingShapes = PathfinderUtil.findCollidingShapes(myCollisionData, yRot, context.vehicleData)

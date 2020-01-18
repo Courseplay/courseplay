@@ -457,12 +457,12 @@ function HybridAStar:rollUpPath(node, goal)
 	local currentNode = node
 	self:debug('Goal node at %.2f/%.2f, cost %.1f (%.1f - %.1f)', goal.x, goal.y, node.cost,
 			self.nodes.lowestCost, self.nodes.highestCost)
-	self:debug('Iterations %d, yields %d', self.iterations, self.yields)
 	table.insert(self.path, 1, currentNode)
 	while currentNode.pred and currentNode ~= currentNode.pred do
 		table.insert(self.path, 1, currentNode.pred)
 		currentNode = currentNode.pred
 	end
+	self:debug('Nodes %d, iterations %d, yields %d', #self.path, self.iterations, self.yields)
 end
 
 function HybridAStar:printOpenList(openList)
@@ -599,7 +599,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 			self:fixReverseForCourseplay(result)
 			return true, result
 		elseif self.phase == self.MIDDLE then
-			if not path or #path == 0 then return true, nil end
+			if not path or #path < 2 then return true, nil end
             -- middle part ready, now trim start and end to make room for the hybrid parts
 			self.middlePath = Polyline:new(path)
 			self.middlePath:calculateData()
