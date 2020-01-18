@@ -605,6 +605,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 			self.middlePath:calculateData()
 			self.middlePath:shortenStart(self.hybridRange)
 			self.middlePath:shortenEnd(self.hybridRange)
+			if #self.middlePath < 2 then return true, nil end
             self:debug('Finding path between start and middle section...')
 			self.phase = self.START_TO_MIDDLE
 			-- generate a hybrid part from the start to the middle section's start
@@ -709,6 +710,7 @@ HybridAStarWithPolygonInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
 function HybridAStarWithPolygonInTheMiddle:init(hybridRange, yieldAfter, polygon, deltaPosGoal)
 	self.polygon = polygon
 	self.deltaPosGoal = deltaPosGoal
+	self:debug('Hybrid A* range is %.1f, delta pos for goal %.1f', hybridRange, deltaPosGoal)
 	HybridAStarWithAStarInTheMiddle.init(self, hybridRange, yieldAfter, 5000)
 end
 
