@@ -2790,7 +2790,8 @@ function TurnContext:getDistanceToFieldEdge(node)
 			return d
 		end
 	end
-	return 0
+	-- edge not found
+	return math.huge
 end
 
 --- Assuming a vehicle just finished a row, provide parameters for calculating a path to the start
