@@ -2393,12 +2393,12 @@ function UseAITurnsSetting:init(vehicle)
 		'COURSEPLAY_USE_AI_TURNS_TOOLTIP', vehicle)
 end
 
---- Use PPC during turns?
----@class UsePPCTurnsSetting : BooleanSetting
-UsePPCTurnsSetting = CpObject(BooleanSetting)
-function UsePPCTurnsSetting:init(vehicle)
-	BooleanSetting.init(self, 'usePPCTurns', 'COURSEPLAY_USE_PPC_TURNS',
-		'COURSEPLAY_USE_PPC_TURNS_TOOLTIP', vehicle)
+--- Use pathfinding during turns?
+---@class UsePathfindingInTurnsSetting : BooleanSetting
+UsePathfindingInTurnsSetting = CpObject(BooleanSetting)
+function UsePathfindingInTurnsSetting:init(vehicle)
+	BooleanSetting.init(self, 'usePathfindingInTurns', 'COURSEPLAY_USE_PATHFINDING_IN_TURNS',
+		'COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP', vehicle)
 end
 
 ---@class AutoFieldScanSetting : BooleanSetting

@@ -439,8 +439,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Kiedy opuścić narzędzia" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Określa kiedy opuścić narzędzie, na początku ścieżki albo zakończeniu zawracania" />
 
-		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Użyj wirtualnych punktów trasy (PPC) podczas skręcania." />
-		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Używa lepszego algorytmu śledzenia kursu (pure pursuit controller) podczas skręcania" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Use pathfinding in turns" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Wynagrodzenie pracowników Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Procent jaki dostają pracownicy Courseplay względem wynagrodzenia zwykłych pracowników" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Samoczynny rozładunek kombajnu" />

@@ -632,7 +632,8 @@ function FieldworkAIDriver:setUpCourses()
 	end
 	-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
 	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
-	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth)
+	-- TODO: consolidate the working width calculation and usage, this is currently an ugly mess
+	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or courseplay:getWorkWidth(self.vehicle))
 end
 
 function FieldworkAIDriver:setRidgeMarkers()

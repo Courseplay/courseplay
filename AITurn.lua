@@ -506,11 +506,7 @@ function CourseTurn:generateCalculatedTurn()
 	courseplay:clearTurnTargets(self.vehicle)
 end
 
-function CourseTurn:generateReverseBeforeStartingTurnWhenNeeded()
-end
-
 function CourseTurn:generatePathfinderTurn()
-	self:generateReverseBeforeStartingTurnWhenNeeded()
 	self.pathFindingStartedAt = self.vehicle.timer
 	local done, path
 	local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets()
@@ -518,14 +514,14 @@ function CourseTurn:generatePathfinderTurn()
 	local spaceNeededOnFieldForTurn = self.turningRadius + self.vehicle.cp.workWidth / 2
 	local distanceToFieldEdge = self.turnContext:getDistanceToFieldEdge(AIDriverUtil.getDirectionNode(self.vehicle))
 	self:debug('Space needed to turn on field %.1f m', spaceNeededOnFieldForTurn)
-	if distanceToFieldEdge < spaceNeededOnFieldForTurn and
+	if distanceToFieldEdge and (distanceToFieldEdge < spaceNeededOnFieldForTurn) and
 			self.vehicle.cp.turnOnField then
 		self:debug('Turn on field is on, generating reverse course before turning.')
 		self.reverseBeforeStartingTurnWaypoints = self.turnContext:createReverseWaypointsBeforeStartingTurn(self.vehicle, spaceNeededOnFieldForTurn - distanceToFieldEdge)
 		startOffset = startOffset - (spaceNeededOnFieldForTurn - distanceToFieldEdge)
 	end
 
-	if self.turnContext:isSimpleWideTurn(self.turningRadius * 2) then
+	if self.vehicle.cp.settings.usePathfindingInTurns:is(false) or self.turnContext:isSimpleWideTurn(self.turningRadius * 2) then
 		self:debug('Wide turn: generate turn with Dubins path')
 		path = PathfinderUtil.findDubinsPath(self.vehicle, startOffset, turnEndNode, goalOffset, self.turningRadius)
 		return self:onPathfindingDone(path)

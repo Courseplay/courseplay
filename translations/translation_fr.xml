@@ -438,8 +438,8 @@
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Quand descendre les outils" />
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Quand descendre les outils en commençant une rangé ou finissant un virage dans les fourrières" />
 
-    <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utilisé des points de rérérences virtualles (PPC) dans les virages" />
-    <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de rérérences virtualles (PPC) - pendant les virages" />
+    <text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Use pathfinding in turns" />
+    <text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />
     <text name="COURSEPLAY_WORKER_WAGES"				   				text="Salaire des travailleurs Courseplay" />
     <text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salaire des travailleurs Courseplay en pourcentage du salaire des travailleurs normaux" />
     <text name="COURSEPLAY_SELF_UNLOAD"				   					text="Déchargement automatique de la batteuse" />

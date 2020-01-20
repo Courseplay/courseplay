@@ -2784,6 +2784,10 @@ function TurnContext:getDistanceToFieldEdge(node)
 	for d = 0, 100, 1 do
 		local x, _, z = localToWorld(node, 0, 0, d)
 		local isField, area, totalArea = courseplay:isField(x, z, 1, 1)
+		if d == 0 and not isField then
+			self:debug('Field edge not found (vehicle not on field)')
+			return nil
+		end
 		local fieldRatio = area / totalArea
 		if not isField or fieldRatio < 0.5 then
 			self:debug('Field edge is at %d m, ratio %.2f', d, fieldRatio)
@@ -2791,6 +2795,7 @@ function TurnContext:getDistanceToFieldEdge(node)
 		end
 	end
 	-- edge not found
+	self:debug('Field edge more than 100 m away')
 	return math.huge
 end
 
