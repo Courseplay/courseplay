@@ -551,7 +551,10 @@ function CourseTurn:onPathfindingDone(path)
 		-- make sure we use tight turn offset towards the end of the course so a towed implement is aligned with the new row
 		self.turnCourse:setUseTightTurnOffsetForLastWaypoints(10)
 		self.turnContext:appendEndingTurnCourse(self.turnCourse)
-    else
+		-- and once again, if there is an ending course, keep adjusting the tight turn offset
+		-- TODO: should probably better done on onWaypointChange, to reset to 0
+		self.turnCourse:setUseTightTurnOffsetForLastWaypoints(10)
+	else
 		self:debug('No path found in %d ms, falling back to normal turn course generator', self.vehicle.timer - (self.pathFindingStartedAt or 0))
 		self:generateCalculatedTurn()
 	end
