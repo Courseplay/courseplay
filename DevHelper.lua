@@ -127,10 +127,13 @@ function DevHelper:startPathfinding()
 
     local done, path
     if self.vehicle and self.vehicle.cp.driver and self.vehicle.cp.driver.fieldworkCourse then
+        self:debug('Starting pathfinding for turn between %s and %s', tostring(self.start), tostring(self.goal))
         self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
                 1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
     else
-        self.pathfinder, done, path = PathfinderUtil.startPathfinding(self.start, self.goal, self.context, true)
+        self:debug('Starting pathfinding (allow reverse) between %s and %s', tostring(self.start), tostring(self.goal))
+        local start = State3D:copy(self.start)
+        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, true)
     end
 
     if done then

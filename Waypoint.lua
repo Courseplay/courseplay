@@ -88,6 +88,7 @@ function Waypoint:set(cpWp, cpIndex)
 	self.angle = cpWp.angle or nil
 	self.radius = cpWp.radius or nil
 	self.rev = cpWp.rev or cpWp.turnReverse or cpWp.reverse or false
+	self.rev = self.rev or cpWp.gear and cpWp.gear == HybridAStar.Gear.Backward
 	self.speed = cpWp.speed
 	self.cpIndex = cpIndex or 0
 	self.turnStart = cpWp.turnStart

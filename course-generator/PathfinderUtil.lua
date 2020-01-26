@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PathfinderUtil = {}
 
+PathfinderUtil.dubinsSolver = DubinsSolver()
+
 ---Size/turn radius all other information on the vehicle
 ---@class PathfinderUtil.VehicleData
 PathfinderUtil.VehicleData = CpObject()
@@ -171,13 +173,15 @@ end
 
 function PathfinderUtil.findCollidingShapes(myCollisionData, yRot, vehicleData)
     local center = myCollisionData.center
+    local width = math.abs(vehicleData.dRight) + math.abs(vehicleData.dLeft)
+    local length = math.abs(vehicleData.dFront) + math.abs(vehicleData.dRear)
     local collidingShapes = overlapBox(
             center.x, center.y + 1, center.z,
             0, yRot, 0,
-            math.abs(vehicleData.dRight) + math.abs(vehicleData.dLeft), 1, math.abs(vehicleData.dFront) + math.abs(vehicleData.dRear),
+            width, 1, length,
             '', nil, AIVehicleUtil.COLLISION_MASK, true, true, true)
     if collidingShapes > 0 then
-        --courseplay.debugFormat(7, 'x = %.1f, z = %.1f, %d', center.x, center.z, collidingShapes)
+        --courseplay.debugFormat(7, 'colliding shapes at x = %.1f, z = %.1f, %d', center.x, center.z, collidingShapes)
     end
     return collidingShapes
 end
@@ -278,9 +282,19 @@ function PathfinderUtil.getNodePenalty(node)
     end
     if isField then
         local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, areaSize, areaSize)
-        penalty = penalty + (hasFruit and (10 + fruitValue / 2) or 0)
+        penalty = penalty + (hasFruit and (fruitValue / 20) or 0)
     end
     return penalty
+end
+
+--- When the pathfinder tries an analytic solution for the entire path from start to goal, we can't use node penalties
+--- to find the optimum path, avoiding fruit. Instead, we just check for collisions with vehicles and objects as
+--- usual and also mark anything overlapping fruit as invalid. This way a path will only be considered if it is not
+--- in the fruit.
+function PathfinderUtil.isValidAnalyticSolutionNode(node, context)
+    local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, 3, 3)
+    if hasFruit and fruitValue > 50 then return false end
+    return PathfinderUtil.isValidNode(node, context)
 end
 
 --- Check if node is valid: would we collide with another vehicle here?
@@ -288,8 +302,6 @@ end
 ---@param userData PathfinderUtil.Context
 function PathfinderUtil.isValidNode(node, context)
     if node.x < context.fieldData.minX or node.x > context.fieldData.maxX or node.y < context.fieldData.minY or node.y > context.fieldData.maxY then
-        --courseplay.debugFormat(7, '%.1f/%.1f is out of field (%.1f, %.1f - %.1f, %.1f', node.x, node.y,
-          --  context.fieldData.minX, context.fieldData.minY, context.fieldData.maxX, context.fieldData.maxY)
         return false
     end
     if not PathfinderUtil.helperNode then
@@ -297,13 +309,17 @@ function PathfinderUtil.isValidNode(node, context)
     end
     local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, node.x, 0, -node.y);
     setTranslation(PathfinderUtil.helperNode, node.x, y + 0.5, -node.y)
-    local heading = context.reverseHeading and courseGenerator.toCpAngle(node:getReverseHeading()) or courseGenerator.toCpAngle(node.t)
-    setRotation(PathfinderUtil.helperNode, 0, heading, 0)
+    --local heading = context and context.reverseHeading and courseGenerator.toCpAngle(node:getReverseHeading()) or courseGenerator.toCpAngle(node.t)
+    local heading = courseGenerator.toCpAngle(node.t)
+    setRotation(PathfinderUtil.helperNode, 0, courseGenerator.toCpAngle(node.t), 0)
     local myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, context.vehicleData, 'me')
     local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(PathfinderUtil.helperNode)
     -- for debug purposes only, store validity info on node
     node.collidingShapes = PathfinderUtil.findCollidingShapes(myCollisionData, yRot, context.vehicleData)
     node.isColliding, node.vehicle = PathfinderUtil.findCollidingVehicles(myCollisionData, PathfinderUtil.helperNode, context.vehicleData)
+    --print(tostring(node))
+    --print(node.isColliding)
+    --print(node.collidingShapes)
     return (not node.isColliding and node.collidingShapes == 0)
 end
 
@@ -339,8 +355,9 @@ end
 ---@param context PathfinderUtil.Context
 ---@param allowReverse boolean allow reverse driving
 function PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
-    local pathfinder = HybridAStarWithAStarInTheMiddle(20)
-    local done, path = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse, PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode)
+    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 200, 50000)
+    local done, path = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse,
+            PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
     return pathfinder, done, path
 end
 
@@ -360,7 +377,7 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, 0, goalOffset or 0)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     -- use 3 * turn radius around start and goal in the hope that it is enough space to find a direct path
-    local pathfinder = HybridAStarWithPolygonInTheMiddle(turnRadius * 3, nil, PathfinderUtil.getOutermostHeadland(course), course:getNumberOfHeadlands() * course:getWorkWidth() * 2)
+    local pathfinder = HybridAStar(200, 10000)
     local fieldNum = courseplay.fields:onWhichFieldAmI(vehicle)
     PathfinderUtil.setUpVehicleCollisionData(vehicle)
     local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum))
@@ -381,8 +398,8 @@ function PathfinderUtil.findDubinsPath(vehicle, startOffset, goalReferenceNode, 
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, 0, goalOffset or 0)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    local path = dubins_shortest_path(start, goal, turnRadius)
-    local dubinsPath = dubins_path_sample_many(path, 1)
+    local solution = PathfinderUtil.dubinsSolver:solve(start, goal, turnRadius)
+    local dubinsPath = solution:getWaypoints(start, turnRadius)
     return dubinsPath
 end
 
@@ -433,10 +450,12 @@ function PathfinderUtil.showNodes(pathfinder)
     if not PathfinderUtil.isVisualDebugEnabled then return end
     if pathfinder then
         local nodes
-        if pathfinder.hybridAStarPathFinder and pathfinder.hybridAStarPathFinder.nodes then
-            nodes = pathfinder.hybridAStarPathFinder.nodes
-        elseif pathfinder.aStarPathFinder and pathfinder.aStarPathFinder.nodes then
-            nodes = pathfinder.aStarPathFinder.nodes
+        if pathfinder.hybridAStarPathfinder and pathfinder.hybridAStarPathfinder.nodes then
+            nodes = pathfinder.hybridAStarPathfinder.nodes
+        elseif pathfinder.aStarPathfinder and pathfinder.aStarPathfinder.nodes then
+            nodes = pathfinder.aStarPathfinder.nodes
+        elseif pathfinder.nodes then
+            nodes = pathfinder.nodes
         end
         if nodes then
             for _, row in pairs(nodes.nodes) do
