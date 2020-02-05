@@ -2190,10 +2190,14 @@ function AutoDriveModeSetting:init(vehicle)
 		{
 			AutoDriveModeSetting.DONT_USE,
 			AutoDriveModeSetting.UNLOAD_OR_REFILL,
+			AutoDriveModeSetting.PARK,
+			AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK,
 		},
 		{
 			'COURSEPLAY_AUTODRIVE_DONT_USE',
 			'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL',
+			'COURSEPLAY_AUTODRIVE_PARK',
+			'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK',
 		})
 	self:update()
 end

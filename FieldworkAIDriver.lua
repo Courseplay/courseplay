@@ -267,6 +267,7 @@ function FieldworkAIDriver:driveFieldwork(dt)
 		self:manageConvoy()
 		self:checkWeather()
 		self:checkFillLevels()
+		self:checkFuelLevels()
 	elseif self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
@@ -307,6 +308,28 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 	end
 end
 
+function FieldworkAIDriver:checkFuelLevels()
+	if self.vehicle.getConsumerFillUnitIndex ~= nil then
+		local dieselIndex = self.vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
+		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
+		
+		if currentFuelPercentage < 15 then
+			self:stopAndRefuel()
+		end;
+	end
+end
+
+function FieldworkAIDriver:stopAndRefuel()
+	if self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
+		-- Switch to AutoDrive when enabled 
+		self:rememberWaypointToContinueFieldwork()
+		self:stopWork()
+		self:foldImplements()
+		self.state = self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+		self:debug('passing the control to AutoDrive to run the fuel refill course.')
+		self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, -2, self, FieldworkAIDriver.onEndCourse, nil);
+	end
+end
 
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
