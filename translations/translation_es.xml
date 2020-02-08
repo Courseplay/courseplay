@@ -438,8 +438,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Cuando bajar los aperos" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Cuando bajar los aperos al empezar la fila o al finalizar la cabecera" />
 
-		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Use pathfinding in turns" />
-		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Use la búsqueda de caminos en giros" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use la búsqueda de caminos en giros en campos de formas extrañas, por ejemplo, para conducir por la cabecera hasta la siguiente fila" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Salario Trabajadores Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="El Salario de los Trabajadores de Courseplay es como un porcentaje del salario de los trabajadores del juego." />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Autodescarga Cosechadora" />
