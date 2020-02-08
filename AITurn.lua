@@ -54,6 +54,7 @@ function AITurn:init(vehicle, driver, turnContext, name)
 	self:addState('ENDING_TURN')
 	self:addState('REVERSING_AFTER_BLOCKED')
 	self:addState('FORWARDING_AFTER_BLOCKED')
+	self:addState('WAITING_FOR_PATHFINDER')
 	self.vehicle = vehicle
 	---@type AIDriver
 	self.driver = driver
@@ -144,6 +145,9 @@ function AITurn:drive(dt)
 	elseif self.state == self.states.ENDING_TURN then
 		-- Ending the turn (starting next row)
 		iAmDriving = self:endTurn(dt)
+	elseif self.state == self.states.WAITING_FOR_PATHFINDER then
+		self.driver:setSpeed(0)
+		iAmDriving = false
 	else
 		-- Performing the actual turn
 		iAmDriving = self:turn(dt)
@@ -267,17 +271,20 @@ function KTurn:turn(dt)
 end
 
 function KTurn:onBlocked()
+	if self.driver:holdInTurnManeuver(false) then
+		-- not really blocked just waiting for the straw for example
+		return
+	end
 	self.stateAfterBlocked = self.state
 	self.blockedTimer = self.vehicle.timer
 	if self.state == self.states.REVERSE then
 		self.state = self.states.FORWARDING_AFTER_BLOCKED
 		self:debug('Blocked, try forwarding a bit')
-	else
+	elseif self.state == self.states.FORWARD then
 		self.state = self.states.REVERSING_AFTER_BLOCKED
 		self:debug('Blocked, try reversing a bit')
 	end
 end
-
 
 --[[
   Headland turn for combines:
@@ -351,8 +358,34 @@ function CombineHeadlandTurn:turn(dt)
 			self.driver:lowerImplements()
 			self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
 		end
+	elseif self.state == self.states.REVERSING_AFTER_BLOCKED then
+		self:setReverseSpeed()
+		self.driver:driveVehicleBySteeringAngle(dt, false, 0.6, self.turnContext:isLeftTurn(), self.driver:getSpeed())
+		if self.vehicle.timer > self.blockedTimer + 3500 then
+			self.state = self.stateAfterBlocked
+			self:debug('Trying again after reversed due to being blocked')
+		end
+	elseif self.state == self.states.FORWARDING_AFTER_BLOCKED then
+		self:setForwardSpeed()
+		self.driver:driveVehicleBySteeringAngle(dt, true, 0.6, self.turnContext:isLeftTurn(), self.driver:getSpeed())
+		if self.vehicle.timer > self.blockedTimer + 3500 then
+			self.state = self.stateAfterBlocked
+			self:debug('Trying again after forwarded due to being blocked')
+		end
 	end
 	return true
+end
+
+function CombineHeadlandTurn:onBlocked()
+	self.stateAfterBlocked = self.state
+	self.blockedTimer = self.vehicle.timer
+	if self.state == self.states.REVERSE_ARC or self.state == self.states.REVERSE_STRAIGHT then
+		self.state = self.states.FORWARDING_AFTER_BLOCKED
+		self:debug('Blocked, try forwarding a bit')
+	else
+		self.state = self.states.REVERSING_AFTER_BLOCKED
+		self:debug('Blocked, try reversing a bit')
+	end
 end
 
 --[[
@@ -362,24 +395,37 @@ A turn maneuver following a course (waypoints created by turn.lua)
 ---@class CourseTurn : AITurn
 CourseTurn = CpObject(AITurn)
 
-function CourseTurn:init(vehicle, driver, turnContext, name)
+function CourseTurn:init(vehicle, driver, turnContext, fieldworkCourse, name)
 	AITurn.init(self, vehicle, driver, turnContext, name or 'CourseTurn')
+	-- adjust turn course for tight turns only for headland corners by default
+	self.useTightTurnOffset = turnContext:isHeadlandCorner()
+	self.fieldworkCourse = fieldworkCourse
+	self.turningRadius = AIDriverUtil.getTurningRadius(vehicle)
+end
+
+function CourseTurn:setForwardSpeed()
+	if self.turnCourse then
+		local currentWpIx = self.turnCourse:getCurrentWaypointIx()
+		if self.turnCourse:getDistanceFromFirstWaypoint(currentWpIx) > 10 and
+				self.turnCourse:getDistanceToLastWaypoint(currentWpIx) > 10 then
+			-- in the middle of a long turn maneuver we can drive faster...
+			self.driver:setSpeed((self.vehicle.cp.speeds.field + self.vehicle.cp.speeds.turn) / 2)
+		end
+	else
+		AITurn.setForwardSpeed(self)
+	end
 end
 
 -- this turn starts when the vehicle reached the point where the implements are raised.
 -- now use turn.lua to generate the turn maneuver waypoints
 function CourseTurn:startTurn()
-	-- TODO: fix ugly dependency on global variables, there should be one function to create the turn maneuver
-	self.vehicle.cp.turnStage = 1
-	-- call turn() with stage 1 which will generate the turn waypoints (dt isn't used by that part)
-	courseplay:turn(self.vehicle, 1, self.turnContext)
-	-- they waypoints should now be in turnTargets, create a course based on that
-	---@type Course
-	self.turnCourse = Course(self.vehicle, self.vehicle.cp.turnTargets, true)
-	-- clean up the turn global data
-	courseplay:clearTurnTargets(self.vehicle)
-	self.driver:startFieldworkCourseWithTemporaryCourse(self.turnCourse, self.turnContext.turnEndWpIx)
-	self.state = self.states.TURNING
+	if self.turnContext:isWideTurn(self.turningRadius * 2) then
+		self:generatePathfinderTurn()
+	else
+		self:generateCalculatedTurn()
+		self.driver:startFieldworkCourseWithTemporaryCourse(self.turnCourse, self.turnContext.turnEndWpIx)
+		self.state = self.states.TURNING
+	end
 end
 
 function CourseTurn:turn()
@@ -398,9 +444,14 @@ end
 
 function CourseTurn:endTurn(dt)
 -- keep driving on the turn course until we need to lower our implements
-	if self.driver:shouldLowerImplements(self.turnContext.workStartNode, self.driver.ppc:isReversing()) then
-		self:debug('Turn ended, resume fieldwork')
-		self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
+	if not self.implementsLowered and self.driver:shouldLowerImplements(self.turnContext.workStartNode, self.driver.ppc:isReversing()) then
+		self:debug('Turn ending, lowering implements')
+		self.driver:lowerImplements()
+		self.implementsLowered = true
+		if self.driver.ppc:isReversing() then
+			-- when ending a turn in reverse, don't drive the rest of the course, switch right back to fieldwork
+			self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
+		end
 	end
 	return false
 end
@@ -409,6 +460,18 @@ function CourseTurn:updateTurnProgress()
 	local progress = self.turnCourse:getCurrentWaypointIx() / #self.turnCourse
 	self.vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", progress, self.turnContext:isLeftTurn())
 end
+
+function CourseTurn:onWaypointChange(ix)
+	AITurn.onWaypointChange(self, ix)
+	if self.turnCourse then
+		if self.useTightTurnOffset or self.turnCourse:useTightTurnOffset(ix) then
+			-- adjust the course a bit to the outside in a curve to keep a towed implement on the course
+			self.tightTurnOffset = AIDriverUtil.calculateTightTurnOffset(self.vehicle, self.turnCourse, self.tightTurnOffset, true)
+			self.turnCourse:setOffset(self.tightTurnOffset, 0)
+		end
+	end
+end
+
 
 --- When switching direction during a turn, especially when switching to reverse we want to make sure
 --- that a towed implement is aligned with the reverse direction (already straight behind the tractor when
@@ -431,6 +494,74 @@ function CourseTurn:changeDirectionWhenAligned()
 	end
 end
 
+function CourseTurn:generateCalculatedTurn()
+	-- TODO: fix ugly dependency on global variables, there should be one function to create the turn maneuver
+	self.vehicle.cp.turnStage = 1
+	-- call turn() with stage 1 which will generate the turn waypoints (dt isn't used by that part)
+	courseplay:turn(self.vehicle, 1, self.turnContext)
+	-- they waypoints should now be in turnTargets, create a course based on that
+	---@type Course
+	self.turnCourse = Course(self.vehicle, self.vehicle.cp.turnTargets, true)
+	-- clean up the turn global data
+	courseplay:clearTurnTargets(self.vehicle)
+end
+
+function CourseTurn:generatePathfinderTurn()
+	self.pathFindingStartedAt = self.vehicle.timer
+	local done, path
+	local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets()
+
+	local spaceNeededOnFieldForTurn = self.turningRadius + self.vehicle.cp.workWidth / 2
+	local distanceToFieldEdge = self.turnContext:getDistanceToFieldEdge(AIDriverUtil.getDirectionNode(self.vehicle))
+	self:debug('Space needed to turn on field %.1f m', spaceNeededOnFieldForTurn)
+	if distanceToFieldEdge and (distanceToFieldEdge < spaceNeededOnFieldForTurn) and
+			self.vehicle.cp.turnOnField then
+		self:debug('Turn on field is on, generating reverse course before turning.')
+		self.reverseBeforeStartingTurnWaypoints = self.turnContext:createReverseWaypointsBeforeStartingTurn(self.vehicle, spaceNeededOnFieldForTurn - distanceToFieldEdge)
+		startOffset = startOffset - (spaceNeededOnFieldForTurn - distanceToFieldEdge)
+	end
+
+	if self.vehicle.cp.settings.usePathfindingInTurns:is(false) or self.turnContext:isSimpleWideTurn(self.turningRadius * 2) then
+		self:debug('Wide turn: generate turn with Dubins path')
+		path = PathfinderUtil.findDubinsPath(self.vehicle, startOffset, turnEndNode, goalOffset, self.turningRadius)
+		return self:onPathfindingDone(path)
+	else
+		self:debug('Wide turn: generate turn with hybrid A*')
+		self.driver.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, startOffset, turnEndNode, goalOffset,
+				self.turningRadius, nil, self.fieldworkCourse)
+		if done then
+			return self:onPathfindingDone(path)
+		else
+			self.state = self.states.WAITING_FOR_PATHFINDER
+			self.driver:setPathfindingDoneCallback(self, self.onPathfindingDone)
+		end
+	end
+end
+
+function CourseTurn:onPathfindingDone(path)
+	if path and #path > 2 then
+		self:debug('Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathFindingStartedAt or 0))
+		if self.reverseBeforeStartingTurnWaypoints and #self.reverseBeforeStartingTurnWaypoints > 0 then
+			self.turnCourse = Course(self.vehicle, self.reverseBeforeStartingTurnWaypoints, true)
+			self.turnCourse:appendWaypoints(courseGenerator.pointsToXzInPlace(path))
+		else
+			self.turnCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
+		end
+		self.turnCourse:setTurnEndForLastWaypoints(5)
+		-- make sure we use tight turn offset towards the end of the course so a towed implement is aligned with the new row
+		self.turnCourse:setUseTightTurnOffsetForLastWaypoints(10)
+		self.turnContext:appendEndingTurnCourse(self.turnCourse)
+		-- and once again, if there is an ending course, keep adjusting the tight turn offset
+		-- TODO: should probably better done on onWaypointChange, to reset to 0
+		self.turnCourse:setUseTightTurnOffsetForLastWaypoints(10)
+	else
+		self:debug('No path found in %d ms, falling back to normal turn course generator', self.vehicle.timer - (self.pathFindingStartedAt or 0))
+		self:generateCalculatedTurn()
+	end
+	self.driver:startFieldworkCourseWithTemporaryCourse(self.turnCourse, self.turnContext.turnEndWpIx)
+	self.state = self.states.TURNING
+end
+
 --- Combines (in general, when harvesting) in headland corners we want to work the corner first, then back up and then
 --- turn so we harvest any area before we drive over it
 ---@class CombineCourseTurn : CourseTurn
@@ -438,8 +569,8 @@ CombineCourseTurn = CpObject(CourseTurn)
 
 ---@param driver AIDriver
 ---@param turnContext TurnContext
-function CombineCourseTurn:init(vehicle, driver, turnContext)
-	CourseTurn.init(self, vehicle, driver, turnContext, 'CombineCourseTurn')
+function CombineCourseTurn:init(vehicle, driver, turnContext, fieldworkCourse)
+	CourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,'CombineCourseTurn')
 end
 
 -- in a combine headland turn we want to raise the header after it reached the field edge (or headland edge on an inner

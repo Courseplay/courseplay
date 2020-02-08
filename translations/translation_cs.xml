@@ -115,12 +115,12 @@
 		<text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="收割机控制" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="CP任务管理" />
 		<text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="选择目录" />
-		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="车辆特定设置" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="车辆特定设置" />
 		<text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="收割机管理" />
 		<text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 							text="速度控制" />
-		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="驾驶设置" />  <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS" 				text="驾驶设置" />
 		<text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="基本设置" />
-		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="收割机正在转弯" />
+		<text name="COURSEPLAY_COMBINE_IS_TURNING" 							text="收割机正在转向" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 								text="无法发现工作区" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 							text="合并任务" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 						text="车辆从后方接近联合收割机" />
@@ -132,7 +132,7 @@
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="前往 %d %d 坐标点" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="等待收割机容量到达设定值" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="附近没有收割机" />
-		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="等待收割机完成转弯" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="等待收割机完成转向" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="等待新的路径点" />
 		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 							text="等待中的车辆" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 							text="油料不足,尽快补充." />
@@ -239,11 +239,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="完成" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="无效任务" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="施肥功能" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="车辆护航" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="最大距离" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="最小距离" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="车辆护航" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="最大距离" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="最小距离" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="收割机管道开启" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="模式设置" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="模式设置" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="找不到铲斗" />
@@ -347,11 +347,31 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text="CP: 移动到运输位置" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: 移动到预卸载位置" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="CP: 移动到卸载位置" />
+		
+    <text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="CP编辑器：切换CP编辑器" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="CP编辑器：撤消上一次脚本编辑" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="CP编辑器：保存对脚本的修改" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"							text="CP编辑器：提高路径点速度" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"							text="CP编辑器：降低路径点速度" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"						text="CP编辑器：删除路径点" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"						text="CP编辑器：删除下一个路径点" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"						text="CP编辑器：删除所有路径点以开始" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"						text="CP编辑器：删除所有路径点以结束" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"						text="CP编辑器：插入路径点" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"						text="CP编辑器：更改路径点类型" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 							text="正常" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 							text="等待" />
+		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="合并" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 							text="卸载" />
+		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="转向开始" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 							text="转向结束" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 							text="反向" />
+
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="显示鼠标" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="不显示鼠标" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="鼠标左键" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="鼠标右键" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="鼠标中键" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="鼠标左键" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="鼠标右键" />
+		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="鼠标中键" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR"						 		text="鼠标按键 %d" /> <!-- TODO TRANSLATE: %s = number -->
 		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="加载或合并任务" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="合并任务到尾端" />
@@ -393,8 +413,8 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="未安装" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="不要使用" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="卸载/填充" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="To park vehicle" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="For unload/refill and park" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="停车" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="用于卸货/加油和停车" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="自动驾驶" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(返回)" />
@@ -402,7 +422,7 @@
 		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="高级设置..." />
 
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="启动后载入脚本" />
-		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="启动时加载所有脚本,Load all courses at startup, will slow down loading a saved game when activated" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="启动时加载所有脚本（激活后会减慢加载存档的速度）" />
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="使用AI转向" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="使用AI转向而不是计算的" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="自动扫描地块" />
@@ -415,10 +435,11 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="放下工具" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="开始或结束时放下工具" />
 
-		<text name="COURSEPLAY_USE_PPC_TURNS"				   				text="轮流使用路径点 (PPC) " />
-		<text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="使用跟踪算法" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="依次使用寻路" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="在异常区域依次使用寻路，例如在岬角上行驶到下一行" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay工资" />
-		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay 工资是工人工资的百分比" />
-		<!-- Replace marker, do not remove! -->
-	</texts>
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay工资是工人工资的百分比" />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="联合收割机自卸" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="有拖车时装满并自动卸载联合收割机" />
+<!-- Replace marker, do not remove! --></texts>
 </l10n>

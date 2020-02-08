@@ -120,8 +120,12 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		end
 
 		if not g_currentMission.cp_courses[id].waypoints and not g_currentMission.cp_courses[id].virtual then
-			courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
-			courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
+			if not CpManager.isMP or not courseplay.isClient then
+				courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
+				courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
+			else
+				g_currentMission.cp_courses[id].waypoints = {}
+			end
 		end
 
 		local course
@@ -303,6 +307,10 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		-- SETUP 2D COURSE DRAW DATA
 		vehicle.cp.course2dUpdateDrawData = true;
 		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
+
+		if CpManager.isMP then
+			CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints, courseplay.isClient);
+		end
 	end
 end
 
@@ -692,7 +700,7 @@ function courseplay.courses:getFreeSaveSlot(course_id)
 	return freeSlot, isOwnSaveSlot;
 end
 
-function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
+function courseplay.courses:saveCourseToXml(course_id, cpCManXml, forceCourseSave)
 	-- save course to xml file
 	if g_server == nil then
 		return
@@ -729,7 +737,7 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 
 
 	-- Dont save course if we already have a saveSlot.
-	if not isOwnSaveSlot then
+	if not isOwnSaveSlot or forceCourseSave then
 		-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; speed may be nil!
 		-- from xml: rev=int wait=int crossing=int generated=bool, turnstart=int turnend=int ridgemarker=int
 		-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2

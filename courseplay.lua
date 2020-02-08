@@ -47,6 +47,7 @@ local sonOfaBangSonOfaBoom = {
 local function initialize()
 	local fileList = {
 		'CpObject',
+		'DevHelper',
 		'CpManager',
 		'base',
 		'button',
@@ -57,12 +58,13 @@ local function initialize()
 		'combineUnload_management',
 		'courseplay_event', 
 		'course_management',
+    	'courseeditor',
+    	'clicktoswitch',
 		'debug', 
 		'distance', 
 		'drive', 
 		'fields', 
 		'fruit', 
-		'generateCourse',
 		'helpers',
 		'hud', 
 		'input', 
@@ -97,15 +99,20 @@ local function initialize()
 		'LevelCompactAIDriver',
 		'ShovelModeAIDriver',
 		'AITurn',
-	'course-generator/Pathfinder',
-    'course-generator/Island',
-	'course-generator/courseGenerator',
-    'course-generator/cp',
-	'course-generator/Genetic',
-    'course-generator/track',
-    'course-generator/center',
-    'course-generator/headland',
-    'course-generator/geo',
+		'course-generator/geo',
+		'course-generator/Pathfinder',
+		'course-generator/PathfinderUtil',
+		'course-generator/Island',
+		'course-generator/courseGenerator',
+		'course-generator/cp',
+		'course-generator/Genetic',
+		'course-generator/track',
+		'course-generator/center',
+		'course-generator/headland',
+		'course-generator/State3D',
+		'course-generator/BinaryHeap',
+		'course-generator/Dubins',
+		'course-generator/HybridAStar',
 		'gui/CourseGeneratorScreen',
 		'gui/CoursePlot',
 		'gui/inputCourseNameDialogue',
@@ -366,6 +373,7 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
 	courseplay.globalSettings:addSetting(EarnWagesSetting)
 	courseplay.globalSettings:addSetting(WorkerWages)
+	courseplay.globalSettings:addSetting(ClickToSwitchSetting)
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

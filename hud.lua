@@ -757,11 +757,12 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'toggleReturnToFirstPoint' then
 					if vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'toggleReturnToFirstPoint')
+						self:disableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.returnToFirstPoint:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.returnToFirstPoint:getText()
 					else
 						self:disableButtonWithFunction(vehicle,page, 'toggleReturnToFirstPoint')
-						forceUpdate = entry.functionToCall ~= 'setCustomSingleFieldEdge' -- force reload of this page if functionToCall changed
+						forceUpdate = true -- force reload of this page if functionToCall changed
 						entry.functionToCall = 'setCustomSingleFieldEdge'
 						self:enableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 						courseplay.hud:setReloadPageOrder(vehicle, page, true);
@@ -975,10 +976,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					and not vehicle.cp.isRecording 
 					and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
+						self:disableButtonWithFunction(vehicle,page, 'toggleReturnToFirstPoint')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SCAN_CURRENT_FIELD_EDGES');
 					else
 						self:disableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
-						forceUpdate = entry.functionToCall ~= 'toggleReturnToFirstPoint' -- force reload of this page if functionToCall changed
+						forceUpdate = true -- force reload of this page if functionToCall changed
 						entry.functionToCall = 'toggleReturnToFirstPoint'
 						self:enableButtonWithFunction(vehicle, page, 'toggleReturnToFirstPoint')
 						courseplay.hud:setReloadPageOrder(vehicle, page, true);
@@ -2007,7 +2009,7 @@ end
 function courseplay.hud:setupCourseGeneratorButton(vehicle)
 	local toolTip = courseplay:loc('COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS');
 	vehicle.cp.hud.advancedCourseGeneratorSettingsButton =
-		courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseGenSettings' }, 'openAdvancedCourseGeneratorSettings', nil, topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, toolTip);
+		courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseGenSettings' }, 'openAdvancedCourseGeneratorSettings', nil, topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, toolTip, true);
 end
 
 function courseplay.hud:setupCalculateWorkWidthButton(vehicle,page,line)
@@ -2346,7 +2348,8 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'toggleOpenHudWithMouse', 6, 2, 1 )
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
 	self:addRowButton(vehicle,'toggleIngameMapIconShowText', 6, 4, 1 )
-	self:addRowButton(vehicle,'openAdvancedSettingsDialog', 6, 5, 1 )
+	self:addRowButton(vehicle,'openAdvancedSettingsDialog', 6, 5, 1 ):setOnlyCallLocal()
+
 
 	--page 7 driving settings
 	self:enablePageButton(vehicle, 7)
@@ -2385,7 +2388,7 @@ end
 function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:debug(vehicle,"setFieldWorkAIDriverContent")
 	--self:setupCourseGeneratorButton(vehicle)
-	self:addRowButton(vehicle,'openAdvancedCourseGeneratorSettings', 1, 4, 1 )
+	self:addRowButton(vehicle,'openAdvancedCourseGeneratorSettings', 1, 4, 1 ):setOnlyCallLocal()
 	self:addRowButton(vehicle,'setCustomSingleFieldEdge', 1, 5, 1 )
 	self:addSettingsRow(vehicle,'setCustomFieldEdgePathNumber', 1, 5, 2 )
 	self:setupCustomFieldEdgeButtons(vehicle,1,5)
@@ -2542,8 +2545,9 @@ function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
 					}
   
   --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
-	courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
+	local button = courseplay.button:new(vehicle, hudPage, nil, funct, line, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
 	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
+	return button
 end
 
 function courseplay.hud:addSettingsRow(vehicle,funct, hudPage, line, column )

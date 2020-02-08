@@ -98,6 +98,7 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 		self:raycast()
 		if self:haveBales() and self.unloadRefillState == nil then
 			self.unloadRefillState = self.states.APPROACHING_UNLOAD_POINT
+			self.tooCloseToOtherBales = false
 			self:debug('Approaching unload point.')
 		elseif self:haveBales() and self.unloadRefillState == self.states.APPROACHING_UNLOAD_POINT then
 			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)

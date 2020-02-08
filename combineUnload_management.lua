@@ -221,7 +221,7 @@ function CombineUnloadAIDriver:calculateAstarPathToCoords( vehicle, combine, tx,
 		else
 			courseplay.debugVehicle( 9, vehicle, "I'm not on field, my combine is on ".. tostring( fieldNum ))
 			-- pathfinding works only within the field, so we'll have to get to the field first
-			local closestPointToVehicleIx = courseplay.generation:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, vx, vz )
+			local closestPointToVehicleIx = courseplay:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, vx, vz )
 			-- we'll use this instead of the vehicle location, so tractor will drive directly to this point first 
 			vx = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cx
 			vz = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cz
@@ -230,7 +230,7 @@ function CombineUnloadAIDriver:calculateAstarPathToCoords( vehicle, combine, tx,
 		courseplay.debugVehicle( 9, vehicle, "I'm on field " .. tostring( fieldNum ))
 		local _, pointInPoly, _, _ = courseplay.fields:getPolygonData(courseplay.fields.fieldData[fieldNum].points, cx, cz, true, true, true);
 		if not pointInPoly then
-			local closestPointToVehicleIx = courseplay.generation:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, cx, cz )
+			local closestPointToVehicleIx = courseplay:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, cx, cz )
 			cx = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cx
 			cz = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cz
 		end	

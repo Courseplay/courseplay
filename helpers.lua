@@ -465,13 +465,16 @@ function table.map(t, func)
 	return newArray;
 end;
 
+-- reverse order of elements in table in place
 function table.reverse(t)
-	local reversedTable = {};
-	local itemCount = #t;
-	for k,v in ipairs(t) do
-		reversedTable[itemCount + 1 - k] = v;
-	end;
-	return reversedTable;
+	local i, j = 1, #t
+
+	while i < j do
+		t[i], t[j] = t[j], t[i]
+
+		i = i + 1
+		j = j - 1
+	end
 end;
 
 function table.getLast(t)
@@ -860,8 +863,8 @@ function courseplay:getRelativePointDirection(pp, cp, np, useC)
 	if pp == nil or cp == nil or np == nil then return nil; end;
 	if useC == nil then useC = true; end;
 
-	local dx1, dz1 = courseplay.generation:getPointDirection(pp, cp, useC);
-	local dx2, dz2 = courseplay.generation:getPointDirection(cp, np, useC);
+	local dx1, dz1 = courseplay:getPointDirection(pp, cp, useC);
+	local dx2, dz2 = courseplay:getPointDirection(cp, np, useC);
 
 	local rot1 = MathUtil.getYRotationFromDirection(dx1, dz1);
 	local rot2 = MathUtil.getYRotationFromDirection(dx2, dz2);
@@ -1296,3 +1299,59 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
 		courseplay.alreadyPrinted = {};
 	end;
 end
+
+
+function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y) --@src: http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect#comment19248344_1968345
+	local s1_x, s1_y, s2_x, s2_y;
+	s1_x = A2x - A1x;
+	s1_y = A2y - A1y;
+	s2_x = B2x - B1x;
+	s2_y = B2y - B1y;
+
+	local s, t;
+	s = (-s1_y * (A1x - B1x) + s1_x * (A1y - B1y)) / (-s2_x * s1_y + s1_x * s2_y);
+	t = ( s2_x * (A1y - B1y) - s2_y * (A1x - B1x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+	if (s >= 0 and s <= 1 and t >= 0 and t <= 1) then
+		--Collision detected
+		local x = A1x + (t * s1_x);
+		local z = A1y + (t * s1_y);
+		return { x = x, z = z };
+	end;
+
+	--No collision
+	return nil;
+end;
+
+function courseplay:getPointDirection(cp, np, useC)
+	if useC == nil then useC = true; end;
+	local x,z = 'x','z'; -- Jeez.
+	if useC then
+		x,z = 'cx','cz';
+	end;
+
+	local dx, dz = np[x] - cp[x], np[z] - cp[z];
+	local vl = MathUtil.vector2Length(dx, dz);
+	if vl and vl > 0.0001 then
+		dx = dx / vl;
+		dz = dz / vl;
+	end;
+	return dx, dz, vl;
+end;
+
+function courseplay:getClosestPolyPoint(poly, x, z)
+	local closestDistance = math.huge;
+	local closestPointIndex;
+
+	for i=1, #(poly) do
+		local cp = poly[i];
+		local distanceToPoint = courseplay:distance(cp.cx, cp.cz, x, z);
+		if distanceToPoint < closestDistance then
+			closestDistance = distanceToPoint;
+			closestPointIndex = i;
+		end;
+	end;
+
+	return closestPointIndex;
+end;
+

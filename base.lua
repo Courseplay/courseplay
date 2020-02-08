@@ -576,12 +576,13 @@ function courseplay:onLoad(savegame)
 	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer()
-	self.cp.settings:addSetting(ReturnToFirstPointSetting)
-	self.cp.settings:addSetting(UseAITurnsSetting)
+	self.cp.settings:addSetting(ReturnToFirstPointSetting, self)
+	self.cp.settings:addSetting(UseAITurnsSetting, self)
+	self.cp.settings:addSetting(UsePathfindingInTurnsSetting, self)
 	self.cp.settings:addSetting(ImplementRaiseTimeSetting, self)
 	self.cp.settings:addSetting(ImplementLowerTimeSetting, self)
 	self.cp.settings:addSetting(AutoDriveModeSetting, self)
-	self.cp.settings:addSetting(SelfUnloadSetting)
+	self.cp.settings:addSetting(SelfUnloadSetting, self)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -617,6 +618,7 @@ end;
 function courseplay:onLeaveVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, false);
+    courseEditor:reset()
 	end
 
 	--hide visual i3D waypoint signs when not in vehicle
@@ -624,6 +626,7 @@ function courseplay:onLeaveVehicle()
 end
 
 function courseplay:onEnterVehicle()
+  courseEditor:reset()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
 	end;
@@ -637,6 +640,7 @@ function courseplay:onEnterVehicle()
 end
 
 function courseplay:onDraw()
+  courseEditor:draw(self, self.cp.directionNode)
 
 	courseplay:showAIMarkers(self)
 	courseplay:showTemporaryMarkers(self)
@@ -952,14 +956,16 @@ function courseplay:onUpdate(dt)
 	
 	if not self.cp.remoteIsEntered then
 		if self.cp.isEntered ~= Enterable.getIsEntered(self) then
-			--Tommi CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",Enterable.getIsEntered(self))
+			--CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",Enterable.getIsEntered(self))
+			self:setCpVar('remoteIsEntered',Enterable.getIsEntered(self))
+			--self.cp.remoteIsEntered = Enterable.getIsEntered(self)
 		end
 		self:setCpVar('isEntered',Enterable.getIsEntered(self))
 	end
 	
 	if not courseplay.isClient then -- and self.cp.infoText ~= nil then --(self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
 		if self.cp.infoText == nil and not self.cp.infoTextNilSent then
-			--Tommi CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
+			CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
 			self.cp.infoTextNilSent = true
 		elseif self.cp.infoText ~= nil then
 			self.cp.infoText = nil
@@ -993,7 +999,9 @@ function courseplay:onUpdate(dt)
 	end
 	 
 	if self.cp.onSaveClick and not self.cp.doNotOnSaveClick then
-		inputCourseNameDialogue:onSaveClick()
+		if courseplay.vehicleToSaveCourseIn == self then
+			inputCourseNameDialogue:onSaveClick()
+		end
 		self.cp.onSaveClick = false
 		self.cp.doNotOnSaveClick = false
 	end
@@ -1279,8 +1287,16 @@ function courseplay:renderToolTip(vehicle)
 	vehicle.cp.hud.toolTipIcon:render();
 end;
 
+function courseplay:setVehicleWaypoints(vehicle, waypoints)
+	vehicle.Waypoints = waypoints
+	vehicle.cp.numWaypoints = #waypoints
+	courseplay.signs:updateWaypointSigns(vehicle, "current");
+	if vehicle.cp.numWaypoints > 3 then
+		vehicle:setCpVar('canDrive',true,courseplay.isClient);
+	end
+end;
 
-function courseplay:readStream(streamId, connection)
+function courseplay:onReadStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
@@ -1290,8 +1306,15 @@ function courseplay:readStream(streamId, connection)
 		end
 		courseplay:setVarValueFromString(self, variable.name, value)
 	end
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
-	
+	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
+
+	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
+	while streamDebugReadBool(streamId) do
+		local name = streamDebugReadString(streamId)
+		local value = streamDebugReadInt32(streamId)
+		self.cp.settings[name]:setFromNetwork(value)
+	end
+
 	local savedFieldNum = streamDebugReadInt32(streamId)
 	if savedFieldNum > 0 then
 		self.cp.generationPosition.fieldNum = savedFieldNum
@@ -1299,22 +1322,22 @@ function courseplay:readStream(streamId, connection)
 		
 	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
 	if copyCourseFromDriverId then
-		self.cp.copyCourseFromDriver = networkGetObject(copyCourseFromDriverId) 
+		self.cp.copyCourseFromDriver = NetworkUtil.getObject(copyCourseFromDriverId) 
 	end
 		
 	local savedCombineId = streamDebugReadInt32(streamId)
 	if savedCombineId then
-		self.cp.savedCombine = networkGetObject(savedCombineId)
+		self.cp.savedCombine = NetworkUtil.getObject(savedCombineId)
 	end
 
 	local activeCombineId = streamDebugReadInt32(streamId)
 	if activeCombineId then
-		self.cp.activeCombine = networkGetObject(activeCombineId)
+		self.cp.activeCombine = NetworkUtil.getObject(activeCombineId)
 	end
 
 	local current_trailer_id = streamDebugReadInt32(streamId)
 	if current_trailer_id then
-		self.cp.currentTrailerToFill = networkGetObject(current_trailer_id)
+		self.cp.currentTrailerToFill = NetworkUtil.getObject(current_trailer_id)
 	end
 
 	courseplay.courses:reinitializeCourses()
@@ -1382,38 +1405,46 @@ function courseplay:readStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
 
-function courseplay:writeStream(streamId, connection)
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream", 5)
+function courseplay:onWriteStream(streamId, connection)
+	courseplay:debug("id: "..tostring(self).."  base: write stream", 5)
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
 	end
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write courseplay.multiplayerSyncTable end", 5)
+	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
+
+	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
+	for name, setting in pairs(self.cp.settings) do
+		streamDebugWriteBool(streamId, true)
+		streamDebugWriteString(streamId, name)
+		streamDebugWriteInt32(streamId, setting.current)
+	end
+	streamDebugWriteBool(streamId, false)
 
 	streamDebugWriteInt32(streamId, self.cp.generationPosition.fieldNum)
 	
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
-		copyCourseFromDriverID = networkGetObjectId(self.cp.copyCourseFromDriver)
+		copyCourseFromDriverID = NetworkUtil.getObjectId(self.cp.copyCourseFromDriver)
 	end
 	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
 	
 	
 	local savedCombineId;
 	if self.cp.savedCombine ~= nil then
-		savedCombineId = networkGetObjectId(self.cp.savedCombine)
+		savedCombineId = NetworkUtil.getObjectId(self.cp.savedCombine)
 	end
 	streamDebugWriteInt32(streamId, savedCombineId)
 
 	local activeCombineId;
 	if self.cp.activeCombine ~= nil then
-		activeCombineId = networkGetObjectId(self.cp.activeCombine)
+		activeCombineId = NetworkUtil.getObjectId(self.cp.activeCombine)
 	end
 	streamDebugWriteInt32(streamId, activeCombineId)
 
 	local current_trailer_id;
 	if self.cp.currentTrailerToFill ~= nil then
-		current_trailer_id = networkGetObjectId(self.cp.currentTrailerToFill)
+		current_trailer_id = NetworkUtil.getObjectId(self.cp.currentTrailerToFill)
 	end
 	streamDebugWriteInt32(streamId, current_trailer_id)
 
@@ -1426,7 +1457,7 @@ function courseplay:writeStream(streamId, connection)
 	
 	--print(string.format("%s:write: numCourses: %s loadedCourses: %s",tostring(self.name),tostring(self.cp.numCourses),tostring(#self.cp.loadedCourses)))
 	if self.cp.numCourses > #self.cp.loadedCourses then
-		courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  sync temp course", 5)
+		courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  sync temp course", 5)
 		streamDebugWriteInt32(streamId, #(self.Waypoints))
 		for w = 1, #(self.Waypoints) do
 			--print("writing point "..tostring(w))
@@ -1448,7 +1479,7 @@ function courseplay:writeStream(streamId, connection)
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
 	
-	courseplay:debug("id: "..tostring(networkGetObjectId(self)).."  base: write stream end", 5)
+	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
 
 
@@ -1560,7 +1591,8 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
 		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
-		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == 'true');
+		-- TODO: move this (as all others) into its own class and get rid of the toggle force madness
+		self.cp.symmetricLaneChange = offsetData[4] == 'true';
 		if not offsetData[5] then offsetData[5] = 0; end;
 		courseplay:changeLoadUnloadOffsetX(self, nil, tonumber(offsetData[5]));
 		if not offsetData[6] then offsetData[6] = 0; end;

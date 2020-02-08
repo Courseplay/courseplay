@@ -618,7 +618,7 @@ function courseplay:unload_combine(vehicle, dt)
 					local maxX,_,maxZ = localToWorld(vehicle.cp.directionNode,-sideMultiplier*maxDiameter,0,-(trailerOffset+(0.5*maxDiameter)));
 					local fieldX,_,fieldZ = localToWorld(vehicle.cp.directionNode,0,0,-(trailerOffset+(0.5*maxDiameter)));
 					courseplay:debug(string.format("%s: is reverse possible",nameNum(vehicle)),4)	
-					if courseplay:isField(maxX, maxZ, 1, 1) and courseplay:getFieldNumForPosition(fieldX,fieldZ) == courseplay:getFieldNumForPosition(maxX,maxZ) then --is the outside point of the course on the field and same field, the make a nice circle
+					if courseplay:isField(maxX, maxZ, 1, 1) and courseplay.fields:getFieldNumForPosition(fieldX,fieldZ) == courseplay.fields:getFieldNumForPosition(maxX,maxZ) then --is the outside point of the course on the field and same field, the make a nice circle
 						courseplay:debug(string.format("%s: points are on field -> turn",nameNum(vehicle)),4)	
 						vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = localToWorld(vehicle.cp.directionNode, 0,0,-(trailerOffset+totalLength+(0.5*maxDiameter)));
 						vehicle.cp.curTarget.rev = true;
@@ -1651,14 +1651,14 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		return false
 	end
 
-	local fieldNum = courseplay:onWhichFieldAmI( vehicle ); 
+	local fieldNum = courseplay.fields:onWhichFieldAmI( vehicle );
 		
 	if fieldNum == 0 then														-- No combines are aviable use us again
 		local combine = vehicle.cp.activeCombine or vehicle.cp.lastActiveCombine or vehicle;
-		fieldNum = courseplay:onWhichFieldAmI( combine );
+		fieldNum = courseplay.fields:onWhichFieldAmI( combine );
 		if fieldNum == 0 and mode4_6 then
 			-- My unloading course doesn't end on a field so I need to know on which field I am returning to by using the waypoint x and z
-			fieldNum = courseplay:getFieldNumForPosition( tx, tz )
+			fieldNum = courseplay.fields:getFieldNumForPosition( tx, tz )
 		end
 		if fieldNum == 0 then
 			courseplay.debugVehicle( 9, vehicle, "I'm not on field, my combine isn't either" )
@@ -1666,7 +1666,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		else
 			courseplay.debugVehicle( 9, vehicle, "I'm not on field, my combine is on ".. tostring( fieldNum ))
 			-- pathfinding works only within the field, so we'll have to get to the field first
-			local closestPointToVehicleIx = courseplay.generation:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, vx, vz )
+			local closestPointToVehicleIx = courseplay:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, vx, vz )
 			-- we'll use this instead of the vehicle location, so tractor will drive directly to this point first 
 			vx = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cx
 			vz = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cz
@@ -1675,7 +1675,7 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
 		courseplay.debugVehicle( 9, vehicle, "I'm on field " .. tostring( fieldNum ))
 		local _, pointInPoly, _, _ = courseplay.fields:getPolygonData(courseplay.fields.fieldData[fieldNum].points, cx, cz, true, true, true);
 		if not pointInPoly then
-			local closestPointToVehicleIx = courseplay.generation:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, cx, cz )
+			local closestPointToVehicleIx = courseplay:getClosestPolyPoint( courseplay.fields.fieldData[ fieldNum ].points, cx, cz )
 			cx = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cx
 			cz = courseplay.fields.fieldData[ fieldNum ].points[ closestPointToVehicleIx ].cz
 		end	
@@ -1743,26 +1743,6 @@ function courseplay:calculateAstarPathToCoords( vehicle, combine, tx, tz, endBef
   end
 end
 
-
-
-function courseplay:onWhichFieldAmI(vehicle)
-	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode);
-	return courseplay:getFieldNumForPosition( positionX, positionZ )
-end
-
-function courseplay:getFieldNumForPosition( positionX, positionZ )
-	local fieldNum = 0;
-	for index, field in pairs(courseplay.fields.fieldData) do
-		if positionX >= field.dimensions.minX and positionX <= field.dimensions.maxX and positionZ >= field.dimensions.minZ and positionZ <= field.dimensions.maxZ then
-			local _, pointInPoly, _, _ = courseplay.fields:getPolygonData(field.points, positionX, positionZ, true, true, true);
-			if pointInPoly then
-				fieldNum = index
-				break
-			end
-		end	
-	end
-	return fieldNum
-end
 
 function courseplay:getWaypointShift(vehicle,tractor)
 	if not tractor:getIsCourseplayDriving() then

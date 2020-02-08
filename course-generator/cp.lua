@@ -11,7 +11,7 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 
 		wp.generated = true
 		wp.ridgeMarker = point.ridgeMarker
-		wp.angle = courseGenerator.toCpAngle( point.nextEdge.angle )
+		wp.angle = courseGenerator.toCpAngleDeg( point.nextEdge.angle )
 		wp.cx = point.x
 		wp.cz = -point.y
 		wp.wait = nil
@@ -50,7 +50,42 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 	end
 end
 
-function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
+function courseGenerator.generate( vehicle )
+
+	local fieldCourseName = tostring(vehicle.cp.currentCourseName);
+	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
+		fieldCourseName = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].name;
+	end;
+	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), 7);
+
+	local poly = {}
+	local islandNodes = {}
+	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
+		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points, true);
+		poly.numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
+		if vehicle.cp.courseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
+			if not courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes then
+				courseGenerator.findIslands( courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum])
+			end
+			islandNodes = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes
+		end
+	else
+		poly.points = courseplay.utils.table.copy(vehicle.Waypoints, true);
+		poly.numPoints = #(poly.points);
+	end;
+
+	courseplay:clearCurrentLoadedCourse(vehicle);
+
+	local workWidth = vehicle.cp.workWidth;
+	if vehicle.cp.multiTools > 1 then
+		workWidth = workWidth * vehicle.cp.multiTools
+	end
+
+	if vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_VEHICLE_POSITION then
+		vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
+		vehicle.cp.generationPosition.hasSavedPosition = true
+		vehicle:setCpVar('generationPosition.fieldNum',vehicle.cp.fieldEdge.selectedField.fieldNum,courseplay.isClient)
+	end
 
 	local field = {}
 	local headlandSettings = {}
@@ -123,7 +158,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		headlandSettings.isClockwise = not vehicle.cp.headland.userDirClockwise
 	end
 	headlandSettings.mode = vehicle.cp.headland.mode
-	-- This is to adjust the turnradius to account for multiTools haveing more tracks than you would have with just one tool causing the innermost tool on the headland 
+	-- This is to adjust the turn radius to account for multiTools having more tracks than you would have with just one tool causing the innermost tool on the headland
 	-- turn tighter than possible
 	-- Using vehicle.cp.turnDiameter has this is updated when the user changes the vaule
 	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter/2
@@ -194,6 +229,11 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
+
+	if CpManager.isMP then
+		CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints);
+	end
+	
 	return status, ok
 end
 
