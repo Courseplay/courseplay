@@ -349,24 +349,24 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Mover pala a posición de pre-descarga" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="CP: Mover pala a posición de descarga" />
 		
-    <text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Activar course editor" />
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Activar course editor" />
 		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Deshacer ultima modificación" />
-		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Salvar cambios" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"							text="Courseplay Editor: Aumentar velocidad en wp" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"							text="Courseplay Editor: Disminuir velocidad en wp" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"						text="Courseplay Editor: Eliminar waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"						text="Courseplay Editor: Eliminar siguiente wp" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"						text="Courseplay Editor: Eliminar todos los wp desde el principio" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"						text="Courseplay Editor: Eliminar todos los wp hasta el final" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"						text="Courseplay Editor: Insertar waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"						text="Courseplay Editor: Cambiar tipo de waypoint" />
-		<text name="COURSEPLAY_EDITOR_NORMAL" 							text="Normal" />
-		<text name="COURSEPLAY_EDITOR_WAIT" 							text="Pausa" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Guardar cambios" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Aumentar velocidad en punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Disminuir velocidad en punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Eliminar punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Eliminar siguiente punto espera" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Eliminar todos los punto espera desde el principio" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Eliminar todos los punto espera hasta el final" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Insertar punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Cambiar tipo de punto espera" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Pausa" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Cruce" />
-		<text name="COURSEPLAY_EDITOR_UNLOAD" 							text="Descarga" />
-		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Inicio de giro" />
-		<text name="COURSEPLAY_EDITOR_TURNEND" 							text="Fin de giro" />
-		<text name="COURSEPLAY_EDITOR_REVERSE" 							text="Atrás" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 								text="Descarga" />
+		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Iniciar de giro" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 								text="Fin de giro" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 								text="Atrás" />
 
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Mostrar el cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Ocultar el cursor" />
@@ -414,8 +414,8 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="No instalado" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="No usar" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Para Descargar/Cargar" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="To park vehicle" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="For unload/refill and park" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Para aparcar vehículo" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Para descarga/rellenar y aparcar" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(y retorno)" />
