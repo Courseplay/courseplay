@@ -15,7 +15,7 @@ function courseplay:start(self)
 
 	-- TODO: move this to TrafficCollision.lua
 	if self:getAINeedsTrafficCollisionBox() then
-		courseplay:setCollisionRoot()
+		courseplay:setCollisionRoot(self)
 	end
 
 	if self.setRandomVehicleCharacter ~= nil then
@@ -457,7 +457,7 @@ function courseplay:start(self)
 	--print('startStop 509')
 end;
 
-function courseplay:setCollisionRoot()
+function courseplay:setCollisionRoot(self)
 	local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
 	if collisionRoot ~= nil and collisionRoot ~= 0 then
 		local collision = getChildAt(collisionRoot, 0)
