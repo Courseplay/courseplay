@@ -174,7 +174,7 @@ function PathfinderUtil.findCollidingShapes(myCollisionData, yRot, vehicleData)
     local collidingShapes = overlapBox(
             center.x, center.y + 1, center.z,
             0, yRot, 0,
-            vehicleData.dRight + vehicleData.dLeft, 1, vehicleData.dFront + vehicleData.dRear,
+            math.abs(vehicleData.dRight) + math.abs(vehicleData.dLeft), 1, math.abs(vehicleData.dFront) + math.abs(vehicleData.dRear),
             '', nil, AIVehicleUtil.COLLISION_MASK, true, true, true)
     if collidingShapes > 0 then
         --courseplay.debugFormat(7, 'x = %.1f, z = %.1f, %d', center.x, center.z, collidingShapes)
