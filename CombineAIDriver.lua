@@ -97,8 +97,8 @@ function CombineAIDriver:init(vehicle)
 				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
 			else
 				-- if there's no animation we have to use this, as seen in the Giants pipe code
-				self.pipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
-				self.pipe:updatePipeNodes(999999, nil)
+				self.vehicle:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
+				self.vehicle:updatePipeNodes(999999, nil)
 			end
 		end
 		self.pipeOffsetX, _, self.pipeOffsetZ = localToLocal(dischargeNode.node, AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
@@ -107,8 +107,8 @@ function CombineAIDriver:init(vehicle)
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 0, true)
 			else
-				self.pipe:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
-				self.pipe:updatePipeNodes(999999, nil)
+				self.vehicle:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
+				self.vehicle:updatePipeNodes(999999, nil)
 			end
 		end
 		if self.vehicle.spec_foldable then
@@ -764,7 +764,7 @@ function CombineAIDriver:openPipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_OPEN then
 		self:debug('Opening pipe')
-		self.pipe:setPipeState(self.PIPE_STATE_OPEN)
+		self.vehicle:setPipeState(self.PIPE_STATE_OPEN)
 	end
 end
 
@@ -773,7 +773,7 @@ function CombineAIDriver:closePipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_CLOSED then
 		self:debug('Closing pipe')
-		self.pipe:setPipeState(self.PIPE_STATE_CLOSED)
+		self.vehicle:setPipeState(self.PIPE_STATE_CLOSED)
 	end
 end
 
