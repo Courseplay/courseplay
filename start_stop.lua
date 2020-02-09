@@ -15,15 +15,7 @@ function courseplay:start(self)
 
 	-- TODO: move this to TrafficCollision.lua
 	if self:getAINeedsTrafficCollisionBox() then
-		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
-		if collisionRoot ~= nil and collisionRoot ~= 0 then
-			local collision = getChildAt(collisionRoot, 0)
-			link(getRootNode(), collision)
-
-			self.spec_aiVehicle.aiTrafficCollision = collision
-
-			delete(collisionRoot)
-		end
+		courseplay:setCollisionRoot()
 	end
 
 	if self.setRandomVehicleCharacter ~= nil then
@@ -465,6 +457,17 @@ function courseplay:start(self)
 	--print('startStop 509')
 end;
 
+function courseplay:setCollisionRoot()
+	local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
+	if collisionRoot ~= nil and collisionRoot ~= 0 then
+		local collision = getChildAt(collisionRoot, 0)
+		link(getRootNode(), collision)
+
+		self.spec_aiVehicle.aiTrafficCollision = collision
+
+		delete(collisionRoot)
+end
+
 function courseplay:getCanUseCpMode(vehicle)
 	-- check engine running state
 	if not courseplay:getIsEngineReady(vehicle) then
@@ -609,7 +612,10 @@ function courseplay:stop(self)
 
 	-- TODO: move this to TrafficCollision.lua
     if self:getAINeedsTrafficCollisionBox() then
-        setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
+		if self.spec_aiVehicle.aiTrafficCollision==nil then
+			courseplay:setCollisionRoot()
+        end
+		setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
         self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
     end
 
