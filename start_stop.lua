@@ -666,6 +666,9 @@ function courseplay:stop(self)
 
 	self.cp.lastInfoText = nil
 
+	--Returns Control to Player:
+	self:requestActionEventUpdate() 
+	
 	if courseplay.isClient then
 		return
 	end
@@ -826,8 +829,6 @@ function courseplay:stop(self)
 	if CpManager.ingameMapIconActive then
 		courseplay:deleteMapHotspot(self);
 	end;
-
-	self:requestActionEventUpdate() 
 	
 	--remove from activeCoursePlayers
 	CpManager:removeFromActiveCoursePlayers(self);
