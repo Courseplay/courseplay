@@ -14,7 +14,7 @@ function courseplay:start(self)
 	end;
 
 	-- TODO: move this to TrafficCollision.lua
-	--[[if self:getAINeedsTrafficCollisionBox() then
+	if self:getAINeedsTrafficCollisionBox() and not courseplay.isClient then
 		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
 		if collisionRoot ~= nil and collisionRoot ~= 0 then
 			local collision = getChildAt(collisionRoot, 0)
@@ -24,7 +24,7 @@ function courseplay:start(self)
 
 			delete(collisionRoot)
 		end
-	end]]--
+	end
 
 	if self.setRandomVehicleCharacter ~= nil then
 		self:setRandomVehicleCharacter()
@@ -608,10 +608,10 @@ function courseplay:stop(self)
 	self.spec_enterable.disableCharacterOnLeave = true;
 
 	-- TODO: move this to TrafficCollision.lua
-    --[[if self:getAINeedsTrafficCollisionBox() then
+    if self:getAINeedsTrafficCollisionBox() and not courseplay.isClient then
         setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
         self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
-    end]]--
+    end
 
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
