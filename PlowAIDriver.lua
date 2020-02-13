@@ -103,7 +103,7 @@ function PlowAIDriver:rotatePlow()
 	local ridgeMarker = self.course:getRidgeMarkerState(self.ppc:getCurrentWaypointIx())
 	local plowShouldBeOnTheLeft = ridgeMarker == courseplay.RIDGEMARKER_RIGHT
 	self:debug('Ridge marker %d, plow should be on the left %s', ridgeMarker, tostring(plowShouldBeOnTheLeft))
-	self.plow.spec_plow:setRotationMax(plowShouldBeOnTheLeft)
+	self.plow:setRotationMax(plowShouldBeOnTheLeft)
 end
 
 --- Attempt to set the tool offset automatically, assuming the attacher joint of the tool is in the middle (the axis

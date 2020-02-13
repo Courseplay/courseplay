@@ -525,7 +525,7 @@ function AIDriver:onEndCourse()
 			courseplay:stop(self.vehicle)
 			-- TODO: encapsulate this in an AutoDriveInterface class
 			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
-			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, 0, nil, nil, nil)
+			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, -3, nil, nil, nil)
 		end
 	elseif self.vehicle.cp.stopAtEnd then
 		if self.state ~= self.states.STOPPED then

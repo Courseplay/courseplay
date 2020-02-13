@@ -441,8 +441,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"						text="Опускать оборудование" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Опускать оборудование при начале прохода или в конце разворота на поворотной полосе." />
 
-		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"					text="Use pathfinding in turns" />
-		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"					text="Поиск пути при поворотах" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Использовать поиск пути на полях непрямоугольной формы, например, чтобы проехать на поворотной полосе до следующего ряда." />
 		<text name="COURSEPLAY_WORKER_WAGES"								text="Уровень зарплаты на Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Заработная плата рабочего на Courseplay в процентах от заработной платы обычного работника." />
 		<text name="COURSEPLAY_SELF_UNLOAD"									text="Саморазгрузка комбайна" />
