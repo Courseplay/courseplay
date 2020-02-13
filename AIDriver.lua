@@ -290,6 +290,7 @@ function AIDriver:update(dt)
 	self:drive(dt)
 	self:checkIfBlocked()
 	self:payWages(dt)
+	self:detectSlipping()
 	self:resetSpeed()
 end
 
@@ -1488,6 +1489,30 @@ end
 
 function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
+end
+
+function AIDriver:detectSlipping()
+	if self.vehicle.spec_motorized then
+		local slippingNow = self.vehicle:getMotor():getClutchRotSpeed() > 10 and math.abs(self.vehicle:getLastSpeed()) < 0.5
+		if not slippingNow then
+			if self.isSlipping then
+				self:debug('Stopped slipping')
+				self:clearInfoText('SLIPPING_1')
+				self.startedSlippingAt = math.huge
+			end
+			self.isSlipping = false
+		end
+		if slippingNow then
+			if self.startedSlippingAt and self.vehicle.timer - self.startedSlippingAt > 4000 then
+				self:debugSparse('Slipping')
+				self:setInfoText('SLIPPING_1')
+			end
+			if not self.isSlipping then
+				self.startedSlippingAt = self.vehicle.timer
+			end
+			self.isSlipping = true
+		end
+	end
 end
 
 function AIDriver:initWages()

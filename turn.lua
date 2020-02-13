@@ -2399,9 +2399,9 @@ TurnContext = CpObject()
 --- is created
 ---@param workWidth number working width
 ---@param frontMarkerDistance number distance of the frontmost work area from the vehicle's root node (positive is
---- in front of the vehicle. We'll add a node (frontMarkerNode) offset by frontMarkerDistance from the turn end
---- node so when the vehicle's root node reaches the frontMarkerNode, the front of the work area will exactly be on the
---- turn end node. (The vehicle must be steered to the frontMarkerNode instead of the turn end node so the implements
+--- in front of the vehicle. We'll add a node (vehicleAtTurnEndNode) offset by frontMarkerDistance from the turn end
+--- node so when the vehicle's root node reaches the vehicleAtTurnEndNode, the front of the work area will exactly be on the
+--- turn end node. (The vehicle must be steered to the vehicleAtTurnEndNode instead of the turn end node so the implements
 --- reach exactly the row end)
 ---@param turnEndSideOffset number offset of the turn end in meters to left (>0) or right (<0) to end the turn left or
 --- right of the turn end node. Used when there's an offset to consider, for example because the implement is not
@@ -2426,15 +2426,24 @@ function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMar
 
 	self:setupTurnStart(course, aiDriverData)
 
+	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn start
+	self.frontMarkerDistance = frontMarkerDistance or 0
+	if not aiDriverData.vehicleAtTurnStartNode then
+		aiDriverData.vehicleAtTurnStartNode = courseplay.createNode( 'vehicleAtTurnStart', 0, - self.frontMarkerDistance, 0, self.workEndNode )
+	end
+	setTranslation(aiDriverData.vehicleAtTurnStartNode, 0, 0, - self.frontMarkerDistance)
+
+	self.vehicleAtTurnStartNode = aiDriverData.vehicleAtTurnStartNode
+
 	self:setupTurnEnd(course, aiDriverData, turnEndSideOffset)
 
 	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn end
 	self.frontMarkerDistance = frontMarkerDistance or 0
-	if not aiDriverData.frontMarkerNode then
-		aiDriverData.frontMarkerNode = courseplay.createNode( 'frontMarker', 0, - self.frontMarkerDistance, 0, self.turnEndWpNode.node )
+	if not aiDriverData.vehicleAtTurnEndNode then
+		aiDriverData.vehicleAtTurnEndNode = courseplay.createNode( 'vehicleAtTurnEnd', 0, - self.frontMarkerDistance, 0, self.turnEndWpNode.node )
 	end
-	setTranslation(aiDriverData.frontMarkerNode, 0, 0, - self.frontMarkerDistance)
-	self.frontMarkerNode = aiDriverData.frontMarkerNode
+	setTranslation(aiDriverData.vehicleAtTurnEndNode, 0, 0, - self.frontMarkerDistance)
+	self.vehicleAtTurnEndNode = aiDriverData.vehicleAtTurnEndNode
 
 	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode, 0, 0, 0)
 	self.leftTurn = self.dx > 0
@@ -2541,7 +2550,7 @@ end
 
 -- node's position in the turn end wp node's coordinate system
 function TurnContext:getLocalPositionFromTurnEnd(node)
-	return localToLocal(node, self.frontMarkerNode, 0, 0, 0)
+	return localToLocal(node, self.vehicleAtTurnEndNode, 0, 0, 0)
 end
 
 -- node's position in the turn start wp node's coordinate system
@@ -2551,7 +2560,7 @@ end
 
 -- turn end wp node's position in node's coordinate system
 function TurnContext:getLocalPositionOfTurnEnd(node)
-	return localToLocal(self.frontMarkerNode, node, 0, 0, 0)
+	return localToLocal(self.vehicleAtTurnEndNode, node, 0, 0, 0)
 end
 
 function TurnContext:isPointingToTurnEnd(node, thresholdDeg)
@@ -2696,8 +2705,8 @@ function TurnContext:createEndingTurnCourse2(vehicle, corner)
 	local r = vehicle.cp.turnDiameter / 2
 	local startPos, endPos = {}, {}
 	startPos.x, _, startPos.z = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
-	endPos.x, _, endPos.z = getWorldTranslation(self.frontMarkerNode)
-	-- use side offset 0 as all the offsets is already included in the frontMarkerNode
+	endPos.x, _, endPos.z = getWorldTranslation(self.vehicleAtTurnEndNode)
+	-- use side offset 0 as all the offsets is already included in the vehicleAtTurnEndNode
 	local myCorner = corner or Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos	, r, 0)
 	courseplay:clearTurnTargets(vehicle)
 	local center = myCorner:getArcCenter()
@@ -2706,7 +2715,7 @@ function TurnContext:createEndingTurnCourse2(vehicle, corner)
 	courseplay:generateTurnCircle(vehicle, center, startArc, endArc, r, self:isLeftTurn() and 1 or -1, false);
 	-- make sure course reaches the front marker node so end it well behind that node
 	local endStraight = {}
-	endStraight.x, _, endStraight.z = localToWorld(self.frontMarkerNode, 0, 0, 3)
+	endStraight.x, _, endStraight.z = localToWorld(self.vehicleAtTurnEndNode, 0, 0, 3)
 	courseplay:generateTurnStraightPoints(vehicle, endArc, endStraight)
 	local course = Course(vehicle, vehicle.cp.turnTargets, true)
 	-- if we created our corner, delete it now.
@@ -2722,7 +2731,7 @@ function TurnContext:createEndingTurnCourse(vehicle)
 	local waypoints = {}
 	-- make sure course reaches the front marker node so end it well behind that node
 	for d = -10, 3, 1 do
-		local x, _, z = localToWorld(self.frontMarkerNode, 0, 0, d)
+		local x, _, z = localToWorld(self.vehicleAtTurnEndNode, 0, 0, d)
 		table.insert(waypoints, {x = x, z = z})
 	end
 	return Course(vehicle, waypoints, true)
@@ -2747,11 +2756,11 @@ end
 ---@param course Course pathfinding course to append the ending course to
 function TurnContext:appendEndingTurnCourse(course)
 	-- make sure course reaches the front marker node so end it well behind that node
-	local _, _, dzFrontMarker = course:getWaypointLocalPosition(self.frontMarkerNode, course:getNumberOfWaypoints())
+	local _, _, dzFrontMarker = course:getWaypointLocalPosition(self.vehicleAtTurnEndNode, course:getNumberOfWaypoints())
 	local _, _, dzWorkStart = course:getWaypointLocalPosition(self.workStartNode, course:getNumberOfWaypoints())
 	local waypoints = {}
 	-- A line between the front marker and the work start node, regardless of which one is first
-	local startNode = dzFrontMarker < dzWorkStart and self.frontMarkerNode or self.workStartNode
+	local startNode = dzFrontMarker < dzWorkStart and self.vehicleAtTurnEndNode or self.workStartNode
     -- +1 so the first waypoint of the appended line won't overlap with the last wp of course
 	for d = math.min(dzFrontMarker, dzWorkStart) + 1, math.max(dzFrontMarker, dzWorkStart) + 3, 1 do
 		local x, y, z = localToWorld(startNode, 0, 0, d)
@@ -2806,8 +2815,8 @@ function TurnContext:getTurnEndNodeAndOffsets()
 	local turnEndNode, startOffset, goalOffset
 	if self.frontMarkerDistance > 0 then
 		-- implement in front of vehicle. Turn should end with the implement at the work start position, this is where
-		-- the vehicle's root node is on the frontMarkerNode
-		turnEndNode = self.frontMarkerNode
+		-- the vehicle's root node is on the vehicleAtTurnEndNode
+		turnEndNode = self.vehicleAtTurnEndNode
 		startOffset = self.frontMarkerDistance
 		goalOffset = 0
 	else
@@ -2849,8 +2858,8 @@ function TurnContext:drawDebug()
 			nx, ny, nz = localToWorld(self.lateWorkEndNode, self.workWidth / 2, 0, 0)
 			cpDebug:drawLine(cx, cy + height, cz, 0.7, 0, 0, nx, ny + height, nz)
 		end
-		if self.frontMarkerNode then
-			cx, cy, cz = localToWorld(self.frontMarkerNode, 0, 0, 0)
+		if self.vehicleAtTurnEndNode then
+			cx, cy, cz = localToWorld(self.vehicleAtTurnEndNode, 0, 0, 0)
 			cpDebug:drawLine(cx, cy, cz, 1, 1, 0, cx, cy + 2, cz)
 		end
 	end
