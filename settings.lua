@@ -127,11 +127,11 @@ function courseplay:toggleConvoyActive(vehicle)
 end
 
 function courseplay:setConvoyMinDistance(vehicle, changeBy)
-	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 200);
+	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 2000);
 end
 
 function courseplay:setConvoyMaxDistance(vehicle, changeBy)
-	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 300);
+	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 3000);
 end
 
 function courseplay:toggleFuelSaveOption(self)
