@@ -97,7 +97,7 @@ end
 -- for example, io.flush is not available from within the game.
 --
 function courseGenerator.isRunningInGame()
-	return g_currentMission ~= nil;
+	return g_currentMission ~= nil and not g_currentMission.mock;
 end
 
 function courseGenerator.getCurrentTime()
@@ -135,6 +135,16 @@ function courseGenerator.pointsToXzInPlace(points)
 	end
 	return points
 end
+
+--- Convert an array of points from x/z to x/y in place (also keeping other attributes)
+function courseGenerator.pointsToXyInPlace(points)
+	for _, point in ipairs(points) do
+		point.y = -point.z
+		point.z = nil
+	end
+	return points
+end
+
 
 function courseGenerator.pointsToCxCz( points )
 	local result = {}

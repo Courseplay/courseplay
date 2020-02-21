@@ -72,7 +72,7 @@ function ShovelModeAIDriver:setHudContent()
 	courseplay.hud:setShovelModeAIDriverContent(self.vehicle)
 end
 
-function ShovelModeAIDriver:start(ix)
+function ShovelModeAIDriver:start()
 	self:beforeStart()
 	--finding my working points
 	local vehicle = self.vehicle

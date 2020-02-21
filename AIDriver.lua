@@ -22,7 +22,7 @@ This is the base class of all AI drivers (modes) and implements MODE_TRANSPORT (
 using the PurePursuitController (PPC). It replaces the code in drive.lua and has the
 basic functionality:
 •	Drive a course
-•	Drive turn maneuvers (by passing on control to the code in turn.lua for the duration of the turn)
+•	Drive turn maneuvers
 •	Add an alignment when needed before starting the course (this is a lot easier now as
 it just initializes the PPC with the alignment course and after that is finished, initializes
 it with the regular course)
@@ -200,8 +200,8 @@ function AIDriver:beforeStart()
 end
 
 --- Start driving
--- @param ix the waypoint index to start driving at
-function AIDriver:start(ix)
+--- @param startingPoint number, one of StartingPointSetting.START_AT_* constants
+function AIDriver:start(startingPoint)
 	self:beforeStart()
 	self.state = self.states.RUNNING
 	-- derived classes must disable collision detection if they don't need its
@@ -209,6 +209,7 @@ function AIDriver:start(ix)
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
+	local ix = self.mainCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, self.mainCourse:getNumberOfWaypoints())
 	self:startCourseWithAlignment(self.mainCourse, ix)
 end
@@ -224,7 +225,7 @@ function AIDriver:dismiss()
 end
 
 --- Stop the driver
--- @param reason as defined in globalInfoText.msgReference
+--- @param msgReference string as defined in globalInfoText.msgReference
 function AIDriver:stop(msgReference)
 	self:deleteCollisionDetector()
 	-- not much to do here, see the derived classes
@@ -260,6 +261,7 @@ function AIDriver:resumeAt(ix)
 	self.ppc:initialize(ix)
 end
 
+--- @param msgReference string as defined in globalInfoText.msgReference
 function AIDriver:setInfoText(msgReference)
 	if msgReference then
 		self:debugSparse('set info text to %s', msgReference)
@@ -267,6 +269,7 @@ function AIDriver:setInfoText(msgReference)
 	end
 end
 
+--- @param msgReference string as defined in globalInfoText.msgReference
 function AIDriver:clearInfoText(msgReference)
 	if msgReference then
 		self.activeMsgReferences[msgReference] = nil
@@ -889,9 +892,8 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 			if tipper.spec_dischargeable then	
 				readyToDischarge = false
 				tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
-				nx,ny,nz = getWorldTranslation(tipRefpoint);
 				local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
-				_,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
+				local _,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
 				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 
 				local foundHeap = self:checkForHeapBehindMe(tipper)

@@ -1323,14 +1323,9 @@ function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y)
 	return nil;
 end;
 
-function courseplay:getPointDirection(cp, np, useC)
-	if useC == nil then useC = true; end;
-	local x,z = 'x','z'; -- Jeez.
-	if useC then
-		x,z = 'cx','cz';
-	end;
-
-	local dx, dz = np[x] - cp[x], np[z] - cp[z];
+function courseplay:getPointDirection(cp, np)
+	-- TODO get rid of cx/cz
+	local dx, dz = (np.x or np.cx) - (cp.x or cp.cx), (np.z or np.cz) - (cp.z or cp.cz)
 	local vl = MathUtil.vector2Length(dx, dz);
 	if vl and vl > 0.0001 then
 		dx = dx / vl;

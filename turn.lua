@@ -48,11 +48,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
 	end;
 
-	-- This is to correct course work width when loading from a save course when using multiTools
-	if vehicle.cp.multiTools and vehicle.cp.multiTools > 1 and vehicle.cp.courseWorkWidth ~= vehicle.cp.workWidth*vehicle.cp.multiTools then
-		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth*vehicle.cp.multiTools
-	end;
-
 	-- find out the headland height to figure out if we have enough room on the headland to make turns
 	if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
 		-- First headland is only half the work width
@@ -184,12 +179,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 			local extRadius = 0.5 + (0.15 * directionNodeToTurnNodeLength); -- The extra calculation is for dynamic trailer length to prevent jackknifing;
 			turnInfo.turnRadius = vehicle.cp.turnDiameter * 0.5 + extRadius;
 			turnInfo.turnDiameter = turnInfo.turnRadius * 2;
-
-			--- Get the new turn target with offset
-			if courseplay:getIsVehicleOffsetValid(vehicle) and turnContext:isHeadlandCorner() == false then
-				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(vehicle)), 14);
-				courseplay:turnWithOffset(vehicle);
-			end;
 
 			local totalOffsetX = vehicle.cp.totalOffsetX * -1
 
@@ -1988,16 +1977,6 @@ function courseplay:clearTurnTargets(vehicle)
 	vehicle.cp.haveCheckedMarkersThisTurn = false;
 	vehicle.cp.headlandTurn = nil
 
-	--- RESET OFFSET TOGGLES
-	if vehicle.cp.symmetricLaneChange and not vehicle.cp.switchLaneOffset then
-		vehicle.cp.switchLaneOffset = true;
-		courseplay:debug(string.format("%s: isTurning=false, switchLaneOffset=false -> set switchLaneOffset to true", nameNum(vehicle)), 12);
-	end;
-	if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and not vehicle.cp.switchToolOffset then
-		vehicle.cp.switchToolOffset = true;
-		courseplay:debug(string.format("%s: isTurning=false, switchToolOffset=false -> set switchToolOffset to true", nameNum(vehicle)), 12);
-	end;
-
 	if vehicle.cp.turnCorner then
 		vehicle.cp.turnCorner:delete()
 		vehicle.cp.turnCorner = nil
@@ -2017,30 +1996,6 @@ function courseplay:needToWaitForTools(vehicle)
 	end
 	return wait
 end
-
-
-function courseplay:turnWithOffset(vehicle)
-	--SYMMETRIC LANE CHANGE
-	if vehicle.cp.symmetricLaneChange then
-		if vehicle.cp.switchLaneOffset then
-			if vehicle.cp.multiTools == 1 then
-				courseplay:changeLaneOffset(vehicle, nil, -vehicle.cp.laneOffset);
-			else
-				courseplay:changeLaneNumber(vehicle, -2*vehicle.cp.laneNumber)
-			end;
-			vehicle.cp.switchLaneOffset = false;
-			courseplay:debug(string.format("%s: cp.turnStage == 1, switchLaneOffset=true -> new laneOffset=%.1f, new totalOffset=%.1f, set switchLaneOffset to false", nameNum(vehicle), vehicle.cp.laneOffset, vehicle.cp.totalOffsetX), 12);
-		end;
-	end;
-	--TOOL OFFSET TOGGLE
-	if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil then
-		if vehicle.cp.switchToolOffset then
-			courseplay:changeToolOffsetX(vehicle, nil, vehicle.cp.toolOffsetX * -1, true);
-			vehicle.cp.switchToolOffset = false;
-			courseplay:debug(string.format("%s: cp.turnStage == 1, switchToolOffset=true -> new toolOffset=%.1f, new totalOffset=%.1f, set switchToolOffset to false", nameNum(vehicle), vehicle.cp.toolOffsetX, vehicle.cp.totalOffsetX), 12);
-		end;
-	end;
-end;
 
 function courseplay.createNode( name, x, z, yRotation, rootNode )
 	local node = createTransformGroup( name )
@@ -2598,6 +2553,7 @@ function TurnContext:setTargetNode(node)
 	self.targetNode = node
 end
 
+-- TODO: this should be a global util function, not under TurnContext
 function TurnContext:getNodeDirection(node)
 	local lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
 	return math.atan2( lx, lz )
@@ -2685,13 +2641,13 @@ end
 ---@param vehicle table
 ---@param r number turning radius in m
 ---@param sideOffset number (left < 0, right > 0) side offset to use when the course has an offset, for example
---- due to a tool or multi tool setting. When not supplied the total offset X set for the vehicle is used
+--- due to a tool setting. When not supplied the tool offset X set for the vehicle is used
 function TurnContext:createCorner(vehicle, r, sideOffset)
 	-- use the average angle of the turn end and the next wp as there is often a bend there
 	local endAngleDeg = self:getAverageEndAngleDeg()
 	courseplay.debugVehicle(14, vehicle, 'start angle: %.1f, end angle: %.1f (from %.1f and %.1f)', self.beforeTurnStartWp.angle,
 		endAngleDeg, self.turnEndWp.angle, self.afterTurnEndWp.angle)
-	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, sideOffset or vehicle.cp.totalOffsetX)
+	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, sideOffset or vehicle.cp.toolOffsetX)
 end
 
 --- Create a turn ending course using the vehicle's current position and the front marker node (where the vehicle must

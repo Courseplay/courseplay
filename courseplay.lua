@@ -37,7 +37,7 @@ courseplay.generation = {};
 courseplay.lights = {};
 courseplay.clock = 0;
 
-local sonOfaBangSonOfaBoom = {
+	local sonOfaBangSonOfaBoom = {
 	['56bb4a8d3f72d5a31aee0c317302dde5'] = true; -- Thomas
 	['9a9f028043394ff9de1cf6c905b515c1'] = true; -- Satis
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
@@ -181,10 +181,10 @@ local function setGlobalData()
 	courseplay.RIDGEMARKER_RIGHT = 2
 
 	-- "start at _ point" options
-	courseplay.START_AT_NEAREST_POINT = 1;
-	courseplay.START_AT_FIRST_POINT = 2;
-	courseplay.START_AT_CURRENT_POINT = 3;
-	courseplay.START_AT_NEXT_POINT = 4;
+	StartingPointSetting.START_AT_NEAREST_POINT = 1;
+	StartingPointSetting.START_AT_FIRST_POINT = 2;
+	StartingPointSetting.START_AT_CURRENT_POINT = 3;
+	StartingPointSetting.START_AT_NEXT_POINT = 4;
 
 	-- warning lights options
 	courseplay.lights.WARNING_LIGHTS_NEVER = 0;
@@ -302,7 +302,7 @@ local function setGlobalData()
 	[24]={name='self.cp.returnToFirstPoint',dataFormat='Bool'},
 	[25]={name='self.cp.ridgeMarkersAutomatic',dataFormat='Bool'},
 	[26]={name='self.cp.shovelStopAndGo',dataFormat='Bool'},
-	[27]={name='self.cp.startAtPoint',dataFormat='Int'},
+	[27]={name='self.cp.startAtPoint',dataFormat='Int'}, -- TODO: remove!
 	[28]={name='self.cp.stopAtEnd',dataFormat='Bool'},
 	[29]={name='self.cp.isDriving',dataFormat='Bool'},
 	[30]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
@@ -351,7 +351,6 @@ local function setGlobalData()
 	[73]={name='self.cp.visualWaypointsCrossing',dataFormat='Bool'},
 	[74]={name='self.cp.warningLightsMode',dataFormat='Int'},
 	[75]={name='self.cp.waitTime',dataFormat='Int'},
-	[76]={name='self.cp.symmetricLaneChange',dataFormat='Bool'},
 	[77]={name='self.cp.startingCorner',dataFormat='Int'},
 	[78]={name='self.cp.startingDirection',dataFormat='Int'},
 	[79]={name='self.cp.hasShovelStatePositions[2]',dataFormat='Bool'},

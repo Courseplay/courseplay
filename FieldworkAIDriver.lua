@@ -140,7 +140,8 @@ function FieldworkAIDriver.getImplementWithSpecialization(vehicle, specializatio
 end
 
 --- Start the course and turn on all implements when needed
-function FieldworkAIDriver:start(ix)
+--- @param startingPoint StartingPointSetting at which waypoint to start the course
+function FieldworkAIDriver:start(startingPoint)
 	self:debug('Starting in mode %d', self.mode)
 	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	self:setMarkers()
@@ -152,25 +153,61 @@ function FieldworkAIDriver:start(ix)
 	self.vehicle.cp.alignment.enabled = true
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
-	-- any offset imposed by the driver itself (tight turns, end of course, etc.), addtional to any
+	-- any offset imposed by the driver itself (tight turns, end of course, etc.), additional to any
 	-- tool offsets
 	self.aiDriverOffsetX = 0
 	self.aiDriverOffsetZ = 0
 
 	self:setUpCourses()
-	self.ppc:setNormalLookaheadDistance()
+
+	-- now that we have our unload/refill and fieldwork courses set up, see where to start
+	local closestFieldworkIx, dClosestFieldwork, closestFieldworkIxRightDirection, dClosestFieldworkRightDirection =
+		self.fieldworkCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
+
+	-- default to math.huge in case there isn't an unload refill course to make sure it only the fieldwork Ix is used
+	local closestUnloadRefillIx, dClosestUnloadRefill, closestUnloadRefillIxRightDirection, dClosestUnloadRefillRightDirection =
+		0, math.huge, 0, math.huge
+
+	if self.unloadRefillCourse then
+		closestUnloadRefillIx, dClosestUnloadRefill, closestUnloadRefillIxRightDirection, dClosestUnloadRefillRightDirection =
+			self.unloadRefillCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
+	end
+
+	local ix = self.course and self.course:getCurrentWaypointIx()
+	local startWithFieldwork
+
+	if startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) then
+		if dClosestFieldwork < dClosestUnloadRefill then
+			ix = closestFieldworkIx
+			startWithFieldwork = true
+		else
+			ix = closestUnloadRefillIx
+			startWithFieldwork = false
+		end
+	end
+	-- TODO: decide if we even need current point in this mode, does not seem to make any sense
+	if startingPoint:is(StartingPointSetting.START_AT_NEXT_POINT) or startingPoint:is(StartingPointSetting.START_AT_CURRENT_POINT) then
+		if dClosestFieldworkRightDirection < dClosestUnloadRefillRightDirection then
+			ix = closestFieldworkIxRightDirection
+			startWithFieldwork = true
+		else
+			ix = closestUnloadRefillIxRightDirection
+			startWithFieldwork = false
+		end
+	end
+	if startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
+		ix = 1
+		startWithFieldwork = true
+	end
 
 	self.waitingForTools = true
-	-- on which course are we starting?
-	-- the ix we receive here is the waypoint index in the fieldwork course and the unload/fill
-	-- course concatenated.
-	if ix > self.fieldworkCourse:getNumberOfWaypoints() then
-		-- beyond the first, fieldwork course: we are on the unload/refill part
-		self:changeToUnloadOrRefill()
-		self:startCourseWithAlignment(self.unloadRefillCourse, ix - self.fieldworkCourse:getNumberOfWaypoints())
-	else
-		-- we are on the fieldwork part
+	self.ppc:setNormalLookaheadDistance()
+
+	if startWithFieldwork then
 		self:startFieldworkWithPathfinding(ix)
+	else
+		self:changeToUnloadOrRefill()
+		self:startCourseWithAlignment(self.unloadRefillCourse, ix)
 	end
 end
 
@@ -653,14 +690,23 @@ function FieldworkAIDriver:setUpCourses()
 		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, #self.vehicle.Waypoints)
 	end
-	-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
+	-- get a signature of the course now, before offsetting it so can compare for the convoy
+	self.fieldworkCourseHash = self.fieldworkCourse:getHash()
+	-- apply the current tool offset to the fieldwork part (multitool offset is added by calculateOffsetCourse when needed)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX, self.vehicle.cp.toolOffsetZ)
 	-- TODO: consolidate the working width calculation and usage, this is currently an ugly mess
 	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or courseplay:getWorkWidth(self.vehicle))
+	if self.vehicle.cp.multiTools > 1 then
+		self:debug('Calculating offset course for position %d of %d', self.vehicle.cp.laneNumber, self.vehicle.cp.multiTools)
+		self.fieldworkCourse = self.fieldworkCourse:calculateOffsetCourse(
+				self.vehicle.cp.multiTools, self.vehicle.cp.laneNumber,  courseplay:getWorkWidth(self.vehicle),
+				self.vehicle.cp.settings.symmetricLaneChange:is(true))
+	end
 end
 
 function FieldworkAIDriver:setRidgeMarkers()
-	if not self.vehicle.cp.ridgeMarkersAutomatic then return end
+	-- no ridge markers with multitools to avoid collisions.
+	if not self.vehicle.cp.ridgeMarkersAutomatic or self.vehicle.cp.multiTools > 1 then return end
 	local active = self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState ~= self.states.TURNING
 	for _, workTool in ipairs(self.vehicle.cp.workTools) do
 		-- yes, another Giants typo. And not sure why implements with no ridge markers even have the spec_ridgeMarker
@@ -679,13 +725,13 @@ end
 function FieldworkAIDriver:updateFieldworkOffset()
 	-- (as lua passes tables by reference, we can directly change self.fieldworkCourse even if we passed self.course
 	-- to the PPC to drive)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
+	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
 		self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
 end
 
 function FieldworkAIDriver:hasSameCourse(otherVehicle)
-	if otherVehicle.cp.driver and otherVehicle.cp.driver.fieldworkCourse then
-		return self.fieldworkCourse:equals(otherVehicle.cp.driver.fieldworkCourse)
+	if otherVehicle.cp.driver and otherVehicle.cp.driver.fieldworkCourseHash then
+		return self.fieldworkCourseHash == otherVehicle.cp.driver.fieldworkCourseHash
 	else
 		return false
 	end
@@ -1197,7 +1243,6 @@ function FieldworkAIDriver:onDraw()
 	if self.plowReferenceNode then
 		DebugUtil.drawDebugNode(self.plowReferenceNode, 'Plow reference')
 	end
-
 
 	AIDriver.onDraw(self)
 end
