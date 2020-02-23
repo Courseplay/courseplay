@@ -227,8 +227,8 @@
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Manoeuvre arrière dans les fourrières"/>
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droite" />
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Courbée" />
-    <text name="COURSEPLAY_CENTER_MODE"									text="Centre de la parcelle (expérimental)" />
-    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="de bas en haut" />
+    <text name="COURSEPLAY_CENTER_MODE"									text="Gestion des passages" />
+    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers-retours" />
     <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire" />
     <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirale" />
     <text name="COURSEPLAY_ACTIVATED" 						 			text="Activé" />
@@ -411,7 +411,7 @@
     <text name="COURSEPLAY_FillType_Molassses"							text="Mélasse" />
 
     <text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="Conduite automatique" />
-    <text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Non-installé" />
+    <text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Pas installé" />
     <text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Ne pas Utiliser" />
     <text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Pour Déchargement/Chargement" />
     <text name="COURSEPLAY_AUTODRIVE_PARK"								text="Pour Stationner un Véhicule" />
