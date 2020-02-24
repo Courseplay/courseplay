@@ -226,11 +226,11 @@
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Circualires" />
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Manoeuvre arrière dans les fourrières"/>
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droite" />
-    <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Courbée" />
+    <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Virage" />
     <text name="COURSEPLAY_CENTER_MODE"									text="Gestion des passages" />
     <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers-retours" />
     <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire" />
-    <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirale" />
+    <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirales" />
     <text name="COURSEPLAY_ACTIVATED" 						 			text="Activé" />
     <text name="COURSEPLAY_NAME_ONLY" 									text="Nom seul" />
     <text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nom et Course" />
@@ -403,7 +403,7 @@
     <text name="COURSEPLAY_FUELSAVEOPTION"								text="Option Economie de carburant" />
     
     <text name="COURSEPLAY_RELOAD_COURSE_LIST" 							text="Actualiser la liste des courses" />
-    <text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 					text="Impossible de générer la course. Essayez de modifier les paramètres ou de déplacer le véhicule."/>
+    <text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 					text="Impossible de générer la course. Essayez de modifier les paramètres ou de déplacer le véhicule"/>
   	
     <text name="COURSEPLAY_FillType_BaleTwine" 							text="Ficelle" />
     <text name="COURSEPLAY_FillType_BaleNet" 							text="Filet" />
@@ -427,7 +427,7 @@
     <text name="COURSEPLAY_USE_AI_TURNS"				   				text="Utiliser les manœuvres de l'AI" />
     <text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Utiliser les manœuvres de l'AI au lieu des trajectoires calculées" />
     <text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Contour automatique des parcelles" />
-    <text name="COURSEPLAY_EARN_WAGES"					   				text="Les ouvriers Courseplay sont rémunérés" />
+    <text name="COURSEPLAY_EARN_WAGES"					   				text="Rémunérer les ouvriers Courseplay" />
 
     <text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Plus tôt" />
     <text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Plus tard" />
