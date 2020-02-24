@@ -23,12 +23,12 @@
     <text name="COURSEPLAY_START_COURSE" 						 		text="Démarrer la course" />
     <text name="COURSEPLAY_STOP_COURSE" 						 		text="Arrêter la course" />
     <text name="COURSEPLAY_MODE_1" 							 			text="Type: Transport (Chargement et livraison)" />
-    <text name="COURSEPLAY_MODE_2" 							 			text="Type: Mode poursuite (benne)" />
+    <text name="COURSEPLAY_MODE_2" 							 			text="Type: Remorque dans la parcelle" />
     <text name="COURSEPLAY_MODE_3" 							 			text="Type: Transbordeur" />
     <text name="COURSEPLAY_MODE_4" 							 			text="Type: Fertiliser et semer" />
     <text name="COURSEPLAY_MODE_5" 							 			text="Type: Aller à" />
-    <text name="COURSEPLAY_MODE_6" 							 			text="Type: Travail des cultures" />
-    <text name="COURSEPLAY_MODE_7" 							 			text="Type: Batteuse va à la benne" />
+    <text name="COURSEPLAY_MODE_6" 							 			text="Type: Travail dans la parcelle" />
+    <text name="COURSEPLAY_MODE_7" 							 			text="Type: Batteuse va à la remorque" />
     <text name="COURSEPLAY_MODE_8" 							 			text="Type: Transport de liquides" />
     <text name="COURSEPLAY_MODE_9" 							 			text="Type: Charger et décharger un godet" />
     <text name="COURSEPLAY_MODE_10" 									text="Type: Nivellement et compactage" />
@@ -101,10 +101,10 @@
     <text name="COURSEPLAY_COPY_COURSE" 						 		text="Copier la course:" />
     <text name="COURSEPLAY_VEHICLE" 						 			text="Véhicule" />
     <text name="COURSEPLAY_TEMP_COURSE" 						 		text="Course temporaire" />
-    <text name="COURSEPLAY_SPEED_TURN" 						 			text="Vitesse de virage:" />
+    <text name="COURSEPLAY_SPEED_TURN" 						 			text="Vitesse dans les virages:" />
     <text name="COURSEPLAY_SPEED_FIELD" 						 		text="Vitesse dans la parcelle:" />
-    <text name="COURSEPLAY_SPEED_MAX" 						 			text="Vitesse sur route:" />
-    <text name="COURSEPLAY_SPEED_REVERSING" 					 		text="Vitesse de recul:" />
+    <text name="COURSEPLAY_SPEED_MAX" 						 			text="Vitesse sur la route:" />
+    <text name="COURSEPLAY_SPEED_REVERSING" 					 		text="Vitesse en marche arrière:" />
     <text name="COURSEPLAY_MAX_SPEED_MODE" 						 		text="Vitesse:" />
     <text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 					text="Même que l'enregistrement" />
     <text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 		text="Vitesse maximale" />
@@ -144,9 +144,9 @@
     <text name="COURSEPLAY_IS_BEING_REFUELED" 					 		text="Fait le plein de carburant" />
     <text name="COURSEPLAY_IS_BEING_WEIGHED" 							text="Se fait peser" />
     <text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 					text="Trop de points d'attente! Seulement %d permis." />
-    <text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 						text="Trop peu de points d'attente! Il en faut %d." />
+    <text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 						text="Pas assez de points d'attente! Il en faut %d." />
     <text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 					text="Trop de points de déchargement! Seulement %d permis." />
-    <text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"					text="Trop peu de points de déchargement! Il en faut %d." />
+    <text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"					text="Pas assez de points de déchargement! Il en faut %d." />
     <text name="COURSEPLAY_WRONG_TRAILER" 						 		text="Remorque incompatible avec ce mode" />
     <text name="COURSEPLAY_WRONG_TOOL" 						 			text="Outil incompatible avec ce mode" />
     <text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 			text="Ce véhicule n'est pas supporté dans ce mode" />
@@ -183,7 +183,7 @@
     <text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 		text="(Cliquez sur la carte pour sélectionner le point de départ)" />
     <text name="COURSEPLAY_START_WORKING_ON" 			            	text="Commencer le travail par" />
     <text name="COURSEPLAY_SKIP_ROWS"     			                	text="Sauter des rangs" />
-    <text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Les Aller - Retour" />
+    <text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Les Allers Retours" />
     <text name="COURSEPLAY_HEADLAND_PASSES" 				        	text="Les fourrières" />
     <text name="COURSEPLAY_HEADLAND_CORNERS" 				        	text="Coins de fourrières" />
     <text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				        	text="Sens horaire" />
@@ -223,7 +223,7 @@
         <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="Circulaire" />
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Virages lissés" />
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="Manoeuvres" />
-    <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Circualires" />
+    <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Circualaires" />
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Manoeuvre arrière dans les fourrières"/>
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droite" />
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Virage" />
