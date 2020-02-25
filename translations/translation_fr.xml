@@ -445,7 +445,7 @@
     <text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Utiliser le pathfinding lors des manoeuvres dans les parcelles biscornues, pour suivre la fourrière pour aller au rang suivant par exemple" />	
     <text name="COURSEPLAY_WORKER_WAGES"				   				text="Salaire des ouvriers Courseplay" />
     <text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salaire des ouvriers Courseplay en pourcentage du salaire des ouvriers normaux" />
-    <text name="COURSEPLAY_SELF_UNLOAD"				   					text="Vider de la batteuse" />
+    <text name="COURSEPLAY_SELF_UNLOAD"				   					text="Vider la batteuse" />
     <text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="La batteuse va vider automatiquement lorsqu'elle est pleine et qu'il y a une remorque à proximité" />		
     <!-- Replace marker, do not remove! -->
   </texts>
