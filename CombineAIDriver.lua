@@ -885,12 +885,38 @@ function CombineAIDriver:findBestTrailer()
 	end
 	local fillRootNode
 	if bestTrailer then
-		fillRootNode = bestTrailer:getFillUnitExactFillRootNode()
-		self:debug('Best trailer is %s at %.1f meters, free capacity %d', bestTrailer:getName(), minDistance, maxCapacity)
+		fillRootNode = bestTrailer:getFillUnitExactFillRootNode(bestFillUnitIndex)
+		self:debug('Best trailer is %s at %.1f meters, free capacity %d, root node %s', bestTrailer:getName(), minDistance, maxCapacity, tostring(fillRootNode))
+		local bestFillNode = self:findBestFillNode(fillRootNode, self.pipeOffsetX)
+		return bestTrailer, bestFillNode
 	else
 		self:info('Found no trailer to unload to.')
+		return nil
 	end
-	return bestTrailer, fillRootNode
+end
+
+function CombineAIDriver:findBestFillNode(fillRootNode, offset)
+	local dx, dy, dz = localToLocal(fillRootNode, AIDriverUtil.getDirectionNode(self.vehicle), offset, 0, 0)
+	local dLeft = MathUtil.vector3Length(dx, dy, dz)
+	dx, dy, dz = localToLocal(fillRootNode, AIDriverUtil.getDirectionNode(self.vehicle), -offset, 0, 0)
+	local dRight = MathUtil.vector3Length(dx, dy, dz)
+	self:debug('Trailer left side distance %d, right side %d', dLeft, dRight)
+	if dLeft <= dRight then
+		-- left side of the trailer is closer, so turn the fillRootNode around as the combine must approach the
+		-- trailer from the front of the trailer
+		-- (as always, we always persist nodes in aiDriverData so they survive the AIDriver object and won't leak)
+		if not self.aiDriverData.bestFillNode then
+			self.aiDriverData.bestFillNode = courseplay.createNode('bestFillNode', 0, 0, math.pi, fillRootNode)
+		else
+			unlink(self.aiDriverData.bestFillNode)
+			link(fillRootNode, self.aiDriverData.bestFillNode)
+			setRotation(self.aiDriverData.bestFillNode, 0, math.pi, 0)
+		end
+		return self.aiDriverData.bestFillNode
+	else
+		-- right side closer, combine approaches the trailer from the rear, driving the same direction as the getFillUnitExactFillRootNode
+		return fillRootNode
+	end
 end
 
 --- Find a path to the best trailer to unload
