@@ -42,7 +42,7 @@
     <text name="COURSEPLAY_GENERATE_FIELD_COURSE"						text="Générer une course" />
     <text name="COURSEPLAY_MULTI_TOOLS"					 				text="Outils Multiples" />
     <text name="COURSEPLAY_DISTANCE" 									text="Distance" />
-    <text name="COURSEPLAY_WAITING_TIME" 						 		text="Temps d'attente:" />
+    <text name="COURSEPLAY_WAITING_TIME" 						 		text="Temps d'attente" />
     <text name="COURSEPLAY_MINUTES" 						 			text="%d min" />
     <text name="COURSEPLAY_SECONDS" 						 			text="%d sec" />
     <text name="COURSEPLAY_UNIT_METER" 									text="m" />
@@ -80,18 +80,18 @@
     <text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
     <text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Afficher les points de passage" />
     <text name="COURSEPLAY_PATHFINDING" 						 		text="Eviter les cultures" />
-    <text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières:" />
-    <text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Alignt. sur 1er point:" />
+    <text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières" />
+    <text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Alignement sur 1er point" />
     <text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Décalage latéral:" />
     <text name="COURSEPLAY_START_AT" 						 			text="Débuter à:" />
-    <text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Tourner dans la parcelle:" />
+    <text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Tourner dans la parcelle" />
     <text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Sens de courbe opposée" />
     <text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Courbe opposée à la fin" />
     <text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="Manoeuvre dès que possible" />
     <text name="COURSEPLAY_TURN_RADIUS" 						 		text="Rayon de virage:" />
     <text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Décalage vertical:" />
     <text name="COURSEPLAY_COMBINE" 						 			text="Batteuse" />
-    <text name="COURSEPLAY_NONE" 							 			text="Aucun" />
+    <text name="COURSEPLAY_NONE" 							 			text="Aucune" />
     <text name="COURSEPLAY_CHOOSE_COMBINE" 						 		text="Choix de la Batteuse:" />
     <text name="COURSEPLAY_COMBINE_SEARCH_MODE" 						text="Recherche de Batteuse:" />
     <text name="COURSEPLAY_CURRENT" 						 			text="Actuelle:" />
@@ -110,7 +110,7 @@
     <text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 		text="Vitesse maximale" />
     <text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="Automatique (max. %s)" />
     <text name="COURSEPLAY_NO_COURSE_LOADED" 					 		text="Pas de course chargée" />
-    <text name="COURSEPLAY_WARNING_LIGHTS" 						 		text="Gyrophare:" />
+    <text name="COURSEPLAY_WARNING_LIGHTS" 						 		text="Gyrophare" />
     <text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="Jamais allumé" />
     <text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="Gyrophares (sur la route)" />
     <text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="Gyrophares &amp; feux de détresse (sur la route)" />
@@ -292,7 +292,7 @@
     <text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="devra bientôt être réparé" />
     <text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="doit être réparé" />
     <text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 					text="réparation en cours" />
-    <text name="COURSEPLAY_COVER_HANDLING" 						 		text="Bâche:" />
+    <text name="COURSEPLAY_COVER_HANDLING" 						 		text="Bâche" />
     <text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Retirer l'affectation à la batteuse" />
     <text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Arrêter pendant le déchargement" />
     <text name="COURSEPLAY_SLIPPING_WARNING" 					 		text="patine" />
@@ -317,7 +317,7 @@
     <text name="COURSEPLAY_RECORDING_REVERSE_START" 					text="Commencer la marche arrière" />
     <text name="COURSEPLAY_RECORDING_REVERSE_STOP" 						text="Arrêter la marche arrière" />
     <text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"					text="Ajouter des points intermédiaires" />
-    <text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 					text="Afficher sur la carte:" />
+    <text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 					text="Afficher sur la carte" />
     <text name="COURSEPLAY_DRIVECONTROL" 								text="Paramètres de conduite" />
     <text name="COURSEPLAY_DRIVECONTROL_MODE_0" 						text="Automatique" />
     <text name="COURSEPLAY_DRIVECONTROL_MODE_1" 						text="4x4 Permanent" />
@@ -325,7 +325,7 @@
     <text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4x4 Permanent &amp; différentiel arrière au travail" />
     <text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4x4 Permanent &amp; différentiel au travail" />
     <text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 		text="Voulez-vous que vos parcelles soient scannées automatiquement ?" />
-    <text name="COURSEPLAY_YES_NO_WAGES" 						 		text="Voulez-vous payer vos ouvriers ?" />
+    <text name="COURSEPLAY_YES_NO_WAGES" 						 		text="Souhaitez vous rémunérer vos ouvriers Courseplay ?" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Utilisation des semences" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Parcelle: %d (%s %s)" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Type de semence: %s" />
@@ -442,7 +442,7 @@
     <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de références virtuels (PPC) - pendant les virages" />
 
     <text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Utiliser Pathfinding" />
-    <text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Utiliser le pathfinding lors des manoeuvres dans les parcelles biscornues, pour suivre la fourrière pour aller au rang suivant par exemple" />	
+    <text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Utiliser Pathfinding lors des manoeuvres dans les parcelles biscornues, pour suivre la fourrière pour aller au rang suivant par exemple" />	
     <text name="COURSEPLAY_WORKER_WAGES"				   				text="Salaire des ouvriers Courseplay" />
     <text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salaire des ouvriers Courseplay en pourcentage du salaire des ouvriers normaux" />
     <text name="COURSEPLAY_SELF_UNLOAD"				   					text="Vider la batteuse" />
