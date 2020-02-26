@@ -35,7 +35,7 @@
     <text name="COURSEPLAY_CONTINUE" 						 			text="Continuer" />
     <text name="COURSEPLAY_CLEAR_COURSE" 						 		text="Réinitialiser la course" />
     <text name="COURSEPLAY_DRIVE_NOW" 						 			text="Démarrer maintenant" />
-    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Démarrer à:" />
+    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Démarrer à" />
     <text name="UNKNOWN" 								 				text="Inconnu" />
     <text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sens de la fourrière" />
     <text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Fourrières : Avant/Après" />
@@ -82,14 +82,14 @@
     <text name="COURSEPLAY_PATHFINDING" 						 		text="Eviter les cultures" />
     <text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières" />
     <text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Alignement sur 1er point" />
-    <text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Décalage latéral:" />
-    <text name="COURSEPLAY_START_AT" 						 			text="Débuter à:" />
+    <text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Décalage latéral" />
+    <text name="COURSEPLAY_START_AT" 						 			text="Débuter à" />
     <text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Tourner dans la parcelle" />
     <text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Sens de courbe opposée" />
     <text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Courbe opposée à la fin" />
     <text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="Manoeuvre dès que possible" />
-    <text name="COURSEPLAY_TURN_RADIUS" 						 		text="Rayon de virage:" />
-    <text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Décalage vertical:" />
+    <text name="COURSEPLAY_TURN_RADIUS" 						 		text="Rayon de virage" />
+    <text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Décalage vertical" />
     <text name="COURSEPLAY_COMBINE" 						 			text="Batteuse" />
     <text name="COURSEPLAY_NONE" 							 			text="Aucune" />
     <text name="COURSEPLAY_CHOOSE_COMBINE" 						 		text="Choix de la Batteuse:" />
@@ -189,9 +189,9 @@
     <text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				        	text="Sens horaire" />
     <text name="COURSEPLAY_HEADLAND_COUNTERCLOCKWISE" 					text="Sens anti-horaire" />
     <text name="COURSEPLAY_HEADLAND_MODE_NONE"   				    	text="Pas de fourrière" />
-    <text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				    	text="Fourrières" />
-    <text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 					text="Fourrières parcelle étroite" />
-    <text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 		text="Fourrières en bouts de parcelle" />
+    <text name="COURSEPLAY_HEADLAND_MODE_NORMAL" 				    	text="Fourrières autour" />
+    <text name="COURSEPLAY_HEADLAND_MODE_NARROW_FIELD" 					text="Parcelle étroite" />
+    <text name="COURSEPLAY_HEADLAND_MODE_TWO_SIDE" 				 		text="En bouts de parcelle" />
     <text name="COURSEPLAY_DIRECTION_1" 						 		text="Nord" />
     <text name="COURSEPLAY_DIRECTION_2" 						 		text="Est" />
     <text name="COURSEPLAY_DIRECTION_3" 						 		text="Sud" />
@@ -228,9 +228,9 @@
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droite" />
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Virage" />
     <text name="COURSEPLAY_CENTER_MODE"									text="Gestion des passages" />
-    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers-retours" />
+    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers Retours" />
     <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire" />
-    <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirales" />
+    <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirale (tourne autour)" />
     <text name="COURSEPLAY_ACTIVATED" 						 			text="Activé" />
     <text name="COURSEPLAY_NAME_ONLY" 									text="Nom seul" />
     <text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nom et Course" />
@@ -293,7 +293,7 @@
     <text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="doit être réparé" />
     <text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 					text="réparation en cours" />
     <text name="COURSEPLAY_COVER_HANDLING" 						 		text="Bâche" />
-    <text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Retirer l'affectation à la batteuse" />
+    <text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Retirer l'affectation à cette batteuse" />
     <text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Arrêter pendant le déchargement" />
     <text name="COURSEPLAY_SLIPPING_WARNING" 					 		text="patine" />
     <text name="COURSEPLAY_REFILL_UNTIL_PCT" 					 		text="Remplir jusqu'à:" />
@@ -426,7 +426,7 @@
     <text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Charger les courses au démarrage ralentira le chargement d'une sauvegarde" />
     <text name="COURSEPLAY_USE_AI_TURNS"				   				text="Utiliser les manœuvres de l'AI" />
     <text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Utiliser les manœuvres de l'AI au lieu des trajectoires calculées" />
-    <text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanner les parcelles automatiquement" />
+    <text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanner les parcelles" />
     <text name="COURSEPLAY_EARN_WAGES"					   				text="Rémunérer les ouvriers Courseplay" />
 
     <text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Plus tôt" />
