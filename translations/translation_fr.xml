@@ -81,12 +81,12 @@
     <text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Afficher les points de passage" />
     <text name="COURSEPLAY_PATHFINDING" 						 		text="Eviter les cultures" />
     <text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières" />
-    <text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Alignement sur 1er point" />
+    <text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Alignement sur le 1er point" />
     <text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Décalage latéral" />
     <text name="COURSEPLAY_START_AT" 						 			text="Débuter à" />
     <text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Tourner dans la parcelle" />
-    <text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Sens de courbe opposée" />
-    <text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Courbe opposée à la fin" />
+    <text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Type de manoeuvre" />
+    <text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Manoeuvre à la fin du rang" />
     <text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="Manoeuvre dès que possible" />
     <text name="COURSEPLAY_TURN_RADIUS" 						 		text="Rayon de virage" />
     <text name="COURSEPLAY_COMBINE_OFFSET_VERTICAL" 					text="Décalage vertical" />
@@ -97,15 +97,15 @@
     <text name="COURSEPLAY_CURRENT" 						 			text="Actuelle:" />
     <text name="COURSEPLAY_AUTOMATIC_SEARCH" 					 		text="Recherche automatique" />
     <text name="COURSEPLAY_MANUAL_SEARCH" 						 		text="Recherche manuelle" />
-    <text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Chercher une batteuse dans la parcelle %s" />
+    <text name="COURSEPLAY_SEARCH_COMBINE_ON_FIELD" 					text="Chercher une batteuse dans la parcelle : %s" />
     <text name="COURSEPLAY_COPY_COURSE" 						 		text="Copier la course:" />
     <text name="COURSEPLAY_VEHICLE" 						 			text="Véhicule" />
     <text name="COURSEPLAY_TEMP_COURSE" 						 		text="Course temporaire" />
     <text name="COURSEPLAY_SPEED_TURN" 						 			text="Vitesse dans les virages:" />
     <text name="COURSEPLAY_SPEED_FIELD" 						 		text="Vitesse dans la parcelle:" />
-    <text name="COURSEPLAY_SPEED_MAX" 						 			text="Vitesse sur la route:" />
-    <text name="COURSEPLAY_SPEED_REVERSING" 					 		text="Vitesse en marche arrière:" />
-    <text name="COURSEPLAY_MAX_SPEED_MODE" 						 		text="Vitesse:" />
+    <text name="COURSEPLAY_SPEED_MAX" 						 			text="Vitesse sur route:" />
+    <text name="COURSEPLAY_SPEED_REVERSING" 					 		text="Vitesse de recul:" />
+    <text name="COURSEPLAY_MAX_SPEED_MODE" 						 		text="Vitesse maximale:" />
     <text name="COURSEPLAY_MAX_SPEED_MODE_RECORDING" 					text="Même que l'enregistrement" />
     <text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 		text="Vitesse maximale" />
     <text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="Automatique (max. %s)" />
@@ -299,8 +299,8 @@
     <text name="COURSEPLAY_REFILL_UNTIL_PCT" 					 		text="Remplir jusqu'à:" />
     <text name="COURSEPLAY_BGA_IS_FULL" 						 		text=": le silo est plein!" />
     <text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 						text="Le silo n'a pas la récolte sélectionnée" />
-    <text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Contenu du silo:" />
-    <text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 					 		text="Silo vide! En attente." />
+    <text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Récolte à charger:" />
+    <text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 					 		text="Silo vide! En attente..." />
     <text name="COURSEPLAY_FARM_SILO_IS_FULL" 							text=": Silo plein ! Continue vers le prochain." />
     <text name="COURSEPLAY_STARTING_UP_TOOL" 					 		text="Démarrage à %s!" />
     <text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Cherche le premier point" />
@@ -379,13 +379,13 @@
     <text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Bouton Central de la Souris" />
     <text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la Souris" /> <!-- %s = number ( could be "%de Bouton de la Souris" for "mouse #th button" ) -->
 
-    <text name="COURSEPLAY_MODE10_MODE" 						    	text="Mode" />
+    <text name="COURSEPLAY_MODE10_MODE" 						    	text="Utilisation de la lame" />
     <text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Nivellement et tassement" />
     <text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="Remplissage" />
     <text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Stopper automatiquement pour" />
     <text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Véhicules avec Courseplay" />
     <text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="Tous les véhicules motorisés" />
-    <text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Détection des véhicules dans un rayon de " />
+    <text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Détecter les véhicules dans un rayon de " />
     <text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Vitesse max pendant le remplissage" />
     <text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Hauteur de la lame" />
     <text name="COURSEPLAY_MODE10_NOSILO"						 		text="Aucun silo détecté au point de départ" />
