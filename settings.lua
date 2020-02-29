@@ -127,11 +127,11 @@ function courseplay:toggleConvoyActive(vehicle)
 end
 
 function courseplay:setConvoyMinDistance(vehicle, changeBy)
-	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 200);
+	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 2000);
 end
 
 function courseplay:setConvoyMaxDistance(vehicle, changeBy)
-	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 300);
+	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 3000);
 end
 
 function courseplay:toggleFuelSaveOption(self)
@@ -225,8 +225,12 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 end;
 
 function courseplay:setStopAtEnd(vehicle, bool)
-	--if bool is nil, toggle stopAtEnd  
-	if bool == nil then 
+	--if bool is nil or a number, toggle stopAtEnd
+	-- 'line' was introduced in addRowButton in the new mode 2 branch as a parameter to pass on to the callback functions
+	-- for selecting the combine. It breaks this function though as it expects a nil when toggled in the HUD.
+	-- Since the HUD/button callback code is so broken/messy that I don't want to touch it, I just put
+	-- one of the most embarrassing hacks of my IT career in here. I'm ashamed of myself.
+	if bool == nil or type(bool) == 'number' then
 		vehicle.cp.stopAtEnd = not vehicle.cp.stopAtEnd
 	else
 		vehicle.cp.stopAtEnd = bool;

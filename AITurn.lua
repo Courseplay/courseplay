@@ -56,6 +56,7 @@ function AITurn:init(vehicle, driver, turnContext, name)
 	self:addState('FORWARDING_AFTER_BLOCKED')
 	self:addState('WAITING_FOR_PATHFINDER')
 	self.vehicle = vehicle
+	self.turningRadius = AIDriverUtil.getTurningRadius(vehicle)
 	---@type AIDriver
 	self.driver = driver
 	-- turn handles its own waypoint changes
@@ -117,10 +118,28 @@ function AITurn.canMakeKTurn(vehicle, turnContext)
 		return true
 	end
 	if not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(vehicle) then
-		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Not all attached implements allow for reversing, let turn.lua handle this for now')
+		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Not all attached implements allow for reversing, use generated course turn')
+		return false
+	end
+	if vehicle.cp.turnOnField and not AITurn.canTurnOnField(turnContext, vehicle) then
+		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Turn on field is on but there is not enough space, use generated course turn')
 		return false
 	end
 	return true
+end
+
+---@param turnContext TurnContext
+---@return boolean, number True if there's enough space to make a forward turn on the field. Also return the
+---distance to reverse in order to be able to just make the turn on the field
+function AITurn.canTurnOnField(turnContext, vehicle)
+	local spaceNeededOnFieldForTurn = AIDriverUtil.getTurningRadius(vehicle) + vehicle.cp.workWidth / 2
+	local distanceToFieldEdge = turnContext:getDistanceToFieldEdge(turnContext.vehicleAtTurnStartNode)
+	courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Space needed to turn on field %.1f m', spaceNeededOnFieldForTurn)
+	if distanceToFieldEdge then
+		return (distanceToFieldEdge > spaceNeededOnFieldForTurn), spaceNeededOnFieldForTurn - distanceToFieldEdge
+	else
+		return false, 0
+	end
 end
 
 function AITurn:setForwardSpeed()
@@ -400,7 +419,6 @@ function CourseTurn:init(vehicle, driver, turnContext, fieldworkCourse, name)
 	-- adjust turn course for tight turns only for headland corners by default
 	self.useTightTurnOffset = turnContext:isHeadlandCorner()
 	self.fieldworkCourse = fieldworkCourse
-	self.turningRadius = AIDriverUtil.getTurningRadius(vehicle)
 end
 
 function CourseTurn:setForwardSpeed()
@@ -419,7 +437,9 @@ end
 -- this turn starts when the vehicle reached the point where the implements are raised.
 -- now use turn.lua to generate the turn maneuver waypoints
 function CourseTurn:startTurn()
-	if self.turnContext:isWideTurn(self.turningRadius * 2) then
+	-- pathfinder and Dubins won't handle multi tools correctly until the big multi tool fix is in place, so until then
+	-- just don't use it
+	if self.vehicle.cp.multiTools < 2 and self.turnContext:isWideTurn(self.turningRadius * 2) then
 		self:generatePathfinderTurn()
 	else
 		self:generateCalculatedTurn()
@@ -510,15 +530,11 @@ function CourseTurn:generatePathfinderTurn()
 	self.pathFindingStartedAt = self.vehicle.timer
 	local done, path
 	local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets()
-
-	local spaceNeededOnFieldForTurn = self.turningRadius + self.vehicle.cp.workWidth / 2
-	local distanceToFieldEdge = self.turnContext:getDistanceToFieldEdge(AIDriverUtil.getDirectionNode(self.vehicle))
-	self:debug('Space needed to turn on field %.1f m', spaceNeededOnFieldForTurn)
-	if distanceToFieldEdge and (distanceToFieldEdge < spaceNeededOnFieldForTurn) and
-			self.vehicle.cp.turnOnField then
+	local canTurnOnField, distanceToReverse = AITurn.canTurnOnField(self.turnContext, self.vehicle)
+	if not canTurnOnField and self.vehicle.cp.turnOnField then
 		self:debug('Turn on field is on, generating reverse course before turning.')
-		self.reverseBeforeStartingTurnWaypoints = self.turnContext:createReverseWaypointsBeforeStartingTurn(self.vehicle, spaceNeededOnFieldForTurn - distanceToFieldEdge)
-		startOffset = startOffset - (spaceNeededOnFieldForTurn - distanceToFieldEdge)
+		self.reverseBeforeStartingTurnWaypoints = self.turnContext:createReverseWaypointsBeforeStartingTurn(self.vehicle, distanceToReverse)
+		startOffset = startOffset - distanceToReverse
 	end
 
 	if self.vehicle.cp.settings.usePathfindingInTurns:is(false) or self.turnContext:isSimpleWideTurn(self.turningRadius * 2) then
