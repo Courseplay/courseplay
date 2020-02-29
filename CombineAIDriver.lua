@@ -88,7 +88,7 @@ function CombineAIDriver:init(vehicle)
 		if self.vehicle.spec_foldable then
 			wasFolded = not self.vehicle.spec_foldable:getIsUnfolded()
 			if wasFolded then
-				Foldable.setAnimTime(self.vehicle.spec_foldable, 1, true)
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 0, true)
 			end
 		end
 		if self.pipe.currentState == CombineAIDriver.PIPE_STATE_CLOSED then
@@ -113,7 +113,7 @@ function CombineAIDriver:init(vehicle)
 		end
 		if self.vehicle.spec_foldable then
 			if wasFolded then
-				Foldable.setAnimTime(self.vehicle.spec_foldable, 0, true)
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 1, true)
 			end
 		end
 	else
