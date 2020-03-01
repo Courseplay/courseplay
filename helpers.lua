@@ -362,13 +362,13 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 end;
 
 function courseplay:getLoadTriggerProvidedFillTypeValid(trigger, fillType)
-	--bad hack for globalCompany mod.  providedFillTypes has a sub structure there
 	if trigger.isGlobalCompanyFillTrigger then
-		for _,subProvidedFillTypes in pairs (trigger.source.providedFillTypes) do
-			if type(subProvidedFillTypes)=='table' then
-				return subProvidedFillTypes[fillType]
-			end			
-		end	
+		if trigger.source.getProvidedFillTypes ~= nil then
+			local fillTypes = trigger.source:getProvidedFillTypes(trigger.extraParamater)
+			if fillTypes ~= nil then
+				return fillTypes[fillType]
+			end
+		end
 	else
 		return trigger.source.providedFillTypes[fillType]
 	end
