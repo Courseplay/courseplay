@@ -364,11 +364,10 @@ end;
 function courseplay:getLoadTriggerProvidedFillTypeValid(trigger, fillType)
 	if trigger.isGlobalCompanyFillTrigger then
 		if trigger.source.getProvidedFillTypes ~= nil then
-			for _,subProvidedFillTypes in pairs (trigger.source:getProvidedFillTypes(trigger.extraParamater)) do
-				if type(subProvidedFillTypes)=='table' then
-					return subProvidedFillTypes[fillType]
-				end			
-			end	
+			local fillTypes = trigger.source:getProvidedFillTypes(trigger.extraParamater)
+			if fillTypes ~= nil then
+				return fillTypes[fillType]
+			end
 		end
 	else
 		return trigger.source.providedFillTypes[fillType]
