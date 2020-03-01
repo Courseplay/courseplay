@@ -477,6 +477,10 @@ function Course:isWaitAt(ix)
 	return self.waypoints[ix].interact
 end
 
+function Course:getHeadlandNumber(ix)
+	return self.waypoints[ix].lane
+end
+
 function Course:isOnHeadland(ix, n)
 	if n then
 		return self.waypoints[ix].lane and self.waypoints[ix].lane == -n
@@ -942,7 +946,12 @@ function Course:executeFunctionForLastWaypoints(d, lambda)
 end
 
 function Course:setTurnEndForLastWaypoints(d)
-	self:executeFunctionForLastWaypoints(d, function(wp) wp.turnEnd = true end)
+	local i = self:getNumberOfWaypoints()
+	-- only set turn end for forward waypoints, we don't want to lower implements while reversing
+	while i > 1 and not self:isReverseAt(i) and self:getDistanceToLastWaypoint(i) < d do
+		self.waypoints[i].turnEnd = true
+		i = i - 1
+	end
 end
 
 function Course:setUseTightTurnOffsetForLastWaypoints(d)

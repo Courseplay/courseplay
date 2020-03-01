@@ -74,7 +74,6 @@ courseGenerator.HEADLAND_MODE_MAX = 4
 courseGenerator.headlandModeTexts = { 'none', 'normal', 'narrow', 'two side'}
 
 courseGenerator.pathFinder = Pathfinder()
-courseGenerator.headlandPathfinder = HeadlandPathfinder()
 
 function courseGenerator.isOrdinalDirection( startingLocation )
 	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and

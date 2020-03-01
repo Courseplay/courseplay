@@ -446,6 +446,8 @@
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP" 						text="I salari dei lavoratori Courseplay come percentuale dei salari dei lavoratori normali" />
 		<text name="COURSEPLAY_SELF_UNLOAD" 								text="Scarico automatico mietitrebbia" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP" 						text="Scarica automaticamente una mietitrebbia quando è piena e c'è un rimorchio in giro" />
+				<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

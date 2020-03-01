@@ -927,7 +927,7 @@ function CombineAIDriver:startSelfUnload()
 	if not bestTrailer then return false end
 
 	if not self.pathfinder or not self.pathfinder:isActive() then
-		self.pathFindingStartedAt = self.vehicle.timer
+		self.pathfindingStartedAt = self.vehicle.timer
 		self.courseAfterPathfinding = nil
 		self.waypointIxAfterPathfinding = nil
 		local fieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
@@ -948,12 +948,12 @@ end
 --- Back to fieldwork after self unloading
 function CombineAIDriver:returnToFieldworkAfterSelfUnloading()
 	if not self.pathfinder or not self.pathfinder:isActive() then
-		self.pathFindingStartedAt = self.vehicle.timer
+		self.pathfindingStartedAt = self.vehicle.timer
 		self.courseAfterPathfinding = self.fieldworkCourse
 		self.waypointIxAfterPathfinding = self.aiDriverData.continueFieldworkAtWaypoint
 		local done, path
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), true, nil)
+				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), 0,true, nil)
 		if done then
 			return self:onPathfindingDone(path)
 		else
@@ -967,12 +967,12 @@ end
 
 function CombineAIDriver:onPathfindingDone(path)
 	if path and #path > 2 then
-		self:debug('(CombineAIDriver) Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathFindingStartedAt or 0))
+		self:debug('(CombineAIDriver) Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
 		local selfUnloadCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(selfUnloadCourse, 1, self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
 		return true
 	else
-		self:debug('No path found in %d ms, no self unloading', self.vehicle.timer - (self.pathFindingStartedAt or 0))
+		self:debug('No path found in %d ms, no self unloading', self.vehicle.timer - (self.pathfindingStartedAt or 0))
 		if self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD then
 			self:startFieldworkWithPathfinding(self.aiDriverData.continueFieldworkAtWaypoint)
 		elseif self.fieldWorkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD then

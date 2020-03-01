@@ -128,7 +128,7 @@ function HybridAStar.shortenStart(path, d)
 	local dCut = d
 	local to = #path - 1
 	for i = 1, to  do
-		local segment = path[i + 1] - path[i]
+		local segment = path[2] - path[1]
 		-- check for something else than zero to make sure the new point does not overlap with the last we did not cut
 		if dCut < segment:length() - 0.1 then
 			segment:setLength(dCut)
@@ -147,7 +147,7 @@ function HybridAStar.shortenEnd(path, d)
 	local dCut = d
 	local from = #path - 1
 	for i = from, 1, -1  do
-		local segment = path[i + 1] - path[i]
+		local segment = path[#path] - path[#path - 1]
 		-- check for something else than zero to make sure the new point does not overlap with the last we did not cut
 		if dCut < segment:length() - 0.1 then
 			segment:setLength(dCut)
@@ -255,7 +255,7 @@ function HybridAStar.MotionPrimitives:__tostring()
 	return output
 end
 
-function HybridAStar.MotionPrimitives:getPrimitives()
+function HybridAStar.MotionPrimitives:getPrimitives(node)
 	return self.primitives
 end
 
@@ -275,77 +275,6 @@ function HybridAStar.SimpleMotionPrimitives:init(gridSize, allowReverse)
 	table.insert(self.primitives, {dx = -d, dy = -d, t = 6 * math.pi / 4, d = dSqrt2, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
 	table.insert(self.primitives, {dx =  0, dy = -d, t = 6 * math.pi / 4, d = d, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
 	table.insert(self.primitives, {dx =  d, dy = -d, t = 7 * math.pi / 4, d = dSqrt2, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
-end
-
---- Motion primitives for a fixed configuration space where the nodes can only be expanded
---- to one of the nodes consisting the configuration space. This is useful for example to restrict the pathfinding
---- to an existing polygon, like a headland
-HybridAStar.PolygonMotionPrimitives = CpObject(HybridAStar.MotionPrimitives)
-
----@param configurationSpace Polygon collection of nodes defining the configuration space
-function HybridAStar.PolygonMotionPrimitives:init(configurationSpace)
-	---@type Polygon
-	self.configurationSpace = configurationSpace
-	-- dummy primitives, dx/dy are used as an index in the configuration space instead of a vector. Here we only use
-	-- dx assuming our configuration space is a line (may have to extend later to use a grid)
-	self.primitives = {}
-	-- d is 0 as it varies and therefore we calculate G when creating the successor
-	table.insert(self.primitives, {dx = 1, dy = 0, dt = 0, d = 0,
-								   gear = HybridAStar.Gear.Forward,
-								   steer = HybridAStar.Steer.Straight,
-								   type = HybridAStar.MotionPrimitiveTypes.FS})
-	table.insert(self.primitives, {dx = -1, dy = 0, dt = 0, d = 0,
-								   gear = HybridAStar.Gear.Backward,
-								   steer = HybridAStar.Steer.Straight,
-								   type = HybridAStar.MotionPrimitiveTypes.RS})
-end
-
----@param node State3D
----@param primitive table
----@return State3D
-function HybridAStar.PolygonMotionPrimitives:createSuccessor(node, primitive)
-	local xSucc, ySucc, tSucc, ixSucc
-	if node.userData then
-		ixSucc = node.userData + primitive.dx
-	else
-		-- node has no userData (index within the configuration space (e.g. this is the start node) so find the closest
-		-- config space node in one direction
-		ixSucc = self:findClosestNode(node.x, node.y, primitive.dx)
-		--print('closest ' .. tostring(ixSucc))
-	end
-	ixSucc = self.configurationSpace:getIndex(ixSucc)
-	xSucc = self.configurationSpace[ixSucc].x
-	ySucc = self.configurationSpace[ixSucc].y
-	tSucc = self.configurationSpace[ixSucc].t or 0
-	local dx, dy = xSucc - node.x, ySucc - node.y
-	local d = math.sqrt(dx * dx + dy * dy)
-	--print(tostring(node.userData) .. ' succ ' .. tostring(ixSucc))
-	--print(tostring(node))
-	local succ = State3D(xSucc, ySucc, tSucc, node.g + d, node, primitive, ixSucc)
-	--print(tostring(succ))
-	return succ
-end
-
-function HybridAStar.PolygonMotionPrimitives:findClosestNode(x, y, dx)
-	local point = {x = x, y = y}
-	local closestIx, d = self.configurationSpace:getClosestPointIndex(point)
-	local dNext = getDistanceBetweenPoints(point, self.configurationSpace[closestIx + 1])
-	local dPrev = getDistanceBetweenPoints(point, self.configurationSpace[closestIx - 1])
-	-- ugly as hell and I'm sure this can be done easier
-	if dx > 0 then
-		-- stepping forward, is the next closer than the previous 
-		if dNext < dPrev then
-			return closestIx + 1
-		else
-			return closestIx
-		end
-	else
-		if dPrev < dNext then
-			return closestIx - 1
-		else
-			return closestIx
-		end
-	end
 end
 
 ---@class HybridAStar.NodeList
@@ -529,9 +458,10 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 
 		if not pred:isClosed() then
 			-- analytical expansion: try a Dubins/Reeds-Shepp path from here randomly, more often as we getting closer to the goal
+			-- also, try it before we start with the pathfinding
 			if pred.h then
-				if self.analyticSolverEnabled and not self.goalNodeIsInvalid
-						and math.random() > 2 * pred.h / self.distanceToGoal then --and pred.h < 4 * turnRadius then
+				if self.analyticSolverEnabled and not self.goalNodeIsInvalid and
+						(self.iterations == 1 or math.random() > 2 * pred.h / self.distanceToGoal) then
 					---@type AnalyticSolution
 					local analyticSolution, pathType = self.analyticSolver:solve(pred, goal, turnRadius, allowReverse)
 					self:debug('Check analytical solution at iteration %d, %.1f, %.1f', self.iterations, pred.h, pred.h / self.distanceToGoal)
@@ -546,7 +476,7 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 				end
 			end
 			-- create the successor nodes
-			for _, primitive in ipairs(hybridMotionPrimitives:getPrimitives()) do
+			for _, primitive in ipairs(hybridMotionPrimitives:getPrimitives(pred)) do
 				---@type State3D
 				local succ = hybridMotionPrimitives:createSuccessor(pred, primitive)
 				if succ:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
@@ -561,7 +491,7 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 					-- we end up being in overlap with another vehicle when we start the pathfinding and all we need is
 					-- an iteration or two to bring us out of that position
 					if self.iterations < 3 or self.isValidNodeFunc(succ, userData) then
-						succ:updateG(primitive, getNodePenaltyFunc(succ))
+						succ:updateG(primitive, getNodePenaltyFunc(succ, userData))
 						local analyticSolutionCost = 0
 						if self.analyticSolverEnabled then
 							local analyticSolution = self.analyticSolver:solve(succ, goal, turnRadius, allowReverse)
@@ -664,24 +594,6 @@ end
 
 function AStar:getMotionPrimitives(turnRadius, allowReverse)
 	return HybridAStar.SimpleMotionPrimitives(self.deltaPos, allowReverse)
-end
-
---- A simple A star implementation based on the hybrid A star. The difference is that the configuration space consists of
---- the vertices of a polygon and every expanded node will be one of these points.
-AStarOnPolygon = CpObject(HybridAStar)
-
----@param configurationSpace Polygon collection of nodes defining the configuration space
-function AStarOnPolygon:init(yieldAfter, configurationSpace, deltaPosGoal)
-	HybridAStar.init(self, yieldAfter)
-	self.deltaPos = 0.1
-	self.deltaPosGoal = deltaPosGoal or 11
-	self.deltaThetaDeg = 181
-	self.deltaThetaGoal = math.rad(self.deltaThetaDeg)
-	self.motionPrimitives = HybridAStar.PolygonMotionPrimitives(configurationSpace)
-end
-
-function AStarOnPolygon:getMotionPrimitives(turnRadius, allowReverse)
-	return self.motionPrimitives
 end
 
 --- A pathfinder combining the (slow) hybrid A * and the (fast) regular A * star.
@@ -814,69 +726,46 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 				end
 				HybridAStar.smooth(self.path)
 			end
-			for i, p in ipairs(self.path) do
-				print(tostring(p))
-			end
 			return true, self.path
 		end
 	end
 	return false
 end
 
---- Figure out which waypoints should have the reverse attribute in order to make it drivable by the PPC
-function HybridAStarWithAStarInTheMiddle:fixReverseForCourseplay(path)
-    --print(tostring(path))
-	path:calculateData()
-    -- we rely here on the fact that the start waypoint will be approximately aligned with the vehicle either forward or backward
-    -- (about 0 or 180 degrees)
-    local angleBetweenStartAndFirstWp = math.abs(path[1].nextEdge.angle - self.originalStartNode.t)
-	if angleBetweenStartAndFirstWp > math.pi * 2 then angleBetweenStartAndFirstWp = angleBetweenStartAndFirstWp - math.pi * 2 end
-    self:debug('Angle between start (%.1f) and first wp (%.1f) is %.1f', math.deg(self.originalStartNode.t), math.deg(path[1].nextEdge.angle), math.deg(angleBetweenStartAndFirstWp))
-	local maxDeltaAngle = math.pi / 2
-	-- if not approximately the same angle then start in reverse
-    local currentReverse = not (angleBetweenStartAndFirstWp < maxDeltaAngle or angleBetweenStartAndFirstWp > 2 * math.pi - maxDeltaAngle)
-    path[1].reverse = currentReverse
-    -- and then keep changing direction when the waypoint direction changes a lot
-	for i = 2, #path do
-        path[i].reverse = currentReverse
-		if math.abs(getDeltaAngle(path[i].prevEdge.angle, path[i].nextEdge.angle)) > 2 * math.pi / 3 then
-            currentReverse = not currentReverse
-		end
-	end
-	path:calculateData()
-	--print(tostring(path))
+
+--- Dummy A* pathfinder implementation, does not calculate a path, just returns a pre-calculated path passed in 
+--- to its constructor. 
+---@see HybridAStarWithPathInTheMiddle
+---@class DummyAStar : HybridAStar
+DummyAStar = CpObject(HybridAStar)
+
+---@param path State3D[] collection of nodes defining the configuration space
+function DummyAStar:init(path)
+	self.path = path
 end
 
--- TODO: put this in a global lib, instead of helpers.lua as helpers.lua depends on courseplay.
-function HybridAStarWithAStarInTheMiddle:reverseTable(t)
-	local i, j = 1, #t
-	while i < j do
-		t[i], t[j] = t[j], t[i]
-		i = i + 1
-		j = j - 1
-	end
-end;
+function DummyAStar:findPath()
+	return true, self.path
+end
 
-HybridAStarWithPolygonInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
+--- Similar to HybridAStarWithAStarInTheMiddle, but the middle section is not calculated using the A*, instead
+--- it is passed in to to constructor, already created by the caller. 
+--- This is used to find a path on the headland to the next row. The headland section is calculated by the caller
+--- based on the vehicle's course, HybridAStarWithPathInTheMiddle only finds the path from the vehicle's position
+--- to the headland and from the headland to the start of the next row.   
+HybridAStarWithPathInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
 
 ---@param hybridRange number range in meters around start/goal to use hybrid A *
 ---@param yieldAfter number coroutine yield after so many iterations (number of iterations in one update loop)
----@param polygon Polygon polygon to use in the middle part
----@param deltaPosGoal number how close the polygon pathfinder should be to the goal node to consider it reached.
---- this is important for example when finding a path on a headland when the goal (first waypoint of a row) can be
---- far from the outermost headland
-function HybridAStarWithPolygonInTheMiddle:init(hybridRange, yieldAfter, polygon, deltaPosGoal)
-	self.polygon = polygon
-	-- make sure all points are distinct, if we have more than one point with the same coordinates A* will never
-	-- end...
-	self.polygon:removeOverlaps()
-	self.deltaPosGoal = deltaPosGoal
-	self:debug('Hybrid A* range is %.1f, delta pos for goal %.1f, polygon has %d points', hybridRange, deltaPosGoal, #polygon)
+---@param path State3D[] path to use in the middle part
+function HybridAStarWithPathInTheMiddle:init(hybridRange, yieldAfter, path)
+	self.path = path
+	self:debug('Start pathfinding on headland, hybrid A* range is %.1f, %d points on headland', hybridRange, #path)
 	HybridAStarWithAStarInTheMiddle.init(self, hybridRange, yieldAfter, 10000)
 end
 
-function HybridAStarWithPolygonInTheMiddle:getAStar()
-	return AStarOnPolygon(self.yieldAfter, self.polygon, self.deltaPosGoal)
+function HybridAStarWithPathInTheMiddle:getAStar()
+	return DummyAStar(self.path)
 end
 
 HybridAStarWithHeuristic = CpObject(PathfinderInterface)

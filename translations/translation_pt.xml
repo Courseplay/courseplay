@@ -444,5 +444,7 @@
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salário dos trabalhadores do Courseplay como porcentagem do salário dos trabalhadores normais" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" /> <!-- TODO TRANSLATE: -->
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Ceifadeira se descarrega automaticamente quando estiver cheia e um carreto estiver próximo" />
-<!-- Replace marker, do not remove! --></texts>
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		<!-- Replace marker, do not remove! --></texts>
 </l10n>

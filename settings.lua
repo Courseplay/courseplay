@@ -2430,6 +2430,14 @@ function UsePathfindingInTurnsSetting:init(vehicle)
 		'COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP', vehicle)
 end
 
+--- Allow driving reverse for pathfinding during turns?
+---@class AllowReverseForPathfindingInTurnsSetting : BooleanSetting
+AllowReverseForPathfindingInTurnsSetting = CpObject(BooleanSetting)
+function AllowReverseForPathfindingInTurnsSetting:init(vehicle)
+	BooleanSetting.init(self, 'allowReverseForPathfindingInTurns', 'COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS',
+			'COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP', vehicle)
+end
+
 ---@class AutoFieldScanSetting : BooleanSetting
 AutoFieldScanSetting = CpObject(BooleanSetting)
 function AutoFieldScanSetting:init()
