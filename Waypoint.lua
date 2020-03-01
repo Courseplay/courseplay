@@ -80,8 +80,8 @@ function Waypoint:set(cpWp, cpIndex)
 	-- full control over what is used in this object
 	-- can use course waypoints with cx/cz or turn waypoints with posX/posZ (but if revPos exists, that takes precedence
 	-- just like in the original turn code, don't ask me why there are two different values if we only use one...)
-	self.x = cpWp.cx or cpWp.revPosX or cpWp.posX or cpWp.x or 0
-	self.z = cpWp.cz or cpWp.revPosZ or cpWp.posZ or cpWp.z or 0
+	self.x = cpWp.x or cpWp.cx or cpWp.revPosX or cpWp.posX or 0
+	self.z = cpWp.z or cpWp.cz or cpWp.revPosZ or cpWp.posZ or 0
 	self.angle = cpWp.angle or nil
 	self.radius = cpWp.radius or nil
 	self.rev = cpWp.rev or cpWp.turnReverse or cpWp.reverse or false

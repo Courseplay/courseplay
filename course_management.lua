@@ -205,9 +205,10 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 						local wp1 = course1[wpNum1];
 						for _,wpNum2 in pairs(crossingPoints[2]) do
 							local wp2 = course2[wpNum2];
-							local dist = courseplay:distance(wp1.cx, wp1.cz, wp2.cx, wp2.cz);
+							local x1, z1, x2, z2 = wp1.cx or wp1.x, wp1.cz or wp1.z, wp2.cx or wp2.x, wp2.cz or wp2.z
+							local dist = courseplay:distance(x1, z1, x2, z2);
 							--Calculate actual turn direction between pair of crosspoints
-							local angleTurn = math.atan2(wp2.cx-wp1.cx,wp2.cz-wp1.cz) -- in radians 
+							local angleTurn = math.atan2(x2 - x1, z2 - z1) -- in radians
 							--add direction change differences between original direction and turn direction and destination direction							
 							local totalAngle=math.deg(
 								math.abs(getDeltaAngle(math.rad(wp1.angle),angleTurn)) +
