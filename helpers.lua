@@ -292,14 +292,11 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 					if fillTrigger.source ~= nil then
 						if courseplay.debugChannels[19] then
 							if fillTrigger.isGlobalCompanyFillTrigger then
-								--bad hack for globalCompany mod
-								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger -> fillTrigger.source.providedFillTypes:')
-								for index,source in pairs (fillTrigger.source.providedFillTypes) do
-									if type(source)== 'table' then
-										for subIndex, subSource in pairs(source)do
-											courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger ->  %s: %s=%s',tostring(index),tostring(subIndex),tostring(subSource))
-										end									
-									end							
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger -> fillTrigger.source.getProvidedFillTypes:')								
+								if trigger.source.getProvidedFillTypes ~= nil then
+									for index, val in pairs(trigger.source:getProvidedFillTypes(trigger.extraParamater))do
+										courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger ->  %s:%s',tostring(index),g_fillTypeManager.indexToName[index])		
+									end		
 								end
 							else
 								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
