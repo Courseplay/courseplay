@@ -392,7 +392,7 @@ function courseplay.hud:setup()
 									
 	-- SOUND
 	self.clickSound = createSample('clickSound');
-	loadSample(self.clickSound, Utils.getFilename('sounds/cpClickSound.wav', courseplay.path), false);
+	loadSample(self.clickSound, Utils.getFilename('sounds/cpClickSound.ogg', courseplay.path), false);
 end;
 
 
