@@ -68,10 +68,12 @@ function CombineAIDriver:init(vehicle)
 
 	if self.vehicle.spec_pipe then
 		self.pipe = self.vehicle.spec_pipe
+		self.objectWithPipe = self.vehicle
 	else
 		local implementWithPipe = FieldworkAIDriver.getImplementWithSpecialization(self.vehicle, Pipe)
 		if implementWithPipe then
 			self.pipe = implementWithPipe.spec_pipe
+			self.objectWithPipe = implementWithPipe
 		else
 			self:info('Could not find implement with pipe')
 		end
@@ -97,8 +99,8 @@ function CombineAIDriver:init(vehicle)
 				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
 			else
 				-- if there's no animation we have to use this, as seen in the Giants pipe code
-				self.vehicle:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
-				self.vehicle:updatePipeNodes(999999, nil)
+				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
+				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
 		self.pipeOffsetX, _, self.pipeOffsetZ = localToLocal(dischargeNode.node, AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
@@ -107,8 +109,8 @@ function CombineAIDriver:init(vehicle)
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 0, true)
 			else
-				self.vehicle:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
-				self.vehicle:updatePipeNodes(999999, nil)
+				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
+				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
 		if self.vehicle.spec_foldable then
@@ -764,7 +766,7 @@ function CombineAIDriver:openPipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_OPEN then
 		self:debug('Opening pipe')
-		self.vehicle:setPipeState(self.PIPE_STATE_OPEN)
+		self.objectWithPipe:setPipeState(self.PIPE_STATE_OPEN)
 	end
 end
 
@@ -773,7 +775,7 @@ function CombineAIDriver:closePipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_CLOSED then
 		self:debug('Closing pipe')
-		self.vehicle:setPipeState(self.PIPE_STATE_CLOSED)
+		self.objectWithPipe:setPipeState(self.PIPE_STATE_CLOSED)
 	end
 end
 
