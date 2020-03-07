@@ -1430,13 +1430,6 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 			local minNumWPBeforeTurn = 8;
 			local wp = vehicle.Waypoints[i];
 			if wp and wp.turnStart then
-				--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
-				if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
-					courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(wp.turnStart and true or false)), 12);
-					courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
-					vehicle.cp.switchLaneOffset = true;
-				end;
-
 				--- If the turn is less than 8 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
 				local wpUntilTurn = i - vehicle.cp.abortWork;
 				if wpUntilTurn < minNumWPBeforeTurn then

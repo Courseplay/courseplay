@@ -68,10 +68,12 @@ function CombineAIDriver:init(vehicle)
 
 	if self.vehicle.spec_pipe then
 		self.pipe = self.vehicle.spec_pipe
+		self.objectWithPipe = self.vehicle
 	else
 		local implementWithPipe = FieldworkAIDriver.getImplementWithSpecialization(self.vehicle, Pipe)
 		if implementWithPipe then
 			self.pipe = implementWithPipe.spec_pipe
+			self.objectWithPipe = implementWithPipe
 		else
 			self:info('Could not find implement with pipe')
 		end
@@ -88,7 +90,7 @@ function CombineAIDriver:init(vehicle)
 		if self.vehicle.spec_foldable then
 			wasFolded = not self.vehicle.spec_foldable:getIsUnfolded()
 			if wasFolded then
-				Foldable.setAnimTime(self.vehicle.spec_foldable, 1, true)
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 0, true)
 			end
 		end
 		if self.pipe.currentState == CombineAIDriver.PIPE_STATE_CLOSED then
@@ -97,8 +99,8 @@ function CombineAIDriver:init(vehicle)
 				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
 			else
 				-- if there's no animation we have to use this, as seen in the Giants pipe code
-				self.vehicle:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
-				self.vehicle:updatePipeNodes(999999, nil)
+				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
+				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
 		self.pipeOffsetX, _, self.pipeOffsetZ = localToLocal(dischargeNode.node, AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
@@ -107,13 +109,13 @@ function CombineAIDriver:init(vehicle)
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 0, true)
 			else
-				self.vehicle:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
-				self.vehicle:updatePipeNodes(999999, nil)
+				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
+				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
 		if self.vehicle.spec_foldable then
 			if wasFolded then
-				Foldable.setAnimTime(self.vehicle.spec_foldable, 0, true)
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 1, true)
 			end
 		end
 	else
@@ -764,7 +766,7 @@ function CombineAIDriver:openPipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_OPEN then
 		self:debug('Opening pipe')
-		self.vehicle:setPipeState(self.PIPE_STATE_OPEN)
+		self.objectWithPipe:setPipeState(self.PIPE_STATE_OPEN)
 	end
 end
 
@@ -773,7 +775,7 @@ function CombineAIDriver:closePipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_CLOSED then
 		self:debug('Closing pipe')
-		self.vehicle:setPipeState(self.PIPE_STATE_CLOSED)
+		self.objectWithPipe:setPipeState(self.PIPE_STATE_CLOSED)
 	end
 end
 
@@ -885,12 +887,38 @@ function CombineAIDriver:findBestTrailer()
 	end
 	local fillRootNode
 	if bestTrailer then
-		fillRootNode = bestTrailer:getFillUnitExactFillRootNode()
-		self:debug('Best trailer is %s at %.1f meters, free capacity %d', bestTrailer:getName(), minDistance, maxCapacity)
+		fillRootNode = bestTrailer:getFillUnitExactFillRootNode(bestFillUnitIndex)
+		self:debug('Best trailer is %s at %.1f meters, free capacity %d, root node %s', bestTrailer:getName(), minDistance, maxCapacity, tostring(fillRootNode))
+		local bestFillNode = self:findBestFillNode(fillRootNode, self.pipeOffsetX)
+		return bestTrailer, bestFillNode
 	else
 		self:info('Found no trailer to unload to.')
+		return nil
 	end
-	return bestTrailer, fillRootNode
+end
+
+function CombineAIDriver:findBestFillNode(fillRootNode, offset)
+	local dx, dy, dz = localToLocal(fillRootNode, AIDriverUtil.getDirectionNode(self.vehicle), offset, 0, 0)
+	local dLeft = MathUtil.vector3Length(dx, dy, dz)
+	dx, dy, dz = localToLocal(fillRootNode, AIDriverUtil.getDirectionNode(self.vehicle), -offset, 0, 0)
+	local dRight = MathUtil.vector3Length(dx, dy, dz)
+	self:debug('Trailer left side distance %d, right side %d', dLeft, dRight)
+	if dLeft <= dRight then
+		-- left side of the trailer is closer, so turn the fillRootNode around as the combine must approach the
+		-- trailer from the front of the trailer
+		-- (as always, we always persist nodes in aiDriverData so they survive the AIDriver object and won't leak)
+		if not self.aiDriverData.bestFillNode then
+			self.aiDriverData.bestFillNode = courseplay.createNode('bestFillNode', 0, 0, math.pi, fillRootNode)
+		else
+			unlink(self.aiDriverData.bestFillNode)
+			link(fillRootNode, self.aiDriverData.bestFillNode)
+			setRotation(self.aiDriverData.bestFillNode, 0, math.pi, 0)
+		end
+		return self.aiDriverData.bestFillNode
+	else
+		-- right side closer, combine approaches the trailer from the rear, driving the same direction as the getFillUnitExactFillRootNode
+		return fillRootNode
+	end
 end
 
 --- Find a path to the best trailer to unload

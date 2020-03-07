@@ -567,6 +567,9 @@ function courseEditor:draw(vehicle)
               local speedUnit = utf8ToUpper(g_i18n:getSpeedMeasuringUnit())
               saction = string.format("%d:%d %s:%s", i, wp.speed, speedUnit, sign)
             end
+            if wp.lane then
+              saction = saction .. string.format(' (%s: %d)', g_i18n:getText('COURSEPLAY_HEADLAND'), -wp.lane)
+            end
             local theight = 0.025
             local overlayColor = {r = 0, g = 0, b = 0, a = 0.85}
             local overlayWidth = getTextWidth(theight, saction) + 0.015

@@ -305,7 +305,6 @@ function courseplay:changeLaneOffset(vehicle, changeBy, force)
 	if abs(vehicle.cp.laneOffset) < 0.1 then
 		vehicle.cp.laneOffset = 0;
 	end;
-	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 end;
 
 function courseplay:changeLaneNumber(vehicle, changeBy, reset)
@@ -314,7 +313,6 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 	
 	if reset then
 		vehicle.cp.laneNumber = 0;
-		vehicle.cp.totalOffsetX = vehicle.cp.toolOffsetX;
 		vehicle.cp.laneOffset = 0
 	else
 		--skip zero if multiTools is even
@@ -337,7 +335,6 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 			newOffset = vehicle.cp.workWidth*vehicle.cp.laneNumber
 		end
 		courseplay:changeLaneOffset(vehicle, nil , newOffset)
-		vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 	end;
 
 end;
@@ -347,7 +344,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	if abs(vehicle.cp.toolOffsetX) < 0.1 then
 		vehicle.cp.toolOffsetX = 0;
 	end;
-	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
+	vehicle.cp.totalOffsetX = vehicle.cp.toolOffsetX;
 	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
@@ -1310,7 +1307,7 @@ function courseplay:toggleShovelStopAndGo(vehicle)
 end;
 
 function courseplay:changeStartAtPoint(vehicle)
-	vehicle.cp.startAtPoint = courseplay:varLoop(vehicle.cp.startAtPoint, 1, courseplay.START_AT_NEXT_POINT, courseplay.START_AT_NEAREST_POINT);
+	vehicle.cp.settings.startingPoint:next()
 end;
 
 function courseplay:reloadCoursesFromXML(vehicle)
@@ -1383,8 +1380,7 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 end;
 
 function courseplay:toggleSymmetricLaneChange(vehicle)
-	vehicle.cp.symmetricLaneChange = not vehicle.cp.symmetricLaneChange;
-	vehicle.cp.switchLaneOffset = vehicle.cp.symmetricLaneChange;
+	vehicle.cp.settings.symmetricLaneChange:toggle()
 end;
 
 function courseplay:toggleDriverPriority(combine)
@@ -2237,6 +2233,31 @@ function AutoDriveModeSetting:useForParkVehicle()
 	return self:is(AutoDriveModeSetting.PARK) or self:is(AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK)
 end
 
+--- Starting point setting (at which waypoint should the vehicle start the course)
+---@class StartingPointSetting : SettingList
+StartingPointSetting = CpObject(SettingList)
+
+StartingPointSetting.START_AT_NEAREST_POINT = 1 -- nearest waypoint regardless of direction
+StartingPointSetting.START_AT_FIRST_POINT   = 2 -- first waypoint
+StartingPointSetting.START_AT_CURRENT_POINT = 3 -- current waypoint
+StartingPointSetting.START_AT_NEXT_POINT    = 4 -- nearest waypoint with approximately same direction as vehicle
+
+function StartingPointSetting:init(vehicle)
+	SettingList.init(self, 'startingPoint', 'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle,
+			{
+		        StartingPointSetting.START_AT_NEAREST_POINT,
+				StartingPointSetting.START_AT_FIRST_POINT  ,
+				StartingPointSetting.START_AT_CURRENT_POINT,
+				StartingPointSetting.START_AT_NEXT_POINT
+			},
+			{
+				"COURSEPLAY_NEAREST_POINT",
+				"COURSEPLAY_FIRST_POINT"  ,
+				"COURSEPLAY_CURRENT_POINT",
+				"COURSEPLAY_NEXT_POINT"
+			})
+end
+
 --- Driving mode setting
 ---@class DrivingModeSetting : SettingList
 DrivingModeSetting = CpObject(SettingList)
@@ -2450,6 +2471,12 @@ end
 SelfUnloadSetting = CpObject(BooleanSetting)
 function SelfUnloadSetting:init(vehicle)
 	BooleanSetting.init(self, 'selfUnload', 'COURSEPLAY_SELF_UNLOAD', 'COURSEPLAY_SELF_UNLOAD_TOOLTIP', vehicle)
+end
+
+---@class SymmetricLaneChangeSetting : BooleanSetting
+SymmetricLaneChangeSetting = CpObject(BooleanSetting)
+function SymmetricLaneChangeSetting:init(vehicle)
+	BooleanSetting.init(self, 'symmetricLaneChange', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', vehicle)
 end
 
 --- Container for settings

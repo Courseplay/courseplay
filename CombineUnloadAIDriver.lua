@@ -40,8 +40,8 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.onTurnAwayCourse = false
 end
 
-function CombineUnloadAIDriver:start(ix)
-	AIDriver.start(self, ix)
+function CombineUnloadAIDriver:start(startingPoint)
+	AIDriver.start(self, startingPoint)
 end
 
 function CombineUnloadAIDriver:isAlignmentCourseNeeded(ix)

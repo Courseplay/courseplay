@@ -33,10 +33,10 @@ function GrainTransportAIDriver:setHudContent()
 	courseplay.hud:setGrainTransportAIDriverContent(self.vehicle)
 end
 
-function GrainTransportAIDriver:start(ix)
+function GrainTransportAIDriver:start(startingPoint)
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	self:beforeStart()
-	AIDriver.start(self, ix)
+	AIDriver.start(self, startingPoint)
 	self:setDriveUnloadNow(false);
 end
 

@@ -292,14 +292,11 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 					if fillTrigger.source ~= nil then
 						if courseplay.debugChannels[19] then
 							if fillTrigger.isGlobalCompanyFillTrigger then
-								--bad hack for globalCompany mod
-								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger -> fillTrigger.source.providedFillTypes:')
-								for index,source in pairs (fillTrigger.source.providedFillTypes) do
-									if type(source)== 'table' then
-										for subIndex, subSource in pairs(source)do
-											courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger ->  %s: %s=%s',tostring(index),tostring(subIndex),tostring(subSource))
-										end									
-									end							
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger -> fillTrigger.source.getProvidedFillTypes:')								
+								if trigger.source.getProvidedFillTypes ~= nil then
+									for index, val in pairs(trigger.source:getProvidedFillTypes(trigger.extraParamater))do
+										courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger ->  %s:%s',tostring(index),g_fillTypeManager.indexToName[index])		
+									end		
 								end
 							else
 								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
@@ -362,13 +359,13 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 end;
 
 function courseplay:getLoadTriggerProvidedFillTypeValid(trigger, fillType)
-	--bad hack for globalCompany mod.  providedFillTypes has a sub structure there
 	if trigger.isGlobalCompanyFillTrigger then
-		for _,subProvidedFillTypes in pairs (trigger.source.providedFillTypes) do
-			if type(subProvidedFillTypes)=='table' then
-				return subProvidedFillTypes[fillType]
-			end			
-		end	
+		if trigger.source.getProvidedFillTypes ~= nil then
+			local fillTypes = trigger.source:getProvidedFillTypes(trigger.extraParamater)
+			if fillTypes ~= nil then
+				return fillTypes[fillType]
+			end
+		end
 	else
 		return trigger.source.providedFillTypes[fillType]
 	end
@@ -1323,14 +1320,9 @@ function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y)
 	return nil;
 end;
 
-function courseplay:getPointDirection(cp, np, useC)
-	if useC == nil then useC = true; end;
-	local x,z = 'x','z'; -- Jeez.
-	if useC then
-		x,z = 'cx','cz';
-	end;
-
-	local dx, dz = np[x] - cp[x], np[z] - cp[z];
+function courseplay:getPointDirection(cp, np)
+	-- TODO get rid of cx/cz
+	local dx, dz = (np.x or np.cx) - (cp.x or cp.cx), (np.z or np.cz) - (cp.z or cp.cz)
 	local vl = MathUtil.vector2Length(dx, dz);
 	if vl and vl > 0.0001 then
 		dx = dx / vl;

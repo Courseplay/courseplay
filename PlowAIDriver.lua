@@ -131,7 +131,7 @@ function PlowAIDriver:setOffsetX()
 		local newToolOffsetX = -(leftMarkerDistance + rightMarkerDistance) / 2
 		-- set to the average of old and new to smooth a little bit to avoid oscillations
 		self.vehicle.cp.toolOffsetX = (self.vehicle.cp.toolOffsetX + newToolOffsetX) / 2
-		self.vehicle.cp.totalOffsetX = self.vehicle.cp.laneOffset + self.vehicle.cp.toolOffsetX
+		self.vehicle.cp.totalOffsetX = self.vehicle.cp.toolOffsetX
 		self:debug('%s: left = %.1f, right = %.1f, leftDx = %.1f, rightDx = %.1f, setting tool offsetX to %.2f (total offset %.2f)',
 			nameNum(self.plow), leftMarkerDistance, rightMarkerDistance, leftDx, rightDx, self.vehicle.cp.toolOffsetX, self.vehicle.cp.totalOffsetX)
 	end

@@ -75,12 +75,13 @@ local function addMissingPassNumber( headlandPath )
 end
 
 --- Calculate a headland track inside polygon in offset distance
-function calculateHeadlandTrack( polygon, mode, rightSide, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
+function calculateHeadlandTrack( polygon, mode, isClockwise, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
                                  currentOffset, doSmooth, inward, centerSettings, currentPassNumber )
 	-- recursion limit
 	if currentOffset == 0 then
 		n = 1
-		courseGenerator.debug( "Generating headland track with offset %.2f", targetOffset )
+		courseGenerator.debug( "Generating headland track with offset %.2f, clockwise %s, inward %s",
+				targetOffset, tostring(isClockwise), tostring(inward))
 	else
 		n = n + 1
 	end
@@ -113,11 +114,24 @@ function calculateHeadlandTrack( polygon, mode, rightSide, targetOffset, minDist
 	local offsetEdges = {}
 	for i, edge, from in polygon:edgeIterator() do
 		local localOffset = getLocalDeltaOffset( polygon, from, mode, centerSettings, deltaOffset, currentPassNumber )
-		local newFrom = addPolarVectorToPoint( edge.from, edge.angle + getInwardDirection( rightSide ), localOffset )
-		local newTo = addPolarVectorToPoint( edge.to, edge.angle + getInwardDirection( rightSide ), localOffset )
-		table.insert( offsetEdges, { from=newFrom, to=newTo })
-	end
+		local newFrom = addPolarVectorToPoint( edge.from, edge.angle + getInwardDirection( isClockwise ), localOffset )
+		local newTo = addPolarVectorToPoint( edge.to, edge.angle + getInwardDirection( isClockwise ), localOffset )
+		-- if there are turn corners, make sure we do not smooth them out (when creating an outside offset course for example)
+		-- we move corner points outwards on the corner angle bisector by making edges leading to/from the corner longer
+		if not inward and edge.to.deltaAngle and edge.to.turnEnd then
+			local d = math.abs(localOffset * math.tan(math.pi / 2 - math.abs(edge.to.deltaAngle / 2 )))
+			newTo = addPolarVectorToPoint(newTo, edge.angle, d)
+			newTo.turnEnd = true
+		end
+		if not inward and edge.from.deltaAngle and edge.from.turnEnd then
+			local d = -math.abs(localOffset *math.tan(math.pi / 2 - math.abs(edge.from.deltaAngle / 2 )))
+			newFrom = addPolarVectorToPoint(newFrom, edge.angle, d)
+			newFrom.turnEnd = true
+			--table.insert(lines, {{x = newFrom.x, y = newFrom.y}, {x = newTo.x, y = newTo.y}} )
+		end
 
+		table.insert( offsetEdges, { from = newFrom, to = newTo })
+	end
 
 	local vertices = polygon:cloneEmpty()
 	cleanupOffsetEdges(offsetEdges, vertices, minDistanceBetweenPoints)
@@ -127,7 +141,7 @@ function calculateHeadlandTrack( polygon, mode, rightSide, targetOffset, minDist
 	end
 	-- only filter points too close, don't care about angle
 	applyLowPassFilter( vertices, math.pi, minDistanceBetweenPoints )
-	return calculateHeadlandTrack( vertices, mode, rightSide, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
+	return calculateHeadlandTrack( vertices, mode, isClockwise, targetOffset, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
 		currentOffset, doSmooth, inward, centerSettings, currentPassNumber )
 end
 
@@ -136,36 +150,39 @@ function cleanupOffsetEdges(offsetEdges, result, minDistanceBetweenPoints)
 		local edge = offsetEdges[i]
 		local ix = i - 1
 		if ix == 0 then ix = #offsetEdges end
-
 		local prevEdge, vertex
 
-		if result:canWrapAround() then
-			-- closed polygon, wrap around the end and use the last edge
+		if i > 1 or result:canWrapAround() then
+			-- check if offset edges are intersecting. If this is a polygon, we can wrap
+			-- around the first vertex back to the last, don't do this for polylines
 			prevEdge = offsetEdges[ix]
 			vertex = getIntersection( edge.from.x, edge.from.y, edge.to.x, edge.to.y,
 				prevEdge.from.x, prevEdge.from.y, prevEdge.to.x, prevEdge.to.y )
 		else
-			-- just a line, no wrap around
 			prevEdge = edge
 			vertex = edge.from
 		end
 
 		if vertex then
-			-- previous edge intersects current, use the intersection point then
+			-- to clip loops, if the previous edge intersects current use the intersection point then
 			table.insert( result, vertex )
 		else
 			-- previous edge does not intersect current
 			if getDistanceBetweenPoints( prevEdge.to, edge.from ) < minDistanceBetweenPoints then
 				-- but their ends are close enough, so add a point between the two.
 				local x, y = getPointInTheMiddle( prevEdge.to, edge.from )
-				table.insert( result, { x=x, y=y })
+				table.insert( result, { x = x, y = y })
 			else
 				-- previous ends far away from the current start, add both
 				table.insert( result, prevEdge.to )
 				table.insert( result, edge.from )
 			end
 		end
+		-- making sure a turn end is carried over to the next iteration, this is to keep headland turns when creating
+		-- offset courses from an existing course
+		result[#result].turnEnd = edge.from.turnEnd
 	end
+
 	if not result.canWrapAround() then
 		-- if we did not wrap around, we missed the end of the last edge
 		table.insert(result, offsetEdges[#offsetEdges].to)

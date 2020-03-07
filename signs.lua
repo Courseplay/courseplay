@@ -159,6 +159,9 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
           neededSignType = 'unload';
         end;
 
+		-- TODO: remove this once we get rid of the terrible cx/cz notation
+		-- make sure we have cx and cz
+		wp.cx = wp.cx or wp.x wp.cy = wp.cy or wp.y wp.cz = wp.cz or wp.z
         -- direction + angle
         if wp.rotX == nil then wp.rotX = 0; end;
         if wp.cy == nil or wp.cy == 0 then
@@ -167,6 +170,8 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
 
         if i < vehicle.cp.numWaypoints then
           np = vehicle.Waypoints[i + 1];
+		  -- TODO: remove this once we get rid of the terrible cx/cz notation
+		  np.cx = np.cx or np.x np.cy = np.cy or np.y np.cz = np.cz or np.z
           if np.cy == nil or np.cy == 0 then
             np.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.cx, 0, np.cz);
           end;

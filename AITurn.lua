@@ -439,7 +439,7 @@ end
 function CourseTurn:startTurn()
 	-- pathfinder and Dubins won't handle multi tools correctly until the big multi tool fix is in place, so until then
 	-- just don't use it
-	if self.vehicle.cp.multiTools < 2 and self.turnContext:isWideTurn(self.turningRadius * 2) then
+	if self.turnContext:isWideTurn(self.turningRadius * 2) then
 		self:generatePathfinderTurn()
 	else
 		self:generateCalculatedTurn()

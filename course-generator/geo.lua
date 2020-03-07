@@ -46,7 +46,10 @@ function pointToString(p)
 	if p.prevEdge then
 		fromAngle = string.format('%.1f', math.deg(p.prevEdge.angle))
 	end
-	return string.format('x=%.1f y=%.1f %s -> %s', p.x, p.y, fromAngle, toAngle) .. (p.reverse and '(rev)' or '')
+	local turn = p.turnStart and ' (start)' or ''
+	turn = p.turnEnd and ' (end)' or turn
+	return string.format('x=%.1f y=%.1f %s -> %s',
+			p.x, p.y, fromAngle, toAngle) .. (p.reverse and '(rev)' or '' .. turn)
 end
 
 -- calculates the polar coordinates of x, y with some filtering
@@ -104,7 +107,7 @@ end
 -- -pi/2 and + pi/2
 function getDeltaAngle( a1, a2 )
 	-- convert the 0 - -180 range into 180 - 360
-	if math.abs( a1 - a2 ) > math.pi then
+		if math.abs( a1 - a2 ) > math.pi then
 		a1 = normalizeAngle( a1 )
 		a2 = normalizeAngle( a2 )
 	end
@@ -379,15 +382,12 @@ end
 -- extensionLength, ab forward, cd backwards as they are edges 
 -- of a polygon
 function getIntersectionOfExtendedEdges( e1, e2, extensionLength )
-	local ab = deepCopy( e1, true )
-	local cd = deepCopy( e2, true )
-	ab.to.x = ab.to.x + extensionLength * ab.dx / ab.length
-	ab.to.y = ab.to.y + extensionLength * ab.dy / ab.length
-	cd.from.x = cd.from.x - extensionLength * cd.dx / cd.length
-	cd.from.y = cd.from.y - extensionLength * cd.dy / cd.length
+	local e1_to_x = e1.to.x + extensionLength * e1.dx / e1.length
+	local e1_to_y = e1.to.y + extensionLength * e1.dy / e1.length
+	local e2_from_x = e2.from.x - extensionLength * e2.dx / e2.length
+	local e2_from_y = e2.from.y - extensionLength * e2.dy / e2.length
 	-- see if they intersect now
-	local is = getIntersection( ab.from.x, ab.from.y, ab.to.x, ab.to.y,
-		cd.from.x, cd.from.y, cd.to.x, cd.to.y )
+	local is = getIntersection( e1.from.x, e1.from.y, e1_to_x, e1_to_y, e2_from_x, e2_from_y, e2.to.x, e2.to.y )
 	return is
 end
 
@@ -720,7 +720,7 @@ function Polyline:calculateData()
 			dx = cp.x - pp.x
 			dy = cp.y - pp.y
 			angle, length = toPolar( dx, dy )
-			self[ i ].prevEdge = { from={ x=pp.x, y=pp.y} , to={ x=cp.x, y=cp.y }, angle=angle, length=length, dx=dx, dy=dy }
+			self[ i ].prevEdge = { from=pp , to=cp, angle=angle, length=length, dx=dx, dy=dy }
 			if length < shortestEdgeLength then shortestEdgeLength = length end
 			-- detect clockwise/counterclockwise direction
 			if pp.prevEdge and cp.prevEdge then
@@ -734,7 +734,7 @@ function Polyline:calculateData()
 			dx = np.x - cp.x
 			dy = np.y - cp.y
 			angle, length = toPolar( dx, dy )
-			self[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
+			self[ i ].nextEdge = { from = cp, to = np, angle=angle, length=length, dx=dx, dy=dy }
 			if length < shortestEdgeLength then shortestEdgeLength = length end
 			addToDirectionStats( directionStats, angle, length )
 			area = area + ( cp.x * np.y - cp.y * np.x )
