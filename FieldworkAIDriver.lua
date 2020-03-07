@@ -162,15 +162,15 @@ function FieldworkAIDriver:start(startingPoint)
 
 	-- now that we have our unload/refill and fieldwork courses set up, see where to start
 	local closestFieldworkIx, dClosestFieldwork, closestFieldworkIxRightDirection, dClosestFieldworkRightDirection =
-		self.fieldworkCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
+	self.fieldworkCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
 
 	-- default to math.huge in case there isn't an unload refill course to make sure it only the fieldwork Ix is used
 	local closestUnloadRefillIx, dClosestUnloadRefill, closestUnloadRefillIxRightDirection, dClosestUnloadRefillRightDirection =
-		0, math.huge, 0, math.huge
+	0, math.huge, 0, math.huge
 
 	if self.unloadRefillCourse then
 		closestUnloadRefillIx, dClosestUnloadRefill, closestUnloadRefillIxRightDirection, dClosestUnloadRefillRightDirection =
-			self.unloadRefillCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
+		self.unloadRefillCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
 	end
 
 	local ix = self.course and self.course:getCurrentWaypointIx()
@@ -180,23 +180,40 @@ function FieldworkAIDriver:start(startingPoint)
 		if dClosestFieldwork < dClosestUnloadRefill then
 			ix = closestFieldworkIx
 			startWithFieldwork = true
+			self:debug('Starting at nearest waypoint %d on fieldwork course', ix)
 		else
 			ix = closestUnloadRefillIx
 			startWithFieldwork = false
+			self:debug('Starting at nearest waypoint %d on unload/refill course', ix)
 		end
 	end
-	-- TODO: decide if we even need current point in this mode, does not seem to make any sense
-	if startingPoint:is(StartingPointSetting.START_AT_NEXT_POINT) or startingPoint:is(StartingPointSetting.START_AT_CURRENT_POINT) then
+
+	if startingPoint:is(StartingPointSetting.START_AT_NEXT_POINT) then
 		if dClosestFieldworkRightDirection < dClosestUnloadRefillRightDirection then
 			ix = closestFieldworkIxRightDirection
 			startWithFieldwork = true
+			self:debug('Starting at nearest waypoint %d (best direction) on fieldwork course', ix)
 		else
 			ix = closestUnloadRefillIxRightDirection
 			startWithFieldwork = false
+			self:debug('Starting at nearest waypoint %d (best direction) on unload/refill course', ix)
 		end
 	end
 	if startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
+		self:debug('Starting at first waypoint')
 		ix = 1
+		startWithFieldwork = true
+	end
+
+	if startingPoint:is(StartingPointSetting.START_AT_CURRENT_POINT) then
+		-- use last fieldwork waypoint if we have the same fieldwork course as before
+		if self.fieldworkCourseHash == self.aiDriverData.lastFieldworkCourseHash then
+			self:debug('Starting at current waypoint %d', self.aiDriverData.lastFieldworkWaypointIx)
+			ix = self.aiDriverData.lastFieldworkWaypointIx
+		else
+			self:debug('Current waypoint not found, starting at first')
+			ix = 1
+		end
 		startWithFieldwork = true
 	end
 
@@ -231,6 +248,9 @@ end
 
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
+	-- persist last fieldwork waypoint data (for 'start at current waypoint')
+	self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
+	self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
 	AIDriver.stop(self, msgReference)
 	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
 	self.vehicle.cp.alignment.enabled = self.alignmentEnabled

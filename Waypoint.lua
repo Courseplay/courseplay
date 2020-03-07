@@ -1080,7 +1080,7 @@ function Course:getNearestWaypoints(node)
 	local x, _, z = getWorldTranslation(node)
 	local lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
 	local nodeAngle = math.atan2(lx, lz)
-	local maxDeltaAngle = math.pi / 4
+	local maxDeltaAngle = math.pi / 2
 	local dClosest, dClosestRightDirection = math.huge, math.huge
 	local ixClosest, ixClosestRightDirection = 1, 1
 
