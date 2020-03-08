@@ -294,6 +294,10 @@ function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then
 		return (combine.cp.workWidth/2)+ 3
 	elseif self:getIsCombine(combine) then
+		if not combine.getCurrentDischargeNode then
+			-- TODO: cotton harvesters for example don't have one...
+			return 0
+		end
 		local dischargeNode = combine:getCurrentDischargeNode().node
 		local dnX,dnY,dnZ = getWorldTranslation(dischargeNode)
 		local baseNode = self:getPipesBaseNode(combine)
@@ -319,6 +323,11 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 			end
 		end
 	elseif self:getIsCombine(combine) then
+		if not combine.getCurrentDischargeNode then
+			-- TODO: cotton harvesters for example don't have one...
+			return combine.rootNode
+		end
+
 		--TODO find a cleaner way to figure out the getPipesBaseNode
 		local dischargeNode = combine:getCurrentDischargeNode().node
 		local lastParent = dischargeNode
@@ -334,11 +343,19 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 end
 
 function CombineUnloadManager:getCombinesFillLevelPercent(combine)
+	if not combine.getCurrentDischargeNode then
+		-- TODO: cotton harvesters for example don't have one...
+		return 0
+	end
 	local dischargeNode = combine:getCurrentDischargeNode()
 	return combine:getFillUnitFillLevelPercentage(dischargeNode.fillUnitIndex)*100
 end
 
 function CombineUnloadManager:getCombinesFillLevel(combine)
+	if not combine.getCurrentDischargeNode then
+		-- TODO: cotton harvesters for example don't have one...
+		return 0
+	end
 	local dischargeNode = combine:getCurrentDischargeNode()
 	return combine:getFillUnitFillLevel(dischargeNode.fillUnitIndex)
 end

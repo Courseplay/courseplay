@@ -2046,6 +2046,11 @@ function SettingList:setNext()
 	self:setToIx(new)
 end
 
+-- TODO: consolidate this with setNext()
+function SettingList:next()
+	self:setNext()
+end
+
 -- private function to set to the value at ix
 function SettingList:setToIx(ix)
 	if ix ~= self.current then
