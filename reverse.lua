@@ -1,6 +1,16 @@
 local abs, max, rad, sin = math.abs, math.max, math.rad, math.sin;
 
 function courseplay:goReverse(vehicle,lx,lz,mode2)
+	-- TODO get rid of cx and cz and the global Waypoints array. I know this is horrible but I don't want to
+	-- maintain a cx/cz in the Course object
+	local getX = function(waypoints, ix)
+		return waypoints[ix].cx or waypoints[ix].x
+	end
+
+	local getZ = function(waypoints, ix)
+		return waypoints[ix].cz or waypoints[ix].z
+	end
+
 	local waypoints, index
 	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
 		-- when the AI Driver is driving we want to use the course set up by the driver and not the legacy
@@ -13,6 +23,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		index = vehicle.cp.waypointIndex + 1;
 		waypoints = vehicle.Waypoints
 	end
+
 	local fwd = false;
 	local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle) or vehicle.cp.workTools[1];
 	local newTarget;
@@ -68,21 +79,21 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	if debugActive and not newTarget then
 		cpDebug:drawPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0);
 		if not vehicle.cp.checkReverseValdityPrinted then
-			local checkValdity = false;
+			local checkValidity = false;
 			for i=index, #waypoints do
 				if waypoints[i].rev then
-					tcx = waypoints[i].cx;
-					tcz = waypoints[i].cz;
+					tcx = getX(waypoints, i);
+					tcz = getZ(waypoints, i);
 					local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
 					if z < 0 then
-						checkValdity = true;
+						checkValidity = true;
 						break;
 					end;
 				else
 					break;
 				end;
 			end;
-			if not checkValdity then
+			if not checkValidity then
 				print(nameNum(vehicle) ..": reverse course is not valid");
 			end;
 			vehicle.cp.checkReverseValdityPrinted = true;
@@ -101,14 +112,14 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	elseif not mode2 then
 		for i= index, #waypoints do
 			if waypoints[i].rev and not waypoints[i-1].wait then
-				tcx = waypoints[i].cx;
-				tcz = waypoints[i].cz;
+				tcx = getX(waypoints, i);
+				tcz = getZ(waypoints, i);
 			else
-				local dx, dz, _ = courseplay.generation:getPointDirection(waypoints[i-2], waypoints[i-1]);
-				tcx = waypoints[i-1].cx + dx * (waypoints[i-1].wait and 15 or 30);
-				tcz = waypoints[i-1].cz + dz * (waypoints[i-1].wait and 15 or 30);
+				local dx, dz, _ = courseplay:getPointDirection(waypoints[i-2], waypoints[i-1]);
+				tcx = getX(waypoints, i-1) + dx * (waypoints[i-1].wait and 15 or 30);
+				tcz = getZ(waypoints, i-1) + dz * (waypoints[i-1].wait and 15 or 30);
 			end;
-			local distance = courseplay:distance(xTipper,zTipper, waypoints[i-1].cx ,waypoints[i-1].cz);
+			local distance = courseplay:distance(xTipper,zTipper, getX(waypoints, i-1) ,getZ(waypoints, i-1));
 
 			local waitingPoint;
 			local unloadPoint;
@@ -131,7 +142,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			if waitingPoint then
 				if workTool.cp.realUnloadOrFillNode then
 					local _,y,_ = getWorldTranslation(workTool.cp.realUnloadOrFillNode);
-					local _,_,z = worldToLocal(workTool.cp.realUnloadOrFillNode, waypoints[waitingPoint].cx, y, waypoints[waitingPoint].cz);
+					local _,_,z = worldToLocal(workTool.cp.realUnloadOrFillNode, getX(waypoints, waitingPoint), y, getZ(waypoints, waitingPoint));
 					if z >= 0 then
 						courseplay:setWaypointIndex(vehicle, waitingPoint + 1);
 						courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
@@ -158,7 +169,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 				if workTool.cp.rearTipRefPoint then
 					local tipRefPoint = workTool.tipReferencePoints[workTool.cp.rearTipRefPoint].node
 					local x,y,z = getWorldTranslation(tipRefPoint);
-					local tipDistanceToPoint = courseplay:distance(x,z,waypoints[unloadPoint].cx,waypoints[unloadPoint].cz)
+					local tipDistanceToPoint = courseplay:distance(x,z,getX(waypoints, unloadPoint),getZ(waypoints, unloadPoint))
 					courseplay:debug(string.format("%s:workTool.cp.rearTipRefPoint: tipDistanceToPoint: %s", nameNum(vehicle),tostring(tipDistanceToPoint)), 13);
 					if tipDistanceToPoint  < 0.5 then
 						courseplay:setWaypointIndex(vehicle, unloadPoint + 1);
@@ -191,7 +202,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			-- FIND THE RIGHT START REVERSING WAYPOINT
 			elseif waypoints[i-1].rev and not waypoints[i-2].rev then
 				for recNum = index, vehicle.cp.numWaypoints do
-					local srX,srZ = waypoints[recNum].cx,waypoints[recNum].cz;
+					local srX,srZ = getX(waypoints, recNum),getZ(waypoints, recNum);
 					local _,_,tsrZ = worldToLocal(node,srX,yTipper,srZ);
 					if tsrZ < -2 then
 						courseplay:setWaypointIndex(vehicle, recNum);

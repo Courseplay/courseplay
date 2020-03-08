@@ -3,6 +3,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	-- Input binding debug
 	local vehicle = g_currentMission.controlledVehicle		
 	if not vehicle or not vehicle.hasCourseplaySpec then return end
+  courseEditor:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
 	
 	--print(string.format('courseplay:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseButton(%s))', tostring(posX), tostring(posY), tostring(isDown), tostring(isUp), tostring(mouseButton) ))
 	--print(string.format("if isUp(%s) and mouseButton(%s) == courseplay.inputBindings.mouse.secondaryButtonId(%s) and Enterable.getIsEntered(self)(%s) then"
@@ -18,6 +19,12 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	local hudGfx = courseplay.hud.visibleArea;
 	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, vehicle.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
+
+	-- should we switch vehicles?
+	if courseplay.globalSettings.clickToSwitch:is(true) and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and not mouseIsInHudArea and
+		mouseButton == courseplay.inputBindings.mouse.primaryButtonId then
+			clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
+	end
 
 	--LEFT CLICK
 	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and mouseIsInHudArea then
@@ -459,6 +466,28 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 						vehicle:setCourseplayFunc('stop_record', nil, false, 1);
 					end;
 				end;
+      elseif actionName == 'COURSEPLAY_EDITOR_TOGGLE' then
+        courseEditor:setEnabled(not courseEditor.enabled, vehicle)
+      elseif actionName == 'COURSEPLAY_EDITOR_UNDO' then
+        courseEditor:undo()
+      elseif actionName == 'COURSEPLAY_EDITOR_SAVE' then
+        courseEditor:save()
+      elseif actionName == 'COURSEPLAY_EDITOR_SPEED_INCREASE' then
+       courseEditor:increaseSpeed()
+      elseif actionName == 'COURSEPLAY_EDITOR_SPEED_DECREASE' then
+       courseEditor:decreaseSpeed()
+      elseif actionName == 'COURSEPLAY_EDITOR_DELETE_WAYPOINT' then
+       courseEditor:delete()
+      elseif actionName == 'COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT' then
+      courseEditor:deleteNext()      
+      elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_START' then
+       courseEditor:deleteToStart()
+      elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_END' then
+       courseEditor:deleteToEnd()
+      elseif actionName == 'COURSEPLAY_EDITOR_INSERT_WAYPOINT' then
+       courseEditor:insert()
+      elseif actionName == 'COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE' then
+       courseEditor:cycleType()
 			elseif actionName == 'COURSEPLAY_CANCELWAIT' and
 				(vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting()) then
 				vehicle:setCourseplayFunc('cancelWait', true, false, 1);

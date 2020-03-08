@@ -37,7 +37,7 @@ end
 
 function DevHelper:update()
     if not CpManager.isDeveloper then return end
-    local node, lx, lz, hasCollision, vehicle
+    local lx, lz, hasCollision, vehicle
 
     if g_currentMission.controlledVehicle then
 
@@ -46,17 +46,17 @@ function DevHelper:update()
         end
 
         self.vehicle = g_currentMission.controlledVehicle
-        node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
-        lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
+        self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
+        lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
         self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
     else
-        node = g_currentMission.player.cameraNode
-        lx, _, lz = localDirectionToWorld(node, 0, 0, -1)
+        self.node = g_currentMission.player.cameraNode
+        lx, _, lz = localDirectionToWorld(self.node, 0, 0, -1)
     end
 
     if self.vehicleData then
-        self.collisionData = PathfinderUtil.getCollisionData(node, self.vehicleData, 'me')
-        hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(self.collisionData, node, self.vehicleData)
+        self.collisionData = PathfinderUtil.getCollisionData(self.node, self.vehicleData, 'me')
+        hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(self.collisionData, self.node, self.vehicleData)
         if hasCollision then
             self.data.vehicleOverlap = vehicle
         else
@@ -66,7 +66,7 @@ function DevHelper:update()
 
     self.yRot = math.atan2( lx, lz )
     self.data.yRotDeg = math.deg(self.yRot)
-    self.data.x, self.data.y, self.data.z = getWorldTranslation(node)
+    self.data.x, self.data.y, self.data.z = getWorldTranslation(self.node)
     self.data.fieldNum = courseplay.fields:getFieldNumForPosition(self.data.x, self.data.z)
 
     self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 2, 2)
@@ -103,6 +103,16 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         self:findTrailers()
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_period then
         self.goal = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
+
+        local x, y, z = getWorldTranslation(self.node)
+        local _, yRot, _ = getRotation(self.node)
+        if self.goalNode then
+            setTranslation( self.goalNode, x, y, z );
+            setRotation( self.goalNode, 0, yRot, 0);
+        else
+            self.goalNode = courseplay.createNode('devhelper', x, z, yRot)
+        end
+
         self:debug('Goal %s', tostring(self.goal))
         --self:startPathfinding()
     elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_period then
@@ -114,8 +124,18 @@ end
 function DevHelper:startPathfinding()
     self.pathfinderStartTime = g_time
     self:debug('Starting pathfinding between %s and %s', tostring(self.start), tostring(self.goal))
+
     local done, path
-    self.pathfinder, done, path = PathfinderUtil.startPathfinding(self.start, self.goal, self.context, true)
+    if self.vehicle and self.vehicle.cp.driver and self.vehicle.cp.driver.fieldworkCourse then
+        self:debug('Starting pathfinding for turn between %s and %s', tostring(self.start), tostring(self.goal))
+        self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
+                1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
+    else
+        self:debug('Starting pathfinding (allow reverse) between %s and %s', tostring(self.start), tostring(self.goal))
+        local start = State3D:copy(self.start)
+        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, true)
+    end
+
     if done then
         if path then
             self:loadPath(path)
@@ -152,8 +172,12 @@ end
 
 ---@param path State3D[]
 function DevHelper:loadPath(path)
-    self:debug('Path with %d waypoint found, finished in %d ms', #path, g_time - self.pathfinderStartTime)
-    self.course = Course(nil, courseGenerator.pointsToXzInPlace(path), true)
+    if path then
+        self:debug('Path with %d waypoint found, finished in %d ms', #path, g_time - self.pathfinderStartTime)
+        self.course = Course(nil, courseGenerator.pointsToXzInPlace(path), true)
+    else
+        self:debug('No path!')
+    end
 end
 
 function DevHelper:drawCourse()

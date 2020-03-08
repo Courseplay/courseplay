@@ -31,14 +31,34 @@ This is the lua port of the original C implementation by Peter Vaiko for Coursep
 
 ]]--
 
+--- Implement interface for the hybrid A* code
+---@class DubinsSolution : AnalyticSolution
+DubinsSolution = CpObject(AnalyticSolution)
+
+function DubinsSolution:init(pathDescriptor)
+    self.pathDescriptor = pathDescriptor
+end
+
+function DubinsSolution:getLength(turnRadius)
+    return dubins_path_length(self.pathDescriptor)
+end
+
+function DubinsSolution:getWaypoints(start, turnRadius)
+    return dubins_path_sample_many(self.pathDescriptor, 1)
+end
+
+
+---@class DubinsSolver : AnalyticSolver
+DubinsSolver = CpObject(AnalyticSolver)
+
 -- Dubins words (path types, Left/Straight/Right
-DubinsPathType = {}
-DubinsPathType.LSL = 0
-DubinsPathType.LSR = 1
-DubinsPathType.RSL = 2
-DubinsPathType.RSR = 3
-DubinsPathType.RLR = 4
-DubinsPathType.LRL = 5
+DubinsSolver.PathType = {}
+DubinsSolver.PathType.LSL = 0
+DubinsSolver.PathType.LSR = 1
+DubinsSolver.PathType.RSL = 2
+DubinsSolver.PathType.RSR = 3
+DubinsSolver.PathType.RLR = 4
+DubinsSolver.PathType.LRL = 5
 
 --[[
 * Floating point modulus suitable for rings
@@ -58,7 +78,7 @@ function dubins_path(path, q0, q1, rho, pathType)
     local ir = dubins_intermediate_results(q0, q1, rho)
     if ir then
         local params = {}
-        errcode = DubinsPathTypeFunctions[pathType](ir, params)
+        errcode = DubinsSolver.PathTypeFunctions[pathType](ir, params)
         if errcode == EDUBOK then
             path.param[1] = params[1]
             path.param[2] = params[2]
@@ -127,19 +147,19 @@ function dubins_path_sample(path, t)
     local qi = State3D(0, 0, path.qi.t) -- The translated initial configuration */
     local q1 = State3D(0, 0, 0) -- end-of segment 1 */
     local q2 = State3D(0, 0, 0) -- end-of segment 2 */
-    local q = State3D(0, 0, 0)
+    local q = State3D(0, 0, 0, 0, nil, HybridAStar.Gear.Forward)
     -- generate the target configuration */
     p1 = path.param[1]
     p2 = path.param[2]
-    
+
     dubins_segment( p1,      qi,    q1, string.sub(path.type, 1, 1))
     dubins_segment( p2,      q1,    q2, string.sub(path.type, 2, 2))
-    
+
     if tprime < p1 then
         dubins_segment( tprime, qi, q, string.sub(path.type, 1, 1))
     elseif tprime < (p1 + p2) then
         dubins_segment(tprime - p1, q1, q, string.sub(path.type, 2, 2))
-    else 
+    else
         dubins_segment(tprime - p1 - p2, q2, q, string.sub(path.type, 3, 3))
     end
 
@@ -214,7 +234,7 @@ function dubins_RSR(ir)
         local tmp1 = math.atan2( (ir.ca - ir.cb), tmp0 )
         return mod2pi(ir.alpha - tmp1), math.sqrt(p_sq), mod2pi(tmp1 -ir.beta), "RSR"
     end
-end 
+end
 
 function dubins_LSR(ir)
     local p_sq = -2 + (ir.d_sq) + (2 * ir.c_ab) + (2 * ir.d * (ir.sa + ir.sb))
@@ -254,7 +274,7 @@ function dubins_LRL(ir)
     end
 end
 
-local DubinsPathTypeFunctions = {
+DubinsSolver.PathTypeFunctions = {
     dubins_LSL,
     dubins_LSR,
     dubins_RSL,
@@ -263,7 +283,7 @@ local DubinsPathTypeFunctions = {
     dubins_LRL
 }
 
-function dubins_shortest_path(q0, q1, rho)
+function DubinsSolver:solve(q0, q1, rho)
     local path = {}
     local ir = {}
     local params = {}
@@ -284,7 +304,7 @@ function dubins_shortest_path(q0, q1, rho)
 
     local pathType
 
-    for _, dubins_path_type_function in pairs(DubinsPathTypeFunctions) do
+    for _, dubins_path_type_function in pairs(DubinsSolver.PathTypeFunctions) do
         params[1], params[2], params[3], pathType = dubins_path_type_function(ir, params)
         if params[1] then
             cost = params[1] + params[2] + params[3]
@@ -301,5 +321,5 @@ function dubins_shortest_path(q0, q1, rho)
     if best_word == -1 then
         return nil
     end
-    return path
+    return DubinsSolution(path), path.type
 end

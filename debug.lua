@@ -686,7 +686,13 @@ end
 function cpDebug:updatePointDrawData(drawData)
 	--- Update point position
 	setTranslation(drawData.itemNode, drawData.posX, drawData.posY, drawData.posZ);
-	--- Update point color
+  --- Update scale
+  if courseEditor.enabled then 
+    setScale(drawData.itemNode, courseEditor.pointScale.x, courseEditor.pointScale.y, courseEditor.pointScale.z) 
+  else
+    setScale(drawData.itemNode, 2, 2, 2) 
+  end
+  --- Update point color
 	self:updateObjectColor(drawData);
 end
 

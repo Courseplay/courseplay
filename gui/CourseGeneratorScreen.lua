@@ -129,7 +129,7 @@ function CourseGeneratorScreen:generate()
 	-- this way we can regenerate the course with different settings without
 	-- having to reselect the field or closing the GUI
 	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
-	local status, ok = courseplay:generateCourse(self.vehicle, true)
+	local status, ok = courseGenerator.generate(self.vehicle)
 
 	if not status then
 		-- show message if there was an exception

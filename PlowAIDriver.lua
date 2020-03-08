@@ -36,6 +36,9 @@ function PlowAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_FIELDWORK
 	self.plow = FieldworkAIDriver.getImplementWithSpecialization(vehicle, Plow)
 	self:setOffsetX()
+	if self:hasRotatablePlow() then
+		self:debug('has rotatable plow.')
+	end
 end
 
 -- When starting work with a plow it first may need to be unfolded and then turned so it is facing to
@@ -100,7 +103,7 @@ function PlowAIDriver:rotatePlow()
 	local ridgeMarker = self.course:getRidgeMarkerState(self.ppc:getCurrentWaypointIx())
 	local plowShouldBeOnTheLeft = ridgeMarker == courseplay.RIDGEMARKER_RIGHT
 	self:debug('Ridge marker %d, plow should be on the left %s', ridgeMarker, tostring(plowShouldBeOnTheLeft))
-	self.plow.spec_plow:setRotationMax(plowShouldBeOnTheLeft)
+	self.plow:setRotationMax(plowShouldBeOnTheLeft)
 end
 
 --- Attempt to set the tool offset automatically, assuming the attacher joint of the tool is in the middle (the axis
@@ -128,7 +131,7 @@ function PlowAIDriver:setOffsetX()
 		local newToolOffsetX = -(leftMarkerDistance + rightMarkerDistance) / 2
 		-- set to the average of old and new to smooth a little bit to avoid oscillations
 		self.vehicle.cp.toolOffsetX = (self.vehicle.cp.toolOffsetX + newToolOffsetX) / 2
-		self.vehicle.cp.totalOffsetX = self.vehicle.cp.laneOffset + self.vehicle.cp.toolOffsetX;
+		self.vehicle.cp.totalOffsetX = self.vehicle.cp.toolOffsetX
 		self:debug('%s: left = %.1f, right = %.1f, leftDx = %.1f, rightDx = %.1f, setting tool offsetX to %.2f (total offset %.2f)',
 			nameNum(self.plow), leftMarkerDistance, rightMarkerDistance, leftDx, rightDx, self.vehicle.cp.toolOffsetX, self.vehicle.cp.totalOffsetX)
 	end
@@ -151,4 +154,20 @@ function PlowAIDriver:getScalarProjection(vx, vz, ux, uz)
 	local dotProduct = vx * ux + vz * uz
 	local length = math.sqrt(ux * ux + uz * uz)
 	return dotProduct / length
+end
+
+function PlowAIDriver:hasRotatablePlow()
+	return self.plow.spec_plow.rotationPart.turnAnimation ~= nil
+end
+
+--- We expect this to be called before the turn starts, so after the turn
+function PlowAIDriver:getTurnEndSideOffset()
+	if self:hasRotatablePlow() then
+		local toolOffsetX = self.vehicle.cp.toolOffsetX
+		-- need the double tool offset as the turn end still has the current offset, after the rotation it'll be
+		-- on the other side, (one toolOffsetX would put it to 0 only)
+		return self.vehicle.cp.laneOffset + 2 * toolOffsetX
+	else
+		return self.vehicle.cp.laneOffset
+	end
 end

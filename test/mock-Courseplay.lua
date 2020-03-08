@@ -35,6 +35,10 @@ function courseplay.debugVehicle(channel, vehicle, ...)
 	print(string.format(...))
 end
 
+function courseplay.debugFormat(channel, ...)
+	print(string.format(...))
+end
+
 function courseplay:loc(text)
 	return text
 end
@@ -46,6 +50,17 @@ function courseplay:distance(x1, z1, x2, z2)
 	local dx, dz = x2 - x1, z2 - z1
 	return math.sqrt(dx * dx + dz * dz)
 end
+
+function courseplay:getWorldDirection(fromX, fromY, fromZ, toX, toY, toZ)
+	-- NOTE: if only 2D is needed, pass fromY and toY as 0
+	local wdx, wdy, wdz = toX - fromX, toY - fromY, toZ - fromZ;
+	local dist = math.sqrt(wdx * wdx + wdz * wdz); -- length of vector
+	if dist and dist > 0.01 then
+		wdx, wdy, wdz = wdx/dist, wdy/dist, wdz/dist; -- if not too short: normalize
+		return wdx, wdy, wdz, dist;
+	end;
+	return 0, 0, 0, 0;
+end;
 
 function courseplay:debug(str, channel)
 	print(str)

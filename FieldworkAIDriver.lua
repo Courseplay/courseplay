@@ -140,7 +140,8 @@ function FieldworkAIDriver.getImplementWithSpecialization(vehicle, specializatio
 end
 
 --- Start the course and turn on all implements when needed
-function FieldworkAIDriver:start(ix)
+--- @param startingPoint StartingPointSetting at which waypoint to start the course
+function FieldworkAIDriver:start(startingPoint)
 	self:debug('Starting in mode %d', self.mode)
 	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
 	self:setMarkers()
@@ -152,25 +153,78 @@ function FieldworkAIDriver:start(ix)
 	self.vehicle.cp.alignment.enabled = true
 	-- stop at the last waypoint by default
 	self.vehicle.cp.stopAtEnd = true
-	-- any offset imposed by the driver itself (tight turns, end of course, etc.), addtional to any
+	-- any offset imposed by the driver itself (tight turns, end of course, etc.), additional to any
 	-- tool offsets
 	self.aiDriverOffsetX = 0
 	self.aiDriverOffsetZ = 0
 
 	self:setUpCourses()
-	self.ppc:setNormalLookaheadDistance()
+
+	-- now that we have our unload/refill and fieldwork courses set up, see where to start
+	local closestFieldworkIx, dClosestFieldwork, closestFieldworkIxRightDirection, dClosestFieldworkRightDirection =
+	self.fieldworkCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
+
+	-- default to math.huge in case there isn't an unload refill course to make sure it only the fieldwork Ix is used
+	local closestUnloadRefillIx, dClosestUnloadRefill, closestUnloadRefillIxRightDirection, dClosestUnloadRefillRightDirection =
+	0, math.huge, 0, math.huge
+
+	if self.unloadRefillCourse then
+		closestUnloadRefillIx, dClosestUnloadRefill, closestUnloadRefillIxRightDirection, dClosestUnloadRefillRightDirection =
+		self.unloadRefillCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
+	end
+
+	local ix = self.course and self.course:getCurrentWaypointIx()
+	local startWithFieldwork
+
+	if startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) then
+		if dClosestFieldwork < dClosestUnloadRefill then
+			ix = closestFieldworkIx
+			startWithFieldwork = true
+			self:debug('Starting at nearest waypoint %d on fieldwork course', ix)
+		else
+			ix = closestUnloadRefillIx
+			startWithFieldwork = false
+			self:debug('Starting at nearest waypoint %d on unload/refill course', ix)
+		end
+	end
+
+	if startingPoint:is(StartingPointSetting.START_AT_NEXT_POINT) then
+		if dClosestFieldworkRightDirection < dClosestUnloadRefillRightDirection then
+			ix = closestFieldworkIxRightDirection
+			startWithFieldwork = true
+			self:debug('Starting at nearest waypoint %d (best direction) on fieldwork course', ix)
+		else
+			ix = closestUnloadRefillIxRightDirection
+			startWithFieldwork = false
+			self:debug('Starting at nearest waypoint %d (best direction) on unload/refill course', ix)
+		end
+	end
+	if startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
+		self:debug('Starting at first waypoint')
+		ix = 1
+		startWithFieldwork = true
+	end
+
+	if startingPoint:is(StartingPointSetting.START_AT_CURRENT_POINT) then
+		-- use last fieldwork waypoint if we have the same fieldwork course as before
+		if self.fieldworkCourseHash == self.aiDriverData.lastFieldworkCourseHash then
+			self:debug('Starting at current waypoint %d', self.aiDriverData.lastFieldworkWaypointIx)
+			ix = self.aiDriverData.lastFieldworkWaypointIx
+		else
+			self:debug('Current waypoint not found, starting at first')
+			ix = 1
+		end
+		startWithFieldwork = true
+	end
 
 	self.waitingForTools = true
-	-- on which course are we starting?
-	-- the ix we receive here is the waypoint index in the fieldwork course and the unload/fill
-	-- course concatenated.
-	if ix > self.fieldworkCourse:getNumberOfWaypoints() then
-		-- beyond the first, fieldwork course: we are on the unload/refill part
-		self:changeToUnloadOrRefill()
-		self:startCourseWithAlignment(self.unloadRefillCourse, ix - self.fieldworkCourse:getNumberOfWaypoints())
-	else
-		-- we are on the fieldwork part
+	self.ppc:setNormalLookaheadDistance()
+
+	if startWithFieldwork then
 		self:startFieldworkWithPathfinding(ix)
+	else
+		self:changeToUnloadOrRefill()
+		self:startCourseWithAlignment(self.unloadRefillCourse, ix)
 	end
 end
 
@@ -194,6 +248,9 @@ end
 
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
+	-- persist last fieldwork waypoint data (for 'start at current waypoint')
+	self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
+	self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
 	AIDriver.stop(self, msgReference)
 	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
 	self.vehicle.cp.alignment.enabled = self.alignmentEnabled
@@ -243,7 +300,7 @@ end
 
 
 --- Doing the fieldwork (headlands or up/down rows, including the turns)
----@return true if driveFieldwork() is driving (no need to call ALDriver.drive())
+---@return boolean true if driveFieldwork() is driving (no need to call ALDriver.drive())
 function FieldworkAIDriver:driveFieldwork(dt)
 	local iAmDriving = false
 	self:updateFieldworkOffset()
@@ -267,6 +324,7 @@ function FieldworkAIDriver:driveFieldwork(dt)
 		self:manageConvoy()
 		self:checkWeather()
 		self:checkFillLevels()
+		self:checkFuelLevels()
 	elseif self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
@@ -307,6 +365,28 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 	end
 end
 
+function FieldworkAIDriver:checkFuelLevels()
+	if self.vehicle.getConsumerFillUnitIndex ~= nil then
+		local dieselIndex = self.vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
+		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
+		
+		if currentFuelPercentage < 15 then
+			self:stopAndRefuel()
+		end;
+	end
+end
+
+function FieldworkAIDriver:stopAndRefuel()
+	if self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
+		-- Switch to AutoDrive when enabled 
+		self:rememberWaypointToContinueFieldwork()
+		self:stopWork()
+		self:foldImplements()
+		self.state = self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+		self:debug('passing the control to AutoDrive to run the fuel refill course.')
+		self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, -2, self, FieldworkAIDriver.onEndCourse, nil);
+	end
+end
 
 ---@return boolean true if unload took over the driving
 function FieldworkAIDriver:driveUnloadOrRefill()
@@ -394,7 +474,7 @@ function FieldworkAIDriver:onEndCourse()
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		AIDriver.onEndCourse(self)
 	else
-		self:debug('Fieldwork AI driver in mode %d ending course', self:getMode())
+		self:debug('Fieldwork AI driver in mode %d ending fieldwork course', self:getMode())
 		if self:shouldReturnToFirstPoint() then
 			self:debug('Returning to first point')
 			local x, _, z = self.fieldworkCourse:getWaypointPosition(1)
@@ -406,9 +486,13 @@ function FieldworkAIDriver:onEndCourse()
 			else
 				-- no path or too short, stop here.
 				AIDriver.onEndCourse(self)
+				-- (onEndCourse calls stopWork which raises the implements, fold must be called after that)
+				-- TODO: add an option to enable fold implement on work end and make it part of stopWork()
+				self:foldImplements()
 			end
 		else
 			AIDriver.onEndCourse(self)
+			self:foldImplements()
 		end
 	end
 end
@@ -626,12 +710,23 @@ function FieldworkAIDriver:setUpCourses()
 		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, #self.vehicle.Waypoints)
 	end
-	-- apply the current offset to the fieldwork part (lane+tool, where, confusingly, totalOffsetX contains the toolOffsetX)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX, self.vehicle.cp.toolOffsetZ)
+	-- get a signature of the course now, before offsetting it so can compare for the convoy
+	self.fieldworkCourseHash = self.fieldworkCourse:getHash()
+	-- apply the current tool offset to the fieldwork part (multitool offset is added by calculateOffsetCourse when needed)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX, self.vehicle.cp.toolOffsetZ)
+	-- TODO: consolidate the working width calculation and usage, this is currently an ugly mess
+	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or courseplay:getWorkWidth(self.vehicle))
+	if self.vehicle.cp.multiTools > 1 then
+		self:debug('Calculating offset course for position %d of %d', self.vehicle.cp.laneNumber, self.vehicle.cp.multiTools)
+		self.fieldworkCourse = self.fieldworkCourse:calculateOffsetCourse(
+				self.vehicle.cp.multiTools, self.vehicle.cp.laneNumber,  courseplay:getWorkWidth(self.vehicle),
+				self.vehicle.cp.settings.symmetricLaneChange:is(true))
+	end
 end
 
 function FieldworkAIDriver:setRidgeMarkers()
-	if not self.vehicle.cp.ridgeMarkersAutomatic then return end
+	-- no ridge markers with multitools to avoid collisions.
+	if not self.vehicle.cp.ridgeMarkersAutomatic or self.vehicle.cp.multiTools > 1 then return end
 	local active = self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState ~= self.states.TURNING
 	for _, workTool in ipairs(self.vehicle.cp.workTools) do
 		-- yes, another Giants typo. And not sure why implements with no ridge markers even have the spec_ridgeMarker
@@ -650,13 +745,13 @@ end
 function FieldworkAIDriver:updateFieldworkOffset()
 	-- (as lua passes tables by reference, we can directly change self.fieldworkCourse even if we passed self.course
 	-- to the PPC to drive)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.totalOffsetX + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
+	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
 		self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
 end
 
 function FieldworkAIDriver:hasSameCourse(otherVehicle)
-	if otherVehicle.cp.driver and otherVehicle.cp.driver.fieldworkCourse then
-		return self.fieldworkCourse:equals(otherVehicle.cp.driver.fieldworkCourse)
+	if otherVehicle.cp.driver and otherVehicle.cp.driver.fieldworkCourseHash then
+		return self.fieldworkCourseHash == otherVehicle.cp.driver.fieldworkCourseHash
 	else
 		return false
 	end
@@ -825,68 +920,8 @@ function FieldworkAIDriver:getLoweringDurationMs()
 	return self.loweringDurationMs
 end
 
---- If we are towing an implement, move to a bigger radius in tight turns
--- making sure that the towed implement's trajectory remains closer to the
--- course.
 function FieldworkAIDriver:calculateTightTurnOffset()
-	local function smoothOffset(offset)
-		self.tightTurnOffset = (offset + 3 * (self.tightTurnOffset or 0 )) / 4
-		return self.tightTurnOffset
-	end
-	-- first of all, does the current waypoint have radius data?
-	local r = self.course:getRadiusAtIx(self.ppc:getCurrentWaypointIx())
-	if not r then
-		return smoothOffset(0)
-	end
-
-	local towBarLength = self:getTowBarLength()
-
-	-- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
-	-- we ignore it.
-	if towBarLength < r / 3 then
-		return smoothOffset(0)
-	end
-
-	-- Ok, looks like a tight turn, so we need to move a bit left or right of the course
-	-- to keep the tool on the course.
-	local offset = self:getOffsetForTowBarLength(r, towBarLength)
-	if offset ~= offset then
-		-- check for nan
-		return smoothOffset(0)
-	end
-	-- figure out left or right now?
-	local nextAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx() + 1)
-	local currentAngle = self.course:getWaypointAngleDeg(self.ppc:getCurrentWaypointIx())
-	if not nextAngle or not currentAngle then
-		return smoothOffset(0)
-	end
-
-	if getDeltaAngle(math.rad(nextAngle), math.rad(currentAngle)) > 0 then offset = -offset end
-
-	-- smooth the offset a bit to avoid sudden changes
-	smoothOffset(offset)
-	self:debug('Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, self.tightTurnOffset )
-	-- remember the last value for smoothing
-	return self.tightTurnOffset
-end
-
-function FieldworkAIDriver:getTowBarLength()
-	-- is there a wheeled implement behind the tractor and is it on a pivot?
-	local workTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
-	if not workTool or not workTool.cp.realTurningNode then
-		return 0
-	end
-	-- get the distance between the tractor and the towed implement's turn node
-	-- (not quite accurate when the angle between the tractor and the tool is high)
-	local tractorX, _, tractorZ = getWorldTranslation( self:getDirectionNode() )
-	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
-	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
-	return towBarLength
-end
-
-function FieldworkAIDriver:getOffsetForTowBarLength(r, towBarLength)
-	local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
-	return rTractor - r
+    self.tightTurnOffset = AIDriverUtil.calculateTightTurnOffset(self.vehicle, self.course, self.tightTurnOffset)
 end
 
 function FieldworkAIDriver:getFillLevelInfoText()
@@ -984,7 +1019,11 @@ end
 
 -- instantiate generic turn course, derived classes may override
 function FieldworkAIDriver:createTurnCourse()
-	return CourseTurn(self.vehicle, self, self.turnContext)
+	return CourseTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
+end
+
+function FieldworkAIDriver:getTurnEndSideOffset()
+	return 0
 end
 
 function FieldworkAIDriver:startTurn(ix)
@@ -993,7 +1032,8 @@ function FieldworkAIDriver:startTurn(ix)
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance,
+			self:getTurnEndSideOffset())
 	if self.vehicle.cp.settings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
 			return
@@ -1021,7 +1061,7 @@ function FieldworkAIDriver:setMarkers()
 		end
 	end
 
-	local referenceNode = self:getDirectionNode()
+	local referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
 	-- now go ahead and try to find the real markers
 	-- work areas of the vehicle itself
 	addMarkers(self.vehicle, referenceNode)
@@ -1100,8 +1140,8 @@ function FieldworkAIDriver:shouldLowerImplements(turnEndNode, reversing)
 	return doLower
 end
 
----@param object ... is a vehicle or implement object with AI markers (marking the working area of the implement)
----@param turnEndNode node at the first waypoint of the row, pointing in the direction of travel. This is where
+---@param object table is a vehicle or implement object with AI markers (marking the working area of the implement)
+---@param turnEndNode number node at the first waypoint of the row, pointing in the direction of travel. This is where
 --- the implement should be in the working position after a turn
 ---@param reversing boolean are we reversing? When reversing towards the turn end point, we must lower the implements
 --- when we are _behind_ the turn end node (dz < 0), otherwise once we reach it (dz > 0)
@@ -1195,8 +1235,20 @@ function FieldworkAIDriver:onDraw()
 			if aiBackMarker then
 				DebugUtil.drawDebugNode(aiBackMarker, object:getName() .. ' AI Back')
 			end
-			DebugUtil.drawDebugNode(object.cp.directionNode or object.rootNode, object:getName() .. ' root')
 		end
+		if object.getAISizeMarkers then
+			local aiSizeLeftMarker, aiSizeRightMarker, aiSizeBackMarker = object:getAISizeMarkers()
+			if aiSizeLeftMarker then
+				DebugUtil.drawDebugNode(aiSizeLeftMarker, object:getName() .. ' AI Size Left')
+			end
+			if aiSizeRightMarker then
+				DebugUtil.drawDebugNode(aiSizeRightMarker, object:getName() .. ' AI Size Right')
+			end
+			if aiSizeBackMarker then
+				DebugUtil.drawDebugNode(aiSizeBackMarker, object:getName() .. ' AI Size Back')
+			end
+		end
+		DebugUtil.drawDebugNode(object.cp.directionNode or object.rootNode, object:getName() .. ' root')
 	end
 
 	showAIMarkersOfObject(self.vehicle)
@@ -1211,7 +1263,6 @@ function FieldworkAIDriver:onDraw()
 	if self.plowReferenceNode then
 		DebugUtil.drawDebugNode(self.plowReferenceNode, 'Plow reference')
 	end
-
 
 	AIDriver.onDraw(self)
 end

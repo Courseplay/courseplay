@@ -206,36 +206,13 @@ end
 --- When reversing, use the towed implement's node as a reference
 function PurePursuitController:switchControlledNode()
 	local lastControlledNode = self.controlledNode
-	local debugText = 'vehicle forward direction/root'
+	local reverserNode, debugText = nil, 'vehicle forward direction/root'
 	if self:isReversing() then
-		-- if there's a reverser node on the tool, use that
-		local reverserDirectionNode = AIVehicleUtil.getAIToolReverserDirectionNode(self.vehicle)
-		local reversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
-		if reverserDirectionNode then
-			self:setControlledNode(reverserDirectionNode)
-			debugText = 'implement reverse (Giants)'
-		elseif reversingWheeledWorkTool and reversingWheeledWorkTool.cp.realTurningNode then
-			self:setControlledNode(reversingWheeledWorkTool.cp.realTurningNode)
-			debugText = 'implement reverse (Courseplay)'
-		elseif self.vehicle.spec_articulatedAxis ~= nil then
-			-- articulated axis vehicles have a special reverser node
-			-- and yes, Giants has a typo in there...
-			if self.vehicle.spec_articulatedAxis.aiRevereserNode ~= nil then
-				self:setControlledNode(self.vehicle.spec_articulatedAxis.aiRevereserNode)
-				debugText = 'vehicle articulated axis reverese'
-			elseif self.vehicle.spec_articulatedAxis.aiReverserNode ~= nil then
-				self:setControlledNode(self.vehicle.spec_articulatedAxis.aiReverserNode)
-				debugText = 'vehicle articulated axis reverse'
-			end
+		reverserNode, debugText = AIDriverUtil.getReverserNode(self.vehicle)
+		if reverserNode then
+			self:setControlledNode(reverserNode)
 		else
-			-- otherwise see if the vehicle has a reverser node
-			if self.vehicle.getAIVehicleReverserNode then
-				reverserDirectionNode = self.vehicle:getAIVehicleReverserNode()
-				if reverserDirectionNode then
-					self:setControlledNode(reverserDirectionNode)
-					debugText = 'vehicle reverse'
-				end
-			end
+			self:resetControlledNode()
 		end
 	else
 		self:resetControlledNode()

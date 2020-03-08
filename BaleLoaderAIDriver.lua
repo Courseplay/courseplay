@@ -92,12 +92,13 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 	end
 	-- use the relevant node, not the current one to determine we are around the unload point as the current changes
 	-- when we change direction
-	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getRelevantWaypointIx(), 25)
+	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getRelevantWaypointIx(), 50)
 	if self:hasTipTrigger() or nearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 		self:raycast()
 		if self:haveBales() and self.unloadRefillState == nil then
 			self.unloadRefillState = self.states.APPROACHING_UNLOAD_POINT
+			self.tooCloseToOtherBales = false
 			self:debug('Approaching unload point.')
 		elseif self:haveBales() and self.unloadRefillState == self.states.APPROACHING_UNLOAD_POINT then
 			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)

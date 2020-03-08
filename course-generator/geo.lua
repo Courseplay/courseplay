@@ -46,7 +46,10 @@ function pointToString(p)
 	if p.prevEdge then
 		fromAngle = string.format('%.1f', math.deg(p.prevEdge.angle))
 	end
-	return string.format('x=%.1f y=%.1f %s -> %s', p.x, p.y, fromAngle, toAngle) .. (p.reverse and '(rev)' or '')
+	local turn = p.turnStart and ' (start)' or ''
+	turn = p.turnEnd and ' (end)' or turn
+	return string.format('x=%.1f y=%.1f %s -> %s',
+			p.x, p.y, fromAngle, toAngle) .. (p.reverse and '(rev)' or '' .. turn)
 end
 
 -- calculates the polar coordinates of x, y with some filtering
@@ -104,7 +107,7 @@ end
 -- -pi/2 and + pi/2
 function getDeltaAngle( a1, a2 )
 	-- convert the 0 - -180 range into 180 - 360
-	if math.abs( a1 - a2 ) > math.pi then
+		if math.abs( a1 - a2 ) > math.pi then
 		a1 = normalizeAngle( a1 )
 		a2 = normalizeAngle( a2 )
 	end
@@ -379,15 +382,12 @@ end
 -- extensionLength, ab forward, cd backwards as they are edges 
 -- of a polygon
 function getIntersectionOfExtendedEdges( e1, e2, extensionLength )
-	local ab = deepCopy( e1, true )
-	local cd = deepCopy( e2, true )
-	ab.to.x = ab.to.x + extensionLength * ab.dx / ab.length
-	ab.to.y = ab.to.y + extensionLength * ab.dy / ab.length
-	cd.from.x = cd.from.x - extensionLength * cd.dx / cd.length
-	cd.from.y = cd.from.y - extensionLength * cd.dy / cd.length
+	local e1_to_x = e1.to.x + extensionLength * e1.dx / e1.length
+	local e1_to_y = e1.to.y + extensionLength * e1.dy / e1.length
+	local e2_from_x = e2.from.x - extensionLength * e2.dx / e2.length
+	local e2_from_y = e2.from.y - extensionLength * e2.dy / e2.length
 	-- see if they intersect now
-	local is = getIntersection( ab.from.x, ab.from.y, ab.to.x, ab.to.y,
-		cd.from.x, cd.from.y, cd.to.x, cd.to.y )
+	local is = getIntersection( e1.from.x, e1.from.y, e1_to_x, e1_to_y, e2_from_x, e2_from_y, e2.to.x, e2.to.y )
 	return is
 end
 
@@ -657,6 +657,10 @@ function Polyline:iterator( from, to, step )
 	end
 end
 
+function Polyline:add(p)
+	table.insert(self, p)
+end
+
 function Polyline:getClosestPointIndex(p)
 	local minDistance = math.huge
 	local ix
@@ -716,7 +720,7 @@ function Polyline:calculateData()
 			dx = cp.x - pp.x
 			dy = cp.y - pp.y
 			angle, length = toPolar( dx, dy )
-			self[ i ].prevEdge = { from={ x=pp.x, y=pp.y} , to={ x=cp.x, y=cp.y }, angle=angle, length=length, dx=dx, dy=dy }
+			self[ i ].prevEdge = { from=pp , to=cp, angle=angle, length=length, dx=dx, dy=dy }
 			if length < shortestEdgeLength then shortestEdgeLength = length end
 			-- detect clockwise/counterclockwise direction
 			if pp.prevEdge and cp.prevEdge then
@@ -730,7 +734,7 @@ function Polyline:calculateData()
 			dx = np.x - cp.x
 			dy = np.y - cp.y
 			angle, length = toPolar( dx, dy )
-			self[ i ].nextEdge = { from = { x=cp.x, y=cp.y }, to={x=np.x, y=np.y}, angle=angle, length=length, dx=dx, dy=dy }
+			self[ i ].nextEdge = { from = cp, to = np, angle=angle, length=length, dx=dx, dy=dy }
 			if length < shortestEdgeLength then shortestEdgeLength = length end
 			addToDirectionStats( directionStats, angle, length )
 			area = area + ( cp.x * np.y - cp.y * np.x )
@@ -938,6 +942,20 @@ function Polyline:removeGlitches()
 	self:calculateData()
 end
 
+-- Remove neighbor with the same coordinates
+function Polyline:removeOverlaps()
+	local i = 2
+	while i <= #self do
+		local cp, pp = self[ i ], self[ i - 1 ]
+		if cp.x == pp.x and cp.y == pp.y then
+			table.remove( self, i )
+		else
+			i = i + 1
+		end
+	end
+	self:calculateData()
+end
+
 --- Remove vertices between (and including) two indexes
 --
 function Polyline:removeElementsBetween( fromIx, toIx )
@@ -1047,6 +1065,7 @@ end
 
 --- Trim section of polyline between its end and intersection with otherLine
 ---@param otherLine Polyline
+---@param d number
 function Polyline:trimEnd(otherLine, insertIntersectionPoint)
 	local i = #self
 	local from, to, is
@@ -1066,8 +1085,9 @@ function Polyline:trimEnd(otherLine, insertIntersectionPoint)
 end
 
 --- Shorten polyline by d
----@param otherLine Polyline
-function Polyline:shortenEnd(d)
+---@param d number
+---@param cutOnly boolean Do not add a point at d, just remove everything in d distance
+function Polyline:shortenEnd(d, cutOnly)
 	local dCut = d
 	local from = #self
 	for i = from, 2, -1 do
@@ -1076,7 +1096,9 @@ function Polyline:shortenEnd(d)
 		if dCut < -0.1 then
 			local p = addPolarVectorToPoint(self[i - 1], self[i - 1].nextEdge.angle, - dCut)
 			table.remove(self)
-			table.insert(self, p)
+			if not cutOnly then
+				table.insert(self, p)
+			end
 			self:calculateData()
 			return true
 		end
@@ -1085,7 +1107,7 @@ function Polyline:shortenEnd(d)
 end
 
 --- Shorten polyline by d from start
----@param otherLine Polyline
+---@param d number
 function Polyline:shortenStart(d)
 	local dCut = d
 	local to = #self

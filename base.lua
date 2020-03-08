@@ -166,7 +166,6 @@ function courseplay:onLoad(savegame)
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
-	self.cp.startAtPoint = courseplay.START_AT_NEAREST_POINT;
 	self.cp.fertilizerEnabled = true
 	self.cp.convoyActive = false
 	self.cp.convoy= {
@@ -428,9 +427,6 @@ function courseplay:onLoad(savegame)
 	self.cp.toolOffsetX = 0;
 	self.cp.toolOffsetZ = 0;
 	self.cp.totalOffsetX = 0;
-	self.cp.symmetricLaneChange = false;
-	self.cp.switchLaneOffset = false;
-	self.cp.switchToolOffset = false;
 	self.cp.loadUnloadOffsetX = 0;
 	self.cp.loadUnloadOffsetZ = 0;
 	self.cp.skipOffsetX = false;
@@ -579,10 +575,13 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(SelectedCombineToUnloadSetting)
 	self.cp.settings:addSetting(ReturnToFirstPointSetting, self)
 	self.cp.settings:addSetting(UseAITurnsSetting, self)
+	self.cp.settings:addSetting(UsePathfindingInTurnsSetting, self)
 	self.cp.settings:addSetting(ImplementRaiseTimeSetting, self)
 	self.cp.settings:addSetting(ImplementLowerTimeSetting, self)
 	self.cp.settings:addSetting(AutoDriveModeSetting, self)
 	self.cp.settings:addSetting(SelfUnloadSetting, self)
+	self.cp.settings:addSetting(StartingPointSetting, self)
+	self.cp.settings:addSetting(SymmetricLaneChangeSetting, self)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -618,6 +617,7 @@ end;
 function courseplay:onLeaveVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, false);
+    courseEditor:reset()
 	end
 
 	--hide visual i3D waypoint signs when not in vehicle
@@ -625,6 +625,7 @@ function courseplay:onLeaveVehicle()
 end
 
 function courseplay:onEnterVehicle()
+  courseEditor:reset()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
 	end;
@@ -638,6 +639,7 @@ function courseplay:onEnterVehicle()
 end
 
 function courseplay:onDraw()
+  courseEditor:draw(self, self.cp.directionNode)
 
 	courseplay:showAIMarkers(self)
 	courseplay:showTemporaryMarkers(self)
@@ -1290,6 +1292,7 @@ function courseplay:onReadStream(streamId, connection)
 	end
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
 
+	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
 	while streamDebugReadBool(streamId) do
 		local name = streamDebugReadString(streamId)
 		local value = streamDebugReadInt32(streamId)
@@ -1394,6 +1397,7 @@ function courseplay:onWriteStream(streamId, connection)
 	end
 	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
 
+	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
 	for name, setting in pairs(self.cp.settings) do
 		streamDebugWriteBool(streamId, true)
 		streamDebugWriteString(streamId, name)
@@ -1571,7 +1575,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
 		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
-		courseplay:toggleSymmetricLaneChange(self, offsetData[4] == 'true');
+
 		if not offsetData[5] then offsetData[5] = 0; end;
 		courseplay:changeLoadUnloadOffsetX(self, nil, tonumber(offsetData[5]));
 		if not offsetData[6] then offsetData[6] = 0; end;
@@ -1715,7 +1719,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".driving #alignment", tostring(self.cp.alignment.enabled))
 	
 	--field work settings
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange), self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
+	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, 0, self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
 	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
 	setXMLBool(xmlFile, newKey..".fieldWork #ridgeMarkersAutomatic", self.cp.ridgeMarkersAutomatic)
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
@@ -1803,103 +1807,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	self.cp.settings:saveToXML(xmlFile, newKey)
 
 end
---[[
-function courseplay:getSaveAttributesAndNodes(nodeIdent)
-	print("courseplay:getSaveAttributesAndNodes(nodeIdent)")
-	local attributes = '';
-
-	--Shovel positions (<shovel rot="1;2;3;4" trans="1;2;3;4" />)
-	local shovelRotsAttrNodes, shovelTransAttrNodes;
-	local shovelRotsTmp, shovelTransTmp = {}, {};
-	if self.cp.shovelStatePositions and self.cp.shovelStatePositions[2] and self.cp.shovelStatePositions[3] and self.cp.shovelStatePositions[4] and self.cp.shovelStatePositions[5] then
-		if self.cp.shovelStatePositions[2].rot and self.cp.shovelStatePositions[3].rot and self.cp.shovelStatePositions[4].rot and self.cp.shovelStatePositions[5].rot then
-			local shovelStateRotSaveTable = {};
-			for a=1,4 do
-				shovelStateRotSaveTable[a] = {};
-				local rotTable = self.cp.shovelStatePositions[a+1].rot;
-				for i=1,#rotTable do
-					shovelStateRotSaveTable[a][i] = courseplay:round(rotTable[i], 4);
-				end;
-				table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], ' ')));
-			end;
-			if #shovelRotsTmp > 0 then
-				shovelRotsAttrNodes = tostring(table.concat(shovelRotsTmp, ';'));
-				courseplay:debug(nameNum(self) .. ": shovelRotsAttrNodes=" .. shovelRotsAttrNodes, 10);
-			end;
-		end;
-		if self.cp.shovelStatePositions[2].trans and self.cp.shovelStatePositions[3].trans and self.cp.shovelStatePositions[4].trans and self.cp.shovelStatePositions[5].trans then
-			local shovelStateTransSaveTable = {};
-			for a=1,4 do
-				shovelStateTransSaveTable[a] = {};
-				local transTable = self.cp.shovelStatePositions[a+1].trans;
-				for i=1,#transTable do
-					shovelStateTransSaveTable[a][i] = courseplay:round(transTable[i], 4);
-				end;
-				table.insert(shovelTransTmp, tostring(table.concat(shovelStateTransSaveTable[a], ' ')));
-			end;
-			if #shovelTransTmp > 0 then
-				shovelTransAttrNodes = tostring(table.concat(shovelTransTmp, ';'));
-				courseplay:debug(nameNum(self) .. ": shovelTransAttrNodes=" .. shovelTransAttrNodes, 10);
-			end;
-		end;
-	end;
-	--overloader pipe position
-
-	local overLoaderPipe = '';
-	
-	if self.cp.pipeWorkToolIndex ~= nil then
-		overLoaderPipe = string.format('<overLoaderPipe rot=%q trans=%q pipeIndex ="%i" pipeWorkToolIndex="%i" />',tostring(table.concat(self.cp.pipePositions.rot)),tostring(table.concat(self.cp.pipePositions.trans)),self.cp.pipeIndex,self.cp.pipeWorkToolIndex)
-	end
-
-	
-	--Offset data
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, tostring(self.cp.symmetricLaneChange), self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
-
-	local runCounter = self.cp.runCounter
-	if self.cp.runReset == true then
-		runCounter = 0;
-	end;
-
-	--NODES
-	local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q siloSelectedFillType=%q maxRunNumber="%d" runCounter="%d" runCounterActive=%q saveFuelOption=%q drivingMode=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime), g_fillTypeManager.indexToName[self.cp.siloSelectedFillType], self.cp.maxRunNumber, runCounter, tostring(self.cp.runCounterActive), tostring(self.cp.saveFuelOptionActive), tostring(self.cp.drivingMode:get()));
-	--local cpOpen = string.format('<courseplay aiMode=%q courses=%q openHudWithMouse=%q lights=%q visualWaypointsStartEnd=%q visualWaypointsAll=%q visualWaypointsCrossing=%q waitTime=%q >', tostring(self.cp.mode), tostring(table.concat(self.cp.loadedCourses, ",")), tostring(self.cp.hud.openWithMouse), tostring(self.cp.warningLightsMode), tostring(self.cp.visualWaypointsStartEnd), tostring(self.cp.visualWaypointsAll), tostring(self.cp.visualWaypointsCrossing), tostring(self.cp.waitTime));
-	local speeds = string.format('<speeds useRecordingSpeed=%q reverse="%d" turn="%d" field="%d" max="%d" />', tostring(self.cp.speeds.useRecordingSpeed), self.cp.speeds.reverse, self.cp.speeds.turn, self.cp.speeds.field, self.cp.speeds.street);
-	local combi = string.format('<combi tipperOffset="%.1f" combineOffset="%.1f" combineOffsetAutoMode=%q fillFollow="%d" fillDriveOn="%d" turnDiameter="%d" realisticDriving=%q allwaysSearchFuel=%q alignment=%q searchCombineOnField="%d" />', self.cp.tipperOffset, self.cp.combineOffset, tostring(self.cp.combineOffsetAutoMode), self.cp.followAtFillLevel, self.cp.driveOnAtFillLevel, self.cp.turnDiameter, tostring(self.cp.realisticDriving),tostring(self.cp.allwaysSearchFuel),tostring(self.cp.alignment.enabled),self.cp.searchCombineOnField);
-	local fieldWork = string.format('<fieldWork workWidth="%.1f" ridgeMarkersAutomatic=%q offsetData=%q abortWork="%d" refillUntilPct="%d" turnOnField=%q oppositeTurnMode=%q manualWorkWidth="%.1f" plowFieldEdge=%q lastValidTipDistance="%.1f" hasSavedPosition=%q savedPositionX="%f" savedPositionZ="%f" savedFieldNum="%d" fertilizerEnabled=%q convoyActive=%q /> ', self.cp.workWidth, tostring(self.cp.ridgeMarkersAutomatic), offsetData, Utils.getNoNil(self.cp.abortWork, 0), self.cp.refillUntilPct, tostring(self.cp.turnOnField), tostring(self.cp.oppositeTurnMode),Utils.getNoNil(self.cp.manualWorkWidth,0),tostring(self.cp.plowFieldEdge),Utils.getNoNil(self.cp.lastValidTipDistance,0),tostring(self.cp.generationPosition.hasSavedPosition),Utils.getNoNil(self.cp.generationPosition.x,0),Utils.getNoNil(self.cp.generationPosition.z,0),Utils.getNoNil(self.cp.generationPosition.fieldNum,0), tostring(self.cp.fertilizerEnabled),tostring(self.cp.convoyActive));
-	local mode10 = string.format('<mode10 leveling=%q  CourseplayersOnly=%q searchRadius="%i" maxSiloSpeed="%i" shieldHeight="%.1f" automaticSpeed=%q  automaticHeight=%q bladeOffset="%.1f" drivingThroughtLoading=%q />', tostring(self.cp.mode10.leveling), tostring(self.cp.mode10.searchCourseplayersOnly), self.cp.mode10.searchRadius, self.cp.speeds.bunkerSilo, self.cp.mode10.shieldHeight, tostring(self.cp.mode10.automaticSpeed),tostring(self.cp.mode10.automaticHeigth), self.cp.mode10.bladeOffset, tostring(self.cp.mode10.drivingThroughtLoading));
-	local shovels, combine = '', '';
-	
-	if shovelRotsAttrNodes or shovelTransAttrNodes then
-		shovels = string.format('<shovel rot=%q trans=%q shovelStopAndGo=%q />', shovelRotsAttrNodes, shovelTransAttrNodes,tostring(self.cp.shovelStopAndGo));
-	end;
-	if self.cp.isCombine then
-		combine = string.format('<combine driverPriorityUseFillLevel=%q stopWhenUnloading=%q />', tostring(self.cp.driverPriorityUseFillLevel), tostring(self.cp.stopWhenUnloading));
-	end;
-	
-	local cpClose = '</courseplay>';
-
-	local indent = '   ';
-	local nodes = nodeIdent .. cpOpen .. '\n';
-	nodes = nodes .. nodeIdent .. indent .. speeds .. '\n';
-	nodes = nodes .. nodeIdent .. indent .. combi .. '\n';
-	nodes = nodes .. nodeIdent .. indent .. fieldWork .. '\n';
-	nodes = nodes .. nodeIdent .. indent .. mode10 .. '\n';
-	if shovelRotsAttrNodes or shovelTransAttrNodes then
-		nodes = nodes .. nodeIdent .. indent .. shovels .. '\n';
-	end;
-	if self.cp.isCombine then
-		nodes = nodes .. nodeIdent .. indent .. combine .. '\n';
-	end;
-	if self.cp.pipeWorkToolIndex ~= nil then
-		nodes = nodes .. nodeIdent .. indent .. overLoaderPipe .. '\n';
-	end
-	nodes = nodes .. nodeIdent .. cpClose;
-
-	courseplay:debug(nameNum(self) .. ": getSaveAttributesAndNodes(): nodes\n" .. nodes, 10)
-
-	return attributes, nodes;
-end
-]]
 
 -- This is to prevent the selfPropelledPotatoHarvester from turning off while turning
 function courseplay.setIsTurnedOn(self, originalFunction, isTurnedOn, noEventSend)

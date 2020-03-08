@@ -118,11 +118,11 @@ function courseplay:toggleConvoyActive(vehicle)
 end
 
 function courseplay:setConvoyMinDistance(vehicle, changeBy)
-	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 200);
+	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 2000);
 end
 
 function courseplay:setConvoyMaxDistance(vehicle, changeBy)
-	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 300);
+	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 3000);
 end
 
 function courseplay:toggleFuelSaveOption(self)
@@ -216,8 +216,12 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 end;
 
 function courseplay:setStopAtEnd(vehicle, bool)
-	--if bool is nil, toggle stopAtEnd  
-	if bool == nil then 
+	--if bool is nil or a number, toggle stopAtEnd
+	-- 'line' was introduced in addRowButton in the new mode 2 branch as a parameter to pass on to the callback functions
+	-- for selecting the combine. It breaks this function though as it expects a nil when toggled in the HUD.
+	-- Since the HUD/button callback code is so broken/messy that I don't want to touch it, I just put
+	-- one of the most embarrassing hacks of my IT career in here. I'm ashamed of myself.
+	if bool == nil or type(bool) == 'number' then
 		vehicle.cp.stopAtEnd = not vehicle.cp.stopAtEnd
 	else
 		vehicle.cp.stopAtEnd = bool;
@@ -292,7 +296,6 @@ function courseplay:changeLaneOffset(vehicle, changeBy, force)
 	if abs(vehicle.cp.laneOffset) < 0.1 then
 		vehicle.cp.laneOffset = 0;
 	end;
-	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 end;
 
 function courseplay:changeLaneNumber(vehicle, changeBy, reset)
@@ -301,7 +304,6 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 	
 	if reset then
 		vehicle.cp.laneNumber = 0;
-		vehicle.cp.totalOffsetX = vehicle.cp.toolOffsetX;
 		vehicle.cp.laneOffset = 0
 	else
 		--skip zero if multiTools is even
@@ -324,7 +326,6 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 			newOffset = vehicle.cp.workWidth*vehicle.cp.laneNumber
 		end
 		courseplay:changeLaneOffset(vehicle, nil , newOffset)
-		vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
 	end;
 
 end;
@@ -334,7 +335,7 @@ function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
 	if abs(vehicle.cp.toolOffsetX) < 0.1 then
 		vehicle.cp.toolOffsetX = 0;
 	end;
-	vehicle.cp.totalOffsetX = vehicle.cp.laneOffset + vehicle.cp.toolOffsetX;
+	vehicle.cp.totalOffsetX = vehicle.cp.toolOffsetX;
 	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
@@ -1281,7 +1282,7 @@ function courseplay:toggleShovelStopAndGo(vehicle)
 end;
 
 function courseplay:changeStartAtPoint(vehicle)
-	vehicle.cp.startAtPoint = courseplay:varLoop(vehicle.cp.startAtPoint, 1, courseplay.START_AT_NEXT_POINT, courseplay.START_AT_NEAREST_POINT);
+	vehicle.cp.settings.startingPoint:next()
 end;
 
 function courseplay:reloadCoursesFromXML(vehicle)
@@ -1353,9 +1354,8 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 	--courseplay.buttons:setActiveEnabled(vehicle, 'debug');
 end;
 
-function courseplay:toggleSymmetricLaneChange(vehicle, force)
-	vehicle.cp.symmetricLaneChange = Utils.getNoNil(force, not vehicle.cp.symmetricLaneChange);
-	vehicle.cp.switchLaneOffset = vehicle.cp.symmetricLaneChange;
+function courseplay:toggleSymmetricLaneChange(vehicle)
+	vehicle.cp.settings.symmetricLaneChange:toggle()
 end;
 
 function courseplay:toggleDriverPriority(combine)
@@ -1893,29 +1893,126 @@ function courseplay:setCpVar(varName, value, noEventSend)
 	end
 end;
 
----@class SettingList
-SettingList = CpObject()
+---@class Setting
+Setting = CpObject()
 
---- A setting that can have a predefined set of values
--- @param values table with the valid values
--- @texts text name in the translation XML files describing the corresponding value
-function SettingList:init(name, label, toolTip, vehicle, values, texts)
+--- Interface for settings
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+function Setting:init(name, label, toolTip, vehicle, value)
 	self.name = name
 	self.label = label
 	self.toolTip = toolTip
-	self.values = values
-	self.texts = texts
+	self.value = value
 	-- Required to send sync events for settings changes
 	self.vehicle = vehicle
 	self.syncValue = false
+	-- override
+	self.xmlKey = name
+	self.xmlAttribute = '#value'
+end
+
+-- Get the current value
+function Setting:get()
+	return self.value
+end
+
+-- Is the current value same as the param?
+function Setting:is(value)
+	return self.value == value
+end
+
+function Setting:equals(value)
+	return self.value == value
+end
+
+-- Get the current text to be shown on the UI
+function Setting:getText()
+	return tostring(self.value)
+end
+
+function Setting:getLabel()
+	return courseplay:loc(self.label)
+end
+
+function Setting:getToolTip()
+	return courseplay:loc(self.toolTip)
+end
+
+-- function only called from network to set synced setting
+function Setting:setFromNetwork(value)
+	self:set(value)
+	self:onChange()
+end
+
+function Setting:onWriteStream(stream)
+	streamDebugWriteBool(stream, true)
+	streamDebugWriteString(stream, self.name)
+	-- rest is override
+end
+
+--- Set to a specific value
+function Setting:set(value)
+	self.value = value
+end
+
+function Setting:onChange()
+	-- setting specific implementation in the derived classes
+end
+
+function Setting:getKey(parentKey)
+	return parentKey .. '.' .. self.xmlKey .. self.xmlAttribute
+end
+
+function Setting:loadFromXml(xml, parentKey)
+	-- override
+end
+
+function Setting:saveToXml(xml, parentKey)
+	-- override
+end
+
+---@class FloatSetting
+FloatSetting = CpObject(Setting)
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+function FloatSetting:init(name, label, toolTip, vehicle, value)
+	Setting.init(self, name, label, toolTip, vehicle, value)
+end
+
+function FloatSetting:loadFromXml(xml, parentKey)
+	local value = getXMLFloat(xml, self:getKey(parentKey))
+	if value then
+		self:set(value)
+	end
+end
+
+function FloatSetting:saveToXml(xml, parentKey)
+	setXMLFloat(xml, self:getKey(parentKey), self:get())
+end
+
+---@class SettingList
+SettingList = CpObject(Setting)
+
+--- A setting that can have a predefined set of values
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+--- @param values table with the valid values
+--- @param texts string[] name in the translation XML files describing the corresponding value
+function SettingList:init(name, label, toolTip, vehicle, values, texts)
+	Setting.init(self, name, label, toolTip, vehicle)
+	self.values = values
+	self.texts = texts
 	-- index of the current value/text
 	self.current = 1
 	-- index of the previous value/text
 	self.previous = 1
-	-- override
-	self.xmlKey = name
-	self.xmlAttribute = '#value'
-	self.lastChangeTimeMilliseconds = 0
 end
 
 -- Get the current value
@@ -1941,20 +2038,6 @@ end
 -- Get the current text
 function SettingList:getText()
 	return courseplay:loc(self.texts[self.current])
-end
-
-function SettingList:getLabel()
-	return courseplay:loc(self.label)
-end
-
-function SettingList:getToolTip()
-	return courseplay:loc(self.toolTip)
-end
-
---- Set the previous value
-function SettingList:setPrevious()
-	local new = self:checkAndSetValidValue(self.current - 1)
-	self:setToIx(new)
 end
 
 --- Set the next value
@@ -2132,10 +2215,14 @@ function AutoDriveModeSetting:init(vehicle)
 		{
 			AutoDriveModeSetting.DONT_USE,
 			AutoDriveModeSetting.UNLOAD_OR_REFILL,
+			AutoDriveModeSetting.PARK,
+			AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK,
 		},
 		{
 			'COURSEPLAY_AUTODRIVE_DONT_USE',
 			'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL',
+			'COURSEPLAY_AUTODRIVE_PARK',
+			'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK',
 		})
 	self:update()
 end
@@ -2169,6 +2256,31 @@ end
 
 function AutoDriveModeSetting:useForParkVehicle()
 	return self:is(AutoDriveModeSetting.PARK) or self:is(AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK)
+end
+
+--- Starting point setting (at which waypoint should the vehicle start the course)
+---@class StartingPointSetting : SettingList
+StartingPointSetting = CpObject(SettingList)
+
+StartingPointSetting.START_AT_NEAREST_POINT = 1 -- nearest waypoint regardless of direction
+StartingPointSetting.START_AT_FIRST_POINT   = 2 -- first waypoint
+StartingPointSetting.START_AT_CURRENT_POINT = 3 -- current waypoint
+StartingPointSetting.START_AT_NEXT_POINT    = 4 -- nearest waypoint with approximately same direction as vehicle
+
+function StartingPointSetting:init(vehicle)
+	SettingList.init(self, 'startingPoint', 'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle,
+			{
+		        StartingPointSetting.START_AT_NEAREST_POINT,
+				StartingPointSetting.START_AT_FIRST_POINT  ,
+				StartingPointSetting.START_AT_CURRENT_POINT,
+				StartingPointSetting.START_AT_NEXT_POINT
+			},
+			{
+				"COURSEPLAY_NEAREST_POINT",
+				"COURSEPLAY_FIRST_POINT"  ,
+				"COURSEPLAY_CURRENT_POINT",
+				"COURSEPLAY_NEXT_POINT"
+			})
 end
 
 --- Driving mode setting
@@ -2428,12 +2540,12 @@ function UseAITurnsSetting:init(vehicle)
 		'COURSEPLAY_USE_AI_TURNS_TOOLTIP', vehicle)
 end
 
---- Use PPC during turns?
----@class UsePPCTurnsSetting : BooleanSetting
-UsePPCTurnsSetting = CpObject(BooleanSetting)
-function UsePPCTurnsSetting:init(vehicle)
-	BooleanSetting.init(self, 'usePPCTurns', 'COURSEPLAY_USE_PPC_TURNS',
-		'COURSEPLAY_USE_PPC_TURNS_TOOLTIP', vehicle)
+--- Use pathfinding during turns?
+---@class UsePathfindingInTurnsSetting : BooleanSetting
+UsePathfindingInTurnsSetting = CpObject(BooleanSetting)
+function UsePathfindingInTurnsSetting:init(vehicle)
+	BooleanSetting.init(self, 'usePathfindingInTurns', 'COURSEPLAY_USE_PATHFINDING_IN_TURNS',
+		'COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP', vehicle)
 end
 
 ---@class AutoFieldScanSetting : BooleanSetting
@@ -2443,6 +2555,15 @@ function AutoFieldScanSetting:init()
 		'COURSEPLAY_YES_NO_FIELDSCAN', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
+end
+
+---@class ClickToSwitchSetting : BooleanSetting
+ClickToSwitchSetting = CpObject(BooleanSetting)
+function ClickToSwitchSetting:init()
+	BooleanSetting.init(self, 'clickToSwitch', 'COURSEPLAY_CLICK_TO_SWITCH',
+				'COURSEPLAY_YES_NO_CLICK_TO_SWITCH', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
 end
 
 ---@class EarnWagesSetting : BooleanSetting
@@ -2468,6 +2589,12 @@ end
 SelfUnloadSetting = CpObject(BooleanSetting)
 function SelfUnloadSetting:init(vehicle)
 	BooleanSetting.init(self, 'selfUnload', 'COURSEPLAY_SELF_UNLOAD', 'COURSEPLAY_SELF_UNLOAD_TOOLTIP', vehicle)
+end
+
+---@class SymmetricLaneChangeSetting : BooleanSetting
+SymmetricLaneChangeSetting = CpObject(BooleanSetting)
+function SymmetricLaneChangeSetting:init(vehicle)
+	BooleanSetting.init(self, 'symmetricLaneChange', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', vehicle)
 end
 
 --- Container for settings

@@ -97,7 +97,7 @@ end
 -- for example, io.flush is not available from within the game.
 --
 function courseGenerator.isRunningInGame()
-	return g_currentMission ~= nil;
+	return g_currentMission ~= nil and not g_currentMission.mock;
 end
 
 function courseGenerator.getCurrentTime()
@@ -135,6 +135,16 @@ function courseGenerator.pointsToXzInPlace(points)
 	end
 	return points
 end
+
+--- Convert an array of points from x/z to x/y in place (also keeping other attributes)
+function courseGenerator.pointsToXyInPlace(points)
+	for _, point in ipairs(points) do
+		point.y = -point.z
+		point.z = nil
+	end
+	return points
+end
+
 
 function courseGenerator.pointsToCxCz( points )
 	local result = {}
@@ -250,19 +260,4 @@ end
 
 local function xyToXz(point)
 	point.y, point.z = point.z or 0, -point.y
-end
-
-function courseGenerator.findDubinsPath(vehicle, goalNode, turnRadius)
-	local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, 1)
-	local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-	x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, 0, -2)
-	local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-	local path = dubins_shortest_path(start, goal, turnRadius)
-	local dubinsPath = dubins_path_sample_many(path, 1)
-	if dubinsPath then
-		for i = 1, #dubinsPath do
-			xyToXz(dubinsPath[i])
-		end
-	end
-	return dubinsPath
 end

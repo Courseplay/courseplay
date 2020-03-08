@@ -765,7 +765,7 @@ function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
 	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then
 		courseplay:debug(('%s: getHighestToolTurnDiameter(%s)'):format(nameNum(vehicle), vehicle.name), 6);
 
-		local toolTurnDiameter = courseplay:getHighestToolTurnDiameter(vehicle);
+		local toolTurnDiameter = AIDriverUtil.getTurningRadius(vehicle) * 2
 
 		-- If the toolTurnDiameter is bigger than the turnDiameterAuto, then set turnDiameterAuto to toolTurnDiameter
 		if toolTurnDiameter > vehicle.cp.turnDiameterAuto then

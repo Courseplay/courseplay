@@ -392,7 +392,7 @@ function courseplay.hud:setup()
 									
 	-- SOUND
 	self.clickSound = createSample('clickSound');
-	loadSample(self.clickSound, Utils.getFilename('sounds/cpClickSound.wav', courseplay.path), false);
+	loadSample(self.clickSound, Utils.getFilename('sounds/cpClickSound.ogg', courseplay.path), false);
 end;
 
 
@@ -733,16 +733,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changeStartAtPoint' then
 					if not vehicle:getIsCourseplayDriving() and vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'changeStartAtPoint')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_START_AT_POINT');
-						if vehicle.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT then
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NEAREST_POINT');
-						elseif vehicle.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_FIRST_POINT');
-						elseif vehicle.cp.startAtPoint == courseplay.START_AT_CURRENT_POINT then
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_CURRENT_POINT');
-						elseif vehicle.cp.startAtPoint == courseplay.START_AT_NEXT_POINT then
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NEXT_POINT');
-						end;
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.startingPoint:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.startingPoint:getText()
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeStartAtPoint')
 					end				
@@ -1016,10 +1008,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				elseif entry.functionToCall == 'toggleSymmetricLaneChange' then
 					--Symmetrical lane change
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SYMMETRIC_LANE_CHANGE');
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.symmetricLaneChange:getLabel()
 					if vehicle.cp.laneOffset ~= 0 then
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SYMMETRIC_LANE_CHANGE');
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.symmetricLaneChange and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.symmetricLaneChange:getText()
 					else
 						vehicle.cp.hud.content.pages[page][line][2].text = '---';
 					end;
@@ -2574,6 +2565,8 @@ function courseplay.hud:addRowButton(vehicle,funct, hudPage, line, column )
 					}
   
   --courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter, x, y, width, height, hudRow, modifiedParameter, hoverText, isMouseWheelArea, isToggleButton, toolTip)
+	-- 'line' was introduced here in the new mode 2 branch as a parameter to pass on to the callback function for selecting the combine. It breaks every toggle/set function though which
+	-- expect a second parameter after the vehicle, for example setStopAtEnd
 	local button = courseplay.button:new(vehicle, hudPage, nil, funct, line, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true);
 	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
 	return button

@@ -22,7 +22,7 @@ This is the base class of all AI drivers (modes) and implements MODE_TRANSPORT (
 using the PurePursuitController (PPC). It replaces the code in drive.lua and has the
 basic functionality:
 •	Drive a course
-•	Drive turn maneuvers (by passing on control to the code in turn.lua for the duration of the turn)
+•	Drive turn maneuvers
 •	Add an alignment when needed before starting the course (this is a lot easier now as
 it just initializes the PPC with the alignment course and after that is finished, initializes
 it with the regular course)
@@ -200,8 +200,8 @@ function AIDriver:beforeStart()
 end
 
 --- Start driving
--- @param ix the waypoint index to start driving at
-function AIDriver:start(ix)
+--- @param startingPoint number, one of StartingPointSetting.START_AT_* constants
+function AIDriver:start(startingPoint)
 	self:beforeStart()
 	self.state = self.states.RUNNING
 	-- derived classes must disable collision detection if they don't need its
@@ -209,6 +209,7 @@ function AIDriver:start(ix)
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
+	local ix = self.mainCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, self.mainCourse:getNumberOfWaypoints())
 	self:startCourseWithAlignment(self.mainCourse, ix)
 end
@@ -224,7 +225,7 @@ function AIDriver:dismiss()
 end
 
 --- Stop the driver
--- @param reason as defined in globalInfoText.msgReference
+--- @param msgReference string as defined in globalInfoText.msgReference
 function AIDriver:stop(msgReference)
 	self:deleteCollisionDetector()
 	-- not much to do here, see the derived classes
@@ -260,6 +261,7 @@ function AIDriver:resumeAt(ix)
 	self.ppc:initialize(ix)
 end
 
+--- @param msgReference string as defined in globalInfoText.msgReference
 function AIDriver:setInfoText(msgReference)
 	if msgReference then
 		self:debugSparse('set info text to %s', msgReference)
@@ -267,6 +269,7 @@ function AIDriver:setInfoText(msgReference)
 	end
 end
 
+--- @param msgReference string as defined in globalInfoText.msgReference
 function AIDriver:clearInfoText(msgReference)
 	if msgReference then
 		self.activeMsgReferences[msgReference] = nil
@@ -290,6 +293,7 @@ function AIDriver:update(dt)
 	self:drive(dt)
 	self:checkIfBlocked()
 	self:payWages(dt)
+	self:detectSlipping()
 	self:resetSpeed()
 end
 
@@ -525,7 +529,7 @@ function AIDriver:onEndCourse()
 			courseplay:stop(self.vehicle)
 			-- TODO: encapsulate this in an AutoDriveInterface class
 			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
-			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, 0, nil, nil, nil)
+			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, -3, nil, nil, nil)
 		end
 	elseif self.vehicle.cp.stopAtEnd then
 		if self.state ~= self.states.STOPPED then
@@ -700,11 +704,11 @@ end
 function AIDriver:getDefaultStreetSpeed(ix)
 	-- reduce speed before the end of the course
 	local dToEnd = self.course:getDistanceToLastWaypoint(ix)
-	if dToEnd < 20 then
+	if dToEnd < 15 then
 		-- TODO make this smoother depending on the remaining distance?
 		return self.vehicle.cp.speeds.turn
 	end
-	local radius = self.course:getMinRadiusWithinDistance(ix, 25)
+	local radius = self.course:getMinRadiusWithinDistance(ix, 15)
 	if radius then
 		return math.max(self.vehicle.cp.speeds.turn, math.min(radius / 20 * self.vehicle.cp.speeds.street, self.vehicle.cp.speeds.street))
 	end
@@ -718,7 +722,11 @@ end
 
 -- TODO: review this whole fillpoint/filltrigger thing.
 function AIDriver:isNearFillPoint()
-	return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
+	if self.course == nil then
+		return false
+	else
+		return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
+	end
 end
 
 function AIDriver:getIsInFilltrigger()
@@ -890,9 +898,8 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 			if tipper.spec_dischargeable then	
 				readyToDischarge = false
 				tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
-				nx,ny,nz = getWorldTranslation(tipRefpoint);
 				local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
-				_,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
+				local _,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
 				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 
 				local foundHeap = self:checkForHeapBehindMe(tipper)
@@ -1377,7 +1384,7 @@ function AIDriver:onPathfindingDone(path)
 					-- pathfinder course, causing unpredictable direction switches
 					table.remove(alignmentWaypoints, 1)
 					self:debug('Append an alignment course with %d waypoints to the path', #alignmentWaypoints)
-					temporaryCourse:append(alignmentWaypoints)
+					temporaryCourse:appendWaypoints(alignmentWaypoints)
 				else
 					self:debug('Could not append an alignment course to the path')
 				end
@@ -1417,7 +1424,7 @@ function AIDriver:getClosestPointOnFieldBoundary(x, z, fieldNum)
 	if fieldNum > 0 and not courseplay:isField(x, z) then
 		-- the pathfinder needs both from/to positions to be on the field so if a  point is not on the
 		-- field, we need to use the closest point on the field boundary instead.
-		local closestPointToTargetIx = courseplay.generation:getClosestPolyPoint(courseplay.fields.fieldData[fieldNum].points, x, z)
+		local closestPointToTargetIx = courseplay:getClosestPolyPoint(courseplay.fields.fieldData[fieldNum].points, x, z)
 		return courseplay.fields.fieldData[ fieldNum ].points[ closestPointToTargetIx ].cx,
 			courseplay.fields.fieldData[ fieldNum ].points[ closestPointToTargetIx ].cz
 	else
@@ -1519,6 +1526,30 @@ end
 
 function AIDriver:trafficContollOK()
 	return g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx())
+end
+
+function AIDriver:detectSlipping()
+	if self.vehicle.spec_motorized then
+		local slippingNow = self.vehicle:getMotor():getClutchRotSpeed() > 10 and math.abs(self.vehicle:getLastSpeed()) < 0.5
+		if not slippingNow then
+			if self.isSlipping then
+				self:debug('Stopped slipping')
+				self:clearInfoText('SLIPPING_1')
+				self.startedSlippingAt = math.huge
+			end
+			self.isSlipping = false
+		end
+		if slippingNow then
+			if self.startedSlippingAt and self.vehicle.timer - self.startedSlippingAt > 4000 then
+				self:debugSparse('Slipping')
+				self:setInfoText('SLIPPING_1')
+			end
+			if not self.isSlipping then
+				self.startedSlippingAt = self.vehicle.timer
+			end
+			self.isSlipping = true
+		end
+	end
 end
 
 function AIDriver:initWages()

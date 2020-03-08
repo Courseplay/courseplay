@@ -205,9 +205,10 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 						local wp1 = course1[wpNum1];
 						for _,wpNum2 in pairs(crossingPoints[2]) do
 							local wp2 = course2[wpNum2];
-							local dist = courseplay:distance(wp1.cx, wp1.cz, wp2.cx, wp2.cz);
+							local x1, z1, x2, z2 = wp1.cx or wp1.x, wp1.cz or wp1.z, wp2.cx or wp2.x, wp2.cz or wp2.z
+							local dist = courseplay:distance(x1, z1, x2, z2);
 							--Calculate actual turn direction between pair of crosspoints
-							local angleTurn = math.atan2(wp2.cx-wp1.cx,wp2.cz-wp1.cz) -- in radians 
+							local angleTurn = math.atan2(x2 - x1, z2 - z1) -- in radians
 							--add direction change differences between original direction and turn direction and destination direction							
 							local totalAngle=math.deg(
 								math.abs(getDeltaAngle(math.rad(wp1.angle),angleTurn)) +
@@ -700,7 +701,7 @@ function courseplay.courses:getFreeSaveSlot(course_id)
 	return freeSlot, isOwnSaveSlot;
 end
 
-function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
+function courseplay.courses:saveCourseToXml(course_id, cpCManXml, forceCourseSave)
 	-- save course to xml file
 	if g_server == nil then
 		return
@@ -737,7 +738,7 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml)
 
 
 	-- Dont save course if we already have a saveSlot.
-	if not isOwnSaveSlot then
+	if not isOwnSaveSlot or forceCourseSave then
 		-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; speed may be nil!
 		-- from xml: rev=int wait=int crossing=int generated=bool, turnstart=int turnend=int ridgemarker=int
 		-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2

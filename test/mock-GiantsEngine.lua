@@ -59,6 +59,7 @@ end
 
 g_updateLoopIndex = 1
 g_currentMission = {}
+g_currentMission.mock = true
 
 giantsVehicle = {}
 giantsVehicle.lastSpeedReal = 10

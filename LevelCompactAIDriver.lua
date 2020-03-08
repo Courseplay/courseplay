@@ -64,7 +64,7 @@ function LevelCompactAIDriver:setHudContent()
 	courseplay.hud:setLevelCompactAIDriverContent(self.vehicle)
 end
 
-function LevelCompactAIDriver:start(ix)
+function LevelCompactAIDriver:start()
 	self:beforeStart()
 	
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)

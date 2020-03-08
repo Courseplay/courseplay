@@ -594,48 +594,25 @@ function courseplay:updateAllTriggers()
 		end			
 	end
 	
-	if g_company and g_company.loadedFactories then
+	if g_company ~= nil and g_company.triggerManagerList ~= nil then
 		courseplay:debug('   check globalCompany mod', 1);
-		for i=1,#g_company.loadedFactories do
-			local factory = g_company.loadedFactories[i];
-			if factory.triggerManager then
-				courseplay:debug(string.format('    factory %d:',i), 1);
-				for index, trigger in pairs (factory.triggerManager.registeredTriggers) do
-					if trigger.exactFillRootNode then
-						trigger.triggerId = trigger.exactFillRootNode;
-						trigger.acceptedFillTypes = trigger.fillTypes
-						courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
-						courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
-					end	
-					if trigger.triggerNode then
-						trigger.triggerId = trigger.triggerNode;
-						trigger.isGlobalCompanyFillTrigger = true
-						courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
-						courseplay:cpAddTrigger(trigger.triggerId, trigger, 'fillTrigger');
-					end
+		for i=1,#g_company.triggerManagerList do
+			local triggerManager = g_company.triggerManagerList[i];			
+			courseplay:debug(string.format('    triggerManager %d:',i), 1);
+			for index, trigger in pairs (triggerManager.registeredTriggers) do
+				if trigger.exactFillRootNode then
+					trigger.triggerId = trigger.exactFillRootNode;
+					trigger.acceptedFillTypes = trigger.fillTypes
+					courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+				end	
+				if trigger.triggerNode then
+					trigger.triggerId = trigger.triggerNode;
+					trigger.isGlobalCompanyFillTrigger = true
+					courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'fillTrigger');
 				end
 			end
-			--[[if factory.registeredUnloadingTriggers then
-				for name, unloadingTrigger in pairs (factory.registeredUnloadingTriggers) do
-					--print(string.format("registeredTriggers: %s : %s",tostring(name),tostring(unloadingTrigger)));
-					if unloadingTrigger.trigger and unloadingTrigger.trigger.exactFillRootNode then
-						--courseplay:printMeThisTable(unloadingTrigger.trigger,0,5,"trigger")
-						unloadingTrigger.trigger.triggerId = unloadingTrigger.trigger.exactFillRootNode;
-						unloadingTrigger.trigger.acceptedFillTypes = unloadingTrigger.trigger.fillTypes
-						courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(unloadingTrigger.trigger.triggerId)), 1);
-						courseplay:cpAddTrigger(unloadingTrigger.trigger.triggerId, unloadingTrigger.trigger, 'tipTrigger');
-					end				
-				end
-				for name, loadingTrigger in pairs (factory.registeredLoadingTriggers) do
-					--print(string.format("registeredTriggers: %s : %s",tostring(name),tostring(loadingTrigger)));
-					if loadingTrigger.trigger and loadingTrigger.trigger.triggerNode then
-						loadingTrigger.trigger.triggerId = loadingTrigger.trigger.triggerNode;
-						loadingTrigger.trigger.isGlobalCompanyFillTrigger = true
-						courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(loadingTrigger.trigger.triggerId)), 1);
-						courseplay:cpAddTrigger(loadingTrigger.trigger.triggerId, loadingTrigger.trigger, 'fillTrigger');
-					end	
-				end
-			end]]
 		end	
 	end
 end;

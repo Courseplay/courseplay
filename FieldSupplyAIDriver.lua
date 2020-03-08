@@ -42,7 +42,7 @@ function FieldSupplyAIDriver:setHudContent()
 	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle)
 end
 
-function FieldSupplyAIDriver:start(ix)
+function FieldSupplyAIDriver:start()
 	self:beforeStart()
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)
 	self.ppc:setCourse(self.course)

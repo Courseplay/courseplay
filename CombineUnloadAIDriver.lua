@@ -73,9 +73,9 @@ function CombineUnloadAIDriver:setHudContent()
 	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle)
 end
 
-function CombineUnloadAIDriver:start(ix)
+function CombineUnloadAIDriver:start(startingPoint)
 
-	AIDriver.start(self, ix)
+	AIDriver.start(self, startingPoint)
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if courseplay:isField(x, z) then
 		self:setNewCombineUnloadState(self.states.ONFIELD)

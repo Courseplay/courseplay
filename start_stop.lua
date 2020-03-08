@@ -14,7 +14,7 @@ function courseplay:start(self)
 	end;
 
 	-- TODO: move this to TrafficCollision.lua
-	if self:getAINeedsTrafficCollisionBox() then
+	if self:getAINeedsTrafficCollisionBox() and not courseplay.isClient then
 		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
 		if collisionRoot ~= nil and collisionRoot ~= 0 then
 			local collision = getChildAt(collisionRoot, 0)
@@ -29,9 +29,6 @@ function courseplay:start(self)
 	if self.setRandomVehicleCharacter ~= nil then
 		self:setRandomVehicleCharacter()
 	end
-
-    -- Start the reset character timer.
-	courseplay:setCustomTimer(self, "resetCharacter", 300);
 
 	if courseplay.isClient then
 		return
@@ -168,9 +165,9 @@ function courseplay:start(self)
 	local nearestWpIx = 0
 	local curLaneNumber = 1;
 	local hasReversing = false;
-	local lookForNearestWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
+	local lookForNearestWaypoint = self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
 
-	local lookForNextWaypoint = self.cp.startAtPoint == courseplay.START_AT_NEXT_POINT and (self.cp.modeState == 0 or self.cp.modeState == 99); 
+	local lookForNextWaypoint = self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_NEXT_POINT) and (self.cp.modeState == 0 or self.cp.modeState == 99);
 	local nx, _, nz = localDirectionToWorld( self.cp.directionNode, 0, 0, 1 )
 	local myDirection = math.atan2( nx, nz ) 
 	-- one of the remaining waypoints of the course, closest in front of us
@@ -182,7 +179,7 @@ function courseplay:start(self)
 	local foundNearestWaypointInSameDirection = false
 	local distNearestWaypointInSameDirection = math.huge
 
-
+	-- TODO: remove this once we finally kill the old mode 2
 	for i,wp in pairs(self.Waypoints) do
 		local cx, cz = wp.cx, wp.cz;
 
@@ -340,7 +337,7 @@ function courseplay:start(self)
 		end
 
 		-- NOTE: if we want to start the course but catch one of the last 5 points ("returnToStartPoint"), make sure we get wp 2
-		if self.cp.startAtPoint == courseplay.START_AT_NEAREST_POINT and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
+		if self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
 			courseplay:setWaypointIndex(self, 2);
 		end
 		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s,hasTransferCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse),tostring(self.cp.hasTransferCourse), self.cp.waypointIndex), 12);
@@ -348,7 +345,7 @@ function courseplay:start(self)
 		courseplay:setDriveUnloadNow(self, false);
 	end
 
-	if self.cp.startAtPoint == courseplay.START_AT_FIRST_POINT then
+	if self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
 		if self.cp.mode == 2 or self.cp.mode == 3 then
 			courseplay:setWaypointIndex(self, 3);
 			courseplay:setDriveUnloadNow(self, true);
@@ -362,7 +359,7 @@ function courseplay:start(self)
 	end;
 
 	-- Reset pathfinding for mode 4 and 6 if resuming from a waypoint other than the current one
-	if (self.cp.mode == 4 or self.cp.mode == 6) and self.cp.realisticDriving == true and #(self.cp.nextTargets) > 0 and self.cp.startAtPoint ~= courseplay.START_AT_CURRENT_POINT then
+	if (self.cp.mode == 4 or self.cp.mode == 6) and self.cp.realisticDriving == true and #(self.cp.nextTargets) > 0 and not self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_CURRENT_POINT) then
 		self.cp.nextTargets = {}
 		self.cp.isNavigatingPathfinding = false
 	end
@@ -445,7 +442,7 @@ function courseplay:start(self)
 			self.cp.driver:delete()
 			self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 		end
-		self.cp.driver:start(self.cp.waypointIndex)
+		self.cp.driver:start(self.cp.settings.startingPoint)
 	else
 		if self.cp.driver then
 			self.cp.driver:delete()
@@ -602,7 +599,7 @@ function courseplay:stop(self)
 	self.spec_enterable.disableCharacterOnLeave = true;
 
 	-- TODO: move this to TrafficCollision.lua
-    if self:getAINeedsTrafficCollisionBox() then
+    if self:getAINeedsTrafficCollisionBox() and not courseplay.isClient then
         setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
         self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
     end
@@ -615,9 +612,6 @@ function courseplay:stop(self)
 		--print("reset existing timer")
 		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
 	end
-
-	-- Reset the reset character timer.
-	courseplay:resetCustomTimer(self, "resetCharacter", true);
 
 	if self.restoreVehicleCharacter ~= nil then
 		self:restoreVehicleCharacter()
@@ -663,6 +657,9 @@ function courseplay:stop(self)
 
 	self.cp.lastInfoText = nil
 
+	--Returns Control to Player:
+	self:requestActionEventUpdate() 
+	
 	if courseplay.isClient then
 		return
 	end
@@ -823,8 +820,6 @@ function courseplay:stop(self)
 	if CpManager.ingameMapIconActive then
 		courseplay:deleteMapHotspot(self);
 	end;
-
-	self:requestActionEventUpdate() 
 	
 	--remove from activeCoursePlayers
 	CpManager:removeFromActiveCoursePlayers(self);

@@ -1430,13 +1430,6 @@ function courseplay:setAbortWorkWaypoint(vehicle)
 			local minNumWPBeforeTurn = 8;
 			local wp = vehicle.Waypoints[i];
 			if wp and wp.turnStart then
-				--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
-				if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
-					courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(wp.turnStart and true or false)), 12);
-					courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
-					vehicle.cp.switchLaneOffset = true;
-				end;
-
 				--- If the turn is less than 8 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
 				local wpUntilTurn = i - vehicle.cp.abortWork;
 				if wpUntilTurn < minNumWPBeforeTurn then
@@ -1619,4 +1612,137 @@ function AIDriverUtil.getDirectionNode(vehicle)
 	else
 		return vehicle.cp.directionNode or vehicle.rootNode
 	end
+end
+
+--- If we are towing an implement, move to a bigger radius in tight turns
+--- making sure that the towed implement's trajectory remains closer to the
+--- course.
+---@param course Course
+function AIDriverUtil.calculateTightTurnOffset(vehicle, course, previousOffset, useCalculatedRadius)
+    local tightTurnOffset
+
+    local function smoothOffset(offset)
+        return (offset + 3 * (previousOffset or 0 )) / 4
+    end
+
+    -- first of all, does the current waypoint have radius data?
+    local r
+	if useCalculatedRadius then
+		r = course:getCalculatedRadiusAtIx(course:getCurrentWaypointIx())
+	else
+		r = course:getRadiusAtIx(course:getCurrentWaypointIx())
+	end
+
+    if not r then
+        return smoothOffset(0)
+    end
+
+	-- limit the radius we are trying to follow to the vehicle's turn radius.
+	-- TODO: there's some potential here as the towed implement can move on a radius less than the vehicle's
+	-- turn radius so this limit may be too pessimistic
+	r = math.max(r, vehicle.cp.turnDiameter / 2)
+
+    local towBarLength = AIDriverUtil.getTowBarLength(vehicle)
+
+    -- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
+    -- we ignore it.
+    if towBarLength < r / 3 then
+        return smoothOffset(0)
+    end
+
+    -- Ok, looks like a tight turn, so we need to move a bit left or right of the course
+    -- to keep the tool on the course. Use a little less than the calculated, this is purely empirical and should probably
+	-- be reviewed why the calculated one seems to overshoot.
+    local offset = 0.75 * AIDriverUtil.getOffsetForTowBarLength(r, towBarLength)
+    if offset ~= offset then
+        -- check for nan
+        return smoothOffset(0)
+    end
+    -- figure out left or right now?
+    local nextAngle = course:getWaypointAngleDeg(course:getCurrentWaypointIx() + 1)
+    local currentAngle = course:getWaypointAngleDeg(course:getCurrentWaypointIx())
+    if not nextAngle or not currentAngle then
+        return smoothOffset(0)
+    end
+
+    if getDeltaAngle(math.rad(nextAngle), math.rad(currentAngle)) > 0 then offset = -offset end
+
+    -- smooth the offset a bit to avoid sudden changes
+    tightTurnOffset = smoothOffset(offset)
+    courseplay.debugVehicle(14, vehicle, 'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, tightTurnOffset )
+    -- remember the last value for smoothing
+    return tightTurnOffset
+end
+
+function AIDriverUtil.getTowBarLength(vehicle)
+    -- is there a wheeled implement behind the tractor and is it on a pivot?
+    local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle)
+    if not workTool or not workTool.cp.realTurningNode then
+        return 0
+    end
+    -- get the distance between the tractor and the towed implement's turn node
+    -- (not quite accurate when the angle between the tractor and the tool is high)
+    local tractorX, _, tractorZ = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
+    local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
+    local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+    return towBarLength
+end
+
+function AIDriverUtil.getOffsetForTowBarLength(r, towBarLength)
+    local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
+    return rTractor - r
+end
+
+-- Find the node to use by the PPC when driving in reverse
+function AIDriverUtil.getReverserNode(vehicle)
+	local reverserNode, debugText
+	-- if there's a reverser node on the tool, use that
+	local reverserDirectionNode = AIVehicleUtil.getAIToolReverserDirectionNode(vehicle)
+	local reversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(vehicle)
+	if reverserDirectionNode then
+		reverserNode = reverserDirectionNode
+		debugText = 'implement reverse (Giants)'
+	elseif reversingWheeledWorkTool and reversingWheeledWorkTool.cp.realTurningNode then
+		reverserNode = reversingWheeledWorkTool.cp.realTurningNode
+		debugText = 'implement reverse (Courseplay)'
+	elseif vehicle.spec_articulatedAxis ~= nil then
+		-- articulated axis vehicles have a special reverser node
+		-- and yes, Giants has a typo in there...
+		if vehicle.spec_articulatedAxis.aiRevereserNode ~= nil then
+			reverserNode = vehicle.spec_articulatedAxis.aiRevereserNode
+			debugText = 'vehicle articulated axis reverese'
+		elseif vehicle.spec_articulatedAxis.aiReverserNode ~= nil then
+			reverserNode = vehicle.spec_articulatedAxis.aiReverserNode
+			debugText = 'vehicle articulated axis reverse'
+		end
+	else
+		-- otherwise see if the vehicle has a reverser node
+		if vehicle.getAIVehicleReverserNode then
+			reverserDirectionNode = vehicle:getAIVehicleReverserNode()
+			if reverserDirectionNode then
+				reverserNode = reverserDirectionNode
+				debugText = 'vehicle reverse'
+			end
+		end
+	end
+	return reverserNode, debugText
+end
+
+-- Get the turning radius of the vehicle and its implements (copied from AIDriveStrategyStraight.updateTurnData())
+function AIDriverUtil.getTurningRadius(vehicle)
+	-- determine turning radius
+	local radius = vehicle.maxTurningRadius * 1.1                     -- needs ackermann steering
+	if vehicle:getAIMinTurningRadius() ~= nil then
+		radius = math.max(radius, vehicle:getAIMinTurningRadius())
+	end
+	local maxToolRadius = 0
+
+	local attachedAIImplements = vehicle:getAttachedAIImplements()
+
+	for _,implement in pairs(attachedAIImplements) do
+		maxToolRadius = math.max(maxToolRadius, AIVehicleUtil.getMaxToolRadius(implement))
+	end
+	radius = math.max(radius, maxToolRadius)
+	courseplay.debugVehicle(6, vehicle, 'getTurningRadius: %.1f m', radius)
+	return radius
 end

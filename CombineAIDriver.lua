@@ -54,6 +54,7 @@ function CombineAIDriver:init(vehicle)
 	self.fillLevelAtLastWaypoint = 0
 	self.beaconLightsActive = false
 	self.lastEmptyTimestamp = 0
+	self.pipeOffsetX = 0
 
 	if self.vehicle.spec_combine then
 		self.combine = self.vehicle.spec_combine
@@ -68,10 +69,12 @@ function CombineAIDriver:init(vehicle)
 
 	if self.vehicle.spec_pipe then
 		self.pipe = self.vehicle.spec_pipe
+		self.objectWithPipe = self.vehicle
 	else
 		local implementWithPipe = FieldworkAIDriver.getImplementWithSpecialization(self.vehicle, Pipe)
 		if implementWithPipe then
 			self.pipe = implementWithPipe.spec_pipe
+			self.objectWithPipe = implementWithPipe
 		else
 			self:info('Could not find implement with pipe')
 		end
@@ -88,7 +91,7 @@ function CombineAIDriver:init(vehicle)
 		if self.vehicle.spec_foldable then
 			wasFolded = not self.vehicle.spec_foldable:getIsUnfolded()
 			if wasFolded then
-				Foldable.setAnimTime(self.vehicle.spec_foldable, 1, true)
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 0, true)
 			end
 		end
 		if self.pipe.currentState == CombineAIDriver.PIPE_STATE_CLOSED then
@@ -97,8 +100,8 @@ function CombineAIDriver:init(vehicle)
 				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
 			else
 				-- if there's no animation we have to use this, as seen in the Giants pipe code
-				self.pipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
-				self.pipe:updatePipeNodes(999999, nil)
+				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
+				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
 		self.pipeOffsetX, _, self.pipeOffsetZ = localToLocal(dischargeNode.node, AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
@@ -107,13 +110,13 @@ function CombineAIDriver:init(vehicle)
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 0, true)
 			else
-				self.pipe:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
-				self.pipe:updatePipeNodes(999999, nil)
+				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
+				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
 		if self.vehicle.spec_foldable then
 			if wasFolded then
-				Foldable.setAnimTime(self.vehicle.spec_foldable, 0, true)
+				Foldable.setAnimTime(self.vehicle.spec_foldable, 1, true)
 			end
 		end
 	else
@@ -121,7 +124,7 @@ function CombineAIDriver:init(vehicle)
 	end
 
 	-- distance keep to the right when pulling back to make room for the tractor
-	self.pullBackSideOffset = math.min(self.vehicle.cp.workWidth, 6)
+	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 2
 	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
 	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
 	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter * 0.7
@@ -186,8 +189,8 @@ function CombineAIDriver:onWaypointPassed(ix)
 	end
 	self:checkFruit()
 	-- make sure we start making a pocket while we still have some fill capacity left as we'll be
-	-- harvesting fruit while making the pocket
-	if self:shouldMakePocket() then
+	-- harvesting fruit while making the pocket unless we have self unload turned on
+	if self:shouldMakePocket() and self.vehicle.cp.settings.selfUnload:is(false) then
 		self.fillLevelFullPercentage = self.pocketFillLevelFullPercentage
 	end
 	self:checkDistanceUntilFull(ix)
@@ -273,7 +276,7 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
 			self:debug('Raise implements and start pulling back')
-			self:stopWork()
+			self:raiseImplements()
 			self.fieldWorkUnloadOrRefillState = self.states.PULLING_BACK_FOR_UNLOAD
 		end
 	elseif self.fieldWorkUnloadOrRefillState == self.states.PULLING_BACK_FOR_UNLOAD then
@@ -613,32 +616,27 @@ end
 
 
 function CombineAIDriver:createTurnCourse()
-	return CombineCourseTurn(self.vehicle, self, self.turnContext)
+	return CombineCourseTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
 end
 
 function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
 
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance)
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance,
+			self:getTurnEndSideOffset())
 
 	-- Combines drive special headland corner maneuvers, except potato and sugarbeet harvesters
 	if self.turnContext:isHeadlandCorner() then
 		if self:isPotatoOrSugarBeetHarvester() then
 			self:debug('Headland turn but this harvester uses normal turn maneuvers.')
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
-		elseif self.vehicle.cp.settings.useAITurns:is(true) and
-			(not self.course:isOnOutermostHeadland(ix) or
-			(self.course:isOnOutermostHeadland(ix) and not self.vehicle.cp.turnOnField))
-		then
-			self:debug('Use AI turn in the headland corner.')
-			self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
-			self.fieldworkState = self.states.TURNING
-		else
-			local cornerCourse, nextIx = self:createHeadlandCornerCourse(ix, self.turnContext)
+		elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.turnOnField then
+			self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
+			local cornerCourse, nextIx = self:createOuterHeadlandCornerCourse(self.turnContext)
 			if cornerCourse then
 				self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
-					cornerCourse:getNumberOfWaypoints(), nextIx)
+						cornerCourse:getNumberOfWaypoints(), nextIx)
 				self.fieldworkState = self.states.TURNING
 				self:startCourse(cornerCourse, 1, self.course, nextIx)
 				-- tighter turns
@@ -647,6 +645,10 @@ function CombineAIDriver:startTurn(ix)
 				self:debug('Could not create a corner course, falling back to default headland turn')
 				UnloadableFieldworkAIDriver.startTurn(self, ix)
 			end
+		else
+			self:debug('Use combine headland turn.')
+			self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
+			self.fieldworkState = self.states.TURNING
 		end
 	else
 		self:debug('Non headland turn.')
@@ -654,52 +656,13 @@ function CombineAIDriver:startTurn(ix)
 	end
 end
 
----@param turnContext TurnContext
----@param ix number
-function CombineAIDriver:createHeadlandCornerCourse(ix, turnContext)
-	if self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.turnOnField then
-		-- create a pocket in the corner so the combine stays on the field
-		return self:createOuterHeadlandCornerCourse(turnContext)
-	else
-		return self:createInnerHeadlandCornerCourse(turnContext)
-	end
-end
-
---- Simple combine headland corner maneuver
----@param turnContext TurnContext
-function CombineAIDriver:createInnerHeadlandCornerCourse(turnContext)
-	local cornerWaypoints = {}
-	local turnRadius = self.vehicle.cp.turnDiameter / 2
-	local offset = turnRadius * 0.25
-	local corner = turnContext:createCorner(self.vehicle, turnRadius)
-	local wp = corner:getPointAtDistanceFromCornerStart(self.vehicle.cp.workWidth / 2)
-	table.insert(cornerWaypoints, wp)
-	-- drive forward up to the headland edge
-	local wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2)
-	table.insert(cornerWaypoints, wp)
-	-- drive further forward and start turning slightly
-	wp = corner:getPointAtDistanceFromCornerStart(-self.vehicle.cp.workWidth / 2 - offset, -offset)
-	table.insert(cornerWaypoints, wp)
-	-- reverse back to set up for the headland after the corner
-	wp = corner:getPointAtDistanceFromCornerEnd(-turnRadius * 0.5, self.vehicle.cp.workWidth / 2 + offset)
-	wp.rev = true
-	table.insert(cornerWaypoints, wp)
-	-- this last waypoint isn't really needed. The only reason we add it is to turn the combine into the
-	-- (sort of) new direction before finishing the turn, so if this is a combine on multitool turn with offset on
-	-- the inner side of the corner, it'll find the right waypoint to continue and does not drive a loop (at least until
-	-- we properly generate offset courses as those have a problem at corners)
-	wp = corner:getPointAtDistanceFromCornerEnd(self.vehicle.cp.workWidth / 2, self.vehicle.cp.workWidth / 3)
-	table.insert(cornerWaypoints, wp)
-	corner:delete()
-	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
-end
-
 --- Create a pocket in the next row at the corner to stay on the field during the turn maneuver.
 ---@param turnContext TurnContext
 function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	local cornerWaypoints = {}
 	local turnRadius = self.vehicle.cp.turnDiameter / 2
-	local offset = math.min(turnRadius * 0.6, self.vehicle.cp.workWidth)
+	-- this is how far we have to cut into the next headland (the position where the header will be after the turn)
+	local offset = math.min(turnRadius + self.frontMarkerDistance,  self.vehicle.cp.workWidth)
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)
 	local d = -self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance
 	local wp = corner:getPointAtDistanceFromCornerStart(d + 2)
@@ -711,16 +674,17 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	table.insert(cornerWaypoints, wp)
 	-- drive back to prepare for making a pocket
 	-- reverse back to set up for the headland after the corner
-	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius)
+	local reverseDistance = 2 * offset
+	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance / 2)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius * 2)
+	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
 	-- now make a pocket in the inner headland to make room to turn
-	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius * 1.6, -offset * 0.8)
+	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance * 0.75, -offset * 0.75)
 	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius * 1.2, -offset * 0.9)
+	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance * 0.5, -offset * 0.9)
 	if not courseplay:isField(wp.x, wp.z) then
 		self:debug('No field where the pocket would be, this seems to be a 270 corner')
 		corner:delete()
@@ -731,7 +695,7 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 	wp = corner:getPointAtDistanceFromCornerStart(d, -offset)
 	wp.speed = self.vehicle.cp.speeds.turn * 0.75
 	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(d + turnRadius)
+	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance / 2)
 	wp.rev = true
 	table.insert(cornerWaypoints, wp)
 	wp = corner:getPointAtDistanceFromCornerEnd(turnRadius / 3, turnRadius / 4)
@@ -817,7 +781,7 @@ function CombineAIDriver:openPipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_OPEN then
 		self:debug('Opening pipe')
-		self.pipe:setPipeState(self.PIPE_STATE_OPEN)
+		self.objectWithPipe:setPipeState(self.PIPE_STATE_OPEN)
 	end
 end
 
@@ -826,7 +790,7 @@ function CombineAIDriver:closePipe()
 	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
 		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_CLOSED then
 		self:debug('Closing pipe')
-		self.pipe:setPipeState(self.PIPE_STATE_CLOSED)
+		self.objectWithPipe:setPipeState(self.PIPE_STATE_CLOSED)
 	end
 end
 
@@ -949,12 +913,38 @@ function CombineAIDriver:findBestTrailer()
 	end
 	local fillRootNode
 	if bestTrailer then
-		fillRootNode = bestTrailer:getFillUnitExactFillRootNode()
-		self:debug('Best trailer is %s at %.1f meters, free capacity %d', bestTrailer:getName(), minDistance, maxCapacity)
+		fillRootNode = bestTrailer:getFillUnitExactFillRootNode(bestFillUnitIndex)
+		self:debug('Best trailer is %s at %.1f meters, free capacity %d, root node %s', bestTrailer:getName(), minDistance, maxCapacity, tostring(fillRootNode))
+		local bestFillNode = self:findBestFillNode(fillRootNode, self.pipeOffsetX)
+		return bestTrailer, bestFillNode
 	else
 		self:info('Found no trailer to unload to.')
+		return nil
 	end
-	return bestTrailer, fillRootNode
+end
+
+function CombineAIDriver:findBestFillNode(fillRootNode, offset)
+	local dx, dy, dz = localToLocal(fillRootNode, AIDriverUtil.getDirectionNode(self.vehicle), offset, 0, 0)
+	local dLeft = MathUtil.vector3Length(dx, dy, dz)
+	dx, dy, dz = localToLocal(fillRootNode, AIDriverUtil.getDirectionNode(self.vehicle), -offset, 0, 0)
+	local dRight = MathUtil.vector3Length(dx, dy, dz)
+	self:debug('Trailer left side distance %d, right side %d', dLeft, dRight)
+	if dLeft <= dRight then
+		-- left side of the trailer is closer, so turn the fillRootNode around as the combine must approach the
+		-- trailer from the front of the trailer
+		-- (as always, we always persist nodes in aiDriverData so they survive the AIDriver object and won't leak)
+		if not self.aiDriverData.bestFillNode then
+			self.aiDriverData.bestFillNode = courseplay.createNode('bestFillNode', 0, 0, math.pi, fillRootNode)
+		else
+			unlink(self.aiDriverData.bestFillNode)
+			link(fillRootNode, self.aiDriverData.bestFillNode)
+			setRotation(self.aiDriverData.bestFillNode, 0, math.pi, 0)
+		end
+		return self.aiDriverData.bestFillNode
+	else
+		-- right side closer, combine approaches the trailer from the rear, driving the same direction as the getFillUnitExactFillRootNode
+		return fillRootNode
+	end
 end
 
 --- Find a path to the best trailer to unload
