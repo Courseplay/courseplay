@@ -35,7 +35,7 @@
 		<text name="COURSEPLAY_CONTINUE" 									text="Continuar" />
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Reiniciar ruta" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Conducir ahora" />
-		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Conducir a:" />
+		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Ir a ruta al:" />
 		<text name="UNKNOWN" 												text="Desconocido" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sentido de la cabecera" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Cabecera antes/después de ruta del campo" />
@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Arar hasta el borde" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Ir 1º Punto espera sin rodeos" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Distancia lateral:" />
-		<text name="COURSEPLAY_START_AT" 									text="Iniciar en:" />
+		<text name="COURSEPLAY_START_AT" 									text="Asistir al:" />
 		<text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Giro dentro del campo:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Giro en dirección opuesta:" />
 		<text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Último par de carriles" />
@@ -349,17 +349,17 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Mover pala a posición de pre-descarga" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="CP: Mover pala a posición de descarga" />
 		
-		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Activar course editor" />
-		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Deshacer ultima modificación" />
-		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Guardar cambios" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Aumentar velocidad en punto espera" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Disminuir velocidad en punto espera" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Eliminar punto espera" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Eliminar siguiente punto espera" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Eliminar todos los punto espera desde el principio" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Eliminar todos los punto espera hasta el final" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Insertar punto espera" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Cambiar tipo de punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="CE: Activar course editor" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="CE: Deshacer ultima modificación" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="CE: Guardar cambios" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="CE: Aumentar velocidad en punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="CE: Disminuir velocidad en punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="CE: Eliminar punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="CE: Eliminar siguiente punto espera" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="CE: Eliminar todos los punto espera desde el principio" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CE: Eliminar todos los punto espera hasta el final" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CE: Insertar punto espera" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CE: Cambiar tipo de punto espera" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Pausa" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Cruce" />
