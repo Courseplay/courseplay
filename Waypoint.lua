@@ -860,6 +860,7 @@ function Course:shorten(d)
 end
 
 --- Append waypoints to the course
+---@param waypoints Waypoint[]
 function Course:appendWaypoints(waypoints)
 	for i = 1, #waypoints do
 		table.insert(self.waypoints, Waypoint(waypoints[i], #self.waypoints + 1))
@@ -870,6 +871,12 @@ end
 --- Append another course to the course
 function Course:append(other)
 	self:appendWaypoints(other.waypoints)
+end
+
+--- Append a single waypoint to the course
+---@param waypoint Waypoint
+function Course:appendWaypoint(waypoint)
+	table.insert(self.waypoints, Waypoint(waypoint, #self.waypoints + 1))
 end
 
 
@@ -969,12 +976,14 @@ function Course:getNextSectionWithProperty(startIx, hasProperty)
 	local section = Course(self.vehicle, {})
 	for i = startIx, self:getNumberOfWaypoints() do
 		if hasProperty(self.waypoints[i]) then
-			section:appendWaypoints({Waypoint(self.waypoints[i])})
+			section:appendWaypoint(self.waypoints[i])
 		else
 			-- wp hasn't this property, stop here
+			section:enrichWaypointData()
 			return section, i + 1
 		end
 	end
+	section:enrichWaypointData()
 	return section, self:getNumberOfWaypoints()
 end
 
@@ -1053,6 +1062,7 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 				addTurnsToCorners(offsetHeadlands, math.rad(60), true)
 				courseGenerator.pointsToXzInPlace(offsetHeadlands)
 				offsetCourse:appendWaypoints(offsetHeadlands)
+				courseplay.debugFormat(7, 'Headland done %d', ix)
 			else
 				courseplay.debugFormat(7, 'Short headland section to %d', ix)
 				origHeadlandsCourse:offsetUpDownRows(offset, 0)
@@ -1060,6 +1070,7 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 			end
 		else
 			local upDownCourse
+			courseplay.debugFormat(7, 'Get next none headland %d', ix)
 			upDownCourse, ix = self:getNextNonHeadlandSection(ix)
 			if upDownCourse:getNumberOfWaypoints() > 0 then
 				courseplay.debugFormat(7, 'Up/down section to %d', ix)
