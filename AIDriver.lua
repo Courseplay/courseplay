@@ -922,9 +922,11 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				
 				--ready with tipping, go forward on the course
 				if tipper.cp.fillLevel == 0 then
-					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
 					self.pullForward = nil
+					if self:getHasAllTippersClosed()then
+						self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
+					end
 				end
 				
 				--do the driving here because if we initalize the ppc, we dont have the unload point anymore
