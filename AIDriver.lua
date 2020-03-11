@@ -1063,7 +1063,7 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 				end
 				
 				local tipState = tipper:getTipState()
-				if tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING then
+				if tipper.cp.fillLevel > 0 and (tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING) then
 					courseplay.debugVehicle(2,self.vehicle,"start tipping")
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 				end				
