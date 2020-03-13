@@ -52,6 +52,13 @@ function FieldSupplyAIDriver:start()
 	AIDriver.continue(self)
 end
 
+function FieldSupplyAIDriver:stop(msgReference)
+	-- TODO: revise why FieldSupplyAIDriver is derived from FieldworkAIDriver, as it has no fieldwork course
+	-- so this override would not be necessary.
+	AIDriver.stop(self, msgReference)
+end
+
+
 function FieldSupplyAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.allowedToDrive = true
