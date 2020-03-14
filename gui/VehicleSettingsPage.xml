@@ -27,6 +27,14 @@
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
 
+			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="allowReverseForPathfindingInTurns" toolTipElementId="ingameMenuHelpBoxText">
+				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
+				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
+				<GuiElement type="text" profile="multiTextOptionSettingsText" />
+				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
+				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
+			</GuiElement>
+
 			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="implementRaiseTime" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />

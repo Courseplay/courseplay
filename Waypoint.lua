@@ -265,7 +265,6 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	self.length = 0
 	self.totalTurns = 0
 	self:enrichWaypointData()
-	courseplay.debugFormat(12, 'Course with %d waypoints created, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
 end
 
 function Course.createFromGeneratedCourse(vehicle, waypoints, temporary, first, last)
@@ -382,6 +381,7 @@ function Course:enrichWaypointData()
 			turnFound = true
 		end
 	end
+	courseplay.debugFormat(12, 'Course with %d waypoints created/updated, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
 end
 
 function Course:calculateRadius(ix)
@@ -475,6 +475,10 @@ end
 
 function Course:isWaitAt(ix)
 	return self.waypoints[ix].interact
+end
+
+function Course:getHeadlandNumber(ix)
+	return self.waypoints[ix].lane
 end
 
 function Course:isOnHeadland(ix, n)
@@ -942,7 +946,12 @@ function Course:executeFunctionForLastWaypoints(d, lambda)
 end
 
 function Course:setTurnEndForLastWaypoints(d)
-	self:executeFunctionForLastWaypoints(d, function(wp) wp.turnEnd = true end)
+	local i = self:getNumberOfWaypoints()
+	-- only set turn end for forward waypoints, we don't want to lower implements while reversing
+	while i > 1 and not self:isReverseAt(i) and self:getDistanceToLastWaypoint(i) < d do
+		self.waypoints[i].turnEnd = true
+		i = i - 1
+	end
 end
 
 function Course:setUseTightTurnOffsetForLastWaypoints(d)
@@ -1058,11 +1067,15 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 						math.abs(offset), 0.5, math.rad( 25 ), math.rad( 60 ), 0, true, inward,
 						{}, 1 )
 
-				offsetHeadlands:calculateData()
-				addTurnsToCorners(offsetHeadlands, math.rad(60), true)
-				courseGenerator.pointsToXzInPlace(offsetHeadlands)
-				offsetCourse:appendWaypoints(offsetHeadlands)
-				courseplay.debugFormat(7, 'Headland done %d', ix)
+				if not offsetHeadlands or #offsetHeadlands == 0 then
+					courseplay.info('Could not generate offset headland')
+				else
+					offsetHeadlands:calculateData()
+					addTurnsToCorners(offsetHeadlands, math.rad(60), true)
+					courseGenerator.pointsToXzInPlace(offsetHeadlands)
+					offsetCourse:appendWaypoints(offsetHeadlands)
+					courseplay.debugFormat(7, 'Headland done %d', ix)
+				end
 			else
 				courseplay.debugFormat(7, 'Short headland section to %d', ix)
 				origHeadlandsCourse:offsetUpDownRows(offset, 0)
@@ -1070,7 +1083,7 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 			end
 		else
 			local upDownCourse
-			courseplay.debugFormat(7, 'Get next none headland %d', ix)
+			courseplay.debugFormat(7, 'Get next none-headland %d', ix)
 			upDownCourse, ix = self:getNextNonHeadlandSection(ix)
 			if upDownCourse:getNumberOfWaypoints() > 0 then
 				courseplay.debugFormat(7, 'Up/down section to %d', ix)

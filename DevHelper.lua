@@ -70,10 +70,11 @@ function DevHelper:update()
     self.data.fieldNum = courseplay.fields:getFieldNumForPosition(self.data.x, self.data.z)
 
     self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 2, 2)
-    self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 2, 2)
+    self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 10, 10)
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
 
-    self.data.collidingShapes = overlapBox(self.data.x, self.data.y + 1, self.data.z, 0, self.yRot, 0, 3, 3, 3, "dummy", nil, AIVehicleUtil.COLLISION_MASK, false, true, true)
+    self.data.collidingShapes = ''
+    overlapBox(self.data.x, self.data.y + 1, self.data.z, 0, self.yRot, 0, 3, 3, 3, "overlapBoxCallback", self, AIVehicleUtil.COLLISION_MASK, false, true, true)
 
     if self.pathfinder and self.pathfinder:isActive() then
         local done, path = self.pathfinder:resume()
@@ -94,14 +95,21 @@ function DevHelper:update()
 
 end
 
+function DevHelper:overlapBoxCallback(transformId)
+    local collidingObject = g_currentMission.nodeToObject[transformId]
+    self.data.collidingShapes = self.data.collidingShapes .. '|' .. (collidingObject and collidingObject:getName() or tostring(collidingObject))
+end
+
+
 function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
+        -- Left Alt + < mark start
         self.context = PathfinderUtil.Context(self.vehicleData, PathfinderUtil.FieldData(self.data.fieldNum))
         self.start = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
         self:debug('Start %s', tostring(self.start))
-        self:findTrailers()
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_period then
+        -- Left Alt + > mark goal
         self.goal = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
 
         local x, y, z = getWorldTranslation(self.node)
@@ -116,6 +124,7 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         self:debug('Goal %s', tostring(self.goal))
         --self:startPathfinding()
     elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_period then
+        -- Left Ctrl + > find path
         self:debug('Calculate')
         self:startPathfinding()
     end
@@ -129,7 +138,7 @@ function DevHelper:startPathfinding()
     if self.vehicle and self.vehicle.cp.driver and self.vehicle.cp.driver.fieldworkCourse then
         self:debug('Starting pathfinding for turn between %s and %s', tostring(self.start), tostring(self.goal))
         self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
-                1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
+                1.05 * self.vehicle.cp.turnDiameter / 2, true, self.vehicle.cp.driver.fieldworkCourse)
     else
         self:debug('Starting pathfinding (allow reverse) between %s and %s', tostring(self.start), tostring(self.goal))
         local start = State3D:copy(self.start)
@@ -162,6 +171,7 @@ function DevHelper:draw()
     DebugUtil.renderTable(0.3, 0.3, 0.02, data, 0.05)
     self:drawCourse()
     self:showVehicleSize()
+    self:showFillNodes()
     for _, vehicle in pairs(g_currentMission.vehicles) do
         if vehicle ~= g_currentMission.controlledVehicle and vehicle.cp and vehicle.cp.driver then
             vehicle.cp.driver:onDraw()
@@ -194,19 +204,15 @@ function DevHelper:drawCourse()
 end
 
 
-function DevHelper:findTrailers()
+function DevHelper:showFillNodes()
     for _, vehicle in pairs(g_currentMission.vehicles) do
         if SpecializationUtil.hasSpecialization(Trailer, vehicle.specializations) then
-            local rootVehicle = vehicle:getRootVehicle()
-            local attacherVehicle
-            if SpecializationUtil.hasSpecialization(Attachable, vehicle.specializations) then
-                attacherVehicle = vehicle.spec_attachable:getAttacherVehicle()
+            DebugUtil.drawDebugNode(vehicle.rootNode, 'Root node')
+            local fillUnits = vehicle:getFillUnits()
+            for i = 1, #fillUnits do
+                local fillRootNode = vehicle:getFillUnitExactFillRootNode(i)
+                if fillRootNode then DebugUtil.drawDebugNode(fillRootNode, 'Fill node ' .. tostring(i)) end
             end
-            local fieldNum = courseplay.fields:onWhichFieldAmI(vehicle)
-            local x, _, z = getWorldTranslation(vehicle.rootNode)
-            local closestDistance = courseplay.fields:getClosestDistanceToFieldEdge(self.data.fieldNum, x, z)
-            courseplay.debugVehicle(14, vehicle, 'is a trailer on field %d, closest distance to %d is %.1f, attached to %s, root vehicle is %s',
-                    fieldNum, self.data.fieldNum, closestDistance, attacherVehicle and attacherVehicle:getName() or 'none', rootVehicle:getName())
         end
     end
 end

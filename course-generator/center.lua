@@ -529,13 +529,10 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 	local result = Polyline:new()
 	local startTrack = 1
 	local endTrack = #parallelTracks
-	local useHeadlandToNextRow = false
 	for i = startTrack, endTrack do
 		if parallelTracks[ i ].waypoints then
 			-- use turn maneuver from one track to the other if they are close to each other
 			local useHeadlandFromPreviousRow = useHeadlandToNextRow
-			useHeadlandToNextRow = centerSettings.mode == courseGenerator.CENTER_MODE_SPIRAL and
-				(i ~= endTrack and math.abs(parallelTracks[i].originalTrackNumber - parallelTracks[i + 1].originalTrackNumber) > 2)
 			for j, point in ipairs( parallelTracks[ i ].waypoints) do
 				-- the first point of a track is the end of the turn (except for the first track)
 				if ( j == 1 and ( i ~= startTrack or startWithTurn ) and not useHeadlandFromPreviousRow) then
@@ -549,13 +546,8 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 				point.firstTrack = i == startTrack
 				-- the last point of a track is the start of the turn (except for the last track)
 				if ( j == #parallelTracks[ i ].waypoints and i ~= endTrack ) then
-					-- if the next row to work on is farther away use the headland to drive there instead of a turn maneuver
-					if useHeadlandToNextRow then
-						addPathOnHeadlandToNextRow(result, parallelTracks[i].waypoints, parallelTracks[i + 1].waypoints, headlands, islands, workWidth)
-					else
-						point.turnStart = true
-						table.insert( result, point )
-					end
+					point.turnStart = true
+					table.insert( result, point )
 				else
 					table.insert( result, point )
 				end
@@ -565,24 +557,6 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 		end
 	end
 	return result
-end
-
-function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, workWidth)
-	local allHeadlands = getAllHeadlands(headlands, islands)
-	local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
-	if not pathToNextRow then
-		-- should not happen, safety harness only
-		table.insert(result, fromRow[#fromRow])
-		return
-	end
-	for i = 1, math.max(1, #pathToNextRow - 1) do
-		if i > 1 then
-			pathToNextRow[i].isConnectingTrack = true
-		end
-		table.insert(result, pathToNextRow[i])
-	end
-	fromRow[#fromRow].mustReach = true
-	toRow[1].align = true
 end
 
 --- Check parallel tracks to see if the turn start and turn end waypoints

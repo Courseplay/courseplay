@@ -445,5 +445,8 @@
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
-		<!-- Replace marker, do not remove! --></texts>
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		<!-- Replace marker, do not remove! -->
+	</texts>
 </l10n>

@@ -2528,8 +2528,9 @@ function TurnContext:isHeadlandCorner()
 	return math.abs( self.directionChangeDeg ) < laneTurnAngleThreshold
 end
 
-function TurnContext:isWideTurn(turnDiameter)
-	return not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter
+function TurnContext:isPathfinderTurn(turnDiameter)
+	local d = math.sqrt(self.dx * self.dx + self.dz * self.dz)
+	return (not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter) or d > 2 * turnDiameter
 end
 
 --- A simple wide turn is where there's no corner to avoid, no headland to follow, there is a straight line on the
@@ -2537,7 +2538,7 @@ end
 --- Currently we don't have a really good way to find this out so assume that if the turn end is reasonably close
 --- to the turn start, there'll be nothing in our way.
 function TurnContext:isSimpleWideTurn(turnDiameter)
-	return self:isWideTurn(turnDiameter) and math.abs(self.dx) < turnDiameter * 1.5 and math.abs(self.dz) < turnDiameter
+	return not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter and math.abs(self.dx) < turnDiameter * 1.5 and math.abs(self.dz) < turnDiameter
 end
 
 function TurnContext:isLeftTurn()

@@ -201,3 +201,24 @@ function State3D:__tostring()
             self.g, self.h, self.cost, tostring(self.closed), tostring(self.onOpenList))
     return result
 end
+
+---@param path State3D[]
+function State3D.printPath(path, title)
+    if title then
+        print(title)
+    end
+    for i, p in ipairs(path) do
+        print(string.format('%d: %s', i, tostring(p)))
+    end
+end
+
+--- Set the heading on an array of nodes (a polyline) so that the heading is pointing to the next
+--- node in the list. The last node will have the same heading as the previous.
+---@param path State3D[]
+function State3D.setHeading(path)
+    for i = 2, #path do
+        local delta = path[i] - path[i - 1]
+        path[i - 1].t = delta:heading()
+    end
+    path[#path].t = path[#path - 1].t
+end

@@ -242,7 +242,36 @@ function FieldworkAIDriver:startFieldworkWithPathfinding(ix)
 		self.state = self.states.ON_FIELDWORK_COURSE
 		self.fieldworkState = self.states.TEMPORARY
 	else
+		self:debug('No path to fieldwork start found.')
 		self:changeToFieldwork()
+	end
+end
+
+--- Start course with pathfinding
+--- Will find a path on a field avoiding fruit as much as possible from the
+--- current position to waypoint ix of course and start driving.
+--- When waypoint ix of course reached, switch to the course and continue driving.
+---
+--- If no path found will use an alignment course to reach waypoint ix of course.
+---@param course Course
+---@param ix number
+---@return boolean true when a pathfinding successfully started or an alignment course was added
+function FieldworkAIDriver:startCourseWithPathfinding(course, ix)
+	-- if the implement is in the front, generate a path so the implement will be at the goal
+	local zOffset = self.frontMarkerDistance > 0 and - self.frontMarkerDistance or 0
+	return AIDriver.startCourseWithPathfinding(self, course, ix, zOffset,0)
+end
+
+function FieldworkAIDriver:xonPathfindingDone(path)
+	if path and #path > 2 then
+		self:debug('(FieldworkAIDriver) Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		local tempCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
+		self:startCourse(tempCourse, 1, self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
+		return true
+	else
+		self:debug('(FieldworkAIDriver) Pathfinding was not able to find a path in %d ms', self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		self:startCourse(self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
+		return false
 	end
 end
 
@@ -455,11 +484,13 @@ end
 function FieldworkAIDriver:onNextCourse()
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.TURNING then
+			self:debug('onNextCourse: a turn course ended')
 			-- a turn just ended, at this point all implements should already be lowered as the turn end course ended
 			-- but just in case, lower them now
 			self:lowerImplements()
 			self.fieldworkState = self.states.WORKING
 		else
+			self:debug('onNextCourse: not a turn course ended')
 			self:changeToFieldwork()
 		end
 	end
@@ -477,8 +508,7 @@ function FieldworkAIDriver:onEndCourse()
 		self:debug('Fieldwork AI driver in mode %d ending fieldwork course', self:getMode())
 		if self:shouldReturnToFirstPoint() then
 			self:debug('Returning to first point')
-			local x, _, z = self.fieldworkCourse:getWaypointPosition(1)
-			if self:driveToPointWithPathfinding(x, z) then
+			if self:driveToPointWithPathfinding(self.fieldworkCourse:getWaypoint(1)) then
 				-- pathfinding was successful, drive back to first point
 				self.state = self.states.RETURNING_TO_FIRST_POINT
 				self:raiseImplements()
