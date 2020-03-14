@@ -92,6 +92,15 @@ function courseGenerator.debug( ... )
 	end
 end
 
+function courseGenerator.info( ... )
+	if courseGenerator.isRunningInGame() then
+		courseplay.info(...)
+	else
+		print( string.format( ... ))
+		io.stdout:flush()
+	end
+end
+
 --- Return true when running in the game
 -- used by file and log functions to determine how exactly to do things,
 -- for example, io.flush is not available from within the game.
