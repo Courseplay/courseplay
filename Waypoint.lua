@@ -928,6 +928,34 @@ function Course:createLegacyCourse()
 	return legacyCourse
 end
 
+function Course:getAllPointsAreOnField()
+	local allOnField = true
+	for i = 1, #self.waypoints do
+		local x, _, z = self:getWaypointPosition(i)
+		if not courseplay:isField(x, z, 1, 1) then
+			return false
+		end
+	end
+	return allOnField
+end
+
+function Course:worldToWaypointLocal(ix, x, y, z)
+	local tempNode = WaypointNode('worldToWaypointLocal')
+	tempNode:setToWaypoint(self,ix)
+	setRotation(tempNode.node, 0, self:getWaypointYRotation(ix), 0);
+	local dx,dy,dz = worldToLocal(tempNode.node,x, y, z)
+	tempNode:destroy()
+	return dx,dy,dz
+end
+
+function Course:waypointLocalToWorld(ix, x, y, z)
+	local tempNode = WaypointNode('waypointLocalToWorld')
+	tempNode:setToWaypoint(self,ix)
+	setRotation(tempNode.node, 0, self:getWaypointYRotation(ix), 0);
+	local dx,dy,dz = localToWorld(tempNode.node,x, y, z)
+	tempNode:destroy()
+	return dx,dy,dz
+end
 function Course:setNodeToWaypoint(node, ix)
 	local x, y, z = self:getWaypointPosition(ix)
 	setTranslation(node, x, y, z)

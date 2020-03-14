@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Waiting until waiting position is free" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Turning to direction %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Drive to waypoint %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Waiting until fill level is reached" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Waiting until fill level is reached (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="No combine in reach" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Waiting until combine has turned" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Waiting for new waypoint" />

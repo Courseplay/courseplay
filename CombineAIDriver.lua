@@ -50,6 +50,7 @@ function CombineAIDriver:init(vehicle)
 	self:initStates(CombineAIDriver.myStates)
 	self.fruitLeft, self.fruitRight = 0, 0
 	self.litersPerMeter = 0
+	self.litersPerSecond = 0
 	self.fillLevelAtLastWaypoint = 0
 	self.beaconLightsActive = false
 	self.lastEmptyTimestamp = 0
@@ -142,6 +143,9 @@ function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
 	self:handlePipe()
 	-- the rest is the same as the parent class
+	if not self:trafficContollOK() then
+		self:hold()
+	end
 	UnloadableFieldworkAIDriver.drive(self, dt)
 end
 
@@ -208,6 +212,9 @@ function CombineAIDriver:onWaypointPassed(ix)
 		self.ppc:setNormalLookaheadDistance()
 	end
 	UnloadableFieldworkAIDriver.onWaypointPassed(self, ix)
+end
+function CombineAIDriver:isWaitingInPocket()
+ return self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET
 end
 
 function CombineAIDriver:changeToFieldworkUnloadOrRefill()
@@ -381,13 +388,26 @@ function CombineAIDriver:onNextCourse(ix)
 end
 
 function CombineAIDriver:unloadFinished()
-	local discharging = self:isDischarging()
+	local discharging = true
+	local tempDischarging = false
+	if self.pipe then
+		tempDischarging = self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
+	end
+	--wait for 10 frames before taking discharging as false
+	if not tempDischarging then
+		self.cantDischargeCount = self.cantDischargeCount and self.cantDischargeCount + 1 or 0
+		if self.cantDischargeCount > 10 then
+			discharging = false
+		end
+	else
+		self.cantDischargeCount = 0
+	end
 	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 
 	-- unload is done when fill levels are ok (not full) and not discharging anymore (either because we
 	-- are empty or the trailer is full)
 	return (self:allFillLevelsOk() and not discharging) or fillLevel < 0.1
-end
+		end
 
 function CombineAIDriver:shouldMakePocket()
 	if self.fruitLeft > 0.75 and self.fruitRight > 0.75 then
@@ -451,6 +471,7 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 			self:debug('Will be full in the next row' )
 		end
 	end
+
 end
 
 function CombineAIDriver:updateLightsOnField()
@@ -572,15 +593,6 @@ function CombineAIDriver:shouldReturnToFirstPoint()
 	-- Combines stay where they are after finishing work
 	-- TODO: call unload driver
 	return false
-end
-
--- TODO: either implement these cleanly or remove them from AIDriver
-function CombineAIDriver:getHasCourseplayers()
-	return self.vehicle.courseplayers and #self.vehicle.courseplayers ~= 0
-end
-
-function CombineAIDriver:getFirstCourseplayer()
-	return self.vehicle.courseplayers and self.vehicle.courseplayers[1]
 end
 
 --- Interface for AutoDrive
@@ -711,13 +723,16 @@ function CombineAIDriver:handlePipe()
 end
 
 function CombineAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() then
+	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or self:has80Percent() then
 		self:openPipe()
 	else
 		self:closePipe()
 	end
 end
 
+function CombineAIDriver:has80Percent()
+	return self.vehicle:getFillUnitFillLevelPercentage(self.combine.fillUnitIndex)*100 >= 80
+end
 
 --- Support for AutoDrive mod: they'll only find us if we open the pipe
 function CombineAIDriver:isAutoDriveWaitingForPipe()
@@ -832,6 +847,17 @@ function CombineAIDriver:canDischarge()
 	local dischargeNode = self.combine:getCurrentDischargeNode()
 	local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
 	return targetObject
+end
+
+function CombineAIDriver:trafficContollOK()
+	local ok =  g_trafficController:reserveWithWorkwidth(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx(),speed,self.vehicle.cp.workWidth)
+	if not ok then
+		local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
+		if blockingVehicle and blockingVehicle == g_combineUnloadManager:getUnloaderByNumber(1,self.vehicle) then
+			ok = true
+		end
+	end
+	return ok
 end
 
 function CombineAIDriver:isDischarging()

@@ -131,13 +131,10 @@ function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
 
 	courseplay:setNameVariable(self);
 
-	-- combines table
-	if courseplay.combines == nil then
-		courseplay.combines = {};
-	end;
-	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or courseplay:isAttachedCombine(self) then
-		courseplay.combines[self.rootNode] = self;
-	end;
+	-- combineUnloadManager
+	if courseplay:isCombine(self) or courseplay:isChopper(self) then
+		g_combineUnloadManager:addCombineToList(self)
+	end
 
 	return loadingState;
 end;
@@ -148,6 +145,7 @@ Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, coursepla
 function courseplay:prePreDelete(self)
 	if self.cp ~= nil then
 		courseplay:deleteMapHotspot(self);
+		-- combineUnloadManager
 	end
 end;
 FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);
@@ -171,20 +169,10 @@ function courseplay:vehicleDelete()
 			self.cp.notesToDelete = nil;
 		end;
 
-		if courseplay.combines[self.rootNode] then
-			for _, courseplayer in pairs(g_currentMission.enterables) do
-				if courseplayer.cp then
-					if courseplayer.cp.activeCombine and courseplayer.cp.activeCombine == self then
-						courseplay:unregisterFromCombine(courseplayer, self)
-					end
-					if courseplayer.cp.lastActiveCombine and courseplayer.cp.lastActiveCombine == self then
-						courseplay:removeFromVehicleLocalIgnoreList(self, courseplayer.cp.lastActiveCombine)
-						courseplayer.cp.lastActiveCombine = nil
-					end
-				end
-			end
-			courseplay.combines[self.rootNode] = nil;
-		end;
+		if courseplay:isCombine(self) or courseplay:isChopper(self) then
+			g_combineUnloadManager:removeCombineFromList(self)
+		end
+
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);

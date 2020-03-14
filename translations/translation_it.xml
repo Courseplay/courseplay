@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Sto aspettando che l'area di sosta sia libera" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Svoltando in direzione %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Sta andando al punto %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Sta aspettando che il livello di riempimento sia raggiunto" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Sta aspettando che il livello di riempimento sia raggiunto (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Nessuna trebbia disponibile" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Sta aspettando che la trebbia finisca di svoltare" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Attendi il prossimo punto di passaggio" />

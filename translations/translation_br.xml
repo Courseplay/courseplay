@@ -135,7 +135,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Aguardando té que a posição de espera esteja livre" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Virando em direção %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Dirigir para o ponto %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Aguardando que o enchimento chegue ao nível" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Aguardando que o enchimento chegue ao nível (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Nenhuma ceifadeira ao alcance" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Esperando a ceifadeira virar" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Aguardando novo waypoint" />

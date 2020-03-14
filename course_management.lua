@@ -337,8 +337,8 @@ function courseplay:copyCourse(vehicle)
 		vehicle:setCpVar('canDrive',true,courseplay.isClient);
 		vehicle.cp.abortWork = nil;
 
-		if src.cp.searchCombineOnField ~= nil and src.cp.searchCombineOnField > 0 then
-			vehicle.cp.searchCombineOnField = src.cp.searchCombineOnField;
+		if src.cp.settings.searchCombineOnField:get() >0 then
+			vehicle.cp.settings.searchCombineOnField:set(src.cp.settings.searchCombineOnField:get())
 		end
 		
 		
@@ -347,14 +347,14 @@ function courseplay:copyCourse(vehicle)
 		if vehicle.cp.activeCombine ~= nil then
 			courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
 		end
-
+		--[[
 		if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
 			courseplay:setModeState(vehicle, 0);
 			-- print(('%s [%s(%d)]: copyCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
 		else
 			courseplay:setModeState(vehicle, 1);
 			-- print(('%s [%s(%d)]: copyCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-		end;
+		end;]]
 		vehicle.cp.recordingTimer = 1;
 
 		courseplay.signs:updateWaypointSigns(vehicle, 'current');
@@ -387,8 +387,8 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 		vehicle.cp.lastValidTipDistance = nil
 	end
 	
-	if vehicle.cp.searchCombineOnField ~= nil and vehicle.cp.searchCombineOnField > 0 then
-		vehicle.cp.searchCombineOnField = 0;
+	if vehicle.cp.settings.searchCombineOnField:get() > 0 then
+		vehicle.cp.settings.searchCombineOnField:set(0);
 	end
 	-------------------------------------------------------
 	

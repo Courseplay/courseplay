@@ -237,6 +237,10 @@ function CpManager:update(dt)
 		
 	end;
 
+	if courseplay.fieldMod == nil then
+		courseplay:initailzeFieldMod()
+	end
+
 	if g_gui.currentGui == nil then
 		-- SETUP FIELD INGAME DATA
 		if not courseplay.fields.ingameDataSetUp then
@@ -261,6 +265,8 @@ function CpManager:update(dt)
 			self:showYesNoDialogue('Courseplay', courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'), self.fieldScanDialogueCallback);
 		end;
 	end;
+	g_trafficController:update(dt)
+	g_combineUnloadManager:onUpdate()
 
 	-- REAL TIME 5 SECS CHANGER
 	if self.realTime5SecsTimer < 5000 then
@@ -291,6 +297,14 @@ function CpManager:update(dt)
 	end
 	g_devHelper:update()
 end;
+
+
+function CpManager:UpdateTick(dt)
+	print("CpManager:updateTick(dt)")
+end
+
+
+
 
 function CpManager:draw()
 	if g_currentMission.paused then

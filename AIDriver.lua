@@ -646,20 +646,20 @@ function AIDriver:setSpeed(speed)
 	self.speed = math.min(self.speed, speed)
 end
 
-function AIDriver:setLastMoveCommandTime(timer)
-	self.lastMoveCommandTime = timer
+function AIDriver:resetLastMoveCommandTime()
+	self.lastMoveCommandTime = self.vehicle.timer
 end
 
 --- Don't auto stop engine. Keep calling this when you do something where the vehicle has a planned stop for a while
 --- and you don't want to engine auto stop to engage (for example waiting in the convoy)
 function AIDriver:overrideAutoEngineStop()
-	self:setLastMoveCommandTime(self.vehicle.timer)
+	self:resetLastMoveCommandTime()
 end
 
 --- Reset drive controls at the end of each loop
 function AIDriver:resetSpeed()
 	if self.speed > 0 and self.allowedToDrive then
-		self:setLastMoveCommandTime(self.vehicle.timer)
+		self:resetLastMoveCommandTime()
 		if self.vehicle:getLastSpeed() > 0.5 then
 			self.lastRealMovingTime = self.vehicle.timer
 			self.stoppedButShouldBeMoving = false
@@ -679,12 +679,18 @@ end
 --- Anyone wants to temporarily stop driving for whatever reason, call this
 function AIDriver:hold()
 	self.allowedToDrive = false
+	-- prevent detecting this state as blocked. TODO: rethink this whole blocking logic, is now confusing as hell
+	self:resetLastMoveCommandTime()
 end
 
 --- Function used by the driver to get the speed it is supposed to drive at
 --
 function AIDriver:getSpeed()
 	return self.speed or 15
+end
+
+function AIDriver:getTotalLength()
+	return self.vehicle.cp.totalLength
 end
 
 function AIDriver:getRecordedSpeed()
@@ -1047,6 +1053,7 @@ end
 
 function AIDriver:tipIntoBGASiloTipTrigger(dt)
 	local trigger = self.vehicle.cp.currentTipTrigger
+	self:setOffsetInBGASilo()
 	for _, tipper in pairs (self.vehicle.cp.workTools) do
 		if tipper.spec_dischargeable ~= nil and trigger ~= nil then
 			--figure out , when i'm in the silo area
@@ -1084,6 +1091,9 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					courseplay.debugVehicle(2,self.vehicle,"reset self.unloadSpeed")
 				end
 				self.unloadSpeed = nil
+				if tipper.cp.fillLevel == 0 then
+					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
+				end
 			end
 			self.speed = self.unloadSpeed or self.speed
 		end
@@ -1110,14 +1120,14 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	local takeOverSteering = false
 	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
 	self:setSpeed(self:getRecordedSpeed())
-	
-	--handle cover 
+	--handle cover
 	if self:hasTipTrigger() or isNearUnloadPoint then
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 	end
 	-- done tipping?
 	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 and self:getHasAllTippersClosed() then
 		courseplay:resetTipTrigger(self.vehicle, true);
+		self:resetBGASiloTables()
 	end
 
 	self:cleanUpMissedTriggerExit()
@@ -1230,6 +1240,27 @@ function AIDriver:getHasAllTippersClosed()
 	return allClosed
 end
 
+function AIDriver:setOffsetInBGASilo()
+	if self.BunkerSiloMap == nil then
+		self.BunkerSilo = g_bunkerSiloManager:getTargetBunkerSiloByPointOnCourse(self.course,self.ppc:getCurrentWaypointIx()+3)
+		if self.BunkerSilo ~= nil then
+			self.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(self.vehicle, self.BunkerSilo,3)
+		end
+	end
+	if self.BunkerSiloMap ~= nil then
+		if self.bestColumnToFill == nil then
+			self.bestColumnToFill = g_bunkerSiloManager:getBestColumnToFill(self.BunkerSiloMap)
+			self.ppc:initialize(g_bunkerSiloManager:setOffsetsPerWayPoint(self.course,self.BunkerSiloMap,self.bestColumnToFill,self.ppc:getCurrentWaypointIx()))
+		end
+	end
+end
+
+function AIDriver:resetBGASiloTables()
+	self.BunkerSilo = nil
+	self.BunkerSiloMap = nil
+	self.offsetsPerWayPoint = nil
+	self.bestColumnToFill = nil
+end
 
 ------------------------------------------------------------------------------
 --- PATHFINDING
@@ -1381,7 +1412,7 @@ function AIDriver:startEngineIfNeeded()
 	end
 	-- reset motor auto stop timer when someone starts the engine so we won't stop it for a while just because
 	-- our speed is 0 (for example while waiting for the implements to lower)
-	self:setLastMoveCommandTime(self.vehicle.timer)
+	self:resetLastMoveCommandTime()
 end
 
 function AIDriver:getIsEngineReady()
@@ -1465,6 +1496,10 @@ end
 
 function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
+end
+
+function AIDriver:trafficContollOK()
+	return g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx())
 end
 
 function AIDriver:detectSlipping()

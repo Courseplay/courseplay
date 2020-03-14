@@ -130,7 +130,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Addig vár, míg a várakozási hely felszabadul" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Irány %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Az %d %d útvonalponthoz megy" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Vár, amíg kombájn ürít" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Vár, amíg kombájn ürít (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Hívó kombájnra vár" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Vár, amíg kombájn megfordul!" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Vár az új útvonalpontra" />

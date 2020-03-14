@@ -1074,17 +1074,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 							else
-								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')			
+								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')
 							end
-						else --temp solution for old mode2
-							if vehicle:getIsCourseplayDriving() and not vehicle.cp.driveUnloadNow and vehicle.cp.waypointIndex < 2 then
-								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
-								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
-							else
-								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')			
-							end					
 						end
-					end		
+					end
 
 				elseif entry.functionToCall == 'forceGoToUnloadCourse' then
 					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
@@ -1097,12 +1090,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							end
 						end
 					end
-				
-				
 
-					
 				elseif entry.functionToCall == 'toggleWantsCourseplayer' then
-					if not vehicle.cp.driver:getHasCourseplayers() then
+					if not g_combineUnloadManager:getHasUnloaders(vehicle)  then
 						self:enableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
 						if vehicle.cp.wantsCourseplayer then
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_REQUESTED');
@@ -1110,15 +1100,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REQUEST_UNLOADING_DRIVER');
 						end
 					else
-						local courseplayer = vehicle.cp.driver:getFirstCourseplayer()
+						local courseplayer = g_combineUnloadManager:getUnloaderByNumber(1, vehicle)
 						self:disableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVER');
-						vehicle.cp.hud.content.pages[page][line][2].text =  courseplayer:getName();
+						vehicle.cp.hud.content.pages[page][line][2].text =  courseplayer.name;
 					end
 				elseif entry.functionToCall == 'startStopCourseplayer' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					if g_combineUnloadManager:getHasUnloaders(vehicle) then
 						self:enableButtonWithFunction(vehicle,page, 'startStopCourseplayer')
-						local courseplayer = vehicle.cp.driver:getFirstCourseplayer()
+						local courseplayer = g_combineUnloadManager:getUnloaderByNumber(1, vehicle)
 						if courseplayer.cp.forcedToStop then
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_START');
 						else
@@ -1128,7 +1118,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:disableButtonWithFunction(vehicle,page, 'startStopCourseplayer')
 					end
 				elseif entry.functionToCall == 'sendCourseplayerHome' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					print("g_combineUnloadManager:getHasUnloaders(vehicle):"..tostring(g_combineUnloadManager:getHasUnloaders(vehicle)))
+					if g_combineUnloadManager:getHasUnloaders(vehicle) then
 						self:enableButtonWithFunction(vehicle,page, 'sendCourseplayerHome')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_SEND_HOME');
 					else
@@ -1136,7 +1127,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 		
 				elseif entry.functionToCall == 'switchCourseplayerSide' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					if g_combineUnloadManager:getHasUnloaders(vehicle) and false then  --TODO do we need the manual setting ?????
 						self:enableButtonWithFunction(vehicle,page, 'switchCourseplayerSide')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_SIDE');
 						if vehicle.cp.forcedSide == 'left' then
@@ -1151,7 +1142,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 			
 				elseif entry.functionToCall == 'toggleTurnStage' then
-					if vehicle.cp.driver:getHasCourseplayers() then
+					if g_combineUnloadManager:getHasUnloaders(vehicle) then
 						--manual chopping: initiate/end turning maneuver
 						if not  vehicle:getIsCourseplayDriving()  then
 							self:enableButtonWithFunction(vehicle,page, 'toggleTurnStage')
@@ -1214,18 +1205,18 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.driveOnAtFillLevel) or '---';
 
 					
-				elseif entry.functionToCall == 'toggleSearchCombineMode' then    --automatic or manual
+				--[[elseif entry.functionToCall == 'toggleSearchCombineMode' then    --automatic or manual
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_SEARCH_MODE'); --always
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc('COURSEPLAY_AUTOMATIC_SEARCH') or courseplay:loc('COURSEPLAY_MANUAL_SEARCH');
-				
+
 				elseif entry.functionToCall == 'selectAssignedCombine' then -- if manual toggle through combines to select one
 					--Line 2: select combine manually
 					if not vehicle.cp.searchCombineAutomatically then
 						self:enableButtonWithFunction(vehicle,page, 'selectAssignedCombine')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CHOOSE_COMBINE'); --only if manual
-						if vehicle.cp.savedCombine ~= nil then
-							local name = vehicle.cp.savedCombine:getName()
-							local dist = courseplay:distanceToObject(vehicle, vehicle.cp.savedCombine);
+						if vehicle.cp.settings.selectedCombineToUnload:get() ~= nil then
+							local name = vehicle.cp.settings.selectedCombineToUnload:get().name
+							local dist = courseplay:distanceToObject(vehicle, vehicle.cp.settings.selectedCombineToUnload:get());
 							if dist >= 1000 then
 								vehicle.cp.hud.content.pages[page][line][2].text = ('%s (%.1f%s)'):format(name, dist * 0.001, courseplay:getMeasuringUnit());
 							else
@@ -1237,25 +1228,27 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'selectAssignedCombine')					
 					end;
-				
+				]]
 				elseif entry.functionToCall == 'setSearchCombineOnField' then 
 					--Line 3: choose field for automatic search --only if automatic
 					if vehicle.cp.searchCombineAutomatically and courseplay.fields.numAvailableFields > 0 then
+						vehicle.cp.settings.searchCombineOnField:refresh()
 						self:enableButtonWithFunction(vehicle,page, 'setSearchCombineOnField')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SEARCH_COMBINE_ON_FIELD'):format(vehicle.cp.searchCombineOnField > 0 and tostring(vehicle.cp.searchCombineOnField) or '---');
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.searchCombineOnField:getLabel():format(vehicle.cp.settings.searchCombineOnField:getText())
 					else
 						self:disableButtonWithFunction(vehicle,page, 'setSearchCombineOnField')
 					end;
-								
+					self:updateCombinesList(vehicle,page)
+
 				elseif entry.functionToCall == 'showCombineName' then
 					self:disableButtonWithFunction(vehicle,page, 'showCombineName')
 					--Line 4: current assigned combine
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CURRENT'); --always
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.activeCombine ~= nil and vehicle.cp.activeCombine.name or courseplay:loc('COURSEPLAY_NONE');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driver and vehicle.cp.driver.combineToUnload ~= nil and vehicle.cp.driver.combineToUnload.name or courseplay:loc('COURSEPLAY_NONE');
 
 				elseif entry.functionToCall == 'removeActiveCombineFromTractor' then
 					--Line 5: remove active combine from tractor
-					if vehicle.cp.activeCombine ~= nil then --only if activeCombine
+					if vehicle.cp.driver and vehicle.cp.driver.combineToUnload ~= nil then --only if activeCombine
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR');
 					end;
 					
@@ -1934,6 +1927,20 @@ function courseplay.hud:setupCustomFieldEdgeButtons(vehicle,page,line)
 	vehicle.cp.hud.toggleCustomFieldEdgePathShowButton = courseplay.button:new(vehicle, page, { 'iconSprite.png', 'eye' }, 'toggleCustomFieldEdgePathShow', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
 end
 
+function courseplay.hud:setupCombinesListPageButtons(vehicle,page)
+	for i=3, self.numLines do
+		self:addRowButton(vehicle,'toggleAssignCombineToTractor', page, i, 1)
+	end;
+	local combinesListMouseWheelArea = {
+		x = self.contentMinX,
+		y = self.linesPosY[self.numLines],
+		width = self.buttonCoursesPosX[4] - self.contentMinX,
+		height = self.linesPosY[3] + self.lineHeight - self.linesPosY[self.numLines]
+	};
+	vehicle.cp.hud.combinesListMouseArea= courseplay.button:new(vehicle, 'global', nil, 'shiftCombinesList', -1, combinesListMouseWheelArea.x, combinesListMouseWheelArea.y, combinesListMouseWheelArea.width, combinesListMouseWheelArea.height, nil, -self.numLines, true, true);
+	print("vehicle.cp.hud.combinesListMouseArea: "..tostring(vehicle.cp.hud.combinesListMouseArea))
+end
+
 function courseplay.hud:setupCoursePageButtons(vehicle,page)
 	local wMiddle	   = self.buttonSize.middle.w;
 	local hMiddle	   = self.buttonSize.middle.h;
@@ -2073,6 +2080,28 @@ function courseplay.hud:updateCourseList(vehicle, page)
 	end;
 	for line = numCourses+1, self.numLines do
 		vehicle.cp.hud.content.pages[page][line][1].text = nil;
+	end
+end
+
+function courseplay.hud:updateCombinesList(vehicle,page)
+	vehicle.cp.possibleCombines = {}
+	for combine,data in pairs (g_combineUnloadManager.combines) do
+		local selectedField = vehicle.cp.settings.searchCombineOnField:get()
+		if data.isOnFieldNumber == selectedField or data.isOnFieldNumber == 0 or selectedField ==0 then
+			table.insert(vehicle.cp.possibleCombines,combine)
+		end
+	end
+	local line = 3
+	for i=1+vehicle.cp.combinesListHUDOffset,#vehicle.cp.possibleCombines do
+		local combine = vehicle.cp.possibleCombines[i]
+		if combine ~= nil then
+			local box = vehicle.cp.assignedCombines[combine] and "[X]"or "[  ]"
+			vehicle.cp.hud.content.pages[page][line][2].text = string.format("%s %s (Feld %d)",box,combine.name,g_combineUnloadManager.combines[combine].isOnFieldNumber)
+		end
+		if line == self.numLines then
+			break;
+		end
+		line = line + 1
 	end
 end
 
@@ -2453,12 +2482,12 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 	
 	--page 4 
 	self:enablePageButton(vehicle, 4)
-	
-	self:addRowButton(vehicle,'toggleSearchCombineMode', 4, 1, 1 )
-	self:addSettingsRowWithArrows(vehicle,'selectAssignedCombine', 4, 2, 1 )
-	self:addSettingsRowWithArrows(vehicle,'setSearchCombineOnField', 4, 3, 1 )
-	self:addRowButton(vehicle,'showCombineName', 4, 4, 1 )
-	self:addRowButton(vehicle,'removeActiveCombineFromTractor', 4, 5, 1 )
+	self:setupCombinesListPageButtons(vehicle, 4)
+	--self:addRowButton(vehicle,'toggleSearchCombineMode', 4, 1, 1 )
+	--self:addSettingsRowWithArrows(vehicle,'selectAssignedCombine', 4, 2, 1 )
+	self:addSettingsRowWithArrows(vehicle,'setSearchCombineOnField', 4, 2, 1 )
+	self:addRowButton(vehicle,'showCombineName', 4, 1, 1 )
+	--self:addRowButton(vehicle,'removeActiveCombineFromTractor', 4, 5, 1 )
 	
 	--page 7
 	self:addRowButton(vehicle,'toggleAlignmentWaypoint', 7, 6, 1 )
