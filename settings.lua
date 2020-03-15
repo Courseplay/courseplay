@@ -2046,6 +2046,13 @@ function SettingList:setNext()
 	self:setToIx(new)
 end
 
+--- Set the previous value
+function SettingList:setPrevious()
+	local new = self:checkAndSetValidValue(self.current - 1)
+	self:setToIx(new)
+end
+
+
 -- TODO: consolidate this with setNext()
 function SettingList:next()
 	self:setNext()

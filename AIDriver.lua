@@ -180,6 +180,7 @@ end
 --- Aggregation of states from this and all descendant classes
 function AIDriver:initStates(states)
 	for key, state in pairs(states) do
+		state[1] = key
 		self.states[key] = state
 	end
 end
@@ -316,6 +317,7 @@ function AIDriver:drive(dt)
 		self:hold()
 		self:continueIfWaitTimeIsOver()
 	end
+	self:debugSparse(tostring(self.allowedToDrive))
 
 	self:driveCourse(dt)
 	self:drawTemporaryCourse()
@@ -1305,7 +1307,7 @@ end
 --- If no path is found, onNoPathFound() is called, you'll need your own implementation
 --- of that to handle that case.
 ---
----@param goalWaypoint Waypoint The destination waypoint (x, z, angle)
+---@param waypoint Waypoint The destination waypoint (x, z, angle)
 ---@param zOffset number length offset of the goal from the goalWaypoint
 ---@param allowReverse boolean allow reverse driving
 ---@param course Course course to start after pathfinding is done, can be nil
@@ -1320,10 +1322,8 @@ function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fie
 			self.waypointIxAfterPathfinding = ix
 			local done, path
 			self.pathfindingStartedAt = self.vehicle.timer
-			-- if the implement is in the front, generate a path so the implement will be at the goal
-			local zOffset = self.frontMarkerDistance > 0 and - self.frontMarkerDistance or 0
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-					self.vehicle, waypoint, zOffset, self.allowReversePathfinding, fieldNum)
+					self.vehicle, waypoint, zOffset or 0, self.allowReversePathfinding, fieldNum)
 			if done then
 				return self:onPathfindingDone(path)
 			else

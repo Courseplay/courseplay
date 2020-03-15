@@ -43,24 +43,6 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
     if withImplements then
         self:calculateSizeOfObjectList(vehicle, vehicle:getAttachedImplements(), buffer, self.rectangles)
     end
-    self:resetCollidingShapes()
-end
-
-function PathfinderUtil.VehicleData:resetCollidingShapes()
-    self.collidingShapes = 0
-end
-
-function PathfinderUtil.VehicleData:getCollidingShapes()
-    return self.collidingShapes
-end
-
-function PathfinderUtil.VehicleData:overlapBoxCallback(transformId)
-    local collidingObject = g_currentMission.nodeToObject[transformId]
-    if collidingObject and collidingObject.getRootVehicle and collidingObject:getRootVehicle() == self.vehicle then
-        -- just bumped into myself
-        return
-    end
-    self.collidingShapes = self.collidingShapes + 1
 end
 
 --- calculate the bounding box of all objects in the implement list. This is not a very good way to figure out how
@@ -151,10 +133,33 @@ end
 --- Pathfinder context
 ---@class PathfinderUtil.Context
 PathfinderUtil.Context = CpObject()
-function PathfinderUtil.Context:init(vehicleData, fieldData, parameters)
+function PathfinderUtil.Context:init(vehicleData, fieldData, parameters, vehiclesToIgnore)
     self.vehicleData = vehicleData
     self.fieldData = fieldData
     self.parameters = parameters
+    self.vehiclesToIgnore = vehiclesToIgnore
+    self:resetCollidingShapes()
+end
+
+
+function PathfinderUtil.Context:resetCollidingShapes()
+    self.collidingShapes = 0
+end
+
+function PathfinderUtil.Context:getCollidingShapes()
+    return self.collidingShapes
+end
+
+function PathfinderUtil.Context:overlapBoxCallback(transformId)
+    local collidingObject = g_currentMission.nodeToObject[transformId]
+    if collidingObject and collidingObject.getRootVehicle then
+        local rootVehicle = collidingObject:getRootVehicle()
+        if rootVehicle == self.vehicleData.vehicle or PathfinderUtil.elementOf(self.vehiclesToIgnore, rootVehicle) then
+            -- just bumped into myself or a vehicle we want to ignore
+            return
+        end
+        self.collidingShapes = self.collidingShapes + 1
+    end
 end
 
 --- Calculate the four corners of a rectangle around a node (for example the area covered by a vehicle)
@@ -175,13 +180,20 @@ function PathfinderUtil.getCollisionData(node, vehicleData)
     return {name = vehicleData.name, center = center, corners = corners}
 end
 
+function PathfinderUtil.elementOf(list, key)
+    for _, element in ipairs(list or {}) do
+        if element == key then return true end
+    end
+    return false
+end
+
 --- Find all other vehicles and add them to our list of vehicles to avoid. Must be called before each pathfinding to
 --- have the current position of the vehicles.
-function PathfinderUtil.setUpVehicleCollisionData(myVehicle)
+function PathfinderUtil.setUpVehicleCollisionData(myVehicle, vehiclesToIgnore)
     PathfinderUtil.vehicleCollisionData = {}
     local myRootVehicle = myVehicle and myVehicle:getRootVehicle() or nil
     for _, vehicle in pairs(g_currentMission.vehicles) do
-        if vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
+        if not PathfinderUtil.elementOf(vehiclesToIgnore, vehicle) and vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
             courseplay.debugVehicle(14, myVehicle, 'othervehicle %s, otherroot %s, myroot %s', vehicle:getName(), vehicle:getRootVehicle():getName(), myRootVehicle:getName())
             table.insert(PathfinderUtil.vehicleCollisionData, PathfinderUtil.getCollisionData(vehicle.rootNode, PathfinderUtil.VehicleData(vehicle)))
         end
@@ -206,21 +218,21 @@ function PathfinderUtil.findCollidingVehicles(myCollisionData, node, myVehicleDa
     return false
 end
 
-function PathfinderUtil.findCollidingShapes(myCollisionData, yRot, vehicleData)
+function PathfinderUtil.findCollidingShapes(myCollisionData, yRot, context)
     local center = myCollisionData.center
-    local width = math.abs(vehicleData.dRight) + math.abs(vehicleData.dLeft)
-    local length = math.abs(vehicleData.dFront) + math.abs(vehicleData.dRear)
-    vehicleData:resetCollidingShapes()
-    local collidingShapes = overlapBox(
+    local width = math.abs(context.vehicleData.dRight) + math.abs(context.vehicleData.dLeft)
+    local length = math.abs(context.vehicleData.dFront) + math.abs(context.vehicleData.dRear)
+    context:resetCollidingShapes()
+    overlapBox(
             center.x, center.y + 1, center.z,
             0, yRot, 0,
             width, 1, length,
-            'overlapBoxCallback', vehicleData, AIVehicleUtil.COLLISION_MASK, true, true, true)
+            'overlapBoxCallback', context, AIVehicleUtil.COLLISION_MASK, true, true, true)
     --[[if vehicleData:getCollidingShapes() > 0 then
         courseplay.debugFormat(7, 'colliding shapes (%s) at x = %.1f, z = %.1f, (%dx%d)',
                 vehicleData.name, center.x, center.z, width, length)
     end]]--
-    return vehicleData:getCollidingShapes()
+    return context:getCollidingShapes()
 end
 
 
@@ -375,32 +387,36 @@ function PathfinderUtil.isValidAnalyticSolutionNode(node, context)
     return PathfinderUtil.isValidNode(node, context)
 end
 
---- Check if node is valid: would we collide with another vehicle here?
+--- Check if node is valid: would we collide with another vehicle or shape here?
 ---@param node State3D
 ---@param userData PathfinderUtil.Context
 function PathfinderUtil.isValidNode(node, context)
+
+    -- If the pathfinding is constrained to a field, fieldData contains the limits
     if node.x < context.fieldData.minX or node.x > context.fieldData.maxX or node.y < context.fieldData.minY or node.y > context.fieldData.maxY then
+        -- not on field
         return false
     end
 
+    -- TODO: is this still needed?
     if context.parameters.preferHeadland then
         local isField, area, totalArea = courseplay:isField(node.x, -node.y,
                 context.parameters.headlandWidth, context.parameters.headlandWidth)
         if not isField or (area / totalArea) > 0.999 then return false end
     end
 
+    -- A helper node to calculate world coordinates
     if not PathfinderUtil.helperNode then
         PathfinderUtil.helperNode = courseplay.createNode('pathfinderHelper', node.x, -node.y, 0)
     end
     local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, node.x, 0, -node.y);
     setTranslation(PathfinderUtil.helperNode, node.x, y + 0.5, -node.y)
-    --local heading = context and context.reverseHeading and courseGenerator.toCpAngle(node:getReverseHeading()) or courseGenerator.toCpAngle(node.t)
-    local heading = courseGenerator.toCpAngle(node.t)
     setRotation(PathfinderUtil.helperNode, 0, courseGenerator.toCpAngle(node.t), 0)
+
     local myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, context.vehicleData, 'me')
     local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(PathfinderUtil.helperNode)
     -- for debug purposes only, store validity info on node
-    node.collidingShapes = PathfinderUtil.findCollidingShapes(myCollisionData, yRot, context.vehicleData)
+    node.collidingShapes = PathfinderUtil.findCollidingShapes(myCollisionData, yRot, context)
     node.isColliding, node.vehicle = PathfinderUtil.findCollidingVehicles(myCollisionData, PathfinderUtil.helperNode, context.vehicleData)
     return (not node.isColliding and node.collidingShapes == 0)
 end
@@ -546,12 +562,13 @@ end
 ---@param zOffset number length offset of the goal from the goal node
 ---@param allowReverse boolean allow reverse driving
 ---@param fieldNum number if other than 0 or nil the pathfinding is restricted to the given field and its vicinity
-function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode, xOffset, zOffset, allowReverse, fieldNum)
+---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection
+function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode, xOffset, zOffset, allowReverse, fieldNum, vehiclesToIgnore)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    PathfinderUtil.setUpVehicleCollisionData(vehicle)
+    PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), PathfinderUtil.Parameters())
     return PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
 end
