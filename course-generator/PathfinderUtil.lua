@@ -247,9 +247,10 @@ function PathfinderUtil.hasFruit(x, z, length, width)
             end
         end
         if not ignoreThis then
-            local fruitValue, a, b, c = FSDensityMapUtil.getFruitArea(fruitType.index, x - width / 2, z - length / 2, x + width / 2, z, x, z + length / 2, true, false)
+            -- if the last boolean parameter is true then it returns fruitValue > 0 for fruits/states ready for forage also
+            local fruitValue, a, b, c = FSDensityMapUtil.getFruitArea(fruitType.index, x - width / 2, z - length / 2, x + width / 2, z, x, z + length / 2, true, true)
             if g_updateLoopIndex % 200 == 0 then
-            --    courseplay.debugFormat(7, '%.1f, %s, %s, %s %s', fruitValue, tostring(a), tostring(b), tostring(c), g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name)
+                --courseplay.debugFormat(7, '%.1f, %s, %s, %s %s', fruitValue, tostring(a), tostring(b), tostring(c), g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name)
             end
             if fruitValue > 0 then
                 return true, fruitValue, g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name
@@ -363,10 +364,11 @@ function PathfinderUtil.getNodePenalty(node, context)
     if area / totalArea < minRequiredAreaRatio then
         penalty = penalty + context.parameters.offFieldPenalty
     end
+    local fieldId = PathfinderUtil.getFieldIdAtWorldPosition(node.x, -node.y)
     if isField then
         local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, areaSize, areaSize)
         if hasFruit and fruitValue > context.parameters.maxFruitPercent then
-            penalty = penalty + fruitValue / 20
+            penalty = penalty + fruitValue / 10
         end
     end
     return penalty
@@ -470,7 +472,7 @@ end
 ---@param context PathfinderUtil.Context
 ---@param allowReverse boolean allow reverse driving
 function PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
-    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 200, 50000)
+    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 200, 20000)
     local done, path = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse,
             PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
     return pathfinder, done, path
@@ -643,6 +645,16 @@ function PathfinderUtil.showNodes(pathfinder)
                 local pp = collisionData.corners[i > 1 and i - 1 or 4]
                 cpDebug:drawLine(cp.x, cp.y + 0.4, cp.z, 1, 1, 0, pp.x, pp.y + 0.4, pp.z)
             end
+        end
+    end
+end
+
+function PathfinderUtil.getFieldIdAtWorldPosition(posX, posZ)
+    local farmland = g_farmlandManager:getFarmlandAtWorldPosition(posX, posZ)
+    if farmland ~= nil then
+        local fieldMapping = g_fieldManager.farmlandIdFieldMapping[farmland.id]
+        if fieldMapping ~= nil and fieldMapping[1] ~= nil then
+            return fieldMapping[1].fieldId
         end
     end
 end

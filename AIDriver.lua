@@ -180,8 +180,7 @@ end
 --- Aggregation of states from this and all descendant classes
 function AIDriver:initStates(states)
 	for key, state in pairs(states) do
-		state[1] = key
-		self.states[key] = state
+		self.states[key] = {name = tostring(key)}
 	end
 end
 
@@ -317,7 +316,6 @@ function AIDriver:drive(dt)
 		self:hold()
 		self:continueIfWaitTimeIsOver()
 	end
-	self:debugSparse(tostring(self.allowedToDrive))
 
 	self:driveCourse(dt)
 	self:drawTemporaryCourse()

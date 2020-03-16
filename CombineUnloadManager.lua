@@ -200,7 +200,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 		for name,value in pairs (attributes) do
 			--print(string.format("%s: %s",tostring(name),tostring(value)))
 		end
-		renderText(0.2,0.175+(0.03*number) ,0.02,string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d timeTill80: %d",nameNum(combine),tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders,attributes.secondsTill80Percent))
+		renderText(0.1,0.175+(0.02*number) ,0.015, string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d timeTill80: %d",nameNum(combine),tostring(attributes.leftOkToDrive),tostring(attributes.rightOKToDrive),#attributes.unloaders,attributes.secondsTill80Percent))
 		number = number +1
 	end
 end

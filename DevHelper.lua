@@ -71,6 +71,8 @@ function DevHelper:update()
 
     self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 2, 2)
     self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 10, 10)
+    self.data.fieldId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
+
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
 
     self.data.collidingShapes = ''
@@ -168,7 +170,7 @@ function DevHelper:draw()
     for key, value in pairs(self.data) do
         table.insert(data, {name = key, value = value})
     end
-    DebugUtil.renderTable(0.3, 0.3, 0.02, data, 0.05)
+    DebugUtil.renderTable(0.75, 0.2, 0.018, data, 0.05)
     self:drawCourse()
     self:showVehicleSize()
     self:showFillNodes()
