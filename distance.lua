@@ -27,6 +27,7 @@ end;
 
 
 function courseplay:distanceToObject(vehicle, object)
+	-- TODO: use localToLocal()
 	local x, y, z = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode);
 	local ox, oy, oz = worldToLocal(object.rootNode, x, y, z);
 

@@ -6,10 +6,16 @@ function CombineUnloadManager:init()
 	print("CombineUnloadManager:init()")
 	self.combines = {}
 	self.unloadersOnFields ={}
-
+	if g_currentMission then
+		-- this isn't needed as combines will be added when they are registered
+		-- but we want to be able to reload this file on the fly when developing/troubleshooting
+		for _, vehicle in pairs(g_currentMission.vehicles) do
+			if courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) then
+				self:addCombineToList(vehicle)
+			end
+		end
+	end
 end
-
-g_combineUnloadManager = CombineUnloadManager()
 
 function CombineUnloadManager:addCombineToList(combine)
 	if combine:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
@@ -28,7 +34,7 @@ function CombineUnloadManager:addCombineToList(combine)
 		rightOKToDrive = false;
 		pipeOffset = 0;
 		fillLitersPerSecond = 0;
-		lastCeckedfillLevel = 0;
+		lastCheckedFillLevel = 0;
 		lastCheckedTime = 0;
 		unloaders = {};
 		secondsTill80Percent = 999
@@ -67,15 +73,18 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 		if unloaderNumber == 0 then
 			self:addUnloaderToCombine(unloader,chopper)
 			return chopper
-		elseif unloaderNumber <2 then
+		elseif unloaderNumber < 2 then
 			local prevTractor = self:getUnloaderByNumber(unloaderNumber, chopper)
+			if prevTractor == unloader then
+				-- awesome, we are no the list already.
+				return chopper
+			end
 			if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
 				self:addUnloaderToCombine(unloader,chopper)
 				return chopper
 			end
 		end
 	end
-
 	--then try to find a combine
 	local combine = self:getCombineWithMostFillLevel(unloader)
 	local unloaderToAssign
@@ -110,14 +119,12 @@ end
 
 function CombineUnloadManager:getChopperWithLeastUnloaders(unloader)
 	--print("FieldManager:getChopperWithLeastUnloaders")
-	--firat try to Find a chopper
+	--first try to Find a chopper
 	local chopperToReturn
 	local amountUnloaders = math.huge
 	for chopper,_ in pairs(unloader.cp.assignedCombines) do
-		--print("data.isChopper: "..tostring(data.isChopper))
 		local data = self.combines[chopper]
 		if data.isChopper then
-			--print(string.format("check %s, unloders:%s",tostring(chopper.name),tostring(#data.unloaders)))
 			if amountUnloaders > #data.unloaders or #data.unloaders == 0 then
 				chopperToReturn = chopper
 				amountUnloaders = #data.unloaders
@@ -125,8 +132,6 @@ function CombineUnloadManager:getChopperWithLeastUnloaders(unloader)
 		end
 	end
 	return chopperToReturn
-
-
 end
 
 function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
@@ -210,8 +215,8 @@ function CombineUnloadManager:updateFillSpeed(combine,data)
 		if g_updateLoopIndex % 500 == 0 then
 			local timeDiff = combine.timer - data.lastCheckedTime
 			data.lastCheckedTime = combine.timer
-			local fillDiff = data.fillLevel - data.lastCeckedfillLevel
-			data.lastCeckedfillLevel = data.fillLevel
+			local fillDiff = data.fillLevel - data.lastCheckedFillLevel
+			data.lastCheckedFillLevel = data.fillLevel
 			data.fillLitersPerSecond =  fillDiff/timeDiff*1000 or 0
 		end
 	else
@@ -253,7 +258,7 @@ function CombineUnloadManager:getFieldNumberByCurrentPosition(vehicle)
 end
 
 function CombineUnloadManager:getNumUnloaders(combine)
-	--print(string.format("#self.combines(%s)[combine(%s)](%s)",tostring(self.combines),tostring(combine),tostring(self.combines[combine])))
+	print(string.format("#self.combines(%s)[combine(%s)](%s)",tostring(self.combines),tostring(combine),tostring(self.combines[combine])))
 	return self.combines[combine] and #self.combines[combine].unloaders
 end
 
@@ -444,6 +449,8 @@ function CombineUnloadManager:raycastBack(chopper)
 	raycastAll(x, y, z, nx, ny, nz, 'raycastBackCallback', 10, self)
 end
 
+-- I believe this tries to figure out how far the back of a combine is from its direction node.
+-- TODO: just use vehicle.sizeLength instead?
 function CombineUnloadManager:raycastBackCallback(hitObjectId, x, y, z, distance, nx, ny, nz, subShapeIndex)
 	if hitObjectId ~= 0 then
 		--print("hitObject: "..tostring(hitObjectId).."; distance: "..tostring(distance))
@@ -457,6 +464,8 @@ function CombineUnloadManager:raycastBackCallback(hitObjectId, x, y, z, distance
 		end
 	end
 end
+
+g_combineUnloadManager = CombineUnloadManager()
 
 
 

@@ -1600,6 +1600,10 @@ end
 AIDriverUtil = {}
 
 function AIDriverUtil.isReverseDriving(vehicle)
+	if not vehicle then
+		printCallstack()
+		return false
+	end
 	return vehicle.spec_reverseDriving and vehicle.spec_reverseDriving.isReverseDriving
 end
 
@@ -1737,7 +1741,7 @@ function AIDriverUtil.getTurningRadius(vehicle)
 	end
 	local maxToolRadius = 0
 
-	local attachedAIImplements = vehicle:getAttachedAIImplements()
+	local attachedAIImplements = vehicle:getAttachedImplements()
 
 	for _,implement in pairs(attachedAIImplements) do
 		maxToolRadius = math.max(maxToolRadius, AIVehicleUtil.getMaxToolRadius(implement))
