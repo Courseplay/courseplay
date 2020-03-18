@@ -534,7 +534,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		local cx,cy,cz = getWorldTranslation(self.combineToUnload.cp.directionNode)
 		local _, _, dz = localToLocal(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
 		--print(string.format("z(%s)> self.vehicle.cp.turnDiameter * 2(%s)",tostring(z),tostring(self.vehicle.cp.turnDiameter * 2)))
-		if dz < - self.vehicle.cp.turnDiameter * 3 then
+		if dz < - self.vehicle.cp.turnDiameter * 1.5 then
 			self:releaseUnloader()
 			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
 			self:recoverOriginalWaypoints()
@@ -925,16 +925,21 @@ end
 
 function CombineUnloadAIDriver:getDrivingCoordsBeside()
 	-- TODO: use localToLocal
-	local tx, ty, tz = localToWorld(self:getDirectionNode(), 0, 0, 5)
+	-- target position 5 m in front of the tractor
+	local tx, ty, tz = localToWorld(AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 5)
+	-- tractor's local position in the combine's coordinate system
 	local sideShift, _, backShift = worldToLocal(self.combineToUnload.cp.directionNode, tx, ty, tz)
 	local backDistance = self:getCombinesMeasuredBackDistance() + 3
+	-- unit vector from the combine to the target
 	local origLx, origLz = AIVehicleUtil.getDriveDirection(self.combineToUnload.cp.directionNode, tx, ty, tz)
 	local lx, lz = origLx, origLz
 	local isBeside = false
 	if self.combineOffset > 0 then
+		-- pipe on the right
 		lx = math.max(0.25, lx)
 		--if I'm on the wrong side, drive to combines back first
 		if backShift > 0 and sideShift < 0 then
+			-- front of the combine or on the left
 			lx = 0
 			lz= -1
 		end
@@ -942,18 +947,21 @@ function CombineUnloadAIDriver:getDrivingCoordsBeside()
 		lx = math.min(-0.25, lx)
 		--if I'm on the wrong side, drive to combines back first
 		if backShift > 0 and sideShift > 0 then
+			-- front of the combine or on the right
 			lx = 0
 			lz= -1
 		end
 	end
-
+	-- no idea how are we calculating this, especially the backDistance part does not seem to make sense with lx
 	local rayLength = (math.abs(self.combineOffset)*math.abs(lx)) + (backDistance - (backDistance * math.abs(lx)))
+	-- this is waaay too complicated, why not just use
 	local nx, _, nz = localDirectionToWorld(self.combineToUnload.cp.directionNode, lx, 0, lz)
 	local cx, cy, cz = getWorldTranslation(self.combineToUnload.cp.directionNode)
 	local x, y, z = cx + (nx * rayLength), cy, cz + (nz * rayLength)
 	local offsetDifference = self.combineOffset - sideShift
+	--self:debug('lz %.1f, lx %.1f, raylength %.1f, backdistance %.1f, sideshift %.1f, backsift %.1f', lz, lx, rayLength, backDistance, sideShift , backShift)
 	local distanceToTarget = courseplay:distance(tx, tz, x, z)
-	--we are on the correct side but not close to the target point, so got dirctely to the offsetTarget
+	--we are on the correct side but not close to the target point, so got directly to the offsetTarget
 	if self.combineOffset > 0 then
 		if origLx > 0 then
 			--print("distanceToTarget: "..tostring(distanceToTarget))
@@ -968,9 +976,11 @@ function CombineUnloadAIDriver:getDrivingCoordsBeside()
 
 	isBeside = isBeside or math.abs(offsetDifference) < 0.5
 	if lz > 0 or isBeside then
-		x, y, z = localToWorld(self.combineToUnload.cp.directionNode,self.combineOffset,0,backShift)
+		x, y, z = localToWorld(self.combineToUnload.cp.directionNode, self.combineOffset, 0, backShift)
+		cpDebug:drawLine(cx, cy + 1, cz, 1, 0, 0, x, y + 1, z)
+	else
+		cpDebug:drawLine(cx, cy + 1, cz, 0, 1, 0, x, y + 1, z)
 	end
-	cpDebug:drawLine(cx, cy + 1, cz, 100, 100, 100, x, y + 1, z)
 	return x, y, z, isBeside
 end
 
@@ -1050,12 +1060,14 @@ function CombineUnloadAIDriver:getSpeedBesideChopper(targetNode)
 	--Discharge Node to AutoAimNode
 	local wx,wy,wz = getWorldTranslation(targetNode)
 	--cpDebug:drawLine(dnX,dnY,dnZ, 100, 100, 100, wx,wy,wz)
+	-- pipe's local position in the trailer's coordinate system
 	local dx,_,dz = worldToLocal(targetNode, bnX, bnY, bnZ)
 	--am I too far in front but beside the chopper ?
 	if dz < -3 and math.abs(dx)< math.abs(self:getSavedCombineOffset())+1 then
 		allowedToDrive = false
 	end
-	return (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(dz, -10, 15)), allowedToDrive
+	-- negative speeds are invalid
+	return math.max(0, (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(dz, -10, 15))), allowedToDrive
 end
 
 function CombineUnloadAIDriver:getSpeedBesideCombine(targetNode)
@@ -1189,6 +1201,9 @@ function CombineUnloadAIDriver:raycastFrontCallback(hitObjectId, x, y, z, distan
 	end
 end
 
+-- This all seems to be here to figure out how far we are from the combine
+-- looks too complicated and fragile as it is using the collisionDetector internals and who knows where that
+-- is in any moment.
 function CombineUnloadAIDriver:raycastDistance(maxDistance)
 	self.distanceToCombine = math.huge
 	local colliNode = self.vehicle.cp.driver.collisionDetector.trafficCollisionTriggers[1]

@@ -470,7 +470,7 @@ end
 
 -- node pointing in the direction the driver is facing, even in case of reverse driving tractors
 function AIDriver:getDirectionNode()
-	return self.ppc:getControlledNode()
+	return AIDriverUtil.getDirectionNode(self.vehicle)
 end
 
 --- Start a course and continue with nextCourse at ix when done
