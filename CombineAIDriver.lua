@@ -44,6 +44,13 @@ CombineAIDriver.myStates = {
 	RETURNING_FROM_SELF_UNLOAD = {}
 }
 
+CombineAIDriver.turnTypes = {
+	HEADLAND_NORMAL = {},
+	HEADLAND_EASY = {},
+	HEADLAND_POCKET = {},
+	UP_DOWN_NORMAL = {}
+}
+
 function CombineAIDriver:init(vehicle)
 	courseplay.debugVehicle(11, vehicle, 'CombineAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
@@ -630,6 +637,7 @@ function CombineAIDriver:startTurn(ix)
 	if self.turnContext:isHeadlandCorner() then
 		if self:isPotatoOrSugarBeetHarvester() then
 			self:debug('Headland turn but this harvester uses normal turn maneuvers.')
+			self.turnType = self.turnTypes.HEADLAND_NORMAL
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.turnOnField then
 			self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
@@ -638,22 +646,42 @@ function CombineAIDriver:startTurn(ix)
 				self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
 						cornerCourse:getNumberOfWaypoints(), nextIx)
 				self.fieldworkState = self.states.TURNING
+				self.turnType = self.turnTypes.HEADLAND_POCKET
 				self:startCourse(cornerCourse, 1, self.course, nextIx)
 				-- tighter turns
 				self.ppc:setShortLookaheadDistance()
 			else
 				self:debug('Could not create a corner course, falling back to default headland turn')
+				self.turnType = self.turnTypes.HEADLAND_NORMAL
 				UnloadableFieldworkAIDriver.startTurn(self, ix)
 			end
 		else
 			self:debug('Use combine headland turn.')
 			self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
+			self.turnType = self.turnTypes.HEADLAND_EASY
 			self.fieldworkState = self.states.TURNING
 		end
 	else
 		self:debug('Non headland turn.')
+		self.turnType = self.turnTypes.UP_DOWN_NORMAL
 		UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
+end
+
+function CombineAIDriver:isTurning()
+	return self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.TURNING
+end
+
+function CombineAIDriver:isEasyTurn()
+	return self.fieldworkState == self.states.TURNING and self.turnType == self.turnTypes.HEADLAND_EASY
+end
+
+function CombineAIDriver:isLeftTurn()
+	return self.fieldworkState == self.states.TURNING and self.turnContext and self.turnContext:isLeftTurn()
+end
+
+function CombineAIDriver:getFieldworkCourse()
+	return self.fieldworkCourse
 end
 
 --- Create a pocket in the next row at the corner to stay on the field during the turn maneuver.
@@ -979,7 +1007,7 @@ function CombineAIDriver:returnToFieldworkAfterSelfUnloading()
 		self.waypointIxAfterPathfinding = self.aiDriverData.continueFieldworkAtWaypoint
 		local done, path
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), 0,true, nil)
+				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), 0,0,true, nil)
 		if done then
 			return self:onPathfindingDone(path)
 		else

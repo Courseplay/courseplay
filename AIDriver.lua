@@ -179,7 +179,7 @@ end
 
 --- Aggregation of states from this and all descendant classes
 function AIDriver:initStates(states)
-	for key, state in pairs(states) do
+	for key, _ in pairs(states) do
 		self.states[key] = {name = tostring(key)}
 	end
 end
@@ -1276,8 +1276,9 @@ end
 ---@param ix number
 ---@param zOffset number or nil length offset of the goal from the goalWaypoint
 ---@param fieldNum number or nil if > 0, the pathfinding is restricted to the given field and its vicinity. Otherwise the
+---@param alwaysUsePathfinding boolean use pathfinding even when close to target
 ---@return boolean true when a pathfinding successfully started or an alignment course was added
-function AIDriver:startCourseWithPathfinding(course, ix, zOffset, fieldNum)
+function AIDriver:startCourseWithPathfinding(course, ix, zOffset, fieldNum, alwaysUsePathfinding)
 	-- make sure we have at least a direct course until we figure out a better path. This can happen
 	-- when we don't have a course set yet when starting the pathfinding, for example when starting the course.`
 	self.course = course
@@ -1285,7 +1286,7 @@ function AIDriver:startCourseWithPathfinding(course, ix, zOffset, fieldNum)
 	self.ppc:initialize(ix)
 	-- no pathfinding when target too close
 	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
-	if d < 3 * self.vehicle.cp.turnDiameter then
+	if not alwaysUsePathfinding and d < 3 * self.vehicle.cp.turnDiameter then
 		self:debug('Too close to target (%.1fm), will not perform pathfinding', d)
 		return self:startCourseWithAlignment(course, ix)
 	end
@@ -1321,7 +1322,7 @@ function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fie
 			local done, path
 			self.pathfindingStartedAt = self.vehicle.timer
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-					self.vehicle, waypoint, zOffset or 0, self.allowReversePathfinding, fieldNum)
+					self.vehicle, waypoint, 0,zOffset or 0, self.allowReversePathfinding, fieldNum)
 			if done then
 				return self:onPathfindingDone(path)
 			else

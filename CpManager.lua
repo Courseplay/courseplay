@@ -105,6 +105,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'printVehicleVariable', 'Print g_currentMission.controlledVehicle.variable', 'printVehicleVariable', self )
+	addConsoleCommand( 'printDriverVariable', 'Print g_currentMission.controlledVehicle.cp.driver.variable', 'printDriverVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
@@ -537,13 +538,21 @@ end
 --- Print the variable in the selected vehicle's namespace
 -- You can omit the dot for data members but if you want to call a function, you must start the variable name with a colon
 function CpManager:printVehicleVariable(variableName, maxDepth)
-	local vehiclePrefix = 'g_currentMission.controlledVehicle'
+	self:printVariableInternal( 'g_currentMission.controlledVehicle', prefix .. variableName, maxDepth)
+end
+
+function CpManager:printDriverVariable(variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', prefix .. variableName, maxDepth)
+end
+
+function CpManager:printVariableInternal(prefix, variableName, maxDepth)
 	if not StringUtil.startsWith(variableName, ':') and not StringUtil.startsWith(variableName, '.') then
 		-- allow to omit the . at the beginning of the variable name.
-		vehiclePrefix = vehiclePrefix .. '.'
+		prefix = prefix .. '.'
 	end
-	self:printVariable(vehiclePrefix .. variableName, maxDepth)
+	self:printVariable(prefix .. variableName, maxDepth)
 end
+
 
 --- Install a wrapper around a function. The wrapper will print the function name
 -- and the arguments every time the function is called and then call the function

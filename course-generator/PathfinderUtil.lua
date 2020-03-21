@@ -193,7 +193,10 @@ function PathfinderUtil.setUpVehicleCollisionData(myVehicle, vehiclesToIgnore)
     PathfinderUtil.vehicleCollisionData = {}
     local myRootVehicle = myVehicle and myVehicle:getRootVehicle() or nil
     for _, vehicle in pairs(g_currentMission.vehicles) do
-        if not PathfinderUtil.elementOf(vehiclesToIgnore, vehicle) and vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
+        local ignore = PathfinderUtil.elementOf(vehiclesToIgnore, vehicle)
+        if ignore then
+            courseplay.debugVehicle(14, myVehicle, 'ignoring %s for collisions during pathfinding', vehicle:getName())
+        elseif vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
             courseplay.debugVehicle(14, myVehicle, 'othervehicle %s, otherroot %s, myroot %s', vehicle:getName(), vehicle:getRootVehicle():getName(), myRootVehicle:getName())
             table.insert(PathfinderUtil.vehicleCollisionData, PathfinderUtil.getCollisionData(vehicle.rootNode, PathfinderUtil.VehicleData(vehicle)))
         end
@@ -539,17 +542,21 @@ end
 --- Interface function to start the pathfinder in the game
 ---@param vehicle table, will be used as the start location/heading, turn radius and size
 ---@param goalWaypoint Waypoint The destination waypoint (x, z, angle)
+---@param xOffset number side offset of the goal from the goalWaypoint
 ---@param zOffset number length offset of the goal from the goalWaypoint
 ---@param allowReverse boolean allow reverse driving
 ---@param fieldNum number if > 0, the pathfinding is restricted to the given field and its vicinity. Otherwise the
 --- pathfinding considers any collision-free path valid, also outside of the field.
-function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypoint, zOffset, allowReverse, fieldNum)
+---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection
+function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypoint, xOffset, zOffset, allowReverse, fieldNum, vehiclesToIgnore)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     local goal = State3D(goalWaypoint.x, -goalWaypoint.z, courseGenerator.fromCpAngleDeg(goalWaypoint.angle))
-    local offset = Vector(zOffset, 0)
+    local offset = Vector(zOffset, -xOffset)
+    print(tostring(goal))
     goal:add(offset:rotate(goal.t))
-    PathfinderUtil.setUpVehicleCollisionData(vehicle)
+    print(tostring(goal))
+    PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     -- ignore fruit when realistic driving (pathfinding) is off on HUD
     local parameters = PathfinderUtil.Parameters(vehicle.cp.realisticDriving and 50 or math.huge)
     local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters)

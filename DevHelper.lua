@@ -76,7 +76,7 @@ function DevHelper:update()
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
 
     self.data.collidingShapes = ''
-    overlapBox(self.data.x, self.data.y + 1, self.data.z, 0, self.yRot, 0, 3, 3, 3, "overlapBoxCallback", self, AIVehicleUtil.COLLISION_MASK, false, true, true)
+    overlapBox(self.data.x, self.data.y + 1, self.data.z, 0, self.yRot, 0, 3, 3, 3, "overlapBoxCallback", self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
 
     if self.pathfinder and self.pathfinder:isActive() then
         local done, path = self.pathfinder:resume()
@@ -170,7 +170,7 @@ function DevHelper:draw()
     for key, value in pairs(self.data) do
         table.insert(data, {name = key, value = value})
     end
-    DebugUtil.renderTable(0.75, 0.2, 0.018, data, 0.05)
+    DebugUtil.renderTable(0.75, 0.3, 0.018, data, 0.05)
     self:drawCourse()
     self:showVehicleSize()
     self:showFillNodes()

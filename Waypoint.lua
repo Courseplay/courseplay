@@ -544,7 +544,7 @@ function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].angle
 end
 
--- This is the radius from the course generator. For now only island bypass waypoints nodes have a
+-- This is the radius from the course generator. For now ony island bypass waypoints nodes have a
 -- radius.
 function Course:getRadiusAtIx(ix)
 	local r = self.waypoints[ix].radius
@@ -876,6 +876,12 @@ end
 function Course:append(other)
 	self:appendWaypoints(other.waypoints)
 end
+
+--- Return a copy of the course
+function Course:copy(vehicle)
+	return Course(vehicle, self.waypoints)
+end
+
 
 --- Append a single waypoint to the course
 ---@param waypoint Waypoint
