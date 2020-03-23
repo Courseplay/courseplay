@@ -95,7 +95,7 @@ function CombineUnloadAIDriver:start(startingPoint)
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if dCombine < dClosest or courseplay:isField(x, z) then
 		self:debug('on the field or closer to a combine than to the unload course, go to field mode')
-		-- start looking for combines
+		if self.combineToUnload then self:setMyCombine(self.combineToUnload) end
 		self:setNewCombineUnloadState(self.states.ONFIELD)
 		self:setNewOnFieldState(self.states.FIND_COMBINE)
 		self:disableCollisionDetection()
@@ -1370,7 +1370,9 @@ function CombineUnloadAIDriver:setMyCombine(combine)
 end
 
 function CombineUnloadAIDriver:findCollidingShapes()
-	local x, y, z = localToWorld(self:getFrontMarkerNode(self.vehicle), 0, 0, 0)
+	local frontMarkerNode = self:getFrontMarkerNode(self.vehicle)
+	if not frontMarkerNode then return 0 end
+	local x, y, z = localToWorld(frontMarkerNode, 0, 0, 0)
 	local lx, _, lz = localDirectionToWorld(self.vehicle.rootNode, 0, 0, 1)
 	local yRot = math.atan2(lx, lz)
 	-- not so sure about this box size calculation, it seems that width/length is the half size of the box
