@@ -68,7 +68,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	--print("CombineUnloadManager:giveMeACombineToUnload")
 	--first try to find a chopper
 	local chopper = self:getChopperWithLeastUnloaders(unloader)
-	if chopper ~= nil then
+	if chopper ~= nil and chopper.cp.driver:getFieldworkCourse() then
 		local unloaderNumber = self:getNumUnloaders(chopper)
 		if unloaderNumber == 0 then
 			self:addUnloaderToCombine(unloader,chopper)
@@ -88,7 +88,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	--then try to find a combine
 	local combine = self:getCombineWithMostFillLevel(unloader)
 	local unloaderToAssign
-	if combine ~= nil then
+	if combine ~= nil and combine.cp.driver:getFieldworkCourse() then
 		if combine.cp.wantsCourseplayer then
 			self:addUnloaderToCombine(unloader,combine)
 			combine.cp.wantsCourseplayer = false

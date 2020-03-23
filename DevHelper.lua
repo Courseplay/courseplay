@@ -107,7 +107,7 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
         -- Left Alt + < mark start
-        self.context = PathfinderUtil.Context(self.vehicleData, PathfinderUtil.FieldData(self.data.fieldNum))
+        self.context = PathfinderUtil.Context(self.vehicleData, PathfinderUtil.FieldData(self.data.fieldNum), PathfinderUtil.Parameters())
         self.start = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
         self:debug('Start %s', tostring(self.start))
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_period then
@@ -140,11 +140,11 @@ function DevHelper:startPathfinding()
     if self.vehicle and self.vehicle.cp.driver and self.vehicle.cp.driver.fieldworkCourse then
         self:debug('Starting pathfinding for turn between %s and %s', tostring(self.start), tostring(self.goal))
         self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
-                1.05 * self.vehicle.cp.turnDiameter / 2, true, self.vehicle.cp.driver.fieldworkCourse)
+                1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
     else
-        self:debug('Starting pathfinding (allow reverse) between %s and %s', tostring(self.start), tostring(self.goal))
+        self:debug('Starting pathfinding (no reverse) between %s and %s', tostring(self.start), tostring(self.goal))
         local start = State3D:copy(self.start)
-        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, true)
+        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, false)
     end
 
     if done then

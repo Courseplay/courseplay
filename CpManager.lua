@@ -538,11 +538,11 @@ end
 --- Print the variable in the selected vehicle's namespace
 -- You can omit the dot for data members but if you want to call a function, you must start the variable name with a colon
 function CpManager:printVehicleVariable(variableName, maxDepth)
-	self:printVariableInternal( 'g_currentMission.controlledVehicle', prefix .. variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle', variableName, maxDepth)
 end
 
 function CpManager:printDriverVariable(variableName, maxDepth)
-	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', prefix .. variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', variableName, maxDepth)
 end
 
 function CpManager:printVariableInternal(prefix, variableName, maxDepth)

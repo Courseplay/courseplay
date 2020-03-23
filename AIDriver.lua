@@ -191,6 +191,7 @@ end
 --- If you have your own start() implementation and you do not call AIDriver.start() then
 -- make sure this is called from the derived start() to initialize all common stuff
 function AIDriver:beforeStart()
+	self.active = true
 	self.nextCourse = nil
 	if self.collisionDetector == nil then
 		self.collisionDetector = CollisionDetector(self.vehicle)
@@ -225,6 +226,12 @@ function AIDriver:dismiss()
 	self.vehicle:setBeaconLightsVisibility(false)
 	self:clearAllInfoTexts()
 	self:stop()
+	self.active = false
+end
+
+--- Is the driver started?
+function AIDriver:isActive()
+	return self.active
 end
 
 --- Stop the driver
@@ -1558,4 +1565,13 @@ end
 
 function AIDriver:getAllowReversePathfinding()
 	return self.allowReversePathfinding and self.vehicle.cp.settings.allowReverseForPathfindingInTurns:is(true)
+end
+
+-- Note that this may temporarily return false even if it is reversing
+function AIDriver:isReversing()
+	if self.vehicle.getMotor and self.vehicle:getMotor():getGearRatio() < 0 and math.abs(self.vehicle.lastSpeedReal) > 0.00001 then
+		return true
+	else
+		return false
+	end
 end
