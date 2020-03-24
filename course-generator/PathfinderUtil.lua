@@ -212,7 +212,10 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             return
         end
     end
-    self.collidingShapes = self.collidingShapes + 1
+    if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
+        -- ignore collision with terrain (may happen on slopes)
+        self.collidingShapes = self.collidingShapes + 1
+    end
 end
 
 function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore)
