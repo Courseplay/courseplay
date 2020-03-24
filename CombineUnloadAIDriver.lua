@@ -153,7 +153,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 	-- safety check #1: collision
 	if self:findCollidingShapes() > 0 then
-		self:debug('PUFF')
 		self:renderText(0, 0.5, "Collision detected!")
 		-- collision detected in the front, don't stop if we are already trying to back up
 		if not self:isInReverseGear() then
@@ -447,7 +446,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		local minD = math.min(d, dz)
 		local speed = (self.combineToUnload.lastSpeedReal * 3600) +
 				(MathUtil.clamp(minD - self.targetDistanceBehindChopper, -self.vehicle.cp.speeds.turn, self.vehicle.cp.speeds.turn))
-		self:renderText(0, 0.7, 'd = %1.f, dz = %.1f, minD = %.1f, speed = %.1f', d, dz, minD, speed)
+		self:renderText(0, 0.7, 'd = %.1f, dz = %.1f, minD = %.1f, speed = %.1f', d, dz, minD, speed)
 		self:setSpeed(speed)
 		--if the chopper is reversing, drive backwards
 		if self:isMyCombineReversing() then

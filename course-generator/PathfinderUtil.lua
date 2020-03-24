@@ -211,8 +211,8 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
-        self.collidingShapes = self.collidingShapes + 1
     end
+    self.collidingShapes = self.collidingShapes + 1
 end
 
 function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore)
@@ -231,7 +231,7 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
 
     self.collidingShapes = 0
 
-    overlapBox(x, y, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
+    overlapBox(x, y + 1, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
     --[[if context:getCollidingShapes() > 0 then
         courseplay.debugFormat(7, 'colliding shapes (%s) at x = %.1f, z = %.1f, (%dx%d)',
                 context.vehicleData.name, center.x, center.z, width, length)

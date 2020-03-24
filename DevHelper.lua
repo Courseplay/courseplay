@@ -76,7 +76,7 @@ function DevHelper:update()
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
 
     self.data.collidingShapes = ''
-    overlapBox(self.data.x, self.data.y + 1, self.data.z, 0, self.yRot, 0, 3, 3, 3, "overlapBoxCallback", self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
+    overlapBox(self.data.x, self.data.y + 1, self.data.z, 0, self.yRot, 0, 3, 1, 3, "overlapBoxCallback", self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
 
     if self.pathfinder and self.pathfinder:isActive() then
         local done, path = self.pathfinder:resume()
@@ -99,7 +99,17 @@ end
 
 function DevHelper:overlapBoxCallback(transformId)
     local collidingObject = g_currentMission.nodeToObject[transformId]
-    self.data.collidingShapes = self.data.collidingShapes .. '|' .. (collidingObject and collidingObject:getName() or tostring(collidingObject))
+    local text
+    if collidingObject then
+        if collidingObject.getRootVehicle then
+            text = 'vehicle' .. collidingObject:getName()
+        else
+            text = collidingObject:getName()
+        end
+    else
+        text = 'not found' .. tostring(collidingObject)
+    end
+    self.data.collidingShapes = self.data.collidingShapes .. '|' .. text
 end
 
 

@@ -1293,7 +1293,10 @@ function AIDriver:startCourseWithPathfinding(course, ix, zOffset, fieldNum, alwa
 	self.ppc:initialize(ix)
 	-- no pathfinding when target too close
 	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
-	if not alwaysUsePathfinding and d < 3 * self.vehicle.cp.turnDiameter then
+	-- always enforce a minimum distance needed for pathfinding, otherwise we'll end up with vehicles making
+	-- a circle just to end up 50 cm to the left or right...
+	local pathfindingRange = alwaysUsePathfinding and self.vehicle.cp.turnDiameter or (3 * self.vehicle.cp.turnDiameter)
+	if not alwaysUsePathfinding and d < pathfindingRange then
 		self:debug('Too close to target (%.1fm), will not perform pathfinding', d)
 		return self:startCourseWithAlignment(course, ix)
 	end
@@ -1569,7 +1572,8 @@ end
 
 -- Note that this may temporarily return false even if it is reversing
 function AIDriver:isReversing()
-	if self.vehicle.getMotor and self.vehicle:getMotor():getGearRatio() < 0 and math.abs(self.vehicle.lastSpeedReal) > 0.00001 then
+	if (self.vehicle.getMotor and self.vehicle:getMotor():getGearRatio() < 0 and math.abs(self.vehicle.lastSpeedReal) > 0.00001) or
+			self.ppc:isReversing() then
 		return true
 	else
 		return false
