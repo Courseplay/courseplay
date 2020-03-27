@@ -395,7 +395,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 		-- whichever is sooner, either my combine gets to the turn WP first or me, in any case, there's a turn coming up
-		if self:getCombineIsTurning() then
+		if  self.combineToUnload.cp.driver:isTurningButNotEndingTurn()  then
 			local combineTurnStartWpIx = self.combineToUnload.cp.driver:getTurnStartWpIx()
 			if combineTurnStartWpIx then
 				self:debug('chopper reached a turn waypoint, start chopper turn')
@@ -984,13 +984,13 @@ function CombineUnloadAIDriver:getSpeedBehindCombine()
 end
 
 function CombineUnloadAIDriver:getSpeedBehindChopper()
-	if self.distanceToFront == 0 then
-		self:raycastFront()
-		return 0
-	else
-		self:raycastDistance(10)
+	local distanceToChoppersBack = self:getDistanceFromCombine()
+	if distanceToChoppersBack < -5 then
+		-- I'm way too forward, stop here as I'm most likely beside the chopper, let it pass before
+		-- moving to the middle
+		self:setSpeed(0)
 	end
-	local targetDistance = self.distanceToCombine - self.targetDistanceBehindChopper
+	local targetDistance = distanceToChoppersBack - self.targetDistanceBehindChopper
 	return (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(targetDistance, -10, 15))
 end
 
@@ -1282,7 +1282,7 @@ function CombineUnloadAIDriver:startFollowingCombine()
 	self:setNewOnFieldState(self.states.FOLLOW_COMBINE)
 end
 
-function CombineUnloadAIDriver:startPathfindingToCombine()
+function CombineUnloadAIDriver:startPathfindingToCombine(xOffset, zOffset)
 	self:debug('Finding path to %s', self.combineToUnload:getName())
 	self:setNewOnFieldState(self.states.FINDPATH_TO_COMBINE)
 
@@ -1297,7 +1297,7 @@ function CombineUnloadAIDriver:startPathfindingToCombine()
 		g_trafficController:cancel(self.vehicle.rootNode)
 		self:startFollowingCombine()
 	else
-		self:startPathfinding(self.combineToUnload.rootNode, 0, -15, 0,
+		self:startPathfinding(self.combineToUnload.rootNode, xOffset or 0, zOffset or -15, 0,
 				self.combineToUnload, self.onPathfindingDoneToCombine)
 	end
 end
@@ -1444,9 +1444,7 @@ end
 
 function CombineUnloadAIDriver:calculateRelativeSpeedToCombine(dt)
 	if not self.combineToUnload then return end
-	local d = self:getDistanceFromCombine()
-	if not self.previousD then self.previousD = d end
-	self.relativeSpeedToCombine = 3600 * (d - self.previousD) / dt
+	self.relativeSpeedToCombine = 3600 * (self.vehicle.lastSpeedReal - self.combineToUnload.lastSpeedReal)
 	self:renderText(0, 0.73, 'relative speed = %.1f', self.relativeSpeedToCombine)
 end
 
@@ -1505,17 +1503,26 @@ end
 -- Chopper turn 180
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:handleChopper180Turn()
-	if self:getCombineIsTurning() then
+	if self.combineToUnload.cp.driver:isTurningButNotEndingTurn() then
 		-- move forward until we reach the turn start waypoint
-		local d = self.turnContext:getLocalPositionFromTurnStart(self:getFrontMarkerNode(self.vehicle))
-		if d > 0 then
+		local _, _, d = self.turnContext:getLocalPositionFromWorkEnd(self:getFrontMarkerNode(self.vehicle))
+		self:debugSparse('Waiting for the chopper to turn, distance from row end %.1f', d)
+		-- stop a bit before the end of the row to let the tractor slow down.
+		if d > -2 then
 			self:setSpeed(0)
 		else
 			self:setSpeed(self.vehicle.cp.speeds.turn)
 		end
 	else
 		-- combine stopped turning, set up a path to follow again
-		self:startPathfindingToCombine()
+		self.combineOffset = self:getChopperOffset(self.combineToUnload)
+		self:debug('Ending 180 chopper turn, offset is %.1f', self.combineOffset)
+		if self.combineOffset ~= 0 then
+			-- will follow chopper on the side, find path to that side
+			self:startPathfindingToCombine(-self.combineOffset, 0)
+		else
+			self:startPathfindingToCombine(0, 10)
+		end
 	end
 end
 

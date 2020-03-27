@@ -2461,7 +2461,7 @@ function TurnContext:setupTurnStart(course, aiDriverData)
 	if not aiDriverData.turnStartWpNode then
 		aiDriverData.turnStartWpNode = WaypointNode('turnStart')
 	end
-	-- Turn start waypoint node, pointing to the direction or the turn end node
+	-- Turn start waypoint node, pointing to the direction of the turn end node
 	aiDriverData.turnStartWpNode:setToWaypoint(course, self.turnStartWpIx)
 	self.turnStartWpNode = aiDriverData.turnStartWpNode
 
@@ -2511,6 +2511,11 @@ end
 -- node's position in the turn start wp node's coordinate system
 function TurnContext:getLocalPositionFromTurnStart(node)
 	return localToLocal(node, self.turnStartWpNode.node, 0, 0, 0)
+end
+
+-- node's position in the work end node's coordinate system
+function TurnContext:getLocalPositionFromWorkEnd(node)
+	return localToLocal(node, self.workEndNode, 0, 0, 0)
 end
 
 -- turn end wp node's position in node's coordinate system

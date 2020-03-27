@@ -150,6 +150,10 @@ function AITurn:setReverseSpeed()
 	self.driver:setSpeed(self.vehicle.cp.speeds.reverse)
 end
 
+function AITurn:isEndingTurn()
+	return self.state == self.states.ENDING_TURN
+end
+
 function AITurn:drive(dt)
 	local iAmDriving = true
 	self:setForwardSpeed()

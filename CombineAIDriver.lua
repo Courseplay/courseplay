@@ -671,6 +671,11 @@ function CombineAIDriver:isTurning()
 	return self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.TURNING
 end
 
+-- Turning except in the ending turn phase which isn't really a turn, it is rather 'starting row'
+function CombineAIDriver:isTurningButNotEndingTurn()
+	return self:isTurning() and self.aiTurn and not self.aiTurn:isEndingTurn()
+end
+
 function CombineAIDriver:getTurnStartWpIx()
 	return self.turnContext and self.turnContext.turnStartWpIx or nil
 end
