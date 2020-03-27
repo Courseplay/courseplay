@@ -1572,10 +1572,14 @@ end
 
 -- Note that this may temporarily return false even if it is reversing
 function AIDriver:isReversing()
-	if (self.vehicle.getMotor and self.vehicle:getMotor():getGearRatio() < 0 and math.abs(self.vehicle.lastSpeedReal) > 0.00001) or
+	if (self:isInReverseGear() and math.abs(self.vehicle.lastSpeedReal) > 0.00001) or
 			self.ppc:isReversing() then
 		return true
 	else
 		return false
 	end
+end
+
+function AIDriver:isInReverseGear()
+	return self.vehicle.getMotor and self.vehicle:getMotor():getGearRatio() < 0
 end

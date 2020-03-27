@@ -2657,7 +2657,7 @@ end
 ---@param vehicle table
 ---@param corner Corner if caller already has a corner to use, can pass in here. If nil, we will create our own
 ---@return Course
-function TurnContext:createEndingTurnCourse2(vehicle, corner)
+function TurnContext:createEndingTurnCourse(vehicle, corner)
 	local startAngle = math.deg(self:getNodeDirection(AIDriverUtil.getDirectionNode(vehicle)))
 	local r = vehicle.cp.turnDiameter / 2
 	local startPos, endPos = {}, {}
@@ -2679,19 +2679,6 @@ function TurnContext:createEndingTurnCourse2(vehicle, corner)
 	if not corner then myCorner:delete() end
 	courseplay:clearTurnTargets(vehicle)
 	return course
-end
-
-
---- Course to end a turn, just a few meters straight leading into the next row
----@return Course
-function TurnContext:createEndingTurnCourse(vehicle)
-	local waypoints = {}
-	-- make sure course reaches the front marker node so end it well behind that node
-	for d = -10, 3, 1 do
-		local x, _, z = localToWorld(self.vehicleAtTurnEndNode, 0, 0, d)
-		table.insert(waypoints, {x = x, z = z})
-	end
-	return Course(vehicle, waypoints, true)
 end
 
 --- Course to reverse before starting a turn to make sure the turn is completely on the field

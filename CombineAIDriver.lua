@@ -621,7 +621,6 @@ function CombineAIDriver:isWaitingForUnloadAfterCourseEnded()
 		self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED
 end
 
-
 function CombineAIDriver:createTurnCourse()
 	return CombineCourseTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
 end
@@ -672,11 +671,19 @@ function CombineAIDriver:isTurning()
 	return self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.TURNING
 end
 
+function CombineAIDriver:getTurnStartWpIx()
+	return self.turnContext and self.turnContext.turnStartWpIx or nil
+end
+
 function CombineAIDriver:isEasyTurn()
 	return self.fieldworkState == self.states.TURNING and self.turnType == self.turnTypes.HEADLAND_EASY
 end
 
-function CombineAIDriver:isLeftTurn()
+function CombineAIDriver:isTurningOnHeadland()
+	return self.fieldworkState == self.states.TURNING and self.turnContext and self.turnContext:isHeadlandCorner()
+end
+
+function CombineAIDriver:isTurningLeft()
 	return self.fieldworkState == self.states.TURNING and self.turnContext and self.turnContext:isLeftTurn()
 end
 

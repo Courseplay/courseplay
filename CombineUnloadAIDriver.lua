@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 CombineUnloadAIDriver = CpObject(AIDriver)
 
 CombineUnloadAIDriver.targetDistanceBehindChopper = 1.5
+CombineUnloadAIDriver.minDistanceFromReversingChopper = 15
 
 CombineUnloadAIDriver.myStates = {
 	ONFIELD = {},
@@ -48,7 +49,8 @@ CombineUnloadAIDriver.myStates = {
 	DRIVE_STRAIGHTBACK_FROM_TURNINGCHOPPER = {},
 	DRIVE_STRAIGHTBACK_FULL ={},
 	HANDLE_COMBINE_TURN ={},
-	HANDLE_CHOPPER_TURN = {},
+	HANDLE_CHOPPER_HEADLAND_TURN = {},
+	HANDLE_CHOPPER_180_TURN = {},
 	WAIT_FOR_COMBINES_FILLLEVEL = {},
 	WAIT_FOR_CHOPPER_TURNED = {}
 }
@@ -151,11 +153,13 @@ end
 
 function CombineUnloadAIDriver:driveOnField(dt)
 
+	self:calculateRelativeSpeedToCombine(dt)
+
 	-- safety check #1: collision
 	if self:findCollidingShapes() > 0 then
 		self:renderText(0, 0.5, "Collision detected!")
 		-- collision detected in the front, don't stop if we are already trying to back up
-		if not self:isInReverseGear() then
+		if not self:isInReverseGear() and not self.ppc:isReversing() then
 			self:setSpeed(0)
 		end
 	end
@@ -391,8 +395,17 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 		-- whichever is sooner, either my combine gets to the turn WP first or me, in any case, there's a turn coming up
-		if self:getCombineIsTurning() or self.followCourse:isTurnStartAtIx(self.followCourse:getCurrentWaypointIx()) then
-			self:setNewOnFieldState(self.states.HANDLE_CHOPPER_TURN)
+		if self:getCombineIsTurning() then
+			local combineTurnStartWpIx = self.combineToUnload.cp.driver:getTurnStartWpIx()
+			if combineTurnStartWpIx then
+				self:debug('chopper reached a turn waypoint, start chopper turn')
+				self:startChopperTurn(combineTurnStartWpIx)
+			else
+				self:error('Combine is turning but does not have a turn start waypoint index.')
+			end
+		elseif false and self.followCourse:isTurnStartAtIx(self.followCourse:getCurrentWaypointIx()) then
+			self:debug('I reached a turn waypoint, start chopper turn')
+			self:startChopperTurn(self.followCourse:getCurrentWaypointIx())
 		end
 
 	elseif self.onFieldState == self.states.FOLLOW_TRACTOR then
@@ -441,36 +454,13 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:driveBesideTractor(dt)
 		return
 
-	elseif self.onFieldState == self.states.HANDLE_CHOPPER_TURN then
-		local d, _, dz = self:getDistanceFromCombine()
-		local minD = math.min(d, dz)
-		local speed = (self.combineToUnload.lastSpeedReal * 3600) +
-				(MathUtil.clamp(minD - self.targetDistanceBehindChopper, -self.vehicle.cp.speeds.turn, self.vehicle.cp.speeds.turn))
-		self:renderText(0, 0.7, 'd = %.1f, dz = %.1f, minD = %.1f, speed = %.1f', d, dz, minD, speed)
-		self:setSpeed(speed)
-		--if the chopper is reversing, drive backwards
-		if self:isMyCombineReversing() then
-			self:debug('Detected reversing chopper.')
-			local reverseCourse = self:getStraightReverseCourse()
-			self:startCourse(reverseCourse,1)
-			self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_REVERSING_CHOPPER )
-		end
+	elseif self.onFieldState == self.states.HANDLE_CHOPPER_HEADLAND_TURN then
 
-		--if the fillLevel is reached while turning go to Unload course
-		if self:shouldDriveOn() then
-			local reverseCourse = self:getStraightReverseCourse()
-			self:startCourse(reverseCourse, 1)
-			self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FULL)
-			return
-		end
+		self:handleChopperHeadlandTurn()
 
-		--when the turn is finished, return to follow chopper
-		if not self:getCombineIsTurning() then
-			self:debug('Combine stopped turning, resuming follow course')
-			-- resume course beside combine
-			self:startCourse(self.followCourse, self.combineCourse:getCurrentWaypointIx())
-			self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
-		end
+	elseif self.onFieldState == self.states.HANDLE_CHOPPER_180_TURN then
+
+		self:handleChopper180Turn()
 
 	elseif self.onFieldState == self.states.FINDPATH_TO_COURSE then
 		if self:startCourseWithPathfinding(self.unloadCourse, 1) then
@@ -498,10 +488,9 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHTBACK_FULL then
-		local cx,cy,cz = getWorldTranslation(self.combineToUnload.cp.directionNode)
 		local _, _, dz = localToLocal(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
 		--print(string.format("z(%s)> self.vehicle.cp.turnDiameter * 2(%s)",tostring(z),tostring(self.vehicle.cp.turnDiameter * 2)))
-		if dz < - self.vehicle.cp.turnDiameter * 1.5 then
+		if dz < - self.vehicle.cp.turnDiameter then
 			self:releaseUnloader()
 			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
 		else
@@ -535,7 +524,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHTBACK_FROM_TURNINGCHOPPER then
 		local z = self:getZOffsetToCoordsBehind()
 		if z > 5 then
-			self:setNewOnFieldState(self.states.HANDLE_CHOPPER_TURN)
+			self:setNewOnFieldState(self.states.HANDLE_CHOPPER_HEADLAND_TURN)
 		else
 			self:holdCombine()
 		end
@@ -543,7 +532,8 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:renderText(0, 0, "drive straight reverse :offset local :%s saved:%s", tostring(self.combineOffset), tostring(self.vehicle.cp.combineOffset))
 
 		local d = self:getDistanceFromCombine()
-		local speed = (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(15 - d, -self.vehicle.cp.speeds.reverse, self.vehicle.cp.speeds.reverse))
+
+		local speed = MathUtil.clamp(self.minDistanceFromReversingChopper - d, 0, self.vehicle.cp.speeds.reverse)
 
 		self:renderText(0, 0.7, 'd = %.1f speed = %.1f', d, speed)
 		-- keep 15 m distance from chopper
@@ -551,8 +541,9 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if not self:isMyCombineReversing() then
 			-- resume forward course
 			self:startCourse(self.followCourse, self.followCourse:getCurrentWaypointIx())
-			self:setNewOnFieldState(self.states.HANDLE_CHOPPER_TURN)
+			self:setNewOnFieldState(self.states.HANDLE_CHOPPER_HEADLAND_TURN)
 		end
+
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHTBACK_FROM_REVERSING_COMBINE_NOTURN then
 		self:renderText(0, 0, "drive straight reverse :offset local :%s saved:%s", tostring(self.combineOffset), tostring(self.vehicle.cp.combineOffset))
 		--local dx,dy,dz = self.course:getWaypointLocalPosition(self:getDirectionNode(), 1)
@@ -1024,16 +1015,18 @@ end
 
 function CombineUnloadAIDriver:getChopperOffset(combine)
 	local offset = g_combineUnloadManager:getCombinesPipeOffset(combine)
-	local leftOk, rightOK = g_combineUnloadManager:getPossibleSidesToDrive(combine)
-	local currentOffset = self.vehicle.cp.combineOffset
+	local leftOk, rightOk = g_combineUnloadManager:getPossibleSidesToDrive(combine)
+	local currentOffset = self.combineOffset
 
+	--self:debug('%.1f %.1f %s %s', offset, currentOffset, tostring(leftOk), tostring(rightOk))
+	
 	-- fruit on both sides, stay behind the chopper
-	if not leftOk and not rightOK then
+	if not leftOk and not rightOk then
 		return 0
 	end
 
 	-- no fruit to the left
-	if leftOk and not rightOK then
+	if leftOk and not rightOk then
 		if currentOffset >= 0 then
 			-- we are already on the left or middle, go to left
 			return offset
@@ -1044,7 +1037,7 @@ function CombineUnloadAIDriver:getChopperOffset(combine)
 	end
 
 	-- no fruit to the right
-	if not leftOk and rightOK then
+	if not leftOk and rightOk then
 		if currentOffset <= 0 then
 			-- we are already on the right or in the middle, move to the right
 			return -offset
@@ -1253,12 +1246,12 @@ function CombineUnloadAIDriver:renderText(x, y, ...)
 	renderText(0.6 + x, 0.2 + y, 0.018, string.format(...))
 end
 
-function CombineUnloadAIDriver:isInGoodPositionToStartFollowing()
-	local cx, cy, cz = getWorldTranslation(self.combineToUnload.rootNode)
-	local _, _, dz = localToLocal(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
+function CombineUnloadAIDriver:isInGoodPositionToStartFollowing(maxDirectionDifferenceDeg)
+	local dx, _, dz = localToLocal(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
 	-- close enough and approximately same direction and behind
-	return dz < 0 and courseplay:distanceToPoint(self.vehicle,cx,cy,cz) < 50 and
-			TurnContext.isSameDirection(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload), 30)
+	return dz < 0 and MathUtil.vector2Length(dx, dz) < 50 and
+			TurnContext.isSameDirection(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload),
+					maxDirectionDifferenceDeg or 30)
 end
 
 function CombineUnloadAIDriver:startFollowingCombine()
@@ -1299,7 +1292,7 @@ function CombineUnloadAIDriver:startPathfindingToCombine()
 		self:setNewOnFieldState(self.states.FINDPATH_TO_TRACTOR)
 	end
 
-	if self:isInGoodPositionToStartFollowing() then
+	if self:isInGoodPositionToStartFollowing(120) then
 		self:debug('Close enough to combine, copy combine course and follow')
 		g_trafficController:cancel(self.vehicle.rootNode)
 		self:startFollowingCombine()
@@ -1414,6 +1407,9 @@ function CombineUnloadAIDriver:setFrontMarkerNode(vehicle)
 	if not vehicle.cp.driver.aiDriverData.frontMarkerNode then
 		vehicle.cp.driver.aiDriverData.frontMarkerNode = courseplay.createNode('frontMarkerNode', 0, 0, 0, vehicle.rootNode)
 	end
+	-- set this up for the turns
+	local _, _, dz = localToLocal(vehicle.cp.driver.aiDriverData.frontMarkerNode, vehicle.rootNode, 0, 0, 0)
+	self.frontMarkerDistance = dz
 	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, vehicle.sizeLength / 2 + vehicle.lengthOffset)
 end
 
@@ -1446,8 +1442,81 @@ function CombineUnloadAIDriver:isMyCombineReversing()
 	return self.combineToUnloadReversing > 0
 end
 
-function CombineUnloadAIDriver:isInReverseGear()
-	return self.vehicle.getMotor and self.vehicle:getMotor():getGearRatio() < 0
+function CombineUnloadAIDriver:calculateRelativeSpeedToCombine(dt)
+	if not self.combineToUnload then return end
+	local d = self:getDistanceFromCombine()
+	if not self.previousD then self.previousD = d end
+	self.relativeSpeedToCombine = 3600 * (d - self.previousD) / dt
+	self:renderText(0, 0.73, 'relative speed = %.1f', self.relativeSpeedToCombine)
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Chopper turns
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:startChopperTurn(ix)
+	if self.combineToUnload.cp.driver:isTurningOnHeadland() then
+		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_HEADLAND_TURN)
+	else
+		self.turnContext = TurnContext(self.followCourse, ix, self.aiDriverData,
+				self.combineToUnload.cp.workWidth, self.frontMarkerDistance, 0)
+		local finishingRowCourse = self.turnContext:createFinishingRowCourse(self.vehicle)
+		self:startCourse(finishingRowCourse, 1)
+		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_180_TURN)
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Chopper turn on headland
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:handleChopperHeadlandTurn()
+	local d, _, dz = self:getDistanceFromCombine()
+	local minD = math.min(d, dz)
+	local speed = (self.combineToUnload.lastSpeedReal * 3600) +
+			(MathUtil.clamp(minD - self.targetDistanceBehindChopper, -self.vehicle.cp.speeds.turn, self.vehicle.cp.speeds.turn))
+	self:renderText(0, 0.7, 'd = %.1f, dz = %.1f, minD = %.1f, speed = %.1f', d, dz, minD, speed)
+	self:setSpeed(speed)
+
+	--if the chopper is reversing, drive backwards
+	if self:isMyCombineReversing() then
+		self:debug('Detected reversing chopper.')
+		local reverseCourse = self:getStraightReverseCourse()
+		self:startCourse(reverseCourse,1)
+		self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_REVERSING_CHOPPER )
+	end
+
+	--if the fillLevel is reached while turning go to Unload course
+	if self:shouldDriveOn() then
+		local reverseCourse = self:getStraightReverseCourse()
+		self:startCourse(reverseCourse, 1)
+		self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FULL)
+		return
+	end
+
+	--when the turn is finished, return to follow chopper
+	if not self:getCombineIsTurning() then
+		self:debug('Combine stopped turning, resuming follow course')
+		-- resume course beside combine
+		self:startCourse(self.followCourse, self.combineCourse:getCurrentWaypointIx())
+		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Chopper turn 180
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:handleChopper180Turn()
+	if self:getCombineIsTurning() then
+		-- move forward until we reach the turn start waypoint
+		local d = self.turnContext:getLocalPositionFromTurnStart(self:getFrontMarkerNode(self.vehicle))
+		if d > 0 then
+			self:setSpeed(0)
+		else
+			self:setSpeed(self.vehicle.cp.speeds.turn)
+		end
+	else
+		-- combine stopped turning, set up a path to follow again
+		self:startPathfindingToCombine()
+	end
 end
 
 FillUnit.updateFillUnitAutoAimTarget =  Utils.overwrittenFunction(FillUnit.updateFillUnitAutoAimTarget,CombineUnloadAIDriver.updateFillUnitAutoAimTarget)

@@ -250,14 +250,14 @@ function KTurn:turn(dt)
 			self.driver:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 			if self.turnContext:isLateralDistanceGreater(dx, turnRadius * 1.05) then
 				-- no need to reverse from here, we can make the turn
-				self.endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
+				self.endingTurnCourse = self.turnContext:createEndingTurnCourse(self.vehicle)
 				self:debug('K Turn: dx = %.1f, r = %.1f, no need to reverse.', dx, turnRadius)
 				endTurn()
 			else
 				-- reverse until we can make turn to the turn end point
 				self.vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", 50, self.turnContext:isLeftTurn())
 				self.state = self.states.REVERSE
-				self.endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
+				self.endingTurnCourse = self.turnContext:createEndingTurnCourse(self.vehicle)
 				self:debug('K Turn: dx = %.1f, r = %.1f, reversing now.', dx, turnRadius)
 			end
 		end
