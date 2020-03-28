@@ -1018,7 +1018,7 @@ function CombineUnloadAIDriver:getChopperOffset(combine)
 	local leftOk, rightOk = g_combineUnloadManager:getPossibleSidesToDrive(combine)
 	local currentOffset = self.combineOffset
 
-	--self:debug('%.1f %.1f %s %s', offset, currentOffset, tostring(leftOk), tostring(rightOk))
+	--`self:debug('%.1f %.1f %s %s', offset, currentOffset, tostring(leftOk), tostring(rightOk))
 	
 	-- fruit on both sides, stay behind the chopper
 	if not leftOk and not rightOk then
@@ -1309,11 +1309,9 @@ function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
 	else
-		self:debug('No path found to %s in %d ms, no self unloading', self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		self:error('No path found to %s in %d ms', self.combineToUnload:getName(), self.vehicle.timer - (self.pathfindingStartedAt or 0))
 	end
 	self:setNewOnFieldState(self.states.DRIVE_TO_COMBINE)
-	local cx,cy,cz = getWorldTranslation(self.combineToUnload.rootNode)
-	self.lastCombinesCoords = { x=cx; y=cy; z=cz; }
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneBeforeFollowing(path)
@@ -1324,7 +1322,7 @@ function CombineUnloadAIDriver:onPathfindingDoneBeforeFollowing(path)
 		alignCourse:print()
 		self:startCourse(alignCourse, 1, self.followCourse, self.followCourseIx)
 	else
-		self:debug('No path found to %s in %d ms, no self unloading', self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		self:debug('No path found to %s in %d ms, no self unloading', self.combineToUnload:getName(), self.vehicle.timer - (self.pathfindingStartedAt or 0))
 	end
 	self:setNewOnFieldState(self.states.FOLLOW_COMBINE)
 end
@@ -1449,6 +1447,19 @@ function CombineUnloadAIDriver:calculateRelativeSpeedToCombine(dt)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
+-- Check for full trailer
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:changeToUnloadWhenFull()
+	--if the fillLevel is reached while turning go to Unload course
+	if self:shouldDriveOn() then
+		self:debug('Trailer full, changing to unload course')
+		local reverseCourse = self:getStraightReverseCourse()
+		self:startCourse(reverseCourse, 1)
+		self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FULL)
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
 -- Chopper turns
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startChopperTurn(ix)
@@ -1482,13 +1493,7 @@ function CombineUnloadAIDriver:handleChopperHeadlandTurn()
 		self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FROM_REVERSING_CHOPPER )
 	end
 
-	--if the fillLevel is reached while turning go to Unload course
-	if self:shouldDriveOn() then
-		local reverseCourse = self:getStraightReverseCourse()
-		self:startCourse(reverseCourse, 1)
-		self:setNewOnFieldState(self.states.DRIVE_STRAIGHTBACK_FULL)
-		return
-	end
+	self:changeToUnloadWhenFull()
 
 	--when the turn is finished, return to follow chopper
 	if not self:getCombineIsTurning() then
@@ -1503,6 +1508,9 @@ end
 -- Chopper turn 180
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:handleChopper180Turn()
+
+	self:changeToUnloadWhenFull()
+
 	if self.combineToUnload.cp.driver:isTurningButNotEndingTurn() then
 		-- move forward until we reach the turn start waypoint
 		local _, _, d = self.turnContext:getLocalPositionFromWorkEnd(self:getFrontMarkerNode(self.vehicle))
@@ -1521,7 +1529,7 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 			-- will follow chopper on the side, find path to that side
 			self:startPathfindingToCombine(-self.combineOffset, 0)
 		else
-			self:startPathfindingToCombine(0, 10)
+			self:startPathfindingToCombine(0, -10)
 		end
 	end
 end

@@ -211,8 +211,16 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
+        courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
     end
     if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
+        --[[local text = ''
+        for key, classId in pairs(ClassIds) do
+            if getHasClassId(transformId, classId) then
+                text = text .. ' ' .. key
+            end
+        end
+        courseplay.debugFormat(7, 'collision %d, %s', transformId, text)]]--
         -- ignore collision with terrain (may happen on slopes)
         self.collidingShapes = self.collidingShapes + 1
     end
@@ -235,10 +243,10 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
     self.collidingShapes = 0
 
     overlapBox(x, y + 1, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
-    --[[if context:getCollidingShapes() > 0 then
-        courseplay.debugFormat(7, 'colliding shapes (%s) at x = %.1f, z = %.1f, (%dx%d)',
-                context.vehicleData.name, center.x, center.z, width, length)
-    end]]--
+    if self.collidingShapes > 0 then
+        courseplay.debugFormat(7, 'colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f)',
+                vehicleData.name, x, z, width, length)
+    end
     DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
 
     return self.collidingShapes

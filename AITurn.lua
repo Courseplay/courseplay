@@ -151,7 +151,9 @@ function AITurn:setReverseSpeed()
 end
 
 function AITurn:isEndingTurn()
-	return self.state == self.states.ENDING_TURN
+	-- include the direction too because some turns go to the ENDING_TURN state very early, while still driving
+	-- perpendicular to the row. This way this returns true really only when we are about to end the turn
+	return self.state == self.states.ENDING_TURN and self.turnContext:isDirectionCloseToEndDirection(self.driver:getDirectionNode(), 15)
 end
 
 function AITurn:drive(dt)
