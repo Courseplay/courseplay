@@ -591,12 +591,51 @@ CombineCourseTurn = CpObject(CourseTurn)
 
 ---@param driver AIDriver
 ---@param turnContext TurnContext
-function CombineCourseTurn:init(vehicle, driver, turnContext, fieldworkCourse)
-	CourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,'CombineCourseTurn')
+function CombineCourseTurn:init(vehicle, driver, turnContext, fieldworkCourse, name)
+	CourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,name or 'CombineCourseTurn')
 end
 
 -- in a combine headland turn we want to raise the header after it reached the field edge (or headland edge on an inner
 -- headland.
 function CombineCourseTurn:getRaiseImplementNode()
 	return self.turnContext.lateWorkEndNode
+end
+
+--[[
+  Headland turn for combines on the outermost headland:
+  1. drive forward to the field edge or the headland path edge
+  2. start turning forward
+  3. reverse straight and then align with the direction after the
+     corner while reversing
+  4. forward to the turn start to continue on headland
+]]
+---@class CombinePocketHeadlandTurn : CombineCourseTurn
+CombinePocketHeadlandTurn = CpObject(CombineCourseTurn)
+
+---@param driver CombineAIDriver
+---@param turnContext TurnContext
+function CombinePocketHeadlandTurn:init(vehicle, driver, turnContext, fieldworkCourse)
+	CombineCourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,'CombinePocketHeadlandTurn')
+end
+
+function CombinePocketHeadlandTurn:startTurn()
+	self.turnCourse = self.driver:createOuterHeadlandCornerCourse(self.turnContext)
+	if not self.turnCourse then
+		self:debug('Could not create pocket course, falling back to normal headland corner')
+		self:generateCalculatedTurn()
+	end
+	self.driver:startFieldworkCourseWithTemporaryCourse(self.turnCourse, self.turnContext.turnEndWpIx)
+	self.state = self.states.TURNING
+end
+
+--- When making a pocket we need to lower the header whenever driving forward
+function CombinePocketHeadlandTurn:turn(dt)
+	AITurn.turn(self)
+	if self.driver.ppc:isReversing() then
+		self.driver:raiseImplements()
+		self.implementsLowered = nil
+	elseif not self.implementsLowered then
+		self.driver:lowerImplements()
+		self.implementsLowered = true
+	end
 end

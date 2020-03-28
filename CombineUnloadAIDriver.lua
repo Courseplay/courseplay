@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 CombineUnloadAIDriver = CpObject(AIDriver)
 
 CombineUnloadAIDriver.targetDistanceBehindChopper = 1.5
-CombineUnloadAIDriver.minDistanceFromReversingChopper = 15
+CombineUnloadAIDriver.minDistanceFromReversingChopper = 10
 
 CombineUnloadAIDriver.myStates = {
 	ONFIELD = {},
@@ -115,6 +115,7 @@ end
 function CombineUnloadAIDriver:dismiss()
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if self.combineToUnload then
+		self.combineToUnload.cp.driver:deregisterUnloader(self)
 		self:releaseUnloader()
 	end
 	if courseplay:isField(x, z) then
@@ -154,6 +155,11 @@ end
 function CombineUnloadAIDriver:driveOnField(dt)
 
 	self:calculateRelativeSpeedToCombine(dt)
+
+	-- make sure if we have a combine we stay registered
+	if self.combineToUnload then
+		self.combineToUnload.cp.driver:registerUnloader(self)
+	end
 
 	-- safety check #1: collision
 	if self:findCollidingShapes() > 0 then
@@ -394,7 +400,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self:driveBehindChopper(dt)
 		end
 
-		-- whichever is sooner, either my combine gets to the turn WP first or me, in any case, there's a turn coming up
 		if  self.combineToUnload.cp.driver:isTurningButNotEndingTurn()  then
 			local combineTurnStartWpIx = self.combineToUnload.cp.driver:getTurnStartWpIx()
 			if combineTurnStartWpIx then
@@ -403,9 +408,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			else
 				self:error('Combine is turning but does not have a turn start waypoint index.')
 			end
-		elseif false and self.followCourse:isTurnStartAtIx(self.followCourse:getCurrentWaypointIx()) then
-			self:debug('I reached a turn waypoint, start chopper turn')
-			self:startChopperTurn(self.followCourse:getCurrentWaypointIx())
 		end
 
 	elseif self.onFieldState == self.states.FOLLOW_TRACTOR then
@@ -532,10 +534,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:renderText(0, 0, "drive straight reverse :offset local :%s saved:%s", tostring(self.combineOffset), tostring(self.vehicle.cp.combineOffset))
 
 		local d = self:getDistanceFromCombine()
+		local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
+		local speed = combineSpeed + MathUtil.clamp(self.minDistanceFromReversingChopper - d, -combineSpeed, self.vehicle.cp.speeds.reverse * 1.5)
 
-		local speed = MathUtil.clamp(self.minDistanceFromReversingChopper - d, 0, self.vehicle.cp.speeds.reverse)
-
-		self:renderText(0, 0.7, 'd = %.1f speed = %.1f', d, speed)
+		self:renderText(0, 0.7, 'd = %.1f, distance diff = %.1f speed = %.1f', d, self.minDistanceFromReversingChopper - d, speed)
 		-- keep 15 m distance from chopper
 		self:setSpeed(speed)
 		if not self:isMyCombineReversing() then
@@ -1530,6 +1532,19 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 			self:startPathfindingToCombine(-self.combineOffset, 0)
 		else
 			self:startPathfindingToCombine(0, -10)
+		end
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Combine Event Listeners
+------------------------------------------------------------------------------------------------------------------------
+
+function CombineUnloadAIDriver:onCombineTurnStart(ix, turnType)
+	if self.combineUnloadState == self.states.ONFIELD then
+		if self.onFieldState == self.states.FOLLOW_CHOPPER then
+			self:debug('chopper reached turn waypoint %d, start chopper turn', ix)
+			--self:startChopperTurn(ix, turnType)
 		end
 	end
 end

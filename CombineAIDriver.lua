@@ -62,6 +62,7 @@ function CombineAIDriver:init(vehicle)
 	self.beaconLightsActive = false
 	self.lastEmptyTimestamp = 0
 	self.pipeOffsetX = 0
+	self.unloaders = {}
 
 	if self.vehicle.spec_combine then
 		self.combine = self.vehicle.spec_combine
@@ -140,6 +141,12 @@ function CombineAIDriver:init(vehicle)
 	-- when making a pocket, how far to back up before changing to forward
 	self.pocketReverseDistance = 25
 end
+
+function CombineAIDriver:start(startingPoint)
+	self:removeAllUnloaders()
+	UnloadableFieldworkAIDriver.start(self, startingPoint)
+end
+
 
 function CombineAIDriver:setHudContent()
 	UnloadableFieldworkAIDriver.setHudContent(self)
@@ -640,20 +647,10 @@ function CombineAIDriver:startTurn(ix)
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.turnOnField then
 			self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
-			local cornerCourse, nextIx = self:createOuterHeadlandCornerCourse(self.turnContext)
-			if cornerCourse then
-				self:debug('Starting a corner with a course with %d waypoints, will continue fieldwork at waypoint %d',
-						cornerCourse:getNumberOfWaypoints(), nextIx)
-				self.fieldworkState = self.states.TURNING
-				self.turnType = self.turnTypes.HEADLAND_POCKET
-				self:startCourse(cornerCourse, 1, self.course, nextIx)
-				-- tighter turns
-				self.ppc:setShortLookaheadDistance()
-			else
-				self:debug('Could not create a corner course, falling back to default headland turn')
-				self.turnType = self.turnTypes.HEADLAND_NORMAL
-				UnloadableFieldworkAIDriver.startTurn(self, ix)
-			end
+			self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
+			self.turnType = self.turnTypes.HEADLAND_POCKET
+			self.fieldworkState = self.states.TURNING
+			self.ppc:setShortLookaheadDistance()
 		else
 			self:debug('Use combine headland turn.')
 			self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
@@ -665,6 +662,9 @@ function CombineAIDriver:startTurn(ix)
 		self.turnType = self.turnTypes.UP_DOWN_NORMAL
 		UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
+
+	self:sendTurnStartEventToUnloaders(ix, self.turnType)
+
 end
 
 function CombineAIDriver:isTurning()
@@ -680,12 +680,13 @@ function CombineAIDriver:getTurnStartWpIx()
 	return self.turnContext and self.turnContext.turnStartWpIx or nil
 end
 
-function CombineAIDriver:isEasyTurn()
-	return self.fieldworkState == self.states.TURNING and self.turnType == self.turnTypes.HEADLAND_EASY
-end
-
 function CombineAIDriver:isTurningOnHeadland()
 	return self.fieldworkState == self.states.TURNING and self.turnContext and self.turnContext:isHeadlandCorner()
+end
+
+---@param turnType table one of CombineAIDriver.turnTypes
+function CombineAIDriver:isHeadlandTurn(turnType)
+	return turnType ~= CombineAIDriver.turnTypes.UP_DOWN_NORMAL
 end
 
 function CombineAIDriver:isTurningLeft()
@@ -1047,5 +1048,39 @@ function CombineAIDriver:onPathfindingDone(path)
 			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED
 		end
 		return false
+	end
+end
+
+--- Some of our turns need a short look ahead distance, make sure we restore the normal after the turn
+function CombineAIDriver:resumeFieldworkAfterTurn(ix)
+	self.ppc:setNormalLookaheadDistance()
+	UnloadableFieldworkAIDriver.resumeFieldworkAfterTurn(self, ix)
+end
+
+--- Let unloaders register for events. This is different from the CombineUnloadManager registration, these
+--- events are for the low level coordination between the combine and its unloader(s). CombineUnloadManager
+--- takes care about coordinating the work between multiple combines.
+
+function CombineAIDriver:removeAllUnloaders()
+	-- the unloaders table hold all registered unloaders, key and value are both the unloader AIDriver
+	self.unloaders = {}
+end
+
+--- Register a combine unload AI driver for notification about combine events
+--- Unloaders can renew their registration as often as they want to make sure they remain registered.
+---@param driver CombineUnloadAIDriver
+function CombineAIDriver:registerUnloader(driver)
+	self.unloaders[driver] = driver
+end
+
+--- Deregister a combine unload AI driver from notificiations
+---@param driver CombineUnloadAIDriver
+function CombineAIDriver:deregisterUnloader(driver)
+	self.unloaders[driver] = nil
+end
+
+function CombineAIDriver:sendTurnStartEventToUnloaders(ix, turnType)
+	for _, unloader in pairs(self.unloaders) do
+		if unloader then unloader:onCombineTurnStart(ix, turnType) end
 	end
 end
