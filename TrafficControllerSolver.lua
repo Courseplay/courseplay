@@ -74,7 +74,7 @@ function TrafficControllerSolver:modifyCourseArroundObstacle()
 			else
 				newOffset = pointData.dx + self.safetyDistance+(self.otherVehicle.cp.workWidth/2)
 			end
-			local courseOffsetX = course:getOffset()
+			local courseOffsetX, _ = course:getOffset()
 			local newX,newY,newZ = course:waypointLocalToWorld(pointData.ix, newOffset+courseOffsetX, 0, 0)
 			waypoint.x = newX
 			waypoint.z = newZ

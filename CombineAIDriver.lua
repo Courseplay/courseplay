@@ -697,6 +697,10 @@ function CombineAIDriver:getFieldworkCourse()
 	return self.fieldworkCourse
 end
 
+function CombineAIDriver:getWorkWidth()
+	return self.vehicle.cp.workWidth
+end
+
 --- Create a pocket in the next row at the corner to stay on the field during the turn maneuver.
 ---@param turnContext TurnContext
 function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)

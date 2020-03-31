@@ -167,7 +167,10 @@ function PathfinderUtil.setUpVehicleCollisionData(myVehicle, vehiclesToIgnore)
     PathfinderUtil.vehicleCollisionData = {}
     local myRootVehicle = myVehicle and myVehicle:getRootVehicle() or nil
     for _, vehicle in pairs(g_currentMission.vehicles) do
-        local ignore = PathfinderUtil.elementOf(vehiclesToIgnore, vehicle)
+        local otherRootVehicle = vehicle:getRootVehicle()
+        -- ignore also if the root vehicle is ignored
+        local ignore = PathfinderUtil.elementOf(vehiclesToIgnore, vehicle) or
+                (otherRootVehicle and PathfinderUtil.elementOf(vehiclesToIgnore, otherRootVehicle))
         if ignore then
             courseplay.debugVehicle(14, myVehicle, 'ignoring %s for collisions during pathfinding', vehicle:getName())
         elseif vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
@@ -211,7 +214,7 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
-        courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
+        --courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
     end
     if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
         --[[local text = ''
@@ -466,6 +469,7 @@ function PathfinderUtil.findShortestPathOnHeadland(start, goal, course, turnRadi
     headland:calculateData()
     local path = {}
     for _, p in ipairs(headland:getSectionBetweenPoints(start, goal)) do
+        --courseGenerator.debug('%.1f %.1f', p.x, p.y)
         table.insert(path, State3D(p.x, p.y, 0))
     end
     return path
@@ -493,7 +497,8 @@ end
 ---@param turnRadius number vehicle turning radius
 ---@param allowReverse boolean allow reverse driving
 ---@param course Course fieldwork course, needed to find the headland
-function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode, goalOffset, turnRadius, allowReverse, course)
+---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection
+function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode, goalOffset, turnRadius, allowReverse, course, vehiclesToIgnore)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, startOffset or 0)
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, 0, goalOffset or 0)
@@ -503,15 +508,22 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
     if course:getNumberOfHeadlands() > 0 then
         -- if there's a headland, we want to drive on the headland to the next row
         local headlandPath = PathfinderUtil.findShortestPathOnHeadland(start, goal, course, turnRadius)
+        -- is the first wp of the headland in front of us?
+        local _, y, _ = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
+        local dx, _, dz = worldToLocal(AIDriverUtil.getDirectionNode(vehicle), headlandPath[1].x, y, - headlandPath[1].y)
+        local dirDeg = math.deg(math.abs(math.atan2(dx, dz)))
+        if dirDeg > 45 or true then
+            courseGenerator.debug('First headland waypoint isn\'t in front of us (%.1f), remove first few waypoints to avoid making a circle %.1f %.1f', dirDeg, dx, dz)
+        end
         pathfinder = HybridAStarWithPathInTheMiddle(turnRadius * 3, 200, headlandPath)
     else
         pathfinder = HybridAStarWithAStarInTheMiddle(turnRadius * 3, 200, 10000)
     end
 
     local fieldNum = courseplay.fields:onWhichFieldAmI(vehicle)
-    PathfinderUtil.setUpVehicleCollisionData(vehicle)
+    PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local parameters = PathfinderUtil.Parameters(nil, vehicle.cp.turnOnField and 10 or nil, false)
-    local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters, {})
+    local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters, vehiclesToIgnore)
     local done, path = pathfinder:start(start, goal, turnRadius, context, allowReverse, PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
     return pathfinder, done, path
 end

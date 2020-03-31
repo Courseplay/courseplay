@@ -300,6 +300,10 @@ function Course:setOffset(x, z)
 	self.offsetX, self.offsetZ = x, z
 end
 
+function Course:getOffset()
+	return self.offsetX, self.offsetZ
+end
+
 function Course:setWorkWidth(w)
 	self.workWidth = w
 end

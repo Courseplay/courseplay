@@ -498,7 +498,6 @@ function CourseTurn:onWaypointChange(ix)
 	end
 end
 
-
 --- When switching direction during a turn, especially when switching to reverse we want to make sure
 --- that a towed implement is aligned with the reverse direction (already straight behind the tractor when
 --- starting to reverse). Turn courses are generated with a very long alignment section to allow for this with

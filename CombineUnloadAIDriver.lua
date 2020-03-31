@@ -18,21 +18,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class CombineUnloadAIDriver : AIDriver
 CombineUnloadAIDriver = CpObject(AIDriver)
 
-CombineUnloadAIDriver.targetDistanceBehindChopper = 1.5
+CombineUnloadAIDriver.targetDistanceBehindChopper = 0.5
 CombineUnloadAIDriver.minDistanceFromReversingChopper = 10
+CombineUnloadAIDriver.minDistanceFromWideTurnChopper = 5
 
 CombineUnloadAIDriver.myStates = {
 	ONFIELD = {},
 	ONSTREET = {},
 	FIND_COMBINE ={},
-	FINDPATH_TO_COMBINE={},
+	WAITING_FOR_PATHFINDER={},
 	FINDPATH_TO_TRACTOR={},
 	DRIVE_TO_COMBINE = {},
 	DRIVE_TO_TRACTOR={},
 	FINDPATH_TO_COURSE={},
 	DRIVE_TO_UNLOADCOURSE ={},
 	DRIVE_BESIDE_TRACTOR ={},
-	ALIGN_TO_COMBINE = {},
 	ALIGN_TO_TRACTOR = {},
 	GET_ALIGNCOURSE_TO_TRACTOR ={},
 	FOLLOW_COMBINE ={},
@@ -51,6 +51,7 @@ CombineUnloadAIDriver.myStates = {
 	HANDLE_COMBINE_TURN ={},
 	HANDLE_CHOPPER_HEADLAND_TURN = {},
 	HANDLE_CHOPPER_180_TURN = {},
+	HANDLE_CHOPPER_WIDE_TURN = {},
 	WAIT_FOR_COMBINES_FILLLEVEL = {},
 	WAIT_FOR_CHOPPER_TURNED = {}
 }
@@ -78,7 +79,7 @@ end
 function CombineUnloadAIDriver:start(startingPoint)
 
 	self.myVehicleData = PathfinderUtil.VehicleData(self.vehicle)
-
+	self.proximitySensor = nil
 	self:beforeStart()
 	self.state = self.states.RUNNING
 
@@ -128,6 +129,7 @@ end
 function CombineUnloadAIDriver:drive(dt)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	self:updateCombineInfo()
+	self:updateProximitySensors()
 	local renderOffset = self.vehicle.cp.coursePlayerNum * 0.03
 	self:renderText(0, 0.1 + renderOffset, "%s: self.onFieldState :%s", nameNum(self.vehicle), self.onFieldState.name)
 
@@ -210,7 +212,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 		self:hold()
 
-	elseif self.onFieldState == self.states.FINDPATH_TO_COMBINE then
+	elseif self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		-- just wait for the pathfinder to finish
 		self:setSpeed(0)
 
@@ -231,7 +233,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	elseif self.onFieldState == self.states.DRIVE_TO_TRACTOR then
 		--if  I'm the first Unloader switch to follow chopper
 		if g_combineUnloadManager:getUnloadersNumber(self.vehicle, self.combineToUnload) == 1 then
-			self:setNewOnFieldState(self.states.FINDPATH_TO_COMBINE)
+			self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 		end
 
 		--check whether the tractor moved meanwhile
@@ -258,7 +260,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_DRIVE_TO_COMBINE");
 		--check whether the combine moved meanwhile
 		--if courseplay:distanceToPoint(self.combineToUnload,self.lastCombinesCoords.x,self.lastCombinesCoords.y,self.lastCombinesCoords.z) > 50 then
-		--	self:setNewOnFieldState(self.states.FINDPATH_TO_COMBINE)
+		--	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 		--end
 		--if we are in range , change to align mode
 		if self:isInGoodPositionToStartFollowing() then
@@ -284,14 +286,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self:setNewOnFieldState(self.states.ALIGN_TO_TRACTOR)
 		end
 
-	elseif self.onFieldState == self.states.ALIGN_TO_COMBINE then
-		courseplay:setInfoText(self.vehicle, "COURSEPLAY_DRIVE_BEHIND_COMBINE")
-		local dx, dy, dz = localToLocal(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
-		if math.abs(dx) < 5 and dz > -20 and dz < 0 and
-				TurnContext.isSameDirection(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload), 30) then
-			self:debug('Combine in range, start following.')
-			self:setNewOnFieldState(self.states.FOLLOW_COMBINE)
-		end
 	elseif self.onFieldState == self.states.ALIGN_TO_TRACTOR then
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_FOLLOWING_TRACTOR");
 
@@ -400,7 +394,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self:driveBehindChopper(dt)
 		end
 
-		if  self.combineToUnload.cp.driver:isTurningButNotEndingTurn()  then
+		if self.combineToUnload.cp.driver:isTurningButNotEndingTurn()  then
 			local combineTurnStartWpIx = self.combineToUnload.cp.driver:getTurnStartWpIx()
 			if combineTurnStartWpIx then
 				self:debug('chopper reached a turn waypoint, start chopper turn')
@@ -463,6 +457,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	elseif self.onFieldState == self.states.HANDLE_CHOPPER_180_TURN then
 
 		self:handleChopper180Turn()
+
+	elseif self.onFieldState == self.states.HANDLE_CHOPPER_WIDE_TURN then
+
+		self:handleChopperWideTurn()
 
 	elseif self.onFieldState == self.states.FINDPATH_TO_COURSE then
 		if self:startCourseWithPathfinding(self.unloadCourse, 1) then
@@ -631,7 +629,7 @@ end
 
 
 function CombineUnloadAIDriver:driveBehindChopper(dt)
-	self:renderText(0, 0.05, "%s: driveBehindCombine offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset))
+	self:renderText(0, 0.05, "%s: driveBehindChopper offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset))
 	self:fixAutoAimNode()
 	--get required Speed
 	self:setSpeed(self:getSpeedBehindChopper())
@@ -715,9 +713,6 @@ function CombineUnloadAIDriver:onLastWaypoint()
 			AIDriver.onLastWaypoint(self)
 			g_trafficController:cancel(self.vehicle.rootNode)
 			return
-		elseif self.onFieldState == self.states.ALIGN_TO_COMBINE then
-			self:setNewOnFieldState(self.states.FOLLOW_COMBINE)
-			g_trafficController:cancel(self.vehicle.rootNode)
 		elseif self.onFieldState == self.states.ALIGN_TO_TRACTOR then
 			self:setNewOnFieldState(self.states.FOLLOW_TRACTOR)
 			g_trafficController:cancel(self.vehicle.rootNode)
@@ -986,14 +981,16 @@ function CombineUnloadAIDriver:getSpeedBehindCombine()
 end
 
 function CombineUnloadAIDriver:getSpeedBehindChopper()
-	local distanceToChoppersBack = self:getDistanceFromCombine()
-	if distanceToChoppersBack < -5 then
+	local distanceToChoppersBack, _, dz = self:getDistanceFromCombine()
+	if dz < -2 then
 		-- I'm way too forward, stop here as I'm most likely beside the chopper, let it pass before
 		-- moving to the middle
 		self:setSpeed(0)
 	end
 	local targetDistance = distanceToChoppersBack - self.targetDistanceBehindChopper
-	return (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(targetDistance, -10, 15))
+	local speed = (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(targetDistance, -10, 15))
+	self:renderText(0, 0.7, 'd = %.1f, dz = %.1f, speed = %.1f', distanceToChoppersBack, dz, speed)
+	return speed
 end
 
 function CombineUnloadAIDriver:getSpeedBehindTractor(tractorToFollow)
@@ -1016,39 +1013,38 @@ function CombineUnloadAIDriver:getCombineOffset(combine)
 end
 
 function CombineUnloadAIDriver:getChopperOffset(combine)
-	local offset = g_combineUnloadManager:getCombinesPipeOffset(combine)
+	local pipeOffset = g_combineUnloadManager:getCombinesPipeOffset(combine)
 	local leftOk, rightOk = g_combineUnloadManager:getPossibleSidesToDrive(combine)
 	local currentOffset = self.combineOffset
+	local newOffset = currentOffset
 
-	--`self:debug('%.1f %.1f %s %s', offset, currentOffset, tostring(leftOk), tostring(rightOk))
-	
 	-- fruit on both sides, stay behind the chopper
 	if not leftOk and not rightOk then
-		return 0
-	end
-
-	-- no fruit to the left
-	if leftOk and not rightOk then
+		newOffset = 0
+	elseif leftOk and not rightOk then
+		-- no fruit to the left
 		if currentOffset >= 0 then
 			-- we are already on the left or middle, go to left
-			return offset
+			newOffset = pipeOffset
 		else
 			-- we are on the right, move to the middle
-			return 0
+			newOffset = 0
 		end
-	end
-
-	-- no fruit to the right
-	if not leftOk and rightOk then
+	elseif not leftOk and rightOk then
+		-- no fruit to the right
 		if currentOffset <= 0 then
 			-- we are already on the right or in the middle, move to the right
-			return -offset
+			newOffset = -pipeOffset
 		else
 			-- we are on the left, move to the middle
-			return 0
+			newOffset = 0
 		end
 	end
-	return currentOffset
+	if newOffset ~= currentOffset then
+		self:debug('Change combine offset: %.1f -> %.1f (pipe %.1f), leftOk: %s rightOk: %s',
+				currentOffset, newOffset, pipeOffset, tostring(leftOk), tostring(rightOk))
+	end
+	return newOffset
 end
 
 function CombineUnloadAIDriver:setSavedCombineOffset(newOffset)
@@ -1256,7 +1252,11 @@ function CombineUnloadAIDriver:isInGoodPositionToStartFollowing(maxDirectionDiff
 					maxDirectionDifferenceDeg or 30)
 end
 
-function CombineUnloadAIDriver:startFollowingCombine()
+---@param skipTurnStart boolean if the current waypoint index of the combine is on a turn start, skip to the
+--- turn end WP instead. This is to avoid starting following a combine at the turn start WP while the combine is
+--- already finishing the course. The current waypoint remains the turn start waypoint during the turn (TODO: review
+--- this legacy behavior)
+function CombineUnloadAIDriver:startFollowingCombine(skipTurnStart)
 	---@type Course
 	self.combineCourse = self.combineToUnload.cp.driver:getFieldworkCourse()
 	if not self.combineCourse then
@@ -1266,6 +1266,11 @@ function CombineUnloadAIDriver:startFollowingCombine()
 	end
 	self.followCourse = self.combineCourse:copy(self.vehicle)
 	self.followCourseIx = self.combineCourse:getCurrentWaypointIx()
+	-- don't start at a turn start WP, this may throw us back to the previous row as the current WP ix isn't
+	-- changed during the entire turn and keeps pointing to the turn start
+	if skipTurnStart and self.combineCourse:isTurnStartAtIx(self.followCourseIx) then
+		self.followCourseIx = self.followCourseIx + 1
+	end
 
 	if courseplay:isChopper(self.combineToUnload) then
 		self.combineOffset = self:getChopperOffset(self.combineToUnload)
@@ -1286,7 +1291,7 @@ end
 
 function CombineUnloadAIDriver:startPathfindingToCombine(xOffset, zOffset)
 	self:debug('Finding path to %s', self.combineToUnload:getName())
-	self:setNewOnFieldState(self.states.FINDPATH_TO_COMBINE)
+	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 
 	-- TODO: figure out what to do with the tractor
 	if self:getImSecondUnloader() then
@@ -1299,7 +1304,7 @@ function CombineUnloadAIDriver:startPathfindingToCombine(xOffset, zOffset)
 		g_trafficController:cancel(self.vehicle.rootNode)
 		self:startFollowingCombine()
 	else
-		self:startPathfinding(self.combineToUnload.rootNode, xOffset or 0, zOffset or -15, 0,
+		self:startPathfinding(self.combineToUnload.rootNode, xOffset or 0, zOffset or -10, 0,
 				self.combineToUnload, self.onPathfindingDoneToCombine)
 	end
 end
@@ -1314,6 +1319,41 @@ function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
 		self:error('No path found to %s in %d ms', self.combineToUnload:getName(), self.vehicle.timer - (self.pathfindingStartedAt or 0))
 	end
 	self:setNewOnFieldState(self.states.DRIVE_TO_COMBINE)
+end
+
+function CombineUnloadAIDriver:startPathfindingToTurnEnd(xOffset, zOffset)
+	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
+
+	if not self.pathfinder or not self.pathfinder:isActive() then
+		local done, path
+		self.pathfindingStartedAt = self.vehicle.timer
+		local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets()
+		-- ignore combine for pathfinding, it is moving anyway and our turn functions make sure we won't hit it
+		self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, startOffset, turnEndNode, goalOffset,
+				self.vehicle.cp.turnDiameter / 2, self:getAllowReversePathfinding(), self.followCourse, {self.combineToUnload})
+		if done then
+			return self:onPathfindingDoneToTurnEnd(path)
+		else
+			self:setPathfindingDoneCallback(self, self.onPathfindingDoneToTurnEnd)
+			return true
+		end
+	else
+		self:debug('Pathfinder already active')
+	end
+	return false
+end
+
+function CombineUnloadAIDriver:onPathfindingDoneToTurnEnd(path)
+	if path and #path > 2 then
+		self:debug('Found path (%d waypoints, %d ms) to %s, starting wide turn', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0),
+				self.combineToUnload:getName())
+		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
+		self:startCourse(driveToCombineCourse, 1)
+		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_WIDE_TURN)
+	else
+		self:error('No path found to %s in %d ms, handle this as a normal 180 turn', self.combineToUnload:getName(), self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_180_TURN)
+	end
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneBeforeFollowing(path)
@@ -1417,6 +1457,11 @@ function CombineUnloadAIDriver:getFrontMarkerNode(vehicle)
 	return vehicle.cp.driver.aiDriverData.frontMarkerNode
 end
 
+---@return number, number, number distance between the tractor's front and the combine's back (always positive),
+--- side offset (local x) of the combine's back in the tractor's front coordinate system (positive if the tractor is on
+--- the right side of the combine)
+--- back offset (local z) of the combine's back in the tractor's front coordinate system (positive if the tractor is behind
+--- the combine)
 function CombineUnloadAIDriver:getDistanceFromCombine()
 	local dx, _, dz = localToLocal(self:getBackMarkerNode(self.combineToUnload), self:getFrontMarkerNode(self.vehicle), 0, 0, 0)
 	return MathUtil.vector2Length(dx, dz), dx, dz
@@ -1436,6 +1481,13 @@ function CombineUnloadAIDriver:updateCombineInfo()
 	else
 		self.combineToUnloadReversing = MathUtil.clamp(combineToUnloadReversing, -1, 1)
 	end
+end
+
+function CombineUnloadAIDriver:updateProximitySensors()
+	if not self.proximitySensor then
+		self.proximitySensor = ProximitySensor(self:getFrontMarkerNode(self.vehicle), 0, 1, 10, 1)
+	end
+	self.proximitySensor:getClosestObjectDistance()
 end
 
 function CombineUnloadAIDriver:isMyCombineReversing()
@@ -1518,21 +1570,42 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 		local _, _, d = self.turnContext:getLocalPositionFromWorkEnd(self:getFrontMarkerNode(self.vehicle))
 		self:debugSparse('Waiting for the chopper to turn, distance from row end %.1f', d)
 		-- stop a bit before the end of the row to let the tractor slow down.
-		if d > -2 then
+		if d > -3 then
 			self:setSpeed(0)
+		elseif d > 0 then
+			self:hold()
 		else
 			self:setSpeed(self.vehicle.cp.speeds.turn)
 		end
+		d = self:getDistanceFromCombine()
+		if d > self.combineToUnload.cp.driver:getWorkWidth() * 2 and self.turnContext then
+			self:debug('Combine is at %1.f m > 2 times to work width, switching to wide turn mode', d)
+			self:startPathfindingToTurnEnd()
+		end
 	else
 		-- combine stopped turning, set up a path to follow again
-		self.combineOffset = self:getChopperOffset(self.combineToUnload)
-		self:debug('Ending 180 chopper turn, offset is %.1f', self.combineOffset)
-		if self.combineOffset ~= 0 then
-			-- will follow chopper on the side, find path to that side
-			self:startPathfindingToCombine(-self.combineOffset, 0)
-		else
-			self:startPathfindingToCombine(0, -10)
-		end
+		self:startFollowingCombine(true)
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Chopper wide turn
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:handleChopperWideTurn()
+
+	self:changeToUnloadWhenFull()
+
+	if self.combineToUnload.cp.driver:isTurning() then
+		-- follow course, make sure we are keeping distance from the chopper
+		local d = self:getDistanceFromCombine()
+		local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
+		local speed = combineSpeed + MathUtil.clamp(d - self.minDistanceFromWideTurnChopper, -combineSpeed, self.vehicle.cp.speeds.field)
+		self:setSpeed(speed)
+		self:renderText(0, 0.7, 'd = %.1f, speed = %.1f', d, speed)
+
+	else
+		-- chopper is ending/ended turn, go back to follow mode
+		self:startFollowingCombine(true)
 	end
 end
 

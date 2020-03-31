@@ -81,6 +81,7 @@ local function initialize()
 		'turn',
 		'traffic',
 		'TrafficCollision',
+		'ProximitySensor',
 		'vehicles',
 		'PurePursuitController',
 		'Waypoint',

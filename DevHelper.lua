@@ -49,9 +49,14 @@ function DevHelper:update()
         self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
         self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
+        self.proximitySensor = nil
     else
         self.node = g_currentMission.player.cameraNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, -1)
+        if not self.proximitySensor then
+            self.proximitySensor = ProximitySensor(self.node, 0, -1, 10)
+        end
+        self.proximitySensor:getClosestObjectDistance()
     end
 
     if self.vehicleData then
