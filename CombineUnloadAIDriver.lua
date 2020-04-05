@@ -18,7 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class CombineUnloadAIDriver : AIDriver
 CombineUnloadAIDriver = CpObject(AIDriver)
 
-CombineUnloadAIDriver.targetDistanceBehindChopper = 0.5
+CombineUnloadAIDriver.safetyDistanceFromChopper = 0.75
+CombineUnloadAIDriver.targetDistanceBehindChopper = 1
+CombineUnloadAIDriver.targetOffsetBehindChopper = 3 -- 3 m to the right
+CombineUnloadAIDriver.targetDistanceBehindReversingChopper = 2
 CombineUnloadAIDriver.minDistanceFromReversingChopper = 10
 CombineUnloadAIDriver.minDistanceFromWideTurnChopper = 5
 
@@ -79,7 +82,7 @@ end
 function CombineUnloadAIDriver:start(startingPoint)
 
 	self.myVehicleData = PathfinderUtil.VehicleData(self.vehicle)
-	self.proximitySensor = nil
+	self.proximitySensorPack = nil
 	self:beforeStart()
 	self.state = self.states.RUNNING
 
@@ -105,8 +108,7 @@ function CombineUnloadAIDriver:start(startingPoint)
 		self:setDriveUnloadNow(false)
 	else
 		local ix = self.unloadCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
-		-- force pathfinding
-		self:startCourseWithPathfinding(self.unloadCourse, ix, 0, 0, true)
+		self:startCourseWithPathfinding(self.unloadCourse, ix, 0, 0)
 		self:setNewCombineUnloadState(self.states.ONSTREET)
 		self:setNewOnFieldState(self.states.FIND_COMBINE)
 	end
@@ -168,7 +170,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:renderText(0, 0.5, "Collision detected!")
 		-- collision detected in the front, don't stop if we are already trying to back up
 		if not self:isInReverseGear() and not self.ppc:isReversing() then
-			self:setSpeed(0)
+			--self:setSpeed(0)
 		end
 	end
 
@@ -474,11 +476,15 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
 		--use trafficController
 		if not self:trafficContollOK() then
-			g_trafficController:solve(self.vehicle.rootNode)
+			-- TODO: don't solve anything for now, just wait
+			--g_trafficController:solve(self.vehicle.rootNode)
 			self:hold()
 		else
 			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
+
+		self.tightTurnOffset = AIDriverUtil.calculateTightTurnOffset(self.vehicle, self.unloadCourse, self.tightTurnOffset, true)
+		self.unloadCourse:setOffset((self.tightTurnOffset or 0), 0)
 
 	elseif self.onFieldState == self.states.WAIT_FOR_CHOPPER_TURNED then
 		--print("self.combineToUnload.cp.turnStage: "..tostring(self.combineToUnload.cp.turnStage))
@@ -488,9 +494,9 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_STRAIGHTBACK_FULL then
-		local _, _, dz = localToLocal(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
+		local d = self:getDistanceFromCombine()
 		--print(string.format("z(%s)> self.vehicle.cp.turnDiameter * 2(%s)",tostring(z),tostring(self.vehicle.cp.turnDiameter * 2)))
-		if dz < - self.vehicle.cp.turnDiameter then
+		if d > self.vehicle.cp.turnDiameter / 2 then
 			self:releaseUnloader()
 			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
 		else
@@ -744,27 +750,6 @@ function CombineUnloadAIDriver:getCourseToAlignTo(vehicle,offset)
 		table.insert(waypoints,point)
 	end
 	local tempCourse = Course(self.vehicle,waypoints)
-
---[[   1 :: table: 0x02a609433738
---  ridgeMarker :: 0
---  dirX :: -0.023623896329334
---  cx :: 50.34
---  speed :: 40
---  rotY :: -3.1179665457138
---  dirZ :: -0.9997203401186
---  angle :: -178.64632373239
---  unload :: false
---  rev :: false
---  turnStart :: false
---  distToNextPoint :: 9.3126043618313
---  turnEnd :: false
---  rotX :: -0.0010738136758804
---  cy :: 112.57
---  crossing :: true
---  cz :: 117.15
---  dirY :: 0.0010738134695157
---  wait :: false]]
-
 	return tempCourse
 end
 
@@ -982,15 +967,49 @@ end
 
 function CombineUnloadAIDriver:getSpeedBehindChopper()
 	local distanceToChoppersBack, _, dz = self:getDistanceFromCombine()
-	if dz < -2 then
+	local fwdDistance = self.proximitySensorPack:getClosestObjectDistance()
+	if dz < 0 then
 		-- I'm way too forward, stop here as I'm most likely beside the chopper, let it pass before
 		-- moving to the middle
 		self:setSpeed(0)
 	end
-	local targetDistance = distanceToChoppersBack - self.targetDistanceBehindChopper
-	local speed = (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(targetDistance, -10, 15))
-	self:renderText(0, 0.7, 'd = %.1f, dz = %.1f, speed = %.1f', distanceToChoppersBack, dz, speed)
+	local errorSafety = self.safetyDistanceFromChopper - fwdDistance
+	local errorTarget = self.targetDistanceBehindChopper - dz
+	local error = math.abs(errorSafety) < math.abs(errorTarget) and errorSafety or errorTarget
+	local deltaV = MathUtil.clamp(-error * 2, -10, 15)
+	local speed = (self.combineToUnload.lastSpeedReal * 3600) + deltaV
+	self:renderText(0, 0.7, 'd = %.1f, dz = %.1f, speed = %.1f, errSafety = %.1f, errTarget = %.1f',
+			distanceToChoppersBack, dz, speed, errorSafety, errorTarget)
 	return speed
+end
+
+
+function CombineUnloadAIDriver:getOffsetBehindChopper()
+	local distanceToChoppersBack, dx, dz = self:getDistanceFromCombine()
+
+	local rightDistance = self.proximitySensorPack:getClosestObjectDistance(-90)
+	local fwdRightDistance = self.proximitySensorPack:getClosestObjectDistance(-45)
+	local minDistance = math.min(rightDistance, fwdRightDistance / 1.4)
+
+	local currentOffsetX, _ = self.followCourse:getOffset()
+	-- TODO: course offset seems to be inverted
+	currentOffsetX = - currentOffsetX
+	local error
+	if dz < 0 and minDistance < 1000 then
+		-- proximity sensor in range, use that to adjust our target offset
+		-- TODO: use actual vehicle width instead of magic constant (we need to consider vehicle width
+		-- as the proximity sensor is in the middle
+		error = (self.safetyDistanceFromChopper + 1) - minDistance
+		self.targetOffsetBehindChopper = MathUtil.clamp(self.targetOffsetBehindChopper + 0.02 * error, -20, 20)
+		self:debug('err %.1f target %.1f', error, self.targetOffsetBehindChopper)
+	end
+	error = self.targetOffsetBehindChopper - currentOffsetX
+	local newOffset = currentOffsetX + error * 0.2
+	self:renderText(0, 0.68, 'right = %.1f, fwdRight = %.1f, current = %.1f, err = %1.f',
+			rightDistance, fwdRightDistance, currentOffsetX, error)
+	self:debug('right = %.1f, fwdRight = %.1f, current = %.1f, err = %1.f',
+			rightDistance, fwdRightDistance, currentOffsetX, error)
+	return MathUtil.clamp(-newOffset, -50, 50)
 end
 
 function CombineUnloadAIDriver:getSpeedBehindTractor(tractorToFollow)
@@ -1484,10 +1503,12 @@ function CombineUnloadAIDriver:updateCombineInfo()
 end
 
 function CombineUnloadAIDriver:updateProximitySensors()
-	if not self.proximitySensor then
-		self.proximitySensor = ProximitySensor(self:getFrontMarkerNode(self.vehicle), 0, 1, 10, 1)
+	if self:getFrontMarkerNode(self.vehicle) then
+		if not self.proximitySensorPack then
+			self.proximitySensorPack = ForwardLookingProximitySensorPack(self:getFrontMarkerNode(self.vehicle), 10, 1)
+		end
+		self.proximitySensorPack:update()
 	end
-	self.proximitySensor:getClosestObjectDistance()
 end
 
 function CombineUnloadAIDriver:isMyCombineReversing()

@@ -76,7 +76,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 		elseif unloaderNumber < 2 then
 			local prevTractor = self:getUnloaderByNumber(unloaderNumber, chopper)
 			if prevTractor == unloader then
-				-- awesome, we are no the list already.
+				-- awesome, we are on the list already.
 				return chopper
 			end
 			if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
@@ -166,6 +166,20 @@ function CombineUnloadManager:getClosestUnloader(combine)
 	end
 	return unloaderToReturn
 end
+
+function CombineUnloadManager:getClosestCombine(unloader)
+	local closestDistance = math.huge
+	local combineToReturn
+	for combine, _ in pairs(self.combines) do
+		local distance = courseplay:distanceToObject(unloader, combine)
+		if distance < closestDistance then
+			closestDistance = distance
+			combineToReturn = combine
+		end
+	end
+	return combineToReturn
+end
+
 
 function CombineUnloadManager:getFullestUnloader(combine)
 	local higestFillLevel = 0

@@ -90,6 +90,7 @@ function CombineAIDriver:init(vehicle)
 
 	if self.pipe then
 		local dischargeNode = self.combine:getCurrentDischargeNode()
+		self:fixDischargeDistance(dischargeNode)
 		local dx, _, _ = localToLocal(dischargeNode.node, self.vehicle.rootNode, 0, 0, 0)
 		self.pipeOnLeftSide = dx > 0
 		self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
@@ -902,7 +903,8 @@ function CombineAIDriver:trafficContollOK()
 			ok = true
 		end
 	end
-	return ok
+	-- TODO: revise this, the special handling of the unloader, for now, just ignore
+	return true
 end
 
 function CombineAIDriver:isDischarging()
@@ -1086,5 +1088,16 @@ end
 function CombineAIDriver:sendTurnStartEventToUnloaders(ix, turnType)
 	for _, unloader in pairs(self.unloaders) do
 		if unloader then unloader:onCombineTurnStart(ix, turnType) end
+	end
+end
+
+--- Make life easier for unloaders, increase chopper discharge distance
+function CombineAIDriver:fixDischargeDistance(dischargeNode)
+	if self:isChopper() and dischargeNode and dischargeNode.maxDistance then
+		local safeDischargeNodeMaxDistance = 40
+		if dischargeNode.maxDistance < safeDischargeNodeMaxDistance then
+			self:debug('Chopper maximum throw distance is %.1f, increasing to %.1f', dischargeNode.maxDistance, safeDischargeNodeMaxDistance)
+			dischargeNode.maxDistance = safeDischargeNodeMaxDistance
+		end
 	end
 end

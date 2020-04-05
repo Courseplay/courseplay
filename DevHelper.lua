@@ -49,14 +49,27 @@ function DevHelper:update()
         self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
         self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
-        self.proximitySensor = nil
+        self.proximitySensorForward = nil
+        self.proximitySensorRight = nil
+        self.pack = nil
     else
+        -- camera node looks backwards so need to flip everything by 180 degrees
         self.node = g_currentMission.player.cameraNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, -1)
-        if not self.proximitySensor then
-            self.proximitySensor = ProximitySensor(self.node, 0, -1, 10)
+        if not self.pack then
+            self.pack = ForwardLookingProximitySensorPack(self.node, 10)
         end
-        self.proximitySensor:getClosestObjectDistance()
+        self.pack:update()
+--[[
+        if not self.proximitySensorForward then
+            self.proximitySensorForward = ProximitySensor(self.node, -180, 10)
+        end
+        self.proximitySensorForward:getClosestObjectDistance()
+        if not self.proximitySensorRight then
+            self.proximitySensorRight = ProximitySensor(self.node, 150, 10)
+        end
+        self.proximitySensorRight:getClosestObjectDistance()
+        ]]--
     end
 
     if self.vehicleData then

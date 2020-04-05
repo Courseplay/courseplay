@@ -1,4 +1,4 @@
-    --[[
+--[[
 This file is part of Courseplay (https://github.com/Courseplay/courseplay)
 Copyright (C) 2020 Peter Vaiko
 
@@ -14,24 +14,29 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-]]
+]]--
 
 ---@class ProximitySensor
 ProximitySensor = CpObject()
 
-function ProximitySensor:init(node, lx, lz, range, height)
+function ProximitySensor:init(node, yRotationDeg, range, height)
     self.node = node
-    self.lx, self.lz = lx, lz
+    self.yRotation = math.rad(yRotationDeg)
+    self.lx, self.lz = MathUtil.getDirectionFromYRotation(self.yRotation)
     self.range = range
     self.height = height or 0
+    self.lastUpdateLoopIndex = 0
 end
 
 function ProximitySensor:update()
+    -- already updated in this loop, no need to raycast again
+    if g_updateLoopIndex == self.lastUpdateLoopIndex then return end
+    self.lastUpdateLoopIndex = g_updateLoopIndex
     local x, y, z = getWorldTranslation(self.node)
     local nx, ny, nz = localDirectionToWorld(self.node, self.lx, 0, self.lz)
     self.distanceOfClosestObject = math.huge
     raycastClosest(x, y + self.height, z, nx, ny, nz, 'raycastCallback', self.range, self, bitOR(AIVehicleUtil.COLLISION_MASK, 2))
-    if self.distanceOfClosestObject <= self.range then
+    if courseplay.debugChannels[12] and self.distanceOfClosestObject <= self.range then
         cpDebug:drawLine(x, y + self.height, z, 1, 1, 1, self.closestObjectX, self.closestObjectY, self.closestObjectZ)
     end
 end
@@ -43,7 +48,6 @@ function ProximitySensor:raycastCallback(objectId, x, y, z, distance)
 end
 
 function ProximitySensor:getClosestObjectDistance()
-    self:update()
     self:showDebugInfo()
     return self.distanceOfClosestObject
 end
@@ -66,5 +70,43 @@ function ProximitySensor:showDebugInfo()
             end
         end
     end
-    renderText(0.6, 0.4, 0.018, text)
+    renderText(0.6, 0.4 + self.yRotation / 10, 0.018, text .. string.format(' %d', math.deg(self.yRotation)))
 end
+
+---@class ProximitySensorPack
+ProximitySensorPack = CpObject()
+function ProximitySensorPack:init(node, range, height, directionsDeg)
+    ---@type ProximitySensor[]
+    self.sensors = {}
+    self.directionsDeg = directionsDeg
+    for _, deg in ipairs(self.directionsDeg) do
+        self.sensors[deg] = ProximitySensor(node, deg, range, height)
+    end
+end
+
+function ProximitySensorPack:update()
+    for _, deg in ipairs(self.directionsDeg) do
+        self.sensors[deg]:update()
+    end
+end
+
+function ProximitySensorPack:getClosestObjectDistance(deg)
+    if deg then
+        return self.sensors[deg] and self.sensors[deg]:getClosestObjectDistance() or math.huge
+    else
+        local closestDistance = math.huge
+        for _, deg in ipairs(self.directionsDeg) do
+            local d = self.sensors[deg]:getClosestObjectDistance()
+            closestDistance = d < closestDistance and d or closestDistance
+        end
+        return closestDistance
+    end
+end
+
+---@class ForwardLookingProximitySensorPack : ProximitySensorPack
+ForwardLookingProximitySensorPack = CpObject(ProximitySensorPack)
+
+function ForwardLookingProximitySensorPack:init(node, range, height)
+    ProximitySensorPack.init(self, node, range, height,{0, 45, 90, -45, -90})
+end
+

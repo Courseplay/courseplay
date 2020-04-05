@@ -109,6 +109,8 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
+	addConsoleCommand( 'cpLoadAIDriver', 'Load a lua file and re-instantiate the current AIDriver', 'loadAIDriver', self )
+
 	addConsoleCommand( 'cpRestartSaveGame', 'Load and start a savegame', 'restartSaveGame', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
@@ -639,6 +641,14 @@ function CpManager:loadFile(fileName)
 		else
 			return 'ERROR: ' .. path .. ' could not be compiled.'
 		end
+	end
+end
+
+function CpManager:loadAIDriver()
+	self:loadFile()
+	if g_currentMission.controlledVehicle then
+		-- re-instantiate the AIDriver after loaded
+		courseplay:setAIDriver(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.cp.mode)
 	end
 end
 
