@@ -823,10 +823,11 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		return false ,allowedToDrive;
 	
 	elseif workTool.cp.isStrawHarvestAddonBaler then
-		local supplyFillLevel = workTool.supplies.active and workTool:getUnitFillLevel(workTool.supplies.fillUnitIndex) or 100;
+		local spec = workTool.spec_strawHarvestRefillSupplies
+		local supplyFillLevel = spec.isActive and workTool:getUnitFillLevel(spec.supplies[1].fillUnitIndex) or 100;
 		local refillMessage = "";
 		local stoppedForReason = false;
-		
+
 		if supplyFillLevel <= 0 then
 			stoppedForReason = true;
 			if workTool.cp.isKroneComprimaV180XC then
@@ -834,15 +835,15 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			elseif 	workTool.cp.isKroneBigPack1290HDPII then
 				refillMessage = courseplay:loc('COURSEPLAY_FillType_BaleTwine')
 			end
-			if not workTool:getIsSupplyCoverOpen() and not workTool.isSupplyCoverOpening then
-				workTool:setIsSupplyCoverOpening(true)
+			if spec.hasCover and not spec:isRefillCoverOpen() then
+				spec:setIsRefillCoverOpen(true)
 			end
 			if #workTool.fillTriggers > 0 and not workTool.isFilling then
 				workTool:setIsFilling(true)
 			end
 		else
-			if workTool:getIsSupplyCoverOpen() then
-				workTool:setIsSupplyCoverOpening(false);
+			if spec.hasCover and spec:isRefillCoverOpen() then
+				spec:setIsRefillCoverOpen(false)
 			end
 			if workTool:getIsAnimationPlaying("lowerTwineBox") then
 				stoppedForReason = true;
@@ -851,10 +852,10 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 		if stoppedForReason then	
 			allowedToDrive = false
-			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING', nil, refillMessage);
 		end
 		
-		return false ,allowedToDrive,stoppedForReason;
+		return false, allowedToDrive, stoppedForReason
 	end;
 
 	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence
