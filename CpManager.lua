@@ -116,6 +116,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
 	addConsoleCommand( 'cpTogglePathfindingDebug', 'Toggle pathfinding visual debug info', 'togglePathfindingDebug', self )
 	addConsoleCommand( 'cpToggleDevhelperDebug', 'Toggle development helper visual debug info', 'toggleDevhelperDebug', self )
+	addConsoleCommand( 'cpShowCombineUnloadManagerStatus', 'Show combine unload manager status', 'showCombineUnloadManagerStatus', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -654,6 +655,10 @@ end
 
 function CpManager:restartSaveGame(saveGameNumber)
 	restartApplication(" -autoStartSavegameId " .. saveGameNumber)
+end
+
+function CpManager:showCombineUnloadManagerStatus()
+	g_combineUnloadManager:printStatus()
 end
 
 function CpManager:setLookaheadDistance(d)

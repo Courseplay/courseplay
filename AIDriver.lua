@@ -113,6 +113,14 @@ AIDriver.slowAngleLimit = 0.3
 AIDriver.slowAcceleration = 0.5
 AIDriver.slowDownFactor = 0.5
 
+-- Proximity sensor
+-- how far the sensor can see
+AIDriver.proximitySensorRange = 10
+-- the sensor will proportionally reduce speed when objects are in range down to this limit (won't set a speed lower than this)
+AIDriver.proximityMinLimitedSpeed = 2
+-- if anything closer than this, we stop
+AIDriver.proximityLimitLow = 0.5
+
 -- we use this as an enum
 AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
@@ -196,6 +204,10 @@ function AIDriver:beforeStart()
 	if self.collisionDetector == nil then
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
+
+	self:setBackMarkerNode(self.vehicle)
+	self:setFrontMarkerNode(self.vehicle)
+
 	self:startEngineIfNeeded()
 	self:initWages()
 	self.firstReversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
@@ -299,6 +311,7 @@ end
 
 --- Update AI driver, everything that needs to run in every loop
 function AIDriver:update(dt)
+	self:updateProximitySensors()
 	self:updatePathfinding()
 	self:drive(dt)
 	self:checkIfBlocked()
@@ -401,6 +414,8 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 		-- TODO: remove allowedToDrive parameter and only use self.allowedToDrive
 	if not self.allowedToDrive then allowedToDrive = false end
 
+	maxSpeed, allowedToDrive = self:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
+
 	-- driveToPoint does not like speeds under 1.5 (will stop) so make sure we set at least 2
 	if maxSpeed > 0.01 and maxSpeed < 2 then
 		maxSpeed = 2
@@ -452,6 +467,9 @@ function AIDriver:driveVehicleBySteeringAngle(dt, moveForwards, steeringAngleNor
 	end
 	if self.vehicle.firstTimeRun then
 		local acc = self.acceleration;
+		
+		maxSpeed, self.allowedToDrive = self:checkProximitySensor(maxSpeed, self.allowedToDrive, moveForwards)
+
 		if maxSpeed ~= nil and maxSpeed ~= 0 then
 			if steeringAngleNormalized >= self.slowAngleLimit then
 				maxSpeed = maxSpeed * self.slowDownFactor;
@@ -1582,4 +1600,83 @@ end
 
 function AIDriver:isInReverseGear()
 	return self.vehicle.getMotor and self.vehicle:getMotor():getGearRatio() < 0
+end
+
+-- Put a node on the back of the vehicle for easy distance checks use this instead of the root/direction node
+-- TODO: check for towed implements/trailers
+function AIDriver:setBackMarkerNode(vehicle)
+	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
+		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, vehicle.rootNode)
+	end
+	setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, - vehicle.sizeLength / 2 - vehicle.lengthOffset)
+end
+
+function AIDriver:getBackMarkerNode(vehicle)
+	return vehicle.cp.driver.aiDriverData.backMarkerNode
+end
+
+-- Put a node on the front of the tractor for easy distance checks use this instead of the root/direction node
+-- TODO: check for implements at front like weights
+function AIDriver:setFrontMarkerNode(vehicle)
+	if not vehicle.cp.driver.aiDriverData.frontMarkerNode then
+		vehicle.cp.driver.aiDriverData.frontMarkerNode = courseplay.createNode('frontMarkerNode', 0, 0, 0, vehicle.rootNode)
+	end
+	-- set this up for the turns
+	local _, _, dz = localToLocal(vehicle.cp.driver.aiDriverData.frontMarkerNode, vehicle.rootNode, 0, 0, 0)
+	self.frontMarkerDistance = dz
+	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, vehicle.sizeLength / 2 + vehicle.lengthOffset)
+end
+
+function AIDriver:getFrontMarkerNode(vehicle)
+	return vehicle.cp.driver.aiDriverData.frontMarkerNode
+end
+
+function AIDriver:addForwardProximitySensor()
+	self:setFrontMarkerNode(self.vehicle)
+	self.forwardLookingProximitySensorPack = ForwardLookingProximitySensorPack(self:getFrontMarkerNode(self.vehicle), self.proximitySensorRange, 1)
+end
+
+function AIDriver:addBackwardProximitySensor()
+	self:setBackMarkerNode(self.vehicle)
+	self.backwardLookingProximitySensorPack = BackwardLookingProximitySensorPack(self:getBackMarkerNode(self.vehicle), self.proximitySensorRange, 1)
+end
+
+function AIDriver:updateProximitySensors()
+	if self.forwardLookingProximitySensorPack then
+		self.forwardLookingProximitySensorPack:update()
+	end
+	if self.backwardLookingProximitySensorPack then
+		self.backwardLookingProximitySensorPack:update()
+	end
+end
+
+function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
+	-- minimum distance from any object in the proximity sensor's range
+	local d, range
+	if moveForwards then
+		if self.forwardLookingProximitySensorPack then
+			d = self.forwardLookingProximitySensorPack:getClosestObjectDistance()
+			range = self.forwardLookingProximitySensorPack:getRange()
+		end
+	else
+		if self.backwardLookingProximitySensorPack then
+			d = self.backwardLookingProximitySensorPack:getClosestObjectDistance()
+			range = self.backwardLookingProximitySensorPack:getRange()
+		end
+	end
+	if d < AIDriver.proximityLimitLow then
+		-- too close, stop
+		self:debugSparse('proximity: d = %.1f, too close, stop.', d)
+		return maxSpeed, false
+	end
+	local normalizedD = d / (range - AIDriver.proximityLimitLow)
+	if normalizedD > 1 then
+		-- nothing in range (d is a huge number, at least bigger than range), don't change anything
+		return maxSpeed, allowedToDrive
+	end
+	-- something in range, reduce speed proportionally
+	local deltaV = maxSpeed - AIDriver.proximityMinLimitedSpeed
+	local newSpeed = AIDriver.proximityMinLimitedSpeed + normalizedD * deltaV
+	self:debugSparse('proximity: d = %d %%, speed = %.1f', 100 * normalizedD, newSpeed)
+	return newSpeed, allowedToDrive
 end

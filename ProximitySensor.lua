@@ -26,6 +26,15 @@ function ProximitySensor:init(node, yRotationDeg, range, height)
     self.range = range
     self.height = height or 0
     self.lastUpdateLoopIndex = 0
+    self.enabled = true
+end
+
+function ProximitySensor:enable()
+    self.enabled = true
+end
+
+function ProximitySensor:enable()
+    self.enabled = false
 end
 
 function ProximitySensor:update()
@@ -35,7 +44,9 @@ function ProximitySensor:update()
     local x, y, z = getWorldTranslation(self.node)
     local nx, ny, nz = localDirectionToWorld(self.node, self.lx, 0, self.lz)
     self.distanceOfClosestObject = math.huge
-    raycastClosest(x, y + self.height, z, nx, ny, nz, 'raycastCallback', self.range, self, bitOR(AIVehicleUtil.COLLISION_MASK, 2))
+    if self.enabled then
+        raycastClosest(x, y + self.height, z, nx, ny, nz, 'raycastCallback', self.range, self, bitOR(AIVehicleUtil.COLLISION_MASK, 2))
+    end
     if courseplay.debugChannels[12] and self.distanceOfClosestObject <= self.range then
         cpDebug:drawLine(x, y + self.height, z, 1, 1, 1, self.closestObjectX, self.closestObjectY, self.closestObjectZ)
     end
@@ -78,15 +89,29 @@ ProximitySensorPack = CpObject()
 function ProximitySensorPack:init(node, range, height, directionsDeg)
     ---@type ProximitySensor[]
     self.sensors = {}
+    self.range = range
     self.directionsDeg = directionsDeg
     for _, deg in ipairs(self.directionsDeg) do
-        self.sensors[deg] = ProximitySensor(node, deg, range, height)
+        self.sensors[deg] = ProximitySensor(node, deg, self.range, height)
     end
 end
 
 function ProximitySensorPack:update()
     for _, deg in ipairs(self.directionsDeg) do
         self.sensors[deg]:update()
+    end
+end
+
+-- TODO: this is crying for a lambda
+function ProximitySensorPack:enable()
+    for _, deg in ipairs(self.directionsDeg) do
+        self.sensors[deg]:enable()
+    end
+end
+
+function ProximitySensorPack:disable()
+    for _, deg in ipairs(self.directionsDeg) do
+        self.sensors[deg]:disable()
     end
 end
 
@@ -110,3 +135,9 @@ function ForwardLookingProximitySensorPack:init(node, range, height)
     ProximitySensorPack.init(self, node, range, height,{0, 45, 90, -45, -90})
 end
 
+---@class BackwardLookingProximitySensorPack : ProximitySensorPack
+BackwardLookingProximitySensorPack = CpObject(ProximitySensorPack)
+
+function BackwardLookingProximitySensorPack:init(node, range, height)
+    ProximitySensorPack.init(self, node, range, height,{120, 150, 180, -150, -120})
+end

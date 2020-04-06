@@ -1,6 +1,8 @@
 ---@class CombineUnloadmanager
 CombineUnloadManager = CpObject()
 
+CombineUnloadManager.debugChannel = 4
+
 -- Constructor
 function CombineUnloadManager:init()
 	print("CombineUnloadManager:init()")
@@ -15,6 +17,10 @@ function CombineUnloadManager:init()
 			end
 		end
 	end
+end
+
+function CombineUnloadManager:debug(...)
+	courseplay.debugFormat(self.debugChannel, 'CombineUnloadManager: ' .. string.format( ... ))
 end
 
 function CombineUnloadManager:addCombineToList(combine)
@@ -39,6 +45,15 @@ function CombineUnloadManager:addCombineToList(combine)
 		unloaders = {};
 		secondsTill80Percent = 999
 	}
+end
+
+function CombineUnloadManager:printStatus()
+	for combine,attributes in pairs (self.combines) do
+		self:debug('%s unloaders:', nameNum(combine))
+		for _, unloader in ipairs(attributes.unloaders) do
+			self:debug('  %s', nameNum(unloader))
+		end
+	end
 end
 
 function CombineUnloadManager:removeCombineFromList(combine)

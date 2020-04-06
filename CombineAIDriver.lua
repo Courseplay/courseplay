@@ -145,6 +145,7 @@ end
 
 function CombineAIDriver:start(startingPoint)
 	self:removeAllUnloaders()
+	self:addBackwardProximitySensor()
 	UnloadableFieldworkAIDriver.start(self, startingPoint)
 end
 

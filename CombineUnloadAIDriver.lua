@@ -82,8 +82,9 @@ end
 function CombineUnloadAIDriver:start(startingPoint)
 
 	self.myVehicleData = PathfinderUtil.VehicleData(self.vehicle)
-	self.proximitySensorPack = nil
 	self:beforeStart()
+	self:addForwardProximitySensor()
+
 	self.state = self.states.RUNNING
 
 	self.unloadCourse = Course(self.vehicle, self.vehicle.Waypoints)
@@ -131,7 +132,6 @@ end
 function CombineUnloadAIDriver:drive(dt)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	self:updateCombineInfo()
-	self:updateProximitySensors()
 	local renderOffset = self.vehicle.cp.coursePlayerNum * 0.03
 	self:renderText(0, 0.1 + renderOffset, "%s: self.onFieldState :%s", nameNum(self.vehicle), self.onFieldState.name)
 
@@ -280,6 +280,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		else
 			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
+
+		self.tightTurnOffset = AIDriverUtil.calculateTightTurnOffset(self.vehicle, self.course, self.tightTurnOffset, true)
+		self:debug('TIGHT %.1f', self.tightTurnOffset)
+		self.course:setOffset((self.tightTurnOffset or 0), 0)
 
 	elseif self.onFieldState == self.states.GET_ALIGNCOURSE_TO_TRACTOR then
 		local tempCourseToAlign = self:getCourseToAlignTo(self.tractorToFollow,0)
@@ -483,8 +487,8 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
 
-		self.tightTurnOffset = AIDriverUtil.calculateTightTurnOffset(self.vehicle, self.unloadCourse, self.tightTurnOffset, true)
-		self.unloadCourse:setOffset((self.tightTurnOffset or 0), 0)
+		self.tightTurnOffset = AIDriverUtil.calculateTightTurnOffset(self.vehicle, self.course, self.tightTurnOffset, true)
+		self.course:setOffset((self.tightTurnOffset or 0), 0)
 
 	elseif self.onFieldState == self.states.WAIT_FOR_CHOPPER_TURNED then
 		--print("self.combineToUnload.cp.turnStage: "..tostring(self.combineToUnload.cp.turnStage))
@@ -967,7 +971,7 @@ end
 
 function CombineUnloadAIDriver:getSpeedBehindChopper()
 	local distanceToChoppersBack, _, dz = self:getDistanceFromCombine()
-	local fwdDistance = self.proximitySensorPack:getClosestObjectDistance()
+	local fwdDistance = self.forwardLookingProximitySensorPack:getClosestObjectDistance()
 	if dz < 0 then
 		-- I'm way too forward, stop here as I'm most likely beside the chopper, let it pass before
 		-- moving to the middle
@@ -987,8 +991,8 @@ end
 function CombineUnloadAIDriver:getOffsetBehindChopper()
 	local distanceToChoppersBack, dx, dz = self:getDistanceFromCombine()
 
-	local rightDistance = self.proximitySensorPack:getClosestObjectDistance(-90)
-	local fwdRightDistance = self.proximitySensorPack:getClosestObjectDistance(-45)
+	local rightDistance = self.forwardLookingProximitySensorPack:getClosestObjectDistance(-90)
+	local fwdRightDistance = self.forwardLookingProximitySensorPack:getClosestObjectDistance(-45)
 	local minDistance = math.min(rightDistance, fwdRightDistance / 1.4)
 
 	local currentOffsetX, _ = self.followCourse:getOffset()
@@ -1416,8 +1420,6 @@ end
 
 function CombineUnloadAIDriver:setMyCombine(combine)
 	self.combineVehicleData = PathfinderUtil.VehicleData(combine, true)
-	self:setBackMarkerNode(combine)
-	self:setFrontMarkerNode(self.vehicle)
 end
 
 function CombineUnloadAIDriver:findCollidingShapes()
@@ -1449,32 +1451,6 @@ function CombineUnloadAIDriver:overlapBoxCallback(transformId)
 	end
 end
 
--- Put a node on the back of the combine for easy distance checks use this instead of the root/direction node
-function CombineUnloadAIDriver:setBackMarkerNode(vehicle)
-	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
-		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, vehicle.rootNode)
-	end
-	setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, - vehicle.sizeLength / 2 - vehicle.lengthOffset)
-end
-
-function CombineUnloadAIDriver:getBackMarkerNode(vehicle)
-	return vehicle.cp.driver.aiDriverData.backMarkerNode
-end
-
--- Put a node on the front of the tractor for easy distance checks use this instead of the root/direction node
-function CombineUnloadAIDriver:setFrontMarkerNode(vehicle)
-	if not vehicle.cp.driver.aiDriverData.frontMarkerNode then
-		vehicle.cp.driver.aiDriverData.frontMarkerNode = courseplay.createNode('frontMarkerNode', 0, 0, 0, vehicle.rootNode)
-	end
-	-- set this up for the turns
-	local _, _, dz = localToLocal(vehicle.cp.driver.aiDriverData.frontMarkerNode, vehicle.rootNode, 0, 0, 0)
-	self.frontMarkerDistance = dz
-	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, vehicle.sizeLength / 2 + vehicle.lengthOffset)
-end
-
-function CombineUnloadAIDriver:getFrontMarkerNode(vehicle)
-	return vehicle.cp.driver.aiDriverData.frontMarkerNode
-end
 
 ---@return number, number, number distance between the tractor's front and the combine's back (always positive),
 --- side offset (local x) of the combine's back in the tractor's front coordinate system (positive if the tractor is on
@@ -1499,15 +1475,6 @@ function CombineUnloadAIDriver:updateCombineInfo()
 		self.combineToUnloadReversing = -1
 	else
 		self.combineToUnloadReversing = MathUtil.clamp(combineToUnloadReversing, -1, 1)
-	end
-end
-
-function CombineUnloadAIDriver:updateProximitySensors()
-	if self:getFrontMarkerNode(self.vehicle) then
-		if not self.proximitySensorPack then
-			self.proximitySensorPack = ForwardLookingProximitySensorPack(self:getFrontMarkerNode(self.vehicle), 10, 1)
-		end
-		self.proximitySensorPack:update()
 	end
 end
 
