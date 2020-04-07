@@ -76,11 +76,18 @@ function FieldworkAIDriver.register()
 
 	AIImplement.getCanImplementBeUsedForAI = Utils.overwrittenFunction(AIImplement.getCanImplementBeUsedForAI,
 		function(self, superFunc)
+			-- if we have the Straw Harvest add on we want to handle the bale collector
+			local strawHarvestBaleCollectSpec
+			if self.customEnvironment ~= nil then
+				strawHarvestBaleCollectSpec = _G[self.customEnvironment].StrawHarvestBaleCollect
+			end
 			if SpecializationUtil.hasSpecialization(BaleLoader, self.specializations) then
 				return true
 			elseif SpecializationUtil.hasSpecialization(BaleWrapper, self.specializations) then
 				return true
 			elseif SpecializationUtil.hasSpecialization(Pickup, self.specializations) then
+				return true
+			elseif strawHarvestBaleCollectSpec and SpecializationUtil.hasSpecialization(strawHarvestBaleCollectSpec, self.specializations) then
 				return true
 			elseif superFunc ~= nil then
 				return superFunc(self)
@@ -93,6 +100,7 @@ function FieldworkAIDriver.register()
 			-- Only the courseplay helper can handle bale loaders.
 			if FieldworkAIDriver.hasImplementWithSpecialization(self, BaleLoader) or
 				FieldworkAIDriver.hasImplementWithSpecialization(self, BaleWrapper) or
+				FieldworkAIDriver.hasImplementWithSpecialization(self, FS19_addon_strawHarvest.StrawHarvestBaleCollect) or
 				FieldworkAIDriver.hasImplementWithSpecialization(self, Pickup) then
 				return false
 			end

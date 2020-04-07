@@ -790,36 +790,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				workTool:setPipeState(1)
 			end
 		end
-		local pelletsFillLevel = workTool:getUnitFillLevel(workTool.pelletizer.fillUnitIndex)
-		local pelletsCapacity = workTool:getUnitCapacity(workTool.pelletizer.fillUnitIndex)
-		local molassesFillLevel = workTool.manualMolassesRefill and workTool:getUnitFillLevel(workTool.pelletizer.molassesFillUnitIndex) or 100
-		local waterFillLevel = workTool.manualWaterRefill and workTool:getUnitFillLevel(workTool.pelletizer.waterFillUnitIndex) or 100
-		local stopForRefill = false
-		local refillMessage = ""
-		if molassesFillLevel <= 0 then
-			stopForRefill = true
-			refillMessage = refillMessage..courseplay:loc('COURSEPLAY_FillType_Molasses')
-		end
-		
-		if waterFillLevel <= 0 then
-			stopForRefill = true
-			if string.len(refillMessage) > 0 then
-				refillMessage = refillMessage..", "
-			end
-			refillMessage = refillMessage..g_i18n:getText("fillType_water")
-		end
-			
-		if stopForRefill then
-			if #workTool.waterTrailerFillTriggers >0  then
-				workTool:setIsWaterTrailerFilling(true)
-			end
-			if #workTool.fillTriggers > 0 and not workTool.isFilling then
-				workTool:setIsFilling(true)
-			end
-			allowedToDrive = false
- 			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
-		end
-		
+
 		return false ,allowedToDrive;
 	
 	elseif workTool.cp.isStrawHarvestAddonBaler then
