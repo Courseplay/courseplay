@@ -73,14 +73,15 @@ function FieldworkAIDriver:setHudContent()
 end
 
 function FieldworkAIDriver.register()
+	-- TODO: maybe just build a table with all specs we want to handle
+	local strawHarvestBaleCollectSpec
 
 	AIImplement.getCanImplementBeUsedForAI = Utils.overwrittenFunction(AIImplement.getCanImplementBeUsedForAI,
 		function(self, superFunc)
-			-- if we have the Straw Harvest add on we want to handle the bale collector
-			local strawHarvestBaleCollectSpec
 			if self.customEnvironment ~= nil then
 				strawHarvestBaleCollectSpec = _G[self.customEnvironment].StrawHarvestBaleCollect
 			end
+			-- if we have the Straw Harvest add on we want to handle the bale collector
 			if SpecializationUtil.hasSpecialization(BaleLoader, self.specializations) then
 				return true
 			elseif SpecializationUtil.hasSpecialization(BaleWrapper, self.specializations) then
@@ -97,11 +98,16 @@ function FieldworkAIDriver.register()
 	-- Make sure the Giants helper can't be hired for implements which have no Giants AI functionality
 	AIVehicle.getCanStartAIVehicle = Utils.overwrittenFunction(AIVehicle.getCanStartAIVehicle,
 		function(self, superFunc)
+			if self.customEnvironment ~= nil then
+				strawHarvestBaleCollectSpec = _G[self.customEnvironment].StrawHarvestBaleCollect
+			end
 			-- Only the courseplay helper can handle bale loaders.
 			if FieldworkAIDriver.hasImplementWithSpecialization(self, BaleLoader) or
-				FieldworkAIDriver.hasImplementWithSpecialization(self, BaleWrapper) or
-				FieldworkAIDriver.hasImplementWithSpecialization(self, FS19_addon_strawHarvest.StrawHarvestBaleCollect) or
-				FieldworkAIDriver.hasImplementWithSpecialization(self, Pickup) then
+					FieldworkAIDriver.hasImplementWithSpecialization(self, BaleWrapper) or
+					FieldworkAIDriver.hasImplementWithSpecialization(self, Pickup) then
+				return false
+			end
+			if strawHarvestBaleCollectSpec and FieldworkAIDriver.hasImplementWithSpecialization(self, strawHarvestBaleCollectSpec) then
 				return false
 			end
 			if superFunc ~= nil then
