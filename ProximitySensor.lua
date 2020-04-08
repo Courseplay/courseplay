@@ -91,28 +91,45 @@ function ProximitySensorPack:init(node, range, height, directionsDeg)
     self.sensors = {}
     self.range = range
     self.directionsDeg = directionsDeg
+    self.speedControlEnabled = true
     for _, deg in ipairs(self.directionsDeg) do
         self.sensors[deg] = ProximitySensor(node, deg, self.range, height)
     end
 end
 
-function ProximitySensorPack:update()
+function ProximitySensorPack:getRange()
+    return self.range
+end
+
+function ProximitySensorPack:callForAllSensors(func, ...)
     for _, deg in ipairs(self.directionsDeg) do
-        self.sensors[deg]:update()
+        func(self.sensors[deg], ...)
     end
 end
 
--- TODO: this is crying for a lambda
+function ProximitySensorPack:disableSpeedControl()
+    self.speedControlEnabled = false
+end
+
+function ProximitySensorPack:enableSpeedControl()
+    self.speedControlEnabled = true
+end
+
+--- Should this pack used to control the speed of the vehicle (or just delivers info about proximity)
+function ProximitySensorPack:isSpeedControlEnabled()
+    return self.speedControlEnabled
+end
+
+function ProximitySensorPack:update()
+    self:callForAllSensors(ProximitySensor.update)
+end
+
 function ProximitySensorPack:enable()
-    for _, deg in ipairs(self.directionsDeg) do
-        self.sensors[deg]:enable()
-    end
+    self:callForAllSensors(ProximitySensor.enable)
 end
 
 function ProximitySensorPack:disable()
-    for _, deg in ipairs(self.directionsDeg) do
-        self.sensors[deg]:disable()
-    end
+    self:callForAllSensors(ProximitySensor.disable)
 end
 
 function ProximitySensorPack:getClosestObjectDistance(deg)

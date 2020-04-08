@@ -84,6 +84,8 @@ function CombineUnloadAIDriver:start(startingPoint)
 	self.myVehicleData = PathfinderUtil.VehicleData(self.vehicle)
 	self:beforeStart()
 	self:addForwardProximitySensor()
+	-- we'll take care of controlling our speed, don't need ADriver for that
+	self.forwardLookingProximitySensorPack:disableSpeedControl()
 
 	self.state = self.states.RUNNING
 
