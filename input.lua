@@ -454,46 +454,45 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 	
 	--Shovel:
 	if actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 2);
+			vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+			courseplay:moveShovelToPosition(vehicle, 2);
 	elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 3);
+			vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+			courseplay:moveShovelToPosition(vehicle, 3);
 	elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 4);
+			vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+			courseplay:moveShovelToPosition(vehicle, 4);
 	elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 5);
+			vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+			courseplay:moveShovelToPosition(vehicle, 5);
 	--Editor:
+	elseif actionName == 'COURSEPLAY_EDITOR_TOGGLE' and keyStatus == 1 then
+			--print('Editortoggle' .. tostring(courseEditor.enabled) .. tostring(keyStatus))
+			courseEditor:setEnabled(not courseEditor.enabled, vehicle)
 	elseif actionName == 'COURSEPLAY_EDITOR_UNDO' then
-					courseEditor:undo()
+			courseEditor:undo()
 	elseif actionName == 'COURSEPLAY_EDITOR_SAVE' then
-					courseEditor:save()
+			courseEditor:save()
 	elseif actionName == 'COURSEPLAY_EDITOR_SPEED_INCREASE' then
-					courseEditor:increaseSpeed()
+			courseEditor:increaseSpeed()
 	elseif actionName == 'COURSEPLAY_EDITOR_SPEED_DECREASE' then
-					courseEditor:decreaseSpeed()
+			courseEditor:decreaseSpeed()
 	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_WAYPOINT' then
-					courseEditor:delete()
+			courseEditor:delete()
 	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT' then
-					courseEditor:deleteNext()      
+			courseEditor:deleteNext()      
 	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_START' then
-					courseEditor:deleteToStart()
+			courseEditor:deleteToStart()
 	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_END' then
-					courseEditor:deleteToEnd()
+			courseEditor:deleteToEnd()
 	elseif actionName == 'COURSEPLAY_EDITOR_INSERT_WAYPOINT' then
-					courseEditor:insert()
+			courseEditor:insert()
 	elseif actionName == 'COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE' then
-					courseEditor:cycleType()
+			courseEditor:cycleType()
 	--Modifier
 	elseif courseplay.inputModifierIsPressed then
-	
-	--to enable Editor, hold modifier, press Editor toggle key, release modifier, release toggle key... Same for disable
-		if actionName == 'COURSEPLAY_EDITOR_TOGGLE' then
-				courseEditor:setEnabled(not courseEditor.enabled, vehicle)	
-					
-		elseif keyStatus == 1 and vehicle:getIsActive() and vehicle:getIsEntered() then
+		
+		if keyStatus == 1 and vehicle:getIsActive() and vehicle:getIsEntered() then
 
 			if actionName == 'COURSEPLAY_START_STOP' then
 				if vehicle.cp.canDrive then
