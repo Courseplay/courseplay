@@ -133,10 +133,10 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
             <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_9" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_EDITOR_TOGGLE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_0" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_KP_0" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_EDITOR_UNDO">
-            <binding device="KB_MOUSE_DEFAULT" input="z" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl z" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_EDITOR_SAVE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_f6" />
