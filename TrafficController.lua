@@ -107,8 +107,6 @@ function TrafficController:update(dt)
 		self:cleanUp()
 	end
 
-
-
 	--self.reservations[point.x][point.z].vehicleId
 	for pointX,list in pairs (self.reservations) do
 		for pointZ,data in pairs(list) do

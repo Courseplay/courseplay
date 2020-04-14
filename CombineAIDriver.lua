@@ -63,6 +63,7 @@ function CombineAIDriver:init(vehicle)
 	self.lastEmptyTimestamp = 0
 	self.pipeOffsetX = 0
 	self.unloaders = {}
+	self:initUnloadStates()
 
 	if self.vehicle.spec_combine then
 		self.combine = self.vehicle.spec_combine
@@ -149,7 +150,6 @@ function CombineAIDriver:start(startingPoint)
 	UnloadableFieldworkAIDriver.start(self, startingPoint)
 end
 
-
 function CombineAIDriver:setHudContent()
 	UnloadableFieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setCombineAIDriverContent(self.vehicle)
@@ -159,7 +159,7 @@ function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
 	self:handlePipe()
 	-- the rest is the same as the parent class
-	if not self:trafficContollOK() then
+	if not self:trafficControlOK() then
 		self:hold()
 	end
 	UnloadableFieldworkAIDriver.drive(self, dt)
@@ -209,7 +209,9 @@ function CombineAIDriver:onWaypointPassed(ix)
 	if self:shouldMakePocket() and self.vehicle.cp.settings.selfUnload:is(false) then
 		self.fillLevelFullPercentage = self.pocketFillLevelFullPercentage
 	end
+
 	self:checkDistanceUntilFull(ix)
+
 	if self.state == self.states.ON_FIELDWORK_COURSE and
 		self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
 		self.fieldWorkUnloadOrRefillState == self.states.MAKING_POCKET and
@@ -229,6 +231,7 @@ function CombineAIDriver:onWaypointPassed(ix)
 	end
 	UnloadableFieldworkAIDriver.onWaypointPassed(self, ix)
 end
+
 function CombineAIDriver:isWaitingInPocket()
  return self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET
 end
@@ -405,25 +408,26 @@ end
 
 function CombineAIDriver:unloadFinished()
 	local discharging = true
-	local tempDischarging = false
+	local dischargingNow = false
 	if self.pipe then
-		tempDischarging = self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
+		dischargingNow = self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
 	end
 	--wait for 10 frames before taking discharging as false
-	if not tempDischarging then
-		self.cantDischargeCount = self.cantDischargeCount and self.cantDischargeCount + 1 or 0
-		if self.cantDischargeCount > 10 then
+	if not dischargingNow then
+		self.notDischargingSinceLoopIndex =
+		self.notDischargingSinceLoopIndex and self.notDischargingSinceLoopIndex or g_updateLoopIndex
+		if g_updateLoopIndex - self.notDischargingSinceLoopIndex > 10 then
 			discharging = false
 		end
 	else
-		self.cantDischargeCount = 0
+		self.notDischargingSinceLoopIndex = nil
 	end
 	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 
 	-- unload is done when fill levels are ok (not full) and not discharging anymore (either because we
 	-- are empty or the trailer is full)
 	return (self:allFillLevelsOk() and not discharging) or fillLevel < 0.1
-		end
+end
 
 function CombineAIDriver:shouldMakePocket()
 	if self.fruitLeft > 0.75 and self.fruitRight > 0.75 then
@@ -439,6 +443,10 @@ function CombineAIDriver:shouldMakePocket()
 end
 
 function CombineAIDriver:shouldPullBack()
+	return self:isPipeInFruit()
+end
+
+function CombineAIDriver:isPipeInFruit()
 	-- is our pipe in the fruit?
 	if self.pipeOnLeftSide then
 		return self.fruitLeft > self.fruitRight
@@ -468,8 +476,9 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 	local fillLevel = self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex)
 	if ix > 1 then
 		if self.fillLevelAtLastWaypoint and self.fillLevelAtLastWaypoint > 0 and self.fillLevelAtLastWaypoint <= fillLevel then
-			self.litersPerMeter = (fillLevel - self.fillLevelAtLastWaypoint) / self.course:getDistanceToNextWaypoint(ix - 1)
+			local litersPerMeter = (fillLevel - self.fillLevelAtLastWaypoint) / self.course:getDistanceToNextWaypoint(ix - 1)
 			-- smooth a bit
+			self.litersPerMeter = (self.litersPerMeter + litersPerMeter) / 2
 			self.fillLevelAtLastWaypoint = (self.fillLevelAtLastWaypoint + fillLevel) / 2
 		else
 			-- no history yet, so make sure we don't end up with some unrealistic numbers
@@ -486,8 +495,20 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 		if dUntilFull > dToNextTurn and dUntilFull < dToNextTurn + lNextRow then
 			self:debug('Will be full in the next row' )
 		end
+		local waypointIxWhenFull = self.course:getNextWaypointIxWithinDistance(ix, dUntilFull) or self.course:getNumberOfWaypoints()
+		self:isPipeInFruitAtWaypoint(self.course, waypointIxWhenFull)
 	end
+end
 
+function CombineAIDriver:isPipeInFruitAtWaypoint(course, ix)
+	if not self.aiDriverData.fruitCheckHelperWpNode then
+		self.aiDriverData.fruitCheckHelperWpNode = WaypointNode(nameNum(self.vehicle) .. 'fruitCheckHelperWpNode')
+	end
+	self.aiDriverData.fruitCheckHelperWpNode:setToWaypoint(course, ix)
+	local x, _, z = localToWorld(self.aiDriverData.fruitCheckHelperWpNode.node, self.pipeOffsetX, 0, 0)
+	local hasFruit, fruitValue = PathfinderUtil.hasFruit(x, z, 5, self.vehicle.cp.workWidth / 2)
+	self:debug('at waypoint %d pipe in fruit %s (fruitValue %.1f)', ix, tostring(hasFruit), fruitValue or 0)
+	return not hasFruit, fruitValue
 end
 
 function CombineAIDriver:updateLightsOnField()
@@ -599,9 +620,10 @@ end
 ---@param isApproaching boolean if true we are still in the turn approach phase (still working on the field,
 ---not yet reached the turn start
 function CombineAIDriver:holdInTurnManeuver(isApproaching)
-	self:debugSparse('held for unload %s, straw active %s, approaching = %s',
-		tostring(self.heldForUnloadRefill), tostring(self.combine.strawPSenabled), tostring(isApproaching))
-	return self.heldForUnloadRefill or (self.combine.strawPSenabled and not isApproaching)
+	local discharging = self:isDischarging()
+	self:debugSparse('discharging %s, held for unload %s, straw active %s, approaching = %s',
+		tostring(discharging), tostring(self.heldForUnloadRefill), tostring(self.combine.strawPSenabled), tostring(isApproaching))
+	return discharging or self.heldForUnloadRefill or (self.combine.strawPSenabled and not isApproaching)
 end
 
 --- Should we return to the first point of the course after we are done?
@@ -770,15 +792,15 @@ function CombineAIDriver:handlePipe()
 end
 
 function CombineAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or self:has80Percent() then
+	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() then
 		self:openPipe()
 	else
 		self:closePipe()
 	end
 end
 
-function CombineAIDriver:has80Percent()
-	return self.vehicle:getFillUnitFillLevelPercentage(self.combine.fillUnitIndex)*100 >= 80
+function CombineAIDriver:getFillLevelPercentage()
+	return 100 * self.vehicle:getFillUnitFillLevel(self.combine.fillUnitIndex) / self.vehicle:getFillUnitCapacity(self.combine.fillUnitIndex)
 end
 
 --- Support for AutoDrive mod: they'll only find us if we open the pipe
@@ -843,7 +865,7 @@ end
 
 function CombineAIDriver:shouldStopForUnloading(pc)
 	local stop = false
-	if self.vehicle.cp.stopWhenUnloading and self.pipe then
+	if self.vehicle.cp.settings.stopForUnload:is(true) and self.pipe then
 		if self:isDischarging() and g_updateLoopIndex > self.lastEmptyTimestamp + 600 then
 			-- stop only if the pipe is discharging AND we have been emptied a while ago.
 			-- this makes sure the combine will start driving after it is emptied but the trailer
@@ -896,7 +918,7 @@ function CombineAIDriver:canDischarge()
 	return targetObject
 end
 
-function CombineAIDriver:trafficContollOK()
+function CombineAIDriver:trafficControlOK()
 	local ok =  g_trafficController:reserveWithWorkwidth(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx(),speed,self.vehicle.cp.workWidth)
 	if not ok then
 		local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
@@ -1101,4 +1123,70 @@ function CombineAIDriver:fixDischargeDistance(dischargeNode)
 			dischargeNode.maxDistance = safeDischargeNodeMaxDistance
 		end
 	end
+end
+
+function CombineAIDriver:getPipeOffset()
+	return self.pipeOffsetX, self.pipeOffsetZ
+end
+
+--- Pipe side offset relative to course. This is to help the unloader
+--- to find the pipe when we are waiting in a pocket
+function CombineAIDriver:getPipeOffsetFromCourse()
+	return self.pipeOffsetX, self.pipeOffsetZ
+end
+
+function CombineAIDriver:initUnloadStates()
+	self.safeUnloadFieldworkStates = {
+		self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK,
+		self.states.WAITING_FOR_UNLOAD_IN_POCKET,
+		self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED,
+		self.states.WORKING,
+		self.states.UNLOAD_OR_REFILL_ON_FIELD,
+		self.states.WAITING_FOR_UNLOAD_OR_REFILL,
+		self.states.WAITING_FOR_LOWER,
+		self.states.WAITING_FOR_LOWER_DELAYED,
+		self.states.WAITING_FOR_STOP,
+	}
+
+	self.willWaitForUnloadToFinishFieldworkStates = {
+		self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK,
+		self.states.WAITING_FOR_UNLOAD_IN_POCKET,
+		self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED,
+	}
+end
+
+function CombineAIDriver:isFieldworkStateOneOf(states)
+	if self.state ~= self.states.ON_FIELDWORK_COURSE then
+		return false
+	end
+	for _, state in ipairs(states) do
+		if self.fieldworkState == state then
+			return true
+		end
+	end
+	return false
+end
+
+--- Get the fieldwork states when it is safe to unload
+function CombineAIDriver:isStateSafeForUnload()
+	return self:isFieldworkStateOneOf(self.safeUnloadFieldworkStates)
+end
+
+--- Are we ready for an unloader?
+function CombineAIDriver:isReadyToUnload()
+	-- no unloading when not in a safe state (like turning)
+	if not self:isStateSafeForUnload() then return false end
+	-- pipe is in the fruit.
+	if self:isPipeInFruit() then return false end
+	return true
+end
+
+--- Will not move until unload is done? Unloaders like to know this.
+function CombineAIDriver:willWaitForUnloadToFinish()
+	return self.state == self.states.ON_FIELDWORK_COURSE and
+			self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+			(self.vehicle.cp.settings.stopForUnload:is(true) or
+					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
+					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK or
+					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED)
 end

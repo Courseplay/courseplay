@@ -886,13 +886,29 @@ function Course:copy(vehicle)
 	return Course(vehicle, self.waypoints)
 end
 
-
 --- Append a single waypoint to the course
 ---@param waypoint Waypoint
 function Course:appendWaypoint(waypoint)
 	table.insert(self.waypoints, Waypoint(waypoint, #self.waypoints + 1))
 end
 
+--- Extend a course with a straight segment (same direction as last WP)
+---@param length number the length to extend the course with
+---@param dx number	direction to extend
+---@param dz number direction to extend
+function Course:extend(length, dx, dz)
+	local lastWp = self.waypoints[#self.waypoints]
+	local len = self.waypoints[#self.waypoints - 1].dToNext
+	dx, dz = dx or lastWp.dx / len, dz or lastWp.dz / len
+	local wpDistance = 2
+	for _ = wpDistance, math.max(length, wpDistance), wpDistance do
+		lastWp = self.waypoints[#self.waypoints]
+		local x = lastWp.x + dx * wpDistance
+		local z = lastWp.z + dz * wpDistance
+		self:appendWaypoint({x = x, z = z})
+	end
+	self:enrichWaypointData()
+end
 
 function Course:getDirectionToWPInDistance(ix, vehicle, distance)
 	local lx, lz = 0, 1
@@ -966,6 +982,7 @@ function Course:waypointLocalToWorld(ix, x, y, z)
 	tempNode:destroy()
 	return dx,dy,dz
 end
+
 function Course:setNodeToWaypoint(node, ix)
 	local x, y, z = self:getWaypointPosition(ix)
 	setTranslation(node, x, y, z)

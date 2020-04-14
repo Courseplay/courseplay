@@ -567,9 +567,7 @@ function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypo
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     local goal = State3D(goalWaypoint.x, -goalWaypoint.z, courseGenerator.fromCpAngleDeg(goalWaypoint.angle))
     local offset = Vector(zOffset, -xOffset)
-    print(tostring(goal))
     goal:add(offset:rotate(goal.t))
-    print(tostring(goal))
     PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     -- ignore fruit when realistic driving (pathfinding) is off on HUD
     local parameters = PathfinderUtil.Parameters(vehicle.cp.realisticDriving and 50 or math.huge)

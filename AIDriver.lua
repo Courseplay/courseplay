@@ -1349,8 +1349,9 @@ function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fie
 			self.waypointIxAfterPathfinding = ix
 			local done, path
 			self.pathfindingStartedAt = self.vehicle.timer
+			local courseOffsetX, courseOffsetZ = course:getOffset()
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-					self.vehicle, waypoint, 0,zOffset or 0, self.allowReversePathfinding, fieldNum)
+					self.vehicle, waypoint, courseOffsetX,courseOffsetZ + zOffset or 0, self.allowReversePathfinding, fieldNum)
 			if done then
 				return self:onPathfindingDone(path)
 			else
@@ -1525,7 +1526,7 @@ function AIDriver:onUnBlocked()
 	self:debug('Unblocked...')
 end
 
-function AIDriver:trafficContollOK()
+function AIDriver:trafficControlOK()
 	return g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx())
 end
 

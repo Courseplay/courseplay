@@ -59,7 +59,7 @@ function ProximitySensor:raycastCallback(objectId, x, y, z, distance)
 end
 
 function ProximitySensor:getClosestObjectDistance()
-    self:showDebugInfo()
+    --self:showDebugInfo()
     return self.distanceOfClosestObject
 end
 

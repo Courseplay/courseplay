@@ -154,6 +154,7 @@ function PurePursuitController:initialize(ix)
 	self.nextWpNode:setToWaypoint(self.course, self.firstIx)
 	self.wpBeforeGoalPointIx = self.nextWpNode.ix
 	self.currentWpNode:setToWaypoint(self.course, self.firstIx )
+	self.course:setCurrentWaypointIx(ix)
 	self:debug('initialized to waypoint %d of %d', self.firstIx, self.course:getNumberOfWaypoints())
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil

@@ -40,7 +40,6 @@ function courseplay:onLoad(savegame)
 		self.cp.driverPriorityUseFillLevel = false;
 	end
 	self.cp.speedDebugLine = "no speed info"
-	self.cp.stopWhenUnloading = false;
 
 	-- GIANT DLC
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
@@ -583,6 +582,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(SelfUnloadSetting, self)
 	self.cp.settings:addSetting(StartingPointSetting, self)
 	self.cp.settings:addSetting(SymmetricLaneChangeSetting, self)
+	self.cp.settings:addSetting(StopForUnloadSetting, self)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -1614,7 +1614,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		if self.cp.isCombine then
 			curKey = key .. '.courseplay.combine';
 			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#driverPriorityUseFillLevel'), false);
-			self.cp.stopWhenUnloading = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#stopWhenUnloading'), false);
 		end;
 
 		--overLoaderPipe
@@ -1802,7 +1801,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	--combine 
 	if self.cp.isCombine then
 		setXMLBool(xmlFile, newKey..".combine #driverPriorityUseFillLevel", self.cp.driverPriorityUseFillLevel)
-		setXMLBool(xmlFile, newKey..".combine #stopWhenUnloading", self.cp.stopWhenUnloading)
 	end;
 
 	self.cp.settings:saveToXML(xmlFile, newKey)

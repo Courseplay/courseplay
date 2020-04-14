@@ -39,9 +39,6 @@ FieldworkAIDriver.myStates = {
 	WAITING_FOR_STOP = {},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
 	TURNING = {},
-	FORWARD1 = {},
-	FORWARD2 = {},
-	REVERSE = {},
 }
 
 -- Our class implementation does not call the constructor of base classes

@@ -1364,13 +1364,8 @@ function courseplay:toggleDriverPriority(combine)
 end;
 
 function courseplay:toggleStopWhenUnloading(combine)
-	if combine.cp.isChopper then
-		combine.cp.stopWhenUnloading = false;
-		return;
-	end;
-	if combine.cp.stopWhenUnloading == nil then combine.cp.stopWhenUnloading = false; end;
-	combine.cp.stopWhenUnloading = not combine.cp.stopWhenUnloading;
-end;
+	combine.cp.settings.stopForUnload:toggle()
+end
 
 function courseplay:goToVehicle(curVehicle, targetVehicle)
 	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
@@ -2615,6 +2610,20 @@ end
 SymmetricLaneChangeSetting = CpObject(BooleanSetting)
 function SymmetricLaneChangeSetting:init(vehicle)
 	BooleanSetting.init(self, 'symmetricLaneChange', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', vehicle)
+end
+
+---@class StopForUnloadSetting : BooleanSetting
+StopForUnloadSetting = CpObject(BooleanSetting)
+function StopForUnloadSetting:init(vehicle)
+	BooleanSetting.init(self, 'stopForUnload', 'COURSEPLAY_STOP_DURING_UNLOADING', 'COURSEPLAY_STOP_DURING_UNLOADING', vehicle)
+end
+
+function StopForUnloadSetting:checkAndSetValidValue(new)
+	if courseplay:isChopper(self.vehicle) then
+		-- can't activate for choppers
+		return 1
+	end
+	return BooleanSetting.checkAndSetValidValue(self, new)
 end
 
 --- Container for settings
