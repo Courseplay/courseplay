@@ -1939,6 +1939,7 @@ end
 --Useable Mode decision. Check Mode Valid = Check for Specializations.
 function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 	local modeValid = false
+	--Mode3 is still disabled should be (cpModeToCheck == 1 or cpModeToCheck == 2 or cpModeToCheck == 3)
 	--Excluded Filltrigger for (Mode1) and Mode2 (e.g. Watertrailer and Manuretrailer) Mode1 check is Added again later.
 	if ((cpModeToCheck == 1 or cpModeToCheck == 2) and SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1) and not SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
 		modeValid = true;
