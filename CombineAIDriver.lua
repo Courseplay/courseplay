@@ -711,7 +711,7 @@ function CombineAIDriver:handlePipe()
 end
 
 function CombineAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() then
+	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or self:isWaitingForUnload() then
 		self:openPipe()
 	else
 		self:closePipe()
