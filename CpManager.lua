@@ -111,6 +111,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
 	addConsoleCommand( 'cpLoadAIDriver', 'Load a lua file and re-instantiate the current AIDriver', 'loadAIDriver', self )
 
+	addConsoleCommand( 'cpRestoreVehiclePositions', 'Restore all saved vehicle positions', 'restoreVehiclePositions', self )
 	addConsoleCommand( 'cpRestartSaveGame', 'Load and start a savegame', 'restartSaveGame', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
@@ -651,6 +652,10 @@ function CpManager:loadAIDriver()
 		-- re-instantiate the AIDriver after loaded
 		courseplay:setAIDriver(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.cp.mode)
 	end
+end
+
+function CpManager:restoreVehiclePositions()
+	DevHelper.restoreAllVehiclePositions()
 end
 
 function CpManager:restartSaveGame(saveGameNumber)

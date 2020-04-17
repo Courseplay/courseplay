@@ -33,7 +33,7 @@ function ProximitySensor:enable()
     self.enabled = true
 end
 
-function ProximitySensor:enable()
+function ProximitySensor:disable()
     self.enabled = false
 end
 
@@ -145,12 +145,29 @@ function ProximitySensorPack:getClosestObjectDistance(deg)
     end
 end
 
+function ProximitySensorPack:disableRightSide()
+    for _, deg in ipairs(self.directionsDeg) do
+        if deg <= 0 then
+            self.sensors[deg]:disable()
+        end
+    end
+end
+
+function ProximitySensorPack:enableRightSide()
+    for _, deg in ipairs(self.directionsDeg) do
+        if deg <= 0 then
+            self.sensors[deg]:enable()
+        end
+    end
+end
+
 ---@class ForwardLookingProximitySensorPack : ProximitySensorPack
 ForwardLookingProximitySensorPack = CpObject(ProximitySensorPack)
 
 function ForwardLookingProximitySensorPack:init(node, range, height)
     ProximitySensorPack.init(self, node, range, height,{0, 45, 90, -45, -90})
 end
+
 
 ---@class BackwardLookingProximitySensorPack : ProximitySensorPack
 BackwardLookingProximitySensorPack = CpObject(ProximitySensorPack)

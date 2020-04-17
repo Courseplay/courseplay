@@ -421,6 +421,14 @@ function Course:getCurrentWaypointIx()
 	return self.currentWaypoint
 end
 
+function Course:setLastPassedWaypointIx(ix)
+	self.lastPassedWaypoint = ix
+end
+
+function Course:getLastPassedWaypointIx()
+	return self.lastPassedWaypoint
+end
+
 function Course:isReverseAt(ix)
 	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].rev
 end
@@ -756,6 +764,15 @@ end
 function Course:hasWaitPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.wait or p.interact end)
 end
+
+--- Is there an turn (start or end) around ix?
+---@param ix number waypoint index to look around
+---@param distance number distance in meters to look around the waypoint
+---@return boolean true if any of the waypoints are turn start/end point
+function Course:hasTurnWithinDistance(ix, distance)
+	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.turnStart or p.turnEnd end)
+end
+
 
 function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 	-- search backwards first

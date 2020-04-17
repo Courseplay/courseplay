@@ -1178,7 +1178,10 @@ function CombineAIDriver:isReadyToUnload()
 	if not self:isStateSafeForUnload() then return false end
 	-- pipe is in the fruit.
 	if self:isPipeInFruit() then return false end
-	return true
+    -- around a turn, for example already working on the next row but not done with the turn yet
+    local lastIx = self.fieldworkCourse:getLastPassedWaypointIx()
+	if not lastIx or (lastIx and self.fieldworkCourse:hasTurnWithinDistance(lastIx, 10)) then return false end
+    return true
 end
 
 --- Will not move until unload is done? Unloaders like to know this.

@@ -60,16 +60,6 @@ function DevHelper:update()
             self.pack = ForwardLookingProximitySensorPack(self.node, 10)
         end
         self.pack:update()
---[[
-        if not self.proximitySensorForward then
-            self.proximitySensorForward = ProximitySensor(self.node, -180, 10)
-        end
-        self.proximitySensorForward:getClosestObjectDistance()
-        if not self.proximitySensorRight then
-            self.proximitySensorRight = ProximitySensor(self.node, 150, 10)
-        end
-        self.proximitySensorRight:getClosestObjectDistance()
-        ]]--
     end
 
     if self.vehicleData then
@@ -164,6 +154,13 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         -- Left Ctrl + > find path
         self:debug('Calculate')
         self:startPathfinding()
+    elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_space then
+        -- save vehicle position
+        g_currentMission.controlledVehicle.vehiclePositionData = {}
+        DevHelper.saveVehiclePosition(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.vehiclePositionData)
+    elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_space then
+        -- restore vehicle position
+        DevHelper.restoreVehiclePosition(g_currentMission.controlledVehicle)
     end
 end
 
@@ -284,6 +281,39 @@ function DevHelper:showVehicleSize()
             local cp = self.collisionData.corners[i]
             local pp = self.collisionData.corners[i > 1 and i - 1 or 4]
             cpDebug:drawLine(cp.x, cp.y + 0.4, cp.z, 1, 1, 0, pp.x, pp.y + 0.4, pp.z)
+        end
+    end
+end
+
+function DevHelper.saveVehiclePosition(vehicle, vehiclePositionData)
+    local savePosition = function(object)
+        local savedPosition = {}
+        savedPosition.x, savedPosition.y, savedPosition.z = getWorldTranslation(object.rootNode)
+        savedPosition.xRot, savedPosition.yRot, savedPosition.zRot = getWorldRotation(object.rootNode)
+        return savedPosition
+    end
+
+    table.insert(vehiclePositionData, {vehicle, savePosition(vehicle)})
+    for _,impl in pairs(vehicle:getAttachedImplements()) do
+        DevHelper.saveVehiclePosition(impl.object, vehiclePositionData)
+    end
+    courseplay.info('Saved position of %s', nameNum(vehicle))
+end
+
+function DevHelper.restoreVehiclePosition(vehicle)
+    if vehicle.vehiclePositionData then
+        for _, savedPosition in pairs(vehicle.vehiclePositionData) do
+            savedPosition[1]:setAbsolutePosition(savedPosition[2].x, savedPosition[2].y, savedPosition[2].z,
+                    savedPosition[2].xRot, savedPosition[2].yRot, savedPosition[2].zRot)
+            courseplay.info('Restored position of %s', nameNum(savedPosition[1]))
+        end
+    end
+end
+
+function DevHelper.restoreAllVehiclePositions()
+    for _, vehicle in pairs(g_currentMission.vehicles) do
+        if vehicle.vehiclePositionData then
+            DevHelper.restoreVehiclePosition(vehicle)
         end
     end
 end

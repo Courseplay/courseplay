@@ -154,7 +154,8 @@ function PurePursuitController:initialize(ix)
 	self.nextWpNode:setToWaypoint(self.course, self.firstIx)
 	self.wpBeforeGoalPointIx = self.nextWpNode.ix
 	self.currentWpNode:setToWaypoint(self.course, self.firstIx )
-	self.course:setCurrentWaypointIx(ix)
+	self.course:setCurrentWaypointIx(self.firstIx)
+	self.course:setLastPassedWaypointIx(nil)
 	self:debug('initialized to waypoint %d of %d', self.firstIx, self.course:getNumberOfWaypoints())
 	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
@@ -236,6 +237,8 @@ function PurePursuitController:update()
 	self:switchControlledNode()
 	self:findRelevantSegment()
 	self:findGoalPoint()
+	self.course:setCurrentWaypointIx(self.currentWpNode.ix)
+	self.course:setLastPassedWaypointIx(self.lastPassedWaypointIx)
 	self:notifyListeners()
 end
 
@@ -482,7 +485,6 @@ function PurePursuitController:setCurrentWaypoint(ix)
 			self.sendWaypointChange = { current = self.currentWpNode.ix, prev = prevIx }
 		end
 	end
-	self.course:setCurrentWaypointIx(self.currentWpNode.ix)
 end
 
 function PurePursuitController:showGoalpointDiag(case, ...)

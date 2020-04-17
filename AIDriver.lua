@@ -1678,6 +1678,6 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	-- something in range, reduce speed proportionally
 	local deltaV = maxSpeed - AIDriver.proximityMinLimitedSpeed
 	local newSpeed = AIDriver.proximityMinLimitedSpeed + normalizedD * deltaV
-	self:debugSparse('proximity: d = %d %%, speed = %.1f', 100 * normalizedD, newSpeed)
+	self:debugSparse('proximity: d = %.1f (%d %%), speed = %.1f', d, 100 * normalizedD, newSpeed)
 	return newSpeed, allowedToDrive
 end
