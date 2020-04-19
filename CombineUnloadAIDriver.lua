@@ -128,27 +128,14 @@ function CombineUnloadAIDriver:start(startingPoint)
 	-- just to have a course set up in any case for PPC to work with until we find a combine/path
 	self:startCourse(self.unloadCourse, 1)
 
-	--[[
-	local combineToWaitFor
-	self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
-	self:debug('Combine to unload: %s, combine to wait for: %s',
-		self.combineToUnload and self.combineToUnload:getName() or 'N/A',
-		self.combineToWaitFor and self.combineToWaitFor:getName() or 'N/A')
-	local dCombine = self.combineToUnload and courseplay:distanceToObject(self.vehicle, self.combineToUnload) or math.huge
-	dCombine = math.min(dCombine, combineToWaitFor and courseplay:distanceToObject(self.vehicle, combineToWaitFor) or math.huge)
-
-	local _, dClosest, _, _ = self.unloadCourse:getNearestWaypoints(AIDriverUtil.getDirectionNode(self.vehicle))
-	self:debug('Closest combine to unload at %.0f m, closest unload course waypoint at %.0f m', dCombine, dClosest)
-	]]--
-
-	local x,_,z = getWorldTranslation(self:getDirectionNode())
-	if courseplay:isField(x, z) then
-		self:debug('On a field, waiting for a combine to call')
+	if startingPoint:is(StartingPointSetting.START_WITH_UNLOAD) then
+		self:debug('Start unloading, waiting for a combine to call')
 		self:setNewState(self.states.ON_FIELD)
 		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 		self:disableCollisionDetection()
 		self:setDriveUnloadNow(false)
 	else
+		self:debug('Start on unload course')
 		local ix = self.unloadCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 		self:startCourseWithPathfinding(self.unloadCourse, ix, 0, 0)
 		self:setNewState(self.states.ON_STREET)

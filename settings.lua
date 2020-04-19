@@ -1969,6 +1969,12 @@ function Setting:saveToXml(xml, parentKey)
 	-- override
 end
 
+-- For settings where the valid values depend on other conditions, re-evaluate the validity of the
+-- current setting (when for example changed the mode of the vehicle, is the current setting still valid for the new mode)
+function Setting:validateCurrentValue()
+	-- override
+end
+
 ---@class FloatSetting
 FloatSetting = CpObject(Setting)
 --- @param name string name of this settings, will be used as an identifier in containers and XML
@@ -2163,6 +2169,11 @@ function SettingList:getMilliSecondsSinceLastChange()
 	return (g_time - self.lastChangeTimeMilliseconds)
 end
 
+function SettingList:validateCurrentValue()
+	local new = self:checkAndSetValidValue(self.current)
+	self:setToIx(new)
+end
+
 function SettingList:__tostring()
 	local result = string.format('%s:\n', self.name)
 	for i = 1, #self.values do
@@ -2291,6 +2302,16 @@ function StartingPointSetting:init(vehicle)
 				"COURSEPLAY_NEXT_POINT",
 				"COURSEPLAY_UNLOAD"
 			})
+end
+
+function StartingPointSetting:checkAndSetValidValue(new)
+	-- enable unload only for CombineUnloadAIDriver
+	if self.vehicle.cp.driver and self.vehicle.cp.mode ~= courseplay.MODE_COMBI and
+			self.values[new] == StartingPointSetting.START_WITH_UNLOAD then
+		return 1
+	else
+		return SettingList.checkAndSetValidValue(self, new)
+	end
 end
 
 --- Driving mode setting
@@ -2649,6 +2670,12 @@ end
 function SettingsContainer:loadFromXML(xml, parentKey)
 	for _, setting in pairs(self) do
 		setting:loadFromXml(xml, parentKey)
+	end
+end
+
+function SettingsContainer:validateCurrentValues()
+	for k, setting in pairs(self) do
+		setting:validateCurrentValue()
 	end
 end
 

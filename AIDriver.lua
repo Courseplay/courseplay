@@ -164,6 +164,11 @@ function AIDriver:init(vehicle)
 	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
+	-- make sure all vehicle settings are valid for this mode
+	if self.vehicle.cp.settings then
+		self:debug('Validating current settings...')
+		self.vehicle.cp.settings:validateCurrentValues()
+	end
 	self:setHudContent()
 end
 
