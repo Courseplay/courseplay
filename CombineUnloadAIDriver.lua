@@ -226,7 +226,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 				if self:isOkToStartUnloading() then
 					self:startUnloading()
 				else
-					self:startPathfindingToCombine(self.onPathfindingDoneToCombine, 0, -10)
+					self:startPathfindingToCombine(self.onPathfindingDoneToCombine)
 				end
 			else
 				if combineToWaitFor then
