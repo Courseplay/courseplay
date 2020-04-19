@@ -657,7 +657,7 @@ function courseplay:removeActiveCombineFromTractor(vehicle)
 		local driver = vehicle.cp.driver
 		driver:releaseUnloader()
 		driver.combineToUnload = nil
-		driver:setNewOnFieldState(driver.states.FIND_COMBINE)
+		driver:setNewOnFieldState(driver.states.WAITING_FOR_COMBINE_TO_CALL)
 	end;
 	--courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
@@ -1835,7 +1835,7 @@ function courseplay:toggleAssignCombineToTractor(vehicle,line)
 		if combine.cp.assignedUnloaders == nil then
 			combine.cp.assignedUnloaders ={}
 		end
-		combine.cp.assignedUnloaders[vehicle]= true
+		combine.cp.assignedUnloaders[vehicle] = true
 	end
 end
 
@@ -2273,6 +2273,7 @@ StartingPointSetting.START_AT_NEAREST_POINT = 1 -- nearest waypoint regardless o
 StartingPointSetting.START_AT_FIRST_POINT   = 2 -- first waypoint
 StartingPointSetting.START_AT_CURRENT_POINT = 3 -- current waypoint
 StartingPointSetting.START_AT_NEXT_POINT    = 4 -- nearest waypoint with approximately same direction as vehicle
+StartingPointSetting.START_WITH_UNLOAD      = 5 -- start with unloading the combine (only for CombineUnloadAIDriver)
 
 function StartingPointSetting:init(vehicle)
 	SettingList.init(self, 'startingPoint', 'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle,
@@ -2280,13 +2281,15 @@ function StartingPointSetting:init(vehicle)
 		        StartingPointSetting.START_AT_NEAREST_POINT,
 				StartingPointSetting.START_AT_FIRST_POINT  ,
 				StartingPointSetting.START_AT_CURRENT_POINT,
-				StartingPointSetting.START_AT_NEXT_POINT
+				StartingPointSetting.START_AT_NEXT_POINT,
+				StartingPointSetting.START_WITH_UNLOAD
 			},
 			{
 				"COURSEPLAY_NEAREST_POINT",
 				"COURSEPLAY_FIRST_POINT"  ,
 				"COURSEPLAY_CURRENT_POINT",
-				"COURSEPLAY_NEXT_POINT"
+				"COURSEPLAY_NEXT_POINT",
+				"COURSEPLAY_UNLOAD"
 			})
 end
 

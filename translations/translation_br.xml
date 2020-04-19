@@ -274,6 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="Primeiro ponto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="Ponto atual" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="Segundo ponto mais próximo" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Caminho de borda do campo" />
 		<text name="COURSEPLAY_FIELD" 										text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Rota atual carregada)" />

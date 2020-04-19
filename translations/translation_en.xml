@@ -273,6 +273,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="First waypoint" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="Current waypoint" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="Next closest waypoint" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Field edge path" />
 		<text name="COURSEPLAY_FIELD" 										text="Field" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Currently loaded course)" />

@@ -157,8 +157,6 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			combine.cp.wantsCourseplayer = false
 			return combine
 		end
-		local distance = courseplay:distanceToObject(unloader, combine)
-		local timeToTarget = distance / (unloader.cp.speeds.field/3.6)
 		if combine.cp.driverPriorityUseFillLevel then
 			unloaderToAssign = self:getFullestUnloader(combine)
 			self:debug('Priority fill level, best unloader %s', unloaderToAssign and nameNum(unloaderToAssign) or 'N/A')
@@ -167,13 +165,12 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			self:debug('Priority closest, best unloader %s', unloaderToAssign and nameNum(unloaderToAssign) or 'N/A')
 		end
 		if unloaderToAssign == unloader then
-			local timeTillStartUnloading = self.combines[combine].secondsTill80Percent - timeToTarget
-			if combine.cp.driver:isReadyToUnload() and combine.cp.driver:getFillLevelPercentage() > unloader.cp.driver:getFillLevelThreshold() then
-				self:debug("%s: fill level %.1f", nameNum(combine), combine.cp.driver:getFillLevelPercentage())
+			if combine.cp.driver:willWaitForUnloadToFinish() then
+				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), combine.cp.driver:getFillLevelPercentage())
 				self:addUnloaderToCombine(unloader,combine)
 				return combine
 			else
-				return nil,combine,timeTillStartUnloading
+				return nil, combine
 			end
 		end
 	end

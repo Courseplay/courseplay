@@ -77,7 +77,7 @@ function DevHelper:update()
     self.data.x, self.data.y, self.data.z = getWorldTranslation(self.node)
     self.data.fieldNum = courseplay.fields:getFieldNumForPosition(self.data.x, self.data.z)
 
-    self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 2, 2)
+    self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 5, 3.6)
     self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 10, 10)
     self.data.fieldId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
 
@@ -315,6 +315,13 @@ function DevHelper.restoreAllVehiclePositions()
         if vehicle.vehiclePositionData then
             DevHelper.restoreVehiclePosition(vehicle)
         end
+    end
+end
+
+function DevHelper.saveAllVehiclePositions()
+    for _, vehicle in pairs(g_currentMission.vehicles) do
+        vehicle.vehiclePositionData = {}
+        DevHelper.saveVehiclePosition(vehicle, vehicle.vehiclePositionData)
     end
 end
 

@@ -147,6 +147,8 @@ end
 function CombineAIDriver:start(startingPoint)
 	self:removeAllUnloaders()
 	self:addBackwardProximitySensor()
+	self:info('Force stop for unload for the first mode 2 version')
+	self.vehicle.cp.settings.stopForUnload:set(true)
 	UnloadableFieldworkAIDriver.start(self, startingPoint)
 end
 
@@ -489,15 +491,21 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 	end
 	local dToNextTurn = self.course:getDistanceToNextTurn(ix) or -1
 	local lNextRow = self.course:getNextRowLength(ix) or -1
+	local dUntilFull = (self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) - fillLevel) / self.litersPerMeter
 	if dToNextTurn > 0 and lNextRow > 0 and self.litersPerMeter > 0 then
-		local dUntilFull = (self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) - fillLevel) / self.litersPerMeter
 		self:debug('dUntilFull: %.1f m, dToNextTurn: %.1f m, lNextRow = %.1f m', dUntilFull, dToNextTurn, lNextRow)
 		if dUntilFull > dToNextTurn and dUntilFull < dToNextTurn + lNextRow then
 			self:debug('Will be full in the next row' )
 		end
-		local waypointIxWhenFull = self.course:getNextWaypointIxWithinDistance(ix, dUntilFull) or self.course:getNumberOfWaypoints()
-		self:isPipeInFruitAtWaypoint(self.course, waypointIxWhenFull)
 	end
+	local waypointIxWhenFull = self.course:getNextWaypointIxWithinDistance(ix, dUntilFull) or self.course:getNumberOfWaypoints()
+	self:isPipeInFruitAtWaypoint(self.course, waypointIxWhenFull)
+end
+
+function CombineAIDriver:checkFruitAtNode(node, offsetX, offsetZ)
+	local x, _, z = localToWorld(node, offsetX, 0, offsetZ or 0)
+	local hasFruit, fruitValue = PathfinderUtil.hasFruit(x, z, 5, 3)
+	return hasFruit, fruitValue
 end
 
 function CombineAIDriver:isPipeInFruitAtWaypoint(course, ix)
@@ -505,8 +513,7 @@ function CombineAIDriver:isPipeInFruitAtWaypoint(course, ix)
 		self.aiDriverData.fruitCheckHelperWpNode = WaypointNode(nameNum(self.vehicle) .. 'fruitCheckHelperWpNode')
 	end
 	self.aiDriverData.fruitCheckHelperWpNode:setToWaypoint(course, ix)
-	local x, _, z = localToWorld(self.aiDriverData.fruitCheckHelperWpNode.node, self.pipeOffsetX, 0, 0)
-	local hasFruit, fruitValue = PathfinderUtil.hasFruit(x, z, 5, self.vehicle.cp.workWidth / 2)
+	local hasFruit, fruitValue = self:checkFruitAtNode(self.aiDriverData.fruitCheckHelperWpNode.node, self.pipeOffsetX)
 	self:debug('at waypoint %d pipe in fruit %s (fruitValue %.1f)', ix, tostring(hasFruit), fruitValue or 0)
 	return not hasFruit, fruitValue
 end
@@ -1175,9 +1182,13 @@ end
 --- Are we ready for an unloader?
 function CombineAIDriver:isReadyToUnload()
 	-- no unloading when not in a safe state (like turning)
-	if not self:isStateSafeForUnload() then return false end
+	-- TODO: fix this after we are able to unload while driving
+	--if not self:isStateSafeForUnload() then return false end
+	-- in this states we are always ready
+	if self:willWaitForUnloadToFinish() then return true end
 	-- pipe is in the fruit.
 	if self:isPipeInFruit() then return false end
+	if not self.fieldworkCourse then return false end
     -- around a turn, for example already working on the next row but not done with the turn yet
     local lastIx = self.fieldworkCourse:getLastPassedWaypointIx()
 	if not lastIx or (lastIx and self.fieldworkCourse:hasTurnWithinDistance(lastIx, 10)) then return false end
@@ -1188,7 +1199,7 @@ end
 function CombineAIDriver:willWaitForUnloadToFinish()
 	return self.state == self.states.ON_FIELDWORK_COURSE and
 			self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
-			(self.vehicle.cp.settings.stopForUnload:is(true) or
+			((self.vehicle.cp.settings.stopForUnload:is(true) and self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL) or
 					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
 					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK or
 					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED)

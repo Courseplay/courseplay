@@ -273,6 +273,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="スタートポイント" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="記憶中のウェイポイント" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="次のウェイポイント" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="フィールド境界線" />
 		<text name="COURSEPLAY_FIELD" 										text="フィールド" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(現在読み込まれているコース)" />

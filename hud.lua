@@ -1163,8 +1163,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 
 					
 				elseif entry.functionToCall == 'toggleStopWhenUnloading' then
-					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.stopForUnload:getLabel()
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.stopForUnload:getText()
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopForUnload:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.stopForUnload:getText()
 		
 		
 				elseif entry.functionToCall == 'changeHeadlandReverseManeuverType' then

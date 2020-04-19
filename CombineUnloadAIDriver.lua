@@ -62,7 +62,7 @@ CombineUnloadAIDriver.safeManeuveringDistance = 30 -- distance to keep from a co
 CombineUnloadAIDriver.myStates = {
 	ON_FIELD = {},
 	ON_STREET = {},
-	FIND_COMBINE ={},
+	WAITING_FOR_COMBINE_TO_CALL ={},
 	WAITING_FOR_PATHFINDER={},
 	FINDPATH_TO_TRACTOR={},
 	DRIVE_TO_COMBINE = {},
@@ -143,9 +143,9 @@ function CombineUnloadAIDriver:start(startingPoint)
 
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if courseplay:isField(x, z) then
-		self:debug('On a field, start looking for combines')
+		self:debug('On a field, waiting for a combine to call')
 		self:setNewState(self.states.ON_FIELD)
-		self:setNewOnFieldState(self.states.FIND_COMBINE)
+		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 		self:disableCollisionDetection()
 		self:setDriveUnloadNow(false)
 	else
@@ -164,7 +164,7 @@ function CombineUnloadAIDriver:dismiss()
 	self:releaseUnloader()
 	if courseplay:isField(x, z) then
 		self:setNewState(self.states.ON_FIELD)
-		self:setNewOnFieldState(self.states.FIND_COMBINE)
+		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 	end
 	AIDriver.dismiss(self)
 end
@@ -222,7 +222,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:stopAndWait(dt)
 		return
 	end
-	if self.onFieldState == self.states.FIND_COMBINE then
+	if self.onFieldState == self.states.WAITING_FOR_COMBINE_TO_CALL then
 		local timeTillStartUnloading,combineToWaitFor
 		if self:getDriveUnloadNow() or self:getAllTrailersFull() or self:shouldDriveOn() then
 			self:debug('Go to unload course')
@@ -232,17 +232,18 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 		-- check for an available combine but not in every loop, not needed
 		if g_updateLoopIndex % 100 == 0 then
-			self.combineToUnload, combineToWaitFor, timeTillStartUnloading  = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
+			self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 			if self.combineToUnload ~= nil then
 				self:refreshHUD()
+				-- TODO: for now, only unloading stopped combine
 				if self:isOkToStartUnloading() then
 					self:startUnloading()
 				else
-					self:startPathfindingToCombine(self.onPathfindingDoneToCombine, 0, 0)
+					self:startPathfindingToCombine(self.onPathfindingDoneToCombine, 0, -10)
 				end
 			else
 				if combineToWaitFor then
-					courseplay:setInfoText(self.vehicle,string.format("COURSEPLAY_WAITING_FOR_FILL_LEVEL;%s;%d",nameNum(combineToWaitFor),timeTillStartUnloading));
+					courseplay:setInfoText(self.vehicle,string.format("COURSEPLAY_WAITING_FOR_FILL_LEVEL;%s",nameNum(combineToWaitFor)));
 				else
 					courseplay:setInfoText(self.vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
 				end
@@ -305,21 +306,19 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		--if courseplay:distanceToPoint(self.combineToUnload,self.lastCombinesCoords.x,self.lastCombinesCoords.y,self.lastCombinesCoords.z) > 50 then
 		--	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 		--end
+
+		self:setFieldSpeed()
+
 		--use trafficController
 		if not self:trafficControlOK() then
-			local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
-			if blockingVehicle and blockingVehicle ~= self.combineToUnload  and blockingVehicle ~= self.tractorToFollow then
-				g_trafficController:solve(self.vehicle.rootNode)
-				self:hold()
-			end
-		else
-			g_trafficController:resetSolver(self.vehicle.rootNode)
+			self:debugSparse('Traffic conflict, stop.')
+			self:hold()
 		end
 
 		-- stop when too close to a combine not ready to unload (wait until it is done with turning for example)
 		if self:isWithinSafeManeuveringDistance() then
 			self:debugSparse('Too close to maneuvering combine, stop.')
-			self:hold()
+--			self:hold()
 		else
 			self:setFieldSpeed()
 		end
@@ -528,7 +527,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		local _, _, dz = self:getDistanceFromCombine()
 		if dz > 0 then
 			self:releaseUnloader()
-			self:setNewOnFieldState(self.states.FIND_COMBINE)
+			self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 		else
 			self:holdCombine()
 		end
@@ -618,7 +617,8 @@ end
 function CombineUnloadAIDriver:driveBesideCombine(targetNode)
 	-- TODO: this + 2 is a workaround the fact that we use a simple P controller instead of a PI
 	local _, _, dz = localToLocal(targetNode, self.combineToUnload.rootNode, 0, 0, self.combineToUnload.cp.driver.pipeOffsetZ - 2)
-	local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz, -10, 15)
+	-- use a factor of two to make sure we reach the pipe fast
+	local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz * 1.5, -10, 15)
 	self:renderText(0, 0.02, "%s: driveBesideCombine: dz = %.1f, speed = %.1f", nameNum(self.vehicle), dz, speed)
 	DebugUtil.drawDebugNode(targetNode, 'target')
 	self:setSpeed(math.max(0, speed))
@@ -703,7 +703,7 @@ end
 function CombineUnloadAIDriver:onEndCourse()
 	if self.state == self.states.ON_STREET then
 		self:setNewState(self.states.ON_FIELD)
-		self:setNewOnFieldState(self.states.FIND_COMBINE)
+		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 		self:setDriveUnloadNow(false)
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
 		self:disableCollisionDetection()
@@ -714,7 +714,7 @@ function CombineUnloadAIDriver:onLastWaypoint()
 	if self.state == self.states.ON_FIELD then
 		if self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
 			self:setNewState(self.states.ON_STREET)
-			self:setNewOnFieldState(self.states.FIND_COMBINE)
+			self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 			self:enableCollisionDetection()
 			courseplay:openCloseCover(self.vehicle, courseplay.SHOW_COVERS)
 			AIDriver.onLastWaypoint(self)
@@ -724,11 +724,12 @@ function CombineUnloadAIDriver:onLastWaypoint()
 			self:setNewOnFieldState(self.states.FOLLOW_TRACTOR)
 			g_trafficController:cancel(self.vehicle.rootNode)
 		elseif self.onFieldState == self.states.DRIVE_TO_COMBINE then
-			self:debug('reached last waypoint, combine isn\'t here anymore, find path to it again')
+			g_trafficController:cancel(self.vehicle.rootNode)
 			if self:isOkToStartUnloading() then
 				self:startUnloading()
 			else
-				self:startPathfindingToCombine(self.onPathfindingDoneToCombine, 0, 0)
+				self:debug('reached last waypoint, combine isn\'t here anymore, find path to it again')
+				self:startPathfindingToCombine(self.onPathfindingDoneToCombine, 0, -20)
 			end
 		end
 	end
@@ -1368,10 +1369,11 @@ function CombineUnloadAIDriver:isPathFound(path)
 end 
 
 function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, xOffset, zOffset)
-	self:debug('Finding path to %s', self.combineToUnload:getName())
+	xOffset = xOffset or self.combineToUnload.cp.driver:getPipeOffset()
+	zOffset = zOffset or -10
+	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
 	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
-	self:startPathfinding(self.combineToUnload.rootNode, xOffset or self.combineToUnload.cp.driver:getPipeOffset(),
-			zOffset or -10, 0,	self.combineToUnload, onPathfindingDoneFunc)
+	self:startPathfinding(self.combineToUnload.rootNode, xOffset, zOffset, 0,	self.combineToUnload, onPathfindingDoneFunc)
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
@@ -1380,7 +1382,7 @@ function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
 		self:startCourse(driveToCombineCourse, 1)
 		self:setNewOnFieldState(self.states.DRIVE_TO_COMBINE)
 	else
-		self:setNewOnFieldState(self.states.FIND_COMBINE)
+		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 	end
 end
 
@@ -1566,7 +1568,7 @@ function CombineUnloadAIDriver:unloadMovingCombine(dt)
 		else
 			self:debug('combine empty and moving forward')
 			self:releaseUnloader()
-			self:setNewOnFieldState(self.states.FIND_COMBINE)
+			self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 			return
 		end
 	end

@@ -267,6 +267,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="起始点" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="当前点" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="下一个路径点" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="选择地块范围编号" />
 		<text name="COURSEPLAY_FIELD" 										text="地块范围路径编号:" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="当前任务" />
