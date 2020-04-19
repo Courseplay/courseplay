@@ -1936,10 +1936,12 @@ function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
 	return modeValid
 end
 
+--Useable Mode decision. Check Mode Valid = Check for Specializations.
 function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 	local modeValid = false
-	--3,8,9,10 are still disabled
-	if ((cpModeToCheck == 1 or cpModeToCheck == 2) and SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1) then
+	--Mode3 is still disabled should be (cpModeToCheck == 1 or cpModeToCheck == 2 or cpModeToCheck == 3)
+	--Excluded Filltrigger for (Mode1) and Mode2 (e.g. Watertrailer and Manuretrailer) Mode1 check is Added again later.
+	if ((cpModeToCheck == 1 or cpModeToCheck == 2) and SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1) and not SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
 		modeValid = true;
 	elseif cpModeToCheck == 4 then
 		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
@@ -1968,7 +1970,8 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 		then
 			modeValid = true;
 		end
-	elseif cpModeToCheck == 8 and SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
+	--Added Mode1 check again for exclusive check on FillTriggerVehicle, if add in 1st check it will add all Modes to Trailer.
+	elseif (cpModeToCheck == 1 or cpModeToCheck == 8) and SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
 		modeValid = true;
 
 	elseif cpModeToCheck == 9 and courseplay:hasShovel(workTool) then
