@@ -67,8 +67,7 @@ CombineUnloadAIDriver.myStates = {
 	FINDPATH_TO_TRACTOR={},
 	DRIVE_TO_COMBINE = {},
 	DRIVE_TO_TRACTOR={},
-	FINDPATH_TO_COURSE={},
-	DRIVE_TO_UNLOADCOURSE ={},
+	DRIVE_TO_UNLOAD_COURSE ={},
 	DRIVE_BESIDE_TRACTOR ={},
 	ALIGN_TO_TRACTOR = {},
 	GET_ALIGNCOURSE_TO_TRACTOR ={},
@@ -210,10 +209,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		return
 	end
 	if self.onFieldState == self.states.WAITING_FOR_COMBINE_TO_CALL then
-		local timeTillStartUnloading,combineToWaitFor
+		local combineToWaitFor
 		if self:getDriveUnloadNow() or self:getAllTrailersFull() or self:shouldDriveOn() then
-			self:debug('Go to unload course')
-			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+			self:debug('Was waiting for a combine but drive now requested or trailer full')
+			self:startUnloadCourse()
 			return
 		end
 
@@ -230,7 +229,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 				end
 			else
 				if combineToWaitFor then
-					courseplay:setInfoText(self.vehicle,string.format("COURSEPLAY_WAITING_FOR_FILL_LEVEL;%s",nameNum(combineToWaitFor)));
+					courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_WAITING_FOR_FILL_LEVEL;%s", nameNum(combineToWaitFor)));
 				else
 					courseplay:setInfoText(self.vehicle, "COURSEPLAY_NO_COMBINE_IN_REACH");
 				end
@@ -461,16 +460,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self.forwardLookingProximitySensorPack:disableSpeedControl()
 		self:handleChopperWideTurn()
 
-	elseif self.onFieldState == self.states.FINDPATH_TO_COURSE then
-		if self:startCourseWithPathfinding(self.unloadCourse, 1) then
-			self:setNewOnFieldState(self.states.DRIVE_TO_UNLOADCOURSE)
-		else
-			self:hold()
-			self:startCourseWithAlignment(self.unloadCourse, 1)
-			self:setNewOnFieldState(self.states.DRIVE_TO_UNLOADCOURSE)
-		end
-
-	elseif self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
+	elseif self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
 		--use trafficController
 		if not self:trafficControlOK() then
 			-- TODO: don't solve anything for now, just wait
@@ -488,16 +478,12 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_BACK_FULL then
-		local d = self:getDistanceFromCombine()
-		--print(string.format("z(%s)> self.vehicle.cp.turnDiameter * 2(%s)",tostring(z),tostring(self.vehicle.cp.turnDiameter * 2)))
-		if d > self.vehicle.cp.turnDiameter / 2 then
+		local _, _, dz = self:getDistanceFromCombine()
+		if dz > 0 then
 			self:releaseUnloader()
-			self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+			self:startUnloadCourse()
 		else
-			local zDist = self:getZOffsetToCoordsBehind()
-			if zDist < 5 then
-				self:holdCombine()
-			end
+			self:holdCombine()
 		end
 		if self:getImFirstOfTwoUnloaders() and self:getChopperOffset(self.combineToUnload) ~= 0 then
 			if not self:getCombineIsTurning() then
@@ -699,7 +685,7 @@ end
 
 function CombineUnloadAIDriver:onLastWaypoint()
 	if self.state == self.states.ON_FIELD then
-		if self.onFieldState == self.states.DRIVE_TO_UNLOADCOURSE then
+		if self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
 			self:setNewState(self.states.ON_STREET)
 			self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 			self:enableCollisionDetection()
@@ -1281,7 +1267,19 @@ function CombineUnloadAIDriver:isOkToStartUnloading(maxDirectionDifferenceDeg)
 	end
 end
 
---- Start to unload (driving to the pipe/closer to combine)
+------------------------------------------------------------------------------------------------------------------------
+-- Start the course to unload the trailers
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:startUnloadCourse()
+	self:debug('Changing to unload course.')
+	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
+	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
+
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Start to unload the combine (driving to the pipe/closer to combine)
+------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloading()
 	g_trafficController:cancel(self.vehicle.rootNode)
 	if self.combineToUnload.cp.driver:willWaitForUnloadToFinish() then
@@ -1293,8 +1291,11 @@ function CombineUnloadAIDriver:startUnloading()
 	end
 end
 
---- Start to unload a stopped combine
+------------------------------------------------------------------------------------------------------------------------
+-- Start to unload a stopped combine
+------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloadingStoppedCombine()
+	-- get a path to the pipe
 	self:startPathfindingToCombine(self.onPathfindingDoneToStoppedCombine, self.combineToUnload.cp.driver:getPipeOffset(), 0)
 end
 
@@ -1302,17 +1303,21 @@ function CombineUnloadAIDriver:onPathfindingDoneToStoppedCombine(path)
 	if self:isPathFound(path) then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		local dx, _, dz = localDirectionToWorld(AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 1)
+		-- the path ends under the pipe, extend it a little so we can use it during the unload process to
+		-- position the trailer(s) under the pipe
 		driveToCombineCourse:extend(30, dx, dz)
 		self:startCourse(driveToCombineCourse, 1)
 		self:setNewOnFieldState(self.states.UNLOADING_STOPPED_COMBINE)
 	end
 end
 
-
+------------------------------------------------------------------------------------------------------------------------
+-- Start to unload a moving combine
 ---@param skipTurnStart boolean if the current waypoint index of the combine is on a turn start, skip to the
 --- turn end WP instead. This is to avoid starting following a combine at the turn start WP while the combine is
 --- already finishing the course. The current waypoint remains the turn start waypoint during the turn (TODO: review
 --- this legacy behavior)
+------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloadingMovingCombine(skipTurnStart)
 	---@type Course
 	self.combineCourse = self.combineToUnload.cp.driver:getFieldworkCourse()
@@ -1360,7 +1365,9 @@ function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, 
 	zOffset = zOffset or -10
 	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
 	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
-	self:startPathfinding(self.combineToUnload.rootNode, xOffset, zOffset, 0,	self.combineToUnload, onPathfindingDoneFunc)
+	-- TODO: here we may have to pass in the combine to ignore once we start driving to a moving combine, at least
+	-- when it is on the headland.
+	self:startPathfinding(self.combineToUnload.rootNode, xOffset, zOffset, 0,	nil, onPathfindingDoneFunc)
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
@@ -1419,18 +1426,18 @@ function CombineUnloadAIDriver:onPathfindingDoneBeforeFollowing(path)
 end
 
 function CombineUnloadAIDriver:startPathfinding(
-		target, xOffset, zOffset, fieldNum, targetVehicle,
-pathfindingCallbackFunc)
+		target, xOffset, zOffset, fieldNum, vehicleToIgnore,
+		pathfindingCallbackFunc)
 	if not self.pathfinder or not self.pathfinder:isActive() then
 		local done, path
 		self.pathfindingStartedAt = self.vehicle.timer
 
 		if type(target) ~= 'number' then
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding, fieldNum, {targetVehicle})
+					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding, fieldNum, { vehicleToIgnore })
 		else
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding, fieldNum, {targetVehicle})
+					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding, fieldNum, { vehicleToIgnore })
 		end
 		if done then
 			return pathfindingCallbackFunc(self, path)
@@ -1499,11 +1506,24 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:unloadStoppedCombine()
 	self:changeToUnloadWhenFull()
-	if self.combineToUnload.cp.driver:unloadFinished() then
-		self:debug('finished unloading stopped combine, move back a bit to make room for it to continue')
-		local reverseCourse = self:getStraightReverseCourse()
-		self:startCourse(reverseCourse,1)
-		self:setNewOnFieldState(self.states.DRIVE_BACK_FROM_EMPTY_COMBINE)
+	local combineDriver = self.combineToUnload.cp.driver
+	if combineDriver:unloadFinished() then
+		if combineDriver:isWaitingForUnloadAfterCourseEnded() then
+			if combineDriver:getFillLevelPercentage() < 0.1 then
+				self:debug('Finished unloading combine at end of fieldwork, changing to unload course')
+				local reverseCourse = self:getStraightReverseCourse()
+				self:startCourse(reverseCourse, 1)
+				self:setNewOnFieldState(self.states.DRIVE_BACK_FULL)
+			else
+				local targetNode = self:getTrailersTargetNode()
+				self:driveBesideCombine(targetNode)
+			end
+		else
+			self:debug('finished unloading stopped combine, move back a bit to make room for it to continue')
+			local reverseCourse = self:getStraightReverseCourse()
+			self:startCourse(reverseCourse,1)
+			self:setNewOnFieldState(self.states.DRIVE_BACK_FROM_EMPTY_COMBINE)
+		end
 	else
 		local targetNode = self:getTrailersTargetNode()
 		self:driveBesideCombine(targetNode)
@@ -1525,9 +1545,9 @@ function CombineUnloadAIDriver:unloadMovingCombine(dt)
 
 	--when trailer is full then go to unload
 	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
-		print(nameNum(self.vehicle)..": trailer full, set self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)")
+		self:debug('drive now requested or trailer full.')
 		self:releaseUnloader()
-		self:setNewOnFieldState(self.states.FINDPATH_TO_COURSE)
+		self:startUnloadCourse()
 		return
 	end
 

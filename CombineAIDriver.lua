@@ -925,18 +925,6 @@ function CombineAIDriver:canDischarge()
 	return targetObject
 end
 
-function CombineAIDriver:trafficControlOK()
-	local ok =  g_trafficController:reserveWithWorkwidth(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx(),speed,self.vehicle.cp.workWidth)
-	if not ok then
-		local blockingVehicle = g_currentMission.nodeToObject[g_trafficController:getBlockingVehicleId(self.vehicle.rootNode)]
-		if blockingVehicle and blockingVehicle == g_combineUnloadManager:getUnloaderByNumber(1,self.vehicle) then
-			ok = true
-		end
-	end
-	-- TODO: revise this, the special handling of the unloader, for now, just ignore
-	return true
-end
-
 function CombineAIDriver:isDischarging()
 	if self.pipe then
 		return self.pipe:getDischargeState() ~= Dischargeable.DISCHARGE_STATE_OFF
