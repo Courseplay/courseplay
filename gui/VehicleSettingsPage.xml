@@ -36,29 +36,29 @@
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
 			<!-- Option 4 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 5 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 6 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 		</GuiElement>
 	</GuiElement>
 	
@@ -120,39 +120,39 @@
 	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="860px -130px" id="container">
 		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px 0px" >
 			<!-- Option 1 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 2 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 3 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 4 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 5 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
@@ -160,13 +160,13 @@
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
 			<!-- Option 6 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 		</GuiElement>
 	</GuiElement>
 	
@@ -174,53 +174,53 @@
 	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="1290px -130px" id="container">
 		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px 0px" >
 			<!-- Option 1 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 2 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 3 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 4 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 5 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 			<!-- Option 6 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<!--<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement>
+			</GuiElement>-->
 		</GuiElement>
 	</GuiElement>		
 </GUI>
