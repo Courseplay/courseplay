@@ -719,7 +719,7 @@ function CombineAIDriver:handleCombinePipe()
 end
 
 function CombineAIDriver:shouldCombineOpenPipeWhileWaitingForUnload()
-	return self.vehicle.cp.stopWhenUnloading and self:isWaitingForUnload()
+	return self.vehicle.cp.openPipeWhenWaiting and self:isWaitingForUnload()
 end
 
 --- Support for AutoDrive mod: they'll only find us if we open the pipe
