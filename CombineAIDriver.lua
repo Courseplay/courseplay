@@ -711,13 +711,16 @@ function CombineAIDriver:handlePipe()
 end
 
 function CombineAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or self:isWaitingForUnload() then
+	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or self:shouldCombineOpenPipeWhileWaitingForUnload() then
 		self:openPipe()
 	else
 		self:closePipe()
 	end
 end
 
+function CombineAIDriver:shouldCombineOpenPipeWhileWaitingForUnload()
+	return self.vehicle.cp.stopWhenUnloading and self:isWaitingForUnload()
+end
 
 --- Support for AutoDrive mod: they'll only find us if we open the pipe
 function CombineAIDriver:isAutoDriveWaitingForPipe()

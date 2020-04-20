@@ -41,6 +41,7 @@ function courseplay:onLoad(savegame)
 	end
 	self.cp.speedDebugLine = "no speed info"
 	self.cp.stopWhenUnloading = false;
+	self.cp.openPipeWhenWaiting = false;
 
 	-- GIANT DLC
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
@@ -1629,6 +1630,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 			curKey = key .. '.courseplay.combine';
 			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#driverPriorityUseFillLevel'), false);
 			self.cp.stopWhenUnloading = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#stopWhenUnloading'), false);
+			self.cp.openPipeWhenWaiting = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#openPipeWhenWaiting'), false);
 		end;
 
 		--overLoaderPipe
@@ -1817,6 +1819,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	if self.cp.isCombine then
 		setXMLBool(xmlFile, newKey..".combine #driverPriorityUseFillLevel", self.cp.driverPriorityUseFillLevel)
 		setXMLBool(xmlFile, newKey..".combine #stopWhenUnloading", self.cp.stopWhenUnloading)
+		setXMLBool(xmlFile, newKey..".combine #openPipeWhenWaiting", self.cp.openPipeWhenWaiting)
 	end;
 
 	self.cp.settings:saveToXML(xmlFile, newKey)

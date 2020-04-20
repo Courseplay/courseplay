@@ -1174,8 +1174,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'toggleStopWhenUnloading' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_STOP_DURING_UNLOADING');
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.stopWhenUnloading and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-		
-		
+
+				elseif entry.functionToCall == 'toggleOpenPipeWhenWaiting' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPEN_PIPE_WHEN_WAITING');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.openPipeWhenWaiting and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+
 				elseif entry.functionToCall == 'changeHeadlandReverseManeuverType' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE')
 					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc( courseplay.headlandReverseManeuverTypeText[ vehicle.cp.headland.reverseManeuverType ])
@@ -2440,7 +2443,8 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 	else
 		self:addRowButton(vehicle,'toggleDriverPriority', 0, 4, 1 )
 		self:addRowButton(vehicle,'toggleStopWhenUnloading', 0, 5, 1 )
-		self:addRowButton(vehicle,'changeHeadlandReverseManeuverType', 0, 6, 1 )
+		self:addRowButton(vehicle,'toggleOpenPipeWhenWaiting', 0, 6, 1 )
+		self:addRowButton(vehicle,'changeHeadlandReverseManeuverType', 0, 7, 1 )
 	end
 	self:setReloadPageOrder(vehicle, -1, true)
 end

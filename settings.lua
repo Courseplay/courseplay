@@ -1397,6 +1397,15 @@ function courseplay:toggleStopWhenUnloading(combine)
 	combine.cp.stopWhenUnloading = not combine.cp.stopWhenUnloading;
 end;
 
+function courseplay:toggleOpenPipeWhenWaiting(combine)
+	if combine.cp.isChopper then
+		combine.cp.openPipeWhenWaiting = false;
+		return;
+	end;
+	if combine.cp.openPipeWhenWaiting == nil then combine.cp.openPipeWhenWaiting = false; end;
+	combine.cp.openPipeWhenWaiting = not combine.cp.openPipeWhenWaiting;
+end;
+
 function courseplay:goToVehicle(curVehicle, targetVehicle)
 	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
 	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_currentMission.missionInfo.playerStyle, g_currentMission.player.ownerFarmId));

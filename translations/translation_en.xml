@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Covers" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Remove combine assignment" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Stop during unloading" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Open pipe when waiting for unload" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="is slipping" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Refill until:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": Bunker silo is full!" />
