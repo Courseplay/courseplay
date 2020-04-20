@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Planen" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Drescher-Zuordnung entfernen" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Während dem Abladen anhalten" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Öffnen Sie das Rohr, wenn Sie auf das Entladen warten" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text=": durchdrehende Reifen" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Auffüllen bis:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": Bunkersilo ist voll!" />

@@ -291,6 +291,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Ponyva:" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Kombájnkijelölés eltávolítása" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Kirakodás közben leállít" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Nyissa ki a csövet, amikor kirakodásra vár" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="kipörög" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Újratölteni:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": a BGA siló tele van!" />

@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Copertura" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Rimuovere assegnazione trebbia" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Fermarsi durante lo scarico" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Aprire il tubo in attesa di scarico" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="sta slittando" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Riempire rimorchio fino al:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": il silo è pieno!" />

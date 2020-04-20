@@ -291,6 +291,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Lonas" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Cancelar la asignación a esta cosechadora" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Detenerse durante la descarga" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Abra la tubería al esperar la descarga" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="no puede continuar" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Llenar hasta:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": el silo ésta lleno!" />

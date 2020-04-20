@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="カバー" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="コンバインの割り当てを解除" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="アンロード時に停止" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="アンロードを待つときにパイプを開く" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="スタック中" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="補給まで:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": バンカーサイロがいっぱいです!" />

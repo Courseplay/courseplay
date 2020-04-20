@@ -296,6 +296,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Cobertura" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Remover designação da ceifadeira" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Parar durante descarregamento" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Tubo aberto ao aguardar descarregamento" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="está patinando" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Encher até" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": Silo está cheio!" />

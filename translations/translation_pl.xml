@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING"							 	text="Plandeka:" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR"			 	text="Usuń zadanie kombajnu" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING"			 		 	text="Zatrzymaj podczas rozładunku" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Otwórz rurę podczas oczekiwania na rozładunek" />
 		<text name="COURSEPLAY_SLIPPING_WARNING"						 	text="ślizga się" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT"						 	text="Uzupełnij do:" />
 		<text name="COURSEPLAY_BGA_IS_FULL"								 	text=": Silos bunkrowy jest pełny!" />

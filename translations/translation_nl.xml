@@ -291,6 +291,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Zeilen" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Verwijder combine opdracht" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Stop tijdens lossen" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Open de buis tijdens het wachten op lossen" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="Slippend" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Bijvullen tot:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": Bunker silo is vol!" />

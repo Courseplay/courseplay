@@ -295,6 +295,7 @@
     <text name="COURSEPLAY_COVER_HANDLING" 						 		text="Bâche" />
     <text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Retirer l'affectation à cette batteuse" />
     <text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Arrêter pendant le déchargement" />
+    <text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Ouvrir le tuyau en attendant le déchargement" />
     <text name="COURSEPLAY_SLIPPING_WARNING" 					 		text="patine" />
     <text name="COURSEPLAY_REFILL_UNTIL_PCT" 					 		text="Remplir jusqu'à:" />
     <text name="COURSEPLAY_BGA_IS_FULL" 						 		text=": le silo est plein!" />

@@ -289,6 +289,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="拖斗盖子" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="删除指定的收割机" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="卸载时停车" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="等待卸载时打开管道" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="车辆打滑！" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="重新填充:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=":青贮池已满!" />

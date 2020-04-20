@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Тент:" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Удалить комбайн из списка" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Стоять при разгрузке:" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Открытая труба в ожидании разгрузки" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="забуксовал." />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Наполнять до:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": силосная яма заполнена!" />

@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Prevleke" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Odstrani dodelitev kombajna" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="UStavi med odlaganjem" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Med čakanjem na razkladanje odprite cev" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="zdrsava" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Napolni do:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": Koritast silos je poln!" />

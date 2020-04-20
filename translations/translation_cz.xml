@@ -295,6 +295,7 @@
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Plachta/Kryt vleku:" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Odstraň přiřezení ke kombajnu" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Zastavit při vykládání:" />
+		<text name="COURSEPLAY_OPEN_PIPE_WHEN_WAITING" 						text="Při čekání na vyložení otevřete potrubí" />
 		<text name="COURSEPLAY_SLIPPING_WARNING" 							text="se zasekl" />
 		<text name="COURSEPLAY_REFILL_UNTIL_PCT" 							text="Naplnit do:" />
 		<text name="COURSEPLAY_BGA_IS_FULL" 								text=": Bunker je plný!" />
