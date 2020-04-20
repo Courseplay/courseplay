@@ -155,7 +155,7 @@
     <text name="COURSEPLAY_TOOL_OFFSET_X" 						 		text="Outil: décalage latéral" />
     <text name="COURSEPLAY_TOOL_OFFSET_Z" 						 		text="Outil: décalage av/ar" />
     <text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_X" 						text="Charg./Décharg. décalage latéral" />
-    <text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 						text="Charg./Décharg./Attente décalage av/ar" />
+    <text name="COURSEPLAY_LOAD_UNLOAD_OFFSET_Z" 						text="Charg./Décharg. décalage av/ar" />
     <text name="COURSEPLAY_FRONT" 							 			text="avant" />
     <text name="COURSEPLAY_BACK" 							 			text="arrière" />
     <text name="COURSEPLAY_WORK_WIDTH" 						 			text="Largeur de travail" />
@@ -447,8 +447,8 @@
     <text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salaire des ouvriers Courseplay en pourcentage du salaire des ouvriers normaux" />
     <text name="COURSEPLAY_SELF_UNLOAD"				   					text="Vider la batteuse" />
     <text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="La batteuse va vider automatiquement lorsqu'elle est pleine et qu'il y a une remorque à proximité" />		
-    		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+    		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Marche arrière avec Pathfinding" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Permet à Pathfinding de faire une manoeuvre incluant une marche arrière (uniquement pour les outils portés)" />
 		<!-- Replace marker, do not remove! -->
   </texts>
 </l10n>
