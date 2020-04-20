@@ -358,17 +358,17 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text='CP: Schaufel auf Position vor Abladen setzen' />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text='CP: Schaufel auf Position Abladen setzen' />
 		
-		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Ein/Aus" />
-		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Rückgängig" />
-		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Kursänderung speichern" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Wegpunktgeschwindigkeit erhöhen" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Wegpunktgeschwindigkeit veringern" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Wegpunkt löschen" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Lösche nächsten Wegpunkt" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Lösche Wegpunkt bis Start" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Lösche Wegpunkt bis Ende" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Wegpunkt einfügen" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Wegpunkttyp ändern" />
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="CP Editor: Ein Aus" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="CP Editor: Rueckgaengig" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="CP Editor: Kursaenderung speichern" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="CP Editor: Geschwindigkeit erhoehen" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="CP Editor: Geschwindigkeit veringern" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="CP Editor: Wegpunkt löschen" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="CP Editor: Loesche nächsten Wegpunkt" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="CP Editor: Loesche Wegpunkt bis Start" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CP Editor: Loesche Wegpunkt bis Ende" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CP Editor: Wegpunkt einfuegen" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP Editor: Wegpunkttyp aendern" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wartepunkt" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Kreuzungspunkt" />
