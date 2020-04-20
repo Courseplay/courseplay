@@ -790,43 +790,15 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 				workTool:setPipeState(1)
 			end
 		end
-		local pelletsFillLevel = workTool:getUnitFillLevel(workTool.pelletizer.fillUnitIndex)
-		local pelletsCapacity = workTool:getUnitCapacity(workTool.pelletizer.fillUnitIndex)
-		local molassesFillLevel = workTool.manualMolassesRefill and workTool:getUnitFillLevel(workTool.pelletizer.molassesFillUnitIndex) or 100
-		local waterFillLevel = workTool.manualWaterRefill and workTool:getUnitFillLevel(workTool.pelletizer.waterFillUnitIndex) or 100
-		local stopForRefill = false
-		local refillMessage = ""
-		if molassesFillLevel <= 0 then
-			stopForRefill = true
-			refillMessage = refillMessage..courseplay:loc('COURSEPLAY_FillType_Molasses')
-		end
-		
-		if waterFillLevel <= 0 then
-			stopForRefill = true
-			if string.len(refillMessage) > 0 then
-				refillMessage = refillMessage..", "
-			end
-			refillMessage = refillMessage..g_i18n:getText("fillType_water")
-		end
-			
-		if stopForRefill then
-			if #workTool.waterTrailerFillTriggers >0  then
-				workTool:setIsWaterTrailerFilling(true)
-			end
-			if #workTool.fillTriggers > 0 and not workTool.isFilling then
-				workTool:setIsFilling(true)
-			end
-			allowedToDrive = false
- 			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
-		end
-		
+
 		return false ,allowedToDrive;
 	
 	elseif workTool.cp.isStrawHarvestAddonBaler then
-		local supplyFillLevel = workTool.supplies.active and workTool:getUnitFillLevel(workTool.supplies.fillUnitIndex) or 100;
+		local spec = workTool.spec_strawHarvestRefillSupplies
+		local supplyFillLevel = spec.isActive and workTool:getUnitFillLevel(spec.supplies[1].fillUnitIndex) or 100;
 		local refillMessage = "";
 		local stoppedForReason = false;
-		
+
 		if supplyFillLevel <= 0 then
 			stoppedForReason = true;
 			if workTool.cp.isKroneComprimaV180XC then
@@ -834,15 +806,15 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 			elseif 	workTool.cp.isKroneBigPack1290HDPII then
 				refillMessage = courseplay:loc('COURSEPLAY_FillType_BaleTwine')
 			end
-			if not workTool:getIsSupplyCoverOpen() and not workTool.isSupplyCoverOpening then
-				workTool:setIsSupplyCoverOpening(true)
+			if spec.hasCover and not spec:isRefillCoverOpen() then
+				spec:setIsRefillCoverOpen(true)
 			end
 			if #workTool.fillTriggers > 0 and not workTool.isFilling then
 				workTool:setIsFilling(true)
 			end
 		else
-			if workTool:getIsSupplyCoverOpen() then
-				workTool:setIsSupplyCoverOpening(false);
+			if spec.hasCover and spec:isRefillCoverOpen() then
+				spec:setIsRefillCoverOpen(false)
 			end
 			if workTool:getIsAnimationPlaying("lowerTwineBox") then
 				stoppedForReason = true;
@@ -851,10 +823,10 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 
 		if stoppedForReason then	
 			allowedToDrive = false
-			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING',nil,refillMessage);
+			CpManager:setGlobalInfoText(self, 'NEEDS_REFILLING', nil, refillMessage);
 		end
 		
-		return false ,allowedToDrive,stoppedForReason;
+		return false, allowedToDrive, stoppedForReason
 	end;
 
 	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence

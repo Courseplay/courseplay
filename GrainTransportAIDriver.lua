@@ -92,7 +92,6 @@ function GrainTransportAIDriver:drive(dt)
 		-- we drive the course as usual
 		self:driveCourse(dt)
 	end
-	self:resetSpeed()
 end
 
 function GrainTransportAIDriver:onWaypointChange(newIx)

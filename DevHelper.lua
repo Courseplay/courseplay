@@ -39,7 +39,8 @@ function DevHelper:update()
     if not CpManager.isDeveloper then return end
     local lx, lz, hasCollision, vehicle
 
-    if g_currentMission.controlledVehicle then
+    -- make sure not calling this for something which does not have courseplay installed (only ones with spec_aiVehicle)
+    if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle.spec_aiVehicle then
 
         if self.vehicle ~= g_currentMission.controlledVehicle then
             PathfinderUtil.setUpVehicleCollisionData(g_currentMission.controlledVehicle)

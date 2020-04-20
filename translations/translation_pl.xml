@@ -446,7 +446,7 @@
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Procent jaki dostają pracownicy Courseplay względem wynagrodzenia zwykłych pracowników" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Samoczynny rozładunek kombajnu" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Kombjan rozładuje się samoczynnie gdy jest pełen, a w poblizu znajduje się przyczepa" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Cofanie przy wyszukiwaniu ścieżki na nawrotach" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Zezwól na wyszukiwanie ścieżki przy nawracaniu, która wymaga cofania (tylko przy maszynach podwieszanych)" />
 		<!-- Replace marker, do not remove! --></texts>
 </l10n>

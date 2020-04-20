@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="47">
-	<version>6.01.00397</version>
+	<version>6.01.00398</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title><!-- en=English de=German fr=French es=Spanish ru=Russian pl=Polish it=Italian br=Brazilian-Portuguese cs=Chinese(Simplified) ct=Chinese(Traditional) cz=Czech nl=Netherlands hu=Hungary jp=Japanese kr=Korean pt=Portuguese ro=Romanian tr=Turkish -->
 		<en>CoursePlay SIX</en>
@@ -133,37 +133,37 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
             <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_9" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_EDITOR_TOGGLE">
-            <binding device="KB_MOUSE_DEFAULT" input="e" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_KP_0" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_EDITOR_UNDO">
-            <binding device="KB_MOUSE_DEFAULT" input="z" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl z" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_EDITOR_SAVE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_f6" />
         </actionBinding>
   <actionBinding action="COURSEPLAY_EDITOR_SPEED_INCREASE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_2" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_2" />
         </actionBinding>
  	<actionBinding action="COURSEPLAY_EDITOR_SPEED_DECREASE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_1" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_1" />
         </actionBinding>
   <actionBinding action="COURSEPLAY_EDITOR_DELETE_WAYPOINT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_5" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_5" />
         </actionBinding>
   <actionBinding action="COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_6" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_6" />
         </actionBinding>
   <actionBinding action="COURSEPLAY_EDITOR_DELETE_TO_START">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_leftbracket" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_leftbracket" />
         </actionBinding>
   <actionBinding action="COURSEPLAY_EDITOR_DELETE_TO_END">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_rightbracket" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_rightbracket" />
         </actionBinding>
  	<actionBinding action="COURSEPLAY_EDITOR_INSERT_WAYPOINT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_7" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_7" />
         </actionBinding>
   <actionBinding action="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_8" />
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_8" />
         </actionBinding>
 		<!-- Possible to delete blank input bindings -->
 		<actionBinding action="COURSEPLAY_STOP_AT_END">
