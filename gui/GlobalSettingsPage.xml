@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI name="globalSettingsPage">
+	<!-- Infobox -->
 	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="0px -130px" id="container">
-		<!-- column 1 -->
+		<GuiElement type="bitmap" profile="ingameMenuHelpRowBg" position="80px 80px" id="ingameMenuHelpBox" visible="true">
+			<GuiElement type="bitmap" profile="ingameMenuHelpRowIcon" />
+			<GuiElement type="text" profile="ingameMenuHelpRowText" id="ingameMenuHelpBoxText" text="" onTextChanged="onIngameMenuHelpTextChanged"/>
+		</GuiElement>
+	</GuiElement>
+	<!-- column 1 -->
+	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="0px -130px" id="container">
 		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="50px 0px" >
+			<!-- Option 1 -->
 			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="loadCoursesAtStartup" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
@@ -42,12 +50,6 @@
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
-
-		</GuiElement>
-
-		<GuiElement type="bitmap" profile="cpIngameMenuHelpRowBg" position="80px 80px" id="ingameMenuHelpBox" visible="true">
-			<GuiElement type="bitmap" profile="ingameMenuHelpRowIcon" />
-			<GuiElement type="text" profile="ingameMenuHelpRowText" id="ingameMenuHelpBoxText" text="" onTextChanged="onIngameMenuHelpTextChanged"/>
 		</GuiElement>		
 	</GuiElement>
 </GUI>
