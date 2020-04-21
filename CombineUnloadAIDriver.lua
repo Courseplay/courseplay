@@ -467,8 +467,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_BACK_FULL then
-		local _, _, dz = self:getDistanceFromCombine()
-		if dz > 0 then
+		local _, dx, dz = self:getDistanceFromCombine()
+		-- drive back way further if we are behind a chopper to have room
+		local dDriveBack = dx < 3 and 0.75 * self.vehicle.cp.turnDiameter or 0
+		if dz > dDriveBack then
 			self:releaseUnloader()
 			self:startUnloadCourse()
 		else
@@ -1270,7 +1272,6 @@ function CombineUnloadAIDriver:startUnloadCourse()
 	self:debug('Changing to unload course.')
 	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
 	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
-
 end
 
 ------------------------------------------------------------------------------------------------------------------------

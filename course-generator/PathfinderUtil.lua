@@ -389,7 +389,7 @@ function PathfinderUtil.getNodePenalty(node, context)
     if isField then
         local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, areaSize, areaSize)
         if hasFruit and fruitValue > context.parameters.maxFruitPercent then
-            penalty = penalty + fruitValue / 10
+            penalty = penalty + fruitValue / 2
         end
     end
     return penalty
