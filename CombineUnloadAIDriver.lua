@@ -439,14 +439,12 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 	elseif self.onFieldState == self.states.HANDLE_CHOPPER_180_TURN then
 
-		-- we'll take care of controlling our speed, don't need ADriver for that
-		self.forwardLookingProximitySensorPack:disableSpeedControl()
+		self.forwardLookingProximitySensorPack:enableSpeedControl()
 		self:handleChopper180Turn()
 
 	elseif self.onFieldState == self.states.HANDLE_CHOPPER_WIDE_TURN then
 
-		-- we'll take care of controlling our speed, don't need ADriver for that
-		self.forwardLookingProximitySensorPack:disableSpeedControl()
+		self.forwardLookingProximitySensorPack:enableSpeedControl()
 		self:handleChopperWideTurn()
 
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
@@ -1680,11 +1678,10 @@ function CombineUnloadAIDriver:handleChopperWideTurn()
 		local speed = combineSpeed + MathUtil.clamp(d - self.minDistanceFromWideTurnChopper, -combineSpeed, self.vehicle.cp.speeds.field)
 		self:setSpeed(speed)
 		self:renderText(0, 0.7, 'd = %.1f, speed = %.1f', d, speed)
-
 	else
 		-- chopper is ending/ended turn, go back to follow mode
 		self:startCourseFollowingCombine(true)
-		self:setNewOnFieldState(self.states.UNLOADING_MOVING_COMBINE)
+		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
 	end
 end
 

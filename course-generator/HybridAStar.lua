@@ -655,21 +655,12 @@ function HybridAStarWithAStarInTheMiddle:start(start, goal, turnRadius, userData
 	self.hybridRange = self.hybridRange and self.hybridRange or turnRadius * 3
 	-- how far is start/goal apart?
 	self.startNode:updateH(self.goalNode, turnRadius)
-	-- do we even need to use the normal A star or the nodes are close enough that the hybrid A star will be fast enough?
-	if false and self.startNode:getCost() < self.hybridRange * 3 then
-		self.phase = self.ALL_HYBRID
-        self:debug('Goal is closer than %d, use one phase pathfinding only', self.hybridRange * 3)
-		self.coroutine = coroutine.create(self.hybridAStarPathfinder.findPath)
-		self.currentPathfinder = self.hybridAStarPathfinder
-		return self:resume(self.startNode, self.goalNode, turnRadius, self.userData, self.allowReverse, getNodePenaltyFunc, isValidNodeFunc, isValidAnalyticPathNodeFunc)
-	else
-		self.phase = self.MIDDLE
-        self:debug('Finding direct path between start and goal...')
-		self.coroutine = coroutine.create(self.aStarPathfinder.findPath)
-		self.currentPathfinder = self.aStarPathfinder
-		self.userData.reverseHeading = false
-		return self:resume(self.startNode, self.goalNode, turnRadius, self.userData, false, getNodePenaltyFunc, isValidNodeFunc, isValidAnalyticPathNodeFunc)
-	end
+	self.phase = self.MIDDLE
+	self:debug('Finding direct path between start and goal...')
+	self.coroutine = coroutine.create(self.aStarPathfinder.findPath)
+	self.currentPathfinder = self.aStarPathfinder
+	self.userData.reverseHeading = false
+	return self:resume(self.startNode, self.goalNode, turnRadius, self.userData, false, getNodePenaltyFunc, isValidNodeFunc, isValidAnalyticPathNodeFunc)
 end
 
 --- The resume() of this pathfinder is more complicated as it handles essentially three separate pathfinding runs
@@ -694,6 +685,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 			if not path then return true, nil end
 			local lMiddlePath = HybridAStar.length(path)
 			self:debug('Direct path is %d m', lMiddlePath)
+			-- do we even need to use the normal A star or the nodes are close enough that the hybrid A star will be fast enough?
 			if lMiddlePath < self.hybridRange * 3 then
 				self.phase = self.ALL_HYBRID
 				self:debug('Goal is closer than %d, use one phase pathfinding only', self.hybridRange * 3)

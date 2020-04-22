@@ -627,7 +627,7 @@ end
 ---@param isApproaching boolean if true we are still in the turn approach phase (still working on the field,
 ---not yet reached the turn start
 function CombineAIDriver:holdInTurnManeuver(isApproaching)
-	local discharging = self:isDischarging()
+	local discharging = self:isDischarging() and not self:isChopper()
 	self:debugSparse('discharging %s, held for unload %s, straw active %s, approaching = %s',
 		tostring(discharging), tostring(self.heldForUnloadRefill), tostring(self.combine.strawPSenabled), tostring(isApproaching))
 	return discharging or self.heldForUnloadRefill or (self.combine.strawPSenabled and not isApproaching)
