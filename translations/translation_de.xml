@@ -434,7 +434,6 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug zum einsteigen" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rohr immer ausfahren" />
 		<text name="COURSEPLAY_PIPE_YES_NO_ALWAYS_UNFOLD"					text="Rohr immer ausfahren, wenn Drescher auf Abfahrer wartet" />
-
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="früh" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="spät" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Tool anheben" />
@@ -451,6 +450,6 @@
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Pathfinder darf rückwärts fahren" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Erlaubt dem Pathfinder, rückwärts zu fahren (Nur nicht gezogene Tools)" />
 		
-		<!-- Replace marker, do not remove! -->
-	</texts>
+		<!-- Replace marker, do not remove! --></texts>
+
 </l10n>
