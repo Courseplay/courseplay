@@ -3,11 +3,11 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 							text="Comenzar grabación" />
 		<text name="COURSEPLAY_DRIVER" 										text="Conductor" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Empezar a conducir" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar de conducir" />
 		<text name="COURSEPLAY_PPC_OFF" 									text="Modo Normal" />
 		<text name="COURSEPLAY_PPC_ON" 										text="Modo experimental" />
 		<text name="COURSEPLAY_AIDRIVER" 									text="Conductor Autónomo" /> 
-		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Empezar a conducir" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar de conducir" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Parar en último punto o siguiente trigger" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Número de recorridos a realizar" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Reiniciar número de viajes"/>
@@ -56,6 +56,10 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 						text="%s para salvar carpeta" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 							text="%s para filtrar rutas" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 						text="Rutas: %q" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Cargar ruta/combinarla con la ruta cargada" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="Añadir esta ruta al final" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 		text="Mover a otra carpeta" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 		text="Borrar ruta/carpeta" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 								text="Crear nueva carpeta" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 				text="Buscar carpetas y rutas" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 							text="Desactivar filtros" />
@@ -232,6 +236,7 @@
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nombre y Ruta" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="desactivado" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Trazador de surcos" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Descargar en el campo" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="automático" />
 		<text name="COURSEPLAY_MANUAL" 										text="manual" />
@@ -326,6 +331,7 @@
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Tipo de semilla: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 					text="Uso: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 					text="···" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"					text="Mostrar/Ocultar Puntos: Inicial y Final" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"							text="Mostrar/Ocultar Puntos: Todos" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"					text="Mostrar/Ocultar Puntos: Cruce" />
@@ -374,10 +380,6 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Botón Der. Ratón" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Botón Cen. Ratón" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Botón del ratón núm %d" /> 
-		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Cargar ruta/combinarla con la ruta cargada" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="Añadir esta ruta al final" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 		text="Mover a otra carpeta" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 		text="Borrar ruta/carpeta" />
 	
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Modo" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Nivelando y Compactando" />
@@ -404,7 +406,6 @@
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 							text="Recargar lista de rutas" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			    	text="No se pudo generar la ruta. Intente cambiar la configuración o mover el vehículo"/>
-
 		<text name="COURSEPLAY_FillType_BaleTwine" 							text="Cuerda para pacas" />
 		<text name="COURSEPLAY_FillType_BaleNet" 							text="Mallas para pacas" />
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="Envoltorio para Pacas" />
@@ -430,6 +431,8 @@
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Sus trabajadores recibiran un salario" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="click raton para cambiar de vehiculo" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click sobre un vehiculo visible para entrar en el" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Antes" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Despues" />
@@ -444,8 +447,9 @@
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="El Salario de los Trabajadores de Courseplay es como un porcentaje del salario de los trabajadores del juego." />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Autodescarga Cosechadora" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Se autodescarga una cosechadora cuando este llena y haya en los alrededores un remolque." />
-
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
-		<!-- Replace marker, do not remove! --></texts>
+		
+		<!-- Replace marker, do not remove! -->
+		</texts>
 </l10n>

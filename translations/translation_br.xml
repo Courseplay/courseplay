@@ -56,7 +56,6 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 						text="%s para Salvar Pasta" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 							text="%s Filtrar Rotas" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 						text="Rotas: %q" />
-		<text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 			text="Configurações avançadas do gerador de rotas" />
 		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Carregar rota/mesclar na rota carragada" />
 		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="Adicionar rota no final" />
 		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 		text="Mover para pasta" />
@@ -237,6 +236,7 @@
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nome e rota" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="Desativado" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Marcador de linha" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />															  
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Descarregando no campo" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="Automático" />
 		<text name="COURSEPLAY_MANUAL" 										text="Manual" />
@@ -335,7 +335,6 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"					text="Mostrar/ocultar início e fim" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"							text="Mostrar/ocultar todos os pontos" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"					text="Mostrar/ocultar cruzamentos de pontos" />
-
 		<text name="COURSEPLAY_HUD_OPEN" 									text="Mostrar Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 									text="Ocultar Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 									text="Funções do Courseplay" />
@@ -356,24 +355,24 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Mover para posição pré descarregar" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="CP: Mover para posição descarregar" />
 		
-    <text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Alternar para editor de rotas" />
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Alternar para editor de rotas" />
 		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Desfazer a última edição" />
 		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Salvar as alterações de rota" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"							text="Courseplay Editor: Aumentar a velocidade do waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"							text="Courseplay Editor: Diminuir a velocidade do waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"						text="Courseplay Editor: Excluir waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"						text="Courseplay Editor: Excluir próximo waypoint" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"						text="Courseplay Editor: Excluir todos so waypoints desde o começo" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"						text="Courseplay Editor: Excluir todos os waypoints até o fim" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"						text="Courseplay Editor: Inserir waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"						text="Courseplay Editor: Alterar tipo de waypoint" />
-		<text name="COURSEPLAY_EDITOR_NORMAL" 							text="Normal" />
-		<text name="COURSEPLAY_EDITOR_WAIT" 							text="Esperar" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Aumentar a velocidade do waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Diminuir a velocidade do waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Excluir waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Excluir próximo waypoint" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Excluir todos so waypoints desde o começo" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Excluir todos os waypoints até o fim" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Inserir waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Alterar tipo de waypoint" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Esperar" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Cruzamento" />
-		<text name="COURSEPLAY_EDITOR_UNLOAD" 							text="Descarregar" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 								text="Descarregar" />
 		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Iniciar volta" />
-		<text name="COURSEPLAY_EDITOR_TURNEND" 							text="Finalizar volta" />
-		<text name="COURSEPLAY_EDITOR_REVERSE" 							text="Marcha a ré" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 								text="Finalizar volta" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 								text="Marcha a ré" />
 
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Mostrar cursor do mouse" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Ocultar cursor do mouse" />
@@ -407,7 +406,6 @@
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 							text="Recarregar lista de rotas" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 		text="Não foi possível gerar a rota. Tente mudar as configurações ou mover o veículo."/>
-		
 		<text name="COURSEPLAY_FillType_BaleTwine" 							text="Fardo em corda" />
 		<text name="COURSEPLAY_FillType_BaleNet" 							text="Fardo em rede" />
 		<text name="COURSEPLAY_FillType_WrappingFoil" 						text="Embalar" />
@@ -431,7 +429,11 @@
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Usar AI para manobras em vez de trajetórias calculadas" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanear campos automaticamente" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay pagar salários para trabalhadores" />
-
+		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Primeiro" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Último" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Quando levantar o implemento" />
@@ -447,5 +449,7 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Ceifadeira descarrega quando cheia ou quando houver carreta por perto" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
-		<!-- Replace marker, do not remove! --></texts>
+		
+		<!-- Replace marker, do not remove! -->
+		</texts>
 </l10n>

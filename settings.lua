@@ -2456,6 +2456,15 @@ function ClickToSwitchSetting:init()
 	self:set(false)
 end
 
+---@class PipeAlwaysUnfold : BooleanSetting
+PipeAlwaysUnfoldSetting = CpObject(BooleanSetting)
+function PipeAlwaysUnfoldSetting:init()
+	BooleanSetting.init(self, 'pipeAlwaysUnfold', 'COURSEPLAY_PIPE_ALWAYS_UNFOLD',
+				'COURSEPLAY_PIPE_YES_NO_ALWAYS_UNFOLD', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
+end
+
 ---@class RidgeMarkersAutomatic : BooleanSetting
 RidgeMarkersAutomatic = CpObject(BooleanSetting)
 function RidgeMarkersAutomatic:init()

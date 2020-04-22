@@ -8,8 +8,6 @@
 		<text name="COURSEPLAY_PPC_OFF" 									text="Normaler Modus" />
 		<text name="COURSEPLAY_PPC_ON" 										text="Experimenteller Modus" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_AIDRIVER" 									text="KI Fahrer" /> <!-- enable new AI driver -->
-		
-		
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Am letzten Wegpunkt o. Trigger warten" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Anzahl der Durchläufe"/>
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Durchläufe zurücksetzen"/>
@@ -337,7 +335,6 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"					text="Start- und Endpunkte anzeigen/verstecken" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"							text="Alle Punkte anzeigen/verstecken" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"					text="Kreuzungspunkte anzeigen/verstecken" />
-
 		<text name="COURSEPLAY_HUD_OPEN" 									text="Courseplay HUD öffnen" />
 		<text name="COURSEPLAY_HUD_CLOSE" 									text="Courseplay HUD schließen" />
 		<text name="COURSEPLAY_FUNCTIONS" 									text="Courseplay-Funktionen" />
@@ -376,6 +373,7 @@
 		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Wenden start" />
 		<text name="COURSEPLAY_EDITOR_TURNEND" 								text="Wenden ende" />
 		<text name="COURSEPLAY_EDITOR_REVERSE" 								text="Rückwärts" />																															   																	  
+		
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Mauszeiger anzeigen" />																						  
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Mauszeiger verstecken" />																		  
 		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Linke Maustaste" /> <!-- TODO TRANSLATE: -->																			

@@ -199,28 +199,28 @@
     <text name="COURSEPLAY_DIRECTION_5" 								text="Automatique" />
     <text name="COURSEPLAY_DIRECTION_6" 								text="Bordure la plus longue" />
     <text name="COURSEPLAY_DIRECTION_7" 								text="Manuel" />
-        <text name="COURSEPLAY_DIRECTION_N"                             	text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                           	text="NNE"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                            	text="NE"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                           	text="ENE"/>
-        <text name="COURSEPLAY_DIRECTION_E"                             	text="E"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                           	text="ESE"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                            	text="SE"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                           	text="SSE"/>
-        <text name="COURSEPLAY_DIRECTION_S"                             	text="S"/>
-        <text name="COURSEPLAY_DIRECTION_SSW"                           	text="SSO"/>
-        <text name="COURSEPLAY_DIRECTION_SW"                            	text="SO"/>
-        <text name="COURSEPLAY_DIRECTION_WSW"                           	text="OSO"/>
-        <text name="COURSEPLAY_DIRECTION_W"                             	text="O"/>
-        <text name="COURSEPLAY_DIRECTION_WNW"                           	text="ONO"/>
-        <text name="COURSEPLAY_DIRECTION_NW"                            	text="NO"/>
-        <text name="COURSEPLAY_DIRECTION_NNW"                           	text="NNO"/>
-        <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="Le parcours a été généré avec succès, mais en raison des paramètres actuels, il peut y avoir des problèmes lors de la conduite"/>
+    <text name="COURSEPLAY_DIRECTION_N"                             	text="N"/>
+    <text name="COURSEPLAY_DIRECTION_NNE"                           	text="NNE"/>
+    <text name="COURSEPLAY_DIRECTION_NE"                            	text="NE"/>
+    <text name="COURSEPLAY_DIRECTION_ENE"                           	text="ENE"/>
+    <text name="COURSEPLAY_DIRECTION_E"                             	text="E"/>
+    <text name="COURSEPLAY_DIRECTION_ESE"                           	text="ESE"/>
+    <text name="COURSEPLAY_DIRECTION_SE"                            	text="SE"/>
+    <text name="COURSEPLAY_DIRECTION_SSE"                           	text="SSE"/>
+    <text name="COURSEPLAY_DIRECTION_S"                             	text="S"/>
+    <text name="COURSEPLAY_DIRECTION_SSW"                           	text="SSO"/>
+    <text name="COURSEPLAY_DIRECTION_SW"                            	text="SO"/>
+    <text name="COURSEPLAY_DIRECTION_WSW"                           	text="OSO"/>
+    <text name="COURSEPLAY_DIRECTION_W"                             	text="O"/>
+    <text name="COURSEPLAY_DIRECTION_WNW"                           	text="ONO"/>
+    <text name="COURSEPLAY_DIRECTION_NW"                            	text="NO"/>
+    <text name="COURSEPLAY_DIRECTION_NNW"                           	text="NNO"/>
+    <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="Le parcours a été généré avec succès, mais en raison des paramètres actuels, il peut y avoir des problèmes lors de la conduite"/>
     <text name="COURSEPLAY_HEADLAND" 						 			text="Fourrières:" />
     <text name="COURSEPLAY_BYPASS_ISLANDS"  							text="Détection des obstacles" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="Désactivé" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="Simple" />
-        <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="Circulaire" />
+    <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="Désactivé" />
+    <text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE"  					text="Simple" />
+    <text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE"  					text="Circulaire" />
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Virages lissés" />
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="Manoeuvres" />
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Circualaires" />
@@ -236,6 +236,7 @@
     <text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nom et Course" />
     <text name="COURSEPLAY_DEACTIVATED" 						 		text="Désactivé" />
     <text name="COURSEPLAY_RIDGEMARKERS" 						 		text="Traceurs:" />
+	<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
     <text name="COURSEPLAY_UNLOADING_ON_FIELD" 					 		text="Déchargement à la parcelle" />
     <text name="COURSEPLAY_AUTOMATIC" 						 			text="Automatique" />
     <text name="COURSEPLAY_MANUAL" 							 			text="Manuellement" />
@@ -287,7 +288,7 @@
     <text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 					text="Calculer le tour de la parcelle actuelle" />
     <text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Tour de la parcelle numéro" />
     <text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Ajoute le tour de la parcelle %d à la liste" />
-    <text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"		text="Écraser le tour de la parcelle %d dans la liste" />
+    <text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Écraser le tour de la parcelle %d dans la liste" />
     <text name="COURSEPLAY_USER" 							 			text="Utilisateur" />
     <text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="devra bientôt être réparé" />
     <text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="doit être réparé" />
@@ -437,6 +438,8 @@
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Baisser l'outil au début d'un rang ou à la fin de la manoeuvre dans les fourrières" />
     <text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
     <text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Cliquez sur un vehicle pour y prendre place" />
+	<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
+	<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
 
     <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utiliser des points de références virtuels (PPC) dans les virages" />
     <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de références virtuels (PPC) - pendant les virages" />
@@ -447,8 +450,9 @@
     <text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salaire des ouvriers Courseplay en pourcentage du salaire des ouvriers normaux" />
     <text name="COURSEPLAY_SELF_UNLOAD"				   					text="Vider la batteuse" />
     <text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="La batteuse va vider automatiquement lorsqu'elle est pleine et qu'il y a une remorque à proximité" />		
-    		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+    <text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
+	<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		
 		<!-- Replace marker, do not remove! -->
   </texts>
 </l10n>
