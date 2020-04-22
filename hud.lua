@@ -2403,7 +2403,6 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:setupSetAutoToolOffsetXButton(vehicle,8,5)
 	self:addSettingsRowWithArrows(vehicle,'changeToolOffsetZ', 8, 6, 1 )
 	self:addRowButton(vehicle,'toggleOppositeTurnMode', 8, 7, 1 )
-	--self:addRowButton(vehicle,'toggleRidgeMarkersAutomatic', 8, 8, 1 )
 
 	self:setReloadPageOrder(vehicle, -1, true)
 end
