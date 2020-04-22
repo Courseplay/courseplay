@@ -1271,16 +1271,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'toggleFertilizeOption')
 					end
-					
-				--elseif entry.functionToCall == 'toggleRidgeMarkersAutomatic' then
-					--if FieldworkAIDriver.hasImplementWithSpecialization(vehicle, SowingMachine) then
-						--self:enableButtonWithFunction(vehicle,page, 'toggleRidgeMarkersAutomatic')
-						--vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RIDGEMARKERS');
-						--vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.ridgeMarkersAutomatic and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-					--else
-						--self:disableButtonWithFunction(vehicle,page, 'toggleRidgeMarkersAutomatic')
-					--end
-					
+										
 				elseif entry.functionToCall == 'changeRefillUntilPct' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
 					vehicle.cp.hud.content.pages[page][line][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
