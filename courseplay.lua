@@ -178,7 +178,9 @@ local function setGlobalData()
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;
 	------------------------------------------------------------
-	courseplay.SHOW_COVERS = true 
+	courseplay.SHOW_COVERS = true
+	courseplay.OPEN_COVERS = false
+	courseplay.CLOSE_COVERS = true
 
 	courseplay.RIDGEMARKER_NONE = 0
 	courseplay.RIDGEMARKER_LEFT = 1

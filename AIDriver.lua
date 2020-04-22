@@ -1477,7 +1477,8 @@ end
 --- Turn.lua calls this in every cycle during the turn and will stop the vehicle if this returns true.
 ---@param isApproaching boolean if true we are still in the turn approach phase (still working on the field,
 ---not yet reached the turn start
-function AIDriver:holdInTurnManeuver(isApproaching)
+---@param isHeadlandCorner boolean is this a headland turn?
+function AIDriver:holdInTurnManeuver(isApproaching, isHeadlandCorner)
 	return false
 end
 

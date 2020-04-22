@@ -686,7 +686,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 			local lMiddlePath = HybridAStar.length(path)
 			self:debug('Direct path is %d m', lMiddlePath)
 			-- do we even need to use the normal A star or the nodes are close enough that the hybrid A star will be fast enough?
-			if lMiddlePath < self.hybridRange * 3 then
+			if lMiddlePath < self.hybridRange * 2 then
 				self.phase = self.ALL_HYBRID
 				self:debug('Goal is closer than %d, use one phase pathfinding only', self.hybridRange * 3)
 				self.coroutine = coroutine.create(self.hybridAStarPathfinder.findPath)

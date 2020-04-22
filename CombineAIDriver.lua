@@ -626,11 +626,13 @@ end
 --- Turn.lua calls this in every cycle during the turn and will stop the vehicle if this returns true.
 ---@param isApproaching boolean if true we are still in the turn approach phase (still working on the field,
 ---not yet reached the turn start
-function CombineAIDriver:holdInTurnManeuver(isApproaching)
+---@param isHeadlandCorner boolean is this a headland turn?
+function CombineAIDriver:holdInTurnManeuver(isApproaching, isHeadlandCorner)
 	local discharging = self:isDischarging() and not self:isChopper()
+	local waitForStraw = self.combine.strawPSenabled and not isApproaching and not isHeadlandCorner
 	self:debugSparse('discharging %s, held for unload %s, straw active %s, approaching = %s',
 		tostring(discharging), tostring(self.heldForUnloadRefill), tostring(self.combine.strawPSenabled), tostring(isApproaching))
-	return discharging or self.heldForUnloadRefill or (self.combine.strawPSenabled and not isApproaching)
+	return discharging or self.heldForUnloadRefill or waitForStraw
 end
 
 --- Should we return to the first point of the course after we are done?

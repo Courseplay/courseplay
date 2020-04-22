@@ -83,7 +83,7 @@ end
 
 --- Stuff we need to do during the turn no matter what turn type we are using
 function AITurn:turn()
-	if self.driver:holdInTurnManeuver(false) then
+	if self.driver:holdInTurnManeuver(false, self.turnContext:isHeadlandCorner()) then
 		-- tell driver to stop if unloading or whatever
 		self.driver:setSpeed(0)
 	end
@@ -194,7 +194,7 @@ function AITurn:finishRow(dt)
 		self:startTurn()
 		self:debug('Row finished, starting turn.')
 	end
-	if self.driver:holdInTurnManeuver(true) then
+	if self.driver:holdInTurnManeuver(true, self.turnContext:isHeadlandCorner()) then
 		-- tell driver to stop while straw swath is active
 		self.driver:setSpeed(0)
 	end
@@ -296,7 +296,7 @@ function KTurn:turn(dt)
 end
 
 function KTurn:onBlocked()
-	if self.driver:holdInTurnManeuver(false) then
+	if self.driver:holdInTurnManeuver(false, self.turnContext:isHeadlandCorner()) then
 		-- not really blocked just waiting for the straw for example
 		return
 	end
