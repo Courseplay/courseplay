@@ -451,5 +451,6 @@
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Pathfinder darf rückwärts fahren" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Erlaubt dem Pathfinder, rückwärts zu fahren (Nur nicht gezogene Tools)" />
 		
-		<!-- Replace marker, do not remove! --></texts>
+		<!-- Replace marker, do not remove! -->
+	</texts>
 </l10n>
