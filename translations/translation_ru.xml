@@ -236,6 +236,7 @@
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="название техники и маршрут" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="нет" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Маркеры:" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Разгрузка на поле" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="автоматически" />
 		<text name="COURSEPLAY_MANUAL" 										text="вручную" />
@@ -433,6 +434,8 @@
 		<text name="COURSEPLAY_EARN_WAGES"									text="Зарплата рабочим на Courseplay" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Переход между техникой по клику" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"					text="заблаговременно" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"					text="с опозданием" />

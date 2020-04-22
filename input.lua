@@ -467,7 +467,6 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 			courseplay:moveShovelToPosition(vehicle, 5);
 	--Editor:
 	elseif actionName == 'COURSEPLAY_EDITOR_TOGGLE' and keyStatus == 1 then
-			--print('Editortoggle' .. tostring(courseEditor.enabled) .. tostring(keyStatus))
 			courseEditor:setEnabled(not courseEditor.enabled, vehicle)
 	elseif actionName == 'COURSEPLAY_EDITOR_UNDO' then
 			courseEditor:undo()

@@ -770,7 +770,7 @@ end
 
 function FieldworkAIDriver:setRidgeMarkers()
 	-- no ridge markers with multitools to avoid collisions.
-	if not self.vehicle.cp.ridgeMarkersAutomatic or self.vehicle.cp.multiTools > 1 then return end
+	if self.vehicle.cp.settings.ridgeMarkersAutomatic:is(false) or self.vehicle.cp.multiTools > 1 then return end
 	local active = self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState ~= self.states.TURNING
 	for _, workTool in ipairs(self.vehicle.cp.workTools) do
 		-- yes, another Giants typo. And not sure why implements with no ridge markers even have the spec_ridgeMarker

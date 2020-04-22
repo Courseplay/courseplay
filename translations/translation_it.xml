@@ -236,6 +236,7 @@
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="nome e percorso" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="disattivato" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Segnafile" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Scaricando sul campo" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="automatico" />
 		<text name="COURSEPLAY_MANUAL" 										text="manuale" />
@@ -432,6 +433,8 @@
 		<text name="COURSEPLAY_EARN_WAGES" 									text="I lavoratori Courseplay ricevono il salario" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Fai click per spostarsi" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Fai clic su un veicolo per spostarsi su di esso" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY" 				text="Prima" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE" 					text="Dopo" />
