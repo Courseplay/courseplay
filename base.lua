@@ -582,6 +582,8 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(SelfUnloadSetting, self)
 	self.cp.settings:addSetting(StartingPointSetting, self)
 	self.cp.settings:addSetting(SymmetricLaneChangeSetting, self)
+	self.cp.settings:addSetting(PipeAlwaysUnfoldSetting, self)
+	self.cp.settings:addSetting(RidgeMarkersAutomatic, self)
 end;
 
 function courseplay:onPostLoad(savegame)

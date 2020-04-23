@@ -236,6 +236,7 @@
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="車両名とコース名" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="無効" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="リッジマーカー" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="フィールドでアンロード" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="自動" />
 		<text name="COURSEPLAY_MANUAL" 										text="手動" />
@@ -355,24 +356,24 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Move to pre-unloading position" /> <!-- TODO TRANSLATE: -->
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="CP: Move to unloading position" /> <!-- TODO TRANSLATE: -->
 		
-    <text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Toggle course editor" />
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Toggle course editor" />
 		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Undo last course edit" />
 		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Save course changes" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"							text="Courseplay Editor: Increase waypoint speed" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"							text="Courseplay Editor: Decrease waypoint speed" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"						text="Courseplay Editor: Delete waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"						text="Courseplay Editor: Delete next waypoint" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"						text="Courseplay Editor: Delete all waypoints to start" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"						text="Courseplay Editor: Delete all waypoints to end" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"						text="Courseplay Editor: Insert waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"						text="Courseplay Editor: Change waypoint type" />
-		<text name="COURSEPLAY_EDITOR_NORMAL" 							text="Normal" />
-		<text name="COURSEPLAY_EDITOR_WAIT" 							text="Wait" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Increase waypoint speed" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Decrease waypoint speed" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Delete waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Delete next waypoint" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Delete all waypoints to start" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Delete all waypoints to end" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Insert waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Change waypoint type" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wait" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Crossing" />
-		<text name="COURSEPLAY_EDITOR_UNLOAD" 							text="Unload" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 								text="Unload" />
 		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Turn Start" />
-		<text name="COURSEPLAY_EDITOR_TURNEND" 							text="Turn End" />
-		<text name="COURSEPLAY_EDITOR_REVERSE" 							text="Reverse" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 								text="Turn End" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 								text="Reverse" />
 
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="マウスカーソルを表示" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="マウスカーソルを非表示" />
@@ -432,6 +433,8 @@
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
@@ -448,5 +451,6 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
-		<!-- Replace marker, do not remove! --></texts>
+		<!-- Replace marker, do not remove! -->
+	</texts>
 </l10n>
