@@ -431,10 +431,10 @@
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Použít AI obrátky místo propočítaných jízd" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Skenovat pole automaticky" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Pomocníci berou mzdy" />
-		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
-		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
-		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Kliknutím přepnete" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Kliknutím přepnete na vybrané vozidlo" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Stále otevřený komín" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Otevřít komín, když kombajn čeká na vykládku" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Brzy" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Pozdě" />
@@ -449,7 +449,7 @@
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Mzdové náklady na pomocníky jako procento běžných mezd pracovníků" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Kombajn se vyloží samostatně" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Samostatné vyložení kombajnu do vleku co je poblíž." />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Povolit zvolení otočení s pocouvnutím" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Povolit zvolení otočení s poouvnutím, když je nutné (pouze u neseného nářadí)" />
 		<!-- Replace marker, do not remove! --></texts>
 </l10n>
