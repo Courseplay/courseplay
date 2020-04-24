@@ -433,7 +433,7 @@
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Klick zum einsteigen" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug zum einsteigen" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rohr immer ausfahren" />
-		<text name="COURSEPLAY_PIPE_YES_NO_ALWAYS_UNFOLD"					text="Rohr immer ausfahren, wenn Drescher auf Abfahrer wartet" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Rohr immer ausfahren, wenn Drescher auf Abfahrer wartet" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="früh" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="spät" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Tool anheben" />
