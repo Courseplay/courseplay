@@ -1246,10 +1246,11 @@ function CombineUnloadAIDriver:isBehindAndAlignedToCombine()
 end
 
 function CombineUnloadAIDriver:isOkToStartFollowingChopper()
-	return courseplay:isChopper(self.combineToUnload) and self:isBehindAndAlignedToCombine()
+	return self.combineToUnload.cp.driver:isChopper() and self:isBehindAndAlignedToCombine()
 end
 
 function CombineUnloadAIDriver:isOkToStartUnloadingCombine()
+	if self.combineToUnload.cp.driver:isChopper() then return false end
 	if self.combineToUnload.cp.driver:isReadyToUnload() then
 		return self:isBehindAndAlignedToCombine()
 	else
@@ -1355,7 +1356,8 @@ function CombineUnloadAIDriver:isPathFound(path)
 		self:debug('Found path (%d waypoints, %d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
 		return true
 	else
-		self:error('No path found to %s in %d ms', self.combineToUnload:getName(), self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		self:error('No path found to %s in %d ms', self.combineToUnload and self.combineToUnload:getName() or 'N/A',
+				self.vehicle.timer - (self.pathfindingStartedAt or 0))
 		return false
 	end
 end
