@@ -1034,7 +1034,7 @@ end
 
 function AIDriver:dischargeAtTipTrigger(dt)
 	local trigger = self.vehicle.cp.currentTipTrigger
-	local allowedToDrive, takeOverSteering = true
+	local allowedToDrive = true
 	if trigger ~= nil then
 		local isBGA = trigger.bunkerSilo ~= nil;
 		if isBGA then
@@ -1050,7 +1050,7 @@ function AIDriver:dischargeAtTipTrigger(dt)
 			allowedToDrive = self:tipIntoStandardTipTrigger()
 		end;
 	end
-	return allowedToDrive, takeOverSteering
+	return allowedToDrive,takeOverSteering
 end
 
 function AIDriver:tipIntoStandardTipTrigger()

@@ -163,9 +163,6 @@ function CombineUnloadAIDriver:drive(dt)
 		if not self:onUnLoadCourse(true, dt) then
 			self:hold()
 		end
-		-- disable speed control as it messes up the speed control during unload
-		-- TODO: refactor that whole unload process, it was just copied from the legacy CP code
-		self.forwardLookingProximitySensorPack:disableSpeedControl()
 		self:searchForTipTriggers()
 		AIDriver.drive(self, dt)
 	elseif self.state == self.states.ON_FIELD then
@@ -221,7 +218,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 				if self:isOkToStartUnloadingCombine() then
 					self:startUnloadingCombine()
 				elseif self:isOkToStartFollowingChopper() then
-					self:startFollowingChopper(true)
+					self:startFollowingChopper()
 				else
 					self:startPathfindingToCombine(self.onPathfindingDoneToCombine)
 				end
@@ -310,7 +307,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if self:isOkToStartUnloadingCombine() then
 			self:startUnloadingCombine()
 		elseif self:isOkToStartFollowingChopper() then
-			self:startFollowingChopper(true)
+			self:startFollowingChopper()
 		end
 
 	elseif self.onFieldState == self.states.UNLOADING_STOPPED_COMBINE then
@@ -694,7 +691,7 @@ function CombineUnloadAIDriver:onLastWaypoint()
 			if self:isOkToStartUnloadingCombine() then
 				self:startUnloadingCombine()
 			elseif self:isOkToStartFollowingChopper() then
-				self:startFollowingChopper(true)
+				self:startFollowingChopper()
 			else
 				self:debug('reached last waypoint, combine isn\'t here anymore, find path to it again')
 				self:startPathfindingToCombine(self.onPathfindingDoneToCombine, 0, -20)
@@ -1310,10 +1307,11 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 -- Start to follow a chopper
 ------------------------------------------------------------------------------------------------------------------------
-function CombineUnloadAIDriver:startFollowingChopper(skipTurnStart)
-	self:startCourseFollowingCombine(skipTurnStart)
+function CombineUnloadAIDriver:startFollowingChopper()
+	self:startCourseFollowingCombine()
 	self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
 end
+
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Start following a combine/chopper on a course
@@ -1341,7 +1339,6 @@ function CombineUnloadAIDriver:startCourseFollowingCombine(skipTurnStart)
 	local forcePathfinding = false
 	if courseplay:isChopper(self.combineToUnload) then
 		self.combineOffset = self:getChopperOffset(self.combineToUnload)
-		forcePathfinding = not self:isBehindAndAlignedToCombine()
 	else
 		self.combineOffset = self:getCombineOffset(self.combineToUnload)
 		-- if the combine is not moving forward we have use pathfinding to get to the pipe so we won't
@@ -1658,14 +1655,14 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 			self:setSpeed(self.vehicle.cp.speeds.turn)
 		end
 		d = self:getDistanceFromCombine()
-		if d > self.combineToUnload.cp.driver:getWorkWidth() * 2  and
-				self.turnContext and self.turnContext:isWideTurn(2 * AIDriverUtil.getTurningRadius(self.combineToUnload)) then
-			self:debug('Combine is at %1.f m > 2 times to work width and is making a wide turn, switching to wide turn mode', d)
+		if d > self.combineToUnload.cp.driver:getWorkWidth() * 2 and self.turnContext then
+			self:debug('Combine is at %1.f m > 2 times to work width, switching to wide turn mode', d)
 			self:startPathfindingToTurnEnd()
 		end
 	else
 		-- combine stopped turning, set up a path to follow again
-		self:startFollowingChopper(true)
+		self:startCourseFollowingCombine(true)
+		self:setNewOnFieldState(self.states.UNLOADING_MOVING_COMBINE)
 	end
 end
 
@@ -1685,7 +1682,8 @@ function CombineUnloadAIDriver:handleChopperWideTurn()
 		self:renderText(0, 0.7, 'd = %.1f, speed = %.1f', d, speed)
 	else
 		-- chopper is ending/ended turn, go back to follow mode
-		self:startFollowingChopper(true)
+		self:startCourseFollowingCombine(true)
+		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
 	end
 end
 
