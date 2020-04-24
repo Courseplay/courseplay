@@ -2460,7 +2460,7 @@ end
 PipeAlwaysUnfoldSetting = CpObject(BooleanSetting)
 function PipeAlwaysUnfoldSetting:init()
 	BooleanSetting.init(self, 'pipeAlwaysUnfold', 'COURSEPLAY_PIPE_ALWAYS_UNFOLD',
-				'COURSEPLAY_PIPE_YES_NO_ALWAYS_UNFOLD', nil)
+				'COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
 end
