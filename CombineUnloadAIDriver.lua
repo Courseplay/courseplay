@@ -1659,7 +1659,7 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 		end
 		d = self:getDistanceFromCombine()
 		if d > self.combineToUnload.cp.driver:getWorkWidth() * 2  and
-				self.turnContext and self.turnContext:isWideTurn(2 * AIDriverUtil.getTurningRadius(self.combineToUnload)) then
+				self.turnContext and not self.turnContext:isSimpleWideTurn(2 * AIDriverUtil.getTurningRadius(self.vehicle)) then
 			self:debug('Combine is at %1.f m > 2 times to work width and is making a wide turn, switching to wide turn mode', d)
 			self:startPathfindingToTurnEnd()
 		end
@@ -1671,6 +1671,8 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Chopper wide turn
+-- here we use the pathfinder to generate a course to the turn end using the headlands and drive that
+-- course carefully keeping our distance from the combine.
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:handleChopperWideTurn()
 
