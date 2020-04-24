@@ -29,7 +29,7 @@
 		<text name="COURSEPLAY_MODE_5" 										text="ПЕРЕГОН ТЕХНИКИ" />
 		<text name="COURSEPLAY_MODE_6" 										text="РАЗНЫЕ ПОЛЕВЫЕ РАБОТЫ" />
 		<text name="COURSEPLAY_MODE_7" 										text="САМОРАЗГУЗКА КОМБАЙНА" />
-		<text name="COURSEPLAY_MODE_8" 										text="ПЕРЕВОЗКА ЖИДКОСТЕЙ" />
+		<text name="COURSEPLAY_MODE_8" 										text="ПЕРЕВОЗКА ЖИДКОСТЕЙ" /> <!-- Field Supply -->
 		<text name="COURSEPLAY_MODE_9" 										text="РАБОТЫ ДЛЯ ПОГРУЗЧИКА" />
 		<text name="COURSEPLAY_MODE_10" 									text="ВЫРАВНИВАНИЕ И УПЛОТНЕНИЕ" />
 		<text name="COURSEPLAY_CONTINUE" 									text="Продолжить" />
@@ -235,8 +235,8 @@
 		<text name="COURSEPLAY_NAME_ONLY" 									text="название техники" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="название техники и маршрут" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="нет" />
-		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Маркеры:" />
-		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
+		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Маркеры" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Вкл/Откл маркеры во время посева." />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Разгрузка на поле" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="автоматически" />
 		<text name="COURSEPLAY_MANUAL" 										text="вручную" />
@@ -433,9 +433,9 @@
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"								text="Автосканирование полей" />
 		<text name="COURSEPLAY_EARN_WAGES"									text="Зарплата рабочим на Courseplay" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Переход между техникой по клику" />
-		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него" />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
-		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него." />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Всегда высталять трубу" />
+		<text name="COURSEPLAY_PIPE_YES_NO_ALWAYS_UNFOLD"					text="Держать трубу разложенной, если комбайн ждёт разгрузки." />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"					text="заблаговременно" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"					text="с опозданием" />
@@ -451,6 +451,6 @@
 		<text name="COURSEPLAY_SELF_UNLOAD"									text="Саморазгрузка комбайна" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Саморазгрузка комбайна при заполнении и наличии поблизости прицепа." />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"		text="Задний ход при повороте" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Разрешить искать траекторию поворота, для которой потребуется движения задним ходом (только с небуксируемыми орудиями)" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Разрешить искать траекторию поворота, для которой потребуется движения задним ходом (только с небуксируемыми орудиями)." />
 <!-- Replace marker, do not remove! --></texts>
 </l10n>
