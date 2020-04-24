@@ -857,7 +857,7 @@ function courseplay:onDraw()
 			if self.cp.mouseCursorActive then
 				g_inputBinding:setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
-		elseif self.cp.hud.showMiniHud then
+		elseif courseplay.globalSettings.showMiniHud:is(true) then
 			courseplay.hud:setContent(self);
 			courseplay.hud:renderHudBottomInfo(self);
 		end;

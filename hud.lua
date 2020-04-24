@@ -861,9 +861,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changeWarningLightsMode' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS');
 					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS_MODE_' .. vehicle.cp.warningLightsMode);
-				elseif entry.functionToCall == 'toggleShowMiniHud' then
-					vehicle.cp.hud.content.pages[page][line][1].text = 'Mini- HUD' --courseplay:loc('COURSEPLAY_WARNING_LIGHTS');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.hud.showMiniHud and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
 				
 				elseif entry.functionToCall == 'toggleOpenHudWithMouse' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPEN_HUD_MODE');

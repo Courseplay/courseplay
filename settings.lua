@@ -2605,6 +2605,15 @@ function ClickToSwitchSetting:init()
 	self:set(false)
 end
 
+---@class ShowMiniHud : BooleanSetting
+ShowMiniHud = CpObject(BooleanSetting)
+function ShowMiniHud:init()
+	BooleanSetting.init(self, 'showMiniHud', 'COURSEPLAY_SHOW_MINI_HUD',
+				'COURSEPLAY_YES_NO_SHOW_MINI_HUD', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
+end
+
 ---@class EarnWagesSetting : BooleanSetting
 EarnWagesSetting = CpObject(BooleanSetting)
 function EarnWagesSetting:init()

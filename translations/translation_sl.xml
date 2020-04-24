@@ -433,6 +433,9 @@
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
+		
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />

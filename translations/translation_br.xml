@@ -432,6 +432,9 @@
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Usar AI para manobras em vez de trajetórias calculadas" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanear campos automaticamente" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay pagar salários para trabalhadores" />
+		
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Primeiro" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Último" />

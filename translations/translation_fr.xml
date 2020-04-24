@@ -437,6 +437,9 @@
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Baisser l'outil au début d'un rang ou à la fin de la manoeuvre dans les fourrières" />
     <text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
     <text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Cliquez sur un vehicle pour y prendre place" />
+	
+	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
     <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utiliser des points de références virtuels (PPC) dans les virages" />
     <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de références virtuels (PPC) - pendant les virages" />

@@ -434,6 +434,9 @@
 		<text name="COURSEPLAY_EARN_WAGES"									text="Зарплата рабочим на Courseplay" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Переход между техникой по клику" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него" />
+		
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"					text="заблаговременно" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"					text="с опозданием" />

@@ -433,6 +433,9 @@
 		<text name="COURSEPLAY_EARN_WAGES" 									text="I lavoratori Courseplay ricevono il salario" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Fai click per spostarsi" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Fai clic su un veicolo per spostarsi su di esso" />
+		
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY" 				text="Prima" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE" 					text="Dopo" />
