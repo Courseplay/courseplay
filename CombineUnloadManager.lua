@@ -65,7 +65,12 @@ function CombineUnloadManager:addCombineToList(combine)
 	if combine:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
 		return
 	end
-	self:debug('added %s to list',tostring(combine.name))
+	-- we only handle combines with CP AIDriver
+	if not combine.cp.driver or not combine.cp.driver:is_a(CombineAIDriver) then
+		self:debug('%s has no combine AI driver, adding it now', combine.name)
+		combine.cp.driver = CombineAIDriver(combine)
+	end
+	self:debug('added %s to list', tostring(combine.name))
 	self.combines[combine]= {
 		isChopper = courseplay:isChopper(combine);
 		isCombine = courseplay:isCombine(combine) and not courseplay:isChopper(combine);
