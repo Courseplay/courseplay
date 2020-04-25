@@ -357,9 +357,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 	elseif self.onFieldState == self.states.FOLLOW_CHOPPER then
 
-		-- we'll take care of controlling our speed, don't need ADriver for that
-		self.forwardLookingProximitySensorPack:disableSpeedControl()
-
 		self:followChopper()
 
 	elseif self.onFieldState == self.states.FOLLOW_TRACTOR then
@@ -1632,7 +1629,10 @@ function CombineUnloadAIDriver:followChopper()
 	if self.course:isTemporary() and self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) > 5 then
 		-- have not started on the combine's fieldwork course yet (still on the temporary alignment course)
 		-- just drive the course
+		self.forwardLookingProximitySensorPack:enableSpeedControl()
 	else
+		-- we'll take care of controlling our speed, don't need ADriver for that
+		self.forwardLookingProximitySensorPack:disableSpeedControl()
 		-- when on the fieldwork course, drive behind or beside the chopper, staying in the range of the pipe
 		self.combineOffset = self:getChopperOffset(self.combineToUnload)
 		self.followCourse:setOffset(-self.combineOffset, 0)
