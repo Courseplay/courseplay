@@ -665,6 +665,15 @@ function CombineAIDriver:createTurnCourse()
 	return CombineCourseTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
 end
 
+--- Will we be driving forward only (not reversing) during a turn
+function CombineAIDriver:isTurnForwardOnly()
+	return self:isTurning() and self.aiTurn and self.aiTurn:isForwardOnly()
+end
+
+function CombineAIDriver:getTurnCourse()
+	return self.aiTurn and self.aiTurn:getCourse()
+end
+
 function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
 

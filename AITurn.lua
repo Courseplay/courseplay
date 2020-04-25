@@ -150,6 +150,10 @@ function AITurn:setReverseSpeed()
 	self.driver:setSpeed(self.vehicle.cp.speeds.reverse)
 end
 
+function AITurn:isForwardOnly()
+	return false
+end
+
 function AITurn:isEndingTurn()
 	-- include the direction too because some turns go to the ENDING_TURN state very early, while still driving
 	-- perpendicular to the row. This way this returns true really only when we are about to end the turn
@@ -452,6 +456,14 @@ function CourseTurn:startTurn()
 		self.driver:startFieldworkCourseWithTemporaryCourse(self.turnCourse, self.turnContext.turnEndWpIx)
 		self.state = self.states.TURNING
 	end
+end
+
+function CourseTurn:isForwardOnly()
+	return self.turnCourse and self.turnCourse:isForwardOnly()
+end
+
+function CourseTurn:getCourse()
+	return self.turnCourse
 end
 
 function CourseTurn:turn()

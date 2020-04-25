@@ -86,7 +86,7 @@ CombineUnloadAIDriver.myStates = {
 	HANDLE_COMBINE_TURN ={},
 	HANDLE_CHOPPER_HEADLAND_TURN = {},
 	HANDLE_CHOPPER_180_TURN = {},
-	HANDLE_CHOPPER_WIDE_TURN = {},
+	FOLLOW_CHOPPER_THROUGH_TURN = {},
 	WAIT_FOR_CHOPPER_TURNED = {}
 }
 
@@ -360,36 +360,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		-- we'll take care of controlling our speed, don't need ADriver for that
 		self.forwardLookingProximitySensorPack:disableSpeedControl()
 
-		--get target node and check whether trailers are full
-		local targetNode = self:getTrailersTargetNode()
-
-		--when trailer is full then go to unload
-		if self:getDriveUnloadNow() or self:getAllTrailersFull() then
-			local reverseCourse = self:getStraightReverseCourse()
-			self:startCourse(reverseCourse,1)
-			self:setNewOnFieldState(self.states.DRIVE_BACK_FULL)
-			return
-		end
-
-		--decide
-		self.combineOffset = self:getChopperOffset(self.combineToUnload)
-		self.followCourse:setOffset(-self.combineOffset, 0)
-
-		if self.combineOffset ~= 0 then
-			self:driveBesideChopper(dt, targetNode)
-		else
-			self:driveBehindChopper(dt)
-		end
-
-		if self.combineToUnload.cp.driver:isTurningButNotEndingTurn()  then
-			local combineTurnStartWpIx = self.combineToUnload.cp.driver:getTurnStartWpIx()
-			if combineTurnStartWpIx then
-				self:debug('chopper reached a turn waypoint, start chopper turn')
-				self:startChopperTurn(combineTurnStartWpIx)
-			else
-				self:error('Combine is turning but does not have a turn start waypoint index.')
-			end
-		end
+		self:followChopper()
 
 	elseif self.onFieldState == self.states.FOLLOW_TRACTOR then
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_FOLLOWING_TRACTOR");
@@ -446,10 +417,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self.forwardLookingProximitySensorPack:enableSpeedControl()
 		self:handleChopper180Turn()
 
-	elseif self.onFieldState == self.states.HANDLE_CHOPPER_WIDE_TURN then
+	elseif self.onFieldState == self.states.FOLLOW_CHOPPER_THROUGH_TURN then
 
 		self.forwardLookingProximitySensorPack:enableSpeedControl()
-		self:handleChopperWideTurn()
+		self:followChopperThroughTurn()
 
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
 		--use trafficController
@@ -1239,7 +1210,7 @@ function CombineUnloadAIDriver:isWithinSafeManeuveringDistance()
 	return MathUtil.vector2Length(dx, dz) < self.safeManeuveringDistance
 end
 
-function CombineUnloadAIDriver:isBehindAndAlignedToCombine()
+function CombineUnloadAIDriver:isBehindAndAlignedToCombine(maxDirectionDifferenceDeg)
 	local dx, _, dz = localToLocal(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
 	-- close enough and approximately same direction and behind
 	return dz < 0 and MathUtil.vector2Length(dx, dz) < 30 and
@@ -1341,7 +1312,8 @@ function CombineUnloadAIDriver:startCourseFollowingCombine(skipTurnStart)
 	local forcePathfinding = false
 	if courseplay:isChopper(self.combineToUnload) then
 		self.combineOffset = self:getChopperOffset(self.combineToUnload)
-		forcePathfinding = not self:isBehindAndAlignedToCombine()
+		-- be more liberal about what 'aligned' means, chopper will move forward anyway when we are in range
+		forcePathfinding = not self:isBehindAndAlignedToCombine(90)
 	else
 		self.combineOffset = self:getCombineOffset(self.combineToUnload)
 		-- if the combine is not moving forward we have use pathfinding to get to the pipe so we won't
@@ -1417,7 +1389,7 @@ function CombineUnloadAIDriver:onPathfindingDoneToTurnEnd(path)
 	if self:isPathFound(path) then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
-		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_WIDE_TURN)
+		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER_THROUGH_TURN)
 	else
 		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_180_TURN)
 	end
@@ -1639,7 +1611,58 @@ function CombineUnloadAIDriver:handleChopperHeadlandTurn()
 end
 
 ------------------------------------------------------------------------------------------------------------------------
+-- Follow chopper
+-- In this mode we drive the same course as the chopper but with an offset. The course may be started with
+-- a temporary (pathfinder generated) course to align to the waypoint we start at.
+-- After that we drive behind or beside the chopper, following the choppers fieldwork course but controlling
+-- our speed to stay in the range of the pipe.
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:followChopper()
+	--get target node and check whether trailers are full
+	local targetNode = self:getTrailersTargetNode()
+
+	--when trailer is full then go to unload
+	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
+		local reverseCourse = self:getStraightReverseCourse()
+		self:startCourse(reverseCourse,1)
+		self:setNewOnFieldState(self.states.DRIVE_BACK_FULL)
+		return
+	end
+
+	if self.course:isTemporary() and self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) > 5 then
+		-- have not started on the combine's fieldwork course yet (still on the temporary alignment course)
+		-- just drive the course
+	else
+		-- when on the fieldwork course, drive behind or beside the chopper, staying in the range of the pipe
+		self.combineOffset = self:getChopperOffset(self.combineToUnload)
+		self.followCourse:setOffset(-self.combineOffset, 0)
+
+		if self.combineOffset ~= 0 then
+			self:driveBesideChopper(dt, targetNode)
+		else
+			self:driveBehindChopper(dt)
+		end
+	end
+
+	if self.combineToUnload.cp.driver:isTurningButNotEndingTurn()  then
+		local combineTurnStartWpIx = self.combineToUnload.cp.driver:getTurnStartWpIx()
+		if combineTurnStartWpIx then
+			self:debug('chopper reached a turn waypoint, start chopper turn')
+			self:startChopperTurn(combineTurnStartWpIx)
+		else
+			self:error('Combine is turning but does not have a turn start waypoint index.')
+		end
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
 -- Chopper turn 180
+-- The default strategy here is to stop before reaching the end of the row and then wait for the combine
+-- to finish the 180 turn. After it finished the turn, we continue on the chopper's fieldwork course with
+-- the appropriate offset.
+--
+-- If the combine says that it won't reverse during the turn (for example performs a wide turn because the
+-- next row to work on is not adjacent the current row), we switch to 'follow chopper through the turn' mode
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:handleChopper180Turn()
 
@@ -1657,11 +1680,16 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 		else
 			self:setSpeed(self.vehicle.cp.speeds.turn)
 		end
-		d = self:getDistanceFromCombine()
-		if d > self.combineToUnload.cp.driver:getWorkWidth() * 2  and
-				self.turnContext and not self.turnContext:isSimpleWideTurn(2 * AIDriverUtil.getTurningRadius(self.vehicle)) then
-			self:debug('Combine is at %1.f m > 2 times to work width and is making a wide turn, switching to wide turn mode', d)
-			self:startPathfindingToTurnEnd()
+		if self.combineToUnload.cp.driver:isTurnForwardOnly() then
+			---@type Course
+			local turnCourse = self.combineToUnload.cp.driver:getTurnCourse()
+			if turnCourse then
+				self:debug('Follow chopper through the turn')
+				self:startCourse(turnCourse:copy(self.vehicle), 1)
+				self:setNewOnFieldState(self.states.FOLLOW_CHOPPER_THROUGH_TURN)
+			else
+				self:debugSparse('Chopper said turn is forward only but has no turn course')
+			end
 		end
 	else
 		-- combine stopped turning, set up a path to follow again
@@ -1670,23 +1698,29 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 end
 
 ------------------------------------------------------------------------------------------------------------------------
--- Chopper wide turn
--- here we use the pathfinder to generate a course to the turn end using the headlands and drive that
--- course carefully keeping our distance from the combine.
+-- Follow chopper through turn
+-- here we drive the chopper's turn course carefully keeping our distance from the combine.
 ------------------------------------------------------------------------------------------------------------------------
-function CombineUnloadAIDriver:handleChopperWideTurn()
+function CombineUnloadAIDriver:followChopperThroughTurn()
 
 	self:changeToUnloadWhenFull()
 
+	local d = self:getDistanceFromCombine()
 	if self.combineToUnload.cp.driver:isTurning() then
+		-- making sure we are never ahead of the chopper on the course (we both drive the same course), this
+		-- prevents the unloader cutting in front of the chopper when for example the unloader is on the
+		-- right side of the chopper and the chopper reaches a right turn.
+		if self.course:getCurrentWaypointIx() > self.combineToUnload.cp.driver.course:getCurrentWaypointIx() then
+			self:hold()
+		end
 		-- follow course, make sure we are keeping distance from the chopper
-		local d = self:getDistanceFromCombine()
+		-- TODO: or just rely on the proximity sensor here?
 		local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
 		local speed = combineSpeed + MathUtil.clamp(d - self.minDistanceFromWideTurnChopper, -combineSpeed, self.vehicle.cp.speeds.field)
 		self:setSpeed(speed)
 		self:renderText(0, 0.7, 'd = %.1f, speed = %.1f', d, speed)
 	else
-		-- chopper is ending/ended turn, go back to follow mode
+		self:debug('chopper is ending/ended turn, return to follow mode')
 		self:startFollowingChopper(true)
 	end
 end

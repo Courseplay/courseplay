@@ -441,6 +441,15 @@ function Course:getLastReverseAt(ix)
 	end
 end
 
+function Course:isForwardOnly()
+	for _, wp in ipairs(self.waypoints) do
+		if wp.rev then
+			return false
+		end
+	end
+	return true
+end
+
 function Course:isTurnStartAtIx(ix)
 	return self.waypoints[ix].turnStart
 end
