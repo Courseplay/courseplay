@@ -1704,12 +1704,17 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 			end
 		end
 	else
-		self:debug('chopper stopped turning, continue on chopper\'s course.')
-		-- reset offset, as we don't know which side is going to work after the turn.
-		self.followCourse:setOffset(0, 0)
-		self:startCourse(self.followCourse, self.combineCourse:getLastPassedWaypointIx())
-		-- TODO: shouldn't we be using lambdas instead?
-		self:setNewOnFieldState(self.states.ALIGN_TO_CHOPPER_AFTER_TURN)
+		local _, _, dz = self:getDistanceFromCombine()
+		self:setSpeed(self.vehicle.cp.speeds.turn)
+		-- start the chopper course (and thus, turning towards it) only after we are behind it
+		if dz < -3 then
+			self:debug('now behind chopper, continue on chopper\'s course.')
+			-- reset offset, as we don't know which side is going to work after the turn.
+			self.followCourse:setOffset(0, 0)
+			self:startCourse(self.followCourse, self.combineCourse:getCurrentWaypointIx())
+			-- TODO: shouldn't we be using lambdas instead?
+			self:setNewOnFieldState(self.states.ALIGN_TO_CHOPPER_AFTER_TURN)
+		end
 	end
 end
 
