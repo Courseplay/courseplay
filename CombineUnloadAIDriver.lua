@@ -1722,6 +1722,8 @@ function CombineUnloadAIDriver:alignToChopperAfterTurn()
 
 	self.forwardLookingProximitySensorPack:enableSpeedControl()
 
+	self:setSpeed(self.vehicle.cp.speeds.turn)
+
 	if self:isBehindAndAlignedToCombine(45) then
 		self:debug('Now aligned with chopper, continue on the side/behind')
 		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)

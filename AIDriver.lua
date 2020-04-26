@@ -119,7 +119,7 @@ AIDriver.proximitySensorRange = 10
 -- the sensor will proportionally reduce speed when objects are in range down to this limit (won't set a speed lower than this)
 AIDriver.proximityMinLimitedSpeed = 2
 -- if anything closer than this, we stop
-AIDriver.proximityLimitLow = 0.5
+AIDriver.proximityLimitLow = 1
 
 -- we use this as an enum
 AIDriver.myStates = {
@@ -1658,6 +1658,10 @@ function AIDriver:updateProximitySensors()
 end
 
 function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
+	if maxSpeed == 0 or not allowedToDrive then
+		-- we are not going anywhere anyway, no use of proximity sensor here
+		return maxSpeed, allowedToDrive
+	end
 	-- minimum distance from any object in the proximity sensor's range
 	local d, range = math.huge, 10
 	if moveForwards then
