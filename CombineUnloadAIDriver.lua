@@ -222,7 +222,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 				if self:isOkToStartUnloadingCombine() then
 					self:startUnloadingCombine()
 				elseif self:isOkToStartFollowingChopper() then
-					self:startFollowingChopper(true)
+					self:startFollowingChopper()
 				else
 					self:startPathfindingToCombine(self.onPathfindingDoneToCombine)
 				end
@@ -311,7 +311,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if self:isOkToStartUnloadingCombine() then
 			self:startUnloadingCombine()
 		elseif self:isOkToStartFollowingChopper() then
-			self:startFollowingChopper(true)
+			self:startFollowingChopper()
 		end
 
 	elseif self.onFieldState == self.states.UNLOADING_STOPPED_COMBINE then
@@ -418,7 +418,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 	elseif self.onFieldState == self.states.FOLLOW_CHOPPER_THROUGH_TURN then
 
-		self.forwardLookingProximitySensorPack:enableSpeedControl()
 		self:followChopperThroughTurn()
 
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
@@ -527,7 +526,7 @@ function CombineUnloadAIDriver:getFillLevelPercent()
 end
 
 function CombineUnloadAIDriver:holdCombine()
-	self:debug('Holding combine.')
+	self:debugSparse('Holding combine.')
 	self.combineToUnload.cp.driver:hold()
 end
 
@@ -664,7 +663,7 @@ function CombineUnloadAIDriver:onLastWaypoint()
 			if self:isOkToStartUnloadingCombine() then
 				self:startUnloadingCombine()
 			elseif self:isOkToStartFollowingChopper() then
-				self:startFollowingChopper(true)
+				self:startFollowingChopper()
 			else
 				self:debug('reached last waypoint, combine isn\'t here anymore, find path to it again')
 				self:startPathfindingToCombine(self.onPathfindingDoneToCombine, 0, -20)
@@ -1281,7 +1280,9 @@ end
 -- Start to follow a chopper
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startFollowingChopper(skipTurnStart)
-	self:startCourseFollowingCombine(skipTurnStart)
+	self.followCourse, self.followCourseIx = self:setupFollowCourse(skipTurnStart)
+	self.followCourse:setOffset(0, 0)
+	self:startCourse(self.followCourse, self.followCourseIx)
 	self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
 end
 
@@ -1613,7 +1614,7 @@ function CombineUnloadAIDriver:handleChopperHeadlandTurn()
 		self:debug('Combine stopped turning, resuming follow course')
 		-- resume course beside combine
 		self:startCourse(self.followCourse, self.combineCourse:getCurrentWaypointIx())
-		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
+		self:setNewOnFieldState(self.states.ALIGN_TO_CHOPPER_AFTER_TURN)
 	end
 end
 
@@ -1668,8 +1669,8 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 -- Chopper turn 180
 -- The default strategy here is to stop before reaching the end of the row and then wait for the combine
--- to finish the 180 turn. After it finished the turn, we continue on the chopper's fieldwork course with
--- the appropriate offset without pathfinding.
+-- to finish the 180 turn. After it finished the turn, we drive forward a bit to make sure we are behind the
+-- chopper and then continue on the chopper's fieldwork course with the appropriate offset without pathfinding.
 --
 -- If the combine says that it won't reverse during the turn (for example performs a wide turn because the
 -- next row to work on is not adjacent the current row), we switch to 'follow chopper through the turn' mode
@@ -1719,27 +1720,12 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 end
 
 ------------------------------------------------------------------------------------------------------------------------
--- Chopper ended a normal 180 turn, we are now on the copper's course but still pointing
--- in the wrong direction. Rely on PPC to turn us around and switch to normal follow mode when
--- about in the same direction
-------------------------------------------------------------------------------------------------------------------------
-function CombineUnloadAIDriver:alignToChopperAfterTurn()
-
-	self.forwardLookingProximitySensorPack:enableSpeedControl()
-
-	self:setSpeed(self.vehicle.cp.speeds.turn)
-
-	if self:isBehindAndAlignedToCombine(45) then
-		self:debug('Now aligned with chopper, continue on the side/behind')
-		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
-	end
-end
-
-------------------------------------------------------------------------------------------------------------------------
 -- Follow chopper through turn
 -- here we drive the chopper's turn course carefully keeping our distance from the combine.
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:followChopperThroughTurn()
+
+	self.forwardLookingProximitySensorPack:enableSpeedControl()
 
 	self:changeToUnloadWhenFull()
 
@@ -1759,7 +1745,26 @@ function CombineUnloadAIDriver:followChopperThroughTurn()
 		self:renderText(0, 0.7, 'd = %.1f, speed = %.1f', d, speed)
 	else
 		self:debug('chopper is ending/ended turn, return to follow mode')
-		self:startFollowingChopper(true)
+		self.followCourse:setOffset(0, 0)
+		self:startCourse(self.followCourse, self.combineCourse:getCurrentWaypointIx())
+		self:setNewOnFieldState(self.states.ALIGN_TO_CHOPPER_AFTER_TURN)
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Chopper ended a turn, we are now on the copper's course but still pointing
+-- in the wrong direction. Rely on PPC to turn us around and switch to normal follow mode when
+-- about in the same direction
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:alignToChopperAfterTurn()
+
+	self.forwardLookingProximitySensorPack:enableSpeedControl()
+
+	self:setSpeed(self.vehicle.cp.speeds.turn)
+
+	if self:isBehindAndAlignedToCombine(45) then
+		self:debug('Now aligned with chopper, continue on the side/behind')
+		self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
 	end
 end
 

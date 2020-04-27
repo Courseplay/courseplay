@@ -48,7 +48,9 @@ function ProximitySensor:update()
         raycastClosest(x, y + self.height, z, nx, ny, nz, 'raycastCallback', self.range, self, bitOR(AIVehicleUtil.COLLISION_MASK, 2))
     end
     if courseplay.debugChannels[12] and self.distanceOfClosestObject <= self.range then
-        cpDebug:drawLine(x, y + self.height, z, 1, 1, 1, self.closestObjectX, self.closestObjectY, self.closestObjectZ)
+        local green = self.distanceOfClosestObject / self.range
+        local red = 1 - green
+        cpDebug:drawLine(x, y + self.height, z, red, green, 0, self.closestObjectX, self.closestObjectY, self.closestObjectZ)
     end
 end
 

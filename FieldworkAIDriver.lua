@@ -1236,7 +1236,7 @@ function FieldworkAIDriver:shouldRaiseThisImplement(object, turnStartNode)
 	local marker = self.vehicle.cp.settings.implementRaiseTime:is(ImplementRaiseLowerTimeSetting.EARLY) and aiFrontMarker or aiBackMarker
 	-- turn start node in the back marker node's coordinate system
 	local _, _, dz = localToLocal(marker, turnStartNode, 0, 0, 0)
-	self:debug('%s: shouldRaiseImplements: dz = %.1f', nameNum(object), dz)
+	self:debugSparse('%s: shouldRaiseImplements: dz = %.1f', nameNum(object), dz)
 	-- marker is just in front of the turn start node
 	return dz > 0
 end

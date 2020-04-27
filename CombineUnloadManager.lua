@@ -278,14 +278,13 @@ function CombineUnloadManager:updateCombinesAttributes()
 		if attributes.measuredBackDistance == nil then
 			self:raycastBack(combine)
 		end
-		for name,value in pairs (attributes) do
-			--print(string.format("%s: %s",tostring(name),tostring(value)))
+		if courseplay.debugChannels[self.debugChannel] then
+			renderText(0.1,0.175+(0.02*number) ,0.015,
+					string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d readyToUnload: %s",
+							nameNum(combine), tostring(attributes.leftOkToDrive), tostring(attributes.rightOKToDrive),
+							#attributes.unloaders, tostring(combine.cp.driver:isReadyToUnload())))
 		end
-		renderText(0.1,0.175+(0.02*number) ,0.015,
-				string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d readyToUnload: %s",
-						nameNum(combine), tostring(attributes.leftOkToDrive), tostring(attributes.rightOKToDrive),
-						#attributes.unloaders, tostring(combine.cp.driver:isReadyToUnload())))
-		number = number +1
+		number = number + 1
 	end
 end
 
