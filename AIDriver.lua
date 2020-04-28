@@ -513,6 +513,7 @@ function AIDriver:startCourse(course, ix, nextCourse, nextWpIx)
 	else
 		self:debug('Starting a course, at waypoint %d, no next course set.', ix)
 	end
+	self:resetTrafficControl()
 	self.nextWpIx = nextWpIx
 	self.nextCourse = nextCourse
 	self.course = course
@@ -536,11 +537,7 @@ function AIDriver:startCourseWithAlignment(course, ix)
 	if alignmentCourse then
 		self:startCourse(alignmentCourse, 1, course, ix)
 	else
-		-- alignment course not enabled/needed/cannot be generated,
-		-- start the main course then
-		self.course = course
-		self.ppc:setCourse(self.course)
-		self.ppc:initialize(ix)
+		self:startCourse(course, ix)
 	end
 	return alignmentCourse
 end
@@ -1311,6 +1308,7 @@ end
 function AIDriver:startCourseWithPathfinding(course, ix, zOffset, fieldNum, alwaysUsePathfinding)
 	-- make sure we have at least a direct course until we figure out a better path. This can happen
 	-- when we don't have a course set yet when starting the pathfinding, for example when starting the course.`
+	self:resetTrafficControl()
 	self.course = course
 	self.ppc:setCourse(course)
 	self.ppc:initialize(ix)
@@ -1533,7 +1531,12 @@ function AIDriver:onUnBlocked()
 end
 
 function AIDriver:trafficControlOK()
+	-- TODO: why the root node? Why not the vehicle itself?
 	return g_trafficController:reserve(self.vehicle.rootNode, self.course, self.ppc:getCurrentWaypointIx())
+end
+
+function AIDriver:resetTrafficControl()
+	g_trafficController:cancel(self.vehicle.rootNode)
 end
 
 function AIDriver:detectSlipping()

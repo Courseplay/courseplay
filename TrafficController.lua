@@ -137,7 +137,7 @@ function TrafficController:reserve(vehicleId, course, fromIx, speed)
 end
 
 function TrafficController:reserveOwnPosition(vehicle)
-	self:chancelOwnPosition(vehicle.rootNode)
+	self:cancelOwnPosition(vehicle.rootNode)
 	local length = vehicle.cp.totalLength or 5
 	for i=0,-length,-self.gridSpacing do
 		local x,y,z = localToWorld(vehicle.rootNode,0,0,i)
@@ -165,7 +165,7 @@ function TrafficController:reserveWithWorkwidth(vehicleId, course, fromIx, speed
 	return ok
 end
 
-function TrafficController:chancelOwnPosition(vehicleId)
+function TrafficController:cancelOwnPosition(vehicleId)
 	for row in pairs(self.reservations) do
 		for col in pairs(self.reservations[row]) do
 			local reservation = self.reservations[row][col]
