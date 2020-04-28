@@ -718,6 +718,10 @@ function CombineAIDriver:isTurningButNotEndingTurn()
 	return self:isTurning() and self.aiTurn and not self.aiTurn:isEndingTurn()
 end
 
+function CombineAIDriver:isFinishingRow()
+	return self:isTurning() and self.aiTurn and self.aiTurn:isFinishingRow()
+end
+
 function CombineAIDriver:getTurnStartWpIx()
 	return self.turnContext and self.turnContext.turnStartWpIx or nil
 end

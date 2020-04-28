@@ -154,6 +154,10 @@ function AITurn:isForwardOnly()
 	return false
 end
 
+function AITurn:isFinishingRow()
+	return self.state == self.states.FINISHING_ROW
+end
+
 function AITurn:isEndingTurn()
 	-- include the direction too because some turns go to the ENDING_TURN state very early, while still driving
 	-- perpendicular to the row. This way this returns true really only when we are about to end the turn

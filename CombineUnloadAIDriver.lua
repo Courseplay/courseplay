@@ -1279,14 +1279,27 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 -- Start to follow a chopper
 ------------------------------------------------------------------------------------------------------------------------
-function CombineUnloadAIDriver:startFollowingChopper(skipTurnStart)
-	self.followCourse, self.followCourseIx = self:setupFollowCourse(skipTurnStart)
+function CombineUnloadAIDriver:startFollowingChopper()
+	self.followCourse, self.followCourseIx = self:setupFollowCourse()
+
+	-- don't start at a turn start WP, unless the chopper is still finishing the row before the turn
+	-- and waiting for us now. We don't want to start following the chopper at a turn start waypoint if the chopper
+	-- isn't turning anymore
+	if self.combineCourse:isTurnStartAtIx(self.followCourseIx) then
+		self:debug('start following at turn start waypoint %d', self.followCourseIx)
+		if not self.combineToUnload.cp.driver:isFinishingRow() then
+			self:debug('chopper already started turn so moving to the next (turn end) waypoint')
+			-- if the chopper is started the turn already or in the process of ending the turn, skip to the turn end waypoint
+			self.followCourseIx = self.followCourseIx + 1
+		end
+	end
+
 	self.followCourse:setOffset(0, 0)
 	self:startCourse(self.followCourse, self.followCourseIx)
 	self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
 end
 
-function CombineUnloadAIDriver:setupFollowCourse(skipTurnStart)
+function CombineUnloadAIDriver:setupFollowCourse()
 	---@type Course
 	self.combineCourse = self.combineToUnload.cp.driver:getFieldworkCourse()
 	if not self.combineCourse then
@@ -1296,11 +1309,6 @@ function CombineUnloadAIDriver:setupFollowCourse(skipTurnStart)
 	end
 	local followCourse = self.combineCourse:copy(self.vehicle)
 	local followCourseIx = self.combineCourse:getCurrentWaypointIx()
-	-- don't start at a turn start WP, this may throw us back to the previous row as the current WP ix isn't
-	-- changed during the entire turn and keeps pointing to the turn start
-	if skipTurnStart and self.combineCourse:isTurnStartAtIx(followCourseIx) then
-		followCourseIx = followCourseIx + 1
-	end
 	return followCourse, followCourseIx
 end
 
@@ -1311,8 +1319,8 @@ end
 --- already finishing the course. The current waypoint remains the turn start waypoint during the turn (TODO: review
 --- this legacy behavior)
 ------------------------------------------------------------------------------------------------------------------------
-function CombineUnloadAIDriver:startCourseFollowingCombine(skipTurnStart)
-	self.followCourse, self.followCourseIx = self:setupFollowCourse(skipTurnStart)
+function CombineUnloadAIDriver:startCourseFollowingCombine()
+	self.followCourse, self.followCourseIx = self:setupFollowCourse()
 	local forcePathfinding = false
 	if courseplay:isChopper(self.combineToUnload) then
 		self.combineOffset = self:getChopperOffset(self.combineToUnload)
@@ -1655,7 +1663,7 @@ function CombineUnloadAIDriver:followChopper()
 		end
 	end
 
-	if self.combineToUnload.cp.driver:isTurningButNotEndingTurn()  then
+	if self.combineToUnload.cp.driver:isTurningButNotEndingTurn() then
 		local combineTurnStartWpIx = self.combineToUnload.cp.driver:getTurnStartWpIx()
 		if combineTurnStartWpIx then
 			self:debug('chopper reached a turn waypoint, start chopper turn')
