@@ -160,10 +160,13 @@ end
 function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
 	self:handlePipe()
-	-- the rest is the same as the parent class
-	if not self:trafficControlOK() then
+	if self.isChopperWaitingForTrailer then
+		-- Give up all reservations while not moving (and do not reserve anything)
+		self:resetTrafficControl()
+	elseif not self:trafficControlOK() then
 		self:hold()
 	end
+	-- the rest is the same as the parent class
 	UnloadableFieldworkAIDriver.drive(self, dt)
 end
 
@@ -831,6 +834,7 @@ function CombineAIDriver:isAutoDriveWaitingForPipe()
 end
 
 function CombineAIDriver:handleChopperPipe()
+	self.isChopperWaitingForTrailer = false
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		-- chopper always opens the pipe
 		self:openPipe()
@@ -840,6 +844,7 @@ function CombineAIDriver:handleChopperPipe()
 		-- not using isFillableTrailerUnderPipe() as the chopper sometimes has FillType.UNKNOWN
 		if self:getIsChopperWaitingForTrailer(fillLevel) then
 			self:debugSparse('Chopper waiting for trailer, fill level %f', fillLevel)
+			self.isChopperWaitingForTrailer = true
 			self:setSpeed(0)
 		end
 	else
