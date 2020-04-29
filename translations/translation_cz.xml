@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Čekám, než se uvolní bod k čekání" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Otočím se ve směru %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Jedu na souřadnice %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čekám, než bude kombajn naplněn" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čekám, než bude kombajn naplněn (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Kombajn/řezačka není v dosahu" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Čekám, než se kombajn/řezačka otočí" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Čekám na další orientační bod" />
@@ -274,6 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="na prvním bodě" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="na vybraném bodě" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="následující čekací bod" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Trasa okolo pole:" />
 		<text name="COURSEPLAY_FIELD" 										text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(načtená trasa)" />
@@ -435,6 +436,8 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Kliknutím přepnete na vybrané vozidlo" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Stále otevřený komín" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Otevřít komín, když kombajn čeká na vykládku" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Brzy" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Pozdě" />

@@ -77,15 +77,6 @@ function courseplay:start(self)
 	if self.attachedCutters ~= nil then
 ]]
 
-	--calculate workwidth for combines in mode7
-	if self.cp.mode == 7 then
-		courseplay:calculateWorkWidth(self)
-	end
-	-- set default modeState if not in mode 2 or 3
-	if self.cp.mode ~= 2 and self.cp.mode ~= 3 then
-		courseplay:setModeState(self, 0);
-	end;
-
 	if self.cp.waypointIndex < 1 then
 		courseplay:setWaypointIndex(self, 1);
 	end
@@ -103,6 +94,12 @@ function courseplay:start(self)
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.directionNode);
+
+	-- TODO: temporary bandaid here for the case when the legacy waypointIndex isn't set correctly
+	if self.cp.waypointIndex > #self.Waypoints then
+		courseplay.infoVehicle(self, 'Waypoint index %d reset to %d', self.cp.waypointIndex, #self.Waypoints)
+		self.cp.waypointIndex = #self.Waypoints
+	end
 	-- position of next waypoint
 	local cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
 	-- distance (in any direction)

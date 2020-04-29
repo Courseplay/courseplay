@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="等待空闲位置" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="转到 %d %d 点" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="前往 %d %d 坐标点" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="等待收割机容量到达设定值" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="等待收割机容量到达设定值 (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="附近没有收割机" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="等待收割机完成转向" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="等待新的路径点" />
@@ -274,6 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="起始点" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="当前点" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="下一个路径点" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="选择地块范围编号" />
 		<text name="COURSEPLAY_FIELD" 										text="地块范围路径编号:" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="当前任务" />
@@ -433,6 +434,9 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="早期" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="晚期" />

@@ -12,5 +12,6 @@ type BaleLoaderAIDriver.lua >> %outfile%
 type BaleWrapperAIDriver.lua >> %outfile%
 type BalerAIDriver.lua >> %outfile%
 type CombineAIDriver.lua >> %outfile%
+type CombineUnloadAIDriver.lua >> %outfile%
 echo ]]^> >> %outfile%
 echo ^</code^> >> %outfile%

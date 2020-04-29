@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Waiting until waiting position is free" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Turning to direction %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Drive to waypoint %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Waiting until fill level is reached" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Waiting until fill level is reached (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="No combine in reach" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Waiting until combine has turned" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Waiting for new waypoint" />
@@ -274,6 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="First waypoint" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="Current waypoint" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="Next closest waypoint" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Field edge path" />
 		<text name="COURSEPLAY_FIELD" 										text="Field" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Currently loaded course)" />
@@ -433,6 +434,8 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD on/off" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />

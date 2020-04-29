@@ -2461,7 +2461,7 @@ function TurnContext:setupTurnStart(course, aiDriverData)
 	if not aiDriverData.turnStartWpNode then
 		aiDriverData.turnStartWpNode = WaypointNode('turnStart')
 	end
-	-- Turn start waypoint node, pointing to the direction or the turn end node
+	-- Turn start waypoint node, pointing to the direction of the turn end node
 	aiDriverData.turnStartWpNode:setToWaypoint(course, self.turnStartWpIx)
 	self.turnStartWpNode = aiDriverData.turnStartWpNode
 
@@ -2513,6 +2513,11 @@ function TurnContext:getLocalPositionFromTurnStart(node)
 	return localToLocal(node, self.turnStartWpNode.node, 0, 0, 0)
 end
 
+-- node's position in the work end node's coordinate system
+function TurnContext:getLocalPositionFromWorkEnd(node)
+	return localToLocal(node, self.workEndNode, 0, 0, 0)
+end
+
 -- turn end wp node's position in node's coordinate system
 function TurnContext:getLocalPositionOfTurnEnd(node)
 	return localToLocal(self.vehicleAtTurnEndNode, node, 0, 0, 0)
@@ -2539,6 +2544,10 @@ end
 --- to the turn start, there'll be nothing in our way.
 function TurnContext:isSimpleWideTurn(turnDiameter)
 	return not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter and math.abs(self.dx) < turnDiameter * 1.5 and math.abs(self.dz) < turnDiameter
+end
+
+function TurnContext:isWideTurn(turnDiameter)
+	return not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter
 end
 
 function TurnContext:isLeftTurn()
@@ -2657,7 +2666,7 @@ end
 ---@param vehicle table
 ---@param corner Corner if caller already has a corner to use, can pass in here. If nil, we will create our own
 ---@return Course
-function TurnContext:createEndingTurnCourse2(vehicle, corner)
+function TurnContext:createEndingTurnCourse(vehicle, corner)
 	local startAngle = math.deg(self:getNodeDirection(AIDriverUtil.getDirectionNode(vehicle)))
 	local r = vehicle.cp.turnDiameter / 2
 	local startPos, endPos = {}, {}
@@ -2679,19 +2688,6 @@ function TurnContext:createEndingTurnCourse2(vehicle, corner)
 	if not corner then myCorner:delete() end
 	courseplay:clearTurnTargets(vehicle)
 	return course
-end
-
-
---- Course to end a turn, just a few meters straight leading into the next row
----@return Course
-function TurnContext:createEndingTurnCourse(vehicle)
-	local waypoints = {}
-	-- make sure course reaches the front marker node so end it well behind that node
-	for d = -10, 3, 1 do
-		local x, _, z = localToWorld(self.vehicleAtTurnEndNode, 0, 0, d)
-		table.insert(waypoints, {x = x, z = z})
-	end
-	return Course(vehicle, waypoints, true)
 end
 
 --- Course to reverse before starting a turn to make sure the turn is completely on the field

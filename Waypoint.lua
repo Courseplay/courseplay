@@ -300,6 +300,10 @@ function Course:setOffset(x, z)
 	self.offsetX, self.offsetZ = x, z
 end
 
+function Course:getOffset()
+	return self.offsetX, self.offsetZ
+end
+
 function Course:setWorkWidth(w)
 	self.workWidth = w
 end
@@ -417,6 +421,14 @@ function Course:getCurrentWaypointIx()
 	return self.currentWaypoint
 end
 
+function Course:setLastPassedWaypointIx(ix)
+	self.lastPassedWaypoint = ix
+end
+
+function Course:getLastPassedWaypointIx()
+	return self.lastPassedWaypoint
+end
+
 function Course:isReverseAt(ix)
 	return self.waypoints[math.min(math.max(1, ix), #self.waypoints)].rev
 end
@@ -427,6 +439,15 @@ function Course:getLastReverseAt(ix)
 			return i-1
 		end
 	end
+end
+
+function Course:isForwardOnly()
+	for _, wp in ipairs(self.waypoints) do
+		if wp.rev then
+			return false
+		end
+	end
+	return true
 end
 
 function Course:isTurnStartAtIx(ix)
@@ -544,7 +565,7 @@ function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].angle
 end
 
--- This is the radius from the course generator. For now only island bypass waypoints nodes have a
+-- This is the radius from the course generator. For now ony island bypass waypoints nodes have a
 -- radius.
 function Course:getRadiusAtIx(ix)
 	local r = self.waypoints[ix].radius
@@ -753,6 +774,15 @@ function Course:hasWaitPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.wait or p.interact end)
 end
 
+--- Is there an turn (start or end) around ix?
+---@param ix number waypoint index to look around
+---@param distance number distance in meters to look around the waypoint
+---@return boolean true if any of the waypoints are turn start/end point
+function Course:hasTurnWithinDistance(ix, distance)
+	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.turnStart or p.turnEnd end)
+end
+
+
 function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 	-- search backwards first
 	local d = 0
@@ -877,12 +907,34 @@ function Course:append(other)
 	self:appendWaypoints(other.waypoints)
 end
 
+--- Return a copy of the course
+function Course:copy(vehicle)
+	return Course(vehicle, self.waypoints)
+end
+
 --- Append a single waypoint to the course
 ---@param waypoint Waypoint
 function Course:appendWaypoint(waypoint)
 	table.insert(self.waypoints, Waypoint(waypoint, #self.waypoints + 1))
 end
 
+--- Extend a course with a straight segment (same direction as last WP)
+---@param length number the length to extend the course with
+---@param dx number	direction to extend
+---@param dz number direction to extend
+function Course:extend(length, dx, dz)
+	local lastWp = self.waypoints[#self.waypoints]
+	local len = self.waypoints[#self.waypoints - 1].dToNext
+	dx, dz = dx or lastWp.dx / len, dz or lastWp.dz / len
+	local wpDistance = 2
+	for _ = wpDistance, math.max(length, wpDistance), wpDistance do
+		lastWp = self.waypoints[#self.waypoints]
+		local x = lastWp.x + dx * wpDistance
+		local z = lastWp.z + dz * wpDistance
+		self:appendWaypoint({x = x, z = z})
+	end
+	self:enrichWaypointData()
+end
 
 function Course:getDirectionToWPInDistance(ix, vehicle, distance)
 	local lx, lz = 0, 1
@@ -926,6 +978,35 @@ function Course:createLegacyCourse()
 	legacyCourse[1].crossing = true
 	legacyCourse[#legacyCourse].crossing = true
 	return legacyCourse
+end
+
+function Course:getAllPointsAreOnField()
+	local allOnField = true
+	for i = 1, #self.waypoints do
+		local x, _, z = self:getWaypointPosition(i)
+		if not courseplay:isField(x, z, 1, 1) then
+			return false
+		end
+	end
+	return allOnField
+end
+
+function Course:worldToWaypointLocal(ix, x, y, z)
+	local tempNode = WaypointNode('worldToWaypointLocal')
+	tempNode:setToWaypoint(self,ix)
+	setRotation(tempNode.node, 0, self:getWaypointYRotation(ix), 0);
+	local dx,dy,dz = worldToLocal(tempNode.node,x, y, z)
+	tempNode:destroy()
+	return dx,dy,dz
+end
+
+function Course:waypointLocalToWorld(ix, x, y, z)
+	local tempNode = WaypointNode('waypointLocalToWorld')
+	tempNode:setToWaypoint(self,ix)
+	setRotation(tempNode.node, 0, self:getWaypointYRotation(ix), 0);
+	local dx,dy,dz = localToWorld(tempNode.node,x, y, z)
+	tempNode:destroy()
+	return dx,dy,dz
 end
 
 function Course:setNodeToWaypoint(node, ix)

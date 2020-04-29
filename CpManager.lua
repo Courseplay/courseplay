@@ -105,14 +105,21 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'printVehicleVariable', 'Print g_currentMission.controlledVehicle.variable', 'printVehicleVariable', self )
+	addConsoleCommand( 'printDriverVariable', 'Print g_currentMission.controlledVehicle.cp.driver.variable', 'printDriverVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
+	addConsoleCommand( 'cpLoadAIDriver', 'Load a lua file and re-instantiate the current AIDriver', 'loadAIDriver', self )
+
+	addConsoleCommand( 'cpRestoreVehiclePositions', 'Restore all saved vehicle positions', 'restoreVehiclePositions', self )
+	addConsoleCommand( 'cpSaveVehiclePositions', 'Save position of all vehicles', 'saveVehiclePositions', self )
+
 	addConsoleCommand( 'cpRestartSaveGame', 'Load and start a savegame', 'restartSaveGame', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
 	addConsoleCommand( 'cpTogglePathfindingDebug', 'Toggle pathfinding visual debug info', 'togglePathfindingDebug', self )
 	addConsoleCommand( 'cpToggleDevhelperDebug', 'Toggle development helper visual debug info', 'toggleDevhelperDebug', self )
+	addConsoleCommand( 'cpShowCombineUnloadManagerStatus', 'Show combine unload manager status', 'showCombineUnloadManagerStatus', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -237,6 +244,10 @@ function CpManager:update(dt)
 		
 	end;
 
+	if courseplay.fieldMod == nil then
+		courseplay:initailzeFieldMod()
+	end
+
 	if g_gui.currentGui == nil then
 		-- SETUP FIELD INGAME DATA
 		if not courseplay.fields.ingameDataSetUp then
@@ -261,6 +272,8 @@ function CpManager:update(dt)
 			self:showYesNoDialogue('Courseplay', courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'), self.fieldScanDialogueCallback);
 		end;
 	end;
+	g_trafficController:update(dt)
+	g_combineUnloadManager:onUpdate()
 
 	-- REAL TIME 5 SECS CHANGER
 	if self.realTime5SecsTimer < 5000 then
@@ -291,6 +304,14 @@ function CpManager:update(dt)
 	end
 	g_devHelper:update()
 end;
+
+
+function CpManager:UpdateTick(dt)
+	print("CpManager:updateTick(dt)")
+end
+
+
+
 
 function CpManager:draw()
 	if g_currentMission.paused then
@@ -523,13 +544,21 @@ end
 --- Print the variable in the selected vehicle's namespace
 -- You can omit the dot for data members but if you want to call a function, you must start the variable name with a colon
 function CpManager:printVehicleVariable(variableName, maxDepth)
-	local vehiclePrefix = 'g_currentMission.controlledVehicle'
+	self:printVariableInternal( 'g_currentMission.controlledVehicle', variableName, maxDepth)
+end
+
+function CpManager:printDriverVariable(variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', variableName, maxDepth)
+end
+
+function CpManager:printVariableInternal(prefix, variableName, maxDepth)
 	if not StringUtil.startsWith(variableName, ':') and not StringUtil.startsWith(variableName, '.') then
 		-- allow to omit the . at the beginning of the variable name.
-		vehiclePrefix = vehiclePrefix .. '.'
+		prefix = prefix .. '.'
 	end
-	self:printVariable(vehiclePrefix .. variableName, maxDepth)
+	self:printVariable(prefix .. variableName, maxDepth)
 end
+
 
 --- Install a wrapper around a function. The wrapper will print the function name
 -- and the arguments every time the function is called and then call the function
@@ -619,8 +648,28 @@ function CpManager:loadFile(fileName)
 	end
 end
 
+function CpManager:loadAIDriver()
+	self:loadFile()
+	if g_currentMission.controlledVehicle then
+		-- re-instantiate the AIDriver after loaded
+		courseplay:setAIDriver(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.cp.mode)
+	end
+end
+
+function CpManager:saveVehiclePositions()
+	DevHelper.saveAllVehiclePositions()
+end
+
+function CpManager:restoreVehiclePositions()
+	DevHelper.restoreAllVehiclePositions()
+end
+
 function CpManager:restartSaveGame(saveGameNumber)
 	restartApplication(" -autoStartSavegameId " .. saveGameNumber)
+end
+
+function CpManager:showCombineUnloadManagerStatus()
+	g_combineUnloadManager:printStatus()
 end
 
 function CpManager:setLookaheadDistance(d)

@@ -50,9 +50,17 @@ function DevHelper:update()
         self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
         self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
+        self.proximitySensorForward = nil
+        self.proximitySensorRight = nil
+        self.pack = nil
     else
+        -- camera node looks backwards so need to flip everything by 180 degrees
         self.node = g_currentMission.player.cameraNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, -1)
+        if not self.pack then
+            self.pack = ForwardLookingProximitySensorPack(self.node, 10)
+        end
+        self.pack:update()
     end
 
     if self.vehicleData then
@@ -70,12 +78,14 @@ function DevHelper:update()
     self.data.x, self.data.y, self.data.z = getWorldTranslation(self.node)
     self.data.fieldNum = courseplay.fields:getFieldNumForPosition(self.data.x, self.data.z)
 
-    self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 2, 2)
+    self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 5, 3.6)
     self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 10, 10)
+    self.data.fieldId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
+
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
 
     self.data.collidingShapes = ''
-    overlapBox(self.data.x, self.data.y + 1, self.data.z, 0, self.yRot, 0, 3, 3, 3, "overlapBoxCallback", self, AIVehicleUtil.COLLISION_MASK, false, true, true)
+    overlapBox(self.data.x, self.data.y + 0.2, self.data.z, 0, self.yRot, 0, 1.6, 1, 8, "overlapBoxCallback", self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
 
     if self.pathfinder and self.pathfinder:isActive() then
         local done, path = self.pathfinder:resume()
@@ -98,7 +108,24 @@ end
 
 function DevHelper:overlapBoxCallback(transformId)
     local collidingObject = g_currentMission.nodeToObject[transformId]
-    self.data.collidingShapes = self.data.collidingShapes .. '|' .. (collidingObject and collidingObject:getName() or tostring(collidingObject))
+    local text
+    if collidingObject then
+        if collidingObject.getRootVehicle then
+            text = 'vehicle' .. collidingObject:getName()
+        else
+            text = collidingObject:getName()
+        end
+    else
+        text = ''
+        for key, classId in pairs(ClassIds) do
+            if getHasClassId(transformId, classId) then
+                text = text .. ' ' .. key
+            end
+        end
+    end
+
+
+    self.data.collidingShapes = self.data.collidingShapes .. '|' .. text
 end
 
 
@@ -106,7 +133,7 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
         -- Left Alt + < mark start
-        self.context = PathfinderUtil.Context(self.vehicleData, PathfinderUtil.FieldData(self.data.fieldNum))
+        self.context = PathfinderUtil.Context(self.vehicleData, PathfinderUtil.FieldData(self.data.fieldNum), PathfinderUtil.Parameters())
         self.start = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
         self:debug('Start %s', tostring(self.start))
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_period then
@@ -128,6 +155,13 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         -- Left Ctrl + > find path
         self:debug('Calculate')
         self:startPathfinding()
+    elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_space then
+        -- save vehicle position
+        g_currentMission.controlledVehicle.vehiclePositionData = {}
+        DevHelper.saveVehiclePosition(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.vehiclePositionData)
+    elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_space then
+        -- restore vehicle position
+        DevHelper.restoreVehiclePosition(g_currentMission.controlledVehicle)
     end
 end
 
@@ -139,11 +173,11 @@ function DevHelper:startPathfinding()
     if self.vehicle and self.vehicle.cp.driver and self.vehicle.cp.driver.fieldworkCourse then
         self:debug('Starting pathfinding for turn between %s and %s', tostring(self.start), tostring(self.goal))
         self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
-                1.05 * self.vehicle.cp.turnDiameter / 2, true, self.vehicle.cp.driver.fieldworkCourse)
+                1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
     else
-        self:debug('Starting pathfinding (allow reverse) between %s and %s', tostring(self.start), tostring(self.goal))
+        self:debug('Starting pathfinding (no reverse) between %s and %s', tostring(self.start), tostring(self.goal))
         local start = State3D:copy(self.start)
-        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, true)
+        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, false)
     end
 
     if done then
@@ -169,7 +203,7 @@ function DevHelper:draw()
     for key, value in pairs(self.data) do
         table.insert(data, {name = key, value = value})
     end
-    DebugUtil.renderTable(0.3, 0.3, 0.02, data, 0.05)
+    DebugUtil.renderTable(0.65, 0.3, 0.018, data, 0.05)
     self:drawCourse()
     self:showVehicleSize()
     self:showFillNodes()
@@ -249,6 +283,46 @@ function DevHelper:showVehicleSize()
             local pp = self.collisionData.corners[i > 1 and i - 1 or 4]
             cpDebug:drawLine(cp.x, cp.y + 0.4, cp.z, 1, 1, 0, pp.x, pp.y + 0.4, pp.z)
         end
+    end
+end
+
+function DevHelper.saveVehiclePosition(vehicle, vehiclePositionData)
+    local savePosition = function(object)
+        local savedPosition = {}
+        savedPosition.x, savedPosition.y, savedPosition.z = getWorldTranslation(object.rootNode)
+        savedPosition.xRot, savedPosition.yRot, savedPosition.zRot = getWorldRotation(object.rootNode)
+        return savedPosition
+    end
+
+    table.insert(vehiclePositionData, {vehicle, savePosition(vehicle)})
+    for _,impl in pairs(vehicle:getAttachedImplements()) do
+        DevHelper.saveVehiclePosition(impl.object, vehiclePositionData)
+    end
+    courseplay.info('Saved position of %s', nameNum(vehicle))
+end
+
+function DevHelper.restoreVehiclePosition(vehicle)
+    if vehicle.vehiclePositionData then
+        for _, savedPosition in pairs(vehicle.vehiclePositionData) do
+            savedPosition[1]:setAbsolutePosition(savedPosition[2].x, savedPosition[2].y, savedPosition[2].z,
+                    savedPosition[2].xRot, savedPosition[2].yRot, savedPosition[2].zRot)
+            courseplay.info('Restored position of %s', nameNum(savedPosition[1]))
+        end
+    end
+end
+
+function DevHelper.restoreAllVehiclePositions()
+    for _, vehicle in pairs(g_currentMission.vehicles) do
+        if vehicle.vehiclePositionData then
+            DevHelper.restoreVehiclePosition(vehicle)
+        end
+    end
+end
+
+function DevHelper.saveAllVehiclePositions()
+    for _, vehicle in pairs(g_currentMission.vehicles) do
+        vehicle.vehiclePositionData = {}
+        DevHelper.saveVehiclePosition(vehicle, vehicle.vehiclePositionData)
     end
 end
 

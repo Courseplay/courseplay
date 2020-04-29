@@ -1,5 +1,3 @@
-local curFile = 'settings.lua';
-
 local abs, ceil, max, min = math.abs, math.ceil, math.max, math.min;
 
 function courseplay:openCloseHud(vehicle, open)
@@ -19,13 +17,7 @@ function courseplay:setCpMode(vehicle, modeNum)
 		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
-
-		--if not CpManager.isDeveloper then
-			if modeNum == courseplay.MODE_COMBI then
-				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
-			else
-				vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
-			end
+		vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
 		--end
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
@@ -41,8 +33,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
 		vehicle.cp.driver = GrainTransportAIDriver(vehicle)	
 	elseif mode == courseplay.MODE_COMBI then
-		CombineUnloadAIDriver:setHudContent(vehicle)
-	--	vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
+		vehicle.cp.driver = CombineUnloadAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		vehicle.cp.driver = ShovelModeAIDriver(vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
@@ -201,7 +192,7 @@ function courseplay:startStop(vehicle)
 end;
 
 function courseplay:startStopCourseplayer(combine)
-	local tractor = combine.courseplayers[1];
+	local tractor = g_combineUnloadManager:getUnloaderByNumber(1, combine)
 	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
 end;
 
@@ -247,7 +238,7 @@ function courseplay:setDriveUnloadNow(vehicle, bool)
 end;
 
 function courseplay:sendCourseplayerHome(combine)
-	courseplay:setDriveUnloadNow(combine.courseplayers[1], true);
+	courseplay:setDriveUnloadNow(g_combineUnloadManager:getUnloaderByNumber(1, combine), true);
 end
 
 function courseplay:toggleTurnStage(combine)
@@ -607,7 +598,7 @@ function courseplay:toggleRealisticDriving(vehicle)
 end;
 
 function courseplay:toggleDrivingMode(vehicle)
-	vehicle.cp.drivingMode:next()
+	vehicle.cp.drivingMode:setNext()
 	courseplay.debugVehicle(12, vehicle, 'Driving mode: %d', vehicle.cp.drivingMode:get())
 end
 
@@ -615,7 +606,6 @@ function courseplay:toggleAutoDriveMode(vehicle)
 	vehicle.cp.settings.autoDriveMode:next()
 	courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.settings.autoDriveMode:get())
 end
-
 
 function courseplay:toggleAlignmentWaypoint( vehicle )
 	vehicle.cp.alignment.enabled = not vehicle.cp.alignment.enabled
@@ -635,56 +625,41 @@ end;
 
 function courseplay:setSearchCombineOnField(vehicle, changeDir, force)
 	if courseplay.fields.numAvailableFields == 0 or not vehicle.cp.searchCombineAutomatically then
-		vehicle.cp.searchCombineOnField = 0;
-		return;
-	end;
+		vehicle.cp.settings.searchCombineOnField:set(0)
+		return
+	end
 	if force and courseplay.fields.fieldData[force] then
-		vehicle.cp.searchCombineOnField = force;
-		return;
-	end;
+		vehicle.cp.settings.searchCombineOnField:set(force)
+		return
+	end
 
-	local newFieldNum = vehicle.cp.searchCombineOnField + changeDir;
-	if newFieldNum == 0 then
-		vehicle.cp.searchCombineOnField = newFieldNum;
-		return;
-	end;
+	if changeDir > 0 then
+		vehicle.cp.settings.searchCombineOnField:setNext()
+	else
+		vehicle.cp.settings.searchCombineOnField:setPrevious()
+	end
 
-	while courseplay.fields.fieldData[newFieldNum] == nil do
-		if newFieldNum == 0 then
-			vehicle.cp.searchCombineOnField = newFieldNum;
-			return;
-		end;
-		newFieldNum = MathUtil.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
-	end;
-
-	vehicle.cp.searchCombineOnField = newFieldNum;
 end;
 
 function courseplay:selectAssignedCombine(vehicle, changeBy)
-	local combines = courseplay:getAllCombines();
-	vehicle.cp.selectedCombineNumber = MathUtil.clamp(vehicle.cp.selectedCombineNumber + changeBy, 0, #combines);
-
-	if vehicle.cp.selectedCombineNumber == 0 then
-		vehicle.cp.savedCombine = nil;
-		vehicle:setCpVar('HUD4savedCombineName',"",courseplay.isClient);
+	vehicle.cp.settings.selectedCombineToUnload:refresh()
+	if changeBy > 0 then
+		vehicle.cp.settings.selectedCombineToUnload:setNext()
 	else
-		vehicle.cp.savedCombine = combines[vehicle.cp.selectedCombineNumber];
-		local combineName = vehicle.cp.savedCombine.name or courseplay:loc('COURSEPLAY_COMBINE');
-		local x1 = courseplay.hud.col2posX[4];
-		local x2 = courseplay.hud.buttonPosX[1] - getTextWidth(courseplay.hud.fontSizes.contentValue, ' (9999m)');
-		local shortenedName, firstChar, lastChar = Utils.limitTextToWidth(combineName, courseplay.hud.fontSizes.contentValue, x2 - x1, false, '...');
-		vehicle:setCpVar('HUD4savedCombineName',shortenedName,courseplay.isClient);
-	end;
-
-	courseplay:removeActiveCombineFromTractor(vehicle);
+		vehicle.cp.settings.selectedCombineToUnload:setPrevious()
+	end
+	courseplay:removeActiveCombineFromTractor(vehicle)
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 end;
 
 function courseplay:removeActiveCombineFromTractor(vehicle)
-	if vehicle.cp.activeCombine ~= nil then
-		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
+	if vehicle.cp.driver.combineToUnload ~= nil then
+		local driver = vehicle.cp.driver
+		driver:releaseUnloader()
+		driver.combineToUnload = nil
+		driver:setNewOnFieldState(driver.states.WAITING_FOR_COMBINE_TO_CALL)
 	end;
-	courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
-	vehicle.cp.lastActiveCombine = nil;
+	--courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -1389,13 +1364,8 @@ function courseplay:toggleDriverPriority(combine)
 end;
 
 function courseplay:toggleStopWhenUnloading(combine)
-	if combine.cp.isChopper then
-		combine.cp.stopWhenUnloading = false;
-		return;
-	end;
-	if combine.cp.stopWhenUnloading == nil then combine.cp.stopWhenUnloading = false; end;
-	combine.cp.stopWhenUnloading = not combine.cp.stopWhenUnloading;
-end;
+	combine.cp.settings.stopForUnload:toggle()
+end
 
 function courseplay:goToVehicle(curVehicle, targetVehicle)
 	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
@@ -1853,6 +1823,25 @@ function courseplay:getIsEngineReady(vehicle)
 	return (vehicle.spec_motorized.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.spec_motorized.motorStartTime == nil or vehicle.spec_motorized.motorStartTime < g_currentMission.time);
 end;
 
+
+function courseplay:toggleAssignCombineToTractor(vehicle,line)
+	local listIndex = line-2 + vehicle.cp.combinesListHUDOffset
+	local combine = vehicle.cp.possibleCombines[listIndex]
+	if vehicle.cp.assignedCombines[combine] then
+		vehicle.cp.assignedCombines[combine] = nil
+		combine.cp.assignedUnloaders[vehicle]= nil
+	else
+		vehicle.cp.assignedCombines[combine] = true
+		if combine.cp.assignedUnloaders == nil then
+			combine.cp.assignedUnloaders ={}
+		end
+		combine.cp.assignedUnloaders[vehicle] = true
+	end
+end
+
+function courseplay:shiftCombinesList(vehicle, change_by)
+	vehicle.cp.combinesListHUDOffset = MathUtil.clamp(vehicle.cp.combinesListHUDOffset+ change_by,0,#vehicle.cp.possibleCombines-6)
+end
 ----------------------------------------------------------------------------------------------------
 
 function courseplay:setCpVar(varName, value, noEventSend)
@@ -1980,6 +1969,12 @@ function Setting:saveToXml(xml, parentKey)
 	-- override
 end
 
+-- For settings where the valid values depend on other conditions, re-evaluate the validity of the
+-- current setting (when for example changed the mode of the vehicle, is the current setting still valid for the new mode)
+function Setting:validateCurrentValue()
+	-- override
+end
+
 ---@class FloatSetting
 FloatSetting = CpObject(Setting)
 --- @param name string name of this settings, will be used as an identifier in containers and XML
@@ -2026,6 +2021,16 @@ function SettingList:get()
 	return self.values[self.current]
 end
 
+---@param seconds number if value changed within seconds than it should be considered invalid
+---@return nil if value changed in the last seconds seconds, otherwise the current value
+function SettingList:getIfNotChangedFor(seconds)
+	if self:getSecondsSinceLastChange() > seconds then
+		return self:get()
+	else
+		return nil
+	end
+end
+
 -- Is the current value same as the param?
 function SettingList:is(value)
 	return self.values[self.current] == value
@@ -2037,9 +2042,21 @@ function SettingList:getText()
 end
 
 --- Set the next value
-function SettingList:next()
+function SettingList:setNext()
 	local new = self:checkAndSetValidValue(self.current + 1)
 	self:setToIx(new)
+end
+
+--- Set the previous value
+function SettingList:setPrevious()
+	local new = self:checkAndSetValidValue(self.current - 1)
+	self:setToIx(new)
+end
+
+
+-- TODO: consolidate this with setNext()
+function SettingList:next()
+	self:setNext()
 end
 
 -- private function to set to the value at ix
@@ -2048,6 +2065,7 @@ function SettingList:setToIx(ix)
 		self.previous = self.current
 		self.current = ix
 		self:onChange()
+		self.lastChangeTimeMilliseconds = g_time
 		if self.syncValue then
 			CourseplaySettingsSyncEvent.sendEvent(self.vehicle, self.name, self.current)
 		end
@@ -2129,14 +2147,39 @@ function SettingList:getKey(parentKey)
 end
 
 function SettingList:loadFromXml(xml, parentKey)
-	local value = getXMLInt(xml, self:getKey(parentKey))
-	if value then
-		self:set(value)
+	-- remember the value loaded from XML for those settings which aren't up to date when loading,
+	-- for example the field numbers
+	self.valueFromXml = getXMLInt(xml, self:getKey(parentKey))
+	if self.valueFromXml then
+		self:set(self.valueFromXml)
 	end
 end
 
 function SettingList:saveToXml(xml, parentKey)
-	setXMLInt(xml, self:getKey(parentKey), self:get())
+	setXMLInt(xml, self:getKey(parentKey), Utils.getNoNil(self:get(),0))
+end
+
+---@return number seconds since last change
+function SettingList:getSecondsSinceLastChange()
+	return self:getMilliSecondsSinceLastChange() / 1000
+end
+
+---@return number milliseconds since last change
+function SettingList:getMilliSecondsSinceLastChange()
+	return (g_time - self.lastChangeTimeMilliseconds)
+end
+
+function SettingList:validateCurrentValue()
+	local new = self:checkAndSetValidValue(self.current)
+	self:setToIx(new)
+end
+
+function SettingList:__tostring()
+	local result = string.format('%s:\n', self.name)
+	for i = 1, #self.values do
+		result = result .. string.format('\t%s%2d: %s\n', i == self.current and '*' or ' ', i, tostring(self.values[i]))
+	end
+	return result
 end
 
 --- Generic boolean setting
@@ -2241,6 +2284,7 @@ StartingPointSetting.START_AT_NEAREST_POINT = 1 -- nearest waypoint regardless o
 StartingPointSetting.START_AT_FIRST_POINT   = 2 -- first waypoint
 StartingPointSetting.START_AT_CURRENT_POINT = 3 -- current waypoint
 StartingPointSetting.START_AT_NEXT_POINT    = 4 -- nearest waypoint with approximately same direction as vehicle
+StartingPointSetting.START_WITH_UNLOAD      = 5 -- start with unloading the combine (only for CombineUnloadAIDriver)
 
 function StartingPointSetting:init(vehicle)
 	SettingList.init(self, 'startingPoint', 'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle,
@@ -2248,14 +2292,26 @@ function StartingPointSetting:init(vehicle)
 		        StartingPointSetting.START_AT_NEAREST_POINT,
 				StartingPointSetting.START_AT_FIRST_POINT  ,
 				StartingPointSetting.START_AT_CURRENT_POINT,
-				StartingPointSetting.START_AT_NEXT_POINT
+				StartingPointSetting.START_AT_NEXT_POINT,
+				StartingPointSetting.START_WITH_UNLOAD
 			},
 			{
 				"COURSEPLAY_NEAREST_POINT",
 				"COURSEPLAY_FIRST_POINT"  ,
 				"COURSEPLAY_CURRENT_POINT",
-				"COURSEPLAY_NEXT_POINT"
+				"COURSEPLAY_NEXT_POINT",
+				"COURSEPLAY_UNLOAD"
 			})
+end
+
+function StartingPointSetting:checkAndSetValidValue(new)
+	-- enable unload only for CombineUnloadAIDriver
+	if self.vehicle.cp.driver and self.vehicle.cp.mode ~= courseplay.MODE_COMBI and
+			self.values[new] == StartingPointSetting.START_WITH_UNLOAD then
+		return 1
+	else
+		return SettingList.checkAndSetValidValue(self, new)
+	end
 end
 
 --- Driving mode setting
@@ -2293,7 +2349,7 @@ function DrivingModeSetting:checkAndSetValidValue(new)
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
 		and self.vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER
 		and self.vehicle.cp.mode ~= courseplay.MODE_FIELD_SUPPLY
-		--and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
+		and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
 		and new == #self.values then
 		-- enable AI Driver for mode 1, 4, 5, 6 ,8 , 9 and 10 only until it can handle other modes
 		return 1
@@ -2414,6 +2470,99 @@ function LoadCoursesAtStartupSetting:init()
 		'COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP', nil)
 end
 
+--- Setting to select a field
+---@class FieldNumberSetting : SettingList
+FieldNumberSetting = CpObject(SettingList)
+function FieldNumberSetting:init(vehicle)
+	local values, texts = self:loadFields()
+	SettingList.init(self, 'fieldNumbers', 'COURSEPLAY_FIELD', 'COURSEPLAY_FIELD',
+		vehicle, values, texts)
+end
+
+function FieldNumberSetting:loadFields()
+	local values = {}
+	local texts = {}
+	for fieldNumber, _ in pairs( courseplay.fields.fieldData ) do
+		table.insert(values, fieldNumber)
+		table.insert(texts, fieldNumber)
+	end
+	table.sort( values, function( a, b ) return a < b end )
+	table.sort( texts, function( a, b ) return a < b end )
+	return values, texts
+end
+
+--- Refresh current field numbers (as they may change when fields are bought/sold)
+function FieldNumberSetting:refresh()
+	self.values, self.texts = self:loadFields()
+	-- if a value was loaded previously from XML and this is the first refresh after that, take over that
+	-- value now. This is because at game load the fields are not known yet.
+	if self.valueFromXml then
+		self:set(self.valueFromXml)
+		self.valueFromXml = nil
+	end
+	self.current = math.min(self.current, #self.values)
+end
+
+--- Search combine on field
+---@class SearchCombineOnFieldSetting : FieldNumberSetting
+SearchCombineOnFieldSetting = CpObject(FieldNumberSetting)
+function SearchCombineOnFieldSetting:init(vehicle)
+	FieldNumberSetting.init(self, vehicle)
+	self.name = 'searchCombineOnField'
+	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.xmlKey = 'searchCombineOnField'
+	self.xmlAttribute = '#fieldNumber'
+	self:addNoneSelected()
+end
+
+function SearchCombineOnFieldSetting:addNoneSelected()
+	-- add value/text for nothing selected
+	table.insert(self.values, 1, 0)
+	table.insert(self.texts, 1, '--')
+end
+
+function SearchCombineOnFieldSetting:refresh()
+	local current = self.current
+	FieldNumberSetting.refresh(self)
+	self:addNoneSelected()
+	self.current = math.min(current, #self.values)
+end
+
+--- SelectedCombineToUnload on field
+---@class SelectedCombineToUnloadSetting : SettingList
+SelectedCombineToUnloadSetting = CpObject(SettingList)
+
+function SelectedCombineToUnloadSetting:init()
+	print("SelectedCombineToUnloadSetting:init()")
+	self.name = 'selectedCombineToUnload'
+	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
+	self.xmlKey = 'selectedCombineToUnload'
+	self.xmlAttribute = '#combineId'
+	self.current = 0
+	self:refresh()
+end
+
+function SelectedCombineToUnloadSetting:refresh()
+	self.values = {}
+	for combine,_ in pairs (g_combineUnloadManager.combines) do
+		table.insert(self.values,combine)
+	end
+end
+
+function SelectedCombineToUnloadSetting:checkAndSetValidValue(new)
+	if new > #self.values then
+		return 0
+	elseif new < 0 then
+		return #self.values
+	else
+		return new
+	end
+end
+
+
+
 --- Use AI Turns?
 ---@class UseAITurnsSetting : BooleanSetting
 UseAITurnsSetting = CpObject(BooleanSetting)
@@ -2469,7 +2618,13 @@ end
 RidgeMarkersAutomatic = CpObject(BooleanSetting)
 function RidgeMarkersAutomatic:init()
 	BooleanSetting.init(self, 'ridgeMarkersAutomatic', 'COURSEPLAY_RIDGEMARKERS',
-				'COURSEPLAY_YES_NO_RIDGEMARKERS', nil)
+			'COURSEPLAY_YES_NO_RIDGEMARKERS', nil)
+
+end ---@class ShowMiniHud : BooleanSetting
+ShowMiniHud = CpObject(BooleanSetting)
+function ShowMiniHud:init()
+	BooleanSetting.init(self, 'showMiniHud', 'COURSEPLAY_SHOW_MINI_HUD',
+				'COURSEPLAY_YES_NO_SHOW_MINI_HUD', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
 end
@@ -2505,6 +2660,20 @@ function SymmetricLaneChangeSetting:init(vehicle)
 	BooleanSetting.init(self, 'symmetricLaneChange', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', vehicle)
 end
 
+---@class StopForUnloadSetting : BooleanSetting
+StopForUnloadSetting = CpObject(BooleanSetting)
+function StopForUnloadSetting:init(vehicle)
+	BooleanSetting.init(self, 'stopForUnload', 'COURSEPLAY_STOP_DURING_UNLOADING', 'COURSEPLAY_STOP_DURING_UNLOADING', vehicle)
+end
+
+function StopForUnloadSetting:checkAndSetValidValue(new)
+	if courseplay:isChopper(self.vehicle) then
+		-- can't activate for choppers
+		return 1
+	end
+	return BooleanSetting.checkAndSetValidValue(self, new)
+end
+
 --- Container for settings
 --- @class SettingsContainer
 SettingsContainer = CpObject()
@@ -2525,6 +2694,12 @@ end
 function SettingsContainer:loadFromXML(xml, parentKey)
 	for _, setting in pairs(self) do
 		setting:loadFromXml(xml, parentKey)
+	end
+end
+
+function SettingsContainer:validateCurrentValues()
+	for k, setting in pairs(self) do
+		setting:validateCurrentValue()
 	end
 end
 

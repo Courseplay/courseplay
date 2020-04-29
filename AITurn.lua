@@ -83,7 +83,7 @@ end
 
 --- Stuff we need to do during the turn no matter what turn type we are using
 function AITurn:turn()
-	if self.driver:holdInTurnManeuver(false) then
+	if self.driver:holdInTurnManeuver(false, self.turnContext:isHeadlandCorner()) then
 		-- tell driver to stop if unloading or whatever
 		self.driver:setSpeed(0)
 	end
@@ -150,6 +150,20 @@ function AITurn:setReverseSpeed()
 	self.driver:setSpeed(self.vehicle.cp.speeds.reverse)
 end
 
+function AITurn:isForwardOnly()
+	return false
+end
+
+function AITurn:isFinishingRow()
+	return self.state == self.states.FINISHING_ROW
+end
+
+function AITurn:isEndingTurn()
+	-- include the direction too because some turns go to the ENDING_TURN state very early, while still driving
+	-- perpendicular to the row. This way this returns true really only when we are about to end the turn
+	return self.state == self.states.ENDING_TURN and self.turnContext:isDirectionCloseToEndDirection(self.driver:getDirectionNode(), 15)
+end
+
 function AITurn:drive(dt)
 	local iAmDriving = true
 	self:setForwardSpeed()
@@ -188,7 +202,7 @@ function AITurn:finishRow(dt)
 		self:startTurn()
 		self:debug('Row finished, starting turn.')
 	end
-	if self.driver:holdInTurnManeuver(true) then
+	if self.driver:holdInTurnManeuver(true, self.turnContext:isHeadlandCorner()) then
 		-- tell driver to stop while straw swath is active
 		self.driver:setSpeed(0)
 	end
@@ -250,14 +264,14 @@ function KTurn:turn(dt)
 			self.driver:driveVehicleBySteeringAngle(dt, true, 0, self.turnContext:isLeftTurn(), self.driver:getSpeed())
 			if self.turnContext:isLateralDistanceGreater(dx, turnRadius * 1.05) then
 				-- no need to reverse from here, we can make the turn
-				self.endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
+				self.endingTurnCourse = self.turnContext:createEndingTurnCourse(self.vehicle)
 				self:debug('K Turn: dx = %.1f, r = %.1f, no need to reverse.', dx, turnRadius)
 				endTurn()
 			else
 				-- reverse until we can make turn to the turn end point
 				self.vehicle:raiseAIEvent("onAITurnProgress", "onAIImplementTurnProgress", 50, self.turnContext:isLeftTurn())
 				self.state = self.states.REVERSE
-				self.endingTurnCourse = self.turnContext:createEndingTurnCourse2(self.vehicle)
+				self.endingTurnCourse = self.turnContext:createEndingTurnCourse(self.vehicle)
 				self:debug('K Turn: dx = %.1f, r = %.1f, reversing now.', dx, turnRadius)
 			end
 		end
@@ -290,7 +304,7 @@ function KTurn:turn(dt)
 end
 
 function KTurn:onBlocked()
-	if self.driver:holdInTurnManeuver(false) then
+	if self.driver:holdInTurnManeuver(false, self.turnContext:isHeadlandCorner()) then
 		-- not really blocked just waiting for the straw for example
 		return
 	end
@@ -448,6 +462,14 @@ function CourseTurn:startTurn()
 	end
 end
 
+function CourseTurn:isForwardOnly()
+	return self.turnCourse and self.turnCourse:isForwardOnly()
+end
+
+function CourseTurn:getCourse()
+	return self.turnCourse
+end
+
 function CourseTurn:turn()
 
 	AITurn.turn(self)
@@ -491,7 +513,6 @@ function CourseTurn:onWaypointChange(ix)
 		end
 	end
 end
-
 
 --- When switching direction during a turn, especially when switching to reverse we want to make sure
 --- that a towed implement is aligned with the reverse direction (already straight behind the tractor when
@@ -585,12 +606,51 @@ CombineCourseTurn = CpObject(CourseTurn)
 
 ---@param driver AIDriver
 ---@param turnContext TurnContext
-function CombineCourseTurn:init(vehicle, driver, turnContext, fieldworkCourse)
-	CourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,'CombineCourseTurn')
+function CombineCourseTurn:init(vehicle, driver, turnContext, fieldworkCourse, name)
+	CourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,name or 'CombineCourseTurn')
 end
 
 -- in a combine headland turn we want to raise the header after it reached the field edge (or headland edge on an inner
 -- headland.
 function CombineCourseTurn:getRaiseImplementNode()
 	return self.turnContext.lateWorkEndNode
+end
+
+--[[
+  Headland turn for combines on the outermost headland:
+  1. drive forward to the field edge or the headland path edge
+  2. start turning forward
+  3. reverse straight and then align with the direction after the
+     corner while reversing
+  4. forward to the turn start to continue on headland
+]]
+---@class CombinePocketHeadlandTurn : CombineCourseTurn
+CombinePocketHeadlandTurn = CpObject(CombineCourseTurn)
+
+---@param driver CombineAIDriver
+---@param turnContext TurnContext
+function CombinePocketHeadlandTurn:init(vehicle, driver, turnContext, fieldworkCourse)
+	CombineCourseTurn.init(self, vehicle, driver, turnContext, fieldworkCourse,'CombinePocketHeadlandTurn')
+end
+
+function CombinePocketHeadlandTurn:startTurn()
+	self.turnCourse = self.driver:createOuterHeadlandCornerCourse(self.turnContext)
+	if not self.turnCourse then
+		self:debug('Could not create pocket course, falling back to normal headland corner')
+		self:generateCalculatedTurn()
+	end
+	self.driver:startFieldworkCourseWithTemporaryCourse(self.turnCourse, self.turnContext.turnEndWpIx)
+	self.state = self.states.TURNING
+end
+
+--- When making a pocket we need to lower the header whenever driving forward
+function CombinePocketHeadlandTurn:turn(dt)
+	AITurn.turn(self)
+	if self.driver.ppc:isReversing() then
+		self.driver:raiseImplements()
+		self.implementsLowered = nil
+	elseif not self.implementsLowered then
+		self.driver:lowerImplements()
+		self.implementsLowered = true
+	end
 end

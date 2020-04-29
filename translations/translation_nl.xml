@@ -130,7 +130,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Wacht tot wachtpositie vrij is" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Ga naar %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Ga naar markering %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Wacht tot vulstand bereikt is" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Wacht tot vulstand bereikt is (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Geen combine binnen bereik" />
 	    <text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Wacht tot combine gedraaid is" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Wacht op nieuwe markering" />
@@ -270,6 +270,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="eerste markering" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="huidige markering" />
 		<text name="COURSEPLAY_NEXT_POINT" 							    	text="volgende markering" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Veldrand route" />
 		<text name="COURSEPLAY_FIELD" 										text="Veld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(huidige route)" />
@@ -432,6 +433,8 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Vroeg" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Laat" />

@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Ожидаю пока отъедет комбайн" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Возвращение к %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Еду на временную стоянку %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Жду заполнения бункера" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Жду заполнения бункера (%s %dc)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Ищу комбайн для работы" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Жду завершения маневра комбайна" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Ожидаю новой путевой точки" />
@@ -274,6 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="продолжить маршрут" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="с ближайшей подходящей точки" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать поле:" />
 		<text name="COURSEPLAY_FIELD" 										text="поле №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(загруженный маршрут)" />
@@ -436,6 +437,9 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него." />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Всегда высталять трубу" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Держать трубу разложенной, если комбайн ждёт разгрузки." />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"					text="заблаговременно" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"					text="с опозданием" />
