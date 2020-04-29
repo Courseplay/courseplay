@@ -473,21 +473,21 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 			courseEditor:undo()
 	elseif actionName == 'COURSEPLAY_EDITOR_SAVE' then
 			courseEditor:save()
-	elseif actionName == 'COURSEPLAY_EDITOR_SPEED_INCREASE' then
+	elseif actionName == 'COURSEPLAY_EDITOR_SPEED_INCREASE' and keyStatus == 1 then
 			courseEditor:increaseSpeed()
-	elseif actionName == 'COURSEPLAY_EDITOR_SPEED_DECREASE' then
+	elseif actionName == 'COURSEPLAY_EDITOR_SPEED_DECREASE' and keyStatus == 1 then
 			courseEditor:decreaseSpeed()
 	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_WAYPOINT' then
 			courseEditor:delete()
-	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT' then
+	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT' and keyStatus == 1 then
 			courseEditor:deleteNext()      
 	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_START' then
 			courseEditor:deleteToStart()
 	elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_END' then
 			courseEditor:deleteToEnd()
-	elseif actionName == 'COURSEPLAY_EDITOR_INSERT_WAYPOINT' then
+	elseif actionName == 'COURSEPLAY_EDITOR_INSERT_WAYPOINT' and keyStatus == 1 then
 			courseEditor:insert()
-	elseif actionName == 'COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE' then
+	elseif actionName == 'COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE' and keyStatus == 1 then
 			courseEditor:cycleType()
 	--Modifier
 	elseif courseplay.inputModifierIsPressed then
