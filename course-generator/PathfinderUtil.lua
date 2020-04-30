@@ -43,24 +43,6 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
     if withImplements then
         self:calculateSizeOfObjectList(vehicle, vehicle:getAttachedImplements(), buffer, self.rectangles)
     end
-    self:resetCollidingShapes()
-end
-
-function PathfinderUtil.VehicleData:resetCollidingShapes()
-    self.collidingShapes = 0
-end
-
-function PathfinderUtil.VehicleData:getCollidingShapes()
-    return self.collidingShapes
-end
-
-function PathfinderUtil.VehicleData:overlapBoxCallback(transformId)
-    local collidingObject = g_currentMission.nodeToObject[transformId]
-    if collidingObject and collidingObject.getRootVehicle and collidingObject:getRootVehicle() == self.vehicle then
-        -- just bumped into myself
-        return
-    end
-    self.collidingShapes = self.collidingShapes + 1
 end
 
 --- calculate the bounding box of all objects in the implement list. This is not a very good way to figure out how
@@ -139,22 +121,19 @@ PathfinderUtil.Parameters = CpObject()
 ---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid
 ---@param offFieldPenalty number penalty to add for every off-field node The higher, the more likely the vehicle will
 ---stay on field
----@param preferHeadland boolean prefer a path on the headland
----@param headlandWidth number width of the headland, the area near the field boundary to prefer
-function PathfinderUtil.Parameters:init(maxFruitPercent, offFieldPenalty, preferHeadland, headlandWidth)
+function PathfinderUtil.Parameters:init(maxFruitPercent, offFieldPenalty)
     self.maxFruitPercent = maxFruitPercent or 50
     self.offFieldPenalty = offFieldPenalty or 1
-    self.preferHeadland = preferHeadland or false
-    self.headlandWidth = headlandWidth or 0
 end
 
 --- Pathfinder context
 ---@class PathfinderUtil.Context
 PathfinderUtil.Context = CpObject()
-function PathfinderUtil.Context:init(vehicleData, fieldData, parameters)
+function PathfinderUtil.Context:init(vehicleData, fieldData, parameters, vehiclesToIgnore)
     self.vehicleData = vehicleData
     self.fieldData = fieldData
     self.parameters = parameters
+    self.vehiclesToIgnore = vehiclesToIgnore
 end
 
 --- Calculate the four corners of a rectangle around a node (for example the area covered by a vehicle)
@@ -175,13 +154,26 @@ function PathfinderUtil.getCollisionData(node, vehicleData)
     return {name = vehicleData.name, center = center, corners = corners}
 end
 
+function PathfinderUtil.elementOf(list, key)
+    for _, element in ipairs(list or {}) do
+        if element == key then return true end
+    end
+    return false
+end
+
 --- Find all other vehicles and add them to our list of vehicles to avoid. Must be called before each pathfinding to
 --- have the current position of the vehicles.
-function PathfinderUtil.setUpVehicleCollisionData(myVehicle)
+function PathfinderUtil.setUpVehicleCollisionData(myVehicle, vehiclesToIgnore)
     PathfinderUtil.vehicleCollisionData = {}
     local myRootVehicle = myVehicle and myVehicle:getRootVehicle() or nil
     for _, vehicle in pairs(g_currentMission.vehicles) do
-        if vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
+        local otherRootVehicle = vehicle:getRootVehicle()
+        -- ignore also if the root vehicle is ignored
+        local ignore = PathfinderUtil.elementOf(vehiclesToIgnore, vehicle) or
+                (otherRootVehicle and PathfinderUtil.elementOf(vehiclesToIgnore, otherRootVehicle))
+        if ignore then
+            courseplay.debugVehicle(14, myVehicle, 'ignoring %s for collisions during pathfinding', vehicle:getName())
+        elseif vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
             courseplay.debugVehicle(14, myVehicle, 'othervehicle %s, otherroot %s, myroot %s', vehicle:getName(), vehicle:getRootVehicle():getName(), myRootVehicle:getName())
             table.insert(PathfinderUtil.vehicleCollisionData, PathfinderUtil.getCollisionData(vehicle.rootNode, PathfinderUtil.VehicleData(vehicle)))
         end
@@ -206,23 +198,64 @@ function PathfinderUtil.findCollidingVehicles(myCollisionData, node, myVehicleDa
     return false
 end
 
-function PathfinderUtil.findCollidingShapes(myCollisionData, yRot, vehicleData)
-    local center = myCollisionData.center
-    local width = math.abs(vehicleData.dRight) + math.abs(vehicleData.dLeft)
-    local length = math.abs(vehicleData.dFront) + math.abs(vehicleData.dRear)
-    vehicleData:resetCollidingShapes()
-    local collidingShapes = overlapBox(
-            center.x, center.y + 1, center.z,
-            0, yRot, 0,
-            width, 1, length,
-            'overlapBoxCallback', vehicleData, AIVehicleUtil.COLLISION_MASK, true, true, true)
-    --[[if vehicleData:getCollidingShapes() > 0 then
-        courseplay.debugFormat(7, 'colliding shapes (%s) at x = %.1f, z = %.1f, (%dx%d)',
-                vehicleData.name, center.x, center.z, width, length)
-    end]]--
-    return vehicleData:getCollidingShapes()
+---@class PathfinderUtil.CollisionDetector
+PathfinderUtil.CollisionDetector = CpObject()
+
+function PathfinderUtil.CollisionDetector:init()
+    self.vehiclesToIgnore = {}
+    self.collidingShapes = 0
 end
 
+function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
+    local collidingObject = g_currentMission.nodeToObject[transformId]
+    if collidingObject and collidingObject.getRootVehicle then
+        local rootVehicle = collidingObject:getRootVehicle()
+        if rootVehicle == self.vehicleData.vehicle or PathfinderUtil.elementOf(self.vehiclesToIgnore, rootVehicle) then
+            -- just bumped into myself or a vehicle we want to ignore
+            return
+        end
+        --courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
+    end
+    if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
+        --[[local text = ''
+        for key, classId in pairs(ClassIds) do
+            if getHasClassId(transformId, classId) then
+                text = text .. ' ' .. key
+            end
+        end
+        courseplay.debugFormat(7, 'collision %d, %s', transformId, text)]]--
+        -- ignore collision with terrain (may happen on slopes)
+        self.collidingShapes = self.collidingShapes + 1
+    end
+end
+
+function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore)
+    self.vehiclesToIgnore = vehiclesToIgnore or {}
+    self.vehicleData = vehicleData
+    -- the box for overlapBox() is symmetric, so if our direction node is not in the middle of the vehicle rectangle,
+    -- we have to translate it into the middle
+    -- right/rear is negative
+    local xOffset = vehicleData.dRight + vehicleData.dLeft
+    local zOffset = vehicleData.dFront + vehicleData.dRear
+    local width = (math.abs(vehicleData.dRight) + math.abs(vehicleData.dLeft)) / 2
+    local length = (math.abs(vehicleData.dFront) + math.abs(vehicleData.dRear)) / 2
+
+    local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(node)
+    local x, y, z = localToWorld(node, xOffset, 1, zOffset)
+
+    self.collidingShapes = 0
+
+    overlapBox(x, y + 1, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
+    --[[if self.collidingShapes > 0 then
+        courseplay.debugFormat(7, 'colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f)',
+                vehicleData.name, x, z, width, length)
+    end]]--
+    --DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
+
+    return self.collidingShapes
+end
+
+PathfinderUtil.collisionDetector = PathfinderUtil.CollisionDetector()
 
 function PathfinderUtil.hasFruit(x, z, length, width)
     local fruitsToIgnore = {9, 10, 13, 14} -- POTATO, SUGARBEET, GRASS, DRYGRASS, we can drive through these...
@@ -235,9 +268,10 @@ function PathfinderUtil.hasFruit(x, z, length, width)
             end
         end
         if not ignoreThis then
-            local fruitValue, a, b, c = FSDensityMapUtil.getFruitArea(fruitType.index, x - width / 2, z - length / 2, x + width / 2, z, x, z + length / 2, true, false)
+            -- if the last boolean parameter is true then it returns fruitValue > 0 for fruits/states ready for forage also
+            local fruitValue, a, b, c = FSDensityMapUtil.getFruitArea(fruitType.index, x - width / 2, z - length / 2, x + width / 2, z, x, z + length / 2, true, true)
             if g_updateLoopIndex % 200 == 0 then
-            --    courseplay.debugFormat(7, '%.1f, %s, %s, %s %s', fruitValue, tostring(a), tostring(b), tostring(c), g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name)
+                --courseplay.debugFormat(7, '%.1f, %s, %s, %s %s', fruitValue, tostring(a), tostring(b), tostring(c), g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name)
             end
             if fruitValue > 0 then
                 return true, fruitValue, g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name
@@ -351,10 +385,11 @@ function PathfinderUtil.getNodePenalty(node, context)
     if area / totalArea < minRequiredAreaRatio then
         penalty = penalty + context.parameters.offFieldPenalty
     end
+    --local fieldId = PathfinderUtil.getFieldIdAtWorldPosition(node.x, -node.y)
     if isField then
         local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, areaSize, areaSize)
         if hasFruit and fruitValue > context.parameters.maxFruitPercent then
-            penalty = penalty + fruitValue / 20
+            penalty = penalty + fruitValue / 2
         end
     end
     return penalty
@@ -367,40 +402,31 @@ end
 function PathfinderUtil.isValidAnalyticSolutionNode(node, context)
     local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, 3, 3)
     if hasFruit and fruitValue > context.parameters.maxFruitPercent then return false end
-    if context.parameters.preferHeadland then
-        local isField, area, totalArea = courseplay:isField(node.x, -node.y,
-                context.parameters.headlandWidth, context.parameters.headlandWidth)
-        if not isField or (area / totalArea) > 0.999 then return false end
-    end
     return PathfinderUtil.isValidNode(node, context)
 end
 
---- Check if node is valid: would we collide with another vehicle here?
+--- Check if node is valid: would we collide with another vehicle or shape here?
 ---@param node State3D
 ---@param userData PathfinderUtil.Context
 function PathfinderUtil.isValidNode(node, context)
+
+    -- If the pathfinding is constrained to a field, fieldData contains the limits
     if node.x < context.fieldData.minX or node.x > context.fieldData.maxX or node.y < context.fieldData.minY or node.y > context.fieldData.maxY then
+        -- not on field
         return false
     end
 
-    if context.parameters.preferHeadland then
-        local isField, area, totalArea = courseplay:isField(node.x, -node.y,
-                context.parameters.headlandWidth, context.parameters.headlandWidth)
-        if not isField or (area / totalArea) > 0.999 then return false end
-    end
-
+    -- A helper node to calculate world coordinates
     if not PathfinderUtil.helperNode then
         PathfinderUtil.helperNode = courseplay.createNode('pathfinderHelper', node.x, -node.y, 0)
     end
     local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, node.x, 0, -node.y);
     setTranslation(PathfinderUtil.helperNode, node.x, y + 0.5, -node.y)
-    --local heading = context and context.reverseHeading and courseGenerator.toCpAngle(node:getReverseHeading()) or courseGenerator.toCpAngle(node.t)
-    local heading = courseGenerator.toCpAngle(node.t)
     setRotation(PathfinderUtil.helperNode, 0, courseGenerator.toCpAngle(node.t), 0)
+
     local myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, context.vehicleData, 'me')
-    local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(PathfinderUtil.helperNode)
     -- for debug purposes only, store validity info on node
-    node.collidingShapes = PathfinderUtil.findCollidingShapes(myCollisionData, yRot, context.vehicleData)
+    node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(PathfinderUtil.helperNode, context.vehicleData, context.vehiclesToIgnore)
     node.isColliding, node.vehicle = PathfinderUtil.findCollidingVehicles(myCollisionData, PathfinderUtil.helperNode, context.vehicleData)
     return (not node.isColliding and node.collidingShapes == 0)
 end
@@ -443,6 +469,7 @@ function PathfinderUtil.findShortestPathOnHeadland(start, goal, course, turnRadi
     headland:calculateData()
     local path = {}
     for _, p in ipairs(headland:getSectionBetweenPoints(start, goal)) do
+        --courseGenerator.debug('%.1f %.1f', p.x, p.y)
         table.insert(path, State3D(p.x, p.y, 0))
     end
     return path
@@ -470,7 +497,8 @@ end
 ---@param turnRadius number vehicle turning radius
 ---@param allowReverse boolean allow reverse driving
 ---@param course Course fieldwork course, needed to find the headland
-function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode, goalOffset, turnRadius, allowReverse, course)
+---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection
+function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode, goalOffset, turnRadius, allowReverse, course, vehiclesToIgnore)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, startOffset or 0)
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, 0, goalOffset or 0)
@@ -480,15 +508,22 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
     if course:getNumberOfHeadlands() > 0 then
         -- if there's a headland, we want to drive on the headland to the next row
         local headlandPath = PathfinderUtil.findShortestPathOnHeadland(start, goal, course, turnRadius)
+        -- is the first wp of the headland in front of us?
+        local _, y, _ = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
+        local dx, _, dz = worldToLocal(AIDriverUtil.getDirectionNode(vehicle), headlandPath[1].x, y, - headlandPath[1].y)
+        local dirDeg = math.deg(math.abs(math.atan2(dx, dz)))
+        if dirDeg > 45 or true then
+            courseGenerator.debug('First headland waypoint isn\'t in front of us (%.1f), remove first few waypoints to avoid making a circle %.1f %.1f', dirDeg, dx, dz)
+        end
         pathfinder = HybridAStarWithPathInTheMiddle(turnRadius * 3, 200, headlandPath)
     else
         pathfinder = HybridAStarWithAStarInTheMiddle(turnRadius * 3, 200, 10000)
     end
 
     local fieldNum = courseplay.fields:onWhichFieldAmI(vehicle)
-    PathfinderUtil.setUpVehicleCollisionData(vehicle)
+    PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local parameters = PathfinderUtil.Parameters(nil, vehicle.cp.turnOnField and 10 or nil, false)
-    local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters)
+    local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters, vehiclesToIgnore)
     local done, path = pathfinder:start(start, goal, turnRadius, context, allowReverse, PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
     return pathfinder, done, path
 end
@@ -521,21 +556,22 @@ end
 --- Interface function to start the pathfinder in the game
 ---@param vehicle table, will be used as the start location/heading, turn radius and size
 ---@param goalWaypoint Waypoint The destination waypoint (x, z, angle)
+---@param xOffset number side offset of the goal from the goalWaypoint
 ---@param zOffset number length offset of the goal from the goalWaypoint
 ---@param allowReverse boolean allow reverse driving
 ---@param fieldNum number if > 0, the pathfinding is restricted to the given field and its vicinity. Otherwise the
 --- pathfinding considers any collision-free path valid, also outside of the field.
-function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypoint, zOffset, allowReverse, fieldNum)
+---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection (optional)
+---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional)
+function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypoint,
+                                                              xOffset, zOffset, allowReverse,
+                                                              fieldNum, vehiclesToIgnore, maxFruitPercent)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     local goal = State3D(goalWaypoint.x, -goalWaypoint.z, courseGenerator.fromCpAngleDeg(goalWaypoint.angle))
-    local offset = Vector(zOffset, 0)
+    local offset = Vector(zOffset, -xOffset)
     goal:add(offset:rotate(goal.t))
-    PathfinderUtil.setUpVehicleCollisionData(vehicle)
-    -- ignore fruit when realistic driving (pathfinding) is off on HUD
-    local parameters = PathfinderUtil.Parameters(vehicle.cp.realisticDriving and 50 or math.huge)
-    local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters)
-    return PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
+    return PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent)
 end
 
 --- Interface function to start the pathfinder in the game. The goal is a point at sideOffset meters from the goal node
@@ -546,13 +582,24 @@ end
 ---@param zOffset number length offset of the goal from the goal node
 ---@param allowReverse boolean allow reverse driving
 ---@param fieldNum number if other than 0 or nil the pathfinding is restricted to the given field and its vicinity
-function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode, xOffset, zOffset, allowReverse, fieldNum)
+---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection (optional)
+---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional)
+function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
+                                                          xOffset, zOffset, allowReverse,
+                                                          fieldNum, vehiclesToIgnore, maxFruitPercent)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    PathfinderUtil.setUpVehicleCollisionData(vehicle)
-    local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), PathfinderUtil.Parameters())
+    return PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent)
+end
+
+function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal,
+                                                          allowReverse, fieldNum,
+                                                          vehiclesToIgnore, maxFruitPercent)
+    PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
+    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.realisticDriving and 50 or math.huge))
+    local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters, vehiclesToIgnore)
     return PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
 end
 
@@ -626,6 +673,16 @@ function PathfinderUtil.showNodes(pathfinder)
                 local pp = collisionData.corners[i > 1 and i - 1 or 4]
                 cpDebug:drawLine(cp.x, cp.y + 0.4, cp.z, 1, 1, 0, pp.x, pp.y + 0.4, pp.z)
             end
+        end
+    end
+end
+
+function PathfinderUtil.getFieldIdAtWorldPosition(posX, posZ)
+    local farmland = g_farmlandManager:getFarmlandAtWorldPosition(posX, posZ)
+    if farmland ~= nil then
+        local fieldMapping = g_fieldManager.farmlandIdFieldMapping[farmland.id]
+        if fieldMapping ~= nil and fieldMapping[1] ~= nil then
+            return fieldMapping[1].fieldId
         end
     end
 end

@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Čakam da se čakalna pozicija sprosti" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Obračam na smer %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Vozi na točko %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čakam da se doseže polnilni nivo" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Čakam da se doseže polnilni nivo (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Nobenega kombajna v dosegu" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Čakam da kombajn obrne" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Čakam na novo točko" />
@@ -274,6 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="prva točka" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="trenutna točka" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="next waypoint" />  <!-- TODO: TRANSLATE -->
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Pot okrog polja" />
 		<text name="COURSEPLAY_FIELD" 										text="Polje" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(trenutno naložena pot)" />
@@ -435,6 +436,8 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />

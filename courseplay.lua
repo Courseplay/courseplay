@@ -51,26 +51,20 @@ local function initialize()
 		'CpManager',
 		'base',
 		'button',
-		'bunkersilo_management',		
+		'bunkersilo_management',
+		'BunkersiloManager',
 		'bypass',
-		'combines',
-		'CombineUnloadAIDriver',
-		'combineUnload_management',
-		'courseplay_event', 
+		'courseplay_event',
 		'course_management',
     	'courseeditor',
     	'clicktoswitch',
 		'debug', 
 		'distance', 
-		'drive', 
-		'fields', 
+		'fields',
 		'fruit', 
 		'helpers',
 		'hud', 
 		'input', 
-		'mode1',
-		'mode2',
-		'mode3', 
 		'recording',
 		'reverse',
 		'settings',
@@ -82,10 +76,13 @@ local function initialize()
 		'turn',
 		'traffic',
 		'TrafficCollision',
+		'ProximitySensor',
 		'vehicles',
 		'PurePursuitController',
 		'Waypoint',
 		'AIDriver',
+		'CombineUnloadAIDriver',
+		'CombineUnloadManager',
 		'GrainTransportAIDriver',
 		'FieldworkAIDriver',
 		'FillableFieldworkAIDriver',
@@ -98,6 +95,8 @@ local function initialize()
 		'CombineAIDriver',
 		'LevelCompactAIDriver',
 		'ShovelModeAIDriver',
+		'TrafficController',
+		'TrafficControllerSolver',
 		'AITurn',
 		'course-generator/geo',
 		'course-generator/Pathfinder',
@@ -174,7 +173,9 @@ local function setGlobalData()
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;
 	------------------------------------------------------------
-	courseplay.SHOW_COVERS = true 
+	courseplay.SHOW_COVERS = true
+	courseplay.OPEN_COVERS = false
+	courseplay.CLOSE_COVERS = true
 
 	courseplay.RIDGEMARKER_NONE = 0
 	courseplay.RIDGEMARKER_LEFT = 1
@@ -376,6 +377,7 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(EarnWagesSetting)
 	courseplay.globalSettings:addSetting(WorkerWages)
 	courseplay.globalSettings:addSetting(ClickToSwitchSetting)
+	courseplay.globalSettings:addSetting(ShowMiniHud)
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;

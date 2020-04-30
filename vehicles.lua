@@ -1414,55 +1414,6 @@ function courseplay:setPathVehiclesSpeed(vehicle,dt)
 	end;
 end
 
-function courseplay:setAbortWorkWaypoint(vehicle)
-	if not vehicle.cp.realisticDriving then
-		-- Set abort Work to 10 waypoints back from where we stopped working to align with course when returing
-		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
-		vehicle.cp.abortWorkExtraMoveBack = 0;
-
-		--- update triggers if in mode 4 in the case that new BiGPacks had been bought
-		if vehicle.cp.mode == 4 then
-			courseplay:updateAllTriggers();
-		end;
-
-		--- Check for turns from the aborkWork WP to where work stopped so we can align with turn to prevent circling and turn alignment issuses
-		for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
-			local minNumWPBeforeTurn = 8;
-			local wp = vehicle.Waypoints[i];
-			if wp and wp.turnStart then
-				--- If the turn is less than 8 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
-				local wpUntilTurn = i - vehicle.cp.abortWork;
-				if wpUntilTurn < minNumWPBeforeTurn then
-					local extraMoveBack = minNumWPBeforeTurn - wpUntilTurn;
-					vehicle.cp.abortWork = vehicle.cp.abortWork - extraMoveBack;
-					-- Save the additonal offset waypoints so Mode4/6 logic knows how far to go from when reaching abortWork WP to where stopped worked occurs
-					vehicle.cp.abortWorkExtraMoveBack = extraMoveBack;
-				end;
-			end;
-		end;
-		-- Set the waypoint index to the first waypoint of the unload course
-		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
-		
-	else
-		-- If were using align point then there is no need for all that extra distance just enough that it straightens back out after turning
-		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 2
-		--- Set the waypoint to the start of the unload course
-		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
-		local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
-		courseplay.debugVehicle( 9, vehicle, "vehicles 1393")
-		if vehicle.cp.isNavigatingPathfinding == false and courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz, vehicle.cp.turnDiameter*2, true) then
-			vehicle.cp.isNavigatingPathfinding = true
-			courseplay.debugVehicle( 9, vehicle, "vehicles 1396")
-			courseplay:setCurrentTargetFromList(vehicle, 1);
-		else
-			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
-		end
-	end
-	-- Initialize PPC because of the jump in WPs
-	vehicle.cp.ppc:initialize()
-	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);
-end;
-
 -- vim: set noexpandtab:
 
 function courseplay:getFreeCapacity(vehicle,fillType)
@@ -1600,6 +1551,10 @@ end
 AIDriverUtil = {}
 
 function AIDriverUtil.isReverseDriving(vehicle)
+	if not vehicle then
+		printCallstack()
+		return false
+	end
 	return vehicle.spec_reverseDriving and vehicle.spec_reverseDriving.isReverseDriving
 end
 
@@ -1737,7 +1692,7 @@ function AIDriverUtil.getTurningRadius(vehicle)
 	end
 	local maxToolRadius = 0
 
-	local attachedAIImplements = vehicle:getAttachedAIImplements()
+	local attachedAIImplements = vehicle:getAttachedImplements()
 
 	for _,implement in pairs(attachedAIImplements) do
 		maxToolRadius = math.max(maxToolRadius, AIVehicleUtil.getMaxToolRadius(implement))

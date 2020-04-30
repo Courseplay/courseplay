@@ -77,15 +77,6 @@ function courseplay:start(self)
 	if self.attachedCutters ~= nil then
 ]]
 
-	--calculate workwidth for combines in mode7
-	if self.cp.mode == 7 then
-		courseplay:calculateWorkWidth(self)
-	end
-	-- set default modeState if not in mode 2 or 3
-	if self.cp.mode ~= 2 and self.cp.mode ~= 3 then
-		courseplay:setModeState(self, 0);
-	end;
-
 	if self.cp.waypointIndex < 1 then
 		courseplay:setWaypointIndex(self, 1);
 	end
@@ -103,6 +94,12 @@ function courseplay:start(self)
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.directionNode);
+
+	-- TODO: temporary bandaid here for the case when the legacy waypointIndex isn't set correctly
+	if self.cp.waypointIndex > #self.Waypoints then
+		courseplay.infoVehicle(self, 'Waypoint index %d reset to %d', self.cp.waypointIndex, #self.Waypoints)
+		self.cp.waypointIndex = #self.Waypoints
+	end
 	-- position of next waypoint
 	local cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
 	-- distance (in any direction)
@@ -356,14 +353,11 @@ function courseplay:start(self)
 
 	if self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
 		if self.cp.mode == 2 or self.cp.mode == 3 then
+			-- TODO: really? 3?
 			courseplay:setWaypointIndex(self, 3);
 			courseplay:setDriveUnloadNow(self, true);
 		else
 			courseplay:setWaypointIndex(self, 1);
-			local distToFirst = courseplay:distanceToPoint( self, self.Waypoints[ 1 ].cx, 0, self.Waypoints[ 1 ].cz )
-			if not self.cp.drivingMode:is(DrivingModeSetting.DRIVING_MODE_AIDRIVER) and distToFirst > self.cp.turnDiameter then
-				courseplay:startAlignmentCourse( self, self.Waypoints[ 1 ])
-			end
 		end
 	end;
 
@@ -626,24 +620,6 @@ function courseplay:stop(self)
 		self:restoreVehicleCharacter()
 	end
 
-	courseplay:endAlignmentCourse( self )
---[[ This is FS17 code
-	if self.vehicleCharacter ~= nil then
-		self.vehicleCharacter:delete();
-	end
-	if self.isEntered or self.isControlled then
-		if self.vehicleCharacter ~= nil then
-			----------------------------------
-			--- Fix Missing playerIndex and playerColorIndex that some times happens for unknow reasons
-			local playerIndex = Utils.getNoNil(self.playerIndex, g_currentMission.missionInfo.playerIndex);
-			local playerColorIndex = Utils.getNoNil(self.playerColorIndex, g_currentMission.missionInfo.playerColorIndex);
-			--- End Fix
-			----------------------------------
-
-			self.vehicleCharacter:loadCharacter(PlayerUtil.playerIndexToDesc[playerIndex].xmlFilename, playerColorIndex)
-			self.vehicleCharacter:setCharacterVisibility(not self:getIsEntered())
-		end
-	end;]]
 	self.currentHelper = nil
 
 	--stop special tools
@@ -717,7 +693,6 @@ function courseplay:stop(self)
 
 	courseplay:removeFromVehicleLocalIgnoreList(vehicle, self.cp.activeCombine)
 	courseplay:removeFromVehicleLocalIgnoreList(vehicle, self.cp.lastActiveCombine)
-	courseplay:releaseCombineStop(self)
 	self.cp.BunkerSiloMap = nil
 	self.cp.mode9TargetSilo = nil
 	self.cp.mode10.lowestAlpha = 99

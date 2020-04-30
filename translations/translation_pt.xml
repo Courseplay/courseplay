@@ -130,7 +130,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="A aguardar que o ponto de espera esteja livre" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 					 		text="A virar na direção %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 		text="Conduzir para o ponto %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="A Aguardar que o enchimento chegue ao nível" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="A Aguardar que o enchimento chegue ao nível (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Nenhuma ceifeira ao alcance" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="A esperar que a ceifeira vire" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="A esperar pelo novo ponto" />
@@ -270,6 +270,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 						 		text="primeiro ponto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 						 		text="ponto atual" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="ponto seguinte" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 					 		text="Percurso da borda do campo" />
 		<text name="COURSEPLAY_FIELD" 							 			text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Percurso atual carregado)" />
@@ -433,6 +434,8 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Clique no veículo para mudar para ele" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Cedo" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Tarde" />

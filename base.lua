@@ -40,7 +40,6 @@ function courseplay:onLoad(savegame)
 		self.cp.driverPriorityUseFillLevel = false;
 	end
 	self.cp.speedDebugLine = "no speed info"
-	self.cp.stopWhenUnloading = false;
 
 	-- GIANT DLC
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
@@ -155,7 +154,6 @@ function courseplay:onLoad(savegame)
 	self.cp.isTipping = false;
 	self.cp.hasPlow = false;
 	self.cp.rotateablePlow = nil;
-	self.cp.isNotAllowedToDrive = false;
 	self.cp.allwaysSearchFuel = false;
 	self.cp.saveFuel = false;
 	self.cp.saveFuelOptionActive = true;
@@ -437,7 +435,6 @@ function courseplay:onLoad(savegame)
 	self.cp.searchCombineAutomatically = true;
 	self.cp.savedCombine = nil
 	self.cp.selectedCombineNumber = 0
-	self.cp.searchCombineOnField = 0;
 
 	--Copy course
 	self.cp.hasFoundCopyDriver = false;
@@ -572,6 +569,8 @@ function courseplay:onLoad(savegame)
 	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer()
+	self.cp.settings:addSetting(SearchCombineOnFieldSetting, self)
+	self.cp.settings:addSetting(SelectedCombineToUnloadSetting)
 	self.cp.settings:addSetting(ReturnToFirstPointSetting, self)
 	self.cp.settings:addSetting(UseAITurnsSetting, self)
 	self.cp.settings:addSetting(UsePathfindingInTurnsSetting, self)
@@ -584,6 +583,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(SymmetricLaneChangeSetting, self)
 	self.cp.settings:addSetting(PipeAlwaysUnfoldSetting, self)
 	self.cp.settings:addSetting(RidgeMarkersAutomatic, self)
+	self.cp.settings:addSetting(StopForUnloadSetting, self)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -680,8 +680,8 @@ function courseplay:onDraw()
 		end	
 	end
 	if self.cp.isCombine and courseplay.debugChannels[4] then
-		renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getFillUnitCapacity(self.spec_combine.fillUnitIndex) - self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex))/self.cp.fillLitersPerSecond))
-		renderText(0.2,0.135,0.02,"self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
+		--renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getFillUnitCapacity(self.spec_combine.fillUnitIndex) - self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex))/self.cp.fillLitersPerSecond))
+		--renderText(0.2,0.135,0.02,"self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
 	end
 	
 	
@@ -858,7 +858,7 @@ function courseplay:onDraw()
 			if self.cp.mouseCursorActive then
 				g_inputBinding:setShowMouseCursor(self.cp.mouseCursorActive);
 			end;
-		elseif self.cp.hud.showMiniHud then
+		elseif courseplay.globalSettings.showMiniHud:is(true) then
 			courseplay.hud:setContent(self);
 			courseplay.hud:renderHudBottomInfo(self);
 		end;
@@ -954,7 +954,7 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:onUpdate(dt)
-	
+
 	if not self.cp.remoteIsEntered then
 		if self.cp.isEntered ~= Enterable.getIsEntered(self) then
 			--CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",Enterable.getIsEntered(self))
@@ -988,10 +988,8 @@ function courseplay:onUpdate(dt)
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
-		courseplay:drive(self, dt);
-		
-		self.cp.isNotAllowedToDrive = false
-		
+		self.cp.driver:update(dt)
+
 		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
 			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				CpManager:setGlobalInfoText(self, refIdx, true); --force remove
@@ -1135,27 +1133,6 @@ function courseplay:onUpdateTick(dt)
 		courseplay:resetTools(self)
 	end
 
-	-- TODO this must be removed, combines should be handled by the AIDriver, not some random piece of code somewhere
-	--get the combines filling rate in l/second
-	if self.cp.isCombine then
-		if courseplay:timerIsThrough(self, 'combineFillLevel') then 
-			courseplay:setCustomTimer(self, "combineFillLevel", 2);
-			local currentFillLevel = self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex)
-			local timeDiff = (g_currentMission.time - (self.cp.lastFillLevelTime or g_currentMission.time))/1000
-			self.cp.lastFillLevelTime = g_currentMission.time
-			if self.cp.lastFillLevel ~= nil then
-				if self.cp.lastFillLevel ~= currentFillLevel then
-					self.cp.fillLitersPerSecond = courseplay:round((currentFillLevel - self.cp.lastFillLevel) /timeDiff);
-					self.cp.lastFillLevel = currentFillLevel;
-				else
-					self.cp.fillLitersPerSecond = 0;
-				end
-				--print("time: "..tostring(timeDiff).."; self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
-			else
-				self.cp.lastFillLevel = currentFillLevel;
-			end	
-		end
-	end
 	self.timer = self.timer + dt;
 end
 
@@ -1248,7 +1225,7 @@ function courseplay:renderInfoText(vehicle)
 			if what[3] then	 
 				text = string.format(courseplay:loc(what[1]), tonumber(what[2]), tonumber(what[3]));
 			end		
-		elseif what[1] == "COURSEPLAY_STARTING_UP_TOOL" 
+		elseif what[1] == "COURSEPLAY_STARTING_UP_TOOL"
 		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_FEW"
 		or what[1] == "COURSEPLAY_WAITING_POINTS_TOO_MANY"
 		or what[1] == "COURSEPLAY_UNLOADING_POINTS_TOO_FEW"
@@ -1256,7 +1233,11 @@ function courseplay:renderInfoText(vehicle)
 			if what[2] then
 				text = string.format(courseplay:loc(what[1]), what[2]);
 			end
-		elseif what[1] == "COURSEPLAY_DISTANCE" then  
+		elseif what[1] == "COURSEPLAY_WAITING_FOR_FILL_LEVEL" then
+			if what[3] then
+				text = string.format(courseplay:loc(what[1]), what[2], tonumber(what[3]));
+			end
+		elseif what[1] == "COURSEPLAY_DISTANCE" then
 			if what[2] then
 				local dist = tonumber(what[2]);
 				if dist >= 1000 then
@@ -1630,7 +1611,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		if self.cp.isCombine then
 			curKey = key .. '.courseplay.combine';
 			self.cp.driverPriorityUseFillLevel = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#driverPriorityUseFillLevel'), false);
-			self.cp.stopWhenUnloading = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#stopWhenUnloading'), false);
 		end;
 
 		--overLoaderPipe
@@ -1753,7 +1733,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".fieldWork #savedFieldNum", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.fieldNum,0)))
 	setXMLBool(xmlFile, newKey..".fieldWork #fertilizerEnabled", self.cp.fertilizerEnabled)
 	setXMLBool(xmlFile, newKey..".fieldWork #convoyActive", self.cp.convoyActive)
-	
+
 	--LevlingAndCompactingSettings
 	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
 	setXMLBool(xmlFile, newKey..".mode10 #CourseplayersOnly", self.cp.mode10.searchCourseplayersOnly)
@@ -1818,7 +1798,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	--combine 
 	if self.cp.isCombine then
 		setXMLBool(xmlFile, newKey..".combine #driverPriorityUseFillLevel", self.cp.driverPriorityUseFillLevel)
-		setXMLBool(xmlFile, newKey..".combine #stopWhenUnloading", self.cp.stopWhenUnloading)
 	end;
 
 	self.cp.settings:saveToXML(xmlFile, newKey)
@@ -1906,5 +1885,31 @@ function courseplay:onActivateObject(superFunc,vehicle)
 end
 LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,courseplay.onActivateObject)
 
+-- TODO: make these part of AIDriver
+
+function courseplay:setWaypointIndex(vehicle, number,isRecording)
+	if vehicle.cp.waypointIndex ~= number then
+		vehicle.cp.course.hasChangedTheWaypointIndex = true
+		if isRecording then
+			vehicle.cp.waypointIndex = number
+			--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+		else
+			vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
+		end
+		if vehicle.cp.waypointIndex > 1 then
+			vehicle.cp.previousWaypointIndex = vehicle.cp.waypointIndex - 1;
+		else
+			vehicle.cp.previousWaypointIndex = 1;
+		end;
+	end;
+end;
+
+function courseplay:getIsCourseplayDriving()
+	return self.cp.isDriving;
+end;
+
+function courseplay:setIsCourseplayDriving(active)
+	self:setCpVar('isDriving',active,courseplay.isClient)
+end;
 -- do not remove this comment
 -- vim: set noexpandtab:
