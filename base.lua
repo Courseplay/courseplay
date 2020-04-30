@@ -154,7 +154,6 @@ function courseplay:onLoad(savegame)
 	self.cp.isTipping = false;
 	self.cp.hasPlow = false;
 	self.cp.rotateablePlow = nil;
-	self.cp.isNotAllowedToDrive = false;
 	self.cp.allwaysSearchFuel = false;
 	self.cp.saveFuel = false;
 	self.cp.saveFuelOptionActive = true;
@@ -989,10 +988,8 @@ function courseplay:onUpdate(dt)
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
-		courseplay:drive(self, dt);
-		
-		self.cp.isNotAllowedToDrive = false
-		
+		self.cp.driver:update(dt)
+
 		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
 			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				CpManager:setGlobalInfoText(self, refIdx, true); --force remove
@@ -1888,5 +1885,31 @@ function courseplay:onActivateObject(superFunc,vehicle)
 end
 LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,courseplay.onActivateObject)
 
+-- TODO: make these part of AIDriver
+
+function courseplay:setWaypointIndex(vehicle, number,isRecording)
+	if vehicle.cp.waypointIndex ~= number then
+		vehicle.cp.course.hasChangedTheWaypointIndex = true
+		if isRecording then
+			vehicle.cp.waypointIndex = number
+			--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+		else
+			vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
+		end
+		if vehicle.cp.waypointIndex > 1 then
+			vehicle.cp.previousWaypointIndex = vehicle.cp.waypointIndex - 1;
+		else
+			vehicle.cp.previousWaypointIndex = 1;
+		end;
+	end;
+end;
+
+function courseplay:getIsCourseplayDriving()
+	return self.cp.isDriving;
+end;
+
+function courseplay:setIsCourseplayDriving(active)
+	self:setCpVar('isDriving',active,courseplay.isClient)
+end;
 -- do not remove this comment
 -- vim: set noexpandtab:

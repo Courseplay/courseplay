@@ -297,7 +297,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		vehicle:setCpVar('canDrive',true,courseplay.isClient);
 
 		courseplay:setWaypointIndex(vehicle, 1);
-		courseplay:setModeState(vehicle, 0);
 		courseplay.signs:updateWaypointSigns(vehicle, "current");
 
 		vehicle.cp.hasGeneratedCourse = false;
@@ -347,14 +346,7 @@ function courseplay:copyCourse(vehicle)
 		if vehicle.cp.activeCombine ~= nil then
 			courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
 		end
-		--[[
-		if vehicle.cp.mode == 2 or vehicle.cp.mode == 3 then
-			courseplay:setModeState(vehicle, 0);
-			-- print(('%s [%s(%d)]: copyCourse(): mode=%d -> set modeState to 0'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline, vehicle.cp.mode)); -- DEBUG140301
-		else
-			courseplay:setModeState(vehicle, 1);
-			-- print(('%s [%s(%d)]: copyCourse() -> set modeState to 1'):format(nameNum(vehicle), curFile, debug.getinfo(1).currentline)); -- DEBUG140301
-		end;]]
+
 		vehicle.cp.recordingTimer = 1;
 
 		courseplay.signs:updateWaypointSigns(vehicle, 'current');
@@ -401,10 +393,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	end
 	vehicle.cp.loadedCourses = {}
 	vehicle:setCpVar('currentCourseName',nil,courseplay.isClient)
-	courseplay:setModeState(vehicle, 1);
-	if vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_OVERLOADER then
-		courseplay:setModeState(vehicle, 0);
-	end;
+
 	vehicle.cp.recordingTimer = 1;
 	vehicle.Waypoints = {}
 	vehicle:setCpVar('canDrive',false,courseplay.isClient);

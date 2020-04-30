@@ -412,7 +412,7 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 		--TODO find a cleaner way to figure out the getPipesBaseNode
 		local dischargeNode = combine:getCurrentDischargeNode().node
 		local lastParent = dischargeNode
-		while true do
+		while entityExists(lastParent) do
 			--print(string.format("   %s: %s",tostring(lastParent),tostring(getName(lastParent))))
 			if getName(lastParent) == 'pipe' then
 				return lastParent
@@ -421,6 +421,8 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 			lastParent = getParent(lastParent)
 		end
 	end
+	-- if nothing found, use the root node
+	return combine.rootNode
 end
 
 function CombineUnloadManager:getCombinesFillLevelPercent(combine)

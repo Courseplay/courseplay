@@ -252,8 +252,6 @@ function courseplay:switchCourseplayerSide(combine)
 			return;
 		end;
 
-		courseplay:setModeState(tractor, 10);
-
 		if combine.cp.forcedSide == nil then
 			combine.cp.forcedSide = "left";
 		elseif combine.cp.forcedSide == "left" then

@@ -1983,3 +1983,237 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 	end
 	return modeValid ;
 end
+
+function courseplay:updateFillLevelsAndCapacities(vehicle)
+	courseplay:setOwnFillLevelsAndCapacities(vehicle,vehicle.cp.mode)
+	vehicle.cp.totalFillLevel = vehicle.cp.fillLevel;
+	vehicle.cp.totalCapacity = vehicle.cp.capacity;
+	vehicle.cp.totalSeederFillLevel = vehicle.cp.seederFillLevel
+	vehicle.cp.totalSeederCapacity = vehicle.cp.seederCapacity
+	vehicle.cp.totalSprayerFillLevel = vehicle.cp.sprayerFillLevel
+	vehicle.cp.totalSprayerCapacity = vehicle.cp.sprayerCapacity
+	if vehicle.cp.totalSprayerFillLevel ~= nil and vehicle.cp.sprayerCapacity ~= nil then
+		vehicle.cp.totalSprayerFillLevelPercent = (vehicle.cp.totalSprayerFillLevel*100)/vehicle.cp.totalSprayerCapacity
+	end
+	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
+		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity;
+	end
+	--print(string.format("vehicle itself(%s): vehicle.cp.totalFillLevel:(%s)",tostring(vehicle:getName()),tostring(vehicle.cp.totalFillLevel)))
+	--print(string.format("vehicle itself(%s): vehicle.cp.totalCapacity:(%s)",tostring(vehicle:getName()),tostring(vehicle.cp.totalCapacity)))
+	if vehicle.cp.workTools ~= nil then
+		for _,tool in pairs(vehicle.cp.workTools) do
+			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool,vehicle.cp.mode)
+			if hasMoreFillUnits and tool ~= vehicle then
+				vehicle.cp.totalFillLevel = (vehicle.cp.totalFillLevel or 0) + tool.cp.fillLevel
+				vehicle.cp.totalCapacity = (vehicle.cp.totalCapacity or 0 ) + tool.cp.capacity
+				vehicle.cp.totalFillLevelPercent = (vehicle.cp.totalFillLevel*100)/vehicle.cp.totalCapacity;
+				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool:getName()),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
+				--print(string.format("%s: adding %s to vehicle.cp.totalCapacity = %s",tostring(tool:getName()),tostring(tool.cp.capacity), tostring(vehicle.cp.totalCapacity)))
+				if tool.spec_sowingMachine ~= nil or tool.cp.isTreePlanter then
+					vehicle.cp.totalSeederFillLevel = (vehicle.cp.totalSeederFillLevel or 0) + tool.cp.seederFillLevel
+					vehicle.cp.totalSeederCapacity = (vehicle.cp.totalSeederCapacity or 0) + tool.cp.seederCapacity
+					vehicle.cp.totalSeederFillLevelPercent = (vehicle.cp.totalSeederFillLevel*100)/vehicle.cp.totalSeederCapacity
+					--print(string.format("%s:  vehicle.cp.totalSeederFillLevel:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSeederFillLevel)))
+					--print(string.format("%s:  vehicle.cp.totalSeederCapacity:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSeederCapacity)))
+				end
+				if tool.spec_sprayer ~= nil then
+					vehicle.cp.totalSprayerFillLevel = (vehicle.cp.totalSprayerFillLevel or 0) + tool.cp.sprayerFillLevel
+					vehicle.cp.totalSprayerCapacity = (vehicle.cp.totalSprayerCapacity or 0) + tool.cp.sprayerCapacity
+					vehicle.cp.totalSprayerFillLevelPercent = (vehicle.cp.totalSprayerFillLevel*100)/vehicle.cp.totalSprayerCapacity
+					--print(string.format("%s:  vehicle.cp.totalSprayerFillLevel:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSprayerFillLevel)))
+					--print(string.format("%s:  vehicle.cp.totalSprayerCapacity:%s",tostring(vehicle:getName()),tostring(vehicle.cp.totalSprayerCapacity)))
+				end
+			end
+		end
+	end
+	--print(string.format("End of function: vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.cp.totalFillLevel)))
+end
+
+function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
+	local fillLevel, capacity = 0,0
+	local fillLevelPercent = 0;
+	local fillType = 0;
+	if workTool.getFillUnits == nil then
+		return false
+	end
+	local fillUnits = workTool:getFillUnits()
+	for index,fillUnit in pairs(fillUnits) do
+		if mode == 10 and workTool.cp.hasSpecializationLeveler then
+			if not workTool.cp.originalCapacities then
+				workTool.cp.originalCapacities = {}
+				workTool.cp.originalCapacities[index]= fillUnit.capacity
+				fillUnit.capacity = fillUnit.capacity *3
+			end
+		end
+		-- TODO: why not fillUnit.fillType == FillType.DIESEL? answer: because you may have diesel in your trailer
+		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL)
+				or index == workTool:getConsumerFillUnitIndex(FillType.DEF)
+				or index == workTool:getConsumerFillUnitIndex(FillType.AIR))
+				or fillUnit.capacity > 999999 then
+		else
+
+			fillLevel = fillLevel + fillUnit.fillLevel
+			capacity = capacity + fillUnit.capacity
+			if fillLevel ~= nil and capacity ~= nil then
+				fillLevelPercent = (fillLevel*100)/capacity;
+			else
+				fillLevelPercent = nil
+			end
+			fillType = fillUnit.lastValidFillType
+			if workTool.cp.isTreePlanter  then
+				local hired = true
+				if workTool.mountedSaplingPallet == nil then
+					workTool.cp.seederFillLevel = 0
+					hired = false;
+				else
+					workTool.cp.seederFillLevel = fillUnit.fillLevel
+				end;
+				if workTool.attacherVehicle ~= nil and workTool.attacherVehicle.isHired ~= hired and workTool.attacherVehicle.cp.isDriving then
+					workTool.attacherVehicle.isHired = hired;
+				end
+				workTool.cp.seederCapacity = fillUnit.capacity
+				workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+			end
+			if workTool.spec_sowingMachine ~= nil and index == workTool.spec_sowingMachine.fillUnitIndex then
+				workTool.cp.seederFillLevel = fillUnit.fillLevel
+				--print(string.format("%s: adding %s to workTool.cp.seederFillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
+				workTool.cp.seederCapacity = fillUnit.capacity
+				--print(string.format("%s: adding %s to workTool.cp.seederCapacity",tostring(workTool:getName()),tostring(fillUnit.capacity)))
+				if g_currentMission.missionInfo.helperBuySeeds then
+					workTool.cp.seederFillLevel = 100
+					workTool.cp.seederCapacity = 100
+				end
+				workTool.cp.seederFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+			end
+			if workTool.spec_sprayer ~= nil and index == workTool.spec_sprayer.fillUnitIndex then
+				workTool.cp.sprayerFillLevel = fillUnit.fillLevel
+				--print(string.format("%s: adding %s to workTool.cp.sprayerFillLevel",tostring(workTool:getName()),tostring(fillUnit.fillLevel)))
+				workTool.cp.sprayerCapacity = fillUnit.capacity
+				--print(string.format("%s: adding %s to workTool.cp.sprayerCapacity",tostring(workTool:getName()),tostring(fillUnit.capacity)))
+
+				if courseplay:isSprayer(workTool) then
+					if (workTool.cp.isLiquidManureSprayer and g_currentMission.missionInfo.helperSlurrySource == 2)
+							or (workTool.cp.isManureSprayer and g_currentMission.missionInfo.helperManureSource == 2)
+							or (g_currentMission.missionInfo.helperBuyFertilizer and not workTool.cp.isLiquidManureSprayer and not workTool.cp.isManureSprayer)
+					then
+						workTool.cp.sprayerFillLevel = 100
+						workTool.cp.sprayerCapacity = 100
+					end
+				end
+				workTool.cp.sprayerFillLevelPercent = (fillUnit.fillLevel*100)/fillUnit.capacity;
+			end
+		end
+	end
+
+	workTool.cp.fillLevel = fillLevel
+	workTool.cp.capacity = capacity
+	workTool.cp.fillLevelPercent = fillLevelPercent
+	workTool.cp.fillType = fillType
+	--print(string.format("%s: adding %s to workTool.cp.fillLevel",tostring(workTool:getName()),tostring(workTool.cp.fillLevel)))
+	--print(string.format("%s: adding %s to workTool.cp.capacity",tostring(workTool:getName()),tostring(workTool.cp.capacity)))
+	return true
+end
+
+function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
+	if vehicle.getConsumerFillUnitIndex ~= nil then
+		local isFilling = false
+		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
+		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
+		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.allwaysSearchFuel and currentFuelPercentage < 99 or currentFuelPercentage < 20);
+		if searchForFuel and not vehicle.cp.fuelFillTrigger then
+			local nx, ny, nz = localDirectionToWorld(vehicle.cp.directionNode, lx, 0, lz);
+			local tx, ty, tz = getWorldTranslation(vehicle.cp.directionNode)
+			courseplay:doTriggerRaycasts(vehicle, 'fuelTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
+		end
+
+		if vehicle.cp.fuelFillTrigger then
+			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fuelFillTrigger]
+			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, vehicle, dieselIndex) then
+				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle,vehicle,vehicle.cp.fuelFillTrigger)
+			else
+				vehicle.cp.fuelFillTrigger = nil
+			end
+		end
+		if currentFuelPercentage < 5 then
+			allowedToDrive = false;
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST');
+		elseif currentFuelPercentage < 20 and not vehicle.isFuelFilling then
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD');
+		elseif isFilling and currentFuelPercentage < 99.99 then
+			allowedToDrive = false;
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
+		end;
+	end
+	return allowedToDrive;
+end
+
+function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
+	if not vehicle.cp.automaticCoverHandling then
+		return
+	end
+
+	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
+		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
+		local tipper = vehicle.cp.workTools[tIdx];
+		local numCovers = #tipper.spec_cover.covers
+		-- default Giants trailers
+		if coverType == 'defaultGiants' then
+			--open cover
+			if not showCover then
+				--we have more covers, open the one related to the fillUnit
+				if numCovers > 1 and (courseplay:isSprayer(tipper) or courseplay:isSowingMachine(tipper)) and fillTrigger then
+					local fillUnits = tipper:getFillUnits()
+					for i=1,#fillUnits do
+						if courseplay:fillTypesMatch(vehicle, fillTrigger, tipper, i) then
+							local cover = tipper:getCoverByFillUnitIndex(i)
+							if tipper.spec_cover.state ~= cover.index then
+								tipper:setCoverState(cover.index ,true);
+							end
+						end
+					end
+				else
+					--we have just one, easy going
+					local newState = 1
+					if tipper.spec_cover.state ~= newState and tipper:getIsNextCoverStateAllowed(newState) then
+						tipper:setCoverState(newState,true);
+					end
+				end
+			else --showCover
+				local newState = 0
+				if tipper.spec_cover.state ~= newState then
+					if tipper:getIsNextCoverStateAllowed(newState) then
+						tipper:setCoverState(newState,true);
+					else
+						for i=tipper.spec_cover.state,numCovers do
+							if tipper:getIsNextCoverStateAllowed(i+1)then
+								tipper:setCoverState(i+1,true);
+							end
+							if tipper:getIsNextCoverStateAllowed(newState) then
+								tipper:setCoverState(newState,true);
+								break
+							end
+						end
+					end;
+				end
+			end
+
+
+
+			-- Example: for mods trailer that don't use the default cover specialization
+		else--if coverType == 'CoverVehicle' then
+			--for _,ci in pairs(coverItems) do
+			--	if getVisibility(ci) ~= showCover then
+			--		setVisibility(ci, showCover);
+			--	end;
+			--end;
+			--if showCoverWhenTipping and isAtTipTrigger and not showCover then
+			--
+			--else
+			--	tipper:setPlane(not showCover);
+			--end;
+		end;
+	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
+end;
+
+
+

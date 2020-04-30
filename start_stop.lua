@@ -353,14 +353,11 @@ function courseplay:start(self)
 
 	if self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
 		if self.cp.mode == 2 or self.cp.mode == 3 then
+			-- TODO: really? 3?
 			courseplay:setWaypointIndex(self, 3);
 			courseplay:setDriveUnloadNow(self, true);
 		else
 			courseplay:setWaypointIndex(self, 1);
-			local distToFirst = courseplay:distanceToPoint( self, self.Waypoints[ 1 ].cx, 0, self.Waypoints[ 1 ].cz )
-			if not self.cp.drivingMode:is(DrivingModeSetting.DRIVING_MODE_AIDRIVER) and distToFirst > self.cp.turnDiameter then
-				courseplay:startAlignmentCourse( self, self.Waypoints[ 1 ])
-			end
 		end
 	end;
 
@@ -623,24 +620,6 @@ function courseplay:stop(self)
 		self:restoreVehicleCharacter()
 	end
 
-	courseplay:endAlignmentCourse( self )
---[[ This is FS17 code
-	if self.vehicleCharacter ~= nil then
-		self.vehicleCharacter:delete();
-	end
-	if self.isEntered or self.isControlled then
-		if self.vehicleCharacter ~= nil then
-			----------------------------------
-			--- Fix Missing playerIndex and playerColorIndex that some times happens for unknow reasons
-			local playerIndex = Utils.getNoNil(self.playerIndex, g_currentMission.missionInfo.playerIndex);
-			local playerColorIndex = Utils.getNoNil(self.playerColorIndex, g_currentMission.missionInfo.playerColorIndex);
-			--- End Fix
-			----------------------------------
-
-			self.vehicleCharacter:loadCharacter(PlayerUtil.playerIndexToDesc[playerIndex].xmlFilename, playerColorIndex)
-			self.vehicleCharacter:setCharacterVisibility(not self:getIsEntered())
-		end
-	end;]]
 	self.currentHelper = nil
 
 	--stop special tools
