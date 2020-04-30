@@ -1161,7 +1161,8 @@ end
 --fix the autoAimTargetNode to not get in trouble while driving behind the chopper
 function CombineUnloadAIDriver:updateFillUnitAutoAimTarget(superFunc,fillUnit)
 	local tractor = self.getAttacherVehicle and self:getAttacherVehicle() or nil
-	if tractor and tractor.cp.driver:isAutoAimNodeFixed() then
+	-- TODO: fix this properly, this isn't only called for CombineUnloadAIDriver, called whenever something is filled.
+	if tractor and tractor.cp.driver and tractor.cp.driver.isAutoAimNodeFixed and tractor.cp.driver:isAutoAimNodeFixed() then
 		local autoAimTarget = fillUnit.autoAimTarget
 		if autoAimTarget.node ~= nil then
 			if autoAimTarget.startZ ~= nil and autoAimTarget.endZ ~= nil then

@@ -693,7 +693,6 @@ function courseplay:stop(self)
 
 	courseplay:removeFromVehicleLocalIgnoreList(vehicle, self.cp.activeCombine)
 	courseplay:removeFromVehicleLocalIgnoreList(vehicle, self.cp.lastActiveCombine)
-	courseplay:releaseCombineStop(self)
 	self.cp.BunkerSiloMap = nil
 	self.cp.mode9TargetSilo = nil
 	self.cp.mode10.lowestAlpha = 99
