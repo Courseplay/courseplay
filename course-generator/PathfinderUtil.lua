@@ -481,7 +481,7 @@ end
 ---@param context PathfinderUtil.Context
 ---@param allowReverse boolean allow reverse driving
 function PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
-    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 200, 50000)
+    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 100, 50000)
     local done, path = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse,
             PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
     return pathfinder, done, path

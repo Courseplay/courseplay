@@ -799,7 +799,7 @@ function AIDriver:setUpAlignmentCourse(course, ix)
 		return nil
 	end
 	self:debug('Alignment course with %d waypoints started.', #alignmentWaypoints)
-	return Course(self.vehicle, courseGenerator.pointsToXzInPlace(alignmentWaypoints), true)
+		return Course(self.vehicle, courseGenerator.pointsToXzInPlace(alignmentWaypoints), true)
 end
 
 function AIDriver:debug(...)
@@ -1616,9 +1616,23 @@ end
 -- TODO: check for towed implements/trailers
 function AIDriver:setBackMarkerNode(vehicle)
 	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
-		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, vehicle.rootNode)
+		local backMarkerOffset = 0
+		local referenceNode
+		local reverserNode = AIDriverUtil.getReverserNode(self.vehicle)
+		if reverserNode then
+			-- if there is a reverser node, use that, mainly because that most likely will turn with an implement
+			-- or with the back component of an articulated vehicle. Just need to find out the distance correctly
+			local dx, _, dz = localToLocal(reverserNode, vehicle.rootNode, 0, 0, 0)
+			local dBetweenRootAndReverserNode = MathUtil.vector2Length(dx, dz)
+			backMarkerOffset = - dBetweenRootAndReverserNode - vehicle.sizeLength / 2 - vehicle.lengthOffset
+			referenceNode = reverserNode
+		else
+			referenceNode = vehicle.rootNode
+			backMarkerOffset = - vehicle.sizeLength / 2 - vehicle.lengthOffset
+		end
+		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, referenceNode)
+		setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, backMarkerOffset)
 	end
-	setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, - vehicle.sizeLength / 2 - vehicle.lengthOffset)
 end
 
 function AIDriver:getBackMarkerNode(vehicle)

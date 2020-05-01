@@ -551,7 +551,7 @@ end
 
 function CombineUnloadAIDriver:driveBesideCombine(targetNode)
 	-- TODO: this + 2 is a workaround the fact that we use a simple P controller instead of a PI
-	local _, _, dz = localToLocal(targetNode, self.combineToUnload.rootNode, 0, 0, self.combineToUnload.cp.driver.pipeOffsetZ - 2)
+	local _, _, dz = localToLocal(targetNode, self.combineToUnload.rootNode, 0, 0, - self.combineToUnload.cp.driver.pipeOffsetZ - 2)
 	-- use a factor of two to make sure we reach the pipe fast
 	local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz * 1.5, -10, 15)
 	self:renderText(0, 0.02, "%s: driveBesideCombine: dz = %.1f, speed = %.1f", nameNum(self.vehicle), dz, speed)

@@ -137,9 +137,9 @@ function CombineAIDriver:init(vehicle)
 	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 2
 	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
 	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
-	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter * 0.7
+	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7
 	-- and back up another bit
-	self.pullBackDistanceEnd = self.pullBackDistanceStart + 10
+	self.pullBackDistanceEnd = self.pullBackDistanceStart + 5
 	-- when making a pocket, how far to back up before changing to forward
 	self.pocketReverseDistance = 25
 end
@@ -272,6 +272,7 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 			-- is our pipe in the fruit? (assuming pipe is on the left side)
 			local pullBackCourse = self:createPullBackCourse()
 			if pullBackCourse then
+				pullBackCourse:print()
 				self:debug('Pipe in fruit, pulling back to make room for unloading')
 				self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 				self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_STOP
@@ -551,23 +552,25 @@ function CombineAIDriver:createPullBackCourse()
 	local dx,_,dz = localDirectionToWorld(self:getDirectionNode(), 0, 0, 1)
 	self.returnPoint.rotation = MathUtil.getYRotationFromDirection(dx, dz)
 	dx,_,dz = localDirectionToWorld(self:getDirectionNode(), 0, 0, -1)
-	local reverseRotation = MathUtil.getYRotationFromDirection(dx, dz)
 
 	local x1, _, z1 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceStart)
 	local x2, _, z2 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceEnd)
 	-- both points must be on the field
 	if courseplay:isField(x1, z1) and courseplay:isField(x2, z2) then
-		local vx, _, vz = getWorldTranslation(self:getDirectionNode())
-		self:debug('%.2f %.2f %d %d', self.returnPoint.rotation, reverseRotation, math.deg(self.returnPoint.rotation), math.deg(reverseRotation))
-		local pullBackWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, vx, vz, x1, z1, reverseRotation, true)
-		if not pullBackWaypoints then
-			self:debug("Can't create alignment course for pull back")
-			return nil
+
+		local referenceNode, debugText = AIDriverUtil.getReverserNode(self.vehicle)
+		if referenceNode then
+			self:debug('Using %s to start pull back course', debugText)
+		else
+			referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
+			self:debug('Using the direction node to start pull back course')
 		end
-		table.insert(pullBackWaypoints, {x = x2, z = z2})
-		-- this is the backing up part, so make sure we are reversing here
-		for _, p in ipairs(pullBackWaypoints) do
-			p.rev = true
+		-- don't make this too complicated, just create a straight line on the left/right side (depending on
+		-- where the pipe is and rely on the PPC, no need for generating fancy curves
+		local pullBackWaypoints = {}
+		for d = 0, -self.pullBackDistanceEnd, -2 do
+			local x, _, z = localToWorld(referenceNode, -self.pullBackSideOffset, 0, d)
+			table.insert(pullBackWaypoints, {x = x, z = z, rev = true})
 		end
 		return Course(self.vehicle, pullBackWaypoints, true)
 	else
@@ -577,13 +580,14 @@ function CombineAIDriver:createPullBackCourse()
 end
 
 function CombineAIDriver:createPullBackReturnCourse()
-	local x1, _, z1 = localToWorld(self:getDirectionNode(), 0, 0, self.pullBackDistanceStart / 2)
-	-- don't need to check if points are on the field, we did it when we got here
-	local pullBackReturnWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x1, z1, self.returnPoint.x, self.returnPoint.z, self.returnPoint.rotation, true)
-	if not pullBackReturnWaypoints then
-		self:debug("Can't create alignment course for pull back return")
-		return nil
+	-- nothing fancy here either, just move forward a few meters before returning to the fieldwork course
+	local pullBackReturnWaypoints = {}
+	local referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
+	for d = 0, 6 do
+		local x, _, z = localToWorld(referenceNode, 0, 0, d)
+		table.insert(pullBackReturnWaypoints, {x = x, z = z})
 	end
+
 	return Course(self.vehicle, pullBackReturnWaypoints, true)
 end
 
