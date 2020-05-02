@@ -33,18 +33,7 @@ function courseplay.registerFunctions(vehicleType)
 end
 
 function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
-	--print(string.format("%s: courseplay:onRegisterActionEvents(isActiveForInput(%s) (%s), isActiveForInputIgnoreSelection(%s))",tostring(self:getName()),tostring(isActiveForInput),tostring(self:getIsActiveForInput(true, true)),tostring(isActiveForInputIgnoreSelection)))
-	if self:getIsActiveForInput(true, true) then 
-		courseplay.actionEvents = {}
-		courseplay.inputActionEventIds = {}
-		for index, action in pairs (g_gui.inputManager.nameActions) do
-			if string.match(index,'COURSEPLAY_') then
-				local _,eventId = self:addActionEvent(courseplay.actionEvents, index, self, courseplay.inputActionCallback, true, true, false, true, nil);
-				courseplay.inputActionEventIds[index] = eventId;
-				g_gui.inputManager:setActionEventTextVisibility(eventId, false)
-			end
-		end
-	end
+	ActionEventsLoader.onRegisterVehicleActionEvents(self,isActiveForInput, isActiveForInputIgnoreSelection)
 end
 
 if courseplay.houstonWeGotAProblem then

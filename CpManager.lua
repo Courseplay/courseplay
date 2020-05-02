@@ -46,6 +46,7 @@ function CpManager:loadMap(name)
 	if g_server ~= nil then
 		self:loadXmlSettings();
 		g_vehicleConfigurations:loadFromXml()
+		g_ActionEventsLoader:loadFromXml()
 	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
@@ -285,19 +286,6 @@ function CpManager:update(dt)
 		self.realTime5SecsTimerThrough = true;
 	end;
 
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- HELP MENU
-	if g_gui.currentGui == nil and g_currentMission.controlledVehicle == nil and not g_currentMission.player.currentTool then
-		if self.playerOnFootMouseEnabled then
-			-- TODO: Fix this when rewriting to the new Input Info box
-			-- Throws an error -> CpManager.lua:296: attempt to call method 'addHelpTextFunction' (a nil value)
-			-- wasn't able to find smth similiar in the FS19 doc, hence disable it for now
-			--g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
-		--Tommi elseif self.globalInfoText.hasContent then
-			--Tommi g_currentMission:addHelpTextFunction(self.drawMouseButtonHelp, self, self.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
-		end;
-	end;
-
 	if not courseplay.fields.modifier then
 		courseplay.fields.modifier = DensityMapModifier:new(g_currentMission.terrainDetailId, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels) -- terrain type modifier
 		courseplay.fields.filter = DensityMapFilter:new(courseplay.fields.modifier) -- filter on terrain type
@@ -363,43 +351,14 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LEFT CLICK to click the button shown in globalInfoText
 	if (isDown or isUp) and mouseKey == courseplay.inputBindings.mouse.primaryButtonId and courseplay:mouseIsInArea(posX, posY, area.x1, area.x2, area.y1, area.y2) then
-		if self.globalInfoText.hasContent then
-			for i,button in pairs(self.globalInfoText.buttons) do
-				if button.show and button:getHasMouse(posX, posY) then
-					button:setClicked(isDown);
-					if isUp then
-						local sourceVehicle = g_currentMission.controlledVehicle or button.parameter;
-						button:handleMouseClick(sourceVehicle);
-					end;
-					break;
-				end;
-			end;
-		end;
-
+		self:onPrimaryMouseClick(posX, posY, isDown, isUp, mouseKey)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- RIGHT CLICK  to activate the mouse cursor when I'm not in a vehicle and a globalInfoText is shown
 	elseif isUp and mouseKey == courseplay.inputBindings.mouse.secondaryButtonId and g_currentMission.controlledVehicle == nil then
-		if self.globalInfoText.hasContent and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
-			self.playerOnFootMouseEnabled = true;
-			self.wasPlayerFrozen = g_currentMission.isPlayerFrozen;
-			g_currentMission.isPlayerFrozen = true;
-		elseif self.playerOnFootMouseEnabled then
-			self.playerOnFootMouseEnabled = false;
-			if self.globalInfoText.hasContent then --if a button was hovered when deactivating the cursor, deactivate hover state
-				for _,button in pairs(self.globalInfoText.buttons) do
-					button:setClicked(false);
-					button:setHovered(false);
-				end;
-			end;
-			if not self.wasPlayerFrozen then
-				g_currentMission.isPlayerFrozen = false;
-			end;
-		end;
-		g_inputBinding:setShowMouseCursor(self.playerOnFootMouseEnabled);
-
+		self:onSecondaryMouseClick(posX, posY, isDown, isUp, mouseKey)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- HOVER
-	elseif not isDown and not isUp and self.globalInfoText.hasContent then
+	elseif not isDown and not isUp and self:getHasGlobalInfoText() then
 		for _,button in pairs(self.globalInfoText.buttons) do
 			button:setClicked(false);
 			if button.show and not button.isHidden then
@@ -410,11 +369,87 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	g_devHelper:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 end;
 
+---Secondary mouse button pressed
+---@param float posX, mouse x position
+---@param float posY, mouse y position
+---@param boolean isDown, is the mouse button down ?
+---@param boolean isUp, is the mouse button up ?
+---@param int mouseKey, which mouse button was pressed ?
+function CpManager:onSecondaryMouseClick(posX, posY, isDown, isUp, mouseKey)
+	if self:getHasGlobalInfoText() and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
+		self.playerOnFootMouseEnabled = true
+		self.wasPlayerFrozen = g_currentMission.isPlayerFrozen
+		g_currentMission.isPlayerFrozen = true
+	elseif self.playerOnFootMouseEnabled then
+		self.playerOnFootMouseEnabled = false
+		if self:getHasGlobalInfoText() then --if a button was hovered when deactivating the cursor, deactivate hover state
+			self:resetGlobalInfoTextButtons()
+		end;
+		if not self.wasPlayerFrozen then
+			g_currentMission.isPlayerFrozen = false
+		end;
+	end;
+	g_inputBinding:setShowMouseCursor(self.playerOnFootMouseEnabled)
+	CpManager:updateMouseInputText()
+end
+
+---Primary mouse button pressed
+---@param float posX, mouse x position
+---@param float posY, mouse y position
+---@param boolean isDown, is the mouse button down ?
+---@param boolean isUp, is the mouse button up ?
+---@param int mouseKey, which mouse button was pressed ?
+function CpManager:onPrimaryMouseClick(posX, posY, isDown, isUp, mouseKey)
+	if self:getHasGlobalInfoText() then
+		for i,button in pairs(self.globalInfoText.buttons) do
+			if button.show and button:getHasMouse(posX, posY) then
+				button:setClicked(isDown)
+				if isUp then
+					local sourceVehicle = g_currentMission.controlledVehicle or button.parameter
+					button:handleMouseClick(sourceVehicle)
+				end
+				break
+			end
+		end
+		CpManager:updateMouseInputText()
+	end
+end
+
+---Is the second mouse button allowed, when the player isn't in a vehicle ?
+---@return boolean allowed?
+function CpManager:isSecondaryMouseClickAllowed()
+	return self.playerOnFootMouseEnabled or self:getHasGlobalInfoText() and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool
+end
+
+---Is the first mouse button allowed, when the player isn't in a vehicle ?
+---@return boolean allowed?
+function CpManager:isPrimaryMouseClickAllowed()
+	return self:getHasGlobalInfoText() and self.playerOnFootMouseEnabled
+end
+
+---Updates mouse input texts
+---@param boolean forceText should the texts forced to display?
+function CpManager:updateMouseInputText()
+	-- HELP MENU
+	---TODO: For now always display the mouse action text,
+	---		 as this one would probably be broken in MP,
+	---		 should probably rework global info texts.
+
+--	if g_gui.currentGui == nil and not g_currentMission.player.currentTool then
+--		g_currentMission.hud.inputHelp:clearCustomEntries()
+--		if self:isPrimaryMouseClickAllowed() or g_currentMission.controlledVehicle ~= nil then 
+--			g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_MOUSEACTION_PRIMARY', '', courseplay:loc("input_COURSEPLAY_MOUSEACTION_PRIMARY"), false)
+--		end
+--		if self:isSecondaryMouseClickAllowed() or g_currentMission.controlledVehicle ~= nil then 
+--			g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_MOUSEACTION_SECONDARY', '', courseplay:loc("input_COURSEPLAY_MOUSEACTION_SECONDARY"), false)
+--		end
+--	end
+end
+
 function CpManager:keyEvent(unicode, sym, modifier, isDown) 
 	courseplay:onKeyEvent(unicode, sym, modifier, isDown)
 	g_devHelper:keyEvent(unicode, sym, modifier, isDown)
 end;
-
 
 -- ####################################################################################################
 function CpManager.saveXmlSettings(self)
@@ -1112,6 +1147,17 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 
 	return line;
 end;
+
+function CpManager:resetGlobalInfoTextButtons()
+	for _,button in pairs(self.globalInfoText.buttons) do
+		button:setClicked(false);
+		button:setHovered(false);
+	end;
+end
+
+function CpManager:getHasGlobalInfoText()
+	return self.globalInfoText.hasContent
+end
 
 -- ####################################################################################################
 -- 2D COURSE DRAW SETUP

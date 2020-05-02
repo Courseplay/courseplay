@@ -352,6 +352,9 @@ function courseplay.button:getHasMouse(mouseX, mouseY)
 	return courseplay:mouseIsInArea(mouseX, mouseY, self.x, self.x2, self.y, self.y2);
 end;
 
+function courseplay.button:getIsDisabled()
+	return self.isDisabled
+end
 
 
 -- #################################################################
