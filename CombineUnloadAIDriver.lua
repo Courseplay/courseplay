@@ -1261,8 +1261,10 @@ end
 -- Start to unload a stopped combine
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloadingStoppedCombine()
-	-- get a path to the pipe
-	self:startPathfindingToCombine(self.onPathfindingDoneToStoppedCombine, self.combineToUnload.cp.driver:getPipeOffset(), 0)
+	-- get a path to the pipe, make the pipe 0.5 m longer so the path will be 0.5 more to the outside to make
+	-- sure we don't bump into the pipe
+	local offsetX, offsetZ = self.combineToUnload.cp.driver:getPipeOffset(0.5)
+	self:startPathfindingToCombine(self.onPathfindingDoneToStoppedCombine, offsetX, offsetZ)
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToStoppedCombine(path)
@@ -1354,8 +1356,9 @@ end
 --Pathfinding to combine
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, xOffset, zOffset)
-	xOffset = xOffset or self.combineToUnload.cp.driver:getPipeOffset()
-	zOffset = zOffset or -10
+	local x, z = self.combineToUnload.cp.driver:getPipeOffset()
+	xOffset = xOffset or x
+	zOffset = zOffset or z
 	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
 	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 	-- TODO: here we may have to pass in the combine to ignore once we start driving to a moving combine, at least

@@ -134,7 +134,7 @@ function CombineAIDriver:init(vehicle)
 	end
 
 	-- distance keep to the right when pulling back to make room for the tractor
-	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 2
+	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 3
 	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
 	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
 	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7
@@ -1152,8 +1152,17 @@ function CombineAIDriver:fixDischargeDistance(dischargeNode)
 	end
 end
 
-function CombineAIDriver:getPipeOffset()
-	return self.pipeOffsetX, self.pipeOffsetZ
+---@param additionalOffsetX number add this to the offsetX if you don't want to be directly under the pipe. If
+--- greater than 0, it'll make the pipe longer, less than zero shorter
+function CombineAIDriver:getPipeOffset(additionalOffsetX)
+	additionalOffsetX = additionalOffsetX or 0
+	local pipeOffsetX
+	if self.pipeOffsetX < 0 then
+		pipeOffsetX = self.pipeOffsetX - additionalOffsetX
+	else
+		pipeOffsetX = self.pipeOffsetX + additionalOffsetX
+	end
+	return pipeOffsetX, self.pipeOffsetZ
 end
 
 --- Pipe side offset relative to course. This is to help the unloader
