@@ -274,7 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT"								 	text="Pierwszy punkt trasy" />
 		<text name="COURSEPLAY_CURRENT_POINT"							 	text="Obecny punkt trasy" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 	 	text="Następny punkt trasy" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Rozładunek" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH"							 	text="Ścieżka krawędzi pola:" />
 		<text name="COURSEPLAY_FIELD"									 	text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"					 	text="(obecnie załadowany kurs)" />
@@ -435,8 +435,8 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Kliknij na pojazd, aby przejść do niego." />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rozkładaj rurę zawsze" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Rura rozłożona, gdy kombajn czeka na rozładunek" />
-		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
-		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Pokaż Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Przełączanie Mini-HUDa" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Wcześniej" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Później" />
