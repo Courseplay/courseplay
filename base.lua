@@ -584,6 +584,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(PipeAlwaysUnfoldSetting, self)
 	self.cp.settings:addSetting(RidgeMarkersAutomatic, self)
 	self.cp.settings:addSetting(StopForUnloadSetting, self)
+	self.cp.settings:addSetting(StrawOnHeadland, self)
 end;
 
 function courseplay:onPostLoad(savegame)

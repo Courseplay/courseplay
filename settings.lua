@@ -2612,6 +2612,15 @@ function PipeAlwaysUnfoldSetting:init()
 	self:set(false)
 end
 
+---@class StrawOnHeadland : BooleanSetting
+StrawOnHeadland = CpObject(BooleanSetting)
+function StrawOnHeadland:init()
+	BooleanSetting.init(self, 'strawOnHeadland', 'COURSEPLAY_STRAW_ON_HEADLAND',
+				'COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
+end
+
 ---@class RidgeMarkersAutomatic : BooleanSetting
 RidgeMarkersAutomatic = CpObject(BooleanSetting)
 function RidgeMarkersAutomatic:init()

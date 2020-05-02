@@ -438,6 +438,8 @@
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Otevřít komín, když kombajn čeká na vykládku" />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on Headland" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on Headland" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Brzy" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Pozdě" />
