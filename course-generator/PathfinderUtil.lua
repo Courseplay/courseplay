@@ -533,17 +533,18 @@ end
 ---@param startOffset number offset in meters relative to the vehicle position (forward positive, backward negative) where
 --- we want the turn to start
 ---@param goalReferenceNode table node used to determine the goal
----@param goalOffset number offset in meters relative to the goal node (forward positive, backward negative)
+---@param xOffset number offset in meters relative to the goal node (left positive, right negative)
+---@param zOffset number offset in meters relative to the goal node (forward positive, backward negative)
 --- Together with the goalReferenceNode defines the goal
 ---@param turnRadius number vehicle turning radius
-function PathfinderUtil.findDubinsPath(vehicle, startOffset, goalReferenceNode, goalOffset, turnRadius)
+function PathfinderUtil.findDubinsPath(vehicle, startOffset, goalReferenceNode, xOffset, zOffset, turnRadius)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle), 0, startOffset or 0)
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, 0, goalOffset or 0)
+    x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalReferenceNode, xOffset or 0, zOffset or 0)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     local solution = PathfinderUtil.dubinsSolver:solve(start, goal, turnRadius)
     local dubinsPath = solution:getWaypoints(start, turnRadius)
-    return dubinsPath
+    return dubinsPath, solution:getLength(turnRadius)
 end
 
 function PathfinderUtil.getNodePositionAndDirection(node, xOffset, zOffset)

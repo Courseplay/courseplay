@@ -560,7 +560,7 @@ function CourseTurn:generatePathfinderTurn()
 
 	if self.vehicle.cp.settings.usePathfindingInTurns:is(false) or self.turnContext:isSimpleWideTurn(self.turningRadius * 2) then
 		self:debug('Wide turn: generate turn with Dubins path')
-		path = PathfinderUtil.findDubinsPath(self.vehicle, startOffset, turnEndNode, goalOffset, self.turningRadius)
+		path = PathfinderUtil.findDubinsPath(self.vehicle, startOffset, turnEndNode, 0, goalOffset, self.turningRadius)
 		return self:onPathfindingDone(path)
 	else
 		self:debug('Wide turn: generate turn with hybrid A*')

@@ -575,12 +575,8 @@ function CombineAIDriver:createPullBackCourse()
 		end
 		-- don't make this too complicated, just create a straight line on the left/right side (depending on
 		-- where the pipe is and rely on the PPC, no need for generating fancy curves
-		local pullBackWaypoints = {}
-		for d = 0, -self.pullBackDistanceEnd, -2 do
-			local x, _, z = localToWorld(referenceNode, -self.pullBackSideOffset, 0, d)
-			table.insert(pullBackWaypoints, {x = x, z = z, rev = true})
-		end
-		return Course(self.vehicle, pullBackWaypoints, true)
+		return Course.createFromNode(self.vehicle, referenceNode,
+				-self.pullBackSideOffset, 0, -self.pullBackDistanceEnd, -2, true)
 	else
 		self:debug("Pull back course would be outside of the field")
 		return nil
@@ -589,14 +585,8 @@ end
 
 function CombineAIDriver:createPullBackReturnCourse()
 	-- nothing fancy here either, just move forward a few meters before returning to the fieldwork course
-	local pullBackReturnWaypoints = {}
 	local referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
-	for d = 0, 6 do
-		local x, _, z = localToWorld(referenceNode, 0, 0, d)
-		table.insert(pullBackReturnWaypoints, {x = x, z = z})
-	end
-
-	return Course(self.vehicle, pullBackReturnWaypoints, true)
+	return Course.createFromNode(self.vehicle, referenceNode, 0, 0, 6, 2, false)
 end
 
 --- Create a temporary course to make a pocket in the fruit on the right (or left), so we can move into that pocket and

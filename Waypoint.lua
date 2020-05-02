@@ -936,6 +936,25 @@ function Course:extend(length, dx, dz)
 	self:enrichWaypointData()
 end
 
+--- Create a new (straight) temporary course based on a node
+---@param vehicle table
+---@param referenceNode number
+---@param xOffset number side offset of the new course (relative to node), left positive
+---@param from number start at this many meters z offset from node
+---@param to number end at this many meters z offset from node
+---@param step number step (waypoint distance), must be negative if to < from
+---@param reverse boolean is this a reverse course?
+function Course.createFromNode(vehicle, referenceNode, xOffset, from, to, step, reverse)
+	local waypoints = {}
+	for d = from, to, step do
+		local x, _, z = localToWorld(referenceNode, xOffset, 0, d)
+		table.insert(waypoints, {x = x, z = z, rev = reverse})
+	end
+	local course = Course(vehicle, waypoints, true)
+	course:enrichWaypointData()
+	return course
+end
+
 function Course:getDirectionToWPInDistance(ix, vehicle, distance)
 	local lx, lz = 0, 1
 	for i = ix, #self.waypoints do
