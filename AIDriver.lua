@@ -947,7 +947,6 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				
 				--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
 				if (foundHeap or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
-					courseplay.debugVehicle(2,self.vehicle,'foundHeap(%s) or z(%s) >= 0  --> readyToDischarge ',tostring(foundHeap),tostring(z))
 					stopForTipping = true
 					readyToDischarge = true
 				end
@@ -963,10 +962,13 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				end
 				
 				--when we can tip again, stop the movement
-				if g_updateLoopIndex % 100 == 0 and self.pullForward and isTipping then
+				if g_updateLoopIndex % 50 == 0 and self.pullForward and isTipping then
 					self.pullForward = false
 				end
-				
+
+				self:debugSparse('foundHeap(%s) z(%s) readyToDischarge(%s) isTipping(%s) pullForward(%s)',
+						tostring(foundHeap), tostring(z), tostring(readyToDischarge), tostring(isTipping), tostring(self.pullForward))
+
 				--ready with tipping, go forward on the course
 				if tipper.cp.fillLevel == 0 then
 					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
@@ -1013,7 +1015,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 		end
 	end
 	
-	return not stopForTipping,takeOverSteering
+	return not stopForTipping, takeOverSteering
 end
 
 function AIDriver:checkForHeapBehindMe(tipper)

@@ -127,6 +127,7 @@ function CombineUnloadAIDriver:start(startingPoint)
 	self.unloadCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	-- just to have a course set up in any case for PPC to work with until we find a combine/path
 	self:startCourse(self.unloadCourse, 1)
+	self.ppc:setNormalLookaheadDistance()
 
 	if startingPoint:is(StartingPointSetting.START_WITH_UNLOAD) then
 		self:debug('Start unloading, waiting for a combine to call')
@@ -161,14 +162,17 @@ function CombineUnloadAIDriver:drive(dt)
 	self:updateCombineStatus()
 
 	if self.state == self.states.ON_STREET then
-		if not self:onUnLoadCourse(true, dt) then
-			self:hold()
-		end
 		-- disable speed control as it messes up the speed control during unload
 		-- TODO: refactor that whole unload process, it was just copied from the legacy CP code
 		self.forwardLookingProximitySensorPack:disableSpeedControl()
 		self:searchForTipTriggers()
-		AIDriver.drive(self, dt)
+		local allowedToDrive, giveUpControl = self:onUnLoadCourse(true, dt)
+		if not allowedToDrive then
+			self:hold()
+		end
+		if not giveUpControl then
+			AIDriver.drive(self, dt)
+		end
 	elseif self.state == self.states.ON_FIELD then
 		local renderOffset = self.vehicle.cp.coursePlayerNum * 0.03
 		self:renderText(0, 0.1 + renderOffset, "%s: self.onFieldState :%s", nameNum(self.vehicle), self.onFieldState.name)
