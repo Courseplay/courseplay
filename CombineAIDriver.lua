@@ -142,6 +142,8 @@ function CombineAIDriver:init(vehicle)
 	self.pullBackDistanceEnd = self.pullBackDistanceStart + 5
 	-- when making a pocket, how far to back up before changing to forward
 	self.pocketReverseDistance = 25
+	-- register ourselves at our boss
+	g_combineUnloadManager:addCombineToList(self.vehicle)
 end
 
 function CombineAIDriver:start(startingPoint)

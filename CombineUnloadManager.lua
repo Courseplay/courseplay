@@ -47,10 +47,10 @@ function CombineUnloadManager:init()
 	self.combines = {}
 	self.unloadersOnFields ={}
 	if g_currentMission then
-		-- this isn't needed as combines will be added when they are registered
+		-- this isn't needed as combines will be added when an CombineAIDriver is created for them
 		-- but we want to be able to reload this file on the fly when developing/troubleshooting
 		for _, vehicle in pairs(g_currentMission.vehicles) do
-			if courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) then
+			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineAIDriver) then
 				self:addCombineToList(vehicle)
 			end
 		end
@@ -64,11 +64,6 @@ end
 function CombineUnloadManager:addCombineToList(combine)
 	if combine:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
 		return
-	end
-	-- we only handle combines with CP AIDriver
-	if not combine.cp.driver or not combine.cp.driver:is_a(CombineAIDriver) then
-		self:debug('%s has no combine AI driver, adding it now', combine.name)
-		combine.cp.driver = CombineAIDriver(combine)
 	end
 	self:debug('added %s to list', tostring(combine.name))
 	self.combines[combine]= {
@@ -259,7 +254,21 @@ end
 
 
 function CombineUnloadManager:onUpdate(dt)
+	self:removeInactiveCombines()
 	self:updateCombinesAttributes()
+end
+
+--- Remove everyone from the list who does not have a CombineAIDriver (for instance because the mode was changed)
+function CombineUnloadManager:removeInactiveCombines()
+	local vehiclesToRemove = {}
+	for vehicle, _ in pairs (self.combines) do
+		if not vehicle.cp.driver or not vehicle.cp.driver:is_a(CombineAIDriver) then
+			table.insert(vehiclesToRemove, vehicle)
+		end
+	end
+	for _, vehicle in ipairs(vehiclesToRemove) do
+		self:removeCombineFromList(vehicle)
+	end
 end
 
 function CombineUnloadManager:updateCombinesAttributes()

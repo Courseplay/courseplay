@@ -131,13 +131,9 @@ function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
 
 	courseplay:setNameVariable(self);
 
-	-- combineUnloadManager
-	if courseplay:isCombine(self) or courseplay:isChopper(self) then
-		g_combineUnloadManager:addCombineToList(self)
-	end
-
 	return loadingState;
 end;
+
 Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
