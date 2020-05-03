@@ -72,13 +72,12 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		vehicle.cp.toolsRealTurningNode = node;
 	end
 	local xTipper,yTipper,zTipper = getWorldTranslation(node);
-	if debugActive then cpDebug:drawPoint(xTipper, yTipper + 5, zTipper, 1, 0 , 0) end;
+	if debugActive then cpDebug:drawPoint(xTipper, yTipper+5, zTipper, 1, 0 , 0) end;
 	local frontNode = workTool.cp.frontNode;
-	local xFrontNode, yFrontNode, zFrontNode = getWorldTranslation(frontNode);
+	local xFrontNode,yFrontNode,zFrontNode = getWorldTranslation(frontNode);
 	local tcx,tcy,tcz =0,0,0;
 	if debugActive and not newTarget then
-		-- red dot
-		cpDebug:drawPoint(xFrontNode,yFrontNode + 3, zFrontNode, 1, 0 , 0);
+		cpDebug:drawPoint(xFrontNode,yFrontNode+3,zFrontNode, 1, 0 , 0);
 		if not vehicle.cp.checkReverseValdityPrinted then
 			local checkValidity = false;
 			for i=index, #waypoints do
@@ -110,7 +109,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			tcx = newTarget.posX;
 			tcz = newTarget.posZ;
 		end;
-	else
+	elseif not mode2 then
 		for i= index, #waypoints do
 			if waypoints[i].rev and not waypoints[i-1].wait then
 				tcx = getX(waypoints, i);
@@ -124,21 +123,21 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 			local waitingPoint;
 			local unloadPoint;
-			if waypoints[i-1].wait then
-				waitingPoint = i-1;
+			if waypoints[i-1].wait then 
+				waitingPoint = i-1;	
 			end;
 			if waypoints[i].wait then
 				waitingPoint = i;
 			end;
-			if waypoints[i-1].unload then
-				unloadPoint = i-1;
+			if waypoints[i-1].unload then 
+				unloadPoint = i-1;	
 			end;
 			if waypoints[i].unload then
 				unloadPoint = i;
 			end;
-
-
-
+			
+			
+			
 			-- HANDLE WAITING POINT WAYPOINT CHANGE
 			if waitingPoint then
 				if workTool.cp.realUnloadOrFillNode then
@@ -176,7 +175,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 						courseplay:setWaypointIndex(vehicle, unloadPoint + 1);
 						courseplay:debug(string.format("%s: Is at unload point", nameNum(vehicle)), 13);
 						break;
-					end;
+					end;		
 				end
 				if distance > 3 then
 					local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
@@ -186,7 +185,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 					end;
 				end;
 				break
-				-- SWITCH TO FORWARD
+			-- SWITCH TO FORWARD
 			elseif waypoints[i-1].rev and not waypoints[i].rev then
 				if distance <= 2 then
 					if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
@@ -200,7 +199,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 				end;
 				break;
 
-				-- FIND THE RIGHT START REVERSING WAYPOINT
+			-- FIND THE RIGHT START REVERSING WAYPOINT
 			elseif waypoints[i-1].rev and not waypoints[i-2].rev then
 				for recNum = index, vehicle.cp.numWaypoints do
 					local srX,srZ = getX(waypoints, recNum),getZ(waypoints, recNum);
@@ -213,7 +212,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 				end;
 				break;
 
-				-- HANDLE REVERSE WAYPOINT CHANGE
+			-- HANDLE REVERSE WAYPOINT CHANGE
 			elseif distance > 3 then
 				local _,_,z = worldToLocal(node, tcx,yTipper,tcz);
 				if z < 0 then
@@ -222,7 +221,9 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 				end;
 			end;
 		end;
-	end
+	elseif mode2 then
+		tcx,tcz = vehicle.cp.curTarget.x, vehicle.cp.curTarget.z;
+	end;
 
 	if debugActive then
 		cpDebug:drawPoint(tcx, yTipper+3, tcz, 1, 1 , 1)
@@ -234,8 +235,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 	local lxTipper, lzTipper = AIVehicleUtil.getDriveDirection(node, tcx, yTipper, tcz);
 
-	-- direction to the target waypoint, red line
-	courseplay:showDirection(node, lxTipper, lzTipper, 1, 0, 0);
+	courseplay:showDirection(node,lxTipper, lzTipper, 1, 0, 0);
 
 	local lxFrontNode, lzFrontNode = AIVehicleUtil.getDriveDirection(frontNode, xTipper,yTipper,zTipper);
 
@@ -464,12 +464,11 @@ function courseplay:getReverseProperties(vehicle, workTool)
 	workTool.cp.nodeDistance = courseplay:getRealTrailerDistanceToPivot(workTool);
 	courseplay:debug("--> tz: "..tostring(workTool.cp.nodeDistance).."  workTool.cp.realTurningNode: "..tostring(workTool.cp.realTurningNode), 13);
 
-	if workTool.cp.distances.attacherJointToPivot then
-		courseplay:debug('--> has steerable front axle', 13);
-		workTool.cp.isPivot = true;
-	else
-		courseplay:debug('--> has no steerable front axle', 13);
+	if workTool.cp.realTurningNode == workTool.cp.frontNode then
+		courseplay:debug('--> workTool.cp.realTurningNode == workTool.cp.frontNode', 13);
 		workTool.cp.isPivot = false;
+	else
+		workTool.cp.isPivot = true;
 	end;
 
 	courseplay:debug(('--> isPivot=%s, frontNode=%s'):format(tostring(workTool.cp.isPivot), tostring(workTool.cp.frontNode)), 13);
