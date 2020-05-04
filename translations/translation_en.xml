@@ -438,8 +438,8 @@
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD on/off" />
 		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on Headland" />
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on Headland" />
-		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Fertilize Seeder" />
-		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="activate or deactivate the Fertilizer of Seeder" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
 		
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
