@@ -430,33 +430,16 @@ function courseplay:start(self)
 		courseplay:disableCropDestruction(self);
 	end;
 
-	--More Realistitic Mod. Temp fix until we can fix the breaking problem.
-	if self.mrUseMrTransmission and self.mrUseMrTransmission == true then
-		self.mrUseMrTransmission = false;
-		self.cp.changedMRMod = true;
+	local ret_removeLegacyCollisionTriggers = false			-- TODO could be used for further processing / error handling / information to the user
+	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
+	-- the driver handles the PPC
+	-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
+	-- attached and I don't have the motivation do dig through the legacy code to find out why
+	if self.cp.mode == courseplay.MODE_FIELDWORK then
+		self.cp.driver:delete()
+		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 	end
-	if self.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
-		local ret_removeLegacyCollisionTriggers = false			-- TODO could be used for further processing / error handling / information to the user
-		ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
-		-- the driver handles the PPC
-		-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
-		-- attached and I don't have the motivation do dig through the legacy code to find out why
-		if self.cp.mode == courseplay.MODE_FIELDWORK then
-			self.cp.driver:delete()
-			self.cp.driver = UnloadableFieldworkAIDriver.create(self)
-		end
-		self.cp.driver:start(self.cp.settings.startingPoint)
-	else
-		if self.cp.driver then
-			self.cp.driver:delete()
-		end
-		-- Initialize pure pursuit controller
-		self.cp.ppc = PurePursuitController(self)
-		self.cp.ppc:initialize()
-		local ret_createLegacyCollisionTriggers = false			-- TODO could be used for further processing / error handling / information to the user
-		ret_createLegacyCollisionTriggers = courseplay:createLegacyCollisionTriggers(self)
-	end
-	--print('startStop 509')
+	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 
 function courseplay:getCanUseCpMode(vehicle)
