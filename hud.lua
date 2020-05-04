@@ -1274,10 +1274,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
 					end
-
-				elseif entry.functionToCall == 'toggleAutoDriveMode' and vehicle.cp.driver and vehicle.cp.settings.autoDriveMode:isAutoDriveAvailable() then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_AUTODRIVE_MODE');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.autoDriveMode:getText()
 				
 				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
 					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
