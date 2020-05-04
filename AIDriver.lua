@@ -1222,8 +1222,9 @@ function AIDriver:tipTriggerIsFull(trigger,tipper)
 	local trigger = self.vehicle.cp.currentTipTrigger
 	local trailerFillType = tipper.cp.fillType
 	if trigger and trigger.unloadingStation then
-		local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType,1)
-		local capacity = trigger.unloadingStation:getCapacity(trailerFillType,1)
+		local ownerFarmId = self.vehicle.getOwnerFarmId(self.vehicle);
+		local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
+		local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
 		courseplay.debugVehicle(2,self.vehicle,'    trigger (%s) fillLevel=%d, capacity=%d ',tostring(trigger.triggerId), fillLevel, capacity);
 		if fillLevel>=capacity then
 			courseplay.debugVehicle(2, self.vehicle,'    trigger (%s) Trigger is full',tostring(triggerId));
