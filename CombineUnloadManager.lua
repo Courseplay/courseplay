@@ -50,6 +50,7 @@ function CombineUnloadManager:init()
 		-- this isn't needed as combines will be added when an CombineAIDriver is created for them
 		-- but we want to be able to reload this file on the fly when developing/troubleshooting
 		for _, vehicle in pairs(g_currentMission.vehicles) do
+			self:debug('Checking %s', vehicle:getName())
 			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineAIDriver) then
 				self:addCombineToList(vehicle)
 			end
@@ -345,7 +346,7 @@ function CombineUnloadManager:getFieldNumberByCurrentPosition(vehicle)
 end
 
 function CombineUnloadManager:getNumUnloaders(combine)
-	return self.combines[combine] and #self.combines[combine].unloaders
+	return self.combines[combine] and #self.combines[combine].unloaders or 0
 end
 
 function CombineUnloadManager:getUnloadersNumber(unloader, combine)
@@ -392,7 +393,7 @@ function CombineUnloadManager:getPipeOffset(combine)
 		local dnX,dnY,dnZ = getWorldTranslation(dischargeNode)
 		local baseNode = self:getPipesBaseNode(combine)
 		local tX,tY,tZ = getWorldTranslation(baseNode)
-		local pipeOffsetX = worldToLocal(combine.cp.directionNode,tX,tY,tZ)
+		local pipeOffsetX = worldToLocal(combine.rootNode, tX, tY, tZ)
 		local distance = courseplay:distance(dnX,dnZ, tX,tZ)
 		--print(string.format(" pipeOffsetX:%s; distance:%s = %s  measured:%s",tostring(pipeOffsetX),tostring(distance),tostring(distance+pipeOffsetX),tostring(measured)))
 		if pipeOffsetX > 0 then
@@ -499,7 +500,7 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	local rHeightZ = rStartZ + (straightDirZ*boxLength);
 
 	--fruitType
-	local fruitType = combine.spec_combine.lastValidInputFruitType
+	local fruitType = combine.cp.driver.combine.lastValidInputFruitType
 	local hasFruit = false
 	if fruitType == nil or fruitType == 0 then
 		hasFruit,fruitType = courseplay:areaHasFruit(x, z, nil, math.abs(offset), math.abs(offset))

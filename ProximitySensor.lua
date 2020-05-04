@@ -92,6 +92,7 @@ function ProximitySensorPack:init(node, range, height, directionsDeg)
     ---@type ProximitySensor[]
     self.sensors = {}
     self.range = range
+    self.node = node
     self.directionsDeg = directionsDeg
     self.speedControlEnabled = true
     for _, deg in ipairs(self.directionsDeg) do
@@ -124,6 +125,12 @@ end
 
 function ProximitySensorPack:update()
     self:callForAllSensors(ProximitySensor.update)
+
+    -- show the position of the pack
+    if courseplay.debugChannels[12] then
+        local x, y, z = getWorldTranslation(self.node)
+        cpDebug:drawLine(x, y, z, 0, 0, 1, x, y + 3, z)
+    end
 end
 
 function ProximitySensorPack:enable()

@@ -733,7 +733,7 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 		local fillUnits = tipper:getFillUnits()
 		for j=1,#fillUnits do
 			local tipperFillType = tipper:getFillUnitFillType(j)
-			local combineFillType = self.combineToUnload and self.combineToUnload:getFillUnitLastValidFillType(self.combineToUnload:getCurrentDischargeNode().fillUnitIndex) or FillType.UNKNOWN
+			local combineFillType = self.combineToUnload and self.combineToUnload.cp.driver.combine:getFillUnitLastValidFillType(self.combineToUnload.cp.driver.combine:getCurrentDischargeNode().fillUnitIndex) or FillType.UNKNOWN
 			if tipper:getFillUnitFreeCapacity(j) > 0 then
 				allTrailersFull = false
 				if tipperFillType == FillType.UNKNOWN or tipperFillType == combineFillType or combineFillType == FillType.UNKNOWN then

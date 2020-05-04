@@ -1701,3 +1701,37 @@ function AIDriverUtil.getTurningRadius(vehicle)
 	courseplay.debugVehicle(6, vehicle, 'getTurningRadius: %.1f m', radius)
 	return radius
 end
+
+---@return boolean true if there are any implements attached to the back of the vehicle
+function AIDriverUtil.hasImplementsOnTheBack(vehicle)
+	for _, implement in pairs(vehicle:getAttachedImplements()) do
+		if implement.object ~= nil then
+			local _, _, dz = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0, 0)
+			if dz < 0 then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+---@return table, number rearmost object and the distance between the back of that object and the root node of the object
+function AIDriverUtil.getLastAttachedImplement(vehicle)
+	-- by default, it is the vehicle's back
+	local maxDistance = 0
+	local backOffset = vehicle.sizeLength / 2 + vehicle.lengthOffset
+	local lastImplement = vehicle
+	for _, implement in pairs(vehicle:getAttachedImplements()) do
+		if implement.object ~= nil then
+			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, - implement.object.sizeLength / 2 + implement.object.lengthOffset)
+			courseplay.debugVehicle(6, vehicle, '%s back distance %d', implement.object:getName(), d)
+			if d > maxDistance then
+				maxDistance = d
+				backOffset = implement.object.sizeLength / 2 - implement.object.lengthOffset
+				lastImplement = implement.object
+			end
+			-- TODO: recursively search implements attached to other implements
+		end
+	end
+	return lastImplement, -backOffset
+end

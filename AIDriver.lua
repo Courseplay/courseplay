@@ -1617,24 +1617,37 @@ end
 -- Put a node on the back of the vehicle for easy distance checks use this instead of the root/direction node
 -- TODO: check for towed implements/trailers
 function AIDriver:setBackMarkerNode(vehicle)
-	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
-		local backMarkerOffset = 0
-		local referenceNode
-		local reverserNode = AIDriverUtil.getReverserNode(self.vehicle)
-		if reverserNode then
-			-- if there is a reverser node, use that, mainly because that most likely will turn with an implement
-			-- or with the back component of an articulated vehicle. Just need to find out the distance correctly
-			local dx, _, dz = localToLocal(reverserNode, vehicle.rootNode, 0, 0, 0)
-			local dBetweenRootAndReverserNode = MathUtil.vector2Length(dx, dz)
-			backMarkerOffset = - dBetweenRootAndReverserNode - vehicle.sizeLength / 2 - vehicle.lengthOffset
-			referenceNode = reverserNode
-		else
-			referenceNode = vehicle.rootNode
-			backMarkerOffset = - vehicle.sizeLength / 2 - vehicle.lengthOffset
-		end
-		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, referenceNode)
-		setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, backMarkerOffset)
+
+	local backMarkerOffset = 0
+	local referenceNode
+	local reverserNode, debugText = AIDriverUtil.getReverserNode(self.vehicle)
+	if AIDriverUtil.hasImplementsOnTheBack(vehicle) then
+		local lastImplement
+		lastImplement, backMarkerOffset = AIDriverUtil.getLastAttachedImplement(vehicle)
+		referenceNode = lastImplement.rootNode
+		self:debug('Using the last implement\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
+	elseif reverserNode then
+		-- if there is a reverser node, use that, mainly because that most likely will turn with an implement
+		-- or with the back component of an articulated vehicle. Just need to find out the distance correctly
+		local dx, _, dz = localToLocal(reverserNode, vehicle.rootNode, 0, 0, 0)
+		local dBetweenRootAndReverserNode = MathUtil.vector2Length(dx, dz)
+		backMarkerOffset = dBetweenRootAndReverserNode - vehicle.sizeLength / 2 - vehicle.lengthOffset
+		referenceNode = reverserNode
+		self:debug('Using the %s node for the rear proximity sensor %d m from root node (%d m between root and reverser)',
+				debugText, backMarkerOffset, dBetweenRootAndReverserNode)
+	else
+		referenceNode = vehicle.rootNode
+		backMarkerOffset = - vehicle.sizeLength / 2 - vehicle.lengthOffset
+		self:debug('Using the vehicle\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
 	end
+	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
+		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, referenceNode)
+	else
+		-- relink to current reference node (in case of implement change for example
+		unlink(vehicle.cp.driver.aiDriverData.backMarkerNode)
+		link(referenceNode, vehicle.cp.driver.aiDriverData.backMarkerNode)
+	end
+	setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, backMarkerOffset)
 end
 
 function AIDriver:getBackMarkerNode(vehicle)
