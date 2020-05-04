@@ -989,7 +989,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 
 		--- Generate second turn circle (Forward)
 		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, center2ZOffset);
-		courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
+		courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, false);
 
 		--- Finish the turn
 		toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, abs(turnInfo.frontMarker) + 5);
