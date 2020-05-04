@@ -600,10 +600,10 @@ function courseplay:toggleDrivingMode(vehicle)
 	courseplay.debugVehicle(12, vehicle, 'Driving mode: %d', vehicle.cp.drivingMode:get())
 end
 
-function courseplay:toggleAutoDriveMode(vehicle)
-	vehicle.cp.settings.autoDriveMode:next()
-	courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.settings.autoDriveMode:get())
-end
+--function courseplay:toggleAutoDriveMode(vehicle)
+	--vehicle.cp.settings.autoDriveMode:next()
+	--courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.settings.autoDriveMode:get())
+--end
 
 function courseplay:toggleAlignmentWaypoint( vehicle )
 	vehicle.cp.alignment.enabled = not vehicle.cp.alignment.enabled
@@ -2635,8 +2635,11 @@ RidgeMarkersAutomatic = CpObject(BooleanSetting)
 function RidgeMarkersAutomatic:init()
 	BooleanSetting.init(self, 'ridgeMarkersAutomatic', 'COURSEPLAY_RIDGEMARKERS',
 			'COURSEPLAY_YES_NO_RIDGEMARKERS', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
+end
 
-end ---@class ShowMiniHud : BooleanSetting
+---@class ShowMiniHud : BooleanSetting
 ShowMiniHud = CpObject(BooleanSetting)
 function ShowMiniHud:init()
 	BooleanSetting.init(self, 'showMiniHud', 'COURSEPLAY_SHOW_MINI_HUD',
@@ -2662,6 +2665,16 @@ function WorkerWages:init()
 			{'50%', '100%', '250%', '500%', '1000%'}
 		)
 	self:set(100)
+end
+
+---@class AutoDrive : SettingList
+AutoDriveModeSetting = CpObject(SettingList)
+function AutoDriveModeSetting:init()
+	SettingList.init(self, 'autoDriveModeSetting', 'COURSEPLAY_AUTODRIVE_MODE', 'COURSEPLAY_AUTODRIVE_MODES_TOOLTIP', nil,
+			{ 1, 2, 3, 4},
+			{'COURSEPLAY_AUTODRIVE_DONT_USE', 'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL', 'COURSEPLAY_AUTODRIVE_PARK', 'COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK',  }
+		)
+	self:set(1)
 end
 
 ---@class SelfUnloadSetting : BooleanSetting
