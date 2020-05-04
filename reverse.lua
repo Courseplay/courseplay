@@ -12,17 +12,11 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 	end
 
 	local waypoints, index
-	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
-		-- when the AI Driver is driving we want to use the course set up by the driver and not the legacy
-		-- global variable
-		-- TODO: fix missing encapsulation
-		index = math.min(vehicle.cp.driver.ppc:getCurrentWaypointIx() + 1, vehicle.cp.driver.ppc.course:getNumberOfWaypoints())
-		waypoints = vehicle.cp.driver:getCurrentCourse().waypoints
-	else
-		-- get rid of this part once we have only AI driver
-		index = vehicle.cp.waypointIndex + 1;
-		waypoints = vehicle.Waypoints
-	end
+	-- when the AI Driver is driving we want to use the course set up by the driver and not the legacy
+	-- global variable
+	-- TODO: fix missing encapsulation
+	index = math.min(vehicle.cp.driver.ppc:getCurrentWaypointIx() + 1, vehicle.cp.driver.ppc.course:getNumberOfWaypoints())
+	waypoints = vehicle.cp.driver:getCurrentCourse().waypoints
 
 	local fwd = false;
 	local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle) or vehicle.cp.workTools[1];
@@ -188,13 +182,6 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			-- SWITCH TO FORWARD
 			elseif waypoints[i-1].rev and not waypoints[i].rev then
 				if distance <= 2 then
-					if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
-						-- Don't do anything, PPC takes care of this
-						--vehicle.cp.driver:resumeAtOriginalIx(vehicle.cp.waypointIndex)
-					else
-						courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
-						vehicle.cp.ppc:initialize()
-					end
 					courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), 13);
 				end;
 				break;

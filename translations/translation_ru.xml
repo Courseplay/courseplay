@@ -274,7 +274,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="продолжить маршрут" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="с ближайшей подходящей точки" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Разгрузка" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать поле:" />
 		<text name="COURSEPLAY_FIELD" 										text="поле №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(загруженный маршрут)" />
@@ -435,11 +435,15 @@
 		<text name="COURSEPLAY_EARN_WAGES"									text="Зарплата рабочим на Courseplay" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Переход между техникой по клику" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него." />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Всегда высталять трубу" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"							text="Всегда выставлять трубу" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Держать трубу разложенной, если комбайн ждёт разгрузки." />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него" />
-		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
-		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Отобразить Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Переключение видимости Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on headland" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"					text="заблаговременно" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"					text="с опозданием" />
@@ -448,13 +452,13 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"						text="Опускать оборудование" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Опускать оборудование при начале прохода или в конце разворота на поворотной полосе." />
 
-		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"					text="Поиск пути при поворотах" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"					text="Поиск пути при разворотах" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Использовать поиск пути на полях непрямоугольной формы, например, чтобы проехать на поворотной полосе до следующего ряда." />
 		<text name="COURSEPLAY_WORKER_WAGES"								text="Уровень зарплаты на Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Заработная плата рабочего на Courseplay в процентах от заработной платы обычного работника." />
 		<text name="COURSEPLAY_SELF_UNLOAD"									text="Саморазгрузка комбайна" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Саморазгрузка комбайна при заполнении и наличии поблизости прицепа." />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"		text="Задний ход при повороте" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"		text="Задний ход при развороте" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Разрешить искать траекторию поворота, для которой потребуется движения задним ходом (только с небуксируемыми орудиями)." />
 <!-- Replace marker, do not remove! --></texts>
 </l10n>

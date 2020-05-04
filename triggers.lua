@@ -130,8 +130,9 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
 					-- check trigger fillLevel / capacity
 					if trigger.unloadingStation then
-						local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType,1)
-						local capacity = trigger.unloadingStation:getCapacity(trailerFillType,1)
+						local ownerFarmId = self:getOwnerFarmId();
+						local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
+						local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
 						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d '):format(tostring(triggerId), fillLevel, capacity), 1);
 						if fillLevel>=capacity then
 							courseplay:debug(('    trigger (%s) Trigger is full -> abort'):format(tostring(triggerId)), 1);

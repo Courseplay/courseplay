@@ -799,7 +799,7 @@ function AIDriver:setUpAlignmentCourse(course, ix)
 		return nil
 	end
 	self:debug('Alignment course with %d waypoints started.', #alignmentWaypoints)
-	return Course(self.vehicle, courseGenerator.pointsToXzInPlace(alignmentWaypoints), true)
+		return Course(self.vehicle, courseGenerator.pointsToXzInPlace(alignmentWaypoints), true)
 end
 
 function AIDriver:debug(...)
@@ -947,7 +947,6 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				
 				--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
 				if (foundHeap or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
-					courseplay.debugVehicle(2,self.vehicle,'foundHeap(%s) or z(%s) >= 0  --> readyToDischarge ',tostring(foundHeap),tostring(z))
 					stopForTipping = true
 					readyToDischarge = true
 				end
@@ -963,10 +962,13 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				end
 				
 				--when we can tip again, stop the movement
-				if g_updateLoopIndex % 100 == 0 and self.pullForward and isTipping then
+				if g_updateLoopIndex % 50 == 0 and self.pullForward and isTipping then
 					self.pullForward = false
 				end
-				
+
+				self:debugSparse('foundHeap(%s) z(%s) readyToDischarge(%s) isTipping(%s) pullForward(%s)',
+						tostring(foundHeap), tostring(z), tostring(readyToDischarge), tostring(isTipping), tostring(self.pullForward))
+
 				--ready with tipping, go forward on the course
 				if tipper.cp.fillLevel == 0 then
 					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
@@ -1013,7 +1015,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 		end
 	end
 	
-	return not stopForTipping,takeOverSteering
+	return not stopForTipping, takeOverSteering
 end
 
 function AIDriver:checkForHeapBehindMe(tipper)
@@ -1220,8 +1222,9 @@ function AIDriver:tipTriggerIsFull(trigger,tipper)
 	local trigger = self.vehicle.cp.currentTipTrigger
 	local trailerFillType = tipper.cp.fillType
 	if trigger and trigger.unloadingStation then
-		local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType,1)
-		local capacity = trigger.unloadingStation:getCapacity(trailerFillType,1)
+		local ownerFarmId = self.vehicle.getOwnerFarmId(self.vehicle);
+		local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
+		local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
 		courseplay.debugVehicle(2,self.vehicle,'    trigger (%s) fillLevel=%d, capacity=%d ',tostring(trigger.triggerId), fillLevel, capacity);
 		if fillLevel>=capacity then
 			courseplay.debugVehicle(2, self.vehicle,'    trigger (%s) Trigger is full',tostring(triggerId));
@@ -1352,9 +1355,12 @@ function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fie
 			self.waypointIxAfterPathfinding = ix
 			local done, path
 			self.pathfindingStartedAt = self.vehicle.timer
-			local courseOffsetX, courseOffsetZ = course:getOffset()
+			local courseOffsetX, courseOffsetZ = 0, 0
+			if course then
+				courseOffsetX, courseOffsetZ = course:getOffset()
+			end
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-					self.vehicle, waypoint, courseOffsetX,courseOffsetZ + zOffset or 0, self.allowReversePathfinding, fieldNum)
+					self.vehicle, waypoint, courseOffsetX,courseOffsetZ + (zOffset or 0), self.allowReversePathfinding, fieldNum)
 			if done then
 				return self:onPathfindingDone(path)
 			else
@@ -1615,26 +1621,57 @@ end
 -- Put a node on the back of the vehicle for easy distance checks use this instead of the root/direction node
 -- TODO: check for towed implements/trailers
 function AIDriver:setBackMarkerNode(vehicle)
-	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
-		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, vehicle.rootNode)
+
+	local backMarkerOffset = 0
+	local referenceNode
+	local reverserNode, debugText = AIDriverUtil.getReverserNode(self.vehicle)
+	if AIDriverUtil.hasImplementsOnTheBack(vehicle) then
+		local lastImplement
+		lastImplement, backMarkerOffset = AIDriverUtil.getLastAttachedImplement(vehicle)
+		referenceNode = lastImplement.rootNode
+		self:debug('Using the last implement\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
+	elseif reverserNode then
+		-- if there is a reverser node, use that, mainly because that most likely will turn with an implement
+		-- or with the back component of an articulated vehicle. Just need to find out the distance correctly
+		local dx, _, dz = localToLocal(reverserNode, vehicle.rootNode, 0, 0, 0)
+		local dBetweenRootAndReverserNode = MathUtil.vector2Length(dx, dz)
+		backMarkerOffset = dBetweenRootAndReverserNode - vehicle.sizeLength / 2 - vehicle.lengthOffset
+		referenceNode = reverserNode
+		self:debug('Using the %s node for the rear proximity sensor %d m from root node (%d m between root and reverser)',
+				debugText, backMarkerOffset, dBetweenRootAndReverserNode)
+	else
+		referenceNode = vehicle.rootNode
+		backMarkerOffset = - vehicle.sizeLength / 2 - vehicle.lengthOffset
+		self:debug('Using the vehicle\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
 	end
-	setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, - vehicle.sizeLength / 2 - vehicle.lengthOffset)
+	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
+		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, referenceNode)
+	else
+		-- relink to current reference node (in case of implement change for example
+		unlink(vehicle.cp.driver.aiDriverData.backMarkerNode)
+		link(referenceNode, vehicle.cp.driver.aiDriverData.backMarkerNode)
+	end
+	setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, backMarkerOffset)
 end
 
 function AIDriver:getBackMarkerNode(vehicle)
 	return vehicle.cp.driver.aiDriverData.backMarkerNode
 end
 
--- Put a node on the front of the tractor for easy distance checks use this instead of the root/direction node
+-- Put a node on the front of the vehicle for easy distance checks use this instead of the root/direction node
 -- TODO: check for implements at front like weights
 function AIDriver:setFrontMarkerNode(vehicle)
+	local firstImplement, frontMarkerOffset = AIDriverUtil.getFirstAttachedImplement(vehicle)
+	self:debug('Using the %s\'s root node for the front proximity sensor, %d m from root node',
+			firstImplement.getName and firstImplement:getName() or 'N/A', frontMarkerOffset)
+
 	if not vehicle.cp.driver.aiDriverData.frontMarkerNode then
 		vehicle.cp.driver.aiDriverData.frontMarkerNode = courseplay.createNode('frontMarkerNode', 0, 0, 0, vehicle.rootNode)
+	else
+		unlink(vehicle.cp.driver.aiDriverData.frontMarkerNode)
+		link(firstImplement.rootNode, vehicle.cp.driver.aiDriverData.frontMarkerNode)
 	end
-	-- set this up for the turns
-	local _, _, dz = localToLocal(vehicle.cp.driver.aiDriverData.frontMarkerNode, vehicle.rootNode, 0, 0, 0)
-	self.frontMarkerDistance = dz
-	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, vehicle.sizeLength / 2 + vehicle.lengthOffset)
+	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, frontMarkerOffset)
 end
 
 function AIDriver:getFrontMarkerNode(vehicle)

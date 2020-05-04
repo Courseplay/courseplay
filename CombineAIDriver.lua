@@ -134,14 +134,16 @@ function CombineAIDriver:init(vehicle)
 	end
 
 	-- distance keep to the right when pulling back to make room for the tractor
-	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 2
+	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 3
 	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
 	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
-	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter * 0.7
+	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7
 	-- and back up another bit
-	self.pullBackDistanceEnd = self.pullBackDistanceStart + 10
+	self.pullBackDistanceEnd = self.pullBackDistanceStart + 5
 	-- when making a pocket, how far to back up before changing to forward
 	self.pocketReverseDistance = 25
+	-- register ourselves at our boss
+	g_combineUnloadManager:addCombineToList(self.vehicle)
 end
 
 function CombineAIDriver:start(startingPoint)
@@ -272,6 +274,7 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 			-- is our pipe in the fruit? (assuming pipe is on the left side)
 			local pullBackCourse = self:createPullBackCourse()
 			if pullBackCourse then
+				pullBackCourse:print()
 				self:debug('Pipe in fruit, pulling back to make room for unloading')
 				self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 				self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_STOP
@@ -279,7 +282,7 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 				self.ixAfterPullBack = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
 				-- tighter turns
 				self.ppc:setShortLookaheadDistance()
-				self:startCourse(pullBackCourse, 1, self.course, self.ixAfterPullBack)
+				self:startCourse(pullBackCourse, 1)
 			else
 				-- revert to normal behavior
 				UnloadableFieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
@@ -337,13 +340,14 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 		-- TODO: instead of just wait a few seconds we could check if the unloader has actually left
 		if self.waitingForUnloaderSince + 5000 < self.vehicle.timer then
 			if self.stateBeforeWaitingForUnloaderToLeave == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK then
-				local pullBackReturnCourse  = self:createPullBackReturnCourse()
+				local pullBackReturnCourse = self:createPullBackReturnCourse()
 				if pullBackReturnCourse then
 					self.fieldWorkUnloadOrRefillState = self.states.RETURNING_FROM_PULL_BACK
 					self:debug('Unloading finished, returning to fieldwork on return course')
 					self:startCourse(pullBackReturnCourse, 1, self.courseAfterPullBack, self.ixAfterPullBack)
 				else
 					self:debug('Unloading finished, returning to fieldwork directly')
+					self:startCourse(self.courseAfterPullBack, self.ixAfterPullBack)
 					self.ppc:setNormalLookaheadDistance()
 					self:changeToFieldwork()
 				end
@@ -381,14 +385,21 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 	end
 end
 
+function CombineAIDriver:onLastWaypoint()
+	if self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+			self.fieldWorkUnloadOrRefillState == self.states.PULLING_BACK_FOR_UNLOAD then
+		-- pulled back, now wait for unload
+		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK
+		self:debug('Pulled back, now wait for unload')
+		self:setInfoText(self:getFillLevelInfoText())
+	else
+		UnloadableFieldworkAIDriver.onLastWaypoint(self)
+	end
+end
+
 function CombineAIDriver:onNextCourse(ix)
 	if self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
-		if self.fieldWorkUnloadOrRefillState == self.states.PULLING_BACK_FOR_UNLOAD then
-			-- pulled back, now wait for unload
-			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK
-			self:debug('Pulled back, now wait for unload')
-			self:setInfoText(self:getFillLevelInfoText())
-		elseif self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_PULL_BACK then
+		if self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_PULL_BACK then
 			self:debug('Pull back finished, returning to fieldwork')
 			self:changeToFieldwork()
 		elseif self.fieldWorkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD then
@@ -551,25 +562,23 @@ function CombineAIDriver:createPullBackCourse()
 	local dx,_,dz = localDirectionToWorld(self:getDirectionNode(), 0, 0, 1)
 	self.returnPoint.rotation = MathUtil.getYRotationFromDirection(dx, dz)
 	dx,_,dz = localDirectionToWorld(self:getDirectionNode(), 0, 0, -1)
-	local reverseRotation = MathUtil.getYRotationFromDirection(dx, dz)
 
 	local x1, _, z1 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceStart)
 	local x2, _, z2 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceEnd)
 	-- both points must be on the field
 	if courseplay:isField(x1, z1) and courseplay:isField(x2, z2) then
-		local vx, _, vz = getWorldTranslation(self:getDirectionNode())
-		self:debug('%.2f %.2f %d %d', self.returnPoint.rotation, reverseRotation, math.deg(self.returnPoint.rotation), math.deg(reverseRotation))
-		local pullBackWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, vx, vz, x1, z1, reverseRotation, true)
-		if not pullBackWaypoints then
-			self:debug("Can't create alignment course for pull back")
-			return nil
+
+		local referenceNode, debugText = AIDriverUtil.getReverserNode(self.vehicle)
+		if referenceNode then
+			self:debug('Using %s to start pull back course', debugText)
+		else
+			referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
+			self:debug('Using the direction node to start pull back course')
 		end
-		table.insert(pullBackWaypoints, {x = x2, z = z2})
-		-- this is the backing up part, so make sure we are reversing here
-		for _, p in ipairs(pullBackWaypoints) do
-			p.rev = true
-		end
-		return Course(self.vehicle, pullBackWaypoints, true)
+		-- don't make this too complicated, just create a straight line on the left/right side (depending on
+		-- where the pipe is and rely on the PPC, no need for generating fancy curves
+		return Course.createFromNode(self.vehicle, referenceNode,
+				-self.pullBackSideOffset, 0, -self.pullBackDistanceEnd, -2, true)
 	else
 		self:debug("Pull back course would be outside of the field")
 		return nil
@@ -577,14 +586,9 @@ function CombineAIDriver:createPullBackCourse()
 end
 
 function CombineAIDriver:createPullBackReturnCourse()
-	local x1, _, z1 = localToWorld(self:getDirectionNode(), 0, 0, self.pullBackDistanceStart / 2)
-	-- don't need to check if points are on the field, we did it when we got here
-	local pullBackReturnWaypoints = courseplay:getAlignWpsToTargetWaypoint(self.vehicle, x1, z1, self.returnPoint.x, self.returnPoint.z, self.returnPoint.rotation, true)
-	if not pullBackReturnWaypoints then
-		self:debug("Can't create alignment course for pull back return")
-		return nil
-	end
-	return Course(self.vehicle, pullBackReturnWaypoints, true)
+	-- nothing fancy here either, just move forward a few meters before returning to the fieldwork course
+	local referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
+	return Course.createFromNode(self.vehicle, referenceNode, 0, 0, 6, 2, false)
 end
 
 --- Create a temporary course to make a pocket in the fruit on the right (or left), so we can move into that pocket and
@@ -1140,8 +1144,17 @@ function CombineAIDriver:fixDischargeDistance(dischargeNode)
 	end
 end
 
-function CombineAIDriver:getPipeOffset()
-	return self.pipeOffsetX, self.pipeOffsetZ
+---@param additionalOffsetX number add this to the offsetX if you don't want to be directly under the pipe. If
+--- greater than 0, it'll make the pipe longer, less than zero shorter
+function CombineAIDriver:getPipeOffset(additionalOffsetX)
+	additionalOffsetX = additionalOffsetX or 0
+	local pipeOffsetX
+	if self.pipeOffsetX < 0 then
+		pipeOffsetX = self.pipeOffsetX - additionalOffsetX
+	else
+		pipeOffsetX = self.pipeOffsetX + additionalOffsetX
+	end
+	return pipeOffsetX, self.pipeOffsetZ
 end
 
 --- Pipe side offset relative to course. This is to help the unloader

@@ -113,7 +113,7 @@ function DevHelper:overlapBoxCallback(transformId)
         if collidingObject.getRootVehicle then
             text = 'vehicle' .. collidingObject:getName()
         else
-            text = collidingObject:getName()
+            text = collidingObject.getName and collidingObject:getName() or 'N/A'
         end
     else
         text = ''

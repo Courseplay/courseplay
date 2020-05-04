@@ -47,10 +47,11 @@ function CombineUnloadManager:init()
 	self.combines = {}
 	self.unloadersOnFields ={}
 	if g_currentMission then
-		-- this isn't needed as combines will be added when they are registered
+		-- this isn't needed as combines will be added when an CombineAIDriver is created for them
 		-- but we want to be able to reload this file on the fly when developing/troubleshooting
 		for _, vehicle in pairs(g_currentMission.vehicles) do
-			if courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) then
+			self:debug('Checking %s', vehicle:getName())
+			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineAIDriver) then
 				self:addCombineToList(vehicle)
 			end
 		end
@@ -64,11 +65,6 @@ end
 function CombineUnloadManager:addCombineToList(combine)
 	if combine:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
 		return
-	end
-	-- we only handle combines with CP AIDriver
-	if not combine.cp.driver or not combine.cp.driver:is_a(CombineAIDriver) then
-		self:debug('%s has no combine AI driver, adding it now', combine.name)
-		combine.cp.driver = CombineAIDriver(combine)
 	end
 	self:debug('added %s to list', tostring(combine.name))
 	self.combines[combine]= {
@@ -259,7 +255,21 @@ end
 
 
 function CombineUnloadManager:onUpdate(dt)
+	self:removeInactiveCombines()
 	self:updateCombinesAttributes()
+end
+
+--- Remove everyone from the list who does not have a CombineAIDriver (for instance because the mode was changed)
+function CombineUnloadManager:removeInactiveCombines()
+	local vehiclesToRemove = {}
+	for vehicle, _ in pairs (self.combines) do
+		if not vehicle.cp.driver or not vehicle.cp.driver:is_a(CombineAIDriver) then
+			table.insert(vehiclesToRemove, vehicle)
+		end
+	end
+	for _, vehicle in ipairs(vehiclesToRemove) do
+		self:removeCombineFromList(vehicle)
+	end
 end
 
 function CombineUnloadManager:updateCombinesAttributes()
@@ -336,7 +346,7 @@ function CombineUnloadManager:getFieldNumberByCurrentPosition(vehicle)
 end
 
 function CombineUnloadManager:getNumUnloaders(combine)
-	return self.combines[combine] and #self.combines[combine].unloaders
+	return self.combines[combine] and #self.combines[combine].unloaders or 0
 end
 
 function CombineUnloadManager:getUnloadersNumber(unloader, combine)
@@ -383,7 +393,7 @@ function CombineUnloadManager:getPipeOffset(combine)
 		local dnX,dnY,dnZ = getWorldTranslation(dischargeNode)
 		local baseNode = self:getPipesBaseNode(combine)
 		local tX,tY,tZ = getWorldTranslation(baseNode)
-		local pipeOffsetX = worldToLocal(combine.cp.directionNode,tX,tY,tZ)
+		local pipeOffsetX = worldToLocal(combine.rootNode, tX, tY, tZ)
 		local distance = courseplay:distance(dnX,dnZ, tX,tZ)
 		--print(string.format(" pipeOffsetX:%s; distance:%s = %s  measured:%s",tostring(pipeOffsetX),tostring(distance),tostring(distance+pipeOffsetX),tostring(measured)))
 		if pipeOffsetX > 0 then
@@ -490,7 +500,7 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	local rHeightZ = rStartZ + (straightDirZ*boxLength);
 
 	--fruitType
-	local fruitType = combine.spec_combine.lastValidInputFruitType
+	local fruitType = combine.cp.driver.combine.lastValidInputFruitType
 	local hasFruit = false
 	if fruitType == nil or fruitType == 0 then
 		hasFruit,fruitType = courseplay:areaHasFruit(x, z, nil, math.abs(offset), math.abs(offset))

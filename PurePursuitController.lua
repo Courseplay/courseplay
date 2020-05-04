@@ -541,6 +541,9 @@ end
 
 --- Should we be driving in reverse based on the current position on course
 function PurePursuitController:isReversing()
+	if not self.course then
+		printCallstack()
+	end
 	return self.course:isReverseAt(self:getCurrentWaypointIx()) or self.course:switchingToForwardAt(self:getCurrentWaypointIx())
 end
 

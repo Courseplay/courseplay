@@ -72,9 +72,9 @@ end
 --
 
 TrafficController = CpObject()
+TrafficController.debugChannel = 4
 
 function TrafficController:init()
-	print("TrafficController:init()")
 	self.dateFormatString = '%H%M%S'
 	self.prevTimeString = getDate(self.dateFormatString)
 	self.clock = 0
@@ -90,13 +90,13 @@ function TrafficController:init()
 	-- this contains the vehicleId of the blocking vehicle
 	self.blockingVehicleId = {}
 	self.solvers = {}
+	self:debug('Traffic controller initialized')
 end
-
-g_trafficController = TrafficController()
 
 --- Update our clock and take care of stale entries
 -- This should be called once in an update cycle (globally, not vehicle specific)
 function TrafficController:update(dt)
+	-- TODO: use
 	-- The Giants engine does not seem to provide a clock, so implement our own.
 	local currentTimeString = getDate(self.dateFormatString)
 	if self.prevTimeString ~= currentTimeString then
@@ -107,17 +107,7 @@ function TrafficController:update(dt)
 		self:cleanUp()
 	end
 
-	--self.reservations[point.x][point.z].vehicleId
-	for pointX,list in pairs (self.reservations) do
-		for pointZ,data in pairs(list) do
-			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode,pointX*self.gridSpacing,1,pointZ*self.gridSpacing)
-			--cpDebug:drawPoint(pointX*self.gridSpacing+1.5, y+0.2, pointZ*self.gridSpacing+1.5, 0, 0, 100)
-			--cpDebug:drawPoint(pointX*self.gridSpacing+-1.5, y+0.2, pointZ*self.gridSpacing-1.5, 100, 0, 0)
-			cpDebug:drawPoint(pointX*self.gridSpacing, y+0.2, pointZ*self.gridSpacing, 1, 1, 1)
-			--Utils.renderTextAtWorldPosition(pointX*self.gridSpacing,y+0.2,pointZ*self.gridSpacing, tostring(data.vehicleId), getCorrectTextSize(0.012), 0)
-		end
-	end
-
+	self:drawDebugInfo()
 end
 
 --- Make a reservation for the next lookaheadTimeSeconds interval
@@ -433,7 +423,9 @@ function TrafficController:cleanUp(vehicleId)
 			end
 		end
 	end
-	self:debug('Clean up: freed %d tiles, total %d reserved tiles remaining.', nFreedTiles, nTotalReservedTiles)
+	if nFreedTiles > 0 then
+		self:debug('Clean up: freed %d tiles, total %d reserved tiles remaining.', nFreedTiles, nTotalReservedTiles)
+	end
 end
 
 function TrafficController:forwardIterator(from, to)
@@ -456,7 +448,6 @@ function TrafficController:backwardIterator(from)
 	end
 end
 
---- Cancel all reservations for a vehicle
 function TrafficController:__tostring()
 	local result = ''
 	for row = 0, 9 do
@@ -474,5 +465,22 @@ function TrafficController:__tostring()
 end
 
 function TrafficController:debug(...)
-	courseplay:debug(string.format(...), 12)
+	courseplay:debug(string.format(...), self.debugChannel)
 end
+
+function TrafficController:drawDebugInfo()
+	if not courseplay.debugChannels[self.debugChannel] then return end
+		--self.reservations[point.x][point.z].vehicleId
+	for pointX,list in pairs (self.reservations) do
+		for pointZ,data in pairs(list) do
+			local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode,pointX*self.gridSpacing,1,pointZ*self.gridSpacing)
+			--cpDebug:drawPoint(pointX*self.gridSpacing+1.5, y+0.2, pointZ*self.gridSpacing+1.5, 0, 0, 100)
+			--cpDebug:drawPoint(pointX*self.gridSpacing+-1.5, y+0.2, pointZ*self.gridSpacing-1.5, 100, 0, 0)
+			cpDebug:drawPoint(pointX*self.gridSpacing, y+0.2, pointZ*self.gridSpacing, 1, 1, 1)
+			--Utils.renderTextAtWorldPosition(pointX*self.gridSpacing,y+0.2,pointZ*self.gridSpacing, tostring(data.vehicleId), getCorrectTextSize(0.012), 0)
+		end
+	end
+end
+
+g_trafficController = TrafficController()
+
