@@ -437,6 +437,8 @@
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
 		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on Headland" />
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on Headland" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Fertilize Seeder" />
+		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="activate or deactivate the Fertilizer of Seeder" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Vroeg" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Laat" />
