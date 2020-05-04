@@ -12,7 +12,7 @@
     <text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Nombre de tours à effectuer" />
     <text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Réinitialiser le nombre de tours"/>
     <text name="COURSEPLAY_UNLIMITED" 									text="Illimité" />
-    <text name="COURSEPLAY_UNLOADING_SIDE" 						 		text="Côté de l'ouvrier:" />
+    <text name="COURSEPLAY_UNLOADING_SIDE" 						 		text="Côté du déchargement:" />
     <text name="COURSEPLAY_UNLOADING_SIDE_NONE" 						text="Automatique" />
     <text name="COURSEPLAY_LEFT" 							 			text="Gauche" />
     <text name="COURSEPLAY_RIGHT" 							 			text="Droite" />
@@ -134,7 +134,7 @@
     <text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Attend que la position d'attente se libère" />
     <text name="COURSEPLAY_TURNING_TO_COORDS" 					 		text="Tourne en direction de %d %d" />
     <text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 					 		text="Conduit vers le points %d %d" />
-    <text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Attend la fin du remplissage (%s %ds)" />
+    <text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Attend la fin du chargement (%s %ds)" />
     <text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Pas de Batteuse à proximité" />
     <text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Attend que la batteuse finisse de manoeuvrer" />
     <text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Attend le nouveau point" />
@@ -443,10 +443,10 @@
 
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet d'afficher le Mini-HUD" />
-	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on headland" />
-	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
-	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
-    <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Paille dans les fourrières" />
+	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Gestion de la paille lors des manoeuvres. Si activée, la batteuse attend d'avoir déchargée toute la paille avant de commencer sa manoeuvre" />
+	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilization au semis" />
+    <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés de trémis d'engrais" />
 
     <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utiliser des points de références virtuels (PPC) dans les virages" />
     <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de références virtuels (PPC) - pendant les virages" />
