@@ -443,6 +443,10 @@
 
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet d'afficher le Mini-HUD" />
+	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on headland" />
+	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
+	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
+    <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
 
     <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utiliser des points de références virtuels (PPC) dans les virages" />
     <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de références virtuels (PPC) - pendant les virages" />

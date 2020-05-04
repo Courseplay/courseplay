@@ -1252,16 +1252,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'toggleOppositeTurnMode' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPPOSITE_TURN_DIRECTION');
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
-				
-				elseif entry.functionToCall == 'toggleFertilizeOption' then
-					if vehicle.cp.hasFertilizerSowingMachine and not vehicle:getIsCourseplayDriving() then
-						self:enableButtonWithFunction(vehicle,page, 'toggleFertilizeOption')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FERTILIZERFUNCTION');
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.fertilizerEnabled and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-					else
-						self:disableButtonWithFunction(vehicle,page, 'toggleFertilizeOption')
-					end
-										
+														
 				elseif entry.functionToCall == 'changeRefillUntilPct' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
 					vehicle.cp.hud.content.pages[page][line][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
@@ -1283,10 +1274,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
 					end
-
-				elseif entry.functionToCall == 'toggleAutoDriveMode' and vehicle.cp.driver and vehicle.cp.settings.autoDriveMode:isAutoDriveAvailable() then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_AUTODRIVE_MODE');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.autoDriveMode:getText()
 				
 				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
 					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
