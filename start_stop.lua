@@ -134,9 +134,10 @@ function courseplay:start(self)
 				isReversePossible = false
 			end
 		end
-				
+
+		-- TODO: this must be moved to the AIDriver somewhere, has nothing to do here...
 		if workTool.spec_sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
-			workTool.fertilizerEnabled = self.cp.fertilizerEnabled
+			workTool.fertilizerEnabled = self.cp.settings.sowingMachineFertilizerEnabled:is(true)
 		end	
 		
 		if workTool.cp.isSugarCaneAugerWagon then

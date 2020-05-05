@@ -2522,8 +2522,7 @@ function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
 	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 6, 1 )
-	self:addRowButton(vehicle,'toggleFertilizeOption', 3, 7, 1 )
-	
+
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
