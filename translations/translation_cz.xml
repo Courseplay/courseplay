@@ -436,12 +436,12 @@
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Kliknutím přepnete na vybrané vozidlo" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Stále otevřený komín" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Otevřít komín, když kombajn čeká na vykládku" />
-		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
-		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on headland" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
-		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
-        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zobrazit Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Přepnout zobrazení Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Sláma na souvrati" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Zapnout vypnout pouštění slámy na souvrati" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Přihnojování při setí />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Zapnout vypnout přijnojování u secího stroje" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Brzy" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Pozdě" />
