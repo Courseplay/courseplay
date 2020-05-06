@@ -1868,22 +1868,6 @@ function courseplay:getIsActivatable(superFunc,objectToFill)
 end
 LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActivatable,courseplay.getIsActivatable)
 
--- LoadTrigger doesn't allow filling non controlled tools
-function courseplay:onActivateObject(superFunc,vehicle)
-	if vehicle~= nil then
-		--if i'm in the vehicle, all is good and I can use the normal function, if not, i have to cheat:
-		if g_currentMission.controlledVehicle ~= vehicle then
-			local oldControlledVehicle = g_currentMission.controlledVehicle;
-			g_currentMission.controlledVehicle = vehicle;
-			superFunc(self);
-			g_currentMission.controlledVehicle = oldControlledVehicle;
-			return;
-		end
-	end
-	superFunc(self);
-end
-LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,courseplay.onActivateObject)
-
 -- TODO: make these part of AIDriver
 
 function courseplay:setWaypointIndex(vehicle, number,isRecording)
