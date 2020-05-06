@@ -738,15 +738,17 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 				allTrailersFull = false
 				if tipperFillType == FillType.UNKNOWN or tipperFillType == combineFillType or combineFillType == FillType.UNKNOWN then
 					local targetNode = tipper:getFillUnitAutoAimTargetNode(1)
-					if targetNode ~= nil then
+					if targetNode then
 						self.trailerToFill = tipper
 						return targetNode, allTrailersFull
+					else
+						return tipper.rootNode, allTrailersFull
 					end
 				end
 			end
 		end
 	end
-	return nil,allTrailersFull
+	return nil, allTrailersFull
 end
 
 function CombineUnloadAIDriver:getDrivingCoordsBeside()

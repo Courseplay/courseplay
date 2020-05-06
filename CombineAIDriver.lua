@@ -1225,3 +1225,15 @@ function CombineAIDriver:willWaitForUnloadToFinish()
 					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK or
 					self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED)
 end
+
+function CombineAIDriver:setStrawSwath(enable)
+	local strawSwathCanBeEnabled = false
+	local fruitType = g_fruitTypeManager:getFruitTypeIndexByFillTypeIndex(self.vehicle:getFillUnitFillType(self.combine.fillUnitIndex))
+	if fruitType ~= nil and fruitType ~= FruitType.UNKNOWN then
+		local fruitDesc = g_fruitTypeManager:getFruitTypeByIndex(fruitType)
+		if fruitDesc.hasWindrow then
+			strawSwathCanBeEnabled = true
+		end
+	end
+	self.vehicle:setIsSwathActive(enable and strawSwathCanBeEnabled)
+end
