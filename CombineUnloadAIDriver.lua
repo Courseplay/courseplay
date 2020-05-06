@@ -737,9 +737,9 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 			if tipper:getFillUnitFreeCapacity(j) > 0 then
 				allTrailersFull = false
 				if tipperFillType == FillType.UNKNOWN or tipperFillType == combineFillType or combineFillType == FillType.UNKNOWN then
+					self.trailerToFill = tipper
 					local targetNode = tipper:getFillUnitAutoAimTargetNode(1)
 					if targetNode then
-						self.trailerToFill = tipper
 						return targetNode, allTrailersFull
 					else
 						return tipper.rootNode, allTrailersFull
