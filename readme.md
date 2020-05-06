@@ -20,7 +20,7 @@ ___
 
 ## Developer version 
 
-**[Download here](https://github.com/Courseplay/courseplay/releases)**
+**[Download here](https://github.com/Courseplay/courseplay/releases/latest)**
 
 Please be aware you're using a developer version, which may and will contain errors, bugs, mistakes and unfinished code. Chances are you computer will explode when using it. Twice. If you have no idea what "beta", "alpha", or "developer" means and entails, steer clear. The Courseplay team will not take any responsibility for crop destroyed, savegames deleted or baby pandas killed. 
 
@@ -38,9 +38,8 @@ Be as specific as possible:
 ___
 
 ## Credits  
-* Thomas Gärtner
-* Satis
 * Peter Vaiko
+* Tensuko
 * Logo Design by Finals Farming
 ___
 
@@ -49,6 +48,8 @@ Please see [`__Attributions.md`](https://github.com/Courseplay/courseplay/blob/m
 ___
 
 ## Former developers
+* Thomas Gärtner
+* Satis
 * Jakob Tischler  
 * Bastian82
 * Lautschreier
