@@ -1868,40 +1868,6 @@ function courseplay:getIsActivatable(superFunc,objectToFill)
 end
 LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActivatable,courseplay.getIsActivatable)
 
--- LoadTrigger doesn't allow filling non controlled tools
-function courseplay:onActivateObject(superFunc,vehicle)
-	--No vehicle, non-courseplay call so just call default version
-	if vehicle == nil then
-		superFunc(self);
-		return;
-	end
-	--Vehicle present, called from courseplay
-	--Cache giant values to restore later
-	local defaultGetFarmIdFunction = g_currentMission.getFarmId;
-	local oldControlledVehicle = g_currentMission.controlledVehicle;
-
-	--Override farm id to match the calling vehicle (fixes issue when obtaining fill levels)
-	local overriddenFarmIdFunc = function()
-		local ownerFarmId = vehicle:getOwnerFarmId()
-		courseplay:debug(string.format('Overriding farm id during loading to %d', ownerFarmId), 19);
-		return ownerFarmId;
-	end
-	g_currentMission.getFarmId = overriddenFarmIdFunc;
-
-	--Override controlled vehicle if I'm not in it
-	if g_currentMission.controlledVehicle ~= vehicle then
-		g_currentMission.controlledVehicle = vehicle;
-	end
-
-	--Call giant method with new params set
-	superFunc(self);
-	
-	--Restore previous values
-	g_currentMission.getFarmId = defaultGetFarmIdFunction;
-	g_currentMission.controlledVehicle = oldControlledVehicle;
-end
-LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,courseplay.onActivateObject)
-
 -- TODO: make these part of AIDriver
 
 function courseplay:setWaypointIndex(vehicle, number,isRecording)
