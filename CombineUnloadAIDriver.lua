@@ -737,16 +737,18 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 			if tipper:getFillUnitFreeCapacity(j) > 0 then
 				allTrailersFull = false
 				if tipperFillType == FillType.UNKNOWN or tipperFillType == combineFillType or combineFillType == FillType.UNKNOWN then
+					self.trailerToFill = tipper
 					local targetNode = tipper:getFillUnitAutoAimTargetNode(1)
-					if targetNode ~= nil then
-						self.trailerToFill = tipper
+					if targetNode then
 						return targetNode, allTrailersFull
+					else
+						return tipper.rootNode, allTrailersFull
 					end
 				end
 			end
 		end
 	end
-	return nil,allTrailersFull
+	return nil, allTrailersFull
 end
 
 function CombineUnloadAIDriver:getDrivingCoordsBeside()
@@ -1421,11 +1423,11 @@ function CombineUnloadAIDriver:startPathfinding(
 		if type(target) ~= 'number' then
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
 					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding,
-					fieldNum, { vehicleToIgnore }, 10)
+					fieldNum, { vehicleToIgnore }, self.vehicle.cp.realisticDriving and 10 or math.huge)
 		else
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
 					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding,
-					fieldNum, { vehicleToIgnore }, 10)
+					fieldNum, { vehicleToIgnore }, self.vehicle.cp.realisticDriving and 10 or math.huge)
 		end
 		if done then
 			return pathfindingCallbackFunc(self, path)

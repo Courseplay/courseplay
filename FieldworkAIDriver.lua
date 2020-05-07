@@ -288,9 +288,13 @@ end
 
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
-	-- persist last fieldwork waypoint data (for 'start at current waypoint')
-	self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
-	self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
+	-- Issue with persisting fieldwork data in multiplayer, as the client doesn't maintain the fieldworkcourse (client never calls start)
+	-- Persisted fieldwork data isn't needed by the client anyway, as its all handled by the server (also in start)
+	if g_server ~= nil then
+		-- persist last fieldwork waypoint data (for 'start at current waypoint')
+		self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
+		self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
+	end
 	AIDriver.stop(self, msgReference)
 	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
 	self.vehicle.cp.alignment.enabled = self.alignmentEnabled

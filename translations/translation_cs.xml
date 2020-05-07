@@ -432,7 +432,7 @@
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay 赚取工资" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold Pipe" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold pipe" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
 
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />

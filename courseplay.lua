@@ -366,8 +366,7 @@ local function setGlobalData()
 	[87]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
 	[88]={name='self.cp.generationPosition.x',dataFormat='Float'},
 	[89]={name='self.cp.generationPosition.z',dataFormat='Float'},
-	[90]={name='self.cp.fertilizerEnabled',dataFormat='Bool'},
-	[91]={name='self.cp.turnOnField',dataFormat='Bool'}
+	[90]={name='self.cp.turnOnField',dataFormat='Bool'}
 	}
 
 	-- TODO: see where is the best to instantiate these settings. Maybe we need a container for all these

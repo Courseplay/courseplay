@@ -1355,9 +1355,12 @@ function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fie
 			self.waypointIxAfterPathfinding = ix
 			local done, path
 			self.pathfindingStartedAt = self.vehicle.timer
-			local courseOffsetX, courseOffsetZ = course:getOffset()
+			local courseOffsetX, courseOffsetZ = 0, 0
+			if course then
+				courseOffsetX, courseOffsetZ = course:getOffset()
+			end
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-					self.vehicle, waypoint, courseOffsetX,courseOffsetZ + zOffset or 0, self.allowReversePathfinding, fieldNum)
+					self.vehicle, waypoint, courseOffsetX,courseOffsetZ + (zOffset or 0), self.allowReversePathfinding, fieldNum)
 			if done then
 				return self:onPathfindingDone(path)
 			else
@@ -1655,16 +1658,20 @@ function AIDriver:getBackMarkerNode(vehicle)
 	return vehicle.cp.driver.aiDriverData.backMarkerNode
 end
 
--- Put a node on the front of the tractor for easy distance checks use this instead of the root/direction node
+-- Put a node on the front of the vehicle for easy distance checks use this instead of the root/direction node
 -- TODO: check for implements at front like weights
 function AIDriver:setFrontMarkerNode(vehicle)
+	local firstImplement, frontMarkerOffset = AIDriverUtil.getFirstAttachedImplement(vehicle)
+	self:debug('Using the %s\'s root node for the front proximity sensor, %d m from root node',
+			firstImplement.getName and firstImplement:getName() or 'N/A', frontMarkerOffset)
+
 	if not vehicle.cp.driver.aiDriverData.frontMarkerNode then
 		vehicle.cp.driver.aiDriverData.frontMarkerNode = courseplay.createNode('frontMarkerNode', 0, 0, 0, vehicle.rootNode)
+	else
+		unlink(vehicle.cp.driver.aiDriverData.frontMarkerNode)
+		link(firstImplement.rootNode, vehicle.cp.driver.aiDriverData.frontMarkerNode)
 	end
-	-- set this up for the turns
-	local _, _, dz = localToLocal(vehicle.cp.driver.aiDriverData.frontMarkerNode, vehicle.rootNode, 0, 0, 0)
-	self.frontMarkerDistance = dz
-	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, vehicle.sizeLength / 2 + vehicle.lengthOffset)
+	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, frontMarkerOffset)
 end
 
 function AIDriver:getFrontMarkerNode(vehicle)

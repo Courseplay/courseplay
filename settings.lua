@@ -129,10 +129,6 @@ function courseplay:toggleFuelSaveOption(self)
 	self.cp.saveFuelOptionActive = not self.cp.saveFuelOptionActive 
 end
 
-function courseplay:toggleFertilizeOption(self)
-	self.cp.fertilizerEnabled = not self.cp.fertilizerEnabled
-end
-
 function courseplay:toggleRidgeMarkersAutomatic(self)
 	self.cp.ridgeMarkersAutomatic = not self.cp.ridgeMarkersAutomatic
 end
@@ -2612,10 +2608,10 @@ function PipeAlwaysUnfoldSetting:init()
 	self:set(false)
 end
 
----@class FertilizeOption : BooleanSetting
-FertilizeOption = CpObject(BooleanSetting)
-function FertilizeOption:init()
-	BooleanSetting.init(self, 'fertilizeOption', 'COURSEPLAY_FERTILIZE_OPTION',
+---@class SowingMachineFertilizerEnabled : BooleanSetting
+SowingMachineFertilizerEnabled = CpObject(BooleanSetting)
+function SowingMachineFertilizerEnabled:init()
+	BooleanSetting.init(self, 'sowingMachineFertilizerEnabled', 'COURSEPLAY_FERTILIZE_OPTION',
 				'COURSEPLAY_YES_NO_FERTILIZE_OPTION', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
