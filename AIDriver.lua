@@ -1508,6 +1508,7 @@ function AIDriver:getDriveUnloadNow()
 end
 
 function AIDriver:refreshHUD()
+	HudContentEvent.sendEvent(self.vehicle, 11)
 	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true);
 end
 

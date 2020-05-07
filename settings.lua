@@ -17,6 +17,10 @@ function courseplay:setCpMode(vehicle, modeNum)
 		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
+		if g_server == nil then
+			return
+		end
+		
 		vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
 		--end
 		courseplay:setAIDriver(vehicle, modeNum)

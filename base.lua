@@ -13,6 +13,18 @@ function courseplay:onLoad(savegame)
 	-- vehicle, this is the ugliest hack I've ever seen.
 	self.setCpVar = courseplay.setCpVar;
 	
+	--Multiplayer Sync Tables
+	if self.SyncTableBool == nil then  self.SyncTableBool = {} end 
+	if self.SyncTableInt == nil then  self.SyncTableInt = {} end 
+	if self.SyncTableFloat == nil then  self.SyncTableFloat = {} end 
+	if self.SyncTableString == nil then  self.SyncTableString = {} end 
+	
+	if self.oldSyncTableBool == nil then  self.oldSyncTableBool = {} end 
+	if self.oldSyncTableInt == nil then  self.oldSyncTableInt = {} end 
+	if self.oldSyncTableFloat == nil then  self.oldSyncTableFloat = {} end 
+	if self.oldSyncTableString == nil then  self.oldSyncTableString = {} end 
+	
+	
 	--SEARCH AND SET self.name IF NOT EXISTING
 	if self.name == nil then
 		self.name = courseplay:getObjectName(self, xmlFile);
@@ -22,6 +34,9 @@ function courseplay:onLoad(savegame)
 	self.hasCourseplaySpec = true;
 
 	self.cp.varMemory = {};
+
+	--life hack for now in HUD
+	self.cp.hudDriver = {}
 
 	-- XML FILE NAME VARIABLE
 	if self.cp.xmlFileName == nil then
@@ -108,6 +123,9 @@ function courseplay:onLoad(savegame)
 
 	-- saves the shortest distance to the next waypoint (for recocnizing circling)
 	self.cp.shortestDistToWp = nil
+	
+	--Multiplayer future!
+	self.oldWaypoints = {}
 
 	self.Waypoints = {}
 	self.cp.isEntered = false
@@ -955,7 +973,31 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:onUpdate(dt)
-
+	
+	if g_server then
+		--life hack in HUD
+		courseplay.hud:setVariablesHUD(self) 
+		
+	end
+	
+	if CpManager.isMP and g_server then		
+		VariableSyncEventHelper:setSyncVariables(self)
+		
+--[[	
+		if self.Waypoints ~= nil and self.oldWaypoints ~=nil then
+			for i=1, #(self.Waypoints) do 
+				if self.Waypoints[i] == self.oldWaypoints[i] then
+				
+				else 
+					WaypointSyncEvent.sendEvent(self)
+				end
+			end	
+		end
+]]--
+	end
+	
+	
+	
 	if not self.cp.remoteIsEntered then
 		if self.cp.isEntered ~= Enterable.getIsEntered(self) then
 			--CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",Enterable.getIsEntered(self))
@@ -1281,7 +1323,7 @@ end;
 
 function courseplay:onReadStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
-		
+--[[		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		local value = courseplay.streamDebugRead(streamId, variable.dataFormat)
 		if variable.dataFormat == 'String' and value == 'nil' then
@@ -1290,6 +1332,67 @@ function courseplay:onReadStream(streamId, connection)
 		courseplay:setVarValueFromString(self, variable.name, value)
 	end
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
+]]--
+--------------------- Multiplayer Table sync on Join
+	--Bool
+	for i=1,streamDebugReadInt32(streamId) do 
+		if streamDebugReadBool(streamId) then
+			self.SyncTableBool[i] = nil
+			self.oldSyncTableBool[i] = nil
+		else
+			self.SyncTableBool[i] = streamDebugReadBool(streamId)
+			self.oldSyncTableBool[i] = self.SyncTableBool[i] 
+		end
+	end 
+	
+	--Int
+	for i=1,streamDebugReadInt32(streamId) do 
+		
+		if streamDebugReadBool(streamId) then
+			self.SyncTableInt[i] = nil
+			self.oldSyncTableInt[i] = nil
+		else
+			self.SyncTableInt[i] = streamDebugReadInt32(streamId)
+			self.oldSyncTableInt[i] = self.SyncTableInt[i]
+		end
+	end 
+		
+		--Float
+		
+	for i=1,streamDebugReadInt32(streamId) do 
+		
+		if streamDebugReadBool(streamId) then
+			self.SyncTableFloat[i] = nil
+			self.oldSyncTableFloat[i] =	nil
+		else
+			self.SyncTableFloat[i] = streamDebugReadFloat32(streamId)
+			self.oldSyncTableFloat[i] = self.SyncTableFloat[i] 
+		end
+	end 
+
+	--String
+	
+	for i=1,streamDebugReadInt32(streamId) do 
+		
+		if streamDebugReadBool(streamId) then
+			self.SyncTableString[i] = nil
+			self.oldSyncTableString[i] = nil
+		else
+			self.SyncTableString[i] = streamDebugReadString(streamId)
+			self.oldSyncTableString[i] = self.SyncTableString[i]
+		end
+	end
+	VariableSyncEventHelper:getSyncVariables(self,nil,true)
+
+	-- sync vehicle.cp.waypointIndex
+	local WaypointIndex = streamReadInt32(streamId)
+	if WaypointIndex >=0 then
+		self.cp.waypointIndex = WaypointIndex
+	else
+		self.cp.waypointIndex = nil
+	end 
+-------------------------
+
 
 	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
 	while streamDebugReadBool(streamId) do
@@ -1390,11 +1493,99 @@ end
 
 function courseplay:onWriteStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self).."  base: write stream", 5)
-		
+--[[		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
 	end
 	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
+]]--
+--------------------- Multiplayer Table sync on Join
+	VariableSyncEventHelper:setSyncVariables(self,true)
+
+	local lengthSyncTableBool = #self.SyncTableBool
+	local lengthSyncTableInt = #self.SyncTableInt
+	local lengthSyncTableFloat = #self.SyncTableFloat
+	local lengthSyncTableString = #self.SyncTableString 
+	
+	--Bool
+	streamDebugWriteInt32(streamId,lengthSyncTableBool)
+	for i=1,lengthSyncTableBool do 
+		local isNil = false
+		if self.SyncTableBool[i] == nil then 
+			--self.vehicle.SyncTableBool[i] = false
+			isNil = true
+		end	
+		streamDebugWriteBool(streamId, isNil)
+		if not isNil then
+			streamDebugWriteBool(streamId, self.SyncTableBool[i])
+			self.oldSyncTableBool[i] = self.SyncTableBool[i]
+		else
+			self.oldSyncTableBool[i] = nil
+		end			
+	end 
+	--Int
+	streamDebugWriteInt32(streamId,lengthSyncTableInt)
+	for i=1,lengthSyncTableInt do 
+		local isNil = false
+		if self.SyncTableInt[i] == nil then 
+			--self.vehicle.SyncTableInt[i] = 0
+			isNil = true
+		end	
+		streamDebugWriteBool(streamId, isNil)
+		if not isNil then
+			streamDebugWriteInt32(streamId, self.SyncTableInt[i])
+			self.oldSyncTableInt[i] = self.SyncTableInt[i]
+		else
+			self.oldSyncTableBool[i] = nil
+		end
+		
+	end 
+
+	--Float
+	streamDebugWriteInt32(streamId,lengthSyncTableFloat)
+	for i=1,lengthSyncTableFloat do 
+		local isNil = false
+		if self.SyncTableFloat[i] == nil then 
+			--self.vehicle.SyncTableFloat[i] = 0
+			isNil = true
+		end	
+		streamDebugWriteBool(streamId, isNil)
+		if not isNil then
+			streamDebugWriteFloat32(streamId, self.SyncTableFloat[i])
+			self.oldSyncTableFloat[i] = self.SyncTableFloat[i]
+		else 
+			self.oldSyncTableFloat[i] = nil
+		end
+		
+	end 
+
+	
+	--String
+	streamDebugWriteInt32(streamId,lengthSyncTableString)
+	for i=1,lengthSyncTableString do 
+		local isNil = false
+		if self.SyncTableString[i] == nil then 
+			--self.vehicle.SyncTableString[i] = "nil"
+			isNil = true
+		end
+		streamDebugWriteBool(streamId, isNil)
+		if not isNil then
+			streamDebugWriteString(streamId, self.SyncTableString[i])
+			self.oldSyncTableString[i] = self.SyncTableString[i]
+		else
+			self.oldSyncTableString[i] = nil
+		end
+	end 
+
+	-- sync vehicle.cp.waypointIndex
+	if self.cp.waypointIndex ~=nil then 
+		streamWriteInt32(streamId,self.cp.waypointIndex)
+	else 
+		streamWriteInt32(streamId,-1)
+	end
+
+-----------------------------------
+
 
 	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
 	for name, setting in pairs(self.cp.settings) do
@@ -1867,6 +2058,26 @@ function courseplay:getIsActivatable(superFunc,objectToFill)
 	return superFunc(self,objectToFill);
 end
 LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActivatable,courseplay.getIsActivatable)
+
+
+-- LoadTrigger doesn't allow filling non controlled tools
+function courseplay:onActivateObject(superFunc,vehicle)
+	if vehicle~= nil then
+		--if i'm in the vehicle, all is good and I can use the normal function, if not, i have to cheat:
+		if g_currentMission.controlledVehicle ~= vehicle then
+			local oldControlledVehicle = g_currentMission.controlledVehicle;
+			g_currentMission.controlledVehicle = vehicle;
+			superFunc(self);
+			g_currentMission.controlledVehicle = oldControlledVehicle;
+			return;
+		end
+	end
+	superFunc(self);
+end
+LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,courseplay.onActivateObject)
+
+
+
 
 -- TODO: make these part of AIDriver
 
