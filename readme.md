@@ -1,4 +1,5 @@
 # Courseplay Six Beta for Farming Simulator 2019
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/courseplay/Courseplay?include_prereleases&style=flat-square)](https://github.com/Courseplay/courseplay/releases/latest) [![GitHub Pre-Releases (by Asset)](https://img.shields.io/github/downloads-pre/Courseplay/courseplay/latest/FS19_Courseplay.zip?style=flat-square)](https://github.com/Courseplay/courseplay/releases/latest/download/FS19_Courseplay.zip) [![GitHub issues](https://img.shields.io/github/issues/Courseplay/courseplay?style=flat-square)](https://github.com/Courseplay/courseplay/issues)
 
  **[Download the latest developer version](https://github.com/Courseplay/courseplay/releases/latest)** (the file FS19_Courseplay.zip).
 
