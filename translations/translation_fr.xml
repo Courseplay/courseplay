@@ -447,6 +447,7 @@
 	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Gestion de la paille lors des manoeuvres de la batteuse. La batteuse attend d'avoir déchargé toute la paille avant de commencer sa manoeuvre" />
 	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
     <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés d'une trémie ou d'une cuve d'engrais" />
+    <text name="COURSEPLAY_TOGGLE_FERTILIZER"							text="CP: Fertilizer of seeder" />
 
     <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utiliser des points de références virtuels (PPC) dans les virages" />
     <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de références virtuels (PPC) - pendant les virages" />
