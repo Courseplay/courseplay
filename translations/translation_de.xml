@@ -367,7 +367,6 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CP Editor: Loesche Wegpunkt bis Ende" />
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CP Editor: Wegpunkt einfuegen" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP Editor: Wegpunkttyp aendern" />
-		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wartepunkt" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Kreuzungspunkt" />
@@ -444,6 +443,7 @@
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Tool absenken am Ende einer Reihe oder am ende des Vorgewende-Wendemanövers" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Aktiviert oder deaktiviert die Düngefunktion der Sämaschine" />
+		<text name="COURSEPLAY_TOGGLE_FERTILIZER"							text="CP: Düngefunktion der Sämaschine" />
 		
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zeige Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD an/aus" />

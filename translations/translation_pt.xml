@@ -362,7 +362,6 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"						text="Editor Courseplay: Delete all waypoints to end" />  <!-- TODO TRANSLATE: -->
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"						text="Editor Courseplay: Inserir waypoint" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"						text="Editor Courseplay: Mudar tipo de waypoint" />
-		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 							text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 							text="Espera" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Cruzamento" />
@@ -441,6 +440,7 @@
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+		<text name="COURSEPLAY_TOGGLE_FERTILIZER"							text="CP: Fertilizer of seeder" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Cedo" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Tarde" />

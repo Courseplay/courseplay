@@ -365,7 +365,6 @@
     <text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Éditeur Courseplay: Supprimer les points jusqu'à la fin" />
     <text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Éditeur Courseplay: Insérer un point" />
     <text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Éditeur Courseplay: Changer le type de point" />
-    <text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
     <text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
     <text name="COURSEPLAY_EDITOR_WAIT" 								text="Point d'attente" />
     <text name="COURSEPLAY_EDITOR_CROSSING" 							text="Croisement" />
@@ -448,6 +447,7 @@
 	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Gestion de la paille lors des manoeuvres de la batteuse. La batteuse attend d'avoir déchargé toute la paille avant de commencer sa manoeuvre" />
 	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
     <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés d'une trémie ou d'une cuve d'engrais" />
+    <text name="COURSEPLAY_TOGGLE_FERTILIZER"							text="CP: Fertilizer of seeder" />
 
     <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utiliser des points de références virtuels (PPC) dans les virages" />
     <text name="COURSEPLAY_USE_PPC_TURNS_TOOLTIP"						text="Utiliser un meilleur algorithme de localisation de parcours - points de références virtuels (PPC) - pendant les virages" />
