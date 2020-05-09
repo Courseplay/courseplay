@@ -2059,19 +2059,14 @@ function courseplay.hud:updateCourseList(vehicle, page)
 end
 
 function courseplay.hud:updateCombinesList(vehicle,page)
-	vehicle.cp.possibleCombines = {}
-	for combine,data in pairs (g_combineUnloadManager.combines) do
-		local selectedField = vehicle.cp.settings.searchCombineOnField:get()
-		if data.isOnFieldNumber == selectedField or data.isOnFieldNumber == 0 or selectedField ==0 then
-			table.insert(vehicle.cp.possibleCombines,combine)
-		end
-	end
+	vehicle.cp.possibleCombines = g_combineUnloadManager:getPossibleCombines(vehicle)
 	local line = 3
-	for i=1+vehicle.cp.combinesListHUDOffset,#vehicle.cp.possibleCombines do
+	for i= 1 + vehicle.cp.combinesListHUDOffset, #vehicle.cp.possibleCombines do
 		local combine = vehicle.cp.possibleCombines[i]
 		if combine ~= nil then
 			local box = vehicle.cp.assignedCombines[combine] and "[X]"or "[  ]"
-			vehicle.cp.hud.content.pages[page][line][2].text = string.format("%s %s (Feld %d)",box,combine.name,g_combineUnloadManager.combines[combine].isOnFieldNumber)
+			vehicle.cp.hud.content.pages[page][line][2].text = string.format("%s %s (Field %d)",
+					box, combine.name, g_combineUnloadManager:getFieldNumber(combine))
 		end
 		if line == self.numLines then
 			break;

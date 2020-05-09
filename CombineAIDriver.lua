@@ -90,11 +90,6 @@ function CombineAIDriver:init(vehicle)
 	end
 
 	if self.pipe then
-		local dischargeNode = self.combine:getCurrentDischargeNode()
-		self:fixDischargeDistance(dischargeNode)
-		local dx, _, _ = localToLocal(dischargeNode.node, self.vehicle.rootNode, 0, 0, 0)
-		self.pipeOnLeftSide = dx > 0
-		self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
 		-- check the pipe length:
 		-- unfold everything, open the pipe, check the side offset, then close pipe, fold everything back (if it was folded)
 		local wasFolded, wasClosed
@@ -109,12 +104,19 @@ function CombineAIDriver:init(vehicle)
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
 			else
-				-- if there's no animation we have to use this, as seen in the Giants pipe code
+				-- as seen in the Giants pipe code
 				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
 				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
-		self.pipeOffsetX, _, self.pipeOffsetZ = localToLocal(dischargeNode.node, AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
+		local dischargeNode = self.combine:getCurrentDischargeNode()
+		self:fixDischargeDistance(dischargeNode)
+		local dx, _, _ = localToLocal(dischargeNode.node, self.combine.rootNode, 0, 0, 0)
+		self.pipeOnLeftSide = dx > 0
+		self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
+		-- use self.combine so attached harvesters have the offset relative to the harvester's root node
+		-- (and thus, does not depend on the angle between the tractor and the harvester)
+		self.pipeOffsetX, _, self.pipeOffsetZ = localToLocal(dischargeNode.node, self.combine.rootNode, 0, 0, 0)
 		self:debug('Pipe offset: x = %.1f, z = %.1f', self.pipeOffsetX, self.pipeOffsetZ)
 		if wasClosed then
 			if self.pipe.animation.name then
@@ -133,7 +135,7 @@ function CombineAIDriver:init(vehicle)
 		self.pipeOnLeftSide = true
 	end
 
-	-- distance keep to the right when pulling back to make room for the tractor
+	-- distance keepget to the right when pulling back to make room for the tractor
 	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 3
 	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
 	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
@@ -143,7 +145,12 @@ function CombineAIDriver:init(vehicle)
 	-- when making a pocket, how far to back up before changing to forward
 	self.pocketReverseDistance = 25
 	-- register ourselves at our boss
-	g_combineUnloadManager:addCombineToList(self.vehicle)
+	g_combineUnloadManager:addCombineToList(self.vehicle, self)
+end
+
+--- Get the combine object, this can be different from the vehicle in case of tools towed or mounted on a tractor
+function CombineAIDriver:getCombine()
+	return self.combine
 end
 
 function CombineAIDriver:start(startingPoint)
@@ -1144,17 +1151,12 @@ function CombineAIDriver:fixDischargeDistance(dischargeNode)
 	end
 end
 
+--- Offset of the pipe from the combine implement's root node
 ---@param additionalOffsetX number add this to the offsetX if you don't want to be directly under the pipe. If
---- greater than 0, it'll make the pipe longer, less than zero shorter
-function CombineAIDriver:getPipeOffset(additionalOffsetX)
-	additionalOffsetX = additionalOffsetX or 0
-	local pipeOffsetX
-	if self.pipeOffsetX < 0 then
-		pipeOffsetX = self.pipeOffsetX - additionalOffsetX
-	else
-		pipeOffsetX = self.pipeOffsetX + additionalOffsetX
-	end
-	return pipeOffsetX, self.pipeOffsetZ
+--- greater than 0 -> to the left, less than zero -> to the right
+---@param additionalOffsetZ number forward (>0)/backward (<0) offset from the pipe
+function CombineAIDriver:getPipeOffset(additionalOffsetX, additionalOffsetZ)
+	return self.pipeOffsetX + (additionalOffsetX or 0), self.pipeOffsetZ + (additionalOffsetZ or 0)
 end
 
 --- Pipe side offset relative to course. This is to help the unloader
@@ -1236,4 +1238,16 @@ function CombineAIDriver:setStrawSwath(enable)
 		end
 	end
 	self.vehicle:setIsSwathActive(enable and strawSwathCanBeEnabled)
+end
+
+function CombineAIDriver:onDraw()
+
+	if not courseplay.debugChannels[6] then return end
+
+	local dischargeNode = self.combine:getCurrentDischargeNode()
+	if dischargeNode then
+		DebugUtil.drawDebugNode(dischargeNode.node, 'discharge')
+	end
+
+	UnloadableFieldworkAIDriver.onDraw(self)
 end

@@ -686,4 +686,5 @@ function PathfinderUtil.getFieldIdAtWorldPosition(posX, posZ)
             return fieldMapping[1].fieldId
         end
     end
+    return 0
 end
