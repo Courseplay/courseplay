@@ -652,6 +652,7 @@ function CpManager:loadAIDriver()
 	if g_currentMission.controlledVehicle then
 		-- re-instantiate the AIDriver after loaded
 		courseplay:setAIDriver(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.cp.mode)
+		g_combineUnloadManager:addNewCombines()
 	end
 end
 

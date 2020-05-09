@@ -301,6 +301,7 @@ function FieldworkAIDriver:stop(msgReference)
 end
 
 function FieldworkAIDriver:drive(dt)
+	-- TODO: this is also called in UnloadableFieldworkAIDriver
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self:driveFieldwork(dt) then
@@ -452,9 +453,9 @@ end
 function FieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 	if self.stopImplementsWhileUnloadOrRefillOnField then
-		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_STOP
+		self.fieldworkUnloadOrRefillState = self.states.WAITING_FOR_STOP
 	else
-		self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
+		self.fieldworkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
 	end
 end
 
@@ -462,14 +463,14 @@ end
 function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 	-- don't move while empty
 	self:setSpeed(0)
-	if self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_STOP then
+	if self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_STOP then
 		-- wait until we stopped before raising the implements
 		if self:isStopped() then
 			self:debug('implements raised, stop')
 			self:stopWork()
-			self.fieldWorkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
+			self.fieldworkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
 		end
-	elseif self.fieldWorkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
+	elseif self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
 		if self:allFillLevelsOk() and not self.heldForUnloadRefill then
 			self:debug('unloaded, continue working')
 			-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
@@ -630,18 +631,6 @@ function FieldworkAIDriver:shouldReturnToFirstPoint()
 		self:debug('Not returning to first point.')
 		return false
 	end
-end
-
---- Speed on the field when not working
-function FieldworkAIDriver:getFieldSpeed()
-	return self.vehicle.cp.speeds.field
-end
-
--- Speed on the field when working
-function FieldworkAIDriver:getWorkSpeed()
-	-- use the speed limit supplied by Giants for fieldwork
-	local speedLimit = self.vehicle:getSpeedLimit() or math.huge
-	return math.min(self.vehicle.cp.speeds.field, speedLimit)
 end
 
 --- Pass on self.speed set elsewhere to the AIDriver.

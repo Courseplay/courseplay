@@ -359,7 +359,6 @@ function CombineHeadlandTurn:turn(dt)
 	AITurn.turn(self)
 	local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self.driver:getDirectionNode())
 	local angleToTurnEnd = math.abs(self.turnContext:getAngleToTurnEndDirection(self.driver:getDirectionNode()))
-
 	if self.state == self.states.FORWARD then
 		self:setForwardSpeed()
 		if angleToTurnEnd > self.angleToTurnInReverse then --and not self.turnContext:isLateralDistanceLess(dx, self.dxToStartReverseTurn) then
