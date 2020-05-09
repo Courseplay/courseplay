@@ -496,7 +496,7 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 
 		--Driver Actions:		
 		elseif actionName == 'COURSEPLAY_CANCELWAIT' and
-			(vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting()) then
+			((vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting())) then
 			vehicle:setCourseplayFunc('cancelWait', true, false, 1);
 		elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
 			vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
