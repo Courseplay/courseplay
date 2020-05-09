@@ -110,7 +110,8 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
     <action name="COURSEPLAY_EDITOR_DELETE_TO_START" axisType="HALF"  />
     <action name="COURSEPLAY_EDITOR_DELETE_TO_END" axisType="HALF"  />
     <action name="COURSEPLAY_EDITOR_INSERT_WAYPOINT" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  />    
+    <action name="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  /> 
+	<action name="COURSEPLAY_TOGGLE_FERTILIZER" axisType="HALF" />
     </actions>
 
 	<inputBinding>
@@ -194,6 +195,9 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_TOGGLE_FERTILIZER">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
     </inputBinding>
