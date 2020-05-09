@@ -524,7 +524,6 @@ function courseplay.hud:renderHud(vehicle)
 	-- self = courseplay.hud
 
 	-- SEEDUSAGECALCULATOR
-	-- Do we realy want to keep this, when GC got a Calculator for all kind of filltypes ?
 	if vehicle.cp.suc.active then
 		vehicle.cp.hud.suc:render();
 		if vehicle.cp.suc.selectedFruit.overlay then
@@ -863,6 +862,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS');
 					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS_MODE_' .. vehicle.cp.warningLightsMode);
 				
+				elseif entry.functionToCall == 'toggleOpenHudWithMouse' then
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPEN_HUD_MODE');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.hud.openWithMouse and courseplay.inputBindings.mouse.secondaryTextI18n or courseplay.inputBindings.keyboard.openCloseHudTextI18n;
+
 				elseif entry.functionToCall == 'toggleIngameMapIconShowText' then
 					if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT');
@@ -2336,6 +2339,8 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	--page 6 general settings
 	self:enablePageButton(vehicle, 6)
 	self:setupDebugButtons(vehicle, 6)
+	self:addRowButton(vehicle,'toggleShowMiniHud', 6, 1, 1 )
+	self:addRowButton(vehicle,'toggleOpenHudWithMouse', 6, 2, 1 )
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
 	self:addRowButton(vehicle,'toggleIngameMapIconShowText', 6, 4, 1 )
 	self:addRowButton(vehicle,'openAdvancedSettingsDialog', 6, 5, 1 ):setOnlyCallLocal()
