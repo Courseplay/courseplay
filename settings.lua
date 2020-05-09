@@ -583,10 +583,6 @@ function courseplay:changeWarningLightsMode(vehicle, changeBy)
 	vehicle.cp.warningLightsMode = MathUtil.clamp(vehicle.cp.warningLightsMode + changeBy, courseplay.lights.WARNING_LIGHTS_NEVER, courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS);
 end;
 
-function courseplay:toggleOpenHudWithMouse(vehicle)
-	vehicle.cp.hud.openWithMouse = not vehicle.cp.hud.openWithMouse;
-end;
-
 function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
@@ -2631,14 +2627,34 @@ RidgeMarkersAutomatic = CpObject(BooleanSetting)
 function RidgeMarkersAutomatic:init()
 	BooleanSetting.init(self, 'ridgeMarkersAutomatic', 'COURSEPLAY_RIDGEMARKERS',
 			'COURSEPLAY_YES_NO_RIDGEMARKERS', nil)
+	self:set(false)
+end 
 
-end ---@class ShowMiniHud : BooleanSetting
+---@class ShowMiniHud : BooleanSetting
 ShowMiniHud = CpObject(BooleanSetting)
 function ShowMiniHud:init()
 	BooleanSetting.init(self, 'showMiniHud', 'COURSEPLAY_SHOW_MINI_HUD',
 				'COURSEPLAY_YES_NO_SHOW_MINI_HUD', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
+end
+
+---@class EnableOpenHudWithMouseGlobal : BooleanSetting
+EnableOpenHudWithMouseGlobal = CpObject(BooleanSetting)
+function EnableOpenHudWithMouseGlobal:init()
+	BooleanSetting.init(self, 'enableOpenHudWithMouseGlobal', 'COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL',
+				'COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(true)
+end
+
+---@class EnableOpenHudWithMouseVehicle : BooleanSetting
+EnableOpenHudWithMouseVehicle = CpObject(BooleanSetting)
+function EnableOpenHudWithMouseVehicle:init()
+	BooleanSetting.init(self, 'enableOpenHudWithMouseVehicle', 'COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE',
+				'COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(true)
 end
 
 ---@class EarnWagesSetting : BooleanSetting

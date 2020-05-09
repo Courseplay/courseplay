@@ -377,6 +377,7 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(WorkerWages)
 	courseplay.globalSettings:addSetting(ClickToSwitchSetting)
 	courseplay.globalSettings:addSetting(ShowMiniHud)
+	courseplay.globalSettings:addSetting(EnableOpenHudWithMouseGlobal)
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;
