@@ -441,6 +441,10 @@
     <text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Cliquez sur un vehicle pour y prendre place" />
 	<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Goulotte toujours dépliée" />
 	<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="La goulotte de la batteuse se déplie lorsqu'elle est pleine ou qu'elle a terminé son travail. Elle est dans ce cas à l'arrêt et attend une remorque" />
+  <text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
 
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet l'affichage du Mini-HUD" />
