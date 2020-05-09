@@ -11,7 +11,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and vehicle:getIsEntered() then
 		if vehicle.cp.hud.show then
 			courseplay:setMouseCursor(vehicle, not vehicle.cp.mouseCursorActive);
-		elseif not vehicle.cp.hud.show and courseplay.globalSettings.enableOpenHudWithMouseGlobal:is(true) and vehicle.cp.settings.enableOpenHudWithMouseVehicle:is(true) then
+		elseif not vehicle.cp.hud.show and vehicle.cp.hud.openWithMouse then
 			courseplay:openCloseHud(vehicle, true)
 		end;
 	end;

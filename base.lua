@@ -585,7 +585,6 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(StopForUnloadSetting, self)
 	self.cp.settings:addSetting(StrawOnHeadland, self)
 	self.cp.settings:addSetting(SowingMachineFertilizerEnabled, self)
-	self.cp.settings:addSetting(EnableOpenHudWithMouseVehicle, self)
 end;
 
 function courseplay:onPostLoad(savegame)
