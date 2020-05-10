@@ -367,6 +367,7 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Excluir todos os waypoints até o fim" />
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Inserir waypoint" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Alterar tipo de waypoint" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Esperar" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Cruzamento" />
@@ -440,6 +441,11 @@
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Ligar / desligar a descarga de palha na cabeceira" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizante da semeadeira" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Ativar ou desativar a função fertilizante da semeadeira" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Primeiro" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Último" />

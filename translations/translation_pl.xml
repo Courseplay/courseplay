@@ -367,6 +367,7 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Edytor: Usuń wszystkie punkty do końca" />
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Edytor: Wstaw punkt trasy" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Edytor: Zmień typ punktu trasy" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normalny" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Oczekiwania" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Skrzyżowania" />
@@ -437,10 +438,16 @@
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Rura rozłożona, gdy kombajn czeka na rozładunek" />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Pokaż Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Przełączanie Mini-HUDa" />
+
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+
 		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Wyładunek słomy na uwrociach" />
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Włącza/Wyłącza wyładunek słomy na uwrociach" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Nawożenie w siewniku" />
-        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Włącza/Wyłącza funkcję nawożenia w siewniku" />
+    <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Włącza/Wyłącza funkcję nawożenia w siewniku" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Wcześniej" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Później" />
