@@ -186,9 +186,6 @@ end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
 	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
-function courseplay:isBigM(workTool)
-	return workTool.cp.hasSpecializationDrivable and courseplay:isMower(workTool);
-end;
 function courseplay:isCombine(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;

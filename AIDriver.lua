@@ -240,6 +240,7 @@ function AIDriver:dismiss()
 	if self.collisionDetector then
 		self.collisionDetector:reset()		-- restore the default direction of the colli boxes
 	end
+	self:resetTrafficControl()
 	self.vehicle:setBeaconLightsVisibility(false)
 	self:clearAllInfoTexts()
 	self:stop()
