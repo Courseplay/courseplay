@@ -649,6 +649,32 @@ function courseplay:printTipTriggersFruits(trigger)
 	end
 end;
 
+-- Custom version of trigger:onActivateObject to allow activating for a non-controlled vehicle
+function courseplay:activateTriggerForVehicle(trigger, vehicle)
+	--Cache giant values to restore later
+	local defaultGetFarmIdFunction = g_currentMission.getFarmId;
+	local oldControlledVehicle = g_currentMission.controlledVehicle;
+
+	--Override farm id to match the calling vehicle (fixes issue when obtaining fill levels)
+	local overriddenFarmIdFunc = function()
+		local ownerFarmId = vehicle:getOwnerFarmId()
+		courseplay.debugVehicle(19, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
+		return ownerFarmId;
+	end
+	g_currentMission.getFarmId = overriddenFarmIdFunc;
+
+	--Override controlled vehicle if I'm not in it
+	if g_currentMission.controlledVehicle ~= vehicle then
+		g_currentMission.controlledVehicle = vehicle;
+	end
+
+	--Call giant method with new params set
+	trigger:onActivateObject();
+
+	--Restore previous values
+	g_currentMission.getFarmId = defaultGetFarmIdFunction;
+	g_currentMission.controlledVehicle = oldControlledVehicle;
+end
 
 
 --------------------------------------------------

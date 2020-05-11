@@ -1,6 +1,7 @@
 # Courseplay Six Beta for Farming Simulator 2019
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/courseplay/Courseplay?include_prereleases&style=flat-square)](https://github.com/Courseplay/courseplay/releases/latest) [![GitHub Pre-Releases (by Asset)](https://img.shields.io/github/downloads-pre/Courseplay/courseplay/latest/FS19_Courseplay.zip?style=flat-square)](https://github.com/Courseplay/courseplay/releases/latest/download/FS19_Courseplay.zip) [![GitHub issues](https://img.shields.io/github/issues/Courseplay/courseplay?style=flat-square)](https://github.com/Courseplay/courseplay/issues)
 
- **[Download the latest developer version](https://github.com/Courseplay/courseplay/releases)** (the file Courseplay_[version].zip).
+ **[Download the latest developer version](https://github.com/Courseplay/courseplay/releases/latest)** (the file FS19_Courseplay.zip).
 
 ## Note that the current version has limited multiplayer support!
 
@@ -20,7 +21,7 @@ ___
 
 ## Developer version 
 
-**[Download here](https://github.com/Courseplay/courseplay/releases)**
+**[Download here](https://github.com/Courseplay/courseplay/releases/latest)**
 
 Please be aware you're using a developer version, which may and will contain errors, bugs, mistakes and unfinished code. Chances are you computer will explode when using it. Twice. If you have no idea what "beta", "alpha", or "developer" means and entails, steer clear. The Courseplay team will not take any responsibility for crop destroyed, savegames deleted or baby pandas killed. 
 
@@ -38,9 +39,8 @@ Be as specific as possible:
 ___
 
 ## Credits  
-* Thomas Gärtner
-* Satis
 * Peter Vaiko
+* Tensuko
 * Logo Design by Finals Farming
 ___
 
@@ -49,6 +49,8 @@ Please see [`__Attributions.md`](https://github.com/Courseplay/courseplay/blob/m
 ___
 
 ## Former developers
+* Thomas Gärtner
+* Satis
 * Jakob Tischler  
 * Bastian82
 * Lautschreier

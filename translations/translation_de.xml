@@ -367,6 +367,7 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CP Editor: Loesche Wegpunkt bis Ende" />
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CP Editor: Wegpunkt einfuegen" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP Editor: Wegpunkttyp aendern" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wartepunkt" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Kreuzungspunkt" />
@@ -432,7 +433,7 @@
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Felder automatisch scannen" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Klick zum einsteigen" />
-		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug zum einsteigen" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug um einzusteigen" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rohr immer ausfahren" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Rohr immer ausfahren, wenn Drescher auf Abfahrer wartet" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="früh" />
@@ -441,9 +442,12 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Tool anheben am Ende einer Reihe oder am start des Vorgewende-Wendemanövers" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Tool absenken" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Tool absenken am Ende einer Reihe oder am ende des Vorgewende-Wendemanövers" />
-		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug um einzusteigen" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Aktiviert oder deaktiviert die Düngefunktion der Sämaschine" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Rechtsklick HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Aktiviert/Deaktiviert den Rechtsklick zum öffnen des HUDs (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Rechtsklick HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Aktiviert/Deaktiviert den Rechtsklick zum öffnen des HUDs (Fahrzeug)" />
 		
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zeige Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD an/aus" />

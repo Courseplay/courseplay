@@ -138,7 +138,8 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 			if fillType == FillType.SEEDS then hasSeeds = true end
 		end
 	end
-	if not allOk and self.vehicle.cp.settings.fertilizeOption:is(false) and hasNoFertilizer and hasSeeds then
+	-- special handling for sowing machines with fertilizer
+	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then
 		self:debugSparse('Has no fertilizer but has seeds so keep working.')
 		allOk = true
 	end

@@ -236,7 +236,7 @@
     <text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nom et Course" />
     <text name="COURSEPLAY_DEACTIVATED" 						 		text="Désactivé" />
     <text name="COURSEPLAY_RIDGEMARKERS" 						 		text="Traceurs:" />
-	<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Gestion automatique des traceurs sur les semoirs" />
+	  <text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Gestion automatique des traceurs sur les semoirs" />
     <text name="COURSEPLAY_UNLOADING_ON_FIELD" 					 		text="Déchargement à la parcelle" />
     <text name="COURSEPLAY_AUTOMATIC" 						 			text="Automatique" />
     <text name="COURSEPLAY_MANUAL" 							 			text="Manuellement" />
@@ -366,7 +366,7 @@
     <text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Éditeur Courseplay: Insérer un point" />
     <text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Éditeur Courseplay: Changer le type de point" />
     <text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilisation au semis" />
-	<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
+    <text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
     <text name="COURSEPLAY_EDITOR_WAIT" 								text="Point d'attente" />
     <text name="COURSEPLAY_EDITOR_CROSSING" 							text="Croisement" />
     <text name="COURSEPLAY_EDITOR_UNLOAD" 								text="Point de déchargement" />

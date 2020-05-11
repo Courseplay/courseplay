@@ -134,9 +134,10 @@ function courseplay:start(self)
 				isReversePossible = false
 			end
 		end
-				
+
+		-- TODO: this must be moved to the AIDriver somewhere, has nothing to do here...
 		if workTool.spec_sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
-			workTool.fertilizerEnabled = self.cp.fertilizerEnabled
+			workTool.fertilizerEnabled = self.cp.settings.sowingMachineFertilizerEnabled:is(true)
 		end	
 		
 		if workTool.cp.isSugarCaneAugerWagon then
@@ -432,7 +433,6 @@ function courseplay:start(self)
 
 	local ret_removeLegacyCollisionTriggers = false			-- TODO could be used for further processing / error handling / information to the user
 	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
-	-- the driver handles the PPC
 	-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
 	-- attached and I don't have the motivation do dig through the legacy code to find out why
 	if self.cp.mode == courseplay.MODE_FIELDWORK then

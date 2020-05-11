@@ -186,9 +186,6 @@ end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
 	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
-function courseplay:isBigM(workTool)
-	return workTool.cp.hasSpecializationDrivable and courseplay:isMower(workTool);
-end;
 function courseplay:isCombine(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;
@@ -1455,11 +1452,11 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 		--start filling
 		if trigger.onActivateObject then
 			if trigger.autoStart then
-				trigger:onActivateObject(vehicle) 
+				courseplay:activateTriggerForVehicle(trigger, vehicle);
 			elseif not trigger.isLoading then
 				--force Diesel when I'm in fuelFillTrigger or the selected fillType in fillTrigger and start the autoload
 				trigger.autoStart = true
-				trigger:onActivateObject(vehicle) 
+				courseplay:activateTriggerForVehicle(trigger, vehicle);
 				trigger.selectedFillType = (vehicle.cp.fuelFillTrigger and FillType.DIESEL) or (vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN and vehicle.cp.siloSelectedFillType) or courseplay:getOnlyPossibleFillType(vehicle,workTool,trigger) 
 				g_effectManager:setFillType(trigger.effects, trigger.selectedFillType)
 				trigger.autoStart = false
@@ -1479,7 +1476,7 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 		--stop filling
 		if trigger.onActivateObject then 
 			if trigger.isLoading then
-				trigger:onActivateObject(vehicle)
+				courseplay:activateTriggerForVehicle(trigger, vehicle);
 			end
 		elseif trigger.sourceObject then
 			workTool:setFillUnitIsFilling(false)							

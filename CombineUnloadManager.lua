@@ -46,13 +46,16 @@ CombineUnloadManager.debugChannel = 4
 function CombineUnloadManager:init()
 	self.combines = {}
 	self.unloadersOnFields ={}
+	self:addNewCombines()
+end
+
+function CombineUnloadManager:addNewCombines()
 	if g_currentMission then
 		-- this isn't needed as combines will be added when an CombineAIDriver is created for them
 		-- but we want to be able to reload this file on the fly when developing/troubleshooting
 		for _, vehicle in pairs(g_currentMission.vehicles) do
-			self:debug('Checking %s', vehicle:getName())
-			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineAIDriver) then
-				self:addCombineToList(vehicle)
+			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineAIDriver) and not self.combines[vehicle] then
+				self:addCombineToList(vehicle, vehicle.cp.driver)
 			end
 		end
 	end
@@ -62,19 +65,23 @@ function CombineUnloadManager:debug(...)
 	courseplay.debugFormat(self.debugChannel, 'CombineUnloadManager: ' .. string.format( ... ))
 end
 
-function CombineUnloadManager:addCombineToList(combine)
-	if combine:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
+function CombineUnloadManager:addCombineToList(vehicle, driver)
+	if vehicle:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
 		return
 	end
-	self:debug('added %s to list', tostring(combine.name))
-	self.combines[combine]= {
-		isChopper = courseplay:isChopper(combine);
-		isCombine = courseplay:isCombine(combine) and not courseplay:isChopper(combine);
-		isDriving = false;
+	-- the object with the combine specialization, this is the same as the vehicle for choppers and combines
+	-- but will point to the implement if it is a towed/mounted harvester
+	local combineObject = driver:getCombine()
+	self:debug('added %s to list (combine object %s)', vehicle.name, combineObject.name)
+	self.combines[vehicle]= {
+		driver = driver,
+		combineObject = combineObject,
+		isChopper = courseplay:isChopper(combineObject),
+		isCombine = courseplay:isCombine(combineObject) and not courseplay:isChopper(combineObject),
 		isOnFieldNumber = 0;
 		fillLevel = 0;
 		fillLevelPct = 0;
-		capacity = combine:getFillUnitCapacity(1);
+		capacity = combineObject:getFillUnitCapacity(1);
 		leftOkToDrive = false;
 		rightOKToDrive = false;
 		pipeOffset = 0;
@@ -97,7 +104,7 @@ end
 
 function CombineUnloadManager:removeCombineFromList(combine)
 	if self.combines[combine] then
-		print(string.format("CombineUnloadmanager: removed %s from list",tostring(combine.name)))
+		self:debug("removed %s from list", tostring(combine.name))
 		self.combines[combine] = nil
 	end
 end
@@ -178,13 +185,11 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 end
 
 function CombineUnloadManager:getChopperWithLeastUnloaders(unloader)
-	--print("FieldManager:getChopperWithLeastUnloaders")
-	--first try to Find a chopper
 	local chopperToReturn
 	local amountUnloaders = math.huge
 	for chopper,_ in pairs(unloader.cp.assignedCombines) do
 		local data = self.combines[chopper]
-		if data.isChopper then
+		if data and data.isChopper then
 			if amountUnloaders > #data.unloaders or #data.unloaders == 0 then
 				chopperToReturn = chopper
 				amountUnloaders = #data.unloaders
@@ -200,7 +205,7 @@ function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	for combine,_ in pairs(unloader.cp.assignedCombines) do
 		local data = self.combines[combine]
 		-- if there is no unloader assigned or this unloader is already assigned as the first
-		if data.isCombine and (self:getNumUnloaders(combine) == 0 or self:getUnloaderIndex(unloader, combine) == 1) then
+		if data and data.isCombine and (self:getNumUnloaders(combine) == 0 or self:getUnloaderIndex(unloader, combine) == 1) then
 			if combine.cp.wantsCourseplayer then
 				return combine
 			end
@@ -255,6 +260,7 @@ end
 
 
 function CombineUnloadManager:onUpdate(dt)
+	self:addNewCombines()
 	self:removeInactiveCombines()
 	self:updateCombinesAttributes()
 end
@@ -276,9 +282,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 	--update attributes
 	local number =1
 	for combine,attributes in pairs (self.combines) do
-		attributes.isDriving = combine:getIsCourseplayDriving()
-		local fieldNum = self:getFieldNumberByCurrentPosition(combine)
-		attributes.isOnFieldNumber = fieldNum
+		attributes.isOnFieldNumber = self:getFieldNumberByCurrentPosition(combine)
 		attributes.leftOkToDrive, attributes.rightOKToDrive = self:getOnFieldSituation(combine)
 		attributes.pipeOffset = self:getPipeOffset(combine)
 		attributes.fillLevelPct = self:getCombinesFillLevelPercent(combine)
@@ -341,8 +345,16 @@ function CombineUnloadManager:getPossibleSidesToDrive(combine)
 end
 
 function CombineUnloadManager:getFieldNumberByCurrentPosition(vehicle)
-	local positionX,_,positionZ = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode);
-	return courseplay.fields:getFieldNumForPosition( positionX, positionZ )
+	local x, _, z = getWorldTranslation(vehicle.rootNode);
+	return PathfinderUtil.getFieldIdAtWorldPosition(x, z)
+end
+
+function CombineUnloadManager:getFieldNumber(vehicle)
+	if self.combines[vehicle] then
+		return self.combines[vehicle].isOnFieldNumber
+	else
+		return 0
+	end
 end
 
 function CombineUnloadManager:getNumUnloaders(combine)
@@ -383,24 +395,10 @@ end
 
 function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then
-		return (combine.cp.workWidth/2)+ 3
+		return (combine.cp.workWidth / 2) + 3
 	elseif self:getIsCombine(combine) then
-		if not combine.getCurrentDischargeNode then
-			-- TODO: cotton harvesters for example don't have one...
-			return 0
-		end
-		local dischargeNode = combine:getCurrentDischargeNode().node
-		local dnX,dnY,dnZ = getWorldTranslation(dischargeNode)
-		local baseNode = self:getPipesBaseNode(combine)
-		local tX,tY,tZ = getWorldTranslation(baseNode)
-		local pipeOffsetX = worldToLocal(combine.rootNode, tX, tY, tZ)
-		local distance = courseplay:distance(dnX,dnZ, tX,tZ)
-		--print(string.format(" pipeOffsetX:%s; distance:%s = %s  measured:%s",tostring(pipeOffsetX),tostring(distance),tostring(distance+pipeOffsetX),tostring(measured)))
-		if pipeOffsetX > 0 then
-			return pipeOffsetX + distance
-		elseif pipeOffsetX < 0 then
-			return pipeOffsetX - distance
-		end
+		local pipeOffsetX, _ = combine.cp.driver:getPipeOffset()
+		return pipeOffsetX
 	end
 	return 0
 end
@@ -423,7 +421,6 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 		local dischargeNode = combine:getCurrentDischargeNode().node
 		local lastParent = dischargeNode
 		while entityExists(lastParent) do
-			--print(string.format("   %s: %s",tostring(lastParent),tostring(getName(lastParent))))
 			if getName(lastParent) == 'pipe' then
 				return lastParent
 			end
@@ -554,6 +551,17 @@ function CombineUnloadManager:raycastBackCallback(hitObjectId, x, y, z, distance
 			return true
 		end
 	end
+end
+
+function CombineUnloadManager:getPossibleCombines(vehicle)
+	local possibleCombines = {}
+	for combine,data in pairs (g_combineUnloadManager.combines) do
+		local selectedField = vehicle.cp.settings.searchCombineOnField:get()
+		if data.isOnFieldNumber == selectedField or data.isOnFieldNumber == 0 or selectedField ==0 then
+			table.insert(possibleCombines, combine)
+		end
+	end
+	return possibleCombines
 end
 
 g_combineUnloadManager = CombineUnloadManager()

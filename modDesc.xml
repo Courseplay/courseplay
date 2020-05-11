@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="47">
-	<version>6.02.00005</version>
+	<version>6.02.00012</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title><!-- en=English de=German fr=French es=Spanish ru=Russian pl=Polish it=Italian br=Brazilian-Portuguese cs=Chinese(Simplified) ct=Chinese(Traditional) cz=Czech nl=Netherlands hu=Hungary jp=Japanese kr=Korean pt=Portuguese ro=Romanian tr=Turkish -->
 		<en>CoursePlay SIX</en>
@@ -100,6 +100,7 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" axisType="HALF"  />
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" axisType="HALF"  />
 		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" axisType="HALF"  />
+		<action name="COURSEPLAY_TOGGLE_FERTILIZER" axisType="HALF" />
     <action name="COURSEPLAY_EDITOR_TOGGLE" axisType="HALF"  />
     <action name="COURSEPLAY_EDITOR_UNDO" axisType="HALF"  />
     <action name="COURSEPLAY_EDITOR_SAVE" axisType="HALF"  />
@@ -110,7 +111,7 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
     <action name="COURSEPLAY_EDITOR_DELETE_TO_START" axisType="HALF"  />
     <action name="COURSEPLAY_EDITOR_DELETE_TO_END" axisType="HALF"  />
     <action name="COURSEPLAY_EDITOR_INSERT_WAYPOINT" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  />    
+    <action name="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  /> 
     </actions>
 
 	<inputBinding>
@@ -194,6 +195,9 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_TOGGLE_FERTILIZER">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
     </inputBinding>
