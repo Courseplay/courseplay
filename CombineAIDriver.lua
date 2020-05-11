@@ -132,10 +132,13 @@ function CombineAIDriver:init(vehicle)
 			end
 		end
 	else
+		-- make sure pipe offset has a value until CombineUnloadManager as cleaned up as it calls getPipeOffset()
+		-- periodically even when CP isn't driving, and even for cotton harvesters...
+		self.pipeOffsetX, self.pipeOffsetZ = 0, 0
 		self.pipeOnLeftSide = true
 	end
 
-	-- distance keepget to the right when pulling back to make room for the tractor
+	-- distance to keep to the right when pulling back to make room for the tractor
 	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 3
 	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
 	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
