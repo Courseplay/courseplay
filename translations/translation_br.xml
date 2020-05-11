@@ -441,10 +441,10 @@
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Ligar / desligar a descarga de palha na cabeceira" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizante da semeadeira" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Ativar ou desativar a função fertilizante da semeadeira" />
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Clique no botão direito do mouse para HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Ativar/Desativar HUD (Global) Clique no botão direito do mouse" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Clique botão direito para HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Ativar/Desativar HUD (Veículo atual) Clique no botão direito do mous)" />
 
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Primeiro" />
