@@ -229,7 +229,7 @@
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Virage" />
     <text name="COURSEPLAY_CENTER_MODE"									text="Gestion des rangs" />
     <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers Retours" />
-    <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire" />
+    <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire (par bloc)" />
     <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirale (tourne autour)" />
     <text name="COURSEPLAY_ACTIVATED" 						 			text="Activé" />
     <text name="COURSEPLAY_NAME_ONLY" 									text="Nom seul" />
@@ -441,9 +441,9 @@
     <text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Cliquez sur un vehicle pour y prendre place" />
 	<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Goulotte toujours dépliée" />
 	<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="La goulotte de la batteuse se déplie lorsqu'elle est pleine ou qu'elle a terminé son travail. Elle est dans ce cas à l'arrêt et attend une remorque" />
-	<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Clique droit pour le HUD" />
+	<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Clique droit pour ouvrir le HUD" />
 	<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Permet l'ouverture du HUD avec un clique droit. Ce paramètre s'applique à TOUS les véhicules" />
-	<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Clique droit pour le HUD" />
+	<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Clique droit pour ouvrir le HUD" />
 	<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Permet l'ouverture du HUD avec un clique droit. Ce paramètre ne s'applique qu'au véhicule actuel" />
 	
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
