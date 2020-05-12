@@ -235,3 +235,12 @@ end
 function FillableFieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_REFILLING'
 end
+
+function FillableFieldworkAIDriver:setLightsMask(vehicle)
+	local x,y,z = getWorldTranslation(vehicle.rootNode);
+	if not courseplay:isField(x, z) and self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
+		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_STREET)
+	else
+		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+	end
+end

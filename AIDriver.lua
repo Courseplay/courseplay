@@ -906,6 +906,41 @@ function AIDriver:updateLights()
 	end
 end
 
+function AIDriver:updateAILights(superFunc)
+	if self.cp and self.cp.driver and self:getIsCourseplayDriving() and self.spec_lights then
+		if self.cp.driver:shouldLightsBeUsedForEnvironment() then --fall back to base class AIDriver for this
+			self.cp.driver:setLightsMask(self)
+		elseif superFunc ~= nil then
+			superFunc(self)
+		end
+	elseif superFunc ~= nil then
+		superFunc(self)
+	end
+end
+Lights.updateAILights = Utils.overwrittenFunction(Lights.updateAILights , AIDriver.updateAILights)
+
+function AIDriver:shouldLightsBeUsedForEnvironment()
+	-- How Giants decides lights in Lights:updateAILights
+	local dayMinutes = g_currentMission.environment.dayTime / (1000 * 60)
+	local nightTime = (dayMinutes > g_currentMission.environment.nightStartMinutes or dayMinutes < g_currentMission.environment.nightEndMinutes)
+	local rainScale = g_currentMission.environment.weather:getRainFallScale()
+	local timeSinceRain = g_currentMission.environment.weather:getTimeSinceLastRain()
+	local raining = rainScale > 0 -- or timeSinceRain < 20 Do we want to use this?
+			-- These are abstract values. I need to figure out what they mean. Pulled from threshing.
+	local shouldLightsBeUsed = (nightTime or raining)
+
+	return shouldLightsBeUsed
+end
+
+function AIDriver:setLightsMask(vehicle)
+	local x,y,z = getWorldTranslation(vehicle.rootNode);
+	if not courseplay:isField(x, z) then
+		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_STREET)
+	else
+		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+	end
+end
+
 function AIDriver:onAIEnd(superFunc)
 	if self.cp and self.cp.driver and self:getIsCourseplayDriving() then
 		self.cp.driver.debug(self.cp.driver, 'overriding onAIEnd() to prevent engine stop')
