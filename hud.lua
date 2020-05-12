@@ -524,6 +524,7 @@ function courseplay.hud:renderHud(vehicle)
 	-- self = courseplay.hud
 
 	-- SEEDUSAGECALCULATOR
+	-- Do we realy want to keep this, when GC got a Calculator for all kind of filltypes ?
 	if vehicle.cp.suc.active then
 		vehicle.cp.hud.suc:render();
 		if vehicle.cp.suc.selectedFruit.overlay then
@@ -862,10 +863,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS');
 					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS_MODE_' .. vehicle.cp.warningLightsMode);
 				
-				elseif entry.functionToCall == 'toggleOpenHudWithMouse' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPEN_HUD_MODE');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.hud.openWithMouse and courseplay.inputBindings.mouse.secondaryTextI18n or courseplay.inputBindings.keyboard.openCloseHudTextI18n;
-
 				elseif entry.functionToCall == 'toggleIngameMapIconShowText' then
 					if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT');
@@ -2059,19 +2056,14 @@ function courseplay.hud:updateCourseList(vehicle, page)
 end
 
 function courseplay.hud:updateCombinesList(vehicle,page)
-	vehicle.cp.possibleCombines = {}
-	for combine,data in pairs (g_combineUnloadManager.combines) do
-		local selectedField = vehicle.cp.settings.searchCombineOnField:get()
-		if data.isOnFieldNumber == selectedField or data.isOnFieldNumber == 0 or selectedField ==0 then
-			table.insert(vehicle.cp.possibleCombines,combine)
-		end
-	end
+	vehicle.cp.possibleCombines = g_combineUnloadManager:getPossibleCombines(vehicle)
 	local line = 3
-	for i=1+vehicle.cp.combinesListHUDOffset,#vehicle.cp.possibleCombines do
+	for i= 1 + vehicle.cp.combinesListHUDOffset, #vehicle.cp.possibleCombines do
 		local combine = vehicle.cp.possibleCombines[i]
 		if combine ~= nil then
 			local box = vehicle.cp.assignedCombines[combine] and "[X]"or "[  ]"
-			vehicle.cp.hud.content.pages[page][line][2].text = string.format("%s %s (Feld %d)",box,combine.name,g_combineUnloadManager.combines[combine].isOnFieldNumber)
+			vehicle.cp.hud.content.pages[page][line][2].text = string.format("%s %s (Field %d)",
+					box, combine.name, g_combineUnloadManager:getFieldNumber(combine))
 		end
 		if line == self.numLines then
 			break;
@@ -2339,8 +2331,6 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	--page 6 general settings
 	self:enablePageButton(vehicle, 6)
 	self:setupDebugButtons(vehicle, 6)
-	self:addRowButton(vehicle,'toggleShowMiniHud', 6, 1, 1 )
-	self:addRowButton(vehicle,'toggleOpenHudWithMouse', 6, 2, 1 )
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
 	self:addRowButton(vehicle,'toggleIngameMapIconShowText', 6, 4, 1 )
 	self:addRowButton(vehicle,'openAdvancedSettingsDialog', 6, 5, 1 ):setOnlyCallLocal()

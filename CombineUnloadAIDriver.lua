@@ -554,8 +554,9 @@ end
 
 
 function CombineUnloadAIDriver:driveBesideCombine(targetNode)
+	local _, offsetZ = self.combineToUnload.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset, self.vehicle.cp.tipperOffset)
 	-- TODO: this + 2 is a workaround the fact that we use a simple P controller instead of a PI
-	local _, _, dz = localToLocal(targetNode, self.combineToUnload.rootNode, 0, 0, - self.combineToUnload.cp.driver.pipeOffsetZ - 2)
+	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, - offsetZ - 2)
 	-- use a factor of two to make sure we reach the pipe fast
 	local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz * 1.5, -10, 15)
 	self:renderText(0, 0.02, "%s: driveBesideCombine: dz = %.1f, speed = %.1f", nameNum(self.vehicle), dz, speed)
@@ -567,7 +568,7 @@ end
 function CombineUnloadAIDriver:driveBesideChopper(dt,targetNode)
 	self:renderText(0, 0.02,"%s: driveBesideCombine:offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset))
 	self:releaseAutoAimNode()
-	local _, _, dz = localToLocal(targetNode, self.combineToUnload.rootNode, 0, 0, 5)
+	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, 5)
 	renderText(0.2,0.325,0.02,string.format("dz: %.1f", dz))
 	self:setSpeed(math.max(0, (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(-dz, -10, 15))))
 end
@@ -862,16 +863,6 @@ function CombineUnloadAIDriver:getDrivingCoordsBesideTractor(tractorToFollow)
 	local tx,ty,tz = localToWorld(tractorToFollow.cp.directionNode,newX,0,math.max(-20,backShift))
 	cpDebug:drawLine(sx,sy+1,sz, 100, 100, 100, tx,ty+1,tz)
 	return tx,ty,tz
-end
-
-function CombineUnloadAIDriver:getColliPointHitsTheCombine()
-	local colliNode = self.vehicle.cp.driver.collisionDetector.trafficCollisionTriggers[1]
-	local cx,cy,cz = localToWorld(colliNode,-1.5,0,0)
-	local tx,ty,tz = localToWorld(colliNode, 1.5,0,0)
-	local x1,_,z1 = localToWorld(self.combineToUnload.cp.directionNode,-1.5,0,-self:getCombinesMeasuredBackDistance())
-	local x2,_,z2 = localToWorld(self.combineToUnload.cp.directionNode, 1.5,0,-self:getCombinesMeasuredBackDistance())
-	local x3,_,z3 = localToWorld(self.combineToUnload.cp.directionNode, -1.5,0,0)
-	return  MathUtil.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,cx,cz,tx-cx,tz-cz)
 end
 
 function CombineUnloadAIDriver:getZOffsetToCoordsBehind()
@@ -1269,9 +1260,8 @@ end
 function CombineUnloadAIDriver:startUnloadingStoppedCombine()
 	-- get a path to the pipe, make the pipe 0.5 m longer so the path will be 0.5 more to the outside to make
 	-- sure we don't bump into the pipe
-	local offsetX, offsetZ = self.combineToUnload.cp.driver:getPipeOffset(0.5)
-	local unloadCourse = Course.createFromNode(self.vehicle, self.combineToUnload.rootNode,
-			offsetX, offsetZ - 5, 30, 2, false)
+	local offsetX, offsetZ = self.combineToUnload.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset, self.vehicle.cp.tipperOffset)
+	local unloadCourse = Course.createFromNode(self.vehicle, self:getCombineRootNode(), offsetX, offsetZ - 5, 30, 2, false)
 	self:startCourse(unloadCourse, 1)
 	-- make sure to get to the course as soon as possible
 	self.ppc:setShortLookaheadDistance()
@@ -1351,18 +1341,24 @@ function CombineUnloadAIDriver:isPathFound(path)
 	end
 end
 
+function CombineUnloadAIDriver:getCombineRootNode()
+	-- for attached harvesters this gets the root node of the harvester as that is our reference point to the
+	-- pipe offsets
+	return self.combineToUnload.cp.driver:getCombine().rootNode
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 --Pathfinding to combine
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, xOffset, zOffset)
-	local x, z = self.combineToUnload.cp.driver:getPipeOffset()
+	local x, z = self.combineToUnload.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset)
 	xOffset = xOffset or x
 	zOffset = zOffset or z
 	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
 	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 	-- TODO: here we may have to pass in the combine to ignore once we start driving to a moving combine, at least
 	-- when it is on the headland.
-	self:startPathfinding(self.combineToUnload.rootNode, xOffset, zOffset, 0,	nil, onPathfindingDoneFunc)
+	self:startPathfinding(self:getCombineRootNode(), xOffset, zOffset, 0, nil, onPathfindingDoneFunc)
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)

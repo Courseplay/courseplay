@@ -21,7 +21,7 @@
 		<text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Вызвать транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Отозвать транспорт" />
 		<text name="COURSEPLAY_START_COURSE" 								text="ЗАПУСТИТЬ ПО МАРШРУТУ" />
-		<text name="COURSEPLAY_STOP_COURSE" 								text="Прервать маршрут" />
+		<text name="COURSEPLAY_STOP_COURSE" 								text="ПРЕРВАТЬ МАРШРУТ" />
 		<text name="COURSEPLAY_MODE_1" 										text="ТРАНСПОРТИРОВКА И ПРОДАЖА" />
 		<text name="COURSEPLAY_MODE_2" 										text="РАБОТА С КОМБАЙНАМИ" />
 		<text name="COURSEPLAY_MODE_3" 										text="РАБОТА С ПРИЦЕПОМ-ПЕРЕГРУЗЧИКОМ" />
@@ -243,7 +243,7 @@
 		<text name="COURSEPLAY_TURN_MANEUVER" 								text="Поворот:" />
 		<text name="COURSEPLAY_START" 										text="Старт" />
 		<text name="COURSEPLAY_FINISH" 										text="Финиш" />
-		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Нерабочий маршрут" />
+		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Маршрут нерабочий" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Функция удобрения сеялки:" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Несколько орудий на этом маршруте:" />
 		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Максим. дистанция до предыдущего:" />
@@ -368,6 +368,7 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Удалить все точки до конца" />
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Вставить путевую точку после текущей" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Изменить тип путевой точки" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Обычная" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Ожидания" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Пересечения" />
@@ -435,14 +436,20 @@
 		<text name="COURSEPLAY_EARN_WAGES"									text="Зарплата рабочим на Courseplay" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Переход между техникой по клику" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"						text="Кликните мышкой по автомобилю, который в поле видимости, чтобы пересесть в него." />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"							text="Всегда выставлять трубу" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"							text="Выставлять трубу" />
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Держать трубу разложенной, если комбайн ждёт разгрузки." />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Отобразить Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Переключение видимости Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on headland" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
-		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
-        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Выгрузка соломы" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Вкл/Выкл выгрузку соломы на разворотной полосе." />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Удобрение сеялкой" />
+		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Активировать или деактивировать функцию удобрения сеялки." />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"					text="заблаговременно" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"					text="с опозданием" />
