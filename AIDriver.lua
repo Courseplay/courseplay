@@ -926,8 +926,8 @@ function AIDriver:shouldLightsBeUsedForEnvironment()
 	local nightTime = (dayMinutes > g_currentMission.environment.nightStartMinutes or dayMinutes < g_currentMission.environment.nightEndMinutes)
 	local rainScale = g_currentMission.environment.weather:getRainFallScale()
 	local timeSinceRain = g_currentMission.environment.weather:getTimeSinceLastRain()
-	local raining = rainScale > 0 -- or timeSinceRain < 20 Do we want to use this?
-			-- These are abstract values. I need to figure out what they mean. Pulled from threshing.
+	local raining = rainScale > 0
+
 	local shouldLightsBeUsed = (nightTime or raining)
 
 	return shouldLightsBeUsed
