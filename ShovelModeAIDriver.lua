@@ -161,14 +161,12 @@ function ShovelModeAIDriver:drive(dt)
 
 		if self:getIsShovelFull() or self:isAtEnd() then
 			if self:getTargetIsOnBunkerWallColumn() then
-				self:setShovelToPositionFinshed(3,dt)
 				self.tempTarget = self:getTargetToStraightOut()
 				self:setShovelState(self.states.STATE_REVERSE_STRAIGHT_OUT_OF_SILO)
 			else
 				local _,_,Zoffset = self.course:getWaypointLocalPosition(self.vehicle.cp.directionNode, self.shovelFillStartPoint)
 				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.directionNode,-Zoffset)
 				self.ppc:initialize(newPoint)
-				self:setShovelToPositionFinshed(3,dt)
 				self:setShovelState(self.states.STATE_REVERSE_OUT_OF_SILO)
 				self.bestTarget = nil
 			end
