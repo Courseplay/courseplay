@@ -2619,7 +2619,7 @@ function StrawOnHeadland:init()
 	BooleanSetting.init(self, 'strawOnHeadland', 'COURSEPLAY_STRAW_ON_HEADLAND',
 				'COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', nil)
 	-- set default while we are transitioning from the the old setting to this new one
-	self:set(false)
+	self:set(true)
 end
 
 ---@class RidgeMarkersAutomatic : BooleanSetting
