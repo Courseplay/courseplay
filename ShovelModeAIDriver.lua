@@ -169,6 +169,8 @@ function ShovelModeAIDriver:drive(dt)
 				self.ppc:initialize(newPoint)
 				self:setShovelState(self.states.STATE_REVERSE_OUT_OF_SILO)
 				self.bestTarget = nil
+			if not self:setShovelToPositionFinshed(3,dt) then
+			self:hold()
 			end
 		end
 
@@ -195,7 +197,7 @@ function ShovelModeAIDriver:drive(dt)
 	elseif self.shovelState == self.states.STATE_REVERSE_OUT_OF_SILO then
 		self.refSpeed = self.vehicle.cp.speeds.reverse
 		if not self:setShovelToPositionFinshed(3,dt) then
-			self:hold()
+			setShovelToPositionFinshed(3,dt)
 		end
 		if not self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) then
 			self:setShovelState(self.states.STATE_TRANSPORT);
