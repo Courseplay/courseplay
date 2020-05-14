@@ -312,7 +312,7 @@ function ShovelModeAIDriver:getIsShovelFull()
 end
 
 function ShovelModeAIDriver:getIsShovelEmpty()
-	return self.vehicle.cp.shovel:getFillUnitFillLevel(1) == 0
+	return self.vehicle.cp.shovel:getFillUnitFillLevel(1) <= self.vehicle.cp.shovel:getFillUnitCapacity(1)*0.01
 end
 
 function ShovelModeAIDriver:getFillLevelDoesChange()
