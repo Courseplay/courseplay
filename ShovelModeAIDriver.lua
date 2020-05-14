@@ -182,7 +182,6 @@ function ShovelModeAIDriver:drive(dt)
 			self.ppc:initialize(newPoint)
 			self:setShovelState(self.states.STATE_TRANSPORT)
 			self.bestTarget = nil
-		end
 			if self:setShovelToPositionFinshed(3,dt) then
 			self:hold()
 		end
