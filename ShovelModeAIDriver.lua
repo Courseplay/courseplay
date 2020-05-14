@@ -161,7 +161,7 @@ function ShovelModeAIDriver:drive(dt)
 
 		if self:getIsShovelFull() or self:isAtEnd() then
 			if self:getTargetIsOnBunkerWallColumn() then
-				if self:setShovelToPositionFinshed(2,dt) then
+				if self:setShovelToPositionFinshed(3,dt) then
 				self.tempTarget = self:getTargetToStraightOut()
 				self:setShovelState(self.states.STATE_REVERSE_STRAIGHT_OUT_OF_SILO)
 			else
