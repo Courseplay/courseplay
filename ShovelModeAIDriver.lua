@@ -170,12 +170,13 @@ function ShovelModeAIDriver:drive(dt)
 				self:setShovelState(self.states.STATE_REVERSE_OUT_OF_SILO)
 				self.bestTarget = nil
 			end
+			if self:setShovelToPositionFinshed(3,dt) then
+				self:hold()
 		end
 
 		return
 	elseif self.shovelState == self.states.STATE_REVERSE_STRAIGHT_OUT_OF_SILO then
 		self.refSpeed = self.vehicle.cp.speeds.reverse
-		if self:setShovelToPositionFinshed(3,dt) then
 		if self:getIsReversedOutOfSilo() then
 			local _,_,Zoffset = self.course:getWaypointLocalPosition(self.vehicle.cp.directionNode, self.shovelFillStartPoint)
 			local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.directionNode,-Zoffset)
