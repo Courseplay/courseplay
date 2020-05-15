@@ -1,17 +1,14 @@
 --[[
 This file is part of Courseplay (https://github.com/Courseplay/courseplay)
 Copyright (C) 2018 Thomas Gaertner
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
@@ -26,16 +23,13 @@ handles "mode9": Fill and empty shovel
 	d) drive reverse (back through silo) and turn at end
 	e) drive forwards to bunker, set waiting point #3 and unload
 	f) drive backwards, turn, drive forwards until before start
-
 1)  drive course until waiting point #1 - set shovel to "filling" rotation
 2)  [repeat] if lastFillLevel == currentFillLevel: drive ahead until is filling
 2b) if waiting point #2 is reached, area is empty -> stop work
 3)  if currentFillLevel == 100: set shovel to "transport" rotation, find closest point that's behind tractor, drive course from there
 4)  drive course forwards until waiting point #3 - set shovel to "empty" rotation
 5)  drive course with recorded direction (most likely in reverse) until end - continue and repeat to 1)
-
 NOTE: rotation: movingTool.curRot[1] (only x-axis) / translation: movingTool.curTrans[3] (only z-axis)
-
 NOTE: although lx and lz are passed in as parameters, they are never used.
 ]]
 
@@ -170,14 +164,13 @@ function ShovelModeAIDriver:drive(dt)
 				self:setShovelState(self.states.STATE_REVERSE_OUT_OF_SILO)
 				self.bestTarget = nil
 			end
-			
 		end
 
 		return
 	elseif self.shovelState == self.states.STATE_REVERSE_STRAIGHT_OUT_OF_SILO then
 		self.refSpeed = self.vehicle.cp.speeds.reverse
 		if not self:setShovelToPositionFinshed(3,dt) then
-		self:hold()
+			self:hold()
 		end
 		if self:getIsReversedOutOfSilo() then
 			local _,_,Zoffset = self.course:getWaypointLocalPosition(self.vehicle.cp.directionNode, self.shovelFillStartPoint)
@@ -198,6 +191,8 @@ function ShovelModeAIDriver:drive(dt)
 		end
 	elseif self.shovelState == self.states.STATE_REVERSE_OUT_OF_SILO then
 		self.refSpeed = self.vehicle.cp.speeds.reverse
+		if not self:setShovelToPositionFinshed(3,dt) then
+			self:hold()
 		end
 		if not self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) then
 			self:setShovelState(self.states.STATE_TRANSPORT);
@@ -453,4 +448,8 @@ function ShovelModeAIDriver:getIsReversedOutOfSilo()
 	local x,z = self.vehicle.cp.BunkerSiloMap[1][self.bestTarget.column].cx,self.vehicle.cp.BunkerSiloMap[1][self.bestTarget.column].cz
 	local px,py,pz = worldToLocal(self.vehicle.cp.directionNode,x,0,z)
 	return pz > 4
+end
+
+function ShovelModeAIDriver:setLightsMask(vehicle)
+	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
 end
