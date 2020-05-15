@@ -834,4 +834,8 @@ function LevelCompactAIDriver:debugRouting()
 			cpDebug:drawPoint(tx, y, tz, 1, 1 , 1);
 		end
 	end
+
+	function LevelCompactAIDriver:setLightsMask(vehicle)
+		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+	end
 end

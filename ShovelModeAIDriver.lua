@@ -452,3 +452,7 @@ function ShovelModeAIDriver:getIsReversedOutOfSilo()
 	local px,py,pz = worldToLocal(self.vehicle.cp.directionNode,x,0,z)
 	return pz > 4
 end
+
+function ShovelModeAIDriver:setLightsMask(vehicle)
+	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+end

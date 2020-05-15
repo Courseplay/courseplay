@@ -42,6 +42,7 @@ courseplay.clock = 0;
 	['9a9f028043394ff9de1cf6c905b515c1'] = true; -- Satis
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
 	['0d8e45a8ed916c1cd40820165b81e12d'] = true; -- Tensuko
+	['97c8e6d0d14f4e242c3c37af68cc376c'] = true; -- Dan
 };
 
 local function initialize()
