@@ -1404,3 +1404,7 @@ end
 function FieldworkAIDriver:setOffsetX()
 	-- implement in derived classes if needed
 end
+
+function FieldworkAIDriver:setLightsMask(vehicle)
+	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+end

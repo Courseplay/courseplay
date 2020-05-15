@@ -25,15 +25,11 @@ function courseplay:distanceCheck(vehicle)
 	courseplay:setInfoText(vehicle, ('COURSEPLAY_DISTANCE;%d'):format(courseplay:distance(ctx, ctz, cx, cz)));
 end;
 
-
 function courseplay:distanceToObject(vehicle, object)
-	-- TODO: use localToLocal()
-	local x, y, z = getWorldTranslation(vehicle.cp.directionNode or vehicle.rootNode);
-	local ox, oy, oz = worldToLocal(object.rootNode, x, y, z);
-
-	return MathUtil.vector2Length(ox, oz);
-end;
-
+	local node1 = vehicle.cp.directionNode or vehicle.rootNode
+	local node2 = object.rootNode or object.nodeId
+	return calcDistanceFrom(node1, node2)
+end
 
 function courseplay:distanceToPoint(vehicle, x, y, z)
 	local ox, oy, oz = worldToLocal(vehicle.cp.directionNode, x, y, z);
