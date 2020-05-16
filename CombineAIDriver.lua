@@ -1257,8 +1257,8 @@ function CombineAIDriver:setStrawSwath(enable)
 		if fruitDesc.hasWindrow then
 			strawSwathCanBeEnabled = true
 		end
+		self.vehicle:setIsSwathActive(enable and strawSwathCanBeEnabled)
 	end
-	self.vehicle:setIsSwathActive(enable and strawSwathCanBeEnabled)
 end
 
 function CombineAIDriver:onDraw()
