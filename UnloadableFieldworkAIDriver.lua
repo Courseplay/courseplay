@@ -127,7 +127,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	end
 		
 	-- done tipping?
-	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 then
+	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel <= 1 then
 		courseplay:resetTipTrigger(self.vehicle, true);
 	end
 		
