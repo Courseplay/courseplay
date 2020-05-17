@@ -636,10 +636,8 @@ function LevelCompactAIDriver:getDiffHeightforHeight(targetHeight)
 	local bladeTerrain = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, bladeX,bladeY,bladeZ);
 	local _,_,offSetZ = worldToLocal(self.vehicle.rootNode,bladeX,bladeY,bladeZ)
 	local _,projectedTractorY,_  = localToWorld(self.vehicle.rootNode,0,0,offSetZ)
-
-	return self.targetHeight
+		return targetHeight
 end
-
 
 function LevelCompactAIDriver:recordAlphaList()
 	local blade = self.vehicle.cp.workTools[1]
