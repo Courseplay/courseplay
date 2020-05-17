@@ -356,6 +356,7 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text="Courseplay: Установить в транспортное положение" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="Courseplay: Установить в положение предразгрузки" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="Courseplay: Установить в положение разгрузки" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="Courseplay: Удобрение сеялкой" />
 		
 		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Включение редактора маршрутов" />
 		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Отменить последнее редактирования маршрута" />
@@ -368,7 +369,7 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Удалить все точки до конца" />
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Вставить путевую точку после текущей" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Изменить тип путевой точки" />
-		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
+
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Обычная" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Ожидания" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Пересечения" />
@@ -441,10 +442,10 @@
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Отобразить Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Переключение видимости Mini-HUD" />
 
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="HUD по правому клику" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Вкл/Выкл клик правой кнопкой для открытия HUD (глобально). В противном случае используйте Right Ctrl+Del." />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="HUD по правому клику" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Вкл/Выкл клик правой кнопкой для открытия HUD (на текущей технике). В противном случае используйте Right Ctrl+Del." />
 
 		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Выгрузка соломы" />
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Вкл/Выкл выгрузку соломы на разворотной полосе." />
