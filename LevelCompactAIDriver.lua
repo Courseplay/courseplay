@@ -637,7 +637,7 @@ function LevelCompactAIDriver:getDiffHeightforHeight(targetHeight)
 	local _,_,offSetZ = worldToLocal(self.vehicle.rootNode,bladeX,bladeY,bladeZ)
 	local _,projectedTractorY,_  = localToWorld(self.vehicle.rootNode,0,0,offSetZ)
 
-	return targetHeight- (projectedTractorY-bladeTerrain)
+	return self.targetHeight
 end
 
 
