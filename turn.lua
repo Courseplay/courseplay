@@ -2026,7 +2026,7 @@ end
 
 function TurnContext:isPathfinderTurn(turnDiameter)
 	local d = math.sqrt(self.dx * self.dx + self.dz * self.dz)
-	return (not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter) or d > 2 * turnDiameter
+	return not self:isHeadlandCorner() and (math.abs(self.dx) > turnDiameter or d > 2 * turnDiameter)
 end
 
 --- A simple wide turn is where there's no corner to avoid, no headland to follow, there is a straight line on the

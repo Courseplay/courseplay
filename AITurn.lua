@@ -451,8 +451,6 @@ end
 -- this turn starts when the vehicle reached the point where the implements are raised.
 -- now use turn.lua to generate the turn maneuver waypoints
 function CourseTurn:startTurn()
-	-- pathfinder and Dubins won't handle multi tools correctly until the big multi tool fix is in place, so until then
-	-- just don't use it
 	if self.turnContext:isPathfinderTurn(self.turningRadius * 2) then
 		self:generatePathfinderTurn()
 	else
