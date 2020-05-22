@@ -1799,7 +1799,8 @@ function CombineUnloadAIDriver:handleChopperHeadlandTurn()
 	if not self:getCombineIsTurning() then
 		self:debug('Combine stopped turning, resuming follow course')
 		-- resume course beside combine
-		self:startCourse(self.followCourse, self.combineCourse:getCurrentWaypointIx())
+		-- skip over the turn start waypoint as it will throw the PPC off course
+		self:startCourse(self.followCourse, self.combineCourse:skipOverTurnStart(self.combineCourse:getCurrentWaypointIx()))
 		self:setNewOnFieldState(self.states.ALIGN_TO_CHOPPER_AFTER_TURN)
 	end
 end
@@ -1896,7 +1897,8 @@ function CombineUnloadAIDriver:handleChopper180Turn()
 			self:debug('now behind chopper, continue on chopper\'s course.')
 			-- reset offset, as we don't know which side is going to work after the turn.
 			self.followCourse:setOffset(0, 0)
-			self:startCourse(self.followCourse, self.combineCourse:getCurrentWaypointIx())
+			-- skip over the turn start waypoint as it will throw the PPC off course
+			self:startCourse(self.followCourse, self.combineCourse:skipOverTurnStart(self.combineCourse:getCurrentWaypointIx()))
 			-- TODO: shouldn't we be using lambdas instead?
 			self:setNewOnFieldState(self.states.ALIGN_TO_CHOPPER_AFTER_TURN)
 		end
@@ -1969,6 +1971,11 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 	self:debug('%s wants me to move out of way', blockedVehicle:getName())
+	if self.combineToUnload.cp.driver:isChopper() then
+		-- TODO: think about how to best handle choppers, since they always stop when no trailer
+		-- is in range they always send these blocking events.
+		return
+	end
 	if self.onFieldState ~= self.states.MOVING_OUT_OF_WAY and
 			self.onFieldState ~= self.states.DRIVE_BACK_FROM_REVERSING_CHOPPER and
 			self.onFieldState ~= self.states.DRIVE_BACK_FROM_EMPTY_COMBINE and

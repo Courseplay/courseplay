@@ -463,6 +463,14 @@ function Course:isTurnEndAtIx(ix)
 	return self.waypoints[ix].turnEnd
 end
 
+function Course:skipOverTurnStart(ix)
+	if self:isTurnStartAtIx(ix) then
+		return ix + 1
+	else
+		return ix
+	end
+end
+
 --- Is this waypoint on a connecting track, that is, a transfer path between
 -- a headland and the up/down rows where there's no fieldwork to do.
 function Course:isOnConnectingTrack(ix)
