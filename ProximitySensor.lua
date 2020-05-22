@@ -44,6 +44,7 @@ function ProximitySensor:update()
     local x, y, z = getWorldTranslation(self.node)
     local nx, ny, nz = localDirectionToWorld(self.node, self.lx, 0, self.lz)
     self.distanceOfClosestObject = math.huge
+    self.objectId = nil
     if self.enabled then
         raycastClosest(x, y + self.height, z, nx, ny, nz, 'raycastCallback', self.range, self, bitOR(AIVehicleUtil.COLLISION_MASK, 2))
     end
@@ -63,6 +64,15 @@ end
 function ProximitySensor:getClosestObjectDistance()
     --self:showDebugInfo()
     return self.distanceOfClosestObject
+end
+
+function ProximitySensor:getClosestRootVehicle()
+    if self.objectId then
+        local object = g_currentMission:getNodeObject(self.objectId)
+        if object and object.getRootVehicle then
+            return object:getRootVehicle()
+        end
+    end
 end
 
 function ProximitySensor:showDebugInfo()
@@ -141,17 +151,22 @@ function ProximitySensorPack:disable()
     self:callForAllSensors(ProximitySensor.disable)
 end
 
-function ProximitySensorPack:getClosestObjectDistance(deg)
-    if deg then
-        return self.sensors[deg] and self.sensors[deg]:getClosestObjectDistance() or math.huge
+function ProximitySensorPack:getClosestObjectDistanceAndRootVehicle(deg)
+    if deg and self.sensors[deg] then
+        return self.sensors[deg]:getClosestObjectDistance(), self.sensors[deg]:getClosestRootVehicle()
     else
         local closestDistance = math.huge
+        local closestRootVehicle
         for _, deg in ipairs(self.directionsDeg) do
             local d = self.sensors[deg]:getClosestObjectDistance()
-            closestDistance = d < closestDistance and d or closestDistance
+            if d < closestDistance then
+                closestDistance = d
+                closestRootVehicle = self.sensors[deg]:getClosestRootVehicle()
+            end
         end
-        return closestDistance
+        return closestDistance, closestRootVehicle
     end
+    return math.huge, nil
 end
 
 function ProximitySensorPack:disableRightSide()

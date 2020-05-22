@@ -173,7 +173,8 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			self:debug('Priority closest, best unloader %s', unloaderToAssign and nameNum(unloaderToAssign) or 'N/A')
 		end
 		if unloaderToAssign == unloader then
-			if combine.cp.driver:willWaitForUnloadToFinish() then
+			if combine.cp.driver:getFillLevelPercentage() > unloader.cp.driver:getFillLevelThreshold() or
+					combine.cp.driver:willWaitForUnloadToFinish() then
 				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), combine.cp.driver:getFillLevelPercentage())
 				self:addUnloaderToCombine(unloader,combine)
 				return combine
@@ -289,9 +290,6 @@ function CombineUnloadManager:updateCombinesAttributes()
 		attributes.fillLevel = self:getCombinesFillLevel(combine)
 		attributes.secondsTill80Percent = self:getSecondsTill80Percent(combine) and self:getSecondsTill80Percent(combine) or attributes.secondsTill80Percent
 		self:updateFillSpeed(combine,attributes)
-		if attributes.measuredBackDistance == nil then
-			self:raycastBack(combine)
-		end
 		if courseplay.debugChannels[self.debugChannel] then
 			renderText(0.1,0.175+(0.02*number) ,0.015,
 					string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d readyToUnload: %s",
@@ -340,6 +338,7 @@ end
 function CombineUnloadManager:getCombinesPipeOffset(combine)
 	return self.combines[combine].pipeOffset
 end
+
 function CombineUnloadManager:getPossibleSidesToDrive(combine)
 	return self.combines[combine].leftOkToDrive, self.combines[combine].rightOKToDrive;
 end
@@ -450,11 +449,6 @@ function CombineUnloadManager:getCombinesFillLevel(combine)
 	return combine:getFillUnitFillLevel(dischargeNode.fillUnitIndex)
 end
 
-
-function CombineUnloadManager:getCombinesMeasuredBackDistance(combine)
-	return self.combines[combine].measuredBackDistance
-end
-
 function CombineUnloadManager:getOnFieldSituation(combine)
 	local offset = self:getPipeOffset(combine)
 
@@ -502,10 +496,10 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	if fruitType == nil or fruitType == 0 then
 		hasFruit,fruitType = courseplay:areaHasFruit(x, z, nil, math.abs(offset), math.abs(offset))
 	end
-	local minHarvestable, maxHarvestable = 1,1
+	local noFruitOnLeft, noFruitOnRight = true, true
 	if fruitType ~= 0  and fruitType ~= nil then
+		local minHarvestable, maxHarvestable = 1, 1
 		maxHarvestable = g_fruitTypeManager.fruitTypes[fruitType].numGrowthStates
-	end
 
 	--cpDebug:drawLine(lStartX,y+1,lStartZ, 100, 0, 0, lWidthX,y+1,lWidthZ)
 	--cpDebug:drawLine(lWidthX,y+1,lWidthZ, 100, 0, 0, lHeightX,y+1,lHeightZ)
@@ -515,42 +509,21 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	--cpDebug:drawLine(rWidthX,y+1,rWidthZ, 0, 100, 0, rHeightX,y+1,rHeightZ)
 	--cpDebug:drawLine(rHeightX,y+1,rHeightZ, 0, 100, 0, rStartX,y+1,rStartZ)
 
-
-
-	local leftFruit, totalAreaLeft = FieldUtil.getFruitArea(lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
-	local rightFruit, totalAreaRight = FieldUtil.getFruitArea(rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
-	local leftField = courseplay:isField(lWidthX,lWidthZ,0.1,0.1)
-	local rightField = courseplay:isField(rWidthX,rWidthZ,0.1,0.1)
-
-	--print(string.format("fruit:%s; leftFruit:%s; totalLeft:%s, leftField:%s, rightFruit:%s, totalRight:%s; rightField:%s",
-	--tostring(fruitType),tostring(leftFruit),tostring(totalArealeft),tostring(leftField),tostring(rightFruit),tostring(totalArearight),tostring(rightField)))
-
-	local leftOK = leftField and leftFruit < totalAreaLeft*0.05
-	local rightOK = rightField and rightFruit < totalAreaRight*0.05
-	return leftOK,rightOK
-end
-
-function CombineUnloadManager:raycastBack(chopper)
-	local nx, ny, nz = localDirectionToWorld(chopper.cp.directionNode, 0, 0, 1)
-	local x, y, z = localToWorld(chopper.cp.directionNode, 0, 1.5, -10)
-	cpDebug:drawLine(x, y, z, 0, 100, 0, x+(nx*10), y+(ny*10), z+(nz*10))
-	raycastAll(x, y, z, nx, ny, nz, 'raycastBackCallback', 10, self)
-end
-
--- I believe this tries to figure out how far the back of a combine is from its direction node.
--- TODO: just use vehicle.sizeLength instead?
-function CombineUnloadManager:raycastBackCallback(hitObjectId, x, y, z, distance, nx, ny, nz, subShapeIndex)
-	if hitObjectId ~= 0 then
-		--print("hitObject: "..tostring(hitObjectId).."; distance: "..tostring(distance))
-		cpDebug:drawPoint(x, y, z, 1, 1 , 1);
-		local object = g_currentMission:getNodeObject(hitObjectId)
-		if object and self.combines[object] and self.combines[object].measuredBackDistance == nil then
-			self.combines[object].measuredBackDistance = 10 - distance
-			print(string.format("%s: measuredBackDistance(%s) = 10 - distance(%s)",tostring(object.name),tostring(self.combines[object].measuredBackDistance),tostring(distance)))
-		else
-			return true
-		end
+		local leftFruit, totalAreaLeft = FieldUtil.getFruitArea(lStartX, lStartZ, lWidthX, lWidthZ, lHeightX, lHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
+		noFruitOnLeft = leftFruit < totalAreaLeft * 0.05
+		local rightFruit, totalAreaRight = FieldUtil.getFruitArea(rStartX, rStartZ, rWidthX, rWidthZ, rHeightX, rHeightZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
+		noFruitOnRight = rightFruit < totalAreaRight * 0.05
 	end
+
+	local leftField = courseplay:isField(lWidthX, lWidthZ,0.1,0.1)
+	local rightField = courseplay:isField(rWidthX, rWidthZ,0.1,0.1)
+	-- TODO: for now, it isn't ok to drive off the field when following a chopper.
+	if not self:getIsChopper(combine) then
+		leftField, rightField = true, true
+	end
+	local leftOK = leftField and noFruitOnLeft
+	local rightOK = rightField and noFruitOnRight
+	return leftOK, rightOK
 end
 
 function CombineUnloadManager:getPossibleCombines(vehicle)

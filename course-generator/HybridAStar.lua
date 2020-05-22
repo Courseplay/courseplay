@@ -578,7 +578,7 @@ function HybridAStar:rollUpPath(node, goal, path)
 		currentNode = currentNode.pred
 	end
 	-- start node always points forward, make sure it is reverse if the second node is reverse...
-	self.path[1].gear = self.path[2].gear
+	self.path[1].gear = self.path[2] and self.path[2].gear or self.path[1].gear
 	self:debug('Nodes %d, iterations %d, yields %d', #self.path, self.iterations, self.yields)
 end
 
