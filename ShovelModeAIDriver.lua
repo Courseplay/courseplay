@@ -305,7 +305,7 @@ function ShovelModeAIDriver:setShovelToPositionFinshed(stage,dt)
 end
 
 function ShovelModeAIDriver:getIsShovelFull()
-	return self.vehicle.cp.shovel:getFillUnitFillLevel(1) >= self.vehicle.cp.shovel:getFillUnitCapacity(1)*0.99
+	return self.vehicle.cp.shovel:getFillUnitFillLevel(1) >= self.vehicle.cp.shovel:getFillUnitCapacity(1)*0.98
 end
 
 function ShovelModeAIDriver:getIsShovelEmpty()
