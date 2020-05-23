@@ -61,9 +61,26 @@ courseGenerator.CENTER_MODE_SPIRAL = 2
 --  ----- 9 ---- < -------     | Block 2
 --  -----11 ---- < -------     /
 courseGenerator.CENTER_MODE_CIRCULAR = 3
-courseGenerator.centerModeTexts = {'up/down', 'spiral', 'circular'}
+
+-- Lands mode, making a break through the field and progressively working
+-- outwards in a counterclockwise spiral fashion
+--  ----- 5 ---- < -------  \
+--  ----- 3 ---- < -------  |
+--  ----- 1 ---- < -------  |
+--  ----- 2 ---- > -------  | Block 1
+--  ----- 4 ---- > -------  |
+--  ----- 6 ---- > -------  /
+--  -----11 ---- < -------  \
+--  ----- 9 ---- < -------  |
+--  ----- 7 ---- < -------  | Block 2
+--  ----- 8 ---- > -------  |
+--  -----10 ---- > -------  |
+--  -----12 ---- > -------  /
+courseGenerator.CENTER_MODE_LANDS = 4
+
+courseGenerator.centerModeTexts = {'up/down', 'spiral', 'circular', 'lands'}
 courseGenerator.CENTER_MODE_MIN = courseGenerator.CENTER_MODE_UP_DOWN
-courseGenerator.CENTER_MODE_MAX = courseGenerator.CENTER_MODE_CIRCULAR
+courseGenerator.CENTER_MODE_MAX = courseGenerator.CENTER_MODE_LANDS
 
 -- Distance of waypoints on the generated track in meters
 courseGenerator.waypointDistance = 5
@@ -505,23 +522,23 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 		-- the last one is on the top
 		parallelTracks = reverseTracks( parallelTracks )
 	end
+	local start
 	if centerSettings.mode == courseGenerator.CENTER_MODE_UP_DOWN then
 		parallelTracks = reorderTracksForAlternateFieldwork(parallelTracks, centerSettings.nRowsToSkip)
+		start = leftToRight and 2 or 1
 	elseif centerSettings.mode == courseGenerator.CENTER_MODE_SPIRAL then
 		parallelTracks = reorderTracksForSpiralFieldwork(parallelTracks)
+		start = leftToRight and 2 or 1
 	elseif centerSettings.mode == courseGenerator.CENTER_MODE_CIRCULAR then
 		parallelTracks = reorderTracksForCircularFieldwork(parallelTracks)
+		start = leftToRight and 2 or 1
+	elseif centerSettings.mode == courseGenerator.CENTER_MODE_LANDS then
+		parallelTracks = reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop)
+		start = leftToRight and 2 or 1
 	end
 	-- now make sure that the we work on the tracks in alternating directions
 	-- we generate track from left to right, so the ones which we'll traverse
 	-- in the other direction must be reversed.
-	local start
-	if leftToRight then
-		-- starting on the left, the first track is not reversed
-		start = 2
-	else
-		start = 1
-	end
 	-- reverse every second track
 	for i = start, #parallelTracks, 2 do
 		parallelTracks[ i ].waypoints = reverse( parallelTracks[ i ].waypoints)
@@ -695,6 +712,50 @@ function reorderTracksForCircularFieldwork(parallelTracks)
 	end
 	return reorderedTracks
 end
+
+function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop)
+	local reorderedTracks = {}
+	print(leftToRight, bottomToTop)
+	local rowOrderInLands = ((leftToRight and bottomToTop) or (not leftToRight and not bottomToTop))  and
+			{
+				{1},
+				{2, 1},
+				{2, 3, 1},
+				{2, 3, 1, 4},
+				{2, 3, 1, 4, 5},
+				{3, 4, 2, 5, 1, 6}
+			} or
+			{
+				{1},
+				{1, 2},
+				{2, 1, 3},
+				{3, 2, 4, 1},
+				{3, 2, 4, 1, 5},
+				{4, 3, 5, 2, 6, 1}
+			}
+
+	local nRowsInLands = 6
+
+	for i = 0, math.floor(#parallelTracks / nRowsInLands) - 1 do
+		for _, j in ipairs(rowOrderInLands[nRowsInLands]) do
+			print(i, j, i * nRowsInLands + j)
+			table.insert(reorderedTracks, parallelTracks[i * nRowsInLands + j])
+		end
+	end
+
+	local lastRow = nRowsInLands * math.floor(#parallelTracks / nRowsInLands)
+	local nRowsLeft = #parallelTracks % nRowsInLands
+
+	if nRowsLeft > 0 then
+		for _, j in ipairs(rowOrderInLands[nRowsLeft]) do
+			print(lastRow, j, lastRow + j)
+			table.insert(reorderedTracks, parallelTracks[lastRow + j])
+		end
+	end
+
+	return reorderedTracks
+end
+
 
 --- Find blocks of center tracks which have to be worked separately
 -- in case of non-convex fields or islands

@@ -428,6 +428,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		self:followChopperThroughTurn()
 
 	elseif self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
+
 		--use trafficController
 		if not self:trafficControlOK() then
 			-- TODO: don't solve anything for now, just wait
@@ -1971,7 +1972,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 	self:debug('%s wants me to move out of way', blockedVehicle:getName())
-	if self.combineToUnload.cp.driver:isChopper() then
+	if blockedVehicle.cp.driver:isChopper() then
 		-- TODO: think about how to best handle choppers, since they always stop when no trailer
 		-- is in range they always send these blocking events.
 		return

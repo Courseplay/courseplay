@@ -227,6 +227,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="op/neer rijen" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circulaire vorm" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiraal vorm" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="geactiveerd" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Alleen naam" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Naam en Route" />

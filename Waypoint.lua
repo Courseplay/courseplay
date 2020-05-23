@@ -1229,11 +1229,11 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 	return offsetCourse
 end
 
---- @param node table the node around we are looking for waypoints
+--- @param node number the node around we are looking for waypoints
 --- @return number, number, number, number the waypoint closest to node, its distance, the waypoint closest to the node
 --- pointing approximately (+-45) in the same direction as the node and its distance
 function Course:getNearestWaypoints(node)
-	local x, _, z = getWorldTranslation(node)
+	local nx, _, nz = getWorldTranslation(node)
 	local lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
 	local nodeAngle = math.atan2(lx, lz)
 	local maxDeltaAngle = math.pi / 2
@@ -1241,7 +1241,8 @@ function Course:getNearestWaypoints(node)
 	local ixClosest, ixClosestRightDirection = 1, 1
 
 	for i, p in ipairs(self.waypoints) do
-		local d = p:getDistanceFromPoint(x, z)
+		local x, _, z = self:getWaypointPosition(i)
+		local d = courseplay:distance(x, z, nx, nz)
 		if d < dClosest then
 			dClosest = d
 			ixClosest = i

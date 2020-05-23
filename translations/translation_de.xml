@@ -231,6 +231,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="hoch/runter" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="kreisförmig" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiralförmig" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="nur Name" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Name und Kurs" />

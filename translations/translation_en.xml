@@ -79,7 +79,7 @@
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Unload Point Distance" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Loading: %d of %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 								text="Show waypoints" />
-		<text name="COURSEPLAY_PATHFINDING" 								text="Pathfinding" />
+		<text name="COURSEPLAY_PATHFINDING" 								text="Avoid fruit" />
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Plow past field edge" />
 		<text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Align w/first waypoint" />
 		<text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Side offset:" />
@@ -231,6 +231,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Up/Down" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Racetrack" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spiral" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="Activated" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Name only" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Name and Course" />

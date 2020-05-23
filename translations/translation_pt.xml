@@ -227,6 +227,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="cima/baixo" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="espiral" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED" 						 			text="ligado" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Só o nome" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nome e percurso" />

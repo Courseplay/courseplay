@@ -31,6 +31,12 @@ function ReedsSheppSolver:init()
     self.numPathWords = 48
 end
 
+local sin, cos, asin, acos, atan2, abs, sqrt, floor, huge, pi =
+    math.sin, math.cos, math.asin, math.acos,  math.atan2, math.abs, math.sqrt, math.floor, math.huge, math.pi
+
+local twoPi = 2 * pi
+local piHalf = pi / 2
+
 ---@param start State3D
 ---@param goal State3D
 function ReedsSheppSolver:solve(start, goal, turnRadius, allowReverse)
@@ -40,12 +46,12 @@ function ReedsSheppSolver:solve(start, goal, turnRadius, allowReverse)
     -- Rotate the goal so that the start orientation is 0
     newGoal:rotate(-start.t)
 
-    local bestPathLength = math.huge
+    local bestPathLength = huge
     local bestWord, bestKey
     local bestT, bestU, bestV = 0, 0, 0
     for key, word in pairs(ReedsShepp.PathWords) do
         local potentialLength, t, u, v = self:calculatePathLength(newGoal, word)
-        if potentialLength < math.huge then
+        if potentialLength < huge then
            --   print(key, potentialLength)
         end
         potentialLength = potentialLength * (word.p or 1)
@@ -58,86 +64,90 @@ function ReedsSheppSolver:solve(start, goal, turnRadius, allowReverse)
             bestV = v
         end
     end
-    if bestPathLength == math.huge then
-        return ReedsShepp.ActionSet(math.huge)
+    if bestPathLength == huge then
+        return ReedsShepp.ActionSet(huge)
     end
     return self:getPath(bestWord, bestT, bestU, bestV), bestKey
 end
 
+function ReedsSheppSolver:makeGoal(x, y, t) 
+    return {x = x, y = y, t = t, sint = sin(t), cost = cos(t)}
+end
+
 function ReedsSheppSolver:calculatePathLength(goal, word)
     -- Reeds-Shepp 8.1: CSC, same turn
-    if word == ReedsShepp.PathWords.LfSfLf then return self:LfSfLf(goal) end
-    if word == ReedsShepp.PathWords.LbSbLb then return self:LfSfLf(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfSfRf then return self:LfSfLf(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbSbRb then return self:LfSfLf(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfSfLf then return self:LfSfLf(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbSbLb then return self:LfSfLf(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfSfRf then return self:LfSfLf(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbSbRb then return self:LfSfLf(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.2: CSC, different turn
-    if word == ReedsShepp.PathWords.LfSfRf then return self:LfSfRf(goal) end
-    if word == ReedsShepp.PathWords.LbSbRb then return self:LfSfRf(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfSfLf then return self:LfSfRf(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbSbLb then return self:LfSfRf(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfSfRf then return self:LfSfRf(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbSbRb then return self:LfSfRf(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfSfLf then return self:LfSfRf(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbSbLb then return self:LfSfRf(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.3: C|C|C
-    if word == ReedsShepp.PathWords.LfRbLf then return self:LfRbLf(goal) end
-    if word == ReedsShepp.PathWords.LbRfLb then return self:LfRbLf(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLbRf then return self:LfRbLf(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLfRb then return self:LfRbLf(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRbLf then return self:LfRbLf(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRfLb then return self:LfRbLf(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLbRf then return self:LfRbLf(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLfRb then return self:LfRbLf(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.4: C|CC
-    if word == ReedsShepp.PathWords.LfRbLb then return self:LfRbLb(goal) end
-    if word == ReedsShepp.PathWords.LbRfLf then return self:LfRbLb(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLbRb then return self:LfRbLb(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLfRf then return self:LfRbLb(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRbLb then return self:LfRbLb(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRfLf then return self:LfRbLb(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLbRb then return self:LfRbLb(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLfRf then return self:LfRbLb(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.4: CC|C
-    if word == ReedsShepp.PathWords.LfRfLb then return self:LfRfLb(goal) end
-    if word == ReedsShepp.PathWords.LbRbLf then return self:LfRfLb(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLfRb then return self:LfRfLb(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLbRf then return self:LfRfLb(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRfLb then return self:LfRfLb(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRbLf then return self:LfRfLb(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLfRb then return self:LfRfLb(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLbRf then return self:LfRfLb(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.7: CCu|CuC
-    if word == ReedsShepp.PathWords.LfRufLubRb then return self:LfRufLubRb(goal) end
-    if word == ReedsShepp.PathWords.LbRubLufRf then return self:LfRufLubRb(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLufRubLb then return self:LfRufLubRb(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLubRufLf then return self:LfRufLubRb(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRufLubRb then return self:LfRufLubRb(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRubLufRf then return self:LfRufLubRb(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLufRubLb then return self:LfRufLubRb(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLubRufLf then return self:LfRufLubRb(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.8: C|CuCu|C
-    if word == ReedsShepp.PathWords.LfRubLubRf then return self:LfRubLubRf(goal) end
-    if word == ReedsShepp.PathWords.LbRufLufRb then return self:LfRubLubRf(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLubRubLf then return self:LfRubLubRf(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLufRufLb then return self:LfRubLubRf(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRubLubRf then return self:LfRubLubRf(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRufLufRb then return self:LfRubLubRf(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLubRubLf then return self:LfRubLubRf(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLufRufLb then return self:LfRubLubRf(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.9: C|C(pi/2)SC, same turn
-    if word == ReedsShepp.PathWords.LfRbpi2SbLb then return self:LfRbpi2SbLb(goal) end
-    if word == ReedsShepp.PathWords.LbRfpi2SfLf then return self:LfRbpi2SbLb(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLbpi2SbRb then return self:LfRbpi2SbLb(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLfpi2SfRf then return self:LfRbpi2SbLb(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRbpi2SbLb then return self:LfRbpi2SbLb(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRfpi2SfLf then return self:LfRbpi2SbLb(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLbpi2SbRb then return self:LfRbpi2SbLb(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLfpi2SfRf then return self:LfRbpi2SbLb(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.10: C|C(pi/2)SC, different turn
-    if word == ReedsShepp.PathWords.LfRbpi2SbRb then return self:LfRbpi2SbRb(goal) end
-    if word == ReedsShepp.PathWords.LbRfpi2SfRf then return self:LfRbpi2SbLb(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLbpi2SbLb then return self:LfRbpi2SbLb(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLfpi2SfLf then return self:LfRbpi2SbLb(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRbpi2SbRb then return self:LfRbpi2SbRb(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRfpi2SfRf then return self:LfRbpi2SbLb(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLbpi2SbLb then return self:LfRbpi2SbLb(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLfpi2SfLf then return self:LfRbpi2SbLb(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.9 (reversed): CSC(pi/2)|C, same turn
-    if word == ReedsShepp.PathWords.LfSfRfpi2Lb then return self:LfSfRfpi2Lb(goal) end
-    if word == ReedsShepp.PathWords.LbSbRbpi2Lf then return self:LfSfRfpi2Lb(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfSfLfpi2Rb then return self:LfSfRfpi2Lb(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbSbLbpi2Rf then return self:LfSfRfpi2Lb(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfSfRfpi2Lb then return self:LfSfRfpi2Lb(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbSbRbpi2Lf then return self:LfSfRfpi2Lb(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfSfLfpi2Rb then return self:LfSfRfpi2Lb(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbSbLbpi2Rf then return self:LfSfRfpi2Lb(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.10 (reversed): CSC(pi/2)|C, different turn
-    if word == ReedsShepp.PathWords.LfSfLfpi2Rb then return self:LfSfLfpi2Rb(goal) end
-    if word == ReedsShepp.PathWords.LbSbLbpi2Rf then return self:LfSfLfpi2Rb(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfSfRfpi2Lb then return self:LfSfLfpi2Rb(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbSbRbpi2Lf then return self:LfSfLfpi2Rb(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfSfLfpi2Rb then return self:LfSfLfpi2Rb(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbSbLbpi2Rf then return self:LfSfLfpi2Rb(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfSfRfpi2Lb then return self:LfSfLfpi2Rb(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbSbRbpi2Lf then return self:LfSfLfpi2Rb(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
     -- Reeds-Shepp 8.11: C|C(pi/2)SC(pi/2)|C
-    if word == ReedsShepp.PathWords.LfRbpi2SbLbpi2Rf then return self:LfRbpi2SbLbpi2Rf(goal) end
-    if word == ReedsShepp.PathWords.LbRfpi2SfLfpi2Rb then return self:LfRbpi2SbLbpi2Rf(State3D(-goal.x, goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RfLbpi2SbRbpi2Lf then return self:LfRbpi2SbLbpi2Rf(State3D(goal.x, -goal.y, -goal.t)) end
-    if word == ReedsShepp.PathWords.RbLfpi2SfRfpi2Lb then return self:LfRbpi2SbLbpi2Rf(State3D(-goal.x, -goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LfRbpi2SbLbpi2Rf then return self:LfRbpi2SbLbpi2Rf(self:makeGoal(goal.x, goal.y, goal.t)) end
+    if word == ReedsShepp.PathWords.LbRfpi2SfLfpi2Rb then return self:LfRbpi2SbLbpi2Rf(self:makeGoal(-goal.x, goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RfLbpi2SbRbpi2Lf then return self:LfRbpi2SbLbpi2Rf(self:makeGoal(goal.x, -goal.y, -goal.t)) end
+    if word == ReedsShepp.PathWords.RbLfpi2SfRfpi2Lb then return self:LfRbpi2SbLbpi2Rf(self:makeGoal(-goal.x, -goal.y, goal.t)) end
 
-    return math.huge, 0, 0, 0
+    return huge, 0, 0, 0
 end
 
 function ReedsSheppSolver:getPath( word, t, u, v)
@@ -213,7 +223,7 @@ function ReedsSheppSolver:getPath( word, t, u, v)
     if word == ReedsShepp.PathWords.RfLbpi2SbRbpi2Lf then return self:reflectTransform(self:LfRbpi2SbLbpi2Rfpath(t, u, v)) end
     if word == ReedsShepp.PathWords.RbLfpi2SfRfpi2Lb then return self:reflectTransform(self:timeflipTransform(self:LfRbpi2SbLbpi2Rfpath(t, u, v))) end
 
-    return ReedsShepp.ActionSet(math.huge)
+    return ReedsShepp.ActionSet(huge)
 end
 
 function ReedsSheppSolver:timeflipTransform(actions)
@@ -235,42 +245,41 @@ function ReedsSheppSolver:reflectTransform(actions)
 end
 
 function ReedsSheppSolver:wrapAngle(angle)
-    if angle > -math.pi and angle <= math.pi then
+    if angle > -pi and angle <= pi then
         return angle;
     end
-    angle = angle % (2 * math.pi)
-    if angle <= -math.pi then
-        return angle + 2 * math.pi
+    angle = angle % (2 * pi)
+    if angle <= -pi then
+        return angle + 2 * pi
     end
-    if angle > math.pi then
-        return angle - 2 * math.pi
+    if angle > pi then
+        return angle - 2 * pi
     end
     return angle
 end
 
 function ReedsSheppSolver:isInvalidAngle(theta)
-    return theta < 0 or theta > math.pi
+    return theta < 0 or theta > pi
 end
 
+
 function ReedsSheppSolver:mod2Pi(theta)
-    while theta < 0 do theta = theta + 2 * math.pi end
-    while theta >= 2 * math.pi do theta = theta - 2 * math.pi end
-    return theta
+    return theta - twoPi * floor(theta / twoPi)
 end
 
 function ReedsSheppSolver:LfSfLf(goal)
     -- Reeds-Shepp 8.1
     local t, u, v = 0, 0, 0
 
-    local x = goal.x - math.sin(goal.t)
-    local y = goal.y - 1 + math.cos(goal.t)
+    local x = goal.x - goal.sint
+    local y = goal.y - 1 + goal.cost
 
-    u = math.sqrt(x * x + y * y)
-    t = math.atan2(y, x)
+    u = sqrt(x * x + y * y)
+    t = atan2(y, x)
     v = ReedsSheppSolver:wrapAngle(goal.t - t)
 
     if self:isInvalidAngle(t) or self:isInvalidAngle(v) then
-        return math.huge
+        return huge
     end
     return t + u + v, t, u, v
 end
@@ -287,23 +296,23 @@ function ReedsSheppSolver:LfSfRf(goal)
     -- Reeds-Shepp 8.2
     local t, u, v = 0, 0, 0
 
-    local x = goal.x + math.sin(goal.t)
-    local y = goal.y - 1 - math.cos(goal.t)
+    local x = goal.x + goal.sint
+    local y = goal.y - 1 - goal.cost
 
     local u1squared = x * x + y * y
-    local t1 = math.atan2(y, x)   
+    local t1 = atan2(y, x)   
 
     if (u1squared < 4) then
-        return math.huge
+        return huge
     end
 
-    u = math.sqrt(u1squared - 4)
-    local phi = math.atan2(2, u)
+    u = sqrt(u1squared - 4)
+    local phi = atan2(2, u)
     t = ReedsSheppSolver:wrapAngle(t1 + phi)
     v = ReedsSheppSolver:wrapAngle(t - goal.t)
 
     if self:isInvalidAngle(t) or self:isInvalidAngle(v) then
-        return math.huge
+        return huge
     end
 
     return t + u + v, t, u, v
@@ -323,21 +332,21 @@ function ReedsSheppSolver:LfRbLf(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x - math.sin(goal.t)
-    local eta =goal.y - 1 + math.cos(goal.t)
+    local xi = goal.x - goal.sint
+    local eta =goal.y - 1 + goal.cost
 
-    local u1 = math.sqrt(xi * xi + eta * eta)
+    local u1 = sqrt(xi * xi + eta * eta)
     if u1 > 4 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
-    local alpha = math.acos(u1 / 4)
-    t = self:mod2Pi((math.pi / 2) + alpha + phi)
-    u = self:mod2Pi(math.pi - 2 * alpha)
+    local phi = atan2(eta, xi)
+    local alpha = acos(u1 / 4)
+    t = self:mod2Pi(piHalf + alpha + phi)
+    u = self:mod2Pi(pi - 2 * alpha)
     v = self:mod2Pi(goal.t - t - u)
     if self:isInvalidAngle(t) or self:isInvalidAngle(u) or self:isInvalidAngle(v) then
-        return math.huge
+        return huge
     end
     return t + u + v, t, u, v
 end
@@ -357,18 +366,18 @@ function ReedsSheppSolver:LfRbLb(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x - math.sin(goal.t)
-    local eta =goal.y - 1 + math.cos(goal.t)
+    local xi = goal.x - goal.sint
+    local eta =goal.y - 1 + goal.cost
 
-    local u1 = math.sqrt(xi * xi + eta * eta)
+    local u1 = sqrt(xi * xi + eta * eta)
     if u1 > 4 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
-    local alpha = math.acos(u1 / 4)
-    t = self:mod2Pi((math.pi / 2) + alpha + phi)
-    u = self:mod2Pi(math.pi - 2 * alpha)
+    local phi = atan2(eta, xi)
+    local alpha = acos(u1 / 4)
+    t = self:mod2Pi(piHalf + alpha + phi)
+    u = self:mod2Pi(pi - 2 * alpha)
     v = self:mod2Pi(t + u - goal.t)
 
     return t + u + v, t, u, v
@@ -388,19 +397,19 @@ function ReedsSheppSolver:LfRfLb(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x - math.sin(goal.t)
-    local eta =goal.y - 1 + math.cos(goal.t)
+    local xi = goal.x - goal.sint
+    local eta =goal.y - 1 + goal.cost
 
-    local u1 = math.sqrt(xi * xi + eta * eta)
+    local u1 = sqrt(xi * xi + eta * eta)
     if u1 > 4 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
-    u = math.acos((8 - u1 * u1) / 8)
-    local va = math.sin(u)
-    local alpha = math.asin(2 * va / u1)
-    t = self:mod2Pi((math.pi / 2) - alpha + phi)
+    local phi = atan2(eta, xi)
+    u = acos((8 - u1 * u1) / 8)
+    local va = sin(u)
+    local alpha = asin(2 * va / u1)
+    t = self:mod2Pi(piHalf - alpha + phi)
     v = self:mod2Pi(t - u - goal.t)
 
     return t + u + v, t, u, v
@@ -420,24 +429,24 @@ function ReedsSheppSolver:LfRufLubRb(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x + math.sin(goal.t)
-    local eta =goal.y - 1 - math.cos(goal.t)
+    local xi = goal.x + goal.sint
+    local eta =goal.y - 1 - goal.cost
 
-    local u1 = math.sqrt(xi * xi + eta * eta)
+    local u1 = sqrt(xi * xi + eta * eta)
     if u1 > 4 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
+    local phi = atan2(eta, xi)
 
     if (u1 > 2) then
-        local alpha = math.acos(u1 / 4 - 0.5)
-        t = self:mod2Pi((math.pi / 2) + phi - alpha)
-        u = self:mod2Pi(math.pi - alpha)
+        local alpha = acos(u1 / 4 - 0.5)
+        t = self:mod2Pi(piHalf + phi - alpha)
+        u = self:mod2Pi(pi - alpha)
         v = self:mod2Pi(goal.t - t + 2 * u)
     else
-        local alpha = math.acos(u1 / 4 + 0.5)
-        t = self:mod2Pi((math.pi / 2) + phi + alpha)
+        local alpha = acos(u1 / 4 + 0.5)
+        t = self:mod2Pi(piHalf + phi + alpha)
         u = self:mod2Pi(alpha)
         v = self:mod2Pi(goal.t - t + 2 * u)
     end
@@ -459,24 +468,24 @@ function ReedsSheppSolver:LfRubLubRf(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x + math.sin(goal.t)
-    local eta =goal.y - 1 - math.cos(goal.t)
+    local xi = goal.x + goal.sint
+    local eta =goal.y - 1 - goal.cost
 
-    local u1 = math.sqrt(xi * xi + eta * eta)
+    local u1 = sqrt(xi * xi + eta * eta)
     if (u1 > 6) then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
+    local phi = atan2(eta, xi)
     local va1 = 1.25 - u1 * u1 / 16
     if va1 < 0 or va1 > 1 then
-        return math.huge
+        return huge
     end
 
-    u = math.acos(va1)
-    local va2 =  math.sin(u)
-    local alpha = math.asin(2 * va2 / u1)
-    t = self:mod2Pi((math.pi / 2) + phi + alpha)
+    u = acos(va1)
+    local va2 =  sin(u)
+    local alpha = asin(2 * va2 / u1)
+    t = self:mod2Pi(piHalf + phi + alpha)
     v = self:mod2Pi(t - goal.t)
 
     return t + u + u + v, t, u, v
@@ -497,32 +506,32 @@ function ReedsSheppSolver:LfRbpi2SbLb(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x - math.sin(goal.t)
-    local eta =goal.y - 1 + math.cos(goal.t)
+    local xi = goal.x - goal.sint
+    local eta =goal.y - 1 + goal.cost
 
     local u1squared = xi * xi + eta * eta
     if u1squared < 4 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
+    local phi = atan2(eta, xi)
 
-    u = math.sqrt(u1squared - 4) - 2
+    u = sqrt(u1squared - 4) - 2
     if u < 0 then
-        return math.huge
+        return huge
     end
 
-    local alpha = math.atan2(2, u + 2)
-    t = self:mod2Pi((math.pi / 2) + phi + alpha)
-    v = self:mod2Pi(t + (math.pi / 2) - goal.t)
+    local alpha = atan2(2, u + 2)
+    t = self:mod2Pi(piHalf + phi + alpha)
+    v = self:mod2Pi(t + piHalf - goal.t)
 
-    return t + (math.pi / 2) + u + v, t, u, v
+    return t + piHalf + u + v, t, u, v
 end
 
 function ReedsSheppSolver:LfRbpi2SbLbpath(t, u, v)     
     local actions = ReedsShepp.ActionSet()
     actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Forward, t)
-    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, (math.pi / 2))
+    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, piHalf)
     actions:addAction(HybridAStar.Steer.Straight, HybridAStar.Gear.Backward, u)
     actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Backward, v)
     return actions
@@ -534,27 +543,27 @@ function ReedsSheppSolver:LfRbpi2SbRb(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x + math.sin(goal.t)
-    local eta =goal.y - 1 - math.cos(goal.t)
+    local xi = goal.x + goal.sint
+    local eta =goal.y - 1 - goal.cost
 
-    local u1 = math.sqrt(xi * xi + eta * eta)
+    local u1 = sqrt(xi * xi + eta * eta)
     if u1 < 2 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
+    local phi = atan2(eta, xi)
 
-    t = self:mod2Pi((math.pi / 2) + phi)
+    t = self:mod2Pi(piHalf + phi)
     u = u1 - 2
-    v = self:mod2Pi(goal.t - t - (math.pi / 2))
+    v = self:mod2Pi(goal.t - t - piHalf)
 
-    return t + (math.pi / 2) + u + v, t, u, v
+    return t + piHalf + u + v, t, u, v
 end
 
 function ReedsSheppSolver:LfRbpi2SbRbpath(t, u, v)
     local actions = ReedsShepp.ActionSet()
     actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Forward, t)
-    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, (math.pi / 2))
+    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, piHalf)
     actions:addAction(HybridAStar.Steer.Straight, HybridAStar.Gear.Backward, u)
     actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, v)
     return actions
@@ -566,33 +575,33 @@ function ReedsSheppSolver:LfSfRfpi2Lb(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x - math.sin(goal.t)
-    local eta =goal.y - 1 + math.cos(goal.t)
+    local xi = goal.x - goal.sint
+    local eta =goal.y - 1 + goal.cost
 
     local u1squared = xi * xi + eta * eta
     if u1squared < 4 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
+    local phi = atan2(eta, xi)
 
-    u = math.sqrt(u1squared - 4) - 2
+    u = sqrt(u1squared - 4) - 2
     if u < 0 then
-        return math.huge
+        return huge
     end
 
-    local alpha = math.atan2(u + 2, 2)
-    t = self:mod2Pi((math.pi / 2) + phi - alpha)
-    v = self:mod2Pi(t - (math.pi / 2) - goal.t)
+    local alpha = atan2(u + 2, 2)
+    t = self:mod2Pi(piHalf + phi - alpha)
+    v = self:mod2Pi(t - piHalf - goal.t)
 
-    return t + u + (math.pi / 2) + v, t, u, v
+    return t + u + piHalf + v, t, u, v
 end
 
 function ReedsSheppSolver:LfSfRfpi2Lbpath(t, u, v)
     local actions = ReedsShepp.ActionSet()
     actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Forward, t)
     actions:addAction(HybridAStar.Steer.Straight, HybridAStar.Gear.Forward, u)
-    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Forward, (math.pi / 2))
+    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Forward, piHalf)
     actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Backward, v)
     return actions
 end
@@ -603,28 +612,28 @@ function ReedsSheppSolver:LfSfLfpi2Rb(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x + math.sin(goal.t)
-    local eta =goal.y - 1 - math.cos(goal.t)
+    local xi = goal.x + goal.sint
+    local eta =goal.y - 1 - goal.cost
 
-    local u1 = math.sqrt(xi * xi + eta * eta)
+    local u1 = sqrt(xi * xi + eta * eta)
     if u1 < 2 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
+    local phi = atan2(eta, xi)
 
     t = self:mod2Pi(phi)
     u = u1 - 2
-    v = self:mod2Pi(-t - (math.pi / 2) + goal.t)
+    v = self:mod2Pi(-t - piHalf + goal.t)
 
-    return t + u + (math.pi / 2) + v, t, u, v
+    return t + u + piHalf + v, t, u, v
 end
 
 function ReedsSheppSolver:LfSfLfpi2Rbpath(t, u, v)
     local actions = ReedsShepp.ActionSet()
     actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Forward, t)
     actions:addAction(HybridAStar.Steer.Straight, HybridAStar.Gear.Forward, u)
-    actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Forward, (math.pi / 2))
+    actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Forward, piHalf)
     actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, v)
     return actions
 end
@@ -635,34 +644,34 @@ function ReedsSheppSolver:LfRbpi2SbLbpi2Rf(goal)
     -- from http:--msl.cs.uiuc.edu/~lavalle/cs326a/rs.c
     local t, u, v = 0, 0, 0
 
-    local xi = goal.x + math.sin(goal.t)
-    local eta = goal.y - 1 - math.cos(goal.t)
+    local xi = goal.x + goal.sint
+    local eta = goal.y - 1 - goal.cost
 
     local u1squared = xi * xi + eta * eta
     if u1squared < 16 then
-        return math.huge
+        return huge
     end
 
-    local phi = math.atan2(eta, xi)
+    local phi = atan2(eta, xi)
 
-    u = math.sqrt(u1squared - 4) - 4
+    u = sqrt(u1squared - 4) - 4
     if u < 0 then
-        return math.huge
+        return huge
     end
 
-    local alpha = math.atan2(2, u + 4)
-    t = self:mod2Pi((math.pi / 2) + phi + alpha)
+    local alpha = atan2(2, u + 4)
+    t = self:mod2Pi(piHalf + phi + alpha)
     v = self:mod2Pi(t - goal.t)
 
-    return t + u + v + math.pi, t, u, v
+    return t + u + v + pi, t, u, v
 end
 
 function ReedsSheppSolver:LfRbpi2SbLbpi2Rfpath(t, u, v)
     local actions = ReedsShepp.ActionSet()
     actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Forward, t)
-    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, (math.pi / 2))
+    actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Backward, piHalf)
     actions:addAction(HybridAStar.Steer.Straight, HybridAStar.Gear.Backward, u)
-    actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Backward, (math.pi / 2))
+    actions:addAction(HybridAStar.Steer.Left, HybridAStar.Gear.Backward, piHalf)
     actions:addAction(HybridAStar.Steer.Right, HybridAStar.Gear.Forward, v)
     return actions
 end
