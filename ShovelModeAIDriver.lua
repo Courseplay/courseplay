@@ -26,13 +26,16 @@ handles "mode9": Fill and empty shovel
 	d) drive reverse (back through silo) and turn at end
 	e) drive forwards to bunker, set waiting point #3 and unload
 	f) drive backwards, turn, drive forwards until before start
+
 1)  drive course until waiting point #1 - set shovel to "filling" rotation
 2)  [repeat] if lastFillLevel == currentFillLevel: drive ahead until is filling
 2b) if waiting point #2 is reached, area is empty -> stop work
 3)  if currentFillLevel == 100: set shovel to "transport" rotation, find closest point that's behind tractor, drive course from there
 4)  drive course forwards until waiting point #3 - set shovel to "empty" rotation
 5)  drive course with recorded direction (most likely in reverse) until end - continue and repeat to 1)
+
 NOTE: rotation: movingTool.curRot[1] (only x-axis) / translation: movingTool.curTrans[3] (only z-axis)
+
 NOTE: although lx and lz are passed in as parameters, they are never used.
 ]]
 
