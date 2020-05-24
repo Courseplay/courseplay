@@ -1380,7 +1380,7 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToMovingCombine(path)
-	if self:isPathFound(path) then
+	if self:isPathFound(path) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
 		self:setNewOnFieldState(self.states.DRIVE_TO_MOVING_COMBINE)
@@ -1404,7 +1404,7 @@ function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, 
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
-	if self:isPathFound(path) then
+	if self:isPathFound(path) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
 		self:setNewOnFieldState(self.states.DRIVE_TO_COMBINE)
