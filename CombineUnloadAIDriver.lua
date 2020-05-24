@@ -85,7 +85,6 @@ CombineUnloadAIDriver.myStates = {
 	HANDLE_CHOPPER_180_TURN = {},
 	FOLLOW_CHOPPER_THROUGH_TURN = {},
 	ALIGN_TO_CHOPPER_AFTER_TURN = {},
-	WAIT_FOR_CHOPPER_TURNED = {},
 	MOVING_OUT_OF_WAY = {},
 	WAITING_FOR_MANEUVERING_COMBINE = {}
 }
@@ -296,7 +295,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 		-- stop when too close to a combine not ready to unload (wait until it is done with turning for example)
-		if self:isWithinSafeManeuveringDistance() then
+		if self:isWithinSafeManeuveringDistance(self.combineToUnload) then
 			self:debugSparse('Too close to maneuvering combine, stop.')
 			--self:hold()
 		else
@@ -433,16 +432,17 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if not self:trafficControlOK() then
 			-- TODO: don't solve anything for now, just wait
 			--g_trafficController:solve(self.vehicle.rootNode)
+			self:debugSparse('holding due to traffic')
 			self:hold()
 		else
 			g_trafficController:resetSolver(self.vehicle.rootNode)
 		end
 
-	elseif self.onFieldState == self.states.WAIT_FOR_CHOPPER_TURNED then
-		--print("self.combineToUnload.cp.turnStage: "..tostring(self.combineToUnload.cp.turnStage))
-		self:hold()
-		if self.combineToUnload.cp.turnStage == 0 then
-			self:setNewOnFieldState(self.states.FOLLOW_CHOPPER)
+		-- try not crashing into our combine on the way to the unload course
+		if self.combineJustUnloaded and self:isWithinSafeManeuveringDistance(self.combineJustUnloaded)
+				 and self.combineJustUnloaded.cp.driver:isManeuvering() then
+			self:debugSparse('holding combine %s while leaving for the unload course', self.combineJustUnloaded:getName())
+			self.combineJustUnloaded.cp.driver:hold()
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_BACK_FULL then
@@ -703,7 +703,8 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 			end
 		end
 	end
-	return nil, allTrailersFull
+	self:debugSparse('Can\'t find trailer target node')
+	return self.vehicle.cp.workTools[1].rootNode, allTrailersFull
 end
 
 function CombineUnloadAIDriver:getDrivingCoordsBeside()
@@ -1072,6 +1073,8 @@ end
 
 function CombineUnloadAIDriver:releaseUnloader()
 	g_combineUnloadManager:releaseUnloaderFromCombine(self.vehicle, self.combineToUnload)
+	-- TODO: may not have to release the unloader at this point at all so no need to remember
+	self.combineJustUnloaded = self.combineToUnload
 	self.combineToUnload = nil
 	self:refreshHUD()
 end
@@ -1155,8 +1158,8 @@ function CombineUnloadAIDriver:driveToNodeWithPathfinding(node, xOffset, zOffset
 	return false
 end
 
-function CombineUnloadAIDriver:isWithinSafeManeuveringDistance()
-	local d = calcDistanceFrom(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(self.combineToUnload))
+function CombineUnloadAIDriver:isWithinSafeManeuveringDistance(vehicle)
+	local d = calcDistanceFrom(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(vehicle))
 	return d < self.safeManeuveringDistance
 end
 
@@ -1623,7 +1626,7 @@ function CombineUnloadAIDriver:driveToMovingCombine()
 --	end
 
 	-- stop when too close to a combine not ready to unload (wait until it is done with turning for example)
-	if self:isWithinSafeManeuveringDistance() and self.combineToUnload.cp.driver:isManeuvering() then
+	if self:isWithinSafeManeuveringDistance(self.combineToUnload) and self.combineToUnload.cp.driver:isManeuvering() then
 		self:startWaitingForManeuveringCombine()
 	elseif self:isOkToStartUnloadingCombine() then
 		self:startUnloadingCombine()
@@ -1644,7 +1647,7 @@ function CombineUnloadAIDriver:startWaitingForManeuveringCombine()
 end
 
 function CombineUnloadAIDriver:waitForManeuveringCombine()
-	if self:isWithinSafeManeuveringDistance() and self.combineToUnload.cp.driver:isManeuvering() then
+	if self:isWithinSafeManeuveringDistance(self.combineToUnload) and self.combineToUnload.cp.driver:isManeuvering() then
 		self:hold()
 	else
 		self:debug('Combine stopped maneuvering')
