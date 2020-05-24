@@ -1178,7 +1178,7 @@ function CombineUnloadAIDriver:isBehindAndAlignedToCombine(maxDirectionDifferenc
 	local pipeOffset = self.combineToUnload.cp.driver:getPipeOffset()
 
 	-- close enough and approximately same direction and behind and not too far to the left or right
-	return dz < 0 and math.abs(dx) < math.abs(1.5 * pipeOffset) and  MathUtil.vector2Length(dx, dz) < 30 and
+	return dz < 0 and math.abs(dx) < math.abs(1.5 * pipeOffset) and MathUtil.vector2Length(dx, dz) < 30 and
 			TurnContext.isSameDirection(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload),
 					maxDirectionDifferenceDeg or 45)
 
@@ -1191,7 +1191,8 @@ function CombineUnloadAIDriver:isInFrontAndAlignedToMovingCombine(maxDirectionDi
 
 	-- in front of the combine, close enough and approximately same direction, about pipe offset side distance
 	-- and is not waiting (stopped) for the unloader
-	if dz >= 0 and dx < pipeOffset * 1.1 and dx > pipeOffset * 0.9 and MathUtil.vector2Length(dx, dz) < 30 and
+	if dz >= 0 and math.abs(dx) < math.abs(pipeOffset) * 1.1 and math.abs(dx) > math.abs(pipeOffset) * 0.9 and
+			MathUtil.vector2Length(dx, dz) < 30 and
 			TurnContext.isSameDirection(AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(self.combineToUnload),
 					maxDirectionDifferenceDeg or 15) and
 			not self.combineToUnload.cp.driver:willWaitForUnloadToFinish() then
