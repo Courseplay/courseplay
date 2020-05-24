@@ -636,9 +636,10 @@ function LevelCompactAIDriver:getDiffHeightforHeight(targetHeight)
 	local bladeTerrain = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, bladeX,bladeY,bladeZ);
 	local _,_,offSetZ = worldToLocal(self.vehicle.rootNode,bladeX,bladeY,bladeZ)
 	local _,projectedTractorY,_  = localToWorld(self.vehicle.rootNode,0,0,offSetZ)
-		end
-	return targetHeight - (projectedTractorY-bladeTerrain)
+
+	return targetHeight- (projectedTractorY-bladeTerrain)
 end
+
 
 function LevelCompactAIDriver:recordAlphaList()
 	local blade = self.vehicle.cp.workTools[1]
@@ -790,7 +791,7 @@ function LevelCompactAIDriver:getColumnsTargetHeight(newColumn)
 		totalFillLevel = totalFillLevel + self.vehicle.cp.BunkerSiloMap[i][newColumn].fillLevel
 	end
 	local newHeight = math.max(0.6,(totalFillLevel/1000)/totalArea)
-	self:debug("getTargetHeight: totalFillLevel:%s; totalArea:%s Height%s",tostring(totalFillLevel),tostring(totalArea),tostring(newHeight))
+	self:debug("getTargetHeigth: totalFillLevel:%s; totalArea:%s Height%s",tostring(totalFillLevel),tostring(totalArea),tostring(newHeight))
 	return newHeight
 	
 end
