@@ -227,6 +227,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="fel/le" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="körkörös" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spirál" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="Bekapcsolva" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Csak név" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Név és útvonal" />

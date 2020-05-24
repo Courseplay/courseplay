@@ -231,6 +231,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="上/下" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="围绕" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="螺旋" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="开启" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="仅名称" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="名称和任务" />

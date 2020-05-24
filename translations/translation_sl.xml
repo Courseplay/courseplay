@@ -231,6 +231,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktiviran" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Samo ime" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Ime in pot" />

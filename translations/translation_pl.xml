@@ -231,6 +231,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Tam i z powrotem" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Na około" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirala" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
 		<text name="COURSEPLAY_ACTIVATED"								 	text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 	text="Tylko nazwa" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 	text="Nazwa i Kurs" />

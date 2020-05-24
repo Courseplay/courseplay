@@ -171,13 +171,10 @@ function State3D:reverseHeading()
     self.t = self:getReverseHeading()
 end
 
+local twoPi = 2 * math.pi
+
 function State3D:normalizeHeadingRad(t)
-    t = t % (2 * math.pi)
-    if t < 0 then
-        return 2 * math.pi - t
-    else
-        return t
-    end
+    return t - twoPi * math.floor(t / twoPi)
 end
 
 --- Add a vector (+= operator, not creating a new Vector instance as __add)

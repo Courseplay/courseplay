@@ -2397,12 +2397,14 @@ function CenterModeSetting:init()
 		{
 			courseGenerator.CENTER_MODE_UP_DOWN,
 			courseGenerator.CENTER_MODE_CIRCULAR,
-			courseGenerator.CENTER_MODE_SPIRAL
+			courseGenerator.CENTER_MODE_SPIRAL,
+			courseGenerator.CENTER_MODE_LANDS
 		},
 		{
 			'COURSEPLAY_CENTER_MODE_UP_DOWN',
 			'COURSEPLAY_CENTER_MODE_CIRCULAR',
-			'COURSEPLAY_CENTER_MODE_SPIRAL'
+			'COURSEPLAY_CENTER_MODE_SPIRAL',
+			'COURSEPLAY_CENTER_MODE_LANDS'
 		})
 end
 

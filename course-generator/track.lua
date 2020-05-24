@@ -318,8 +318,9 @@ function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 			local cutFromHere, cutToHere = 0, i - 1
 			local totalAngle = 0
 			-- this is the first waypoint of a block with up/down rows.
-			if centerSettings.mode == courseGenerator.CENTER_MODE_CIRCULAR then
-				-- In this mode we want to reach the first up/down row waypoint on the headland as the starting row
+			if centerSettings.mode == courseGenerator.CENTER_MODE_CIRCULAR or
+				centerSettings.mode == courseGenerator.CENTER_MODE_LANDS then
+				-- In these modes we want to reach the first up/down row waypoint on the headland as the starting row
 				-- is usually somewhere in the middle of the field
 				-- walk back from the up/down row on the headland and see if we have a connecting track here
 				for j, point in course:iterator(i - 2, 1, -1) do
