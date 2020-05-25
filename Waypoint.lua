@@ -292,7 +292,7 @@ end
 
 --- Current offset to apply. getWaypointPosition() will always return the position adjusted by the
 -- offset. The x and z offset are in the waypoint's coordinate system, waypoints are directed towards
--- the next waypoint, so a z = 1 offset will move the waypoint 1m forward, x = 1 1 m to the left (when
+-- the next waypoint, so a z = 1 offset will move the waypoint 1m forward, x = 1 1 m to the right (when
 -- looking in the drive direction)
 --- IMPORTANT: the offset for multitool (laneOffset) must not be part of this as it is already part of the
 --- course,

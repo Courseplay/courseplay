@@ -139,7 +139,7 @@ function CombineAIDriver:init(vehicle)
 	end
 
 	-- distance to keep to the right when pulling back to make room for the tractor
-	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 3
+	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 5
 	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
 	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
 	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7

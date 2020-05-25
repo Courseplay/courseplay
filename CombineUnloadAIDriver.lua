@@ -534,7 +534,7 @@ function CombineUnloadAIDriver:driveBesideCombine()
 	-- we don't want a moving target
 	self:fixAutoAimNode()
 	local targetNode = self:getTrailersTargetNode()
-	local _, offsetZ = self.combineToUnload.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset, self.vehicle.cp.tipperOffset)
+	local _, offsetZ = self:getPipeOffset(self.combineToUnload)
 	-- TODO: this - 1 is a workaround the fact that we use a simple P controller instead of a PI
 	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, - offsetZ - 1)
 	-- use a factor to make sure we reach the pipe fast, but be more gentle while discharging
@@ -923,8 +923,15 @@ function CombineUnloadAIDriver:getCombineIsTurning()
 	return self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isTurning()
 end
 
+-- TODO: remove this legacy function and use getPipeOffset everywhere
 function CombineUnloadAIDriver:getCombineOffset(combine)
 	return g_combineUnloadManager:getCombinesPipeOffset(combine)
+end
+
+---@return number, number x and z offset of the pipe's end from the combine's root node in the Giants coordinate system
+---(x > 0 left, z > 0 forward) corrected with the manual offset settings
+function CombineUnloadAIDriver:getPipeOffset(combine)
+	return combine.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset, self.vehicle.cp.tipperOffset)
 end
 
 function CombineUnloadAIDriver:getChopperOffset(combine)
@@ -1175,7 +1182,7 @@ end
 
 function CombineUnloadAIDriver:isBehindAndAlignedToCombine(maxDirectionDifferenceDeg)
 	local dx, _, dz = localToLocal(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
-	local pipeOffset = self.combineToUnload.cp.driver:getPipeOffset()
+	local pipeOffset = self:getPipeOffset(self.combineToUnload)
 
 	-- close enough and approximately same direction and behind and not too far to the left or right
 	return dz < 0 and math.abs(dx) < math.abs(1.5 * pipeOffset) and MathUtil.vector2Length(dx, dz) < 30 and
@@ -1187,7 +1194,7 @@ end
 --- In front of the combine, right distance from pipe to start unloading and the combine is moving
 function CombineUnloadAIDriver:isInFrontAndAlignedToMovingCombine(maxDirectionDifferenceDeg)
 	local dx, _, dz = localToLocal(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
-	local pipeOffset = self.combineToUnload.cp.driver:getPipeOffset()
+	local pipeOffset = self:getPipeOffset(self.combineToUnload)
 
 	-- in front of the combine, close enough and approximately same direction, about pipe offset side distance
 	-- and is not waiting (stopped) for the unloader
@@ -1266,7 +1273,7 @@ end
 function CombineUnloadAIDriver:startUnloadingStoppedCombine()
 	-- get a path to the pipe, make the pipe 0.5 m longer so the path will be 0.5 more to the outside to make
 	-- sure we don't bump into the pipe
-	local offsetX, offsetZ = self.combineToUnload.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset, self.vehicle.cp.tipperOffset)
+	local offsetX, offsetZ = self:getPipeOffset(self.combineToUnload)
 	local unloadCourse = Course.createFromNode(self.vehicle, self:getCombineRootNode(), offsetX, offsetZ - 5, 30, 2, false)
 	self:startCourse(unloadCourse, 1)
 	-- make sure to get to the course as soon as possible
@@ -1317,7 +1324,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startCourseFollowingCombine()
 	self.followCourse, self.followCourseIx = self:setupFollowCourse()
-	self.combineOffset = self:getCombineOffset(self.combineToUnload)
+	self.combineOffset = self:getPipeOffset(self.combineToUnload)
 	self.followCourse:setOffset(-self.combineOffset, 0)
 	self:debug('Will follow combine\'s course at waypoint %d, side offset %.1f',
 			self.followCourseIx, self.followCourse.offsetX)
@@ -1362,11 +1369,11 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 		-- for now, just use the Eucledian distance. This should rather be the length of a pathfinder generated
 		-- path, using the simple A* should be good enough for estimation, the hybrid A* would be too slow
 		local d = self:getDistanceFromCombine()
-		local estimatedSecondsEnroute = d / (self:getFieldSpeed() / 3.6)
+		local estimatedSecondsEnroute = d / (self:getFieldSpeed() / 3.6) + 3 -- add a few seconds to allow for starting the engine/accelerating
 		local rendezvousWaypoint, rendezvousWaypointIx = self.combineToUnload.cp.driver:getUnloaderRendezvousWaypoint(estimatedSecondsEnroute)
 		if rendezvousWaypoint then
 			self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
-			local xOffset = self.combineToUnload.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset)
+			local xOffset = self:getPipeOffset(self.combineToUnload)
 			local zOffset = -15
 			self:debug('Start pathfinding to moving combine, %d m, ETE: %d s, meet combine at waypoint %d, xOffset = %.1f, zOffset = %.1f',
 					d, estimatedSecondsEnroute, rendezvousWaypointIx, xOffset, zOffset)
@@ -1393,7 +1400,7 @@ end
 -- Pathfinding to combine
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, xOffset, zOffset)
-	local x, z = self.combineToUnload.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset)
+	local x, z = self:getPipeOffset(self.combineToUnload)
 	xOffset = xOffset or x
 	zOffset = zOffset or z
 	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
@@ -1702,6 +1709,10 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	-- TODO: handle pipe on the left side
 	-- disable looking to the right so the proximity sensor won't slow us down while driving beside the combine
 	self.forwardLookingProximitySensorPack:disableRightSide()
+
+	-- allow on the fly offset changes
+	self.combineOffset = self:getPipeOffset(self.combineToUnload)
+	self.followCourse:setOffset(-self.combineOffset, 0)
 
 	--when trailer is full then go to unload
 	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
