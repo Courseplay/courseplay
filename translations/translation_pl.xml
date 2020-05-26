@@ -231,7 +231,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Tam i z powrotem" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Na około" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirala" />
-		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Spirala od środka" />
 		<text name="COURSEPLAY_ACTIVATED"								 	text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 	text="Tylko nazwa" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 	text="Nazwa i Kurs" />
@@ -448,7 +448,7 @@
 		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Wyładunek słomy na uwrociach" />
 		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Włącza/Wyłącza wyładunek słomy na uwrociach" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Nawożenie w siewniku" />
-    <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                         text="Włącza/Wyłącza funkcję nawożenia w siewniku" />
+		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Włącza/Wyłącza funkcję nawożenia w siewniku" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Wcześniej" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Później" />
