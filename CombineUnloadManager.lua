@@ -158,7 +158,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	--then try to find a combine
 	local combine = self:getCombineWithMostFillLevel(unloader)
 	self:debug('Combine with most fill level is %s', combine and combine:getName() or 'N/A')
-	local unloaderToAssign
+	local bestUnloader
 	if combine ~= nil and combine.cp.driver:getFieldworkCourse() then
 		if combine.cp.wantsCourseplayer then
 			self:addUnloaderToCombine(unloader,combine)
@@ -166,17 +166,17 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			return combine
 		end
 		if combine.cp.driverPriorityUseFillLevel then
-			unloaderToAssign = self:getFullestUnloader(combine)
-			self:debug('Priority fill level, best unloader %s', unloaderToAssign and nameNum(unloaderToAssign) or 'N/A')
+			bestUnloader = self:getFullestUnloader(combine)
+			self:debug('Priority fill level, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		else
-			unloaderToAssign = self:getClosestUnloader(combine)
-			self:debug('Priority closest, best unloader %s', unloaderToAssign and nameNum(unloaderToAssign) or 'N/A')
+			bestUnloader = self:getClosestUnloader(combine)
+			self:debug('Priority closest, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		end
-		if unloaderToAssign == unloader then
+		if bestUnloader == unloader then
 			if combine.cp.driver:getFillLevelPercentage() > unloader.cp.driver:getFillLevelThreshold() or
 					combine.cp.driver:willWaitForUnloadToFinish() then
 				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), combine.cp.driver:getFillLevelPercentage())
-				self:addUnloaderToCombine(unloader,combine)
+				self:addUnloaderToCombine(unloader, combine)
 				return combine
 			else
 				return nil, combine
@@ -247,12 +247,12 @@ function CombineUnloadManager:getClosestCombine(unloader)
 end
 
 function CombineUnloadManager:getFullestUnloader(combine)
-	local higestFillLevel = 0
+	local highestFillLevel = - math.huge
 	local unloaderToReturn
 	for unloader,_ in pairs(combine.cp.assignedUnloaders) do
 		local fillLevelPct = unloader.cp.driver:getFillLevelPercent()
-		if higestFillLevel < fillLevelPct and not self:getHasCombine(unloader) then
-			higestFillLevel = fillLevelPct
+		if highestFillLevel < fillLevelPct and not self:isAssignedToOtherCombine(unloader, combine) then
+			highestFillLevel = fillLevelPct
 			unloaderToReturn = unloader
 		end
 	end
@@ -379,17 +379,17 @@ function CombineUnloadManager:getHasUnloaders(combine)
 	return self:getNumUnloaders(combine) > 0
 end
 
-function CombineUnloadManager:getHasCombine(unloader)
-	local isAssigned = false
-	for combine,data in pairs(self.combines) do
+--- Is this unloader assigned to a combine other than thisCombine
+function CombineUnloadManager:isAssignedToOtherCombine(unloader, thisCombine)
+	for combine, _ in pairs(self.combines) do
 		for i = 1, #self.combines[combine].unloaders do
 			local unloaderToCheck = self.combines[combine].unloaders[i]
-			if unloader == unloaderToCheck then
-				isAssigned = true
+			if unloader == unloaderToCheck and combine ~= thisCombine then
+				return true
 			end
 		end
 	end
-	return isAssigned
+	return false
 end
 
 function CombineUnloadManager:getPipeOffset(combine)

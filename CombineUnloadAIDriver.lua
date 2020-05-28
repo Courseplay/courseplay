@@ -1604,15 +1604,28 @@ function CombineUnloadAIDriver:isMyCombineReversing()
 end
 
 ------------------------------------------------------------------------------------------------------------------------
--- Check for full trailer
+-- Check for full trailer/drive on setting when following a chopper
 ------------------------------------------------------------------------------------------------------------------------
-function CombineUnloadAIDriver:changeToUnloadWhenFull()
+function CombineUnloadAIDriver:changeToUnloadWhenDriveOnLevelReached()
 	--if the fillLevel is reached while turning go to Unload course
 	if self:shouldDriveOn() then
-		self:debug('Trailer full, changing to unload course')
+		self:debug('Drive on level reached, changing to unload course')
 		local reverseCourse = self:getStraightReverseCourse()
 		self:startCourse(reverseCourse, 1)
 		self:setNewOnFieldState(self.states.DRIVE_BACK_FULL)
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
+-- Check for full trailer when unloading a combine
+------------------------------------------------------------------------------------------------------------------------
+function CombineUnloadAIDriver:changeToUnloadWhenFull()
+	--when trailer is full then go to unload
+	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
+		self:debug('drive now requested or trailer full.')
+		self:releaseUnloader()
+		self:startUnloadCourse()
+		return
 	end
 end
 
@@ -1714,13 +1727,7 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	self.combineOffset = self:getPipeOffset(self.combineToUnload)
 	self.followCourse:setOffset(-self.combineOffset, 0)
 
-	--when trailer is full then go to unload
-	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
-		self:debug('drive now requested or trailer full.')
-		self:releaseUnloader()
-		self:startUnloadCourse()
-		return
-	end
+	self:changeToUnloadWhenFull()
 
 	if self:canDriveBesideCombine(self.combineToUnload) or (self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isWaitingInPocket()) then
 		self:driveBesideCombine()
@@ -1809,7 +1816,7 @@ function CombineUnloadAIDriver:handleChopperHeadlandTurn()
 		self:setNewOnFieldState(self.states.DRIVE_BACK_FROM_REVERSING_CHOPPER )
 	end
 
-	self:changeToUnloadWhenFull()
+	self:changeToUnloadWhenDriveOnLevelReached()
 
 	--when the turn is finished, return to follow chopper
 	if not self:getCombineIsTurning() then
@@ -1878,7 +1885,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:handleChopper180Turn()
 
-	self:changeToUnloadWhenFull()
+	self:changeToUnloadWhenDriveOnLevelReached()
 
 	self.forwardLookingProximitySensorPack:enableSpeedControl()
 
@@ -1929,7 +1936,7 @@ function CombineUnloadAIDriver:followChopperThroughTurn()
 
 	self.forwardLookingProximitySensorPack:enableSpeedControl()
 
-	self:changeToUnloadWhenFull()
+	self:changeToUnloadWhenDriveOnLevelReached()
 
 	local d = self:getDistanceFromCombine()
 	if self.combineToUnload.cp.driver:isTurning() then

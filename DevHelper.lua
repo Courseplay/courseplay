@@ -44,12 +44,12 @@ function DevHelper:update()
 
         if self.vehicle ~= g_currentMission.controlledVehicle then
             PathfinderUtil.setUpVehicleCollisionData(g_currentMission.controlledVehicle)
+            self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
         end
 
         self.vehicle = g_currentMission.controlledVehicle
         self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
-        self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
         self.proximitySensorForward = nil
         self.proximitySensorRight = nil
         self.pack = nil

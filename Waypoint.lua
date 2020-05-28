@@ -728,7 +728,7 @@ function Course:getDistanceToFirstUpDownRowWaypoint(ix)
 		if self.waypoints[i].lane and not self.waypoints[i + 1].lane and isConnectingTrack then
 			return d, i + 1
 		end
-		if d > 100 then
+		if d > 1000 then
 			return math.huge, nil
 		end
 	end
