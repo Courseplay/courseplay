@@ -791,7 +791,7 @@ function LevelCompactAIDriver:getColumnsTargetHeight(newColumn)
 		totalFillLevel = totalFillLevel + self.vehicle.cp.BunkerSiloMap[i][newColumn].fillLevel
 	end
 	local newHeight = math.max(0.6,(totalFillLevel/1000)/totalArea)
-	self:debug("getTargetHeigth: totalFillLevel:%s; totalArea:%s Height%s",tostring(totalFillLevel),tostring(totalArea),tostring(newHeight))
+	self:debug("getTargetHeigth: totalFillLevel:%s,totalArea:%s,Height%s",tostring(totalFillLevel),tostring(totalArea),tostring(newHeight))
 	return newHeight
 	
 end
