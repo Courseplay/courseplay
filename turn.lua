@@ -21,7 +21,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local lx, lz 							= 0, 1;
 	local dtpX, dtpZ						= 0, 1;
 	local turnOutTimer 						= 1500;
-	local turnTimer 						= 1500;
 	local wpChangeDistance 					= 3;
 	local reverseWPChangeDistance			= 5;
 	local reverseWPChangeDistanceWithTool	= 3;

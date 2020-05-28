@@ -54,7 +54,6 @@ local function initialize()
 		'button',
 		'bunkersilo_management',
 		'BunkersiloManager',
-		'bypass',
 		'courseplay_event',
 		'course_management',
     	'courseeditor',
