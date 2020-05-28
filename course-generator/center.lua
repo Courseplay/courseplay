@@ -722,8 +722,10 @@ function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop
 				{2, 1},
 				{2, 3, 1},
 				{2, 3, 1, 4},
-				{2, 3, 1, 4, 5},
+				{3, 4, 2, 5, 1},
 				{3, 4, 2, 5, 1, 6}
+				{4, 5, 3, 6, 2, 7, 1}
+				{4, 5, 3, 6, 2, 7, 1, 8}
 			} or
 			{
 				{1},
@@ -732,9 +734,11 @@ function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop
 				{3, 2, 4, 1},
 				{3, 2, 4, 1, 5},
 				{4, 3, 5, 2, 6, 1}
+				{4, 3, 5, 2, 6, 1, 7}
+				{5, 4, 6, 3, 7, 2, 8, 1}
 			}
 
-	local nRowsInLands = 6
+	local nRowsInLands = 8
 
 	for i = 0, math.floor(#parallelTracks / nRowsInLands) - 1 do
 		for _, j in ipairs(rowOrderInLands[nRowsInLands]) do
