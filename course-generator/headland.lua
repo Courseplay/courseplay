@@ -190,13 +190,23 @@ function cleanupOffsetEdges(offsetEdges, result, minDistanceBetweenPoints)
 	result:calculateData()
 end
 
+--- add a series of points (track) to the headland path. This is to
+-- assemble the complete spiral headland path from the individual
+-- parallel headland tracks.
+local function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to, step)
+	for i, point in track:iterator( from, to, step ) do
+		table.insert( headlandPath, track[ i ])
+		headlandPath[ #headlandPath ].passNumber = passNumber
+	end
+end
+
 --- Link the generated, parallel circular headland tracks to
 -- a single spiral track
--- First, We have to find where to start our course. 
+-- First, We have to find where to start our course.
 --  If we work on the headland first:
 --  - the starting point will be on the outermost headland track
---    close to the current vehicle position. 
---  - for the subsequent headland passes, we add a 90 degree vector 
+--    close to the current vehicle position.
+--  - for the subsequent headland passes, we add a 90 degree vector
 --    to the first point of the first pass and then continue from there
 --    inwards
 --
@@ -205,7 +215,9 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 	-- vehicles heading vector.
 	local headlandPath = Polyline:new()
 	-- find closest point to starting position on outermost headland track
-	local fromIndex =  field.headlandTracks[ 1 ]:getClosestPointIndex(startLocation)
+	local fromIndex = field.headlandTracks[ 1 ]:getClosestPointIndex(startLocation)
+	-- start one waypoint back to have an overlap with the transition to the next headland so nothing is missed
+	table.insert(headlandPath, copyPoint(field.headlandTracks[ 1 ][fromIndex + (isClockwise and 1 or -1)]))
 	local toIndex = field.headlandTracks[ 1 ]:getIndex( fromIndex + 1 )
 	vectors = {}
 	-- direction we'll be looking for the next inward headland track (relative to
@@ -278,16 +290,6 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 		addMissingPassNumber( field.headlandPath )
 	else
 		field.headlandPath = headlandPath
-	end
-end
-
---- add a series of points (track) to the headland path. This is to 
--- assemble the complete spiral headland path from the individual 
--- parallel headland tracks.
-function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to, step)
-	for i, point in track:iterator( from, to, step ) do
-		table.insert( headlandPath, track[ i ])
-		headlandPath[ #headlandPath ].passNumber = passNumber
 	end
 end
 
