@@ -231,13 +231,13 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="nahoru/dolů" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="dokola" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spirála" />
-		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Pole" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="pouze stroj" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="stroj a trasa" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="neaktivní" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Znamenák stop:" />
-		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Znamenák zapnut/vypnut" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Vyložit na poli" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="automaticky" />
 		<text name="COURSEPLAY_MANUAL" 										text="ručně" />
@@ -275,7 +275,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="na prvním bodě" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="na vybraném bodě" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="následující čekací bod" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Vykládání" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Trasa okolo pole:" />
 		<text name="COURSEPLAY_FIELD" 										text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(načtená trasa)" />
@@ -466,6 +466,6 @@
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Kombajn se vyloží samostatně" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Samostatné vyložení kombajnu do vleku co je poblíž." />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Povolit zvolení otočení s pocouvnutím" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Povolit zvolení otočení s poouvnutím, když je nutné (pouze u neseného nářadí)" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Povolit zvolení otočení s pocouvnutím, když je nutné (pouze u neseného nářadí)" />
 		<!-- Replace marker, do not remove! --></texts>
 </l10n>

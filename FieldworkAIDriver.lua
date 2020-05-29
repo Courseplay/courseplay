@@ -547,8 +547,10 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.WORKING then
-			-- check for transition to connecting track
-			if self.course:isOnConnectingTrack(ix) then
+			-- check for transition to connecting track, make sure we've been on it for a few waypoints already
+			-- to avoid raising the implements too soon, this can be a problem with long implements not yet reached
+			-- the end of the headland track while the tractor is already on the connecting track
+			if self.course:isOnConnectingTrack(ix) and self.course:isOnConnectingTrack(ix - 2) then
 				-- reached a connecting track (done with the headland, move to the up/down row or vice versa),
 				-- raise all implements while moving
 				self:debug('on a connecting track now, raising implements.')

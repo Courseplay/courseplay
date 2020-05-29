@@ -49,6 +49,10 @@ end
 --- big a vehicle is as the sizes of foldable implements seem to be in the folded state but should be ok for
 --- now.
 function PathfinderUtil.VehicleData:calculateSizeOfObjectList(vehicle, implements, buffer, rectangles)
+    -- we'll calculate the trailer's precise position an angle for the collision detection to not hit obstacles
+    -- while turning. Get that object here, there may be more but we ignore that case.
+    local trailer = courseplay:getFirstReversingWheeledWorkTool(vehicle)
+    courseplay.debugVehicle(7, vehicle, 'trailer for the pathfinding is %s', trailer and trailer:getName() or 'not found')
     for _, implement in ipairs(implements) do
         --print(implement.object:getName())
         local referenceNode = AIDriverUtil.getDirectionNode(vehicle)

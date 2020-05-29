@@ -41,41 +41,21 @@ function courseplay:start(self)
 	courseplay:setEngineState(self, true);
 	self.cp.saveFuel = false
 
-	--print_r(self)
-	
-	--print(tableShow(self.attachedImplements[1],"self.attachedImplements",nil,nil,4))
-	--local id = self.attachedImplements[1].object.unloadTrigger.triggerId
-	--courseplay:findInTables(g_currentMission ,"g_currentMission", id)
-	courseplay.alreadyPrinted = {} 
-	--courseplay:printMeThisTable(g_currentMission,0,5,"g_currentMission")
+	courseplay.alreadyPrinted = {}
 
-	--[[Tommi Todo Whx is this here ???
-	if self.cp.orgRpm == nil then
-		self.cp.orgRpm = {}
-		self.cp.orgRpm[1] = self.spec_motorized.motor.maxRpm
-		self.cp.orgRpm[2] = self.spec_motorized.motor.maxRpm
-		self.cp.orgRpm[3] = self.spec_motorized.motor.maxRpm
-	end]]
-	
 	self.cpTrafficCollisionIgnoreList = {}
-	-- self.CPnumCollidingVehicles = 0;					-- ??? not used anywhere
 	self.cp.collidingVehicleId = nil
 	self.cp.collidingObjects = {
 		all = {};
 	};
 	
 	courseplay:debug(string.format("%s: Start/Stop: deleting \"self.cp.collidingVehicleId\"", nameNum(self)), 3);
-	--self.numToolsCollidingVehicles = {};
 	self:setIsCourseplayDriving(false);
 	courseplay:setIsRecording(self, false);
 	courseplay:setRecordingIsPaused(self, false);
 	self.cp.calculatedCourseToCombine = false
 
 	courseplay:resetTools(self)
---[[
-	--TODO when checking the Collision triggers, check if we still need this
-	if self.attachedCutters ~= nil then
-]]
 
 	if self.cp.waypointIndex < 1 then
 		courseplay:setWaypointIndex(self, 1);
@@ -88,8 +68,6 @@ function courseplay:start(self)
 	--add to activeCoursePlayers
 	CpManager:addToActiveCoursePlayers(self);
 
-	self.cp.turnTimer = 8000
-	
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
@@ -147,19 +125,7 @@ function courseplay:start(self)
 	end;
 	self.cp.isReversePossible = isReversePossible
 	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
-	
-	--[[if self.cp.mode == 10 then 
-		if self.cp.mode10.OrigCompactScale == nil then
-			self.cp.mode10.OrigCompactScale = self.bunkerSiloCompactingScale
-			self.bunkerSiloCompactingScale = self.bunkerSiloCompactingScale*5
-		end
-	end]]
 		
-		
-	local mapIconPath = Utils.getFilename('img/mapWaypoint.png', courseplay.path);
-	local mapIconHeight = 2 / 1080;
-	local mapIconWidth = mapIconHeight / g_screenAspectRatio;
-
 	local numWaitPoints = 0
 	local numUnloadPoints = 0
 	local numCrossingPoints = 0
@@ -168,131 +134,7 @@ function courseplay:start(self)
 	self.cp.workDistance = 0
 	self.cp.mediumWpDistance = 0
 	self.cp.mode10.alphaList = {}
-	local nearestpoint = dist
-	local nearestWpIx = 0
-	local curLaneNumber = 1;
-	local hasReversing = false;
-	local lookForNearestWaypoint = self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) and (self.cp.modeState == 0 or self.cp.modeState == 99); --or self.cp.modeState == 1
 
-	local lookForNextWaypoint = self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_NEXT_POINT) and (self.cp.modeState == 0 or self.cp.modeState == 99);
-	local nx, _, nz = localDirectionToWorld( self.cp.directionNode, 0, 0, 1 )
-	local myDirection = math.atan2( nx, nz ) 
-	-- one of the remaining waypoints of the course, closest in front of us
-	local nextWaypointIx = 1
-	local foundNextWaypoint = false
-	local distNextWaypoint = math.huge
-	-- any waypoint of the course, closest in front of us
-	local nearestWaypointInSameDirectionIx = 1
-	local foundNearestWaypointInSameDirection = false
-	local distNearestWaypointInSameDirection = math.huge
-
-	-- TODO: remove this once we finally kill the old mode 2
-	for i,wp in pairs(self.Waypoints) do
-		local cx, cz = wp.cx, wp.cz;
-
-		-- find nearest waypoint regardless of its rotation and direction from us
-		if lookForNearestWaypoint or lookForNextWaypoint then
-			dist = courseplay:distance(ctx, ctz, cx, cz)
-			if dist <= nearestpoint then
-				nearestpoint = dist
-				nearestWpIx = i
-			end;
-		end;
-
-		-- find next waypoint 
-		if lookForNextWaypoint then
-			local _, _, dz = worldToLocal( self.cp.directionNode, cx, 0, cz )
-			local deltaAngle = math.huge	
-			if wp.angle ~= nil then 
-				deltaAngle = math.abs( getDeltaAngle( math.rad( wp.angle ), myDirection ))
-			end
-			-- we don't want to deal with anything closer than 5 m to avoid circling
-			-- also, we want the waypoint which points into the direction we are currently heading to
-			if dist < 30 and dz > 5 and deltaAngle < math.rad( 45 ) then
-				if dist < distNearestWaypointInSameDirection then
-					nearestWaypointInSameDirectionIx = i
-					distNearestWaypointInSameDirection = dist
-					foundNearestWaypointInSameDirection = true
-					courseplay:debug(string.format('%s: found waypoint %d anywhere, distance = %.1f, deltaAngle = %.1f', nameNum(self), i, dist, math.deg( deltaAngle )), 12);
-				end
-				if dist < distNextWaypoint and i >= self.cp.waypointIndex and i <= self.cp.waypointIndex + 10 then
-					foundNextWaypoint = true
-					distNextWaypoint = dist
-					nextWaypointIx = i
-					courseplay:debug(string.format('%s: found waypoint %d next, distance = %.1f, deltaAngle = %.1f', nameNum(self), i, dist, math.deg( deltaAngle )), 12);
-				end
-			end
-		end
-
-		if wp.wait then
-			numWaitPoints = numWaitPoints + 1;
-			self.cp.waitPoints[numWaitPoints] = i;
-		end;
-		if wp.unload then
-			numUnloadPoints = numUnloadPoints + 1;
-			self.cp.unloadPoints[numUnloadPoints] = i;
-		end;
-		if wp.crossing then
-			numCrossingPoints = numCrossingPoints + 1;
-			self.cp.crossingPoints[numCrossingPoints] = i;
-		end;
-
-		-- has reversing part
-		if self.cp.mode ~= 9 and wp.rev then
-			hasReversing = true;
-		end;
-
-		-- specific Workzone
-		if self.cp.mode == 4 or self.cp.mode == 6 then
-			if numWaitPoints == 1 and (self.cp.startWork == nil or self.cp.startWork == 0) then
-				self.cp.startWork = i
-			end
-			if numWaitPoints > 1 and (self.cp.stopWork == nil or self.cp.stopWork == 0) then
-				self.cp.stopWork = i
-			end
-			if self.cp.startWork and not self.cp.stopWork then
-				if i > 1 then
-					local dist = courseplay:distance(cx, cz, self.Waypoints[i-1].cx, self.Waypoints[i-1].cz)
-					self.cp.workDistance = self.cp.workDistance + dist
-					self.cp.mediumWpDistance = self.cp.workDistance/i
-				end
-			end
-			if numUnloadPoints == 1 and (self.cp.heapStart == nil or self.cp.heapStart == 0) then
-				self.cp.heapStart = i
-				self.cp.makeHeaps = false
-			end
-			if numUnloadPoints > 1 and (self.cp.heapStop == nil or self.cp.heapStop == 0) then
-				self.cp.heapStop = i
-				self.cp.makeHeaps = true
-			end
-		elseif self.cp.mode == 7  then--combineUnloadMode
-			if numUnloadPoints == 1 and (self.cp.heapStart == nil or self.cp.heapStart == 0) then
-				self.cp.heapStart = i
-				self.cp.makeHeaps = false
-			end
-			if numUnloadPoints > 1 and (self.cp.heapStop == nil or self.cp.heapStop == 0) then
-				self.cp.heapStop = i
-				self.cp.makeHeaps = true
-			end
-		--unloading point for transporter
-		elseif self.cp.mode == 8 then
-			--
-
-		--work points for shovel
-		elseif self.cp.mode == 9 then
-			--moved to ShovelModeAIDriver
-		end;
-
-		-- laneNumber (for seeders)
-		if setLaneNumber and wp.generated ~= nil and wp.generated == true then
-			if wp.turnEnd ~= nil and wp.turnEnd == true then
-				curLaneNumber = curLaneNumber + 1;
-				courseplay:debug(string.format('%s: waypoint %d: turnEnd=true -> new curLaneNumber=%d', nameNum(self), i, curLaneNumber), 12);
-			end;
-			wp.laneNum = curLaneNumber;
-		end;
-	end; -- END for wp in self.Waypoints
-	
 	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses
 	if (self.cp.mode == 4 or self.cp.mode == 6) then
 		if numWaitPoints == 0 or self.cp.startWork == nil then
@@ -311,24 +153,6 @@ function courseplay:start(self)
 	if not courseplay:getCanHaveWaitTime(self) and self.cp.waitTime > 0 then
 		courseplay:changeWaitTime(self, -self.cp.waitTime);
 	end;
-
-  if lookForNextWaypoint then
-		if foundNextWaypoint then 
-			courseplay:debug(string.format('%s: found next waypoint: %d', nameNum(self), nextWaypointIx ), 12);
-			courseplay:safeSetWaypointIndex( self, nextWaypointIx )     
-		elseif foundNearestWaypointInSameDirection then
-			courseplay:debug(string.format('%s: no next waypoint found, using the closest one in the same direction: %d', nameNum(self), nearestWaypointInSameDirectionIx), 12);
-			courseplay:safeSetWaypointIndex( self, nearestWaypointInSameDirectionIx )     
-		else
-			courseplay:debug(string.format('%s: no next waypoint found, none found in the same direction, falling back to the nearest: %d', 
-			                               nameNum(self), nearestWpIx ), 12);
-			courseplay:safeSetWaypointIndex( self, nearestWpIx )     
-    end
-  end
-	
-	if lookForNearestWaypoint then
-		courseplay:safeSetWaypointIndex( self, nearestWpIx )     
-	end --END if modeState == 0
 
 	if self.cp.waypointIndex > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 and self.cp.mode ~= 8 then
 		courseplay:setDriveUnloadNow(self, true);
@@ -362,44 +186,11 @@ function courseplay:start(self)
 		end
 	end;
 
-	-- Reset pathfinding for mode 4 and 6 if resuming from a waypoint other than the current one
-	if (self.cp.mode == 4 or self.cp.mode == 6) and self.cp.realisticDriving == true and #(self.cp.nextTargets) > 0 and not self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_CURRENT_POINT) then
-		self.cp.nextTargets = {}
-		self.cp.isNavigatingPathfinding = false
-	end
-
 	courseplay:updateAllTriggers();
 
 	self.cp.aiLightsTypesMaskBackup  = self.spec_lights.aiLightsTypesMask
 	self.cp.cruiseControlSpeedBackup = self:getCruiseControlSpeed();
 
-	if self.cp.hasDriveControl then
-		local changed = false;
-		if self.cp.driveControl.hasFourWD then
-			self.cp.driveControl.fourWDBackup = self.driveControl.fourWDandDifferentials.fourWheel;
-			if self.cp.driveControl.alwaysUseFourWD and not self.driveControl.fourWDandDifferentials.fourWheel then
-				self.driveControl.fourWDandDifferentials.fourWheel = true;
-				changed = true;
-			end;
-		end;
-		if self.cp.driveControl.hasHandbrake then
-			if self.driveControl.handBrake.isActive == true then
-				self.driveControl.handBrake.isActive = false;
-				changed = true;
-			end;
-		end;
-		if self.cp.driveControl.hasShuttleMode and self.driveControl.shuttle.isActive then
-			if self.driveControl.shuttle.direction < 1.0 then
-				self.driveControl.shuttle.direction = 1.0;
-				changed = true;
-			end;
-		end;
-
-		if changed and driveControlInputEvent ~= nil then
-			driveControlInputEvent.sendEvent(self);
-		end;
-	end;
-	
 	--check Crab Steering mode and set it to default
 	if self.crabSteering and (self.crabSteering.state ~= self.crabSteering.aiSteeringModeIndex or self.cp.useCrabSteeringMode ~= nil) then
 		local crabSteeringMode = self.cp.useCrabSteeringMode or self.crabSteering.aiSteeringModeIndex;
@@ -417,9 +208,6 @@ function courseplay:start(self)
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
 	courseplay:validateCanSwitchMode(self);
-
-	-- deactivate load/add/delete course buttons
-	--courseplay.buttons:setActiveEnabled(self, 'page2');
 
 	-- add ingameMap icon
 	if CpManager.ingameMapIconActive then

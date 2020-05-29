@@ -216,8 +216,8 @@
 		<text name="COURSEPLAY_DIRECTION_NW" 								text="СЗ"/>
 		<text name="COURSEPLAY_DIRECTION_NNW" 								text="ССЗ"/>
 		<text name="COURSEPLAY_COURSE_SUBOPTIMAL"							text="Маршрут успешно сгенерирован, но из-за текущих настроек направления он может вызвать проблемы при его прохождении."/>
-		<text name="COURSEPLAY_HEADLAND" 									text="Поворотная полоса:" />
-		<text name="COURSEPLAY_BYPASS_ISLANDS" 								text="Обход островков:" />
+		<text name="COURSEPLAY_HEADLAND" 									text="Поворотная полоса" />
+		<text name="COURSEPLAY_BYPASS_ISLANDS" 								text="Обход островков" />
 		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE" 					text="отключить" />
 		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE" 					text="простой" />
 		<text name="COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE" 					text="с проходом по периметру" />
@@ -227,11 +227,11 @@
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Разворот в конце поля:"/>
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="по прямой (с реверсом)" />
 		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="по дуге (без реверса)" />
-		<text name="COURSEPLAY_CENTER_MODE"									text="Способ движения (экспериментальный)" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Способ движения" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="челночный" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="загонами" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="круговой" />
-		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="загонами v2" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="да" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="название техники" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="название техники и маршрут" />

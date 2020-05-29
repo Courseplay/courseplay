@@ -271,7 +271,7 @@ function HybridAStar.MotionPrimitives:getPrimitives(node)
 	return self.primitives
 end
 
---- A simple set of motion primitives to use with an A start algorlithm, pointing to 8 directions
+--- A simple set of motion primitives to use with an A start algorithm, pointing to 8 directions
 ---@param gridSize number search grid size in meters
 HybridAStar.SimpleMotionPrimitives = CpObject(HybridAStar.MotionPrimitives)
 function HybridAStar.SimpleMotionPrimitives:init(gridSize, allowReverse)

@@ -300,6 +300,8 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 end;
 
 function courseplay:getFirstReversingWheeledWorkTool(vehicle)
+	-- since some weird things like Seed Bigbag are also vehicles, check this first
+	if not vehicle.getAttachedImplements then return nil end
 	-- Check all attached implements if we are an wheeled workTool behind the tractor
 	for _, imp in ipairs(vehicle:getAttachedImplements()) do
 		-- Check if the implement is behind

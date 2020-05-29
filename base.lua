@@ -49,9 +49,6 @@ function courseplay:onLoad(savegame)
 	self.cp.mrAccelrator = nil -- Used when MR needs assitance breaking, Mode2 field driving, Turn Driving, Pathfinding Driving, Drive Driving
 	self.cp.mrHasStopped = nil -- Used in the turn manuver to stop MR on a steep grade
 
-	-- Mode4/6 Pathfinding TODO Move this to its proper place
-	self.cp.isNavigatingPathfinding = false
-
 	--turn maneuver
 	self.cp.turnOnField = true;
 	self.cp.oppositeTurnMode = false;
@@ -61,7 +58,6 @@ function courseplay:onLoad(savegame)
 	self.cp.canBeReversed = nil --bool
 	self.cp.backMarkerOffset = nil --float
 	self.cp.aiFrontMarker = nil --float
-	self.cp.turnTimer = 8000 --int
 	self.cp.noStopOnEdge = false --bool
 	self.cp.noStopOnTurn = false --bool
 	self.cp.noWorkArea = false -- bool
@@ -592,30 +588,6 @@ function courseplay:onPostLoad(savegame)
 	if savegame ~= nil and savegame.key ~= nil and not savegame.resetVehicles then
 		courseplay.loadVehicleCPSettings(self, savegame.xmlFile, savegame.key, savegame.resetVehicles)
 	end
-
-	-- Drive Control (upsidedown)
-	if self.driveControl ~= nil and g_currentMission.driveControl ~= nil then
-		self.cp.hasDriveControl = true;
-		self.cp.driveControl = {
-			hasFourWD = g_currentMission.driveControl.useModules.fourWDandDifferentials and not self.driveControl.fourWDandDifferentials.isSurpressed;
-			hasHandbrake = g_currentMission.driveControl.useModules.handBrake;
-			hasManualMotorStart = g_currentMission.driveControl.useModules.manMotorStart;
-			hasMotorKeepTurnedOn = g_currentMission.driveControl.useModules.manMotorKeepTurnedOn;
-			hasShuttleMode = g_currentMission.driveControl.useModules.shuttle;
-			--alwaysUseFourWD = false;
-			mode = 0;
-			OFF = 0;
-			AWD = 1;
-			AWD_FRONT_DIFF = 2;
-			AWD_REAR_DIFF = 3;
-			AWD_BOTH_DIFF = 4;
-		};
-
-		-- add "always use 4WD" button. This was moved into hud and shown based off conditions in button
-		-- if self.cp.driveControl.hasFourWD then
-		-- 	--courseplay.button:new(self, 5, nil, 'toggleAlwaysUseFourWD', nil, courseplay.hud.col1posX, courseplay.hud.linesPosY[7], courseplay.hud.contentMaxWidth, 0.015, 7, nil, true);
-		-- end
-	end;
 end;
 
 function courseplay:onLeaveVehicle()
