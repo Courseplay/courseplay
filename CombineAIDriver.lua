@@ -529,7 +529,9 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 	if ix > 1 then
 		if self.fillLevelAtLastWaypoint and self.fillLevelAtLastWaypoint > 0 and self.fillLevelAtLastWaypoint <= fillLevel then
 			local litersPerMeter = (fillLevel - self.fillLevelAtLastWaypoint) / self.course:getDistanceToNextWaypoint(ix - 1)
-			local litersPerSecond = (fillLevel - self.fillLevelAtLastWaypoint) / ((self.vehicle.timer - self.fillLevelLastCheckedTime) / 1000)
+			-- make sure it won't end up being inf
+			local litersPerSecond = math.min(1000, (fillLevel - self.fillLevelAtLastWaypoint) /
+					((self.vehicle.timer - (self.fillLevelLastCheckedTime or self.vehicle.timer)) / 1000))
 			-- smooth everything a bit, also ignore 0
 			self.litersPerMeter = litersPerMeter > 0 and (self.litersPerMeter + litersPerMeter) / 2 or self.litersPerMeter
 			self.litersPerSecond = litersPerSecond > 0 and (self.litersPerSecond + litersPerSecond) / 2 or self.litersPerSecond
@@ -575,18 +577,20 @@ function CombineAIDriver:getUnloaderRendezvousWaypoint(unloaderEstimatedSecondsE
 		else
 			return nil, 0, 0
 		end
-
 	elseif self.waypointIxWhenFull then
-		self:debug('We don\'t know when exactly we\'ll be full, but it will be at waypoint %d in %d m',
-				self.waypointIxWhenFull, dToUnloaderRendezvous)
+		self:debug('We don\'t know when exactly we\'ll be full, but it will be at waypoint %d in %d m, reject rendezvous',
+				self.waypointIxWhenFull, self.distanceToWaypointWhenFull)
 		if self:canUnloadWhileMovingAtWaypoint(unloaderRendezvousWaypointIx) then
 			self.agreedUnloaderRendezvousWaypointIx = self.waypointIxWhenFull
-			return self.fieldworkCourse:getWaypoint(self.waypointIxWhenFull), self.waypointIxWhenFull, self.distanceToWaypointWhenFull / (self:getWorkSpeed() / 3.6)
+			-- TODO: figure out what to do in this case, it does not seem to make sense to send the unloader to
+			-- a distant waypoint
+			return nil, 0, 0
+			-- return self.fieldworkCourse:getWaypoint(self.waypointIxWhenFull), self.waypointIxWhenFull, self.distanceToWaypointWhenFull / (self:getWorkSpeed() / 3.6)
 		else
 			return nil, 0, 0
 		end
 	else
-		self:debug('We don\t know when exactly we\'ll be full')
+		self:debug('We don\t know when exactly we\'ll be full, reject rendezvous')
 		return nil, 0, 0
 	end
 end

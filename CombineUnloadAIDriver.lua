@@ -1371,10 +1371,10 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 		local d = self:getDistanceFromCombine()
 		local estimatedSecondsEnroute = d / (self:getFieldSpeed() / 3.6) + 3 -- add a few seconds to allow for starting the engine/accelerating
 		local rendezvousWaypoint, rendezvousWaypointIx = self.combineToUnload.cp.driver:getUnloaderRendezvousWaypoint(estimatedSecondsEnroute)
-		if rendezvousWaypoint then
+		local xOffset = self:getPipeOffset(self.combineToUnload)
+		local zOffset = -15
+		if rendezvousWaypoint and self:isPathfindingNeeded(self.vehicle, rendezvousWaypoint, xOffset, zOffset) then
 			self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
-			local xOffset = self:getPipeOffset(self.combineToUnload)
-			local zOffset = -15
 			self:debug('Start pathfinding to moving combine, %d m, ETE: %d s, meet combine at waypoint %d, xOffset = %.1f, zOffset = %.1f',
 					d, estimatedSecondsEnroute, rendezvousWaypointIx, xOffset, zOffset)
 			self:startPathfinding(rendezvousWaypoint, xOffset, zOffset, 0,
@@ -1391,8 +1391,10 @@ function CombineUnloadAIDriver:onPathfindingDoneToMovingCombine(path)
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
 		self:setNewOnFieldState(self.states.DRIVE_TO_MOVING_COMBINE)
+		return true
 	else
 		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
+		return false
 	end
 end
 
@@ -1404,10 +1406,15 @@ function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, 
 	xOffset = xOffset or x
 	zOffset = zOffset or z
 	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
-	self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 	-- TODO: here we may have to pass in the combine to ignore once we start driving to a moving combine, at least
 	-- when it is on the headland.
-	self:startPathfinding(self:getCombineRootNode(), xOffset, zOffset, 0, nil, onPathfindingDoneFunc)
+	if self:isPathfindingNeeded(self.vehicle, self:getCombineRootNode(), xOffset, zOffset) then
+		self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
+		self:startPathfinding(self:getCombineRootNode(), xOffset, zOffset, 0, nil, onPathfindingDoneFunc)
+	else
+		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
+		self:debug('Can\'t start pathfinding, too close?')
+	end
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
@@ -1415,8 +1422,10 @@ function CombineUnloadAIDriver:onPathfindingDoneToCombine(path)
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
 		self:setNewOnFieldState(self.states.DRIVE_TO_COMBINE)
+		return true
 	else
 		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
+		return false
 	end
 end
 
@@ -1485,12 +1494,14 @@ function CombineUnloadAIDriver:isPathfindingNeeded(vehicle, target, xOffset, zOf
 	local targetNode = self:getTargetNode(target)
 	if not targetNode then return false end
 	local startNode = AIDriverUtil.getDirectionNode(vehicle)
-	local dx, _, dz = localToLocal(startNode, targetNode, xOffset, 0, zOffset)
+	local dx, _, dz = localToLocal(targetNode, startNode, xOffset, 0, zOffset)
 	local d = MathUtil.vector2Length(dx, dz)
-	if d < self.pathfindingRange and TurnContext.isSameDirection(startNode, targetNode, 30) then
-		self:debug('No pathfinding needed, d = %.1f', d)
+	local sameDirection = TurnContext.isSameDirection(startNode, targetNode, 30)
+	if d < self.pathfindingRange and sameDirection then
+		self:debug('No pathfinding needed, d = %.1f, same direction %s', d, tostring(sameDirection))
 		return false
 	else
+		self:debug('Ok to start pathfinding, d = %.1f, same direction %s', d, tostring(sameDirection))
 		return true
 	end
 end
@@ -1512,8 +1523,6 @@ function CombineUnloadAIDriver:startPathfinding(
 		target, xOffset, zOffset, fieldNum, vehicleToIgnore,
 		pathfindingCallbackFunc)
 	if not self.pathfinder or not self.pathfinder:isActive() then
-
-		if not self:isPathfindingNeeded(self.vehicle, target, xOffset, zOffset) then return false end
 
 		local maxFruitPercent = 10
 		if self:isFruitAt(target, xOffset, zOffset) then
