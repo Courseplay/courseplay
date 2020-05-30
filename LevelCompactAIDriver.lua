@@ -762,7 +762,8 @@ function LevelCompactAIDriver:getBestTargetFillUnitLeveling(Silo,lastDrivenColum
 								column = newColumn;
 								empty = false;
 								}]]
-			return self:getBestTargetFillUnitFillUp(Silo,{})
+			newBestTarget, firstLine = self:getBestTargetFillUnitFillUp(Silo,{})
+			return newBestTarget, firstLine, targetHeight
 		else
 			newColumn = lastDrivenColumn +1;
 			if newColumn > #vehicle.cp.BunkerSiloMap[1] then
