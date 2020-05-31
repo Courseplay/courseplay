@@ -17,7 +17,6 @@ function courseplay:setCpMode(vehicle, modeNum)
 		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
-		vehicle.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
 		--end
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
@@ -586,11 +585,6 @@ end;
 function courseplay:toggleRealisticDriving(vehicle)
 	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
 end;
-
-function courseplay:toggleDrivingMode(vehicle)
-	vehicle.cp.drivingMode:setNext()
-	courseplay.debugVehicle(12, vehicle, 'Driving mode: %d', vehicle.cp.drivingMode:get())
-end
 
 function courseplay:toggleAutoDriveMode(vehicle)
 	vehicle.cp.settings.autoDriveMode:next()
@@ -2288,61 +2282,6 @@ function StartingPointSetting:checkAndSetValidValue(new)
 	end
 end
 
---- Driving mode setting
----@class DrivingModeSetting : SettingList
-DrivingModeSetting = CpObject(SettingList)
-
--- Driving modes
-DrivingModeSetting.DRIVING_MODE_NORMAL   = 0  -- legacy
-DrivingModeSetting.DRIVING_MODE_PPC      = 1  -- legacy with pure pursuit controller
-DrivingModeSetting.DRIVING_MODE_AIDRIVER = 2  -- AI driver
-
---- Constructor needs a vehicle to be able to check CP mode
-function DrivingModeSetting:init(vehicle)
-	SettingList.init(self, 'drivingMode', 'COURSEPLAY_DRIVER', '', vehicle,
-		{
-			DrivingModeSetting.DRIVING_MODE_NORMAL,
-			DrivingModeSetting.DRIVING_MODE_PPC,
-			DrivingModeSetting.DRIVING_MODE_AIDRIVER
-		},
-		{
-			'COURSEPLAY_PPC_OFF',
-			'COURSEPLAY_PPC_ON',
-			'COURSEPLAY_AIDRIVER'
-		})
-	-- make sure the vehicle's settings are in sync
-	self:onChange()
-end
-
---- Until not all modes are available with AI Drive, we disable it for those modes
-function DrivingModeSetting:checkAndSetValidValue(new)
-	if self.vehicle.cp.mode ~= courseplay.MODE_GRAIN_TRANSPORT
-		and self.vehicle.cp.mode ~= courseplay.MODE_TRANSPORT
-		and self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
-		and self.vehicle.cp.mode ~= courseplay.MODE_SEED_FERTILIZE
-		and self.vehicle.cp.mode ~= courseplay.MODE_FIELDWORK
-		and self.vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER
-		and self.vehicle.cp.mode ~= courseplay.MODE_FIELD_SUPPLY
-		and self.vehicle.cp.mode ~= courseplay.MODE_COMBI
-		and new == #self.values then
-		-- enable AI Driver for mode 1, 4, 5, 6 ,8 , 9 and 10 only until it can handle other modes
-		return 1
-	else
-		return SettingList.checkAndSetValidValue(self, new)
-	end
-end
-
---- Disable PPC for the legacy driving mode
-function DrivingModeSetting:onChange()
-	if self.vehicle.cp.ppc then
-		if self:get() == DrivingModeSetting.DRIVING_MODE_NORMAL then
-			self.vehicle.cp.ppc:disable()
-		else
-			self.vehicle.cp.ppc:enable()
-		end
-	end
-end
-
 ---@class StartingLocationSetting : SettingList
 StartingLocationSetting = CpObject(SettingList)
 
@@ -2390,6 +2329,17 @@ function CenterModeSetting:init()
 			'COURSEPLAY_CENTER_MODE_SPIRAL',
 			'COURSEPLAY_CENTER_MODE_LANDS'
 		})
+end
+
+--- Number of rows per land in Lands center mode
+---@class NumberOfRowsPerLand
+NumberOfRowsPerLandSetting = CpObject(SettingList)
+
+function NumberOfRowsPerLandSetting:init()
+	SettingList.init(self, 'numberOfRowsPerLand', 'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND',
+			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', nil,
+			{4, 6, 8, 10, 12},
+			{4, 6, 8, 10, 12})
 end
 
 --- Implement raise/lower  setting

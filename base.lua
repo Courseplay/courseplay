@@ -454,15 +454,16 @@ function courseplay:onLoad(savegame)
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	self.cp.ridgeMarkersAutomatic = true;
-	-- TODO: add all course gen settings to this table
-	-- TODO: create an event for MP
+	-- TODO: add all course gen settings to a SettingsContainer
 	self.cp.courseGeneratorSettings = {
 		startingLocation = self.cp.startingCorner,
 		manualStartingLocationWorldPos = nil,
 		islandBypassMode = Island.BYPASS_MODE_NONE,
 		nRowsToSkip = 0,
-		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
+		centerMode = courseGenerator.CENTER_MODE_UP_DOWN,
+		numberOfRowsPerLand = NumberOfRowsPerLandSetting()
 	}
+	self.cp.courseGeneratorSettings.numberOfRowsPerLand:set(6)
 	self.cp.headland = {
 		-- with the old, manual direction selection course generator
 		manuDirMaxNumLanes = 6;
@@ -551,14 +552,6 @@ function courseplay:onLoad(savegame)
 	courseplay:validateCanSwitchMode(self);
 	--courseplay.buttons:setActiveEnabled(self, 'all');
 
-	-- TODO: remove driving mode when mode 2 is finally converted
-	self.cp.drivingMode = DrivingModeSetting(self)
-	
-	--if CpManager.isDeveloper then
-	self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_AIDRIVER)
-	--[[else
-		self.cp.drivingMode:set(DrivingModeSetting.DRIVING_MODE_NORMAL)
-	end]]
 	courseplay:setAIDriver(self, self.cp.mode)
 
 	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
@@ -1451,9 +1444,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
  		self.cp.maxRunNumber		 = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#maxRunNumber'),			 11);
  		self.cp.runCounterActive	= Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#runCounterActive'),		 false);
 		self.cp.saveFuelOptionActive = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#saveFuelOption'),			 true);
-		-- TODO: move this into DrivingModeSetting
-		self.cp.drivingMode:set(Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#drivingMode'),			 0));
-	
+
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
@@ -1659,8 +1650,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLInt(xmlFile, newKey..".basics #runCounter", runCounter)
 	setXMLBool(xmlFile, newKey..".basics #runCounterActive", self.cp.runCounterActive)
 	setXMLBool(xmlFile, newKey..".basics #saveFuelOption", self.cp.saveFuelOptionActive)
-	setXMLInt(xmlFile, newKey..".basics #drivingMode", self.cp.drivingMode:get())
-	
+
 	--HUD
 	setXMLBool(xmlFile, newKey..".HUD #openHudWithMouse", self.cp.hud.openWithMouse)
 	setXMLBool(xmlFile, newKey..".HUD #showMiniHud", self.cp.hud.showMiniHud)

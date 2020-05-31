@@ -117,6 +117,16 @@
 							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_CENTER_MODE"/>
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
+
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="numberOfRowsPerLand" toolTip="$l10n_COURSEPLAY_NUMBER_OF_ROWS_PER_LAND" onOpen="onOpenNumberOfRowsPerLand" onClick="onClickNumberOfRowsPerLand">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
+							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+							<GuiElement type="text" profile="cpMultiTextOptionText" />
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"/>
+							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+						</GuiElement>
+
+
 					</GuiElement>
 
 					<!-- ugly hack to position this box directly to have the width multitext and auto width side by side

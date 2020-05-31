@@ -22,19 +22,17 @@ CourseGeneratorScreen.CONTROLS = {
 	headlandCorners = 'headlandCorners',
 	headlandPasses = 'headlandPasses',
 	headlandFirst = 'headlandFirst',
+	numberOfRowsPerLand = 'numberOfRowsPerLand',
 	ingameMap = 'ingameMap',
 	mapCursor = 'mapCursor'
 }
 
-function CourseGeneratorScreen:new(target, custom_mt)
-	if custom_mt == nil then
-		custom_mt = CourseGeneratorScreen_mt
-	end
-	local self = ScreenElement:new(target, custom_mt)
+function CourseGeneratorScreen:new(vehicle)
+	local self = ScreenElement:new(nil, CourseGeneratorScreen_mt)
 	-- needed for onClickBack to work.
 	self.returnScreenName = "";
 	self.state = CourseGeneratorScreen.SHOW_NOTHING
-	self.vehicle = nil
+	self.vehicle = vehicle
 
 	self.directions = {}
 	-- map to look up gui element state from angle
@@ -513,6 +511,21 @@ end
 
 function CourseGeneratorScreen:onClickCenterMode(state)
 	self.vehicle.cp.courseGeneratorSettings.centerMode = self.centerModeSetting:getValueFromGuiElementState(state)
+	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElement():setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode == courseGenerator.CENTER_MODE_LANDS)
+end
+
+function CourseGeneratorScreen:onOpenNumberOfRowsPerLand( element, parameter )
+	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:setGuiElement(element)
+	element:setTexts(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementTexts())
+	element:setState(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementState())
+	element:setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode == courseGenerator.CENTER_MODE_LANDS)
+end
+
+function CourseGeneratorScreen:onClickNumberOfRowsPerLand(state)
+	local setting = self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand
+	if setting:getGuiElement() then
+		setting:setToIx(setting:getGuiElement():getState())
+	end
 end
 
 function CourseGeneratorScreen:isOverElement( x, y, element )
@@ -579,22 +592,15 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	return eventUsed
 end
 
-local modDirectory = g_currentModDirectory
-
 -- It is ugly to have a courseplay member function in this file but the current HUD implementations seems to be able to
 -- use callbacks only if they are in the courseplay class.
 function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
 	--- Prevent Dialog from locking up mouse and keyboard when closing it.
 	courseplay:lockContext(false);
-
-	if g_CourseGeneratorScreen == nil then
-		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
-		g_gui:loadProfiles( modDirectory .. "gui/guiProfiles.xml" )
-		g_gui:loadGui( modDirectory .. "gui/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
-	end
-	g_CourseGeneratorScreen:setVehicle( vehicle )
+	g_courseGeneratorScreen = CourseGeneratorScreen:new(vehicle)
+	g_gui:loadProfiles( self.path .. "gui/guiProfiles.xml" )
+	g_gui:loadGui( self.path .. "gui/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_courseGeneratorScreen)
+	g_courseGeneratorScreen:setVehicle( vehicle )
 	g_gui:showGui( 'CourseGeneratorScreen' )
-	-- force reload screen so changes in XML do not require the entire game to be restarted, just reselect the screen
-	g_CourseGeneratorScreen = nil
 end
 

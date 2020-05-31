@@ -1627,15 +1627,21 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Check for full trailer when unloading a combine
+---@return boolean true when changed to unload course
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:changeToUnloadWhenFull()
 	--when trailer is full then go to unload
 	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
-		self:debug('drive now requested or trailer full.')
+		if self:getDriveUnloadNow() then
+			self:debug('drive now requested, changing to unload course.')
+		else
+			self:debug('trailer full, changing to unload course.')
+		end
 		self:releaseUnloader()
 		self:startUnloadCourse()
-		return
+		return true
 	end
+	return false
 end
 
 ------------------------------------------------------------------------------------------------------------------------

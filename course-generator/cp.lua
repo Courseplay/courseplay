@@ -122,7 +122,8 @@ function courseGenerator.generate( vehicle )
 		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
 		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0,
 		nRowsToSkip = vehicle.cp.courseGeneratorSettings.nRowsToSkip,
-		mode = vehicle.cp.courseGeneratorSettings.centerMode
+		mode = vehicle.cp.courseGeneratorSettings.centerMode,
+		nRowsPerLand = vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:get()
 	}
 
 	local minSmoothAngle, maxSmoothAngle

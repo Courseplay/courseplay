@@ -228,6 +228,8 @@
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="körkörös" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spirál" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="Bekapcsolva" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Csak név" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Név és útvonal" />

@@ -38,34 +38,6 @@ function TestSettings:setUp()
 	--self.vehicle.cp.ppc:initialize(1)
 end
 
--- This is not a functional test, the only purpose is to run as much of the AIDriver code as possible
--- to find typos before restarting the game
-function TestSettings:testDrivingModeSettingList()
-	self.vehicle.cp.mode = courseplay.MODE_TRANSPORT
-	local drivingMode = DrivingModeSetting(self.vehicle)
-	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_NORMAL)
-	lu.assertIsTrue(drivingMode:is(DrivingModeSetting.DRIVING_MODE_NORMAL))
-	lu.assertIsFalse(self.vehicle.cp.ppc:isEnabled())
-	drivingMode:setNext()
-	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_PPC)
-	lu.assertIsTrue(self.vehicle.cp.ppc:isEnabled())
-	drivingMode:setNext()
-	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_AIDRIVER)
-	lu.assertIsTrue(self.vehicle.cp.ppc:isEnabled())
-	drivingMode:setNext()
-	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_NORMAL)
-	lu.assertIsFalse(self.vehicle.cp.ppc:isEnabled())
-	self.vehicle.cp.mode = courseplay.MODE_COMBI
-	drivingMode:setNext()
-	drivingMode:setNext()
-	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_NORMAL)
-	lu.assertIsFalse(self.vehicle.cp.ppc:isEnabled())
-
-	drivingMode:set(DrivingModeSetting.DRIVING_MODE_PPC)
-	lu.assertEquals(drivingMode:get(), DrivingModeSetting.DRIVING_MODE_PPC)
-	lu.assertEquals(drivingMode:getText(), 'COURSEPLAY_PPC_ON')
-	lu.assertIsTrue(self.vehicle.cp.ppc:isEnabled())
-end
 
 errors = lu.LuaUnit.run()
 os.exit(errors)

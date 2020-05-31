@@ -232,7 +232,9 @@
     <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire (par bloc)" />
     <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirale (tourne autour)" />
 	<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Enrayure à travers (centre)" />
-	<text name="COURSEPLAY_ACTIVATED" 						 			text="Activé" />
+    <text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
+    <text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
+    <text name="COURSEPLAY_ACTIVATED" 						 			text="Activé" />
     <text name="COURSEPLAY_NAME_ONLY" 									text="Nom seul" />
     <text name="COURSEPLAY_NAME_AND_COURSE" 							text="Nom et Course" />
     <text name="COURSEPLAY_DEACTIVATED" 						 		text="Désactivé" />

@@ -533,7 +533,7 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 		parallelTracks = reorderTracksForCircularFieldwork(parallelTracks)
 		start = leftToRight and 2 or 1
 	elseif centerSettings.mode == courseGenerator.CENTER_MODE_LANDS then
-		parallelTracks = reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop)
+		parallelTracks = reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop, centerSettings.nRowsPerLand)
 		start = leftToRight and 2 or 1
 	end
 	-- now make sure that the we work on the tracks in alternating directions
@@ -713,9 +713,10 @@ function reorderTracksForCircularFieldwork(parallelTracks)
 	return reorderedTracks
 end
 
-function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop)
+function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop, nRowsInLands)
 	local reorderedTracks = {}
-	print(leftToRight, bottomToTop)
+	-- TODO: add logic for pipe on the left side, as it is now only works for pipe on the right side
+	-- I know this could be generated but it is more readable and easy to visualize this way.
 	local rowOrderInLands = ((leftToRight and bottomToTop) or (not leftToRight and not bottomToTop))  and
 			{
 				{1},
@@ -745,8 +746,6 @@ function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop
 				{6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11},
 				{7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 12, 1}
 			}
-
-	local nRowsInLands = 12
 
 	for i = 0, math.floor(#parallelTracks / nRowsInLands) - 1 do
 		for _, j in ipairs(rowOrderInLands[nRowsInLands]) do
