@@ -1351,6 +1351,29 @@ function courseplay:onReadStream(streamId, connection)
 	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
+	
+	--TODO: create IngameMap Settings Container !
+	
+	CpManager.ingameMapIconShowName = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconShowCourse = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconShowText = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconActive = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconShowTextLoaded = streamDebugReadBool(streamId)
+	
+	
+	--Ingame Map Sync
+	if streamDebugReadBool(streamId) then
+		--add to activeCoursePlayers
+		CpManager:addToActiveCoursePlayers(self)	
+		-- add ingameMap icon
+		if CpManager.ingameMapIconActive then
+			courseplay:createMapHotspot(self);
+		end;
+	end
+	
+	--Make sure every vehicle has same AIDriver as the Server
+	courseplay:setAIDriver(self, self.cp.mode)
+	
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
 
@@ -1427,6 +1450,22 @@ function courseplay:onWriteStream(streamId, connection)
 
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
+	
+	--TODO: create IngameMap Settings Container !
+	
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowName)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowCourse)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowText)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconActive)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowTextLoaded)
+	
+	
+	if self.cp.mapHotspot then
+		streamDebugWriteBool(streamId,true)
+	else
+		streamDebugWriteBool(streamId,false)
+	end
+	
 	
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
