@@ -1896,5 +1896,66 @@ end;
 function courseplay:setIsCourseplayDriving(active)
 	self:setCpVar('isDriving',active,courseplay.isClient)
 end;
+
+--This is a copy from the Autodrive code "https://github.com/Stephan-S/FS19_AutoDrive" 
+--all credits go to their Dev team
+--All the code that has to be run on Server and Client from the "start_stop" file has to get in here
+function courseplay:onStartCpAIDriver()
+	self.forceIsActive = true
+    self.spec_motorized.stopMotorOnLeave = false
+    self.spec_enterable.disableCharacterOnLeave = false
+    self.spec_aiVehicle.isActive = true
+    self.steeringEnabled = false
+
+    if self.currentHelper == nil then
+		self.currentHelper = g_helperManager:getRandomHelper()
+        if self.setRandomVehicleCharacter ~= nil then
+            self:setRandomVehicleCharacter()
+            self.cp.vehicleCharacter = self.spec_enterable.vehicleCharacter
+        end
+        if self.spec_enterable.controllerFarmId ~= 0 then
+            self.spec_aiVehicle.startedFarmId = self.spec_enterable.controllerFarmId
+        end
+	end
+	--add to activeCoursePlayers
+	CpManager:addToActiveCoursePlayers(self)
+	
+	-- add ingameMap Hotspot
+	if CpManager.ingameMapIconActive then
+		courseplay:createMapHotspot(self);
+	end;
+end
+
+function courseplay:onStopCpAIDriver()
+	
+    --if self.raiseAIEvent ~= nil then
+     --   self:raiseAIEvent("onAIEnd", "onAIImplementEnd")
+    --end
+
+    self.spec_aiVehicle.isActive = false
+    self.forceIsActive = false
+    self.spec_motorized.stopMotorOnLeave = true
+    self.spec_enterable.disableCharacterOnLeave = true
+    self.currentHelper = nil
+
+    if self.restoreVehicleCharacter ~= nil then
+        self:restoreVehicleCharacter()
+    end
+
+    if self.steeringEnabled == false then
+        self.steeringEnabled = true
+    end
+
+    self:requestActionEventUpdate()
+	
+	--remove from activeCoursePlayers
+	CpManager:removeFromActiveCoursePlayers(self);
+
+	-- remove ingame map hotspot
+	if CpManager.ingameMapIconActive then
+		courseplay:deleteMapHotspot(self);
+	end;
+end
+
 -- do not remove this comment
 -- vim: set noexpandtab:
