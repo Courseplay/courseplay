@@ -1351,6 +1351,29 @@ function courseplay:onReadStream(streamId, connection)
 	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
+	
+	--TODO: create IngameMap Settings Container !
+	
+	CpManager.ingameMapIconShowName = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconShowCourse = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconShowText = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconActive = streamDebugReadBool(streamId)
+	CpManager.ingameMapIconShowTextLoaded = streamDebugReadBool(streamId)
+	
+	
+	--Ingame Map Sync
+	if streamDebugReadBool(streamId) then
+		--add to activeCoursePlayers
+		CpManager:addToActiveCoursePlayers(self)	
+		-- add ingameMap icon
+		if CpManager.ingameMapIconActive then
+			courseplay:createMapHotspot(self);
+		end;
+	end
+	
+	--Make sure every vehicle has same AIDriver as the Server
+	courseplay:setAIDriver(self, self.cp.mode)
+	
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
 
@@ -1427,6 +1450,22 @@ function courseplay:onWriteStream(streamId, connection)
 
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
+	
+	--TODO: create IngameMap Settings Container !
+	
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowName)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowCourse)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowText)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconActive)
+	streamDebugWriteBool(streamId,CpManager.ingameMapIconShowTextLoaded)
+	
+	
+	if self.cp.mapHotspot then
+		streamDebugWriteBool(streamId,true)
+	else
+		streamDebugWriteBool(streamId,false)
+	end
+	
 	
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
@@ -1857,5 +1896,66 @@ end;
 function courseplay:setIsCourseplayDriving(active)
 	self:setCpVar('isDriving',active,courseplay.isClient)
 end;
+
+--This is a copy from the Autodrive code "https://github.com/Stephan-S/FS19_AutoDrive" 
+--all credits go to their Dev team
+--All the code that has to be run on Server and Client from the "start_stop" file has to get in here
+function courseplay:onStartCpAIDriver()
+	self.forceIsActive = true
+    self.spec_motorized.stopMotorOnLeave = false
+    self.spec_enterable.disableCharacterOnLeave = false
+    self.spec_aiVehicle.isActive = true
+    self.steeringEnabled = false
+
+    if self.currentHelper == nil then
+		self.currentHelper = g_helperManager:getRandomHelper()
+        if self.setRandomVehicleCharacter ~= nil then
+            self:setRandomVehicleCharacter()
+            self.cp.vehicleCharacter = self.spec_enterable.vehicleCharacter
+        end
+        if self.spec_enterable.controllerFarmId ~= 0 then
+            self.spec_aiVehicle.startedFarmId = self.spec_enterable.controllerFarmId
+        end
+	end
+	--add to activeCoursePlayers
+	CpManager:addToActiveCoursePlayers(self)
+	
+	-- add ingameMap Hotspot
+	if CpManager.ingameMapIconActive then
+		courseplay:createMapHotspot(self);
+	end;
+end
+
+function courseplay:onStopCpAIDriver()
+	
+    --if self.raiseAIEvent ~= nil then
+     --   self:raiseAIEvent("onAIEnd", "onAIImplementEnd")
+    --end
+
+    self.spec_aiVehicle.isActive = false
+    self.forceIsActive = false
+    self.spec_motorized.stopMotorOnLeave = true
+    self.spec_enterable.disableCharacterOnLeave = true
+    self.currentHelper = nil
+
+    if self.restoreVehicleCharacter ~= nil then
+        self:restoreVehicleCharacter()
+    end
+
+    if self.steeringEnabled == false then
+        self.steeringEnabled = true
+    end
+
+    self:requestActionEventUpdate()
+	
+	--remove from activeCoursePlayers
+	CpManager:removeFromActiveCoursePlayers(self);
+
+	-- remove ingame map hotspot
+	if CpManager.ingameMapIconActive then
+		courseplay:deleteMapHotspot(self);
+	end;
+end
+
 -- do not remove this comment
 -- vim: set noexpandtab:
