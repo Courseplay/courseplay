@@ -40,7 +40,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Направление поворотной полосы" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Поворотная полоса до/после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"						text="Сгенерировать маршрут" />
-		<text name="COURSEPLAY_MULTI_TOOLS"									text="Совместная работа орудий:" />
+		<text name="COURSEPLAY_MULTI_TOOLS"									text="Совместно работающих орудий:" />
 		<text name="COURSEPLAY_DISTANCE" 									text="дистанция" />
 		<text name="COURSEPLAY_WAITING_TIME" 								text="Пауза в точке ожидания:" />
 		<text name="COURSEPLAY_MINUTES" 									text="%d мин" />
@@ -232,8 +232,8 @@
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="загонами" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="круговой" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="загонами v2" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Рядов на загон" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Указывается количество рядов в загоне при работе в режиме 'загонами v2'." />
 		<text name="COURSEPLAY_ACTIVATED" 									text="да" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="название техники" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="название техники и маршрут" />
