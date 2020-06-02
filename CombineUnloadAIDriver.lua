@@ -1704,7 +1704,7 @@ end
 -- Unload combine (stopped)
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:unloadStoppedCombine()
-	self:changeToUnloadWhenFull()
+	if self:changeToUnloadWhenFull() then return end
 	local combineDriver = self.combineToUnload.cp.driver
 	if combineDriver:unloadFinished() then
 		if combineDriver:isWaitingForUnloadAfterCourseEnded() then
@@ -1742,7 +1742,7 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	self.combineOffset = self:getPipeOffset(self.combineToUnload)
 	self.followCourse:setOffset(-self.combineOffset, 0)
 
-	self:changeToUnloadWhenFull()
+	if self:changeToUnloadWhenFull() then return end
 
 	if self:canDriveBesideCombine(self.combineToUnload) or (self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isWaitingInPocket()) then
 		self:driveBesideCombine()

@@ -19,6 +19,13 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onPostDetachImplement", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onReadStream", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onStartCpAIDriver",courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onStopCpAIDriver",courseplay)
+end
+
+function courseplay.registerEvents(vehicleType)
+    SpecializationUtil.registerEvent(vehicleType, "onStartCpAIDriver")
+    SpecializationUtil.registerEvent(vehicleType, "onStopCpAIDriver")
 end
 
 function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)

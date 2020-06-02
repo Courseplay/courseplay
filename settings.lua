@@ -1793,6 +1793,11 @@ end;
 
 
 function courseplay:toggleAssignCombineToTractor(vehicle,line)
+	--temp fix make sure every client has possibleCombines at start
+	if vehicle.cp.possibleCombines == nil then 
+		vehicle.cp.possibleCombines = g_combineUnloadManager:getPossibleCombines(vehicle)
+	end
+	--TODO: assignedCombines and assignedUnloaders have to get sync at start
 	local listIndex = line-2 + vehicle.cp.combinesListHUDOffset
 	local combine = vehicle.cp.possibleCombines[listIndex]
 	if vehicle.cp.assignedCombines[combine] then
@@ -2338,8 +2343,8 @@ NumberOfRowsPerLandSetting = CpObject(SettingList)
 function NumberOfRowsPerLandSetting:init()
 	SettingList.init(self, 'numberOfRowsPerLand', 'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND',
 			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', nil,
-			{4, 6, 8, 10, 12},
-			{4, 6, 8, 10, 12})
+			{4, 6, 8, 10, 12, 14, 16},
+			{4, 6, 8, 10, 12, 14, 16})
 end
 
 --- Implement raise/lower  setting

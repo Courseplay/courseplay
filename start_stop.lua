@@ -2,19 +2,19 @@ local curFile = 'start_stop.lua';
 
 -- starts driving the course
 function courseplay:start(self)
+	if g_server == nil then 
+		return
+	end
+	
 	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
-	self.currentHelper = g_helperManager:getRandomHelper()
-	self.spec_aiVehicle.isActive = true
-	self.cp.stopMotorOnLeaveBackup = self.spec_motorized.stopMotorOnLeave;
-	self.spec_motorized.stopMotorOnLeave = false;
-	self.spec_enterable.disableCharacterOnLeave = false;
+	
 	if not CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] then			-- ???
 		CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
 	end;
 
 	-- TODO: move this to TrafficCollision.lua
-	if self:getAINeedsTrafficCollisionBox() and not courseplay.isClient then
+	if self:getAINeedsTrafficCollisionBox() then
 		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
 		if collisionRoot ~= nil and collisionRoot ~= 0 then
 			local collision = getChildAt(collisionRoot, 0)
@@ -26,13 +26,6 @@ function courseplay:start(self)
 		end
 	end
 
-	if self.setRandomVehicleCharacter ~= nil then
-		self:setRandomVehicleCharacter()
-	end
-
-	if courseplay.isClient then
-		return
-	end
 	self.cp.numWayPoints = #self.Waypoints;
 	--self:setCpVar('numWaypoints', #self.Waypoints,courseplay.isClient);
 	if self.cp.numWaypoints < 1 then
@@ -65,9 +58,6 @@ function courseplay:start(self)
 	if self.cp.coursePlayerNum == nil then
 		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
 	end;
-	--add to activeCoursePlayers
-	CpManager:addToActiveCoursePlayers(self);
-
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
@@ -209,11 +199,6 @@ function courseplay:start(self)
 
 	courseplay:validateCanSwitchMode(self);
 
-	-- add ingameMap icon
-	if CpManager.ingameMapIconActive then
-		courseplay:createMapHotspot(self);
-	end;
-
 	-- Disable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
 	if self.cropDestruction then
 		courseplay:disableCropDestruction(self);
@@ -227,6 +212,7 @@ function courseplay:start(self)
 		self.cp.driver:delete()
 		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 	end
+	StartStopEvent:sendStartEvent(self)
 	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 
@@ -361,23 +347,24 @@ end;
 
 -- stops driving the course
 function courseplay:stop(self)
+	if g_server == nil then 
+		return
+	end
 	-- Stop AI Driver
 	if self.cp.driver then
 		self.cp.driver:dismiss()
 	end
-
+	
 	local ret2_removeLegacyCollisionTriggers = false				-- TODO could be used for further processing / error handling / information to the user
 	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self)
-	self.spec_aiVehicle.isActive = false
-	self.spec_motorized.stopMotorOnLeave = self.cp.stopMotorOnLeaveBackup;
-	self.spec_enterable.disableCharacterOnLeave = true;
+	
 
 	-- TODO: move this to TrafficCollision.lua
-    if self:getAINeedsTrafficCollisionBox() and not courseplay.isClient then
+    if self:getAINeedsTrafficCollisionBox() then
         setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
         self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
     end
-
+	
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
 		self.cp.saveFuel = false;
@@ -386,12 +373,6 @@ function courseplay:stop(self)
 		--print("reset existing timer")
 		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
 	end
-
-	if self.restoreVehicleCharacter ~= nil then
-		self:restoreVehicleCharacter()
-	end
-
-	self.currentHelper = nil
 
 	--stop special tools
 	for _, tool in pairs (self.cp.workTools) do
@@ -413,13 +394,6 @@ function courseplay:stop(self)
 
 	self.cp.lastInfoText = nil
 
-	--Returns Control to Player:
-	self:requestActionEventUpdate() 
-	
-	if courseplay.isClient then
-		return
-	end
-	
 	--mode10 restore original compactingScales
 	if self.cp.mode10.OrigCompactScale ~= nil then
 		self.bunkerSiloCompactingScale = self.cp.mode10.OrigCompactScale 
@@ -436,7 +410,7 @@ function courseplay:stop(self)
 	if self.cp.useProgessiveBraking then
 		self.cp.mrAccelrator = nil
 	end
-
+	
 	if self.cp.hasDriveControl then
 		local changed = false;
 		if self.cp.driveControl.hasFourWD and self.driveControl.fourWDandDifferentials.fourWheel ~= self.cp.driveControl.fourWDBackup then
@@ -571,17 +545,10 @@ function courseplay:stop(self)
 		end;
 	end
 	
-	-- remove ingame map hotspot
-	if CpManager.ingameMapIconActive then
-		courseplay:deleteMapHotspot(self);
-	end;
 	
-	--remove from activeCoursePlayers
-	CpManager:removeFromActiveCoursePlayers(self);
-
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
-
+	StartStopEvent:sendStopEvent(self)
 	-- reactivate load/add/delete course buttons
 	--courseplay.buttons:setActiveEnabled(self, 'page2');
 end
