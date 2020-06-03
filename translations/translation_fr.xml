@@ -448,6 +448,10 @@
 	<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Permet l'ouverture du HUD avec un clique droit. Ce paramètre s'applique à TOUS les véhicules" />
 	<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Clique droit pour ouvrir le HUD" />
 	<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Permet l'ouverture du HUD avec un clique droit. Ce paramètre ne s'applique qu'au véhicule actuel" />
+  <text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
 	
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet l'affichage du Mini-HUD" />

@@ -63,7 +63,7 @@ function courseGenerator.generate( vehicle )
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
 		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points, true);
 		poly.numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
-		if vehicle.cp.courseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
+		if vehicle.cp.oldCourseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
 			if not courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes then
 				courseGenerator.findIslands( courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum])
 			end
@@ -106,11 +106,11 @@ function courseGenerator.generate( vehicle )
 		x, _, z = getWorldTranslation( vehicle.rootNode )
 		headlandSettings.startLocation = courseGenerator.pointToXy({ x = x, z = z })
 		courseplay.debugVehicle(7, vehicle, "Course starting location is current vehicle position at %.1f/%.1f", x, z )
-	elseif vehicle.cp.courseGeneratorSettings.startingLocationWorldPos then
-		headlandSettings.startLocation = courseGenerator.pointToXy(vehicle.cp.courseGeneratorSettings.startingLocationWorldPos)
+	elseif vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos then
+		headlandSettings.startLocation = courseGenerator.pointToXy(vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos)
 		courseplay.debugVehicle(7, vehicle, "Course starting location position selected on map at %.1f/%.1f",
-			vehicle.cp.courseGeneratorSettings.startingLocationWorldPos.x,
-			vehicle.cp.courseGeneratorSettings.startingLocationWorldPos.z)
+			vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos.x,
+			vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos.z)
 	end
 
 	local extendTracks = 0
@@ -121,8 +121,8 @@ function courseGenerator.generate( vehicle )
 		useBestAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC,
 		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
 		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0,
-		nRowsToSkip = vehicle.cp.courseGeneratorSettings.nRowsToSkip,
-		mode = vehicle.cp.courseGeneratorSettings.centerMode,
+		nRowsToSkip = vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip,
+		mode = vehicle.cp.courseGeneratorSettings.centerMode:get(),
 		nRowsPerLand = vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:get()
 	}
 
@@ -148,7 +148,7 @@ function courseGenerator.generate( vehicle )
 	end
 	-- use some overlap between headland passes to get better results
 	-- (=less fruit missed) at smooth headland corners
-	headlandSettings.overlapPercent = 7
+	headlandSettings.overlapPercent = vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:get()
 	headlandSettings.nPasses = vehicle.cp.headland.getNumLanes()
 	-- ignore headland order setting when there's no headland
 	headlandSettings.headlandFirst = vehicle.cp.headland.orderBefore or vehicle.cp.headland.getNumLanes() == 0
@@ -173,7 +173,7 @@ function courseGenerator.generate( vehicle )
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, turnRadiusAdjustedForMultiTool,
 		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
-		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
+		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode, centerSettings
 	)
 	]]--
 	local status = true
@@ -183,7 +183,7 @@ function courseGenerator.generate( vehicle )
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, turnRadiusAdjustedForMultiTool,
 		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
-		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
+		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode, centerSettings
 	)
 
 	-- return on exception (but continue on not ok as that is just a warning)

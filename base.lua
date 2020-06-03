@@ -454,16 +454,14 @@ function courseplay:onLoad(savegame)
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	self.cp.ridgeMarkersAutomatic = true;
-	-- TODO: add all course gen settings to a SettingsContainer
-	self.cp.courseGeneratorSettings = {
+	-- TODO: add all old course gen settings to a SettingsContainer
+	self.cp.oldCourseGeneratorSettings = {
 		startingLocation = self.cp.startingCorner,
 		manualStartingLocationWorldPos = nil,
 		islandBypassMode = Island.BYPASS_MODE_NONE,
 		nRowsToSkip = 0,
-		centerMode = courseGenerator.CENTER_MODE_UP_DOWN,
-		numberOfRowsPerLand = NumberOfRowsPerLandSetting()
+		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
 	}
-	self.cp.courseGeneratorSettings.numberOfRowsPerLand:set(6)
 	self.cp.headland = {
 		-- with the old, manual direction selection course generator
 		manuDirMaxNumLanes = 6;
@@ -575,6 +573,13 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(StrawOnHeadland, self)
 	self.cp.settings:addSetting(SowingMachineFertilizerEnabled, self)
 	self.cp.settings:addSetting(EnableOpenHudWithMouseVehicle, self)
+	self.cp.settings:addSetting(EnableVisualWaypointsTemporary, self)
+
+	---@type SettingsContainer
+	self.cp.courseGeneratorSettings = SettingsContainer()
+	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
+	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
+	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
 end;
 
 function courseplay:onPostLoad(savegame)

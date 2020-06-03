@@ -451,6 +451,11 @@
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Aktiviert/Deaktiviert den Rechtsklick zum öffnen des HUDs (Global)" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Rechtsklick HUD" />
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Aktiviert/Deaktiviert den Rechtsklick zum öffnen des HUDs (Fahrzeug)" />
+
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Pathfinder Wegpunkte" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Zeige Wegpunkte vom Pathfinder" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Überlappung Vorgewende" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Überlappung im Vorgewende in Prozent" />
 		
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zeige Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD an/aus" />

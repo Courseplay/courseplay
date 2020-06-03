@@ -850,7 +850,11 @@ end
 
 function AIDriver:drawTemporaryCourse()
 	if not self.course:isTemporary() then return end
-	if not courseplay.debugChannels[self.debugChannel] then return end
+	if self.vehicle.cp.settings.enableVisualWaypointsTemporary:is(false) and
+			not courseplay.debugChannels[self.debugChannel] then
+		return
+	end
+
 	for i = 1, self.course:getNumberOfWaypoints() do
 		local x, y, z = self.course:getWaypointPosition(i)
 		cpDebug:drawPoint(x, y + 3, z, 10, 0, 0)
