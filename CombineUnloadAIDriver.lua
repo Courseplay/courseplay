@@ -59,6 +59,9 @@ CombineUnloadAIDriver.minDistanceFromReversingChopper = 10
 CombineUnloadAIDriver.minDistanceFromWideTurnChopper = 5
 CombineUnloadAIDriver.safeManeuveringDistance = 30 -- distance to keep from a combine not ready to unload
 CombineUnloadAIDriver.pathfindingRange = 5 -- won't do pathfinding if target is closer than this
+CombineUnloadAIDriver.maxFruitPercent = 10
+CombineUnloadAIDriver.offFieldPenalty = 1000 -- aggresively attempt to keep unloaders on the field
+CombineUnloadAIDriver.pathfinderFailureCount = 0
 
 CombineUnloadAIDriver.myStates = {
 	ON_FIELD = {},
@@ -1151,7 +1154,7 @@ function CombineUnloadAIDriver:driveToNodeWithPathfinding(node, xOffset, zOffset
 		local done, path
 		self.pathfindingStartedAt = self.vehicle.timer
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-				self.vehicle, node, xOffset or 0, zOffset or 0, self.allowReversePathfinding, fieldNum, {targetVehicle})
+				self.vehicle, node, xOffset or 0, zOffset or 0, self.allowReversePathfinding, fieldNum, {targetVehicle}, self.maxFruitPercent, self.offFieldPenalty)
 		if done then
 			return self:onPathfindingDone(path)
 		else
@@ -1335,10 +1338,24 @@ end
 function CombineUnloadAIDriver:isPathFound(path)
 	if path and #path > 2 then
 		self:debug('Found path (%d waypoints, %d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		self.maxFruitPercent = 50
+		self.offFieldPenalty = 1000
+		self.pathfinderFailureCount = 0
 		return true
 	else
-		self:error('No path found to %s in %d ms', self.combineToUnload and self.combineToUnload:getName() or 'N/A',
-				self.vehicle.timer - (self.pathfindingStartedAt or 0))
+		self.pathfinderFailureCount = self.pathfinderFailureCount + 1
+		if self.pathfinderFailureCount > 1 then
+			self:error('No path found to %s in %d ms, pathfinder failed at least twice, trying a path through crop and relaxing pathfinder field constraint...',
+						self.combineToUnload and self.combineToUnload:getName() or 'N/A',
+						self.vehicle.timer - (self.pathfindingStartedAt or 0))
+			self.maxFruitPercent = math.huge
+			self.offFieldPenalty = 1
+		elseif self.pathfinderFailureCount == 1 then
+			self:error('No path found to %s in %d ms, pathfinder failed once, relaxing pathfinder field constraint...',
+						self.combineToUnload and self.combineToUnload:getName() or 'N/A',
+						self.vehicle.timer - (self.pathfindingStartedAt or 0))
+			self.offFieldPenalty = 1
+		end
 		return false
 	end
 end
@@ -1524,10 +1541,9 @@ function CombineUnloadAIDriver:startPathfinding(
 		pathfindingCallbackFunc)
 	if not self.pathfinder or not self.pathfinder:isActive() then
 
-		local maxFruitPercent = 10
 		if self:isFruitAt(target, xOffset, zOffset) then
 			self:info('There is fruit at the target, disabling fruit avoidance')
-			maxFruitPercent = math.huge
+			self.maxFruitPercent = math.huge
 		end
 
 		local done, path
@@ -1539,11 +1555,13 @@ function CombineUnloadAIDriver:startPathfinding(
 			-- the same reference everywhere
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
 					self.vehicle, target, -xOffset or 0, zOffset or 0, self.allowReversePathfinding,
-					fieldNum, { vehicleToIgnore }, self.vehicle.cp.realisticDriving and 10 or math.huge)
+					fieldNum, { vehicleToIgnore },
+					self.vehicle.cp.realisticDriving and 10 or self.maxFruitPercent or  math.huge, self.offFieldPenalty)
 		else
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
 					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding,
-					fieldNum, { vehicleToIgnore }, self.vehicle.cp.realisticDriving and 10 or math.huge)
+					fieldNum, { vehicleToIgnore },
+					self.vehicle.cp.realisticDriving and 10 or self.maxFruitPercent or math.huge, self.offFieldPenalty)
 		end
 		if done then
 			return pathfindingCallbackFunc(self, path)

@@ -508,8 +508,10 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 						if self.analyticSolverEnabled then
 							local analyticSolution = self.analyticSolver:solve(succ, goal, turnRadius, allowReverse)
 							analyticSolutionCost = analyticSolution:getLength(turnRadius)
+							succ:updateH(goal, analyticSolutionCost)
+						else
+							succ:updateH(goal, 0, succ:distance(goal) * 1.5)
 						end
-						succ:updateH(goal, analyticSolutionCost)
 
 						--self:debug('     %s', tostring(succ))
 						if existingSuccNode then

@@ -43,6 +43,7 @@ courseplay.clock = 0;
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
 	['0d8e45a8ed916c1cd40820165b81e12d'] = true; -- Tensuko
 	['97c8e6d0d14f4e242c3c37af68cc376c'] = true; -- Dan
+	['8f5e9e8fb5a23375afbb3b7abbc6335c'] = true; -- Goof
 };
 
 local function initialize()
