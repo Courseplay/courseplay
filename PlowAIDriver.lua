@@ -41,6 +41,14 @@ function PlowAIDriver:init(vehicle)
 	end
 end
 
+function PlowAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function PlowAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 -- When starting work with a plow it first may need to be unfolded and then turned so it is facing to
 -- the unworked side, and then can we start working
 function PlowAIDriver:startWork()

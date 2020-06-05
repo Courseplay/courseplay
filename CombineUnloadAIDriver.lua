@@ -105,6 +105,14 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineToUnloadReversing = 0
 end
 
+function CombineUnloadAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function CombineUnloadAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function CombineUnloadAIDriver:setHudContent()
 	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle)
 end
@@ -201,6 +209,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 	-- make sure if we have a combine we stay registered
 	if self.combineToUnload then
+		-- TODO MP: self.combineToUnload.cp.driver:registerUnloader(self) has to get called on client!
 		self.combineToUnload.cp.driver:registerUnloader(self)
 	end
 
@@ -221,6 +230,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if g_updateLoopIndex % 100 == 0 then
 			self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 			if self.combineToUnload ~= nil then
+				-- TODO MP: g_combineUnloadManager:addUnloaderToCombine(self.vehicle, self.combineToUnload) has to get called on client!
 				self:refreshHUD()
 				courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
 				self:startWorking()
@@ -1078,6 +1088,7 @@ function CombineUnloadAIDriver:getDriveOnThreshold()
 	return self.vehicle.cp.driveOnAtFillLevel
 end
 
+-- TODO MP: CombineUnloadAIDriver:releaseUnloader() has to get called on client!
 function CombineUnloadAIDriver:releaseUnloader()
 	g_combineUnloadManager:releaseUnloaderFromCombine(self.vehicle, self.combineToUnload)
 	-- TODO: may not have to release the unloader at this point at all so no need to remember

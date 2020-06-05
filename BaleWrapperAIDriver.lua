@@ -36,6 +36,14 @@ function BaleWrapperAIDriver:init(vehicle)
 	end
 end
 
+function BaleWrapperAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function BaleWrapperAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function BaleWrapperAIDriver:driveFieldwork(dt)
 	-- Don't drop the bale in the turn or on temporary alignment or connecting tracks
 	if BalerAIDriver.isHandlingAllowed(self) then

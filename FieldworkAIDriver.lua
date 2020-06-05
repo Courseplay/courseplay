@@ -64,6 +64,14 @@ function FieldworkAIDriver:init(vehicle)
 	self.turnDurationMs = 20000
 end
 
+function FieldworkAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function FieldworkAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function FieldworkAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
 	courseplay.hud:setFieldWorkAIDriverContent(self.vehicle)
@@ -648,6 +656,7 @@ end
 function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')
 	-- send the event first and _then_ lower otherwise it sometimes does not turn it on
+	-- TODO: Missing Multiplayer Event for: onAIImplementStart, as the original is : https://gdn.giants-software.com/documentation_scripting_fs19.php?version=script&category=70&class=10462#startAIVehicle165101
 	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
 	self.vehicle:requestActionEventUpdate()
 	self:startEngineIfNeeded()
@@ -659,6 +668,7 @@ end
 function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
 	self:raiseImplements()
+	--TODO: Missing Multiplayer Event for: onAIImplementEnd
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
 	self:clearRemainingTime()

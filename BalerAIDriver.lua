@@ -25,6 +25,14 @@ function BalerAIDriver:init(vehicle)
 	self.baler = FieldworkAIDriver.getImplementWithSpecialization(vehicle, Baler)
 end
 
+function BalerAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function BalerAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function BalerAIDriver:driveFieldwork(dt)
 	-- this is due to the derived BaleWrapperAIDriver, not all bale wrappers are balers at the same time
 	-- so handle balers only if we really have one.

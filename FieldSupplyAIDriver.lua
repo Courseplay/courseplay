@@ -38,6 +38,14 @@ function FieldSupplyAIDriver:init(vehicle)
 	self:setHudContent()
 end
 
+function FieldSupplyAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function FieldSupplyAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function FieldSupplyAIDriver:setHudContent()
 	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle)
 end

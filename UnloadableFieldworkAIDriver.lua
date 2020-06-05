@@ -41,6 +41,14 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self.stopImplementsWhileUnloadOrRefillOnField = false
 end
 
+function UnloadableFieldworkAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function UnloadableFieldworkAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function UnloadableFieldworkAIDriver:setHudContent()
 	FieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setUnloadableFieldworkAIDriverContent(self.vehicle)

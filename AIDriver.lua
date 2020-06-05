@@ -96,6 +96,19 @@ You can add multiple messages to display by calling setInfoText() multiple times
 
 Make sure to call updateInfoText() in each cycle to display the current message texts.
 
+Multiplayer
+-----------
+These functions are used to sync AIDriver variables from Server to Client once they change.
+
+Every AIDriver has to have these derived functions:
+
+function __:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function __:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
 
 
 Note:
@@ -170,6 +183,15 @@ function AIDriver:init(vehicle)
 		self.vehicle.cp.settings:validateCurrentValues()
 	end
 	self:setHudContent()
+end
+
+function AIDriver:writeUpdateStream(streamId)
+	streamWriteString(streamId,self.state.name)
+end 
+
+function AIDriver:readUpdateStream(streamId)
+	local nameState = streamReadString(streamId)
+	self.state = self.states[nameState]
 end
 
 function AIDriver:setHudContent()

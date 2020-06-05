@@ -39,6 +39,14 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self.refillState = self.states.TO_BE_REFILLED
 end
 
+function FillableFieldworkAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function FillableFieldworkAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function FillableFieldworkAIDriver:setHudContent()
 	FieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setFillableFieldworkAIDriverContent(self.vehicle)

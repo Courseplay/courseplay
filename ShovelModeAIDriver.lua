@@ -68,6 +68,14 @@ function ShovelModeAIDriver:init(vehicle)
 	self:setHudContent()
 end
 
+function ShovelModeAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function ShovelModeAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function ShovelModeAIDriver:setHudContent()
 	courseplay.hud:setShovelModeAIDriverContent(self.vehicle)
 end

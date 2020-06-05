@@ -60,6 +60,14 @@ function LevelCompactAIDriver:init(vehicle)
 	self.stoppedCourseplayers = {}
 end
 
+function LevelCompactAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function LevelCompactAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function LevelCompactAIDriver:setHudContent()
 	courseplay.hud:setLevelCompactAIDriverContent(self.vehicle)
 end

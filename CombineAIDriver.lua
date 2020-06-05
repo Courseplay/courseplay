@@ -152,6 +152,15 @@ function CombineAIDriver:init(vehicle)
 	self:measureBackDistance()
 end
 
+function CombineAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function CombineAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
+
 --- Get the combine object, this can be different from the vehicle in case of tools towed or mounted on a tractor
 function CombineAIDriver:getCombine()
 	return self.combine

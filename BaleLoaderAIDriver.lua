@@ -72,6 +72,14 @@ function BaleLoaderAIDriver:init(vehicle)
 	self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
 end
 
+function BaleLoaderAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+end 
+
+function BaleLoaderAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+end
+
 function BaleLoaderAIDriver:setHudContent()
 	UnloadableFieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setBaleLoaderAIDriverContent(self.vehicle)
