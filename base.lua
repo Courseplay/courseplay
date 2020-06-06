@@ -1470,6 +1470,21 @@ function courseplay:onWriteStream(streamId, connection)
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
 
+function courseplay:onReadUpdateStream(streamId, timestamp, connection)
+	if g_server == nil and CpManager.isMultiplayer then
+		if self.cp.driver ~= nil then 
+			self.cp.driver:readUpdateStream(streamId)
+		end 
+	end
+end
+
+function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
+	if g_server ~= nil and CpManager.isMultiplayer then
+		if self.cp.driver ~= nil then
+			self.cp.driver:writeUpdateStream(streamId)
+		end
+	end
+end
 
 function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	

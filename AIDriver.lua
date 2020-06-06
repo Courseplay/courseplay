@@ -172,6 +172,15 @@ function AIDriver:init(vehicle)
 	self:setHudContent()
 end
 
+function AIDriver:writeUpdateStream(streamId)
+	streamWriteString(streamId,self.state.name)
+end 
+
+function AIDriver:readUpdateStream(streamId)
+	local nameState = streamReadString(streamId)
+	self.state = self.states[nameState]
+end
+
 function AIDriver:setHudContent()
 	courseplay.hud:setAIDriverContent(self.vehicle)
 end

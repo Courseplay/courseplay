@@ -28,6 +28,16 @@ function GrainTransportAIDriver:init(vehicle)
 	-- just for backwards compatibility
 end
 
+function GrainTransportAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+	streamWriteUIntN(streamId,self.runCounter,4)
+end 
+
+function GrainTransportAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+	self.runCounter = streamReadUIntN(streamId,4)
+end
+
 function GrainTransportAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
 	courseplay.hud:setGrainTransportAIDriverContent(self.vehicle)
