@@ -501,7 +501,7 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 		elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
 			vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
 		elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive then
-			vehicle:setCourseplayFunc('setStopAtEnd', not vehicle.cp.stopAtEnd, false, 1);
+			vehicle:setCourseplayFunc('setStopAtEnd', nil, false, 1);
 		
 		--Switch Mode, but doesn't work right now, not sure why
 		elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then

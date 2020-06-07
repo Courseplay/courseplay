@@ -571,7 +571,7 @@ function AIDriver:onEndCourse()
 			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
 			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, -3, nil, nil, nil)
 		end
-	elseif self.vehicle.cp.stopAtEnd then
+	elseif self.vehicle.cp.settings.stopAtEnd:is(true) then
 		if self.state ~= self.states.STOPPED then
 			self:stop('END_POINT')
 		end
@@ -745,7 +745,7 @@ end
 function AIDriver:getRecordedSpeed()
 	-- default is the street speed (reduced in corners)
 	local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
-	if self.vehicle.cp.speeds.useRecordingSpeed then
+	if self.vehicle.cp.settings.useRecordingSpeed:is(true) then
 		-- use default street speed if there's no recorded speed.
 		speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 	end
@@ -920,7 +920,7 @@ function AIDriver:detectCollision(dt)
 end
 
 function AIDriver:areBeaconLightsEnabled()
-	return self.vehicle.cp.warningLightsMode > courseplay.lights.WARNING_LIGHTS_NEVER
+	return self.vehicle.cp.settings.warningLightsMode:get() > WarningLightsModeSetting.WARNING_LIGHTS_NEVER
 end
 
 function AIDriver:updateLights()
@@ -1410,7 +1410,7 @@ end
 --- pathfinding considers any collision-free path valid, also outside of the field.
 ---@return boolean true when a pathfinding successfully started
 function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fieldNum)
-	if self.vehicle.cp.realisticDriving then
+	if self.vehicle.cp.settings.useRealisticDriving:is(true) then
 		if not self.pathfinder or not self.pathfinder:isActive() then
 			self.courseAfterPathfinding = course
 			self.waypointIxAfterPathfinding = ix
@@ -1527,7 +1527,7 @@ end;
 --- Is auto stop engine enabled?
 function AIDriver:isEngineAutoStopEnabled()
 	-- do not auto stop engine when auto motor start is enabled as it'll try to restart the engine on each update tick.
-	return self.vehicle.cp.saveFuelOptionActive and not g_currentMission.missionInfo.automaticMotorStartEnabled
+	return self.vehicle.cp.settings.saveFuelOption:is(true) and not g_currentMission.missionInfo.automaticMotorStartEnabled
 end
 
 --- Check the engine state and stop if we have the fuel save option and been stopped too long

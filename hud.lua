@@ -462,11 +462,11 @@ function courseplay.hud:setContent(vehicle)
 		vehicle.cp.hud.content.bottomInfo.convoyText = nil
 	end	
 		
-	if vehicle.cp.runCounterActive and vehicle.cp.canDrive and vehicle.cp.driver.runCounter then
+	if not vehicle.cp.settings.runCounterMax:is(RunCounterMaxSetting.RUN_COUNTER_OFF) and vehicle.cp.canDrive and vehicle.cp.driver.runCounter then
 		if vehicle.cp.siloSelectedFillType ~= nil and vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN then
-			vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %d",vehicle.cp.driver.runCounter, vehicle.cp.maxRunNumber);
+			vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %s",vehicle.cp.driver.runCounter,  vehicle.cp.settings.runCounterMax:get());
 		else
-			vehicle.cp.hud.content.bottomInfo.runCounterText = courseplay:loc('UNKNOWN')..string.format(": %d / %d",vehicle.cp.driver.runCounter, vehicle.cp.maxRunNumber);
+			vehicle.cp.hud.content.bottomInfo.runCounterText = courseplay:loc('UNKNOWN')..string.format(": %d / %s",vehicle.cp.driver.runCounter, vehicle.cp.settings.runCounterMax:get());
 		end
 	else
 		vehicle.cp.hud.content.bottomInfo.runCounterText = nil 
@@ -742,8 +742,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'setStopAtEnd' then
 					if vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'setStopAtEnd')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_STOP_AT_LAST_POINT');
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.stopAtEnd and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopAtEnd:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.stopAtEnd:getText() 
 					else
 						self:disableButtonWithFunction(vehicle,page, 'setStopAtEnd')
 					end
@@ -762,8 +762,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 
 					end
 				elseif entry.functionToCall == 'toggleAutomaticCoverHandling' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COVER_HANDLING');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.automaticCoverHandling and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.automaticCoverHandling:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticCoverHandling:getText()
 				
 				elseif entry.functionToCall == 'changeSiloFillType' then
 					if vehicle.cp.siloSelectedFillType ~= nil then 
@@ -776,22 +776,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changemaxRunNumber' then
 					if vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
-						self:enableButtonWithFunction(vehicle,page, 'toggleRunCounterActive')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_NUMBER_OF_RUNS');
-						if vehicle.cp.runCounterActive then
-							vehicle.cp.hud.content.pages[page][line][2].text = string.format("%d", vehicle.cp.maxRunNumber);
-						else
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_DEACTIVATED') --courseplay:loc('COURSEPLAY_UNLIMITED');
-							self:disableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
-						end
-					
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.runCounterMax:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.runCounterMax:getText()
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
-						self:disableButtonWithFunction(vehicle,page, 'toggleRunCounterActive')
 					end
 					
 				elseif entry.functionToCall == 'resetRunCounter' then
-					if vehicle.cp.canDrive and vehicle.cp.runCounterActive then
+					if vehicle.cp.canDrive and not self.vehicle.cp.settings.runCounterMax:is(RunCounterMaxSetting.RUN_COUNTER_OFF) then
 						self:enableButtonWithFunction(vehicle,page, 'resetRunCounter')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RESET_NUMBER_OF_RUNS') ;
 					else
@@ -844,7 +836,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							
 				elseif entry.functionToCall == 'changeMaxSpeed' then
 					local streetSpeedStr = ('%d %s'):format(g_i18n:getSpeed(vehicle.cp.speeds.street), courseplay:getSpeedMeasuringUnit());
-					if vehicle.cp.speeds.useRecordingSpeed then
+					if vehicle.cp.settings.useRecordingSpeed:is(true) then
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SPEED_MAX');
 						vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC'):format(streetSpeedStr);
 					else
@@ -852,43 +844,22 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[page][line][2].text = streetSpeedStr
 					end
 				elseif entry.functionToCall == 'toggleUseRecordingSpeed' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE');
-					if vehicle.cp.speeds.useRecordingSpeed then
-						vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_RECORDING');
-					else
-						vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_MAX_SPEED_MODE_MAX');
-					end;	
-				
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.useRecordingSpeed:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.useRecordingSpeed:getText() 
 				elseif entry.functionToCall == 'changeWarningLightsMode' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS');
-					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_WARNING_LIGHTS_MODE_' .. vehicle.cp.warningLightsMode);
-				
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.warningLightsMode:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.warningLightsMode:getText() 
 				elseif entry.functionToCall == 'toggleIngameMapIconShowText' then
-					if CpManager.ingameMapIconActive and CpManager.ingameMapIconShowTextLoaded then
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT');
-						if CpManager.ingameMapIconShowName and not CpManager.ingameMapIconShowCourse then
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NAME_ONLY');
-						elseif CpManager.ingameMapIconShowName and CpManager.ingameMapIconShowCourse then
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_NAME_AND_COURSE');
-						else
-							vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_DEACTIVATED');
-						end;			
-					end;
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.showMapHotspot:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.showMapHotspot:getText() 
 				elseif entry.functionToCall == 'openAdvancedSettingsDialog' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_OPEN_ADVANCED_SETTINGS');
 				elseif entry.functionToCall == 'toggleFuelSaveOption' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FUELSAVEOPTION');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.saveFuelOptionActive and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-				
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.saveFuelOption:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.saveFuelOption:getText() 
 				elseif entry.functionToCall == 'toggleAutoRefuel' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FUEL_SEARCH_FOR');
-					if vehicle.cp.allwaysSearchFuel then
-						vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_FUEL_ALWAYS');
-					else
-						vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc('COURSEPLAY_FUEL_BELOW_20PCT');
-					end
-				
-
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.allwaysSearchFuel:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.allwaysSearchFuel:getText()
 				elseif entry.functionToCall == 'changeLoadUnloadOffsetX' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_LOAD_UNLOAD_OFFSET_X');
 					if vehicle.cp.loadUnloadOffsetX and vehicle.cp.loadUnloadOffsetX ~= 0 then
@@ -905,8 +876,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[page][line][2].text = '---';
 					end;
 				elseif entry.functionToCall == 'toggleRealisticDriving' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_PATHFINDING');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.realisticDriving and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.useRealisticDriving:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.useRealisticDriving:getText()
 
 				elseif entry.functionToCall == 'changeTurnDiameter' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TURN_RADIUS');
@@ -1152,8 +1123,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 
 				elseif entry.functionToCall == 'toggleDriverPriority' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_PRIORITY');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driverPriorityUseFillLevel and courseplay:loc('COURSEPLAY_FILLEVEL') or courseplay:loc('COURSEPLAY_DISTANCE');
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.driverPriorityUseFillLevel:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.driverPriorityUseFillLevel:getText() 
 
 				elseif entry.functionToCall == 'toggleStopWhenUnloading' then
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopForUnload:getLabel()
@@ -1255,21 +1226,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'toggleAutomaticUnloadingOnField' then
 					if not vehicle.cp.hasUnloadingRefillingCourse then
 						self:enableButtonWithFunction(vehicle,page, 'toggleAutomaticUnloadingOnField')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_ON_FIELD');
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.automaticUnloadingOnField and courseplay:loc('COURSEPLAY_AUTOMATIC') or courseplay:loc('COURSEPLAY_MANUAL');
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.automaticUnloadingOnField:getLabel() 
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticUnloadingOnField:getText() 
 					else
 						self:disableButtonWithFunction(vehicle,page, 'toggleAutomaticUnloadingOnField')
 					end
-					
-				elseif entry.functionToCall == 'togglePlowFieldEdge' then
-					if vehicle.cp.hasPlow then
-						self:enableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_PLOW_FIELD_EDGE');
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.plowFieldEdge and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
-					else
-						self:disableButtonWithFunction(vehicle,page, 'togglePlowFieldEdge')
-					end
-				
 				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
 					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
 					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
@@ -2351,7 +2312,6 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
 	
 	self:addSettingsRow(vehicle,'changemaxRunNumber', 1, 5, 1 )
-	self:addRowButton(vehicle,'toggleRunCounterActive', 1, 5, 2 )
 	self:addRowButton(vehicle,'resetRunCounter', 1, 6, 1 )
 	
 	

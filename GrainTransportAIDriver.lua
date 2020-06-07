@@ -128,7 +128,7 @@ function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:getCurrentWaypointIx() == self.course:getNumberOfWaypoints() then
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
-		if self.runCounter >= self.vehicle.cp.maxRunNumber then
+		if self:getIsRunCounterActive() and self.runCounter >= self.vehicle.cp.settings.runCounterMax:get() then
 			-- stop at the last waypoint when the run counter expires
 			allowedToDrive = false
 			self:stop('END_POINT_MODE_1')
@@ -162,7 +162,7 @@ function GrainTransportAIDriver:getCanShowDriveOnButton()
 end
 
 function GrainTransportAIDriver:getIsRunCounterActive()
-	return self.vehicle.cp.runCounterActive;
+	return not self.vehicle.cp.settings.runCounterMax:is(RunCounterMaxSetting.RUN_COUNTER_OFF)
 end
 
 function GrainTransportAIDriver:incrementRunCounter()

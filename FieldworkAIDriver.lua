@@ -163,7 +163,7 @@ function FieldworkAIDriver:start(startingPoint)
 	self.alignmentEnabled = self.vehicle.cp.alignment.enabled
 	self.vehicle.cp.alignment.enabled = true
 	-- stop at the last waypoint by default
-	self.vehicle.cp.stopAtEnd = true
+	self.vehicle.cp.settings.stopAtEnd:set(true)
 	-- any offset imposed by the driver itself (tight turns, end of course, etc.), additional to any
 	-- tool offsets
 	self.aiDriverOffsetX = 0

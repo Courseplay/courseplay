@@ -260,7 +260,7 @@ function CombineAIDriver:isWaitingInPocket()
 end
 
 function CombineAIDriver:changeToFieldworkUnloadOrRefill()
-	if self.vehicle.cp.realisticDriving then
+	if self.vehicle.cp.settings.useRealisticDriving:is(true) then
 		self:checkFruit()
 		-- TODO: check around turn maneuvers we may not want to pull back before a turn
 		if self.vehicle.cp.settings.selfUnload:is(true) and self:startSelfUnload() then

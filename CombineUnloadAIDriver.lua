@@ -516,7 +516,7 @@ function CombineUnloadAIDriver:getRecordedSpeed()
 	-- default is the street speed (reduced in corners)
 	if self.state == self.states.ON_STREET then
 		local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
-		if self.vehicle.cp.speeds.useRecordingSpeed then
+		if self.vehicle.cp.settings.useRecordingSpeed:is(true) then
 			-- use default street speed if there's no recorded speed.
 			speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 		end
@@ -1539,11 +1539,11 @@ function CombineUnloadAIDriver:startPathfinding(
 			-- the same reference everywhere
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
 					self.vehicle, target, -xOffset or 0, zOffset or 0, self.allowReversePathfinding,
-					fieldNum, { vehicleToIgnore }, self.vehicle.cp.realisticDriving and 10 or math.huge)
+					fieldNum, { vehicleToIgnore }, self.vehicle.cp.settings.useRealisticDriving:is(true) and 10 or math.huge)
 		else
 			self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
 					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding,
-					fieldNum, { vehicleToIgnore }, self.vehicle.cp.realisticDriving and 10 or math.huge)
+					fieldNum, { vehicleToIgnore }, self.vehicle.cp.settings.useRealisticDriving:is(true) and 10 or math.huge)
 		end
 		if done then
 			return pathfindingCallbackFunc(self, path)
@@ -1577,7 +1577,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:canDriveBesideCombine(combine)
 	-- no fruit avoidance, don't care
-	if not self.vehicle.cp.realisticDriving then return true end
+	if self.vehicle.cp.settings.useRealisticDriving:is(false) then return true end
 	-- TODO: or just use combine:pipeInFruit() instead?
 	local leftOk, rightOk = g_combineUnloadManager:getPossibleSidesToDrive(combine)
 	if leftOk and combine.cp.driver:isPipeOnLeft() then

@@ -1771,7 +1771,7 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 	local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
 	if tipper:getTipState() == Trailer.TIPSTATE_OPEN and not isTipping then
 		vehicle.cp.takeOverSteering = true
-		if vehicle.cp.saveFuelOptionActive then
+		if vehicle.cp.settings.saveFuelOption:is(true) then
 			courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
 		end
 		
@@ -2117,7 +2117,7 @@ function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
 		local isFilling = false
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
 		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
-		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.allwaysSearchFuel and currentFuelPercentage < 99 or currentFuelPercentage < 20);
+		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.settings.allwaysSearchFuel:is(true) and currentFuelPercentage < 99 or currentFuelPercentage < 20);
 		if searchForFuel and not vehicle.cp.fuelFillTrigger then
 			local nx, ny, nz = localDirectionToWorld(vehicle.cp.directionNode, lx, 0, lz);
 			local tx, ty, tz = getWorldTranslation(vehicle.cp.directionNode)
@@ -2146,7 +2146,7 @@ function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
 end
 
 function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
-	if not vehicle.cp.automaticCoverHandling then
+	if vehicle.cp.settings.automaticCoverHandling:is(false)then
 		return
 	end
 
