@@ -454,16 +454,14 @@ function courseplay:onLoad(savegame)
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	self.cp.ridgeMarkersAutomatic = true;
-	-- TODO: add all course gen settings to a SettingsContainer
-	self.cp.courseGeneratorSettings = {
+	-- TODO: add all old course gen settings to a SettingsContainer
+	self.cp.oldCourseGeneratorSettings = {
 		startingLocation = self.cp.startingCorner,
 		manualStartingLocationWorldPos = nil,
 		islandBypassMode = Island.BYPASS_MODE_NONE,
 		nRowsToSkip = 0,
-		centerMode = courseGenerator.CENTER_MODE_UP_DOWN,
-		numberOfRowsPerLand = NumberOfRowsPerLandSetting()
+		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
 	}
-	self.cp.courseGeneratorSettings.numberOfRowsPerLand:set(6)
 	self.cp.headland = {
 		-- with the old, manual direction selection course generator
 		manuDirMaxNumLanes = 6;
@@ -575,6 +573,13 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(StrawOnHeadland, self)
 	self.cp.settings:addSetting(SowingMachineFertilizerEnabled, self)
 	self.cp.settings:addSetting(EnableOpenHudWithMouseVehicle, self)
+	self.cp.settings:addSetting(EnableVisualWaypointsTemporary, self)
+
+	---@type SettingsContainer
+	self.cp.courseGeneratorSettings = SettingsContainer()
+	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
+	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
+	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -1470,6 +1475,21 @@ function courseplay:onWriteStream(streamId, connection)
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
 
+function courseplay:onReadUpdateStream(streamId, timestamp, connection)
+	if g_server == nil and CpManager.isMultiplayer then
+		if self.cp.driver ~= nil then 
+			self.cp.driver:readUpdateStream(streamId)
+		end 
+	end
+end
+
+function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
+	if g_server ~= nil and CpManager.isMultiplayer then
+		if self.cp.driver ~= nil then
+			self.cp.driver:writeUpdateStream(streamId)
+		end
+	end
+end
 
 function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	

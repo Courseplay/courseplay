@@ -1127,9 +1127,9 @@ function courseplay:toggleHeadlandOrder(vehicle)
 end;
 
 function courseplay:changeIslandBypassMode(vehicle)
-	vehicle.cp.courseGeneratorSettings.islandBypassMode = vehicle.cp.courseGeneratorSettings.islandBypassMode + 1
-	if vehicle.cp.courseGeneratorSettings.islandBypassMode > Island.BYPASS_MODE_MAX then
-		vehicle.cp.courseGeneratorSettings.islandBypassMode = Island.BYPASS_MODE_MIN
+	vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = vehicle.cp.oldCourseGeneratorSettings.islandBypassMode + 1
+	if vehicle.cp.oldCourseGeneratorSettings.islandBypassMode > Island.BYPASS_MODE_MAX then
+		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = Island.BYPASS_MODE_MIN
 	end
 end;
 
@@ -2345,6 +2345,24 @@ function NumberOfRowsPerLandSetting:init()
 			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', nil,
 			{4, 6, 8, 10, 12, 14, 16},
 			{4, 6, 8, 10, 12, 14, 16})
+	self:set(6)
+end
+
+--- Percentage of Overlap for Headland
+---@class HeadlandOverlapPercent
+HeadlandOverlapPercent = CpObject(SettingList)
+
+function HeadlandOverlapPercent:init(vehicle)
+	local values, texts = {}, {}
+	for i = 0, 20 do
+		table.insert(values, i)
+		table.insert(texts, string.format('%d %%', i))
+	end
+	SettingList.init(self, 'headlandOverlapPercent', 'COURSEPLAY_HEADLAND_OVERLAP_PERCENT',
+			'COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP', vehicle,
+			values, texts)
+	-- reasonable default used for years
+	self:set(7)
 end
 
 --- Implement raise/lower  setting
@@ -2569,7 +2587,16 @@ function RidgeMarkersAutomatic:init()
 	BooleanSetting.init(self, 'ridgeMarkersAutomatic', 'COURSEPLAY_RIDGEMARKERS',
 			'COURSEPLAY_YES_NO_RIDGEMARKERS', nil)
 	self:set(false)
-end 
+end
+
+---@class EnableVisualWaypointsTemporary : BooleanSetting
+EnableVisualWaypointsTemporary = CpObject(BooleanSetting)
+function EnableVisualWaypointsTemporary:init()
+	BooleanSetting.init(self, 'enableVisualWaypointsTemporary', 'COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY',
+				'COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(false)
+end
 
 ---@class ShowMiniHud : BooleanSetting
 ShowMiniHud = CpObject(BooleanSetting)
