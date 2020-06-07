@@ -2593,7 +2593,7 @@ end
 EnableVisualWaypointsTemporary = CpObject(BooleanSetting)
 function EnableVisualWaypointsTemporary:init()
 	BooleanSetting.init(self, 'enableVisualWaypointsTemporary', 'COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY',
-				'COURSEPLAY_YES_NO_ENABLE_VISUAL_WAYPOINTS_TEMPORAR', nil)
+				'COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
 end
