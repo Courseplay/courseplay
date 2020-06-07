@@ -2682,6 +2682,10 @@ function RunCounterMaxSetting:init(vehicle)
 	self:set(0)
 end
 
+function RunCounterMaxSetting:getIsRunCounterActive()
+	return not self:is(self.RUN_COUNTER_OFF)
+end
+
 ---@class UseRecordingSpeedSetting : BooleanSetting
 UseRecordingSpeedSetting = CpObject(BooleanSetting)
 function UseRecordingSpeedSetting:init(vehicle)

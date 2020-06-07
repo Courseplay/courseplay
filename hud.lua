@@ -462,7 +462,7 @@ function courseplay.hud:setContent(vehicle)
 		vehicle.cp.hud.content.bottomInfo.convoyText = nil
 	end	
 		
-	if not vehicle.cp.settings.runCounterMax:is(RunCounterMaxSetting.RUN_COUNTER_OFF) and vehicle.cp.canDrive and vehicle.cp.driver.runCounter then
+	if vehicle.cp.settings.runCounterMax:getIsRunCounterActive() and vehicle.cp.canDrive and vehicle.cp.driver.runCounter then
 		if vehicle.cp.siloSelectedFillType ~= nil and vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN then
 			vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %s",vehicle.cp.driver.runCounter,  vehicle.cp.settings.runCounterMax:get());
 		else
@@ -783,7 +783,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 					
 				elseif entry.functionToCall == 'resetRunCounter' then
-					if vehicle.cp.canDrive and not self.vehicle.cp.settings.runCounterMax:is(RunCounterMaxSetting.RUN_COUNTER_OFF) then
+					if vehicle.cp.canDrive and vehicle.cp.settings.runCounterMax:getIsRunCounterActive() then
 						self:enableButtonWithFunction(vehicle,page, 'resetRunCounter')
 						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_RESET_NUMBER_OF_RUNS') ;
 					else
