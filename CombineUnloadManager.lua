@@ -165,7 +165,8 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			combine.cp.wantsCourseplayer = false
 			return combine
 		end
-		if combine.cp.driverPriorityUseFillLevel then
+		
+		if combine.cp.settings.driverPriorityUseFillLevel:is(true) then
 			bestUnloader = self:getFullestUnloader(combine)
 			self:debug('Priority fill level, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		else

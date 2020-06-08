@@ -125,7 +125,7 @@ function courseplay:setConvoyMaxDistance(vehicle, changeBy)
 end
 
 function courseplay:toggleFuelSaveOption(self)
-	self.cp.saveFuelOptionActive = not self.cp.saveFuelOptionActive 
+	self.cp.settings.saveFuelOption:toggle()
 end
 
 function courseplay:toggleRidgeMarkersAutomatic(self)
@@ -133,15 +133,15 @@ function courseplay:toggleRidgeMarkersAutomatic(self)
 end
 
 function courseplay:toggleAutomaticUnloadingOnField(self)
-	self.cp.automaticUnloadingOnField = not self.cp.automaticUnloadingOnField;
+	self.cp.settings.automaticUnloadingOnField:toggle()
 end
 
 function courseplay:toggleAutoRefuel(self)
-	self.cp.allwaysSearchFuel = not self.cp.allwaysSearchFuel 
+	self.cp.settings.allwaysSearchFuel:toggle()
 end
 
 function courseplay:toggleAutomaticCoverHandling (self)
-	self.cp.automaticCoverHandling = not self.cp.automaticCoverHandling 
+	self.cp.settings.automaticCoverHandling:toggle()
 end
 
 function courseplay:toggleMode10automaticSpeed(self)
@@ -206,22 +206,12 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 		vehicle.cp.isUnloaded = true;
 	end;
 	if cancelStopAtEnd then
-		courseplay:setStopAtEnd(vehicle, false);
+		vehicle.cp.settings.stopAtEnd:toggle()
 	end;
 end;
 
-function courseplay:setStopAtEnd(vehicle, bool)
-	--if bool is nil or a number, toggle stopAtEnd
-	-- 'line' was introduced in addRowButton in the new mode 2 branch as a parameter to pass on to the callback functions
-	-- for selecting the combine. It breaks this function though as it expects a nil when toggled in the HUD.
-	-- Since the HUD/button callback code is so broken/messy that I don't want to touch it, I just put
-	-- one of the most embarrassing hacks of my IT career in here. I'm ashamed of myself.
-	if bool == nil or type(bool) == 'number' then
-		vehicle.cp.stopAtEnd = not vehicle.cp.stopAtEnd
-	else
-		vehicle.cp.stopAtEnd = bool;
-	end
-	--vehicle:setCpVar('stopAtEnd', vehicle.cp.stopAtEnd, courseplay.isClient);
+function courseplay:setStopAtEnd(vehicle)
+	vehicle.cp.settings.stopAtEnd:toggle()
 end;
 
 function courseplay:setDriveUnloadNow(vehicle, bool)
@@ -546,7 +536,7 @@ function courseplay:changeFieldSpeed(vehicle, changeBy)
 end
 
 function courseplay:changeMaxSpeed(vehicle, changeBy)
-	if not vehicle.cp.speeds.useRecordingSpeed then
+	if vehicle.cp.settings.useRecordingSpeed:is(false) then
 		local speed = vehicle.cp.speeds.street;
 		speed = MathUtil.clamp(speed + changeBy, vehicle.cp.speeds.minStreet, vehicle.cp.speeds.max);
 		vehicle.cp.speeds.street = speed;
@@ -575,15 +565,16 @@ function courseplay:changeBunkerSpeed(vehicle, changeBy)
 end
 
 function courseplay:toggleUseRecordingSpeed(vehicle)
-	vehicle.cp.speeds.useRecordingSpeed = not vehicle.cp.speeds.useRecordingSpeed;
+	vehicle.cp.settings.useRecordingSpeed:toggle()
 end;
 
 function courseplay:changeWarningLightsMode(vehicle, changeBy)
-	vehicle.cp.warningLightsMode = MathUtil.clamp(vehicle.cp.warningLightsMode + changeBy, courseplay.lights.WARNING_LIGHTS_NEVER, courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS);
+	local number = MathUtil.clamp(vehicle.cp.settings.warningLightsMode:get() + changeBy, WarningLightsModeSetting.WARNING_LIGHTS_NEVER, WarningLightsModeSetting.WARNING_LIGHTS_BEACON_ALWAYS);
+	vehicle.cp.settings.warningLightsMode:set(number)
 end;
 
 function courseplay:toggleRealisticDriving(vehicle)
-	vehicle.cp.realisticDriving = not vehicle.cp.realisticDriving;
+	vehicle.cp.settings.useRealisticDriving:toggle(number)
 end;
 
 function courseplay:toggleAutoDriveMode(vehicle)
@@ -594,11 +585,6 @@ end
 function courseplay:toggleAlignmentWaypoint( vehicle )
 	vehicle.cp.alignment.enabled = not vehicle.cp.alignment.enabled
 end
-
-function courseplay:togglePlowFieldEdge(self)
-	self.cp.plowFieldEdge = not self.cp.plowFieldEdge;
-end;
-
 
 function courseplay:toggleSearchCombineMode(vehicle)
 	vehicle.cp.searchCombineAutomatically = not vehicle.cp.searchCombineAutomatically;
@@ -1343,8 +1329,7 @@ function courseplay:toggleSymmetricLaneChange(vehicle)
 end;
 
 function courseplay:toggleDriverPriority(combine)
-	if combine.cp.driverPriorityUseFillLevel == nil then combine.cp.driverPriorityUseFillLevel = false; end;
-	combine.cp.driverPriorityUseFillLevel = not combine.cp.driverPriorityUseFillLevel;
+	combine.cp.settings.driverPriorityUseFillLevel:toggle()
 end;
 
 function courseplay:toggleStopWhenUnloading(combine)
@@ -1578,11 +1563,8 @@ function courseplay:changeLastValidTipDistance(vehicle, changeBy)
 end;
 
 function courseplay:changemaxRunNumber(vehicle, changeBy)
- 	vehicle.cp.maxRunNumber = MathUtil.clamp(vehicle.cp.maxRunNumber + changeBy, 1, 10);
-end;
-
-function courseplay:toggleRunCounterActive(vehicle, changeBy)
- 	vehicle.cp.runCounterActive = not vehicle.cp.runCounterActive;
+ 	local number = MathUtil.clamp(vehicle.cp.settings.runCounterMax:get() + changeBy, 0, 10);
+	vehicle.cp.settings.runCounterMax:set(number)
 end;
 
 function courseplay:resetRunCounter(vehicle)
@@ -1641,17 +1623,14 @@ function courseplay:setSlippingStage(vehicle, stage)
 	end;
 end;
 
--- INGAME MAP ICONS
 
 function courseplay:getMapHotspotText(vehicle)
 	local text = '';
-	if CpManager.ingameMapIconShowText then
-		if CpManager.ingameMapIconShowName then
-			text = nameNum(vehicle, true) .. '\n';
-		end;
-		if CpManager.ingameMapIconShowCourse then
-			text = text .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-		end;
+	if vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_ONLY) then 
+		text = nameNum(vehicle, true) .. '\n';
+	elseif vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_AND_COURSE) then
+		text = nameNum(vehicle, true) .. '\n';
+		text = text .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
 	end
 	return text
 end
@@ -1717,17 +1696,8 @@ function courseplay:deleteMapHotspot(vehicle)
 	end
 end
 
-function courseplay:toggleIngameMapIconShowText()
-	if not CpManager.ingameMapIconShowName and not CpManager.ingameMapIconShowCourse then
-		CpManager.ingameMapIconShowName = true;
-	elseif CpManager.ingameMapIconShowName and not CpManager.ingameMapIconShowCourse then
-		CpManager.ingameMapIconShowCourse = true
-	else
-		CpManager.ingameMapIconShowName = false;
-		CpManager.ingameMapIconShowCourse = false
-	end
-	--TODO broadcast change to other Multiplayers
-	
+function courseplay:toggleIngameMapIconShowText(vehicle)
+	vehicle.cp.settings.showMapHotspot:setNext() 
 	-- for _,vehicle in pairs(g_currentMission.enterables) do
 	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
 		if vehicle.cp.mapHotspot then
@@ -1887,6 +1857,8 @@ function Setting:get()
 	return self.value
 end
 
+
+
 -- Is the current value same as the param?
 function Setting:is(value)
 	return self.value == value
@@ -1905,6 +1877,10 @@ function Setting:getLabel()
 	return courseplay:loc(self.label)
 end
 
+function Setting:getName()
+	return self.name
+end
+
 function Setting:getToolTip()
 	return courseplay:loc(self.toolTip)
 end
@@ -1915,10 +1891,9 @@ function Setting:setFromNetwork(value)
 	self:onChange()
 end
 
-function Setting:onWriteStream(stream)
-	streamDebugWriteBool(stream, true)
-	streamDebugWriteString(stream, self.name)
-	-- rest is override
+
+function Setting:printSetting()
+	print(self:getName()..": "..tostring(self:get()))
 end
 
 --- Set to a specific value
@@ -1967,6 +1942,50 @@ end
 
 function FloatSetting:saveToXml(xml, parentKey)
 	setXMLFloat(xml, self:getKey(parentKey), self:get())
+end
+
+function FloatSetting:onWriteStream(stream)
+	streamDebugWriteFloat32(stream, self:get())
+end
+
+function FloatSetting:onReadStream(stream)
+	local value = streamDebugReadFloat32(stream)
+	if value then 
+		self:setFromNetwork(value)
+	end
+end
+
+
+---@class IntSetting
+IntSetting = CpObject(Setting)
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+function IntSetting:init(name, label, toolTip, vehicle, value)
+	Setting.init(self, name, label, toolTip, vehicle, value)
+end
+
+function IntSetting:loadFromXml(xml, parentKey)
+	local value = getXMLInt(xml, self:getKey(parentKey))
+	if value then
+		self:set(value)
+	end
+end
+
+function IntSetting:saveToXml(xml, parentKey)
+	setXMLInt(xml, self:getKey(parentKey), self:get())
+end
+
+function IntSetting:onWriteStream(stream)
+	streamDebugWriteInt32(stream, self:get())
+end
+
+function IntSetting:onReadStream(stream)
+	local value = streamDebugReadInt32(stream)
+	if value then 
+		self:setFromNetwork(value)
+	end
 end
 
 ---@class SettingList
@@ -2155,6 +2174,19 @@ function SettingList:__tostring()
 	return result
 end
 
+function SettingList:onWriteStream(stream)
+	streamDebugWriteInt32(stream, self:get())
+end
+
+function SettingList:onReadStream(stream)
+	local value = streamDebugReadInt32(stream)
+	if value ~= nil then 
+		self:setFromNetwork(value)
+	else 
+		print(self:getName()..": Error")
+	end
+end
+
 --- Generic boolean setting
 ---@class BooleanSetting : SettingList
 BooleanSetting = CpObject(SettingList)
@@ -2189,6 +2221,18 @@ function BooleanSetting:saveToXml(xml, parentKey)
 	setXMLBool(xml, self:getKey(parentKey), self:get())
 end
 
+function BooleanSetting:onWriteStream(stream)
+	streamDebugWriteBool(stream, self:get())
+end
+
+function BooleanSetting:onReadStream(stream)
+	local value = streamDebugReadBool(stream)
+	if value ~= nil then 
+		self:setFromNetwork(value)
+	else 
+		print(self:getName()..": Error")
+	end
+end
 
 --- AutoDrive mode setting
 ---@class AutoDriveModeSetting : SettingList
@@ -2670,6 +2714,128 @@ function StopForUnloadSetting:checkAndSetValidValue(new)
 	return BooleanSetting.checkAndSetValidValue(self, new)
 end
 
+-----------------------------------------------------------------------
+
+---@class StopAtEndSetting : BooleanSetting
+StopAtEndSetting = CpObject(BooleanSetting)
+function StopAtEndSetting:init(vehicle)
+	BooleanSetting.init(self, 'stopAtEnd', 'COURSEPLAY_STOP_AT_LAST_POINT', 'COURSEPLAY_STOP_AT_LAST_POINT', vehicle)
+	self:set(false)
+end
+
+---@class AutomaticCoverHandlingSetting : BooleanSetting
+AutomaticCoverHandlingSetting = CpObject(BooleanSetting)
+function AutomaticCoverHandlingSetting:init(vehicle)
+	BooleanSetting.init(self, 'automaticCoverHandling', 'COURSEPLAY_COVER_HANDLING', 'COURSEPLAY_COVER_HANDLING', vehicle)
+	self:set(false)
+end
+
+--no Function!!
+---@class AutomaticUnloadingOnFieldSetting : BooleanSetting
+AutomaticUnloadingOnFieldSetting = CpObject(BooleanSetting)
+function AutomaticUnloadingOnFieldSetting:init(vehicle)
+	BooleanSetting.init(self, 'automaticUnloadingOnField', 'COURSEPLAY_UNLOADING_ON_FIELD', 'COURSEPLAY_UNLOADING_ON_FIELD', {'COURSEPLAY_MANUAL','COURSEPLAY_AUTOMATIC'})
+	self:set(false)
+end
+
+---@class DriverPriorityUseFillLevelSetting : BooleanSetting
+DriverPriorityUseFillLevelSetting = CpObject(BooleanSetting)
+function DriverPriorityUseFillLevelSetting:init(vehicle)
+	BooleanSetting.init(self, 'driverPriorityUseFillLevel', 'COURSEPLAY_UNLOADING_DRIVER_PRIORITY', 'COURSEPLAY_UNLOADING_DRIVER_PRIORITY', vehicle, {'COURSEPLAY_DISTANCE','COURSEPLAY_FILLEVEL'})
+	self:set(false)
+end
+
+---@class RunCounterMaxSetting : SettingList
+RunCounterMaxSetting = CpObject(SettingList)
+RunCounterMaxSetting.RUN_COUNTER_OFF = 0
+function RunCounterMaxSetting:init(vehicle)
+	SettingList.init(self, 'runCounterMax', 'COURSEPLAY_NUMBER_OF_RUNS', 'COURSEPLAY_NUMBER_OF_RUNS', vehicle,
+			{ RunCounterMaxSetting.RUN_COUNTER_OFF,1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			{ 'COURSEPLAY_DEACTIVATED','1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}
+		)
+	self:set(0)
+end
+
+function RunCounterMaxSetting:getIsRunCounterActive()
+	return not self:is(self.RUN_COUNTER_OFF)
+end
+
+---@class UseRecordingSpeedSetting : BooleanSetting
+UseRecordingSpeedSetting = CpObject(BooleanSetting)
+function UseRecordingSpeedSetting:init(vehicle)
+	BooleanSetting.init(self, 'useRecordingSpeed', 'COURSEPLAY_MAX_SPEED_MODE', 'COURSEPLAY_MAX_SPEED_MODE', vehicle, {'COURSEPLAY_MAX_SPEED_MODE_MAX','COURSEPLAY_MAX_SPEED_MODE_RECORDING'})
+	self:set(false)
+end
+
+---@class WarningLightsModeSetting : SettingList
+WarningLightsModeSetting = CpObject(SettingList)
+WarningLightsModeSetting.WARNING_LIGHTS_NEVER = 0;
+WarningLightsModeSetting.WARNING_LIGHTS_BEACON_ON_STREET = 1;
+WarningLightsModeSetting.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET = 2;
+WarningLightsModeSetting.WARNING_LIGHTS_BEACON_ALWAYS = 3;
+
+function WarningLightsModeSetting:init(vehicle)
+	SettingList.init(self, 'warningLightsMode', 'COURSEPLAY_WARNING_LIGHTS', 'COURSEPLAY_WARNING_LIGHTS', vehicle,
+		{ 
+			WarningLightsModeSetting.WARNING_LIGHTS_NEVER,
+			WarningLightsModeSetting.WARNING_LIGHTS_BEACON_ON_STREET,
+			WarningLightsModeSetting.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET,
+			WarningLightsModeSetting.WARNING_LIGHTS_BEACON_ALWAYS
+		},
+		{ 	
+			'COURSEPLAY_WARNING_LIGHTS_MODE_0',
+			'COURSEPLAY_WARNING_LIGHTS_MODE_1',
+			'COURSEPLAY_WARNING_LIGHTS_MODE_2',
+			'COURSEPLAY_WARNING_LIGHTS_MODE_3'
+		}
+		)
+	self:set(1)
+end
+
+---@class ShowMapHotspotSetting : SettingList
+ShowMapHotspotSetting = CpObject(SettingList)
+ShowMapHotspotSetting.DEACTIVED = 0;
+ShowMapHotspotSetting.NAME_ONLY = 1;
+ShowMapHotspotSetting.NAME_AND_COURSE = 2;
+
+function ShowMapHotspotSetting:init(vehicle)
+	SettingList.init(self, 'showMapHotspot', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', vehicle,
+		{ 
+			ShowMapHotspotSetting.DEACTIVED,
+			ShowMapHotspotSetting.NAME_ONLY,
+			ShowMapHotspotSetting.NAME_AND_COURSE
+		},
+		{ 	
+			'COURSEPLAY_DEACTIVATED',
+			'COURSEPLAY_NAME_ONLY',
+			'COURSEPLAY_NAME_AND_COURSE'
+		}
+		)
+	self:set(2)
+end
+
+---@class SaveFuelOptionSetting : BooleanSetting
+SaveFuelOptionSetting = CpObject(BooleanSetting)
+function SaveFuelOptionSetting:init(vehicle)
+	BooleanSetting.init(self, 'saveFuelOption', 'COURSEPLAY_FUELSAVEOPTION', 'COURSEPLAY_FUELSAVEOPTION', vehicle)
+	self:set(true)
+end
+
+---@class AllwaysSearchFuelSetting : BooleanSetting
+AllwaysSearchFuelSetting = CpObject(BooleanSetting)
+function AllwaysSearchFuelSetting:init(vehicle)
+	BooleanSetting.init(self, 'allwaysSearchFuel', 'COURSEPLAY_FUEL_SEARCH_FOR', 'COURSEPLAY_FUEL_SEARCH_FOR', vehicle, {'COURSEPLAY_FUEL_BELOW_20PCT','COURSEPLAY_FUEL_ALWAYS'})
+	self:set(false)
+end
+---@class RealisticDrivingSetting : BooleanSetting
+RealisticDrivingSetting = CpObject(BooleanSetting)
+function RealisticDrivingSetting:init(vehicle)
+	BooleanSetting.init(self, 'useRealisticDriving', 'COURSEPLAY_PATHFINDING', 'COURSEPLAY_PATHFINDING', vehicle)
+	self:set(true)
+end
+
+
+
 --- Container for settings
 --- @class SettingsContainer
 SettingsContainer = CpObject()
@@ -2696,6 +2862,22 @@ end
 function SettingsContainer:validateCurrentValues()
 	for k, setting in pairs(self) do
 		setting:validateCurrentValue()
+	end
+end
+
+--TODO: test if in pairs() or in ipairs() is needed, as ipairs would be safer as
+--		I am not sure if the order is the same on Client and Server,
+--		but doesn't seem to work at the moment
+
+function SettingsContainer:onReadStream(stream)
+	for k, setting in pairs(self) do
+		setting:onReadStream(stream)
+	end
+end
+
+function SettingsContainer:onWriteStream(stream)
+	for k, setting in pairs(self) do
+		setting:onWriteStream(stream)
 	end
 end
 

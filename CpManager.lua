@@ -40,7 +40,6 @@ function CpManager:loadMap(name)
 	courseplay.signs:setup();
 	courseplay.fields:setup();
 	self.showFieldScanYesNoDialogue = false;
-	self:setupIngameMap();
 	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -440,11 +439,7 @@ function CpManager.saveXmlSettings(self)
 		setXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields',	courseplay.fields.debugCustomLoadedFields);
 		setXMLInt (cpSettingsXml, key .. '#scanStep',					courseplay.fields.scanStep);
 
-		-- Save Ingame Map Settings
-		key = 'CPSettings.courseplayIngameMap';
-		setXMLBool(cpSettingsXml, key .. '#active', 		CpManager.ingameMapIconActive);
-		setXMLBool(cpSettingsXml, key .. '#showName', 		CpManager.ingameMapIconShowName);
-		setXMLBool(cpSettingsXml, key .. '#showCourse',		CpManager.ingameMapIconShowCourse);
+	
 
 		-- Save 2D Course Settings
 		key = 'CPSettings.course2D';
@@ -859,17 +854,6 @@ function CpManager:fieldScanDialogueCallback(setActive)
 end;
 
 -- ####################################################################################################
--- INGAME MAP
-function CpManager:setupIngameMap()
-	self.ingameMapIconActive		 = true;
-	self.ingameMapIconShowName		 = true;
-	self.ingameMapIconShowCourse	 = true;
-	self.ingameMapIconShowText		 = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
-	self.ingameMapIconShowTextLoaded = self.ingameMapIconShowText;
-end;
-
-
--- ####################################################################################################
 -- GLOBALINFOTEXT
 function CpManager:setupGlobalInfoText()
 	print('## Courseplay: setting up globalInfoText');
@@ -1168,13 +1152,6 @@ function CpManager:loadXmlSettings()
 		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
 		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
 		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpSettingsXml, key .. '#scanStep'),				 courseplay.fields.scanStep);
-
-		-- ingame map
-		key = 'CPSettings.courseplayIngameMap';
-		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#active'),		self.ingameMapIconActive);
-		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showName'),	self.ingameMapIconShowName);
-		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showCourse'),	self.ingameMapIconShowCourse);
-		self.ingameMapIconShowText = true --self.ingameMapIconShowName or self.ingameMapIconShowCourse;
 
 		-- 2D course
 		key = 'CPSettings.course2D';

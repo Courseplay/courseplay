@@ -603,7 +603,7 @@ function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal,
                                                           allowReverse, fieldNum,
                                                           vehiclesToIgnore, maxFruitPercent)
     PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
-    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.realisticDriving and 50 or math.huge))
+    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge))
     local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters, vehiclesToIgnore)
     return PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
 end

@@ -580,7 +580,7 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 end
 
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
-	if (not vehicle.cp.saveFuelOptionActive) 
+	if (vehicle.cp.settings.saveFuelOption:is(false)) 
 	or (vehicle.cp.mode == courseplay.MODE_COMBI and vehicle.cp.activeCombine ~= nil)
 	or (vehicle.cp.mode == courseplay.MODE_FIELDWORK and ((vehicle.courseplayers ~= nil and #vehicle.courseplayers > 0) or vehicle.cp.convoyActive))
 	or ((vehicle.cp.mode == courseplay.MODE_FIELD_SUPPLY or vehicle.cp.mode == courseplay.MODE_OVERLOADER) and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait)

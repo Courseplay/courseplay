@@ -180,15 +180,8 @@ end
 function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
 	if not connection:getIsServer() then
-		for name, setting in pairs(courseplay.globalSettings) do
-			streamDebugWriteBool(streamId, true)
-			streamDebugWriteString(streamId, name)
-			streamDebugWriteInt32(streamId, setting.previous)
-			streamDebugWriteInt32(streamId, setting.current)
-		end
-		streamDebugWriteBool(streamId, false)
-
-		--courseplay:debug("manager transfering courses", 8);
+		courseplay.globalSettings:onWriteStream(streamId)
+		
 		--transfer courses
 		local course_count = 0
 		for _,_ in pairs(g_currentMission.cp_courses) do
@@ -260,13 +253,7 @@ end
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
 	if connection:getIsServer() then
-		while streamDebugReadBool(streamId) do
-			local name = streamDebugReadString(streamId)
-			local previous = streamDebugReadInt32(streamId)
-			local value = streamDebugReadInt32(streamId)
-			courseplay.globalSettings[name]:setFromNetwork(value)
-			courseplay.globalSettings[name].previous = previous
-		end
+		courseplay.globalSettings:onReadStream(streamId)
 
 		local course_count = streamDebugReadInt32(streamId)
 		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
