@@ -1260,14 +1260,12 @@ function courseplay:onReadStream(streamId, connection)
 		courseplay:setVarValueFromString(self, variable.name, value)
 	end
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
-
-	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
-	while streamDebugReadBool(streamId) do
-		local name = streamDebugReadString(streamId)
-		local value = streamDebugReadInt32(streamId)
-		self.cp.settings[name]:setFromNetwork(value)
-	end
-
+-------------------
+	-- SettingsContainer:
+	self.cp.settings:onReadStream(streamId)
+	-- courseGeneratorSettingsContainer:
+	self.cp.courseGeneratorSettings:onReadStream(streamId)
+-------------------	
 	local savedFieldNum = streamDebugReadInt32(streamId)
 	if savedFieldNum > 0 then
 		self.cp.generationPosition.fieldNum = savedFieldNum
@@ -1378,15 +1376,12 @@ function courseplay:onWriteStream(streamId, connection)
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
 	end
 	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
-
-	-- TODO: refactor this so settings and settings containers can (de)serialize themselves
-	for name, setting in pairs(self.cp.settings) do
-		streamDebugWriteBool(streamId, true)
-		streamDebugWriteString(streamId, name)
-		streamDebugWriteInt32(streamId, setting.current)
-	end
-	streamDebugWriteBool(streamId, false)
-
+-------------------
+	-- SettingsContainer:
+	self.cp.settings:onWriteStream(streamId)
+	-- courseGeneratorSettingsContainer:
+	self.cp.courseGeneratorSettings:onWriteStream(streamId)
+-------------
 	streamDebugWriteInt32(streamId, self.cp.generationPosition.fieldNum)
 	
 	local copyCourseFromDriverID;

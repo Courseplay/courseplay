@@ -1857,6 +1857,8 @@ function Setting:get()
 	return self.value
 end
 
+
+
 -- Is the current value same as the param?
 function Setting:is(value)
 	return self.value == value
@@ -1875,6 +1877,10 @@ function Setting:getLabel()
 	return courseplay:loc(self.label)
 end
 
+function Setting:getName()
+	return self.name
+end
+
 function Setting:getToolTip()
 	return courseplay:loc(self.toolTip)
 end
@@ -1885,10 +1891,9 @@ function Setting:setFromNetwork(value)
 	self:onChange()
 end
 
-function Setting:onWriteStream(stream)
-	streamDebugWriteBool(stream, true)
-	streamDebugWriteString(stream, self.name)
-	-- rest is override
+
+function Setting:printSetting()
+	print(self:getName()..": "..tostring(self:get()))
 end
 
 --- Set to a specific value
@@ -1937,6 +1942,50 @@ end
 
 function FloatSetting:saveToXml(xml, parentKey)
 	setXMLFloat(xml, self:getKey(parentKey), self:get())
+end
+
+function FloatSetting:onWriteStream(stream)
+	streamDebugWriteFloat32(stream, self:get())
+end
+
+function FloatSetting:onReadStream(stream)
+	local value = streamDebugReadFloat32(stream)
+	if value then 
+		self:setFromNetwork(value)
+	end
+end
+
+
+---@class IntSetting
+IntSetting = CpObject(Setting)
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+function IntSetting:init(name, label, toolTip, vehicle, value)
+	Setting.init(self, name, label, toolTip, vehicle, value)
+end
+
+function IntSetting:loadFromXml(xml, parentKey)
+	local value = getXMLInt(xml, self:getKey(parentKey))
+	if value then
+		self:set(value)
+	end
+end
+
+function IntSetting:saveToXml(xml, parentKey)
+	setXMLInt(xml, self:getKey(parentKey), self:get())
+end
+
+function IntSetting:onWriteStream(stream)
+	streamDebugWriteInt32(stream, self:get())
+end
+
+function IntSetting:onReadStream(stream)
+	local value = streamDebugReadInt32(stream)
+	if value then 
+		self:setFromNetwork(value)
+	end
 end
 
 ---@class SettingList
@@ -2125,6 +2174,19 @@ function SettingList:__tostring()
 	return result
 end
 
+function SettingList:onWriteStream(stream)
+	streamDebugWriteInt32(stream, self:get())
+end
+
+function SettingList:onReadStream(stream)
+	local value = streamDebugReadInt32(stream)
+	if value ~= nil then 
+		self:setFromNetwork(value)
+	else 
+		print(self:getName()..": Error")
+	end
+end
+
 --- Generic boolean setting
 ---@class BooleanSetting : SettingList
 BooleanSetting = CpObject(SettingList)
@@ -2159,6 +2221,18 @@ function BooleanSetting:saveToXml(xml, parentKey)
 	setXMLBool(xml, self:getKey(parentKey), self:get())
 end
 
+function BooleanSetting:onWriteStream(stream)
+	streamDebugWriteBool(stream, self:get())
+end
+
+function BooleanSetting:onReadStream(stream)
+	local value = streamDebugReadBool(stream)
+	if value ~= nil then 
+		self:setFromNetwork(value)
+	else 
+		print(self:getName()..": Error")
+	end
+end
 
 --- AutoDrive mode setting
 ---@class AutoDriveModeSetting : SettingList
@@ -2788,6 +2862,22 @@ end
 function SettingsContainer:validateCurrentValues()
 	for k, setting in pairs(self) do
 		setting:validateCurrentValue()
+	end
+end
+
+--TODO: test if in pairs() or in ipairs() is needed, as ipairs would be safer as
+--		I am not sure if the order is the same on Client and Server,
+--		but doesn't seem to work at the moment
+
+function SettingsContainer:onReadStream(stream)
+	for k, setting in pairs(self) do
+		setting:onReadStream(stream)
+	end
+end
+
+function SettingsContainer:onWriteStream(stream)
+	for k, setting in pairs(self) do
+		setting:onWriteStream(stream)
 	end
 end
 
