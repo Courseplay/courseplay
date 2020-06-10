@@ -122,6 +122,9 @@ local function initialize()
 		'gui/GlobalSettingsPage',
 		'gui/VehicleSettingsPage',
 		'Events/StartStopEvent',
+		'Events/UnloaderEvents',
+		'Events/StartStopWorkEvent',
+		'Events/FoldUnfoldImplementEvent',
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded

@@ -145,6 +145,7 @@ function CombineUnloadAIDriver:dismiss()
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if self.combineToUnload then
 		self.combineToUnload.cp.driver:deregisterUnloader(self)
+		UnloaderEvents:sendRemoveFromCombineEvent(self.vehicle,self.combineToUnload)
 	end
 	self:releaseUnloader()
 	if courseplay:isField(x, z) then
@@ -221,6 +222,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if g_updateLoopIndex % 100 == 0 then
 			self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 			if self.combineToUnload ~= nil then
+				UnloaderEvents:sendAddToCombineEvent(self.vehicle,self.combineToUnload)
 				self:refreshHUD()
 				courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
 				self:startWorking()
@@ -497,6 +499,11 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 	end
 	AIDriver.drive(self, dt)
+end
+
+function CombineUnloadAIDriver:setCombineToUnloadClient(combineToUnload)
+	self.combineToUnload = combineToUnload
+	self.combineToUnload:registerUnloader(self.vehicle)
 end
 
 function CombineUnloadAIDriver:getTractorsFillLevelPercent()
@@ -1084,6 +1091,7 @@ function CombineUnloadAIDriver:releaseUnloader()
 	self.combineJustUnloaded = self.combineToUnload
 	self.combineToUnload = nil
 	self:refreshHUD()
+	UnloaderEvents:sendRelaseUnloaderEvent(self.vehicle,self.combineToUnload)
 end
 
 function CombineUnloadAIDriver:getImSecondUnloader()
