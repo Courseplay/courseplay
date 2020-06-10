@@ -1786,7 +1786,13 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	if self.combineToUnload.cp.driver:isManeuvering() then
 		self:hold()
 	elseif not self:isOkToStartUnloadingCombine() then
-		self:debug('not in a good position to unload, trying to recover')
+		local dx, _, dz = localToLocal(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0, 0)
+		local pipeOffset = self:getPipeOffset(self.combineToUnload)
+		local sameDirection = TurnContext.isSameDirection(AIDriverUtil.getDirectionNode(self.vehicle), 
+			AIDriverUtil.getDirectionNode(self.combineToUnload), 15)
+		local willWait = self.combineToUnload.cp.driver:willWaitForUnloadToFinish()
+		self:info('not in a good position to unload, trying to recover')
+		self:info('dx = %.2f, dz = %.2f, offset = %.2f, sameDir = %s, willWait = %s', dx, dz, pipeOffset, tostring(sameDirection), tostring(willWait))
 		-- switch to driving only when not holding for maneuvering combine
 		-- for some reason (like combine turned) we are not in a good position anymore then set us up again
 		self:startDrivingToCombine()
