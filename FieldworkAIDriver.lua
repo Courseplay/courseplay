@@ -857,7 +857,6 @@ function FieldworkAIDriver:unfoldImplements()
 			end
 		end
 	end
-	FoldUnfoldImplementEvent:sendUnfoldEvent(self.vehicle)
 end
 
 function FieldworkAIDriver:foldImplements()
@@ -870,7 +869,6 @@ function FieldworkAIDriver:foldImplements()
 			end
 		end
 	end
-	FoldUnfoldImplementEvent:sendFoldEvent(self.vehicle)
 end
 
 function FieldworkAIDriver:isAllUnfolded()
