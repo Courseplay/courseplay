@@ -583,6 +583,10 @@ function courseplay:updateAllTriggers()
 	if g_currentMission.nodeToObject ~= nil then
 		courseplay:debug('   check nodeToObject', 1);
 		for _,object in pairs (g_currentMission.nodeToObject) do
+			if object.exactFillRootNode ~= nil and not courseplay.triggers.all[object.exactFillRootNode] then
+				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(object.exactFillRootNode)), 1);
+				courseplay:cpAddTrigger(object.exactFillRootNode, object, 'tipTrigger');
+			end
 			if object.triggerNode ~= nil and not courseplay.triggers.all[object.triggerNode] then
 				local triggerId = object.triggerNode;
 				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject->triggerNode )', '',tostring(triggerId)), 1);
