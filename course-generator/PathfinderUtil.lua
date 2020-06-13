@@ -591,19 +591,19 @@ end
 ---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional)
 function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
                                                           xOffset, zOffset, allowReverse,
-                                                          fieldNum, vehiclesToIgnore, maxFruitPercent)
+                                                          fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    return PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent)
+    return PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
 end
 
 function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal,
                                                           allowReverse, fieldNum,
-                                                          vehiclesToIgnore, maxFruitPercent)
+                                                          vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
     PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
-    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge))
+    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), offFieldPenalty or 1)
     local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters, vehiclesToIgnore)
     return PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
 end
