@@ -647,6 +647,7 @@ end
 --- Start the actual work. Lower and turn on implements
 function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')
+	StartStopWorkEvent:sendStartEvent(self.vehicle)
 	-- send the event first and _then_ lower otherwise it sometimes does not turn it on
 	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
 	self.vehicle:requestActionEventUpdate()
@@ -658,6 +659,7 @@ end
 --- Stop working. Raise and stop implements
 function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
+	StartStopWorkEvent:sendStopEvent(self.vehicle)
 	self:raiseImplements()
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()

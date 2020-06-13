@@ -45,7 +45,7 @@ end
 -- the unworked side, and then can we start working
 function PlowAIDriver:startWork()
 	self:debug('Starting plow work')
-
+	StartStopWorkEvent:sendStartEvent(self.vehicle)
 	self:setOffsetX()
 	self:startEngineIfNeeded()
 

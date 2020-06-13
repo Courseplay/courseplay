@@ -206,7 +206,7 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 		vehicle.cp.isUnloaded = true;
 	end;
 	if cancelStopAtEnd then
-		vehicle.cp.settings.stopAtEnd:toggle()
+		vehicle.cp.settings.stopAtEnd:set(false)
 	end;
 end;
 
@@ -2058,7 +2058,7 @@ function SettingList:setToIx(ix)
 		self.current = ix
 		self:onChange()
 		self.lastChangeTimeMilliseconds = g_time
-		if self.syncValue then
+		if self.syncValue and g_server ~= nil then
 			CourseplaySettingsSyncEvent.sendEvent(self.vehicle, self.name, self.current)
 		end
 	end
