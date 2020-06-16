@@ -971,6 +971,11 @@ function FieldworkAIDriver:lowerImplements()
 		implement.object:aiImplementStartLine()
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
+	
+	if g_server == nil then 
+		return
+	end
+	
 	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) or self.ppc:isReversing() then
 		-- sowing machines want to stop while the implement is being lowered
 		-- also, when reversing, we assume that we'll switch to forward, so stop while lowering, then start forward

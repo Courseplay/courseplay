@@ -2175,7 +2175,7 @@ function SettingList:__tostring()
 end
 
 function SettingList:onWriteStream(stream)
-	streamDebugWriteInt32(stream, self:get())
+	streamDebugWriteInt32(stream, self:getNetworkCurrentValue())
 end
 
 function SettingList:onReadStream(stream)
@@ -2185,6 +2185,10 @@ function SettingList:onReadStream(stream)
 	else 
 		print(self:getName()..": Error")
 	end
+end
+
+function SettingList:getNetworkCurrentValue()
+	return self.current
 end
 
 --- Generic boolean setting
@@ -2219,19 +2223,6 @@ end
 
 function BooleanSetting:saveToXml(xml, parentKey)
 	setXMLBool(xml, self:getKey(parentKey), self:get())
-end
-
-function BooleanSetting:onWriteStream(stream)
-	streamDebugWriteBool(stream, self:get())
-end
-
-function BooleanSetting:onReadStream(stream)
-	local value = streamDebugReadBool(stream)
-	if value ~= nil then 
-		self:setFromNetwork(value)
-	else 
-		print(self:getName()..": Error")
-	end
 end
 
 --- AutoDrive mode setting
