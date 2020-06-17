@@ -198,6 +198,7 @@ function CombineAIDriver:onEndCourse()
 		end
 	elseif self.state == self.states.ON_FIELDWORK_COURSE and fillLevel > 0 then
 		if self.vehicle.cp.settings.selfUnload:is(true) and self:startSelfUnload() then
+			self:debug('Start self unload after fieldwork ended')
 			self:raiseImplements()
 			self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 			self.fieldworkUnloadOrRefillState = self.states.DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED
@@ -264,12 +265,12 @@ function CombineAIDriver:changeToFieldworkUnloadOrRefill()
 		self:checkFruit()
 		-- TODO: check around turn maneuvers we may not want to pull back before a turn
 		if self.vehicle.cp.settings.selfUnload:is(true) and self:startSelfUnload() then
+			self:debug('Start self unload')
 			self:raiseImplements()
 			self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
 			self.fieldworkUnloadOrRefillState = self.states.DRIVING_TO_SELF_UNLOAD
 			self.ppc:setShortLookaheadDistance()
 			self:disableCollisionDetection()
-			self:rememberWaypointToContinueFieldwork()
 		elseif self:shouldMakePocket() then
 			-- I'm on the edge of the field or fruit is on both sides, make a pocket on the right side and wait there for the unload
 			local pocketCourse, nextIx = self:createPocketCourse()
@@ -407,7 +408,7 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkUnloadOrRefillState == self.states.SELF_UNLOADING_AFTER_FIELDWORK_ENDED then
 		self:setSpeed(0)
 		if self:unloadFinished() then
-			self:debug('Self unloading finished, returning to fieldwork')
+			self:debug('Self unloading finished after fieldwork ended, returning to fieldwork')
 			UnloadableFieldworkAIDriver.onEndCourse(self)
 		end
 	elseif self.fieldworkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD then
@@ -1219,6 +1220,7 @@ function CombineAIDriver:startSelfUnload()
 	if not bestTrailer then return false end
 
 	if not self.pathfinder or not self.pathfinder:isActive() then
+		self:rememberWaypointToContinueFieldwork()
 		self.pathfindingStartedAt = self.vehicle.timer
 		self.courseAfterPathfinding = nil
 		self.waypointIxAfterPathfinding = nil
