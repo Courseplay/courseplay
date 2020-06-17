@@ -1,8 +1,11 @@
+--Events that should handle communication
+--between combine and unloader that need sync
+
 UnloaderEvents = {};
 UnloaderEvents.TYPE_ADD_TO_COMBINE = 0
 UnloaderEvents.TYPE_REMOVE_FROM_COMBINE = 1
 UnloaderEvents.TYPE_RELEASE_UNLOADER = 2
-
+UnloaderEvents.TYPE_ADD_UNLOADER_TO_COMBINE = 3
 local UnloaderEvents_mt = Class(UnloaderEvents, Event);
 
 InitEventClass(UnloaderEvents, "UnloaderEvents");
@@ -45,6 +48,8 @@ function UnloaderEvents:run(connection) -- wir fuehren das empfangene event aus
 			end
 		elseif self.eventType == self.TYPE_RELEASE_UNLOADER then
 			self.vehicle.cp.driver:releaseUnloader()
+		elseif self.eventType == self.TYPE_ADD_UNLOADER_TO_COMBINE then
+			g_combineUnloadManager:addUnloaderToCombine(self.vehicle,self.combine)
 		end
 	end
 end
@@ -67,5 +72,12 @@ function UnloaderEvents:sendRelaseUnloaderEvent(vehicle,combine)
     if g_server ~= nil then
         -- Server have to broadcast to all clients and himself
         g_server:broadcastEvent(UnloaderEvents:new(vehicle,combine,self.TYPE_RELEASE_UNLOADER), nil,nil,vehicle)
+    end
+end
+
+function UnloaderEvents:sendAddUnloaderToCombine(vehicle,combine)
+    if g_server ~= nil then
+        -- Server have to broadcast to all clients and himself
+        g_server:broadcastEvent(UnloaderEvents:new(vehicle,combine,self.TYPE_ADD_UNLOADER_TO_COMBINE), nil,nil,vehicle)
     end
 end

@@ -795,7 +795,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 
 	local currentTrailer = vehicle.cp.workTools[vehicle.cp.currentTrailerToFill];
 
-	local driveOn = vehicle.cp.driveUnloadNow;
+	local driveOn = vehicle.cp.settings.driveUnloadNow:get();
 	if not currentTrailer.cp.realUnloadOrFillNode then
 		currentTrailer.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(currentTrailer);
 		if not currentTrailer.cp.realUnloadOrFillNode or not currentTrailer.spec_trailer then
@@ -885,7 +885,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 	
 	--if established on a fill trigger go on immediately when level is reached
-	if currentTrailer.cp.currentSiloTrigger ~= nil and (vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct or vehicle.cp.driveUnloadNow) then
+	if currentTrailer.cp.currentSiloTrigger ~= nil and (vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct or vehicle.cp.settings.driveUnloadNow:is(true)) then
 		courseplay:setFillOnTrigger(vehicle,currentTrailer,false,currentTrailer.cp.currentSiloTrigger)
 		driveOn = true;
 	end;	

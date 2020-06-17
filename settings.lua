@@ -98,6 +98,7 @@ end;]]
 	return true;
 end;]]
 
+--TODO: should be removed and changed directly to driveUnloadNow Setting?
 function courseplay:setDriveNow(vehicle)
 	courseplay:setDriveUnloadNow(vehicle, true);
 end
@@ -166,7 +167,7 @@ function courseplay:toggleMode10SearchMode(self)
 end
 
 function courseplay:toggleWantsCourseplayer(combine)
-	combine.cp.wantsCourseplayer = not combine.cp.wantsCourseplayer;
+	combine.cp.settings.combineWantsCourseplayer:toggle()
 end;
 
 function courseplay:toggleOppositeTurnMode(vehicle)
@@ -215,11 +216,8 @@ function courseplay:setStopAtEnd(vehicle)
 end;
 
 function courseplay:setDriveUnloadNow(vehicle, bool)
-	if vehicle.cp.driveUnloadNow ~= bool then
-		vehicle.cp.driveUnloadNow = bool;
-		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-	end;
-		
+	vehicle.cp.settings.driveUnloadNow:set(bool)
+	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);		
 end;
 
 function courseplay:sendCourseplayerHome(combine)
@@ -1763,27 +1761,29 @@ end;
 
 
 function courseplay:toggleAssignCombineToTractor(vehicle,line)
-	--temp fix make sure every client has possibleCombines at start
-	if vehicle.cp.possibleCombines == nil then 
+	--temp fix make sure every client has correct possibleCombines 
+	if g_server == nil then 
 		vehicle.cp.possibleCombines = g_combineUnloadManager:getPossibleCombines(vehicle)
 	end
-	--TODO: assignedCombines and assignedUnloaders have to get sync at start
-	local listIndex = line-2 + vehicle.cp.combinesListHUDOffset
+	local listIndex = line-2 + vehicle.cp.driver.combinesListHUDOffset
 	local combine = vehicle.cp.possibleCombines[listIndex]
+	if combine == nil then 
+		return
+	end
+	if combine.cp.assignedUnloaders == nil then
+		combine.cp.assignedUnloaders ={}
+	end
 	if vehicle.cp.assignedCombines[combine] then
 		vehicle.cp.assignedCombines[combine] = nil
 		combine.cp.assignedUnloaders[vehicle]= nil
 	else
 		vehicle.cp.assignedCombines[combine] = true
-		if combine.cp.assignedUnloaders == nil then
-			combine.cp.assignedUnloaders ={}
-		end
 		combine.cp.assignedUnloaders[vehicle] = true
 	end
 end
 
 function courseplay:shiftCombinesList(vehicle, change_by)
-	vehicle.cp.combinesListHUDOffset = MathUtil.clamp(vehicle.cp.combinesListHUDOffset+ change_by,0,#vehicle.cp.possibleCombines-6)
+	vehicle.cp.driver:shiftCombinesList(change_by)
 end
 ----------------------------------------------------------------------------------------------------
 
@@ -2825,6 +2825,27 @@ function RealisticDrivingSetting:init(vehicle)
 	self:set(true)
 end
 
+---@class DriveUnloadNowSetting : BooleanSetting
+DriveUnloadNowSetting = CpObject(BooleanSetting)
+function DriveUnloadNowSetting:init(vehicle)
+	BooleanSetting.init(self, 'driveUnloadNow', 'COURSEPLAY_DRIVE_NOW', 'COURSEPLAY_DRIVE_NOW', vehicle)
+	self:set(false)
+end
+
+function DriveUnloadNowSetting:onChange()
+	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true)
+end
+
+---@class CombineWantsCourseplayerSetting : BooleanSetting
+CombineWantsCourseplayerSetting = CpObject(BooleanSetting)
+function CombineWantsCourseplayerSetting:init(vehicle)
+	BooleanSetting.init(self, 'combineWantsCourseplayer', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
+	self:set(false)
+end
+
+function CombineWantsCourseplayerSetting:onChange()
+	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true)
+end
 
 
 --- Container for settings

@@ -130,9 +130,11 @@ function CombineUnloadManager:addUnloaderToCombine(unloader,combine)
 	if not self:getUnloaderIndex(unloader, combine) then
 		table.insert(self.combines[combine].unloaders, unloader)
 		self:debug('assigned %s to combine %s', nameNum(unloader), nameNum(combine))
+		UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
 	else
 		self:debug('%s is already assigned to combine %s', nameNum(unloader), nameNum(combine))
 	end
+	
 end
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
@@ -160,9 +162,9 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	self:debug('Combine with most fill level is %s', combine and combine:getName() or 'N/A')
 	local bestUnloader
 	if combine ~= nil and combine.cp.driver:getFieldworkCourse() then
-		if combine.cp.wantsCourseplayer then
+		if combine.cp.settings.combineWantsCourseplayer:is(true) then
 			self:addUnloaderToCombine(unloader,combine)
-			combine.cp.wantsCourseplayer = false
+			combine.cp.settings.combineWantsCourseplayer:set(false)
 			return combine
 		end
 		
@@ -208,7 +210,7 @@ function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 		local data = self.combines[combine]
 		-- if there is no unloader assigned or this unloader is already assigned as the first
 		if data and data.isCombine and (self:getNumUnloaders(combine) == 0 or self:getUnloaderIndex(unloader, combine) == 1) then
-			if combine.cp.wantsCourseplayer then
+			if combine.cp.settings.combineWantsCourseplayer:is(true) then
 				return combine
 			end
 			local fillLevelPct = combine.cp.driver:getFillLevelPercentage()

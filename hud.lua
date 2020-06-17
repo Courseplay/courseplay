@@ -1031,13 +1031,13 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changeDriveOnAtFillLevel' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_ON_AT');
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.driveOnAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.driveOnAtFillLevel) or '---';
-
+				--TODO: setDriveNow and forceGoToUnloadCourse should be same !! 
 				elseif entry.functionToCall == 'setDriveNow' then
 					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						if vehicle.cp.driver and vehicle.cp.driver.getCanShowDriveOnButton then
-							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and not vehicle.cp.driveUnloadNow then
+							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and vehicle.cp.settings.driveUnloadNow:is(false) then
 								self:enableButtonWithFunction(vehicle,page, 'setDriveNow')
-								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
+								vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.driveUnloadNow:getLabel()
 							else
 								self:disableButtonWithFunction(vehicle,page, 'setDriveNow')
 							end
@@ -1047,7 +1047,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'forceGoToUnloadCourse' then
 					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						if vehicle.cp.driver and vehicle.cp.driver.getCanShowDriveOnButton then
-							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and not vehicle.cp.driveUnloadNow then
+							if vehicle:getIsCourseplayDriving() and vehicle.cp.driver:getCanShowDriveOnButton() and vehicle.cp.settings.driveUnloadNow:is(false) then
 								self:enableButtonWithFunction(vehicle,page, 'forceGoToUnloadCourse')
 								vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVE_NOW')
 							else
@@ -1059,15 +1059,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'toggleWantsCourseplayer' then
 					if not g_combineUnloadManager:getHasUnloaders(vehicle)  then
 						self:enableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
-						if vehicle.cp.wantsCourseplayer then
-							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_REQUESTED');
+						if vehicle.cp.settings.combineWantsCourseplayer:is(true) then
+							vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.combineWantsCourseplayer:getText()
 						else
-							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REQUEST_UNLOADING_DRIVER');
+							vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.combineWantsCourseplayer:getText()
 						end
 					else
 						local courseplayer = g_combineUnloadManager:getUnloaderByNumber(1, vehicle)
 						self:disableButtonWithFunction(vehicle,page, 'toggleWantsCourseplayer')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_DRIVER');
+						vehicle.cp.hud.content.pages[page][line][1].text =  vehicle.cp.settings.combineWantsCourseplayer:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text =  courseplayer.name;
 					end
 				elseif entry.functionToCall == 'startStopCourseplayer' then
@@ -2017,7 +2017,7 @@ end
 function courseplay.hud:updateCombinesList(vehicle,page)
 	vehicle.cp.possibleCombines = g_combineUnloadManager:getPossibleCombines(vehicle)
 	local line = 3
-	for i= 1 + vehicle.cp.combinesListHUDOffset, #vehicle.cp.possibleCombines do
+	for i= 1 + vehicle.cp.driver.combinesListHUDOffset, #vehicle.cp.possibleCombines do
 		local combine = vehicle.cp.possibleCombines[i]
 		if combine ~= nil then
 			local box = vehicle.cp.assignedCombines[combine] and "[X]"or "[  ]"
