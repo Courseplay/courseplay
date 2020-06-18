@@ -2832,21 +2832,12 @@ function DriveUnloadNowSetting:init(vehicle)
 	self:set(false)
 end
 
-function DriveUnloadNowSetting:onChange()
-	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true)
-end
-
 ---@class CombineWantsCourseplayerSetting : BooleanSetting
 CombineWantsCourseplayerSetting = CpObject(BooleanSetting)
 function CombineWantsCourseplayerSetting:init(vehicle)
 	BooleanSetting.init(self, 'combineWantsCourseplayer', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
 	self:set(false)
 end
-
-function CombineWantsCourseplayerSetting:onChange()
-	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true)
-end
-
 
 --- Container for settings
 --- @class SettingsContainer
