@@ -2718,7 +2718,7 @@ end
 AutomaticCoverHandlingSetting = CpObject(BooleanSetting)
 function AutomaticCoverHandlingSetting:init(vehicle)
 	BooleanSetting.init(self, 'automaticCoverHandling', 'COURSEPLAY_COVER_HANDLING', 'COURSEPLAY_COVER_HANDLING', vehicle)
-	self:set(false)
+	self:set(true)
 end
 
 --no Function!!
