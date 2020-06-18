@@ -17,24 +17,24 @@ function StartStopWorkEvent:new(vehicle, eventType)
 	return self
 end
 
-function StartStopWorkEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
+function StartStopWorkEvent:readStream(streamId, connection) 
 	self.vehicle = NetworkUtil.readNodeObject(streamId)
 	self.eventType = streamReadUIntN(streamId, 1)
 	self:run(connection);
 end
 
-function StartStopWorkEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 	
+function StartStopWorkEvent:writeStream(streamId, connection)  
 	NetworkUtil.writeNodeObject(streamId, self.vehicle);
-	--NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(self.vehicle))
     streamWriteUIntN(streamId, self.eventType, 1)
-
 end
 
-function StartStopWorkEvent:run(connection) -- wir fuehren das empfangene event aus
+function StartStopWorkEvent:run(connection) 
 	if self.eventType == self.TYPE_START then
-        self.vehicle.cp.driver:startWork()
+        self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
+		self.vehicle:requestActionEventUpdate()
     elseif self.eventType == self.TYPE_STOP then
-        self.vehicle.cp.driver:stopWork()		
+		self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
+		self.vehicle:requestActionEventUpdate()
     end
 end
 

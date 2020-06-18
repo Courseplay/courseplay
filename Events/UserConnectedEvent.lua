@@ -33,14 +33,12 @@ end
 
 function UserConnectedEvent:run(connection)
 	if g_server ~= nil then
-		print("send PostSyncEvent")
 		connection:sendEvent(PostSyncEvent:new(self.vehicle))
 	end
 end
 
 function UserConnectedEvent.sendEvent(vehicle)
 	if g_server == nil then
-		print("send UserConnectedEvent")
 		g_client:getServerConnection():sendEvent(UserConnectedEvent:new(vehicle))
 	end
 end

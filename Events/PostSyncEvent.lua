@@ -20,10 +20,8 @@ function PostSyncEvent:writeStream(streamId, connection)
 	streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
 	---assignedCombines
 	if self.vehicle.cp.assignedCombines then 
-		print("assignedCombines found")
 		for combine,data in pairs(self.vehicle.cp.assignedCombines) do
 			if data == true then 
-				print("write Combine: "..tostring(combine))
 				streamDebugWriteBool(streamId, true)
 				NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(combine))
 			end
@@ -33,18 +31,14 @@ function PostSyncEvent:writeStream(streamId, connection)
 end
 
 function PostSyncEvent:readStream(streamId, connection)
-	print("PostSyncEvent readStream")
 	self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
 	--assignedCombines
 	while streamDebugReadBool(streamId) do 
-		print("assignedCombines found")
 		local combine = NetworkUtil.getObject(NetworkUtil.readNodeObjectId(streamId))
 		if combine ~= nil then 
-			print("read Combine:"..tostring(combine))
 			self.vehicle.cp.assignedCombines[combine] = true
-			print("assignedCombine")
 		else 
-			print("combine is nil")
+		
 		end
 	end
 	

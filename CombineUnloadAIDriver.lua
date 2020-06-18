@@ -2078,7 +2078,6 @@ function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 	end
 end
 
---TODO: create an Int Setting for combinesListHUDOffset
 function CombineUnloadAIDriver:shiftCombinesList(change_by)
 	self.combinesListHUDOffset = MathUtil.clamp(self.combinesListHUDOffset+ change_by,0,#self.vehicle.cp.possibleCombines-6)
 end
