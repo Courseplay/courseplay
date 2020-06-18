@@ -101,8 +101,18 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.distanceToFront = 0
 	self.vehicle.cp.possibleCombines ={}
 	self.vehicle.cp.assignedCombines ={}
-	self.vehicle.cp.combinesListHUDOffset = 0
+	self.combinesListHUDOffset = 0
 	self.combineToUnloadReversing = 0
+end
+
+function CombineUnloadAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+	streamWriteUIntN(streamId,self.combinesListHUDOffset,6)
+end 
+
+function CombineUnloadAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+	self.combinesListHUDOffset = streamReadUIntN(streamId,6)
 end
 
 function CombineUnloadAIDriver:setHudContent()
@@ -512,7 +522,7 @@ end
 
 function CombineUnloadAIDriver:setCombineToUnloadClient(combineToUnload)
 	self.combineToUnload = combineToUnload
-	self.combineToUnload:registerUnloader(self.vehicle)
+	self.combineToUnload.cp.driver:registerUnloader(self.vehicle)
 end
 
 function CombineUnloadAIDriver:getTractorsFillLevelPercent()
@@ -2068,6 +2078,10 @@ function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 	end
 end
 
+function CombineUnloadAIDriver:shiftCombinesList(change_by)
+	self.combinesListHUDOffset = MathUtil.clamp(self.combinesListHUDOffset+ change_by,0,#self.vehicle.cp.possibleCombines-6)
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 -- Debug
 ------------------------------------------------------------------------------------------------------------------------
@@ -2091,6 +2105,8 @@ function CombineUnloadAIDriver:renderText(x, y, ...)
 
 	renderText(0.6 + x, 0.2 + y, 0.018, string.format(...))
 end
+
+
 
 
 FillUnit.updateFillUnitAutoAimTarget =  Utils.overwrittenFunction(FillUnit.updateFillUnitAutoAimTarget,CombineUnloadAIDriver.updateFillUnitAutoAimTarget)

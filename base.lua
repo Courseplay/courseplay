@@ -367,7 +367,6 @@ function courseplay:onLoad(savegame)
 	self.cp.trailerFillDistance = nil;
 	self.cp.prevTrailerDistance = 100.00;
 	self.cp.isUnloaded = false;
-	self.cp.driveUnloadNow = false;
 	self.cp.totalFillLevel = nil;
 	self.cp.totalCapacity = nil;
 	self.cp.totalFillLevelPercent = 0;
@@ -573,6 +572,8 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(SaveFuelOptionSetting, self)
 	self.cp.settings:addSetting(AllwaysSearchFuelSetting, self)
 	self.cp.settings:addSetting(RealisticDrivingSetting, self)
+	self.cp.settings:addSetting(DriveUnloadNowSetting, self)
+	self.cp.settings:addSetting(CombineWantsCourseplayerSetting, self)
 	
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer()
@@ -925,7 +926,12 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:onUpdate(dt)
-
+	
+	if g_server == nil and self.isPostSynced == nil then 
+		UserConnectedEvent.sendEvent(self)
+		self.isPostSynced=true
+	end
+	
 	if not self.cp.remoteIsEntered then
 		if self.cp.isEntered ~= Enterable.getIsEntered(self) then
 			--CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",Enterable.getIsEntered(self))
@@ -1354,7 +1360,6 @@ function courseplay:onReadStream(streamId, connection)
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
 	
-
 	--Ingame Map Sync
 	if streamDebugReadBool(streamId) then
 		--add to activeCoursePlayers

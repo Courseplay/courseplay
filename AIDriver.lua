@@ -1564,13 +1564,13 @@ function AIDriver:onDraw()
 	end
 
 end
-
+--TODO: do we want to continue using this setter/getter for driveUnloadNow??
 function AIDriver:setDriveUnloadNow(driveUnloadNow)
 	courseplay:setDriveUnloadNow(self.vehicle, driveUnloadNow or false)
 end
 
 function AIDriver:getDriveUnloadNow()
-	return self.vehicle.cp.driveUnloadNow
+	return self.vehicle.cp.settings.driveUnloadNow:get()
 end
 
 function AIDriver:refreshHUD()
