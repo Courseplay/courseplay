@@ -264,6 +264,8 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	self.temporary = temporary or false
 	self.currentWaypoint = 1
 	self.length = 0
+	self.headlandLength = 0
+	self.nHeadlandWaypoints = 0
 	self.totalTurns = 0
 	self:enrichWaypointData()
 end
@@ -296,7 +298,7 @@ end
 -- looking in the drive direction)
 --- IMPORTANT: the offset for multitool (laneOffset) must not be part of this as it is already part of the
 --- course,
---- @see Course#calculateOffsetCourse()
+--- @see Course#calculateOffsetCourse
 function Course:setOffset(x, z)
 	self.offsetX, self.offsetZ = x, z
 end
@@ -336,11 +338,26 @@ end
 -- PPC relies on waypoint angles, the world direction is needed to calculate offsets
 function Course:enrichWaypointData()
 	if #self.waypoints < 2 then return end
+	self.length = 0
+	self.nHeadlandWaypoints = 0
+	self.headlandLength = 0
+	self.firstHeadlandWpIx = nil
+	self.firstCenterWpIx = nil
 	for i = 1, #self.waypoints - 1 do
 		local cx, _, cz = self:getWaypointPosition(i)
 		local nx, _, nz = self:getWaypointPosition( i + 1)
 		local dToNext = courseplay:distance(cx, cz, nx, nz)
 		self.length = self.length + dToNext
+		if self:isOnHeadland(i) then
+			self.nHeadlandWaypoints = self.nHeadlandWaypoints + 1
+			self.headlandLength = self.headlandLength + dToNext
+			self.firstHeadlandWpIx = self.firstHeadlandWpIx or i
+		else
+			-- TODO: this and firstHeadlandWpIx works only if there is one block on the field and 
+			-- no islands, as then we have more than one group of headlands. But these are only 
+			-- for the convoy mode anyway so it is ok if it does not work in all possible situations
+			self.firstCenterWpIx = self.firstCenterWpIx or i	
+		end
 		if self:isTurnStartAtIx(i) then self.totalTurns = self.totalTurns + 1 end
 		self.waypoints[i].dToNext = dToNext
 		self.waypoints[i].dToHere = self.length
@@ -516,6 +533,7 @@ function Course:getHeadlandNumber(ix)
 end
 
 function Course:isOnHeadland(ix, n)
+	ix = ix or self.currentWaypoint
 	if n then
 		return self.waypoints[ix].lane and self.waypoints[ix].lane == -n
 	else
@@ -824,14 +842,20 @@ function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 end
 
 
---- Get the index of the first waypoint from ix which is at least distance meters away (search forward)
-function Course:getNextWaypointIxWithinDistance(ix, distance)
+--- Get the index of the first waypoint from ix which is at least distance meters away
+---@param backward boolean search backward if true
+function Course:getNextWaypointIxWithinDistance(ix, distance, backward)
 	local d = 0
-	for i =ix, #self.waypoints - 1 do
+	local from, to, step = ix, #self.waypoints - 1, 1
+	if backward then
+		from, to, step = ix - 1, 1, -1
+	end
+	for i = from, to, step do
 		d = d + self.waypoints[i].dToNext
 		if d > distance then return i end
 	end
-	return nil
+	-- at the end/start of course return last/first wp
+	return to
 end
 
 --- Get the index of the first waypoint from ix which is at least distance meters away (search backwards)
@@ -1068,7 +1092,7 @@ end
 
 --- Run a function for all waypoints of the course within the last d meters
 ---@param d number
----@param lambda function(waypoint)
+---@param lambda function (waypoint)
 function Course:executeFunctionForLastWaypoints(d, lambda)
 	local i = self:getNumberOfWaypoints()
 	while i > 1 and self:getDistanceToLastWaypoint(i) < d do
@@ -1090,7 +1114,7 @@ function Course:setUseTightTurnOffsetForLastWaypoints(d)
 	self:executeFunctionForLastWaypoints(d, function(wp) wp.useTightTurnOffset = true end)
 end
 
---- Get then next contiguous headland section of a course, starting at startIx
+--- Get the next contiguous headland section of a course, starting at startIx
 ---@param headland number of headland, starting at 1 on the outermost headland, any headland if nil
 ---@param startIx number start at this waypoint index
 ---@return Course, number headland section as a Course object, next wp index after the section
@@ -1100,7 +1124,7 @@ function Course:getNextHeadlandSection(headland, startIx)
 	end)
 end
 
---- Get then next contigous non-headland section of a course, starting at startIx
+--- Get the next contigous non-headland section of a course, starting at startIx
 ---@param startIx number start at this waypoint index
 ---@return Course, number headland section as a Course object, next wp index after the section
 function Course:getNextNonHeadlandSection(startIx)
@@ -1146,6 +1170,16 @@ function Course:offsetUpDownRows(offsetX, offsetZ, useSameTurnWidth)
 		end
 	end
 	self:enrichWaypointData()
+end
+
+---@param waypoints Polyline
+function Course:markAsHeadland(waypoints)
+	-- TODO: this should be in Polyline
+
+	for _, p in ipairs(waypoints) do
+		-- don't care which headland, just make sure it is a headland
+		p.lane = -1
+	end
 end
 
 --- Calculate an offset course from an existing course. This is used when multiple vehicles working on
@@ -1203,6 +1237,7 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 					courseplay.info('Could not generate offset headland')
 				else
 					offsetHeadlands:calculateData()
+					self:markAsHeadland(offsetHeadlands)
 					addTurnsToCorners(offsetHeadlands, math.rad(60), true)
 					courseGenerator.pointsToXzInPlace(offsetHeadlands)
 					offsetCourse:appendWaypoints(offsetHeadlands)
@@ -1324,7 +1359,7 @@ function Course:setPipeInFruitMap(pipeOffsetX, workWidth)
 
 	-- The idea here is that we walk backwards on the course, remembering each row and adding them
 	-- to the list of unworked rows. This way, at any waypoint we have a list of rows the vehicle
-	-- wouldn't have finished if it was driving the course the right way (start to end).
+	-- wouldn't have finished if it was driving the course the right wa		y (start to end).
 	-- Now check if the pipe would be in any of these unworked rows
 	local rowsNotDone = {}
 	local totalNonHeadlandWps = 0
@@ -1348,4 +1383,42 @@ function Course:setPipeInFruitMap(pipeOffsetX, workWidth)
 	end
 	pipeInFruitMapHelperWpNode:destroy()
 	return totalNonHeadlandWps, pipeInFruitWps
+end
+
+--- @return number between 0 - 1, 0 if ix is not on the headland yet, 1 if ix is past the headland, 
+-- 0 < 1 on the headland according to the progress made (as distance)
+function Course:getHeadlandProgress(ix)
+	if not self.firstHeadlandWpIx then return 1 end
+	ix = ix or self.currentWaypoint
+	if ix < self.firstHeadlandWpIx then return 0 end
+	if ix >= self.firstHeadlandWpIx + self.nHeadlandWaypoints then return 1 end
+	
+	local progress = (ix - self.firstHeadlandWpIx) / self.nHeadlandWaypoints
+	return progress, self.headlandLength
+end
+
+--- @return number between 0 - 1, 0 if ix is not on the field center yet, 1 if ix is past the field center, 
+-- 0 < 1 on the field according to the progress made (as distance)
+function Course:getCenterProgress(ix)
+	if not self.firstCenterWpIx then return 1 end
+	ix = ix or self.currentWaypoint
+	-- TODO: this works only when there is one headland section (no islands or multiple blocks)
+	local nCenterWaypoints = (#self.waypoints - self.nHeadlandWaypoints)
+	if ix < self.firstCenterWpIx then return 0 end
+	if ix >= self.firstCenterWpIx + nCenterWaypoints then return 1 end
+
+	local progress = (ix - self.firstCenterWpIx) / nCenterWaypoints
+	return progress, self.length - self.headlandLength
+end
+
+function Course:getAverageWaypointDistanceOnHeadland()
+	if self.nHeadlandWaypoints > 0 then
+		return  self.headlandLength / self.nHeadlandWaypoints
+	else
+		return self.length / #self.waypoints
+	end
+end
+
+function Course:getAverageWaypointDistanceOnCenter()
+	return (self.length - self.headlandLength) / (#self.waypoints - self.nHeadlandWaypoints)
 end

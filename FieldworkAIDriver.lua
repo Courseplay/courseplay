@@ -169,6 +169,8 @@ function FieldworkAIDriver:start(startingPoint)
 	self.aiDriverOffsetX = 0
 	self.aiDriverOffsetZ = 0
 
+	self.workWidth = courseplay:getWorkWidth(self.vehicle)
+
 	self:setUpCourses()
 
 	-- now that we have our unload/refill and fieldwork courses set up, see where to start
@@ -793,12 +795,24 @@ function FieldworkAIDriver:hasSameCourse(otherVehicle)
 	end
 end
 
-function FieldworkAIDriver:getCurrentFieldworkWaypointIx()
-	return self.fieldworkCourse:getCurrentWaypointIx()
+
+function FieldworkAIDriver:getHeadlandProgress()
+	return self.fieldworkCourse:getHeadlandProgress()
+end
+
+function FieldworkAIDriver:getCenterProgress()
+	return self.fieldworkCourse:getCenterProgress()
+end
+
+function FieldworkAIDriver:isOnHeadland()
+	return self.fieldworkCourse:isOnHeadland()
 end
 
 --- When working in a group (convoy), do I have to hold so I don't get too close to the
 -- other vehicles in front of me?
+--- We can't just use the waypoint index as each vehicle in the convoy has its own course
+--- generated and for instance on the headland the vehicles on the inside will have less  
+--- waypoints, so we operate with progress percentage
 function FieldworkAIDriver:manageConvoy()
 	if not self.vehicle.cp.convoyActive then return false end
 	--get my position in convoy and look for the closest combine
@@ -807,12 +821,31 @@ function FieldworkAIDriver:manageConvoy()
 	local closestDistance = math.huge
 	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
 		if otherVehicle ~= self.vehicle and otherVehicle.cp.convoyActive and self:hasSameCourse(otherVehicle) then
-			local myWpIndex = self:getCurrentFieldworkWaypointIx()
-			local otherVehicleWpIndex = otherVehicle.cp.driver:getCurrentFieldworkWaypointIx()
+			local isOtherVehicleOnHeadland = otherVehicle.cp.driver:isOnHeadland()
+			local myProgress, length, otherProgress
+			if self:isOnHeadland() then
+				myProgress, length = self:getHeadlandProgress()
+				otherProgress = otherVehicle.cp.driver:getHeadlandProgress()
+				if not otherVehicle.cp.driver:isOnHeadland() and self.fieldworkCourse:isOnHeadland(1) then
+					-- other vehicle past the headland now and the course starts with the headland
+					otherProgress = otherProgress + otherVehicle.cp.driver:getCenterProgress()
+				end
+				self:debugSparse('convoy on headland: my progress %.1f%%, other progress %.1f%%, 100%% %d',
+				 	myProgress * 100, otherProgress * 100, length)
+			else
+				myProgress, length = self:getCenterProgress()
+				otherProgress = otherVehicle.cp.driver:getCenterProgress()
+				if otherVehicle.cp.driver:isOnHeadland() and not self.fieldworkCourse:isOnHeadland(1) then
+					-- other vehicle past the center now and the course ends with the headland
+					otherProgress = otherProgress + otherVehicle.cp.driver:getHeadlandProgress()
+				end
+				self:debugSparse('convoy on center: my progress %.1f%%, other progress %.1f%%, 100%% %d', 
+					myProgress * 100, otherProgress * 100, length)
+			end	
 			total = total + 1
-			if myWpIndex < otherVehicleWpIndex then
+			if myProgress < otherProgress then
 				position = position + 1
-				local distance = (otherVehicleWpIndex - myWpIndex) * courseGenerator.waypointDistance
+				local distance = (otherProgress - myProgress) * length
 				if distance < closestDistance then
 					closestDistance = distance
 				end
@@ -1399,4 +1432,9 @@ end
 
 function FieldworkAIDriver:setLightsMask(vehicle)
 	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+end
+
+function FieldworkAIDriver:getVehicleWidth()
+	-- TODO: get folded/unfolded width according to state
+	return self.workWidth
 end
