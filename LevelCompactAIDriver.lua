@@ -225,6 +225,9 @@ function LevelCompactAIDriver:stopCourseplayer(courseplayer)
 	if courseplayer.cp.driver ~= nil then
 		courseplayer.cp.driver:hold()
 	end
+	if courseplayer ~= nil and courseplayer.spec_autodrive and courseplayer.spec_autodrive.HoldDriving then
+		courseplayer.spec_autodrive:HoldDriving(courseplayer)
+	end
 end 
 
 function LevelCompactAIDriver:driveSiloCompact(dt)
