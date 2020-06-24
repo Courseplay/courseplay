@@ -108,11 +108,23 @@ function inputCourseNameDialogue:onSaveClick()
 		end
 
 		local maxID = courseplay.courses:getMaxFolderID()
-		if maxID == nil then
+		local folderID
+		if not maxID or maxID == 0 then
+			-- no folders yet
 			g_currentMission.cp_folders = {}
-			maxID = 0
+			folderID = 1
+		elseif g_currentMission.cp_folders[maxID].virtual then
+			-- dirty trick: the last folder is virtual, make sure the virtual is always at the end of the folder list
+			-- so there are no gaps in the real folder IDs
+			-- so move up the virtual folder to the end
+			courseplay.courses:moveFolder(maxID, maxID + 1)
+			-- new folder goes where the virtual was before
+			folderID = maxID
+		else
+			-- folders already exist, use the nextID
+			folderID = maxID + 1
 		end
-		local folderID = maxID+1
+
 		local folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = vehicle.cp.saveFolderName, nameClean = courseplay:normalizeUTF8(vehicle.cp.saveFolderName), parent = 0 }
 
 		g_currentMission.cp_folders[folderID] = folder
@@ -178,5 +190,5 @@ function inputCourseNameDialogue:validateCourseName()
 end
 
 g_inputCourseNameDialogue = inputCourseNameDialogue:new();
-g_gui:loadGui(courseplay.path .. 'inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);
+g_gui:loadGui(courseplay.path .. 'gui/inputCourseNameDialogue.xml', 'inputCourseNameDialogue', g_inputCourseNameDialogue);
 FocusManager:setGui("MPLoadingScreen")

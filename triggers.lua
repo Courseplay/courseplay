@@ -36,7 +36,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
 		or (triggerType == 'specialTrigger') 
 		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
-			local x, _, z = localToWorld(vehicle.cp.DirectionNode, vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.cp.directionNode, vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 2);
 		end;
@@ -44,7 +44,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 		if (triggerType == 'tipTrigger' and vehicle.cp.currentTipTrigger == nil) 
 		or (triggerType == 'specialTrigger') 
 		or (triggerType == 'fuelTrigger' and vehicle.cp.fuelFillTrigger == nil) then
-			local x, _, z = localToWorld(vehicle.cp.DirectionNode, -vehicle.cp.tipRefOffset, 0, 0);
+			local x, _, z = localToWorld(vehicle.cp.directionNode, -vehicle.cp.tipRefOffset, 0, 0);
 			--local x, _, z = localToWorld(vehicle.aiTrafficCollisionTrigger, -vehicle.cp.tipRefOffset, 0, 0);
 			courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, 3);
 		end;
@@ -130,8 +130,9 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
 					-- check trigger fillLevel / capacity
 					if trigger.unloadingStation then
-						local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType,1)
-						local capacity = trigger.unloadingStation:getCapacity(trailerFillType,1)
+						local ownerFarmId = self:getOwnerFarmId();
+						local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
+						local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
 						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d '):format(tostring(triggerId), fillLevel, capacity), 1);
 						if fillLevel>=capacity then
 							courseplay:debug(('    trigger (%s) Trigger is full -> abort'):format(tostring(triggerId)), 1);
@@ -152,7 +153,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
-						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.DirectionNode or self.rootNode, trigger.triggerId)*2
+						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.directionNode or self.rootNode, trigger.triggerId)*2
 						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
 						return false
 					end;
@@ -290,22 +291,47 @@ end;
 --FIND Trailer CALLBACK
 function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 	local trailer = g_currentMission.nodeToObject[transformId];
-	if trailer~= nil then
-		local shovelFillUnits =  self.cp.shovel:getFillUnits()
-		local shovelFillType = shovelFillUnits[1].fillType
+	local shovelFillUnits =  self.cp.shovel:getFillUnits()
+	local shovelFillType = shovelFillUnits[1].fillType
+	local shovelFillLevel = shovelFillUnits[1].fillLevel
+	local failReason = "none"
+	if trailer~= nil and trailer.getFillUnits then
 		local fillUnits = trailer:getFillUnits()
 		--print(string.format("trailer found; shovelFillType=%s ",tostring(shovelFillType)))
 		for i=1,#fillUnits do
 			local fillTypes = trailer:getFillUnitSupportedFillTypes(i)
 			--print(string.format("fillUnit%s: supported:%s; fillType:%s; fillLevel:%s capacity:%s"
 			--,tostring(i),tostring(fillTypes[shovelFillType]),tostring(fillUnits[i].fillType),tostring(fillUnits[i].fillLevel),tostring(fillUnits[i].capacity)))
-			if fillTypes[shovelFillType]	
-			and (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN)
-			and fillUnits[i].fillLevel < fillUnits[i].capacity then
+			if fillTypes[shovelFillType]
+				and (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN)
+				and fillUnits[i].fillLevel < fillUnits[i].capacity then
 				self.cp.shovel.targetFound = trailer;
+			elseif not fillTypes[shovelFillType] then
+				failReason = "shovels fillType not supported"
+			elseif not (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN) then
+				failReason = "shovel and trailer doesnt have the same fillType"
+			elseif not (fillUnits[i].fillLevel < fillUnits[i].capacity) then
+				failReason = "target is full"
 			end
 		end
 	end
+
+	local Bunker = courseplay.triggers.tipTriggers[transformId]
+	if Bunker then
+		if Bunker.unloadingStation then
+			if Bunker.unloadingStation:getFreeCapacity(shovelFillType, 1) > shovelFillLevel then
+				self.cp.shovel.targetFound = courseplay.triggers.tipTriggers[transformId];
+			else
+				failReason = "Bunkers unloading station has no capacity"
+			end
+		end
+	end
+	if failReason ~= 'none' and courseplay.debugChannels[10] then
+		if g_updateLoopIndex % 100 == 0 then
+			print("findTrailerRaycastCallback failed. Reason: "..failReason)
+		end
+	end
+
 	return true
 end
 
@@ -557,18 +583,43 @@ function courseplay:updateAllTriggers()
 	if g_currentMission.nodeToObject ~= nil then
 		courseplay:debug('   check nodeToObject', 1);
 		for _,object in pairs (g_currentMission.nodeToObject) do
+			if object.exactFillRootNode ~= nil and not courseplay.triggers.all[object.exactFillRootNode] then
+				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(object.exactFillRootNode)), 1);
+				courseplay:cpAddTrigger(object.exactFillRootNode, object, 'tipTrigger');
+			end
 			if object.triggerNode ~= nil and not courseplay.triggers.all[object.triggerNode] then
 				local triggerId = object.triggerNode;
-				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject)', '',tostring(triggerId)), 1);
+				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject->triggerNode )', '',tostring(triggerId)), 1);
 				courseplay:cpAddTrigger(triggerId, object, 'fillTrigger');
 			end
 			--[[if object.baleTriggerNode ~= nil and not courseplay.triggers.all[object.baleTriggerNode] then
 				courseplay:cpAddTrigger(object.baleTriggerNode, object, 'tipTrigger');
 				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(object.baleTriggerNode, '', className), 1);
-			end]]	
+			end]]
 		end			
 	end
 	
+	if g_company ~= nil and g_company.triggerManagerList ~= nil then
+		courseplay:debug('   check globalCompany mod', 1);
+		for i=1,#g_company.triggerManagerList do
+			local triggerManager = g_company.triggerManagerList[i];			
+			courseplay:debug(string.format('    triggerManager %d:',i), 1);
+			for index, trigger in pairs (triggerManager.registeredTriggers) do
+				if trigger.exactFillRootNode then
+					trigger.triggerId = trigger.exactFillRootNode;
+					trigger.acceptedFillTypes = trigger.fillTypes
+					courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
+				end	
+				if trigger.triggerNode then
+					trigger.triggerId = trigger.triggerNode;
+					trigger.isGlobalCompanyFillTrigger = true
+					courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'fillTrigger');
+				end
+			end
+		end	
+	end
 end;
 
 function courseplay:cpAddTrigger(triggerId, trigger, groupType)
@@ -602,12 +653,38 @@ function courseplay:printTipTriggersFruits(trigger)
 	end
 end;
 
+-- Custom version of trigger:onActivateObject to allow activating for a non-controlled vehicle
+function courseplay:activateTriggerForVehicle(trigger, vehicle)
+	--Cache giant values to restore later
+	local defaultGetFarmIdFunction = g_currentMission.getFarmId;
+	local oldControlledVehicle = g_currentMission.controlledVehicle;
+
+	--Override farm id to match the calling vehicle (fixes issue when obtaining fill levels)
+	local overriddenFarmIdFunc = function()
+		local ownerFarmId = vehicle:getOwnerFarmId()
+		courseplay.debugVehicle(19, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
+		return ownerFarmId;
+	end
+	g_currentMission.getFarmId = overriddenFarmIdFunc;
+
+	--Override controlled vehicle if I'm not in it
+	if g_currentMission.controlledVehicle ~= vehicle then
+		g_currentMission.controlledVehicle = vehicle;
+	end
+
+	--Call giant method with new params set
+	trigger:onActivateObject();
+
+	--Restore previous values
+	g_currentMission.getFarmId = defaultGetFarmIdFunction;
+	g_currentMission.controlledVehicle = oldControlledVehicle;
+end
 
 
 --------------------------------------------------
 -- Adding easy access to SiloTrigger
 --------------------------------------------------
-local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+courseplay.SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	courseplay:debug(' SiloTrigger_TriggerCallback',2);
 	local trailer = g_currentMission.nodeToObject[otherShapeId];
 	if trailer ~= nil then
@@ -636,7 +713,7 @@ local SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEn
 		end;
 	end;
 end;
-LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, SiloTrigger_TriggerCallback);
+LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, courseplay.SiloTrigger_TriggerCallback);
 
 -- this could be used to fill sowing machines, but better may be a better way to find out what Vehicle.addFillUnitTrigger() does.
 local cpFillTriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)

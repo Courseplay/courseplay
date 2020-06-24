@@ -16,26 +16,23 @@ function courseplay:distanceCheck(vehicle)
 	local number = vehicle.cp.recordingIsPaused and vehicle.cp.waypointIndex - 1 or 1;
 
 	local cx, cz = vehicle.Waypoints[number].cx, vehicle.Waypoints[number].cz;
-	local lx, ly, lz = worldToLocal(vehicle.cp.DirectionNode, cx, 0, cz);
+	local lx, ly, lz = worldToLocal(vehicle.cp.directionNode, cx, 0, cz);
 	local arrowRotation = MathUtil.getYRotationFromDirection(lx, lz);
 	vehicle.cp.directionArrowOverlay:setRotation(arrowRotation, vehicle.cp.directionArrowOverlay.width/2, vehicle.cp.directionArrowOverlay.height/2);
 	vehicle.cp.directionArrowOverlay:render();
 
-	local ctx, cty, ctz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local ctx, cty, ctz = getWorldTranslation(vehicle.cp.directionNode);
 	courseplay:setInfoText(vehicle, ('COURSEPLAY_DISTANCE;%d'):format(courseplay:distance(ctx, ctz, cx, cz)));
 end;
 
-
 function courseplay:distanceToObject(vehicle, object)
-	local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode);
-	local ox, oy, oz = worldToLocal(object.rootNode, x, y, z);
-
-	return MathUtil.vector2Length(ox, oz);
-end;
-
+	local node1 = vehicle.cp.directionNode or vehicle.rootNode
+	local node2 = object.rootNode or object.nodeId
+	return calcDistanceFrom(node1, node2)
+end
 
 function courseplay:distanceToPoint(vehicle, x, y, z)
-	local ox, oy, oz = worldToLocal(vehicle.cp.DirectionNode, x, y, z);
+	local ox, oy, oz = worldToLocal(vehicle.cp.directionNode, x, y, z);
 	return MathUtil.vector2Length(ox, oz);
 end;
 

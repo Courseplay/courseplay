@@ -172,7 +172,7 @@ end
 -- return the calculated fitness for total population fitness calculation
 function Population:calculateFitness()
 	self.totalFitness = 0
-	self.bestFitness = 0
+	self.bestFitness = -1
 	self.misfits = 0
 	self.bestChromosome = nil
 	for i = 1, #self do

@@ -28,15 +28,25 @@ function GrainTransportAIDriver:init(vehicle)
 	-- just for backwards compatibility
 end
 
+function GrainTransportAIDriver:writeUpdateStream(streamId)
+	AIDriver.writeUpdateStream(self,streamId)
+	streamWriteUIntN(streamId,self.runCounter,4)
+end 
+
+function GrainTransportAIDriver:readUpdateStream(streamId)
+	AIDriver.readUpdateStream(self,streamId)
+	self.runCounter = streamReadUIntN(streamId,4)
+end
+
 function GrainTransportAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
 	courseplay.hud:setGrainTransportAIDriverContent(self.vehicle)
 end
 
-function GrainTransportAIDriver:start(ix)
+function GrainTransportAIDriver:start(startingPoint)
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	self:beforeStart()
-	AIDriver.start(self, ix)
+	AIDriver.start(self, startingPoint)
 	self:setDriveUnloadNow(false);
 end
 
@@ -92,7 +102,6 @@ function GrainTransportAIDriver:drive(dt)
 		-- we drive the course as usual
 		self:driveCourse(dt)
 	end
-	self:resetSpeed()
 end
 
 function GrainTransportAIDriver:onWaypointChange(newIx)
@@ -119,7 +128,7 @@ function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:getCurrentWaypointIx() == self.course:getNumberOfWaypoints() then
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
-		if self.runCounter >= self.vehicle.cp.maxRunNumber then
+		if self.vehicle.cp.settings.runCounterMax:getIsRunCounterActive() and self.runCounter >= self.vehicle.cp.settings.runCounterMax:get() then
 			-- stop at the last waypoint when the run counter expires
 			allowedToDrive = false
 			self:stop('END_POINT_MODE_1')
@@ -152,12 +161,8 @@ function GrainTransportAIDriver:getCanShowDriveOnButton()
 	return self:isNearFillPoint()
 end
 
-function GrainTransportAIDriver:getIsRunCounterActive()
-	return self.vehicle.cp.runCounterActive;
-end
-
 function GrainTransportAIDriver:incrementRunCounter()
-	if self:getIsRunCounterActive() then
+	if self.vehicle.cp.settings.runCounterMax:getIsRunCounterActive() then
 		self.runCounter = self.runCounter + 1
 	end
 end

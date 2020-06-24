@@ -130,7 +130,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Wacht tot wachtpositie vrij is" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Ga naar %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="Ga naar markering %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Wacht tot vulstand bereikt is" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Wacht tot vulstand bereikt is (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Geen combine binnen bereik" />
 	    <text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Wacht tot combine gedraaid is" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Wacht op nieuwe markering" />
@@ -227,11 +227,15 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="op/neer rijen" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circulaire vorm" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiraal vorm" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="geactiveerd" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="Alleen naam" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Naam en Route" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="gedeactiveerd" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Banen markeerders" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Uitladen in het veld" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="automatisch" />
 		<text name="COURSEPLAY_MANUAL" 										text="handmatig" />
@@ -269,6 +273,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="eerste markering" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="huidige markering" />
 		<text name="COURSEPLAY_NEXT_POINT" 							    	text="volgende markering" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Veldrand route" />
 		<text name="COURSEPLAY_FIELD" 										text="Veld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(huidige route)" />
@@ -309,7 +314,7 @@
 		<text name="COURSEPLAY_RECORDING_SET_UNLOAD" 						text="Plaats los punt" />
 		<text name="COURSEPLAY_RECORDING_SET_CROSS" 						text="Kruising plaatsen" />
 		<text name="COURSEPLAY_RECORDING_TURN_START" 						text="Bocht starten" />
-		<text name="COURSEPLAY_RECORDING_TURN_END" 							text="Bocht stoppen" />
+		<text name="COURSEPLAY_RECORDING_TURN_END" 							text="Bocht eindigen" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 					text="Achteruit rijden starten" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 						text="Achteruit rijden stoppen" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"					text="Voeg tussenpunten toe" />
@@ -321,7 +326,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="Altijd 4WD &amp; Diff-Lock achterzijde aan bij veldwerk" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="Altijd 4WD &amp; Diff-Lock voor- en achterzijde aan bij veldwerk" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Velden automatisch scannen?" />
- 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Wilt u de arbeiders belonen (%s/uur)?" />
+ 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Wilt u de arbeiders belonen?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Zaad verbruik calculator" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Veld: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Zaad soort: %s" />
@@ -345,6 +350,27 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text="Courseplay: Ga naar transport positie" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="Courseplay: Ga naar aanvang los positie" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="Courseplay: Ga naar los positie" />
+		
+        <text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Schakel naar course editor" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Maak laatste route wijziging ongedaan" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Bewaar route wijzigingen" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Verhoog snelheid van route markering" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Verlaag snelheid van route markering" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Verwijder route markering" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Verwijder volgende route markering" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Verwijder route markeringen richting startpunt" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Verwijder route markeringen richting eindpunt" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Voeg extra route markereing toe" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Verander route markering type" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Vooruit rijden" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wachtpunt" />
+		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Kruising" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 								text="Lospunt" />
+		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Bocht starten" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 								text="Bocht eindigen" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 								text="Achteruit rijden" />
+
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="toon cursor" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="verberg cursor" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Linker muis knop" /> 
@@ -358,7 +384,6 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"					text="Toon/verberg 'start' en 'eind' markeringen" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"							text="Toon/verberg alle markeringen" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"					text="Toon/verberg kruispunten" />
-	
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="mode" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="egaliseren en comprimeren" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="opvullen" />
@@ -391,9 +416,59 @@
 		<text name="COURSEPLAY_FillType_Molasses"							text="melasse" />
 
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Niet geinstalleerd" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Niet gebruiken" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Voor laden/lossen/hervullen" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Voor parkeren voertuig" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Voor laden/lossen/hervullen &amp; parkeren" />
 
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(en terug)" />
+
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Geavanceerde instellingen..." />
+
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Laad routes bij opstarten" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Laad alle routes bij het opstarten, vertraagt het laden van een opgeslagen spel wanneer geactiveerd" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Gebruik AI bochtmanoeuvres" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Gebruik AI bochtmanoeuvres in plaats van berekende bochttrajecten" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan velden automatisch" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay loonwerkers verdienen loon" />
+		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on headland" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
+
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Vroeg" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Laat" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Wanneer moeten werktuigen worden opgeheven" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Wanneer moeten werktuigen worden opgeheven, bij het beëindigen van een rij of het starten van een kopakkerbocht" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Wanneer moeten werktuigen worden neergelaten" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Wanneer moeten werktuigen worden neergelaten, bij het beëindigen van een rij of het starten van een kopakkerbocht" />
+
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Use pathfinding in turns" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay loonwerkers loon" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay loonwerkers loon als percentage van normale loonwerkers loon" />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine zelflossen" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Zelflossen van combine als deze vol is en er een trailer in de buurt is" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		
+		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

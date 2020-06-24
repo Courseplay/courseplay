@@ -5,7 +5,6 @@ addModEventListener(CpManager);
 
 local modDirectory = g_currentModDirectory
 
-
 function CpManager:loadMap(name)
 	--print("CpManager:loadMap(name)")
 	self.isCourseplayManager = true;
@@ -24,8 +23,6 @@ function CpManager:loadMap(name)
 		self.cpCustomFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayCustomFields.xml';
 		self.cpOldCustomFieldsXmlFilePath = self.savegameFolderPath .. '/courseplayFields.xml';
 
-		self.cpXmlFilePath = self.savegameFolderPath .. '/courseplay.xml';
-		self.oldCPFileExists = fileExists(self.cpXmlFilePath);
 		-- Course save path
 		self.cpCoursesFolderPath = ("%s%s/%s"):format(getUserProfileAppPath(),"CoursePlay_Courses", g_currentMission.missionInfo.mapId);
 		self.cpCourseManagerXmlFilePath = self.cpCoursesFolderPath .. "/courseManager.xml";
@@ -43,8 +40,6 @@ function CpManager:loadMap(name)
 	courseplay.signs:setup();
 	courseplay.fields:setup();
 	self.showFieldScanYesNoDialogue = false;
-	self:setupWages();
-	self:setupIngameMap();
 	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,8 +79,7 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- FIELDS
-	print(string.format("courseplay.fields.automaticScan: %s",tostring(courseplay.fields.automaticScan)))
-	if courseplay.fields.automaticScan then
+	if courseplay.globalSettings.autoFieldScan:is(true) then
 		self:setupFieldScanInfo();
 	end;
 	if g_server ~= nil then
@@ -96,7 +90,6 @@ function CpManager:loadMap(name)
 	-- TIMERS
 	g_currentMission.environment:addMinuteChangeListener(self);
 	self.realTimeMinuteTimer = 0;
-	self.realTime10SecsTimer = 0;
 	self.realTime5SecsTimer = 0;
 	self.realTime5SecsTimerThrough = 0;
 	self.startFieldScanAfter = 1500; -- Start field scanning after specified milliseconds
@@ -109,14 +102,23 @@ function CpManager:loadMap(name)
 	end;
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
-	addConsoleCommand( 'cpPrintVariable', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
-	addConsoleCommand( 'printVehicleVariable', 'Print a variable', 'printVehicleVariable', self )
+	addConsoleCommand( 'printVehicleVariable', 'Print g_currentMission.controlledVehicle.variable', 'printVehicleVariable', self )
+	addConsoleCommand( 'printDriverVariable', 'Print g_currentMission.controlledVehicle.cp.driver.variable', 'printDriverVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
+	addConsoleCommand( 'cpLoadAIDriver', 'Load a lua file and re-instantiate the current AIDriver', 'loadAIDriver', self )
+
+	addConsoleCommand( 'cpRestoreVehiclePositions', 'Restore all saved vehicle positions', 'restoreVehiclePositions', self )
+	addConsoleCommand( 'cpSaveVehiclePositions', 'Save position of all vehicles', 'saveVehiclePositions', self )
+
+	addConsoleCommand( 'cpRestartSaveGame', 'Load and start a savegame', 'restartSaveGame', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
+	addConsoleCommand( 'cpTogglePathfindingDebug', 'Toggle pathfinding visual debug info', 'togglePathfindingDebug', self )
+	addConsoleCommand( 'cpToggleDevhelperDebug', 'Toggle development helper visual debug info', 'toggleDevhelperDebug', self )
+	addConsoleCommand( 'cpShowCombineUnloadManagerStatus', 'Show combine unload manager status', 'showCombineUnloadManagerStatus', self )
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
@@ -131,7 +133,6 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- MISCELLANEOUS
-	self.lightsNeeded = false;
 end;
 
 function CpManager:deleteMap()
@@ -241,6 +242,10 @@ function CpManager:update(dt)
 		
 	end;
 
+	if courseplay.fieldMod == nil then
+		courseplay:initailzeFieldMod()
+	end
+
 	if g_gui.currentGui == nil then
 		-- SETUP FIELD INGAME DATA
 		if not courseplay.fields.ingameDataSetUp then
@@ -256,29 +261,17 @@ function CpManager:update(dt)
 			courseplay:initailzeFieldMod()
 		end	
 		
-		if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+		if courseplay.fields.fieldDefinitionBase and courseplay.globalSettings.autoFieldScan:is(true) and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 			courseplay.fields:setAllFieldEdges();
 		end;
 
-		-- Field scan, wages yes/no dialogue
+		-- Field scan yes/no dialogue
 		if self.showFieldScanYesNoDialogue then
 			self:showYesNoDialogue('Courseplay', courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'), self.fieldScanDialogueCallback);
-		elseif self.showWagesYesNoDialogue then
-			local txt = courseplay:loc('COURSEPLAY_YES_NO_WAGES'):format(g_i18n:formatMoney(g_i18n:getCurrency(self.wagePerHour * self.wageDifficultyMultiplier), 2));
-			self:showYesNoDialogue('Courseplay', txt, self.wagesDialogueCallback);
 		end;
 	end;
-
-
-	-- REAL TIME 10 SECS CHANGER
-	if g_server ~= nil then
-		if self.realTime10SecsTimer < 10000 then
-			self.realTime10SecsTimer = self.realTime10SecsTimer + dt;
-		else
-			self:realTime10SecsChanged();
-			self.realTime10SecsTimer = self.realTime10SecsTimer - 10000;
-		end;
-	end;
+	g_trafficController:update(dt)
+	g_combineUnloadManager:onUpdate()
 
 	-- REAL TIME 5 SECS CHANGER
 	if self.realTime5SecsTimer < 5000 then
@@ -307,7 +300,16 @@ function CpManager:update(dt)
 		courseplay.fields.filter = DensityMapFilter:new(courseplay.fields.modifier) -- filter on terrain type
 		courseplay.fields.filter:setValueCompareParams("greater", 0) -- more than 0, so it is a field
 	end
+	g_devHelper:update()
 end;
+
+
+function CpManager:UpdateTick(dt)
+	print("CpManager:updateTick(dt)")
+end
+
+
+
 
 function CpManager:draw()
 	if g_currentMission.paused then
@@ -332,9 +334,11 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- DISPLAY FIELD SCAN MSG
-	if courseplay.fields.fieldDefinitionBase and courseplay.fields.automaticScan and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
+	if courseplay.fields.fieldDefinitionBase and courseplay.globalSettings.autoFieldScan:is(true) and not courseplay.fields.allFieldsScanned and self.startFieldScanAfter <= 0 then
 		self:renderFieldScanInfo();
 	end;
+
+	g_devHelper:draw()
 end;
 
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
@@ -399,10 +403,12 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 			end;
 		end;
 	end;
+	g_devHelper:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 end;
 
 function CpManager:keyEvent(unicode, sym, modifier, isDown) 
 	courseplay:onKeyEvent(unicode, sym, modifier, isDown)
+	g_devHelper:keyEvent(unicode, sym, modifier, isDown)
 end;
 
 
@@ -428,28 +434,20 @@ function CpManager.saveXmlSettings(self)
 
 		-- Save Fields Settings
 		key = 'CPSettings.courseplayFields';
-		setXMLBool(cpSettingsXml, key .. '#automaticScan',				courseplay.fields.automaticScan);
 		setXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields',		courseplay.fields.onlyScanOwnedFields);
 		setXMLBool(cpSettingsXml, key .. '#debugScannedFields',			courseplay.fields.debugScannedFields);
 		setXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields',	courseplay.fields.debugCustomLoadedFields);
 		setXMLInt (cpSettingsXml, key .. '#scanStep',					courseplay.fields.scanStep);
 
-		-- Save Wages Settings
-		key = 'CPSettings.courseplayWages';
-		setXMLBool(cpSettingsXml, key .. '#active', 		CpManager.wagesActive);
-		setXMLInt (cpSettingsXml, key .. '#wagePerHour',	CpManager.wagePerHour);
-
-		-- Save Ingame Map Settings
-		key = 'CPSettings.courseplayIngameMap';
-		setXMLBool(cpSettingsXml, key .. '#active', 		CpManager.ingameMapIconActive);
-		setXMLBool(cpSettingsXml, key .. '#showName', 		CpManager.ingameMapIconShowName);
-		setXMLBool(cpSettingsXml, key .. '#showCourse',		CpManager.ingameMapIconShowCourse);
+	
 
 		-- Save 2D Course Settings
 		key = 'CPSettings.course2D';
 		setXMLFloat(cpSettingsXml, key .. '#posX', 		CpManager.course2dPlotPosX);
 		setXMLFloat(cpSettingsXml, key .. '#posY', 		CpManager.course2dPlotPosY);
 		setXMLFloat(cpSettingsXml, key .. '#opacity',	CpManager.course2dPdaMapOpacity);
+
+		courseplay.globalSettings:saveToXML(cpSettingsXml, 'CPSettings')
 
 		saveXMLFile(cpSettingsXml);
 		delete(cpSettingsXml);
@@ -540,13 +538,21 @@ end
 --- Print the variable in the selected vehicle's namespace
 -- You can omit the dot for data members but if you want to call a function, you must start the variable name with a colon
 function CpManager:printVehicleVariable(variableName, maxDepth)
-	local vehiclePrefix = 'g_currentMission.controlledVehicle'
+	self:printVariableInternal( 'g_currentMission.controlledVehicle', variableName, maxDepth)
+end
+
+function CpManager:printDriverVariable(variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', variableName, maxDepth)
+end
+
+function CpManager:printVariableInternal(prefix, variableName, maxDepth)
 	if not StringUtil.startsWith(variableName, ':') and not StringUtil.startsWith(variableName, '.') then
 		-- allow to omit the . at the beginning of the variable name.
-		vehiclePrefix = vehiclePrefix .. '.'
+		prefix = prefix .. '.'
 	end
-	self:printVariable(vehiclePrefix .. variableName, maxDepth)
+	self:printVariable(prefix .. variableName, maxDepth)
 end
+
 
 --- Install a wrapper around a function. The wrapper will print the function name
 -- and the arguments every time the function is called and then call the function
@@ -617,6 +623,7 @@ function CpManager:getVariable(variableName)
 end
 
 function CpManager:loadFile(fileName)
+	fileName = fileName or 'reload.xml'
 	local path = courseplay.path .. fileName
 	if fileExists(path) then
 		g_xmlFile = loadXMLFile('loadFile', path)
@@ -628,11 +635,36 @@ function CpManager:loadFile(fileName)
 		local f = getfenv(0).loadstring('setfenv(1, courseplay); ' .. code)
 		if f then
 			f()
-			return path .. ' loaded.'
+			return 'OK: ' .. path .. ' loaded.'
 		else
-			return path .. ' could not be compiled.'
+			return 'ERROR: ' .. path .. ' could not be compiled.'
 		end
 	end
+end
+
+function CpManager:loadAIDriver()
+	self:loadFile()
+	if g_currentMission.controlledVehicle then
+		-- re-instantiate the AIDriver after loaded
+		courseplay:setAIDriver(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.cp.mode)
+		g_combineUnloadManager:addNewCombines()
+	end
+end
+
+function CpManager:saveVehiclePositions()
+	DevHelper.saveAllVehiclePositions()
+end
+
+function CpManager:restoreVehiclePositions()
+	DevHelper.restoreAllVehiclePositions()
+end
+
+function CpManager:restartSaveGame(saveGameNumber)
+	restartApplication(" -autoStartSavegameId " .. saveGameNumber)
+end
+
+function CpManager:showCombineUnloadManagerStatus()
+	g_combineUnloadManager:printStatus()
 end
 
 function CpManager:setLookaheadDistance(d)
@@ -658,6 +690,15 @@ function CpManager:callVehicleFunction(funcName, ...)
 	end
 	return 'Error when calling vehicle:' .. funcName
 end
+
+function CpManager:togglePathfindingDebug()
+	PathfinderUtil.toggleVisualDebug()
+end
+
+function CpManager:toggleDevhelperDebug()
+	g_devHelper:toggleVisualDebug()
+end
+
 
 function CpManager:setupFieldScanInfo()
 	--print("CpManager:setupFieldScanInfo()")
@@ -790,26 +831,7 @@ function CpManager:severCombineTractorConnection(vehicle, callDelete)
 end;
 BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, CpManager.severCombineTractorConnection);
 
-local nightStart, dayStart = 19 * 3600000, 7.5 * 3600000; -- from 7pm until 7:30am
 function CpManager:minuteChanged()
-	-- WEATHER
-	local env = g_currentMission.environment;
-	self.lightsNeeded = true --Tommi env.needsLights or (env.dayTime >= nightStart or env.dayTime <= dayStart) or env.currentRain ~= nil or env.curRain ~= nil or (env.lastRainScale > 0.1 and env.timeSinceLastRain < 30);
-end;
-
-function CpManager:realTime10SecsChanged()
-	-- WAGES
-	if self.wagesActive and g_server ~= nil then
-		local totalWages = 0;
-		local farmID = 0
-		for vehicleNum, vehicle in pairs(self.activeCoursePlayers) do
-			totalWages = totalWages + self.wagePer10Secs;
-			farmID = vehicle.ownerFarmId
-		end;
-		if totalWages > 0 then
-			g_currentMission:addMoney(-totalWages * self.wageDifficultyMultiplier, farmID, MoneyType.AI, true);
-		end;
-	end;
 end;
 
 function CpManager:showYesNoDialogue(title, text, callbackFn)
@@ -827,37 +849,9 @@ end;
 -- FIELD SCAN Y/N DIALOGUE
 function CpManager:fieldScanDialogueCallback(setActive)
 	--print(string.format("CpManager:fieldScanDialogueCallback(setActive(%s))",tostring(setActive)))
-	courseplay.fields.automaticScan = setActive;
+	courseplay.globalSettings.autoFieldScan:set(setActive)
 	self.showFieldScanYesNoDialogue = false
 end;
-
-
--- ####################################################################################################
--- WAGES
-function CpManager:setupWages()
-	self.wageDifficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier;
-	self.wagesActive = true;
-	self.wagePerHour = 1500;
-	self.wagePer10Secs  = self.wagePerHour / 360;
-	self.showWagesYesNoDialogue = false;
-end;
-
-function CpManager:wagesDialogueCallback(setActive)
-	self.wagesActive = setActive;
-	self.showWagesYesNoDialogue = false
-end;
-
-
--- ####################################################################################################
--- INGAME MAP
-function CpManager:setupIngameMap()
-	self.ingameMapIconActive		 = true;
-	self.ingameMapIconShowName		 = true;
-	self.ingameMapIconShowCourse	 = true;
-	self.ingameMapIconShowText		 = self.ingameMapIconShowName or self.ingameMapIconShowCourse;
-	self.ingameMapIconShowTextLoaded = self.ingameMapIconShowText;
-end;
-
 
 -- ####################################################################################################
 -- GLOBALINFOTEXT
@@ -1094,10 +1088,7 @@ function CpManager:loadXmlSettings()
 		cpSettingsXml = loadXMLFile('cpSettingsXml', self.cpSettingsXmlFilePath);
 	else
 		print('## Courseplay: loading default settings');
-		if not self.oldCPFileExists then
-			self.showFieldScanYesNoDialogue = true;
-			self.showWagesYesNoDialogue = true;
-		end;
+		self.showFieldScanYesNoDialogue = true;
 		return;
 	end;
 
@@ -1157,38 +1148,10 @@ function CpManager:loadXmlSettings()
 
 		-- fields settings
 		key = 'CPSettings.courseplayFields';
-		local fieldsAutomaticScan = getXMLBool(cpSettingsXml, key .. '#automaticScan');
-		if fieldsAutomaticScan ~= nil then
-			courseplay.fields.automaticScan = fieldsAutomaticScan;
-		elseif not self.oldCPFileExists then
-			self.showFieldScanYesNoDialogue = true;
-		end;
 		courseplay.fields.onlyScanOwnedFields	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#onlyScanOwnedFields'),	 courseplay.fields.onlyScanOwnedFields);
 		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
 		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
 		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpSettingsXml, key .. '#scanStep'),				 courseplay.fields.scanStep);
-
-		-- wages
-		key = 'CPSettings.courseplayWages';
-		local wagesActive, wagePerHour = getXMLBool(cpSettingsXml, key .. '#active'), getXMLInt(cpSettingsXml, key .. '#wagePerHour');
-		if wagesActive ~= nil then
-			self.wagesActive = wagesActive;
-		elseif not self.oldCPFileExists then
-			self.showWagesYesNoDialogue = true;
-		end;
-		if wagePerHour ~= nil then
-			self.wagePerHour = wagePerHour;
-		elseif not self.oldCPFileExists then
-			self.showWagesYesNoDialogue = true;
-		end;
-		self.wagePer10Secs = self.wagePerHour / 360;
-
-		-- ingame map
-		key = 'CPSettings.courseplayIngameMap';
-		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#active'),		self.ingameMapIconActive);
-		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showName'),	self.ingameMapIconShowName);
-		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpSettingsXml, key .. '#showCourse'),	self.ingameMapIconShowCourse);
-		self.ingameMapIconShowText = true --self.ingameMapIconShowName or self.ingameMapIconShowCourse;
 
 		-- 2D course
 		key = 'CPSettings.course2D';
@@ -1199,291 +1162,9 @@ function CpManager:loadXmlSettings()
 		self.course2dPlotField.x = self.course2dPlotPosX;
 		self.course2dPlotField.y = self.course2dPlotPosY;
 
+		courseplay.globalSettings:loadFromXML(cpSettingsXml, 'CPSettings')
 		--------------------------------------------------
 		delete(cpSettingsXml);
 	end;
 end;
 
-function CpManager:importOldCPFiles(save, courses_by_id, folders_by_id)
-	local cpFile = loadXMLFile("cpFile", self.cpXmlFilePath);
-
-	if not fileExists(self.cpXmlFilePath) and false then
-		-------------------------------------------------------------------------
-		-- Import Settings from old file
-		-------------------------------------------------------------------------
-		print('## Courseplay: Importing old settings from "courseplay.xml"');
-
-		-- hud position
-		local key = 'XML.courseplayHud';
-		local posX, posY = getXMLFloat(cpFile, key .. '#posX'), getXMLFloat(cpFile, key .. '#posY');
-		if posX then
-			courseplay.hud.basePosX = courseplay.hud:getFullPx(posX, 'x');
-		end;
-		if posY then
-			courseplay.hud.basePosY = courseplay.hud:getFullPx(posY, 'y');
-		end;
-
-		-- fields settings
-		key = 'XML.courseplayFields';
-		local fieldsAutomaticScan = getXMLBool(cpFile, key .. '#automaticScan');
-		if fieldsAutomaticScan ~= nil then
-			courseplay.fields.automaticScan = fieldsAutomaticScan;
-		end;
-		courseplay.fields.onlyScanOwnedFields	  = Utils.getNoNil(getXMLBool(cpFile, key .. '#onlyScanOwnedFields'),	 courseplay.fields.onlyScanOwnedFields);
-		courseplay.fields.debugScannedFields 	  = Utils.getNoNil(getXMLBool(cpFile, key .. '#debugScannedFields'),		 courseplay.fields.debugScannedFields);
-		courseplay.fields.debugCustomLoadedFields = Utils.getNoNil(getXMLBool(cpFile, key .. '#debugCustomLoadedFields'), courseplay.fields.debugCustomLoadedFields);
-		courseplay.fields.scanStep				  = Utils.getNoNil( getXMLInt(cpFile, key .. '#scanStep'),				 courseplay.fields.scanStep);
-
-		-- wages
-		key = 'XML.courseplayWages';
-		local wagesActive, wagePerHour = getXMLBool(cpFile, key .. '#active'), getXMLInt(cpFile, key .. '#wagePerHour');
-		if wagesActive ~= nil then
-			self.wagesActive = wagesActive;
-		end;
-		if wagePerHour ~= nil then
-			self.wagePerHour = wagePerHour;
-		end;
-		self.wagePer10Secs = self.wagePerHour / 360;
-
-		-- ingame map
-		key = 'XML.courseplayIngameMap';
-		self.ingameMapIconActive	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#active'),		self.ingameMapIconActive);
-		self.ingameMapIconShowName	 = Utils.getNoNil(getXMLBool(cpFile, key .. '#showName'),	self.ingameMapIconShowName);
-		self.ingameMapIconShowCourse = Utils.getNoNil(getXMLBool(cpFile, key .. '#showCourse'),	self.ingameMapIconShowCourse);
-		self.ingameMapIconShowText =  true --self.ingameMapIconShowName or self.ingameMapIconShowCourse;
-
-		-- 2D course
-		key = 'XML.course2D';
-		self.course2dPlotPosX		= Utils.getNoNil(getXMLFloat(cpFile, key .. '#posX'),	 self.course2dPlotPosX);
-		self.course2dPlotPosY		= Utils.getNoNil(getXMLFloat(cpFile, key .. '#posY'),	 self.course2dPlotPosY);
-		self.course2dPdaMapOpacity	= Utils.getNoNil(getXMLFloat(cpFile, key .. '#opacity'), self.course2dPdaMapOpacity);
-
-		self.course2dPlotField.x = self.course2dPlotPosX;
-		self.course2dPlotField.y = self.course2dPlotPosY;
-
-		-- Save Imported settings.
-		self:saveXmlSettings();
-	end;
-
-	-------------------------------------------------------------------------
-	-- Import Folders and Courses from old file
-	-------------------------------------------------------------------------
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- DO CHECKS AND SETUP BEFORE IMPORTING
-	local startFromFolderID, startFromCourseID = Utils.getNoNil(courseplay.courses:getMaxFolderID(), 0) + 1, Utils.getNoNil(courseplay.courses:getMaxCourseID(), 0) + 1;
-	if hasXMLProperty(cpFile, "XML.folders.folder(0)") or hasXMLProperty(cpFile, "XML.courses.course(0)") then
-		local FolderName = string.format('Import from savegame%d',g_careerScreen.selectedIndex);
-		local folderNameClean = courseplay:normalizeUTF8(FolderName);
-		local folder = { id = startFromFolderID, uid = 'f' .. startFromFolderID, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = 0 }
-		folders_by_id[startFromFolderID] = folder;
-
-		save = true;
-	end;
-
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- LOAD FOLDERS
-	if hasXMLProperty(cpFile, "XML.folders.folder(0)") then
-		-- g_careerScreen.selectedIndex
-		print('## Courseplay: Importing old folders from "courseplay.xml"');
-		local j = 0;
-		local currentFolder, FolderName, id, parent, folder;
-		local finish_all = false;
-		local folders_without_id = {};
-		repeat
-			-- current folder
-			currentFolder = string.format("XML.folders.folder(%d)", j)
-			if not hasXMLProperty(cpFile, currentFolder) then
-				finish_all = true;
-				break;
-			end;
-
-			-- folder id
-			id = getXMLInt(cpFile, currentFolder .. "#id");
-			if id then
-				id = id + startFromFolderID;
-				-- folder name
-				FolderName = getXMLString(cpFile, currentFolder .. "#name");
-				if FolderName == nil then
-					FolderName = string.format('NO_NAME%d',j);
-				end
-				local folderNameClean = courseplay:normalizeUTF8(FolderName);
-
-				-- folder parent
-				parent = getXMLInt(cpFile, currentFolder .. "#parent");
-				if parent == nil then
-					parent = 0;
-				end;
-				parent = parent + startFromFolderID;
-
-				-- "save" current folder
-				folder = { id = id, uid = 'f' .. id, type = 'folder', name = FolderName, nameClean = folderNameClean, parent = parent };
-				if id ~= 0 then
-					folders_by_id[id] = folder;
-				else
-					table.insert(folders_without_id, folder);
-				end;
-				j = j + 1;
-			end;
-		until finish_all == true
-
-		if #folders_without_id > 0 then
-			-- give a new ID and save
-			local maxID = self:getMaxFolderID()
-			for i = #folders_without_id, 1, -1 do
-				maxID = maxID + 1
-				folders_without_id[i].id = maxID
-				folders_without_id[i].uid = 'f' .. maxID
-				folders_by_id[maxID] = table.remove(folders_without_id)
-			end
-			save = true;
-		end
-	end;
-
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- LOAD COURSES
-	if hasXMLProperty(cpFile, "XML.courses.course(0)") then
-		print('## Courseplay: Importing old courses from "courseplay.xml"');
-
-		local courses_without_id = {}
-
-		local waypoints;
-		local i = 0;
-		while true do
-			-- current course
-			local courseKey = ('XML.courses.course(%d)'):format(i);
-			if not hasXMLProperty(cpFile, courseKey) then
-				break;
-			end;
-
-			-- course ID
-			local id = getXMLInt(cpFile, courseKey .. '#id');
-			if id then
-				id = id + startFromCourseID;
-				-- course name
-				local courseName = getXMLString(cpFile, courseKey .. '#name');
-				if courseName == nil then
-					courseName = ('NO_NAME%d'):format(i);
-				end;
-				local courseNameClean = courseplay:normalizeUTF8(courseName);
-
-				-- course parent
-				local parent = getXMLInt(cpFile, courseKey .. '#parent') or 0;
-				parent = parent + startFromFolderID;
-
-				-- course workWidth
-				local workWidth = getXMLFloat(cpFile, courseKey .. "#workWidth");
-
-				-- course numHeadlandLanes
-				local numHeadlandLanes = getXMLInt(cpFile, courseKey .. "#numHeadlandLanes");
-
-				-- course headlandDirectionCW
-				local headlandDirectionCW = getXMLBool(cpFile, courseKey .. "#headlandDirectionCW");
-
-				--course waypoints
-				waypoints = {};
-
-				local wpNum = 1;
-				while true do
-					local key = courseKey .. '.waypoint' .. wpNum;
-
-					if not hasXMLProperty(cpFile, key .. '#pos') then
-						break;
-					end;
-					local x, z = StringUtil.getVectorFromString(getXMLString(cpFile, key .. '#pos'));
-					if x == nil or z == nil then
-						break;
-					end;
-
-					local angle 	  =  getXMLFloat(cpFile, key .. '#angle') or 0;
-					local speed 	  = getXMLString(cpFile, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
-					speed = tonumber(speed);
-					if math.ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
-						speed = math.ceil(speed * 3600);
-					end;
-
-					-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
-					local wait 		  =    getXMLInt(cpFile, key .. '#wait');
-					local rev 		  =    getXMLInt(cpFile, key .. '#rev');
-					local crossing 	  =    getXMLInt(cpFile, key .. '#crossing');
-
-					local generated   =   getXMLBool(cpFile, key .. '#generated');
-					local lane		  =    getXMLInt(cpFile, key .. '#lane');
-					local turnStart	  =    getXMLInt(cpFile, key .. '#turnstart');
-					local turnEnd 	  =    getXMLInt(cpFile, key .. '#turnend');
-					local ridgeMarker =    getXMLInt(cpFile, key .. '#ridgemarker') or 0;
-
-					crossing = crossing == 1 or wpNum == 1;
-					wait = wait == 1;
-					rev = rev == 1;
-
-					turnStart = turnStart == 1;
-					turnEnd = turnEnd == 1;
-
-					waypoints[wpNum] = {
-						cx = x,
-						cz = z,
-						angle = angle,
-						speed = speed,
-
-						rev = rev,
-						wait = wait,
-						crossing = crossing,
-						generated = generated,
-						turnStart = turnStart,
-						turnEnd = turnEnd,
-						ridgeMarker = ridgeMarker
-					};
-
-					wpNum = wpNum + 1;
-				end; -- END while true (waypoints)
-
-				local course = {
-					id = id,
-					uid = 'c' .. id ,
-					type = 'course',
-					name = courseName,
-					nameClean = courseNameClean,
-					waypoints = waypoints,
-					parent = parent,
-					workWidth = workWidth,
-					numHeadlandLanes = numHeadlandLanes,
-					headlandDirectionCW = headlandDirectionCW
-				};
-				if id ~= 0 then
-					courses_by_id[id] = course;
-				else
-					table.insert(courses_without_id, course);
-				end;
-
-				waypoints = nil;
-			end;
-			i = i + 1;
-		end; -- END while true (courses)
-
-		if #courses_without_id > 0 then
-			-- give a new ID and save
-			local maxID = self:getMaxCourseID()
-			for i = 1, #courses_without_id do
-				maxID = maxID + 1
-				courses_without_id[i].id = maxID
-				courses_without_id[i].uid = 'c' .. maxID
-				courses_by_id[maxID] = courses_without_id[i]
-			end
-			save = true;
-		end;
-	end;
-
-	delete(cpFile);
-
-	-------------------------------------------------------------------------
-	-- Delete content of old file
-	-------------------------------------------------------------------------
-	local cpOldFile = createXMLFile("cpOldFile", self.cpXmlFilePath, 'XML');
-	saveXMLFile(cpOldFile);
-	delete(cpOldFile);
-
-
-	return save, courses_by_id, folders_by_id;
-end;

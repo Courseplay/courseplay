@@ -131,18 +131,26 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	local hasSeeds, hasNoFertilizer = false, false
 
 	for fillType, info in pairs(fillLevelInfo) do
-		if info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
+		if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
 			allOk = false
 			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
 		else
 			if fillType == FillType.SEEDS then hasSeeds = true end
 		end
 	end
-	if not allOk and not self.vehicle.cp.fertilizerEnabled and hasNoFertilizer and hasSeeds then
+	-- special handling for sowing machines with fertilizer
+	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then
 		self:debugSparse('Has no fertilizer but has seeds so keep working.')
 		allOk = true
 	end
 	return allOk
+end
+
+--- Do we need to check this fill unit at all?
+--- AIR and DEF are currently don't seem to be used in the game and some mods come with empty tank. Most stock
+--- vehicles don't seem to consume any air or adblue.
+function FillableFieldworkAIDriver:isValidFillType(fillType)
+	return fillType ~= FillType.DEF	and fillType ~= FillType.AIR
 end
 
 --- Does the helper buy this fill unit (according to the game settings)? If yes, we don't have to stop or refill when empty.
@@ -226,4 +234,13 @@ end
 
 function FillableFieldworkAIDriver:getFillLevelInfoText()
 	return 'NEEDS_REFILLING'
+end
+
+function FillableFieldworkAIDriver:setLightsMask(vehicle)
+	local x,y,z = getWorldTranslation(vehicle.rootNode);
+	if not courseplay:isField(x, z) and self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
+		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_STREET)
+	else
+		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+	end
 end

@@ -186,10 +186,10 @@ function courseplay:checkTraffic(vehicle, displayWarnings, allowedToDrive)
 	if collisionVehicle ~= nil and not (vehicle.cp.mode == 9 and (collisionVehicle.allowFillFromAir or (collisionVehicle.cp and collisionVehicle.cp.mode9TrafficIgnoreVehicle))) then
 		local vx, vy, vz = getWorldTranslation(vehicle.cp.collidingVehicleId);
 		local tx, _, tz = worldToLocal(vehicle.cp.trafficCollisionTriggers[1], vx, vy, vz);
-		local x, y, z = getWorldTranslation(vehicle.cp.DirectionNode);
+		local x, y, z = getWorldTranslation(vehicle.cp.directionNode);
 		local halfLength =  (collisionVehicle.sizeLength or 5) * 0.5;
 		local x1,z1 = AIVehicleUtil.getDriveDirection(vehicle.cp.collidingVehicleId, x, y, z);
-		if z1 > -0.9 then -- tractor in front of vehicle face2face or beside < 4 o'clock
+		if z1 > -0.9 and abs(z1) < 15 and abs(x1) < 15 then -- tractor in front of vehicle face2face or beside < 4 o'clock
 			ahead = true
 		end;
 		local _,transY,_ = getTranslation(vehicle.cp.collidingVehicleId);
@@ -249,7 +249,7 @@ function courseplay:regulateTrafficSpeed(vehicle,refSpeed,allowedToDrive)
 			courseplay:debug(nameNum(vehicle)..": regulateTrafficSpeed:	 "..tostring(name),3)
 		end
 		local x, y, z = getWorldTranslation(vehicle.cp.collidingVehicleId)
-		local x1, y1, z1 = worldToLocal(vehicle.cp.DirectionNode, x, y, z)
+		local x1, y1, z1 = worldToLocal(vehicle.cp.directionNode, x, y, z)
 		if z1 < 0 or abs(x1) > 5 and not vehicle.cp.collidingObjects.all[vehicle.cp.collidingVehicleId] then -- vehicle behind tractor
 			vehicleBehind = true
 		end
@@ -347,7 +347,7 @@ function courseplay:setTrafficCollisionOnField(vehicle, lx, lz, disableLongCheck
 	local colDirZ = lz;
 
 	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then
-		courseplay:setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX * steeringfactor, colDirZ * steeringfactor);
+		courseplay:setCollisionDirection(vehicle.cp.directionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX * steeringfactor, colDirZ * steeringfactor);
 		local recordNumber = vehicle.cp.waypointIndex
 		for i=2,vehicle.cp.numTrafficCollisionTriggers do	-- continue with i=2 for the rest of the colli boxes
 			if disableLongCheck or (distanceToCombine) < ((i+2) * 5) then
@@ -366,7 +366,7 @@ function courseplay:setTrafficCollision(vehicle, lx, lz, disableLongCheck)
 	--courseplay:debug(string.format("colDirX: %f colDirZ %f ",colDirX,colDirZ ), 3)
 
 	if vehicle.cp.trafficCollisionTriggers[1] ~= nil then
-		courseplay:setCollisionDirection(vehicle.cp.DirectionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
+		courseplay:setCollisionDirection(vehicle.cp.directionNode, vehicle.cp.trafficCollisionTriggers[1], colDirX, colDirZ);
 		local recordNumber = vehicle.cp.waypointIndex
 		for i=2,vehicle.cp.numTrafficCollisionTriggers do
 			-- if disableLongCheck or recordNumber + i >= vehicle.cp.numWaypoints or recordNumber < 2 then

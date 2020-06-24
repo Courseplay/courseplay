@@ -11,7 +11,7 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 
 		wp.generated = true
 		wp.ridgeMarker = point.ridgeMarker
-		wp.angle = courseGenerator.toCpAngle( point.nextEdge.angle )
+		wp.angle = courseGenerator.toCpAngleDeg( point.nextEdge.angle )
 		wp.cx = point.x
 		wp.cz = -point.y
 		wp.wait = nil
@@ -50,7 +50,42 @@ local function writeCourseToVehicleWaypoints( vehicle, course )
 	end
 end
 
-function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
+function courseGenerator.generate( vehicle )
+
+	local fieldCourseName = tostring(vehicle.cp.currentCourseName);
+	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
+		fieldCourseName = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].name;
+	end;
+	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), 7);
+
+	local poly = {}
+	local islandNodes = {}
+	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
+		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points, true);
+		poly.numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
+		if vehicle.cp.oldCourseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
+			if not courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes then
+				courseGenerator.findIslands( courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum])
+			end
+			islandNodes = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes
+		end
+	else
+		poly.points = courseplay.utils.table.copy(vehicle.Waypoints, true);
+		poly.numPoints = #(poly.points);
+	end;
+
+	courseplay:clearCurrentLoadedCourse(vehicle);
+
+	local workWidth = vehicle.cp.workWidth;
+	if vehicle.cp.multiTools > 1 then
+		workWidth = workWidth * vehicle.cp.multiTools
+	end
+
+	if vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_VEHICLE_POSITION then
+		vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
+		vehicle.cp.generationPosition.hasSavedPosition = true
+		vehicle:setCpVar('generationPosition.fieldNum',vehicle.cp.fieldEdge.selectedField.fieldNum,courseplay.isClient)
+	end
 
 	local field = {}
 	local headlandSettings = {}
@@ -71,11 +106,11 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		x, _, z = getWorldTranslation( vehicle.rootNode )
 		headlandSettings.startLocation = courseGenerator.pointToXy({ x = x, z = z })
 		courseplay.debugVehicle(7, vehicle, "Course starting location is current vehicle position at %.1f/%.1f", x, z )
-	elseif vehicle.cp.courseGeneratorSettings.startingLocationWorldPos then
-		headlandSettings.startLocation = courseGenerator.pointToXy(vehicle.cp.courseGeneratorSettings.startingLocationWorldPos)
+	elseif vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos then
+		headlandSettings.startLocation = courseGenerator.pointToXy(vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos)
 		courseplay.debugVehicle(7, vehicle, "Course starting location position selected on map at %.1f/%.1f",
-			vehicle.cp.courseGeneratorSettings.startingLocationWorldPos.x,
-			vehicle.cp.courseGeneratorSettings.startingLocationWorldPos.z)
+			vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos.x,
+			vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos.z)
 	end
 
 	local extendTracks = 0
@@ -86,8 +121,9 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		useBestAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC,
 		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
 		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0,
-		nRowsToSkip = vehicle.cp.courseGeneratorSettings.nRowsToSkip,
-		mode = vehicle.cp.courseGeneratorSettings.centerMode
+		nRowsToSkip = vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip,
+		mode = vehicle.cp.courseGeneratorSettings.centerMode:get(),
+		nRowsPerLand = vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:get()
 	}
 
 	local minSmoothAngle, maxSmoothAngle
@@ -112,7 +148,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 	end
 	-- use some overlap between headland passes to get better results
 	-- (=less fruit missed) at smooth headland corners
-	headlandSettings.overlapPercent = 7
+	headlandSettings.overlapPercent = vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:get()
 	headlandSettings.nPasses = vehicle.cp.headland.getNumLanes()
 	-- ignore headland order setting when there's no headland
 	headlandSettings.headlandFirst = vehicle.cp.headland.orderBefore or vehicle.cp.headland.getNumLanes() == 0
@@ -123,7 +159,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		headlandSettings.isClockwise = not vehicle.cp.headland.userDirClockwise
 	end
 	headlandSettings.mode = vehicle.cp.headland.mode
-	-- This is to adjust the turnradius to account for multiTools haveing more tracks than you would have with just one tool causing the innermost tool on the headland 
+	-- This is to adjust the turn radius to account for multiTools having more tracks than you would have with just one tool causing the innermost tool on the headland
 	-- turn tighter than possible
 	-- Using vehicle.cp.turnDiameter has this is updated when the user changes the vaule
 	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter/2
@@ -137,7 +173,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, turnRadiusAdjustedForMultiTool,
 		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
-		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
+		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode, centerSettings
 	)
 	]]--
 	local status = true
@@ -147,7 +183,7 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, turnRadiusAdjustedForMultiTool,
 		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
-		vehicle.cp.courseGeneratorSettings.islandBypassMode, centerSettings
+		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode, centerSettings
 	)
 
 	-- return on exception (but continue on not ok as that is just a warning)
@@ -194,25 +230,11 @@ function courseGenerator.generate( vehicle, name, poly, workWidth, islandNodes )
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
-	return status, ok
-end
 
-local modDirectory = g_currentModDirectory
-
--- It is ugly to have a courseplay member function in this file but button.lua seems to be able to
--- use callbacks only if they are in the courseplay class.
-function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
-	--- Prevent Dialog from locking up mouse and keyboard when closing it.
-	courseplay:lockContext(false);
-
-	if g_CourseGeneratorScreen == nil then
-		g_CourseGeneratorScreen = CourseGeneratorScreen:new();
-		g_gui:loadProfiles( modDirectory .. "course-generator/guiProfiles.xml" )
-		g_gui:loadGui( modDirectory .. "course-generator/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_CourseGeneratorScreen)
+	if CpManager.isMP then
+		CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints);
 	end
-	g_CourseGeneratorScreen:setVehicle( vehicle )
-	g_gui:showGui( 'CourseGeneratorScreen' )
-	-- force reload screen so changes in XML do not require the entire game to be restarted, just reselect the screen
-	g_CourseGeneratorScreen = nil
+	
+	return status, ok
 end
 

@@ -74,7 +74,6 @@ courseGenerator.HEADLAND_MODE_MAX = 4
 courseGenerator.headlandModeTexts = { 'none', 'normal', 'narrow', 'two side'}
 
 courseGenerator.pathFinder = Pathfinder()
-courseGenerator.headlandPathfinder = HeadlandPathfinder()
 
 function courseGenerator.isOrdinalDirection( startingLocation )
 	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and
@@ -88,6 +87,16 @@ function courseGenerator.debug( ... )
 		courseplay:debug( string.format( ... ), 7 )
 	else
 		print( string.format( ... ))
+		io.stdout:flush()
+	end
+end
+
+function courseGenerator.info( ... )
+	if courseGenerator.isRunningInGame() then
+		courseplay.info(...)
+	else
+		print( string.format( ... ))
+		io.stdout:flush()
 	end
 end
 
@@ -96,7 +105,7 @@ end
 -- for example, io.flush is not available from within the game.
 --
 function courseGenerator.isRunningInGame()
-	return courseplay ~= nil;
+	return g_currentMission ~= nil and not g_currentMission.mock;
 end
 
 function courseGenerator.getCurrentTime()
@@ -125,6 +134,26 @@ function courseGenerator.pointsToXz( points )
 	return result
 end
 
+--- Convert an array of points from x/y to x/z in place (also keeping other attributes)
+function courseGenerator.pointsToXzInPlace(points)
+	for _, point in ipairs(points) do
+		point.z = -point.y
+		-- wipe y as it is a different coordinate in this system
+		point.y = nil
+	end
+	return points
+end
+
+--- Convert an array of points from x/z to x/y in place (also keeping other attributes)
+function courseGenerator.pointsToXyInPlace(points)
+	for _, point in ipairs(points) do
+		point.y = -point.z
+		point.z = nil
+	end
+	return points
+end
+
+
 function courseGenerator.pointsToCxCz( points )
 	local result = {}
 	for _, point in ipairs( points) do
@@ -144,13 +173,40 @@ end
 --- Convert our angle representation (measured from the x axis up in radians)
 -- into CP's, where 0 is to the south, to our negative y axis.
 --
-function courseGenerator.toCpAngle( angle )
+function courseGenerator.toCpAngleDeg( angle )
 	local a = math.deg( angle ) + 90
 	if a > 180 then
 		a = a - 360
 	end
 	return a
 end
+
+function courseGenerator.toCpAngle( angle )
+	local a = angle + math.pi / 2
+	if a > math.pi then
+		a = a - 2 * math.pi
+	end
+	return a
+end
+
+
+--- Convert the Courseplay angle to the Cartesian representation
+function courseGenerator.fromCpAngleDeg(angleDeg)
+	local a = angleDeg - 90
+	if a < 0 then
+		a = 360 + a
+	end
+	return math.rad(a)
+end
+
+function courseGenerator.fromCpAngle(angle)
+	local a = angle - math.pi / 2
+	if a < 0 then
+		a = 2 * math.pi + a
+	end
+	return a
+end
+
 
 
 --- Pathfinder wrapper for CP 
@@ -206,3 +262,10 @@ function courseGenerator.getCompassAngleDeg( gameAngleDeg )
 	return ( 360 + gameAngleDeg - 90 ) % 360
 end
 
+local function xzToXy(point)
+	point.y, point.z = -point.z, point.y or 0
+end
+
+local function xyToXz(point)
+	point.y, point.z = point.z or 0, -point.y
+end

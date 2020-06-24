@@ -36,7 +36,7 @@ function BaleWrapperAIDriver:init(vehicle)
 	end
 end
 
-function BaleWrapperAIDriver:driveFieldwork()
+function BaleWrapperAIDriver:driveFieldwork(dt)
 	-- Don't drop the bale in the turn or on temporary alignment or connecting tracks
 	if BalerAIDriver.isHandlingAllowed(self) then
 		-- stop while wrapping only if we deon't have a baler. If we do we should continue driving and working
@@ -65,5 +65,5 @@ function BaleWrapperAIDriver:driveFieldwork()
 			end
 		end
 	end
-	BalerAIDriver.driveFieldwork(self)
+	return BalerAIDriver.driveFieldwork(self, dt)
 end

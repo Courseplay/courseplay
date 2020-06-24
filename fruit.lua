@@ -3,19 +3,20 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	widthX = widthX or 0.5;
 	widthZ = widthZ or 0.5;
 	if not courseplay:isField(x, z, widthX, widthZ) then
-		return false;
+		return false, nil, 0, 0;
 	end;
 
 	local density = 0;
+	local totalArea = 0
 	local maxDensity = 0;
 	local maxFruitType = 0
 	if fruitType ~= nil and fruitType ~= FruitType.UNKNOWN then
 		local minHarvestable, maxHarvestable = 1, fruitType.numGrowthStates
 	
-		density = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
+		density, totalArea = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
-			return true,fruitType;
+			return true, fruitType, density, totalArea
 		end;
 	else
 		for i = 1, #g_fruitTypeManager.fruitTypes do
@@ -33,12 +34,12 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 		if maxDensity > 0 then
 			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
 			--print("areaHasFruit: return "..tostring(maxFruitType))
-			return true, maxFruitType;
+			return true, maxFruitType, maxDensity, totalArea
 		end;
 	end;
 
 	--courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), 3)
-	return false;
+	return false, nil, 0, 0;
 end;
 
 function courseplay:initailzeFieldMod()
@@ -52,16 +53,21 @@ function courseplay:isField(x, z, widthX, widthZ)
     --print(string.format("running courseplay:isField(%s, %s, %s, %s)",tostring(x),tostring(z),tostring(widthX),tostring(widthZ)))
 	widthX = widthX or 0.5
     widthZ = widthZ or 0.5
-    local startWorldX, startWorldZ   = x, z
-    local widthWorldX, widthWorldZ   = x - widthX, z - widthZ
-    local heightWorldX, heightWorldZ = x + widthX, z + widthZ
+	local startWorldX, startWorldZ   = x, z
+	local widthWorldX, widthWorldZ   = x - widthX, z - widthZ
+	local heightWorldX, heightWorldZ = x + widthX, z + widthZ
+	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, startWorldX, 1, startWorldZ)
+
+	--cpDebug:drawLine(startWorldX,y+1,startWorldZ, 0, 100, 0, widthWorldX,y+1,widthWorldZ)
+	--cpDebug:drawLine(widthWorldX,y+1,widthWorldZ, 0, 100, 0, heightWorldX,y+1,heightWorldZ)
+	--cpDebug:drawLine(heightWorldX,y+1,heightWorldZ, 0, 100, 0, startWorldX,y+1,startWorldZ)
 
     self.fieldMod.modifier:setParallelogramWorldCoords(startWorldX, startWorldZ, widthWorldX, widthWorldZ, heightWorldX, heightWorldZ, "ppp")
     self.fieldMod.filter:setValueCompareParams("greater", 0)
 
     local _, area, totalArea = self.fieldMod.modifier:executeGet( self.fieldMod.filter)
 	local isField = area > 0
-	return  isField
+	return isField, area, totalArea
 end
 
 
@@ -163,8 +169,8 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 	end;
 
 	-- COMBINE DIRECTION
-	local x, y, z = localToWorld(tractor.cp.DirectionNode, 0, 0, distance);
-	local node = combine.cp.DirectionNode or combine.rootNode;
+	local x, y, z = localToWorld(tractor.cp.directionNode, 0, 0, distance);
+	local node = combine.cp.directionNode or combine.rootNode;
 	local dx,_,dz = localDirectionToWorld(node, 0, 0, 2);
 	local length = MathUtil.vector2Length(dx,dz);
 	local dirX = dx/length;

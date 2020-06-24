@@ -1,8 +1,8 @@
 local abs, min, max, floor, ceil, square, pi, rad, deg = math.abs, math.min, math.max, math.floor, math.ceil, math.sqrt, math.pi, math.rad, math.deg;
-local _; --- The _ is an discart character for values not needed. Setting it to local, prevent's it from being an global variable.
+local _; --- The _ is an discard character for values not needed. Setting it to local, prevent's it from being an global variable.
 
 --- SET VALUES
-local wpDistance		= 1.5;  -- Waypoint Distance in Strait lines
+local wpDistance		= 1.5;  -- Waypoint Distance in Straight lines
 local wpCircleDistance	= 1; 	-- Waypoint Distance in circles
 -- if the direction difference between turnStart and turnEnd is bigger than this then
 -- we consider that as a turn when switching to the next up/down lane and assume that
@@ -11,19 +11,9 @@ local laneTurnAngleThreshold = 150
 
 ---@param turnContext TurnContext
 function courseplay:turn(vehicle, dt, turnContext)
-	---- TURN STAGES:
-	-- 0:	Raise implements
-	-- 1:	Create Turn maneuver (Creating waypoints to follow)
-	-- 2:	Drive Turn maneuver
-	-- abort turn if loaded and heading back to the silo except when on an alignment course
-	-- (which is a turn manever) to the first course waypoint
-	if vehicle.cp.isLoaded and not courseplay:onAlignmentCourse( vehicle ) then
-		vehicle.cp.isTurning = nil;
-		courseplay:clearTurnTargets(vehicle);
-		return;
-	end
 
-	local realDirectionNode					= vehicle.isReverseDriving and vehicle.cp.reverseDrivingDirectionNode or vehicle.cp.DirectionNode;
+	-- TODO: move this to TurnContext?
+	local realDirectionNode					= AIDriverUtil.getDirectionNode(vehicle)
 	local allowedToDrive 					= true;
 	local moveForwards 						= true;
 	local refSpeed 							= vehicle.cp.speeds.turn;
@@ -31,10 +21,9 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local lx, lz 							= 0, 1;
 	local dtpX, dtpZ						= 0, 1;
 	local turnOutTimer 						= 1500;
-	local turnTimer 						= 1500;
 	local wpChangeDistance 					= 3;
 	local reverseWPChangeDistance			= 5;
-	local reverseWPChangeDistanceWithTool	= vehicle.isReverseDriving and 3 or 3;
+	local reverseWPChangeDistanceWithTool	= 3;
 	local isHarvester						= Utils.getNoNil(courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle), false);
 	local allowedAngle						= vehicle.cp.changeDirAngle or isHarvester and 15 or 3; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
 	if vehicle.cp.noStopOnEdge then
@@ -47,22 +36,13 @@ function courseplay:turn(vehicle, dt, turnContext)
 		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
 	end;
 
-	-- This is to correct course work width when loading from a save course when using multiTools
-	if vehicle.cp.multiTools and vehicle.cp.multiTools > 1 and vehicle.cp.courseWorkWidth ~= vehicle.cp.workWidth*vehicle.cp.multiTools then
-		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth*vehicle.cp.multiTools
-	end;
-
 	-- find out the headland height to figure out if we have enough room on the headland to make turns
 	if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
 		-- First headland is only half the work width
-		vehicle.cp.headlandHeight = vehicle.cp.courseWorkWidth / 2;
-		-- Add extra workwidth for each extra headland
-		if vehicle.cp.courseNumHeadlandLanes > 1 then
-			vehicle.cp.headlandHeight = vehicle.cp.headlandHeight + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth);
-		end;
+		vehicle.cp.headlandHeight = vehicle.cp.courseWorkWidth / 2 + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth)
 	else
-		vehicle.cp.headlandHeight = 0;
-	end;
+		vehicle.cp.headlandHeight = 0
+	end
 
 	--- Get front and back markers
 	local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
@@ -93,7 +73,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 						end;
 					else
 						local color = { r = 0, g = 1, b = 1}; -- Light Blue Line
-						if nextTurnTarget.changeWhenPosible then
+						if nextTurnTarget.changeDirectionWhenAligned then
 							color["r"], color["g"], color["b"] = 1, 0.706, 0; -- Orange Line
 						end
 						cpDebug:drawLine(turnTarget.posX, posY + 3, turnTarget.posZ, color["r"], color["g"], color["b"], nextTurnTarget.posX, nextPosY + 3, nextTurnTarget.posZ);  -- Light Blue Line
@@ -129,647 +109,259 @@ function courseplay:turn(vehicle, dt, turnContext)
 		wpChangeDistance = reverseWPChangeDistance;
 	end;
 
-	----------------------------------------------------------
-	-- TURN STAGES 1 - 3
-	----------------------------------------------------------
-	if vehicle.cp.turnStage > 0 then
 
-		----------------------------------------------------------
-		-- TURN STAGES 1 - Create Turn maneuver (Creating waypoints to follow)
-		----------------------------------------------------------
-		if vehicle.cp.turnStage == 1 then
-			--- Cleanup in case we already have old info
-			courseplay:clearTurnTargets(vehicle); -- Make sure we have cleaned it from any previus usage.
 
-			--- Setting default turnInfo values
-			local turnInfo = {};
-			turnInfo.directionNode					= realDirectionNode
-			turnInfo.frontMarker					= frontMarker;
-			turnInfo.backMarker						= backMarker;
-			turnInfo.halfVehicleWidth 				= 2.5;
-			turnInfo.directionNodeToTurnNodeLength  = directionNodeToTurnNodeLength + 0.5; -- 0.5 is to make the start turn point just a tiny in front of the tractor
-			turnInfo.wpChangeDistance				= wpChangeDistance;
-			turnInfo.reverseWPChangeDistance 		= reverseWPChangeDistance;
-			turnInfo.direction 						= -1;
-			turnInfo.haveHeadlands 					= courseplay:haveHeadlands(vehicle);
-			-- Headland height in the waypoint overrides the generic headland height calculation. This is for the
-			-- short edge headlands where we make 180 turns on te headland course. The generic calculation would use
-			-- the number of headlands and think there is room on the headland to make the turn.
-			-- Therefore, the course generator will add a headlandHeightForTurn = 0 for these turn waypoints to make
-			-- sure on field turns are calculated correctly.
-			turnInfo.headlandHeight 				= turnContext.turnStartWp.headlandHeightForTurn and
+	----------------------------------------------------------
+	-- TURN STAGES 1 - Create Turn maneuver (Creating waypoints to follow)
+	----------------------------------------------------------
+	if vehicle.cp.turnStage == 1 then
+		--- Cleanup in case we already have old info
+		courseplay:clearTurnTargets(vehicle); -- Make sure we have cleaned it from any previus usage.
+
+		--- Setting default turnInfo values
+		local turnInfo = {};
+		turnInfo.directionNode					= realDirectionNode
+		turnInfo.frontMarker					= frontMarker;
+		turnInfo.backMarker						= backMarker;
+		turnInfo.halfVehicleWidth 				= 2.5;
+		turnInfo.directionNodeToTurnNodeLength  = directionNodeToTurnNodeLength + 0.5; -- 0.5 is to make the start turn point just a tiny in front of the tractor
+		-- when PPC is driving we don't have to care about wp change distances, PPC takes care of that. Still use
+		-- a small value to make sure none of the turn generator functions end up with overlapping waypoints
+		turnInfo.wpChangeDistance				= 0.5
+		turnInfo.reverseWPChangeDistance 		= 0.5
+		turnInfo.direction 						= -1;
+		turnInfo.haveHeadlands 					= courseplay:haveHeadlands(vehicle);
+		-- Headland height in the waypoint overrides the generic headland height calculation. This is for the
+		-- short edge headlands where we make 180 turns on te headland course. The generic calculation would use
+		-- the number of headlands and think there is room on the headland to make the turn.
+		-- Therefore, the course generator will add a headlandHeightForTurn = 0 for these turn waypoints to make
+		-- sure on field turns are calculated correctly.
+		turnInfo.headlandHeight 				= turnContext.turnStartWp.headlandHeightForTurn and
 				turnContext.turnStartWp.headlandHeightForTurn or vehicle.cp.headlandHeight;
-			turnInfo.numLanes ,turnInfo.onLaneNum 	= courseplay:getLaneInfo(vehicle);
-			turnInfo.turnOnField 					= vehicle.cp.turnOnField;
-			turnInfo.reverseOffset 					= 0;
-			turnInfo.extraAlignLength				= 6;
-			turnInfo.haveWheeledImplement 			= reversingWorkTool ~= nil;
-			if turnInfo.haveWheeledImplement then
-				turnInfo.reversingWorkTool 			= reversingWorkTool;
-				turnInfo.extraAlignLength			= turnInfo.extraAlignLength + directionNodeToTurnNodeLength * 2;
-			end;
-			turnInfo.isHarvester					= isHarvester;
+		turnInfo.numLanes ,turnInfo.onLaneNum 	= courseplay:getLaneInfo(vehicle);
+		turnInfo.turnOnField 					= vehicle.cp.turnOnField;
+		turnInfo.reverseOffset 					= 0;
+		turnInfo.extraAlignLength				= 6;
+		turnInfo.haveWheeledImplement 			= reversingWorkTool ~= nil;
+		if turnInfo.haveWheeledImplement then
+			turnInfo.reversingWorkTool 			= reversingWorkTool;
+			turnInfo.extraAlignLength			= turnInfo.extraAlignLength + directionNodeToTurnNodeLength * 2;
+		end;
+		turnInfo.isHarvester					= isHarvester;
 
-			-- headland turn data
-			vehicle.cp.headlandTurn = turnContext:isHeadlandCorner() and {} or nil
-			-- direction halfway between dir of turnStart and turnEnd 
-			turnInfo.halfAngle = math.deg( getAverageAngle( math.rad( turnContext.turnEndWp.angle ),
+		-- headland turn data
+		vehicle.cp.headlandTurn = turnContext:isHeadlandCorner() and {} or nil
+		-- direction halfway between dir of turnStart and turnEnd
+		turnInfo.halfAngle = math.deg( getAverageAngle( math.rad( turnContext.turnEndWp.angle ),
 				math.rad( turnContext.turnStartWp.angle )))
-			-- delta between turn start and turn end
-			turnInfo.deltaAngle = math.pi - ( math.rad( turnContext.turnEndWp.angle )
+		-- delta between turn start and turn end
+		turnInfo.deltaAngle = math.pi - ( math.rad( turnContext.turnEndWp.angle )
 				- math.rad( turnContext.turnStartWp.angle ))
 
-			turnInfo.startDirection = turnContext.turnStartWp.angle
+		turnInfo.startDirection = turnContext.turnStartWp.angle
 
-			--- Get the turn radius either by the automatic or user provided turn circle.
-			local extRadius = 0.5 + (0.15 * directionNodeToTurnNodeLength); -- The extra calculation is for dynamic trailer length to prevent jackknifing;
-			turnInfo.turnRadius = vehicle.cp.turnDiameter * 0.5 + extRadius;
-			turnInfo.turnDiameter = turnInfo.turnRadius * 2;
+		--- Get the turn radius either by the automatic or user provided turn circle.
+		local extRadius = 0.5 + (0.15 * directionNodeToTurnNodeLength); -- The extra calculation is for dynamic trailer length to prevent jackknifing;
+		turnInfo.turnRadius = vehicle.cp.turnDiameter * 0.5 + extRadius;
+		turnInfo.turnDiameter = turnInfo.turnRadius * 2;
 
-			--- Get the new turn target with offset
-			if courseplay:getIsVehicleOffsetValid(vehicle) and turnContext:isHeadlandCorner() == false then
-				courseplay:debug(string.format("%s:(Turn) turnWithOffset = true", nameNum(vehicle)), 14);
-				courseplay:turnWithOffset(vehicle);
-			end;
+		local totalOffsetX = vehicle.cp.totalOffsetX * -1
 
-			local totalOffsetX = vehicle.cp.totalOffsetX * -1
+		--- Create temp target node and translate it.
+		turnInfo.targetNode = createTransformGroup("cpTempTargetNode");
+		link(g_currentMission.terrainRootNode, turnInfo.targetNode);
+		local cx,cz = turnContext.turnEndWp.x, turnContext.turnEndWp.z
+		local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
+		setTranslation(turnInfo.targetNode, cx, cy, cz);
+		turnContext:setTargetNode(targetNode)
+		-- Rotate it's direction to the next wp.
+		local yRot = MathUtil.getYRotationFromDirection(turnContext.turnEndWp.dx, turnContext.turnEndWp.dz);
+		setRotation(turnInfo.targetNode, 0, yRot, 0);
 
-			--- Create temp target node and translate it.
-			turnInfo.targetNode = createTransformGroup("cpTempTargetNode");
-			link(g_currentMission.terrainRootNode, turnInfo.targetNode);
-			local cx,cz = turnContext.turnEndWp.x, turnContext.turnEndWp.z
-			local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
+		-- Retranslate it again to the correct position if there is offsets.
+		if totalOffsetX ~= 0 then
+			local totalOffsetZ
+			if vehicle.cp.headlandTurn then
+				-- headland turns are not near 180 degrees so just moving the target left/right won't work.
+				-- we must move it back as well
+				totalOffsetZ = totalOffsetX / math.tan( turnInfo.deltaAngle / 2 )
+			else
+				totalOffsetZ = 0
+			end
+			cx, cy, cz = localToWorld( turnInfo.targetNode, totalOffsetX, 0, totalOffsetZ )
 			setTranslation(turnInfo.targetNode, cx, cy, cz);
-			turnContext:setTargetNode(targetNode)
-			-- Rotate it's direction to the next wp.
-			local yRot = MathUtil.getYRotationFromDirection(turnContext.turnEndWp.dx, turnContext.turnEndWp.dz);
-			setRotation(turnInfo.targetNode, 0, yRot, 0);
+			courseplay:debug(("%s:(Turn) Offset x = %.1f, z = %.1f"):format( nameNum( vehicle ), totalOffsetX, totalOffsetZ ), 14 )
+		end;
 
-			-- Retranslate it again to the correct position if there is offsets.
-			if totalOffsetX ~= 0 then
-				local totalOffsetZ
-				if vehicle.cp.headlandTurn then
-					-- headland turns are not near 180 degrees so just moving the target left/right won't work. 
-					-- we must move it back as well
-					totalOffsetZ = totalOffsetX / math.tan( turnInfo.deltaAngle / 2 )
-				else
-					totalOffsetZ = 0
-				end
-				cx, cy, cz = localToWorld( turnInfo.targetNode, totalOffsetX, 0, totalOffsetZ )
-				setTranslation(turnInfo.targetNode, cx, cy, cz);
-				courseplay:debug(("%s:(Turn) Offset x = %.1f, z = %.1f"):format( nameNum( vehicle ), totalOffsetX, totalOffsetZ ), 14 )
-			end;
-
-			--- Debug Print
-			if courseplay.debugChannels[14] then
-				local x,y,z = getWorldTranslation(turnInfo.targetNode);
-				local ctx,_,ctz = localToWorld(turnInfo.targetNode, 0, 0, 20);
-				--drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 0, 1, 0);
-				cpDebug:drawLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz);
-				-- this is an test
-				courseplay:debug(("%s:(Turn) wp%d=%.1f°, wp%d=%.1f°, directionChangeDeg = %.1f° halfAngle = %.1f"):format(nameNum(vehicle),
+		--- Debug Print
+		if courseplay.debugChannels[14] then
+			local x,y,z = getWorldTranslation(turnInfo.targetNode);
+			local ctx,_,ctz = localToWorld(turnInfo.targetNode, 0, 0, 20);
+			--drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 0, 1, 0);
+			cpDebug:drawLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz);
+			-- this is an test
+			courseplay:debug(("%s:(Turn) wp%d=%.1f°, wp%d=%.1f°, directionChangeDeg = %.1f° halfAngle = %.1f"):format(nameNum(vehicle),
 					turnContext.beforeTurnStartWp.cpIndex, turnContext.beforeTurnStartWp.angle,  turnContext.turnEndWp.cpIndex, turnContext.turnEndWp.angle, turnContext.directionChangeDeg, turnInfo.halfAngle), 14);
-			end;
+		end;
 
-			--- Get the local delta distances from the tractor to the targetNode
-			turnInfo.targetDeltaX, _, turnInfo.targetDeltaZ = worldToLocal(turnInfo.directionNode, cx, vehicleY, cz);
-			courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(vehicle), turnInfo.targetDeltaX, turnInfo.targetDeltaZ), 14);
+		--- Get the local delta distances from the tractor to the targetNode
+		turnInfo.targetDeltaX, _, turnInfo.targetDeltaZ = worldToLocal(turnInfo.directionNode, cx, vehicleY, cz);
+		courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(vehicle), turnInfo.targetDeltaX, turnInfo.targetDeltaZ), 14);
 
-			--- Get the turn direction
-			if turnContext:isHeadlandCorner() then
-				-- headland corner turns have a targetDeltaX around 0 so use the direction diff
-				if turnContext.directionChangeDeg > 0 then
-					turnInfo.direction = 1;
-				end
-			else
-				if turnInfo.targetDeltaX > 0 then
-					turnInfo.direction = 1;
-				end;
+		--- Get the turn direction
+		if turnContext:isHeadlandCorner() then
+			-- headland corner turns have a targetDeltaX around 0 so use the direction diff
+			if turnContext.directionChangeDeg > 0 then
+				turnInfo.direction = 1;
 			end
-
-			--- Check if tool width will collide on turn (Value is set in askForSpecialSettings)
-			for i=1, #(vehicle.cp.workTools) do
-				local workTool = vehicle.cp.workTools[i];
-				if workTool.cp.widthWillCollideOnTurn and vehicle.cp.courseWorkWidth and (vehicle.cp.workWidth / 2) > turnInfo.halfVehicleWidth then
-					turnInfo.halfVehicleWidth = vehicle.cp.workWidth / 2;
-				end;
-			end
-
-			-- Relative position of the turn start waypoint from the vehicle.
-			-- Note that as we start the turn when the backMarkerOffset reaches the turn start point, this zOffset
-			-- is the same as the backMarkerOffset
-			_, _, turnInfo.zOffset = worldToLocal(turnInfo.directionNode, turnContext.turnStartWp.x, vehicleY, turnContext.turnStartWp.z);
-			-- remember this as we'll need it later
-			turnInfo.deltaZBetweenVehicleAndTarget = turnInfo.targetDeltaZ
-			-- targetDeltaZ is now the delta Z between the turn start and turn end waypoints.
-			turnInfo.targetDeltaZ = turnInfo.targetDeltaZ - turnInfo.zOffset;
-
-			-- Calculate reverseOffset in case we need to reverse.
-			-- This is used in both wide turns and in the question mark turn
-			local offset = turnInfo.zOffset;
-			if turnInfo.frontMarker > 0 then
-				offset = -turnInfo.zOffset - turnInfo.frontMarker;
+		else
+			if turnInfo.targetDeltaX > 0 then
+				turnInfo.direction = 1;
 			end;
-			if turnInfo.turnOnField and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward then
-				turnInfo.reverseOffset = max((turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight), offset);
-			elseif turnInfo.isHarvester and turnInfo.frontMarker > 0 then
-				-- without fully understanding this reverseOffset, correct it with combines so they don't make
-				-- unnecessarily wide turns (and hit trees outside the field)
-				turnInfo.reverseOffset = -turnInfo.frontMarker
-			else
-				turnInfo.reverseOffset = offset;
+		end
+
+		--- Check if tool width will collide on turn (Value is set in askForSpecialSettings)
+		for i=1, #(vehicle.cp.workTools) do
+			local workTool = vehicle.cp.workTools[i];
+			if workTool.cp.widthWillCollideOnTurn and vehicle.cp.courseWorkWidth and (vehicle.cp.workWidth / 2) > turnInfo.halfVehicleWidth then
+				turnInfo.halfVehicleWidth = vehicle.cp.workWidth / 2;
 			end;
+		end
 
-			courseplay:debug(("%s:(Turn Data) frontMarker=%q, backMarker=%q, halfVehicleWidth=%q, directionNodeToTurnNodeLength=%q, wpChangeDistance=%q"):format(nameNum(vehicle), tostring(turnInfo.frontMarker), tostring(backMarker), tostring(turnInfo.halfVehicleWidth), tostring(turnInfo.directionNodeToTurnNodeLength), tostring(turnInfo.wpChangeDistance)), 14);
-			courseplay:debug(("%s:(Turn Data) reverseWPChangeDistance=%q, direction=%q, haveHeadlands=%q, headlandHeight=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseWPChangeDistance), tostring(turnInfo.direction), tostring(turnInfo.haveHeadlands), tostring(turnInfo.headlandHeight)), 14);
-			courseplay:debug(("%s:(Turn Data) numLanes=%q, onLaneNum=%q, turnOnField=%q, reverseOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.numLanes), tostring(turnInfo.onLaneNum), tostring(turnInfo.turnOnField), tostring(turnInfo.reverseOffset)), 14);
-			courseplay:debug(("%s:(Turn Data) haveWheeledImplement=%q, reversingWorkTool=%q, turnRadius=%q, turnDiameter=%q"):format(nameNum(vehicle), tostring(turnInfo.haveWheeledImplement), tostring(turnInfo.reversingWorkTool), tostring(turnInfo.turnRadius), tostring(turnInfo.turnDiameter)), 14);
-			courseplay:debug(("%s:(Turn Data) targetNode=%q, targetDeltaX=%q, targetDeltaZ=%q, zOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.targetNode), tostring(turnInfo.targetDeltaX), tostring(turnInfo.targetDeltaZ), tostring(turnInfo.zOffset)), 14);
-			courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester)), 14);
+		-- Relative position of the turn start waypoint from the vehicle.
+		-- Note that as we start the turn when the backMarkerOffset reaches the turn start point, this zOffset
+		-- is the same as the backMarkerOffset
+		_, _, turnInfo.zOffset = worldToLocal(turnInfo.directionNode, turnContext.turnStartWp.x, vehicleY, turnContext.turnStartWp.z);
+		-- remember this as we'll need it later
+		turnInfo.deltaZBetweenVehicleAndTarget = turnInfo.targetDeltaZ
+		-- targetDeltaZ is now the delta Z between the turn start and turn end waypoints.
+		turnInfo.targetDeltaZ = turnInfo.targetDeltaZ - turnInfo.zOffset;
+
+		-- Calculate reverseOffset in case we need to reverse.
+		-- This is used in both wide turns and in the question mark turn
+		local offset = turnInfo.zOffset;
+		-- only if all implements are in the front
+		if turnInfo.frontMarker > 0 and turnInfo.backMarker > 0 then
+			offset = -turnInfo.zOffset - turnInfo.frontMarker;
+		end;
+		if turnInfo.turnOnField and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward then
+			turnInfo.reverseOffset = max((turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight), offset);
+		elseif turnInfo.isHarvester and turnInfo.frontMarker > 0 then
+			-- without fully understanding this reverseOffset, correct it for combines so they don't make
+			-- unnecessarily wide turns (and hit trees outside the field)
+			turnInfo.reverseOffset = -turnInfo.frontMarker
+		else
+			-- the weird thing about this is that reverseOffset here equals to zOffset and this is why
+			-- the wide turn works at all, even if there's no reversing.
+			turnInfo.reverseOffset = offset;
+		end;
+
+		courseplay:debug(("%s:(Turn Data) frontMarker=%q, backMarker=%q, halfVehicleWidth=%q, directionNodeToTurnNodeLength=%q, wpChangeDistance=%q"):format(nameNum(vehicle), tostring(turnInfo.frontMarker), tostring(backMarker), tostring(turnInfo.halfVehicleWidth), tostring(turnInfo.directionNodeToTurnNodeLength), tostring(turnInfo.wpChangeDistance)), 14);
+		courseplay:debug(("%s:(Turn Data) reverseWPChangeDistance=%q, direction=%q, haveHeadlands=%q, headlandHeight=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseWPChangeDistance), tostring(turnInfo.direction), tostring(turnInfo.haveHeadlands), tostring(turnInfo.headlandHeight)), 14);
+		courseplay:debug(("%s:(Turn Data) numLanes=%q, onLaneNum=%q, turnOnField=%q, reverseOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.numLanes), tostring(turnInfo.onLaneNum), tostring(turnInfo.turnOnField), tostring(turnInfo.reverseOffset)), 14);
+		courseplay:debug(("%s:(Turn Data) haveWheeledImplement=%q, reversingWorkTool=%q, turnRadius=%q, turnDiameter=%q"):format(nameNum(vehicle), tostring(turnInfo.haveWheeledImplement), tostring(turnInfo.reversingWorkTool), tostring(turnInfo.turnRadius), tostring(turnInfo.turnDiameter)), 14);
+		courseplay:debug(("%s:(Turn Data) targetNode=%q, targetDeltaX=%q, targetDeltaZ=%q, zOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.targetNode), tostring(turnInfo.targetDeltaX), tostring(turnInfo.targetDeltaZ), tostring(turnInfo.zOffset)), 14);
+		courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester)), 14);
 
 
-			if not turnContext:isHeadlandCorner() then
-				----------------------------------------------------------
-				-- SWITCH TO THE NEXT LANE
-				----------------------------------------------------------
-				courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a lane switch.", nameNum(vehicle), turnContext.directionChangeDeg), 14);
-				----------------------------------------------------------
-				-- WIDE TURNS (Turns where the distance to next lane is bigger than the turning Diameter)
-				----------------------------------------------------------
-				if abs(turnInfo.targetDeltaX) >= turnInfo.turnDiameter then
-					if abs(turnInfo.targetDeltaX) >= (turnInfo.turnDiameter * 2) and abs(turnInfo.targetDeltaZ) >= (turnInfo.turnRadius * 3) then
-						courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo);
-					else
-						courseplay:generateTurnTypeWideTurn(vehicle, turnInfo);
-					end;
-					----------------------------------------------------------
-					-- NAROW TURNS (Turns where the distance to next lane is smaller than the turning Diameter)
-					----------------------------------------------------------
+		if not turnContext:isHeadlandCorner() then
+			----------------------------------------------------------
+			-- SWITCH TO THE NEXT LANE
+			----------------------------------------------------------
+			courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a lane switch.", nameNum(vehicle), turnContext.directionChangeDeg), 14);
+			----------------------------------------------------------
+			-- WIDE TURNS (Turns where the distance to next lane is bigger than the turning Diameter)
+			----------------------------------------------------------
+			if abs(turnInfo.targetDeltaX) >= turnInfo.turnDiameter then
+				if abs(turnInfo.targetDeltaX) >= (turnInfo.turnDiameter * 2) and abs(turnInfo.targetDeltaZ) >= (turnInfo.turnRadius * 3) then
+					courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo);
 				else
-					--- If we have wheeled implement, then do turns based on that.
-					if turnInfo.haveWheeledImplement then
-						--- Get the Triangle sides
-						local centerOffset = abs(turnInfo.targetDeltaX) / 2;
-						local sideC = turnInfo.turnDiameter;
-						local sideB = centerOffset + turnInfo.turnRadius;
-						local centerHeight = square(sideC^2 - sideB^2);
-
-						--- Check if there is enough space to make Ohm turn on the headland.
-						local useOhmTurn = false;
-						if (-turnInfo.zOffset + centerHeight + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
-							useOhmTurn = true;
-						end;
-
-						--- Ohm Turn
-						if useOhmTurn or turnInfo.isHarvester or vehicle.cp.aiTurnNoBackward or not turnInfo.turnOnField then
-							courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo);
-						else
-							--- Questionmark Turn
-							courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo);
-						end;
-
-						--- If not wheeled implement, then do the short turns.
-					else
-						--- Get the Triangle sides
-						turnInfo.centerOffset = (turnInfo.targetDeltaX * turnInfo.direction) - turnInfo.turnRadius;
-						local sideC = turnInfo.turnDiameter;
-						local sideB = turnInfo.turnRadius + turnInfo.centerOffset; -- which is exactly targetDeltaX, see above
-						turnInfo.centerHeight = square(sideC^2 - sideB^2);
-
-						local neededSpace = abs(turnInfo.targetDeltaZ) + turnInfo.zOffset + 1 + turnInfo.centerHeight + (turnInfo.reverseWPChangeDistance * 1.5);
-						--- Forward 3 Point Turn
-						if neededSpace < turnInfo.headlandHeight or turnInfo.isHarvester or not turnInfo.turnOnField then
-							courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo);
-
-							--- Reverse 3 Point Turn
-						else
-							courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo);
-						end;
-					end;
+					courseplay:generateTurnTypeWideTurn(vehicle, turnInfo);
 				end
+
+				----------------------------------------------------------
+				-- NAROW TURNS (Turns where the distance to next lane is smaller than the turning Diameter)
+				----------------------------------------------------------
 			else
-				-------------------------------------------------------------
-				-- A SHARP TURN, LIKELY ON THE HEADLAND BUT NOT A LANE SWITCH
-				-------------------------------------------------------------
-				courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner, maneuver type = %d.",
+				--- If we have wheeled implement, then do turns based on that.
+				if turnInfo.haveWheeledImplement then
+					--- Get the Triangle sides
+					local centerOffset = abs(turnInfo.targetDeltaX) / 2;
+					local sideC = turnInfo.turnDiameter;
+					local sideB = centerOffset + turnInfo.turnRadius;
+					local centerHeight = square(sideC^2 - sideB^2);
+
+					--- Check if there is enough space to make Ohm turn on the headland.
+					local useOhmTurn = false;
+					if (-turnInfo.zOffset + centerHeight + turnInfo.turnRadius + turnInfo.halfVehicleWidth) < turnInfo.headlandHeight then
+						useOhmTurn = true;
+					end;
+
+					--- Ohm Turn
+					if useOhmTurn or turnInfo.isHarvester or vehicle.cp.aiTurnNoBackward or not turnInfo.turnOnField then
+						courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo);
+					else
+						--- Questionmark Turn
+						courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo);
+					end;
+
+					--- If not wheeled implement, then do the short turns.
+				else
+					--- Get the Triangle sides
+					turnInfo.centerOffset = (turnInfo.targetDeltaX * turnInfo.direction) - turnInfo.turnRadius;
+					local sideC = turnInfo.turnDiameter;
+					local sideB = turnInfo.turnRadius + turnInfo.centerOffset; -- which is exactly targetDeltaX, see above
+					turnInfo.centerHeight = square(sideC^2 - sideB^2);
+
+					local neededSpace = abs(turnInfo.targetDeltaZ) + turnInfo.zOffset + 1 + turnInfo.centerHeight + (turnInfo.reverseWPChangeDistance * 1.5);
+					--- Forward 3 Point Turn
+					if neededSpace < turnInfo.headlandHeight or turnInfo.isHarvester or not turnInfo.turnOnField then
+						courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo);
+
+						--- Reverse 3 Point Turn
+					else
+						courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo);
+					end;
+				end;
+			end
+		else
+			-------------------------------------------------------------
+			-- A SHARP TURN, LIKELY ON THE HEADLAND BUT NOT A LANE SWITCH
+			-------------------------------------------------------------
+			courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner, maneuver type = %d.",
 					nameNum(vehicle), turnContext.directionChangeDeg, vehicle.cp.headland.reverseManeuverType), 14);
 
-				vehicle.cp.turnCorner = turnContext:createCorner(vehicle, turnInfo.turnRadius)
+			vehicle.cp.turnCorner = turnContext:createCorner(vehicle, turnInfo.turnRadius)
 
-				if turnInfo.isHarvester then
-					if vehicle.cp.headland.reverseManeuverType == courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT then
-						courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle, turnInfo)
-					elseif vehicle.cp.headland.reverseManeuverType == courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_CURVE then
-						courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turnInfo)
-					end
-				else
-					courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
-				end
-			end
-
-			cpPrintLine(14, 1);
-			courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), 14);
-			cpPrintLine(14, 3);
-
-			-- Rotate plow on lane change.
-			if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and vehicle.cp.toolOffsetX ~= 0 and turnContext:isHeadlandCorner() == false then
-				if vehicle.cp.toolOffsetX < 0 then
-					vehicle.cp.rotateablePlow:setRotationMax(true);
-				else
-					vehicle.cp.rotateablePlow:setRotationMax(false);
-				end;
-			end;
-
-			vehicle.cp.turnStage = 2;
-			--vehicle.cp.turnStage = 100; -- Stop the tractor (Developing Tests)
-
-			unlink(turnInfo.targetNode);
-			delete(turnInfo.targetNode);
-
-			----------------------------------------------------------
-			-- TURN STAGES 2 - Drive Turn maneuver
-			----------------------------------------------------------
-		elseif vehicle.cp.turnStage == 2 then
-			if curTurnTarget then
-				if curTurnTarget.turnEnd then
-					if vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
-						-- We are on the last waypoint, so we goto stage 3 without changing to new waypoints.
-						vehicle.cp.turnStage = 3;
-					else
-						-- We have more waypoints, so we goto stage 4, which will still change waypoints together with checking if we can lower the implement
-						vehicle.cp.turnStage = 4;
-					end;
-					courseplay:debug(string.format("%s:(Turn) Ending turn at waypoint %d, switch to stage %d", nameNum(vehicle), vehicle.cp.curTurnIndex, vehicle.cp.turnStage ), 14);
-					return;
-				end;
-
-
-				local dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, vehicleX, vehicleZ);
-				local distOrig = dist
-
-				local forceSwitch = false
-				-- Set reversing settings.
-				if curTurnTarget.turnReverse then
-					refSpeed = vehicle.cp.speeds.reverse;
-					if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
-						local workToolX, workToolY, workToolZ = getWorldTranslation(reversingWorkTool.cp.realTurningNode);
-						dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, workToolX, workToolZ);
-						local _, _, dz = worldToLocal(reversingWorkTool.cp.realTurningNode, curTurnTarget.posX, workToolY, curTurnTarget.posZ)
-						if dz > 0 then
-							-- we are reversing but the target is in front of us, switch to the next target to avoid
-							-- circling back to this one
-							forceSwitch = true
-							courseplay.debugVehicle(14, vehicle, '(Turn) Reversing with tool but target %d is in front of us, dist = %.1f, dz = %.1f',
-								vehicle.cp.curTurnIndex, dist, dz)
-						end
-						if courseplay.debugChannels[14] then
-							cpDebug:drawLine(vehicleX, workToolY + 5, vehicleZ, 1, 1, 0, workToolX, workToolY + 5, workToolZ);
-						end
-					end;
-
-					-- If next wp is more than 10 meters ahead, use fieldwork speed.
-				elseif dist > 10 and not curTurnTarget.turnReverse then
-					refSpeed = vehicle.cp.speeds.field;
-				end;
-
-				-- Change turn waypoint
-				if dist < wpChangeDistance or forceSwitch then
-					courseplay:debug( string.format( "%s:(Turn) @( %.1f, %.1f) ix = %d/%d, distOrig = %.1f, dist = %.1f, wpChangeDistance = %.1f",
-						nameNum( vehicle ), vehicleX, vehicleZ, vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, distOrig, dist, wpChangeDistance ), 14)
-					-- See if we have to raise/lower implements at this point
-					if vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].raiseImplement then
-						courseplay:debug( string.format( "%s:(Turn) raising implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						vehicle.cp.driver:raiseImplements()
-					elseif vehicle.cp.turnTargets[vehicle.cp.curTurnIndex].lowerImplement then
-						courseplay:debug( string.format( "%s:(Turn) lowering implement at turn waypoint %d", nameNum(vehicle), vehicle.cp.curTurnIndex ), 14 )
-						vehicle.cp.driver:lowerImplements()
-					end
-					local nextCurTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
-					local changeDir = ((curTurnTarget.turnReverse and not vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse) or (not curTurnTarget.turnReverse and vehicle.cp.turnTargets[nextCurTurnIndex].turnReverse))
-
-					-- We are still moving and want to swicth directions STOP if using MR mod. And we haven't yet stoped
-					if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle and changeDir and not vehicle.cp.mrHasStopped then
-						allowedToDrive = false
-						-- We have finally stopped on direction. Set a flag to allow movement again
-					elseif math.abs(vehicle.lastSpeedReal) < 0.0001 and vehicle.mrIsMrVehicle and changeDir then
-						vehicle.cp.mrHasStopped = true;
-					else
-						-- We are now 1 index away from the direction clear the flag
-						if vehicle.cp.mrHasStopped then
-							vehicle.cp.mrHasStopped = nil
-						end;
-						vehicle.cp.curTurnIndex = nextCurTurnIndex;
-					end
-				end;
-
-
-				-- Start reversing before time if we are allowed and if we can
-				if curTurnTarget.changeWhenPosible then
-					-- Get the world rotation of the next lane
-					local laneRot = MathUtil.getYRotationFromDirection(turnContext.turnEndWp.dx, turnContext.turnEndWp.dz);
-					laneRot = deg(laneRot);
-
-					if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
-						-- Get the world rotation of the tool
-						dx, _, dz = localDirectionToWorld(reversingWorkTool.cp.realTurningNode, 0, 0, 1);
-					else
-						-- Get the world rotation of the vehicle
-						dx, _, dz = localDirectionToWorld(realDirectionNode, 0, 0, 1);
-					end;
-					local toolRot = MathUtil.getYRotationFromDirection(dx, dz);
-					toolRot = deg(toolRot);
-					--courseplay:debug(("%s:(Turn) laneRot=%.2f, toolRot=%.2f"):format(nameNum(vehicle), laneRot, toolRot), 14);
-
-					-- Get the angle difference
-					local angleDifference = min( abs((toolRot + 180 - laneRot) %360 - 180), abs((laneRot + 180 - toolRot) %360 - 180) )
-
-					-- If the angle diff is less than the allowed angle, then goto the first wp in oposite drive direction
-					if angleDifference then
-						courseplay:debug(("%s:(Turn) Change direction when anglediff(%.2f) <= %.2f"):format(nameNum(vehicle), angleDifference, allowedAngle), 14);
-						if angleDifference <= allowedAngle then
-							if math.abs(vehicle.lastSpeedReal) > 0.0001 and vehicle.mrIsMrVehicle then
-								allowedToDrive = false -- This is to ensure MR brakes before changing directions to prevent runaway tractors on steep grades
-							else
-								local changeToForward = curTurnTarget.turnReverse;
-								for i = vehicle.cp.curTurnIndex, #vehicle.cp.turnTargets, 1 do
-									if changeToForward and not vehicle.cp.turnTargets[i].turnReverse then
-										courseplay:debug(("%s:(Turn) Changing to forward"):format(nameNum(vehicle)), 14);
-										vehicle.cp.curTurnIndex = i;
-										return;
-									elseif not changeToForward and vehicle.cp.turnTargets[i].turnReverse then
-										courseplay:debug(("%s:(Turn) Changing to reverse"):format(nameNum(vehicle)), 14);
-										vehicle.cp.curTurnIndex = i;
-										return;
-									end;
-								end;
-							end;
-						end;
-					end;
-				end;
-			else
-				vehicle.cp.turnStage = 1; -- (THIS SHOULD NEVER HAPPEN) Somehow we don't have any waypoints, so try recollect them.
-				return;
-			end;
-
-			----------------------------------------------------------
-			-- TURN STAGES 3 - Lower implement and continue on next lane
-			----------------------------------------------------------
-		elseif vehicle.cp.turnStage == 3 then
-			local deltaZ, lowerImplements
-			if courseplay:onAlignmentCourse( vehicle ) then
-				courseplay:endAlignmentCourse( vehicle )
-				courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex );
-				return
-			else
-				_, _, deltaZ = worldToLocal(realDirectionNode,turnContext.turnEndWp.x, vehicleY, turnContext.turnEndWp.z)
-				lowerImplements = deltaZ < frontMarker + 3
-			end
-
-			if curTurnTarget.turnReverse then
-				refSpeed = vehicle.cp.speeds.reverse;
-				lowerImplements = deltaZ > frontMarker;
-			end;
-
-			-- Lower implement and continue on next lane
-			if vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
-				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
-				vehicle.cp.driver:lowerImplements()
-				--courseplay:addTemporaryMarker(vehicle, vehicle.cp.driver.frontMarker:getNode())
-
-				vehicle.cp.isTurning = nil;
-
-				-- move on to the turnEnd (targetNode)
-				courseplay:setWaypointIndex(vehicle, turnContext.turnEndWp.cpIndex);
-				-- and then to the next wp in front of us.
-				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-				--vehicle.cp.ppc:initialize()
-				if vehicle.cp.driver then
-					vehicle.cp.driver:onTurnEnd()
-				end
-				courseplay:clearTurnTargets(vehicle);
-				return;
-			end;
-
-			----------------------------------------------------------
-			-- TURN STAGES 4 - Lower implement and continue on next lane (Multi waypoint version)
-			----------------------------------------------------------
-		elseif vehicle.cp.turnStage == 4 then
-			if curTurnTarget.turnEnd and vehicle.cp.curTurnIndex == #vehicle.cp.turnTargets then
-				vehicle.cp.turnStage = 3;
-				return;
-			end;
-
-			local dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, vehicleX, vehicleZ);
-
-			-- Set reversing settings.
-			if curTurnTarget.turnReverse then
-				refSpeed = vehicle.cp.speeds.reverse;
-				if reversingWorkTool and reversingWorkTool.cp.realTurningNode then
-					local workToolX, _, workToolZ = getWorldTranslation(reversingWorkTool.cp.realTurningNode);
-					dist = courseplay:distance(curTurnTarget.posX, curTurnTarget.posZ, workToolX, workToolZ);
-
-					if courseplay.debugChannels[14] then
-						local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, workToolX, 300, workToolZ);
-						cpDebug:drawLine(vehicleX, posY + 5, vehicleZ, 1, 1, 0, workToolX, posY + 5, workToolZ);
-					end
-				end;
-			end;
-			-- Change turn waypoint
-			if dist < wpChangeDistance then
-				vehicle.cp.curTurnIndex = min(vehicle.cp.curTurnIndex + 1, #vehicle.cp.turnTargets);
-				return;
-			end;
-
-			--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			-- Check if we are at the start of the lane and lower if so and continue working.
-			--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			local _, _, deltaZ = worldToLocal(realDirectionNode, turnContext.turnEndWp.x, vehicleY, turnContext.turnEndWp.z)
-
-			--courseplay.debugVehicle(14, vehicle, 'ix=%d dz=%.1f', vehicle.cp.waypointIndex+1, deltaZ)
-			local lowerImplements = deltaZ < frontMarker + 3
-			if curTurnTarget.turnReverse then
-				refSpeed = vehicle.cp.speeds.reverse;
-				lowerImplements = deltaZ > frontMarker;
-			end;
-
-			-- Lower implement and continue on next lane
-			if vehicle.cp.driver.shouldLowerImplements and vehicle.cp.driver:shouldLowerImplements(turnContext.turnEndWpNode.node, curTurnTarget.turnReverse) then
-				courseplay.debugVehicle(12, vehicle, '(Turn) lowering implements')
-				vehicle.cp.driver:lowerImplements()
-				--courseplay:addTemporaryMarker(vehicle, vehicle.cp.driver.frontMarker:getNode())
-
-				vehicle.cp.isTurning = nil;
-
-				courseplay:setWaypointIndex(vehicle, turnContext.turnEndWp.cpIndex);
-				courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle, true));
-				--vehicle.cp.ppc:initialize()
-				if vehicle.cp.driver then
-					vehicle.cp.driver:onTurnEnd()
-				end
-				courseplay:clearTurnTargets(vehicle);
-
-				return;
-			end;
-
-			----------------------------------------------------------
-			-- UNKNOWN TURN STAGE - Stop the vehicle from driving (Used for developing purpose)
-			----------------------------------------------------------
-		else
-			allowedToDrive = false;
-		end;
-
-
-		----------------------------------------------------------
-		-- TURN STAGES 0 - Finish lane and raise implement and change to stage 1
-		----------------------------------------------------------
-	else
-		--- Add WP to follow while doing last bit before raising Implement
-		if not curTurnTarget then
-			local extraForward = 0;
-			if backMarker < 0 then
-				extraForward = abs(backMarker);
-			end;
-			local cx, cz = courseplay:getVehicleOffsettedCoords(vehicle, turnContext.turnStartWp.x, turnContext.turnStartWp.z);
-			local posX, posZ = cx + (extraForward + 10) * turnContext.beforeTurnStartWp.dx, cz + (extraForward + 10) * turnContext.beforeTurnStartWp.dz;
-			courseplay:addTurnTarget(vehicle, posX, posZ);
-		end;
-
-		--- Use the speed limit if we are still working and turn speed is higher that the speed limit.
-		refSpeed = courseplay:getSpeedWithLimiter(vehicle, refSpeed);
-		if vehicle.cp.driver.shouldRaiseImplements and vehicle.cp.driver:shouldRaiseImplements(turnContext.turnStartForwardWpNode.node) then
-			-- raise implements only if this is not a headland turn; in headland
-			-- turns the turn waypoint attribute will control when to raise/lower implements
-			if not turnContext:isHeadlandCorner() then
-				vehicle.cp.driver:raiseImplements()
-			end
-			vehicle.cp.turnStage = 1;
+			courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
 		end
-	end;
+
+		cpPrintLine(14, 1);
+		courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), 14);
+		cpPrintLine(14, 3);
+
+		unlink(turnInfo.targetNode);
+		delete(turnInfo.targetNode);
+	end
 
 	----------------------------------------------------------
 	--Set the driving direction
 	----------------------------------------------------------
 	if curTurnTarget then
 		local posX, posZ = curTurnTarget.revPosX or curTurnTarget.posX, curTurnTarget.revPosZ or curTurnTarget.posZ;
-		local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.DirectionNode;
+		local directionNode = vehicle.aiVehicleDirectionNode or vehicle.cp.directionNode;
 		dtpX,_,dtpZ = worldToLocal(directionNode, posX, vehicleY, posZ);
 		if courseplay:isWheelloader(vehicle) then
 			dtpZ = dtpZ * 0.5; -- wheel loaders need to turn more
 		end;
 		--print( ("dtp %.1f, %.1f, %.1f"):format( dtpX, dtpZ, refSpeed ))
 
-		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.DirectionNode, posX, vehicleY, posZ);
+		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, posX, vehicleY, posZ);
 		if curTurnTarget.turnReverse then
 			lx, lz, moveForwards = courseplay:goReverse(vehicle,lx,lz);
 		end;
 	end;
-
-	----------------------------------------------------------
-	-- Debug prints: Show Current Waypoint
-	----------------------------------------------------------b
-	if courseplay.debugChannels[12] and curTurnTarget then
-		local posX, posZ = curTurnTarget.revPosX or curTurnTarget.posX, curTurnTarget.revPosZ or curTurnTarget.posZ;
-		local posY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, posX, 300, posZ);
-		cpDebug:drawLine(posX, posY + 3, posZ, 0, 0, 1, posX, posY + 4, posZ);  -- Blue Line
-	end;
-
-	if courseplay.debugChannels[14] then
-		local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, frontMarker )
-		local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, frontMarker )
-		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x1, 0, z1 );
-		cpDebug:drawLine(x1, y + 5, z1, 0, 1, 0, x2, y + 5, z2);
-		local x1, _, z1 = localToWorld( realDirectionNode, -1, 0, backMarker )
-		local x2, _, z2 = localToWorld( realDirectionNode, 1, 0, backMarker )
-		cpDebug:drawLine(x1, y + 5, z1, 1, 0, 0, x2, y + 5, z2);
-
-	end
-
-	if vehicle.cp.turnCorner then
-		vehicle.cp.turnCorner:drawDebug()
-	end
-
-	----------------------------------------------------------
-	-- Need to wait for tools to lower? (this is now handled in the turn generation by getWpIxInDistanceFromEnd
-	----------------------------------------------------------
-	--allowedToDrive = allowedToDrive and not courseplay:needToWaitForTools(vehicle)
-
-
-	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
-		-- in AIDriver based modes do not call / use legacy collision code
-				allowedToDrive = vehicle.cp.driver:detectCollision(dt)
-	else
-		-- allowedToDrive = courseplay:checkTraffic(self, true, allowedToDrive)
-	end
-
-	----------------------------------------------------------
-	-- allowedToDrive false -> SLOW DOWN TO STOP
-	----------------------------------------------------------
-	if not allowedToDrive then
-		-- reset slipping timers
-		courseplay:resetSlippingTimers(vehicle)
-		if courseplay.debugChannels[21] then
-			renderText(0.5,0.85-(0.03*vehicle.cp.coursePlayerNum),0.02,string.format("%s: vehicle.lastSpeedReal: %.8f km/h ",nameNum(vehicle),vehicle.lastSpeedReal*3600))
-		end
-		vehicle.cp.TrafficBrake = false;
-		vehicle.cp.isTrafficBraking = false;
-
-		if vehicle.cp.curSpeed > 1 then
-			allowedToDrive = true;
-			moveForwards = vehicle.movingDirection == 1;
-			directionForce = -1;
-		end;
-		vehicle.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): allowedToDrive false ")
-	else
-		vehicle.cp.speedDebugLine = ("turn("..tostring(debug.getinfo(1).currentline-1).."): refSpeed = "..tostring(refSpeed))
-		courseplay:setSpeed(vehicle, refSpeed )
-	end;
-
-	----------------------------------------------------------
-	-- Traffic break if something is in front of us
-	----------------------------------------------------------
-	if vehicle.cp.TrafficBrake then
-		moveForwards = vehicle.movingDirection == -1;
-	end
-
-	----------------------------------------------------------
-	-- Vehicles with inverted driving direction.
-	----------------------------------------------------------
-	if vehicle.isReverseDriving then
-		lz = -lz
-	end
-
-	if vehicle.cp.useProgessiveBraking then
-		courseplay:mrProgressiveBreaking(vehicle, refSpeed)
-		if vehicle.cp.mrAccelrator then
-			directionForce = -vehicle.cp.mrAccelrator -- The progressive breaking function returns a postive number which accelerates the tractor 
-		end
-	end
-
-	-- hold while straw swath is active (not during headland turn maneuvers though)
-	local holdInTurn = not vehicle.cp.headlandTurn and vehicle.cp.driver and vehicle.cp.driver:holdInTurnManeuver(vehicle.cp.turnStage == 0)
-	allowedToDrive = not holdInTurn and allowedToDrive
-
-	if curTurnTarget and ((curTurnTarget.turnReverse and reversingWorkTool ~= nil) or (courseplay:onAlignmentCourse( vehicle ) and vehicle.cp.curTurnIndex < 2 )) then
-		if math.abs(vehicle.lastSpeedReal) < 0.0001 and  not g_currentMission.missionInfo.stopAndGoBraking then
-			if not moveForwards then
-				vehicle.nextMovingDirection = -1
-			else
-				vehicle.nextMovingDirection = 1
-			end
-		end
-
-		AIVehicleUtil.driveInDirection(vehicle, dt, vehicle.cp.steeringAngle, directionForce, 0.5, 20, allowedToDrive, moveForwards, lx, lz, refSpeed, 1);
-	else
-		dtpZ = dtpZ * 0.85;
-		AIVehicleUtil.driveToPoint(vehicle, dt, directionForce, allowedToDrive, moveForwards, dtpX, dtpZ, refSpeed);
-	end
-
-	if vehicle.cp.drivingMode:get() == DrivingModeSetting.DRIVING_MODE_AIDRIVER then
-		-- in AIDriver based modes do not call / use legacy collision code
-	else
-		courseplay:setTrafficCollision(vehicle, lx, lz,false)
-	end
-end;
+end
 
 function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
@@ -806,11 +398,13 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 		courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, nil, turnInfo.reverseWPChangeDistance);
 	end;
 
-	--- Get the 2 circle center coordinate
+	-- Get the 2 circle center coordinate
+	-- I don't understand that turnInfo.zOffset here. That is our distance from the turn start WP, and with no reverseOffset it'll put the
+	-- circle behind us. I think this is buggy, and only works with that magic at the beginning where we end up with the reverseOffset == zOffset
 	center1.x,_,center1.z = localToWorld(turnInfo.directionNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.zOffset - turnInfo.reverseOffset);
 	center2.x,_,center2.z = localToWorld(turnInfo.targetNode, turnInfo.turnRadius * turnInfo.direction, 0, turnInfo.reverseOffset);
 
-	--- Get the circle intersection points
+	-- Get the circle intersection points
 	intersect1.x, intersect1.z = center1.x, center1.z;
 	intersect2.x, intersect2.z = center2.x, center2.z;
 	intersect1, intersect2 = courseplay:getTurnCircleTangentIntersectionPoints(intersect1, intersect2, turnInfo.turnRadius, turnInfo.targetDeltaX > 0);
@@ -1131,7 +725,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 		--- Generate second turn circle
 		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset);
-		courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, turnInfo.turnRadius, (turnInfo.direction * -1), true);
+		courseplay:generateTurnCircle(vehicle, center2, center1, stopDir, turnInfo.turnRadius, (turnInfo.direction * -1), false);
 
 		--- If we have headlands, then see if we can skip the reversing back part.
 		if turnInfo.haveHeadlands and newZOffset < turnInfo.directionNodeToTurnNodeLength * 0.5 then
@@ -1161,7 +755,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset);
 			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + 3);
 			courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint);
-			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + 3);
+			fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + 4);
 			toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, newZOffset + directionNodeToTurnNodeLength + extraDistance + turnInfo.extraAlignLength + turnInfo.wpChangeDistance);
 			courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, nil, nil, nil, true);
 
@@ -1281,8 +875,13 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	if turnInfo.frontMarker > 0 then
 		frontOffset = frontOffset - turnInfo.frontMarker;
 	end;
+	-- getAttachedImplementsAllowTurnBackward will return true for anything easy to reverse, that is has no towed implement,
+	-- like combines or tractors with implements mounted on the 3 point hitch. Those should make the same turn (fishtail or K-turn)
+	-- as combines do as it takes up a lot less space on the headland. Our calculation of how much space is needed is still off a bit
+	-- so you may have to turn off 'turn on field' for this to work for tractors.
+	if not ((courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle)) and not courseplay:isHarvesterSteerable(vehicle)) and
+		not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(vehicle) then
 
-	if not ((courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle)) and not courseplay:isHarvesterSteerable(vehicle)) then
 		local targetDeltaZ = turnInfo.targetDeltaZ;
 		if targetDeltaZ > 0 then
 			targetDeltaZ = 0;
@@ -1324,7 +923,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		courseplay:generateTurnCircle(vehicle, center1, startDir, center2, turnInfo.turnRadius, turnInfo.direction, true);
 
 		--- Move a little bit more forward, so we can reverse properly
-		local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
+		local dx, dz = courseplay:getPointDirection(center1, center2, false);
 		local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 		rotationDeg = rotationDeg + (90 * turnInfo.direction);
 		dx, dz = MathUtil.getDirectionFromYRotation(rad(rotationDeg));
@@ -1375,7 +974,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		courseplay:generateTurnCircle(vehicle, center1, startDir, intersect1, turnInfo.turnRadius, turnInfo.direction, true);
 
 		--- Move a little bit more forward, so we can reverse properly
-		local dx, dz = courseplay.generation:getPointDirection(intersect2, intersect1, false);
+		local dx, dz = courseplay:getPointDirection(intersect2, intersect1, false);
 		toPoint.x = intersect1.x + (turnInfo.wpChangeDistance * dx);
 		toPoint.z = intersect1.z + (turnInfo.wpChangeDistance * dz);
 		courseplay:generateTurnStraightPoints(vehicle, intersect1, toPoint);
@@ -1389,7 +988,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 
 		--- Generate second turn circle (Forward)
 		stopDir.x,_,stopDir.z = localToWorld(turnInfo.targetNode, 0, 0, center2ZOffset);
-		courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
+		courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, false);
 
 		--- Finish the turn
 		toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, abs(turnInfo.frontMarker) + 5);
@@ -1442,7 +1041,7 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	courseplay:generateTurnCircle(vehicle, center1, startDir, center2, turnInfo.turnRadius, turnInfo.direction * -1, true, true);
 
 	--- Move a little bit more back, so we can align better when going forward
-	local dx, dz = courseplay.generation:getPointDirection(center1, center2, false);
+	local dx, dz = courseplay:getPointDirection(center1, center2, false);
 	local rotationDeg = deg(MathUtil.getYRotationFromDirection(dx, dz));
 	rotationDeg = rotationDeg + (90 * turnInfo.direction);
 	dx, dz = MathUtil.getDirectionFromYRotation(rad(rotationDeg));
@@ -1705,11 +1304,10 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 
 	-- Drive forward until our implement reaches the circle end and a bit more so it is hopefully aligned with the tractor
 	-- and we can start reversing more or less straight.
+	fromPoint = vehicle.cp.turnCorner:getPointAtDistanceFromArcEnd((turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + buffer) * 0.2)
 	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromArcEnd(turnInfo.directionNodeToTurnNodeLength + turnInfo.wpChangeDistance + buffer)
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), from ( %.2f %.2f ), to ( %.2f %.2f)"):format(
 		nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z), 14);
-	fromPoint = vehicle.cp.turnTargets[#vehicle.cp.turnTargets]
-	fromPoint.x, fromPoint.z = fromPoint.posX, fromPoint.posZ
 	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, false, false );
 
 	-- now back up the implement to the edge of the field (or headland)
@@ -1717,12 +1315,12 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 
 	if turnInfo.reversingWorkTool and turnInfo.reversingWorkTool.cp.realTurningNode then
 		-- with towed reversing tools the reference point is the tool, not the tractor so don't care about frontMarker and such
-		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.reverseWPChangeDistance - 1)
+		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.reverseWPChangeDistance - 10)
 	else
-		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.frontMarker - turnInfo.reverseWPChangeDistance - 1)
+		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.frontMarker - turnInfo.reverseWPChangeDistance - 10)
 	end
 
-	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, false, turnInfo.reverseWPChangeDistance);
+	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, true, turnInfo.reverseWPChangeDistance);
 
 	-- lower the implement 
 	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].lowerImplement = true
@@ -1730,7 +1328,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	--- Finish the turn
 	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromArcEnd(3)
 	-- add just one target well forward, making sure it is in front of the tractor
-	courseplay:addTurnTarget(vehicle, toPoint.x, toPoint.z, true, false)
+	--courseplay:addTurnTarget(vehicle, toPoint.x, toPoint.z, true, false)
 end
 
 function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftTurn)
@@ -1738,7 +1336,7 @@ function courseplay:getTurnCircleTangentIntersectionPoints(cp, np, radius, leftT
 	link(g_currentMission.terrainRootNode, point);
 
 	-- Rotate it in the right direction
-	local dx, dz = courseplay.generation:getPointDirection(cp, np, false);
+	local dx, dz = courseplay:getPointDirection(cp, np, false);
 	local yRot = MathUtil.getYRotationFromDirection(dx, dz);
 	setRotation(point, 0, yRot, 0);
 
@@ -1787,7 +1385,7 @@ function courseplay:haveHeadlands(vehicle)
 	return vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0;
 end;
 
-function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeWhenPosible, doNotAddLastPoint)
+function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeDirectionWhenAligned, doNotAddLastPoint)
 	local endTurn = false;
 	local wpDistance = wpDistance;
 	local dist = courseplay:distance(fromPoint.x, fromPoint.z, toPoint.x, toPoint.z);
@@ -1799,7 +1397,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 	end;
 
 	-- add first point
-	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, endTurn, reverse, nil, nil, nil, changeWhenPosible);
+	courseplay:addTurnTarget(vehicle, fromPoint.x, fromPoint.z, endTurn, reverse, nil, nil, nil, changeDirectionWhenAligned);
 
 	-- add points between the first and last
 	local posX, posZ;
@@ -1809,7 +1407,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 			posX = fromPoint.x + (i * wpDistance * dx);
 			posZ = fromPoint.z + (i * wpDistance * dz);
 
-			courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, nil, nil, nil, changeWhenPosible);
+			courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, nil, nil, nil, changeDirectionWhenAligned);
 		end;
 	end;
 
@@ -1825,7 +1423,7 @@ function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reve
 	posX = toPoint.x;
 	posZ = toPoint.z;
 
-	courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, revPosX, revPosZ, nil, changeWhenPosible);
+	courseplay:addTurnTarget(vehicle, posX, posZ, endTurn, reverse, revPosX, revPosZ, nil, changeDirectionWhenAligned);
 
 end;
 
@@ -1833,13 +1431,13 @@ end;
 -- to startDir intersects the circle and ends where the line from the center of the circle to stopDir
 -- intersects the circle.
 --
-function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radius, clockWice, addEndPoint, reverse)
-	-- Convert clockWice to the right format
-	if clockWice == nil then clockWice = 1 end;
-	if clockWice == false or clockWice < 0 then
-		clockWice = -1;
+function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radius, clockwise, addEndPoint, reverse)
+	-- Convert clockwise to the right format
+	if clockwise == nil then clockwise = 1 end;
+	if clockwise == false or clockwise < 0 then
+		clockwise = -1;
 	else
-		clockWice = 1;
+		clockwise = 1;
 	end;
 
 	-- Define some basic values to use
@@ -1851,9 +1449,9 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	local endRot		= 0;
 
 	-- Get the start and end rotation
-	local dx, dz = courseplay.generation:getPointDirection(center, startDir, false);
+	local dx, dz = courseplay:getPointDirection(center, startDir, false);
 	startRot = deg(MathUtil.getYRotationFromDirection(dx, dz));
-	dx, dz = courseplay.generation:getPointDirection(center, stopDir, false);
+	dx, dz = courseplay:getPointDirection(center, stopDir, false);
 	endRot = deg(MathUtil.getYRotationFromDirection(dx, dz));
 
 	-- Create new transformGroupe to use for placing waypoints
@@ -1868,27 +1466,27 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	setRotation(point, 0, rad(startRot), 0);
 
 	-- Fix the rotation values in some special cases
-	if clockWice == 1 then
-		--(Turn:generateTurnCircle) startRot=90, endRot=-29, degreeStep=20, degreeToTurn=240, clockWice=1
+	if clockwise == 1 then
+		--(Turn:generateTurnCircle) startRot=90, endRot=-29, degreeStep=20, degreeToTurn=240, clockwise=1
 		if startRot > endRot then
 			degreeToTurn = endRot + 360 - startRot;
 		else
 			degreeToTurn = endRot - startRot;
 		end;
 	else
-		--(Turn:generateTurnCircle) startRot=150, endRot=90, degreeStep=-20, degreeToTurn=60, clockWice=-1
+		--(Turn:generateTurnCircle) startRot=150, endRot=90, degreeStep=-20, degreeToTurn=60, clockwise=-1
 		if startRot < endRot then
 			degreeToTurn = startRot + 360 - endRot;
 		else
 			degreeToTurn = startRot - endRot;
 		end;
 	end;
-	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) startRot=%d, endRot=%d, degreeStep=%d, degreeToTurn=%d, clockWice=%d", nameNum(vehicle), startRot, endRot, (degreeStep * clockWice), degreeToTurn, clockWice), 14);
+	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) startRot=%d, endRot=%d, degreeStep=%d, degreeToTurn=%d, clockwise=%d", nameNum(vehicle), startRot, endRot, (degreeStep * clockwise), degreeToTurn, clockwise), 14);
 
 	-- Get the number of waypoints
 	numWP = ceil(degreeToTurn / degreeStep);
 	-- Recalculate degreeStep
-	degreeStep = (degreeToTurn / numWP) * clockWice;
+	degreeStep = (degreeToTurn / numWP) * clockwise;
 	-- Add extra waypoint if addEndPoint is true
 	if addEndPoint then numWP = numWP + 1; end;
 
@@ -1916,7 +1514,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	delete(point);
 end;
 
-function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, changeWhenPosible)
+function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, revPosX, revPosZ, dontPrint, changeDirectionWhenAligned)
 	local target = {};
 	target.posX 			  = posX;
 	target.posZ 			  = posZ;
@@ -1924,11 +1522,11 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, rev
 	target.turnReverse		  = turnReverse;
 	target.revPosX 			  = revPosX;
 	target.revPosZ 			  = revPosZ;
-	target.changeWhenPosible = changeWhenPosible;
+	target.changeDirectionWhenAligned = changeDirectionWhenAligned;
 	table.insert(vehicle.cp.turnTargets, target);
 
 	if not dontPrint then
-		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeWhenPosible=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeWhenPosible and true or false)), 14);
+		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeDirectionWhenAligned=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeDirectionWhenAligned and true or false)), 14);
 	end;
 end
 
@@ -1938,16 +1536,6 @@ function courseplay:clearTurnTargets(vehicle)
 	vehicle.cp.curTurnIndex = 1;
 	vehicle.cp.haveCheckedMarkersThisTurn = false;
 	vehicle.cp.headlandTurn = nil
-
-	--- RESET OFFSET TOGGLES
-	if vehicle.cp.symmetricLaneChange and not vehicle.cp.switchLaneOffset then
-		vehicle.cp.switchLaneOffset = true;
-		courseplay:debug(string.format("%s: isTurning=false, switchLaneOffset=false -> set switchLaneOffset to true", nameNum(vehicle)), 12);
-	end;
-	if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil and not vehicle.cp.switchToolOffset then
-		vehicle.cp.switchToolOffset = true;
-		courseplay:debug(string.format("%s: isTurning=false, switchToolOffset=false -> set switchToolOffset to true", nameNum(vehicle)), 12);
-	end;
 
 	if vehicle.cp.turnCorner then
 		vehicle.cp.turnCorner:delete()
@@ -1968,30 +1556,6 @@ function courseplay:needToWaitForTools(vehicle)
 	end
 	return wait
 end
-
-
-function courseplay:turnWithOffset(vehicle)
-	--SYMMETRIC LANE CHANGE
-	if vehicle.cp.symmetricLaneChange then
-		if vehicle.cp.switchLaneOffset then
-			if vehicle.cp.multiTools == 1 then
-				courseplay:changeLaneOffset(vehicle, nil, -vehicle.cp.laneOffset);
-			else
-				courseplay:changeLaneNumber(vehicle, -2*vehicle.cp.laneNumber)
-			end;
-			vehicle.cp.switchLaneOffset = false;
-			courseplay:debug(string.format("%s: cp.turnStage == 1, switchLaneOffset=true -> new laneOffset=%.1f, new totalOffset=%.1f, set switchLaneOffset to false", nameNum(vehicle), vehicle.cp.laneOffset, vehicle.cp.totalOffsetX), 12);
-		end;
-	end;
-	--TOOL OFFSET TOGGLE
-	if vehicle.cp.hasPlow and vehicle.cp.rotateablePlow ~= nil then
-		if vehicle.cp.switchToolOffset then
-			courseplay:changeToolOffsetX(vehicle, nil, vehicle.cp.toolOffsetX * -1, true);
-			vehicle.cp.switchToolOffset = false;
-			courseplay:debug(string.format("%s: cp.turnStage == 1, switchToolOffset=true -> new toolOffset=%.1f, new totalOffset=%.1f, set switchToolOffset to false", nameNum(vehicle), vehicle.cp.toolOffsetX, vehicle.cp.totalOffsetX), 12);
-		end;
-	end;
-end;
 
 function courseplay.createNode( name, x, z, yRotation, rootNode )
 	local node = createTransformGroup( name )
@@ -2014,54 +1578,6 @@ function courseplay.destroyNode( node )
 		unlink( node )
 		delete( node )
 	end
-end
-
---- Find the waypoint at the given distance from the turn end
--- @param turnTargets list of (turn target) waypoints
--- @param d distance if < 0 it is behind the turn end node, if > 0 it is in front of it
--- @return index of first waypoint in d or greater distance from the turn end waypoint
-function courseplay.getWpIxInDistanceFromEnd(turnTargets, d, targetIx)
-	local x, z = turnTargets[targetIx].posX, turnTargets[targetIx].posZ
-	if d >= 0 then
-		-- we must lower the implement after we passed the turn end waypoint (towing a cultivator for example)
-		local dFromTarget = 0
-		-- so start at the turn end and go forward
-		for i = targetIx + 1, #turnTargets do
-			dFromTarget = dFromTarget + courseplay:distance(x, z, turnTargets[i].posX, turnTargets[i].posZ)
-			if dFromTarget > d then
-				return i
-			end
-		end
-	else
-		-- we must lower the implement before we get to the turn end waypoint (combine, header is in front)
-		local dFromTarget = 0
-		-- so start at the turn end and go backwards
-		for i = targetIx, 2, -1 do
-			dFromTarget = dFromTarget + courseplay:distance(x, z, turnTargets[i].posX, turnTargets[i].posZ)
-			if dFromTarget > -d then
-				return i
-			end
-		end
-	end
-	return nil
-end
-
---- Find the waypoint closest to the turn target (turn end waypoint)
--- This is in some cases known when we generate the turn as we use the turn end node as one of the endpoints of the
--- turn course segments, but not always, so, ugly as it is, we now go ahead and find that again based on the distance
-function courseplay:findTurnTargetWaypointIx(vehicle, turnEndNode)
-	local x, _, z = getWorldTranslation(turnEndNode)
-	local minD = math.huge
-	local targetIx
-	for i = #vehicle.cp.turnTargets, 2, -1 do
-		local d = courseplay:distance(x, z, vehicle.cp.turnTargets[i].posX, vehicle.cp.turnTargets[i].posZ)
-		if d < minD then
-			minD = d
-			targetIx = i
-		end
-	end
-	courseplay:debug(string.format("%s:(Turn) turn target is at waypoint index %d", nameNum(vehicle), targetIx and targetIx or -1), 14)
-	return targetIx
 end
 
 --[[
@@ -2124,89 +1640,20 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, tx, tz, tDirec
 	return result
 end
 
--- Start the vehicle on an alignment course towards targetWaypoint.
--- The alignment course consists of a circle segment ending at targetWaypoint,
--- with the tangent showing into the direction to the waypoint after targetWaypoint.
--- This makes sure the vehicle arrives at targetWaypoint in the correct
--- direction and won't circle around it.
---
--- The alignment course is implemented as a turn maneuver.
---
--- No obstacles are checked.
-function courseplay:startAlignmentCourse( vehicle, targetWaypoint, forceEnable )
-	if not vehicle.cp.alignment.enabled and not forceEnable then return end
-	if not ( targetWaypoint and targetWaypoint.angle ) then
-		courseplay.debugVehicle( 14, vehicle, "No target waypoint or no angle on target waypoint, can't generate alignment course.")
-		printCallstack()
-		return
-	end
-
-	--Readjust x and z for offset being used
-	if courseplay:getIsVehicleOffsetValid(vehicle) then
-		targetWaypoint.cx, targetWaypoint.cz = courseplay:getVehicleOffsettedCoords(vehicle, targetWaypoint.cx, targetWaypoint.cz);
-	end;
-
-	local vx, _, vz = getWorldTranslation(vehicle.cp.DirectionNode or vehicle.rootNode)
-	local points = courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, targetWaypoint.cx, targetWaypoint.cz, math.rad( targetWaypoint.angle ))
-	if not points then
-		courseplay.debugVehicle( 14, vehicle, "(Align) can't find an alignment course, may be too close to target wp?" )
-		return
-	end
-	if #points < 3 then
-		courseplay.debugVehicle( 14, vehicle, "(Align) Alignment course would be only %d waypoints, it isn't needed then.", #points )
-		return
-	end
-	courseplay:clearTurnTargets( vehicle )
-	for _, point in ipairs( points ) do
-		courseplay:addTurnTarget( vehicle, point.posX, point.posZ, false )
-		courseplay.debugVehicle( 14, vehicle, "(Align) Adding an alignment wp: (%1.f, %1.f)", point.posX, point.posZ )
-	end
-	vehicle.cp.turnTargets[#vehicle.cp.turnTargets].turnEnd = true
-	vehicle.cp.turnStage = 2
-	vehicle.cp.isTurning = true
-	vehicle.cp.alignment.onAlignmentCourse = true
-	vehicle.cp.alignment.justFinished = false
-end
-
--- is the vehicle currently on an alignment course?
-function courseplay:onAlignmentCourse( vehicle )
-	return vehicle.cp.alignment.onAlignmentCourse
-end
-
-function courseplay:getAlignmentCourseWpChangeDistance( vehicle )
-	-- same for all vehicles for now
-	return 3
-end
-
--- End the alignment course, restore the original course and continue on it.
-function courseplay:endAlignmentCourse( vehicle )
-	if courseplay:onAlignmentCourse( vehicle ) then
-		courseplay.debugVehicle( 14, vehicle, "(Align) Ending alignment course, continue on original course at waypoint %d.", vehicle.cp.waypointIndex)
-		vehicle.cp.alignment.onAlignmentCourse = false
-		-- that's for the waypoint change distance calculation in drive.lua, for the first waypoint it is 0.5 meters
-		-- but we won't be able to get that close every time which results in circling. So set this flag to make
-		-- drive.lua pick a bigger waypoint switch distance
-		vehicle.cp.alignment.justFinished = true
-	else
-		courseplay.debugVehicle( 14, vehicle, "(Align) Ending alignment course but not on alignment course." )
-	end
-	courseplay:clearTurnTargets( vehicle )
-	vehicle.cp.isTurning = nil
-end
-
 --- Helper class providing information about a turn maneuver corner.
 
 ---@class Corner
 Corner = CpObject()
 
--- @param vehicle the vehicle
--- @param startAngleDeg the angle we are arriving at the turn start waypoint (not the angle of the turn start wp, the angle
--- of the one before!)
+---@param vehicle table the vehicle
+---@param startAngleDeg number the angle we are arriving at the turn start waypoint (not the angle of the turn start wp, the angle
+---of the one before!)
 ---@param startWp Waypoint turn start waypoint
--- @param endAngleDeg the direction we want to end the turn
+---@param endAngleDeg number direction we want to end the turn
 ---@param endWp Waypoint turn end waypoint
--- @param turnRadius radius to use in this turn
--- @param offsetX left/right offset of the course
+---@param turnRadius number radius to use in this turn
+---@param offsetX number left/right offset of the course. The Corner uses the un-offset coordinates of the start/end
+--- waypoints and the offsetX to move the corner point diagonally inward or outward if the course has a side offset
 function Corner:init(vehicle, startAngleDeg, startWp, endAngleDeg, endWp, turnRadius, offsetX)
 	self.debugChannel = 14
 	self.vehicle = vehicle
@@ -2216,17 +1663,21 @@ function Corner:init(vehicle, startAngleDeg, startWp, endAngleDeg, endWp, turnRa
 	self.offsetX = offsetX
 	self.startNode = courseplay.createNode(tostring(self) .. '-cpTurnStartNode', self.startWp.x, self.startWp.z, math.rad(startAngleDeg))
 	self.endNode = courseplay.createNode(tostring(self) .. '-cpTurnEndNode', self.endWp.x, self.endWp.z, math.rad(self.endAngleDeg))
-
-	-- the startAngle reversed by 180
-	self.reverseStartAngle = startAngleDeg > 0 and startAngleDeg - 180 or startAngleDeg + 180
-	-- this is the corner angle
-	self.alpha = getDeltaAngle(math.rad(self.endAngleDeg), math.rad(self.reverseStartAngle))
+	self.alpha, self.reverseStartAngle = Corner.getAngles(startAngleDeg, endAngleDeg)
 	self.turnDirection = self.alpha > 0 and 1 or -1
 	self:debug('start: %.1f end: %.1f alpha: %.1f dir: %d',
 		startAngleDeg, self.endAngleDeg, math.deg(self.alpha), self.turnDirection)
 
 	self:findCornerNodes(startAngleDeg)
 	self:findCircle(turnRadius)
+end
+
+function Corner.getAngles(startAngleDeg, endAngleDeg)
+	-- the startAngle reversed by 180
+	local reverseStartAngle = startAngleDeg > 0 and startAngleDeg - 180 or startAngleDeg + 180
+	-- this is the corner angle
+	local alpha = getDeltaAngle(math.rad(endAngleDeg), math.rad(reverseStartAngle))
+	return alpha, reverseStartAngle
 end
 
 function Corner:delete()
@@ -2257,8 +1708,9 @@ function Corner:findCornerNodes(startAngle)
 	-- line 1 through startWp at startAngle, and
 	-- line 2 through endWp at endAngle
 
-	-- So go ahead and find that point. First we need to make the lines long enough so they actually intersect1
-	local extensionDistance = 50 -- this should depend on the work width and turn radius
+	-- So go ahead and find that point. First we need to make the lines long enough so they actually intersect
+	-- must look far enough, start/end waypoints may be far away
+	local extensionDistance = math.max(50, 1.5 * courseplay:distance(self.startWp.x, self.startWp.z, self.endWp.x, self.endWp.z))
 	-- extend line 1 back and forth
 	local l1x1, _, l1z1 = localToWorld(self.startNode, 0, 0, -extensionDistance)
 	local l1x2, _, l1z2 = localToWorld(self.startNode, 0, 0, extensionDistance)
@@ -2286,6 +1738,7 @@ function Corner:findCornerNodes(startAngle)
 			is.x, is.z, startAngle, self.endAngleDeg)
 	else
 		self:debug('Could not find turn corner, using turn end waypoint')
+		self.cornerNode = self.endNode
 		self.cornerStartNode = self.startNode
 		self.cornerEndNode = self.startNode
 	end
@@ -2302,14 +1755,7 @@ function Corner:findCircle(turnRadius)
 	self.arcStart, self.arcEnd, self.center = {}, {}, {}
 	self.arcStart.x, _, self.arcStart.z = localToWorld(self.cornerStartNode, 0, 0, self.dCornerToTangentPoints)
 	self.arcEnd.x, _, self.arcEnd.z = localToWorld(self.cornerEndNode, 0, 0, self.dCornerToTangentPoints)
-	local offsetForTightTurns = 0
-	if self.vehicle.cp.driver and self.vehicle.cp.driver.getTowBarLength then
-		local towBarLength = self.vehicle.cp.driver:getTowBarLength()
-		offsetForTightTurns = self.vehicle.cp.driver:getOffsetForTowBarLength(r, towBarLength)
-		self:debug('tow bar: %.1f offset: %.1f', towBarLength, offsetForTightTurns)
-	end
-	-- move the center out towards the corner a bit so the implement stays on the circle while the tractor drives a little further out
-	self.center.x, _, self.center.z = localToWorld(self.cornerNode, 0, 0, self.dCornerToCircleCenter - offsetForTightTurns)
+	self.center.x, _, self.center.z = localToWorld(self.cornerNode, 0, 0, self.dCornerToCircleCenter)
 	self:debug('arc start: %.1f %.1f, arc end: %.1f %.1f, arc center: %.1f %.1f ',
 		self.arcStart.x, self.arcStart.z, self.arcEnd.x, self.arcEnd.z, self.center.x, self.center.z)
 end
@@ -2356,6 +1802,10 @@ function Corner:getArcCenter()
 	return self.center
 end
 
+function Corner:getEndAngleDeg()
+	return self.endAngleDeg
+end
+
 function Corner:debug(...)
 	courseplay.debugVehicle(self.debugChannel, self.vehicle, ...)
 end
@@ -2386,68 +1836,476 @@ TurnContext = CpObject()
 
 --- All data needed to create a turn
 -- TODO: this uses a bit too many course internal info, should maybe moved into Course?
+-- TODO: could this be done a lot easier with child nodes sitting on a single corner node?
 ---@param course Course
 ---@param turnStartIx number
 ---@param aiDriverData table to store the turn start/end waypoint nodes (which are created if nil passed in)
 --- we store the nodes some global, long lived table to avoid creating new nodes every time a TurnContext object
 --- is created
-function TurnContext:init(course, turnStartIx, aiDriverData)
+---@param workWidth number working width
+---@param frontMarkerDistance number distance of the frontmost work area from the vehicle's root node (positive is
+--- in front of the vehicle. We'll add a node (vehicleAtTurnEndNode) offset by frontMarkerDistance from the turn end
+--- node so when the vehicle's root node reaches the vehicleAtTurnEndNode, the front of the work area will exactly be on the
+--- turn end node. (The vehicle must be steered to the vehicleAtTurnEndNode instead of the turn end node so the implements
+--- reach exactly the row end)
+---@param turnEndSideOffset number offset of the turn end in meters to left (>0) or right (<0) to end the turn left or
+--- right of the turn end node. Used when there's an offset to consider, for example because the implement is not
+--- in the middle, like plows.
+function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMarkerDistance, turnEndSideOffset)
+	self.debugChannel = 14
+	self.workWidth = workWidth
 
+	--- Setting up turn waypoints
+	---
 	---@type Waypoint
 	self.beforeTurnStartWp = course.waypoints[turnStartIx - 1]
-
 	---@type Waypoint
 	self.turnStartWp = course.waypoints[turnStartIx]
 	self.turnStartWpIx = turnStartIx
-	if not aiDriverData.turnStartWpNode then
-		aiDriverData.turnStartWpNode = WaypointNode('turnStart')
-	end
-	aiDriverData.turnStartWpNode:setToWaypoint(course, turnStartIx)
-	self.turnStartWpNode = aiDriverData.turnStartWpNode
-
-	-- create a node pointing in the incoming direction of the turn start waypoint. This will be used
-	-- to determine relative position to the turn start. (the turn start WP can't be used as it is
-	-- pointing towards the turn end waypoint which may be anything around 90 degrees
-	---@type Waypoint
-	if not aiDriverData.turnStartForwardWpNode then
-		aiDriverData.turnStartForwardWpNode = WaypointNode('turnStartForward')
-	end
-	aiDriverData.turnStartForwardWpNode:setToWaypoint(course, turnStartIx)
-	setRotation(aiDriverData.turnStartForwardWpNode.node, 0, course:getWaypointYRotation(turnStartIx - 1), 0)
-	self.turnStartForwardWpNode = aiDriverData.turnStartForwardWpNode
-
 	---@type Waypoint
 	self.turnEndWp = course.waypoints[turnStartIx + 1]
 	self.turnEndWpIx = turnStartIx + 1
+	---@type Waypoint
+	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
+	self.directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle), math.rad(self.beforeTurnStartWp.angle)))
+
+	self:setupTurnStart(course, aiDriverData)
+
+	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn start
+	self.frontMarkerDistance = frontMarkerDistance or 0
+	if not aiDriverData.vehicleAtTurnStartNode then
+		aiDriverData.vehicleAtTurnStartNode = courseplay.createNode( 'vehicleAtTurnStart', 0, - self.frontMarkerDistance, 0, self.workEndNode )
+	end
+	setTranslation(aiDriverData.vehicleAtTurnStartNode, 0, 0, - self.frontMarkerDistance)
+
+	self.vehicleAtTurnStartNode = aiDriverData.vehicleAtTurnStartNode
+
+	self:setupTurnEnd(course, aiDriverData, turnEndSideOffset)
+
+	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn end
+	self.frontMarkerDistance = frontMarkerDistance or 0
+	if not aiDriverData.vehicleAtTurnEndNode then
+		aiDriverData.vehicleAtTurnEndNode = courseplay.createNode( 'vehicleAtTurnEnd', 0, - self.frontMarkerDistance, 0, self.turnEndWpNode.node )
+	end
+	setTranslation(aiDriverData.vehicleAtTurnEndNode, 0, 0, - self.frontMarkerDistance)
+	self.vehicleAtTurnEndNode = aiDriverData.vehicleAtTurnEndNode
+
+	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode, 0, 0, 0)
+	self.leftTurn = self.dx > 0
+	self:debug('start ix = %d', turnStartIx)
+end
+
+function TurnContext:debug(...)
+	courseplay.debugFormat(self.debugChannel, 'Turn context: ' .. string.format(...))
+end
+
+--- Get overshoot for a headland corner (how far further we need to drive if the corner isn't 90 degrees 
+--- for full coverage
+function TurnContext:getOvershootForHeadlandCorner()
+	local headlandAngle = math.rad(math.abs(math.abs(self.directionChangeDeg) - 90))
+	local overshoot = self.workWidth / 2 * math.tan(headlandAngle)
+	self:debug('work start node headland angle = %.1f, overshoot = %.1f', math.deg(headlandAngle), overshoot)
+	return overshoot
+end
+
+--- Set up the turn end node and all related nodes (relative to the turn end node)
+function TurnContext:setupTurnEnd(course, aiDriverData, turnEndSideOffset)
+	-- making sure we have the nodes created, and created only once
 	if not aiDriverData.turnEndWpNode then
 		aiDriverData.turnEndWpNode = WaypointNode('turnEnd')
 	end
-	aiDriverData.turnEndWpNode:setToWaypoint(course, turnStartIx + 1)
+	-- Turn end waypoint node, pointing to the direction after the turn
+	aiDriverData.turnEndWpNode:setToWaypoint(course, self.turnEndWpIx)
 	self.turnEndWpNode = aiDriverData.turnEndWpNode
 
-	---@type Waypoint
-	self.afterTurnEndWp = course.waypoints[math.min(course:getNumberOfWaypoints(), turnStartIx + 2)]
+	-- if there's an offset move the turn end node (and all others based on it)
+	if turnEndSideOffset and turnEndSideOffset ~= 0 then
+		self:debug('Applying %.1f side offset to turn end', turnEndSideOffset)
+		local x, y, z = localToWorld(self.turnEndWpNode.node, turnEndSideOffset, 0, 0)
+		setTranslation(self.turnEndWpNode.node, x, y, z)
+	end
 
-	self.directionChangeDeg = math.deg( getDeltaAngle( math.rad(self.turnEndWp.angle), math.rad(self.beforeTurnStartWp.angle)))
+	-- Set up a node where the implement must be lowered when starting to work after the turn maneuver
+	if not aiDriverData.workStartNode then
+		aiDriverData.workStartNode = courseplay.createNode('workStart', 0, 0, 0, aiDriverData.turnEndWpNode.node)
+	end
+	if not aiDriverData.lateWorkStartNode then
+		-- this is for the headland turns where we want to cover the corner in the inbound direction (before turning)
+		-- so we can start working later after the turn
+		aiDriverData.lateWorkStartNode = courseplay.createNode('lateWorkStartNode', 0, 0, 0, aiDriverData.workStartNode)
+	end
 
-	courseplay.debugFormat(12, 'Turn context: start ix = %d', turnStartIx)
+	if self:isHeadlandCorner() then
+		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
+		-- for headland turns, when we cover the corner in the outbound direction, which is half self.workWidth behind
+		-- the turn end node
+		setTranslation(aiDriverData.workStartNode, 0, 0, - self.workWidth / 2 - overshoot)
+		setTranslation(aiDriverData.lateWorkStartNode, 0, 0, self.workWidth)
+	end
+	self.workStartNode = aiDriverData.workStartNode
+	self.lateWorkStartNode = aiDriverData.lateWorkStartNode
+end
 
+--- Set up the turn end node and all related nodes (relative to the turn end node)
+function TurnContext:setupTurnStart(course, aiDriverData)
+	if not aiDriverData.turnStartWpNode then
+		aiDriverData.turnStartWpNode = WaypointNode('turnStart')
+	end
+	-- Turn start waypoint node, pointing to the direction of the turn end node
+	aiDriverData.turnStartWpNode:setToWaypoint(course, self.turnStartWpIx)
+	self.turnStartWpNode = aiDriverData.turnStartWpNode
+
+	-- Set up a node where the implement must be raised when finishing a row before the turn
+	if not aiDriverData.workEndNode then
+		aiDriverData.workEndNode = courseplay.createNode('workEnd', 0, 0, 0)
+	end
+	if not aiDriverData.lateWorkEndNode then
+		-- this is for the headland turns where we want to cover the corner in the inbound direction (before turning)
+		aiDriverData.lateWorkEndNode = courseplay.createNode('lateWorkEnd', 0, 0, 0, aiDriverData.workEndNode)
+	end
+	if self:isHeadlandCorner() then
+		-- for headland turns (about 45-135 degrees) the turn end node is on the corner but pointing to
+		-- the direction after the turn. So create a node at the same location but pointing into the incoming direction
+		-- to be used to find out when to raise the implements during a headland turn
+		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnEndWpIx)
+		-- use the rotation and offset of the waypoint before the turn start to make sure that we continue straight
+		-- until the implements are raised
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(self.turnStartWpIx - 1), 0)
+		local x, y, z = course:getOffsetPositionWithOtherWaypointDirection(self.turnEndWpIx, self.turnStartWpIx)
+		setTranslation(aiDriverData.workEndNode, x, y, z)
+		local overshoot = math.min(self:getOvershootForHeadlandCorner(), self.workWidth * 2)
+		-- for headland turns, we cover the corner in the outbound direction, so here we can end work when 
+		-- the implement is half self.workWidth before the turn end node
+		x, y, z = localToWorld(aiDriverData.workEndNode, 0, 0, - self.workWidth / 2 + overshoot)
+		setTranslation(aiDriverData.workEndNode, x, y, z)
+		setTranslation(aiDriverData.lateWorkEndNode, 0, 0, self.workWidth)
+	else
+		-- For 180 turns, create a node pointing in the incoming direction of the turn start waypoint. This will be used
+		-- to determine relative position to the turn start. (the turn start WP can't be used as it is
+		-- pointing towards the turn end waypoint which may be anything around 90 degrees)
+		-- there's no need for an overshoot as it is being taken care during the course generation
+		course:setNodeToWaypoint(aiDriverData.workEndNode, self.turnStartWpIx)
+		setRotation(aiDriverData.workEndNode, 0, course:getWaypointYRotation(self.turnStartWpIx - 1), 0)
+		setTranslation(aiDriverData.lateWorkEndNode, 0, 0, 0)
+	end
+
+	self.workEndNode = aiDriverData.workEndNode
+	self.lateWorkEndNode = aiDriverData.lateWorkEndNode
+end
+
+-- node's position in the turn end wp node's coordinate system
+function TurnContext:getLocalPositionFromTurnEnd(node)
+	return localToLocal(node, self.vehicleAtTurnEndNode, 0, 0, 0)
+end
+
+-- node's position in the turn start wp node's coordinate system
+function TurnContext:getLocalPositionFromTurnStart(node)
+	return localToLocal(node, self.turnStartWpNode.node, 0, 0, 0)
+end
+
+-- node's position in the work end node's coordinate system
+function TurnContext:getLocalPositionFromWorkEnd(node)
+	return localToLocal(node, self.workEndNode, 0, 0, 0)
+end
+
+-- turn end wp node's position in node's coordinate system
+function TurnContext:getLocalPositionOfTurnEnd(node)
+	return localToLocal(self.vehicleAtTurnEndNode, node, 0, 0, 0)
+end
+
+function TurnContext:isPointingToTurnEnd(node, thresholdDeg)
+	local lx, _, lz = localToLocal(self.turnEndWpNode.node, node, 0, 0, 0)
+	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg)
 end
 
 function TurnContext:isHeadlandCorner()
+	-- TODO: there should be a better way to find this out
 	return math.abs( self.directionChangeDeg ) < laneTurnAngleThreshold
+end
+
+function TurnContext:isPathfinderTurn(turnDiameter)
+	local d = math.sqrt(self.dx * self.dx + self.dz * self.dz)
+	return not self:isHeadlandCorner() and (math.abs(self.dx) > turnDiameter or d > 2 * turnDiameter)
+end
+
+--- A simple wide turn is where there's no corner to avoid, no headland to follow, there is a straight line on the
+--- field between the turn start and end
+--- Currently we don't have a really good way to find this out so assume that if the turn end is reasonably close
+--- to the turn start, there'll be nothing in our way.
+function TurnContext:isSimpleWideTurn(turnDiameter)
+	return not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter and math.abs(self.dx) < turnDiameter * 1.5 and math.abs(self.dz) < turnDiameter
+end
+
+function TurnContext:isWideTurn(turnDiameter)
+	return not self:isHeadlandCorner() and math.abs(self.dx) > turnDiameter
+end
+
+function TurnContext:isLeftTurn()
+	if self:isHeadlandCorner() then
+		local cornerAngle = self:getCornerAngle()
+		return cornerAngle > 0
+	else
+		return self.leftTurn
+	end
 end
 
 function TurnContext:setTargetNode(node)
 	self.targetNode = node
 end
 
-function TurnContext:createCorner(vehicle, r)
+-- TODO: this should be a global util function, not under TurnContext
+function TurnContext:getNodeDirection(node)
+	local lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
+	return math.atan2( lx, lz )
+end
+
+--- Returns true if node1 is pointing approximately in node2's direction
+---@param thresholdDeg number defines what 'approximately' means, by default if the difference is less than 10 degrees
+function TurnContext.isSameDirection(node1, node2, thresholdDeg)
+	local lx, _, lz = localDirectionToLocal(node1, node2, 0, 0, 1)
+	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg or 5)
+end
+
+--- Returns true if node is pointing approximately in the turn start direction, that is, the direction from
+--- turn start waypoint to the turn end waypoint.
+function TurnContext:isDirectionCloseToStartDirection(node, thresholdDeg)
+	return TurnContext.isSameDirection(node, self.turnStartWpNode.node, thresholdDeg)
+end
+
+--- Returns true if node is pointing approximately in the turn's ending direction, that is, the direction of the turn
+--- end waypoint, the direction the vehicle will continue after the turn
+function TurnContext:isDirectionCloseToEndDirection(node, thresholdDeg)
+	return TurnContext.isSameDirection(node, self.turnEndWpNode.node, thresholdDeg)
+end
+
+--- Use to find out if we can make a turn: are we farther away from the next row than our turn radius
+--- @param dx number lateral distance from the next row (dx from turn end node)
+--- @return boolean True if dx is bigger than r, considering the turn's direction
+function TurnContext:isLateralDistanceGreater(dx, r)
+	if self:isLeftTurn() then
+		-- more than r meters to the left
+		return dx > r
+	else
+		-- more than r meters to the right
+		return dx < -r
+	end
+end
+
+function TurnContext:isLateralDistanceLess(dx, r)
+	if self:isLeftTurn() then
+		-- less than r meters to the left
+		return dx < r
+	else
+		-- less than r meters to the right
+		return dx > -r
+	end
+end
+
+function TurnContext:getAngleToTurnEndDirection(node)
+	local lx, _, lz = localDirectionToLocal(self.turnEndWpNode.node, node, 0, 0, 1)
+	-- TODO: check for nan?
+	return math.atan2(lx, lz)
+end
+
+function TurnContext:isDirectionPerpendicularToTurnEndDirection(node, thresholdDeg)
+	local lx, _, lz = localDirectionToLocal(self.turnEndWpNode.node, node, self:isLeftTurn() and -1 or 1, 0, 0)
+	return math.abs(math.atan2(lx, lz)) < math.rad(thresholdDeg or 5)
+end
+
+--- An angle of 0 means the headland is perpendicular to the up/down rows
+function TurnContext:getHeadlandAngle()
+	local lx, _, lz = localDirectionToLocal(self.turnEndWpNode.node, self.turnStartWpNode.node, self:isLeftTurn() and -1 or 1, 0, 0)
+	return math.abs(math.atan2(lx, lz))
+end
+
+
+function TurnContext:getAverageEndAngleDeg()
 	-- use the average angle of the turn end and the next wp as there is often a bend there
-	local endAngleDeg = math.deg(getAverageAngle(math.rad(self.turnEndWp.angle), math.rad(self.afterTurnEndWp.angle)))
+	return math.deg(getAverageAngle(math.rad(self.turnEndWp.angle), math.rad(self.afterTurnEndWp.angle)))
+end
+
+--- @return number the angle to turn in this corner (if the corner is less than 90 degrees, you'll have to turn > 90 degrees)
+function TurnContext:getCornerAngle()
+	local endAngleDeg = self:getAverageEndAngleDeg()
+	local alpha, _ = Corner.getAngles(self.turnStartWp.angle, endAngleDeg)
+	return alpha
+end
+
+--- @return number the angle to turn in this corner (if the corner is less than 90 degrees, you'll have to turn > 90 degrees)
+function TurnContext:getCornerAngleToTurn()
+	local endAngleDeg = self:getAverageEndAngleDeg()
+	return getDeltaAngle(math.rad(endAngleDeg), math.rad(self.turnStartWp.angle))
+end
+
+--- Create a corner based on the turn context's start and end waypoints
+---@param vehicle table
+---@param r number turning radius in m
+---@param sideOffset number (left < 0, right > 0) side offset to use when the course has an offset, for example
+--- due to a tool setting. When not supplied the tool offset X set for the vehicle is used
+function TurnContext:createCorner(vehicle, r, sideOffset)
+	-- use the average angle of the turn end and the next wp as there is often a bend there
+	local endAngleDeg = self:getAverageEndAngleDeg()
 	courseplay.debugVehicle(14, vehicle, 'start angle: %.1f, end angle: %.1f (from %.1f and %.1f)', self.beforeTurnStartWp.angle,
 		endAngleDeg, self.turnEndWp.angle, self.afterTurnEndWp.angle)
-	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, vehicle.cp.totalOffsetX)
+	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, sideOffset or vehicle.cp.toolOffsetX)
+end
+
+--- Create a turn ending course using the vehicle's current position and the front marker node (where the vehicle must
+--- be in the moment it starts on the next row. Use the Corner class to generate a nice arc.
+-- TODO: use Dubins instead?
+---@param vehicle table
+---@param corner Corner if caller already has a corner to use, can pass in here. If nil, we will create our own
+---@return Course
+function TurnContext:createEndingTurnCourse(vehicle, corner)
+	local startAngle = math.deg(self:getNodeDirection(AIDriverUtil.getDirectionNode(vehicle)))
+	local r = vehicle.cp.turnDiameter / 2
+	local startPos, endPos = {}, {}
+	startPos.x, _, startPos.z = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
+	endPos.x, _, endPos.z = getWorldTranslation(self.vehicleAtTurnEndNode)
+	-- use side offset 0 as all the offsets is already included in the vehicleAtTurnEndNode
+	local myCorner = corner or Corner(vehicle, startAngle, startPos, self.turnEndWp.angle, endPos	, r, 0)
+	courseplay:clearTurnTargets(vehicle)
+	local center = myCorner:getArcCenter()
+	local startArc = myCorner:getArcStart()
+	local endArc = myCorner:getArcEnd()
+	courseplay:generateTurnCircle(vehicle, center, startArc, endArc, r, self:isLeftTurn() and 1 or -1, false);
+	-- make sure course reaches the front marker node so end it well behind that node
+	local endStraight = {}
+	endStraight.x, _, endStraight.z = localToWorld(self.vehicleAtTurnEndNode, 0, 0, 3)
+	courseplay:generateTurnStraightPoints(vehicle, endArc, endStraight)
+	local course = Course(vehicle, vehicle.cp.turnTargets, true)
+	-- if we created our corner, delete it now.
+	if not corner then myCorner:delete() end
+	courseplay:clearTurnTargets(vehicle)
+	return course
+end
+
+--- Course to reverse before starting a turn to make sure the turn is completely on the field
+--- @param vehicle table
+--- @param reverseDistance number distance to reverse in meters
+function TurnContext:createReverseWaypointsBeforeStartingTurn(vehicle, reverseDistance)
+	local reverserNode = AIDriverUtil.getReverserNode(vehicle)
+	local _, _, dStart = localToLocal(reverserNode or AIDriverUtil.getDirectionNode(vehicle), self.workEndNode, 0, 0, 0)
+	local waypoints = {}
+	for d = dStart, dStart - reverseDistance - 1, -1 do
+		local x, y, z = localToWorld(self.workEndNode, 0, 0, d)
+		table.insert(waypoints, {x = x, y = y, z = z, rev = true})
+	end
+	return waypoints
+end
+
+--- Course to end a pathfinder turn, a straight line from where pathfinder ended, into to next row,
+--- making sure it is long enough so the vehicle reaches the point to lower the implements on this course
+---@param course Course pathfinding course to append the ending course to
+function TurnContext:appendEndingTurnCourse(course)
+	-- make sure course reaches the front marker node so end it well behind that node
+	local _, _, dzFrontMarker = course:getWaypointLocalPosition(self.vehicleAtTurnEndNode, course:getNumberOfWaypoints())
+	local _, _, dzWorkStart = course:getWaypointLocalPosition(self.workStartNode, course:getNumberOfWaypoints())
+	local waypoints = {}
+	-- A line between the front marker and the work start node, regardless of which one is first
+	local startNode = dzFrontMarker < dzWorkStart and self.vehicleAtTurnEndNode or self.workStartNode
+    -- +1 so the first waypoint of the appended line won't overlap with the last wp of course
+	for d = math.min(dzFrontMarker, dzWorkStart) + 1, math.max(dzFrontMarker, dzWorkStart) + 3, 1 do
+		local x, y, z = localToWorld(startNode, 0, 0, d)
+		table.insert(waypoints, {x = x, y = y, z = z, turnEnd = true})
+	end
+	course:appendWaypoints(waypoints)
+end
+
+
+--- Course to finish a row before the turn, just straight ahead, ignoring the corner
+---@return Course
+function TurnContext:createFinishingRowCourse(vehicle)
+	local waypoints = {}
+	-- must be at least as long as the front marker distance so we are not reaching the end of the course before
+	-- the implement reaches the field edge (a negative frontMarkerDistance means the implement is behind the
+	-- vehicle, this isn't a problem for a positive frontMarkerDistance as the implement reaches the field edge
+	-- before the vehicle (except for very wide work widths of course, so make sure we have enough course to cross
+	-- the headland)
+	-- TODO: fix this properly, maybe we should check the end course during turns instead
+	for d = 0, math.max(self.workWidth * 1.5, -self.frontMarkerDistance * 6), 1 do
+		local x, _, z = localToWorld(self.workEndNode, 0, 0, d)
+		table.insert(waypoints, {x = x, z = z})
+	end
+	return Course(vehicle, waypoints, true)
+end
+
+--- How much space we have from node to the field edge (in the direction of the node)?
+---@return number
+function TurnContext:getDistanceToFieldEdge(node)
+	for d = 0, 100, 1 do
+		local x, _, z = localToWorld(node, 0, 0, d)
+		local isField, area, totalArea = courseplay:isField(x, z, 1, 1)
+		if d == 0 and not isField then
+			self:debug('Field edge not found (vehicle not on field)')
+			return nil
+		end
+		local fieldRatio = area / totalArea
+		if not isField or fieldRatio < 0.5 then
+			self:debug('Field edge is at %d m, ratio %.2f', d, fieldRatio)
+			return d
+		end
+	end
+	-- edge not found
+	self:debug('Field edge more than 100 m away')
+	return math.huge
+end
+
+--- Assuming a vehicle just finished a row, provide parameters for calculating a path to the start
+--- of the next row, making sure that the vehicle and the implement arrives there aligned with the row direction
+---@return number, number, number the node where the turn ends, z offset to use with the start node, z offset to use with the end node
+function TurnContext:getTurnEndNodeAndOffsets()
+	local turnEndNode, startOffset, goalOffset
+	if self.frontMarkerDistance > 0 then
+		-- implement in front of vehicle. Turn should end with the implement at the work start position, this is where
+		-- the vehicle's root node is on the vehicleAtTurnEndNode
+		turnEndNode = self.vehicleAtTurnEndNode
+		startOffset = self.frontMarkerDistance
+		goalOffset = 0
+	else
+		-- implement behind vehicle. Since we are turning, we want to be aligned with the next row with our vehicle
+		-- on the work start node so by the time the implement reaches it, it is also aligned
+		turnEndNode = self.workStartNode
+		startOffset = 0
+		goalOffset = self.frontMarkerDistance
+	end
+	return turnEndNode, startOffset, goalOffset
+end
+
+function TurnContext:debug(...)
+	courseplay.debugFormat(self.debugChannel, 'TurnContext: ' .. string.format(...))
+end
+
+function TurnContext:drawDebug()
+	if courseplay.debugChannels[self.debugChannel] then
+		local cx, cy, cz
+		local nx, ny, nz
+		local height = 1
+		if self.workStartNode then
+			cx, cy, cz = localToWorld(self.workStartNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.workStartNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0, 1, 0, nx, ny + height, nz)
+		end
+		if self.lateWorkStartNode then
+			cx, cy, cz = localToWorld(self.lateWorkStartNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.lateWorkStartNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0, 0.7, 0, nx, ny + height, nz)
+		end
+		if self.workEndNode then
+			cx, cy, cz = localToWorld(self.workEndNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.workEndNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 1, 0, 0, nx, ny + height, nz)
+		end
+		if self.lateWorkEndNode then
+			cx, cy, cz = localToWorld(self.lateWorkEndNode, -self.workWidth / 2, 0, 0)
+			nx, ny, nz = localToWorld(self.lateWorkEndNode, self.workWidth / 2, 0, 0)
+			cpDebug:drawLine(cx, cy + height, cz, 0.7, 0, 0, nx, ny + height, nz)
+		end
+		if self.vehicleAtTurnEndNode then
+			cx, cy, cz = localToWorld(self.vehicleAtTurnEndNode, 0, 0, 0)
+			cpDebug:drawLine(cx, cy, cz, 1, 1, 0, cx, cy + 2, cz)
+		end
+	end
 end
 
 -- do not delete this line

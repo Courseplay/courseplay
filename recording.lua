@@ -3,7 +3,7 @@ local abs, atan2, ceil, deg, floor, rad = math.abs, math.atan2, math.ceil, math.
 
 -- records waypoints for course
 function courseplay:record(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	if vehicle.cp.lastValidTipDistance ~= nil then
 		vehicle.cp.lastValidTipDistance = nil
@@ -43,7 +43,7 @@ function courseplay:record(vehicle)
 end;
 
 function courseplay:set_waitpoint(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local wait = true;
 	local unload;
@@ -57,7 +57,7 @@ function courseplay:set_waitpoint(vehicle)
 end
 
 function courseplay:set_unloadPoint(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local wait;
 	local unload = true;
@@ -71,7 +71,7 @@ function courseplay:set_unloadPoint(vehicle)
 end
 
 function courseplay:set_crossing(vehicle, stop)
-	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local wait;
 	local unload;
@@ -104,7 +104,7 @@ function courseplay:start_record(vehicle)
 
 	courseplay.signs:updateWaypointSigns(vehicle, "current");
 	courseplay:validateCanSwitchMode(vehicle);
-	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end
 
 -- stops course recording -- just setting variables
@@ -122,7 +122,7 @@ function courseplay:stop_record(vehicle)
 	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
 	courseplay.signs:updateWaypointSigns(vehicle);
-	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 
 	-- SETUP 2D COURSE DRAW DATA
 	vehicle.cp.course2dUpdateDrawData = true;
@@ -148,7 +148,7 @@ function courseplay:setRecordingPause(vehicle)
 		courseplay.signs:changeSignType(vehicle, oldSignIndex, oldSignType, newSignType);
 
 		courseplay:validateCanSwitchMode(vehicle);
-		courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+		--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 	end;
 end;
 
@@ -161,7 +161,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 	end;
 	courseplay:debug(string.format('%s: set "isRecordingTurnManeuver" to %s', nameNum(vehicle), tostring(vehicle.cp.isRecordingTurnManeuver)), 16);
 
-	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local wait,unload, rev, crossing;
 	if vehicle.cp.isRecordingTurnManeuver then
@@ -206,12 +206,12 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1,true);
 	local diamondColor = vehicle.cp.isRecordingTurnManeuver and 'turnStart' or 'turnEnd';
 	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle, nil, nil, diamondColor);
-	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end;
 
 -- set Waypoint before change direction
 function courseplay:change_DriveDirection(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
 	local wait,unload, crossing;
 	local rev = courseplay:trueOrNil(vehicle.cp.drivingDirReverse);
@@ -225,7 +225,7 @@ function courseplay:change_DriveDirection(vehicle)
 	vehicle.cp.recordingTimer = 1;
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1,true);
 	courseplay.signs:addSign(vehicle, 'normal', cx, cz, nil, newAngle, nil, nil, 'regular');
-	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end
 
 -- delete last waypoint
@@ -245,11 +245,11 @@ function courseplay:delete_waypoint(vehicle)
 		vehicle.Waypoints[vehicle.cp.waypointIndex] = nil
 		vehicle.cp.numWaypoints = vehicle.cp.waypointIndex;
 	end;
-	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end;
 
 function courseplay:currentVehAngle(vehicle)
-	local x, y, z = localDirectionToWorld(vehicle.cp.DirectionNode, 0, 0, 1);
+	local x, y, z = localDirectionToWorld(vehicle.cp.directionNode, 0, 0, 1);
 	local length = MathUtil.vector2Length(x, z);
 	local dx, dz = x/length, z/length;
 	local angleRad = MathUtil.getYRotationFromDirection(dx, dz);
@@ -278,7 +278,7 @@ function courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, wait,unl
 end;
 
 function courseplay:addSplitRecordingPoints(vehicle)
-	local cx, cy, cz = getWorldTranslation(vehicle.cp.DirectionNode);
+	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local prevPoint = vehicle.Waypoints[vehicle.cp.waypointIndex - 1];
 	local prevCx, prevCz = prevPoint.cx, prevPoint.cz;
 	local dist = courseplay:distance(cx, cz, prevCx, prevCz);
@@ -312,7 +312,7 @@ function courseplay:addSplitRecordingPoints(vehicle)
 	courseplay.signs:addSign(vehicle, 'stop', cx, cz, nil, angle);
 	vehicle.cp.recordingTimer = 1;
 	courseplay:setWaypointIndex(vehicle, vehicle.cp.waypointIndex + 1,true);
-	courseplay.buttons:setActiveEnabled(vehicle, 'recording');
+	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 end;
 -- do not remove this comment
 -- vim: set noexpandtab:

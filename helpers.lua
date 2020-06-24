@@ -291,12 +291,21 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 					courseplay.debugVehicle(19,vehicle,'fillTypesMatch: checking trigger vs. %s fillunit %d for %d (%s)',tostring(workTool:getName()),i,index,g_fillTypeManager.indexToName[index])
 					if fillTrigger.source ~= nil then
 						if courseplay.debugChannels[19] then
-							courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
-							for index,_ in pairs(fillTrigger.source.providedFillTypes)do
-								courseplay.debugVehicle(19,vehicle,'fillTypesMatch:    %d:%s',index,g_fillTypeManager.indexToName[index])
-							end						
+							if fillTrigger.isGlobalCompanyFillTrigger then
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger -> fillTrigger.source.getProvidedFillTypes:')								
+								if trigger.source.getProvidedFillTypes ~= nil then
+									for index, val in pairs(trigger.source:getProvidedFillTypes(trigger.extraParamater))do
+										courseplay.debugVehicle(19,vehicle,'fillTypesMatch: isGlobalCompanyFillTrigger ->  %s:%s',tostring(index),g_fillTypeManager.indexToName[index])		
+									end		
+								end
+							else
+								courseplay.debugVehicle(19,vehicle,'fillTypesMatch: fillTrigger.source.providedFillTypes:')
+								for index,_ in pairs(fillTrigger.source.providedFillTypes)do
+									courseplay.debugVehicle(19,vehicle,'fillTypesMatch:    %d:%s',index,g_fillTypeManager.indexToName[index])
+								end	
+							end
 						end
-						if fillTrigger.source.providedFillTypes[index] then						
+						if courseplay:getLoadTriggerProvidedFillTypeValid(fillTrigger, index) then
 							typesMatch = true
 							matchInThisUnit =true
 						end
@@ -316,11 +325,12 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 						end
 					end
 					if index == selectedFillType and selectedFillType ~= FillType.UNKNOWN then
+						courseplay.debugVehicle(19,vehicle,'fillTypesMatch(343): selectedFillTypeIsNotInMyFillUnit set to false')
 						selectedFillTypeIsNotInMyFillUnit = false;
 					end
 				end
 				if matchInThisUnit and selectedFillTypeIsNotInMyFillUnit then
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(324): return true')
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(336): return true')
 					return true;
 				end
 			end
@@ -332,21 +342,35 @@ function courseplay:fillTypesMatch(vehicle, fillTrigger, workTool,onlyCheckThisF
 			else
 				courseplay.debugVehicle(19,vehicle,'fillTypesMatch: selectedFillType:%d',selectedFillType)
 				if fillTrigger.source then
-					local result = fillTrigger.source.providedFillTypes[selectedFillType] or false;
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(337): return %s',tostring(result))
+					local result = courseplay:getLoadTriggerProvidedFillTypeValid(fillTrigger, selectedFillType) or false;
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(349): return %s',tostring(result))
 					return result;
 				elseif fillTrigger.sourceObject ~= nil then
 					local fillType = fillTrigger.sourceObject:getFillUnitFillType(1)  
 					local result = fillType == selectedFillType;
-					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(342): return %s',tostring(result))
+					courseplay.debugVehicle(19,vehicle,'fillTypesMatch(354): return %s',tostring(result))
 					return result;
 				end
 			end		
 		end
 	end
-	courseplay.debugVehicle(19,vehicle,'fillTypesMatch(348): return false')
+	courseplay.debugVehicle(19,vehicle,'fillTypesMatch(360): return false')
 	return false;
 end;
+
+function courseplay:getLoadTriggerProvidedFillTypeValid(trigger, fillType)
+	if trigger.isGlobalCompanyFillTrigger then
+		if trigger.source.getProvidedFillTypes ~= nil then
+			local fillTypes = trigger.source:getProvidedFillTypes(trigger.extraParamater)
+			if fillTypes ~= nil then
+				return fillTypes[fillType]
+			end
+		end
+	else
+		return trigger.source.providedFillTypes[fillType]
+	end
+end
+
 
 -- by horoman
 courseplay.utils.table = {}
@@ -438,13 +462,16 @@ function table.map(t, func)
 	return newArray;
 end;
 
+-- reverse order of elements in table in place
 function table.reverse(t)
-	local reversedTable = {};
-	local itemCount = #t;
-	for k,v in ipairs(t) do
-		reversedTable[itemCount + 1 - k] = v;
-	end;
-	return reversedTable;
+	local i, j = 1, #t
+
+	while i < j do
+		t[i], t[j] = t[j], t[i]
+
+		i = i + 1
+		j = j - 1
+	end
 end;
 
 function table.getLast(t)
@@ -833,8 +860,8 @@ function courseplay:getRelativePointDirection(pp, cp, np, useC)
 	if pp == nil or cp == nil or np == nil then return nil; end;
 	if useC == nil then useC = true; end;
 
-	local dx1, dz1 = courseplay.generation:getPointDirection(pp, cp, useC);
-	local dx2, dz2 = courseplay.generation:getPointDirection(cp, np, useC);
+	local dx1, dz1 = courseplay:getPointDirection(pp, cp, useC);
+	local dx2, dz2 = courseplay:getPointDirection(cp, np, useC);
 
 	local rot1 = MathUtil.getYRotationFromDirection(dx1, dz1);
 	local rot2 = MathUtil.getYRotationFromDirection(dx2, dz2);
@@ -1168,7 +1195,7 @@ function courseplay:drawCourse2D(vehicle, doLoop)
 		return;
 	end;
 
-	local dx,_,dz = localDirectionToWorld(vehicle.cp.DirectionNode or vehicle.rootNode, 0, 0, 1);
+	local dx,_,dz = localDirectionToWorld(vehicle.cp.directionNode or vehicle.rootNode, 0, 0, 1);
 	if dx ~= vehicle.cp.course2dDirectionX or dz ~= vehicle.cp.course2dDirectionZ then
 		vehicle.cp.course2dDirectionX = dx;
 		vehicle.cp.course2dDirectionZ = dz;
@@ -1269,3 +1296,54 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
 		courseplay.alreadyPrinted = {};
 	end;
 end
+
+
+function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y) --@src: http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect#comment19248344_1968345
+	local s1_x, s1_y, s2_x, s2_y;
+	s1_x = A2x - A1x;
+	s1_y = A2y - A1y;
+	s2_x = B2x - B1x;
+	s2_y = B2y - B1y;
+
+	local s, t;
+	s = (-s1_y * (A1x - B1x) + s1_x * (A1y - B1y)) / (-s2_x * s1_y + s1_x * s2_y);
+	t = ( s2_x * (A1y - B1y) - s2_y * (A1x - B1x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+	if (s >= 0 and s <= 1 and t >= 0 and t <= 1) then
+		--Collision detected
+		local x = A1x + (t * s1_x);
+		local z = A1y + (t * s1_y);
+		return { x = x, z = z };
+	end;
+
+	--No collision
+	return nil;
+end;
+
+function courseplay:getPointDirection(cp, np)
+	-- TODO get rid of cx/cz
+	local dx, dz = (np.x or np.cx) - (cp.x or cp.cx), (np.z or np.cz) - (cp.z or cp.cz)
+	local vl = MathUtil.vector2Length(dx, dz);
+	if vl and vl > 0.0001 then
+		dx = dx / vl;
+		dz = dz / vl;
+	end;
+	return dx, dz, vl;
+end;
+
+function courseplay:getClosestPolyPoint(poly, x, z)
+	local closestDistance = math.huge;
+	local closestPointIndex;
+
+	for i=1, #(poly) do
+		local cp = poly[i];
+		local distanceToPoint = courseplay:distance(cp.cx, cp.cz, x, z);
+		if distanceToPoint < closestDistance then
+			closestDistance = distanceToPoint;
+			closestPointIndex = i;
+		end;
+	end;
+
+	return closestPointIndex;
+end;
+

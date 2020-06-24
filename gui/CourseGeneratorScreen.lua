@@ -20,21 +20,20 @@ CourseGeneratorScreen.CONTROLS = {
 	islandBypassMode = 'islandBypassMode',
 	headlandDirection = 'headlandDirection',
 	headlandCorners = 'headlandCorners',
+	headlandOverlapPercent = 'headlandOverlapPercent',
 	headlandPasses = 'headlandPasses',
 	headlandFirst = 'headlandFirst',
+	numberOfRowsPerLand = 'numberOfRowsPerLand',
 	ingameMap = 'ingameMap',
 	mapCursor = 'mapCursor'
 }
 
-function CourseGeneratorScreen:new(target, custom_mt)
-	if custom_mt == nil then
-		custom_mt = CourseGeneratorScreen_mt
-	end
-	local self = ScreenElement:new(target, custom_mt)
+function CourseGeneratorScreen:new(vehicle)
+	local self = ScreenElement:new(nil, CourseGeneratorScreen_mt)
 	-- needed for onClickBack to work.
 	self.returnScreenName = "";
 	self.state = CourseGeneratorScreen.SHOW_NOTHING
-	self.vehicle = nil
+	self.vehicle = vehicle
 
 	self.directions = {}
 	-- map to look up gui element state from angle
@@ -53,6 +52,12 @@ end
 
 function CourseGeneratorScreen:setVehicle( vehicle )
 	self.vehicle = vehicle
+end
+
+function CourseGeneratorScreen:setFromGui(setting)
+	if setting:getGuiElement() then
+		setting:setToIx(setting:getGuiElement():getState())
+	end
 end
 
 --- function to override the standard icon sizes so map symbols like field numbers don't look too big
@@ -129,7 +134,7 @@ function CourseGeneratorScreen:generate()
 	-- this way we can regenerate the course with different settings without
 	-- having to reselect the field or closing the GUI
 	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
-	local status, ok = courseplay:generateCourse(self.vehicle, true)
+	local status, ok = courseGenerator.generate(self.vehicle)
 
 	if not status then
 		-- show message if there was an exception
@@ -263,12 +268,12 @@ end
 function CourseGeneratorScreen:onClickStartingLocation( state )
 	courseplay:setStartingCorner(self.vehicle, self.startingLocationSetting:getValueFromGuiElementState(state))
 	if self.vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_SELECT_ON_MAP and
-		not self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos then
+		not self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos then
 		if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
-			self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = ({ x = self.vehicle.Waypoints[1].cx, z = self.vehicle.Waypoints[1].cz})
+			self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = ({ x = self.vehicle.Waypoints[1].cx, z = self.vehicle.Waypoints[1].cz})
 		else
 			local x, _, z = getWorldTranslation(self.vehicle.rootNode)
-			self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = ({ x = x, z = z })
+			self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = ({ x = x, z = z })
 		end
 	end
 end
@@ -342,11 +347,11 @@ function CourseGeneratorScreen:onOpenIslandBypassMode( element, parameter )
 		table.insert( texts, courseplay:loc( Island.bypassModeText[ i ]))
 	end
 	element:setTexts( texts )
-	element:setState( self.vehicle.cp.courseGeneratorSettings.islandBypassMode )
+	element:setState( self.vehicle.cp.oldCourseGeneratorSettings.islandBypassMode )
 end
 
 function CourseGeneratorScreen:onClickIslandBypassMode( state )
-	self.vehicle.cp.courseGeneratorSettings.islandBypassMode = state
+	self.vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = state
 end
 
 
@@ -358,11 +363,11 @@ function CourseGeneratorScreen:onOpenSkipRows( element, parameter )
 		table.insert( texts, tostring( i ))
 	end
 	element:setTexts( texts )
-	element:setState( self.vehicle.cp.courseGeneratorSettings.nRowsToSkip + 1 )
+	element:setState( self.vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip + 1 )
 end
 
 function CourseGeneratorScreen:onClickSkipRows( state )
-	self.vehicle.cp.courseGeneratorSettings.nRowsToSkip = state - 1
+	self.vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip = state - 1
 end
 
 -----------------------------------------------------------------------------------------------------
@@ -411,6 +416,7 @@ function CourseGeneratorScreen:setHeadlandFields()
 	-- force headland turn maneuver for two side mode
 	self.headlandCorners:setVisible( headlandFieldsVisible and self.vehicle.cp.headland.mode ==
 		courseGenerator.HEADLAND_MODE_NORMAL)
+	self.headlandOverlapPercent:setVisible( headlandFieldsVisible )
 end
 
 function CourseGeneratorScreen:onOpenHeadlandMode( element, parameter )
@@ -494,6 +500,17 @@ function CourseGeneratorScreen:onClickHeadlandCorners( state )
 	self.vehicle.cp.headland.turnType = state
 end
 
+function CourseGeneratorScreen:onOpenHeadlandOverlapPercent( element, parameter )
+	self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:setGuiElement(element)
+	element:setTexts(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:getGuiElementTexts())
+	element:setState(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:getGuiElementState())
+end
+
+function CourseGeneratorScreen:onClickHeadlandOverlapPercent(state)
+	self:setFromGui(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent)
+end
+
+
 -- this is called when the dynamic map gui element is rendered
 function CourseGeneratorScreen:draw()
 	CourseGeneratorScreen:superClass().draw(self)
@@ -506,13 +523,29 @@ function CourseGeneratorScreen:draw()
 end
 
 function CourseGeneratorScreen:onOpenCenterMode( element, parameter )
-	self.centerModeSetting = CenterModeSetting()
-	element:setTexts(self.centerModeSetting:getGuiElementTexts())
-	element:setState(self.centerModeSetting:getGuiElementStateFromValue(self.vehicle.cp.courseGeneratorSettings.centerMode))
+	self.vehicle.cp.courseGeneratorSettings.centerMode:setGuiElement(element)
+	element:setTexts(self.vehicle.cp.courseGeneratorSettings.centerMode:getGuiElementTexts())
+	element:setState(self.vehicle.cp.courseGeneratorSettings.centerMode:getGuiElementState())
 end
 
 function CourseGeneratorScreen:onClickCenterMode(state)
-	self.vehicle.cp.courseGeneratorSettings.centerMode = self.centerModeSetting:getValueFromGuiElementState(state)
+	self:setFromGui(self.vehicle.cp.courseGeneratorSettings.centerMode)
+	print(self.vehicle.cp.courseGeneratorSettings.centerMode:get())
+	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElement():setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
+end
+
+function CourseGeneratorScreen:onOpenNumberOfRowsPerLand( element, parameter )
+	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:setGuiElement(element)
+	element:setTexts(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementTexts())
+	element:setState(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementState())
+	element:setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
+end
+
+function CourseGeneratorScreen:onClickNumberOfRowsPerLand(state)
+	local setting = self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand
+	if setting:getGuiElement() then
+		setting:setToIx(setting:getGuiElement():getState())
+	end
 end
 
 function CourseGeneratorScreen:isOverElement( x, y, element )
@@ -527,11 +560,11 @@ end
 function CourseGeneratorScreen:onClickMap(element, posX, posZ)
 
 	if courseGenerator.STARTING_LOCATION_SELECT_ON_MAP == self.startingLocationSetting:getValueFromGuiElementState(self.startingLocation:getState()) then
-		self.vehicle.cp.courseGeneratorSettings.startingLocationWorldPos = {x = posX, z = posZ }
+		self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = {x = posX, z = posZ }
 		self.coursePlot:setStartPosition(posX, posZ)
 	end
 
-	local fieldNum = courseplay:getFieldNumForPosition(posX, posZ)
+	local fieldNum = courseplay.fields:getFieldNumForPosition(posX, posZ)
 	if fieldNum > 0 and self.fields then
 		-- clicked on a field, set it as selected
 		for i, field in ipairs(self.fields) do
@@ -578,3 +611,16 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 
 	return eventUsed
 end
+
+-- It is ugly to have a courseplay member function in this file but the current HUD implementations seems to be able to
+-- use callbacks only if they are in the courseplay class.
+function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
+	--- Prevent Dialog from locking up mouse and keyboard when closing it.
+	courseplay:lockContext(false);
+	g_courseGeneratorScreen = CourseGeneratorScreen:new(vehicle)
+	g_gui:loadProfiles( self.path .. "gui/guiProfiles.xml" )
+	g_gui:loadGui( self.path .. "gui/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_courseGeneratorScreen)
+	g_courseGeneratorScreen:setVehicle( vehicle )
+	g_gui:showGui( 'CourseGeneratorScreen' )
+end
+

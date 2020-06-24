@@ -167,7 +167,7 @@ function courseplay:getMovingTools(vehicle)
 		if oAI[1] ~= nil then
 			secondaryMovingTools = oAI[1].object.spec_cylindered.movingTools;
 			vehicle.cp.shovel = oAI[1].object;
-			courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object.attachedImplements[1].object), nameNum(vehicle.cp.shovel)), 10);
+			courseplay:debug(('    [2] attachedFrontLoader=%s, primaryMt=%s, secondaryMt=%s, shovel=%s'):format(nameNum(object), nameNum(object), nameNum(object:getAttachedImplements()[1].object), nameNum(vehicle.cp.shovel)), 10);
 		end;
 		
 	elseif pipe ~= 0 then
@@ -182,125 +182,14 @@ function courseplay:getMovingTools(vehicle)
 	return primaryMovingTools, secondaryMovingTools;
 end;
 
-function courseplay:createBunkerSiloMap(vehicle, Silo,width, height)
-	local sx,sz = Silo.bunkerSiloArea.sx,Silo.bunkerSiloArea.sz;
-	local wx,wz = Silo.bunkerSiloArea.wx,Silo.bunkerSiloArea.wz;
-	local hx,hz = Silo.bunkerSiloArea.hx,Silo.bunkerSiloArea.hz;
-	local sy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz);
-	local bunkerWidth = courseplay:distance(sx,sz, wx, wz)
-	local bunkerLength = courseplay:distance(sx,sz, hx, hz)
-	local startDistance = courseplay:distanceToPoint(vehicle, sx, sy, sz)
-	local endDistance = courseplay:distanceToPoint(vehicle, hx, sy, hz)
-	local widthDirX,widthDirY,widthDirZ,widthDistance = courseplay:getWorldDirection(sx,sy,sz, wx,sy,wz);
-	local heightDirX,heightDirY,heightDirZ,heightDistance = courseplay:getWorldDirection(sx,sy,sz, hx,sy,hz);
 
-	local widthCount = math.ceil(bunkerWidth/vehicle.cp.workWidth)
-	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
-		widthCount = widthCount+1
-	end
-	
-	local heightCount = math.ceil(bunkerLength/vehicle.cp.workWidth)
-	local unitWidth = bunkerWidth/widthCount
-	local unitHeigth = bunkerLength/heightCount
-	local heightLengthX = (Silo.bunkerSiloArea.hx-Silo.bunkerSiloArea.sx)/heightCount
-	local heightLengthZ = (Silo.bunkerSiloArea.hz-Silo.bunkerSiloArea.sz)/heightCount
-	local widthLengthX = (Silo.bunkerSiloArea.wx-Silo.bunkerSiloArea.sx)/widthCount
-	local widthLengthZ = (Silo.bunkerSiloArea.wz-Silo.bunkerSiloArea.sz)/widthCount
-	local getOffTheWall = 0.5;
-	
-	local lastValidfillType = 0
-	local map = {}
-	for heightIndex = 1,heightCount do
-		map[heightIndex]={}
-		for widthIndex = 1,widthCount do
-			local newWx = sx + widthLengthX
-			local newWz = sz + widthLengthZ
-			local newHx = sx + heightLengthX
-			local newHz = sz + heightLengthZ
-			
-			local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newWx, 1, newWz); 
-			local hY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newHx, 1, newHz);
-			local fillType = DensityMapHeightUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
-			if lastValidfillType ~= fillType and fillType ~= 0 then
-				lastValidfillType = fillType
-			end
-			local newFillLevel = DensityMapHeightUtil.getFillLevelAtArea(fillType, sx, sz, newWx, newWz, newHx, newHz )
-			local bx = sx + (widthLengthX/2) + (heightLengthX/2)  
-			local bz = sz + (widthLengthZ/2) + (heightLengthZ/2)
-			local offset = 0
-			if vehicle.cp.mode9TargetSilo.type and vehicle.cp.mode9TargetSilo.type == "heap" then
-				offset = unitWidth/2
-			else
-				if widthIndex == 1 then
-					offset = getOffTheWall+ (vehicle.cp.workWidth/2)
-				elseif widthIndex == widthCount then
-					offset = unitWidth- (getOffTheWall+ (vehicle.cp.workWidth/2))
-				else
-					offset = unitWidth/2
-				end
-			end
-			local cx,cz = sx +(widthDirX*offset)+(heightLengthX/2),sz +(widthDirZ*offset)+ (heightLengthZ/2)
-			if vehicle.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and heightIndex == heightCount then
-				cx,cz = sx +(widthDirX*offset)+(heightLengthX),sz +(widthDirZ*offset)+ (heightLengthZ)
-			end
-			local unitArea = unitWidth*unitHeigth
-			
-			map[heightIndex][widthIndex] ={
-										sx = sx;
-										sz = sz;
-										y = wY;
-										wx = newWx;
-										wz = newWz;
-										hx = newHx;
-										hz = newHz;
-										cx = cx;
-										cz = cz;
-										bx = bx;
-										bz = bz;
-										area = unitArea;
-										fillLevel = newFillLevel;
-										fillType = fillType;
-										bunkerLength = bunkerLength;
-										bunkerWidth = bunkerWidth;
-											}
-											
-			sx = map[heightIndex][widthIndex].wx
-			sz = map[heightIndex][widthIndex].wz
-		end
-		sx = map[heightIndex][1].hx
-		sz = map[heightIndex][1].hz
-	end
-	if lastValidfillType > 0 then
-		courseplay:debug(('%s: Bunkersilo filled with %s(%i) will be devided in %d lines and %d columns'):format(nameNum(vehicle),g_fillTypeManager.indexToName[lastValidfillType], lastValidfillType, heightCount, widthCount), 10);   
-	else
-		courseplay:debug(('%s: empty Bunkersilo will be devided in %d lines and %d columns'):format(nameNum(vehicle), heightCount, widthCount), 10);   
-	end
-	--invert table
-	if endDistance < startDistance then
-		courseplay:debug(('%s: Bunkersilo will be approached from the back -> turn map'):format(nameNum(vehicle)), 10);
-		local newMap = {}	
-		local lineCounter = #map 
-		for lineIndex=1,lineCounter do 
-			local newLineIndex = lineCounter+1-lineIndex;
-			--print(string.format("put line%s into line%s",tostring(lineIndex),tostring(newLineIndex)))
-			newMap[newLineIndex]={}
-			local columnCount = #map[lineIndex]
-			for columnIndex =1, columnCount do
-				--print(string.format("  put column%s into column%s",tostring(columnIndex),tostring(columnCount+1-columnIndex)))
-				newMap[newLineIndex][columnCount+1-columnIndex] = map[lineIndex][columnIndex]
-			end
-		end	
-		map = newMap
-	end
-	return map
-end
 
 function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
 	local pointIndex = 0
 	if forcedPoint then
 		 pointIndex = forcedPoint;
 	else
-		pointIndex = vehicle.cp.shovelFillStartPoint+1
+		pointIndex = vehicle.cp.driver.shovelFillStartPoint+2
 	end
 	local x,z = vehicle.Waypoints[pointIndex].cx,vehicle.Waypoints[pointIndex].cz			
 	local tx,tz = x,z + 0.50
@@ -320,8 +209,8 @@ function courseplay:getMode9TargetBunkerSilo(vehicle,forcedPoint)
 	--it's not a bunkersSilo, try to find a heap
 	local heapFillType = 0
 	if vehicle.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		p1x,p1z = vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cx,vehicle.Waypoints[vehicle.cp.shovelFillStartPoint].cz;
-		p2x,p2z = vehicle.Waypoints[vehicle.cp.shovelFillEndPoint].cx,vehicle.Waypoints[vehicle.cp.shovelFillEndPoint].cz;
+		p1x,p1z = vehicle.Waypoints[vehicle.cp.driver.shovelFillStartPoint].cx,vehicle.Waypoints[vehicle.cp.driver.shovelFillStartPoint].cz;
+		p2x,p2z = vehicle.Waypoints[vehicle.cp.driver.shovelFillEndPoint].cx,vehicle.Waypoints[vehicle.cp.driver.shovelFillEndPoint].cz;
 		p1y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p1x, 1, p1z);
 		p2y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, p2x, 1, p2z);
 		heapFillType = DensityMapHeightUtil.getFillTypeAtLine(p1x, p1y, p1z, p2x, p2y, p2z, 5)

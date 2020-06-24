@@ -1,28 +1,37 @@
+CoursePlayNetworkHelper = {};
+
 CourseplayEvent = {};
-CourseplayEvent_mt = Class(CourseplayEvent, Event);
+local CourseplayEvent_mt = Class(CourseplayEvent, Event);
 
 InitEventClass(CourseplayEvent, "CourseplayEvent");
 
 function CourseplayEvent:emptyNew()
-	courseplay:debug("recieve new event",5)
 	local self = Event:new(CourseplayEvent_mt);
 	self.className = "CourseplayEvent";
 	return self;
 end
 
 function CourseplayEvent:new(vehicle, func, value, page)
+	courseplay:debug(string.format("courseplay:CourseplayEvent:new( %s, %s, %s)",tostring(func), tostring(value), tostring(page)), 5)
 	self.vehicle = vehicle;
 	self.messageNumber = Utils.getNoNil(self.messageNumber,0) +1
 	self.func = func
 	self.value = value;
 	self.type = type(value)
 	self.page = page
+
+	if self.type == "table" then
+		if self.func == "setVehicleWaypoints" then
+			self.type = "waypointList"
+		end
+	end
+
 	return self;
 end
 
 function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
-	local id = streamReadInt32(streamId);
-	self.vehicle = networkGetObject(id);
+	--local id = streamReadInt32(streamId);
+	self.vehicle = NetworkUtil.readNodeObject(streamId);
 	local messageNumber = streamReadFloat32(streamId);
 	self.func = streamReadString(streamId);
 	self.page = streamReadInt32(streamId);
@@ -42,19 +51,25 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 		self.value = streamReadString(streamId);
 	elseif self.type == "nil" then
 		self.value = streamReadString(streamId);
+	elseif self.type == "waypointList" then
+		local wp_count = streamReadInt32(streamId)
+		self.value = {}
+		for w = 1, wp_count do
+			table.insert(self.value, CoursePlayNetworkHelper:readWaypoint(streamId))
+		end
 	else 
 		self.value = streamReadFloat32(streamId);
 	end
 	courseplay:debug("	readStream",5)
-	courseplay:debug("		id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.page: "..tostring(self.page).."  self.type: "..self.type),5)
+	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  function: "..tostring(self.func).."  self.value: "..tostring(self.value).."  self.page: "..tostring(self.page).."  self.type: "..self.type, 5)
 
 	self:run(connection);
 end
 
 function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	courseplay:debug("		writeStream",5)
-	courseplay:debug("			id: "..tostring(networkGetObjectId(self.vehicle).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type).."  page: "..tostring(self.page)),5)
-	streamWriteInt32(streamId, networkGetObjectId(self.vehicle));
+	courseplay:debug("			id: "..tostring(NetworkUtil.getObjectId(self.vehicle)).."/"..tostring(self.messageNumber).."  function: "..tostring(self.func).."  value: "..tostring(self.value).."  type: "..tostring(self.type).."  page: "..tostring(self.page), 5)
+	NetworkUtil.writeNodeObject(streamId, self.vehicle);
 	streamWriteFloat32(streamId, self.messageNumber);
 	streamWriteString(streamId, self.func);
 	if self.page == "global" then
@@ -74,6 +89,11 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 		streamWriteString(streamId, self.value);
 	elseif self.type == "nil" then
 		streamWriteString(streamId, "nil");
+	elseif self.type == "waypointList" then
+		streamWriteInt32(streamId, #(self.value))
+		for w = 1, #(self.value) do
+			CoursePlayNetworkHelper:writeWaypoint(streamId, self.value[w])
+		end
 	else
 		streamWriteFloat32(streamId, self.value);
 	end
@@ -81,7 +101,7 @@ end
 
 function CourseplayEvent:run(connection) -- wir fuehren das empfangene event aus
 	courseplay:debug("\t\t\trun",5)
-	-- Ryan networkGetObjectId no longer exists courseplay:debug(('\t\t\t\tid=%s, function=%s, value=%s'):format(tostring(networkGetObjectId(self.vehicle)), tostring(self.func), tostring(self.value)), 5);
+	courseplay:debug(('\t\t\t\tid=%s, function=%s, value=%s'):format(tostring(self.vehicle), tostring(self.func), tostring(self.value)), 5);
 	self.vehicle:setCourseplayFunc(self.func, self.value, true, self.page);
 	if not connection:getIsServer() then
 		courseplay:debug("broadcast event feedback",5)
@@ -93,11 +113,11 @@ function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend, page) -- h
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then
 			courseplay:debug("broadcast event",5)
-			-- Ryan networkGetObjectId no longer exists courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
+			courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(vehicle), tostring(func), tostring(value), tostring(page)), 5);
 			g_server:broadcastEvent(CourseplayEvent:new(vehicle, func, value, page), nil, nil, vehicle);
 		else
 			courseplay:debug("send event",5)
-			--courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(networkGetObjectId(vehicle)), tostring(func), tostring(value), tostring(page)), 5);
+			courseplay:debug(('\tid=%s, function=%s, value=%s, page=%s'):format(tostring(vehicle), tostring(func), tostring(value), tostring(page)), 5);
 			g_client:getServerConnection():sendEvent(CourseplayEvent:new(vehicle, func, value, page));
 		end;
 	end;
@@ -105,8 +125,8 @@ end
 
 function courseplay:checkForChangeAndBroadcast(self, stringName, variable , variableMemory)
 	if variable ~= variableMemory then
-		print(string.format("checkForChangeAndBroadcast: %s = %s",stringName,tostring(variable))) 
-		--CourseplayEvent.sendEvent(self, stringName, variable)
+		courseplay:debug("checkForChangeAndBroadcast",5)
+		CourseplayEvent.sendEvent(self, stringName, variable)
 		variableMemory = variable
 	end
 	return variableMemory
@@ -135,6 +155,7 @@ local Server_sendObjects_old = Server.sendObjects;
 
 function Server:sendObjects(connection, x, y, z, viewDistanceCoeff)
 	connection:sendEvent(CourseplayJoinFixEvent:new());
+	courseplay:debug("server send objects",5)
 
 	Server_sendObjects_old(self, connection, x, y, z, viewDistanceCoeff);
 end
@@ -159,7 +180,8 @@ end
 function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
 	if not connection:getIsServer() then
-		--courseplay:debug("manager transfering courses", 8);
+		courseplay.globalSettings:onWriteStream(streamId)
+		
 		--transfer courses
 		local course_count = 0
 		for _,_ in pairs(g_currentMission.cp_courses) do
@@ -174,22 +196,13 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			streamDebugWriteInt32(streamId, course.id)
 			streamDebugWriteInt32(streamId, course.parent)
 			streamDebugWriteInt32(streamId, course.multiTools)
-			streamDebugWriteInt32(streamId, #(course.waypoints))
-			for w = 1, #(course.waypoints) do
-				streamDebugWriteFloat32(streamId, course.waypoints[w].cx)
-				streamDebugWriteFloat32(streamId, course.waypoints[w].cz)
-				streamDebugWriteFloat32(streamId, course.waypoints[w].angle)
-				streamDebugWriteBool(streamId, course.waypoints[w].wait)
-				streamDebugWriteBool(streamId, course.waypoints[w].rev)
-				streamDebugWriteBool(streamId, course.waypoints[w].crossing)
-				streamDebugWriteInt32(streamId, course.waypoints[w].speed)
-
-				streamDebugWriteBool(streamId, course.waypoints[w].generated)
-				
-				streamDebugWriteBool(streamId, course.waypoints[w].turnStart)
-				streamDebugWriteBool(streamId, course.waypoints[w].turnEnd)
-				streamDebugWriteInt32(streamId, course.waypoints[w].ridgeMarker)
-				streamDebugWriteInt32(streamId, course.waypoints[w].headlandHeightForTurn)
+			if course.waypoints then
+				streamDebugWriteInt32(streamId, #(course.waypoints))
+				for w = 1, #(course.waypoints) do
+					CoursePlayNetworkHelper:writeWaypoint(streamId, course.waypoints[w])
+				end
+			else
+				streamDebugWriteInt32(streamId, -1)
 			end
 		end
 				
@@ -205,6 +218,8 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			streamDebugWriteString(streamId, folder.type)
 			streamDebugWriteInt32(streamId, folder.id)
 			streamDebugWriteInt32(streamId, folder.parent)
+			streamDebugWriteBool(streamId, folder.virtual)
+			streamDebugWriteBool(streamId, folder.autodrive)
 		end
 				
 		local fieldsCount = 0
@@ -221,6 +236,10 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, course.numPoints)
 				streamDebugWriteBool(streamId, course.isCustom)
 				streamDebugWriteInt32(streamId, course.fieldNum)
+				streamDebugWriteInt32(streamId, course.dimensions.minX)
+				streamDebugWriteInt32(streamId, course.dimensions.maxX)
+				streamDebugWriteInt32(streamId, course.dimensions.minZ)
+				streamDebugWriteInt32(streamId, course.dimensions.maxZ)
 				streamDebugWriteInt32(streamId, #(course.points))
 				for p = 1, #(course.points) do
 					streamDebugWriteFloat32(streamId, course.points[p].cx)
@@ -234,6 +253,8 @@ end
 
 function CourseplayJoinFixEvent:readStream(streamId, connection)
 	if connection:getIsServer() then
+		courseplay.globalSettings:onReadStream(streamId)
+
 		local course_count = streamDebugReadInt32(streamId)
 		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
@@ -247,38 +268,13 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local courseMultiTools = streamDebugReadInt32(streamId)
 			local wp_count = streamDebugReadInt32(streamId)
 			local waypoints = {}
-			for w = 1, wp_count do
-				--courseplay:debug("got waypoint", 8);
-				local cx = streamDebugReadFloat32(streamId)
-				local cz = streamDebugReadFloat32(streamId)
-				local angle = streamDebugReadFloat32(streamId)
-				local wait = streamDebugReadBool(streamId)
-				local rev = streamDebugReadBool(streamId)
-				local crossing = streamDebugReadBool(streamId)
-				local speed = streamDebugReadInt32(streamId)
-
-				local generated = streamDebugReadBool(streamId)
-				--local dir = streamDebugReadString(streamId)
-				local turnStart = streamDebugReadBool(streamId)
-				local turnEnd = streamDebugReadBool(streamId)
-				local ridgeMarker = streamDebugReadInt32(streamId)
-				local headlandHeightForTurn = streamDebugReadInt32(streamId)
-
-				local wp = {
-					cx = cx, 
-					cz = cz, 
-					angle = angle, 
-					wait = wait, 
-					rev = rev, 
-					crossing = crossing, 
-					speed = speed,
-					generated = generated,
-					turnStart = turnStart,
-					turnEnd = turnEnd,
-					ridgeMarker = ridgeMarker,
-					headlandHeightForTurn = headlandHeightForTurn
-				};
-				table.insert(waypoints, wp)
+			if wp_count >= 0 then
+				for w = 1, wp_count do
+					--courseplay:debug("got waypoint", 8);
+					table.insert(waypoints, CoursePlayNetworkHelper:readWaypoint(streamId))
+				end
+			else
+				waypoints = nil
 			end
 			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent, multiTools = courseMultiTools  }
 			g_currentMission.cp_courses[course_id] = course
@@ -294,7 +290,9 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local folderType = streamDebugReadString(streamId)
 			local folderId = streamDebugReadInt32(streamId)
 			local folderParent = streamDebugReadInt32(streamId)
-			local folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent }
+			local folderVirtual = streamDebugReadBool(streamId)
+			local folderAutoDrive = streamDebugReadBool(streamId)
+			local folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent, virtual = folderVirtual, autodrive = folderAutoDrive }
 			g_currentMission.cp_folders[folderId] = folder
 			g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 		end
@@ -307,6 +305,10 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local numPoints = streamDebugReadInt32(streamId)
 			local isCustom = streamDebugReadBool(streamId)
 			local fieldNum = streamDebugReadInt32(streamId)
+			local minX = streamDebugReadInt32(streamId)
+			local maxX = streamDebugReadInt32(streamId)
+			local minZ = streamDebugReadInt32(streamId)
+			local maxZ = streamDebugReadInt32(streamId)
 			local ammountPoints = streamDebugReadInt32(streamId)
 			local waypoints = {}
 			for w = 1, ammountPoints do 
@@ -316,7 +318,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 				local wp = { cx = cx, cy = cy, cz = cz}
 				table.insert(waypoints, wp)
 			end
-			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints}
+			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints, dimensions = {minX = minX, maxX = maxX, minZ = minZ, maxZ = maxZ}}
 			courseplay.fields.fieldData[fieldNum] = field
 		end
 		print("\t### CourseplayMultiplayer: courses/folders reading end")
@@ -325,4 +327,139 @@ end
 
 function CourseplayJoinFixEvent:run(connection)
 	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", 8);
+end;
+
+
+---------------------------------
+
+
+
+CourseplaySettingsSyncEvent = {};
+local CourseplaySettingsSyncEvent_mt = Class(CourseplaySettingsSyncEvent, Event);
+
+InitEventClass(CourseplaySettingsSyncEvent, "CourseplaySettingsSyncEvent");
+
+function CourseplaySettingsSyncEvent:emptyNew()
+	local self = Event:new(CourseplaySettingsSyncEvent_mt);
+	self.className = "CourseplaySettingsSyncEvent";
+	return self;
+end
+
+function CourseplaySettingsSyncEvent:new(vehicle, name, value)
+	courseplay:debug(string.format("courseplay:CourseplaySettingsSyncEvent:new(%s, %s)", tostring(name), tostring(value)), 5)
+	self.vehicle = vehicle;
+	self.messageNumber = Utils.getNoNil(self.messageNumber, 0) + 1
+	self.name = name
+	self.value = value;
+	return self;
+end
+
+function CourseplaySettingsSyncEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
+	if streamReadBool(streamId) then
+		self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
+	else
+		self.vehicle = nil
+	end
+	local messageNumber = streamReadFloat32(streamId)
+	self.name = streamReadString(streamId)
+	self.value = streamReadInt32(streamId)
+
+	courseplay:debug("	readStream",5)
+	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  self.name: "..tostring(self.name).."  self.value: "..tostring(self.value),5)
+
+	self:run(connection);
+end
+
+function CourseplaySettingsSyncEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
+	courseplay:debug("		writeStream",5)
+	courseplay:debug("			id: "..tostring(self.vehicle).."/"..tostring(self.messageNumber).."  self.name: "..tostring(self.name).."  value: "..tostring(self.value),5)
+
+	if self.vehicle ~= nil then
+		streamWriteBool(streamId, true)
+		streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
+	else
+		streamWriteBool(streamId, false)
+	end
+	streamWriteFloat32(streamId, self.messageNumber)
+	streamWriteString(streamId, self.name)
+	streamWriteInt32(streamId, self.value)
+end
+
+function CourseplaySettingsSyncEvent:run(connection) -- wir fuehren das empfangene event aus
+	courseplay:debug("\t\t\trun",5)
+	courseplay:debug(('\t\t\t\tid=%s, name=%s, value=%s'):format(tostring(self.vehicle), tostring(self.name), tostring(self.value)), 5);
+
+	if self.vehicle ~= nil then
+		self.vehicle.cp.settings[self.name]:setFromNetwork(self.value)
+	else
+		courseplay.globalSettings[self.name]:setFromNetwork(self.value)
+	end
+	if not connection:getIsServer() then
+		courseplay:debug("broadcast settings event feedback",5)
+		g_server:broadcastEvent(CourseplaySettingsSyncEvent:new(self.vehicle, self.name, self.value), nil, connection, self.vehicle);
+	end;
+end
+
+function CourseplaySettingsSyncEvent.sendEvent(vehicle, name, value)
+	if g_server ~= nil then
+		courseplay:debug("broadcast settings event", 5)
+		courseplay:debug(('\tid=%s, name=%s, value=%s'):format(tostring(vehicle), tostring(name), tostring(value)), 5);
+		g_server:broadcastEvent(CourseplaySettingsSyncEvent:new(vehicle, name, value), nil, nil, self);
+	else
+		courseplay:debug("send settings event", 5)
+		courseplay:debug(('\tid=%s, name=%s, value=%s'):format(tostring(vehicle), tostring(name), tostring(value)), 5);
+		g_client:getServerConnection():sendEvent(CourseplaySettingsSyncEvent:new(vehicle, name, value));
+	end;
+end
+
+---------------------------------
+
+function CoursePlayNetworkHelper:writeWaypoint(streamId, waypoint)
+	streamDebugWriteFloat32(streamId, waypoint.cx)
+	streamDebugWriteFloat32(streamId, waypoint.cz)
+	streamDebugWriteFloat32(streamId, waypoint.angle)
+	streamDebugWriteBool(streamId, waypoint.wait)
+	streamDebugWriteBool(streamId, waypoint.rev)
+	streamDebugWriteBool(streamId, waypoint.crossing)
+	streamDebugWriteInt32(streamId, waypoint.speed)
+
+	streamDebugWriteBool(streamId, waypoint.generated)
+	
+	streamDebugWriteBool(streamId, waypoint.turnStart)
+	streamDebugWriteBool(streamId, waypoint.turnEnd)
+	streamDebugWriteInt32(streamId, waypoint.ridgeMarker)
+	streamDebugWriteInt32(streamId, waypoint.headlandHeightForTurn)
+end;
+
+function CoursePlayNetworkHelper:readWaypoint(streamId)
+	local cx = streamDebugReadFloat32(streamId)
+	local cz = streamDebugReadFloat32(streamId)
+	local angle = streamDebugReadFloat32(streamId)
+	local wait = streamDebugReadBool(streamId)
+	local rev = streamDebugReadBool(streamId)
+	local crossing = streamDebugReadBool(streamId)
+	local speed = streamDebugReadInt32(streamId)
+
+	local generated = streamDebugReadBool(streamId)
+	--local dir = streamDebugReadString(streamId)
+	local turnStart = streamDebugReadBool(streamId)
+	local turnEnd = streamDebugReadBool(streamId)
+	local ridgeMarker = streamDebugReadInt32(streamId)
+	local headlandHeightForTurn = streamDebugReadInt32(streamId)
+
+	local wp = {
+		cx = cx, 
+		cz = cz, 
+		angle = angle, 
+		wait = wait, 
+		rev = rev, 
+		crossing = crossing, 
+		speed = speed,
+		generated = generated,
+		turnStart = turnStart,
+		turnEnd = turnEnd,
+		ridgeMarker = ridgeMarker,
+		headlandHeightForTurn = headlandHeightForTurn
+	};
+	return wp;
 end;

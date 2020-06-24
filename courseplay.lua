@@ -25,11 +25,6 @@ courseplay.modName = g_currentModName;
 --- CoursePlay Input Context name for locking keys and mouse to the hud
 courseplay.INPUT_CONTEXT_NAME = "COURSEPLAY_HUD";
 
--- initiate CpManager
-local filePath = courseplay.path .. 'CpManager.lua';
-assert(fileExists(filePath), ('COURSEPLAY ERROR: "CpManager.lua" can\'t be found at %q'):format(filePath));
-source(filePath);
-
 -- place sub-classes here in order to get an overview of the contents of the courseplay object and allow for sub-class functions
 courseplay.utils = {};
 ---@class courseplay.courses
@@ -42,50 +37,36 @@ courseplay.generation = {};
 courseplay.lights = {};
 courseplay.clock = 0;
 
-local sonOfaBangSonOfaBoom = {
+	local sonOfaBangSonOfaBoom = {
 	['56bb4a8d3f72d5a31aee0c317302dde5'] = true; -- Thomas
 	['9a9f028043394ff9de1cf6c905b515c1'] = true; -- Satis
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
+	['0d8e45a8ed916c1cd40820165b81e12d'] = true; -- Tensuko
+	['97c8e6d0d14f4e242c3c37af68cc376c'] = true; -- Dan
+	['8f5e9e8fb5a23375afbb3b7abbc6335c'] = true; -- Goof
 };
-
-CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
-
-if CpManager.isDeveloper then
-	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
-else
-	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	--courseplay.houstonWeGotAProblem = true;
-	--return;
-end;
 
 local function initialize()
 	local fileList = {
 		'CpObject',
+		'DevHelper',
+		'CpManager',
 		'base',
 		'button',
-		'bunkersilo_management',		
-		'bypass',
-		'combines',
-		'CombineUnloadAIDriver',
-		'combineUnload_management',
-		'courseplay_event', 
+		'bunkersilo_management',
+		'BunkersiloManager',
+		'courseplay_event',
 		'course_management',
+    	'courseeditor',
+    	'clicktoswitch',
 		'debug', 
 		'distance', 
-		'drive', 
-		'fields', 
+		'fields',
 		'fruit', 
-		'generateCourse',
 		'helpers',
 		'hud', 
 		'input', 
-		'inputCourseNameDialogue', 
-		'mode1',
-		'mode2',
-		'mode3', 
-		'mode8',
-		'mode10',		
-		'recording', 
+		'recording',
 		'reverse',
 		'settings',
 		'signs', 
@@ -96,33 +77,59 @@ local function initialize()
 		'turn',
 		'traffic',
 		'TrafficCollision',
+		'ProximitySensor',
 		'vehicles',
 		'PurePursuitController',
 		'Waypoint',
 		'AIDriver',
+		'CombineUnloadAIDriver',
+		'CombineUnloadManager',
 		'GrainTransportAIDriver',
 		'FieldworkAIDriver',
 		'FillableFieldworkAIDriver',
+		'FieldSupplyAIDriver',
+		'PlowAIDriver',
 		'UnloadableFieldworkAIDriver',
 		'BaleLoaderAIDriver',
 		'BalerAIDriver',
 		'BaleWrapperAIDriver',
 		'CombineAIDriver',
+		'LevelCompactAIDriver',
 		'ShovelModeAIDriver',
-    'course-generator/Pathfinder',
-    'course-generator/Island',
-	'course-generator/courseGenerator',
-    'course-generator/CourseGeneratorScreen',
-	'course-generator/CoursePlot',
-    'course-generator/cp',
-	'course-generator/Genetic',
-    'course-generator/track',
-    'course-generator/center',
-    'course-generator/headland',
-    'course-generator/geo'
+		'TrafficController',
+		'TrafficControllerSolver',
+		'AITurn',
+		'course-generator/geo',
+		'course-generator/Pathfinder',
+		'course-generator/Island',
+		'course-generator/courseGenerator',
+		'course-generator/cp',
+		'course-generator/Genetic',
+		'course-generator/track',
+		'course-generator/center',
+		'course-generator/headland',
+		'course-generator/Vector',
+		'course-generator/State3D',
+		'course-generator/BinaryHeap',
+		'course-generator/Dubins',
+		'course-generator/HybridAStar',
+		'course-generator/ReedsShepp',
+		'course-generator/ReedsSheppSolver',
+		'course-generator/PathfinderUtil',
+		'gui/CourseGeneratorScreen',
+		'gui/CoursePlot',
+		'gui/inputCourseNameDialogue',
+		'gui/AdvancedSettingsScreen',
+		'gui/GlobalSettingsPage',
+		'gui/VehicleSettingsPage',
+		'Events/StartStopEvent',
+		'Events/UnloaderEvents',
+		'Events/StartStopWorkEvent',
+		'Events/UserConnectedEvent',
+		'Events/PostSyncEvent',
 	};
 
-	local numFiles, numFilesLoaded = #(fileList) + 3, 3; -- + 3 as 'register.lua', 'courseplay.lua' and 'CpManager.lua' have already been loaded
+	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded
 	for _,file in ipairs(fileList) do
 		local filePath = courseplay.path .. file .. '.lua';
 
@@ -167,26 +174,27 @@ local function setGlobalData()
 	courseplay.MODE_TRANSPORT = 5;
 	courseplay.MODE_FIELDWORK = 6;
 	courseplay.MODE_COMBINE_SELF_UNLOADING = 7; --removed by Tommi
-	courseplay.MODE_LIQUIDMANURE_TRANSPORT = 8;
+	courseplay.MODE_FIELD_SUPPLY = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;
 	------------------------------------------------------------
-	courseplay.SHOW_COVERS = true 
-	
+	courseplay.SHOW_COVERS = true
+	courseplay.OPEN_COVERS = false
+	courseplay.CLOSE_COVERS = true
+
+	courseplay.RIDGEMARKER_NONE = 0
+	courseplay.RIDGEMARKER_LEFT = 1
+	courseplay.RIDGEMARKER_RIGHT = 2
 
 	-- "start at _ point" options
-	courseplay.START_AT_NEAREST_POINT = 1;
-	courseplay.START_AT_FIRST_POINT = 2;
-	courseplay.START_AT_CURRENT_POINT = 3;
-	courseplay.START_AT_NEXT_POINT = 4;
+	StartingPointSetting.START_AT_NEAREST_POINT = 1;
+	StartingPointSetting.START_AT_FIRST_POINT = 2;
+	StartingPointSetting.START_AT_CURRENT_POINT = 3;
+	StartingPointSetting.START_AT_NEXT_POINT = 4;
 
-	-- warning lights options
-	courseplay.lights.WARNING_LIGHTS_NEVER = 0;
-	courseplay.lights.WARNING_LIGHTS_BEACON_ON_STREET = 1;
-	courseplay.lights.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET = 2;
-	courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS = 3;
-
+	-- lights options
+	-- this should have a Setting Class like WarningLightsModeSetting
 	courseplay.lights.HEADLIGHT_OFF = 0;
 	courseplay.lights.HEADLIGHT_STREET = 1;
 	courseplay.lights.HEADLIGHT_FULL = 7;
@@ -219,29 +227,6 @@ local function setGlobalData()
 		courseplay.numberDecimalSeparator = langNumData[g_languageShort][2];
 	end;
 
-	--MULTIPLAYER
-	
-	courseplay.checkValues = {
-		"infoText",
-		"HUD0noCourseplayer",
-		"HUD0wantsCourseplayer",
-		"HUD0tractorName",
-		"HUD0tractorForcedToStop",
-		"HUD0tractor",
-		"HUD0combineForcedSide",
-		"HUD0isManual",
-		"HUD0turnStage",
-		"HUD1notDrive",
-		"HUD1wait",
-		"HUD1noWaitforFill",
-		"HUD4combineName",
-		"HUD4hasActiveCombine",
-		"HUD4savedCombine",
-		"HUD4savedCombineName"
-		
-	};
-
-
 	--UTF8
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
@@ -271,15 +256,15 @@ local function setGlobalData()
 		
 	courseplay.multiplayerSyncTable = {
 	
-	[1]={name='self.cp.automaticCoverHandling',dataFormat='Bool'},
-	[2]={name='self.cp.automaticUnloadingOnField',dataFormat='Bool'},
+	[1]={name='self.cp.automaticCoverHandling',dataFormat='Bool'}, --remove
+	[2]={name='self.cp.automaticUnloadingOnField',dataFormat='Bool'}, --remove
 	[3]={name='self.cp.mode',dataFormat='Int'},
 	[4]={name='self.cp.turnDiameterAuto',dataFormat='Float'},
 	[5]={name='self.cp.canDrive',dataFormat='Bool'},
 	[6]={name='self.cp.combineOffsetAutoMode',dataFormat='Bool'},
 	[7]={name='self.cp.combineOffset',dataFormat='Float'},
 	[8]={name='self.cp.currentCourseName',dataFormat='String'},
-	[9]={name='self.cp.driverPriorityUseFillLevel',dataFormat='Bool'},
+	[9]={name='self.cp.driverPriorityUseFillLevel',dataFormat='Bool'}, --remove
 	[10]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
 	[11]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
 	[12]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
@@ -295,13 +280,13 @@ local function setGlobalData()
     [22]={name='self.cp.hasUnloadingRefillingCourse	',dataFormat='Bool'},
 	[23]={name='self.cp.infoText',dataFormat='String'},
 	[24]={name='self.cp.returnToFirstPoint',dataFormat='Bool'},
-	[25]={name='self.cp.ridgeMarkersAutomatic',dataFormat='Bool'},
+	[25]={name='self.cp.ridgeMarkersAutomatic',dataFormat='Bool'}, --remove
 	[26]={name='self.cp.shovelStopAndGo',dataFormat='Bool'},
-	[27]={name='self.cp.startAtPoint',dataFormat='Int'},
-	[28]={name='self.cp.stopAtEnd',dataFormat='Bool'},
+	[27]={name='self.cp.startAtPoint',dataFormat='Int'}, -- TODO: remove!
+	[28]={name='self.cp.stopAtEnd',dataFormat='Bool'}, --remove
 	[29]={name='self.cp.isDriving',dataFormat='Bool'},
 	[30]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
-	[31]={name='self.cp.realisticDriving',dataFormat='Bool'},
+	[31]={name='self.cp.realisticDriving',dataFormat='Bool'}, --remove
 	[32]={name='self.cp.driveOnAtFillLevel',dataFormat='Float'},
 	[33]={name='self.cp.followAtFillLevel',dataFormat='Float'},
 	[34]={name='self.cp.refillUntilPct',dataFormat='Float'},
@@ -318,20 +303,20 @@ local function setGlobalData()
 	[45]={name='self.cp.loadUnloadOffsetX',dataFormat='Float'},
 	[46]={name='self.cp.loadUnloadOffsetZ',dataFormat='Float'},
 	[47]={name='self.cp.hud.currentPage',dataFormat='Int'},
-	[48]={name='self.cp.HUD0noCourseplayer',dataFormat='Bool'},
-	[49]={name='self.cp.HUD0wantsCourseplayer',dataFormat='Bool'},
-	[50]={name='self.cp.HUD0combineForcedSide',dataFormat='String'},
-	[51]={name='self.cp.HUD0isManual',dataFormat='Bool'},
-	[52]={name='self.cp.HUD0turnStage',dataFormat='Int'},
-	[53]={name='self.cp.HUD0tractorForcedToStop',dataFormat='Bool'},
-	[54]={name='self.cp.HUD0tractorName',dataFormat='String'},
-	[55]={name='self.cp.HUD0tractor',dataFormat='Bool'},
-	[56]={name='self.cp.HUD1wait',dataFormat='Bool'},
-	[57]={name='self.cp.HUD1noWaitforFill',dataFormat='Bool'},
-	[58]={name='self.cp.HUD4hasActiveCombine',dataFormat='Bool'},
-	[59]={name='self.cp.HUD4combineName',dataFormat='String'},
-	[60]={name='self.cp.HUD4savedCombine',dataFormat='Bool'},
-	[61]={name='self.cp.HUD4savedCombineName',dataFormat='String'},
+	[48]={name='self.cp.HUD0noCourseplayer',dataFormat='Bool'}, --remove
+	[49]={name='self.cp.HUD0wantsCourseplayer',dataFormat='Bool'}, --remove
+	[50]={name='self.cp.HUD0combineForcedSide',dataFormat='String'}, --remove
+	[51]={name='self.cp.HUD0isManual',dataFormat='Bool'}, --remove
+	[52]={name='self.cp.HUD0turnStage',dataFormat='Int'}, --remove
+	[53]={name='self.cp.HUD0tractorForcedToStop',dataFormat='Bool'}, --remove
+	[54]={name='self.cp.HUD0tractorName',dataFormat='String'}, --remove
+	[55]={name='self.cp.HUD0tractor',dataFormat='Bool'}, --remove
+	[56]={name='self.cp.HUD1wait',dataFormat='Bool'}, --remove
+	[57]={name='self.cp.HUD1noWaitforFill',dataFormat='Bool'}, --remove
+	[58]={name='self.cp.HUD4hasActiveCombine',dataFormat='Bool'}, --remove
+	[59]={name='self.cp.HUD4combineName',dataFormat='String'}, --remove
+	[60]={name='self.cp.HUD4savedCombine',dataFormat='Bool'}, --remove
+	[61]={name='self.cp.HUD4savedCombineName',dataFormat='String'}, --remove
 	[62]={name='self.cp.waypointIndex',dataFormat='Int'},
 	[63]={name='self.cp.isRecording',dataFormat='Bool'},
 	[64]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
@@ -344,9 +329,8 @@ local function setGlobalData()
 	[71]={name='self.cp.visualWaypointsStartEnd',dataFormat='Bool'},
 	[72]={name='self.cp.visualWaypointsAll',dataFormat='Bool'},
 	[73]={name='self.cp.visualWaypointsCrossing',dataFormat='Bool'},
-	[74]={name='self.cp.warningLightsMode',dataFormat='Int'},
+	[74]={name='self.cp.warningLightsMode',dataFormat='Int'}, --remove
 	[75]={name='self.cp.waitTime',dataFormat='Int'},
-	[76]={name='self.cp.symmetricLaneChange',dataFormat='Bool'},
 	[77]={name='self.cp.startingCorner',dataFormat='Int'},
 	[78]={name='self.cp.startingDirection',dataFormat='Int'},
 	[79]={name='self.cp.hasShovelStatePositions[2]',dataFormat='Bool'},
@@ -361,9 +345,18 @@ local function setGlobalData()
 	[87]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
 	[88]={name='self.cp.generationPosition.x',dataFormat='Float'},
 	[89]={name='self.cp.generationPosition.z',dataFormat='Float'},
-	[90]={name='self.cp.fertilizerEnabled',dataFormat='Bool'},
-	[91]={name='self.cp.turnOnField',dataFormat='Bool'}
-	}	
+	[90]={name='self.cp.turnOnField',dataFormat='Bool'}
+	}
+
+	-- TODO: see where is the best to instantiate these settings. Maybe we need a container for all these
+	courseplay.globalSettings = SettingsContainer()
+	courseplay.globalSettings:addSetting(LoadCoursesAtStartupSetting)
+	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
+	courseplay.globalSettings:addSetting(EarnWagesSetting)
+	courseplay.globalSettings:addSetting(WorkerWages)
+	courseplay.globalSettings:addSetting(ClickToSwitchSetting)
+	courseplay.globalSettings:addSetting(ShowMiniHud)
+	courseplay.globalSettings:addSetting(EnableOpenHudWithMouseGlobal)
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;
@@ -371,10 +364,19 @@ end;
 
 --------------------------------------------------------------
 
-
 setVersionData();
 
 initialize();
+
+CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
+
+if CpManager.isDeveloper then
+	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+else
+	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
+	--courseplay.houstonWeGotAProblem = true;
+	--return;
+end;
 
 courseplay.inputBindings.updateInputButtonData();
 

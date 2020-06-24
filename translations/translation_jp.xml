@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="スペースがあくまで停止" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="目標へターン %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="ウェイポイントへ %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="充填レベルに到達するまで待機" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="充填レベルに到達するまで待機 (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="コンバインとの距離がありません" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="コンバインのターン待ち" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="新しいウェイポイントを待っています" />
@@ -231,11 +231,15 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="up/down" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiral" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="有効" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="車両名のみ" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="車両名とコース名" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="無効" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="リッジマーカー" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="フィールドでアンロード" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="自動" />
 		<text name="COURSEPLAY_MANUAL" 										text="手動" />
@@ -273,6 +277,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="スタートポイント" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="記憶中のウェイポイント" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="次のウェイポイント" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="フィールド境界線" />
 		<text name="COURSEPLAY_FIELD" 										text="フィールド" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(現在読み込まれているコース)" />
@@ -325,7 +330,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="フルタイム4WD &amp; FWリアデフロック" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="フルタイム4WD &amp; FWオールデフロック" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="フィールドを自動的にスキャンされるようにしますか?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="作業者に賃金を支払いますか? (%s/時間)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="作業者に賃金を支払いますか?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="消費量計" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="フィールド: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="種子タイプ: %s" />
@@ -354,6 +359,27 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="CP: Move to transport position" /> <!-- TODO TRANSLATE: -->
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Move to pre-unloading position" /> <!-- TODO TRANSLATE: -->
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="CP: Move to unloading position" /> <!-- TODO TRANSLATE: -->
+		
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Toggle course editor" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Undo last course edit" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Save course changes" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Increase waypoint speed" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Decrease waypoint speed" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Delete waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Delete next waypoint" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Delete all waypoints to start" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Delete all waypoints to end" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Insert waypoint" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Change waypoint type" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wait" />
+		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Crossing" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 								text="Unload" />
+		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Turn Start" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 								text="Turn End" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 								text="Reverse" />
+
 		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="マウスカーソルを表示" />
 		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="マウスカーソルを非表示" />
 		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Left Mouse Button" /> <!-- TODO TRANSLATE: -->
@@ -396,6 +422,55 @@
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
 		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="To park vehicle" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="For unload/refill and park" />
 
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(and return)" />
+
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Advanced settings..." />
+
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Load courses at startup" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Load all courses at startup, will slow down loading a saved game when activated" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use AI turn maneuvers" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use AI turn maneuvers instead of calculated turn trajectories" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scan fields automatically" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Straw discharge on headland" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Turn on/off the Straw discharge on headland" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
+
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Early" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Late" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" />
+
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Use pathfinding in turns" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay worker wages" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay worker wages as percentage of normal worker's wages" />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Self unload a combine when full and there's a trailer around" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

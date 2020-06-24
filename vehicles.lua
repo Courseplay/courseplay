@@ -132,7 +132,7 @@ function courseplay:getDistances(object)
 		local distances = {};
 
 		-- STEERABLES
-		if object.cp.DirectionNode then
+		if object.cp.directionNode then
 			-- Finde the front and rear distance from the direction node
 			local front, rear = 0, 0;
 			local haveRunnedOnce = false
@@ -142,7 +142,7 @@ function courseplay:getDistances(object)
 				local wreprxTemp, wrepryTemp, wreprzTemp = getRotation(wheel.repr);
 				setRotation(wheel.repr, 0, 0, 0);
 				local xw, yw, zw = getWorldTranslation(wheel.driveNode);
-				local _,_,dis = worldToLocal(object.cp.DirectionNode, xw, yw, zw);
+				local _,_,dis = worldToLocal(object.cp.directionNode, xw, yw, zw);
 				setRotation(wheel.repr, wreprxTemp, wrepryTemp, wreprzTemp);
 				setRotation(wheel.driveNode, wdnrxTemp, wdnryTemp, wdnrzTemp);
 				if haveRunnedOnce then
@@ -162,7 +162,7 @@ function courseplay:getDistances(object)
 			-- Finde the attacherJoints distance from the direction node
 			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 				local xj, yj, zj = getWorldTranslation(attacherJoint.jointTransform);
-				local _,_,dis = worldToLocal(object.cp.DirectionNode, xj, yj, zj);
+				local _,_,dis = worldToLocal(object.cp.directionNode, xj, yj, zj);
 				if dis < front then
 					if not distances.frontWheelToRearTrailerAttacherJoints then
 						distances.frontWheelToRearTrailerAttacherJoints = {};
@@ -176,7 +176,7 @@ function courseplay:getDistances(object)
 			local turningNode = courseplay:getRealTurningNode(object);
 			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
 				local xj, yj, zj = getWorldTranslation(attacherJoint.jointTransform);
-				local _, _, deltaZ = worldToLocal(object.cp.DirectionNode, xj, yj, zj);
+				local _, _, deltaZ = worldToLocal(object.cp.directionNode, xj, yj, zj);
 
 				-- If we are behind the front wheel, then it should be an attacherJoing on the rear
 				if deltaZ < front then
@@ -367,7 +367,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 			end;
 		end;
 
-		if vehicle.cp.DirectionNode and totalDistance > 0 then
+		if vehicle.cp.directionNode and totalDistance > 0 then
 			for _, imp in ipairs(vehicle:getAttachedImplements()) do
 				if courseplay:isRearAttached(vehicle, imp.jointDescIndex) then
 					local workTool = imp.object;
@@ -472,7 +472,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 		local Distance = 0;
 
 		-- STEERABLES
-		if object.cp.DirectionNode then
+		if object.cp.directionNode then
 			-- Giants have provided us with steeringCenterNode, so use it.
 			if object.steeringCenterNode then
 				-- The steeringCenterNode is already set for us to use.
@@ -496,7 +496,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 					end;
 				end;
 			else
-				-- Greate an new linked node.
+				-- Create an new linked node.
 				node = courseplay:createNewLinkedNode(object, "realTurningNode", object.rootNode);
 
 				-- Find the pivot point on articulated vehicle
@@ -787,7 +787,6 @@ function courseplay:getRealUnloadOrFillNode(workTool)
 		elseif workTool.cp.hasSpecializationTrailer and workTool.cp.hasSpecializationFillable and #workTool.spec_fillUnit.fillUnits > 0 then
 			-- Get the current exactFillRootNode.
 			local exactFillRootNode = workTool.spec_fillUnit.fillUnits[1].exactFillRootNode; -- TODO: Handle multiply exactFillRootNode for trailers with more than 1 fill plane. (temp fix for now)
-
 			-- Create the new node and link it to exactFillRootNode
 			local node = courseplay:createNewLinkedNode(workTool, "UnloadOrFillNode", exactFillRootNode);
 
@@ -801,7 +800,6 @@ function courseplay:getRealUnloadOrFillNode(workTool)
 			end;
 
 			workTool.cp.unloadOrFillNode = node;
-
 			-- NONE OF THE ABOVE
 		else
 			workTool.cp.unloadOrFillNode = false;
@@ -1008,10 +1006,10 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 	end;
 
 	-- STEERABLES
-	if vehicle.cp.DirectionNode then
+	if vehicle.cp.directionNode then
 		directionNodeToFrontWheelOffset = vehicle.cp.distances.frontWheelToDirectionNodeOffset;
 
-		local _, y, _ = getWorldTranslation(vehicle.cp.DirectionNode);
+		local _, y, _ = getWorldTranslation(vehicle.cp.directionNode);
 
 		local hasRearAttach = false;
 		local jointType = 0;
@@ -1137,7 +1135,7 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	TR = ceil(courseplay:calculateTurnRadius(steeringType, wheelBase, rotMax, CPRatio) * radiusMultiplier);
 
 	if TR > 0 then
-		if vehicle.maxTurningRadius and vehicle.maxTurningRadius > TR then
+		if vehicle.maxTurningRadius then
 			turnRadius = vehicle.maxTurningRadius;
 			courseplay:debug(('%s -> TurnRadius: Using Giants maxTurningRadius: %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
 		else
@@ -1314,7 +1312,7 @@ end
 
 function courseplay:isInvertedToolNode(workTool, node)
 	-- Only check trailers
-	if workTool.cp.DirectionNode then
+	if workTool.cp.directionNode then
 		return false;
 	end;
 
@@ -1335,7 +1333,7 @@ function courseplay:isPartOfNode(node, partOfNode)
 end;
 
 function courseplay:isRearAttached(object, jointDescIndex)
-	local turningNode = object.cp.DirectionNode or courseplay:getRealTurningNode(object);
+	local turningNode = object.cp.directionNode or courseplay:getRealTurningNode(object);
 	local x, y, z = localToWorld(turningNode, 0, 0, 50);
 	local deltaX, _, _ = worldToLocal(object.spec_attacherJoints.attacherJoints[jointDescIndex].jointTransform, x, y, z);
 
@@ -1416,62 +1414,6 @@ function courseplay:setPathVehiclesSpeed(vehicle,dt)
 	end;
 end
 
-function courseplay:setAbortWorkWaypoint(vehicle)
-	if not vehicle.cp.realisticDriving then
-		-- Set abort Work to 10 waypoints back from where we stopped working to align with course when returing
-		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 10;
-		vehicle.cp.abortWorkExtraMoveBack = 0;
-
-		--- update triggers if in mode 4 in the case that new BiGPacks had been bought
-		if vehicle.cp.mode == 4 then
-			courseplay:updateAllTriggers();
-		end;
-
-		--- Check for turns from the aborkWork WP to where work stopped so we can align with turn to prevent circling and turn alignment issuses
-		for i=vehicle.cp.abortWork,vehicle.cp.previousWaypointIndex do
-			local minNumWPBeforeTurn = 8;
-			local wp = vehicle.Waypoints[i];
-			if wp and wp.turnStart then
-				--- Invert lane offset if abortWork is before previous turn point (symmetric lane change)
-				if vehicle.cp.symmetricLaneChange and vehicle.cp.laneOffset ~= 0 and not vehicle.cp.switchLaneOffset then
-					courseplay:debug(string.format('%s: abortWork + %d: turnStart=%s -> change lane offset back to abortWork\'s lane', nameNum(vehicle), i-1, tostring(wp.turnStart and true or false)), 12);
-					courseplay:changeLaneOffset(vehicle, nil, vehicle.cp.laneOffset * -1);
-					vehicle.cp.switchLaneOffset = true;
-				end;
-
-				--- If the turn is less than 8 points ahead of the abortWork waypoint, we set the abortWork further back so we can align better.
-				local wpUntilTurn = i - vehicle.cp.abortWork;
-				if wpUntilTurn < minNumWPBeforeTurn then
-					local extraMoveBack = minNumWPBeforeTurn - wpUntilTurn;
-					vehicle.cp.abortWork = vehicle.cp.abortWork - extraMoveBack;
-					-- Save the additonal offset waypoints so Mode4/6 logic knows how far to go from when reaching abortWork WP to where stopped worked occurs
-					vehicle.cp.abortWorkExtraMoveBack = extraMoveBack;
-				end;
-			end;
-		end;
-		-- Set the waypoint index to the first waypoint of the unload course
-		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
-		
-	else
-		-- If were using align point then there is no need for all that extra distance just enough that it straightens back out after turning
-		vehicle.cp.abortWork = vehicle.cp.previousWaypointIndex - 2
-		--- Set the waypoint to the start of the unload course
-		courseplay:setWaypointIndex(vehicle, vehicle.cp.stopWork + 1);
-		local tx, tz = vehicle.Waypoints[vehicle.cp.waypointIndex].cx,vehicle.Waypoints[vehicle.cp.waypointIndex].cz
-		courseplay.debugVehicle( 9, vehicle, "vehicles 1393")
-		if vehicle.cp.isNavigatingPathfinding == false and courseplay:calculateAstarPathToCoords(vehicle, nil, tx, tz, vehicle.cp.turnDiameter*2, true) then
-			vehicle.cp.isNavigatingPathfinding = true
-			courseplay.debugVehicle( 9, vehicle, "vehicles 1396")
-			courseplay:setCurrentTargetFromList(vehicle, 1);
-		else
-			courseplay:startAlignmentCourse( vehicle, vehicle.Waypoints[vehicle.cp.waypointIndex], true)
-		end
-	end
-	-- Initialize PPC because of the jump in WPs
-	vehicle.cp.ppc:initialize()
-	courseplay:debug(string.format('%s: abortWork set (%d)', nameNum(vehicle), vehicle.cp.abortWork), 12);
-end;
-
 -- vim: set noexpandtab:
 
 function courseplay:getFreeCapacity(vehicle,fillType)
@@ -1486,9 +1428,9 @@ end
 
 function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 	--get raycast direction x and z
-	local nx,_, nz = localDirectionToWorld(vehicle.cp.DirectionNode, lx or 0, 0, lz or 1)
+	local nx,_, nz = localDirectionToWorld(vehicle.cp.directionNode, lx or 0, 0, lz or 1)
 	-- get raycast start point in front of vehicle
-	local x, y, z = localToWorld(vehicle.cp.DirectionNode, 0, 1, 3)
+	local x, y, z = localToWorld(vehicle.cp.directionNode, 0, 1, 3)
 	--get the raycast direction y to a point 1m below terrain at raycast tip 
 	local xt,zt = x+(nx*distance), z+(nz*distance)
 	local yt = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, xt, 0, zt);
@@ -1497,7 +1439,7 @@ function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 end
 
 function courseplay:isNodeTurnedWrongWay(vehicle,dischargeNode)
-	local x,y,z = getWorldTranslation(vehicle.cp.DirectionNode)
+	local x,y,z = getWorldTranslation(vehicle.cp.directionNode)
 	local _,_, nz = worldToLocal(dischargeNode,x,y,z)
 	return nz < 0
 end
@@ -1602,4 +1544,217 @@ function courseplay:addToVehicleLocalIgnoreList(vehicle, targetVehicle)
 			courseplay:addToVehicleLocalIgnoreList(vehicle, impl.object);
 		end;
 	end;
+end
+
+-- TODO: move this to a separate file and move everything vehicle related and not dependent on other classes out of
+-- courseplay int this
+AIDriverUtil = {}
+
+function AIDriverUtil.isReverseDriving(vehicle)
+	if not vehicle then
+		printCallstack()
+		return false
+	end
+	return vehicle.spec_reverseDriving and vehicle.spec_reverseDriving.isReverseDriving
+end
+
+function AIDriverUtil.getDirectionNode(vehicle)
+	-- our reference node we are tracking/controlling, by default it is the vehicle's root/direction node
+	if AIDriverUtil.isReverseDriving(vehicle) then
+		-- reverse driving tractor, use the CP calculated reverse driving direction node pointing in the
+		-- direction the driver seat is facing
+		return vehicle.cp.reverseDrivingDirectionNode
+	else
+		return vehicle.cp.directionNode or vehicle.rootNode
+	end
+end
+
+--- If we are towing an implement, move to a bigger radius in tight turns
+--- making sure that the towed implement's trajectory remains closer to the
+--- course.
+---@param course Course
+function AIDriverUtil.calculateTightTurnOffset(vehicle, course, previousOffset, useCalculatedRadius)
+    local tightTurnOffset
+
+    local function smoothOffset(offset)
+        return (offset + 3 * (previousOffset or 0 )) / 4
+    end
+
+    -- first of all, does the current waypoint have radius data?
+    local r
+	if useCalculatedRadius then
+		r = course:getCalculatedRadiusAtIx(course:getCurrentWaypointIx())
+	else
+		r = course:getRadiusAtIx(course:getCurrentWaypointIx())
+	end
+
+    if not r then
+        return smoothOffset(0)
+    end
+
+	-- limit the radius we are trying to follow to the vehicle's turn radius.
+	-- TODO: there's some potential here as the towed implement can move on a radius less than the vehicle's
+	-- turn radius so this limit may be too pessimistic
+	r = math.max(r, vehicle.cp.turnDiameter / 2)
+
+    local towBarLength = AIDriverUtil.getTowBarLength(vehicle)
+
+    -- Is this really a tight turn? It is when the tow bar is longer than radius / 3, otherwise
+    -- we ignore it.
+    if towBarLength < r / 3 then
+        return smoothOffset(0)
+    end
+
+    -- Ok, looks like a tight turn, so we need to move a bit left or right of the course
+    -- to keep the tool on the course. Use a little less than the calculated, this is purely empirical and should probably
+	-- be reviewed why the calculated one seems to overshoot.
+    local offset = 0.75 * AIDriverUtil.getOffsetForTowBarLength(r, towBarLength)
+    if offset ~= offset then
+        -- check for nan
+        return smoothOffset(0)
+    end
+    -- figure out left or right now?
+    local nextAngle = course:getWaypointAngleDeg(course:getCurrentWaypointIx() + 1)
+    local currentAngle = course:getWaypointAngleDeg(course:getCurrentWaypointIx())
+    if not nextAngle or not currentAngle then
+        return smoothOffset(0)
+    end
+
+    if getDeltaAngle(math.rad(nextAngle), math.rad(currentAngle)) > 0 then offset = -offset end
+
+    -- smooth the offset a bit to avoid sudden changes
+    tightTurnOffset = smoothOffset(offset)
+    courseplay.debugVehicle(14, vehicle, 'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, tightTurnOffset )
+    -- remember the last value for smoothing
+    return tightTurnOffset
+end
+
+function AIDriverUtil.getTowBarLength(vehicle)
+    -- is there a wheeled implement behind the tractor and is it on a pivot?
+    local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle)
+    if not workTool or not workTool.cp.realTurningNode then
+        return 0
+    end
+    -- get the distance between the tractor and the towed implement's turn node
+    -- (not quite accurate when the angle between the tractor and the tool is high)
+    local tractorX, _, tractorZ = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
+    local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
+    local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+    return towBarLength
+end
+
+function AIDriverUtil.getOffsetForTowBarLength(r, towBarLength)
+    local rTractor = math.sqrt( r * r + towBarLength * towBarLength ) -- the radius the tractor should be on
+    return rTractor - r
+end
+
+-- Find the node to use by the PPC when driving in reverse
+function AIDriverUtil.getReverserNode(vehicle)
+	local reverserNode, debugText
+	-- if there's a reverser node on the tool, use that
+	local reverserDirectionNode = AIVehicleUtil.getAIToolReverserDirectionNode(vehicle)
+	local reversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(vehicle)
+	if reverserDirectionNode then
+		reverserNode = reverserDirectionNode
+		debugText = 'implement reverse (Giants)'
+	elseif reversingWheeledWorkTool and reversingWheeledWorkTool.cp.realTurningNode then
+		reverserNode = reversingWheeledWorkTool.cp.realTurningNode
+		debugText = 'implement reverse (Courseplay)'
+	elseif vehicle.spec_articulatedAxis ~= nil then
+		-- articulated axis vehicles have a special reverser node
+		-- and yes, Giants has a typo in there...
+		if vehicle.spec_articulatedAxis.aiRevereserNode ~= nil then
+			reverserNode = vehicle.spec_articulatedAxis.aiRevereserNode
+			debugText = 'vehicle articulated axis reverese'
+		elseif vehicle.spec_articulatedAxis.aiReverserNode ~= nil then
+			reverserNode = vehicle.spec_articulatedAxis.aiReverserNode
+			debugText = 'vehicle articulated axis reverse'
+		end
+	else
+		-- otherwise see if the vehicle has a reverser node
+		if vehicle.getAIVehicleReverserNode then
+			reverserDirectionNode = vehicle:getAIVehicleReverserNode()
+			if reverserDirectionNode then
+				reverserNode = reverserDirectionNode
+				debugText = 'vehicle reverse'
+			end
+		end
+	end
+	return reverserNode, debugText
+end
+
+-- Get the turning radius of the vehicle and its implements (copied from AIDriveStrategyStraight.updateTurnData())
+function AIDriverUtil.getTurningRadius(vehicle)
+	-- determine turning radius
+	local radius = vehicle.maxTurningRadius * 1.1                     -- needs ackermann steering
+	if vehicle:getAIMinTurningRadius() ~= nil then
+		radius = math.max(radius, vehicle:getAIMinTurningRadius())
+	end
+	local maxToolRadius = 0
+
+	local attachedAIImplements = vehicle:getAttachedImplements()
+
+	for _,implement in pairs(attachedAIImplements) do
+		maxToolRadius = math.max(maxToolRadius, AIVehicleUtil.getMaxToolRadius(implement))
+	end
+	radius = math.max(radius, maxToolRadius)
+	courseplay.debugVehicle(6, vehicle, 'getTurningRadius: %.1f m', radius)
+	return radius
+end
+
+---@return boolean true if there are any implements attached to the back of the vehicle
+function AIDriverUtil.hasImplementsOnTheBack(vehicle)
+	for _, implement in pairs(vehicle:getAttachedImplements()) do
+		if implement.object ~= nil then
+			local _, _, dz = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0, 0)
+			if dz < 0 then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+---@return table, number frontmost object and the distance between the front of that object and the root node of the object
+function AIDriverUtil.getFirstAttachedImplement(vehicle)
+	-- by default, it is the vehicle's front, negative as the vehicle's root node is behind the front implement's root node
+	local minDistance = 0
+	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
+	local frontOffset = vehicle.sizeLength / 2 + vehicle.lengthOffset
+	local firstImplement = vehicle
+	for _, implement in pairs(vehicle:getAttachedImplements()) do
+		if implement.object ~= nil then
+			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, implement.object.sizeLength / 2 + implement.object.lengthOffset)
+			courseplay.debugVehicle(6, vehicle, '%s front distance %d', implement.object:getName(), d)
+			if d < minDistance then
+				minDistance = d
+				frontOffset = implement.object.sizeLength / 2 + implement.object.lengthOffset
+				firstImplement = implement.object
+			end
+			-- TODO: recursively search implements attached to other implements
+		end
+	end
+	return firstImplement, frontOffset
+end
+
+---@return table, number rearmost object and the distance between the back of that object and the root node of the object
+function AIDriverUtil.getLastAttachedImplement(vehicle)
+	-- by default, it is the vehicle's back
+	local maxDistance = 0
+	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
+	local backOffset = vehicle.sizeLength / 2 - vehicle.lengthOffset
+	local lastImplement = vehicle
+	for _, implement in pairs(vehicle:getAttachedImplements()) do
+		if implement.object ~= nil then
+			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, - implement.object.sizeLength / 2 + implement.object.lengthOffset)
+			courseplay.debugVehicle(6, vehicle, '%s back distance %d', implement.object:getName(), d)
+			if d > maxDistance then
+				maxDistance = d
+				backOffset = implement.object.sizeLength / 2 - implement.object.lengthOffset
+				lastImplement = implement.object
+			end
+			-- TODO: recursively search implements attached to other implements
+		end
+	end
+	return lastImplement, -backOffset
 end

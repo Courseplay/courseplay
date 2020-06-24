@@ -17,13 +17,14 @@ function CpManager:setUpDebugChannels()
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
 			defaultActive[11] = true;
-			defaultActive[12] = true;
+			--defaultActive[12] = true;
 			defaultActive[13] = true;
 			defaultActive[14] = true;
 			defaultActive[6] = true;
 			defaultActive[7] = true;
 			defaultActive[8] = true;
 			defaultActive[9] = true;
+			defaultActive[4] = true;
 		end;
 	end;
 
@@ -93,7 +94,7 @@ end;
 
 -- GENERAL DEBUG
 function courseplay:debug(str, channel)
-	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local timestamp = getDate( ":%S")
 		print(timestamp .. ' [dbg' .. tostring(channel) .. ' lp' .. g_updateLoopIndex .. '] ' .. str);
 	end;
@@ -103,7 +104,7 @@ end;
 -- courseplay.debugVehicle( 14, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugFormat(channel, ...)
-	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
 		local timestamp = getDate( ":%S")
 		print(string.format('%s [dbg%d lp%d] %s', timestamp, channel, updateLoopIndex, string.format( ... )))
@@ -114,7 +115,7 @@ end
 -- courseplay.debugVehicle( 14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugVehicle(channel, vehicle, ...)
-	if channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
+	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
 		local vehicleName = vehicle and nameNum(vehicle) or "Unknown vehicle"
 		local updateLoopIndex = g_updateLoopIndex and g_updateLoopIndex or 0
 		local timestamp = getDate( ":%S")
@@ -686,7 +687,13 @@ end
 function cpDebug:updatePointDrawData(drawData)
 	--- Update point position
 	setTranslation(drawData.itemNode, drawData.posX, drawData.posY, drawData.posZ);
-	--- Update point color
+  --- Update scale
+  if courseEditor.enabled then 
+    setScale(drawData.itemNode, courseEditor.pointScale.x, courseEditor.pointScale.y, courseEditor.pointScale.z) 
+  else
+    setScale(drawData.itemNode, 2, 2, 2) 
+  end
+  --- Update point color
 	self:updateObjectColor(drawData);
 end
 

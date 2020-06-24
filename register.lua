@@ -17,6 +17,17 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onDelete", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onPostDetachImplement", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onReadStream", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onReadUpdateStream", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onWriteUpdateStream", courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onStartCpAIDriver",courseplay)
+	SpecializationUtil.registerEventListener(vehicleType, "onStopCpAIDriver",courseplay)
+end
+
+function courseplay.registerEvents(vehicleType)
+    SpecializationUtil.registerEvent(vehicleType, "onStartCpAIDriver")
+    SpecializationUtil.registerEvent(vehicleType, "onStopCpAIDriver")
 end
 
 function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
@@ -44,6 +55,10 @@ local courseplaySpecName = g_currentModName .. ".courseplay"
 function courseplay:register(secondTime)
 	if secondTime then
 		print('## Courseplay: register later loaded mods:');
+		if g_company and g_company.loadingTrigger and g_company.loadingTrigger.loadTriggerCallback then
+			g_company.loadingTrigger.loadTriggerCallback = Utils.appendedFunction(g_company.loadingTrigger.loadTriggerCallback, courseplay.SiloTrigger_TriggerCallback);
+			print("  append courseplay.SiloTrigger_TriggerCallback to g_company.loadingTrigger.loadTriggerCallback")
+		end
 	else
 		print('## Courseplay: register into vehicle types:');
 	end
@@ -125,16 +140,9 @@ function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
 
 	courseplay:setNameVariable(self);
 
-	-- combines table
-	if courseplay.combines == nil then
-		courseplay.combines = {};
-	end;
-	if self.cp.isCombine or self.cp.isChopper or self.cp.isHarvesterSteerable or self.cp.isSugarBeetLoader or courseplay:isAttachedCombine(self) then
-		courseplay.combines[self.rootNode] = self;
-	end;
-
 	return loadingState;
 end;
+
 Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
 
@@ -142,6 +150,7 @@ Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, coursepla
 function courseplay:prePreDelete(self)
 	if self.cp ~= nil then
 		courseplay:deleteMapHotspot(self);
+		-- combineUnloadManager
 	end
 end;
 FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);
@@ -165,20 +174,10 @@ function courseplay:vehicleDelete()
 			self.cp.notesToDelete = nil;
 		end;
 
-		if courseplay.combines[self.rootNode] then
-			for _, courseplayer in pairs(g_currentMission.enterables) do
-				if courseplayer.cp then
-					if courseplayer.cp.activeCombine and courseplayer.cp.activeCombine == self then
-						courseplay:unregisterFromCombine(courseplayer, self)
-					end
-					if courseplayer.cp.lastActiveCombine and courseplayer.cp.lastActiveCombine == self then
-						courseplay:removeFromVehicleLocalIgnoreList(self, courseplayer.cp.lastActiveCombine)
-						courseplayer.cp.lastActiveCombine = nil
-					end
-				end
-			end
-			courseplay.combines[self.rootNode] = nil;
-		end;
+		if courseplay:isCombine(self) or courseplay:isChopper(self) then
+			g_combineUnloadManager:removeCombineFromList(self)
+		end
+
 	end;
 end;
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);

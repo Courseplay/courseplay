@@ -273,7 +273,7 @@ end
 function Pathfinder:getNeighbors( theNode, grid )
 	local neighbors = {}
 	self.count = self.count + 1
-	if self.finder and self.count % 20 == 0 then
+	if self.coroutine and self.count % 20 == 0 then
 		self.yields = self.yields + 1
 		coroutine.yield(false)
 	end
@@ -351,7 +351,7 @@ end
 -- @param fromNode starting node {x, y} of the path
 -- @param toNode destination node
 ---@param polygon : Polygon polygon representing the field boundary
--- @param fruit the fruit to avoid, all fruit will be avoided if nil
+---@param fruit the fruit to avoid, all fruit will be avoided if nil
 -- @param customHasFruitFunc function(node, width) custom function to tell if an area
 -- width wide around node has a function. If nil, courseplay:areaHasFruit() will be used
 -- @param addFruit if true, will add fruit to the field. Only for test purposes
@@ -408,8 +408,8 @@ end
 -- After start(), call resume() until it returns done == true.
 ---@see Pathfinder#findPath also on how to use.
 function Pathfinder:start(...)
-	if not self.finder then
-		self.finder = coroutine.create(self.run)
+	if not self.coroutine then
+		self.coroutine = coroutine.create(self.run)
 	end
 	return self:resume(...)
 end
@@ -417,118 +417,21 @@ end
 --- Is a pathfinding currently active?
 -- @return true if the pathfinding has started and not yet finished
 function Pathfinder:isActive()
-	return self.finder ~= nil
+	return self.coroutine ~= nil
 end
 
 --- Resume the pathfinding
--- @return true if the pathfinding is done, false if it isn't ready. In this case you'll have to call resume() again
----@return path : Polyline the path found or nil if none found.
+---@return boolean true if the pathfinding is done, false if it isn't ready. In this case you'll have to call resume() again
+---@return Polyline path if the path found or nil if none found.
 -- @return array of the points of the grid used for the pathfinding, for test purposes only
 function Pathfinder:resume(...)
-	local ok, done, path, grid = coroutine.resume(self.finder, self, ...)
+	local ok, done, path, grid = coroutine.resume(self.coroutine, self, ...)
 	if not ok or done then
-		self.finder = nil
+		self.coroutine = nil
 		return true, path, grid
 	end
 	return false
 end
 
---- Find path on a headland, using only the headland nodes
----@class HeadlandPathfinder : Pathfinder
-HeadlandPathfinder = CpObject(Pathfinder)
 
--- On a headland path, we prefer switching to the headland as
--- soon as we can and stay on it as long as we can
-function HeadlandPathfinder:isValidNeighbor( theNode, node )
-	local d = self:distance( theNode.x, theNode.y, node.x, node.y )
-	if theNode.headlandNumber and node.headlandNumber then
-		-- both nodes are on a headland
-		if theNode.headlandNumber == node.headlandNumber then
-			-- on same the headland we don't want to cut corners, must remain
-			-- on the headland waypoints
-			if theNode.index == node.prevIndex or theNode.index == node.nextIndex then
-				return true
-			else
-				return false
-			end
-		else
-			-- nodes are on a different headland, allow for switching between headlands
-			return d < self.maxDistanceBetweenPointsOnDifferentHeadlands
-		end
-	else
-		if theNode.headlandNumber or node.headlandNumber then
-			-- at least one of the nodes is the headland, the other one must be the start or end node
-			-- this determines how close to the start/end we switch to the headland
-			return d < self.maxDistanceBetweenStartOrEndAndHeadland
-		else
-			-- no direct path between start and end node
-			return false
-		end
-	end
-end
-
-function HeadlandPathfinder:getNeighbors( theNode, nodes )
-	local neighbors = {}
-	for _, node in ipairs ( nodes ) do
-		if theNode ~= node and self:isValidNeighbor ( theNode, node ) then
-			table.insert ( neighbors, node )
-		end
-	end
-	return neighbors
-end
-
--- g() score on the headland does not consider fruit, just plain distance based
-function HeadlandPathfinder:gScoreToNeighbor(a, b)
-	return self:distance( a.x, a.y, b.x, b.y )
-end
-
---
---- Find path between two points on the headland. This one currently ignores the fruit.
--- Do not use this directly, call either through Pathfinder:findPath() or Pathfinder:start()
---
--- @param fromNode starting node {x, y} of the path
--- @param toNode destination node
----@param headlands : Polygon[] - array of polygons containing the headland waypoints
--- @param workWidth work width of the headlands
--- @param dontUseInnermostHeadland - if true, won't use the innermost headland
-function HeadlandPathfinder:findPath(fromNode, toNode, headlands, workWidth, dontUseInnermostHeadland)
-	-- list of nodes for pathfinding are all the waypoints on the headland
-	local nodes = {}
-	local nHeadlandsToUse = math.max(1, dontUseInnermostHeadland and #headlands - 1 or #headlands)
-
-	for i = 1, nHeadlandsToUse do
-		for j, node in ipairs(headlands[i]) do
-			local newNode = PointXY:copy(node)
-			-- add metadata for isValidNeighbor()
-			newNode.headlandNumber = i
-			newNode.index = j
-			-- last and first points are also next to each other as the headland is closed
-			newNode.prevIndex = j == 1 and #headlands[i] or j - 1
-			newNode.nextIndex = j == #headlands[i] and 1 or j + 1
-			table.insert(nodes, newNode)
-		end
-	end
-
-	local from, to = PointXY:copy(fromNode), PointXY:copy(toNode)
-	table.insert(nodes, from)
-	table.insert(nodes, to)
-
-	courseGenerator.debug( "Starting pathfinding on headland (%d waypoints)", #nodes)
-
-	self.maxDistanceBetweenPointsOnDifferentHeadlands = math.max(courseGenerator.waypointDistance, workWidth) * 1.3
-	self.maxDistanceBetweenStartOrEndAndHeadland = workWidth * (#headlands - nHeadlandsToUse + 1)
-
-	local path, iterations = self:path(from, to, nodes, #nodes * 3)
-
-	courseGenerator.debug( "Number of iterations %d", iterations)
-
-	if path then
-		path = Polyline:new( path )
-		path:calculateData()
-		--path:smooth( math.rad( 0 ), math.rad( 180 ), 1 )
-		courseGenerator.debug( "Path generated with %d points", #path )
-	end
-
-	return path, nodes
-end
 

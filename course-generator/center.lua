@@ -61,9 +61,26 @@ courseGenerator.CENTER_MODE_SPIRAL = 2
 --  ----- 9 ---- < -------     | Block 2
 --  -----11 ---- < -------     /
 courseGenerator.CENTER_MODE_CIRCULAR = 3
-courseGenerator.centerModeTexts = {'up/down', 'spiral', 'circular'}
+
+-- Lands mode, making a break through the field and progressively working
+-- outwards in a counterclockwise spiral fashion
+--  ----- 5 ---- < -------  \
+--  ----- 3 ---- < -------  |
+--  ----- 1 ---- < -------  |
+--  ----- 2 ---- > -------  | Block 1
+--  ----- 4 ---- > -------  |
+--  ----- 6 ---- > -------  /
+--  -----11 ---- < -------  \
+--  ----- 9 ---- < -------  |
+--  ----- 7 ---- < -------  | Block 2
+--  ----- 8 ---- > -------  |
+--  -----10 ---- > -------  |
+--  -----12 ---- > -------  /
+courseGenerator.CENTER_MODE_LANDS = 4
+
+courseGenerator.centerModeTexts = {'up/down', 'spiral', 'circular', 'lands'}
 courseGenerator.CENTER_MODE_MIN = courseGenerator.CENTER_MODE_UP_DOWN
-courseGenerator.CENTER_MODE_MAX = courseGenerator.CENTER_MODE_CIRCULAR
+courseGenerator.CENTER_MODE_MAX = courseGenerator.CENTER_MODE_LANDS
 
 -- Distance of waypoints on the generated track in meters
 courseGenerator.waypointDistance = 5
@@ -259,7 +276,7 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 		end
 	end
 
-	if #blocks > 20 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
+	if #blocks > 30 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
 		-- don't waste time on unrealistic problems
 		courseGenerator.debug( 'Implausible number of blocks/tracks (%d/%d), not generating up/down rows', #blocks, nTotalTracks )
 		return nil, 0, 0, nil, false
@@ -505,23 +522,23 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 		-- the last one is on the top
 		parallelTracks = reverseTracks( parallelTracks )
 	end
+	local start
 	if centerSettings.mode == courseGenerator.CENTER_MODE_UP_DOWN then
 		parallelTracks = reorderTracksForAlternateFieldwork(parallelTracks, centerSettings.nRowsToSkip)
+		start = leftToRight and 2 or 1
 	elseif centerSettings.mode == courseGenerator.CENTER_MODE_SPIRAL then
 		parallelTracks = reorderTracksForSpiralFieldwork(parallelTracks)
+		start = leftToRight and 2 or 1
 	elseif centerSettings.mode == courseGenerator.CENTER_MODE_CIRCULAR then
 		parallelTracks = reorderTracksForCircularFieldwork(parallelTracks)
+		start = leftToRight and 2 or 1
+	elseif centerSettings.mode == courseGenerator.CENTER_MODE_LANDS then
+		parallelTracks = reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop, centerSettings.nRowsPerLand)
+		start = leftToRight and 2 or 1
 	end
 	-- now make sure that the we work on the tracks in alternating directions
 	-- we generate track from left to right, so the ones which we'll traverse
 	-- in the other direction must be reversed.
-	local start
-	if leftToRight then
-		-- starting on the left, the first track is not reversed
-		start = 2
-	else
-		start = 1
-	end
 	-- reverse every second track
 	for i = start, #parallelTracks, 2 do
 		parallelTracks[ i ].waypoints = reverse( parallelTracks[ i ].waypoints)
@@ -529,13 +546,10 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 	local result = Polyline:new()
 	local startTrack = 1
 	local endTrack = #parallelTracks
-	local useHeadlandToNextRow = false
 	for i = startTrack, endTrack do
 		if parallelTracks[ i ].waypoints then
 			-- use turn maneuver from one track to the other if they are close to each other
 			local useHeadlandFromPreviousRow = useHeadlandToNextRow
-			useHeadlandToNextRow = centerSettings.mode == courseGenerator.CENTER_MODE_SPIRAL and
-				(i ~= endTrack and math.abs(parallelTracks[i].originalTrackNumber - parallelTracks[i + 1].originalTrackNumber) > 2)
 			for j, point in ipairs( parallelTracks[ i ].waypoints) do
 				-- the first point of a track is the end of the turn (except for the first track)
 				if ( j == 1 and ( i ~= startTrack or startWithTurn ) and not useHeadlandFromPreviousRow) then
@@ -549,13 +563,8 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 				point.firstTrack = i == startTrack
 				-- the last point of a track is the start of the turn (except for the last track)
 				if ( j == #parallelTracks[ i ].waypoints and i ~= endTrack ) then
-					-- if the next row to work on is farther away use the headland to drive there instead of a turn maneuver
-					if useHeadlandToNextRow then
-						addPathOnHeadlandToNextRow(result, parallelTracks[i].waypoints, parallelTracks[i + 1].waypoints, headlands, islands, workWidth)
-					else
-						point.turnStart = true
-						table.insert( result, point )
-					end
+					point.turnStart = true
+					table.insert( result, point )
 				else
 					table.insert( result, point )
 				end
@@ -565,24 +574,6 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 		end
 	end
 	return result
-end
-
-function addPathOnHeadlandToNextRow(result, fromRow, toRow, headlands, islands, workWidth)
-	local allHeadlands = getAllHeadlands(headlands, islands)
-	local pathToNextRow, _ = courseGenerator.headlandPathfinder:findPath(fromRow[#fromRow], toRow[1], allHeadlands, workWidth, true)
-	if not pathToNextRow then
-		-- should not happen, safety harness only
-		table.insert(result, fromRow[#fromRow])
-		return
-	end
-	for i = 1, math.max(1, #pathToNextRow - 1) do
-		if i > 1 then
-			pathToNextRow[i].isConnectingTrack = true
-		end
-		table.insert(result, pathToNextRow[i])
-	end
-	fromRow[#fromRow].mustReach = true
-	toRow[1].align = true
 end
 
 --- Check parallel tracks to see if the turn start and turn end waypoints
@@ -721,6 +712,69 @@ function reorderTracksForCircularFieldwork(parallelTracks)
 	end
 	return reorderedTracks
 end
+
+function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop, nRowsInLands)
+	local reorderedTracks = {}
+	-- TODO: add logic for pipe on the left side, as it is now only works for pipe on the right side
+	-- I know this could be generated but it is more readable and easy to visualize this way.
+	local rowOrderInLands = ((leftToRight and bottomToTop) or (not leftToRight and not bottomToTop))  and
+			{
+				{1},
+				{2, 1},
+				{2, 3, 1},
+				{2, 3, 1, 4},
+				{3, 4, 2, 5, 1},
+				{3, 4, 2, 5, 1, 6},
+				{4, 5, 3, 6, 2, 7, 1},
+				{4, 5, 3, 6, 2, 7, 1, 8},
+				{5, 6, 4, 7, 3, 8, 2, 9, 1},
+				{5, 6, 4, 7, 3, 8, 2, 9, 1, 10},
+				{6, 7, 5, 8, 4, 9, 3, 10, 2, 11, 1},
+				{6, 7, 5, 8, 4, 9, 3, 10, 2, 11, 1, 12},
+				{7, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1},
+				{7, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1, 14},
+				{8, 9, 7, 10, 6, 11, 5, 12, 4, 13, 3, 14, 2, 15, 1},
+				{8, 9, 7, 10, 6, 11, 5, 12, 4, 13, 3, 14, 2, 15, 1, 16}	
+			} or
+			{
+				{1},
+				{1, 2},
+				{2, 1, 3},
+				{3, 2, 4, 1},
+				{3, 2, 4, 1, 5},
+				{4, 3, 5, 2, 6, 1},
+				{4, 3, 5, 2, 6, 1, 7},
+				{5, 4, 6, 3, 7, 2, 8, 1},
+				{5, 4, 6, 3, 7, 2, 8, 1, 9},
+				{6, 5, 7, 4, 8, 3, 9, 2, 10, 1},
+				{6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11},
+				{7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 12, 1},
+				{7, 6, 8, 5, 9, 4, 10, 3, 11, 2, 12, 1, 13},
+				{8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1},
+				{8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15},
+				{9, 8, 10, 7, 11, 6, 12, 5, 13, 4, 14, 3, 15, 2, 16, 1}
+			}
+
+	for i = 0, math.floor(#parallelTracks / nRowsInLands) - 1 do
+		for _, j in ipairs(rowOrderInLands[nRowsInLands]) do
+			print(i, j, i * nRowsInLands + j)
+			table.insert(reorderedTracks, parallelTracks[i * nRowsInLands + j])
+		end
+	end
+
+	local lastRow = nRowsInLands * math.floor(#parallelTracks / nRowsInLands)
+	local nRowsLeft = #parallelTracks % nRowsInLands
+
+	if nRowsLeft > 0 then
+		for _, j in ipairs(rowOrderInLands[nRowsLeft]) do
+			print(lastRow, j, lastRow + j)
+			table.insert(reorderedTracks, parallelTracks[lastRow + j])
+		end
+	end
+
+	return reorderedTracks
+end
+
 
 --- Find blocks of center tracks which have to be worked separately
 -- in case of non-convex fields or islands
@@ -874,14 +928,6 @@ function overlaps( t1, t2 )
 	end
 end
 
--- ugly copy paste, should be refactored
-local ridgeMarker = {
-	none = 0,
-	left = 1,
-	right = 2
-};
-
-
 --- Add ridge markers to all up/down tracks, including the first and the last.
 -- The last one does not need it but we'll take care of that once we know 
 -- which track will really be the last one, because if we reverse the course
@@ -891,15 +937,14 @@ function addRidgeMarkers( track )
 	-- ridge markers should be on the unworked side so
 	-- just check the turn at the end of the row.
 	-- If it is a right turn then we start with the ridge marker on the right
-	local left, right = 1, 2
 	function getNextTurnDir(startIx)
 		for i = startIx, #track do
 			-- it is an up/down row if it has track number. Otherwise ignore turns
 			if track[i].trackNumber and track[i].turnStart and track[i].deltaAngle then
 				if track[i].deltaAngle >= 0 then
-					return i, right
+					return i, courseplay.RIDGEMARKER_RIGHT
 				else
-					return i, left
+					return i, courseplay.RIDGEMARKER_LEFT
 				end
 			end
 		end
@@ -917,10 +962,10 @@ function addRidgeMarkers( track )
 			-- don't use ridge markers at the first and the last row of the block as
 			-- blocks can be worked in any order and we may screw up the adjacent block
 			if track[i].trackNumber and not track[i].lastTrack and not track[i].firstTrack then
-				if turnDirection == right then
-					track[i].ridgeMarker = ridgeMarker.right
+				if turnDirection == courseplay.RIDGEMARKER_RIGHT then
+					track[i].ridgeMarker = courseplay.RIDGEMARKER_RIGHT
 				else
-					track[i].ridgeMarker = ridgeMarker.left
+					track[i].ridgeMarker = courseplay.RIDGEMARKER_LEFT
 				end
 			end
 			i = i + 1
@@ -940,16 +985,16 @@ function removeRidgeMarkersFromLastTrack( course, isReversed )
 		-- if the course is not reversed (working on headland first)
 		-- remove ridge markers from the last track
 		if not isReversed and p.lastTrack then
-			p.ridgeMarker = ridgeMarker.none
+			p.ridgeMarker = courseplay.RIDGEMARKER_NONE
 		end
 		-- if it is reversed, the first track becomes the last
 		if isReversed and p.firstTrack then
-			p.ridgeMarker = ridgeMarker.none
+			p.ridgeMarker = courseplay.RIDGEMARKER_NONE
 		end
 		-- if the previous wp is a turn end, remove
 		-- (dunno why, this is how the old course generator works)
 		if i > 1 and course[ i - 1 ].turnEnd then
-			p.ridgeMarker = ridgeMarker.none
+			p.ridgeMarker = courseplay.RIDGEMARKER_NONE
 		end
 	end
 end
@@ -1111,7 +1156,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 				end
 			end
 		end
-		chromosome.fitness = math.floor( 10000 / chromosome.distance )
+		chromosome.fitness = ( 10000 / chromosome.distance )
 		return chromosome.fitness
 	end
 
@@ -1156,6 +1201,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 		local newGeneration = population:breed()
 		population:recombine( newGeneration )
 		generation = generation + 1
+		courseGenerator.debug( 'generation %d %s', generation, tostring( population.bestChromosome ))
 	end
 	courseGenerator.debug( tostring( population.bestChromosome ))
 	-- this table contains the blocks and other relevant data in the order they have to be worked on
@@ -1167,6 +1213,7 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 		block.directionToNextBlock = population.bestChromosome.directionToNextBlock[ blockIx ] -- step direction on the headland index to take
 		table.insert( blocksInSequence, block )
 	end
+
 	return blocksInSequence, population.bestChromosome
 end
 

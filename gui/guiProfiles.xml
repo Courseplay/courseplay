@@ -201,4 +201,66 @@
 	</Profile>
 
 
+	<Profile name="cpMenuPageTab" extends="listItem">
+		<Value name="size" value="100px 100px" />
+		<Value name="margin" value="0px 0px 0px 0px" />
+		<Value name="position" value="0px 0px" />
+	</Profile>
+
+	<Profile name="cpMenuPageTabAlternate" extends="cpMenuPageTab" with="alternateRow" />
+
+	<Profile name="cpDialogBg" extends="dialogBg">
+		<Value name="size" value="1800px 800px" />
+	</Profile>
+
+	<Profile name="cpHeaderSelector" extends="multiTextOptionSettings">
+		<Value name="size" value="1800px 112px" />
+	</Profile>
+
+	<Profile name="cpMenuHeader" extends="emptyPanel" with="anchorTopCenter">
+		<Value name="size" value="1800px 112px" />
+		<Value name="alignmentX" value="left" />
+		<Value name="alignmentY" value="bottom" />
+		<Value name="imageColor" value="$preset_colorGlassVeryLight" />
+		<Value name="flowDirection" value="horizontal" />
+		<Value name="wrapAround" value="true" />
+		<Value name="lateralFlowSize" value="112px" />
+		<Value name="fitToElements" value="true" />
+		<Value name="autoValidateLayout" value="true" />
+		<Value name="hasFrame" value="false" />
+	</Profile>
+
+	<Profile name="cpPagingTabList" extends="list" with="anchorTopLeft">
+		<Value name="size" value="1800px 112px" />
+		<Value name="position" value="0px 0px" />
+		<Value name="itemsPerRow" value="6" />
+		<Value name="listItemHeight" value="112px" />
+		<Value name="listItemWidth" value="100px" />
+		<Value name="listItemPadding" value="0px" />
+		<Value name="listItemSpacing" value="0px" />
+		<Value name="fixedHeight" value="false" />
+		<Value name="fixedWidth" value="false" />
+		<Value name="margin" value="0px 0px 0px 0px" />
+		<Value name="rowBackgroundProfile" value="cpMenuPageTab" />
+		<Value name="rowBackgroundProfileAlternate" value="cpMenuPageTabAlternate" />
+	</Profile>
+
+	<Profile name="cpFullScreenSpanning" extends="uiElementContainerFullScreenSpanning" with="anchorTopLeft">
+		<Value name="size" value="1800px 720px" />
+		<Value name="position" value="0px 0px" />
+		<Value name="margin" value="0px 0px 0px 0px" />
+	</Profile>
+
+	<Profile name="cpIngameMenuSettingsBox" extends="ingameMenuSettingsBox" with="anchorTopLeft">
+		<Value name="hasFrame" value="false" />
+	</Profile>
+
+	<Profile name="cpButtonBoxDocked" extends="buttonBoxDocked" >
+		<Value name="position" value="-130px 50px" />
+	</Profile>
+
+	<Profile name="cpIngameMenuHelpRowBg" extends="ingameMenuHelpRowBg" >
+		<Value name="size" value="1700px 50px" />
+	</Profile>
+
 </GUIProfiles>

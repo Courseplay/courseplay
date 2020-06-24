@@ -3,6 +3,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	-- Input binding debug
 	local vehicle = g_currentMission.controlledVehicle		
 	if not vehicle or not vehicle.hasCourseplaySpec then return end
+  courseEditor:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
 	
 	--print(string.format('courseplay:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseButton(%s))', tostring(posX), tostring(posY), tostring(isDown), tostring(isUp), tostring(mouseButton) ))
 	--print(string.format("if isUp(%s) and mouseButton(%s) == courseplay.inputBindings.mouse.secondaryButtonId(%s) and Enterable.getIsEntered(self)(%s) then"
@@ -10,7 +11,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	if isUp and mouseButton == courseplay.inputBindings.mouse.secondaryButtonId and vehicle:getIsEntered() then
 		if vehicle.cp.hud.show then
 			courseplay:setMouseCursor(vehicle, not vehicle.cp.mouseCursorActive);
-		elseif not vehicle.cp.hud.show and vehicle.cp.hud.openWithMouse then
+		elseif not vehicle.cp.hud.show and courseplay.globalSettings.enableOpenHudWithMouseGlobal:is(true) and vehicle.cp.settings.enableOpenHudWithMouseVehicle:is(true) then
 			courseplay:openCloseHud(vehicle, true)
 		end;
 	end;
@@ -18,6 +19,12 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	local hudGfx = courseplay.hud.visibleArea;
 	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, vehicle.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
+
+	-- should we switch vehicles?
+	if courseplay.globalSettings.clickToSwitch:is(true) and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and not mouseIsInHudArea and
+		mouseButton == courseplay.inputBindings.mouse.primaryButtonId then
+			clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
+	end
 
 	--LEFT CLICK
 	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and mouseIsInHudArea then
@@ -153,9 +160,9 @@ function courseplay:mouseIsInArea(mouseX, mouseY, areaX1, areaX2, areaY1, areaY2
 end;
 
 function courseplay:setCourseplayFunc(func, value, noEventSend, page)
-	--print(string.format("courseplay:setCourseplayFunc( %s, %s, %s, %s)",tostring(func), tostring(value), tostring(noEventSend), tostring(page)))
+	courseplay:debug("setCourseplayFunc: function: " .. func .. " value: " .. tostring(value) .. " noEventSend: " .. tostring(noEventSend) .. " page: " .. tostring(page), 5)
 	if noEventSend ~= true then
-		--Tommi CourseplayEvent.sendEvent(self, func, value,noEventSend,page); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
+		CourseplayEvent.sendEvent(self, func, value,noEventSend,page); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
 	if value == "nil" then
 		value = nil
@@ -167,6 +174,7 @@ function courseplay:setCourseplayFunc(func, value, noEventSend, page)
 end
 
 function courseplay:executeFunction(self, func, value, page)
+	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), 5)
 	if func == "setMPGlobalInfoText" then
 		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
@@ -183,12 +191,13 @@ function courseplay:executeFunction(self, func, value, page)
 		g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
 	end
 	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
-
 	if func ~= "rowButton" then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
 		courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
-	--[[else
+	else
+		courseplay:debug(('%s: calling rowButton function !!!'):format(nameNum(self)), 5);
+		--[[
 		local page = Utils.getNoNil(page, self.cp.hud.currentPage);
 		local line = value;
 		if page == 0 then
@@ -429,7 +438,7 @@ function courseplay.inputBindings.updateInputButtonData()
 	end]]
 
 	-- KEYBOARD
-	local modifierTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_MODIFIER");
+	--local modifierTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_MODIFIER");
 	local openCloseHudTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_HUD");
 
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
@@ -438,55 +447,87 @@ end;
 
 
 function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
-	courseplay.inputModifierIsPressed = g_gui.inputManager.nameActions.COURSEPLAY_MODIFIER.activeBindings[1].isPressed
+	--This Line is to show Keybinds in Help Menu, not sure how to do it...
+	--courseplay.inputModifierIsPressed = g_gui.inputManager.nameActions.COURSEPLAY_MODIFIER.activeBindings[1].isPressed
 	--print(string.format("inputActionCallback:(vehicle(%s), actionName(%s), keyStatus(%s))",tostring(vehicle:getName()),tostring(actionName),tostring(keyStatus)))
-	if courseplay.inputModifierIsPressed then
+	
+	if keyStatus == 1 and vehicle:getIsActive() and vehicle:getIsEntered() then
+
+		--Shovel:
+		if actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
+				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(vehicle, 2);
+		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
+				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(vehicle, 3);
+		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
+				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(vehicle, 4);
+		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
+				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
+				courseplay:moveShovelToPosition(vehicle, 5);
+		--Editor:
+		elseif actionName == 'COURSEPLAY_EDITOR_TOGGLE' then
+				courseEditor:setEnabled(not courseEditor.enabled, vehicle)
+		elseif actionName == 'COURSEPLAY_EDITOR_UNDO' then
+				courseEditor:undo()
+		elseif actionName == 'COURSEPLAY_EDITOR_SAVE' then
+				courseEditor:save()
+		elseif actionName == 'COURSEPLAY_EDITOR_SPEED_INCREASE' then
+				courseEditor:increaseSpeed()
+		elseif actionName == 'COURSEPLAY_EDITOR_SPEED_DECREASE' then
+				courseEditor:decreaseSpeed()
+		elseif actionName == 'COURSEPLAY_EDITOR_DELETE_WAYPOINT' then
+				courseEditor:delete()
+		elseif actionName == 'COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT' then
+				courseEditor:deleteNext()      
+		elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_START' then
+				courseEditor:deleteToStart()
+		elseif actionName == 'COURSEPLAY_EDITOR_DELETE_TO_END' then
+				courseEditor:deleteToEnd()
+		elseif actionName == 'COURSEPLAY_EDITOR_INSERT_WAYPOINT' then
+				courseEditor:insert()
+		elseif actionName == 'COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE' then
+				courseEditor:cycleType()
+
+		--HUD open/close:
+		elseif actionName == 'COURSEPLAY_HUD' then
+			vehicle:setCourseplayFunc('openCloseHud', not vehicle.cp.hud.show, true);
+
+		--Driver Actions:		
+		elseif actionName == 'COURSEPLAY_CANCELWAIT' and
+			((vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting())) then
+			vehicle:setCourseplayFunc('cancelWait', true, false, 1);
+		elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
+			vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
+		elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive then
+			vehicle:setCourseplayFunc('setStopAtEnd', nil, false, 1);
 		
-		if keyStatus == 1 and vehicle:getIsActive() and vehicle:getIsEntered() then
-			if actionName == 'COURSEPLAY_START_STOP' then
-				if vehicle.cp.canDrive then
-					if vehicle.cp.isDriving then
+		--Switch Mode, but doesn't work right now, not sure why
+		elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
+			vehicle:setCourseplayFunc('setCpMode', vehicle.cp.nextMode, false, 1);
+		elseif vehicle.cp.canSwitchMode and vehicle.cp.prevMode and actionName == 'COURSEPLAY_PREVMODE' then
+			vehicle:setCourseplayFunc('setCpMode', vehicle.cp.prevMode, false, 1);
+
+		--Seeder fertilizer toggle:
+		elseif actionName == 'COURSEPLAY_TOGGLE_FERTILIZER' then
+			vehicle.cp.settings.sowingMachineFertilizerEnabled:toggle()
+
+		--StartStop:
+		elseif actionName == 'COURSEPLAY_START_STOP' then
+			if vehicle.cp.canDrive then
+				if vehicle.cp.isDriving then
 						vehicle:setCourseplayFunc('stop', nil, false, 1);
-					else
-						vehicle:setCourseplayFunc('start', nil, false, 1);
-					end;
 				else
-					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.cp.numWaypoints == 0 then
-						vehicle:setCourseplayFunc('start_record', nil, false, 1);
-					elseif vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.isRecordingTurnManeuver then
-						vehicle:setCourseplayFunc('stop_record', nil, false, 1);
-					end;
+						vehicle:setCourseplayFunc('start', nil, false, 1);
 				end;
-			elseif actionName == 'COURSEPLAY_CANCELWAIT' and
-				(vehicle.cp.HUD1wait and vehicle.cp.canDrive and vehicle.cp.isDriving) or (vehicle.cp.driver and vehicle.cp.driver:isWaiting()) then
-				vehicle:setCourseplayFunc('cancelWait', true, false, 1);
-			elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
-				vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
-			elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive and vehicle.cp.isDriving then
-				vehicle:setCourseplayFunc('setStopAtEnd', not vehicle.cp.stopAtEnd, false, 1);
-			elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
-				vehicle:setCourseplayFunc('setCpMode', vehicle.cp.nextMode, false, 1);
-			elseif vehicle.cp.canSwitchMode and vehicle.cp.prevMode and actionName == 'COURSEPLAY_PREVMODE' then
-				vehicle:setCourseplayFunc('setCpMode', vehicle.cp.prevMode, false, 1);
-			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 2);
-			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 3);
-			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 4);
-			elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
-					vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-					courseplay:moveShovelToPosition(vehicle, 5);
+			else
+				if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.cp.numWaypoints == 0 then
+						vehicle:setCourseplayFunc('start_record', nil, false, 1);
+				elseif vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.isRecordingTurnManeuver then
+						vehicle:setCourseplayFunc('stop_record', nil, false, 1);
+				end;
 			end;
-
-			if not vehicle.cp.openHudWithMouse and actionName == 'COURSEPLAY_HUD' then
-				vehicle:setCourseplayFunc('openCloseHud', not vehicle.cp.hud.show, true);
-			end;
-		end; -- END vehicle:getIsActive() and Enterable.getIsEntered(vehicle) and modifierPressed
-	end
-		
-
-end
+		end; 
+	end; -- END Keystatus == 1 and vehicle:getIsActive() and Enterable.getIsEntered(vehicle)
+end;

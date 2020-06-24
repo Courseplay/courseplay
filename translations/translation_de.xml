@@ -3,11 +3,11 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 							text="Kursaufzeichnung beginnen" />
 		<text name="COURSEPLAY_DRIVER" 										text="Abfahrer" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Abfahrer starten" />
+		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Abfahrer stoppen" />
 		<text name="COURSEPLAY_PPC_OFF" 									text="Normaler Modus" />
 		<text name="COURSEPLAY_PPC_ON" 										text="Experimenteller Modus" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_AIDRIVER" 									text="KI Fahrer" /> <!-- enable new AI driver -->
-		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Abfahrer starten" />
-		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Abfahrer stoppen" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Am letzten Wegpunkt o. Trigger warten" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Anzahl der Durchläufe"/>
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Durchläufe zurücksetzen"/>
@@ -29,7 +29,7 @@
 		<text name="COURSEPLAY_MODE_5" 										text="Typ: Überführung (Route abfahren)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Typ: Feldarbeit" />
 		<text name="COURSEPLAY_MODE_7" 										text="Typ: Drescher fährt selbst abtanken" />
-		<text name="COURSEPLAY_MODE_8" 										text="Typ: Flüssigkeitstransport" />
+		<text name="COURSEPLAY_MODE_8" 										text="Typ: Feldversorgung" />
 		<text name="COURSEPLAY_MODE_9" 										text="Typ: Schaufel befüllen und entleeren" />
 		<text name="COURSEPLAY_MODE_10" 									text="Typ: Bunkersilo befüllen und verdichten" />
 		<text name="COURSEPLAY_CONTINUE" 									text="weiterfahren" />
@@ -134,7 +134,7 @@
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Warte bis die Warteposition frei ist" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="wende in Richtung Koordinaten %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 							text="fahre zu Wegpunkt %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Warte bis Füllstand erreicht ist" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 						text="Warte bis Füllstand erreicht ist (%s %ds)" />
 		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 						text="Kein Drescher in Reichweite" />
 		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Warte bis Drescher gewendet hat" />
 		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Warte auf neuen Wegpunkt" />
@@ -182,8 +182,8 @@
 		<text name="COURSEPLAY_CLICK_MAP_TO_SELECT_FIELD" 	 				text="(Feld auf Karte anklicken um es auszuwählen)" />
 		<text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 		text="(Position auf Karte anklicken für Startposition)" />
 		<text name="COURSEPLAY_START_WORKING_ON" 			            	text="Arbeit beginnen auf" />
-		<text name="COURSEPLAY_SKIP_ROWS"     			                	text="überspringe Reihen" />
 		<text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Feldreihen" />
+		<text name="COURSEPLAY_SKIP_ROWS"     			                	text="überspringe Reihen" />
 		<text name="COURSEPLAY_HEADLAND_PASSES" 				        	text="Vorgewende-Bahnen" />
 		<text name="COURSEPLAY_HEADLAND_CORNERS" 				        	text="Vorgewende Ecken" />
 		<text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				        	text="im Uhrzeigersinn" />
@@ -231,11 +231,15 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="hoch/runter" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="kreisförmig" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiralförmig" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="nur Name" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="Name und Kurs" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="deaktiviert" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Spurreißer" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Spurreißer an/aus" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Abladen auf dem Feld" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="automatisch" />
 		<text name="COURSEPLAY_MANUAL" 										text="manuell" />
@@ -273,6 +277,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="ersten Wegpunkt" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="aktuellen Wegpunkt" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="nächsten passenden Wegpunkt" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Feldrandkurs" />
 		<text name="COURSEPLAY_FIELD" 										text="Feld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(aktuell geladener Kurs)" />
@@ -325,15 +330,15 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD an &amp; Hinterachssperrdiff auf dem Feld" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD an &amp; Sperrdifferential auf den Feld" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Möchtest du dass die Felder automatisch gescannt werden?" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Möchtest du Löhne für deine Fahrer aktivieren (%s/Stunde)?" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Möchtest du Löhne für deine Fahrer aktivieren?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Saatgut-Rechner" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Feld: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Saattyp: %s" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 					text="Verbrauch: %s %s (%s)" />
+		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_TRIM" 					text="···" />																
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND"					text="Start- und Endpunkte anzeigen/verstecken" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL"							text="Alle Punkte anzeigen/verstecken" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"					text="Kreuzungspunkte anzeigen/verstecken" />
-
 		<text name="COURSEPLAY_HUD_OPEN" 									text="Courseplay HUD öffnen" />
 		<text name="COURSEPLAY_HUD_CLOSE" 									text="Courseplay HUD schließen" />
 		<text name="COURSEPLAY_FUNCTIONS" 									text="Courseplay-Funktionen" />
@@ -353,12 +358,33 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text='CP: Schaufel auf Position Transport setzen' />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text='CP: Schaufel auf Position vor Abladen setzen' />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text='CP: Schaufel auf Position Abladen setzen' />
-		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Mauszeiger anzeigen" />
-		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Mauszeiger verstecken" />
-		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Linke Maustaste" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Rechte Maustaste" /> <!-- TODO TRANSLATE: -->
+		
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="CP Editor: Ein Aus" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="CP Editor: Rueckgaengig" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="CP Editor: Kursaenderung speichern" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="CP Editor: Geschwindigkeit erhoehen" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="CP Editor: Geschwindigkeit veringern" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="CP Editor: Wegpunkt löschen" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="CP Editor: Loesche nächsten Wegpunkt" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="CP Editor: Loesche Wegpunkt bis Start" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CP Editor: Loesche Wegpunkt bis Ende" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CP Editor: Wegpunkt einfuegen" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP Editor: Wegpunkttyp aendern" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Düngefunktion der Sämaschine" />
+		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
+		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wartepunkt" />
+		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Kreuzungspunkt" />
+		<text name="COURSEPLAY_EDITOR_UNLOAD" 								text="Entladepunkt" />
+		<text name="COURSEPLAY_EDITOR_TURNSTART" 							text="Wenden start" />
+		<text name="COURSEPLAY_EDITOR_TURNEND" 								text="Wenden ende" />
+		<text name="COURSEPLAY_EDITOR_REVERSE" 								text="Rückwärts" />																															   																	  
+		
+		<text name="COURSEPLAY_MOUSEARROW_SHOW" 							text="Mauszeiger anzeigen" />																						  
+		<text name="COURSEPLAY_MOUSEARROW_HIDE" 							text="Mauszeiger verstecken" />																		  
+		<text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Linke Maustaste" /> <!-- TODO TRANSLATE: -->																			
+		<text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Rechte Maustaste" /> <!-- TODO TRANSLATE: -->																	 
 		<text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Mittlere Maustaste" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Maustaste %d" /> <!-- TODO TRANSLATE: %s = number -->
+		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Maustaste %d" /> <!-- TODO TRANSLATE: %s = number -->					
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Betriebsart" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="verteilen und verdichten" />
@@ -392,9 +418,59 @@
 		<text name="COURSEPLAY_FillType_Molasses"							text="Melasse" />
 
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Not installed" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Don't use" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="For unload/refill" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Nicht installiert" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Nicht benutzen" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Zum entladen/auffüllen" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Zum parken" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Zum entladen/auffüllen und parken" />
 
-	</texts>
+		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(und zurück)" />
+
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"				   		text="Erweiterte Einstellungen..." />
+
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"				   		text="Lade Kurse beim Start" />
+		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Lade Kurse beim Start des Savegames, Ladezeit wird sich erhöhen, wenn aktiviert" />
+		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Benutze AI Wendemanöver" />
+		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Benutze AI Wendemanöver anstatt berechneter Wendemanöver" />
+		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Felder automatisch scannen" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Klick zum einsteigen" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug um einzusteigen" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rohr immer ausfahren" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Rohr immer ausfahren, wenn Drescher auf Abfahrer wartet" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="früh" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="spät" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Tool anheben" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Tool anheben am Ende einer Reihe oder am start des Vorgewende-Wendemanövers" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Tool absenken" />
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Tool absenken am Ende einer Reihe oder am ende des Vorgewende-Wendemanövers" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Düngefunktion der Sämaschine" />
+		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Aktiviert oder deaktiviert die Düngefunktion der Sämaschine" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Rechtsklick HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Aktiviert/Deaktiviert den Rechtsklick zum öffnen des HUDs (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Rechtsklick HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Aktiviert/Deaktiviert den Rechtsklick zum öffnen des HUDs (Fahrzeug)" />
+
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Pathfinder Wegpunkte" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Zeige Wegpunkte vom Pathfinder" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Überlappung Vorgewende" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Überlappung im Vorgewende in Prozent" />
+		
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zeige Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD an/aus" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Strohablage im Vorgewende" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Schaltet die Strohablage im Vorgewende an oder aus" />
+
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Pathfinding im Wendemanöver" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Pathfinding im Wendemanöver auf unförmigen Feldern, vom Vorgewende zur nächste Reihe" />
+		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay Arbeiterlohn" />
+		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay Arbeiterlohn in Prozent vom normalen Helfer" />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Drescher selber abtanken" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Drescher sucht einen Trailer und fährt abtanken" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Pathfinder darf rückwärts fahren" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Erlaubt dem Pathfinder, rückwärts zu fahren (Nur nicht gezogene Tools)" />
+		
+		<!-- Replace marker, do not remove! --></texts>
+
 </l10n>
