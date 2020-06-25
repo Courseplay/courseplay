@@ -227,6 +227,12 @@ function AIDriver:beforeStart()
 	self.firstReversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
 	-- for now, pathfinding generated courses can't be driven by towed tools
 	self.allowReversePathfinding = self.firstReversingWheeledWorkTool == nil
+	if self.vehicle:getAINeedsTrafficCollisionBox() then
+		courseplay.debugVehicle(3,self.vehicle,"Making sure cars won't stop around us")
+		-- something deep inside the Giants vehicle sets the translation of this box to whatever
+		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
+		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
+	end
 end
 
 --- Start driving
@@ -869,25 +875,11 @@ end
 function AIDriver:enableCollisionDetection()
 	courseplay.debugVehicle(3,self.vehicle,'Collision detection enabled')
 	self.collisionDetectionEnabled = true
-	-- move the big collision box around the vehicle underground because this will stop
-	-- traffic (not CP drivers though) around us otherwise
-	if self.vehicle:getAINeedsTrafficCollisionBox() then
-		courseplay.debugVehicle(3,self.vehicle,"Making sure cars won't stop around us")
-		-- something deep inside the Giants vehicle sets the translation of this box to whatever
-		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
-		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
-	end
 end
 
 function AIDriver:disableCollisionDetection()
 	courseplay.debugVehicle(3,self.vehicle,'Collision detection disabled')
 	self.collisionDetectionEnabled = false
-	-- move the big collision box around the vehicle back over the ground so
-	-- game traffic around us will stop while we are working on the field
-	if self.vehicle:getAINeedsTrafficCollisionBox() then
-		courseplay.debugVehicle(3,self.vehicle,'Cars will stop around us again.')
-		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = 0
-	end
 end
 
 function AIDriver:detectCollision(dt)
