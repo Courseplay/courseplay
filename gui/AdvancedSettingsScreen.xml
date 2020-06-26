@@ -31,6 +31,5 @@
     <GuiElement type="flowLayout" profile="cpButtonBoxDocked"  id="buttonsPanel" position="-130px 0px">
         <GuiElement type="button" profile="buttonBack" text="$l10n_button_back" onClick="onClickBack" id="menuButton[1]" />
         <GuiElement type="button" profile="buttonOK" text="$l10n_button_ok" onClick="onClickOk" id="menuButton[2]"  />
-        <GuiElement type="button" profile="buttonCancel" text="$l10n_button_reset" onClick="onClickResetButton" id="menuButton[3]"  />	
     </GuiElement>
 </GUI>
