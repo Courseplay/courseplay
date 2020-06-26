@@ -335,6 +335,7 @@ function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
 	return true
 end
 
+--do we really need this one ??
 function courseplay:updateAllTriggers()
 	courseplay:debug('updateAllTriggers()', 1);
 
@@ -653,78 +654,6 @@ function courseplay:printTipTriggersFruits(trigger)
 	end
 end;
 
--- Custom version of trigger:onActivateObject to allow activating for a non-controlled vehicle
-function courseplay:activateTriggerForVehicle(trigger, vehicle)
-	--Cache giant values to restore later
-	local defaultGetFarmIdFunction = g_currentMission.getFarmId;
-	local oldControlledVehicle = g_currentMission.controlledVehicle;
-
-	--Override farm id to match the calling vehicle (fixes issue when obtaining fill levels)
-	local overriddenFarmIdFunc = function()
-		local ownerFarmId = vehicle:getOwnerFarmId()
-		courseplay.debugVehicle(19, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
-		return ownerFarmId;
-	end
-	g_currentMission.getFarmId = overriddenFarmIdFunc;
-
-	--Override controlled vehicle if I'm not in it
-	if g_currentMission.controlledVehicle ~= vehicle then
-		g_currentMission.controlledVehicle = vehicle;
-	end
-
-	--Call giant method with new params set
-	trigger:onActivateObject();
-
-	--Restore previous values
-	g_currentMission.getFarmId = defaultGetFarmIdFunction;
-	g_currentMission.controlledVehicle = oldControlledVehicle;
-end
-
-
---------------------------------------------------
--- Adding easy access to SiloTrigger
---------------------------------------------------
-courseplay.SiloTrigger_TriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
-	courseplay:debug(' SiloTrigger_TriggerCallback',2);
-	local trailer = g_currentMission.nodeToObject[otherShapeId];
-	if trailer ~= nil then
-		-- Make sure cp table is present in the trailer.
-		if not trailer.cp then
-			trailer.cp = {};
-		end;
-		if not trailer.cp.siloTriggerHits then
-			trailer.cp.siloTriggerHits = 0;
-		end;
-		-- self.Schnecke is only set for MischStation and that one is not an real SiloTrigger and should not be used as one.
-		if onEnter then --and not self.Schnecke and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
-			-- Add the current SiloTrigger to the cp table, for easier access.
-			if not trailer.cp.currentSiloTrigger then
-				trailer.cp.currentSiloTrigger = self;
-				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
-			end;
-			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits + 1;
-		elseif onLeave and not self.Schnecke and trailer.cp.siloTriggerHits >= 1 then 
-			-- Remove the current SiloTrigger.
-			if trailer.cp.currentSiloTrigger ~= nil and trailer.cp.siloTriggerHits == 1 then
-				trailer.cp.currentSiloTrigger = nil;
-				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
-			end;
-			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits - 1;
-		end;
-	end;
-end;
-LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback, courseplay.SiloTrigger_TriggerCallback);
-
--- this could be used to fill sowing machines, but better may be a better way to find out what Vehicle.addFillUnitTrigger() does.
-local cpFillTriggerCallback = function(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
-	if onEnter then
-		courseplay.debugFormat(2, 'fillTrigger onEnter')
-	elseif onLeave then
-		courseplay.debugFormat(2, 'fillTrigger onLeave')
-	end
-end
-FillTrigger.fillTriggerCallback = Utils.appendedFunction(FillTrigger.fillTriggerCallback, cpFillTriggerCallback)
-
 local oldBunkerSiloLoad = BunkerSilo.load;
 function BunkerSilo:load(...)
 	local old = oldBunkerSiloLoad(self,...);
@@ -753,5 +682,221 @@ function BunkerSilo:load(...)
 	
 	return old
 end
+
+--basic trigger functions for Loading/Unloading at grain silos/ filling implements
+-----------------------------------------------------------------------------------------------------
+-- Custom version of trigger:onActivateObject to allow activating for a non-controlled vehicle
+function courseplay:activateTriggerForVehicle(trigger, vehicle)
+	--Cache giant values to restore later
+	local defaultGetFarmIdFunction = g_currentMission.getFarmId;
+	local oldControlledVehicle = g_currentMission.controlledVehicle;
+
+	--Override farm id to match the calling vehicle (fixes issue when obtaining fill levels)
+	local overriddenFarmIdFunc = function()
+		local ownerFarmId = vehicle:getOwnerFarmId()
+		courseplay.debugVehicle(19, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
+		return ownerFarmId;
+	end
+	g_currentMission.getFarmId = overriddenFarmIdFunc;
+
+	--Override controlled vehicle if I'm not in it
+	if g_currentMission.controlledVehicle ~= vehicle then
+		g_currentMission.controlledVehicle = vehicle;
+	end
+
+	--Call giant method with new params set
+	trigger:onActivateObject(vehicle);
+
+	--Restore previous values
+	g_currentMission.getFarmId = defaultGetFarmIdFunction;
+	g_currentMission.controlledVehicle = oldControlledVehicle;
+end
+--helper if we are already in an trigger 
+function courseplay:isTriggerAvailable(vehicle)
+    for key, object in pairs(g_currentMission.activatableObjects) do
+		if object:getIsActivatable(vehicle) then
+            g_currentMission.activatableObjects[key] = nil
+			courseplay:activateTriggerForVehicle(object, vehicle)
+			vehicle.cp.driver:setTrigger(object)
+		    return true
+        end
+    end
+    return false
+end
+
+function courseplay:onActivateObject(superFunc,vehicle)
+	if vehicle and vehicle.cp and vehicle.cp.driver and vehicle:getIsCourseplayDriving() then 
+		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
+		courseplay.debugVehicle(19, vehicle, 'onActivateObject Load Trigger')
+		if not self.isLoading then
+			local fillLevels, capacity = self.source:getAllFillLevels(g_currentMission:getFarmId())
+			local fillableObject = self.validFillableObject
+			local fillUnitIndex = self.validFillableFillUnitIndex
+			local firstFillType = nil
+			for fillTypeIndex, fillLevel in pairs(fillLevels) do
+				if self.fillTypes == nil or self.fillTypes[fillTypeIndex] then
+					if fillableObject:getFillUnitAllowsFillType(fillUnitIndex, fillTypeIndex) then
+						if vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN and fillTypeIndex == vehicle.cp.siloSelectedFillType then
+							if vehicle.cp.driver.passedRunCounter then
+								if vehicle.cp.driver:passedRunCounter() then 
+									courseplay.debugVehicle(19, vehicle, 'passedRunCounter => no more loading!')
+									return
+								end
+							end		
+							if vehicle.cp.driver:is_a(CombineUnloadAIDriver) then 
+								courseplay.debugVehicle(19, vehicle, 'wrong AIDriver')
+								return
+							end
+							courseplay.debugVehicle(19, vehicle, 'select Filltype Load Trigger')
+							self:onFillTypeSelection(fillTypeIndex)
+							break
+						elseif dieselIndex and fillTypeIndex == dieselIndex then 
+							motorSpec = vehicle.spec_motorized
+							courseplay.debugVehicle(19, vehicle, 'Fuell Trigger found')
+							if vehicle.cp.settings.allwaysSearchFuel:is(false) then
+								if not vehicle:getFillUnitFillLevelPercentage(motorSpec.consumersByFillTypeName.def.fillUnitIndex)*100 < 20 then 
+									courseplay.debugVehicle(19, vehicle, 'still enough fuel in Vehicle')
+									return superFunc(self,trigger, fillTypeIndex, fillUnitIndex)
+								end
+							end
+							self:onFillTypeSelection(fillTypeIndex)
+							break
+						end
+					end
+				end
+			end
+			CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_NO_FILLTYPE')
+			courseplay.debugVehicle(19, vehicle, 'wrong FillType')
+		end
+	else 
+		return superFunc(self)
+	end
+end
+LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,courseplay.onActivateObject)
+
+--for covers might need to use: Cover:onAddedFillUnitTrigger()
+--maybe should use loadTriggerCallback as direct entry point for CP
+function courseplay:loadTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+    local fillableObject = g_currentMission:getNodeObject(otherId)
+	local rootVehicle
+	if fillableObject then 
+		rootVehicle = fillableObject:getRootVehicle()
+	end
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() and rootVehicle:getIsCourseplayDriving() then 
+		if onEnter then 
+			courseplay.debugVehicle(19, vehicle, 'onEnter LoadTrigger ')
+			courseplay:openCloseCover(fillableObject, true)
+			rootVehicle.cp.driver:setTrigger(object)
+		end
+		if onLeave then 
+			courseplay.debugVehicle(19, vehicle, 'onLeave LoadTrigger ')
+			courseplay:openCloseCover(fillableObject, false)
+			rootVehicle.cp.driver.trigger = nil
+		end
+		superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+		
+		--activate Trigger
+		if self:getIsActivatable(rootVehicle) then
+			courseplay.debugVehicle(19, vehicle, 'activateTriggerForVehicle ')
+			courseplay:activateTriggerForVehicle(self, rootVehicle)
+		end
+	else
+		return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	end
+end
+LoadTrigger.loadTriggerCallback = Utils.overwrittenFunction(LoadTrigger.loadTriggerCallback,courseplay.loadTriggerCallback)
+
+function courseplay:isUnloadingTriggerAvailable(object)    
+	local spec = object.spec_dischargeable
+	if spec then 
+		if spec:getCanToggleDischargeToObject() then 
+			local currentDischargeNode = spec.currentDischargeNode
+			if currentDischargeNode and spec.currentDischargeState == Dischargeable.DISCHARGE_STATE_OFF then
+				if spec:getCanDischargeToObject(currentDischargeNode) then
+					spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
+				elseif currentDischargeNode.dischargeHit then
+				
+				else 
+				
+				end
+			end
+		end
+	end
+	for _,impl in pairs(object:getAttachedImplements()) do
+		courseplay:isUnloadingTriggerAvailable(impl.object)
+	end
+end
+
+function courseplay:setDischargeState(superFunc,state, noEventSend)
+    local rootVehicle = self:getRootVehicle()
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+		courseplay.debugVehicle(19, vehicle, 'setDischargeState')
+		if state == Dischargeable.DISCHARGE_STATE_OFF  then
+			rootVehicle.cp.driver:resetUnloadingState()
+			courseplay.debugVehicle(19, vehicle, 'stop Unloading')
+		elseif state == Dischargeable.DISCHARGE_STATE_OBJECT then
+			rootVehicle.cp.driver:setUnloadingState()
+			courseplay.debugVehicle(19, vehicle, 'start Unloading')
+		end
+	end
+	return superFunc(self,state,noEventSend)
+end
+Dischargeable.setDischargeState = Utils.overwrittenFunction(Dischargeable.setDischargeState,courseplay.setDischargeState)
+
+function courseplay:addFillUnitTrigger(superFunc,trigger, fillTypeIndex, fillUnitIndex)
+	local rootVehicle = self:getRootVehicle()
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+		local spec = self.spec_fillUnit
+		local possible = false
+		if #spec.fillTrigger.triggers == 0 then
+			courseplay.debugVehicle(19, vehicle, 'FillUnit: addFillUnitTrigger')
+			spec.fillTrigger.activatable:setFillType(fillTypeIndex)
+			possible = true
+		end
+		ListUtil.addElementToList(spec.fillTrigger.triggers, trigger)
+		SpecializationUtil.raiseEvent(self, "onAddedFillUnitTrigger", fillTypeIndex, fillUnitIndex, #spec.fillTrigger.triggers)
+		if possible then
+			spec:setFillUnitIsFilling(true)
+			courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling')
+		end
+		return 
+	end
+	return superFunc(self,trigger, fillTypeIndex, fillUnitIndex)
+end
+FillUnit.addFillUnitTrigger = Utils.overwrittenFunction(FillUnit.addFillUnitTrigger,courseplay.addFillUnitTrigger)
+
+function courseplay:setFillUnitIsFilling(superFunc,isFilling, noEventSend)
+	local rootVehicle = self:getRootVehicle()
+	if rootVehicle then 
+		if isFilling == true then 
+			courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling is filling for')
+			rootVehicle.cp.driver:stop()
+		else 
+			courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling is full/stopped ')
+			rootVehicle.cp.driver:continue()
+		end	
+	end
+	return superFunc(self,isFilling, noEventSend)
+end
+FillUnit.setFillUnitIsFilling = Utils.overwrittenFunction(FillUnit.setFillUnitIsFilling,courseplay.setFillUnitIsFilling)
+
+function courseplay:setIsLoading(superFunc,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
+    courseplay.debugVehicle(19, vehicle, 'LoadTrigger: setIsLoading')
+	local rootVehicle = self.validFillableObject:getRootVehicle()
+	if rootVehicle then
+		if isLoading then 
+			courseplay.debugVehicle(19, vehicle, 'LoadTrigger: setIsLoading is Loading ')
+			rootVehicle.cp.driver:setLoadingState()
+		else 
+			courseplay.debugVehicle(19, vehicle, 'LoadTrigger: setIsLoading is full/stopped')
+			rootVehicle.cp.driver:resetLoadingState()
+		end
+	end
+	return superFunc(self,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
+end
+LoadTrigger.setIsLoading = Utils.overwrittenFunction(LoadTrigger.setIsLoading,courseplay.setIsLoading)
+
+-------------------------------------------------------------------------------------------------------
+
 -- do not remove this comment
 -- vim: set noexpandtab:

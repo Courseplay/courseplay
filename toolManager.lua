@@ -251,6 +251,8 @@ function courseplay:isTrailer(workTool)
 	return workTool.typeName:match("trailer");
 end;
 
+--TODO: have to get rid of this one 
+
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	if not isImplement then
@@ -685,7 +687,7 @@ function courseplay:setMarkers(vehicle, object)
 	courseplay.debugVehicle(6, vehicle, '(%s), setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',
 		nameNum(object), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker))
 end;
-
+--still needed ???
 function courseplay:setFoldedStates(object)
 	if courseplay:isFoldable(object) and object.spec_foldable.turnOnFoldDirection then
 		cpPrintLine(17);
@@ -719,7 +721,7 @@ function courseplay:setFoldedStates(object)
 		cpPrintLine(17);
 	end;
 end;
-
+--old code 
 function courseplay:setTipperCoverData(vehicle)
 	for i=1, vehicle.cp.numWorkTools do
 		local workTool = vehicle.cp.workTools[i];
@@ -781,7 +783,7 @@ end;
 
 --##################################################
 
-
+--old code
 -- ##### LOADING TOOLS ##### --
 function courseplay:load_tippers(vehicle, allowedToDrive)
 	--- vehicle.cp.tipperLoadMode == num
@@ -926,6 +928,7 @@ end
 
 -- ##################################################
 
+--old code, TODO: create unload code for heap tipper
 
 -- ##### UNLOADING TOOLS ##### --
 function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
@@ -1272,7 +1275,7 @@ function courseplay:addCpNilTempFillLevelFunction()
 	end;
 	BunkerSilo.setState = Utils.prependedFunction(BunkerSilo.setState, cpNilTempFillLevel);
 end;
-
+--TDOO: should be changed to spec_dischargeable and ... 
 function courseplay:getTipTriggerFreeCapacity(trigger, fillType)
 	--Tommi TODO get it to the new Trigger version
 	local freeCapacity = 0;
@@ -1285,7 +1288,7 @@ function courseplay:getTipTriggerFreeCapacity(trigger, fillType)
 	end
 	return freeCapacity;
 end;
-
+--TDOO: should be changed to spec_dischargeable and ... 
 function courseplay:resetTipTrigger(vehicle, changeToForward)
 	if vehicle.cp.currentTipTrigger ~= nil then
 		if vehicle.cp.tipperFillLevel == 0 then
@@ -1311,7 +1314,7 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 		end;
 	end
 end;
-
+--old trigger code
 -- this does not change lx/lz (direction), only allowedToDrive
 function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, lx, lz)
 	--if the trigger is not used by me, reset it after 10s
@@ -1324,7 +1327,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fillTrigger]
 			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, workTool) then
 				courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
-				courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS,trigger)
+				courseplay:openCloseCover(vehicle, true,trigger)
 				allowedToDrive, isFilling = courseplay:fillOnTrigger(vehicle, workTool,vehicle.cp.fillTrigger)
 			else
 				courseplay.debugVehicle(19,vehicle,'fillTypes dont match -> reset fillTrigger')
@@ -1355,7 +1358,7 @@ function courseplay:refillWorkTools(vehicle, driveOnAtPercent, allowedToDrive, l
 	end;
 	return allowedToDrive, lx, lz;
 end;		
-		
+--old trigger code		
 function courseplay:fillOnTrigger(vehicle, objectToFill,triggerId)
 	local allowedToDrive = true
 	local trigger = courseplay.triggers.fillTriggers[triggerId]
@@ -1423,6 +1426,7 @@ function courseplay:fillOnTrigger(vehicle, objectToFill,triggerId)
 	return allowedToDrive, vehicle.isFuelFilling ;
 end
 	
+--old trigger code
 function courseplay:resetFillTrigger(vehicle)
 	--print("resetFillTrigger: triggers: "..tostring(#vehicle.cp.fillTriggers))
 	if vehicle.cp.fillTrigger then
@@ -1443,9 +1447,10 @@ function courseplay:resetFillTrigger(vehicle)
 	elseif vehicle.cp.fuelFillTrigger then
 		vehicle.cp.fuelFillTrigger = nil
 	end
-	courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
+	courseplay:openCloseCover(vehicle, false)
 end	
 
+--old trigger code
 function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerIndex)
 	courseplay:resetCustomTimer(vehicle, "triggerFailBackup", true)
 	if fillOrder then
@@ -1481,7 +1486,7 @@ function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerI
 		elseif trigger.sourceObject then
 			workTool:setFillUnitIsFilling(false)							
 		end
-		courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
+		courseplay:openCloseCover(vehicle, false)
 	end
 end	
 
@@ -1500,7 +1505,9 @@ function courseplay:getOnlyPossibleFillType(vehicle,workTool,fillTrigger)
 		end
 	end
 end
-		
+
+
+--TODO: not if this one is needed ? probably not needed
 function courseplay:handleUnloading(vehicle,revUnload,dt,reverseCourseUnloadpoint)
 	local tipRefpoint = 0
 	local stopForTipping = false
@@ -1667,7 +1674,7 @@ function courseplay:checkValidTipDistance(vehicle,tipper,reverseCourseUnloadpoin
 	return trueDistanceToHeap;
 end
 
-
+--TODO: not sure if this one is needed  ?
 function courseplay:handleHeapUnloading(vehicle)
 	--Todo right now it starts when tractor is under unload point. Be nice if pipe was under
 	local stopForUnload = false;
@@ -1933,6 +1940,8 @@ function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
 	return modeValid
 end
 
+--TODO: pretty inconsistent and not reliable => maybe sperate for ich mode and only use spec's directly??
+
 --Useable Mode decision. Check Mode Valid = Check for Specializations.
 function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 	local modeValid = false
@@ -1981,7 +1990,7 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 	end
 	return modeValid ;
 end
-
+--TODO: remove this one and use Giants code ??
 function courseplay:updateFillLevelsAndCapacities(vehicle)
 	courseplay:setOwnFillLevelsAndCapacities(vehicle,vehicle.cp.mode)
 	vehicle.cp.totalFillLevel = vehicle.cp.fillLevel;
@@ -2026,7 +2035,7 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	end
 	--print(string.format("End of function: vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.cp.totalFillLevel)))
 end
-
+--TODO: remove this one and use Giants code ??
 function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 	local fillLevel, capacity = 0,0
 	local fillLevelPercent = 0;
@@ -2113,105 +2122,62 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 end
 
 function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
-	if vehicle.getConsumerFillUnitIndex ~= nil then
-		local isFilling = false
-		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
-		local currentFuelPercentage = vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
-		local searchForFuel = not vehicle.isFuelFilling and (vehicle.cp.settings.allwaysSearchFuel:is(true) and currentFuelPercentage < 99 or currentFuelPercentage < 20);
-		if searchForFuel and not vehicle.cp.fuelFillTrigger then
-			local nx, ny, nz = localDirectionToWorld(vehicle.cp.directionNode, lx, 0, lz);
-			local tx, ty, tz = getWorldTranslation(vehicle.cp.directionNode)
-			courseplay:doTriggerRaycasts(vehicle, 'fuelTrigger', 'fwd', true, tx, ty, tz, nx, ny, nz);
-		end
-
-		if vehicle.cp.fuelFillTrigger then
-			local trigger = courseplay.triggers.fillTriggers[vehicle.cp.fuelFillTrigger]
-			if trigger ~= nil and courseplay:fillTypesMatch(vehicle, trigger, vehicle, dieselIndex) then
-				allowedToDrive,isFilling = courseplay:fillOnTrigger(vehicle,vehicle,vehicle.cp.fuelFillTrigger)
-			else
-				vehicle.cp.fuelFillTrigger = nil
+	if vehicle and vehicle.spec_motorized then 
+		if vehicle:getCanMotorRun() then 
+			local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
+			if vehicle:getFillUnitFillLevelPercentage(dieselIndex)*100 < 5 then 
+				CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST')
+				return false
 			end
+			if vehicle:getFillUnitFillLevelPercentage(dieselIndex)*100 < 20 then 
+				CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD')
+			end
+			return true
+		else 
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST')
+			return false
 		end
-		if currentFuelPercentage < 5 then
-			allowedToDrive = false;
-			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST');
-		elseif currentFuelPercentage < 20 and not vehicle.isFuelFilling then
-			CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD');
-		elseif isFilling and currentFuelPercentage < 99.99 then
-			allowedToDrive = false;
-			CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
-		end;
 	end
-	return allowedToDrive;
 end
 
-function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
-	if vehicle.cp.settings.automaticCoverHandling:is(false)then
-		return
-	end
-
-	for i,twc in pairs(vehicle.cp.tippersWithCovers) do
-		local tIdx, coverType, showCoverWhenTipping, coverItems = twc.tipperIndex, twc.coverType, twc.showCoverWhenTipping, twc.coverItems;
-		local tipper = vehicle.cp.workTools[tIdx];
-		local numCovers = #tipper.spec_cover.covers
-		-- default Giants trailers
-		if coverType == 'defaultGiants' then
-			--open cover
-			if not showCover then
-				--we have more covers, open the one related to the fillUnit
-				if numCovers > 1 and (courseplay:isSprayer(tipper) or courseplay:isSowingMachine(tipper)) and fillTrigger then
-					local fillUnits = tipper:getFillUnits()
-					for i=1,#fillUnits do
-						if courseplay:fillTypesMatch(vehicle, fillTrigger, tipper, i) then
-							local cover = tipper:getCoverByFillUnitIndex(i)
-							if tipper.spec_cover.state ~= cover.index then
-								tipper:setCoverState(cover.index ,true);
-							end
-						end
-					end
-				else
-					--we have just one, easy going
-					local newState = 1
-					if tipper.spec_cover.state ~= newState and tipper:getIsNextCoverStateAllowed(newState) then
-						tipper:setCoverState(newState,true);
-					end
-				end
-			else --showCover
-				local newState = 0
-				if tipper.spec_cover.state ~= newState then
-					if tipper:getIsNextCoverStateAllowed(newState) then
-						tipper:setCoverState(newState,true);
-					else
-						for i=tipper.spec_cover.state,numCovers do
-							if tipper:getIsNextCoverStateAllowed(i+1)then
-								tipper:setCoverState(i+1,true);
-							end
-							if tipper:getIsNextCoverStateAllowed(newState) then
-								tipper:setCoverState(newState,true);
-								break
-							end
-						end
-					end;
-				end
+--only for trailers!!, every sower/sprayer open/closes automaticly by giants!
+function courseplay:openCloseCover(vehicle, openCover) 
+	if vehicle.spec_drivable then
+		if vehicle.cp.settings.automaticCoverHandling:is(false) and not openCover then
+			return
+		end
+		courseplay:recusiveOpenCloseCover(vehicle, openCover)
+	else
+		if vehicle.spec_cover then 
+			local numCovers = #vehicle.spec_cover.covers
+			local newCoverState 
+			if openCover then
+				newCoverState=#vehicle.spec_cover.covers
+			else
+				newCoverState=0
 			end
+			if vehicle:getIsNextCoverStateAllowed(newState) then	
+				vehicle:setCoverState(newCoverState, true)
+			end
+		end
+	end	
+end
 
-
-
-			-- Example: for mods trailer that don't use the default cover specialization
-		else--if coverType == 'CoverVehicle' then
-			--for _,ci in pairs(coverItems) do
-			--	if getVisibility(ci) ~= showCover then
-			--		setVisibility(ci, showCover);
-			--	end;
-			--end;
-			--if showCoverWhenTipping and isAtTipTrigger and not showCover then
-			--
-			--else
-			--	tipper:setPlane(not showCover);
-			--end;
-		end;
-	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
-end;
-
-
-
+function courseplay:recusiveOpenCloseCover(object, openCover) 
+	if object.spec_cover then 
+		local numCovers = #object.spec_cover.covers
+		local newCoverState 
+		if openCover then
+			newCoverState=#object.spec_cover.covers
+		else
+			newCoverState=0
+		end
+		if object:getIsNextCoverStateAllowed(newState) then	
+			object:setCoverState(newCoverState, true)
+		end
+	end
+	-- get all attached implements recursively
+	for _,impl in pairs(object:getAttachedImplements()) do
+		courseplay:openCloseCover(impl.object, openCover)
+	end
+end

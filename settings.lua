@@ -2804,7 +2804,7 @@ function ShowMapHotspotSetting:init(vehicle)
 		)
 	self:set(2)
 end
-
+--TODO: this one is basiclly used to check if we should turn of engine while waiting, maybe default??!!
 ---@class SaveFuelOptionSetting : BooleanSetting
 SaveFuelOptionSetting = CpObject(BooleanSetting)
 function SaveFuelOptionSetting:init(vehicle)

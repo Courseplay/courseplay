@@ -176,7 +176,7 @@ function courseplay:start(self)
 		end
 	end;
 
-	courseplay:updateAllTriggers();
+	--courseplay:updateAllTriggers();
 
 	self.cp.aiLightsTypesMaskBackup  = self.spec_lights.aiLightsTypesMask
 	self.cp.cruiseControlSpeedBackup = self:getCruiseControlSpeed();
