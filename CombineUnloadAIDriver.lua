@@ -171,22 +171,28 @@ function CombineUnloadAIDriver:drive(dt)
 	self:updateCombineStatus()
 
 	if self.state == self.states.ON_STREET then
+		--tipping in bunker silo or tipping to ground not working yet !!
+		
 		-- disable speed control as it messes up the speed control during unload
 		-- TODO: refactor that whole unload process, it was just copied from the legacy CP code
-		self.forwardLookingProximitySensorPack:disableSpeedControl()
-		self:searchForTipTriggers()
-		local allowedToDrive, giveUpControl = self:onUnLoadCourse(true, dt)
-		if not allowedToDrive then
-			self:hold()
-		end
-		if not giveUpControl then
-			AIDriver.drive(self, dt)
-		end
+		--self.forwardLookingProximitySensorPack:disableSpeedControl()
+		--self:searchForTipTriggers()
+
+		courseplay:isUnloadingTriggerAvailable(self.vehicle) 
+		AIDriver.drive(self, dt)
 	elseif self.state == self.states.ON_FIELD then
 		local renderOffset = self.vehicle.cp.coursePlayerNum * 0.03
 		self:renderText(0, 0.1 + renderOffset, "%s: self.onFieldState :%s", nameNum(self.vehicle), self.onFieldState.name)
 		self:driveOnField(dt)
 	end
+end
+
+function CombineUnloadAIDriver:resetUnloadingState()
+	self:continue()
+end
+
+function CombineUnloadAIDriver:setUnloadingState()
+	self:stop()
 end
 
 function CombineUnloadAIDriver:resetPathfinder()

@@ -55,27 +55,14 @@ function FillableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 end
 
+--TODO fix these speeds??
+
 --- Drive the refill part of the course
 function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 5)
-
-	self:searchForRefillTriggers()
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
-	elseif self:getIsInFilltrigger() then
-		-- our raycast in searchForRefillTriggers found a fill trigger
-		local allowedToDrive = true
-		-- lx, lz is not used by refillWorkTools, allowedToDrive is returned, should be refactored, but use it for now as it is
-		allowedToDrive, _, _ = courseplay:refillWorkTools(self.vehicle, self.vehicle.cp.refillUntilPct, allowedToDrive, 0, 1)
-		if allowedToDrive then
-			-- slow down to field speed around fill triggers
-			self:setSpeed(math.min(self.vehicle.cp.speeds.turn, self:getRecordedSpeed()))
-		else
-			-- stop for refill when refillWorkTools tells us
-			self:debugSparse('refillWorkTools() tells us to stop')
-			self:setSpeed( 0)
-		end
 	elseif  self.refillState == self.states.TO_BE_REFILLED and isNearWaitPoint then
 		local allowedToDrive = true;
 		local distanceToWait = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, waitPointIx)

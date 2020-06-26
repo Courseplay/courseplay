@@ -218,7 +218,7 @@ function AIDriver:beforeStart()
 	if self.collisionDetector == nil then
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
-
+	
 	self:setBackMarkerNode(self.vehicle)
 	self:setFrontMarkerNode(self.vehicle)
 
@@ -363,7 +363,7 @@ function AIDriver:driveCourse(dt)
 	-- check if reversing
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
 	-- stop for fuel if needed
-	if not courseplay:checkFuel(self.vehicle, lx, lz, true) then
+	if not courseplay:checkFuel(self.vehicle) then
 		self:hold()
 	end
 
@@ -380,7 +380,7 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self:getRecordedSpeed())
 	end
 
-	if self:getIsInFilltrigger() then
+	if self.trigger or self.trailer then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
 
@@ -772,18 +772,6 @@ function AIDriver:slowDownForWaitPoints()
 	end
 end
 
--- TODO: review this whole fillpoint/filltrigger thing.
-function AIDriver:isNearFillPoint()
-	if self.course == nil then
-		return false
-	else
-		return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
-	end
-end
-
-function AIDriver:getIsInFilltrigger()
-	return self.vehicle.cp.fillTrigger ~= nil or self:isNearFillPoint()
-end
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed
 ---@param course Course
@@ -1204,7 +1192,7 @@ function AIDriver:searchForTipTriggers()
 		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz,raycastDistance)
 	end
 end
-
+--not used anymore ?
 function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	-- Unloading
 	local takeOverSteering = false
@@ -1212,7 +1200,7 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	self:setSpeed(self:getRecordedSpeed())
 	--handle cover
 	if self:hasTipTrigger() or isNearUnloadPoint then
-		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
+		courseplay:openCloseCover(self.vehicle, true)
 	end
 	-- done tipping?
 	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 and self:getHasAllTippersClosed() then
@@ -1797,3 +1785,13 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	self:debugSparse('proximity: d = %.1f (%d %%), speed = %.1f', d, 100 * normalizedD, newSpeed)
 	return newSpeed, allowedToDrive
 end
+-- disable detachImplement while running AIDriver like GrainTransportAIDriver
+function AIDriver:detachImplementByObject(superFunc,object, noEventSend)
+	local rootVehicle = self:getRootVehicle()
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+		return
+	end
+	return superFunc(self,object, noEventSend)
+end
+AttacherJoints.detachImplementByObject = Utils.overwrittenFunction(AttacherJoints.detachImplementByObject,AIDriver.detachImplementByObject)
+
