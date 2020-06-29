@@ -416,29 +416,13 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	
 end;
 
-
-function courseplay:changeSiloFillType(vehicle, modifier, currentSelectedFilltype)
-	local eftl = vehicle.cp.easyFillTypeList;
-	local newVal = 1;
-	if currentSelectedFilltype and currentSelectedFilltype ~= FillType.UNKNOWN then
-		for index, fillType in ipairs(eftl) do
-			if currentSelectedFilltype == fillType then
-				newVal = index;
-			end;
-		end;
-	else
-		newVal = vehicle.cp.siloSelectedEasyFillType + modifier
-		if newVal < 1 then
-			newVal = #eftl;
-		elseif newVal > #eftl then
-			newVal = 1;
-		end
-	end;
-	vehicle.cp.siloSelectedEasyFillType = newVal;
-	vehicle.cp.siloSelectedFillType = eftl[newVal];
-
+function courseplay:changeSiloFillType(vehicle, modifier)
+	if modifier >0  then
+		vehicle.cp.settings.siloSelectedFillType:setNext()
+	elseif modifier <0 then
+		vehicle.cp.settings.siloSelectedFillType:setPrevious()
+	end
 end;
-
 
 function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibilityUpdate)
 	vehicle.cp.visualWaypointsStartEnd = Utils.getNoNil(force, not vehicle.cp.visualWaypointsStartEnd);
@@ -1553,7 +1537,11 @@ function courseplay:addNewTargetVector(vehicle, x, z, trailer,node,rev)
 end;
 
 function courseplay:changeRefillUntilPct(vehicle, changeBy)
-	vehicle.cp.refillUntilPct = MathUtil.clamp(vehicle.cp.refillUntilPct + changeBy, 1, 100);
+	if changeBy > 0 then 
+		vehicle.cp.settings.refillUntilPct:setNext()
+	else 
+		vehicle.cp.settings.refillUntilPct:setPrevious()
+	end
 end;
 
 function courseplay:changeLastValidTipDistance(vehicle, changeBy)
@@ -2191,6 +2179,19 @@ function SettingList:getNetworkCurrentValue()
 	return self.current
 end
 
+function SettingList:setNewValues(values)
+	self.values = values
+	-- index of the current value/text
+	self.current = 1
+	-- index of the previous value/text
+	self.previous = 1
+end
+
+function SettingList:setNewTexts(texts)
+	self.texts = texts
+end
+
+
 --- Generic boolean setting
 ---@class BooleanSetting : SettingList
 BooleanSetting = CpObject(SettingList)
@@ -2223,6 +2224,20 @@ end
 
 function BooleanSetting:saveToXml(xml, parentKey)
 	setXMLBool(xml, self:getKey(parentKey), self:get())
+end
+
+--- Generic Percentage setting from 0% to 100%
+---@class PercentageSettingList : SettingList
+PercentageSettingList = CpObject(SettingList)
+
+function PercentageSettingList:init(name, label, toolTip, vehicle)
+	local values = {}
+	local texts = {}
+	for i=1,100 do 
+		values[i] = i
+		texts[i] = i.."%"
+	end
+	SettingList.init(self, name, label, toolTip, vehicle,values, texts)
 end
 
 --- AutoDrive mode setting
@@ -2838,6 +2853,83 @@ function CombineWantsCourseplayerSetting:init(vehicle)
 	BooleanSetting.init(self, 'combineWantsCourseplayer', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
 	self:set(false)
 end
+
+---@class SiloSelectedFillTypeSetting : SettingList
+SiloSelectedFillTypeSetting = CpObject(SettingList)
+function SiloSelectedFillTypeSetting:init(vehicle)
+	SettingList.init(self, 'siloSelectedFillType', 'COURSEPLAY_FARM_SILO_FILL_TYPE', 'COURSEPLAY_FARM_SILO_FILL_TYPE', vehicle,
+		{  
+			FillType.UNKNOWN
+		},
+		{ 	
+			'COURSEPLAY_DEACTIVATED'
+		}
+	)
+end
+
+function SiloSelectedFillTypeSetting:resetSupportedFillTypes()
+	SettingList.setNewValues({FillType.UNKNOWN})
+	SettingList.setNewTexts({'COURSEPLAY_DEACTIVATED'})
+end
+
+function SiloSelectedFillTypeSetting:setSupportedFillTypes(vehicle)  
+	local supportedFillTypes = {}
+	self:getSupportedFillTypes(vehicle,supportedFillTypes)
+	local values = {}
+	local texts = {}
+	if supportedFillTypes then
+		for fillType, bool in pairs(supportedFillTypes) do
+			table.insert(values,fillType)
+			local fillTypeName = g_fillTypeManager:getFillTypeByIndex(fillType).title
+			table.insert(texts,fillTypeName)
+		end
+		if values and #values>0 then
+			SettingList.setNewValues(self,values)
+			SettingList.setNewTexts(self,texts)
+			courseplay.debugVehicle(19, vehicle, 'SiloSelectedFillTypeSetting setNewValues ')
+		end
+	else
+		print("supportedFillTypes is empty!!")
+	end
+end
+
+function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillTypes)  
+	if object:getFillUnits() and object.spec_motorized == nil then
+		if supportedFillTypes ~= nil then 
+			if #supportedFillTypes == 0 then 
+				for filltype,bool in pairs(object:getFillUnitSupportedFillTypes(1)) do 
+					supportedFillTypes[filltype]=bool
+				end		
+			else
+				for fillType, bool in pairs(supportedFillTypes) do
+					if bool and object:getFillUnitSupportsFillType(1, fillType) then
+	
+					else
+						table.remove(supportedFillTypes,fillType)
+					end
+				end
+				if #supportedFillTypes == 0 then 
+					supportedFillTypes=nil
+				end
+			end
+		else 
+			print('supportedFillTypes is now empty')
+			return
+		end
+	end
+	-- get all attached implements recursively
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:getSupportedFillTypes(impl.object,supportedFillTypes)
+	end
+end
+
+---@class RefillUntilPctSetting : PercentageSettingList
+RefillUntilPctSetting = CpObject(PercentageSettingList)
+function RefillUntilPctSetting:init(vehicle)
+	PercentageSettingList.init(self, 'refillUntilPct', 'COURSEPLAY_REFILL_UNTIL_PCT', 'COURSEPLAY_REFILL_UNTIL_PCT', vehicle)
+	self:set(100)
+end
+
 
 --- Container for settings
 --- @class SettingsContainer

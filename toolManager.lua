@@ -59,7 +59,7 @@ function courseplay:resetTools(vehicle)
 
 	vehicle.cp.easyFillTypeList = courseplay:getEasyFillTypeList(vehicle);
 	vehicle.cp.siloSelectedEasyFillType = 0;
-	courseplay:changeSiloFillType(vehicle, 1, vehicle.cp.siloSelectedFillType);
+	--courseplay:changeSiloFillType(vehicle, 1, vehicle.cp.siloSelectedFillType);
 
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
 	

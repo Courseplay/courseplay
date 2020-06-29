@@ -768,8 +768,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changeSiloFillType' then
 					if vehicle.cp.siloSelectedFillType ~= nil then 
 						self:enableButtonWithFunction(vehicle,page, 'changeSiloFillType')
-						vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_FARM_SILO_FILL_TYPE');
-						vehicle.cp.hud.content.pages[page][line][2].text = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.siloSelectedFillType:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.siloSelectedFillType:getText() 
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 					end
@@ -1220,8 +1220,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.oppositeTurnMode and courseplay:loc('COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE') or courseplay:loc('COURSEPLAY_OPPOSITE_TURN_AT_END');
 														
 				elseif entry.functionToCall == 'changeRefillUntilPct' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_REFILL_UNTIL_PCT');
-					vehicle.cp.hud.content.pages[page][line][2].text = ('%d%%'):format(vehicle.cp.refillUntilPct);
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.refillUntilPct:getLabel() 
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.refillUntilPct:getText() 
 							
 				elseif entry.functionToCall == 'toggleAutomaticUnloadingOnField' then
 					if not vehicle.cp.hasUnloadingRefillingCourse then

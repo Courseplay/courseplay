@@ -129,6 +129,12 @@ AIDriver.myStates = {
 	DONE = {}
 }
 
+AIDriver.myLoadingStates = {
+	NOTHING  = {},
+	IS_LOADING = {},
+	IS_UNLOADING = {}
+}
+
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
@@ -137,6 +143,7 @@ function AIDriver:init(vehicle)
 	self.mode = courseplay.MODE_TRANSPORT
 	self.states = {}
 	self:initStates(AIDriver.myStates)
+	self:initStates(AIDriver.myLoadingStates)
 	self.vehicle = vehicle
 	-- set up a global container on the vehicle to persist AI Driver related data between AIDriver incarnations
 	if not vehicle.cp.aiDriverData then
@@ -153,6 +160,7 @@ function AIDriver:init(vehicle)
 	self.nextWpIx = 1
 	self.acceleration = 1
 	self.state = self.states.STOPPED
+	self.loadingState = self.states.NOTHING
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
 	-- AIDriver and its derived classes set the self.speed in various locations in
 	-- the code and then getSpeed() will pass that on to AIDriver.driveCourse.
@@ -189,6 +197,7 @@ end
 -- we want those nodes removed when the AIDriver instance is deleted.
 function AIDriver:delete()
 	self:debug('delete AIDriver')
+	self.vehicle.cp.settings.siloSelectedFillType:resetSupportedFillTypes()
 	self:deleteCollisionDetector()
 end
 
@@ -333,6 +342,7 @@ function AIDriver:update(dt)
 	self:payWages(dt)
 	self:detectSlipping()
 	self:resetSpeed()
+	self:checkTriggers()
 end
 
 --- Main driving function
@@ -347,7 +357,7 @@ function AIDriver:drive(dt)
 
 	self:updateInfoText()
 
-	if self.state == self.states.STOPPED then
+	if self.state == self.states.STOPPED or self.loadingState == self.states.IS_LOADING or self.loadingState == self.states.IS_UNLOADING then
 		self:hold()
 		self:continueIfWaitTimeIsOver()
 	end
@@ -380,7 +390,7 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self:getRecordedSpeed())
 	end
 
-	if self.trigger or self.trailer then
+	if self.trigger then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
 
@@ -1785,7 +1795,63 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	self:debugSparse('proximity: d = %.1f (%d %%), speed = %.1f', d, 100 * normalizedD, newSpeed)
 	return newSpeed, allowedToDrive
 end
--- disable detachImplement while running AIDriver like GrainTransportAIDriver
+
+--Triggers
+
+function AIDriver:checkTriggers()
+	courseplay:isUnloadingTriggerAvailable(self.vehicle)
+	if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
+		courseplay:isTriggerAvailable(self.vehicle)
+	else
+		courseplay.debugVehicle(19, vehicle,'drive on and ignore Trigger')
+		if self.trigger and self.trigger.isLoading then 
+			self.trigger:setIsLoading(false)
+		end
+	end
+end
+
+function AIDriver:setLoadingState()
+	self.vehicle.cp.settings.driveUnloadNow:set(false)
+	self.loadingState=self.states.IS_LOADING
+end
+
+function AIDriver:resetLoadingState(object)
+	if object.getFillUnits then
+		for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
+			if not object:getFillUnitFillLevelPercentage(fillUnitIndex) >= 1 then 
+				return
+			end
+		end
+	end
+	self.loadingState=self.states.NOTHING
+end
+
+function AIDriver:resetUnloadingState()
+	self.loadingState=self.states.NOTHING
+end
+
+function AIDriver:setUnloadingState()
+	self.vehicle.cp.settings.driveUnloadNow:set(false)
+	self.loadingState=self.states.IS_UNLOADING
+end
+
+function AIDriver:setTrigger()
+	self.trigger = trigger
+end
+
+function AIDriver:resetTrigger()
+	self.trigger = nil
+end
+
+function AIDriver:setTriggerTrailer()
+	self.triggerTrailer = trigger
+end
+
+function AIDriver:resetTriggerTrailer()
+	self.triggerTrailer = nil
+end
+
+-- disable detachImplement while running AIDriver like GrainTransportAIDriver or CombineUnloadDriver
 function AIDriver:detachImplementByObject(superFunc,object, noEventSend)
 	local rootVehicle = self:getRootVehicle()
 	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 

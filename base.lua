@@ -135,7 +135,6 @@ function courseplay:onLoad(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.tipperLoadMode = 0;
 	self.cp.easyFillTypeList = {};
-	self.cp.siloSelectedFillType = FillType.UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
@@ -393,7 +392,6 @@ function courseplay:onLoad(savegame)
 	self.cp.allowFollowing = false
 	self.cp.followAtFillLevel = 50
 	self.cp.driveOnAtFillLevel = 90
-	self.cp.refillUntilPct = 100;
 
 	self.cp.vehicleTurnRadius = courseplay:getVehicleTurnRadius(self);
 	self.cp.turnDiameter = self.cp.vehicleTurnRadius * 2;
@@ -574,6 +572,8 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(RealisticDrivingSetting, self)
 	self.cp.settings:addSetting(DriveUnloadNowSetting, self)
 	self.cp.settings:addSetting(CombineWantsCourseplayerSetting, self)
+	self.cp.settings:addSetting(SiloSelectedFillTypeSetting, self)
+	self.cp.settings:addSetting(RefillUntilPctSetting, self)
 	
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer()
@@ -1498,8 +1498,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		--courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
 		courseplay.signs:setSignsVisibility(self);
 
-		self.cp.siloSelectedFillType = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#siloSelectedFillType'), FillType.UNKNOWN);
-		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = FillType.UNKNOWN end 
+		
 
 		--HUD
 		curKey = key .. '.courseplay.HUD';
@@ -1562,7 +1561,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 			self.cp.lastValidTipDistance = nil;
 		end;
 		
-		self.cp.refillUntilPct = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#refillUntilPct'), 100);
 		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
 		offsetData = StringUtil.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
@@ -1671,7 +1669,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsAll", self.cp.visualWaypointsAll)
 	setXMLBool(xmlFile, newKey..".basics #visualWaypointsCrossing", self.cp.visualWaypointsCrossing)
 	setXMLInt(xmlFile, newKey..".basics #waitTime", self.cp.waitTime)
-	setXMLInt(xmlFile, newKey..".basics #siloSelectedFillType", self.cp.siloSelectedFillType or FillType.UNKNOWN)
 	setXMLInt(xmlFile, newKey..".basics #runCounter", runCounter)
 
 	--HUD
@@ -1704,7 +1701,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".fieldWork #ridgeMarkersAutomatic", self.cp.ridgeMarkersAutomatic)
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
 	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
-	setXMLInt(xmlFile, newKey..".fieldWork #refillUntilPct", self.cp.refillUntilPct)
 	setXMLBool(xmlFile, newKey..".fieldWork #turnOnField", self.cp.turnOnField)
 	setXMLBool(xmlFile, newKey..".fieldWork #oppositeTurnMode", self.cp.oppositeTurnMode)
 	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
@@ -1824,26 +1820,6 @@ function courseplay:showTourDialog()
 	print('Tour dialog is disabled by Courseplay.')
 end
 TourIcons.showTourDialog = Utils.overwrittenFunction(TourIcons.showTourDialog, courseplay.showTourDialog)
-
--- LoadTrigger doesn't allow filling non controlled tools
-function courseplay:getIsActivatable(superFunc,objectToFill)
-	--when the trigger is filling, it uses this function without objectToFill
-	if objectToFill ~= nil then
-		local vehicle = objectToFill:getRootVehicle()
-		if objectToFill:getIsCourseplayDriving() or (vehicle~= nil and vehicle:getIsCourseplayDriving()) then
-			--if i'm in the vehicle, all is good and I can use the normal function, if not, i have to cheat:
-			if g_currentMission.controlledVehicle ~= vehicle then
-				local oldControlledVehicle = g_currentMission.controlledVehicle;
-				g_currentMission.controlledVehicle = vehicle or objectToFill;
-				local result = superFunc(self,objectToFill);
-				g_currentMission.controlledVehicle = oldControlledVehicle;
-				return result;
-			end
-		end
-	end
-	return superFunc(self,objectToFill);
-end
-LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActivatable,courseplay.getIsActivatable)
 
 -- TODO: make these part of AIDriver
 
