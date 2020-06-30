@@ -166,18 +166,7 @@ function courseGenerator.generate( vehicle )
 	if vehicle.cp.multiTools then
 		turnRadiusAdjustedForMultiTool = turnRadiusAdjustedForMultiTool + vehicle.cp.workWidth*((vehicle.cp.multiTools-1)/2)
 	end
-	--[[ commented out as there's not debug.traceback in FS19 so we don't know where we fail if we use xpcall
-	local status, ok = xpcall( generateCourseForField, function() print( err, debug.traceback()) end,
-		field, workWidth, headlandSettings,
-		extendTracks, minDistanceBetweenPoints,
-		minSmoothAngle, maxSmoothAngle, doSmooth,
-		roundCorners, turnRadiusAdjustedForMultiTool,
-		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
-		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode, centerSettings
-	)
-	]]--
-	local status = true
-	local ok = generateCourseForField(
+	local status, ok = xpcall( generateCourseForField, function(err) printCallstack(); return err end,
 		field, workWidth, headlandSettings,
 		extendTracks, minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,

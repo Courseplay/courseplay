@@ -965,13 +965,19 @@ function courseplay:onUpdate(dt)
 			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
 		end;
 
-		self.cp.driver:update(dt)
+		local status, err = xpcall(self.cp.driver.update, function(err) printCallstack(); return err end, self.cp.driver, dt)
 
 		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
 			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
 				CpManager:setGlobalInfoText(self, refIdx, true); --force remove
 			end;
 		end;
+
+		if not status then
+			courseplay.infoVehicle(self, 'Exception, stopping Courseplay driver, %s', tostring(err))
+			courseplay:stop(self)
+			return
+		end
 	end
 	 
 	if self.cp.onSaveClick and not self.cp.doNotOnSaveClick then
