@@ -1388,10 +1388,11 @@ end
 --- @return number between 0 - 1, 0 if ix is not on the headland yet, 1 if ix is past the headland, 
 -- 0 < 1 on the headland according to the progress made (as distance)
 function Course:getHeadlandProgress(ix)
-	if not self.firstHeadlandWpIx then return 1 end
+	-- no headland
+	if not self.firstHeadlandWpIx then return 1, self.length end
 	ix = ix or self.currentWaypoint
-	if ix < self.firstHeadlandWpIx then return 0 end
-	if ix >= self.firstHeadlandWpIx + self.nHeadlandWaypoints then return 1 end
+	if ix < self.firstHeadlandWpIx then return 0, self.headlandLength end
+	if ix >= self.firstHeadlandWpIx + self.nHeadlandWaypoints then return 1, self.headlandLength end
 	
 	local progress = (ix - self.firstHeadlandWpIx) / self.nHeadlandWaypoints
 	return progress, self.headlandLength
@@ -1400,15 +1401,16 @@ end
 --- @return number between 0 - 1, 0 if ix is not on the field center yet, 1 if ix is past the field center, 
 -- 0 < 1 on the field according to the progress made (as distance)
 function Course:getCenterProgress(ix)
-	if not self.firstCenterWpIx then return 1 end
+	if not self.firstCenterWpIx then return 1, self.length end
 	ix = ix or self.currentWaypoint
 	-- TODO: this works only when there is one headland section (no islands or multiple blocks)
 	local nCenterWaypoints = (#self.waypoints - self.nHeadlandWaypoints)
-	if ix < self.firstCenterWpIx then return 0 end
-	if ix >= self.firstCenterWpIx + nCenterWaypoints then return 1 end
+	local centerLength = self.length - self.headlandLength
+	if ix < self.firstCenterWpIx then return 0, centerLength end
+	if ix >= self.firstCenterWpIx + nCenterWaypoints then return 1, centerLength end
 
 	local progress = (ix - self.firstCenterWpIx) / nCenterWaypoints
-	return progress, self.length - self.headlandLength
+	return progress, centerLength
 end
 
 function Course:getAverageWaypointDistanceOnHeadland()
