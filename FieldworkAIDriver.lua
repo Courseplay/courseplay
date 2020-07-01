@@ -795,17 +795,8 @@ function FieldworkAIDriver:hasSameCourse(otherVehicle)
 	end
 end
 
-
-function FieldworkAIDriver:getHeadlandProgress()
-	return self.fieldworkCourse:getHeadlandProgress()
-end
-
-function FieldworkAIDriver:getCenterProgress()
-	return self.fieldworkCourse:getCenterProgress()
-end
-
-function FieldworkAIDriver:isOnHeadland()
-	return self.fieldworkCourse:isOnHeadland()
+function FieldworkAIDriver:getProgress()
+	return self.fieldworkCourse:getProgress()
 end
 
 --- When working in a group (convoy), do I have to hold so I don't get too close to the
@@ -821,27 +812,11 @@ function FieldworkAIDriver:manageConvoy()
 	local closestDistance = math.huge
 	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
 		if otherVehicle ~= self.vehicle and otherVehicle.cp.convoyActive and self:hasSameCourse(otherVehicle) then
-			local isOtherVehicleOnHeadland = otherVehicle.cp.driver:isOnHeadland()
-			local myProgress, length, otherProgress
-			if self:isOnHeadland() then
-				myProgress, length = self:getHeadlandProgress()
-				otherProgress = otherVehicle.cp.driver:getHeadlandProgress()
-				if not otherVehicle.cp.driver:isOnHeadland() and self.fieldworkCourse:isOnHeadland(1) then
-					-- other vehicle past the headland now and the course starts with the headland
-					otherProgress = otherProgress + otherVehicle.cp.driver:getCenterProgress()
-				end
-				self:debugSparse('convoy on headland: my progress %.1f%%, other progress %.1f%%, 100%% %d',
-				 	myProgress * 100, otherProgress * 100, length)
-			else
-				myProgress, length = self:getCenterProgress()
-				otherProgress = otherVehicle.cp.driver:getCenterProgress()
-				if otherVehicle.cp.driver:isOnHeadland() and not self.fieldworkCourse:isOnHeadland(1) then
-					-- other vehicle past the center now and the course ends with the headland
-					otherProgress = otherProgress + otherVehicle.cp.driver:getHeadlandProgress()
-				end
-				self:debugSparse('convoy on center: my progress %.1f%%, other progress %.1f%%, 100%% %d', 
+			local myProgress = self:getProgress()
+			local length = self.fieldworkCourse:getLength()
+			local otherProgress = otherVehicle.cp.driver:getProgress()
+			self:debugSparse('convoy: my progress %.1f%%, other progress %.1f%%, 100%% %d', 
 					myProgress * 100, otherProgress * 100, length)
-			end	
 			total = total + 1
 			if myProgress < otherProgress then
 				position = position + 1
@@ -856,7 +831,7 @@ function FieldworkAIDriver:manageConvoy()
 	-- stop when I'm too close to the combine in front of me
 	if position > 1 then
 		if closestDistance < self.vehicle.cp.convoy.minDistance then
-			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
+			self:debugSparse('too close (%.1f) to other vehicles in convoy, holding.', closestDistance)
 			self:setSpeed(0)
 			self:overrideAutoEngineStop()
 		end
