@@ -2923,6 +2923,15 @@ function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillT
 	end
 end
 
+function SiloSelectedFillTypeSetting:isActive()  
+	if #self.values == 1 then 
+		if self.values[1]==FillType.UNKNOWN then 
+			return false
+		end
+	end
+	return true
+end
+
 ---@class RefillUntilPctSetting : PercentageSettingList
 RefillUntilPctSetting = CpObject(PercentageSettingList)
 function RefillUntilPctSetting:init(vehicle)

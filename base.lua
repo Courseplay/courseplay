@@ -534,7 +534,7 @@ function courseplay:onLoad(savegame)
 	courseplay:validateCanSwitchMode(self);
 	--courseplay.buttons:setActiveEnabled(self, 'all');
 
-	courseplay:setAIDriver(self, self.cp.mode)
+	
 
 	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
 	---@type SettingsContainer
@@ -580,6 +580,9 @@ function courseplay:onLoad(savegame)
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
 	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
 	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
+	
+	--init SettingsContainer before init AIDriver modes! 
+	courseplay:setAIDriver(self, self.cp.mode)
 end;
 
 function courseplay:onPostLoad(savegame)

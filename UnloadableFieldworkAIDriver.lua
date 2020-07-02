@@ -92,44 +92,44 @@ function UnloadableFieldworkAIDriver:changeToFieldworkUnloadOrRefill()
 	end
 	FieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 end
-
+--need to figure this one out ??
 ---@return boolean true if unload took over the driving
 function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	self:updateOffset()
 	local allowedToDrive = true
-	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
+--	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
 	-- by default, drive street/recorded speed.
 	self:setSpeed(self:getRecordedSpeed())
 	if not self.ppc:isReversing() then
 		-- 'cause reverse does the raycasting for us
-		self:searchForTipTriggers()
+--		self:searchForTipTriggers()
 	end
 	local takeOverSteering = FieldworkAIDriver.driveUnloadOrRefill(self)
 	if self.vehicle.cp.totalFillLevel > 0 then
-		if self:hasTipTrigger() then
+--		if self:hasTipTrigger() then
 			-- unload at tip trigger
-			self:setSpeed(self.vehicle.cp.speeds.approach)
-			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
-			courseplay:setInfoText(self.vehicle,"COURSEPLAY_TIPTRIGGER_REACHED");
+	--		self:setSpeed(self.vehicle.cp.speeds.approach)
+	--		allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
+	--		courseplay:setInfoText(self.vehicle,"COURSEPLAY_TIPTRIGGER_REACHED");
 			self:setSpeed(self.vehicle.cp.speeds.turn)
-		end
+	--	end
 	end
 	
 	-- tractor reaches unloadPoint
-	if isNearUnloadPoint then
-		self:setSpeed(self.vehicle.cp.speeds.approach)
-		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
-		allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,unloadPointIx)
-	end
+--	if isNearUnloadPoint then
+--		self:setSpeed(self.vehicle.cp.speeds.approach)
+--		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
+--		allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,unloadPointIx)
+--	end
 	
 	if not allowedToDrive then
 		self:setSpeed(0)
 	end
 		
 	-- done tipping?
-	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel <= 10 then
-		courseplay:resetTipTrigger(self.vehicle, true);
-	end
+--	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel <= 10 then
+--		courseplay:resetTipTrigger(self.vehicle, true);
+--	end
 		
 	return takeOverSteering
 end

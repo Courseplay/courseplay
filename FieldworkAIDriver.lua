@@ -665,13 +665,13 @@ function FieldworkAIDriver:stopWork()
 end
 
 --- Check if need to refill/unload anything
-function FieldworkAIDriver:allFillLevelsOk()
+function FieldworkAIDriver:allFillLevelsOk(fillUntil)
 	if not self.vehicle.cp.workTools then return false end
 	-- what here comes is basically what Giants' getFillLevelInformation() does but this returns the real fillType,
 	-- not the fillTypeToDisplay as this latter is different for each type of seed
 	local fillLevelInfo = {}
 	self:getAllFillLevels(self.vehicle, fillLevelInfo)
-	return self:areFillLevelsOk(fillLevelInfo)
+	return self:areFillLevelsOk(fillLevelInfo,fillUntil)
 end
 
 function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)

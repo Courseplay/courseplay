@@ -1807,6 +1807,7 @@ function courseplay:manageCompleteTipping(vehicle,tipper,dt,zSent)
 	return vehicle.cp.takeOverSteering
 end
 
+--the surgerCane one seems off to me ??
 function courseplay:sugarCaneTrailerToggleTipstate()
 	--print(nameNum(self)..": courseplay:sugarCaneTrailerToggleTipstate() called by: "..courseplay.utils:getFnCallPath(2))
 	if self.tipState < Trailer.TIPSTATE_OPEN then
@@ -2141,6 +2142,8 @@ function courseplay:checkFuel(vehicle, lx, lz,allowedToDrive)
 end
 
 --only for trailers!!, every sower/sprayer open/closes automaticly by giants!
+--TODO: might can be replaced with alternated version of addFillUnitTrigger/removeFillUnitTrigger ??
+--TODO: figure out a way to maybe force Trigger Raycast at CP Driver first start() ??
 function courseplay:openCloseCover(vehicle, openCover) 
 	if vehicle.spec_drivable then
 		if vehicle.cp.settings.automaticCoverHandling:is(false) and not openCover then

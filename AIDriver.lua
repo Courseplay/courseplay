@@ -342,7 +342,6 @@ function AIDriver:update(dt)
 	self:payWages(dt)
 	self:detectSlipping()
 	self:resetSpeed()
-	self:checkTriggers()
 end
 
 --- Main driving function
@@ -357,11 +356,12 @@ function AIDriver:drive(dt)
 
 	self:updateInfoText()
 
-	if self.state == self.states.STOPPED or self.loadingState == self.states.IS_LOADING or self.loadingState == self.states.IS_UNLOADING then
+	if self.state == self.states.STOPPED then
 		self:hold()
 		self:continueIfWaitTimeIsOver()
 	end
-
+	self:checkTriggers()
+	
 	self:driveCourse(dt)
 	self:drawTemporaryCourse()
 end
@@ -1110,7 +1110,7 @@ function AIDriver:dischargeAtTipTrigger(dt)
 	end
 	return allowedToDrive, takeOverSteering
 end
-
+--TODO: is this really necessary ?? seems counterproduktiv as giants basiclly should have a version for this one automated ??
 function AIDriver:tipIntoStandardTipTrigger()
 	local stopForTipping = false
 	local siloIsFull = false
@@ -1138,7 +1138,7 @@ function AIDriver:tipIntoStandardTipTrigger()
 	
 	return not stopForTipping
 end
-
+--TODO: same as above use giants raycast ??
 function AIDriver:tipIntoBGASiloTipTrigger(dt)
 	local trigger = self.vehicle.cp.currentTipTrigger
 	self:setOffsetInBGASilo()
@@ -1188,9 +1188,11 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 	end
 
 end
-
+--TODO Figure out for which one ??
 function AIDriver:searchForTipTriggers()
-	if not self.vehicle.cp.hasAugerWagon
+	return
+----------	
+--[[	if not self.vehicle.cp.hasAugerWagon
 		and not self:hasTipTrigger()
 		and self.vehicle.cp.totalFillLevel > 0
 		and self.ppc:getCurrentWaypointIx() > 2
@@ -1200,7 +1202,7 @@ function AIDriver:searchForTipTriggers()
 		local dx,dz = self.course:getDirectionToWPInDistance(self.ppc:getCurrentWaypointIx(),self.vehicle,raycastDistance)
 		local x,y,z,nx,ny,nz = courseplay:getTipTriggerRaycastDirection(self.vehicle,dx,dz,raycastDistance)	
 		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz,raycastDistance)
-	end
+	end]]--
 end
 --not used anymore ?
 function AIDriver:onUnLoadCourse(allowedToDrive, dt)
@@ -1796,33 +1798,42 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	return newSpeed, allowedToDrive
 end
 
---Triggers
+--Triggers currently working in every mode have to enable it for specific modes only
 
 function AIDriver:checkTriggers()
-	courseplay:isUnloadingTriggerAvailable(self.vehicle)
-	if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
-		courseplay:isTriggerAvailable(self.vehicle)
-	else
-		courseplay.debugVehicle(19, vehicle,'drive on and ignore Trigger')
-		if self.trigger and self.trigger.isLoading then 
-			self.trigger:setIsLoading(false)
+	if self.loadingState == self.states.IS_LOADING then
+		if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
+			courseplay:isTriggerAvailable(self.vehicle)
+			self:hold()
+		else
+			self.loadingState = self.states.NOTHING
+			courseplay.debugVehicle(19, vehicle,'drive on and ignore Trigger')
+			if self.trigger and self.trigger.isLoading then 
+				self.trigger:setIsLoading(false)
+			end
 		end
 	end
+	
+	if self.loadingState == self.states.IS_UNLOADING then
+		self:hold()
+	end
+	
+	courseplay:isUnloadingTriggerAvailable(self.vehicle)
 end
 
 function AIDriver:setLoadingState()
 	self.vehicle.cp.settings.driveUnloadNow:set(false)
 	self.loadingState=self.states.IS_LOADING
 end
-
+--TODO move to GrainTransportAIDriver ??
 function AIDriver:resetLoadingState(object)
-	if object.getFillUnits then
-		for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
-			if not object:getFillUnitFillLevelPercentage(fillUnitIndex) >= 1 then 
-				return
-			end
-		end
-	end
+--	if object and object.getFillUnits then
+--		for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
+--			if object:getFillUnitFillLevelPercentage(fillUnitIndex) <= 1 then 
+	--			return
+--			end
+--		end
+--	end
 	self.loadingState=self.states.NOTHING
 end
 
@@ -1843,13 +1854,7 @@ function AIDriver:resetTrigger()
 	self.trigger = nil
 end
 
-function AIDriver:setTriggerTrailer()
-	self.triggerTrailer = trigger
-end
 
-function AIDriver:resetTriggerTrailer()
-	self.triggerTrailer = nil
-end
 
 -- disable detachImplement while running AIDriver like GrainTransportAIDriver or CombineUnloadDriver
 function AIDriver:detachImplementByObject(superFunc,object, noEventSend)

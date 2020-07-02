@@ -83,9 +83,9 @@ end
 function FillableFieldworkAIDriver:fillAtWaitPoint()
 	local vehicle = self.vehicle
 	local allowedToDrive = false
+	--TODO: tweak this one for diff filltypes ??
 	courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
 	self:setInfoText('WAIT_POINT')
-	courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS)
 	--fillLevel changed in last loop-> start timer
 	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= vehicle.cp.totalFillLevelPercent then
 		self.prevFillLevelPct = vehicle.cp.totalFillLevelPercent
@@ -94,11 +94,10 @@ function FillableFieldworkAIDriver:fillAtWaitPoint()
 	
 	--if time is up and no fillLevel change happend, check whether we may drive on or not
 	if courseplay:timerIsThrough(vehicle, "fillLevelChange",false) then
-		if vehicle.cp.totalFillLevelPercent >= vehicle.cp.refillUntilPct then
+		if self:allFillLevelsOk(self.vehicle.cp.settings.refillUntilPct:get()) then
 			self:continue()
 			courseplay:resetCustomTimer(vehicle, "fillLevelChange",true);
 			self.prevFillLevelPct = nil
-			courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
 		end
 	end
 	return allowedToDrive
@@ -113,16 +112,23 @@ end
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)
-function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
+function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,fillUntil)
 	local allOk = true
 	local hasSeeds, hasNoFertilizer = false, false
 
 	for fillType, info in pairs(fillLevelInfo) do
-		if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
-			allOk = false
-			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+		if fillUntil then
+			local fillPercentage = info.fillLevel/info.capacity*100
+			if fillPercentage < fillUntil then 
+				allOk = false
+			end
 		else
-			if fillType == FillType.SEEDS then hasSeeds = true end
+			if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
+				allOk = false
+				if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+			else
+				if fillType == FillType.SEEDS then hasSeeds = true end
+			end
 		end
 	end
 	-- special handling for sowing machines with fertilizer
@@ -188,6 +194,7 @@ function FillableFieldworkAIDriver:helperBuysThisFillType(fillType)
 	return false
 end
 
+--old code!!
 function FillableFieldworkAIDriver:searchForRefillTriggers()
 	-- look straight ahead for now. The rest of CP looks into the direction of the 'current waypoint'
 	-- but we don't have that information (lx/lz) here. See if we can get away with this, should only

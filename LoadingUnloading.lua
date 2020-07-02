@@ -91,7 +91,7 @@ function courseplay:onActivateObject(superFunc,vehicle)
 			--FillableFieldworkDriver
 			if siloSelectedFillType == FillType.UNKNOWN then 
 				if #validFillTypIndexes >0 then 
-					SpecializationUtil.raiseEvent(self, "onAddedFillUnitTrigger", validFillTypIndexes[1], fillUnitIndex)
+					fillableObject:addFillUnitTrigger(nil,validFillTypIndexes[1],fillUnitIndex)
 					self:onFillTypeSelection(validFillTypIndexes[1])
 				end
 			end
@@ -107,7 +107,12 @@ LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateO
 --loadTriggerCallback as direct entry point for CP to open/close Covers 
 --TODO: needs some tweaking
 function courseplay:loadTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-    local fillableObject = g_currentMission:getNodeObject(otherId)
+    if onEnter then 
+		print("loadTriggerCallback: onEnter")
+	elseif onLeave then 
+		print("loadTriggerCallback: onLeave")
+	end
+	local fillableObject = g_currentMission:getNodeObject(otherId)
 	local rootVehicle
 	if fillableObject then 
 		rootVehicle = fillableObject:getRootVehicle()
@@ -127,6 +132,8 @@ end
 LoadTrigger.loadTriggerCallback = Utils.overwrittenFunction(LoadTrigger.loadTriggerCallback,courseplay.loadTriggerCallback)
 
 --simple trigger scan for unloading Triggers
+--is this useable for shovels -> bunker silo ??
+--or shovel in general ??
 --TODO: needs more tweaking
 function courseplay:isUnloadingTriggerAvailable(object)    
 	local spec = object.spec_dischargeable
@@ -152,16 +159,17 @@ end
 --override of setDischargeState() to start/stop driver while unloading
 function courseplay:setDischargeState(superFunc,state, noEventSend)
     local rootVehicle = self:getRootVehicle()
+	--might break harvesters/combines ??
+	if rootVehicle and rootVehicle.spec_combine then 
+		return superFunc(self,state,noEventSend)
+	end
 	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
 		courseplay.debugVehicle(19, vehicle, 'setDischargeState')
 		if state == Dischargeable.DISCHARGE_STATE_OFF  then
-			rootVehicle.cp.driver:resetUnloadingState()
-			rootVehicle.cp.driver:resetTriggerTrailer()
-			
+			rootVehicle.cp.driver:resetUnloadingState()			
 			courseplay.debugVehicle(19, vehicle, 'stop Unloading')
 		elseif state == Dischargeable.DISCHARGE_STATE_OBJECT then
 			rootVehicle.cp.driver:setUnloadingState()
-			rootVehicle.cp.driver:setTriggerTrailer(self)
 			courseplay.debugVehicle(19, vehicle, 'start Unloading')
 		end
 	end
@@ -173,20 +181,24 @@ Dischargeable.setDischargeState = Utils.overwrittenFunction(Dischargeable.setDis
 function courseplay:addFillUnitTrigger(superFunc,trigger, fillTypeIndex, fillUnitIndex)
 	local rootVehicle = self:getRootVehicle()
 	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
-		local spec = self.spec_fillUnit
-		local possible = false
-		if #spec.fillTrigger.triggers == 0 then
-			courseplay.debugVehicle(19, vehicle, 'FillUnit: addFillUnitTrigger')
-			spec.fillTrigger.activatable:setFillType(fillTypeIndex)
-			possible = true
+		if trigger then
+			local spec = self.spec_fillUnit
+			local possible = false
+			if #spec.fillTrigger.triggers == 0 then
+				courseplay.debugVehicle(19, vehicle, 'FillUnit: addFillUnitTrigger')
+				spec.fillTrigger.activatable:setFillType(fillTypeIndex)
+				possible = true
+			end
+			ListUtil.addElementToList(spec.fillTrigger.triggers, trigger)
+			SpecializationUtil.raiseEvent(self, "onAddedFillUnitTrigger", fillTypeIndex, fillUnitIndex, #spec.fillTrigger.triggers)
+			if possible then
+				spec:setFillUnitIsFilling(true)
+				courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling')
+			end
+			return
+		else
+			SpecializationUtil.raiseEvent(self, "onAddedFillUnitTrigger", fillTypeIndex, fillUnitIndex)	
 		end
-		ListUtil.addElementToList(spec.fillTrigger.triggers, trigger)
-		SpecializationUtil.raiseEvent(self, "onAddedFillUnitTrigger", fillTypeIndex, fillUnitIndex, #spec.fillTrigger.triggers)
-		if possible then
-			spec:setFillUnitIsFilling(true)
-			courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling')
-		end
-		return 
 	end
 	return superFunc(self,trigger, fillTypeIndex, fillUnitIndex)
 end
@@ -195,13 +207,13 @@ FillUnit.addFillUnitTrigger = Utils.overwrittenFunction(FillUnit.addFillUnitTrig
 --force Driver to start/stop while loading on FillTriggers
 function courseplay:setFillUnitIsFilling(superFunc,isFilling, noEventSend)
 	local rootVehicle = self:getRootVehicle()
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive()  then 
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
 		if isFilling == true then 
 			courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling is filling for')
-			rootVehicle.cp.driver:resetLoadingState()
+			rootVehicle.cp.driver:setLoadingState()
 		else 
 			courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling is full/stopped ')
-			rootVehicle.cp.driver:setLoadingState()
+			rootVehicle.cp.driver:resetLoadingState(self)
 		end	
 	end
 	return superFunc(self,isFilling, noEventSend)
@@ -212,7 +224,7 @@ FillUnit.setFillUnitIsFilling = Utils.overwrittenFunction(FillUnit.setFillUnitIs
 function courseplay:setIsLoading(superFunc,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
     courseplay.debugVehicle(19, vehicle, 'LoadTrigger: setIsLoading')
 	local rootVehicle = self.validFillableObject:getRootVehicle()
-	if rootVehicle then
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then
 		if isLoading then 
 			courseplay.debugVehicle(19, vehicle, 'LoadTrigger: setIsLoading is Loading ')
 			rootVehicle.cp.driver:setLoadingState()
@@ -247,6 +259,7 @@ function courseplay:getIsActivatable(superFunc,objectToFill)
 end
 LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActivatable,courseplay.getIsActivatable)
 
+--close cover after tipping if not closed already
 function courseplay:endTipping(superFunc,noEventSend)
 	local rootVehicle = self:getRootVehicle()
 	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then
@@ -256,5 +269,63 @@ function courseplay:endTipping(superFunc,noEventSend)
 	end
 	return superFunc(self,noEventSend)
 end
-
 Trailer.endTipping = Utils.overwrittenFunction(Trailer.endTipping,courseplay.endTipping)
+
+--callback for pips if pipe is over implement oven cover 
+function courseplay:unloadingTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	if onEnter then 
+		print("unloadingTriggerCallback: onEnter")
+	elseif onLeave then 
+		print("unloadingTriggerCallback: onLeave")
+	end
+	local fillableObject = g_currentMission:getNodeObject(otherId)
+	local rootVehicle
+	if fillableObject then 
+		rootVehicle = fillableObject:getRootVehicle()
+	end
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+		if onEnter then 
+			print("onEnter + rootVehicle")
+			if fillableObject.spec_cover and fillableObject.getFillUnitIndexFromNode ~= nil then 
+				print("fillableObject cover +getFillUnitIndexFromNode")
+				local fillUnitIndex = fillableObject:getFillUnitIndexFromNode(otherId)
+                if fillUnitIndex ~= nil then
+					print("fillUnitIndex found")
+					local dischargeNode = self:getDischargeNodeByIndex(self:getPipeDischargeNodeIndex())
+					local fillType = nil
+					if dischargeNode ~= nil then
+                        fillType = self:getFillUnitFillType(dischargeNode.fillUnitIndex)
+						print("dischargeNode found"..tostring(fillType))
+					end
+					if fillType then 
+						print("addFillUnitTrigger")
+						fillableObject:addFillUnitTrigger(nil,fillType,fillUnitIndex)
+					end
+				end
+			end
+			
+			courseplay.debugVehicle(19, vehicle, 'onEnter UnloadingTrigger ')
+		--	courseplay:openCloseCover(fillableObject, true)
+		end
+		if onLeave then 
+			courseplay.debugVehicle(19, vehicle, 'onLeave UnloadingTrigger ')
+		--	courseplay:openCloseCover(fillableObject, false)
+		end
+	end
+
+	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+end
+Pipe.unloadingTriggerCallback = Utils.overwrittenFunction(Pipe.unloadingTriggerCallback,courseplay.unloadingTriggerCallback)
+
+function courseplay:interactionTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	if onEnter then
+		print("BunkerSilo onEnter")
+	end
+	if onLeave then 
+		print("BunkerSilo onLeave")
+	end
+	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+end
+BunkerSilo.interactionTriggerCallback = Utils.overwrittenFunction(BunkerSilo.interactionTriggerCallback,courseplay.interactionTriggerCallback)
+
+

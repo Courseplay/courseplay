@@ -68,8 +68,9 @@ function FieldSupplyAIDriver:drive(dt)
 		AIDriver.drive(self, dt)
 	elseif self.supplyState == self.states.WAITING_FOR_GETTING_UNLOADED then
 		self:stopAndWait(dt)
+		--TODO is this really needed ?
 		-- unload into a FRC if there is one
-		AIDriver.tipIntoStandardTipTrigger(self)
+		--AIDriver.tipIntoStandardTipTrigger(self)
 		--if i'm empty or fillLevel is below threshold then drive to get new stuff
 		if self:isFillLevelToContinueReached() then
 			self:continue()

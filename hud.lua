@@ -463,8 +463,8 @@ function courseplay.hud:setContent(vehicle)
 	end	
 		
 	if vehicle.cp.settings.runCounterMax:getIsRunCounterActive() and vehicle.cp.canDrive and vehicle.cp.driver.runCounter then
-		if vehicle.cp.siloSelectedFillType ~= nil and vehicle.cp.siloSelectedFillType ~= FillType.UNKNOWN then
-			vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.siloSelectedFillType).title..string.format(": %d / %s",vehicle.cp.driver.runCounter,  vehicle.cp.settings.runCounterMax:get());
+		if vehicle.cp.settings.siloSelectedFillType:isActive() then
+			vehicle.cp.hud.content.bottomInfo.runCounterText = g_fillTypeManager:getFillTypeByIndex(vehicle.cp.settings.siloSelectedFillType:get()).title..string.format(": %d / %s",vehicle.cp.driver.runCounter,  vehicle.cp.settings.runCounterMax:get());
 		else
 			vehicle.cp.hud.content.bottomInfo.runCounterText = courseplay:loc('UNKNOWN')..string.format(": %d / %s",vehicle.cp.driver.runCounter, vehicle.cp.settings.runCounterMax:get());
 		end
@@ -766,7 +766,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticCoverHandling:getText()
 				
 				elseif entry.functionToCall == 'changeSiloFillType' then
-					if vehicle.cp.siloSelectedFillType ~= nil then 
+					if true then --TODO figure a logic behind this out!!
 						self:enableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.siloSelectedFillType:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.siloSelectedFillType:getText() 

@@ -171,13 +171,12 @@ function CombineUnloadAIDriver:drive(dt)
 	self:updateCombineStatus()
 
 	if self.state == self.states.ON_STREET then
-		--tipping in bunker silo or tipping to ground not working yet !!
+		--tipping in bunker silo or tipping to ground not working yet !!!
 		
 		-- disable speed control as it messes up the speed control during unload
 		-- TODO: refactor that whole unload process, it was just copied from the legacy CP code
 		--self.forwardLookingProximitySensorPack:disableSpeedControl()
 		--self:searchForTipTriggers()
-
 		courseplay:isUnloadingTriggerAvailable(self.vehicle) 
 		AIDriver.drive(self, dt)
 	elseif self.state == self.states.ON_FIELD then
