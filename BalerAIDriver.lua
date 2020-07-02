@@ -73,7 +73,7 @@ function BalerAIDriver:handleBaler()
 			elseif self.baler.spec_baler.unloadingState ~= Baler.UNLOADING_CLOSED then
 				if fillLevel >= capacity then -- Only stop if capacity is full. Allowing for continuous balers such as the ViconFastBale
 					allowedToDrive = false
-				elseif fillLevel == 0 and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSING then
+				elseif fillLevel == 0 and (self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSING or self.baler.spec_baler.unloadingState == Baler.UNLOADING_OPENING) then
 					allowedToDrive = false
 				elseif self.baler.spec_baler.unloadingState == Baler.UNLOADING_OPEN then
 					self.baler:setIsUnloadingBale(false)
