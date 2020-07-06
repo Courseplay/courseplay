@@ -2240,6 +2240,47 @@ function PercentageSettingList:init(name, label, toolTip, vehicle)
 	SettingList.init(self, name, label, toolTip, vehicle,values, texts)
 end
 
+--- Generic LinkedList setting 
+---@class LinkedList : Setting
+LinkedListSetting = CpObject(Setting)
+
+function LinkedListSetting:init(name, label, toolTip, vehicle)
+	Setting.init(self, name, label, toolTip, vehicle)
+	self.List = LinkedList({value=nil,text="Dummy"})
+end
+
+function LinkedListSetting:moveUp(index)
+	print("index: "..tostring(index))
+	self.List:swapUpX(index)
+end
+
+function LinkedListSetting:moveDown(index)
+	print("index: "..tostring(index))
+	self.List:swapDownX(index)
+end
+
+function LinkedListSetting:addElement()
+
+end
+
+function LinkedListSetting:deleteElement(index)
+	print("index: "..tostring(index))
+	self.List:removeX(index)
+end
+
+function LinkedListSetting:getText(index)
+	local element = self.List:getElementByIndex(index)
+	if element and element.data.text then 
+		return element.data.text
+	else
+		return ""
+	end
+end
+
+function LinkedListSetting:button()
+	print("button")
+end
+
 --- AutoDrive mode setting
 ---@class AutoDriveModeSetting : SettingList
 AutoDriveModeSetting = CpObject(SettingList)
@@ -2853,7 +2894,7 @@ function CombineWantsCourseplayerSetting:init(vehicle)
 	BooleanSetting.init(self, 'combineWantsCourseplayer', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
 	self:set(false)
 end
-
+--[[
 ---@class SiloSelectedFillTypeSetting : SettingList
 SiloSelectedFillTypeSetting = CpObject(SettingList)
 function SiloSelectedFillTypeSetting:init(vehicle)
@@ -2929,6 +2970,65 @@ function SiloSelectedFillTypeSetting:isActive()
 			return false
 		end
 	end
+	return true
+end
+]]--
+
+--- Generic LinkedList setting 
+---@class LinkedList : LinkedListSetting
+SiloSelectedFillTypeSetting = CpObject(LinkedListSetting)
+
+function SiloSelectedFillTypeSetting:init(vehicle)
+	LinkedListSetting.init(self, 'siloSelectedFillType', 'COURSEPLAY_FARM_SILO_FILL_TYPE', 'COURSEPLAY_FARM_SILO_FILL_TYPE', vehicle)
+end
+
+function SiloSelectedFillTypeSetting:addFilltype()  
+	local supportedFillTypes = {}
+	self:getSupportedFillTypes(self.vehicle,supportedFillTypes)
+	if supportedFillTypes then
+		g_gui:showSiloDialog({title="Filltype Selection", fillLevels=supportedFillTypes, capacity=100, callback=self.onFillTypeSelection, target=self, hasInfiniteCapacity = true})
+	end
+end
+
+function SiloSelectedFillTypeSetting:onFillTypeSelection(fillType)
+	if fillType then 
+		self.List:addLast({value = fillType, text = g_fillTypeManager:getFillTypeByIndex(fillType).title})
+	end
+end  
+
+function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillTypes)  
+	if object and object:getFillUnits() and object.spec_motorized == nil then
+		if supportedFillTypes ~= nil then 
+			if #supportedFillTypes == 0 then 
+				for filltype,bool in pairs(object:getFillUnitSupportedFillTypes(1)) do 
+					if bool then 
+						supportedFillTypes[filltype]=100
+					end
+				end		
+			else
+				for fillType, bool in pairs(supportedFillTypes) do
+					if bool and object:getFillUnitSupportsFillType(1, fillType) then
+	
+					else
+						table.remove(supportedFillTypes,fillType)
+					end
+				end
+				if #supportedFillTypes == 0 then 
+					supportedFillTypes=nil
+				end
+			end
+		else 
+			print('supportedFillTypes is now empty')
+			return
+		end
+	end
+	-- get all attached implements recursively
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:getSupportedFillTypes(impl.object,supportedFillTypes)
+	end
+end
+--TODO: fix this one
+function SiloSelectedFillTypeSetting:isActive()  
 	return true
 end
 

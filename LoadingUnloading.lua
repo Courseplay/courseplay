@@ -1,6 +1,12 @@
 
---basic trigger functions for Loading at grain silos/ filling implements and Unloading to triggers
+--basic trigger functions for Loading at grain silos/ filling implements and Unloading to triggers and ...
 
+function courseplay:checkAIDriver(vehicle) 
+	if vehicle and vehicle.cp and vehicle.cp.driver and vehicle:getIsCourseplayDriving() then 
+		return true
+	end
+	return false
+end
 
 -- Custom version of trigger:onActivateObject to allow activating for a non-controlled vehicle
 function courseplay:activateTriggerForVehicle(trigger, vehicle)
@@ -41,9 +47,9 @@ function courseplay:isTriggerAvailable(vehicle)
     return false
 end
 
---LoadTrigger override of onActivateObject to disable fruitSelectMenu and also check if we are at fuel trigger
+--LoadTrigger override of onActivateObject to disable fruitSelectMenu and also check if we are at a fuel trigger
 function courseplay:onActivateObject(superFunc,vehicle)
-	if vehicle and vehicle.cp and vehicle.cp.driver and vehicle:getIsCourseplayDriving() then 
+	if courseplay:checkAIDriver(vehicle) then 
 		local dieselIndex = vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
 		courseplay.debugVehicle(19, vehicle, 'onActivateObject Load Trigger')
 		if not self.isLoading then
@@ -105,19 +111,15 @@ end
 LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,courseplay.onActivateObject)
 
 --loadTriggerCallback as direct entry point for CP to open/close Covers 
+--might have to use "onAddedFillUnitTrigger"
 --TODO: needs some tweaking
 function courseplay:loadTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-    if onEnter then 
-		print("loadTriggerCallback: onEnter")
-	elseif onLeave then 
-		print("loadTriggerCallback: onLeave")
-	end
 	local fillableObject = g_currentMission:getNodeObject(otherId)
 	local rootVehicle
 	if fillableObject then 
 		rootVehicle = fillableObject:getRootVehicle()
 	end
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() and rootVehicle:getIsCourseplayDriving() then 
+	if courseplay:checkAIDriver(rootVehicle)  then 
 		if onEnter then 
 			courseplay.debugVehicle(19, vehicle, 'onEnter LoadTrigger ')
 			courseplay:openCloseCover(fillableObject, true)
@@ -156,14 +158,15 @@ function courseplay:isUnloadingTriggerAvailable(object)
 	end
 end
 
---override of setDischargeState() to start/stop driver while unloading
+--override of setDischargeState() to start/stop driver while unloading at triggers, 
+--might be tricky with unloading at BunkerSilo while driving ??
 function courseplay:setDischargeState(superFunc,state, noEventSend)
     local rootVehicle = self:getRootVehicle()
 	--might break harvesters/combines ??
 	if rootVehicle and rootVehicle.spec_combine then 
 		return superFunc(self,state,noEventSend)
 	end
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+	if courseplay:checkAIDriver(rootVehicle) then 
 		courseplay.debugVehicle(19, vehicle, 'setDischargeState')
 		if state == Dischargeable.DISCHARGE_STATE_OFF  then
 			rootVehicle.cp.driver:resetUnloadingState()			
@@ -180,7 +183,11 @@ Dischargeable.setDischargeState = Utils.overwrittenFunction(Dischargeable.setDis
 --used for for FillTriggers, like pallets... , for sowers/sprayers ...
 function courseplay:addFillUnitTrigger(superFunc,trigger, fillTypeIndex, fillUnitIndex)
 	local rootVehicle = self:getRootVehicle()
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+	if courseplay:checkAIDriver(rootVehicle) then 
+		--Try this one so TransportDriver is not using trigger unless it's filling up fuel.
+		if not fillTypeIndex == FillType.DIESEL and rootVehicle.cp.driver:is_a(AIDriver) then 
+			return superFunc(self,trigger, fillTypeIndex, fillUnitIndex)
+		end
 		if trigger then
 			local spec = self.spec_fillUnit
 			local possible = false
@@ -197,7 +204,8 @@ function courseplay:addFillUnitTrigger(superFunc,trigger, fillTypeIndex, fillUni
 			end
 			return
 		else
-			SpecializationUtil.raiseEvent(self, "onAddedFillUnitTrigger", fillTypeIndex, fillUnitIndex)	
+			SpecializationUtil.raiseEvent(self, "onAddedFillUnitTrigger", fillTypeIndex, fillUnitIndex)
+			return
 		end
 	end
 	return superFunc(self,trigger, fillTypeIndex, fillUnitIndex)
@@ -207,7 +215,7 @@ FillUnit.addFillUnitTrigger = Utils.overwrittenFunction(FillUnit.addFillUnitTrig
 --force Driver to start/stop while loading on FillTriggers
 function courseplay:setFillUnitIsFilling(superFunc,isFilling, noEventSend)
 	local rootVehicle = self:getRootVehicle()
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+	if courseplay:checkAIDriver(rootVehicle) then 
 		if isFilling == true then 
 			courseplay.debugVehicle(19, vehicle, 'FillUnit: setFillUnitIsFilling is filling for')
 			rootVehicle.cp.driver:setLoadingState()
@@ -224,7 +232,7 @@ FillUnit.setFillUnitIsFilling = Utils.overwrittenFunction(FillUnit.setFillUnitIs
 function courseplay:setIsLoading(superFunc,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
     courseplay.debugVehicle(19, vehicle, 'LoadTrigger: setIsLoading')
 	local rootVehicle = self.validFillableObject:getRootVehicle()
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then
+	if courseplay:checkAIDriver(rootVehicle) then
 		if isLoading then 
 			courseplay.debugVehicle(19, vehicle, 'LoadTrigger: setIsLoading is Loading ')
 			rootVehicle.cp.driver:setLoadingState()
@@ -262,7 +270,7 @@ LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActiva
 --close cover after tipping if not closed already
 function courseplay:endTipping(superFunc,noEventSend)
 	local rootVehicle = self:getRootVehicle()
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then
+	if courseplay:checkAIDriver(rootVehicle) then
 		if rootVehicle.cp.settings.automaticCoverHandling:is(true) and self.spec_cover then
 			self:setCoverState(0, true)
 		end
@@ -271,34 +279,25 @@ function courseplay:endTipping(superFunc,noEventSend)
 end
 Trailer.endTipping = Utils.overwrittenFunction(Trailer.endTipping,courseplay.endTipping)
 
---callback for pips if pipe is over implement oven cover 
+--callback for pips if pipe is over implement oven cover and for shovels i am guessing
 function courseplay:unloadingTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	if onEnter then 
-		print("unloadingTriggerCallback: onEnter")
-	elseif onLeave then 
-		print("unloadingTriggerCallback: onLeave")
-	end
 	local fillableObject = g_currentMission:getNodeObject(otherId)
 	local rootVehicle
 	if fillableObject then 
 		rootVehicle = fillableObject:getRootVehicle()
 	end
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+	if courseplay:checkAIDriver(rootVehicle) then 
 		if onEnter then 
-			print("onEnter + rootVehicle")
 			if fillableObject.spec_cover and fillableObject.getFillUnitIndexFromNode ~= nil then 
-				print("fillableObject cover +getFillUnitIndexFromNode")
 				local fillUnitIndex = fillableObject:getFillUnitIndexFromNode(otherId)
                 if fillUnitIndex ~= nil then
-					print("fillUnitIndex found")
 					local dischargeNode = self:getDischargeNodeByIndex(self:getPipeDischargeNodeIndex())
 					local fillType = nil
 					if dischargeNode ~= nil then
                         fillType = self:getFillUnitFillType(dischargeNode.fillUnitIndex)
-						print("dischargeNode found"..tostring(fillType))
 					end
 					if fillType then 
-						print("addFillUnitTrigger")
+						courseplay.debugVehicle(19, vehicle, 'open Cover for Pipe/Unloading Trigger')
 						fillableObject:addFillUnitTrigger(nil,fillType,fillUnitIndex)
 					end
 				end
@@ -317,12 +316,14 @@ function courseplay:unloadingTriggerCallback(superFunc,triggerId, otherId, onEnt
 end
 Pipe.unloadingTriggerCallback = Utils.overwrittenFunction(Pipe.unloadingTriggerCallback,courseplay.unloadingTriggerCallback)
 
+
+--Bunker Silo Callback ,have to get the local hitbox of where to unload maybe in the bunkersilo:load ??
 function courseplay:interactionTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	if onEnter then
-		print("BunkerSilo onEnter")
+		courseplay.debugVehicle(19, vehicle, 'BunkerSilo onEnter')
 	end
 	if onLeave then 
-		print("BunkerSilo onLeave")
+		courseplay.debugVehicle(19, vehicle, 'BunkerSilo onLeave')
 	end
 	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 end

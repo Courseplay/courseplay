@@ -23,7 +23,7 @@ GrainTransportAIDriver = CpObject(AIDriver)
 function GrainTransportAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'GrainTransportAIDriver:init()')
 	AIDriver.init(self, vehicle)
-	self.vehicle.cp.settings.siloSelectedFillType:setSupportedFillTypes(self.vehicle)
+--	self.vehicle.cp.settings.siloSelectedFillType:setSupportedFillTypes(self.vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
 	self.loadingState = self.states.NOTHING
 	self.runCounter = 0
@@ -55,7 +55,6 @@ function GrainTransportAIDriver:start(startingPoint)
 	--probably do TriggerRaycast: onStay -> openCover ??
 	courseplay:openCloseCover(self.vehicle, true) --check if we are already in trigger on start 
 	AIDriver.start(self, startingPoint)
-	self:setDriveUnloadNow(false)
 	self.vehicle.cp.settings.stopAtEnd:set(false) -- should be used for runcounter!
 	courseplay:isTriggerAvailable(self.vehicle) -- temp solution to check on start if under trigger
 end
@@ -70,7 +69,7 @@ function GrainTransportAIDriver:drive(dt)
 	self:updateOffset()
 	
 	if self.loadingState == self.states.IS_LOADING then 
-		if not self:checkFillLevelsOk() then
+		if self:checkFillLevelsOk() then
 			self:resetLoadingState(object)
 		end
 	end
@@ -121,16 +120,23 @@ function GrainTransportAIDriver:resetRunCounter()
 end
 
 function GrainTransportAIDriver:checkFillLevelsOk()
-	if self:getTotalFillLevelPercentage() < self.vehicle.cp.settings.refillUntilPct:get() then 
+	if self:getTotalFillLevelPercentage() >= self.vehicle.cp.settings.refillUntilPct:get() then 
 		return true 
 	end
 	return false
 end
 
 function GrainTransportAIDriver:resetLoadingState(object)
-	if not self.checkFillLevelsOk then 
-		self.loadingState=self.states.NOTHING
-		return
+--	if not self.checkFillLevelsOk then 
+--		self.loadingState=self.states.NOTHING
+--		return
+--	end
+	if object and object.getFillUnits then
+		for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
+			if object:getFillUnitFillLevelPercentage(fillUnitIndex) <= 1 then 
+				return
+			end
+		end
 	end
 	AIDriver.resetLoadingState(self,object)
 end

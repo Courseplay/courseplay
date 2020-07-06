@@ -581,7 +581,8 @@ function courseplay:onLoad(savegame)
 	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
 	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
 	
-	--init SettingsContainer before init AIDriver modes! 
+	--init SettingsContainer before init AIDriver modes!
+	--might have to move this one to onUpdate -> firstRun as init dosen't work as intended ??
 	courseplay:setAIDriver(self, self.cp.mode)
 end;
 
@@ -933,6 +934,11 @@ function courseplay:onUpdate(dt)
 	if g_server == nil and self.isPostSynced == nil then 
 		UserConnectedEvent.sendEvent(self)
 		self.isPostSynced=true
+	end
+	
+	if self.firstRun == nil then 
+		courseplay:setAIDriver(self, self.cp.mode)
+		self.firstRun = true
 	end
 	
 	if not self.cp.remoteIsEntered then

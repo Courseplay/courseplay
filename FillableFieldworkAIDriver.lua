@@ -70,9 +70,9 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 		if distanceToWait < 1 then
 			allowedToDrive = self:fillAtWaitPoint()
 		end	
-		if not allowedToDrive then
-			self:setSpeed( 0)
-		end
+--		if not allowedToDrive then
+--			self:setSpeed( 0)
+--		end
 	else
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
@@ -83,19 +83,24 @@ end
 function FillableFieldworkAIDriver:fillAtWaitPoint()
 	local vehicle = self.vehicle
 	local allowedToDrive = false
+	if not self.loadingState == self.states.IS_LOADING then 
+		self:setLoadingState()
+		courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
+	end
 	--TODO: tweak this one for diff filltypes ??
 	courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
 	self:setInfoText('WAIT_POINT')
 	--fillLevel changed in last loop-> start timer
-	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= vehicle.cp.totalFillLevelPercent then
-		self.prevFillLevelPct = vehicle.cp.totalFillLevelPercent
-		courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
-	end
+--	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= vehicle.cp.totalFillLevelPercent then
+--		self.prevFillLevelPct = vehicle.cp.totalFillLevelPercent
+--		courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
+--	end
 	
 	--if time is up and no fillLevel change happend, check whether we may drive on or not
 	if courseplay:timerIsThrough(vehicle, "fillLevelChange",false) then
 		if self:allFillLevelsOk(self.vehicle.cp.settings.refillUntilPct:get()) then
-			self:continue()
+		--	self:continue()
+			self:resetLoadingState()
 			courseplay:resetCustomTimer(vehicle, "fillLevelChange",true);
 			self.prevFillLevelPct = nil
 		end
@@ -236,5 +241,11 @@ function FillableFieldworkAIDriver:setLightsMask(vehicle)
 		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_STREET)
 	else
 		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+	end
+end
+
+function FillableFieldworkAIDriver:resetLoadingState(object)
+	if self:allFillLevelsOk(self.vehicle.cp.settings.refillUntilPct:get()) then 
+		self.loadingState=self.states.NOTHING
 	end
 end

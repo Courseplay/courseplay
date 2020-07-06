@@ -175,6 +175,44 @@ end
 
 function courseplay:executeFunction(self, func, value, page)
 	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), 5)
+	local validateClasses={
+		"Setting",
+		"CourseGeneratorSetting",
+		"AIDriver"	
+	}
+	for _,class in pairs(validateClasses) do 
+		local start,stop = string.find(func, class)
+		if start and stop and start == 1 then		
+			local funcName = string.sub(func, stop+2)
+			print("class: "..class..",funcName: "..funcName)
+			if class == "Setting" then 
+				local seperate = string.find(funcName, ":")
+				local settingName = string.sub(funcName, 1,seperate-1)
+				local funcCall = string.sub(funcName, seperate+1)
+				print("settingName: "..settingName..",funcCall: "..funcCall)
+				--self.cp[settingName][funcCall](value)
+				if self.cp.settings then
+					if self.cp.settings[settingName] then
+						if self.cp.settings[settingName][funcCall] then
+							self.cp.settings[settingName][funcCall](self.cp.settings[settingName],value)
+						end
+					end	
+				end
+			--	assert(loadstring("self.vehicle.cp.settings"..'.' .. settingName .. ':'.. funcCall .. '(...)'))(self, value);
+			elseif class == "CourseGeneratorSetting" then
+			--	assert(loadstring('self.vehicle.cp.courseGeneratorSettings'..':'.. func .. '(...)'))(self, value);
+			else
+				assert(loadstring(class..':' .. func .. '(...)'))(self, value);
+			end
+			courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
+			if self:getIsEntered() then
+				--The old sound playSample(courseplay.hud.clickSound, 1, 1, 0, 0, 0);
+				-- The new gui click sound
+				g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
+			end
+			return
+		end
+	end
 	if func == "setMPGlobalInfoText" then
 		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)

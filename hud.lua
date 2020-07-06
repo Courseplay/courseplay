@@ -765,14 +765,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.automaticCoverHandling:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticCoverHandling:getText()
 				
-				elseif entry.functionToCall == 'changeSiloFillType' then
+				elseif entry.functionToCall == 'Setting:siloSelectedFillType:addFilltype' then
 					if true then --TODO figure a logic behind this out!!
 						self:enableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.siloSelectedFillType:getLabel()
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.siloSelectedFillType:getText() 
+					--	vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.siloSelectedFillType:getText() 
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 					end
+					self:updateSelectedSiloList(vehicle,page)
 				elseif entry.functionToCall == 'changemaxRunNumber' then
 					if vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
@@ -1332,7 +1333,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		vehicle.cp.hud.visualWaypointsAllButton:setActive(vehicle.cp.visualWaypointsAll)
 		vehicle.cp.hud.visualWaypointsEndButton:setActive(vehicle.cp.visualWaypointsStartEnd)
 		vehicle.cp.hud.visualWaypointsCrossingButton:setActive(vehicle.cp.visualWaypointsCrossing)
-
+	
 		
 		-- Debug channels
 		if courseplay.isDevVersion then
@@ -1341,7 +1342,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	else
 		self:showShowWaypointsButtons(vehicle, false)
 	end
-		
+	
 --[[
 
 
@@ -2031,6 +2032,13 @@ function courseplay.hud:updateCombinesList(vehicle,page)
 	end
 end
 
+function courseplay.hud:updateSelectedSiloList(vehicle,page)
+	for i= 3, 7 do
+		vehicle.cp.hud.content.pages[page][i][2].text = vehicle.cp.settings.siloSelectedFillType:getText(i-2)
+	end
+end
+
+
 function courseplay.hud:updateDebugChannelButtons(vehicle)
 	for _,button in pairs(vehicle.cp.buttons[6]) do
 		if button.functionToCall == 'toggleDebugChannel' then
@@ -2315,11 +2323,12 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'resetRunCounter', 1, 6, 1 )
 	
 	
-	--page 1 driving
+	--page 3 
 	self:enablePageButton(vehicle, 3)
-	self:addSettingsRowWithArrows(vehicle,'changeSiloFillType', 3, 1, 1 )
-	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 2, 1 )
-
+--	self:addSettingsRowWithArrows(vehicle,'changeSiloFillType', 3, 1, 1 )
+	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 1, 1 )
+	self:addRowButton(vehicle,'Setting:siloSelectedFillType:addFilltype', 3, 2, 1 )
+	self:addLinkedListButtons(vehicle,'Setting:siloSelectedFillType', 3, 3, 7, 1)
 	--page 7 
 	self:addSettingsRow(vehicle,'changeLoadUnloadOffsetX', 7, 5, 1 )
 	self:addSettingsRow(vehicle,'changeLoadUnloadOffsetZ', 7, 6, 1 )
@@ -2508,7 +2517,19 @@ function courseplay.hud:addSettingsRowWithArrows(vehicle,funct, hudPage, line, c
 	courseplay.button:new(vehicle, hudPage, nil, funct, 1, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true);
 	vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = funct
 end
-		
+
+function courseplay.hud:addLinkedListButtons(vehicle,funct, hudPage,startLine,stopLine, column)
+	self:debug(vehicle,"  addLinkedListButtons: "..tostring(funct))
+	local diff = startLine-1
+	for i=startLine,stopLine do 
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navUp' }, funct..":moveUp",   i-diff, self.buttonPosX[3], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i, -5, false);
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navDown' },  funct..":moveDown",    i-diff, self.buttonPosX[2], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i,  5, false);
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'delete' },  funct..":deleteElement",    i-diff, self.buttonPosX[1], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i,  5, false);
+	--	courseplay.button:new(vehicle, hudPage, nil, funct..":button", i, self.contentMinX, self.linesButtonPosY[i], self.contentMaxWidth, self.lineHeight, i, 5, true, true);
+		vehicle.cp.hud.content.pages[hudPage][i][column].functionToCall = funct
+	end
+end
+
 function courseplay.hud:debug(vehicle,...)
 	courseplay.debugVehicle(18, vehicle, ...)
 end	

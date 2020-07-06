@@ -197,7 +197,7 @@ end
 -- we want those nodes removed when the AIDriver instance is deleted.
 function AIDriver:delete()
 	self:debug('delete AIDriver')
-	self.vehicle.cp.settings.siloSelectedFillType:resetSupportedFillTypes()
+--	self.vehicle.cp.settings.siloSelectedFillType:resetSupportedFillTypes()
 	self:deleteCollisionDetector()
 end
 
@@ -227,7 +227,7 @@ function AIDriver:beforeStart()
 	if self.collisionDetector == nil then
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
-	
+	self:setDriveUnloadNow(false)
 	self:setBackMarkerNode(self.vehicle)
 	self:setFrontMarkerNode(self.vehicle)
 
@@ -1824,16 +1824,10 @@ end
 function AIDriver:setLoadingState()
 	self.vehicle.cp.settings.driveUnloadNow:set(false)
 	self.loadingState=self.states.IS_LOADING
+	self:refreshHUD()
 end
 --TODO move to GrainTransportAIDriver ??
 function AIDriver:resetLoadingState(object)
---	if object and object.getFillUnits then
---		for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
---			if object:getFillUnitFillLevelPercentage(fillUnitIndex) <= 1 then 
-	--			return
---			end
---		end
---	end
 	self.loadingState=self.states.NOTHING
 end
 
@@ -1842,7 +1836,6 @@ function AIDriver:resetUnloadingState()
 end
 
 function AIDriver:setUnloadingState()
-	self.vehicle.cp.settings.driveUnloadNow:set(false)
 	self.loadingState=self.states.IS_UNLOADING
 end
 
