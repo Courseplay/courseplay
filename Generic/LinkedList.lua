@@ -218,6 +218,18 @@ function LinkedList:iterateToEnd(node)
 	return node
 end
 
+function LinkedList:getData()
+	local node = self.First.Next
+	local totalData = {}
+	i=1
+	while node ~=nil do 
+		totalData[i]=node.data
+		node=node.Next
+		i=i+1
+	end
+	return totalData
+end
+
 --getters
 
 function LinkedList:getFirst()

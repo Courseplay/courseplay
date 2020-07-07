@@ -2791,7 +2791,7 @@ function DriverPriorityUseFillLevelSetting:init(vehicle)
 	BooleanSetting.init(self, 'driverPriorityUseFillLevel', 'COURSEPLAY_UNLOADING_DRIVER_PRIORITY', 'COURSEPLAY_UNLOADING_DRIVER_PRIORITY', vehicle, {'COURSEPLAY_DISTANCE','COURSEPLAY_FILLEVEL'})
 	self:set(false)
 end
-
+--old code !!!
 ---@class RunCounterMaxSetting : SettingList
 RunCounterMaxSetting = CpObject(SettingList)
 RunCounterMaxSetting.RUN_COUNTER_OFF = 0
@@ -2894,88 +2894,8 @@ function CombineWantsCourseplayerSetting:init(vehicle)
 	BooleanSetting.init(self, 'combineWantsCourseplayer', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
 	self:set(false)
 end
---[[
----@class SiloSelectedFillTypeSetting : SettingList
-SiloSelectedFillTypeSetting = CpObject(SettingList)
-function SiloSelectedFillTypeSetting:init(vehicle)
-	SettingList.init(self, 'siloSelectedFillType', 'COURSEPLAY_FARM_SILO_FILL_TYPE', 'COURSEPLAY_FARM_SILO_FILL_TYPE', vehicle,
-		{  
-			FillType.UNKNOWN
-		},
-		{ 	
-			'COURSEPLAY_DEACTIVATED'
-		}
-	)
-end
 
-function SiloSelectedFillTypeSetting:resetSupportedFillTypes()
-	SettingList.setNewValues({FillType.UNKNOWN})
-	SettingList.setNewTexts({'COURSEPLAY_DEACTIVATED'})
-end
-
-function SiloSelectedFillTypeSetting:setSupportedFillTypes(vehicle)  
-	local supportedFillTypes = {}
-	self:getSupportedFillTypes(vehicle,supportedFillTypes)
-	local values = {}
-	local texts = {}
-	if supportedFillTypes then
-		for fillType, bool in pairs(supportedFillTypes) do
-			table.insert(values,fillType)
-			local fillTypeName = g_fillTypeManager:getFillTypeByIndex(fillType).title
-			table.insert(texts,fillTypeName)
-		end
-		if values and #values>0 then
-			SettingList.setNewValues(self,values)
-			SettingList.setNewTexts(self,texts)
-			courseplay.debugVehicle(19, vehicle, 'SiloSelectedFillTypeSetting setNewValues ')
-		end
-	else
-		print("supportedFillTypes is empty!!")
-	end
-end
-
-function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillTypes)  
-	if object:getFillUnits() and object.spec_motorized == nil then
-		if supportedFillTypes ~= nil then 
-			if #supportedFillTypes == 0 then 
-				for filltype,bool in pairs(object:getFillUnitSupportedFillTypes(1)) do 
-					supportedFillTypes[filltype]=bool
-				end		
-			else
-				for fillType, bool in pairs(supportedFillTypes) do
-					if bool and object:getFillUnitSupportsFillType(1, fillType) then
-	
-					else
-						table.remove(supportedFillTypes,fillType)
-					end
-				end
-				if #supportedFillTypes == 0 then 
-					supportedFillTypes=nil
-				end
-			end
-		else 
-			print('supportedFillTypes is now empty')
-			return
-		end
-	end
-	-- get all attached implements recursively
-	for _,impl in pairs(object:getAttachedImplements()) do
-		self:getSupportedFillTypes(impl.object,supportedFillTypes)
-	end
-end
-
-function SiloSelectedFillTypeSetting:isActive()  
-	if #self.values == 1 then 
-		if self.values[1]==FillType.UNKNOWN then 
-			return false
-		end
-	end
-	return true
-end
-]]--
-
---- Generic LinkedList setting 
----@class LinkedList : LinkedListSetting
+---@class SiloSelectedFillTypeSetting : LinkedListSetting
 SiloSelectedFillTypeSetting = CpObject(LinkedListSetting)
 
 function SiloSelectedFillTypeSetting:init(vehicle)
@@ -2985,41 +2905,41 @@ end
 function SiloSelectedFillTypeSetting:addFilltype()  
 	local supportedFillTypes = {}
 	self:getSupportedFillTypes(self.vehicle,supportedFillTypes)
+	self:checkSelectedFillTypes(supportedFillTypes)
 	if supportedFillTypes then
 		g_gui:showSiloDialog({title="Filltype Selection", fillLevels=supportedFillTypes, capacity=100, callback=self.onFillTypeSelection, target=self, hasInfiniteCapacity = true})
 	end
 end
 
 function SiloSelectedFillTypeSetting:onFillTypeSelection(fillType)
-	if fillType then 
-		self.List:addLast({value = fillType, text = g_fillTypeManager:getFillTypeByIndex(fillType).title})
+	if fillType and fillType ~= FillType.UNKNOWN then 
+		self.List:addLast({value = fillType, text = g_fillTypeManager:getFillTypeByIndex(fillType).title, runCounter = 20})
 	end
 end  
 
+function SiloSelectedFillTypeSetting:checkSelectedFillTypes(supportedFillTypes)
+	selectedFillTypes = self:getFillTypes()
+	for _,fillType in ipairs(selectedFillTypes) do 
+		--print("Filltype already selected: "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+		if supportedFillTypes[fillType] then
+		--	print("removing: "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			supportedFillTypes[fillType]=0
+		end
+	end
+end 
+
 function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillTypes)  
-	if object and object:getFillUnits() and object.spec_motorized == nil then
+	if object and object.spec_fillUnit and object:getFillUnits() then
 		if supportedFillTypes ~= nil then 
-			if #supportedFillTypes == 0 then 
-				for filltype,bool in pairs(object:getFillUnitSupportedFillTypes(1)) do 
-					if bool then 
-						supportedFillTypes[filltype]=100
+			for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
+				for fillType,bool in pairs(object:getFillUnitSupportedFillTypes(fillUnitIndex)) do 
+					if bool and fillType ~= FillType.DIESEL and fillType ~= FillType.DEF then 
+						if supportedFillTypes[fillType] == nil then
+							supportedFillTypes[fillType]=100
+						end
 					end
 				end		
-			else
-				for fillType, bool in pairs(supportedFillTypes) do
-					if bool and object:getFillUnitSupportsFillType(1, fillType) then
-	
-					else
-						table.remove(supportedFillTypes,fillType)
-					end
-				end
-				if #supportedFillTypes == 0 then 
-					supportedFillTypes=nil
-				end
 			end
-		else 
-			print('supportedFillTypes is now empty')
-			return
 		end
 	end
 	-- get all attached implements recursively
@@ -3029,7 +2949,59 @@ function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillT
 end
 --TODO: fix this one
 function SiloSelectedFillTypeSetting:isActive()  
-	return true
+	local data = self:getData()
+	local runCounterCheck = false
+	for _,data in pairs(data) do 
+		if data.runCounter > 0 then 
+			runCounterCheck=true
+		end
+	end
+	return runCounterCheck
+end
+
+--TODO: fix this one
+function SiloSelectedFillTypeSetting:getFillTypes()  
+	local totalData = self.List:getData()
+	local fillTypes = {}
+	local i=1
+	for _,data in ipairs(totalData) do 
+		fillTypes[i]=data.value
+		i=i+1
+	end
+	return fillTypes
+end
+
+function SiloSelectedFillTypeSetting:getData()  
+	local totalData = self.List:getData()
+	return totalData
+end
+
+function SiloSelectedFillTypeSetting:getRunCounterText(index)
+	local element = self.List:getElementByIndex(index)
+	if element and element.data.runCounter then 
+		local strg = element.data.runCounter.."/20"
+		return strg
+	else
+		return ""
+	end
+end
+
+function SiloSelectedFillTypeSetting:incrementRunCounter(index)
+	local element = self.List:getElementByIndex(index)
+	if element and element.data.runCounter then 
+		if not (element.data.runCounter >= 20) then 
+			element.data.runCounter = element.data.runCounter+1
+		end
+	end
+end
+
+function SiloSelectedFillTypeSetting:decrementRunCounter(index)
+	local element = self.List:getElementByIndex(index)
+	if element and element.data.runCounter then 
+		if not (element.data.runCounter <= 0) then 
+			element.data.runCounter = element.data.runCounter-1
+		end
+	end
 end
 
 ---@class RefillUntilPctSetting : PercentageSettingList

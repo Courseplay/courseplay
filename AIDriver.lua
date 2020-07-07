@@ -1801,11 +1801,14 @@ end
 --Triggers currently working in every mode have to enable it for specific modes only
 
 function AIDriver:checkTriggers()
-	if self.loadingState == self.states.IS_LOADING then
-		if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
-			courseplay:isTriggerAvailable(self.vehicle)
+
+	if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
+		courseplay:isTriggerAvailable(self.vehicle)
+		if self.loadingState == self.states.IS_LOADING then
 			self:hold()
-		else
+		end
+	else
+		if self.loadingState == self.states.IS_LOADING then
 			self.loadingState = self.states.NOTHING
 			courseplay.debugVehicle(19, vehicle,'drive on and ignore Trigger')
 			if self.trigger and self.trigger.isLoading then 
@@ -1826,8 +1829,8 @@ function AIDriver:setLoadingState()
 	self.loadingState=self.states.IS_LOADING
 	self:refreshHUD()
 end
---TODO move to GrainTransportAIDriver ??
-function AIDriver:resetLoadingState(object)
+
+function AIDriver:resetLoadingState()
 	self.loadingState=self.states.NOTHING
 end
 

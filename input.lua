@@ -184,12 +184,12 @@ function courseplay:executeFunction(self, func, value, page)
 		local start,stop = string.find(func, class)
 		if start and stop and start == 1 then		
 			local funcName = string.sub(func, stop+2)
-			print("class: "..class..",funcName: "..funcName)
+		--	print("class: "..class..",funcName: "..funcName)
 			if class == "Setting" then 
 				local seperate = string.find(funcName, ":")
 				local settingName = string.sub(funcName, 1,seperate-1)
 				local funcCall = string.sub(funcName, seperate+1)
-				print("settingName: "..settingName..",funcCall: "..funcCall)
+		--		print("settingName: "..settingName..",funcCall: "..funcCall)
 				--self.cp[settingName][funcCall](value)
 				if self.cp.settings then
 					if self.cp.settings[settingName] then

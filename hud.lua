@@ -2034,7 +2034,8 @@ end
 
 function courseplay.hud:updateSelectedSiloList(vehicle,page)
 	for i= 3, 7 do
-		vehicle.cp.hud.content.pages[page][i][2].text = vehicle.cp.settings.siloSelectedFillType:getText(i-2)
+		vehicle.cp.hud.content.pages[page][i][1].text = vehicle.cp.settings.siloSelectedFillType:getText(i-2)
+		vehicle.cp.hud.content.pages[page][i][2].text = vehicle.cp.settings.siloSelectedFillType:getRunCounterText(i-2)
 	end
 end
 
@@ -2319,13 +2320,12 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	--page 1 driving
 	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
 	
-	self:addSettingsRow(vehicle,'changemaxRunNumber', 1, 5, 1 )
-	self:addRowButton(vehicle,'resetRunCounter', 1, 6, 1 )
+--	self:addSettingsRow(vehicle,'changemaxRunNumber', 1, 5, 1 )
+--	self:addRowButton(vehicle,'resetRunCounter', 1, 6, 1 )
 	
 	
 	--page 3 
 	self:enablePageButton(vehicle, 3)
---	self:addSettingsRowWithArrows(vehicle,'changeSiloFillType', 3, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 1, 1 )
 	self:addRowButton(vehicle,'Setting:siloSelectedFillType:addFilltype', 3, 2, 1 )
 	self:addLinkedListButtons(vehicle,'Setting:siloSelectedFillType', 3, 3, 7, 1)
@@ -2439,7 +2439,8 @@ function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeDriveOnAtFillLevel', 3, 2, 1 )
-	self:addSettingsRowWithArrows(vehicle,'changeSiloFillType', 3, 3, 1 )
+--	self:addRowButton(vehicle,'Setting:siloSelectedFillType:addFilltype', 3, 3, 1 )
+--	self:addLinkedListButtons(vehicle,'Setting:siloSelectedFillType', 3, 4, 8, 1)
 end
 
 
@@ -2478,7 +2479,7 @@ function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 
 
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
-	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 6, 1 )
+--	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 6, 1 )
 
 	self:setReloadPageOrder(vehicle, -1, true)
 end
@@ -2525,8 +2526,10 @@ function courseplay.hud:addLinkedListButtons(vehicle,funct, hudPage,startLine,st
 		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navUp' }, funct..":moveUp",   i-diff, self.buttonPosX[3], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i, -5, false);
 		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navDown' },  funct..":moveDown",    i-diff, self.buttonPosX[2], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i,  5, false);
 		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'delete' },  funct..":deleteElement",    i-diff, self.buttonPosX[1], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i,  5, false);
-	--	courseplay.button:new(vehicle, hudPage, nil, funct..":button", i, self.contentMinX, self.linesButtonPosY[i], self.contentMaxWidth, self.lineHeight, i, 5, true, true);
-		vehicle.cp.hud.content.pages[hudPage][i][column].functionToCall = funct
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navMinus' }, funct..":decrementRunCounter",   i-diff, self.buttonPosX[5], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, line, -5, false);
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navPlus' },  funct..":incrementRunCounter",   i-diff, self.buttonPosX[4], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, line,  5, false);
+	--	courseplay.button:new(vehicle, hudPage, nil, funct, 1, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true);
+		--vehicle.cp.hud.content.pages[hudPage][i][column].functionToCall = funct
 	end
 end
 

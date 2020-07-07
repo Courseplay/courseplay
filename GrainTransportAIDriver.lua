@@ -23,7 +23,6 @@ GrainTransportAIDriver = CpObject(AIDriver)
 function GrainTransportAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'GrainTransportAIDriver:init()')
 	AIDriver.init(self, vehicle)
---	self.vehicle.cp.settings.siloSelectedFillType:setSupportedFillTypes(self.vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
 	self.loadingState = self.states.NOTHING
 	self.runCounter = 0
@@ -51,12 +50,12 @@ function GrainTransportAIDriver:start(startingPoint)
 	self:getTotalFillCapacitys(self.vehicle,totalFillCapacity)
 	self.totalFillCapacity = totalFillCapacity.fillCapacity
 	courseplay.debugVehicle(19, vehicle,'totalFillCapacity: %d',self.totalFillCapacity)
-	courseplay.debugVehicle(19, vehicle,'Last run (%d) finished, stopping.', self.runCounter)
+--	courseplay.debugVehicle(19, vehicle,'Last run (%d) finished, stopping.', self.runCounter)
 	--probably do TriggerRaycast: onStay -> openCover ??
-	courseplay:openCloseCover(self.vehicle, true) --check if we are already in trigger on start 
+	courseplay:openCloseCover(self.vehicle, true) --check if we are already in trigger on start --????
 	AIDriver.start(self, startingPoint)
 	self.vehicle.cp.settings.stopAtEnd:set(false) -- should be used for runcounter!
-	courseplay:isTriggerAvailable(self.vehicle) -- temp solution to check on start if under trigger
+--	courseplay:isTriggerAvailable(self.vehicle) -- temp solution to check on start if under trigger
 end
 
 function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
@@ -77,18 +76,28 @@ function GrainTransportAIDriver:drive(dt)
 end
 
 function GrainTransportAIDriver:onLastWaypoint()
+	if not self.vehicle.cp.settings.siloSelectedFillType:isActive() then
+		
+		self:setLoadingState()
+	else
+	
+	end
+	AIDriver.onLastWaypoint(self)
+--[[	
 	if self:passedRunCounter() then 
 		--self:stop('END_POINT_MODE_1') --should be called in AIDriver:onLastWaypoint
 		self:debug('Last run (%d) finished, stopping.', self.runCounter)
 		courseplay.debugVehicle(19, vehicle,'Last run (%d) finished, stopping.', self.runCounter)
 	else 
-		self:setLoadingState()
-		self:incrementRunCounter()
-		self:checkRunCounter()
+		if not self.vehicle.cp.settings.siloSelectedFillType:isActive() then
+			self:setLoadingState()
+		end
+	--	self:incrementRunCounter()
+	--	self:checkRunCounter()
 		self:debug('Finished run %d, continue with next.', self.runCounter)
 		courseplay.debugVehicle(19, vehicle,'Finished run %d, continue with next.', self.runCounter)
 	end	
-	AIDriver.onLastWaypoint(self)
+	AIDriver.onLastWaypoint(self)]]--
 end
 
 function GrainTransportAIDriver:checkRunCounter()
@@ -126,25 +135,10 @@ function GrainTransportAIDriver:checkFillLevelsOk()
 	return false
 end
 
-function GrainTransportAIDriver:resetLoadingState(object)
---	if not self.checkFillLevelsOk then 
---		self.loadingState=self.states.NOTHING
---		return
---	end
-	if object and object.getFillUnits then
-		for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
-			if object:getFillUnitFillLevelPercentage(fillUnitIndex) <= 1 then 
-				return
-			end
-		end
-	end
-	AIDriver.resetLoadingState(self,object)
-end
-
 function GrainTransportAIDriver:getTotalFillLevelPercentage()
 	local totalFillLevels = {}
 	self:getTotalFillLevels(self.vehicle,totalFillLevels)
-	courseplay.debugVehicle(19, vehicle,'totalFillLevel: %d',totalFillLevels.fillLevel)
+--	courseplay.debugVehicle(19, vehicle,'totalFillLevel: %d',totalFillLevels.fillLevel)
 	return (totalFillLevels.fillLevel/self.totalFillCapacity)*100
 end
 

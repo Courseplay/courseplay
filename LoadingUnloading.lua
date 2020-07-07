@@ -57,29 +57,10 @@ function courseplay:onActivateObject(superFunc,vehicle)
 			local fillableObject = self.validFillableObject
 			local fillUnitIndex = self.validFillableFillUnitIndex
 			local validFillTypIndexes = {}
-			local siloSelectedFillType = vehicle.cp.settings.siloSelectedFillType:get()
 			for fillTypeIndex, fillLevel in pairs(fillLevels) do
 				if self.fillTypes == nil or self.fillTypes[fillTypeIndex] then
 					if fillableObject:getFillUnitAllowsFillType(fillUnitIndex, fillTypeIndex) then
-						table.insert(validFillTypIndexes,fillTypeIndex)
-						--GrainTransportDriver 
-						
-						if siloSelectedFillType ~= FillType.UNKNOWN and fillTypeIndex == siloSelectedFillType then
-							if vehicle.cp.driver.passedRunCounter then
-								if vehicle.cp.driver:passedRunCounter() then 
-									courseplay.debugVehicle(19, vehicle, 'passedRunCounter => no more loading!')
-									return
-								end
-							end		
-							if vehicle.cp.driver:is_a(CombineUnloadAIDriver) then 
-								courseplay.debugVehicle(19, vehicle, 'wrong AIDriver')
-								return
-							end
-							courseplay.debugVehicle(19, vehicle, 'select Filltype Load Trigger')
-							self:onFillTypeSelection(fillTypeIndex)
-							break
-						--FuelRefill
-						elseif dieselIndex and fillTypeIndex == dieselIndex then 
+						if dieselIndex and fillTypeIndex == dieselIndex and vehicle.spec_motorized then 
 							motorSpec = vehicle.spec_motorized
 							courseplay.debugVehicle(19, vehicle, 'Fuell Trigger found')
 							if vehicle.cp.settings.allwaysSearchFuel:is(false) then
@@ -89,20 +70,55 @@ function courseplay:onActivateObject(superFunc,vehicle)
 								end
 							end
 							self:onFillTypeSelection(fillTypeIndex)
-							break
+							return
+						else
+							if fillLevel > 0 then 
+								table.insert(validFillTypIndexes,fillTypeIndex)						
+							end
 						end
 					end
 				end
 			end
-			--FillableFieldworkDriver
-			if siloSelectedFillType == FillType.UNKNOWN then 
-				if #validFillTypIndexes >0 then 
-					fillableObject:addFillUnitTrigger(nil,validFillTypIndexes[1],fillUnitIndex)
-					self:onFillTypeSelection(validFillTypIndexes[1])
+			local totalData = vehicle.cp.settings.siloSelectedFillType:getData()
+			if #validFillTypIndexes >0 and totalData then 
+				courseplay.debugVehicle(19, vehicle, 'validFillTypes found')
+				for _,data in ipairs(totalData) do 
+					courseplay.debugVehicle(19, vehicle, 'selected filltypes: '..g_fillTypeManager:getFillTypeByIndex(data.value).title)
+					for _,fillType in pairs(validFillTypIndexes) do						
+						if fillType == data.value then 	
+							if vehicle.cp.driver:is_a(CombineUnloadAIDriver) then 
+								courseplay.debugVehicle(19, vehicle, 'wrong AIDriver')
+								return
+							end
+							courseplay.debugVehicle(19, vehicle, 'select Filltype Load Trigger')
+							if data.runCounter > 0 then
+								courseplay.debugVehicle(19, vehicle, 'select Filltype Load Trigger')
+								self:onFillTypeSelection(data.value)
+								data.runCounter = data.runCounter-1
+								return
+							else
+								courseplay.debugVehicle(19, vehicle, 'passedRunCounter => no more loading!')
+							end
+						end
+					end
 				end
 			end
+			
+			
+			--FillableFieldworkDriver
+	--		if siloSelectedFillType == FillType.UNKNOWN then 
+	--			if #validFillTypIndexes >0 then 
+	--				fillableObject:addFillUnitTrigger(nil,validFillTypIndexes[1],fillUnitIndex)
+	--				self:onFillTypeSelection(validFillTypIndexes[1])
+	--			end
+	--		end
 			CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_NO_FILLTYPE')
-			courseplay.debugVehicle(19, vehicle, 'wrong FillType')
+			if not fillableObject:getFillUnitFillType() then 
+				vehicle.cp.driver:setLoadingState()
+				courseplay.debugVehicle(19, vehicle, 'wrong FillType and empty => wait')
+			else
+				courseplay.debugVehicle(19, vehicle, 'wrong FillType ??')
+			end
 		end
 	else 
 		return superFunc(self)
