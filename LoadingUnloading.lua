@@ -94,6 +94,13 @@ function courseplay:onActivateObject(superFunc,vehicle)
 							if data.runCounter > 0 then
 								courseplay.debugVehicle(19, vehicle, 'select Filltype Load Trigger')
 								self:onFillTypeSelection(data.value)
+								local spec = fillableObject.spec_dischargeable 
+								if spec then 
+									local currentDischargeNode = spec.currentDischargeNode
+									if currentDischargeNode and currentDischargeNode.dischargeObject then 
+										vehicle.cp.settings.disableUnloadingTrigger:diable(NetworkUtil.getObjectId(currentDischargeNode.dischargeObject)) 
+									end
+								end
 								data.runCounter = data.runCounter-1
 								return
 							else
@@ -139,10 +146,12 @@ function courseplay:loadTriggerCallback(superFunc,triggerId, otherId, onEnter, o
 		if onEnter then 
 			courseplay.debugVehicle(19, vehicle, 'onEnter LoadTrigger ')
 			courseplay:openCloseCover(fillableObject, true)
+			rootVehicle.cp.settings.disableLoadingTrigger:addCurrentTrigger(triggerId)
 		end
 		if onLeave then 
 			courseplay.debugVehicle(19, vehicle, 'onLeave LoadTrigger ')
 			courseplay:openCloseCover(fillableObject, false)
+			rootVehicle.cp.settings.disableLoadingTrigger:removeCurrentTrigger(triggerId)
 		end
 	end
 	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
@@ -155,16 +164,21 @@ LoadTrigger.loadTriggerCallback = Utils.overwrittenFunction(LoadTrigger.loadTrig
 --TODO: needs more tweaking
 function courseplay:isUnloadingTriggerAvailable(object)    
 	local spec = object.spec_dischargeable
+	local rootVehicle = object:getRootVehicle()
 	if spec then 
 		if spec:getCanToggleDischargeToObject() then 
 			local currentDischargeNode = spec.currentDischargeNode
 			if currentDischargeNode and spec.currentDischargeState == Dischargeable.DISCHARGE_STATE_OFF then
-				if spec:getCanDischargeToObject(currentDischargeNode) then
-					spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
-				elseif currentDischargeNode.dischargeHit then
+				if rootVehicle.cp.settings.disableUnloadingTrigger:isTriggerAllowed(NetworkUtil.getObjectId(currentDischargeNode.dischargeObject)) then
+					if not rootVehicle.cp.settings.disableLoadingTrigger:hasCurrentTriggers() then
+						if spec:getCanDischargeToObject(currentDischargeNode) then
+							spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
+						elseif currentDischargeNode.dischargeHit then
 				
-				else 
+						else 
 				
+						end
+					end
 				end
 			end
 		end
@@ -185,7 +199,7 @@ function courseplay:setDischargeState(superFunc,state, noEventSend)
 	if courseplay:checkAIDriver(rootVehicle) then 
 		courseplay.debugVehicle(19, vehicle, 'setDischargeState')
 		if state == Dischargeable.DISCHARGE_STATE_OFF  then
-			rootVehicle.cp.driver:resetUnloadingState()			
+		--	rootVehicle.cp.driver:resetUnloadingState()			
 			courseplay.debugVehicle(19, vehicle, 'stop Unloading')
 		elseif state == Dischargeable.DISCHARGE_STATE_OBJECT then
 			rootVehicle.cp.driver:setUnloadingState()
@@ -290,6 +304,7 @@ function courseplay:endTipping(superFunc,noEventSend)
 		if rootVehicle.cp.settings.automaticCoverHandling:is(true) and self.spec_cover then
 			self:setCoverState(0, true)
 		end
+		rootVehicle.cp.driver:resetUnloadingState()
 	end
 	return superFunc(self,noEventSend)
 end
@@ -345,4 +360,42 @@ function courseplay:interactionTriggerCallback(superFunc,triggerId, otherId, onE
 end
 BunkerSilo.interactionTriggerCallback = Utils.overwrittenFunction(BunkerSilo.interactionTriggerCallback,courseplay.interactionTriggerCallback)
 
+function courseplay:dischargeTriggerCallback(superFunc,triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+	local fillableObject = g_currentMission:getNodeObject(otherId)
+	local rootVehicle
+	if fillableObject then 
+		rootVehicle = fillableObject:getRootVehicle()
+	end
+	if courseplay:checkAIDriver(rootVehicle) then 
+		if onEnter then 
+			courseplay.debugVehicle(19, vehicle, 'dischargeTrigger onEnter')
+		--	rootVehicle.cp.settings.disableLoadingTrigger:addCurrentTrigger(triggerId)
+		end
+		if onLeave then
+			courseplay.debugVehicle(19, vehicle, 'dischargeTrigger onLeave')
+		--	rootVehicle.cp.settings.disableLoadingTrigger:removeCurrentTrigger(triggerId)
+		end	
+	end
+	return superFunc(self,triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+end
+Dischargeable.dischargeTriggerCallback = Utils.overwrittenFunction(Dischargeable.dischargeTriggerCallback,courseplay.dischargeTriggerCallback)
 
+function courseplay:dischargeActivationTriggerCallback(superFunc,triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+	local fillableObject = g_currentMission:getNodeObject(otherId)
+	local rootVehicle
+	if fillableObject then 
+		rootVehicle = fillableObject:getRootVehicle()
+	end
+	if courseplay:checkAIDriver(rootVehicle) then 
+		if onEnter then 
+			courseplay.debugVehicle(19, vehicle, 'dischargeActivationTrigger onEnter')
+		--	rootVehicle.cp.settings.disableLoadingTrigger:addCurrentTrigger(triggerId)
+		end
+		if onLeave then
+			courseplay.debugVehicle(19, vehicle, 'dischargeActivationTrigger onLeave')
+		--	rootVehicle.cp.settings.disableLoadingTrigger:removeCurrentTrigger(triggerId)
+		end	
+	end
+	return superFunc(self,triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+end
+Dischargeable.dischargeActivationTriggerCallback = Utils.overwrittenFunction(Dischargeable.dischargeActivationTriggerCallback,courseplay.dischargeActivationTriggerCallback)

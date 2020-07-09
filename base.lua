@@ -574,7 +574,8 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(CombineWantsCourseplayerSetting, self)
 	self.cp.settings:addSetting(SiloSelectedFillTypeSetting, self)
 	self.cp.settings:addSetting(RefillUntilPctSetting, self)
-	
+	self.cp.settings:addSetting(DisableLoadingTriggersSetting, self)
+	self.cp.settings:addSetting(DisableUnloadingTriggersSetting, self)
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer()
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)

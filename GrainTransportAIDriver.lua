@@ -75,12 +75,27 @@ function GrainTransportAIDriver:drive(dt)
 	AIDriver.drive(self, dt)
 end
 
+function GrainTransportAIDriver:checkTriggers()
+	if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
+		courseplay:isTriggerAvailable(self.vehicle)
+	else
+		if self.loadingState == self.states.IS_LOADING then
+			self.loadingState = self.states.NOTHING
+			courseplay.debugVehicle(19, vehicle,'drive on and ignore Trigger')
+			if self.trigger and self.trigger.isLoading then 
+				self.trigger:setIsLoading(false)
+			end
+		end
+	end	
+	courseplay:isUnloadingTriggerAvailable(self.vehicle)
+	AIDriver.checkTriggers(self)
+end
+
 function GrainTransportAIDriver:onLastWaypoint()
 	if not self.vehicle.cp.settings.siloSelectedFillType:isActive() then
-		
 		self:setLoadingState()
-	else
-	
+	else --this one is not so nice !!
+		
 	end
 	AIDriver.onLastWaypoint(self)
 --[[	
@@ -99,7 +114,7 @@ function GrainTransportAIDriver:onLastWaypoint()
 	end	
 	AIDriver.onLastWaypoint(self)]]--
 end
-
+--old code!!
 function GrainTransportAIDriver:checkRunCounter()
 	if self:passedRunCounter() then 
 		self.vehicle.cp.settings.stopAtEnd:set(true)
@@ -113,17 +128,17 @@ end
 function GrainTransportAIDriver:getCanShowDriveOnButton()
 	return self.loadingState==self.states.IS_LOADING
 end
-
+--old code!!
 function GrainTransportAIDriver:incrementRunCounter()
 	if self.vehicle.cp.settings.runCounterMax:getIsRunCounterActive() then
 		self.runCounter = self.runCounter + 1
 	end
 end
-
+--old code!!
 function GrainTransportAIDriver:passedRunCounter()
 	return self.vehicle.cp.settings.runCounterMax:getIsRunCounterActive() and self.runCounter >= self.vehicle.cp.settings.runCounterMax:get()
 end
-
+--old code!!
 function GrainTransportAIDriver:resetRunCounter()
 	self.runCounter = 0
 end

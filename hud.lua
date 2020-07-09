@@ -773,7 +773,13 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeSiloFillType')
 					end
-					self:updateSelectedSiloList(vehicle,page)
+					if vehicle.cp.driver:is_a(GrainTransportAIDriver) then 
+						self:updateSelectedSiloList(vehicle,page,3,7)
+					elseif vehicle.cp.driver:is_a(FillableFieldworkAIDriver) then
+						self:updateSelectedSiloList(vehicle,page,7,8)
+					elseif vehicle.cp.driver:is_a(FieldSupplyAIDriver) then
+						self:updateSelectedSiloList(vehicle,page,4,5)
+					end
 				elseif entry.functionToCall == 'changemaxRunNumber' then
 					if vehicle.cp.canDrive then
 						self:enableButtonWithFunction(vehicle,page, 'changemaxRunNumber')
@@ -790,8 +796,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'resetRunCounter')
 					end
+				elseif entry.functionToCall == 'Setting:disableUnloadingTrigger:disable'then
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.disableUnloadingTrigger:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.disableUnloadingTrigger:getText()
 					
-					
+				elseif entry.functionToCall == 'Setting:disableLoadingTrigger:disable'then
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.disableLoadingTrigger:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.disableLoadingTrigger:getText()
+				
 				elseif entry.functionToCall == 'switchDriverCopy' then
 					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'switchDriverCopy')
@@ -2032,13 +2044,13 @@ function courseplay.hud:updateCombinesList(vehicle,page)
 	end
 end
 
-function courseplay.hud:updateSelectedSiloList(vehicle,page)
-	for i= 3, 7 do
-		vehicle.cp.hud.content.pages[page][i][1].text = vehicle.cp.settings.siloSelectedFillType:getText(i-2)
-		vehicle.cp.hud.content.pages[page][i][2].text = vehicle.cp.settings.siloSelectedFillType:getRunCounterText(i-2)
+function courseplay.hud:updateSelectedSiloList(vehicle,page,startLine,stopLine)
+	local diff = startLine-1
+	for i= startLine, stopLine do
+		vehicle.cp.hud.content.pages[page][i][1].text = vehicle.cp.settings.siloSelectedFillType:getText(i-diff)
+		vehicle.cp.hud.content.pages[page][i][2].text = vehicle.cp.settings.siloSelectedFillType:getRunCounterText(i-diff)
 	end
 end
-
 
 function courseplay.hud:updateDebugChannelButtons(vehicle)
 	for _,button in pairs(vehicle.cp.buttons[6]) do
@@ -2321,8 +2333,8 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
 	
 --	self:addSettingsRow(vehicle,'changemaxRunNumber', 1, 5, 1 )
---	self:addRowButton(vehicle,'resetRunCounter', 1, 6, 1 )
-	
+	self:addRowButton(vehicle,'Setting:disableLoadingTrigger:disable', 1, 6, 1 )
+	self:addRowButton(vehicle,'Setting:disableUnloadingTrigger:disable', 1, 5, 1 )
 	
 	--page 3 
 	self:enablePageButton(vehicle, 3)
@@ -2439,8 +2451,8 @@ function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeDriveOnAtFillLevel', 3, 2, 1 )
---	self:addRowButton(vehicle,'Setting:siloSelectedFillType:addFilltype', 3, 3, 1 )
---	self:addLinkedListButtons(vehicle,'Setting:siloSelectedFillType', 3, 4, 8, 1)
+	self:addRowButton(vehicle,'Setting:siloSelectedFillType:addFilltype', 3, 3, 1 )
+	self:addLinkedListButtons(vehicle,'Setting:siloSelectedFillType', 3, 4, 5, 1)
 end
 
 
@@ -2476,11 +2488,11 @@ end
 
 function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 	self:debug(vehicle,"setFillableFieldworkAIDriverContent")
-
-
+	
 	self:addSettingsRow(vehicle,'changeRefillUntilPct', 3, 5, 1 )
 --	self:addSettingsRow(vehicle,'changeSiloFillType', 3, 6, 1 )
-
+	self:addRowButton(vehicle,'Setting:siloSelectedFillType:addFilltype', 3, 6, 1 )
+	self:addLinkedListButtons(vehicle,'Setting:siloSelectedFillType', 3, 7, 8, 1)
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 

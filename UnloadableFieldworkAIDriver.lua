@@ -130,7 +130,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 --	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel <= 10 then
 --		courseplay:resetTipTrigger(self.vehicle, true);
 --	end
-		
+	courseplay:isUnloadingTriggerAvailable(self.vehicle) 	
 	return takeOverSteering
 end
 

@@ -21,7 +21,7 @@ function LinkedList:addLast(...)
 	local node = LinkedNode:new(nil,...)
 	LastNode.Next = node
 	self:incrementCount()
-	self:printLinkedList()
+--	self:printLinkedList()
 end
 
 function LinkedList:addFirst(...)

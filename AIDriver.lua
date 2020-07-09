@@ -390,7 +390,7 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self:getRecordedSpeed())
 	end
 
-	if self.trigger then
+	if self.trigger or self.vehicle.cp.settings.disableLoadingTrigger:hasCurrentTriggers() or self.vehicle.cp.settings.disableUnloadingTrigger:hasCurrentTriggers() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
 
@@ -1801,27 +1801,19 @@ end
 --Triggers currently working in every mode have to enable it for specific modes only
 
 function AIDriver:checkTriggers()
-
+	--only in derived function!!
 	if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
-		courseplay:isTriggerAvailable(self.vehicle)
 		if self.loadingState == self.states.IS_LOADING then
 			self:hold()
 		end
 	else
 		if self.loadingState == self.states.IS_LOADING then
 			self.loadingState = self.states.NOTHING
-			courseplay.debugVehicle(19, vehicle,'drive on and ignore Trigger')
-			if self.trigger and self.trigger.isLoading then 
-				self.trigger:setIsLoading(false)
-			end
 		end
-	end
-	
+	end	
 	if self.loadingState == self.states.IS_UNLOADING then
 		self:hold()
 	end
-	
-	courseplay:isUnloadingTriggerAvailable(self.vehicle)
 end
 
 function AIDriver:setLoadingState()

@@ -244,8 +244,24 @@ function FillableFieldworkAIDriver:setLightsMask(vehicle)
 	end
 end
 
-function FillableFieldworkAIDriver:resetLoadingState(object)
-	if self:allFillLevelsOk(self.vehicle.cp.settings.refillUntilPct:get()) then 
-		self.loadingState=self.states.NOTHING
+--function FillableFieldworkAIDriver:resetLoadingState(object)
+--	if self:allFillLevelsOk(self.vehicle.cp.settings.refillUntilPct:get()) then 
+--		self.loadingState=self.states.NOTHING
+--	end
+--end
+
+function FillableFieldworkAIDriver:checkTriggers()
+	if self.vehicle.cp.settings.driveUnloadNow:is(false) then 
+		courseplay:isTriggerAvailable(self.vehicle)
+	else
+		if self.loadingState == self.states.IS_LOADING then
+			self.loadingState = self.states.NOTHING
+			courseplay.debugVehicle(19, vehicle,'drive on and ignore Trigger')
+			if self.trigger and self.trigger.isLoading then 
+				self.trigger:setIsLoading(false)
+			end
+		end
 	end
+	AIDriver.checkTriggers(self)
+--	courseplay:isUnloadingTriggerAvailable(self.vehicle)
 end

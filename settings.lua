@@ -2897,12 +2897,19 @@ end
 
 ---@class SiloSelectedFillTypeSetting : LinkedListSetting
 SiloSelectedFillTypeSetting = CpObject(LinkedListSetting)
-
 function SiloSelectedFillTypeSetting:init(vehicle)
 	LinkedListSetting.init(self, 'siloSelectedFillType', 'COURSEPLAY_FARM_SILO_FILL_TYPE', 'COURSEPLAY_FARM_SILO_FILL_TYPE', vehicle)
 end
 
 function SiloSelectedFillTypeSetting:addFilltype()  
+	if self.vehicle.cp.driver:is_a(GrainTransportAIDriver) then
+		MAX=4
+	else
+		MAX=2
+	end
+	if self.List:getSize() >= MAX then 
+		return
+	end
 	local supportedFillTypes = {}
 	self:getSupportedFillTypes(self.vehicle,supportedFillTypes)
 	self:checkSelectedFillTypes(supportedFillTypes)
@@ -3011,7 +3018,121 @@ function RefillUntilPctSetting:init(vehicle)
 	self:set(100)
 end
 
+---Generic Setting
+---@class DisableTriggersSetting : Setting
+DisableTriggersSetting = CpObject(Setting)
+function DisableTriggersSetting:init(name, label, toolTip, vehicle)
+	Setting.init(self, name, label, toolTip, vehicle)
+	self.triggers = {}
+	self.currentTriggers = {}
+end
 
+function DisableTriggersSetting:disable(trigger)
+	if trigger then 
+		self.triggers[trigger] = nil
+		return
+	end
+	
+	for triggerId, int in pairs(self.currentTriggers) do 
+		if self.triggers[triggerId] and not forceDisable then 
+			self.triggers[triggerId] = nil
+		else
+			self.triggers[triggerId] = true
+		end
+	end
+end
+
+function DisableTriggersSetting:getLabel()
+	if not self:hasCurrentTriggers() then 
+		return ""
+	end	
+	return courseplay:loc(self.label)
+end
+
+function DisableTriggersSetting:getText()
+	if not self:hasCurrentTriggers() then 
+		return ""
+	end	
+	--??
+	for triggerId, int in pairs (self.currentTriggers) do
+		return tostring(int)
+	end
+end
+
+function DisableTriggersSetting:addCurrentTrigger(triggerId)
+	if self.currentTriggers[triggerId]==nil then 
+		self.currentTriggers[triggerId]=1
+	else
+		self.currentTriggers[triggerId]=self.currentTriggers[triggerId]+1
+	end
+end
+
+function DisableTriggersSetting:removeCurrentTrigger(triggerId)
+	if self.currentTriggers[triggerId] and self.currentTriggers[triggerId]==1 then 
+		self.currentTriggers[triggerId]=nil
+	else
+		self.currentTriggers[triggerId]=self.currentTriggers[triggerId]-1
+	end
+end
+
+function DisableTriggersSetting:hasCurrentTrigger(triggerId)
+	if self.currentTriggers[triggerId] ~= nil then 
+		return true
+	end
+end
+
+function DisableTriggersSetting:hasCurrentTriggers()
+	for triggerId, int in pairs(self.currentTriggers) do 
+		if int ~=nil and int~=0 then 
+			return true
+		end
+	end
+	return false
+end
+
+function DisableTriggersSetting:isTriggerAllowed(triggerId)
+	if self.triggers[triggerId] == nil then 
+		return true
+	end
+	return false
+end
+
+---@class DisableLoadingTriggersSetting : DisableTriggersSetting
+DisableLoadingTriggersSetting = CpObject(DisableTriggersSetting)
+function DisableLoadingTriggersSetting:init(vehicle)
+	DisableTriggersSetting.init(self, 'disableLoadingTrigger', 'LoadingTrigger', 'LoadingTrigger', vehicle)
+end
+
+--function DisableLoadingTriggersSetting:addCurrentTrigger(triggerId)
+--	DisableTriggersSetting.addCurrentTrigger(self,triggerId)
+--	self.vehicle.cp.settings.disableUnloadingTrigger:disable(true)
+--end
+
+---@class DisableUnloadingTriggersSetting : DisableTriggersSetting
+DisableUnloadingTriggersSetting = CpObject(DisableTriggersSetting)
+function DisableUnloadingTriggersSetting:init(vehicle)
+	DisableTriggersSetting.init(self, 'disableUnloadingTrigger', 'UnloadingTrigger', 'UnloadingTrigger', vehicle)
+end
+
+--[[
+---@class GrainTransportDriverSelectedFillTypeSetting : SiloSelectedFillTypeSetting
+GrainTransportDriverSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
+function GrainTransportDriverSelectedFillTypeSetting:init(vehicle)
+	SiloSelectedFillTypeSetting.init(self, vehicle)
+end
+
+---@class FillableFieldworkAIDriverSelectedFillTypeSetting : SiloSelectedFillTypeSetting
+FillableFieldworkAIDriverSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
+function FillableFieldworkAIDriverSelectedFillTypeSetting:init(vehicle)
+	SiloSelectedFillTypeSetting.init(self, vehicle)
+end
+
+---@class GrainTransportDriverSelectedFillTypeSetting : SiloSelectedFillTypeSetting
+GrainTransportDriverSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
+function GrainTransportDriverSelectedFillTypeSetting:init(vehicle)
+	SiloSelectedFillTypeSetting.init(self, vehicle)
+end
+]]--
 --- Container for settings
 --- @class SettingsContainer
 SettingsContainer = CpObject()
