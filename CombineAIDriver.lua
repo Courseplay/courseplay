@@ -1002,7 +1002,10 @@ function CombineAIDriver:handleCombinePipe()
 	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) then
 		self:openPipe()
 	else
-		self:closePipe()
+		--wait until the objects under the pipe are gone
+		if self.pipe.numObjectsInTriggers <=0 then
+			self:closePipe()
+		end
 	end
 end
 
