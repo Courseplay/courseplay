@@ -189,7 +189,9 @@ end;
 
 function courseplay:startStopCourseplayer(combine)
 	local tractor = g_combineUnloadManager:getUnloaderByNumber(1, combine)
-	tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
+	if tractor then	
+		tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
+	end
 end;
 
 function courseplay:setVehicleWait(vehicle, active)
@@ -216,9 +218,11 @@ function courseplay:setStopAtEnd(vehicle)
 end;
 
 function courseplay:setDriveUnloadNow(vehicle, bool)
-	vehicle.cp.settings.driveUnloadNow:set(bool)
-	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);		
-end;
+	if vehicle then
+		vehicle.cp.settings.driveUnloadNow:set(bool)
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);		
+	end
+end
 
 function courseplay:sendCourseplayerHome(combine)
 	courseplay:setDriveUnloadNow(g_combineUnloadManager:getUnloaderByNumber(1, combine), true);
@@ -1783,7 +1787,9 @@ function courseplay:toggleAssignCombineToTractor(vehicle,line)
 end
 
 function courseplay:shiftCombinesList(vehicle, change_by)
-	vehicle.cp.driver:shiftCombinesList(change_by)
+	if vehicle.cp.driver.shiftCombinesList then 
+		vehicle.cp.driver:shiftCombinesList(change_by)
+	end
 end
 ----------------------------------------------------------------------------------------------------
 
