@@ -420,9 +420,9 @@
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Nicht installiert" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Nicht benutzen" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Zum entladen/auffüllen" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Zum parken" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Zum entladen/auffüllen und parken" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="entladen/auffüllen" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="parken(P)" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="entladen/auffüllen/P" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(und zurück)" />
