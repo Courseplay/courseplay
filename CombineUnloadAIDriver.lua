@@ -1402,7 +1402,7 @@ end
 function CombineUnloadAIDriver:startDrivingToCombine()
 	if self.combineToUnload.cp.driver:isWaitingForUnload() then
 		self:debug('Combine is waiting for unload, start finding path to combine')
-		self:startPathfindingToCombine(self.onPathfindingDoneToCombine, nil, -15)
+		self:startPathfindingToCombine(self.onPathfindingDoneToCombine, nil, -8)
 	else
 		-- combine is moving, agree on a rendezvous
 		-- for now, just use the Eucledian distance. This should rather be the length of a pathfinder generated

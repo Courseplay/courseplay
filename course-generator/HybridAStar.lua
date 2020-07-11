@@ -382,7 +382,7 @@ function HybridAStar:init(yieldAfter, maxIterations)
 	self.iterations = 0
 	-- state space resolution
 	self.deltaPos = 1.1
-	self.deltaThetaDeg = 3
+	self.deltaThetaDeg = 6
 	-- if the goal is within self.deltaPos meters we consider it reached
 	self.deltaPosGoal = 2 * self.deltaPos
 	-- if the goal heading is within self.deltaThetaDeg degrees we consider it reached
