@@ -25,7 +25,7 @@ function VehicleSettingsPage:onFrameClose()
 	VehicleSettingsPage:superClass().onFrameClose(self);
 end;
 
-function VehicleSettingsPage:getSettings()
+function VehicleSettingsPage:getSettings()	
 	return g_currentMission.controlledVehicle.cp.settings
 end
 
@@ -55,7 +55,7 @@ end
 
 function VehicleSettingsPage:onClickOk()
 	for _, setting in pairs(self:getSettings()) do
-		if setting:getGuiElement() then
+		if setting.getGuiElement and setting:getGuiElement() then
 			setting:setToIx(setting:getGuiElement():getState())
 		end
 	end
@@ -63,7 +63,9 @@ end
 
 function VehicleSettingsPage:onClickReset()
 	for _, setting in pairs(self:getSettings()) do
-		setting:getGuiElement():setState(setting:getGuiElementState(), false)
+		if setting.getGuiElement then
+			setting:getGuiElement():setState(setting:getGuiElementState(), false)
+		end
 	end
 end
 
@@ -84,7 +86,7 @@ end
 
 function VehicleSettingsPage:updateMyGUISettings()
 	for _, setting in pairs(self:getSettings()) do
-		if setting:getGuiElement() then
+		if setting.getGuiElement and setting:getGuiElement() then
 			setting:getGuiElement():setState(setting:getGuiElementState(), false)
 		end
 	end
