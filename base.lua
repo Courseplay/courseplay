@@ -49,10 +49,8 @@ function courseplay:onLoad(savegame)
 	self.cp.mrHasStopped = nil -- Used in the turn manuver to stop MR on a steep grade
 
 	--turn maneuver
-	self.cp.turnOnField = true;
 	self.cp.oppositeTurnMode = false;
 	self.cp.waitForTurnTime = 0.00   --float
-	self.cp.turnStage = 0 --int
 	self.cp.aiTurnNoBackward = false --bool
 	self.cp.canBeReversed = nil --bool
 	self.cp.backMarkerOffset = nil --float
@@ -565,7 +563,6 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(AutomaticCoverHandlingSetting, self)
 	self.cp.settings:addSetting(AutomaticUnloadingOnFieldSetting, self)
 	self.cp.settings:addSetting(DriverPriorityUseFillLevelSetting, self)
-	self.cp.settings:addSetting(RunCounterMaxSetting, self)
 	self.cp.settings:addSetting(UseRecordingSpeedSetting, self)
 	self.cp.settings:addSetting(WarningLightsModeSetting, self)
 	self.cp.settings:addSetting(ShowMapHotspotSetting, self)
@@ -574,6 +571,9 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(RealisticDrivingSetting, self)
 	self.cp.settings:addSetting(DriveUnloadNowSetting, self)
 	self.cp.settings:addSetting(CombineWantsCourseplayerSetting, self)
+	self.cp.settings:addSetting(SiloSelectedFillTypeSetting, self)
+	self.cp.settings:addSetting(TurnOnFieldSetting, self)
+	self.cp.settings:addSetting(TurnStageSetting, self)
 	
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer()
@@ -1544,7 +1544,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
-		self.cp.turnOnField							= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnOnField'),			true);
 		self.cp.oppositeTurnMode					= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#oppositeTurnMode'),		false);
 		self.cp.workWidth 							= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),				3);
 		self.cp.ridgeMarkersAutomatic				= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'),	true);
@@ -1711,7 +1710,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
 	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
 	setXMLInt(xmlFile, newKey..".fieldWork #refillUntilPct", self.cp.refillUntilPct)
-	setXMLBool(xmlFile, newKey..".fieldWork #turnOnField", self.cp.turnOnField)
 	setXMLBool(xmlFile, newKey..".fieldWork #oppositeTurnMode", self.cp.oppositeTurnMode)
 	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
 	setXMLString(xmlFile, newKey..".fieldWork #lastValidTipDistance", string.format("%.1f",Utils.getNoNil(self.cp.lastValidTipDistance,0)))

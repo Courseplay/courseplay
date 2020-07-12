@@ -240,7 +240,7 @@ function courseplay:sideToDrive(vehicle, combine, distance, switchSide)
 		courseplay:debug(string.format("%s:courseplay:sideToDrive: is Courseplayer", nameNum(combine)), 4);
 		local ridgeMarker = 0;
 		local wayPoint = tractor.cp.waypointIndex;
-		if tractor.cp.turnStage > 0 then
+		if tractor.cp.settings.turnStage:is(true) then
    			switchSide = true;
   		end;
 		if not switchSide then

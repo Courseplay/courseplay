@@ -175,6 +175,61 @@ end
 
 function courseplay:executeFunction(self, func, value, page)
 	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), 5)
+	local validateClasses={
+		"Setting",
+		"CourseGeneratorSetting",
+		"AIDriver"	
+	}
+	--for now only support for Setting and CourseGeneratorSetting
+	for _,class in pairs(validateClasses) do 
+		local start,stop = string.find(func, class)
+		if start and stop and start == 1 then		
+			local funcName = string.sub(func, stop+2)
+			if funcName then
+				courseplay:debug("class: "..class..",funcName: "..funcName, 5)
+				if class == "Setting" then 
+					local seperate = string.find(funcName, ":")
+					local settingName = string.sub(funcName, 1,seperate-1)
+					local funcCall = string.sub(funcName, seperate+1)
+					if funcName and settingName then 
+						courseplay:debug("settingName: "..settingName..",funcCall: "..funcCall, 5)
+						if self.cp.settings then
+							if self.cp.settings[settingName] then
+								if self.cp.settings[settingName][funcCall] then
+									self.cp.settings[settingName][funcCall](self.cp.settings[settingName],value)
+								end
+							end	
+						end
+					end
+				elseif class == "CourseGeneratorSetting" then
+					local seperate = string.find(funcName, ":")
+					local settingName = string.sub(funcName, 1,seperate-1)
+					local funcCall = string.sub(funcName, seperate+1)
+					if funcName and settingName then 
+						courseplay:debug("settingName: "..settingName..",funcCall: "..funcCall, 5)
+						if self.cp.courseGeneratorSettings then
+							if self.cp.courseGeneratorSettings[settingName] then
+								if self.cp.courseGeneratorSettings[settingName][funcCall] then
+									self.cp.courseGeneratorSettings[settingName][funcCall](self.cp.courseGeneratorSettings[settingName],value)
+								end
+							end	
+						end
+					end
+				else --TODO: should be used for classes like : AIDriver:start() ...
+				--	assert(loadstring(class..':' .. func .. '(...)'))(self, value);
+				end
+				courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
+				if self:getIsEntered() then
+					--The old sound playSample(courseplay.hud.clickSound, 1, 1, 0, 0, 0);
+					-- The new gui click sound
+					g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
+				end
+			end
+			return
+		end
+	end
+
+	--legancy code
 	if func == "setMPGlobalInfoText" then
 		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
@@ -501,8 +556,7 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 		elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
 			vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
 		elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive then
-			vehicle:setCourseplayFunc('setStopAtEnd', nil, false, 1);
-		
+			vehicle:setCourseplayFunc('Setting:stopAtEnd:toggle',nil,false,1)
 		--Switch Mode, but doesn't work right now, not sure why
 		elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
 			vehicle:setCourseplayFunc('setCpMode', vehicle.cp.nextMode, false, 1);

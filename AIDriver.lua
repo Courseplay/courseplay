@@ -1789,3 +1789,18 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	self:debugSparse('proximity: d = %.1f (%d %%), speed = %.1f', d, 100 * normalizedD, newSpeed)
 	return newSpeed, allowedToDrive
 end
+-- disable detachImplement while running AIDriver like GrainTransportAIDriver or CombineUnloadDriver
+function AIDriver:detachImplementByObject(superFunc,object, noEventSend)
+	local rootVehicle = self:getRootVehicle()
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle.cp.driver:isActive() then 
+		return
+	end
+	return superFunc(self,object, noEventSend)
+end
+AttacherJoints.detachImplementByObject = Utils.overwrittenFunction(AttacherJoints.detachImplementByObject,AIDriver.detachImplementByObject)
+
+
+
+
+
+

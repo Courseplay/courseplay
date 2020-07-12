@@ -121,7 +121,7 @@ function AITurn.canMakeKTurn(vehicle, turnContext)
 		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Not all attached implements allow for reversing, use generated course turn')
 		return false
 	end
-	if vehicle.cp.turnOnField and not AITurn.canTurnOnField(turnContext, vehicle) then
+	if vehicle.cp.settings.turnOnField:is(true) and not AITurn.canTurnOnField(turnContext, vehicle) then
 		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Turn on field is on but there is not enough space, use generated course turn')
 		return false
 	end
@@ -534,7 +534,7 @@ end
 
 function CourseTurn:generateCalculatedTurn()
 	-- TODO: fix ugly dependency on global variables, there should be one function to create the turn maneuver
-	self.vehicle.cp.turnStage = 1
+	self.vehicle.cp.settings.turnStage:set(true)
 	-- call turn() with stage 1 which will generate the turn waypoints (dt isn't used by that part)
 	courseplay:turn(self.vehicle, 1, self.turnContext)
 	-- they waypoints should now be in turnTargets, create a course based on that
@@ -549,7 +549,7 @@ function CourseTurn:generatePathfinderTurn()
 	local done, path
 	local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets()
 	local canTurnOnField, distanceToReverse = AITurn.canTurnOnField(self.turnContext, self.vehicle)
-	if not canTurnOnField and self.vehicle.cp.turnOnField then
+	if not canTurnOnField and self.vehicle.cp.settings.turnOnField:is(true) then
 		self:debug('Turn on field is on, generating reverse course before turning.')
 		self.reverseBeforeStartingTurnWaypoints = self.turnContext:createReverseWaypointsBeforeStartingTurn(self.vehicle, distanceToReverse)
 		startOffset = startOffset - distanceToReverse
