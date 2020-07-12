@@ -287,7 +287,6 @@ function courseplay:onLoad(savegame)
 	end;
 
 	-- TRIGGERS
-	self.findTrailerRaycastCallback = courseplay.findTrailerRaycastCallback;
 	self.findTipTriggerCallback = courseplay.findTipTriggerCallback;
 	self.findSpecialTriggerCallback = courseplay.findSpecialTriggerCallback;
 	self.findFuelTriggerCallback = courseplay.findFuelTriggerCallback;
