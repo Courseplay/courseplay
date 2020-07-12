@@ -2315,7 +2315,7 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:addRowButton(vehicle,'resetRunCounter', 1, 6, 1 )
 	
 	
-	--page 1 driving
+	--page 3
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,'changeSiloFillType', 3, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,'changeRefillUntilPct', 3, 2, 1 )

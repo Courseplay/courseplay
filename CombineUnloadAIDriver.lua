@@ -116,6 +116,7 @@ function CombineUnloadAIDriver:readUpdateStream(streamId)
 end
 
 function CombineUnloadAIDriver:setHudContent()
+	AIDriver.setHudContent(self)
 	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle)
 end
 
