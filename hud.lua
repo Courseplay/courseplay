@@ -2401,8 +2401,12 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 
 	--page 1
 	self:addRowButton(vehicle,'setDriveNow', 1, 2, 3 )
-	
-	--page 4 
+
+	-- page 3
+	self:enablePageButton(vehicle, 3)
+	self:addSettingsRow(vehicle,'changeTurnDiameter', 3, 1, 1 )
+
+	--page 4
 	self:enablePageButton(vehicle, 4)
 	self:setupCombinesListPageButtons(vehicle, 4)
 	--self:addRowButton(vehicle,'toggleSearchCombineMode', 4, 1, 1 )
