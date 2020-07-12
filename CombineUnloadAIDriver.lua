@@ -2077,7 +2077,7 @@ function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 		self:debug('Already busy moving out of the way')
 	end
 end
-
+--TODO maybe a new Setting for this one ??
 function CombineUnloadAIDriver:shiftCombinesList(change_by)
 	self.combinesListHUDOffset = MathUtil.clamp(self.combinesListHUDOffset+ change_by,0,#self.vehicle.cp.possibleCombines-6)
 end

@@ -500,7 +500,7 @@ function courseplay:stop(self)
 	self.cp.turnTimeRecorded = nil;	
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.hasTransferCourse = false
-	courseplay:setStopAtEnd(self, false);
+	self.cp.settings.stopAtEnd:set(false)
 	self.cp.stopAtEndMode1 = false;
 	self.cp.isTipping = false;
 	self.cp.isUnloaded = false;

@@ -24,18 +24,7 @@ function GrainTransportAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'GrainTransportAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
-	self.runCounter = 0
 	-- just for backwards compatibility
-end
-
-function GrainTransportAIDriver:writeUpdateStream(streamId)
-	AIDriver.writeUpdateStream(self,streamId)
-	streamWriteUIntN(streamId,self.runCounter,4)
-end 
-
-function GrainTransportAIDriver:readUpdateStream(streamId)
-	AIDriver.readUpdateStream(self,streamId)
-	self.runCounter = streamReadUIntN(streamId,4)
 end
 
 function GrainTransportAIDriver:setHudContent()
@@ -48,6 +37,7 @@ function GrainTransportAIDriver:start(startingPoint)
 	self:beforeStart()
 	AIDriver.start(self, startingPoint)
 	self:setDriveUnloadNow(false);
+	self.vehicle.cp.siloSelectedFillType = FillType.UNKNOWN
 end
 
 function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
@@ -115,11 +105,12 @@ function GrainTransportAIDriver:onWaypointChange(newIx)
 	if not self:hasTipTrigger() and not self:isNearFillPoint() then
 		courseplay:openCloseCover(self.vehicle, courseplay.SHOW_COVERS)
 	end
-	
 	--temp solution till load_tippers is refactored
 	-- and we can have a non cyclic value that the loading process is finished
+	--THIS is not working as it should with multiple trailers!!! 
 	if newIx == 4 and self:getDriveUnloadNow() then
-		self:incrementRunCounter()
+		self:decrementRunCounter()
+		self:refreshHUD()
 	end	
 end
 
@@ -128,7 +119,7 @@ function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:getCurrentWaypointIx() == self.course:getNumberOfWaypoints() then
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
-		if self.vehicle.cp.settings.runCounterMax:getIsRunCounterActive() and self.runCounter >= self.vehicle.cp.settings.runCounterMax:get() then
+		if not self.vehicle.cp.settings.siloSelectedFillType:isActive() and not self.vehicle.cp.settings.siloSelectedFillType:hasFillTypes()  then
 			-- stop at the last waypoint when the run counter expires
 			allowedToDrive = false
 			self:stop('END_POINT_MODE_1')
@@ -161,12 +152,22 @@ function GrainTransportAIDriver:getCanShowDriveOnButton()
 	return self:isNearFillPoint()
 end
 
-function GrainTransportAIDriver:incrementRunCounter()
-	if self.vehicle.cp.settings.runCounterMax:getIsRunCounterActive() then
-		self.runCounter = self.runCounter + 1
+function GrainTransportAIDriver:getAllFillTypes(object,totalFillTypes)
+	if object.spec_trailer and object.spec_dischargeable then 
+		local dischargeNode = object:getCurrentDischargeNode()
+		local fillType = object:getFillUnitFillType(dischargeNode.fillUnitIndex)
+		if fillType then 
+			table.insert(totalFillTypes,fillType)
+		end
+	end
+	-- get all attached implements recursively
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:getAllFillTypes(impl.object,totalFillTypes)
 	end
 end
 
-function GrainTransportAIDriver:resetRunCounter()
-	self.runCounter = 0
+function GrainTransportAIDriver:decrementRunCounter()
+	totalFillTypes = {}
+	self:getAllFillTypes(self.vehicle,totalFillTypes)
+	self.vehicle.cp.settings.siloSelectedFillType:decrementRunCounterByFillType(totalFillTypes)
 end
