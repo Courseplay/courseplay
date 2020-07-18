@@ -854,6 +854,45 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	if vehicle.cp.tipperLoadMode == 1 and currentTrailer.cp.currentSiloTrigger ~= nil and not driveOn then
         local acceptedFillType = false;
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
+		local fillTypeData = vehicle.cp.settings.siloSelectedFillType:getFillTypes()
+		if not siloTrigger.isLoading and (vehicle.cp.siloSelectedFillType==nil or vehicle.cp.siloSelectedFillType==FillType.UNKNOWN) then
+			vehicle.cp.siloSelectedFillType = FillType.UNKNOWN
+			if fillTypeData then 
+				for _,data in ipairs(fillTypeData) do 
+					if data.runCounter >0 then 
+						if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
+							local breakLoop = false
+							local fillLevels, capacity
+							if siloTrigger.source and  siloTrigger.source.getAllFillLevels then 
+								fillLevels, capacity = siloTrigger.source:getAllFillLevels(g_currentMission:getFarmId())
+							elseif siloTrigger.source and siloTrigger.source.getAllProvidedFillLevels then
+								fillLevels, capacity = siloTrigger.source:getAllProvidedFillLevels(g_currentMission:getFarmId(), siloTrigger.managerId)
+							else
+								courseplay:debug('fillLevels not found !!', 2);
+								breakLoop=true
+								break
+							end						
+							for fillTypeIndex, fillLevel in pairs(fillLevels) do
+								if fillTypeIndex == data.fillType then 
+									if fillLevel > 0 then 
+										vehicle.cp.siloSelectedFillType = data.fillType
+										breakLoop=true
+										break
+									else
+							
+									end
+								end
+							end
+							if breakLoop then 
+								break
+							end
+						else
+						
+						end
+					end		
+				end
+			end
+		end
 		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
 			local siloIsEmpty = false --siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
 			if not siloTrigger.isLoading and not siloIsEmpty and (unloadDistance < vehicle.cp.trailerFillDistance or backUpDistance < 1 ) then
@@ -2212,6 +2251,3 @@ function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
 		end;
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
-
-
-

@@ -127,6 +127,7 @@ local function initialize()
 		'Events/StartStopWorkEvent',
 		'Events/UserConnectedEvent',
 		'Events/PostSyncEvent',
+		'Generic/LinkedList'
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded
@@ -344,8 +345,7 @@ local function setGlobalData()
 	[87]={name='self.cp.generationPosition.fieldNum',dataFormat='Int'},
 	[87]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
 	[88]={name='self.cp.generationPosition.x',dataFormat='Float'},
-	[89]={name='self.cp.generationPosition.z',dataFormat='Float'},
-	[90]={name='self.cp.turnOnField',dataFormat='Bool'}
+	[89]={name='self.cp.generationPosition.z',dataFormat='Float'}
 	}
 
 	-- TODO: see where is the best to instantiate these settings. Maybe we need a container for all these
