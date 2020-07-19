@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<guiTemplates>
+	<colors>
+		<color name="transparent" value="0 0 0 0" />
+
+    </colors>
+	<uvs>
+		<uv name="colorBg" value="10px 1010px 4px 4px" />
+
+    </uvs>
+	<templates>
+		<template name="cpBase">
+			<value name="imageFilename" value="g_baseUIFilename" />
+			<value name="imageUVs" value="colorBg" />
+			<value name="imageUVs_selected" value="colorBg" />
+			<value name="imageUVs_disabled" value="colorBg" />
+			<value name="imageUVs_disabledSelected" value="colorBg" />
+
+			<value name="imageColor" value="image" />
+			<value name="imageColor_disabled" value="image_disabled" />
+			<value name="imageColor_selected" value="image_selected" />
+			<value name="imageColor_disabledSelected" value="image_disabled" />
+
+			<value name="textColor" value="text" />
+			<value name="textColor_disabled" value="text_disabled" />
+			<value name="textColor_selected" value="text_selected" />
+			<value name="imageSize" value="1024 1024" />
+		</template>
+        
+        <template name="cpMain" anchor="middleCenter" extends="cpBase">
+			<Value name="imageUVs" value="colorBg"/>
+			<value name="imageColor" value="0.018 0.016 0.015 0.6" />
+		</template>
+        
+	</templates>
+</guiTemplates>

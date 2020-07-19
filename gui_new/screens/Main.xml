@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<!--
+CoursePlay - Gui - Main
+
+@Interface: 1.6.0.0 b9166
+@Author: LS-Modcompany / kevink98
+@Date: 19.07.2020
+@Version: 1.0.0.0
+
+@Changelog:
+	v1.0.0.0 (kevink98):
+		- initial fs19
+
+-->
+
+<GUI>  
+  <GuiElement type="image" template="cpMain">  
+    
+    
+  </GuiElement>
+</GUI>
