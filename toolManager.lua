@@ -2040,7 +2040,6 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 			if not workTool.cp.originalCapacities then
 				workTool.cp.originalCapacities = {}
 				workTool.cp.originalCapacities[index]= fillUnit.capacity
-				--fillUnit.capacity = fillUnit.capacity *3
 			end
 		end
 		-- TODO: why not fillUnit.fillType == FillType.DIESEL? answer: because you may have diesel in your trailer
