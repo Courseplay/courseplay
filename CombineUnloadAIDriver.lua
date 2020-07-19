@@ -1782,7 +1782,12 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	self.combineOffset = self:getPipeOffset(self.combineToUnload)
 	self.followCourse:setOffset(-self.combineOffset, 0)
 
-	if self:changeToUnloadWhenFull() then return end
+	if self:changeToUnloadWhenFull() then 
+		self:debug('Finished unloading, move back a bit to make room for it to continue')
+		local reverseCourse = self:getStraightReverseCourse()
+		AIDriver.startCourse(self, reverseCourse,1)
+		return 
+	end
 
 	if self:canDriveBesideCombine(self.combineToUnload) or (self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isWaitingInPocket()) then
 		self:driveBesideCombine()
