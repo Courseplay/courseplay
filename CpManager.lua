@@ -54,6 +54,7 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
+	courseplay.guiManager = GuiManager:new()
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
@@ -149,6 +150,10 @@ function CpManager:loadMap(name)
 	self.validModeSetupHandler = ValidModeSetupHandler()
 end;
 
+function CpManager:preLoad()
+	courseplay.guiManager:preLoad()
+end
+
 function CpManager:deleteMap()
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- empty courses and folders tables
@@ -232,6 +237,10 @@ function CpManager:deleteMap()
 	if self.course2dPdaMapOverlay then
 		self.course2dPdaMapOverlay:delete();
 	end;
+	
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- delete gui
+	courseplay.guiManager:delete()
 end;
 
 function CpManager:update(dt)
@@ -298,6 +307,10 @@ function CpManager:update(dt)
 	end
 	g_devHelper:update()
 	self:printVariableDebugSparseHook()
+	
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- GUI
+	courseplay.guiManager:update(dt)
 end;
 
 
@@ -336,6 +349,10 @@ function CpManager:draw()
 	end;
 
 	g_devHelper:draw()
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- GUI
+	courseplay.guiManager:draw() -- TODO: Need this call?
 end;
 
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
@@ -372,6 +389,10 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		end;
 	end;
 	g_devHelper:mouseEvent(posX, posY, isDown, isUp, mouseKey)
+	
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- GUI
+	courseplay.guiManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 end;
 
 ---Secondary mouse button pressed
@@ -454,6 +475,10 @@ end
 function CpManager:keyEvent(unicode, sym, modifier, isDown) 
 	courseplay:onKeyEvent(unicode, sym, modifier, isDown)
 	g_devHelper:keyEvent(unicode, sym, modifier, isDown)
+	
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- GUI
+	courseplay.guiManager:keyEvent(unicode, sym, modifier, isDown)
 end;
 
 -- ####################################################################################################
