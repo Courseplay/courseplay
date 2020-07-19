@@ -254,6 +254,7 @@ function LevelCompactAIDriver:driveSiloCompact(dt)
 		if self:drivePull(dt) then
 			self.fillUpState = self.states.PUSH
 			self:deleteBestTargetLeveling()
+			self:raiseImplements()
 		end
 	end
 end
