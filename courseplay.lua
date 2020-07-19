@@ -150,6 +150,27 @@ local function initialize()
 		'Events/CommandEvents',
 		'Events/WorkWidthSettingEvent',
 		'Generic/LinkedList'
+		'Events/UserConnectedEvent',
+		'Events/PostSyncEvent',
+
+		'gui_new/GuiManager',
+		'gui_new/FakeGui',
+		'gui_new/elements/Borders',
+		'gui_new/elements/Button',
+		'gui_new/elements/FlowLayout',
+		'gui_new/elements/Gui',
+		'gui_new/elements/GuiElement',
+		'gui_new/elements/GuiScreen',
+		'gui_new/elements/IngameMap',
+		'gui_new/elements/Input',
+		'gui_new/elements/Overlay',
+		'gui_new/elements/Page',
+		'gui_new/elements/PageSelector',
+		'gui_new/elements/Slider',
+		'gui_new/elements/Table',
+		'gui_new/elements/TableSort',
+		'gui_new/elements/Text',
+>>>>>>> 0f544295 (add files)
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded
