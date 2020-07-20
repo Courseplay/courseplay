@@ -19,11 +19,11 @@
 --
 
 CpGuiBorders = {}
-CpGuiBorders._mt = Class(CpGuiBorders, CpGuiElement)
+local CpGuiBorders_mt = Class(CpGuiBorders, CpGuiElement)
 
 function CpGuiBorders:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiBorders._mt
+        custom_mt = CpGuiBorders_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)

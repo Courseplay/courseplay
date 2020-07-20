@@ -19,11 +19,11 @@
 --
 
 CpGuiOverlay = {}
-CpGuiOverlay._mt = Class(CpGuiOverlay, CpGuiElement)
+local CpGuiOverlay_mt = Class(CpGuiOverlay, CpGuiElement)
 
 function CpGuiOverlay:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiOverlay._mt
+        custom_mt = CpGuiOverlay_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)
@@ -163,6 +163,7 @@ end
 
 function CpGuiOverlay:draw(index)
 	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+	
 	--if self:getVisible() then
 		if self.isCamera then
 			setOverlayRotation(self.imageOverlay, self.rotation, self.size[1] * 0.5, self.size[2] * 0.5)

@@ -19,11 +19,11 @@
 --
 
 CpGuiInput = {}
-CpGuiInput._mt = Class(CpGuiInput, CpGuiElement)
+local CpGuiInput_mt = Class(CpGuiInput, CpGuiElement)
 
 function CpGuiInput:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiInput._mt
+        custom_mt = CpGuiInput_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)

@@ -19,11 +19,11 @@
 --
 
 CpGuiScreen = {}
-CpGuiScreen._mt = Class(CpGuiScreen)
+local CpGuiScreen_mt = Class(CpGuiScreen)
 
 function CpGuiScreen:new(custom_mt)	
 	if custom_mt == nil then
-        custom_mt = CpGuiScreen._mt
+        custom_mt = CpGuiScreen_mt
     end
     local self = setmetatable({}, custom_mt)	
     

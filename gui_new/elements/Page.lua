@@ -19,11 +19,11 @@
 --
 
 CpGuiPage = {}
-CpGuiPage._mt = Class(CpGuiPage, CpGuiElement)
+local CpGuiPage_mt = Class(CpGuiPage, CpGuiElement)
 
 function CpGuiPage:new(gui, custom_mt)	
 	if custom_mt == nil then
-        custom_mt = CpGuiPage._mt
+        custom_mt = CpGuiPage_mt
     end
 	local self = CpGuiElement:new(gui, custom_mt)
     

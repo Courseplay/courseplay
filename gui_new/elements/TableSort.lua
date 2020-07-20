@@ -19,11 +19,11 @@
 --
 
 CpGuiTableSort = {}
-CpGuiTableSort._mt = Class(CpGuiTableSort, CpGuiElement)
+local CpGuiTableSort_mt = Class(CpGuiTableSort, CpGuiElement)
 
 function CpGuiTableSort:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiTableSort._mt
+        custom_mt = CpGuiTableSort_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)

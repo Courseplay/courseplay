@@ -19,12 +19,12 @@
 --
 
 CpGuiPageSelector = {}
-CpGuiPageSelector._mt = Class(CpGuiPageSelector, CpGuiElement)
+local CpGuiPageSelector_mt = Class(CpGuiPageSelector, CpGuiElement)
 
 
 function CpGuiPageSelector:new(gui, custom_mt)	
 	if custom_mt == nil then
-        custom_mt = CpGuiPageSelector._mt
+        custom_mt = CpGuiPageSelector_mt
     end
 	local self = CpGuiElement:new(gui, custom_mt)
 	self.name = "pageSelector"

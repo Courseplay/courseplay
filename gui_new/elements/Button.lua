@@ -19,12 +19,11 @@
 --
 
 CpGuiButton = {}
-
-CpGuiButton._mt = Class(CpGuiButton, CpGuiElement)
+local CpGuiButton_mt = Class(CpGuiButton, CpGuiElement)
 
 function CpGuiButton:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiButton._mt
+		custom_mt = CpGuiButton_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)
@@ -48,7 +47,6 @@ function CpGuiButton:new(gui, custom_mt)
 	self.doubleClickTime = 0
 	
 	self.sliderPosition = {0,0}
-	
 	return self
 end
 
