@@ -261,6 +261,8 @@ function courseplay.inputBindings.updateInputButtonData()
 		courseplay.inputBindings.mouse[inputNameType .. 'TextI18n'] = txt;
 		courseplay.inputBindings.mouse[inputNameType .. 'ButtonId'] = Input[mouseButtonName];
 		-- print(('\t\t%sTextI18n=%q, mouseButtonId=%d'):format(inputNameType, txt, mouseButtonId));
-
 	end;
+	local openCloseHudTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_HUD");
+
+	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 end;
