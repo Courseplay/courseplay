@@ -339,6 +339,7 @@ function courseplay:onLeaveVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, false);
     	courseEditor:reset()
+		courseplay.guiManager:onLeaveVehicle()
 	end
 	---Update mouse action event texts
 	CpManager:updateMouseInputText()
@@ -358,6 +359,12 @@ function courseplay:onEnterVehicle()
 	end;
 	---Update mouse action event texts
 	CpManager:updateMouseInputText()
+	courseplay.guiManager:onEnterVehicle()
+
+	if self:getIsCourseplayDriving() and self.steeringEnabled then
+		self.steeringEnabled = false;
+	end;
+
 	--show visual i3D waypoint signs only when in vehicle
 	courseplay.signs:setSignsVisibility(self);
 end
