@@ -43,16 +43,17 @@ end
 
 function CpGui:loadFromXML()
 	if self.classGui.xmlFilename == nil then
-		g_debug.write(debugIndex, Debug.ERROR, "Gui %s haven't xmlFilename", self.name)
+		print(string.format("Gui %s haven't xmlFilename", self.name))
 		return
 	end	
-
 	local xmlFile = loadXMLFile("Temp", self.classGui.xmlFilename)
 
 	if xmlFile == nil or xmlFile == 0 then		
-		g_debug.write(debugIndex, Debug.ERROR, "Gui can't load xml %s", self.classGui.xmlFilename)
+		print(string.format("Gui can't load xml %s", self.classGui.xmlFilename))
 		return
 	end
+
+	self.classGui.rootElement = self.rootElement
 	self:loadFromXMLRec(xmlFile, "GUI", self.rootElement)
 	self.classGui:onCreate()
 	delete(xmlFile)
@@ -72,27 +73,29 @@ function CpGui:loadFromXMLRec(xmlFile, key, actGui)
 		local guiElement = nil
 		
 		if t == "text" then
-			guiElement = CpGui_text:new(self.classGui)
+			guiElement = CpGuiText:new(self.classGui)
 		elseif t == "image" then
-			guiElement = CpGui_overlay:new(self.classGui)
+			guiElement = CpGuiOverlay:new(self.classGui)
 		elseif t == "flowLayout" then
-			guiElement = CpGui_flowLayout:new(self.classGui)
+			guiElement = CpGuiFlowLayout:new(self.classGui)
 		elseif t == "button" then
-			guiElement = CpGui_button:new(self.classGui)
+			guiElement = CpGuiButton:new(self.classGui)
 		elseif t == "table" then
-			guiElement = CpGui_table:new(self.classGui)
+			guiElement = CpGuiTable:new(self.classGui)
 		elseif t == "input" then
-			guiElement = CpGui_input:new(self.classGui)
+			guiElement = CpGuiInput:new(self.classGui)
 		elseif t == "page" then
-			guiElement = CpGui_page:new(self.classGui)
+			guiElement = CpGuiPage:new(self.classGui)
 		elseif t == "pageSelector" then
-			guiElement = CpGui_pageSelector:new(self.classGui)
+			guiElement = CpGuiPageSelector:new(self.classGui)
 		elseif t == "ingameMap" then
-			guiElement = CpGui_ingameMap:new(self.classGui)
+			guiElement = CpGuiIngameMap:new(self.classGui)
 		elseif t == "tableSort" then
-			guiElement = CpGui_tableSort:new(self.classGui)			
+			guiElement = CpGuiTableSort:new(self.classGui)	
+		elseif t == "guiMover" then
+			guiElement = CpGuiMover:new(self.classGui)		
 		else
-			guiElement = CpGui_element:new(self.classGui, nil, true)
+			guiElement = CpGuiElement:new(self.classGui, nil, true)
 		end
 		guiElement.id = id
 		

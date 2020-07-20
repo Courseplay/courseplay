@@ -19,12 +19,17 @@
 --
 
 CpGuiElement = {}
-CpGuiElement._mt = Class(CpGuiElement)
+local CpGuiElement_mt = Class(CpGuiElement)
+
+function CpGuiElement:isElement()
+
+end
 
 function CpGuiElement:new(gui, custom_mt, isOnlyElement)	
 	if custom_mt == nil then
-        custom_mt = CpGuiElement._mt
-    end
+		custom_mt = CpGuiElement_mt
+	end
+	
 	local self = setmetatable({}, custom_mt)
 	self.name = "empty"
 	self.elements = {}

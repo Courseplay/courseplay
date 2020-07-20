@@ -3,9 +3,21 @@
 	<colors>
 		<color name="transparent" value="0 0 0 0" />
 
+		<color name="white" value="1 1 1 1" />
+		<color name="gray" value="0.03 0.03 0.03 0.98" />
+		<color name="black" value="0.01 0.01 0.01 0.98" />
+		<color name="grayLight" value="0.8 0 0 0" />
+		<color name="cpOrange" value="1 0.7921 0 1" />
+
+
     </colors>
 	<uvs>
 		<uv name="colorBg" value="10px 1010px 4px 4px" />
+		<uv name="image" value="0 0 1 1" />
+
+		<uv name="icon_cpLogo" value="0 0.845 0.8125 0.15" />
+		<uv name="icon_info" value="440px 290px 150px 75px" />
+		<uv name="icon_closeX" value="580px 365px 150px 75px" />
 
     </uvs>
 	<templates>
@@ -21,16 +33,85 @@
 			<value name="imageColor_selected" value="image_selected" />
 			<value name="imageColor_disabledSelected" value="image_disabled" />
 
-			<value name="textColor" value="text" />
+			<value name="textColor" value="white" />
 			<value name="textColor_disabled" value="text_disabled" />
 			<value name="textColor_selected" value="text_selected" />
 			<value name="imageSize" value="1024 1024" />
 		</template>
         
         <template name="cpMain" anchor="middleCenter" extends="cpBase">
-			<Value name="imageUVs" value="colorBg"/>
-			<value name="imageColor" value="0.018 0.016 0.015 0.6" />
+			<value name="size" value="400px 300px" />
+			<value name="position" value="700px 0px" />
+			<value name="imageColor" value="gray" />
 		</template>
-        
+
+        <template name="cpMainBarTop" anchor="middleTop" extends="cpBase">
+			<value name="size" value="400px 25px" />
+			<value name="position" value="0px 0px" />
+			<value name="imageColor" value="black" />
+		</template>
+        <template name="cpMainGuiMover" anchor="leftTop" extends="cpBase">
+			<value name="size" value="370px 25px" />
+			<value name="position" value="0px 0px" />
+		</template>        
+        <template name="cpMainLogo" anchor="leftCenter" extends="cpBase">
+			<value name="size" value="40px 15px" />
+			<value name="position" value="10px 0px" />
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageUVs" value="icon_cpLogo" />
+		</template>
+        <template name="cpMainTitle1" anchor="leftCenter" extends="cpBase">
+			<value name="position" value="40px 2px" />
+			<value name="textSize" value="18px" />
+			<value name="textAlignment" value="left" />
+			<value name="textColor" value="white" />
+			<value name="textBold" value="true" />
+		</template>
+        <template name="cpMainTitle2" anchor="leftCenter" extends="cpMainTitle1">
+			<value name="position" value="112px 2px" />
+			<value name="textColor" value="cpOrange" />
+		</template>
+        <template name="cpMainVersion" anchor="leftCenter" extends="cpBase">
+			<value name="position" value="200px 2px" />
+			<value name="textSize" value="10px" />
+			<value name="textAlignment" value="left" />
+			<value name="textColor" value="white" />
+		</template> 
+		<template name="cpMainCloseButton" anchor="rightCenter" extends="cpBase">
+			<value name="size" value="20px 20px" />
+			<value name="position" value="-10px 0px" />
+			<value name="hasOverlay" value="true" />
+		</template>
+		<template name="cpMainCloseButton_overlay" anchor="middleCenter" extends="cpMainCloseButton">
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageUVs" value="icon_closeX" />
+			<value name="imageUVs_selected" value="icon_closeX" />
+			<value name="imageColor" value="white" />
+			<value name="imageColor_selected" value="cpOrange" />
+		</template>
+
+
+
+
+
+
+        <template name="cpMainBarBottom" anchor="middleBottom" extends="cpMainBarTop">
+			<value name="position" value="0px 0px" />
+			<value name="imageColor" value="black" />
+		</template>
+        <template name="cpMainBarBottomIcon" anchor="leftCenter" extends="cpBase">
+			<value name="size" value="20px 20px" />
+			<value name="position" value="5px 0px" />
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageUVs" value="icon_info" />
+		</template>
+        <template name="cpMainBarBottomHelptext" anchor="leftCenter" extends="cpBase">
+			<value name="position" value="30px 2px" />
+			<value name="textSize" value="15px" />
+			<value name="textAlignment" value="left" />
+			<value name="textColor" value="white" />
+		</template>
+
+
 	</templates>
 </guiTemplates>
