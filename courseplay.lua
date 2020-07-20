@@ -169,6 +169,7 @@ local function initialize()
 		'gui_new/elements/Slider',
 		'gui_new/elements/Table',
 		'gui_new/elements/TableSort',
+		'gui_new/elements/GuiMover',
 		'gui_new/elements/Text',
 		'gui_new/screens/Main',
 	};
