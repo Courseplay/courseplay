@@ -345,6 +345,9 @@
 		<text name="COURSEPLAY_HUD_OPEN" 									text="Courseplay HUD öffnen" />
 		<text name="COURSEPLAY_HUD_CLOSE" 									text="Courseplay HUD schließen" />
 		<text name="COURSEPLAY_FUNCTIONS" 									text="Courseplay-Funktionen" />
+
+		<text name="input_COURSEPLAY_HUD_OPEN" 								text="Courseplay HUD öffnen" />
+		
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wartepunkt" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Kreuzungspunkt" />

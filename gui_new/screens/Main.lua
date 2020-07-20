@@ -23,11 +23,13 @@ CpGuiMain.xmlFilename = courseplay.path .. "gui_new/screens/Main.xml"
 
 CpGuiMain._mt = Class(CpGuiMain)
 
+GuiManager.guiClass.main = CpGuiMain
+
 function CpGuiMain:new(target, custom_mt)
     if custom_mt == nil then
         custom_mt = CpGuiMain._mt
     end
-    local self = setmetatable({}, CpGuiMain_mt)
+    local self = setmetatable({}, custom_mt)
 	
 	return self
 end
@@ -65,3 +67,10 @@ end
 function CpGuiMain:setData(site)
     
 end
+
+
+
+function CpGuiMain:onClose()
+    courseplay.guiManager:onCloseCpMainGui()
+end
+

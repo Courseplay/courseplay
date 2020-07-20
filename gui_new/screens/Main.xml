@@ -16,7 +16,21 @@ CoursePlay - Gui - Main
 
 <GUI>  
   <GuiElement type="image" template="cpMain">  
+    <GuiElement type="image" template="cpMainBarTop">  
+        <GuiElement type="guiMover" template="cpMainGuiMover" /> 
+        <GuiElement type="image" template="cpMainLogo" /> 
+        <GuiElement type="text" template="cpMainTitle1" text="COURSE" /> 
+        <GuiElement type="text" template="cpMainTitle2" text="PLAY" /> 
+        <GuiElement type="text" template="cpMainVersion" text="v6.02.00040dev" /> 
+        <GuiElement type="button" template="cpMainCloseButton" onClick="onClose" /> 
+
+    </GuiElement>
     
     
+    <GuiElement type="image" template="cpMainBarBottom">      
+        <GuiElement type="image" template="cpMainBarBottomIcon" />  
+        <GuiElement type="text" template="cpMainBarBottomHelptext" text="Hilfetext" /> 
+
+    </GuiElement>
   </GuiElement>
 </GUI>

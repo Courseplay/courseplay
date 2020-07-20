@@ -55,6 +55,7 @@ function CpManager:loadMap(name)
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
 	courseplay.guiManager = GuiManager:new()
+	courseplay.guiManager:load()
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
@@ -149,10 +150,6 @@ function CpManager:loadMap(name)
 	-- MISCELLANEOUS
 	self.validModeSetupHandler = ValidModeSetupHandler()
 end;
-
-function CpManager:preLoad()
-	courseplay.guiManager:preLoad()
-end
 
 function CpManager:deleteMap()
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -356,6 +353,10 @@ function CpManager:draw()
 end;
 
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- GUI
+	courseplay.guiManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
+
 	-- if the game is paused or a gui is open (e.g. Shop or Landscaping) then ignore the input
 	if g_currentMission.paused or g_gui.currentGui~= nil then return; end;
 
@@ -389,10 +390,6 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 		end;
 	end;
 	g_devHelper:mouseEvent(posX, posY, isDown, isUp, mouseKey)
-	
-	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- GUI
-	courseplay.guiManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 end;
 
 ---Secondary mouse button pressed

@@ -23,11 +23,13 @@ GuiManager._mt = Class(GuiManager)
 
 GuiManager.devVersion = false -- if true, the gui will reload every defined time
 
+GuiManager.guiClass = {}
+
 function GuiManager:new(customMt)
 	local self = {}
 	setmetatable(self, customMt or GuiManager._mt)
 
-	self.devVersionTimeReload = 2000 -- time for reload
+	self.devVersionTimeReload = 1000 -- time for reload
 	self.devVersionTemplateFiles = {}
 
 	self.guis = {}
@@ -35,6 +37,7 @@ function GuiManager:new(customMt)
 	self.toInit_actionEvents = {}
 	self.activeGuiDialogs = {}
 	self.registeredActionEvents = {} -- TODO: Need this variable?
+	self.guiStates = {}
 
 	self.template = {}
 	self.template.colors = {}
@@ -44,48 +47,49 @@ function GuiManager:new(customMt)
 
 	Mission00.onStartMission = Utils.appendedFunction(Mission00.onStartMission, self.init)
 	--BaseMission.draw = Utils.appendedFunction(BaseMission.draw, self.drawB)
-	
+
 	return self
 end
 
-function GuiManager:init()
-	for _,inAc in pairs(courseplay.guiManager.toInit_actionEvents) do
-		g_gui.inputManager:registerActionEvent(inAc.inputAction, courseplay.guiManager, inAc.func, false, true, false, true)
-	end
-	FSBaseMission.registerActionEvents = Utils.appendedFunction(FSBaseMission.registerActionEvents, courseplay.guiManager.registerActionEventsVehicle)
-end
-
-function GuiManager:registerActionEventsVehicle()
-	if self.toInit_actionEvents ~= nil then
-		for _,inAc in pairs(self.toInit_actionEvents) do
-			if g_currentMission.controlledVehicle ~= nil then
-				if inAc.inVehicle then
-					g_gui.inputManager:registerActionEvent(inAc.inputAction, GuiManager, inAc.func, false, true, false, true)
-				end
-			else
-				g_gui.inputManager:registerActionEvent(inAc.inputAction, GuiManager, inAc.func, false, true, false, true)
-			end
-		end
-	end
-end
-
---function GuiManager:loadMap()	
-	--Gui.mouseEvent = self_stored_gui_mouseEvent --TODO: Need it for cp? I think it was for the farmstart
-	--Gui.keyEvent = self_stored_gui_keyEvent --TODO: Need it for cp? I think it was for the farmstart
---end
-
-function GuiManager:preLoad()	
+function GuiManager:load()
 	self:loadGuiTemplates(courseplay.path .. "gui_new/guiTemplates.xml")
 
 	self.fakeGui = GuiManager.fakeGui:new()
 	g_gui:loadGui(courseplay.path .. self.fakeGui.guiInformations.guiXml, "cp_fakeGui", self.fakeGui)
 	
 	self:registerUiElements("g_cpIcons", courseplay.path .. "img/iconSprite.dds")
+	
+	self.mainCpGui = self:registerGui("cp_main", InputAction.COURSEPLAY_MOUSEACTION_SECONDARY, GuiManager.guiClass.main, false, false, true).classGui
+	--self:registerInput("cp_main", InputAction.COURSEPLAY_HUD_OPEN, true) 
 end
 
-function GuiManager:load()	
-	self.mainCpGui = self:registerGui("cp_main", InputAction.GC_MAIN, CpGuiMain, true, true, true).classGui
+function GuiManager:init()
+	--for _,inAc in pairs(courseplay.guiManager.toInit_actionEvents) do
+	--	if (inAc.inVehicle and g_currentMission.controlledVehicle ~= nil) or not inAc.inVehicle then
+	--		g_gui.inputManager:registerActionEvent(inAc.inputAction, courseplay.guiManager, inAc.func, false, true, false, true)
+	--	end
+	--end
+	--FSBaseMission.registerActionEvents = Utils.appendedFunction(FSBaseMission.registerActionEvents, courseplay.guiManager.registerActionEventsVehicle)
 end
+
+function GuiManager:registerActionEventsVehicle()
+	--print("registerActionEventsVehicle")
+	--if self.toInit_actionEvents ~= nil then
+		--print("registerActionEventsVehicle2")
+		--for _,inAc in pairs(self.toInit_actionEvents) do
+			--print("registerActionEventsVehicle3")
+			--print(string.format("%s %s %s", inAc.inVehicle, g_currentMission.controlledVehicle ~= nil, (inAc.inVehicle and g_currentMission.controlledVehicle ~= nil) or not inAc.inVehicle))
+			--if (inAc.inVehicle and g_currentMission.controlledVehicle ~= nil) or not inAc.inVehicle then
+				--g_gui.inputManager:registerActionEvent(inAc.inputAction, self, inAc.func, false, true, false, true)
+			--end
+		--end
+	--end
+end
+
+--function GuiManager:loadMap()	
+	--Gui.mouseEvent = self_stored_gui_mouseEvent --TODO: Need it for cp? I think it was for the farmstart
+	--Gui.keyEvent = self_stored_gui_keyEvent --TODO: Need it for cp? I think it was for the farmstart
+--end
 
 function GuiManager:update(dt)
 	if GuiManager.devVersion then
@@ -138,6 +142,12 @@ function GuiManager:mouseEvent(posX, posY, isDown, isUp, button)
 		self.guis[self.activeGuiDialog].gui:mouseEvent(posX, posY, isDown, isUp, button)
 	elseif self.activeGui ~= nil then
 		self.guis[self.activeGui].gui:mouseEvent(posX, posY, isDown, isUp, button)
+	else		
+		for name, open in pairs(self.smallGuis) do
+			if open then
+				self.guis[name].gui:mouseEvent(posX, posY, isDown, isUp, button)
+			end
+		end
 	end
 end
 
@@ -153,6 +163,12 @@ function GuiManager:keyEvent(unicode, sym, modifier, isDown)
 	--	end
 	elseif self.activeGui ~= nil then
 		self.guis[self.activeGui].gui:keyEvent(unicode, sym, modifier, isDown)
+	else		
+		for name, open in pairs(self.smallGuis) do
+			if open then
+				self.guis[name].gui:keyEvent(unicode, sym, modifier, isDown)
+			end
+		end
 	end
 end
 
@@ -205,7 +221,7 @@ function GuiManager:registerGui(name, inputAction, class, isFullGui, canExit, in
 	end
 	
 	local classGui = class:new()
-	local newGui = GC_Gui:new(name)
+	local newGui = CpGui:new(name)
 	newGui:assignClass(classGui)
 	self.guis[name].gui = newGui
 	self.guis[name].isFullGui = Utils.getNoNil(isFullGui, true)
@@ -267,6 +283,8 @@ function GuiManager:openGui(name, asDialog)
 		self.smallGuis[name] = true
 	end
 	self.guis[name].gui:openGui()
+
+	self.guiStates[name] = true
 end
 
 function GuiManager:getGuiForOpen(name, asDialog)
@@ -365,7 +383,7 @@ function GuiManager:loadGuiTemplates(xmlFilename, noWarning)
 		return
 	end
 	
-	GuiManager.devVersionTemplateFiles[xmlFilename] = xmlFilename
+	self.devVersionTemplateFiles[xmlFilename] = xmlFilename
 	
 	local i = 0
 	while true do
@@ -845,4 +863,35 @@ end
 
 function GuiManager:checkClickZoneNormal(x,y, drawX, drawY, sX, sY)
 	return x > drawX and y > drawY and x < drawX + sX and y < drawY + sY
+end
+
+function GuiManager:handleInputMainGui(rightClick)
+	-- TODO: Add Key setting
+
+	if not self.smallGuis["cp_main"] then
+		courseplay.guiManager:openGui("cp_main", true)
+	end
+
+	--if rightClick then
+
+	--end
+end
+
+function GuiManager:onEnterVehicle()
+	if self.guiStates["cp_main"] then
+		courseplay.guiManager:openGui("cp_main", true)
+	end
+
+end
+
+function GuiManager:onLeaveVehicle()
+	if self.smallGuis["cp_main"] then
+		courseplay.guiManager:closeGui("cp_main")
+	end
+
+end
+
+function GuiManager:onCloseCpMainGui()
+	courseplay.guiManager:closeGui("cp_main")
+	self.guiStates["cp_main"] = false
 end
