@@ -747,6 +747,7 @@ function FieldworkAIDriver:setUpCourses()
 	else
 		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, #self.vehicle.Waypoints)
+		self.unloadRefillCourse = nil
 	end
 	-- get a signature of the course now, before offsetting it so can compare for the convoy
 	self.fieldworkCourseHash = self.fieldworkCourse:getHash()
