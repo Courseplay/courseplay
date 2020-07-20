@@ -19,7 +19,7 @@
 --
 
 CpGuiTable = {}
-CpGuiTable._mt = Class(CpGuiTable, CpGuiElement)
+local CpGuiTable_mt = Class(CpGuiTable, CpGuiElement)
 
 CpGuiTable.ORIENTATION_X = 1
 CpGuiTable.ORIENTATION_Y = 2
@@ -29,7 +29,7 @@ CpGuiTable.TYP_LIST = 2
 
 function CpGuiTable:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiTable._mt
+        custom_mt = CpGuiTable_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)

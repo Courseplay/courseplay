@@ -19,11 +19,11 @@
 --
 
 CpGuiText = {}
-CpGuiText._mt = Class(CpGuiText, CpGuiElement)
+local CpGuiText_mt = Class(CpGuiText, CpGuiElement)
 
 function CpGuiText:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiText._mt
+        custom_mt = CpGuiText_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)
@@ -95,13 +95,22 @@ function CpGuiText:loadTemplate(templateName, xmlFile, key)
 	if xmlFile ~= nil then
 	 	text = getXMLString(xmlFile, string.format("%s#text", key))	
 	end
+
 	if text ~= nil then 
-		if text:sub(-1) == ":" then
+		local addColon = text:sub(-1) == ":"
+		if addColon then
 			text = text:sub(1, text:len() - 1)
-			self:setText(g_i18n:getText(text) .. ":", true)
-		else
-			self:setText(g_i18n:getText(text), true)
 		end
+		
+		if text:sub(1, 6) == "$l10n_" then
+			text = text:sub(7, text:len())
+			text = g_i18n:getText(text)
+		end
+
+		if addColon then
+			text = text .. ":"
+		end		 
+		self:setText(text, true)
     end
 	self:loadOnCreate()
 end

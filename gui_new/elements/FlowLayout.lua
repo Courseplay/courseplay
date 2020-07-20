@@ -30,11 +30,11 @@ CpGuiFlowLayout.ALIGNMENT_TOP = 4
 CpGuiFlowLayout.ALIGNMENT_CENTER = 5
 CpGuiFlowLayout.ALIGNMENT_BOTTOM = 6
 
-CpGuiFlowLayout._mt = Class(CpGuiFlowLayout, CpGuiElement)
+local CpGuiFlowLayout_mt = Class(CpGuiFlowLayout, CpGuiElement)
 
 function CpGuiFlowLayout:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiFlowLayout._mt
+        custom_mt = CpGuiFlowLayout_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)

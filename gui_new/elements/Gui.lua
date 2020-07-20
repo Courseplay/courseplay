@@ -19,10 +19,10 @@
 --
 
 CpGui = {}
-CpGui._mt = Class(CpGui)
+local CpGui_mt = Class(CpGui)
 
 function CpGui:new(name)	
-	local self = setmetatable({}, CpGui._mt)
+	local self = setmetatable({}, CpGui_mt)
 	self.name = name
 	self.rootElement = CpGuiElement:new()
 	

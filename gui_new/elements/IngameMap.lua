@@ -19,11 +19,11 @@
 --
 
 CpGuiIngameMap = {}
-CpGuiIngameMap._mt = Class(CpGuiIngameMap, CpGuiElement)
+local CpGuiIngameMap_mt = Class(CpGuiIngameMap, CpGuiElement)
 
 function CpGuiIngameMap:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiIngameMap._mt
+        custom_mt = CpGuiIngameMap_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)

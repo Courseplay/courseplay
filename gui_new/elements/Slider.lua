@@ -19,11 +19,11 @@
 --
 
 CpGuiSlider = {}
-CpGuiSlider._mt = Class(CpGuiSlider, CpGuiElement)
+local CpGuiSlider_mt = Class(CpGuiSlider, CpGuiElement)
 
 function CpGuiSlider:new(gui, custom_mt)
     if custom_mt == nil then
-        custom_mt = CpGuiSlider._mt
+        custom_mt = CpGuiSlider_mt
     end
 	
 	local self = CpGuiElement:new(gui, custom_mt)
