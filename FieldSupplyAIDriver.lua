@@ -42,11 +42,12 @@ function FieldSupplyAIDriver:setHudContent()
 	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle)
 end
 
-function FieldSupplyAIDriver:start()
+function FieldSupplyAIDriver:start(startingPoint)
 	self:beforeStart()
-	self.course = Course(self.vehicle , self.vehicle.Waypoints)
+	self.course = Course(self.vehicle, self.vehicle.Waypoints)
+	local ix = self.course:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 	self.ppc:setCourse(self.course)
-	self.ppc:initialize()
+	self.ppc:initialize(ix)
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
 	self.refillState = self.states.REFILL_DONE
 	AIDriver.continue(self)
