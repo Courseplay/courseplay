@@ -32,7 +32,7 @@ end
 function VehicleSettingsPage:onCreateVehicleSettingsPage(element)
 	---@type SettingList
 	local setting = self:getSettings()[element.name]
-	if setting then
+	if setting and setting.getGuiElement then
 		setting:setGuiElement(element)
 		element.labelElement.text = setting:getLabel()
 		element.toolTipText = setting:getToolTip()

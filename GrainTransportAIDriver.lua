@@ -51,8 +51,6 @@ function GrainTransportAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
 
-	self:updateInfoText()
-
 	-- RESET TRIGGER RAYCASTS from drive.lua.
 	-- TODO: Not sure how raycast can be called twice if everything is coded cleanly.
 	self.vehicle.cp.hasRunRaycastThisLoop['tipTrigger'] = false
@@ -64,24 +62,32 @@ function GrainTransportAIDriver:drive(dt)
 	local giveUpControl = false
 	-- should we keep driving?
 	local allowedToDrive = self:checkLastWaypoint()
-
-	-- TODO: are these checks really necessary?
-	if self.vehicle.cp.totalFillLevel ~= nil
-		and self.vehicle.cp.tipRefOffset ~= nil
-		and self.vehicle.cp.workToolAttached then
-
-		self:searchForTipTriggers()
-
-		allowedToDrive = self:load(allowedToDrive)
-		allowedToDrive, giveUpControl = self:onUnLoadCourse(allowedToDrive, dt)
+	
+	if self.vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver:isEmpty() then 
+		allowedToDrive = false
+		self:setInfoText('NO_SELECTED_FILLTYPE')
 	else
-		self:debug('Safety check failed')
-	end
+		self:clearInfoText('NO_SELECTED_FILLTYPE')
+			-- TODO: are these checks really necessary?
+		if self.vehicle.cp.totalFillLevel ~= nil
+			and self.vehicle.cp.tipRefOffset ~= nil
+			and self.vehicle.cp.workToolAttached then
 
+			self:searchForTipTriggers()
+
+			allowedToDrive = self:load(allowedToDrive)
+			allowedToDrive, giveUpControl = self:onUnLoadCourse(allowedToDrive, dt)
+		else
+			self:debug('Safety check failed')
+		end
+	end
+	
 	-- TODO: clean up the self.allowedToDrives above and use a local copy
 	if self.state == self.states.STOPPED or not allowedToDrive then
 		self:hold()
 	end
+	
+	self:updateInfoText()
 
 	if giveUpControl then
 		-- unload_tippers does the driving
@@ -119,7 +125,7 @@ function GrainTransportAIDriver:checkLastWaypoint()
 	local allowedToDrive = true
 	if self.ppc:getCurrentWaypointIx() == self.course:getNumberOfWaypoints() then
 		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
-		if not self.vehicle.cp.settings.siloSelectedFillType:isActive() and not self.vehicle.cp.settings.siloSelectedFillType:hasFillTypes()  then
+		if not self.vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver:isActive() then
 			-- stop at the last waypoint when the run counter expires
 			allowedToDrive = false
 			self:stop('END_POINT_MODE_1')
@@ -169,5 +175,5 @@ end
 function GrainTransportAIDriver:decrementRunCounter()
 	totalFillTypes = {}
 	self:getAllFillTypes(self.vehicle,totalFillTypes)
-	self.vehicle.cp.settings.siloSelectedFillType:decrementRunCounterByFillType(totalFillTypes)
+	self.vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver:decrementRunCounterByFillType(totalFillTypes)
 end

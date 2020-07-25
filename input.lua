@@ -175,86 +175,6 @@ end
 
 function courseplay:executeFunction(self, func, value, page)
 	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), 5)
-	local validateClasses={
-		"Setting", --cp.settings
-		"CourseGeneratorSetting", --cp.courseGeneratorSettings
-		"AIDriver" --cp.driver
-	}
-	--for now only support for Setting and CourseGeneratorSetting and Driver Classes
-	--needs more optimization!!!
-	local callError = nil
-	local validCall = false
-	sepFunc = {}
-	courseplay:splitFunctionCall(func,sepFunc)
-	for index, call in ipairs(sepFunc) do 
-		courseplay:debug("Index: "..index.." call: "..call,5)
-	end
-	if #sepFunc > 3 then 
-		callError = "to many seperate funcCalls!"
-	end
-	if #sepFunc > 1 and callError==nil then
-		for _,class in pairs(validateClasses) do 
-			if class == sepFunc[1] then
-				if class == "Setting" and #sepFunc > 2 then 
-					if self.cp.settings then
-						if self.cp.settings[sepFunc[2]] then
-							if self.cp.settings[sepFunc[2]][sepFunc[3]] then
-								self.cp.settings[sepFunc[2]][sepFunc[3]](self.cp.settings[sepFunc[2]],value)
-								validCall = true
-							else
-								callError = "wrong setting->functionCall"
-							end
-						else
-							callError = "wrong settingName"
-						end
-					end
-				elseif class == "CourseGeneratorSetting" and #sepFunc > 2 then
-					if self.cp.courseGeneratorSettings then
-						if self.cp.courseGeneratorSettings[sepFunc[2]] then
-							if self.cp.courseGeneratorSettings[sepFunc[2]][sepFunc[3]] then
-								self.cp.courseGeneratorSettings[sepFunc[2]][sepFunc[3]](self.cp.courseGeneratorSettings[sepFunc[2]],value)
-								validCall = true
-							else
-								callError = "wrong courseGeneratorSetting->functionCall"
-							end
-						else
-							callError = "wrong courseGeneratorSettingName"
-						end
-					end
-				elseif class == "AIDriver" and #sepFunc <3 then
-					if self.cp.driver then
-						if self.cp.driver[sepFunc[2]] then
-							self.cp.driver[sepFunc[2]](self.cp.driver,value)
-							validCall = true
-						else
-							callError = "wrong driver->functionCall"
-						end	
-					end
-				else
-					--TODO find a solution for more classes !!
-				end
-				if validCall then
-					courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
-					if self:getIsEntered() then
-						--The old sound playSample(courseplay.hud.clickSound, 1, 1, 0, 0, 0);
-						-- The new gui click sound
-						g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
-					end
-				end
-			end
-		end
-		if not validCall and callError==nil then 
-			callError = "wrong classCall"
-		end
-	end
-	if validCall then 
-		return
-	end
-	if callError then 
-		print(callError)
-		printCallstack()
-		return
-	end
 	--legancy code
 	if func == "setMPGlobalInfoText" then
 		CpManager:setGlobalInfoText(self, value, page)
@@ -390,26 +310,6 @@ function courseplay:executeFunction(self, func, value, page)
 		end; --END is page 0 or 1 or 3 or 10]]
 	end; --END isRowFunction
 end;
-
-function courseplay:splitFunctionCall(func,sepFunc)
-	local start,stop = string.find(func, ":")
-	if start and stop and start == stop then
-		local funcName = string.sub(func, 1, start-1)
-		local nextFunc = string.sub(func, start+1)
-		local index = #sepFunc + 1
-		if funcName then	
-			sepFunc[index] = funcName
-		end
-		if nextFunc then
-			courseplay:splitFunctionCall(nextFunc,sepFunc)
-		else
-			sepFunc = {}
-		end
-	elseif func then
-		local index = #sepFunc + 1
-		sepFunc[index] = func
-	end
-end
 
 --- Lock/Unlock mouse and keyboard form any interaction outside the courseplay hud
 function courseplay:lockContext(lockIt)

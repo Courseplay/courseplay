@@ -271,7 +271,10 @@ function CpManager:update(dt)
 		end;
 	end;
 	g_trafficController:update(dt)
-	g_combineUnloadManager:onUpdate()
+	status,driver,err = xpcall(g_combineUnloadManager.onUpdate, function(err) printCallstack(); return self,err end, g_combineUnloadManager)
+	if not status then
+		courseplay.infoVehicle(vehicle, "Exception, failed update CombineUnloadManager %s",tostring(err))
+	end
 
 	-- REAL TIME 5 SECS CHANGER
 	if self.realTime5SecsTimer < 5000 then
@@ -928,6 +931,10 @@ function CpManager:setupGlobalInfoText()
 		WEATHER						= { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
 		WEIGHING_VEHICLE			= { level =  0, text = 'COURSEPLAY_IS_BEING_WEIGHED' };
 		WORK_END					= { level =  1, text = 'COURSEPLAY_WORK_END' };
+		REACHED_OVERLOADING_POINT	= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
+		NO_SELECTED_FILLTYPE		= { level =  0, text = 'COURSEPLAY_NO_SELECTED_FILLTYPE' };
+		REACHED_REFILLING_POINT		= { level =  0, text = 'COURSEPLAY_REACHED_REFILL_POINT' };
+		WRONG_FILLTYPE_FOR_TRIGGER	= { level =  0, text = 'COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER' };
 	};
 end;
 

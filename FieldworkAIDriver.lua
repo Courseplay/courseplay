@@ -296,10 +296,7 @@ function FieldworkAIDriver:drive(dt)
 			return
 		end
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
-		if self:driveUnloadOrRefill(dt) then
-			-- someone else is driving, no need to call AIDriver.drive()
-			return
-		end
+		self:driveUnloadOrRefill(dt)
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE then
