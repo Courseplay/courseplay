@@ -139,14 +139,15 @@ function CombineUnloadAIDriver:start(startingPoint)
 	self.ppc:setNormalLookaheadDistance()
 
 	if startingPoint:is(StartingPointSetting.START_WITH_UNLOAD) then
-		self:debug('Start unloading, waiting for a combine to call')
+		self:info('Start unloading, waiting for a combine to call')
 		self:setNewState(self.states.ON_FIELD)
 		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
 		self:disableCollisionDetection()
 		self:setDriveUnloadNow(false)
 	else
-		self:debug('Start on unload course')
 		local ix = self.unloadCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
+		self:info('CombineUnloadAIDriver in mode %d starting at %d/%d waypoints (%s)',
+				self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
 		self:startCourseWithPathfinding(self.unloadCourse, ix, 0, 0)
 		self:setNewState(self.states.ON_STREET)
 	end
@@ -579,7 +580,6 @@ function CombineUnloadAIDriver:driveBesideChopper()
 	self:renderText(0, 0.02,"%s: driveBesideChopper:offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset))
 	self:releaseAutoAimNode()
 	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, 5)
-	renderText(0.2,0.325,0.02,string.format("dz: %.1f", dz))
 	self:setSpeed(math.max(0, (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(-dz, -10, 15))))
 end
 
@@ -868,7 +868,6 @@ function CombineUnloadAIDriver:getSpeedBesideChopper(targetNode)
 		allowedToDrive = false
 	end
 	-- negative speeds are invalid
-	renderText(0.2,0.225,0.02,string.format("dz:%s",tostring(dz)))
 	return math.max(0, (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(-dz, -10, 15))), allowedToDrive
 end
 
@@ -884,7 +883,6 @@ function CombineUnloadAIDriver:getSpeedBehindCombine()
 	end
 	local targetGap = 20
 	local targetDistance = self.distanceToCombine - targetGap
-	--renderText(0.2,0.195,0.02,string.format("self.distanceToCombine:%s, targetDistance:%s speed:%s",tostring(self.distanceToCombine),tostring(targetDistance),tostring((self.combineToUnload.lastSpeedReal * 3600) +(MathUtil.clamp(targetDistance,-10,15)))))
 	return (self.combineToUnload.lastSpeedReal * 3600) +(MathUtil.clamp(targetDistance,-10,15))
 end
 
@@ -1243,7 +1241,7 @@ end
 
 function CombineUnloadAIDriver:isOkToStartUnloadingCombine()
 	if self.combineToUnload.cp.driver:isChopper() then return false end
-	if self.combineToUnload.cp.driver:isReadyToUnload() then
+	if self.combineToUnload.cp.driver:isReadyToUnload(self.vehicle.cp.settings.useRealisticDriving:is(true)) then
 		return self:isBehindAndAlignedToCombine() or self:isInFrontAndAlignedToMovingCombine()
 	else
 		self:debugSparse('combine not ready to unload, waiting')
@@ -1341,7 +1339,8 @@ function CombineUnloadAIDriver:setupFollowCourse()
 		return
 	end
 	local followCourse = self.combineCourse:copy(self.vehicle)
-	local followCourseIx = self.combineCourse:getCurrentWaypointIx()
+	-- relevant waypoint is the closest to the combine, prefer that so our PPC will get us on course with the proper offset faster
+	local followCourseIx = self.combineToUnload.cp.driver:getRelevantWaypointIx() or self.combineCourse:getCurrentWaypointIx()
 	return followCourse, followCourseIx
 end
 
@@ -1788,10 +1787,11 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	if self:canDriveBesideCombine(self.combineToUnload) or (self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isWaitingInPocket()) then
 		self:driveBesideCombine()
 	else
-		self:debug('Can\'t drive beside combine, releasing it.')
-		self:releaseUnloader()
-		self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
-		return
+		self:debugSparse('Can\'t drive beside combine as probably fruit under the pipe but ignore that for now and continue unloading.')
+		self:driveBesideCombine()
+		--self:releaseUnloader()
+		--self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
+		--return
 	end
 
 	--when the combine is empty, stop and wait for next combine
@@ -1812,7 +1812,7 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	end
 
 	-- don't move until ready to unload
-	if not self.combineToUnload.cp.driver:isReadyToUnload() then
+	if not self.combineToUnload.cp.driver:isReadyToUnload(self.vehicle.cp.settings.useRealisticDriving:is(true)) then
 		self:setSpeed(0)
 	end
 

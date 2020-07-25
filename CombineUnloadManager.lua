@@ -295,9 +295,9 @@ function CombineUnloadManager:updateCombinesAttributes()
 		self:updateFillSpeed(combine,attributes)
 		if courseplay.debugChannels[self.debugChannel] then
 			renderText(0.1,0.175+(0.02*number) ,0.015,
-					string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d readyToUnload: %s",
+					string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d",
 							nameNum(combine), tostring(attributes.leftOkToDrive), tostring(attributes.rightOKToDrive),
-							#attributes.unloaders, tostring(combine.cp.driver:isReadyToUnload())))
+							#attributes.unloaders))
 		end
 		number = number + 1
 	end

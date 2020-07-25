@@ -246,7 +246,8 @@ function AIDriver:start(startingPoint)
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	local ix = self.mainCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
-	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, self.mainCourse:getNumberOfWaypoints())
+	self:info('AI driver in mode %d starting at %d/%d waypoints (%s)',
+			self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
 	self:startCourseWithAlignment(self.mainCourse, ix)
 end
 
@@ -746,6 +747,11 @@ end
 
 function AIDriver:getTotalLength()
 	return self.vehicle.cp.totalLength
+end
+
+--- Get waypoint closest to the current position of the vehicle
+function AIDriver:getRelevantWaypointIx()
+	return self.ppc:getRelevantWaypointIx()
 end
 
 function AIDriver:getRecordedSpeed()

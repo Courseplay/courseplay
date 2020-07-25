@@ -2034,6 +2034,11 @@ function SettingList:is(value)
 	return self.values[self.current] == value
 end
 
+-- Get the current text key (for the logs, for example)
+function SettingList:__tostring()
+	return self.texts[self.current]
+end
+
 -- Get the current text
 function SettingList:getText()
 	return courseplay:loc(self.texts[self.current])

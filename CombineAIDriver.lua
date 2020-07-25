@@ -932,6 +932,7 @@ function CombineAIDriver:getWorkWidth()
 	return self.vehicle.cp.workWidth
 end
 
+
 --- Create a pocket in the next row at the corner to stay on the field during the turn maneuver.
 ---@param turnContext TurnContext
 function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
@@ -1394,23 +1395,46 @@ function CombineAIDriver:isManeuvering()
 end
 
 --- Are we ready for an unloader?
-function CombineAIDriver:isReadyToUnload()
+--- @param noUnloadWithPipeInFruit boolean pipe must not be in fruit for unload
+function CombineAIDriver:isReadyToUnload(noUnloadWithPipeInFruit)
 	-- no unloading when not in a safe state (like turning)
 	-- in this states we are always ready
 	if self:willWaitForUnloadToFinish() then return true end
+
+	-- but, if we are full and waiting for unload, we have no choice, we must be ready ...
+	if self.state == self.states.ON_FIELDWORK_COURSE and
+			self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD and
+			self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
+		return true
+	end
+
 	-- pipe is in the fruit.
-	if self:isPipeInFruit() then return false end
-	if not self.fieldworkCourse then return false end
-    -- around a turn, for example already working on the next row but not done with the turn yet
-    local lastIx = self.fieldworkCourse:getLastPassedWaypointIx()
-	if lastIx then
-		local dToNextTurn = self.fieldworkCourse:getDistanceToNextTurn(lastIx)
-		-- if distance to last turn is not known then we are ok. If it is known and the turn
-		-- is close, we aren't ready.
-		return dToNextTurn and dToNextTurn < 10 or true
-	else
+	if noUnloadWithPipeInFruit and self:isPipeInFruit() then
+		self:debugSparse('isReadyToUnload(): pipe in fruit')
 		return false
 	end
+
+	if not self.fieldworkCourse then
+		self:debugSparse('isReadyToUnload(): has no fieldwork course')
+		return false
+	end
+
+    -- around a turn, for example already working on the next row but not done with the turn yet
+    local ix = self.ppc:getRelevantWaypointIx()
+	if ix then
+		local dToNextTurn = self.fieldworkCourse:getDistanceToNextTurn(ix)
+		-- if distance to last turn is not known then we are ok. If it is known and the turn
+		-- is close, we aren't ready.
+		if dToNextTurn < 10 then
+			self:debugSparse('isReadyToUnload(): too close to turn')
+			return false
+		else
+			return true
+		end
+	end
+	-- safe default, better than block unloading
+	self:debugSparse('isReadyToUnload(): defaulting to ready to unload')
+	return true
 end
 
 --- Will not move until unload is done? Unloaders like to know this.
