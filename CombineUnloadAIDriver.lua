@@ -147,7 +147,7 @@ function CombineUnloadAIDriver:start(startingPoint)
 	else
 		local ix = self.unloadCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 		self:info('CombineUnloadAIDriver in mode %d starting at %d/%d waypoints (%s)',
-				self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
+				self:getMode(), ix, self.unloadCourse:getNumberOfWaypoints(), tostring(startingPoint))
 		self:startCourseWithPathfinding(self.unloadCourse, ix, 0, 0)
 		self:setNewState(self.states.ON_STREET)
 	end

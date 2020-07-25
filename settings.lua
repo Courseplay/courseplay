@@ -2177,7 +2177,7 @@ function SettingList:validateCurrentValue()
 	self:setToIx(new)
 end
 
-function SettingList:__tostring()
+function SettingList:getDebugString()
 	local result = string.format('%s:\n', self.name)
 	for i = 1, #self.values do
 		result = result .. string.format('\t%s%2d: %s\n', i == self.current and '*' or ' ', i, tostring(self.values[i]))
