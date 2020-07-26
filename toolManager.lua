@@ -725,7 +725,7 @@ function courseplay:setTipperCoverData(vehicle)
 		local workTool = vehicle.cp.workTools[i];
 
 		-- Default Giants trailers
-		if workTool.cp.hasSpecializationCover and not workTool.cp.isStrawBlower then
+		if workTool.cp.hasSpecializationCover and not workTool.cp.isStrawBlower and workTool.spec_cover.hasCovers then
 			courseplay:debug(string.format('Implement %q has a cover (hasSpecializationCover == true)', tostring(workTool.name)), 6);
 			local data = {
 				coverType = 'defaultGiants',
@@ -1933,21 +1933,24 @@ function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
 	return modeValid
 end
 
---Useable Mode decision. Check Mode Valid = Check for Specializations.
-function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
+--- Is this mode valid for the tool?
+--- @param workTool table tool to check
+--- @param cpModeToCheck number is worktool valid for this mode?
+function courseplay:getIsToolValidForCpMode(workTool, cpModeToCheck)
 	local modeValid = false
-	--Mode3 is still disabled should be (cpModeToCheck == 2 or cpModeToCheck == 3)
-	--Made Mode1 and Mode2 seperate check to have a cleaner check for Liquid Trailer.
-	if cpModeToCheck == 1 and (SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 or SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations)) then
+	--Made Mode1 and Mode2 separate check to have a cleaner check for Liquid Trailer.
+	if cpModeToCheck == courseplay.MODE_GRAIN_TRANSPORT and (SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and not SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 or SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations)) then
 		modeValid = true;
-	elseif cpModeToCheck == 2 and SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 and not SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
+	elseif cpModeToCheck == courseplay.MODE_COMBI and SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and not SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 and not SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
 		modeValid = true;
-	elseif cpModeToCheck == 4 then
+	elseif cpModeToCheck == courseplay.MODE_OVERLOADER and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) then
+		modeValid = true
+	elseif cpModeToCheck == courseplay.MODE_SEED_FERTILIZE then
 		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
 		if isSprayer or isSowingMachine or workTool.cp.isTreePlanter or workTool.cp.isKuhnDC401 or workTool.cp.isKuhnHR4004 then
 			modeValid = true;
 		end
-	elseif cpModeToCheck == 6 then
+	elseif cpModeToCheck == courseplay.MODE_FIELDWORK then
 		if (courseplay:isBaler(workTool)
 			or courseplay:isBaleLoader(workTool)
 			or courseplay:isSpecialBaleLoader(workTool)
@@ -1969,13 +1972,13 @@ function courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck)
 		then
 			modeValid = true;
 		end
-	elseif cpModeToCheck == 8 and SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
+	elseif cpModeToCheck == courseplay.MODE_FIELD_SUPPLY and SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
 		modeValid = true;
 
-	elseif cpModeToCheck == 9 and courseplay:hasShovel(workTool) then
+	elseif cpModeToCheck == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and courseplay:hasShovel(workTool) then
 		modeValid = true;
 	
-	elseif cpModeToCheck == 10 and (courseplay:hasLeveler(workTool) or courseplay:hasBunkerSiloCompacter(workTool)) then
+	elseif cpModeToCheck == courseplay.MODE_BUNKERSILO_COMPACTER and (courseplay:hasLeveler(workTool) or courseplay:hasBunkerSiloCompacter(workTool)) then
 		modeValid = true;
 
 	end

@@ -34,7 +34,7 @@ function PlowAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(PlowAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
-	self.plow = FieldworkAIDriver.getImplementWithSpecialization(vehicle, Plow)
+	self.plow = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Plow)
 	self:setOffsetX()
 	if self:hasRotatablePlow() then
 		self:debug('has rotatable plow.')

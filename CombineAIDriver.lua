@@ -19,10 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class CombineAIDriver : UnloadableFieldworkAIDriver
 CombineAIDriver = CpObject(UnloadableFieldworkAIDriver)
 
--- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
-CombineAIDriver.PIPE_STATE_MOVING = 0
-CombineAIDriver.PIPE_STATE_CLOSED = 1
-CombineAIDriver.PIPE_STATE_OPEN = 2
 
 -- fill level when we start making a pocket to unload if we are on the outermost headland
 CombineAIDriver.pocketFillLevelFullPercentage = 95
@@ -68,7 +64,7 @@ function CombineAIDriver:init(vehicle)
 	if self.vehicle.spec_combine then
 		self.combine = self.vehicle.spec_combine
 	else
-		local combineImplement = FieldworkAIDriver.getImplementWithSpecialization(self.vehicle, Combine)
+		local combineImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Combine)
 		if combineImplement then
 			self.combine = combineImplement.spec_combine
 		else
@@ -80,7 +76,7 @@ function CombineAIDriver:init(vehicle)
 		self.pipe = self.vehicle.spec_pipe
 		self.objectWithPipe = self.vehicle
 	else
-		local implementWithPipe = FieldworkAIDriver.getImplementWithSpecialization(self.vehicle, Pipe)
+		local implementWithPipe = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Pipe)
 		if implementWithPipe then
 			self.pipe = implementWithPipe.spec_pipe
 			self.objectWithPipe = implementWithPipe
@@ -99,13 +95,13 @@ function CombineAIDriver:init(vehicle)
 				Foldable.setAnimTime(self.vehicle.spec_foldable, self.vehicle.spec_foldable.startAnimTime == 1 and 0 or 1, true)
 			end
 		end
-		if self.pipe.currentState == CombineAIDriver.PIPE_STATE_CLOSED then
+		if self.pipe.currentState == AIDriverUtil.PIPE_STATE_CLOSED then
 			wasClosed = true
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
 			else
 				-- as seen in the Giants pipe code
-				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_OPEN)
+				self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
 				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
@@ -122,7 +118,7 @@ function CombineAIDriver:init(vehicle)
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 0, true)
 			else
-				self.objectWithPipe:setPipeState(CombineAIDriver.PIPE_STATE_CLOSED)
+				self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
 				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
@@ -641,11 +637,9 @@ function CombineAIDriver:checkBlockingUnloader()
 	if not self.backwardLookingProximitySensorPack then return end
 	local d, blockingVehicle = self.backwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
 	if d < 1000 and blockingVehicle and self:isStopped() and self:isReversing() and not self:isWaitingForUnload() then
-		if g_updateLoopIndex % 250 == 0 then
-			self:debug('Can\'t reverse, %s at %.1f m is blocking', blockingVehicle:getName(), d)
-			if blockingVehicle.cp.driver and blockingVehicle.cp.driver.onBlockingOtherVehicle then
-				blockingVehicle.cp.driver:onBlockingOtherVehicle(self.vehicle)
-			end
+		self:debugSparse('Can\'t reverse, %s at %.1f m is blocking', blockingVehicle:getName(), d)
+		if blockingVehicle.cp.driver and blockingVehicle.cp.driver.onBlockingOtherVehicle then
+			blockingVehicle.cp.driver:onBlockingOtherVehicle(self.vehicle)
 		end
 	end
 end
@@ -1060,19 +1054,19 @@ end
 
 function CombineAIDriver:openPipe()
 	if not self:needToOpenPipe() then return end
-	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
-		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_OPEN then
+	if self.pipe.currentState ~= AIDriverUtil.PIPE_STATE_MOVING and
+		self.pipe.currentState ~= AIDriverUtil.PIPE_STATE_OPEN then
 		self:debug('Opening pipe')
-		self.objectWithPipe:setPipeState(self.PIPE_STATE_OPEN)
+		self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
 	end
 end
 
 function CombineAIDriver:closePipe()
 	if not self:needToOpenPipe() then return end
-	if self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_MOVING and
-		self.pipe.currentState ~= CombineAIDriver.PIPE_STATE_CLOSED then
+	if self.pipe.currentState ~= AIDriverUtil.PIPE_STATE_MOVING and
+		self.pipe.currentState ~= AIDriverUtil.PIPE_STATE_CLOSED then
 		self:debug('Closing pipe')
-		self.objectWithPipe:setPipeState(self.PIPE_STATE_CLOSED)
+		self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
 	end
 end
 

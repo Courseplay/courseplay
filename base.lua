@@ -145,7 +145,6 @@ function courseplay:onLoad(savegame)
 	self.cp.hasAugerWagon = false;
 	self.cp.hasSugarCaneAugerWagon = false
 	self.cp.hasSugarCaneTrailer = false
-	self.cp.isMode3Unloading = false
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 	
@@ -534,7 +533,6 @@ function courseplay:onLoad(savegame)
 	courseplay.hud:setupVehicleHud(self);
 
 	courseplay:validateCanSwitchMode(self);
-	--courseplay.buttons:setActiveEnabled(self, 'all');
 
 	courseplay:setAIDriver(self, self.cp.mode)
 
@@ -992,75 +990,6 @@ function courseplay:onUpdate(dt)
 		self.cp.onMpSetCourses = nil
 	end
 
-	--[[if not courseplay.isClient then
-		if self.cp.isDriving then
-			
-			elseif self.cp.mode == courseplay.MODE_OVERLOADER and self.cp.isMode3Unloading then
-				showDriveOnButton = true;
-			else
-				if (self.cp.wait and (self.Waypoints[self.cp.waypointIndex].wait or self.Waypoints[self.cp.previousWaypointIndex].wait)) or (self.cp.stopAtEnd and (self.cp.waypointIndex == self.cp.numWaypoints or self.cp.currentTipTrigger ~= nil)) or (self.cp.runReset and self.cp.				~= 0) then
-					showDriveOnButton = true;
-				end;
-			end;
-		end;
-		
-		if self.cp.hud.currentPage == 0 then
-			local combine = self;
-			if self.cp.attachedCombine then
-				combine = self.cp.attachedCombine;
-			end;
-			if combine.courseplayers == nil then
-				self:setCpVar('HUD0noCourseplayer', true,courseplay.isClient);
-				combine.courseplayers = {};
-			else
-				self:setCpVar('HUD0noCourseplayer', #combine.courseplayers == 0,courseplay.isClient);
-			end
-			self:setCpVar('HUD0wantsCourseplayer', combine.cp.wantsCourseplayer,courseplay.isClient);
-			self:setCpVar('HUD0combineForcedSide', combine.cp.forcedSide,courseplay.isClient);
-			self:setCpVar('HUD0isManual', not self.cp.isDriving and not combine.aiIsStarted,courseplay.isClient);
-			self:setCpVar('HUD0turnStage', self.cp.turnStage,courseplay.isClient);
-			local tractor = combine.courseplayers[1]
-			if tractor ~= nil then
-				self:setCpVar('HUD0tractorForcedToStop', tractor.cp.forcedToStop,courseplay.isClient);
-				self:setCpVar('HUD0tractorName', tostring(tractor.name),courseplay.isClient);
-				self:setCpVar('HUD0tractor', true,courseplay.isClient);
-			else
-				self:setCpVar('HUD0tractorForcedToStop', nil,courseplay.isClient);
-				self:setCpVar('HUD0tractorName', nil,courseplay.isClient);
-				self:setCpVar('HUD0tractor', false,courseplay.isClient);
-			end;
-
-		elseif self.cp.hud.currentPage == 1 then
-			if self:getIsActive() and not self.cp.canDrive and self.cp.fieldEdge.customField.show and self.cp.fieldEdge.customField.points ~= nil then
-				courseplay:showFieldEdgePath(self, "customField");
-			end;
-
-
-		elseif self.cp.hud.currentPage == 4 then
-			self:setCpVar('HUD4hasActiveCombine', self.cp.activeCombine ~= nil,courseplay.isClient);
-			if self.cp.HUD4hasActiveCombine == true then
-				self:setCpVar('HUD4combineName', self.cp.activeCombine.name,courseplay.isClient);
-			end
-			self:setCpVar('HUD4savedCombine', self.cp.savedCombine ~= nil and self.cp.savedCombine.rootNode ~= nil,courseplay.isClient);
-			if self.cp.savedCombine ~= nil then
-				self:setCpVar('HUD4savedCombineName', self.cp.savedCombine:getName(),courseplay.isClient);
-			end
-
-		elseif self.cp.hud.currentPage == 8 then
-			if self:getIsActive() and self.cp.fieldEdge.selectedField.show and self.cp.fieldEdge.selectedField.fieldNum > 0 and self == g_currentMission.controlledVehicle then
-				courseplay:showFieldEdgePath(self, "selectedField");
-			end;
-		end;
-	end;]]
-	
-	--Not sure if this needs to be reenabled? During my test this produced a nil error
-	--[[if g_server ~= nil and g_currentMission.missionDynamicInfo.isMultiplayer then 
-		for k,v in pairs(courseplay.checkValues) do
-			self.cp[v .. "Memory"] = courseplay:checkForChangeAndBroadcast(self, "self.cp." .. v , self.cp[v], self.cp[v .. "Memory"]);
-		end;
-	end;]]
-	
-	
 	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToObject[self.cp.collidingVehicleId] ~= nil and g_currentMission.nodeToObject[self.cp.collidingVehicleId].isCpPathvehicle then
 		courseplay:setPathVehiclesSpeed(self,dt)
 	end

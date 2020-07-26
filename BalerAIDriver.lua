@@ -22,7 +22,7 @@ BalerAIDriver = CpObject(UnloadableFieldworkAIDriver)
 function BalerAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BalerAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.baler = FieldworkAIDriver.getImplementWithSpecialization(vehicle, Baler)
+	self.baler = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Baler)
 end
 
 function BalerAIDriver:driveFieldwork(dt)

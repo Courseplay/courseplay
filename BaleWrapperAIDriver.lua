@@ -25,7 +25,7 @@ function BaleWrapperAIDriver:init(vehicle)
 	-- derived classes may not fly when there are multiple specializations to handle, if we had a bale loader
 	-- which is also a bale wrapper then we would probably have to put everything back into the baler.
 	BalerAIDriver.init(self, vehicle)
-	self.baleWrapper = FieldworkAIDriver.getImplementWithSpecialization(vehicle, BaleWrapper)
+	self.baleWrapper = AIDriverUtil.getAIImplementWithSpecialization(vehicle, BaleWrapper)
 
 	if not self.baler then
 		-- Bale wrappers which aren't balers have no AI markers as they have no pick up so add a function here

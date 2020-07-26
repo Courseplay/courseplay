@@ -46,7 +46,7 @@ function CpManager:setUpDebugChannels()
 		[1] = 'Debug: Raycast (drive + tipTriggers)';
 		[2] = 'Debug: Load and unload tippers';
 		[3] = 'Debug: Traffic collision';
-		[4] = 'Debug: Combines/mode2, register and unload combines';
+		[4] = 'Debug: Mode 2/3, combi/overloader';
 		[5] = 'Debug: Multiplayer';
 		[6] = 'Debug: implements (updateWorkTools etc.)';
 		[7] = 'Debug: course generation';
@@ -57,7 +57,7 @@ function CpManager:setUpDebugChannels()
 		[12] = 'Debug: all other debugs (uncategorized)';
 		[13] = 'Debug: reverse driving';
 		[14] = 'Debug: driving specific';
-		[15] = 'Debug: mode3: overloader';
+		[15] = 'Debug: not used';
 		[16] = 'Debug: recording courses';
 		[17] = 'Debug: mode4/6: seeding/fieldWork';
 		[18] = 'Debug: hud action';

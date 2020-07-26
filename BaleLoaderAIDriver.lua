@@ -59,7 +59,7 @@ end
 function BaleLoaderAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BaleLoaderAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.baleLoader = FieldworkAIDriver.getImplementWithSpecialization(vehicle, BaleLoader)
+	self.baleLoader = AIDriverUtil.getAIImplementWithSpecialization(vehicle, BaleLoader)
 
 	-- Bale loaders have no AI markers (as they are not AIImplements according to Giants) so add a function here
 	-- to get the markers

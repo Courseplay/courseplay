@@ -99,12 +99,12 @@ function FieldworkAIDriver.register()
 				strawHarvestBaleCollectSpec = _G[self.customEnvironment].StrawHarvestBaleCollect
 			end
 			-- Only the courseplay helper can handle bale loaders.
-			if FieldworkAIDriver.hasImplementWithSpecialization(self, BaleLoader) or
-					FieldworkAIDriver.hasImplementWithSpecialization(self, BaleWrapper) or
-					FieldworkAIDriver.hasImplementWithSpecialization(self, Pickup) then
+			if AIDriverUtil.hasAIImplementWithSpecialization(self, BaleLoader) or
+					AIDriverUtil.hasAIImplementWithSpecialization(self, BaleWrapper) or
+					AIDriverUtil.hasAIImplementWithSpecialization(self, Pickup) then
 				return false
 			end
-			if strawHarvestBaleCollectSpec and FieldworkAIDriver.hasImplementWithSpecialization(self, strawHarvestBaleCollectSpec) then
+			if strawHarvestBaleCollectSpec and AIDriverUtil.hasAIImplementWithSpecialization(self, strawHarvestBaleCollectSpec) then
 				return false
 			end
 			if superFunc ~= nil then
@@ -135,19 +135,6 @@ function FieldworkAIDriver.register()
 
 	print('## Courseplay: Appending event listener for loader wagons.')
 	Pickup.registerEventListeners = Utils.appendedFunction(Pickup.registerEventListeners, PickupRegisterEventListeners)
-end
-
-function FieldworkAIDriver.hasImplementWithSpecialization(vehicle, specialization)
-	return FieldworkAIDriver.getImplementWithSpecialization(vehicle, specialization) ~= nil
-end
-
-function FieldworkAIDriver.getImplementWithSpecialization(vehicle, specialization)
-	local aiImplements = vehicle:getAttachedAIImplements()
-	for _, implement in ipairs(aiImplements) do
-		if SpecializationUtil.hasSpecialization(specialization, implement.object.specializations) then
-			return implement.object
-		end
-	end
 end
 
 --- Start the course and turn on all implements when needed
@@ -979,7 +966,7 @@ function FieldworkAIDriver:lowerImplements()
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
 		
-	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) or self.ppc:isReversing() then
+	if AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, SowingMachine) or self.ppc:isReversing() then
 		-- sowing machines want to stop while the implement is being lowered
 		-- also, when reversing, we assume that we'll switch to forward, so stop while lowering, then start forward
 		self.fieldworkState = self.states.WAITING_FOR_LOWER_DELAYED
@@ -1199,7 +1186,7 @@ function FieldworkAIDriver:shouldLowerThisImplement(object, turnEndNode, reversi
 	local _, _, dzRight = localToLocal(aiRightMarker, turnEndNode, 0, 0, 0)
 	local _, _, dzBack = localToLocal(aiBackMarker, turnEndNode, 0, 0, 0)
 	local loweringDistance
-	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
+	if AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, SowingMachine) then
 		-- sowing machines are stopped while lowering, but leave a little reserve to allow for stopping
 		-- TODO: rather slow down while approaching the lowering point
 		loweringDistance = 0.5
