@@ -68,7 +68,7 @@ end
 function OverloaderAIDriver:driveUnloadCourse(dt)
     if self.unloadCourseState == self.states.ENROUTE then
     elseif self.unloadCourseState == self.states.WAITING_FOR_TRAILER then
-        self:setSpeed(0)
+        self:hold()
         if self:isTrailerUnderPipe() then
             self:debug('Trailer is here, opening pipe')
             if self.pipe then self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN) end
