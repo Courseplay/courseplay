@@ -437,21 +437,33 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 end
 
 function CombineUnloadManager:getCombinesFillLevelPercent(combine)
-	if not combine.getCurrentDischargeNode then
-		-- TODO: cotton harvesters for example don't have one...
-		return 0
-	end
-	local dischargeNode = combine:getCurrentDischargeNode()
-	return combine:getFillUnitFillLevelPercentage(dischargeNode.fillUnitIndex)*100
+	local combineSpec = CombineAIDriver:getCombineSpec(combine)
+    
+    if combineSpec then
+        if not combineSpec.getCurrentDischargeNode then
+            -- TODO: cotton harvesters for example don't have one...
+            return 0
+        end
+        local dischargeNode = combineSpec:getCurrentDischargeNode()
+        return combineSpec:getFillUnitFillLevelPercentage(dischargeNode.fillUnitIndex)*100
+    else 
+        return 0
+    end
 end
 
 function CombineUnloadManager:getCombinesFillLevel(combine)
-	if not combine.getCurrentDischargeNode then
-		-- TODO: cotton harvesters for example don't have one...
-		return 0
-	end
-	local dischargeNode = combine:getCurrentDischargeNode()
-	return combine:getFillUnitFillLevel(dischargeNode.fillUnitIndex)
+	local combineSpec = CombineAIDriver:getCombineSpec(combine)
+
+    if combineSpec then
+        if not combineSpec.getCurrentDischargeNode then
+            -- TODO: cotton harvesters for example don't have one...
+            return 0
+        end
+        local dischargeNode = combineSpec:getCurrentDischargeNode()
+        return combineSpec:getFillUnitFillLevel(dischargeNode.fillUnitIndex)
+    else 
+        return 0
+    end
 end
 
 function CombineUnloadManager:getOnFieldSituation(combine)

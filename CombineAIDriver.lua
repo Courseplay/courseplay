@@ -61,16 +61,7 @@ function CombineAIDriver:init(vehicle)
 	self.unloaders = {}
 	self:initUnloadStates()
 
-	if self.vehicle.spec_combine then
-		self.combine = self.vehicle.spec_combine
-	else
-		local combineImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Combine)
-		if combineImplement then
-			self.combine = combineImplement.spec_combine
-		else
-			self:error('Vehicle is not a combine and could not find implement with spec_combine')
-		end
-	end
+	self.combine = self:getCombineSpec(self.vehicle)
 
 	if self.vehicle.spec_pipe then
 		self.pipe = self.vehicle.spec_pipe
@@ -1515,3 +1506,19 @@ function CombineAIDriver:onDraw()
 	UnloadableFieldworkAIDriver.onDraw(self)
 end
 
+function CombineAIDriver:getCombineSpec(vehicle)
+
+    local combineSpecRet = nil
+
+    if vehicle.spec_combine then
+		combineSpecRet = vehicle.spec_combine
+	else
+		local combineImplement = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Combine)
+		if combineImplement then
+			combineSpecRet = combineImplement.spec_combine
+		else
+			self:error('Vehicle is not a combine and could not find implement with spec_combine')
+		end
+	end
+    return combineSpecRet
+end
