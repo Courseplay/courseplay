@@ -178,9 +178,8 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			self:debug('Priority closest, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		end
 		if bestUnloader == unloader then
-			if combine.cp.driver:getFillLevelPercentage() > unloader.cp.driver:getFillLevelThreshold() or
-					combine.cp.driver:willWaitForUnloadToFinish() then
-				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), combine.cp.driver:getFillLevelPercentage())
+      if self:getCombinesFillLevelPercent(combine) > unloader.cp.driver:getFillLevelThreshold() or	combine.cp.driver:willWaitForUnloadToFinish() then
+				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), self:getCombinesFillLevelPercent(combine))
 				self:addUnloaderToCombine(unloader, combine)
 				return combine
 			else
