@@ -173,7 +173,7 @@ end;
 function courseplay:startStopCourseplayer(combine)
 	local tractor = g_combineUnloadManager:getUnloaderByNumber(1, combine)
 	if tractor then	
-		tractor.cp.forcedToStop = not tractor.cp.forcedToStop;
+		tractor.cp.settings.forcedToStop:toggle()
 	end
 end;
 
@@ -464,11 +464,6 @@ end
 function courseplay:changeShieldHeight (vehicle, changeBy)
 	vehicle.cp.mode10.shieldHeight = MathUtil.clamp(vehicle.cp.mode10.shieldHeight + changeBy,0,1.5)
 end
-
-function courseplay:changeFollowAtFillLevel(vehicle, changeBy)
-	vehicle.cp.followAtFillLevel = MathUtil.clamp(vehicle.cp.followAtFillLevel + changeBy, 0, 100);
-end
-
 
 function courseplay:changeTurnDiameter(vehicle, changeBy)
 	vehicle.cp.turnDiameter = vehicle.cp.turnDiameter + changeBy;
@@ -3215,10 +3210,17 @@ function DriveOnAtFillLevelSetting:init(vehicle)
 	self:set(90)
 end
 
+---@class FollowAtFillLevelSetting : PercentageSettingList
+FollowAtFillLevelSetting = CpObject(PercentageSettingList)
+function FollowAtFillLevelSetting:init(vehicle)
+	PercentageSettingList.init(self, 'followAtFillLevel', 'COURSEPLAY_START_AT', 'COURSEPLAY_START_AT', vehicle)
+	self:set(50)
+end
+
 --seperate SiloSelectedFillTypeSettings to save their current state
 --and disable runCounter for FillableFieldWorkDriver and FieldSupplyDriver
 
---TODO: figure out how to implement maxFillLevel for seperate FillTypes 
+--TODO: figure out how to implement maxFillLevel for seperate FillTypes in mode 1 
 ---@class GrainTransportDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
 GrainTransportDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
 function GrainTransportDriver_SiloSelectedFillTypeSetting:init(vehicle)
@@ -3243,7 +3245,12 @@ function FieldSupplyDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	self.disallowedFillTypes = {FillType.DIESEL, FillType.DEF,FillType.AIR}
 end
 
-
+---@class ForcedToStopSetting : BooleanSetting
+ForcedToStopSetting = CpObject(BooleanSetting)
+function ForcedToStopSetting:init(vehicle)
+	BooleanSetting.init(self, 'forcedToStop','--', '--', vehicle,{'COURSEPLAY_UNLOADING_DRIVER_STOP','COURSEPLAY_UNLOADING_DRIVER_START'}) 
+	self:set(false)
+end
 
 --- Container for settings
 --- @class SettingsContainer

@@ -16,15 +16,15 @@ function UnloaderEvents:emptyNew()
 	return self;
 end
 
-function UnloaderEvents:new(vehicle,combine, eventType)
-	self.vehicle = vehicle
+function UnloaderEvents:new(unloader,combine, eventType)
+	self.unloader = unloader
 	self.combine = combine
 	self.eventType = eventType
 	return self
 end
 
 function UnloaderEvents:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
-	self.vehicle = NetworkUtil.readNodeObject(streamId)
+	self.unloader = NetworkUtil.getObject(NetworkUtil.readNodeObjectId(streamId))
 	self.combine = NetworkUtil.getObject(NetworkUtil.readNodeObjectId(streamId))
 	self.eventType = streamReadUIntN(streamId, 2)
 	
@@ -32,52 +32,31 @@ function UnloaderEvents:readStream(streamId, connection) -- wird aufgerufen wenn
 end
 
 function UnloaderEvents:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 	
-	NetworkUtil.writeNodeObject(streamId, self.vehicle);
+	NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(self.unloader))
 	NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(self.combine))
     streamWriteUIntN(streamId, self.eventType, 2)
 end
 
 function UnloaderEvents:run(connection) -- wir fuehren das empfangene event aus
 	if g_server == nil then
-		if self.eventType == self.TYPE_ADD_TO_COMBINE then	
-			self.vehicle.cp.driver:setCombineToUnloadClient(self.combine)
-			self.combine.cp.driver:registerUnloader(self.vehicle)
-		elseif self.eventType == self.TYPE_REMOVE_FROM_COMBINE then
-			if self.vehicle.cp.driver.combineToUnload ~= nil then
-				self.combine.cp.driver:deregisterUnloader(self.vehicle)
-			end
-		elseif self.eventType == self.TYPE_RELEASE_UNLOADER then
-			self.vehicle.cp.driver:releaseUnloader()
+		if self.eventType == self.TYPE_RELEASE_UNLOADER then
+			g_combineUnloadManager:releaseUnloaderFromCombine(self.unloader,self.combine,true)
 		elseif self.eventType == self.TYPE_ADD_UNLOADER_TO_COMBINE then
-			g_combineUnloadManager:addUnloaderToCombine(self.vehicle,self.combine)
+			g_combineUnloadManager:addUnloaderToCombine(self.unloader,self.combine,true)
 		end
 	end
 end
 
-function UnloaderEvents:sendAddToCombineEvent(vehicle,combine)
+function UnloaderEvents:sendRelaseUnloaderEvent(unloader,combine)
     if g_server ~= nil then
         -- Server have to broadcast to all clients and himself
-        g_server:broadcastEvent(UnloaderEvents:new(vehicle,combine,self.TYPE_ADD_TO_COMBINE), nil,nil,vehicle)
+        g_server:broadcastEvent(UnloaderEvents:new(unloader,combine,self.TYPE_RELEASE_UNLOADER), nil,nil,vehicle)
     end
 end
 
-function UnloaderEvents:sendRemoveFromCombineEvent(vehicle,combine)
+function UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
     if g_server ~= nil then
         -- Server have to broadcast to all clients and himself
-        g_server:broadcastEvent(UnloaderEvents:new(vehicle,combine,self.TYPE_REMOVE_FROM_COMBINE), nil,nil,vehicle)
-    end
-end
-
-function UnloaderEvents:sendRelaseUnloaderEvent(vehicle,combine)
-    if g_server ~= nil then
-        -- Server have to broadcast to all clients and himself
-        g_server:broadcastEvent(UnloaderEvents:new(vehicle,combine,self.TYPE_RELEASE_UNLOADER), nil,nil,vehicle)
-    end
-end
-
-function UnloaderEvents:sendAddUnloaderToCombine(vehicle,combine)
-    if g_server ~= nil then
-        -- Server have to broadcast to all clients and himself
-        g_server:broadcastEvent(UnloaderEvents:new(vehicle,combine,self.TYPE_ADD_UNLOADER_TO_COMBINE), nil,nil,vehicle)
+        g_server:broadcastEvent(UnloaderEvents:new(unloader,combine,self.TYPE_ADD_UNLOADER_TO_COMBINE), nil,nil,vehicle)
     end
 end

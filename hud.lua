@@ -702,7 +702,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				
 				elseif entry.functionToCall == 'cancelWait' then
-						if vehicle.cp.driver and (vehicle:getIsCourseplayDriving() and vehicle.cp.driver.isWaiting and vehicle.cp.driver:isWaiting() or vehicle.cp.driver:isLoading() and vehicle.cp.driver:is_a(FillableFieldworkAIDriver)) then
+						if vehicle.cp.driver and (vehicle:getIsCourseplayDriving() and vehicle.cp.driver.isWaiting and vehicle.cp.driver:isWaiting() or vehicle.cp.driver.isLoading and vehicle.cp.driver:isLoading() and vehicle.cp.driver:is_a(FillableFieldworkAIDriver)) then
 							self:enableButtonWithFunction(vehicle,page, 'cancelWait')
 							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_CONTINUE')
 						else
@@ -1053,11 +1053,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					if g_combineUnloadManager:getHasUnloaders(vehicle) then
 						self:enableButtonWithFunction(vehicle,page, 'startStopCourseplayer')
 						local courseplayer = g_combineUnloadManager:getUnloaderByNumber(1, vehicle)
-						if courseplayer.cp.forcedToStop then
-							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_START');
-						else
-							vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_UNLOADING_DRIVER_STOP');
-						end
+						vehicle.cp.hud.content.pages[page][line][1].text = courseplayer.cp.settings.forcedToStop:getText()
 					else
 						self:disableButtonWithFunction(vehicle,page, 'startStopCourseplayer')
 					end
@@ -1137,9 +1133,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[page][line][2].text = '---';
 					end;	
 					
-				elseif entry.functionToCall == 'changeFollowAtFillLevel' then	
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_START_AT');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.followAtFillLevel ~= nil and ('%d%%'):format(vehicle.cp.followAtFillLevel) or '---';					
+				elseif entry.functionToCall == 'followAtFillLevel:changeByX' then	
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.followAtFillLevel:getLabel() 
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.followAtFillLevel:getText()					
 				--[[elseif entry.functionToCall == 'toggleSearchCombineMode' then    --automatic or manual
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_SEARCH_MODE'); --always
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.searchCombineAutomatically and courseplay:loc('COURSEPLAY_AUTOMATIC_SEARCH') or courseplay:loc('COURSEPLAY_MANUAL_SEARCH');
@@ -2424,7 +2420,7 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 		self:addRowButton(vehicle,vehicle.cp.settings.turnStage,'toggle', 0, 5, 1 )
 	else
 		self:addRowButton(vehicle,vehicle.cp.settings.driverPriorityUseFillLevel,'toggle', 0, 4, 1 )
-		self:addRowButton(vehicle,vehicle.cp.settings.stopForUnload,'toggle', 0, 5, 1 ):setOnlyCallLocal();
+		self:addRowButton(vehicle,vehicle.cp.settings.stopForUnload,'toggle', 0, 5, 1 )
 		self:addRowButton(vehicle,nil,'changeHeadlandReverseManeuverType', 0, 6, 1 )
 	end
 	self:setReloadPageOrder(vehicle, -1, true)
@@ -2457,7 +2453,7 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,nil,'changeCombineOffset', 8, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,nil,'changeTipperOffset', 8, 2, 1 )
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 8, 3, 1 )
-	self:addSettingsRowWithArrows(vehicle,nil,'changeFollowAtFillLevel', 8, 4, 1 )
+	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.followAtFillLevel,'changeByX', 8, 4, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.useRealisticDriving,'toggle', 8, 5, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.turnOnField,'toggle', 8, 6, 1 )
 	

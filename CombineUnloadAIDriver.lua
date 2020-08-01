@@ -158,7 +158,6 @@ function CombineUnloadAIDriver:dismiss()
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if self.combineToUnload then
 		self.combineToUnload.cp.driver:deregisterUnloader(self)
-		UnloaderEvents:sendRemoveFromCombineEvent(self.vehicle,self.combineToUnload)
 	end
 	self:releaseUnloader()
 	if courseplay:isField(x, z) then
@@ -233,7 +232,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	-- safety check: combine has active AI driver
 	if self.combineToUnload and not self.combineToUnload.cp.driver:isActive() then
 		self:setSpeed(0)
-	elseif self.vehicle.cp.forcedToStop then
+	elseif self.vehicle.cp.settings.forcedToStop:is(true) then
 		self:setSpeed(0)
 	elseif self.onFieldState == self.states.WAITING_FOR_COMBINE_TO_CALL then
 		local combineToWaitFor
@@ -247,7 +246,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if g_updateLoopIndex % 100 == 0 then
 			self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 			if self.combineToUnload ~= nil then
-				UnloaderEvents:sendAddToCombineEvent(self.vehicle,self.combineToUnload)
 				self:refreshHUD()
 				courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
 				self:startWorking()
@@ -1100,7 +1098,7 @@ function CombineUnloadAIDriver:getCombinesFillLevelPercent()
 end
 
 function CombineUnloadAIDriver:getFillLevelThreshold()
-	return self.vehicle.cp.followAtFillLevel
+	return self.vehicle.cp.settings.followAtFillLevel:get()
 end
 
 function CombineUnloadAIDriver:getDriveOnThreshold()
@@ -1113,7 +1111,6 @@ function CombineUnloadAIDriver:releaseUnloader()
 	self.combineJustUnloaded = self.combineToUnload
 	self.combineToUnload = nil
 	self:refreshHUD()
-	UnloaderEvents:sendRelaseUnloaderEvent(self.vehicle,self.combineToUnload)
 end
 
 function CombineUnloadAIDriver:getImSecondUnloader()

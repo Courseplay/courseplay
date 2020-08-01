@@ -385,10 +385,8 @@ function courseplay:onLoad(savegame)
 	self.cp.tipperOffset = 0.0
 
 	self.cp.forcedSide = nil
-	self.cp.forcedToStop = false
-
+	
 	self.cp.allowFollowing = false
-	self.cp.followAtFillLevel = 50
 	
 	self.cp.vehicleTurnRadius = courseplay:getVehicleTurnRadius(self);
 	self.cp.turnDiameter = self.cp.vehicleTurnRadius * 2;
@@ -572,6 +570,8 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, self)
 	self.cp.settings:addSetting(DriveOnAtFillLevelSetting, self)
 	self.cp.settings:addSetting(RefillUntilPctSetting, self)
+	self.cp.settings:addSetting(FollowAtFillLevelSetting,self)
+	self.cp.settings:addSetting(ForcedToStopSetting,self)
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
@@ -1463,7 +1463,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.tipperOffset 		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#tipperOffset'),			 0);
 		self.cp.combineOffset 		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#combineOffset'),		 0);
 		self.cp.combineOffsetAutoMode = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#combineOffsetAutoMode'), true);
-		self.cp.followAtFillLevel 	  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#fillFollow'),			 50);
 		self.cp.searchCombineOnField  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#searchCombineOnField'),	 0);
 		
 		curKey = key .. '.courseplay.driving';
@@ -1623,7 +1622,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".combi #tipperOffset", string.format("%.1f",self.cp.tipperOffset))
 	setXMLString(xmlFile, newKey..".combi #combineOffset", string.format("%.1f",self.cp.combineOffset))
 	setXMLString(xmlFile, newKey..".combi #combineOffsetAutoMode", tostring(self.cp.combineOffsetAutoMode))
-	setXMLInt(xmlFile, newKey..".combi #fillFollow", self.cp.followAtFillLevel)
 	setXMLInt(xmlFile, newKey..".combi #searchCombineOnField", self.cp.searchCombineOnField)
 	
 	--driving settings

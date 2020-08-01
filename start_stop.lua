@@ -445,7 +445,7 @@ function courseplay:stop(self)
 	
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.spec_drivable.cruiseControl.minSpeed = 1
-	self.cp.forcedToStop = false
+	self.cp.settings.forcedToStop:set(false)
 	self.cp.waitingForTrailerToUnload = false
 	courseplay:setIsRecording(self, false);
 	courseplay:setRecordingIsPaused(self, false);
