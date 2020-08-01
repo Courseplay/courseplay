@@ -572,7 +572,9 @@ function CombineUnloadAIDriver:driveBesideCombine()
 	local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz * factor, -10, 15)
 	self:renderText(0, 0.02, "%s: driveBesideCombine: dz = %.1f, speed = %.1f, factor = %.1f",
 			nameNum(self.vehicle), dz, speed, factor)
-	DebugUtil.drawDebugNode(targetNode, 'target')
+	if  courseplay.debugChannels[self.debugChannel] then
+		DebugUtil.drawDebugNode(targetNode, 'target')
+	end
 	self:setSpeed(math.max(0, speed))
 end
 

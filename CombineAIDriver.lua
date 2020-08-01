@@ -1514,4 +1514,3 @@ function CombineAIDriver:onDraw()
 
 	UnloadableFieldworkAIDriver.onDraw(self)
 end
-
