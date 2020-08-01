@@ -594,7 +594,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 						-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 						for i = 1, #objectWheels do
-							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffnessLoad > 0.5 then
+							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and AIDriverUtil.isRealWheel(objectWheels[i]) then
 								local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
 								local _,_,dis = worldToLocal(componentNode, x, y, z);
 								dis = dis * invert;
@@ -737,8 +737,7 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 			if component.node ~= node then
 				-- Loop through all the wheels and see if they are attached to this component.
 				for i = 1, #workToolsWheels do
-					-- isLeft is only set for real wheels and not dummy wheels, so we can use that to sort out the dummy wheels
-					if workToolsWheels[i].isLeft ~= nil and workToolsWheels[i].maxLatStiffnessLoad > 0.5 then
+					if AIDriverUtil.isRealWheel(workToolsWheels[i]) then
 						if courseplay:isPartOfNode(workToolsWheels[i].node, component.node) then
 							-- Check if they are linked together
 							for _, joint in ipairs(workTool.componentJoints) do
@@ -1780,4 +1779,11 @@ function AIDriverUtil.getImplementWithSpecializationFromList(specialization, imp
 			return implement.object
 		end
 	end
+end
+
+--- Is this a real wheel the implement is actually rolling on (and turning around) or just some auxiliary support
+--- wheel? We need to know about the real wheels when finding the turn radius/distance between attacher joint and
+--- wheels.
+function AIDriverUtil.isRealWheel(wheel)
+	return wheel.hasTireTracks and wheel.maxLatStiffnessLoad > 0.5
 end
