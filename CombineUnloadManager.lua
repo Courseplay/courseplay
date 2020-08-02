@@ -119,20 +119,25 @@ function CombineUnloadManager:getUnloaderIndex(unloader, combine)
 	end
 end
 
-function CombineUnloadManager:releaseUnloaderFromCombine(unloader,combine)
+function CombineUnloadManager:releaseUnloaderFromCombine(unloader,combine,noEventSend)
 	if self.combines[combine] then
 		local ix = self:getUnloaderIndex(unloader, combine)
 		if ix then
 			table.remove(self.combines[combine].unloaders, ix)
+			if not noEventSend then 
+				UnloaderEvents:sendRelaseUnloaderEvent(unloader,combine)
+			end
 		end
 	end
 end
 
-function CombineUnloadManager:addUnloaderToCombine(unloader,combine)
+function CombineUnloadManager:addUnloaderToCombine(unloader,combine,noEventSend)
 	if not self:getUnloaderIndex(unloader, combine) then
 		table.insert(self.combines[combine].unloaders, unloader)
 		self:debug('assigned %s to combine %s', nameNum(unloader), nameNum(combine))
-		UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
+		if not noEventSend then
+			UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
+		end
 	else
 		self:debug('%s is already assigned to combine %s', nameNum(unloader), nameNum(combine))
 	end

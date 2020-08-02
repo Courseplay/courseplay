@@ -272,7 +272,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	local hasWaterTrailer = false
 	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
 	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if SpecializationUtil.hasSpecialization(Dischargeable, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 then
+		if SpecializationUtil.hasSpecialization(Dischargeable, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 and not  SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -358,7 +358,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- MODE 8: Field Supply
 	elseif vehicle.cp.mode == 8 then
-		if SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
+		if SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) or SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end;
@@ -854,6 +854,47 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	if vehicle.cp.tipperLoadMode == 1 and currentTrailer.cp.currentSiloTrigger ~= nil and not driveOn then
         local acceptedFillType = false;
 		local siloTrigger = currentTrailer.cp.currentSiloTrigger;
+		local fillTypeData = vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver:getData()
+		if not siloTrigger.isLoading then
+			vehicle.cp.siloSelectedFillType = FillType.UNKNOWN
+			--should be a function in the rework !!
+			if fillTypeData then 
+				for _,data in ipairs(fillTypeData) do 
+					if data.runCounter >0 then 
+						if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
+							local breakLoop = false
+							local fillLevels, capacity
+							if siloTrigger.source and  siloTrigger.source.getAllFillLevels then 
+								fillLevels, capacity = siloTrigger.source:getAllFillLevels(g_currentMission:getFarmId())
+							elseif siloTrigger.source and siloTrigger.source.getAllProvidedFillLevels then
+								--siloTrigger.extraParameter instead of siloTrigger.managerId
+								fillLevels, capacity = siloTrigger.source:getAllProvidedFillLevels(g_currentMission:getFarmId(), siloTrigger.managerId)
+							else
+								courseplay:debug('fillLevels not found !!', 2);
+								breakLoop=true
+								break
+							end						
+							for fillTypeIndex, fillLevel in pairs(fillLevels) do
+								if fillTypeIndex == data.fillType then 
+									if fillLevel > 0 then 
+										vehicle.cp.siloSelectedFillType = data.fillType
+										breakLoop=true
+										break
+									else
+							
+									end
+								end
+							end
+							if breakLoop then 
+								break
+							end
+						else
+						
+						end
+					end		
+				end
+			end
+		end
 		if courseplay:fillTypesMatch(vehicle, siloTrigger, currentTrailer) then	
 			local siloIsEmpty = false --siloTrigger:getFillLevel(vehicle.cp.siloSelectedFillType) <= 1;
 			if not siloTrigger.isLoading and not siloIsEmpty and (unloadDistance < vehicle.cp.trailerFillDistance or backUpDistance < 1 ) then
@@ -866,7 +907,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 				courseplay:debug(('%s: SiloTrigger: selectedFillType = %s, isLoading = %s'):format(nameNum(vehicle), tostring(g_fillTypeManager.indexToName[siloTrigger.selectedFillType]), tostring(siloTrigger.isLoading)), 2);
 			elseif siloTrigger.isLoading then
 				courseplay:setCustomTimer(vehicle, 'siloEmptyMessageDelay', 1);
-			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.refillUntilPct and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then
+			elseif siloIsEmpty and vehicle.cp.totalFillLevelPercent < vehicle.cp.settings.refillUntilPct:get() and courseplay:timerIsThrough(vehicle, 'siloEmptyMessageDelay') then
 				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
 			end;
 		else
@@ -877,7 +918,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	-- drive on when required fill level is reached
 	-- in case of waiting to be loaded e.g. by shovel 
 	if not driveOn and (courseplay:timerIsThrough(vehicle, 'fillLevelChange') or vehicle.cp.prevFillLevelPct == nil) then
-		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct then
+		if vehicle.cp.prevFillLevelPct ~= nil and vehicle.cp.totalFillLevelPercent == vehicle.cp.prevFillLevelPct and vehicle.cp.totalFillLevelPercent > vehicle.cp.settings.refillUntilPct:get() then
 			driveOn = true;
 		end;
 		vehicle.cp.prevFillLevelPct = vehicle.cp.totalFillLevelPercent;
@@ -885,7 +926,7 @@ function courseplay:load_tippers(vehicle, allowedToDrive)
 	end;
 	
 	--if established on a fill trigger go on immediately when level is reached
-	if currentTrailer.cp.currentSiloTrigger ~= nil and (vehicle.cp.totalFillLevelPercent > vehicle.cp.refillUntilPct or vehicle.cp.settings.driveUnloadNow:is(true)) then
+	if currentTrailer.cp.currentSiloTrigger ~= nil and (vehicle.cp.totalFillLevelPercent > vehicle.cp.settings.refillUntilPct:get() or vehicle.cp.settings.driveUnloadNow:is(true)) then
 		courseplay:setFillOnTrigger(vehicle,currentTrailer,false,currentTrailer.cp.currentSiloTrigger)
 		driveOn = true;
 	end;	
@@ -1217,10 +1258,10 @@ function courseplay:unload_tippers(vehicle, allowedToDrive,dt)
 								tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 							elseif ctt.animalHusbandry then
 								if ctt.animalHusbandry:getHasSpaceForTipping(tipper.cp.fillType) then
-									tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
+							--		tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
 								end
 							else	
-								tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT) --tipper:toggleTipState(ctt, bestTipReferencePoint);
+							--	tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT) --tipper:toggleTipState(ctt, bestTipReferencePoint);
 							end
 							courseplay:debug(nameNum(tipper)..": setDischargeState: "..tostring(bestTipReferencePoint).."  /unloadingTipper= "..tostring(tipper:getName()), 2);
 						end
@@ -1387,7 +1428,7 @@ function courseplay:fillOnTrigger(vehicle, objectToFill,triggerId)
 				local triggerFilltype = trigger:getCurrentFillType()
 				local fillUnits = objectToFill:getFillUnits()
 				for i=1,#fillUnits do
-					if objectToFill:getFillUnitFillLevelPercentage(i)*100 < vehicle.cp.refillUntilPct and courseplay:fillTypesMatch(vehicle, fillTrigger, objectToFill,i) then
+					if objectToFill:getFillUnitFillLevelPercentage(i)*100 < vehicle.cp.settings.refillUntilPct:get() and courseplay:fillTypesMatch(vehicle, fillTrigger, objectToFill,i) then
 						courseplay.debugVehicle(19,vehicle,'start filling')
 						courseplay:setFillOnTrigger(vehicle,objectToFill,true,trigger,triggerIndex)
 						allowedToDrive = false;
@@ -1448,6 +1489,7 @@ end
 
 function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerIndex)
 	courseplay:resetCustomTimer(vehicle, "triggerFailBackup", true)
+	courseplay.activateTriggerForVehicle = vehicle.cp.driver.activateTriggerForVehicle
 	if fillOrder then
 		--start filling
 		if trigger.onActivateObject then
@@ -1972,7 +2014,8 @@ function courseplay:getIsToolValidForCpMode(workTool, cpModeToCheck)
 		then
 			modeValid = true;
 		end
-	elseif cpModeToCheck == courseplay.MODE_FIELD_SUPPLY and SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
+	elseif cpModeToCheck == 8 and (SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) or SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations)) then
+
 		modeValid = true;
 
 	elseif cpModeToCheck == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and courseplay:hasShovel(workTool) then
@@ -2214,6 +2257,3 @@ function courseplay:openCloseCover(vehicle, showCover, fillTrigger)
 		end;
 	end; --END for i,tipperWithCover in vehicle.cp.tippersWithCovers
 end;
-
-
-

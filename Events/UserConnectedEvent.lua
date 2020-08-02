@@ -23,11 +23,18 @@ function UserConnectedEvent:new(vehicle)
 end
 
 function UserConnectedEvent:writeStream(streamId, connection)
-	streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
+	if self.vehicle then 
+		streamWriteBool(streamId, true)
+		streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
+	else
+		streamWriteBool(streamId, false)
+	end
 end
 
 function UserConnectedEvent:readStream(streamId, connection)
-	self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
+	if streamReadBool(streamId) then
+		self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
+	end
 	self:run(connection)
 end
 

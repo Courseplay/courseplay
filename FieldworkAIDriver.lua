@@ -23,8 +23,8 @@ Can follow a fieldworking course, perform turn maneuvers, turn on/off and raise/
 add adjustment course if needed.
 ]]
 
----@class FieldworkAIDriver : AIDriver
-FieldworkAIDriver = CpObject(AIDriver)
+---@class FieldworkAIDriver : TriggerAIDriver
+FieldworkAIDriver = CpObject(TriggerAIDriver)
 
 FieldworkAIDriver.myStates = {
 	ON_FIELDWORK_COURSE = {},
@@ -46,7 +46,7 @@ FieldworkAIDriver.myStates = {
 -- the base class ctr.
 function FieldworkAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'FieldworkAIDriver:init()')
-	AIDriver.init(self, vehicle)
+	TriggerAIDriver.init(self, vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
 	-- waiting for tools to turn on, unfold and lower
 	self.waitingForTools = true
@@ -282,7 +282,7 @@ function FieldworkAIDriver:stop(msgReference)
 	self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
 	self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
 
-	AIDriver.stop(self, msgReference)
+	TriggerAIDriver.stop(self, msgReference)
 	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
 	self.vehicle.cp.alignment.enabled = self.alignmentEnabled
 end
@@ -296,10 +296,7 @@ function FieldworkAIDriver:drive(dt)
 			return
 		end
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
-		if self:driveUnloadOrRefill(dt) then
-			-- someone else is driving, no need to call AIDriver.drive()
-			return
-		end
+		self:driveUnloadOrRefill(dt)
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE then
@@ -651,48 +648,6 @@ function FieldworkAIDriver:stopWork()
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
 	self:clearRemainingTime()
-end
-
---- Check if need to refill/unload anything
-function FieldworkAIDriver:allFillLevelsOk()
-	if not self.vehicle.cp.workTools then return false end
-	-- what here comes is basically what Giants' getFillLevelInformation() does but this returns the real fillType,
-	-- not the fillTypeToDisplay as this latter is different for each type of seed
-	local fillLevelInfo = {}
-	self:getAllFillLevels(self.vehicle, fillLevelInfo)
-	return self:areFillLevelsOk(fillLevelInfo)
-end
-
-function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)
-	-- get own fill levels
-	if object.getFillUnits then
-		for _, fillUnit in pairs(object:getFillUnits()) do
-			local fillType = self:getFillTypeFromFillUnit(fillUnit)
-			local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType)
-			self:debugSparse('%s: Fill levels: %s: %.1f/%.1f', object:getName(), fillTypeName, fillUnit.fillLevel, fillUnit.capacity)
-			if not fillLevelInfo[fillType] then fillLevelInfo[fillType] = {fillLevel=0, capacity=0} end
-			fillLevelInfo[fillType].fillLevel = fillLevelInfo[fillType].fillLevel + fillUnit.fillLevel
-			fillLevelInfo[fillType].capacity = fillLevelInfo[fillType].capacity + fillUnit.capacity
-		end
-	end
- 	-- collect fill levels from all attached implements recursively
-	for _,impl in pairs(object:getAttachedImplements()) do
-		self:getAllFillLevels(impl.object, fillLevelInfo)
-	end
-end
-
-function FieldworkAIDriver:getFillTypeFromFillUnit(fillUnit)
-	local fillType = fillUnit.lastValidFillType or fillUnit.fillType
-	-- TODO: do we need to check more supported fill types? This will probably cover 99.9% of the cases
-	if fillType == FillType.UNKNOWN then
-		-- just get the first valid supported fill type
-		for ft, valid in pairs(fillUnit.supportedFillTypes) do
-			if valid then return ft end
-		end
-	else
-		return fillType
-	end
-
 end
 
 -- is the fill level ok to continue?

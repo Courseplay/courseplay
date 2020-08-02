@@ -48,8 +48,8 @@ This is currently screwed up...
 
 ]]--
 
----@class CombineUnloadAIDriver : AIDriver
-CombineUnloadAIDriver = CpObject(AIDriver)
+---@class CombineUnloadAIDriver : TriggerAIDriver
+CombineUnloadAIDriver = CpObject(TriggerAIDriver)
 
 CombineUnloadAIDriver.safetyDistanceFromChopper = 0.75
 CombineUnloadAIDriver.targetDistanceBehindChopper = 1
@@ -92,7 +92,7 @@ CombineUnloadAIDriver.myStates = {
 --- Constructor
 function CombineUnloadAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
-	AIDriver.init(self, vehicle)
+	TriggerAIDriver.init(self, vehicle)
 	self.debugChannel = 4
 	self.mode = courseplay.MODE_COMBI
 	self:initStates(CombineUnloadAIDriver.myStates)
@@ -158,7 +158,6 @@ function CombineUnloadAIDriver:dismiss()
 	local x,_,z = getWorldTranslation(self:getDirectionNode())
 	if self.combineToUnload then
 		self.combineToUnload.cp.driver:deregisterUnloader(self)
-		UnloaderEvents:sendRemoveFromCombineEvent(self.vehicle,self.combineToUnload)
 	end
 	self:releaseUnloader()
 	if courseplay:isField(x, z) then
@@ -233,7 +232,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	-- safety check: combine has active AI driver
 	if self.combineToUnload and not self.combineToUnload.cp.driver:isActive() then
 		self:setSpeed(0)
-	elseif self.vehicle.cp.forcedToStop then
+	elseif self.vehicle.cp.settings.forcedToStop:is(true) then
 		self:setSpeed(0)
 	elseif self.onFieldState == self.states.WAITING_FOR_COMBINE_TO_CALL then
 		local combineToWaitFor
@@ -247,7 +246,6 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		if g_updateLoopIndex % 100 == 0 then
 			self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 			if self.combineToUnload ~= nil then
-				UnloaderEvents:sendAddToCombineEvent(self.vehicle,self.combineToUnload)
 				self:refreshHUD()
 				courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
 				self:startWorking()
@@ -1102,11 +1100,11 @@ function CombineUnloadAIDriver:getCombinesFillLevelPercent()
 end
 
 function CombineUnloadAIDriver:getFillLevelThreshold()
-	return self.vehicle.cp.followAtFillLevel
+	return self.vehicle.cp.settings.followAtFillLevel:get()
 end
 
 function CombineUnloadAIDriver:getDriveOnThreshold()
-	return self.vehicle.cp.driveOnAtFillLevel
+	return self.vehicle.cp.settings.driveOnAtFillLevel:get()
 end
 
 function CombineUnloadAIDriver:releaseUnloader()
@@ -1115,7 +1113,6 @@ function CombineUnloadAIDriver:releaseUnloader()
 	self.combineJustUnloaded = self.combineToUnload
 	self.combineToUnload = nil
 	self:refreshHUD()
-	UnloaderEvents:sendRelaseUnloaderEvent(self.vehicle,self.combineToUnload)
 end
 
 function CombineUnloadAIDriver:getImSecondUnloader()
@@ -2085,7 +2082,7 @@ function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 		self:debugSparse('Already busy moving out of the way')
 	end
 end
-
+--TODO maybe a new Setting for this one ??
 function CombineUnloadAIDriver:shiftCombinesList(change_by)
 	self.combinesListHUDOffset = MathUtil.clamp(self.combinesListHUDOffset+ change_by,0,#self.vehicle.cp.possibleCombines-6)
 end
