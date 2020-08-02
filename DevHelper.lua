@@ -293,7 +293,7 @@ function DevHelper.saveVehiclePosition(vehicle, vehiclePositionData)
         savedPosition.xRot, savedPosition.yRot, savedPosition.zRot = getWorldRotation(object.rootNode)
         return savedPosition
     end
-
+    if not vehicle.getAttachedImplements then return end
     table.insert(vehiclePositionData, {vehicle, savePosition(vehicle)})
     for _,impl in pairs(vehicle:getAttachedImplements()) do
         DevHelper.saveVehiclePosition(impl.object, vehiclePositionData)

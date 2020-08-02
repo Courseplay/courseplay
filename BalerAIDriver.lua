@@ -22,7 +22,7 @@ BalerAIDriver = CpObject(UnloadableFieldworkAIDriver)
 function BalerAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BalerAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.baler = FieldworkAIDriver.getImplementWithSpecialization(vehicle, Baler)
+	self.baler = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Baler)
 end
 
 function BalerAIDriver:driveFieldwork(dt)
@@ -71,8 +71,11 @@ function BalerAIDriver:handleBaler()
 					self.baler:setIsUnloadingBale(true, false)
 				end
 			elseif self.baler.spec_baler.unloadingState ~= Baler.UNLOADING_CLOSED then
-				allowedToDrive = false
-				if self.baler.spec_baler.unloadingState == Baler.UNLOADING_OPEN then
+				if fillLevel >= capacity then -- Only stop if capacity is full. Allowing for continuous balers such as the ViconFastBale
+					allowedToDrive = false
+				elseif fillLevel == 0 and (self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSING or self.baler.spec_baler.unloadingState == Baler.UNLOADING_OPENING) then
+					allowedToDrive = false
+				elseif self.baler.spec_baler.unloadingState == Baler.UNLOADING_OPEN then
 					self.baler:setIsUnloadingBale(false)
 				end
 			elseif fillLevel >= 0 and not self.baler:getIsTurnedOn() and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then

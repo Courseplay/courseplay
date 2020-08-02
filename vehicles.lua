@@ -594,7 +594,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 						-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 						for i = 1, #objectWheels do
-							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffnessLoad > 0.5 then
+							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and AIDriverUtil.isRealWheel(objectWheels[i]) then
 								local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
 								local _,_,dis = worldToLocal(componentNode, x, y, z);
 								dis = dis * invert;
@@ -737,8 +737,7 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 			if component.node ~= node then
 				-- Loop through all the wheels and see if they are attached to this component.
 				for i = 1, #workToolsWheels do
-					-- isLeft is only set for real wheels and not dummy wheels, so we can use that to sort out the dummy wheels
-					if workToolsWheels[i].isLeft ~= nil and workToolsWheels[i].maxLatStiffnessLoad > 0.5 then
+					if AIDriverUtil.isRealWheel(workToolsWheels[i]) then
 						if courseplay:isPartOfNode(workToolsWheels[i].node, component.node) then
 							-- Check if they are linked together
 							for _, joint in ipairs(workTool.componentJoints) do
@@ -855,17 +854,6 @@ function courseplay:getToolTurnRadius(workTool)
 
 		for i, attachedImplement in pairs(attacherVehicle:getAttachedImplements()) do
 			if attachedImplement.object == workTool then
-				-- Check if AIVehicleUtil can calculate it for us
-				--local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
-				--if AIMaxToolRadius > 0 then
-				--	if workToolDistances.attacherJointOrPivotToTurningNode > AIMaxToolRadius then
-				--		AIMaxToolRadius = workToolDistances.attacherJointOrPivotToTurningNode;
-				--	end;
-				--	courseplay:debug(('%s -> TurnRadius: AIVehicleUtil.getMaxToolRadius=%.2fm'):format(nameNum(workTool), AIMaxToolRadius), 6);
-				--	return AIMaxToolRadius;
-				--end;
-
-				-- AIVehicleUtil could not calculate it, so we do it our self.
 				rotMax = attachedImplement.upperRotLimit[2];
 				break;
 			end;
@@ -1550,6 +1538,11 @@ end
 -- courseplay int this
 AIDriverUtil = {}
 
+-- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
+AIDriverUtil.PIPE_STATE_MOVING = 0
+AIDriverUtil.PIPE_STATE_CLOSED = 1
+AIDriverUtil.PIPE_STATE_OPEN = 2
+
 function AIDriverUtil.isReverseDriving(vehicle)
 	if not vehicle then
 		printCallstack()
@@ -1685,7 +1678,7 @@ end
 
 -- Get the turning radius of the vehicle and its implements (copied from AIDriveStrategyStraight.updateTurnData())
 function AIDriverUtil.getTurningRadius(vehicle)
-	-- determine turning radius
+	courseplay.debugVehicle(6, vehicle, 'Finding turn radius')
 	local radius = vehicle.maxTurningRadius * 1.1                     -- needs ackermann steering
 	if vehicle:getAIMinTurningRadius() ~= nil then
 		radius = math.max(radius, vehicle:getAIMinTurningRadius())
@@ -1694,8 +1687,14 @@ function AIDriverUtil.getTurningRadius(vehicle)
 
 	local attachedAIImplements = vehicle:getAttachedImplements()
 
-	for _,implement in pairs(attachedAIImplements) do
-		maxToolRadius = math.max(maxToolRadius, AIVehicleUtil.getMaxToolRadius(implement))
+	for _, implement in pairs(attachedAIImplements) do
+		local turnRadius = AIVehicleUtil.getMaxToolRadius(implement)
+		if turnRadius == 0 then
+			turnRadius = courseplay:getToolTurnRadius(implement.object)
+			courseplay.debugVehicle(6, vehicle, '%s: no Giants turn radius, we calculated %.1f', implement.object:getName(), turnRadius)
+		end
+		maxToolRadius = math.max(maxToolRadius, turnRadius)
+		courseplay.debugVehicle(6, vehicle, '%s: max tool radius %.1f', implement.object:getName(), maxToolRadius)
 	end
 	radius = math.max(radius, maxToolRadius)
 	courseplay.debugVehicle(6, vehicle, 'getTurningRadius: %.1f m', radius)
@@ -1757,4 +1756,34 @@ function AIDriverUtil.getLastAttachedImplement(vehicle)
 		end
 	end
 	return lastImplement, -backOffset
+end
+
+
+function AIDriverUtil.hasAIImplementWithSpecialization(vehicle, specialization)
+	return AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization) ~= nil
+end
+
+function AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization)
+	local aiImplements = vehicle:getAttachedAIImplements()
+	return AIDriverUtil.getImplementWithSpecializationFromList(specialization, aiImplements)
+end
+
+function AIDriverUtil.getImplementWithSpecialization(vehicle, specialization)
+	local implements = vehicle:getAttachedImplements()
+	return AIDriverUtil.getImplementWithSpecializationFromList(specialization, implements)
+end
+
+function AIDriverUtil.getImplementWithSpecializationFromList(specialization, implements)
+	for _, implement in ipairs(implements) do
+		if SpecializationUtil.hasSpecialization(specialization, implement.object.specializations) then
+			return implement.object
+		end
+	end
+end
+
+--- Is this a real wheel the implement is actually rolling on (and turning around) or just some auxiliary support
+--- wheel? We need to know about the real wheels when finding the turn radius/distance between attacher joint and
+--- wheels.
+function AIDriverUtil.isRealWheel(wheel)
+	return wheel.hasTireTracks and wheel.maxLatStiffnessLoad > 0.5
 end

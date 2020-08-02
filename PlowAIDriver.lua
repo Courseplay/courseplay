@@ -34,7 +34,7 @@ function PlowAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(PlowAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
-	self.plow = FieldworkAIDriver.getImplementWithSpecialization(vehicle, Plow)
+	self.plow = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Plow)
 	self:setOffsetX()
 	if self:hasRotatablePlow() then
 		self:debug('has rotatable plow.')
@@ -45,7 +45,7 @@ end
 -- the unworked side, and then can we start working
 function PlowAIDriver:startWork()
 	self:debug('Starting plow work')
-
+	StartStopWorkEvent:sendStartEvent(self.vehicle)
 	self:setOffsetX()
 	self:startEngineIfNeeded()
 

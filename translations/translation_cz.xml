@@ -232,8 +232,8 @@
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="dokola" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spirála" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Pole" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Počet řádků na pozemku" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Když pracujete na pozemku, kolik řádků je na pozemku" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="pouze stroj" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="stroj a trasa" />
@@ -354,7 +354,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 								text="Courseplay: předchozí mód" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					text="Courseplay: myš akce" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 				text="Courseplay: myš sekundární akce" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="Courseplay: umístit ladicí značku do protokolu" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		text="Pohyb lžíce do pozice k nakládání" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text="Pohyb lžíce do pozice k převozu" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" text="Pohyb lžíce do pozice k vykládání" />
@@ -446,10 +446,10 @@
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Pravé tlačítko myši HUD" />
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Zapnout/vypnout pravé tlačítko myši pro otevření HUD (aktuální vozidlo)" />
 
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Zobrazit dočasné body" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Zobrazit dočasné trasy (jako hledání cesty nebo otočení)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Souvrať se překrývá" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Překrývání mezi průjezdy na souvrati v procentech" />
 
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zobrazit Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Přepnout zobrazení Mini-HUD" />
@@ -474,5 +474,10 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Samostatné vyložení kombajnu do vleku co je poblíž." />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Povolit zvolení otočení s pocouvnutím" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Povolit zvolení otočení s pocouvnutím, když je nutné (pouze u neseného nářadí)" />
+
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
 		<!-- Replace marker, do not remove! --></texts>
 </l10n>

@@ -382,7 +382,7 @@ function HybridAStar:init(yieldAfter, maxIterations)
 	self.iterations = 0
 	-- state space resolution
 	self.deltaPos = 1.1
-	self.deltaThetaDeg = 3
+	self.deltaThetaDeg = 6
 	-- if the goal is within self.deltaPos meters we consider it reached
 	self.deltaPosGoal = 2 * self.deltaPos
 	-- if the goal heading is within self.deltaThetaDeg degrees we consider it reached
@@ -508,8 +508,10 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 						if self.analyticSolverEnabled then
 							local analyticSolution = self.analyticSolver:solve(succ, goal, turnRadius, allowReverse)
 							analyticSolutionCost = analyticSolution:getLength(turnRadius)
+							succ:updateH(goal, analyticSolutionCost)
+						else
+							succ:updateH(goal, 0, succ:distance(goal) * 1.5)
 						end
-						succ:updateH(goal, analyticSolutionCost)
 
 						--self:debug('     %s', tostring(succ))
 						if existingSuccNode then

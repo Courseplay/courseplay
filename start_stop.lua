@@ -445,7 +445,7 @@ function courseplay:stop(self)
 	
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.spec_drivable.cruiseControl.minSpeed = 1
-	self.cp.forcedToStop = false
+	self.cp.settings.forcedToStop:set(false)
 	self.cp.waitingForTrailerToUnload = false
 	courseplay:setIsRecording(self, false);
 	courseplay:setRecordingIsPaused(self, false);
@@ -500,7 +500,7 @@ function courseplay:stop(self)
 	self.cp.turnTimeRecorded = nil;	
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.hasTransferCourse = false
-	courseplay:setStopAtEnd(self, false);
+	self.cp.settings.stopAtEnd:set(false)
 	self.cp.stopAtEndMode1 = false;
 	self.cp.isTipping = false;
 	self.cp.isUnloaded = false;
@@ -580,7 +580,7 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 end
 
 function courseplay:checkSaveFuel(vehicle,allowedToDrive)
-	if (not vehicle.cp.saveFuelOptionActive) 
+	if (vehicle.cp.settings.saveFuelOption:is(false)) 
 	or (vehicle.cp.mode == courseplay.MODE_COMBI and vehicle.cp.activeCombine ~= nil)
 	or (vehicle.cp.mode == courseplay.MODE_FIELDWORK and ((vehicle.courseplayers ~= nil and #vehicle.courseplayers > 0) or vehicle.cp.convoyActive))
 	or ((vehicle.cp.mode == courseplay.MODE_FIELD_SUPPLY or vehicle.cp.mode == courseplay.MODE_OVERLOADER) and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait)
