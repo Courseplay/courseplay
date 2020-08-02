@@ -1489,6 +1489,7 @@ end
 
 function courseplay:setFillOnTrigger(vehicle,workTool,fillOrder,trigger,triggerIndex)
 	courseplay:resetCustomTimer(vehicle, "triggerFailBackup", true)
+	courseplay.activateTriggerForVehicle = vehicle.cp.driver.activateTriggerForVehicle
 	if fillOrder then
 		--start filling
 		if trigger.onActivateObject then

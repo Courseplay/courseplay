@@ -3028,10 +3028,10 @@ function SiloSelectedFillTypeSetting:incrementRunCounter(index)
 	end
 end
 
-function SiloSelectedFillTypeSetting:decrementRunCounterByFillType(fillTypes)
+function SiloSelectedFillTypeSetting:decrementRunCounterByFillType(fillLevelInfo)
 	local totalData = self:getData()
 	for index,data in ipairs(totalData) do 
-		for _,fillType in ipairs(fillTypes) do 
+		for fillType,info in pairs(fillLevelInfo) do 
 			if data.fillType == fillType then
 				local _data = self:getDataByIndex(index)
 				_data.runCounter = _data.runCounter-1

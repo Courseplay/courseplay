@@ -131,15 +131,6 @@ AIDriver.myStates = {
 	DONE = {}
 }
 
-AIDriver.myLoadingStates = {
-	IS_LOADING = {},
-	NOTHING = {},
-	APPROACH_TRIGGER = {},
-	APPROACH_AUGER_TRIGGER = {},
-	IS_UNLOADING = {},
-	DRIVE_NOW = {}
-}
-
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
@@ -148,7 +139,6 @@ function AIDriver:init(vehicle)
 	self.mode = courseplay.MODE_TRANSPORT
 	self.states = {}
 	self:initStates(AIDriver.myStates)
-	self:initStates(AIDriver.myLoadingStates)
 	self.vehicle = vehicle
 	-- set up a global container on the vehicle to persist AI Driver related data between AIDriver incarnations
 	if not vehicle.cp.aiDriverData then
@@ -182,7 +172,6 @@ function AIDriver:init(vehicle)
 		self.vehicle.cp.settings:validateCurrentValues()
 	end
 	self:setHudContent()
-	self.loadingState = self.states.NOTHING
 end
 
 function AIDriver:writeUpdateStream(streamId)
@@ -253,7 +242,6 @@ end
 function AIDriver:start(startingPoint)
 	self:beforeStart()
 	self.state = self.states.RUNNING
-	self:resetLoadingState()
 	-- derived classes must disable collision detection if they don't need its
 	self:enableCollisionDetection()
 	-- for now, initialize the course with the vehicle's current course
@@ -289,10 +277,6 @@ function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
-	if self:isLoading() or self:isUnloading() then
-		self:forceStopLoading()
-	end
-	self.loadingState = self.states.NOTHING
 end
 
 --- Stop the driver when the work is done. Could just dismiss at this point,
@@ -309,10 +293,6 @@ function AIDriver:continue()
 	-- can be stopped for various reasons and those can have different msgReferences, so
 	-- just remove all, if there's a condition which requires a message it'll call setInfoText() again anyway.
 	self:clearAllInfoTexts()
-	if self:isLoading() or self:isUnloading() then
-		self:forceStopLoading()
-		self.loadingState = self.states.DRIVE_NOW
-	end
 end
 
 --- Compatibility function for the legacy CP code so the course can be resumed
@@ -411,18 +391,7 @@ function AIDriver:driveCourse(dt)
 	if self:getIsInFilltrigger() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
-	
-	if self.loadingState == self.states.APPROACH_TRIGGER then
-		self:setSpeed(self.vehicle.cp.speeds.approach)
-	elseif self.loadingState == self.states.APPROACH_AUGER_TRIGGER then
-		self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)
-	end
-	
-	if self:isLoading() or self:isUnloading() then
-	--	self:setSpeed(0)
-		self:hold()
-	end
-	
+		
 	self:slowDownForWaitPoints()
 
 	self:stopEngineIfNotNeeded()
@@ -1828,120 +1797,14 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	return newSpeed, allowedToDrive
 end
 
---Driver set to wait while loading
-function AIDriver:setLoadingState(object,fillUnitIndex,fillType,trigger)
-	if not self:ignoreTrigger() and not self:isLoading() then
-		self.loadingState=self.states.IS_LOADING
-		self:refreshHUD()
-	end
+function AIDriver:isLoadingTriggerCallbackEnabled()
+	return false
 end
 
-function AIDriver:isLoading()
-	if self.loadingState == self.states.IS_LOADING then
-		return true
-	end
+function AIDriver:isUnloadingTriggerCallbackEnabled()
+	return false
 end
 
-function AIDriver:isUnloading()
-	if self.loadingState == self.states.IS_UNLOADING then
-		return true
-	end
-end
-
---Driver set to ignore the current Trigger as "continue" was pressed
-function AIDriver:ignoreTrigger()
-	if self.loadingState == self.states.DRIVE_NOW then
-		return true
-	end
-end
-
---Driver stops loading
-function AIDriver:resetLoadingState()
-	if not self:ignoreTrigger() then 
-		if not self.activeTriggers then
-			self.loadingState=self.states.NOTHING
-		else
-			self.loadingState=self.states.APPROACH_TRIGGER
-		end
-	end
-	self.augerTriggerSpeed=nil
-	self.fillableObject = nil
-end
-
---Driver is in trigger range slow down
-function AIDriver:setInTriggerRange(isAugerTrigger)
-	if self.loadingState==self.states.NOTHING then
-		self.loadingState=self.states.APPROACH_TRIGGER
-	end
-	if isAugerTrigger and self.loadingState==self.states.APPROACH_TRIGGER then 
-		self.loadingState=self.states.APPROACH_AUGER_TRIGGER
-	end
-end
-
---Driver set to wait while unloading
-function AIDriver:setUnloadingState(object)
-	if object then 
-		self.fillableObject = {} 
-		self.fillableObject.object = object --used to enable self:forceStopLoading()
-	else
-		self.fillableObject = nil
-	end
-	if not self:ignoreTrigger() then
-		self.loadingState=self.states.IS_UNLOADING
-		self:refreshHUD()
-	end
-end
-
---Driver stops unloading 
-function AIDriver:resetUnloadingState()
-	if not self:ignoreTrigger() then
-		self.loadingState=self.states.NOTHING
-	end
-	self.fillableObject = nil
-end
-
---countTriggerUp/countTriggerDown used to check current Triggers
-function AIDriver:countTriggerUp(object)
-	if self.activeTriggers ==nil then
-		self.activeTriggers = {}
-		self.loadingState = self.states.APPROACH_TRIGGER
-	end
-	if object then
-		self.activeTriggers[object] = true
-	end
-end
-
-function AIDriver:countTriggerDown(object)
-	if object and self.activeTriggers then
-		self.activeTriggers[object] = false
-	end
-	if self.activeTriggers == nil then 
-		return
-	end
-	for object,bool in pairs(self.activeTriggers) do 
-		if bool then 
-			return
-		end
-	end
-	self.activeTriggers =nil
-	self.loadingState = self.states.NOTHING
-end
-
---force stop loading/ unloading if "continue" or stop is pressed
-function AIDriver:forceStopLoading()
-	if self.fillableObject then 
-		if self.fillableObject.trigger then 
-			if self.fillableObject.trigger:isa(Vehicle) then --disable filling at Augerwagons
-				--TODO!!
-			else --disable filling at LoadingTriggers
-				self.fillableObject.trigger:setIsLoading(false)
-			end
-		else 
-			if self:isLoading() then -- disable filling at fillTriggers
-				self.fillableObject.object:setFillUnitIsFilling(false)
-			else -- disable unloading
-				self.fillableObject.object:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
-			end
-		end
-	end
+function AIDriver:isOverloadingTriggerCallbackEnabled()
+	return false
 end

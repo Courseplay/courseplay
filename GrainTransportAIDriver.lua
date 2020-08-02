@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
----@class GrainTransportAIDriver : AIDriver
-GrainTransportAIDriver = CpObject(AIDriver)
+---@class GrainTransportAIDriver : TriggerAIDriver
+GrainTransportAIDriver = CpObject(TriggerAIDriver)
 
 --- Constructor
 function GrainTransportAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'GrainTransportAIDriver:init()')
-	AIDriver.init(self, vehicle)
+	TriggerAIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
 	-- just for backwards compatibility
 end
@@ -35,7 +35,7 @@ end
 function GrainTransportAIDriver:start(startingPoint)
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	self:beforeStart()
-	AIDriver.start(self, startingPoint)
+	TriggerAIDriver.start(self, startingPoint)
 	self:setDriveUnloadNow(false);
 	self.vehicle.cp.siloSelectedFillType = FillType.UNKNOWN
 end
@@ -158,22 +158,8 @@ function GrainTransportAIDriver:getCanShowDriveOnButton()
 	return self:isNearFillPoint()
 end
 
-function GrainTransportAIDriver:getAllFillTypes(object,totalFillTypes)
-	if object.spec_trailer and object.spec_dischargeable then 
-		local dischargeNode = object:getCurrentDischargeNode()
-		local fillType = object:getFillUnitFillType(dischargeNode.fillUnitIndex)
-		if fillType then 
-			table.insert(totalFillTypes,fillType)
-		end
-	end
-	-- get all attached implements recursively
-	for _,impl in pairs(object:getAttachedImplements()) do
-		self:getAllFillTypes(impl.object,totalFillTypes)
-	end
-end
-
 function GrainTransportAIDriver:decrementRunCounter()
-	totalFillTypes = {}
-	self:getAllFillTypes(self.vehicle,totalFillTypes)
-	self.vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver:decrementRunCounterByFillType(totalFillTypes)
+	local fillLevelInfo = {}
+	self:getAllFillLevels(self.vehicle, fillLevelInfo)
+	self.vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver:decrementRunCounterByFillType(fillLevelInfo)
 end

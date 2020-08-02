@@ -83,6 +83,7 @@ local function initialize()
 		'PurePursuitController',
 		'Waypoint',
 		'AIDriver',
+		'TriggerAIDriver',
 		'CombineUnloadAIDriver',
 		'OverloaderAIDriver',
 		'CombineUnloadManager',
