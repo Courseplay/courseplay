@@ -119,20 +119,25 @@ function CombineUnloadManager:getUnloaderIndex(unloader, combine)
 	end
 end
 
-function CombineUnloadManager:releaseUnloaderFromCombine(unloader,combine)
+function CombineUnloadManager:releaseUnloaderFromCombine(unloader,combine,noEventSend)
 	if self.combines[combine] then
 		local ix = self:getUnloaderIndex(unloader, combine)
 		if ix then
 			table.remove(self.combines[combine].unloaders, ix)
+			if not noEventSend then 
+				UnloaderEvents:sendRelaseUnloaderEvent(unloader,combine)
+			end
 		end
 	end
 end
 
-function CombineUnloadManager:addUnloaderToCombine(unloader,combine)
+function CombineUnloadManager:addUnloaderToCombine(unloader,combine,noEventSend)
 	if not self:getUnloaderIndex(unloader, combine) then
 		table.insert(self.combines[combine].unloaders, unloader)
 		self:debug('assigned %s to combine %s', nameNum(unloader), nameNum(combine))
-		UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
+		if not noEventSend then
+			UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
+		end
 	else
 		self:debug('%s is already assigned to combine %s', nameNum(unloader), nameNum(combine))
 	end
@@ -178,9 +183,8 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			self:debug('Priority closest, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		end
 		if bestUnloader == unloader then
-			if combine.cp.driver:getFillLevelPercentage() > unloader.cp.driver:getFillLevelThreshold() or
-					combine.cp.driver:willWaitForUnloadToFinish() then
-				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), combine.cp.driver:getFillLevelPercentage())
+      if self:getCombinesFillLevelPercent(combine) > unloader.cp.driver:getFillLevelThreshold() or	combine.cp.driver:willWaitForUnloadToFinish() then
+				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), self:getCombinesFillLevelPercent(combine))
 				self:addUnloaderToCombine(unloader, combine)
 				return combine
 			else
@@ -437,21 +441,33 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 end
 
 function CombineUnloadManager:getCombinesFillLevelPercent(combine)
-	if not combine.getCurrentDischargeNode then
-		-- TODO: cotton harvesters for example don't have one...
-		return 0
-	end
-	local dischargeNode = combine:getCurrentDischargeNode()
-	return combine:getFillUnitFillLevelPercentage(dischargeNode.fillUnitIndex)*100
+  local combine = combine.cp.driver:getCombine()
+    
+  if combine then
+      if not combine.getCurrentDischargeNode then
+          -- TODO: cotton harvesters for example don't have one...
+          return 0
+      end
+      local dischargeNode = combine:getCurrentDischargeNode()
+      return combine:getFillUnitFillLevelPercentage(dischargeNode.fillUnitIndex)*100
+  else 
+      return 0
+  end
 end
 
 function CombineUnloadManager:getCombinesFillLevel(combine)
-	if not combine.getCurrentDischargeNode then
-		-- TODO: cotton harvesters for example don't have one...
-		return 0
-	end
-	local dischargeNode = combine:getCurrentDischargeNode()
-	return combine:getFillUnitFillLevel(dischargeNode.fillUnitIndex)
+  local combine = combine.cp.driver:getCombine()
+
+  if combine then
+      if not combine.getCurrentDischargeNode then
+          -- TODO: cotton harvesters for example don't have one...
+          return 0
+      end
+      local dischargeNode = combine:getCurrentDischargeNode()
+      return combine:getFillUnitFillLevel(dischargeNode.fillUnitIndex)
+  else 
+      return 0
+  end
 end
 
 function CombineUnloadManager:getOnFieldSituation(combine)

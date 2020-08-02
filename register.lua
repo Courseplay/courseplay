@@ -56,7 +56,7 @@ function courseplay:register(secondTime)
 	if secondTime then
 		print('## Courseplay: register later loaded mods:');
 		if g_company and g_company.loadingTrigger and g_company.loadingTrigger.loadTriggerCallback then
-			g_company.loadingTrigger.loadTriggerCallback = Utils.appendedFunction(g_company.loadingTrigger.loadTriggerCallback, courseplay.SiloTrigger_TriggerCallback);
+			g_company.loadingTrigger.loadTriggerCallback = Utils.appendedFunction(g_company.loadingTrigger.loadTriggerCallback, courseplay.loadTriggerCallback);
 			print("  append courseplay.SiloTrigger_TriggerCallback to g_company.loadingTrigger.loadTriggerCallback")
 		end
 	else

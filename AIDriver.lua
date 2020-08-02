@@ -121,6 +121,8 @@ AIDriver.proximityMinLimitedSpeed = 2
 -- if anything closer than this, we stop
 AIDriver.proximityLimitLow = 1
 
+AIDriver.APPROACH_AUGER_TRIGGER_SPEED = 3
+
 -- we use this as an enum
 AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
@@ -358,7 +360,6 @@ function AIDriver:drive(dt)
 		self:hold()
 		self:continueIfWaitTimeIsOver()
 	end
-
 	self:driveCourse(dt)
 	self:drawTemporaryCourse()
 end
@@ -390,7 +391,7 @@ function AIDriver:driveCourse(dt)
 	if self:getIsInFilltrigger() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
-
+		
 	self:slowDownForWaitPoints()
 
 	self:stopEngineIfNotNeeded()
@@ -1795,3 +1796,16 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	self:debugSparse('proximity: d = %.1f (%d %%), speed = %.1f', d, 100 * normalizedD, newSpeed)
 	return newSpeed, allowedToDrive
 end
+
+function AIDriver:isLoadingTriggerCallbackEnabled()
+	return false
+end
+
+function AIDriver:isUnloadingTriggerCallbackEnabled()
+	return false
+end
+
+function AIDriver:isOverloadingTriggerCallbackEnabled()
+	return false
+end
+

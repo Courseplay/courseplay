@@ -175,6 +175,7 @@ end
 
 function courseplay:executeFunction(self, func, value, page)
 	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), 5)
+	--legancy code
 	if func == "setMPGlobalInfoText" then
 		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
@@ -501,8 +502,7 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 		elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
 			vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
 		elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive then
-			vehicle:setCourseplayFunc('setStopAtEnd', nil, false, 1);
-		
+			vehicle:setCourseplayFunc('Setting:stopAtEnd:toggle',nil,false,1)
 		--Switch Mode, but doesn't work right now, not sure why
 		elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
 			vehicle:setCourseplayFunc('setCpMode', vehicle.cp.nextMode, false, 1);
