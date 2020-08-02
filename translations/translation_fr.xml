@@ -300,10 +300,10 @@
     <text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Retirer l'affectation à cette batteuse" />
     <text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Arrêter pendant le déchargement" />
     <text name="COURSEPLAY_SLIPPING_WARNING" 					 		text="patine" />
-    <text name="COURSEPLAY_REFILL_UNTIL_PCT" 					 		text="Remplir jusqu'à:" />
+    <text name="COURSEPLAY_REFILL_UNTIL_PCT" 					 		text="Charger jusqu'à:" />
     <text name="COURSEPLAY_BGA_IS_FULL" 						 		text=": le silo est plein!" />
-    <text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 						text="Le silo n'a pas la récolte sélectionnée" />
-    <text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Récolte à charger:" />
+    <text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 						text="Le silo n'a pas le produit sélectionné" />
+    <text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Produit à charger:" />
     <text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 					 		text="Silo vide ! En attente..." />
     <text name="COURSEPLAY_FARM_SILO_IS_FULL" 							text=": Silo plein !" />
     <text name="COURSEPLAY_STARTING_UP_TOOL" 					 		text="Démarrer à %s!" />
@@ -457,7 +457,7 @@
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet l'affichage du Mini-HUD" />
 	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Paille dans les fourrières" />
-	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Gestion de la paille lors des manoeuvres de la batteuse. La batteuse attend d'avoir déchargé toute la paille avant de commencer sa manoeuvre" />
+	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Gestion de la paille dans les fourrières" />
 	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
     <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés d'une trémie ou d'une cuve d'engrais" />
 
@@ -473,10 +473,10 @@
  	<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Marche arrière avec Pathfinding" />
 	<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Permet à Pathfinding de faire une manoeuvre incluant une marche arrière (uniquement pour les outils portés)" />
 
-  <text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
-	<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
-	<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
-	<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
+  	<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="Pas de produit sélectionné!/cette course n'est pas supportée!!" />
+	<text name="COURSEPLAY_ADD_FILLTYPE"								text="Ajouter un produit" />
+	<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="a atteint le point de chargement." />
+	<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="a un produit incompatible avec ce trigger." />
 	<!-- Replace marker, do not remove! -->
   </texts>
 </l10n>
