@@ -570,6 +570,13 @@ function CombineUnloadAIDriver:driveBesideCombine()
 	-- use a factor to make sure we reach the pipe fast, but be more gentle while discharging
 	local factor = self.combineToUnload.cp.driver:isDischarging() and 0.5 or 2
 	local speed = self.combineToUnload.lastSpeedReal * 3600 + MathUtil.clamp(-dz * factor, -10, 15)
+  -- slow down while the pipe is unfoling to avoid crashing onto it
+  if self.combineToUnload.cp.driver.pipe.currentState ~= nil then
+    if self.combineToUnload.cp.driver.pipe.currentState == AIDriverUtil.PIPE_STATE_MOVING then
+      speed = (math.min(speed, self.combineToUnload:getLastSpeed()))
+    end
+  end
+  
 	self:renderText(0, 0.02, "%s: driveBesideCombine: dz = %.1f, speed = %.1f, factor = %.1f",
 			nameNum(self.vehicle), dz, speed, factor)
 	if  courseplay.debugChannels[self.debugChannel] then
