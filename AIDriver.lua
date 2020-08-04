@@ -172,15 +172,38 @@ function AIDriver:init(vehicle)
 		self.vehicle.cp.settings:validateCurrentValues()
 	end
 	self:setHudContent()
+	self.triggerHandler = TriggerHandler(self.vehicle,self:getSiloSelectedFillTypeSetting())
+	self.triggerHandler:enableFuelLoading()
+end
+
+function AIDriver:updateLoadingText()
+	local fillableObject = self.triggerHandler.fillableObject
+	if fillableObject then
+		local fillLevel = fillableObject.object:getFillUnitFillLevel(fillableObject.fillUnitIndex)
+		local fillCapacity = fillableObject.object:getFillUnitCapacity(fillableObject.fillUnitIndex)
+		if fillLevel and fillCapacity then
+			if fillableObject.isLoading then 
+				courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",math.floor(fillLevel),fillCapacity))
+			else
+				courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_UNLOADING_AMOUNT;%d;%d",math.floor(fillLevel),fillCapacity))
+			end
+		end
+	end
 end
 
 function AIDriver:writeUpdateStream(streamId)
+	self.triggerHandler:writeUpdateStream(streamId)
 	streamWriteString(streamId,self.state.name)
+	streamWriteBool(streamId,self.active)
+--	streamWriteBool(streamId,self.vehicle.cp.isDriving)
 end 
 
 function AIDriver:readUpdateStream(streamId)
+	self.triggerHandler:readUpdateStream(streamId)
 	local nameState = streamReadString(streamId)
 	self.state = self.states[nameState]
+	self.active = streamReadBool(streamId)
+--	self.vehicle.cp.isDriving = streamReadBool(streamId)
 end
 
 function AIDriver:setHudContent()
@@ -235,6 +258,7 @@ function AIDriver:beforeStart()
 		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
 		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
 	end
+	self.triggerHandler:onStart()
 end
 
 --- Start driving
@@ -274,6 +298,7 @@ end
 --- @param msgReference string as defined in globalInfoText.msgReference
 function AIDriver:stop(msgReference)
 	self:deleteCollisionDetector()
+	self.triggerHandler:onStop()
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
@@ -290,6 +315,7 @@ end
 function AIDriver:continue()
 	self:debug('Continuing...')
 	self.state = self.states.RUNNING
+	self.triggerHandler:onContinue()
 	-- can be stopped for various reasons and those can have different msgReferences, so
 	-- just remove all, if there's a condition which requires a message it'll call setInfoText() again anyway.
 	self:clearAllInfoTexts()
@@ -342,6 +368,8 @@ function AIDriver:update(dt)
 	self:payWages(dt)
 	self:detectSlipping()
 	self:resetSpeed()
+	self:updateLoadingText()
+	self.triggerHandler:onUpdate(dt)
 end
 
 --- Main driving function
@@ -356,7 +384,7 @@ function AIDriver:drive(dt)
 
 	self:updateInfoText()
 
-	if self.state == self.states.STOPPED then
+	if self.state == self.states.STOPPED or self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() then
 		self:hold()
 		self:continueIfWaitTimeIsOver()
 	end
@@ -371,10 +399,9 @@ function AIDriver:driveCourse(dt)
 	-- check if reversing
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
 	-- stop for fuel if needed
-	if not courseplay:checkFuel(self.vehicle, lx, lz, true) then
+	if not self:checkFuel() then 
 		self:hold()
 	end
-
 	if not self:getIsEngineReady() then
 		if self:getSpeed() > 0 and self.allowedToDrive then
 			self:startEngineIfNeeded()
@@ -382,16 +409,18 @@ function AIDriver:driveCourse(dt)
 			self:debugSparse('Wait for the engine to start')
 		end
 	end
-
 	-- use the recorded speed by default
 	if not self:hasTipTrigger() then
 		self:setSpeed(self:getRecordedSpeed())
 	end
-
-	if self:getIsInFilltrigger() then
+	local isInTrigger, isAugerWagonTrigger = self.triggerHandler:isInTrigger()
+	if self:getIsInFilltrigger() or isInTrigger then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
+		if isAugerWagonTrigger then 
+			self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)
+		end
 	end
-		
+	
 	self:slowDownForWaitPoints()
 
 	self:stopEngineIfNotNeeded()
@@ -790,7 +819,7 @@ function AIDriver:isNearFillPoint()
 	if self.course == nil then
 		return false
 	else
-		return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 3;
+		return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 5;
 	end
 end
 
@@ -1104,9 +1133,10 @@ function AIDriver:dischargeAtTipTrigger(dt)
 				--we are reversing into the BGA Silo. We are taking the last rev waypoint as virtual unloadpoint and start tipping there the same way as on unload point
 				allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,self.course:getLastReverseAt(self.ppc:getCurrentWaypointIx()))     
 			end
+			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 		else
-			--using all standard tip triggers
-			allowedToDrive = self:tipIntoStandardTipTrigger()
+			--dischargeAtObjects is handled by the new TriggerHandler
+		--	allowedToDrive = self:tipIntoStandardTipTrigger()
 		end;
 	end
 	return allowedToDrive, takeOverSteering
@@ -1227,7 +1257,6 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 		and not self:isNearFillPoint() then
 			self:setSpeed(self.vehicle.cp.speeds.approach)
 			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
-			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
 		end
 	--end
 	-- tractor reaches unloadPoint
@@ -1797,14 +1826,36 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	return newSpeed, allowedToDrive
 end
 
-function AIDriver:isLoadingTriggerCallbackEnabled()
+function AIDriver:isAutoDriveDriving()
 	return false
 end
 
-function AIDriver:isUnloadingTriggerCallbackEnabled()
-	return false
+function AIDriver:checkFuel()
+	--override
+	local allowedToDrive = true
+	if self.vehicle.getConsumerFillUnitIndex ~= nil then
+		local dieselIndex = self.vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
+		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
+		if currentFuelPercentage < 5 then
+			allowedToDrive = false;
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST');
+		elseif currentFuelPercentage < 20 then
+			CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD');
+		elseif currentFuelPercentage < 99.99 then
+		--	CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
+		end;
+	end
+	return allowedToDrive;
 end
 
-function AIDriver:isOverloadingTriggerCallbackEnabled()
-	return false
+function AIDriver:getSiloSelectedFillTypeSetting()
+
+end
+
+function AIDriver:getCanShowDriveOnButton()
+	if self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() then 
+		
+		return true
+	end
+	self:refreshHUD()
 end
