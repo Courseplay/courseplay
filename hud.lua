@@ -899,7 +899,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeLaneOffset')	
 					end
-				
 				elseif entry.functionToCall == 'turnOnField:toggle' then
 					--TurnOnFieldSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.turnOnField:getLabel()
@@ -1033,7 +1032,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 							end
 						end
 					end
-
 				elseif entry.functionToCall == 'combineWantsCourseplayer:toggle' then
 					--CombineWantsCourseplayerSetting 
 					if not g_combineUnloadManager:getHasUnloaders(vehicle)  then
@@ -1080,7 +1078,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'switchCourseplayerSide')
 					end
-			
 				elseif entry.functionToCall == 'turnStage:toggle' then
 					--TurnStageSetting
 					if g_combineUnloadManager:getHasUnloaders(vehicle) then
@@ -1093,22 +1090,17 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.turnStage)
 					end
-
 				elseif entry.functionToCall == 'driverPriorityUseFillLevel:toggle' then
 					--DriverPriorityUseFillLevelSetting 
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.driverPriorityUseFillLevel:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.driverPriorityUseFillLevel:getText() 
-
 				elseif entry.functionToCall == 'stopForUnload:toggle' then
 					--StopForUnloadSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopForUnload:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.stopForUnload:getText()
-		
 				elseif entry.functionToCall == 'changeHeadlandReverseManeuverType' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE')
 					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc( courseplay.headlandReverseManeuverTypeText[ vehicle.cp.headland.reverseManeuverType ])
-		
-		
 				elseif entry.functionToCall == 'changeCombineOffset' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
 					if vehicle.cp.modeState ~= nil then
@@ -1191,7 +1183,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'refillUntilPct:changeByX' then
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.refillUntilPct:getLabel() 
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.refillUntilPct:getText()
-							
 				elseif entry.functionToCall == 'automaticUnloadingOnField:toggle' then
 					--not used right now!
 					--AutomaticUnloadingOnFieldSetting 
@@ -1966,7 +1957,6 @@ function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,s
 			courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navPlus' },  "incrementRunCounter",   i-diff, self.buttonPosX[4], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i,  5, false):setSetting(setting);
 		end
 		courseplay.button:new(vehicle, hudPage, nil, "changeMaxFillLevel", i-diff, self.contentMinX, self.linesButtonPosY[i], self.contentMaxWidth, self.lineHeight, i, 1, true, true):setSetting(setting);
-		
 		--vehicle.cp.hud.content.pages[hudPage][i][column].functionToCall = funct
 	end
 end
@@ -2344,7 +2334,6 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:debug(vehicle,"setGrainTransportAIDriverContent")
 	--page 1 driving
 	self:addRowButton(vehicle,nil,'setDriveNow', 1, 2, 3 )
-
 	--page 3 
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.refillUntilPct,'changeByX', 3, 1, 1 )
@@ -2471,7 +2460,7 @@ function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupShovelModeButtons(vehicle, 9)
-	self:addRowButton(vehicle,'toggleShovelStopAndGo', 9, 5, 1 )
+	self:addRowButton(vehicle,nil,'toggleShovelStopAndGo', 9, 5, 1 )
 end
 
 function courseplay.hud:setLevelCompactAIDriverContent(vehicle)
@@ -2493,7 +2482,6 @@ end
 function courseplay.hud:setBaleLoaderAIDriverContent(vehicle)
 	self:debug(vehicle,"setBaleLoaderAIDriverContent")
 	self:addRowButton(vehicle,vehicle.cp.settings.automaticUnloadingOnField,'toggle', 3, 6, 1 )
-	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 

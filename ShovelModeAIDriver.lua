@@ -66,6 +66,7 @@ function ShovelModeAIDriver:init(vehicle)
 	self.shovelState = self.states.STATE_TRANSPORT
 	self.refSpeed = 15
 	self:setHudContent()
+	self.foundTrailer = nil
 end
 
 function ShovelModeAIDriver:setHudContent()
@@ -73,6 +74,11 @@ function ShovelModeAIDriver:setHudContent()
 end
 
 function ShovelModeAIDriver:start()
+	if not self:findShovel(self.vehicle) then 
+		print("Error: shovel not found!!")
+		return
+	end
+	
 	self:beforeStart()
 	--finding my working points
 	local vehicle = self.vehicle
@@ -133,7 +139,7 @@ function ShovelModeAIDriver:drive(dt)
 	if not self:checkShovelPositionsValid() or not self:checkWaypointsValid() then
 		return
 	end
-
+	local notAllowedToDrive = false
 	if self.shovelState == self.states.STATE_CHECKSILO then
 		self:hold()
 		if self:setShovelToPositionFinshed(2,dt) then
@@ -207,38 +213,40 @@ function ShovelModeAIDriver:drive(dt)
 		if self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, self.shovelEmptyPoint) < 15
 			and self:iAmBeforeEmptyPoint()
 			and self:iAmBehindFillEndPoint() then
-				self:setShovelState(self.states.STATE_WAIT_FOR_TARGET);
-		end;
+				self:setShovelState(self.states.STATE_WAIT_FOR_TARGET)
+		end
 		--backup for starting somewhere in between
 		if not self:setShovelToPositionFinshed(3,dt) then
 			self:hold()
 		end
 	elseif self.shovelState == self.states.STATE_WAIT_FOR_TARGET then
 		self.refSpeed = self.vehicle.cp.speeds.crawl
-		if self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, self.shovelEmptyPoint) < 10 then
+		if self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, self.shovelEmptyPoint) < 10 then 
 			self:hold()
 		end
 		if self:setShovelToPositionFinshed(4,dt) then
-			self:searchForShovelEmptyTrigger()
+			--search for UnloadStation(UnloadTrigger) or correct Trailer ahead, else wait
+			self:searchForUnloadingObjectRaycast()
 		end
-
-		if self.vehicle.cp.shovel.targetFound ~= nil then
-			self:setShovelState(self.states.STATE_START_UNLOAD)
-		end
-
 	elseif self.shovelState == self.states.STATE_START_UNLOAD then
 		self.refSpeed = self.vehicle.cp.speeds.turn
-		local dischargeNode = self.vehicle.cp.shovel:getCurrentDischargeNode()
-		if self.vehicle.cp.shovel:getCanDischargeToObject(dischargeNode) then
+		local currentDischargeNode = self.shovel:getCurrentDischargeNode()
+		if self.shovel:getCanDischargeToObject(currentDischargeNode) and currentDischargeNode.dischargeObject then
 			if self:setShovelToPositionFinshed(5,dt) then
 				self:setShovelState(self.states.STATE_WAIT_FOR_UNLOADREADY);
 			end;
 			self:hold()
-		end;
+		elseif currentDischargeNode.dischargeObject or currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
+			self:hold()
+		else --drive in straight line to waitPoint is UnloadStation(UnloadTrigger) or correct Trailer was found
+			notAllowedToDrive = true
+			local gx, _, gz = self.course:getWaypointLocalPosition(self:getDirectionNode(),self.shovelEmptyPoint)
+			self:driveVehicleToLocalPosition(dt, true, true, gx, gz, self.refSpeed)
+		end
 	elseif self.shovelState == self.states.STATE_WAIT_FOR_UNLOADREADY then
 		self:hold()
-		local dischargeNode = self.vehicle.cp.shovel:getCurrentDischargeNode()
-		if self:getIsShovelEmpty() or not self.vehicle.cp.shovel:getCanDischargeToObject(dischargeNode) then
+		local dischargeNode = self.shovel:getCurrentDischargeNode()		
+		if self:getIsShovelEmpty() or not self.shovel:getCanDischargeToObject(dischargeNode) and self.foundTrailer then
 			if self:setShovelToPositionFinshed(4,dt) then
 				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.directionNode, 3 )
 				self.ppc:initialize(newPoint)
@@ -251,17 +259,20 @@ function ShovelModeAIDriver:drive(dt)
 			if not self:setShovelToPositionFinshed(3,dt) then
 				--self:hold()
 			else
-				self.vehicle.cp.shovel.targetFound = nil
+				self.shovel.targetFound = nil
 				self:setShovelState(self.states.STATE_TRANSPORT)
 			end
 		end
+		self.foundTrailer=nil
 	elseif self.shovelState == self.states.STATE_WORK_FINISHED then
 		self:hold()
 		self:setInfoText('WORK_END')
 	end
 	self:updateInfoText()
 	self.ppc:update()
-	AIDriver.driveCourse(self, dt)
+	if not notAllowedToDrive then
+		AIDriver.driveCourse(self, dt)
+	end
 	self:resetSpeed()
 	self:checkLastWaypoint()
 end
@@ -311,15 +322,15 @@ function ShovelModeAIDriver:setShovelToPositionFinshed(stage,dt)
 end
 
 function ShovelModeAIDriver:getIsShovelFull()
-	return self.vehicle.cp.shovel:getFillUnitFillLevel(1) >= self.vehicle.cp.shovel:getFillUnitCapacity(1)*0.98
+	return self.shovel:getFillUnitFillLevel(1) >= self.shovel:getFillUnitCapacity(1)*0.98
 end
 
 function ShovelModeAIDriver:getIsShovelEmpty()
-	return self.vehicle.cp.shovel:getFillUnitFillLevel(1) <= self.vehicle.cp.shovel:getFillUnitCapacity(1)*0.01
+	return self.shovel:getFillUnitFillLevel(1) <= self.shovel:getFillUnitCapacity(1)*0.01
 end
 
 function ShovelModeAIDriver:getFillLevelDoesChange()
-	local fillLevel = self.vehicle.cp.shovel:getFillUnitFillLevel(1)
+	local fillLevel = self.shovel:getFillUnitFillLevel(1)
 	if not self.savedLastFillLevel or self.savedLastFillLevel ~= fillLevel then
 		self.savedLastFillLevel = fillLevel
 		return true
@@ -334,21 +345,44 @@ function ShovelModeAIDriver:iAmBeforeEmptyPoint()
 	return self.ppc:getCurrentWaypointIx() < self.shovelEmptyPoint
 end
 
-function ShovelModeAIDriver:searchForShovelEmptyTrigger()
+function ShovelModeAIDriver:searchForUnloadingObjectRaycast()
 	local vehicle = self.vehicle
-	vehicle.cp.shovel.targetFound = nil;
 	local rx, ry, rz = self.course:getWaypointPosition(self.shovelEmptyPoint)
 	local nx, nz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, rx, ry, rz);
 	local lx7,ly7,lz7 = localDirectionToWorld(vehicle.cp.directionNode, nx, -1, nz);
 	for i=6,12 do
-		if vehicle.cp.shovel.targetFound == nil then
+		if self.shovelState == self.states.STATE_WAIT_FOR_TARGET then
 			local x,y,z = localToWorld(vehicle.cp.directionNode,0,4,i);
-			raycastAll(x, y, z, lx7, ly7, lz7, "findTrailerRaycastCallback", 10, vehicle);
+			raycastAll(x, y, z, lx7, ly7, lz7, "searchForUnloadingObjectRaycastCallback", 10, self);
 			if courseplay.debugChannels[10] then
 				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx7*10, y+ly7*10, z+lz7*10);
 			end;
 		end
 	end;
+end
+
+function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, y, z, distance)
+	local trailer = g_currentMission.nodeToObject[transformId]
+	if trailer then
+		if trailer:isa(Vehicle) then 
+			if trailer.getFillUnitSupportsToolType then
+				for fillUnitIndex,fillUnit in pairs(trailer:getFillUnits()) do
+					if trailer:getFillUnitSupportsToolType(fillUnitIndex, ToolType.DISCHARGEABLE) then
+						self:debug("Trailer found!!")
+						self:setShovelState(self.states.STATE_START_UNLOAD)
+						self.foundTrailer = true
+						return
+					end
+				end
+			end
+			return
+		elseif trailer:isa(UnloadTrigger) then 
+			self:setShovelState(self.states.STATE_START_UNLOAD)
+			return
+		end
+	else
+		return
+	end
 end
 
 function ShovelModeAIDriver:onWaypointPassed(ix)
@@ -459,3 +493,12 @@ end
 function ShovelModeAIDriver:setLightsMask(vehicle)
 	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
 end
+
+function ShovelModeAIDriver:findShovel(vehicle)
+    local implementWithShovel = AIDriverUtil.getImplementWithSpecialization(vehicle, Shovel)
+    if implementWithShovel or SpecializationUtil.hasSpecialization(Shovel, vehicle.specializations) then
+        self.shovel = implementWithShovel or vehicle
+		return true
+    end
+end
+

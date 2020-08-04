@@ -288,52 +288,6 @@ function courseplay:findFuelTriggerCallback(transformId, x, y, z, distance)
 	return true;
 end;
 
---FIND Trailer CALLBACK
-function courseplay:findTrailerRaycastCallback(transformId, x, y, z, distance)
-	local trailer = g_currentMission.nodeToObject[transformId];
-	local shovelFillUnits =  self.cp.shovel:getFillUnits()
-	local shovelFillType = shovelFillUnits[1].fillType
-	local shovelFillLevel = shovelFillUnits[1].fillLevel
-	local failReason = "none"
-	if trailer~= nil and trailer.getFillUnits then
-		local fillUnits = trailer:getFillUnits()
-		--print(string.format("trailer found; shovelFillType=%s ",tostring(shovelFillType)))
-		for i=1,#fillUnits do
-			local fillTypes = trailer:getFillUnitSupportedFillTypes(i)
-			--print(string.format("fillUnit%s: supported:%s; fillType:%s; fillLevel:%s capacity:%s"
-			--,tostring(i),tostring(fillTypes[shovelFillType]),tostring(fillUnits[i].fillType),tostring(fillUnits[i].fillLevel),tostring(fillUnits[i].capacity)))
-			if fillTypes[shovelFillType]
-				and (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN)
-				and fillUnits[i].fillLevel < fillUnits[i].capacity then
-				self.cp.shovel.targetFound = trailer;
-			elseif not fillTypes[shovelFillType] then
-				failReason = "shovels fillType not supported"
-			elseif not (fillUnits[i].fillType == shovelFillType or fillUnits[i].fillType == FillType.UNKNOWN) then
-				failReason = "shovel and trailer doesnt have the same fillType"
-			elseif not (fillUnits[i].fillLevel < fillUnits[i].capacity) then
-				failReason = "target is full"
-			end
-		end
-	end
-
-	local Bunker = courseplay.triggers.tipTriggers[transformId]
-	if Bunker then
-		if Bunker.unloadingStation then
-			if Bunker.unloadingStation:getFreeCapacity(shovelFillType, 1) > shovelFillLevel then
-				self.cp.shovel.targetFound = courseplay.triggers.tipTriggers[transformId];
-			else
-				failReason = "Bunkers unloading station has no capacity"
-			end
-		end
-	end
-	if failReason ~= 'none' and courseplay.debugChannels[10] then
-		if g_updateLoopIndex % 100 == 0 then
-			print("findTrailerRaycastCallback failed. Reason: "..failReason)
-		end
-	end
-
-	return true
-end
 
 function courseplay:updateAllTriggers()
 	courseplay:debug('updateAllTriggers()', 1);
