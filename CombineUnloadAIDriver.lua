@@ -711,8 +711,9 @@ end
 function CombineUnloadAIDriver:getStraightReverseCourse(length)
 	local waypoints = {}
 	local l = length or 100
-	for i=0, -l, -5 do
-		local x, y, z = localToWorld(self.trailerToFill.rootNode, 0, 0, i)
+	local lastTrailer = AIDriverUtil.getLastAttachedImplement(self.vehicle)
+	for i = 0, -l, -5 do
+		local x, y, z = localToWorld(lastTrailer.rootNode, 0, 0, i)
 		table.insert(waypoints, {x = x, y = y, z = z, rev = true})
 	end
 	return Course(self.vehicle, waypoints, true)
@@ -730,7 +731,6 @@ function CombineUnloadAIDriver:getTrailersTargetNode()
 			if tipper:getFillUnitFreeCapacity(j) > 0 then
 				allTrailersFull = false
 				if tipperFillType == FillType.UNKNOWN or tipperFillType == combineFillType or combineFillType == FillType.UNKNOWN then
-					self.trailerToFill = tipper
 					local targetNode = tipper:getFillUnitAutoAimTargetNode(1)
 					if targetNode then
 						return targetNode, allTrailersFull

@@ -1767,8 +1767,6 @@ function Setting:get()
 	return self.value
 end
 
-
-
 -- Is the current value same as the param?
 function Setting:is(value)
 	return self.value == value
@@ -1835,6 +1833,11 @@ end
 
 function Setting:setParent(name)
 	self.parentName = name
+end
+
+--- Should this setting be disabled on the GUI?
+function Setting:isDisabled()
+	return false
 end
 
 ---@class FloatSetting
@@ -2607,12 +2610,17 @@ end
 
 ---@class PipeAlwaysUnfold : BooleanSetting
 PipeAlwaysUnfoldSetting = CpObject(BooleanSetting)
-function PipeAlwaysUnfoldSetting:init()
+function PipeAlwaysUnfoldSetting:init(vehicle)
 	BooleanSetting.init(self, 'pipeAlwaysUnfold', 'COURSEPLAY_PIPE_ALWAYS_UNFOLD',
-				'COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD', nil)
+				'COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD', vehicle)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
 end
+
+function PipeAlwaysUnfoldSetting:isDisabled()
+	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineAIDriver)
+end
+
 
 ---@class SowingMachineFertilizerEnabled : BooleanSetting
 SowingMachineFertilizerEnabled = CpObject(BooleanSetting)
@@ -2625,11 +2633,15 @@ end
 
 ---@class StrawOnHeadland : BooleanSetting
 StrawOnHeadland = CpObject(BooleanSetting)
-function StrawOnHeadland:init()
+function StrawOnHeadland:init(vehicle)
 	BooleanSetting.init(self, 'strawOnHeadland', 'COURSEPLAY_STRAW_ON_HEADLAND',
-				'COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', nil)
+				'COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', vehicle)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
+end
+
+function StrawOnHeadland:isDisabled()
+	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineAIDriver)
 end
 
 ---@class RidgeMarkersAutomatic : BooleanSetting
@@ -2701,6 +2713,11 @@ function SelfUnloadSetting:init(vehicle)
 	BooleanSetting.init(self, 'selfUnload', 'COURSEPLAY_SELF_UNLOAD', 'COURSEPLAY_SELF_UNLOAD_TOOLTIP', vehicle)
 end
 
+function SelfUnloadSetting:isDisabled()
+	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineAIDriver)
+end
+
+
 ---@class SymmetricLaneChangeSetting : BooleanSetting
 SymmetricLaneChangeSetting = CpObject(BooleanSetting)
 function SymmetricLaneChangeSetting:init(vehicle)
@@ -2719,6 +2736,18 @@ function StopForUnloadSetting:checkAndSetValidValue(new)
 		return 1
 	end
 	return BooleanSetting.checkAndSetValidValue(self, new)
+end
+
+---@class AllowUnloadOnFirstHeadlandSetting : BooleanSetting
+AllowUnloadOnFirstHeadlandSetting = CpObject(BooleanSetting)
+function AllowUnloadOnFirstHeadlandSetting:init(vehicle)
+	BooleanSetting.init(self, 'allowUnloadOnFirstHeadland', 'COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND',
+			'COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP', vehicle)
+	self:set(true)
+end
+
+function AllowUnloadOnFirstHeadlandSetting:isDisabled()
+	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineAIDriver)
 end
 
 -----------------------------------------------------------------------
@@ -2823,9 +2852,9 @@ function SaveFuelOptionSetting:init(vehicle)
 	self:set(true)
 end
 
----@class AllwaysSearchFuelSetting : BooleanSetting
-AllwaysSearchFuelSetting = CpObject(BooleanSetting)
-function AllwaysSearchFuelSetting:init(vehicle)
+---@class AlwaysSearchFuelSetting : BooleanSetting
+AlwaysSearchFuelSetting = CpObject(BooleanSetting)
+function AlwaysSearchFuelSetting:init(vehicle)
 	BooleanSetting.init(self, 'allwaysSearchFuel', 'COURSEPLAY_FUEL_SEARCH_FOR', 'COURSEPLAY_FUEL_SEARCH_FOR', vehicle, {'COURSEPLAY_FUEL_BELOW_20PCT','COURSEPLAY_FUEL_ALWAYS'})
 	self:set(false)
 end
