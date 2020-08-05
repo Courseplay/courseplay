@@ -597,7 +597,7 @@ function CombineAIDriver:canUnloadWhileMovingAtWaypoint(ix)
 		self:debug('pipe would be in fruit at the planned rendezvous waypoint %d', ix)
 		return false
 	end
-	if self.fieldworkCourse:isOnHeadland(ix, 1) then
+	if self.vehicle.cp.settings.allowUnloadOnFirstHeadland:is(false) and self.fieldworkCourse:isOnHeadland(ix, 1) then
 		self:debug('planned rendezvous waypoint %d is on first headland, no unloading of moving combine there', ix)
 		return false
 	end

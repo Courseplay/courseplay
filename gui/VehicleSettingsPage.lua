@@ -38,6 +38,7 @@ function VehicleSettingsPage:onCreateVehicleSettingsPage(element)
 		element.toolTipText = setting:getToolTip()
 		element:setTexts(setting:getGuiElementTexts())
 		element:setState(setting:getGuiElementState())
+		element:setDisabled(setting:isDisabled())
 	else
 		courseplay.info('VehicleSettingsPage: can\'t find setting %s', element.name)
 	end
