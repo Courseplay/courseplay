@@ -71,13 +71,14 @@
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="транспортировка закончена." />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="закончил перевозку жидкостей." />
 		<text name="COURSEPLAY_WORK_END" 									text="завершил работу на маршруте." />
-		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text="нуждается в разгрузке " />
-		<text name="COURSEPLAY_NEEDS_REFILLING" 							text="нуждается в заправке " />
+		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text="нуждается в разгрузке. " />
+		<text name="COURSEPLAY_NEEDS_REFILLING" 							text="нуждается в заправке. " />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="выгрузка тюков." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Достигнут пункт разгрузки" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Расстояние до точки разгрузки" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Заполнение: %d из %d" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Разгрузка: %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 								text="Отображение путевых точек:" />
 		<text name="COURSEPLAY_PATHFINDING" 								text="Избегать движения по посевам:" />
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Плуг за границы поля" />
@@ -293,7 +294,7 @@
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Выбрать поле:" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Добавить поле в список" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Переписать поле в списке" />
-		<text name="COURSEPLAY_USER" 										text="в собственности" />
+		<text name="COURSEPLAY_USER" 										text="пользовательская" /> <!-- при ручной перезаписи границы добавляется эта пометка к номеру поля -->
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="скоро развалится от повреждений" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="нуждается в ремонте" />
 		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 					text="на ремонте" />
@@ -476,13 +477,13 @@
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"		text="Задний ход при развороте" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Разрешить искать траекторию поворота, для которой потребуется движения задним ходом (только с небуксируемыми орудиями)." />
 
-		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
-		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
-		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="не выбран fillType!/не поддерживается курс пополнения!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="добавить новый fillType" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="достиг точки заправки." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="неверный fillType для триггера." />
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Разгрузка комбайна на 1-й ПП" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Разрешить разгрузку движущегося комбайн на первой поворотной полосе (ПП), при этом разгрузчику придётся выезжать за пределы поля." />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
