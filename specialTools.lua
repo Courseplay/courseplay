@@ -765,7 +765,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 		
 		--inhibit fuelSave because wrapping takes longer than fuelsave timer
-		if self.cp.saveFuelOptionActive and not stoppedForReason then
+		if self.cp.settings.saveFuelOption:is(true) and not stoppedForReason then
 			self.cp.saveFuel = false
 			courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
 		end 

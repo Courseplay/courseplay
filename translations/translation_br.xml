@@ -449,10 +449,10 @@
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Clique botão direito para HUD" />
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Ativar/Desativar HUD (Veículo atual) Clique no botão direito do mous)" />
 
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Mostrar waypoints temporários" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Mostrar rotas temporários (como busca de caminhos ou manobras)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Sobrepor cabeceira" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Sobrepor passos de cabeceira em porcentagem" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Primeiro" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Último" />
@@ -469,7 +469,15 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Ceifadeira descarrega quando cheia ou quando houver carreta por perto" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="marcha ré em manobras" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Permite encontrar um caminho com curva que precise de marcha ré (apenas com implementos não rebocados)" />
+
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
 		
+
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
 		<!-- Replace marker, do not remove! -->
-		</texts>
+</texts>
 </l10n>

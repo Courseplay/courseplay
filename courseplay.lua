@@ -43,6 +43,7 @@ courseplay.clock = 0;
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
 	['0d8e45a8ed916c1cd40820165b81e12d'] = true; -- Tensuko
 	['97c8e6d0d14f4e242c3c37af68cc376c'] = true; -- Dan
+	['8f5e9e8fb5a23375afbb3b7abbc6335c'] = true; -- Goof
 };
 
 local function initialize()
@@ -51,6 +52,7 @@ local function initialize()
 		'DevHelper',
 		'CpManager',
 		'base',
+		'LoadingUnloading',
 		'button',
 		'bunkersilo_management',
 		'BunkersiloManager',
@@ -81,7 +83,9 @@ local function initialize()
 		'PurePursuitController',
 		'Waypoint',
 		'AIDriver',
+		'TriggerAIDriver',
 		'CombineUnloadAIDriver',
+		'OverloaderAIDriver',
 		'CombineUnloadManager',
 		'GrainTransportAIDriver',
 		'FieldworkAIDriver',
@@ -122,6 +126,13 @@ local function initialize()
 		'gui/GlobalSettingsPage',
 		'gui/VehicleSettingsPage',
 		'Events/StartStopEvent',
+		'Events/UnloaderEvents',
+		'Events/StartStopWorkEvent',
+		'Events/UserConnectedEvent',
+		'Events/PostSyncEvent',
+		'Events/SettingsListEvent',
+		'Events/SiloSelectedFillTypeEvent',
+		'Generic/LinkedList'
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded
@@ -188,12 +199,8 @@ local function setGlobalData()
 	StartingPointSetting.START_AT_CURRENT_POINT = 3;
 	StartingPointSetting.START_AT_NEXT_POINT = 4;
 
-	-- warning lights options
-	courseplay.lights.WARNING_LIGHTS_NEVER = 0;
-	courseplay.lights.WARNING_LIGHTS_BEACON_ON_STREET = 1;
-	courseplay.lights.WARNING_LIGHTS_BEACON_HAZARD_ON_STREET = 2;
-	courseplay.lights.WARNING_LIGHTS_BEACON_ALWAYS = 3;
-
+	-- lights options
+	-- this should have a Setting Class like WarningLightsModeSetting
 	courseplay.lights.HEADLIGHT_OFF = 0;
 	courseplay.lights.HEADLIGHT_STREET = 1;
 	courseplay.lights.HEADLIGHT_FULL = 7;
@@ -226,29 +233,6 @@ local function setGlobalData()
 		courseplay.numberDecimalSeparator = langNumData[g_languageShort][2];
 	end;
 
-	--MULTIPLAYER
-	
-	courseplay.checkValues = {
-		"infoText",
-		"HUD0noCourseplayer",
-		"HUD0wantsCourseplayer",
-		"HUD0tractorName",
-		"HUD0tractorForcedToStop",
-		"HUD0tractor",
-		"HUD0combineForcedSide",
-		"HUD0isManual",
-		"HUD0turnStage",
-		"HUD1notDrive",
-		"HUD1wait",
-		"HUD1noWaitforFill",
-		"HUD4combineName",
-		"HUD4hasActiveCombine",
-		"HUD4savedCombine",
-		"HUD4savedCombineName"
-		
-	};
-
-
 	--UTF8
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
@@ -278,15 +262,15 @@ local function setGlobalData()
 		
 	courseplay.multiplayerSyncTable = {
 	
-	[1]={name='self.cp.automaticCoverHandling',dataFormat='Bool'},
-	[2]={name='self.cp.automaticUnloadingOnField',dataFormat='Bool'},
+	[1]={name='self.cp.automaticCoverHandling',dataFormat='Bool'}, --remove
+	[2]={name='self.cp.automaticUnloadingOnField',dataFormat='Bool'}, --remove
 	[3]={name='self.cp.mode',dataFormat='Int'},
 	[4]={name='self.cp.turnDiameterAuto',dataFormat='Float'},
 	[5]={name='self.cp.canDrive',dataFormat='Bool'},
 	[6]={name='self.cp.combineOffsetAutoMode',dataFormat='Bool'},
 	[7]={name='self.cp.combineOffset',dataFormat='Float'},
 	[8]={name='self.cp.currentCourseName',dataFormat='String'},
-	[9]={name='self.cp.driverPriorityUseFillLevel',dataFormat='Bool'},
+	[9]={name='self.cp.driverPriorityUseFillLevel',dataFormat='Bool'}, --remove
 	[10]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
 	[11]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
 	[12]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
@@ -302,13 +286,13 @@ local function setGlobalData()
     [22]={name='self.cp.hasUnloadingRefillingCourse	',dataFormat='Bool'},
 	[23]={name='self.cp.infoText',dataFormat='String'},
 	[24]={name='self.cp.returnToFirstPoint',dataFormat='Bool'},
-	[25]={name='self.cp.ridgeMarkersAutomatic',dataFormat='Bool'},
+	[25]={name='self.cp.ridgeMarkersAutomatic',dataFormat='Bool'}, --remove
 	[26]={name='self.cp.shovelStopAndGo',dataFormat='Bool'},
 	[27]={name='self.cp.startAtPoint',dataFormat='Int'}, -- TODO: remove!
-	[28]={name='self.cp.stopAtEnd',dataFormat='Bool'},
+	[28]={name='self.cp.stopAtEnd',dataFormat='Bool'}, --remove
 	[29]={name='self.cp.isDriving',dataFormat='Bool'},
 	[30]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
-	[31]={name='self.cp.realisticDriving',dataFormat='Bool'},
+	[31]={name='self.cp.realisticDriving',dataFormat='Bool'}, --remove
 	[32]={name='self.cp.driveOnAtFillLevel',dataFormat='Float'},
 	[33]={name='self.cp.followAtFillLevel',dataFormat='Float'},
 	[34]={name='self.cp.refillUntilPct',dataFormat='Float'},
@@ -325,20 +309,20 @@ local function setGlobalData()
 	[45]={name='self.cp.loadUnloadOffsetX',dataFormat='Float'},
 	[46]={name='self.cp.loadUnloadOffsetZ',dataFormat='Float'},
 	[47]={name='self.cp.hud.currentPage',dataFormat='Int'},
-	[48]={name='self.cp.HUD0noCourseplayer',dataFormat='Bool'},
-	[49]={name='self.cp.HUD0wantsCourseplayer',dataFormat='Bool'},
-	[50]={name='self.cp.HUD0combineForcedSide',dataFormat='String'},
-	[51]={name='self.cp.HUD0isManual',dataFormat='Bool'},
-	[52]={name='self.cp.HUD0turnStage',dataFormat='Int'},
-	[53]={name='self.cp.HUD0tractorForcedToStop',dataFormat='Bool'},
-	[54]={name='self.cp.HUD0tractorName',dataFormat='String'},
-	[55]={name='self.cp.HUD0tractor',dataFormat='Bool'},
-	[56]={name='self.cp.HUD1wait',dataFormat='Bool'},
-	[57]={name='self.cp.HUD1noWaitforFill',dataFormat='Bool'},
-	[58]={name='self.cp.HUD4hasActiveCombine',dataFormat='Bool'},
-	[59]={name='self.cp.HUD4combineName',dataFormat='String'},
-	[60]={name='self.cp.HUD4savedCombine',dataFormat='Bool'},
-	[61]={name='self.cp.HUD4savedCombineName',dataFormat='String'},
+	[48]={name='self.cp.HUD0noCourseplayer',dataFormat='Bool'}, --remove
+	[49]={name='self.cp.HUD0wantsCourseplayer',dataFormat='Bool'}, --remove
+	[50]={name='self.cp.HUD0combineForcedSide',dataFormat='String'}, --remove
+	[51]={name='self.cp.HUD0isManual',dataFormat='Bool'}, --remove
+	[52]={name='self.cp.HUD0turnStage',dataFormat='Int'}, --remove
+	[53]={name='self.cp.HUD0tractorForcedToStop',dataFormat='Bool'}, --remove
+	[54]={name='self.cp.HUD0tractorName',dataFormat='String'}, --remove
+	[55]={name='self.cp.HUD0tractor',dataFormat='Bool'}, --remove
+	[56]={name='self.cp.HUD1wait',dataFormat='Bool'}, --remove
+	[57]={name='self.cp.HUD1noWaitforFill',dataFormat='Bool'}, --remove
+	[58]={name='self.cp.HUD4hasActiveCombine',dataFormat='Bool'}, --remove
+	[59]={name='self.cp.HUD4combineName',dataFormat='String'}, --remove
+	[60]={name='self.cp.HUD4savedCombine',dataFormat='Bool'}, --remove
+	[61]={name='self.cp.HUD4savedCombineName',dataFormat='String'}, --remove
 	[62]={name='self.cp.waypointIndex',dataFormat='Int'},
 	[63]={name='self.cp.isRecording',dataFormat='Bool'},
 	[64]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
@@ -351,7 +335,7 @@ local function setGlobalData()
 	[71]={name='self.cp.visualWaypointsStartEnd',dataFormat='Bool'},
 	[72]={name='self.cp.visualWaypointsAll',dataFormat='Bool'},
 	[73]={name='self.cp.visualWaypointsCrossing',dataFormat='Bool'},
-	[74]={name='self.cp.warningLightsMode',dataFormat='Int'},
+	[74]={name='self.cp.warningLightsMode',dataFormat='Int'}, --remove
 	[75]={name='self.cp.waitTime',dataFormat='Int'},
 	[77]={name='self.cp.startingCorner',dataFormat='Int'},
 	[78]={name='self.cp.startingDirection',dataFormat='Int'},
@@ -366,12 +350,11 @@ local function setGlobalData()
 	[87]={name='self.cp.generationPosition.fieldNum',dataFormat='Int'},
 	[87]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
 	[88]={name='self.cp.generationPosition.x',dataFormat='Float'},
-	[89]={name='self.cp.generationPosition.z',dataFormat='Float'},
-	[90]={name='self.cp.turnOnField',dataFormat='Bool'}
+	[89]={name='self.cp.generationPosition.z',dataFormat='Float'}
 	}
-
+	
 	-- TODO: see where is the best to instantiate these settings. Maybe we need a container for all these
-	courseplay.globalSettings = SettingsContainer()
+	courseplay.globalSettings = SettingsContainer("globalSettings")
 	courseplay.globalSettings:addSetting(LoadCoursesAtStartupSetting)
 	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
 	courseplay.globalSettings:addSetting(EarnWagesSetting)

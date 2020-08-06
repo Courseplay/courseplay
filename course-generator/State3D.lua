@@ -109,6 +109,15 @@ function State3D:distance(other)
     return d
 end
 
+local sqrt2 = math.sqrt(2)
+
+function State3D:octileDistance(other)
+    local dx = math.abs(other.x - self.x)
+    local dy = math.abs(other.y - self.y)
+    local D, D2 = 1, sqrt2
+    return D * (dx + dy) + (D2 - 2 * D) * math.min(dx, dy)
+end
+
 function State3D:equals(other, deltaPos, deltaTheta)
     local d = self:distance(other)
     if d < 2*deltaPos then
@@ -147,7 +156,7 @@ end
 ---@param node State3D
 function State3D:updateH(goal, analyticPathLength, heuristicPathLength)
     -- simple Eucledian heuristics
-    local h = self:distance(goal)
+    local h = self:octileDistance(goal)
     self.hAnalytic = analyticPathLength
     self.hHeuristic = heuristicPathLength
     self.h = math.max(h, analyticPathLength or 0, heuristicPathLength or 0)

@@ -23,8 +23,8 @@ Can follow a fieldworking course, perform turn maneuvers, turn on/off and raise/
 add adjustment course if needed.
 ]]
 
----@class FieldworkAIDriver : AIDriver
-FieldworkAIDriver = CpObject(AIDriver)
+---@class FieldworkAIDriver : TriggerAIDriver
+FieldworkAIDriver = CpObject(TriggerAIDriver)
 
 FieldworkAIDriver.myStates = {
 	ON_FIELDWORK_COURSE = {},
@@ -46,7 +46,7 @@ FieldworkAIDriver.myStates = {
 -- the base class ctr.
 function FieldworkAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'FieldworkAIDriver:init()')
-	AIDriver.init(self, vehicle)
+	TriggerAIDriver.init(self, vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
 	-- waiting for tools to turn on, unfold and lower
 	self.waitingForTools = true
@@ -99,12 +99,12 @@ function FieldworkAIDriver.register()
 				strawHarvestBaleCollectSpec = _G[self.customEnvironment].StrawHarvestBaleCollect
 			end
 			-- Only the courseplay helper can handle bale loaders.
-			if FieldworkAIDriver.hasImplementWithSpecialization(self, BaleLoader) or
-					FieldworkAIDriver.hasImplementWithSpecialization(self, BaleWrapper) or
-					FieldworkAIDriver.hasImplementWithSpecialization(self, Pickup) then
+			if AIDriverUtil.hasAIImplementWithSpecialization(self, BaleLoader) or
+					AIDriverUtil.hasAIImplementWithSpecialization(self, BaleWrapper) or
+					AIDriverUtil.hasAIImplementWithSpecialization(self, Pickup) then
 				return false
 			end
-			if strawHarvestBaleCollectSpec and FieldworkAIDriver.hasImplementWithSpecialization(self, strawHarvestBaleCollectSpec) then
+			if strawHarvestBaleCollectSpec and AIDriverUtil.hasAIImplementWithSpecialization(self, strawHarvestBaleCollectSpec) then
 				return false
 			end
 			if superFunc ~= nil then
@@ -137,19 +137,6 @@ function FieldworkAIDriver.register()
 	Pickup.registerEventListeners = Utils.appendedFunction(Pickup.registerEventListeners, PickupRegisterEventListeners)
 end
 
-function FieldworkAIDriver.hasImplementWithSpecialization(vehicle, specialization)
-	return FieldworkAIDriver.getImplementWithSpecialization(vehicle, specialization) ~= nil
-end
-
-function FieldworkAIDriver.getImplementWithSpecialization(vehicle, specialization)
-	local aiImplements = vehicle:getAttachedAIImplements()
-	for _, implement in ipairs(aiImplements) do
-		if SpecializationUtil.hasSpecialization(specialization, implement.object.specializations) then
-			return implement.object
-		end
-	end
-end
-
 --- Start the course and turn on all implements when needed
 --- @param startingPoint StartingPointSetting at which waypoint to start the course
 function FieldworkAIDriver:start(startingPoint)
@@ -163,11 +150,13 @@ function FieldworkAIDriver:start(startingPoint)
 	self.alignmentEnabled = self.vehicle.cp.alignment.enabled
 	self.vehicle.cp.alignment.enabled = true
 	-- stop at the last waypoint by default
-	self.vehicle.cp.stopAtEnd = true
+	self.vehicle.cp.settings.stopAtEnd:set(true)
 	-- any offset imposed by the driver itself (tight turns, end of course, etc.), additional to any
 	-- tool offsets
 	self.aiDriverOffsetX = 0
 	self.aiDriverOffsetZ = 0
+
+	self.workWidth = courseplay:getWorkWidth(self.vehicle)
 
 	self:setUpCourses()
 
@@ -288,14 +277,12 @@ end
 
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
-	-- Issue with persisting fieldwork data in multiplayer, as the client doesn't maintain the fieldworkcourse (client never calls start)
-	-- Persisted fieldwork data isn't needed by the client anyway, as its all handled by the server (also in start)
-	if g_server ~= nil then
-		-- persist last fieldwork waypoint data (for 'start at current waypoint')
-		self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
-		self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
-	end
-	AIDriver.stop(self, msgReference)
+	
+	-- persist last fieldwork waypoint data (for 'start at current waypoint')
+	self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
+	self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
+
+	TriggerAIDriver.stop(self, msgReference)
 	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
 	self.vehicle.cp.alignment.enabled = self.alignmentEnabled
 end
@@ -309,10 +296,7 @@ function FieldworkAIDriver:drive(dt)
 			return
 		end
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
-		if self:driveUnloadOrRefill(dt) then
-			-- someone else is driving, no need to call AIDriver.drive()
-			return
-		end
+		self:driveUnloadOrRefill(dt)
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE then
@@ -550,7 +534,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			-- check for transition to connecting track, make sure we've been on it for a few waypoints already
 			-- to avoid raising the implements too soon, this can be a problem with long implements not yet reached
 			-- the end of the headland track while the tractor is already on the connecting track
-			if self.course:isOnConnectingTrack(ix) and self.course:isOnConnectingTrack(ix - 2) then
+			if self.course:isOnConnectingTrack(self.course:getCurrentWaypointIx()) and self.course:isOnConnectingTrack(ix) and self.course:isOnConnectingTrack(ix - 2) then
 				-- reached a connecting track (done with the headland, move to the up/down row or vice versa),
 				-- raise all implements while moving
 				self:debug('on a connecting track now, raising implements.')
@@ -647,6 +631,7 @@ end
 --- Start the actual work. Lower and turn on implements
 function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')
+	StartStopWorkEvent:sendStartEvent(self.vehicle)
 	-- send the event first and _then_ lower otherwise it sometimes does not turn it on
 	self.vehicle:raiseAIEvent("onAIStart", "onAIImplementStart")
 	self.vehicle:requestActionEventUpdate()
@@ -658,52 +643,11 @@ end
 --- Stop working. Raise and stop implements
 function FieldworkAIDriver:stopWork()
 	self:debug('Ending work: turn off and raise implements.')
+	StartStopWorkEvent:sendStopEvent(self.vehicle)
 	self:raiseImplements()
 	self.vehicle:raiseAIEvent("onAIEnd", "onAIImplementEnd")
 	self.vehicle:requestActionEventUpdate()
 	self:clearRemainingTime()
-end
-
---- Check if need to refill/unload anything
-function FieldworkAIDriver:allFillLevelsOk()
-	if not self.vehicle.cp.workTools then return false end
-	-- what here comes is basically what Giants' getFillLevelInformation() does but this returns the real fillType,
-	-- not the fillTypeToDisplay as this latter is different for each type of seed
-	local fillLevelInfo = {}
-	self:getAllFillLevels(self.vehicle, fillLevelInfo)
-	return self:areFillLevelsOk(fillLevelInfo)
-end
-
-function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)
-	-- get own fill levels
-	if object.getFillUnits then
-		for _, fillUnit in pairs(object:getFillUnits()) do
-			local fillType = self:getFillTypeFromFillUnit(fillUnit)
-			local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillType)
-			self:debugSparse('%s: Fill levels: %s: %.1f/%.1f', object:getName(), fillTypeName, fillUnit.fillLevel, fillUnit.capacity)
-			if not fillLevelInfo[fillType] then fillLevelInfo[fillType] = {fillLevel=0, capacity=0} end
-			fillLevelInfo[fillType].fillLevel = fillLevelInfo[fillType].fillLevel + fillUnit.fillLevel
-			fillLevelInfo[fillType].capacity = fillLevelInfo[fillType].capacity + fillUnit.capacity
-		end
-	end
- 	-- collect fill levels from all attached implements recursively
-	for _,impl in pairs(object:getAttachedImplements()) do
-		self:getAllFillLevels(impl.object, fillLevelInfo)
-	end
-end
-
-function FieldworkAIDriver:getFillTypeFromFillUnit(fillUnit)
-	local fillType = fillUnit.lastValidFillType or fillUnit.fillType
-	-- TODO: do we need to check more supported fill types? This will probably cover 99.9% of the cases
-	if fillType == FillType.UNKNOWN then
-		-- just get the first valid supported fill type
-		for ft, valid in pairs(fillUnit.supportedFillTypes) do
-			if valid then return ft end
-		end
-	else
-		return fillType
-	end
-
 end
 
 -- is the fill level ok to continue?
@@ -745,6 +689,7 @@ function FieldworkAIDriver:setUpCourses()
 	else
 		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, #self.vehicle.Waypoints)
+		self.unloadRefillCourse = nil
 	end
 	-- get a signature of the course now, before offsetting it so can compare for the convoy
 	self.fieldworkCourseHash = self.fieldworkCourse:getHash()
@@ -793,12 +738,15 @@ function FieldworkAIDriver:hasSameCourse(otherVehicle)
 	end
 end
 
-function FieldworkAIDriver:getCurrentFieldworkWaypointIx()
-	return self.fieldworkCourse:getCurrentWaypointIx()
+function FieldworkAIDriver:getProgress()
+	return self.fieldworkCourse:getProgress()
 end
 
 --- When working in a group (convoy), do I have to hold so I don't get too close to the
 -- other vehicles in front of me?
+--- We can't just use the waypoint index as each vehicle in the convoy has its own course
+--- generated and for instance on the headland the vehicles on the inside will have less  
+--- waypoints, so we operate with progress percentage
 function FieldworkAIDriver:manageConvoy()
 	if not self.vehicle.cp.convoyActive then return false end
 	--get my position in convoy and look for the closest combine
@@ -807,12 +755,15 @@ function FieldworkAIDriver:manageConvoy()
 	local closestDistance = math.huge
 	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
 		if otherVehicle ~= self.vehicle and otherVehicle.cp.convoyActive and self:hasSameCourse(otherVehicle) then
-			local myWpIndex = self:getCurrentFieldworkWaypointIx()
-			local otherVehicleWpIndex = otherVehicle.cp.driver:getCurrentFieldworkWaypointIx()
+			local myProgress = self:getProgress()
+			local length = self.fieldworkCourse:getLength()
+			local otherProgress = otherVehicle.cp.driver:getProgress()
+			self:debugSparse('convoy: my progress %.1f%%, other progress %.1f%%, 100%% %d', 
+					myProgress * 100, otherProgress * 100, length)
 			total = total + 1
-			if myWpIndex < otherVehicleWpIndex then
+			if myProgress < otherProgress then
 				position = position + 1
-				local distance = (otherVehicleWpIndex - myWpIndex) * courseGenerator.waypointDistance
+				local distance = (otherProgress - myProgress) * length
 				if distance < closestDistance then
 					closestDistance = distance
 				end
@@ -823,7 +774,7 @@ function FieldworkAIDriver:manageConvoy()
 	-- stop when I'm too close to the combine in front of me
 	if position > 1 then
 		if closestDistance < self.vehicle.cp.convoy.minDistance then
-			self:debugSparse('too close (%.1f) to other vehicles in group, holding.', closestDistance)
+			self:debugSparse('too close (%.1f) to other vehicles in convoy, holding.', closestDistance)
 			self:setSpeed(0)
 			self:overrideAutoEngineStop()
 		end
@@ -969,7 +920,8 @@ function FieldworkAIDriver:lowerImplements()
 		implement.object:aiImplementStartLine()
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
-	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) or self.ppc:isReversing() then
+		
+	if AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, SowingMachine) or self.ppc:isReversing() then
 		-- sowing machines want to stop while the implement is being lowered
 		-- also, when reversing, we assume that we'll switch to forward, so stop while lowering, then start forward
 		self.fieldworkState = self.states.WAITING_FOR_LOWER_DELAYED
@@ -1189,7 +1141,7 @@ function FieldworkAIDriver:shouldLowerThisImplement(object, turnEndNode, reversi
 	local _, _, dzRight = localToLocal(aiRightMarker, turnEndNode, 0, 0, 0)
 	local _, _, dzBack = localToLocal(aiBackMarker, turnEndNode, 0, 0, 0)
 	local loweringDistance
-	if FieldworkAIDriver.hasImplementWithSpecialization(self.vehicle, SowingMachine) then
+	if AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, SowingMachine) then
 		-- sowing machines are stopped while lowering, but leave a little reserve to allow for stopping
 		-- TODO: rather slow down while approaching the lowering point
 		loweringDistance = 0.5
@@ -1398,4 +1350,9 @@ end
 
 function FieldworkAIDriver:setLightsMask(vehicle)
 	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+end
+
+function FieldworkAIDriver:getVehicleWidth()
+	-- TODO: get folded/unfolded width according to state
+	return self.workWidth
 end

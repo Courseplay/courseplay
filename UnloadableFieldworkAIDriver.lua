@@ -47,19 +47,19 @@ function UnloadableFieldworkAIDriver:setHudContent()
 end
 
 function UnloadableFieldworkAIDriver.create(vehicle)
-	if FieldworkAIDriver.hasImplementWithSpecialization(vehicle, BaleLoader) then
+	if AIDriverUtil.hasAIImplementWithSpecialization(vehicle, BaleLoader) then
 		return BaleLoaderAIDriver(vehicle)
-	elseif FieldworkAIDriver.hasImplementWithSpecialization(vehicle, BaleWrapper) then
+	elseif AIDriverUtil.hasAIImplementWithSpecialization(vehicle, BaleWrapper) then
 		-- Bale wrapper is derived from baler so must check it first to make sure that we instantiate a
 		-- BaleWrapperAIDriver if we have both the baler and the balewrapper specialization
 		return BaleWrapperAIDriver(vehicle)
-	elseif FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Baler) then
+	elseif AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Baler) then
 		return BalerAIDriver(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) or
-		FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Combine) then
+		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Combine) then
 		return CombineAIDriver(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Plow, vehicle.specializations) or
-		FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Plow) then
+		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Plow) then
 		return PlowAIDriver(vehicle)
 	else
 		return UnloadableFieldworkAIDriver(vehicle)

@@ -420,9 +420,9 @@
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Nicht installiert" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Nicht benutzen" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Zum entladen/auffüllen" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Zum parken" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Zum entladen/auffüllen und parken" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="entladen/auffüllen" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="parken(P)" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="entladen/auffüllen/P" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(und zurück)" />
@@ -470,7 +470,15 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Drescher sucht einen Trailer und fährt abtanken" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Pathfinder darf rückwärts fahren" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Erlaubt dem Pathfinder, rückwärts zu fahren (Nur nicht gezogene Tools)" />
-		
-		<!-- Replace marker, do not remove! --></texts>
 
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="Kein Ladegut gewählt!/Nachfüllkurs nicht unterstützt!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Ladegut hinzufügen" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="Auffüllpunkt erreicht" />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="Ladegut wird hier nicht angenommen" />
+		
+
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
+		<!-- Replace marker, do not remove! -->
+</texts>
 </l10n>

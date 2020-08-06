@@ -114,7 +114,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 	----------------------------------------------------------
 	-- TURN STAGES 1 - Create Turn maneuver (Creating waypoints to follow)
 	----------------------------------------------------------
-	if vehicle.cp.turnStage == 1 then
+	if vehicle.cp.settings.turnStage:is(true) then
 		--- Cleanup in case we already have old info
 		courseplay:clearTurnTargets(vehicle); -- Make sure we have cleaned it from any previus usage.
 
@@ -139,7 +139,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		turnInfo.headlandHeight 				= turnContext.turnStartWp.headlandHeightForTurn and
 				turnContext.turnStartWp.headlandHeightForTurn or vehicle.cp.headlandHeight;
 		turnInfo.numLanes ,turnInfo.onLaneNum 	= courseplay:getLaneInfo(vehicle);
-		turnInfo.turnOnField 					= vehicle.cp.turnOnField;
+		turnInfo.turnOnField 					= vehicle.cp.settings.turnOnField:is(true);
 		turnInfo.reverseOffset 					= 0;
 		turnInfo.extraAlignLength				= 6;
 		turnInfo.haveWheeledImplement 			= reversingWorkTool ~= nil;
@@ -1531,7 +1531,7 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, rev
 end
 
 function courseplay:clearTurnTargets(vehicle)
-	vehicle.cp.turnStage = 0;
+	vehicle.cp.settings.turnStage:set(false)
 	vehicle.cp.turnTargets = {};
 	vehicle.cp.curTurnIndex = 1;
 	vehicle.cp.haveCheckedMarkersThisTurn = false;

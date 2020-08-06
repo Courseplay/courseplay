@@ -41,6 +41,7 @@ ___
 ## Credits  
 * Peter Vaiko
 * Tensuko
+* schwiti6190
 * Logo Design by Finals Farming
 ___
 

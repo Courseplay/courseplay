@@ -121,6 +121,8 @@ AIDriver.proximityMinLimitedSpeed = 2
 -- if anything closer than this, we stop
 AIDriver.proximityLimitLow = 1
 
+AIDriver.APPROACH_AUGER_TRIGGER_SPEED = 3
+
 -- we use this as an enum
 AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
@@ -227,6 +229,12 @@ function AIDriver:beforeStart()
 	self.firstReversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
 	-- for now, pathfinding generated courses can't be driven by towed tools
 	self.allowReversePathfinding = self.firstReversingWheeledWorkTool == nil
+	if self.vehicle:getAINeedsTrafficCollisionBox() then
+		courseplay.debugVehicle(3,self.vehicle,"Making sure cars won't stop around us")
+		-- something deep inside the Giants vehicle sets the translation of this box to whatever
+		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
+		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
+	end
 end
 
 --- Start driving
@@ -240,7 +248,8 @@ function AIDriver:start(startingPoint)
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	local ix = self.mainCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
-	self:debug('AI driver in mode %d starting at %d/%d waypoints', self:getMode(), ix, self.mainCourse:getNumberOfWaypoints())
+	self:info('AI driver in mode %d starting at %d/%d waypoints (%s)',
+			self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
 	self:startCourseWithAlignment(self.mainCourse, ix)
 end
 
@@ -351,7 +360,6 @@ function AIDriver:drive(dt)
 		self:hold()
 		self:continueIfWaitTimeIsOver()
 	end
-
 	self:driveCourse(dt)
 	self:drawTemporaryCourse()
 end
@@ -383,7 +391,7 @@ function AIDriver:driveCourse(dt)
 	if self:getIsInFilltrigger() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 	end
-
+		
 	self:slowDownForWaitPoints()
 
 	self:stopEngineIfNotNeeded()
@@ -571,7 +579,7 @@ function AIDriver:onEndCourse()
 			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
 			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, -3, nil, nil, nil)
 		end
-	elseif self.vehicle.cp.stopAtEnd then
+	elseif self.vehicle.cp.settings.stopAtEnd:is(true) then
 		if self.state ~= self.states.STOPPED then
 			self:stop('END_POINT')
 		end
@@ -742,10 +750,15 @@ function AIDriver:getTotalLength()
 	return self.vehicle.cp.totalLength
 end
 
+--- Get waypoint closest to the current position of the vehicle
+function AIDriver:getRelevantWaypointIx()
+	return self.ppc:getRelevantWaypointIx()
+end
+
 function AIDriver:getRecordedSpeed()
 	-- default is the street speed (reduced in corners)
 	local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
-	if self.vehicle.cp.speeds.useRecordingSpeed then
+	if self.vehicle.cp.settings.useRecordingSpeed:is(true) then
 		-- use default street speed if there's no recorded speed.
 		speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 	end
@@ -869,25 +882,11 @@ end
 function AIDriver:enableCollisionDetection()
 	courseplay.debugVehicle(3,self.vehicle,'Collision detection enabled')
 	self.collisionDetectionEnabled = true
-	-- move the big collision box around the vehicle underground because this will stop
-	-- traffic (not CP drivers though) around us otherwise
-	if self.vehicle:getAINeedsTrafficCollisionBox() then
-		courseplay.debugVehicle(3,self.vehicle,"Making sure cars won't stop around us")
-		-- something deep inside the Giants vehicle sets the translation of this box to whatever
-		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
-		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
-	end
 end
 
 function AIDriver:disableCollisionDetection()
 	courseplay.debugVehicle(3,self.vehicle,'Collision detection disabled')
 	self.collisionDetectionEnabled = false
-	-- move the big collision box around the vehicle back over the ground so
-	-- game traffic around us will stop while we are working on the field
-	if self.vehicle:getAINeedsTrafficCollisionBox() then
-		courseplay.debugVehicle(3,self.vehicle,'Cars will stop around us again.')
-		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = 0
-	end
 end
 
 function AIDriver:detectCollision(dt)
@@ -920,7 +919,7 @@ function AIDriver:detectCollision(dt)
 end
 
 function AIDriver:areBeaconLightsEnabled()
-	return self.vehicle.cp.warningLightsMode > courseplay.lights.WARNING_LIGHTS_NEVER
+	return self.vehicle.cp.settings.warningLightsMode:get() > WarningLightsModeSetting.WARNING_LIGHTS_NEVER
 end
 
 function AIDriver:updateLights()
@@ -1410,7 +1409,7 @@ end
 --- pathfinding considers any collision-free path valid, also outside of the field.
 ---@return boolean true when a pathfinding successfully started
 function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fieldNum)
-	if self.vehicle.cp.realisticDriving then
+	if self.vehicle.cp.settings.useRealisticDriving:is(true) then
 		if not self.pathfinder or not self.pathfinder:isActive() then
 			self.courseAfterPathfinding = course
 			self.waypointIxAfterPathfinding = ix
@@ -1527,7 +1526,7 @@ end;
 --- Is auto stop engine enabled?
 function AIDriver:isEngineAutoStopEnabled()
 	-- do not auto stop engine when auto motor start is enabled as it'll try to restart the engine on each update tick.
-	return self.vehicle.cp.saveFuelOptionActive and not g_currentMission.missionInfo.automaticMotorStartEnabled
+	return self.vehicle.cp.settings.saveFuelOption:is(true) and not g_currentMission.missionInfo.automaticMotorStartEnabled
 end
 
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
@@ -1564,13 +1563,13 @@ function AIDriver:onDraw()
 	end
 
 end
-
+--TODO: do we want to continue using this setter/getter for driveUnloadNow??
 function AIDriver:setDriveUnloadNow(driveUnloadNow)
 	courseplay:setDriveUnloadNow(self.vehicle, driveUnloadNow or false)
 end
 
 function AIDriver:getDriveUnloadNow()
-	return self.vehicle.cp.driveUnloadNow
+	return self.vehicle.cp.settings.driveUnloadNow:get()
 end
 
 function AIDriver:refreshHUD()
@@ -1796,4 +1795,16 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	local newSpeed = AIDriver.proximityMinLimitedSpeed + normalizedD * deltaV
 	self:debugSparse('proximity: d = %.1f (%d %%), speed = %.1f', d, 100 * normalizedD, newSpeed)
 	return newSpeed, allowedToDrive
+end
+
+function AIDriver:isLoadingTriggerCallbackEnabled()
+	return false
+end
+
+function AIDriver:isUnloadingTriggerCallbackEnabled()
+	return false
+end
+
+function AIDriver:isOverloadingTriggerCallbackEnabled()
+	return false
 end
