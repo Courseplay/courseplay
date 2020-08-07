@@ -74,8 +74,9 @@ function ShovelModeAIDriver:setHudContent()
 end
 
 function ShovelModeAIDriver:start()
-	if not self:findShovel(self.vehicle) then 
-		print("Error: shovel not found!!")
+	self:findShovel(self.vehicle) 
+	if not self.shovel then 
+		self:error("Error: shovel not found!!")
 		return
 	end
 	
@@ -494,11 +495,14 @@ function ShovelModeAIDriver:setLightsMask(vehicle)
 	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
 end
 
-function ShovelModeAIDriver:findShovel(vehicle)
-    local implementWithShovel = AIDriverUtil.getImplementWithSpecialization(vehicle, Shovel)
-    if implementWithShovel or SpecializationUtil.hasSpecialization(Shovel, vehicle.specializations) then
-        self.shovel = implementWithShovel or vehicle
-		return true
-    end
+function ShovelModeAIDriver:findShovel(object)
+	if SpecializationUtil.hasSpecialization(Shovel, object.specializations) and not self.shovel then 
+		self.shovel = object
+		return
+	end
+	
+	for _,impl in pairs(object:getAttachedImplements()) do
+		ShovelModeAIDriver:findShovel(impl.object)
+	end
 end
 
