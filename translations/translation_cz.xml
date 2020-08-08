@@ -480,8 +480,8 @@
 		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="přijel k bodu doplnění." />
 		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="špatný druh nákladu pro tento trigger." />
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vyložit kombajn na první souvrati" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Povolit vykládku kombajnu za jízdy, odvozce vyjede z pole." />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
