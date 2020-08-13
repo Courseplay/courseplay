@@ -1453,6 +1453,8 @@ function courseplay:findAiCollisionTrigger(vehicle)
 			index = vehicle.i3dMappings.aiCollisionTriggerBig
 		elseif vehicle.i3dMappings.aiCollisionTriggerSmall then			-- workaround GIANTS FS19 vehicle K105, K165
 			index = vehicle.i3dMappings.aiCollisionTriggerSmall
+		elseif vehicle.i3dMappings.aiTrafficCollisionTrigger then		-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.aiTrafficCollisionTrigger
 		end
 		if index then
 			local triggerObject = I3DUtil.indexToObject(vehicle.components, index);
