@@ -466,18 +466,18 @@
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Courseplay salários dos trabalhadores" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay pagamento do trabalhador como porcentagem do salário normal" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Ceifadeira descarrega na carreta" />
-		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Ceifadeira descarrega quando cheia ou quando houver carreta por perto" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Ceifadeira descarrega quando cheio ou quando houver carreta por perto" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="marcha ré em manobras" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Permite encontrar um caminho com curva que precise de marcha ré (apenas com implementos não rebocados)" />
 
-		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
-		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
-		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="nenhum tipo de carga selecionado!/nenhuma rota para recarga!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="adicionar novo tipo de carga" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="chegou ao ponto para recaregar." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="tipo de carga errado para o ponto de descarga." />
 		
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Descarregar a ceifadeira na primeira faixa da cabeceira." />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Descarregar a ceifadeira na primeira faixa da cabeceira em movimento, em seguida sair do campo." />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>
