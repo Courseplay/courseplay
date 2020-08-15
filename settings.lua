@@ -1678,15 +1678,10 @@ function courseplay:toggleAssignCombineToTractor(vehicle,line)
 	if combine == nil then 
 		return
 	end
-	if combine.cp.assignedUnloaders == nil then
-		combine.cp.assignedUnloaders ={}
-	end
 	if vehicle.cp.assignedCombines[combine] then
 		vehicle.cp.assignedCombines[combine] = nil
-		combine.cp.assignedUnloaders[vehicle]= nil
 	else
 		vehicle.cp.assignedCombines[combine] = true
-		combine.cp.assignedUnloaders[vehicle] = true
 	end
 end
 
