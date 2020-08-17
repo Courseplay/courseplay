@@ -2914,7 +2914,7 @@ function SiloSelectedFillTypeSetting:fillTypeDataToAdd(selectedfillType,counter,
 			fillType = selectedfillType,
 			text = g_fillTypeManager:getFillTypeByIndex(selectedfillType).title,
 			runCounter = counter or self.MAX_RUNS,
-			maxFillLevel = maxLevel or self.MAX_PERCENT, --TODO: figure this one for mode 1 out
+			maxFillLevel = maxLevel or self.MAX_PERCENT,
 			minFillLevel = minLevel or self.MIN_PERCENT
 		}	
 	else
@@ -3101,7 +3101,7 @@ function SiloSelectedFillTypeSetting:changeRunCounter(index)
 end
 
 function SiloSelectedFillTypeSetting:setRunCounterFromNetwork(index,value)
-	local totalData = self:getDataByIndex(index)
+	local data = self:getDataByIndex(index)
 	if data and data.runCounter then 
 		local diff = data.runCounter+value
 		if diff >= 0 and diff <=20 then 
@@ -3111,7 +3111,7 @@ function SiloSelectedFillTypeSetting:setRunCounterFromNetwork(index,value)
 end
 
 function SiloSelectedFillTypeSetting:setMaxFillLevelFromNetwork(index,value)
-	local totalData = self:getDataByIndex(index)
+	local data = self:getDataByIndex(index)
 	if data and data.maxFillLevel then 
 		local diff = data.maxFillLevel+value
 		if diff >= 1 and diff <=100 then 
@@ -3121,7 +3121,7 @@ function SiloSelectedFillTypeSetting:setMaxFillLevelFromNetwork(index,value)
 end
 
 function SiloSelectedFillTypeSetting:setMinFillLevelFromNetwork(index,value)
-	local totalData = self:getDataByIndex(index)
+	local data = self:getDataByIndex(index)
 	if data and data.minFillLevel then 
 		local diff = data.minFillLevel+value
 		if diff >= 1 and diff <=100 then 
@@ -3200,9 +3200,9 @@ function SiloSelectedFillTypeSetting:onWriteStream(stream)
 			streamDebugWriteInt32(stream, data.fillType)
 			if self.runCounterActive then
 				streamDebugWriteInt32(stream, data.runCounter)
+				streamDebugWriteInt32(stream, data.minFillLevel)
 			end
 			streamDebugWriteInt32(stream, data.maxFillLevel)
-			streamDebugWriteInt32(stream, data.minFillLevel)
 		end
 	end
 end
@@ -3213,12 +3213,12 @@ function SiloSelectedFillTypeSetting:onReadStream(stream)
 	if size and size>0 then
 		for key=1,size do 
 			local selectedFillType = streamDebugReadInt32(stream)
-			local counter
+			local counter,minLevel
 			if self.runCounterActive then
 				counter = streamDebugReadInt32(stream)
+				minLevel = streamDebugReadInt32(stream)
 			end
 			local maxLevel = streamDebugReadInt32(stream)
-			local minLevel = streamDebugReadInt32(stream)
 			if selectedFillType then 
 				self:addLast(self:fillTypeDataToAdd(selectedFillType,counter,maxLevel,minLevel))
 			end

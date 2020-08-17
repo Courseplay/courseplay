@@ -7,6 +7,7 @@ function LinkedList:init(...)
 	self.First = nil
 	self.count = -1
 	self:addToEmptyList(...)
+	self.debug = false
 end
 
 LinkedNode = {}
@@ -22,7 +23,7 @@ function LinkedList:addLast(...)
 	local node = self:iterateToEnd(self.First)
 	node.Next = LinkedNode:new(nil,...)
 	self:incrementCount()
---	self:printLinkedList()
+	self:printLinkedList()
 end
 
 function LinkedList:addFirst(...)
@@ -30,7 +31,7 @@ function LinkedList:addFirst(...)
 	local node = LinkedNode:new(First,...)
 	self.First.Next = node
 	self:incrementCount()
---	self:printLinkedList()
+	self:printLinkedList()
 end
 
 --remove methos 
@@ -65,7 +66,7 @@ function LinkedList:removeX(index)
 	else
 		self:removeFirst()
 	end
---	self:printLinkedList()
+	self:printLinkedList()
 	return true
 end
 
@@ -95,7 +96,7 @@ function LinkedList:swapUpX(index)
 			end
 		end
 	end
---	self:printLinkedList()
+	self:printLinkedList()
 end
 
 function LinkedList:swapDownX(index)
@@ -124,12 +125,12 @@ function LinkedList:swapDownX(index)
 			end
 		end
 	end
---	self:printLinkedList()
+	self:printLinkedList()
 end
 
 --print List
 function LinkedList:printLinkedList()
-	if self:isEmpty() then 
+	if self:isEmpty() or not self.debug then 
 		return false
 	end	
 	local node = self.First.Next
@@ -172,6 +173,9 @@ function LinkedList:iterateAfterX(X)
 end
 
 function LinkedList:printLinkedNode(X,index)
+	if X == nil or not self.debug then 
+		return
+	end	
 	if type(X.data) == "table" then
 		print(index..": ")
 		for _,value in pairs(X.data) do 
@@ -224,7 +228,9 @@ function LinkedList:getSize()
 end
 
 function LinkedList:getElementByIndex(index)
-	return self:iterateByIndex(index)
+	local node = self:iterateByIndex(index)
+	self:printLinkedNode(node,index)
+	return node
 end
 
 function LinkedList:getDataXtoY(x,y)	
@@ -248,7 +254,7 @@ function LinkedList:getData()
 	local totalData = {}
 	i=1
 	while node ~=nil do 
-	--	self:printLinkedNode(node,i)
+		self:printLinkedNode(node,i)
 		totalData[i]=node.data
 		node=node.Next
 		i=i+1

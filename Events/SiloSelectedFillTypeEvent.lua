@@ -26,7 +26,7 @@ function SiloSelectedFillTypeEvent:readStream(streamId, connection) -- wird aufg
 	else
 		self.vehicle = nil
 	end
-	self.settingType = streamReadIntN(streamId,3)
+	self.settingType = streamReadUIntN(streamId,3)
 	local messageNumber = streamReadFloat32(streamId)
 	self.name = streamReadString(streamId)
 	if streamReadBool(streamId) then
@@ -51,7 +51,7 @@ function SiloSelectedFillTypeEvent:writeStream(streamId, connection)  -- Wird au
 	else
 		streamWriteBool(streamId, false)
 	end
-	streamWriteIntN(streamId,self.settingType,3)
+	streamWriteUIntN(streamId,self.settingType,3)
 	streamWriteFloat32(streamId, self.messageNumber)
 	streamWriteString(streamId, self.name)
 	if self.index then
@@ -73,22 +73,31 @@ function SiloSelectedFillTypeEvent:run(connection) -- wir fuehren das empfangene
 	courseplay:debug(('\t\t\t\tid=%s, name=%s, value=%s'):format(tostring(self.vehicle), tostring(self.name), tostring(self.value)), 5);
 
 	if self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.ADD_ELEMENT then 
+		courseplay:debug("add Element!",5)
 		self.vehicle.cp.settings[self.name]:onFillTypeSelection(self.value,true)
 	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.DELETE_X then
+		courseplay:debug("delete Element!",5)
 		self.vehicle.cp.settings[self.name]:deleteByIndex(self.index,true)
 	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.MOVE_UP_X then
+		courseplay:debug("move UP Element!",5)
 		self.vehicle.cp.settings[self.name]:moveUpByIndex(self.index,true)
 	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.MOVE_DOWN_X then
+		courseplay:debug("move Down Element!",5)
 		self.vehicle.cp.settings[self.name]:moveDownByIndex(self.index,true)
 	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_RUNCOUNTER then
+		courseplay:debug("change Counter Element!",5)
 		self.vehicle.cp.settings[self.name]:setRunCounterFromNetwork(self.index,self.value)
 	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_MAX_FILLLEVEL then
+		courseplay:debug("change Max Element!",5)
 		self.vehicle.cp.settings[self.name]:setMaxFillLevelFromNetwork(self.index,self.value)
 	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CLEANUP_OLD_FILLTYPES  then
+		courseplay:debug("cleanUP Element!",5)
 		self.vehicle.cp.settings[self.name]:cleanUpOldFillTypes(true)
 	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_MIN_FILLEVEL then
+		courseplay:debug("change Min Element!",5)
 		self.vehicle.cp.settings[self.name]:setMinFillLevelFromNetwork(self.index,self.value)
 	end
+	self.vehicle.cp.driver:refreshHUD()
 	if not connection:getIsServer() then
 		courseplay:debug("broadcast settings event feedback",5)
 		g_server:broadcastEvent(SiloSelectedFillTypeEvent:new(self.vehicle, self.name,self.settingType, self.index, self.value), nil, connection, self.vehicle)

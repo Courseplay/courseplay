@@ -1838,9 +1838,9 @@ function AIDriver:checkFuel()
 		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
 		if currentFuelPercentage < 5 then
 			allowedToDrive = false;
-			CpManager:setGlobalInfoText(vehicle, 'FUEL_MUST');
+			CpManager:setGlobalInfoText(self.vehicle, 'FUEL_MUST');
 		elseif currentFuelPercentage < 20 then
-			CpManager:setGlobalInfoText(vehicle, 'FUEL_SHOULD');
+			CpManager:setGlobalInfoText(self.vehicle, 'FUEL_SHOULD');
 		elseif currentFuelPercentage < 99.99 then
 		--	CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
 		end;
