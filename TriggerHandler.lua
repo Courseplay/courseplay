@@ -779,7 +779,7 @@ function courseplay:isAIDriverActive(rootVehicle)
 	end
 end
 
-+--Augerwagons handling
+--Augerwagons handling
 --Pipe callback used for augerwagons to open the cover on the fillableObject
 function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	local rootVehicle = self:getRootVehicle()
