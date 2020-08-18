@@ -92,6 +92,7 @@ CombineUnloadAIDriver.myStates = {
 --- Constructor
 function CombineUnloadAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
+	self.assignedCombinesSetting = AssignedCombinesSetting(vehicle)
 	AIDriver.init(self, vehicle)
 	self.debugChannel = 4
 	self.mode = courseplay.MODE_COMBI
@@ -99,8 +100,6 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineOffset = 0
 	self.distanceToCombine = math.huge
 	self.distanceToFront = 0
-	self.vehicle.cp.possibleCombines ={}
-	self.vehicle.cp.assignedCombines ={}
 	self.combinesListHUDOffset = 0
 	self.combineToUnloadReversing = 0
 end
@@ -115,9 +114,21 @@ function CombineUnloadAIDriver:readUpdateStream(streamId)
 	self.combinesListHUDOffset = streamReadUIntN(streamId,6)
 end
 
+function CombineUnloadAIDriver:postSync()
+	self.assignedCombinesSetting:sendPostSyncRequestEvent()
+end
+
+function CombineUnloadAIDriver:getAssignedCombines()
+	return self.assignedCombinesSetting:getData()
+end
+
+function CombineUnloadAIDriver:getAssignedCombinesSetting()
+	return self.assignedCombinesSetting
+end
+
 function CombineUnloadAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
-	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle)
+	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle,self.assignedCombinesSetting)
 end
 
 function CombineUnloadAIDriver:debug(...)
@@ -2090,10 +2101,6 @@ function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 	else
 		self:debugSparse('Already busy moving out of the way')
 	end
-end
---TODO maybe a new Setting for this one ??
-function CombineUnloadAIDriver:shiftCombinesList(change_by)
-	self.combinesListHUDOffset = MathUtil.clamp(self.combinesListHUDOffset+ change_by,0,#self.vehicle.cp.possibleCombines-6)
 end
 
 ------------------------------------------------------------------------------------------------------------------------

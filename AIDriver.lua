@@ -206,6 +206,10 @@ function AIDriver:readUpdateStream(streamId)
 --	self.vehicle.cp.isDriving = streamReadBool(streamId)
 end
 
+function AIDriver:postSync()
+
+end
+
 function AIDriver:setHudContent()
 	courseplay.hud:setAIDriverContent(self.vehicle)
 end

@@ -126,11 +126,10 @@ local function initialize()
 		'gui/VehicleSettingsPage',
 		'Events/StartStopEvent',
 		'Events/UnloaderEvents',
-		'Events/StartStopWorkEvent',
-		'Events/UserConnectedEvent',
-		'Events/PostSyncEvent',
-		'Events/SettingsListEvent',
 		'Events/SiloSelectedFillTypeEvent',
+		'Events/StartStopWorkEvent',
+		'Events/SettingsListEvent',
+		'Events/AssignedCombinesEvents',
 		'Generic/LinkedList'
 	};
 

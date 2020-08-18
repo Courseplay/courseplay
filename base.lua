@@ -932,8 +932,8 @@ end;
 
 function courseplay:onUpdate(dt)
 	
-	if g_server == nil and self.isPostSynced == nil and CpManager.isMultiplayer then 
-		UserConnectedEvent.sendEvent(self)
+	if g_server == nil and self.isPostSynced == nil then 
+		self.cp.driver:postSync()
 		self.isPostSynced=true
 	end
 	

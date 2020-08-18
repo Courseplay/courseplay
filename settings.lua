@@ -108,6 +108,7 @@ end;]]
 --TODO: should be removed and changed directly to driveUnloadNow Setting?
 function courseplay:setDriveNow(vehicle)
 	courseplay:setDriveUnloadNow(vehicle, true);
+	vehicle.cp.driver.triggerHandler:setDriveNow()
 end
 
 function courseplay:forceGoToUnloadCourse(vehicle)
@@ -199,9 +200,6 @@ end;
 function courseplay:setDriveUnloadNow(vehicle, bool)
 	if vehicle then
 		vehicle.cp.settings.driveUnloadNow:set(bool)
-		if bool then 
-			vehicle.cp.driver.triggerHandler:setDriveNow()
-		end
 		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);		
 	end
 end
@@ -1613,29 +1611,6 @@ function courseplay:getIsEngineReady(vehicle)
 	return (vehicle.spec_motorized.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.spec_motorized.motorStartTime == nil or vehicle.spec_motorized.motorStartTime < g_currentMission.time);
 end;
 
-
-function courseplay:toggleAssignCombineToTractor(vehicle,line)
-	--temp fix make sure every client has correct possibleCombines 
-	if g_server == nil then 
-		vehicle.cp.possibleCombines = g_combineUnloadManager:getPossibleCombines(vehicle)
-	end
-	local listIndex = line-2 + vehicle.cp.driver.combinesListHUDOffset
-	local combine = vehicle.cp.possibleCombines[listIndex]
-	if combine == nil then 
-		return
-	end
-	if vehicle.cp.assignedCombines[combine] then
-		vehicle.cp.assignedCombines[combine] = nil
-	else
-		vehicle.cp.assignedCombines[combine] = true
-	end
-end
-
-function courseplay:shiftCombinesList(vehicle, change_by)
-	if vehicle.cp.driver.shiftCombinesList then 
-		vehicle.cp.driver:shiftCombinesList(change_by)
-	end
-end
 ----------------------------------------------------------------------------------------------------
 
 function courseplay:setCpVar(varName, value, noEventSend)
@@ -2067,7 +2042,6 @@ end
 ---Generic LinkedList setting and Interface for LinkedList.lua
 ---@class LinkedList : Setting
 LinkedListSetting = CpObject(Setting)
-
 function LinkedListSetting:init(name, label, toolTip, vehicle)
 	Setting.init(self, name, label, toolTip, vehicle)
 	self.List = LinkedList({value=nil,text="Dummy"})
@@ -2287,11 +2261,6 @@ function StartingPointSetting:init(vehicle)
 				"COURSEPLAY_NEXT_POINT",
 				"COURSEPLAY_UNLOAD"
 			})
-end
-
-function StartingPointSetting:next()
-	print("button pressed")
-	SettingList.next(self)
 end
 
 function StartingPointSetting:checkAndSetValidValue(new)
@@ -3356,11 +3325,12 @@ BunkerSpeedSetting = CpObject(SpeedSetting)
 function BunkerSpeedSetting:init(vehicle)
 	SpeedSetting.init(self, 'bunkerSpeed','COURSEPLAY_MODE10_MAX_BUNKERSPEED', 'COURSEPLAY_MODE10_MAX_BUNKERSPEED', vehicle,3,20) 
 	self:set(20)
+	self.MAX_SPEED_LEVELING = 15
 end
 
 function BunkerSpeedSetting:checkAndSetValidValue(new)
 	if self.vehicle.cp.mode10.leveling then
-		if new >15 then 
+		if new > self.MAX_SPEED_LEVELING then 
 			return 3
 		else 
 			return new
@@ -3402,35 +3372,123 @@ function ApproachSpeedSetting:init(vehicle)
 end
 ]]--
 
---[[
-	local upperLimit = 20 
-	local speed = vehicle.cp.speeds.bunkerSilo;
-	if vehicle.cp.mode10.leveling then
-		upperLimit = 15
+---@class AssignedCombinesSetting : Setting
+AssignedCombinesSetting = CpObject(Setting)
+AssignedCombinesSetting.NetworkTypes = {}
+AssignedCombinesSetting.NetworkTypes.TOGGLE = 0
+AssignedCombinesSetting.NetworkTypes.CHANGE_OFFSET = 1
+function AssignedCombinesSetting:init(vehicle)
+	Setting.init(self, 'assignedCombines','-', '-', vehicle) 
+	self.MAX_COMBINES_FOR_PAGE = 5
+	self.offsetHead = 0
+	self.table = {}
+	self.lastPossibleCombines = {}
+end
+
+function AssignedCombinesSetting:getPossibleCombines()
+	return g_combineUnloadManager:getPossibleCombines(self.vehicle)
+end
+
+function AssignedCombinesSetting:toggleAssignedCombine(index,noEventSend)
+	local newIndex = index-2+self.offsetHead
+	local possibleCombines = self:getPossibleCombines()
+	local combine =	possibleCombines[newIndex]
+	if combine then 
+		self:toggleDataByIndex(combine)
 	end
-	speed = MathUtil.clamp(speed + changeBy, 3, upperLimit);
-	vehicle.cp.speeds.bunkerSilo = speed;
+	if not noEventSend then 
+		AssignedCombinesEvents:sendEvent(self.vehicle,self.NetworkTypes.TOGGLE,index)
+	end
+	self.vehicle.cp.driver:refreshHUD()
+end
 
+function AssignedCombinesSetting:getTexts()
+	local x = 1+self.offsetHead
+	local line = 1
+	local texts = {}
+	for i=x,self.MAX_COMBINES_FOR_PAGE+x do 
+		local possibleCombines = self:getPossibleCombines()
+		self:clearInactiveCombines(possibleCombines)
+		if possibleCombines[i] then
+			local combine = possibleCombines[i]
+			local fieldNumber = g_combineUnloadManager:getFieldNumber(combine)
+			local box = self:getDataByIndex(combine) and "[X]"or "[  ]"
+			local text = string.format("%s %s (Field %d)",box, combine.name , fieldNumber)
+			texts[line] = text
+		else
+			texts[line] = ""
+		end
+		line = line +1
+	end
+	return texts
+end
 
-	-- speed limits
-	self.cp.speeds = {
-		reverse =  6;
-		turn =   10;
-		field =  24;
-		street = self:getCruiseControlMaxSpeed() or 50;
-		crawl = 3;
-		discharge = 8;
-		bunkerSilo = 20;
-		approach = 10;
-		
-		minReverse = 3;
-		minTurn = 3;
-		minField = 3;
-		minStreet = 3;
-		max = self:getCruiseControlMaxSpeed() or 60;
-	};
-]]--
+function AssignedCombinesSetting:clearInactiveCombines(possibleCombines)
+	local validCombines = {}
+	for index, combine in pairs(possibleCombines) do 
+		if self.table[combine] then 
+			validCombines[combine] = true
+		end
+	end
+	self.table = validCombines
+	self.vehicle.cp.driver:refreshHUD()
+end
 
+function AssignedCombinesSetting:allowedToChangeListOffsetUp()
+	local possibleCombines = self:getPossibleCombines()
+	return #possibleCombines-self.offsetHead > self.MAX_COMBINES_FOR_PAGE 
+end
+
+function AssignedCombinesSetting:allowedToChangeListOffsetDown()
+	return self.offsetHead >0
+end
+
+function AssignedCombinesSetting:changeListOffset(x,noEventSend)	
+	if x>0 and self:allowedToChangeListOffsetUp() then 
+		self.offsetHead = self.offsetHead+1
+	elseif x<0 and self:allowedToChangeListOffsetDown() then 
+		self.offsetHead = self.offsetHead-1
+	end
+	if not noEventSend then 
+		AssignedCombinesEvents:sendEvent(self.vehicle,self.NetworkTypes.CHANGE_OFFSET,index)
+	end
+	self.vehicle.cp.driver:refreshHUD()
+end
+
+function AssignedCombinesSetting:sendPostSyncRequestEvent()
+	RequestAssignedCombinesPostSyncEvent:sendEvent(self.vehicle)
+end
+
+function AssignedCombinesSetting:sendPostSyncEvent(connection)
+	connection:sendEvent(AssignedCombinesPostSyncEvent:new(self.vehicle,self:getData(),self.offsetHead))
+end
+
+function AssignedCombinesSetting:setNetworkValues(assignedCombines,offsetHead)
+	for combine,bool in pairs(assignedCombines) do
+		self:addElementByIndex(combine,true)
+	end
+	self.offsetHead = offsetHead
+end
+
+function AssignedCombinesSetting:addElementByIndex(index,data)
+	self.table[index] = data
+end
+
+function AssignedCombinesSetting:toggleDataByIndex(index)
+	if self.table[index] then 
+		self.table[index] = nil
+	else
+		self.table[index] = true
+	end
+end
+
+function AssignedCombinesSetting:getDataByIndex(index)
+	return self.table[index]
+end
+
+function AssignedCombinesSetting:getData()
+	return self.table
+end
 
 --- Container for settings
 --- @class SettingsContainer
