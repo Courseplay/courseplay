@@ -478,6 +478,8 @@
 
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"				text="last runCounter = 0" />
+
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

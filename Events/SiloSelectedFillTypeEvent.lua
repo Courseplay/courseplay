@@ -1,11 +1,4 @@
 SiloSelectedFillTypeEvent = {};
-SiloSelectedFillTypeEvent.TYPE_ADD_ELEMENT = 0
-SiloSelectedFillTypeEvent.TYPE_DELETE_X = 1
-SiloSelectedFillTypeEvent.TYPE_MOVE_UP_X = 2
-SiloSelectedFillTypeEvent.TYPE_MOVE_DOWN_X = 3
-SiloSelectedFillTypeEvent.TYPE_CHANGE_MAX_FILLLEVEL = 4
-SiloSelectedFillTypeEvent.TYPE_CHANGE_RUNCOUNTER = 5
-SiloSelectedFillTypeEvent.TYPE_CLEANUP_OLD_CODE = 6
 local SiloSelectedFillTypeEvent_mt = Class(SiloSelectedFillTypeEvent, Event);
 
 InitEventClass(SiloSelectedFillTypeEvent, "SiloSelectedFillTypeEvent");
@@ -16,7 +9,7 @@ function SiloSelectedFillTypeEvent:emptyNew()
 	return self
 end
 
-function SiloSelectedFillTypeEvent:new(vehicle,settingType,parentName, name, index, value)
+function SiloSelectedFillTypeEvent:new(vehicle, name,settingType, index, value)
 	courseplay:debug(string.format("courseplay:SiloSelectedFillTypeEvent:new(%s, %s)", tostring(name), tostring(value)), 5)
 	self.vehicle = vehicle
 	self.settingType = settingType
@@ -33,14 +26,14 @@ function SiloSelectedFillTypeEvent:readStream(streamId, connection) -- wird aufg
 	else
 		self.vehicle = nil
 	end
-	self.settingType = streamReadIntN(streamId,3)
+	self.settingType = streamReadUIntN(streamId,3)
 	local messageNumber = streamReadFloat32(streamId)
 	self.name = streamReadString(streamId)
 	if streamReadBool(streamId) then
 		self.index = streamReadIntN(streamId,3)
 	end
 	if streamReadBool(streamId) then
-		self.value = streamReadIntN(streamId,5)
+		self.value = streamReadIntN(streamId,8)
 	end
 	courseplay:debug("	readStream",5)
 	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  self.name: "..tostring(self.name).."  self.value: "..tostring(self.value),5)
@@ -58,7 +51,7 @@ function SiloSelectedFillTypeEvent:writeStream(streamId, connection)  -- Wird au
 	else
 		streamWriteBool(streamId, false)
 	end
-	streamWriteIntN(streamId,self.settingType,3)
+	streamWriteUIntN(streamId,self.settingType,3)
 	streamWriteFloat32(streamId, self.messageNumber)
 	streamWriteString(streamId, self.name)
 	if self.index then
@@ -69,7 +62,7 @@ function SiloSelectedFillTypeEvent:writeStream(streamId, connection)  -- Wird au
 	end
 	if self.value then
 		streamWriteBool(streamId, true)
-		streamWriteIntN(streamId, self.value,5)
+		streamWriteIntN(streamId, self.value,8)
 	else
 		streamWriteBool(streamId, false)
 	end
@@ -79,36 +72,47 @@ function SiloSelectedFillTypeEvent:run(connection) -- wir fuehren das empfangene
 	courseplay:debug("\t\t\trun",5)
 	courseplay:debug(('\t\t\t\tid=%s, name=%s, value=%s'):format(tostring(self.vehicle), tostring(self.name), tostring(self.value)), 5);
 
-	if self.settingType == SiloSelectedFillTypeEvent.TYPE_ADD_ELEMENT then 
+	if self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.ADD_ELEMENT then 
+		courseplay:debug("add Element!",5)
 		self.vehicle.cp.settings[self.name]:onFillTypeSelection(self.value,true)
-	elseif self.settingType == SiloSelectedFillTypeEvent.TYPE_DELETE_X then
+	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.DELETE_X then
+		courseplay:debug("delete Element!",5)
 		self.vehicle.cp.settings[self.name]:deleteByIndex(self.index,true)
-	elseif self.settingType == SiloSelectedFillTypeEvent.TYPE_MOVE_UP_X then
+	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.MOVE_UP_X then
+		courseplay:debug("move UP Element!",5)
 		self.vehicle.cp.settings[self.name]:moveUpByIndex(self.index,true)
-	elseif self.settingType == SiloSelectedFillTypeEvent.TYPE_MOVE_DOWN_X then
+	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.MOVE_DOWN_X then
+		courseplay:debug("move Down Element!",5)
 		self.vehicle.cp.settings[self.name]:moveDownByIndex(self.index,true)
-	elseif self.settingType == SiloSelectedFillTypeEvent.TYPE_CHANGE_RUNCOUNTER then
+	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_RUNCOUNTER then
+		courseplay:debug("change Counter Element!",5)
 		self.vehicle.cp.settings[self.name]:setRunCounterFromNetwork(self.index,self.value)
-	elseif self.settingType == SiloSelectedFillTypeEvent.TYPE_CHANGE_MAX_FILLLEVEL then
+	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_MAX_FILLLEVEL then
+		courseplay:debug("change Max Element!",5)
 		self.vehicle.cp.settings[self.name]:setMaxFillLevelFromNetwork(self.index,self.value)
-	elseif self.settingType == SiloSelectedFillTypeEvent.CLEANUP_OLD_FILLTYPES then
+	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CLEANUP_OLD_FILLTYPES  then
+		courseplay:debug("cleanUP Element!",5)
 		self.vehicle.cp.settings[self.name]:cleanUpOldFillTypes(true)
+	elseif self.settingType == SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_MIN_FILLEVEL then
+		courseplay:debug("change Min Element!",5)
+		self.vehicle.cp.settings[self.name]:setMinFillLevelFromNetwork(self.index,self.value)
 	end
+	self.vehicle.cp.driver:refreshHUD()
 	if not connection:getIsServer() then
 		courseplay:debug("broadcast settings event feedback",5)
-		g_server:broadcastEvent(SiloSelectedFillTypeEvent:new(self.vehicle, self.name, self.index, self.value), nil, connection, self.vehicle)
+		g_server:broadcastEvent(SiloSelectedFillTypeEvent:new(self.vehicle, self.name,self.settingType, self.index, self.value), nil, connection, self.vehicle)
 	end
 end
 
-function SiloSelectedFillTypeEvent.sendEvent(vehicle, settingType, name, index, value)
+function SiloSelectedFillTypeEvent.sendEvent(vehicle, name,settingType, index, value)
 	if g_server ~= nil then
 		courseplay:debug("broadcast settings event", 5)
 		courseplay:debug(('\tid=%s, name=%s'):format(tostring(vehicle), tostring(name)), 5)
-		g_server:broadcastEvent(SiloSelectedFillTypeEvent:new(vehicle,settingType, name, index, value), nil, nil, self)
+		g_server:broadcastEvent(SiloSelectedFillTypeEvent:new(vehicle, name,settingType, index, value), nil, nil, self)
 	else
 		courseplay:debug("send settings event", 5)
 		courseplay:debug(('\tid=%s, name=%s'):format(tostring(vehicle), tostring(name)), 5)
-		g_client:getServerConnection():sendEvent(SiloSelectedFillTypeEvent:new(vehicle,settingType, name, index, value))
+		g_client:getServerConnection():sendEvent(SiloSelectedFillTypeEvent:new(vehicle, name,settingType, index, value))
 	end;
 end
 

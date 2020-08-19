@@ -197,7 +197,7 @@ end
 function CombineUnloadManager:getChopperWithLeastUnloaders(unloader)
 	local chopperToReturn
 	local amountUnloaders = math.huge
-	for chopper,_ in pairs(unloader.cp.assignedCombines) do
+	for chopper,_ in pairs(unloader.cp.driver:getAssignedCombines()) do
 		local data = self.combines[chopper]
 		if data and data.isChopper then
 			if amountUnloaders > #data.unloaders or #data.unloaders == 0 then
@@ -212,7 +212,7 @@ end
 function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	local mostFillLevel = 0
 	local combineToReturn
-	for combine,_ in pairs(unloader.cp.assignedCombines) do
+	for combine,_ in pairs(unloader.cp.driver:getAssignedCombines()) do
 		local data = self.combines[combine]
 		-- if there is no unloader assigned or this unloader is already assigned as the first
 		if data and data.isCombine and (self:getNumUnloaders(combine) == 0 or self:getUnloaderIndex(unloader, combine) == 1) then
@@ -235,7 +235,8 @@ function CombineUnloadManager:getUnloaders(combine)
 		for _, vehicle in pairs(g_currentMission.vehicles) do
 			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineUnloadAIDriver) then
 				-- TODO: refactor and move assignedCombines into the CombineUnloadAIDriver
-				if vehicle.cp.assignedCombines[combine] then
+				local assignedCombines = vehicle.cp.driver:getAssignedCombines()
+				if assignedCombines[combine] then
 					table.insert(unloaders, vehicle)
 				end
 			end

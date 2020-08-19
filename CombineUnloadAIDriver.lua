@@ -48,8 +48,8 @@ This is currently screwed up...
 
 ]]--
 
----@class CombineUnloadAIDriver : TriggerAIDriver
-CombineUnloadAIDriver = CpObject(TriggerAIDriver)
+---@class CombineUnloadAIDriver : AIDriver
+CombineUnloadAIDriver = CpObject(AIDriver)
 
 CombineUnloadAIDriver.safetyDistanceFromChopper = 0.75
 CombineUnloadAIDriver.targetDistanceBehindChopper = 1
@@ -92,15 +92,14 @@ CombineUnloadAIDriver.myStates = {
 --- Constructor
 function CombineUnloadAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
-	TriggerAIDriver.init(self, vehicle)
+	self.assignedCombinesSetting = AssignedCombinesSetting(vehicle)
+	AIDriver.init(self, vehicle)
 	self.debugChannel = 4
 	self.mode = courseplay.MODE_COMBI
 	self:initStates(CombineUnloadAIDriver.myStates)
 	self.combineOffset = 0
 	self.distanceToCombine = math.huge
 	self.distanceToFront = 0
-	self.vehicle.cp.possibleCombines ={}
-	self.vehicle.cp.assignedCombines ={}
 	self.combinesListHUDOffset = 0
 	self.combineToUnloadReversing = 0
 end
@@ -115,9 +114,21 @@ function CombineUnloadAIDriver:readUpdateStream(streamId)
 	self.combinesListHUDOffset = streamReadUIntN(streamId,6)
 end
 
+function CombineUnloadAIDriver:postSync()
+	self.assignedCombinesSetting:sendPostSyncRequestEvent()
+end
+
+function CombineUnloadAIDriver:getAssignedCombines()
+	return self.assignedCombinesSetting:getData()
+end
+
+function CombineUnloadAIDriver:getAssignedCombinesSetting()
+	return self.assignedCombinesSetting
+end
+
 function CombineUnloadAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
-	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle)
+	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle,self.assignedCombinesSetting)
 end
 
 function CombineUnloadAIDriver:debug(...)
@@ -173,7 +184,9 @@ function CombineUnloadAIDriver:drive(dt)
 
 	if self.state == self.states.ON_UNLOAD_COURSE then
 		self:driveUnloadCourse(dt)
+		self.triggerHandler:enableFillTypeUnloading()
 	elseif self.state == self.states.ON_FIELD then
+		self.triggerHandler:disableFillTypeUnloading()
 		local renderOffset = self.vehicle.cp.coursePlayerNum * 0.03
 		self:renderText(0, 0.1 + renderOffset, "%s: self.onFieldState :%s", nameNum(self.vehicle), self.onFieldState.name)
 		self:driveOnField(dt)
@@ -2088,10 +2101,6 @@ function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
 	else
 		self:debugSparse('Already busy moving out of the way')
 	end
-end
---TODO maybe a new Setting for this one ??
-function CombineUnloadAIDriver:shiftCombinesList(change_by)
-	self.combinesListHUDOffset = MathUtil.clamp(self.combinesListHUDOffset+ change_by,0,#self.vehicle.cp.possibleCombines-6)
 end
 
 ------------------------------------------------------------------------------------------------------------------------

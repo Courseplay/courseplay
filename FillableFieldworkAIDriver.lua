@@ -73,8 +73,8 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	self.waitPointIx = waitPointIx
 	--this one is used to disable loading at the unloading stations,
 	--might be better to disable the triggerID for loading
-	local isInWaitPointRange = self.waitPointIx and self.waitPointIx+8 >self.ppc:getCurrentWaypointIx() or isNearWaitPoint 
-	self:activateTriggersIfPossible(isInWaitPointRange)
+	self.isInWaitPointRange = self.waitPointIx and self.waitPointIx+8 >self.ppc:getCurrentWaypointIx() or isNearWaitPoint 
+	self:enableFillTypeLoading(self.isInWaitPointRange)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
@@ -85,32 +85,26 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 			self:fillAtWaitPoint()
 		end	
 	else
-		if self:isLoading() and not self.activeTriggers then 
+		if self.triggerHandler:isLoading() then 
 			self:fillAtWaitPoint()	
+		else 
+			self:clearInfoText('REACHED_REFILLING_POINT')
 		end
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
-		self:closePipeIfNeeded(isInWaitPointRange)
-	end
-	if self:isLoading() then
-		self:checkFilledUnitFillPercantage()
-		if self.fillableObject and self.fillableObject.object and self.fillableObject.fillUnitIndex then
-			local fillLevel = self.fillableObject.object:getFillUnitFillLevel(self.fillableObject.fillUnitIndex)
-			local fillCapacity = self.fillableObject.object:getFillUnitCapacity(self.fillableObject.fillUnitIndex)
-			courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",math.floor(fillLevel),fillCapacity))
-			self.loadingText = nil
-		end
-		if self.loadingText then 
-			courseplay:setInfoText(self.vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",math.floor(self.loadingText.fillLevel),self.loadingText.capacity))
-		end
-	else
-		self.loadingText = nil
-	end
+		self:closePipeIfNeeded()
+	end	
 end
 
-function FillableFieldworkAIDriver:activateTriggersIfPossible(isInWaitPointRange)
-	self:activateFillTriggersWhenAvailable(self.vehicle)
-	self:activateLoadingTriggerWhenAvailable()
+function FillableFieldworkAIDriver:enableFillTypeLoading(isInWaitPointRange)
+	self.triggerHandler:enableFillTypeLoading()
+	self.triggerHandler:disableFillTypeUnloading()
+end
+
+function FillableFieldworkAIDriver:needsFillTypeLoading()
+	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
+		return true
+	end
 end
 
 function FillableFieldworkAIDriver:closePipeIfNeeded(isInWaitPointRange) 
@@ -120,11 +114,11 @@ end
 function FillableFieldworkAIDriver:fillAtWaitPoint()
 	local fillLevelInfo = {}
 	self:getAllFillLevels(self.vehicle, fillLevelInfo)
-	local fillTypeData, fillTypeDataSize= self:getSiloSelectedFillTypeData()
+	local fillTypeData, fillTypeDataSize= self.triggerHandler:getSiloSelectedFillTypeData()
 	if fillTypeData == nil then
 		return
 	end
-	self:setLoadingState()
+	self:setSpeed(0)
 	
 	local newTotalFillLevel = 0
 	for fillType, info in pairs(fillLevelInfo) do
@@ -141,11 +135,26 @@ function FillableFieldworkAIDriver:fillAtWaitPoint()
 	
 end
 
+--TODO might change this one 
+function FillableFieldworkAIDriver:levelDidNotChange(fillLevelPercent)
+	--fillLevel changed in last loop-> start timer
+	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= fillLevelPercent then
+		self.prevFillLevelPct = fillLevelPercent
+		courseplay:setCustomTimer(self.vehicle, "fillLevelChange", 3)
+	end
+	--if time is up and no fillLevel change happend, return true
+	if courseplay:timerIsThrough(self.vehicle, "fillLevelChange",false) then
+		if self.prevFillLevelPct == fillLevelPercent then
+			return true
+		end
+		courseplay:resetCustomTimer(self.vehicle, "fillLevelChange",nil)
+	end
+end
+
 function FillableFieldworkAIDriver:continue()
-	TriggerAIDriver.continue(self)
+	AIDriver.continue(self)
 	self.refillState = self.states.REFILL_DONE	
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
-	self.loadingState = self.states.NOTHING
 end
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
@@ -246,71 +255,4 @@ function FillableFieldworkAIDriver:getSiloSelectedFillTypeSetting()
 	return self.vehicle.cp.settings.siloSelectedFillTypeFillableFieldWorkDriver
 end
 
-
-function FillableFieldworkAIDriver:isLoadingTriggerCallbackEnabled()
-	return true
-end
-
-function FillableFieldworkAIDriver:setFillUnitIsFilling(superFunc,isFilling, noEventSend)
-	local rootVehicle = self:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) then 
-		if not rootVehicle.cp.driver:isLoadingTriggerCallbackEnabled() then 
-			return superFunc(self,isFilling, noEventSend)
-		end
-		local fillTypeData, fillTypeDataSize= rootVehicle.cp.driver:getSiloSelectedFillTypeData()
-		if fillTypeData == nil then
-			return superFunc(self,isFilling, noEventSend)
-		end
-		local spec = self.spec_fillUnit
-		if isFilling ~= spec.fillTrigger.isFilling then
-			if noEventSend == nil or noEventSend == false then
-				if g_server ~= nil then
-					g_server:broadcastEvent(SetFillUnitIsFillingEvent:new(self, isFilling), nil, nil, self)
-				else
-					g_client:getServerConnection():sendEvent(SetFillUnitIsFillingEvent:new(self, isFilling))
-				end
-			end
-			if isFilling then
-				-- find the first trigger which is activable
-				spec.fillTrigger.currentTrigger = nil
-				for _, trigger in ipairs(spec.fillTrigger.triggers) do
-					for _,data in ipairs(fillTypeData) do
-						if trigger:getIsActivatable(self) then
-							local fillType = trigger:getCurrentFillType()
-							local fillUnitIndex = nil
-							if fillType and fillType == data.fillType then
-								fillUnitIndex = self:getFirstValidFillUnitToFill(fillType)
-							end
-							if not rootVehicle.cp.driver:isFilledUntilPercantageX(fillType,data.maxFillLevel) then 
-								if fillUnitIndex then
-									rootVehicle = self:getRootVehicle()
-									rootVehicle.cp.driver:setLoadingState(self,fillUnitIndex,fillType)
-									spec.fillTrigger.currentTrigger = trigger
-									courseplay.debugFormat(2,"FillUnit setLoading, FillType: "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
-									break
-								end
-							end
-						end
-					end
-				end
-			end
-			spec.fillTrigger.isFilling = isFilling
-			if self.isClient then
-				self:setFillSoundIsPlaying(isFilling)
-				if spec.fillTrigger.currentTrigger ~= nil then
-					spec.fillTrigger.currentTrigger:setFillSoundIsPlaying(isFilling)
-				end
-			end
-			SpecializationUtil.raiseEvent(self, "onFillUnitIsFillingStateChanged", isFilling)
-			if not isFilling then
-				self:updateFillUnitTriggers()
-				rootVehicle.cp.driver:resetLoadingState()
-				courseplay.debugFormat(2,"FillUnit resetLoading")
-			end
-		end
-		return
-	end
-	return superFunc(self,isFilling, noEventSend)
-end
-FillUnit.setFillUnitIsFilling = Utils.overwrittenFunction(FillUnit.setFillUnitIsFilling,FillableFieldworkAIDriver.setFillUnitIsFilling)
 

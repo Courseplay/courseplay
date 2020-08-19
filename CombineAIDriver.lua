@@ -153,6 +153,10 @@ function CombineAIDriver:getCombine()
 	return self.combine
 end
 
+function CombineAIDriver:postSync()
+	--TODO: figure out if we need this or not for multiplayer ??
+end
+
 function CombineAIDriver:start(startingPoint)
 	self:clearAllUnloaderInformation()
 	self:addBackwardProximitySensor()
@@ -1294,14 +1298,20 @@ end
 --- Register a combine unload AI driver for notification about combine events
 --- Unloaders can renew their registration as often as they want to make sure they remain registered.
 ---@param driver CombineUnloadAIDriver
-function CombineAIDriver:registerUnloader(driver)
+function CombineAIDriver:registerUnloader(driver,noEventSend)
 	self.unloaders[driver] = driver
+	if not noEventSend then 
+		UnloaderEvents:sendRegisterUnloaderEvent(driver,self)
+	end
 end
 
 --- Deregister a combine unload AI driver from notificiations
 ---@param driver CombineUnloadAIDriver
-function CombineAIDriver:deregisterUnloader(driver)
+function CombineAIDriver:deregisterUnloader(driver,noEventSend)
 	self.unloaders[driver] = nil
+	if not noEventSend then 
+		UnloaderEvents:sendDeregisterUnloaderEvent(driver,self)
+	end
 end
 
 function CombineAIDriver:sendTurnStartEventToUnloaders(ix, turnType)

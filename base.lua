@@ -572,6 +572,12 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(RefillUntilPctSetting, self)
 	self.cp.settings:addSetting(FollowAtFillLevelSetting,self)
 	self.cp.settings:addSetting(ForcedToStopSetting,self)
+	
+	self.cp.settings:addSetting(ReverseSpeedSetting, self)
+	self.cp.settings:addSetting(TurnSpeedSetting, self)
+	self.cp.settings:addSetting(FieldSpeedSettting,self)
+	self.cp.settings:addSetting(StreetSpeedSetting,self)
+	self.cp.settings:addSetting(BunkerSpeedSetting,self)
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
@@ -926,8 +932,8 @@ end;
 
 function courseplay:onUpdate(dt)
 	
-	if g_server == nil and self.isPostSynced == nil and CpManager.isMultiplayer then 
-		UserConnectedEvent.sendEvent(self)
+	if g_server == nil and self.isPostSynced == nil then 
+		self.cp.driver:postSync()
 		self.isPostSynced=true
 	end
 	
@@ -1444,20 +1450,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.hud.showMiniHud = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showMiniHud'), true);
 		self.cp.hud.show = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showHud'), false);
 		
-		-- SPEEDS
-		curKey = key .. '.courseplay.speeds';
-	
-		-- use string so we can get both ints and proper floats without LUA's rounding errors
-		-- if float speeds (old speed system) are loaded, the default speeds are used instead
-		local reverse = floor(tonumber(getXMLString(xmlFile, curKey .. '#reverse') or '0'));
-		local turn    = floor(tonumber(getXMLString(xmlFile, curKey .. '#turn')	   or '0'));
-		local field   = floor(tonumber(getXMLString(xmlFile, curKey .. '#field')   or '0'));
-		local street  = floor(tonumber(getXMLString(xmlFile, curKey .. '#max')	   or '0'));
-		if reverse ~= 0	then self.cp.speeds.reverse	= reverse; end;
-		if turn ~= 0	then self.cp.speeds.turn	= turn;   end;
-		if field ~= 0	then self.cp.speeds.field	= field;  end;
-		if street ~= 0	then self.cp.speeds.street	= street; end;
-
 		-- MODE 2
 		curKey = key .. '.courseplay.combi';
 		self.cp.tipperOffset 		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#tipperOffset'),			 0);
@@ -1560,7 +1552,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.mode10.leveling =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#leveling'), true);
 		self.cp.mode10.searchCourseplayersOnly = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#CourseplayersOnly'), true);
 		self.cp.mode10.searchRadius = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#searchRadius'), 50);
-		self.cp.speeds.bunkerSilo = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#maxSiloSpeed'), 20);
 		self.cp.mode10.shieldHeight = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#shieldHeight'), 0.3);
 		self.cp.mode10.automaticSpeed =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticSpeed'), true);
 		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticHeight'), true);
@@ -1612,11 +1603,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".HUD #showMiniHud", self.cp.hud.showMiniHud)
 	setXMLBool(xmlFile, newKey..".HUD #showHud", self.cp.hud.show)
 	
-	--speeds
-	setXMLInt(xmlFile, newKey..".speeds #reverse", self.cp.speeds.reverse)
-	setXMLInt(xmlFile, newKey..".speeds #turn", self.cp.speeds.turn)
-	setXMLInt(xmlFile, newKey..".speeds #field", self.cp.speeds.field)
-	setXMLInt(xmlFile, newKey..".speeds #max", self.cp.speeds.street)
+
 	
 	--combineMode
 	setXMLString(xmlFile, newKey..".combi #tipperOffset", string.format("%.1f",self.cp.tipperOffset))
@@ -1648,7 +1635,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
 	setXMLBool(xmlFile, newKey..".mode10 #CourseplayersOnly", self.cp.mode10.searchCourseplayersOnly)
 	setXMLInt(xmlFile, newKey..".mode10 #searchRadius", self.cp.mode10.searchRadius)
-	setXMLInt(xmlFile, newKey..".mode10 #maxSiloSpeed", self.cp.speeds.bunkerSilo)
 	setXMLString(xmlFile, newKey..".mode10 #shieldHeight", string.format("%.1f",self.cp.mode10.shieldHeight))
 	setXMLBool(xmlFile, newKey..".mode10 #automaticSpeed", self.cp.mode10.automaticSpeed)
 	setXMLBool(xmlFile, newKey..".mode10 #automaticHeight", self.cp.mode10.automaticHeigth)

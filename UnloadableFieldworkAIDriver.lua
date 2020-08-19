@@ -80,6 +80,7 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	-- only reason we need this is to update the totalFillLevel for reverse.lua so it will
 	-- do a raycast for tip triggers (side effects, side effects all over the place, killing me...)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
+	self.triggerHandler:disableFillTypeUnloading()
 	-- the rest is the same as the parent class
 	FieldworkAIDriver.drive(self, dt)
 end
@@ -114,7 +115,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 			self:setSpeed(self.vehicle.cp.speeds.turn)
 		end
 	end
-	
+	self.triggerHandler:enableFillTypeUnloading()
 	-- tractor reaches unloadPoint
 	if isNearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
