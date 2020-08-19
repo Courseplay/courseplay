@@ -55,9 +55,15 @@ local courseplaySpecName = g_currentModName .. ".courseplay"
 function courseplay:register(secondTime)
 	if secondTime then
 		print('## Courseplay: register later loaded mods:');
-		if g_company and g_company.loadingTrigger and g_company.loadingTrigger.loadTriggerCallback then
-			g_company.loadingTrigger.loadTriggerCallback = Utils.appendedFunction(g_company.loadingTrigger.loadTriggerCallback, TriggerHandler.loadTriggerCallback);
-			print("  append courseplay.SiloTrigger_TriggerCallback to g_company.loadingTrigger.loadTriggerCallback")
+		if g_company and g_company.loadingTrigger then 
+			if g_company.loadingTrigger.loadTriggerCallback then
+				g_company.loadingTrigger.loadTriggerCallback = Utils.appendedFunction(g_company.loadingTrigger.loadTriggerCallback, TriggerHandler.loadTriggerCallback);
+				print("  append TriggerHandler.loadTriggerCallback to g_company.loadingTrigger.loadTriggerCallback")
+			end
+			if g_company.loadingTrigger.onActivateObject then 
+				g_company.loadingTrigger.onActivateObject = Utils.overwrittenFunction(g_company.loadingTrigger.onActivateObject, TriggerHandler.onActivateObjectGlobalCompany)
+				print("  overwrittenFunction g_company.loadingTrigger.onActivateObject to TriggerHandler.onActivateObjectGlobalCompany")
+			end
 		end
 	else
 		print('## Courseplay: register into vehicle types:');

@@ -239,3 +239,8 @@ function UnloadableFieldworkAIDriver:setLightsMask(vehicle)
 		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
 	end
 end
+
+function UnloadableFieldworkAIDriver:setDriveNow()
+	self:stopAndChangeToUnload()
+	AIDriver.setDriveNow(self)
+end

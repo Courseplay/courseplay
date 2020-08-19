@@ -12,9 +12,9 @@ TriggerHandler.myLoadingStates = {
 }
 TriggerHandler.APPROACH_AUGER_TRIGGER_SPEED = 3
 
-function TriggerHandler:init(vehicle,siloSelectedFillTypeSetting)
+function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 	self.vehicle = vehicle
-	self.driver = vehicle.cp.driver
+	self.driver = driver
 	self.siloSelectedFillTypeSetting=siloSelectedFillTypeSetting
 --	self.driveOnAtFillLevel=driveOnAtFillLevelSetting
 	self.allwaysSearchFuel = vehicle.cp.settings.allwaysSearchFuel
@@ -28,12 +28,26 @@ function TriggerHandler:init(vehicle,siloSelectedFillTypeSetting)
 	self.triggers = {}
 	self.isInAugerWagonTrigger = false
 	self.fillableObject = nil
+	self.lastLoadedFillTypes = {}
+	self.disabledCombiUnloadingTrigger = nil
+	self.debugTicks = 100
+	self.debugChannel = 2
 end 
 
 function TriggerHandler:initStates(states)
 	for key, _ in pairs(states) do
 		self.states[key] = {name = tostring(key)}
 	end
+end
+
+function TriggerHandler:debugSparse(vehicle,...)
+	if g_updateLoopIndex % self.debugTicks == 0 then
+		courseplay.debugVehicle(self.debugChannel, vehicle, ...)
+	end
+end
+
+function TriggerHandler:debug(vehicle,...)
+	courseplay.debugVehicle(self.debugChannel, vehicle, ...)
 end
 
 function TriggerHandler:onStart()
@@ -77,13 +91,15 @@ function TriggerHandler:readUpdateStream(streamId)
 end
 
 function TriggerHandler:onDriveNow()
-
+	self:setDriveNow()
 end
+
+
 
 function TriggerHandler:changeLoadingState(newState)
 	if newState ~= self.loadingState then 
 		self.loadingState = newState
-		courseplay.debugFormat(2,"new TriggerHandler state = %s!",self.loadingState.name)
+		courseplay.debugVehicle(2,self.vehicle,"new TriggerHandler state = %s!",self.loadingState.name)
 	end
 end
 
@@ -111,7 +127,8 @@ function TriggerHandler:isFilledUntilPercantageX()
 		local fillUnitIndex = self.fillableObject.fillUnitIndex
 		local object = self.fillableObject.object
 		local maxFillLevelPercentage = self.siloSelectedFillTypeSetting:getMaxFillLevelByFillType(self.fillableObject.fillType)
-		return not self:canLoadFillType(object,fillUnitIndex,maxFillLevelPercentage)
+		local fillType = self.fillableObject.fillType
+		return not self:canLoadFillType(object,fillUnitIndex,maxFillLevelPercentage,fillType)
 	end
 end
 
@@ -257,7 +274,8 @@ function TriggerHandler:needsFuel()
 end
 
 --Trigger stuff
-
+--TODO: LoadTrigger are derived from FillTrigger, maybe only check fillTrigger ???????????
+--		God dammit Giants what have you done, Pallets are FillTriggerVehicle ??? 
 
 --scanning for LoadingTriggers and FillTriggers(checkFillTriggers)
 function TriggerHandler:activateLoadingTriggerWhenAvailable()
@@ -274,16 +292,17 @@ end
 
 --check recusively if fillTriggers are enableable 
 function TriggerHandler:activateFillTriggersWhenAvailable(object)
-	if object.spec_fillUnit then
-		local spec = object.spec_fillUnit
+	local spec = object.spec_fillUnit
+	if spec then
 		local coverSpec = object.spec_cover	
 		if spec.fillTrigger and #spec.fillTrigger.triggers>0 then
-			if not spec.fillTrigger.isFilling then	
+			if not spec.fillTrigger.isFilling and spec.fillTrigger.currentTrigger == nil then	
 				if coverSpec and coverSpec.isDirty then 
-					courseplay.debugFormat(2,"cover is still opening wait!")
+					courseplay.debugVehicle(2,object,"cover is still opening wait!")
 					self:setLoadingState()
 				else
-					object:setFillUnitIsFilling(true)
+					object:updateFillUnitTriggers(self)
+--					object:setFillUnitIsFilling(true,nil,true)
 				end
 			end
 		end
@@ -293,7 +312,7 @@ function TriggerHandler:activateFillTriggersWhenAvailable(object)
 		self:activateFillTriggersWhenAvailable(impl.object)
 	end
 end
-
+--TODO: change this to dichargeNode.triggers ...
 --check for standart object unloading Triggers
 function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)    
 	local spec = object.spec_dischargeable
@@ -302,7 +321,12 @@ function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)
 		if spec:getCanToggleDischargeToObject() then 
 			local currentDischargeNode = spec.currentDischargeNode
 			if currentDischargeNode then
-				if currentDischargeNode.dischargeObject then 
+				if currentDischargeNode.dischargeObject then
+					if self.disabledCombiUnloadingTrigger == currentDischargeNode.dischargeObject then 
+						courseplay.debugFormat(2,"Unloading Trigger of LoadingTrigger")
+						return 
+					end
+				
 					if not self:isUnloading() then
 						courseplay:setInfoText(rootVehicle,"COURSEPLAY_TIPTRIGGER_REACHED")
 					end
@@ -317,15 +341,6 @@ function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)
 				--	CpManager:setGlobalInfoText(rootVehicle, 'WRONG_FILLTYPE_FOR_TRIGGER');
 				end
 				if spec.currentDischargeState == Dischargeable.DISCHARGE_STATE_OFF then
-					if not spec:getCanDischargeToObject(currentDischargeNode) then
-						for i=1,#spec.dischargeNodes do
-							if spec:getCanDischargeToObject(spec.dischargeNodes[i])then
-								spec:setCurrentDischargeNodeIndex(spec.dischargeNodes[i]);
-								currentDischargeNode = spec:getCurrentDischargeNode()
-								break
-							end
-						end
-					end
 					if spec:getCanDischargeToObject(currentDischargeNode) then
 						if not object:getFillUnitFillType(currentDischargeNode.fillUnitIndex) or self:isDriveNowActivated() then 
 							return
@@ -333,6 +348,25 @@ function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)
 						if spec.setDischargeState then
 							spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)				
 							self:setUnloadingState(object,currentDischargeNode.fillUnitIndex,spec:getDischargeFillType(currentDischargeNode))
+						end
+					else 
+						if #spec.fillUnitDischargeNodeMapping>1 and not currentDischargeNode.dischargeObject then 
+							for fillUnitIndex,dischargeNode in pairs(spec.fillUnitDischargeNodeMapping) do 
+								if not spec:getCanDischargeToObject(currentDischargeNode) and dischargeNode~=currentDischargeNode then 
+									for dischargeNodeIndex,curDischargeNode in pairs(spec.dischargeNodes) do 
+										if curDischargeNode == dischargeNode then 
+											local trailerSpec = object.spec_trailer
+											if trailerSpec and object:getCanTogglePreferdTipSide() then
+												for tipSideIndex,tipside in pairs(trailerSpec.tipSides) do 
+													if tipside.dischargeNodeIndex == dischargeNodeIndex then 
+														object:setPreferedTipSide(tipSideIndex)
+													end
+												end											
+											end
+										end
+									end
+								end							
+							end
 						end
 					end
 				end
@@ -368,6 +402,11 @@ end
 
 function TriggerHandler:disableFillTypeLoading()
 	self.validFillTypeLoading = false
+	if self.siloSelectedFillTypeSetting:isRunCounterActive() then 
+		self.siloSelectedFillTypeSetting:decrementRunCounterByFillType(self.lastLoadedFillTypes)
+		self.driver:refreshHUD()
+	end	
+	self.lastLoadedFillTypes = {}
 end 
 
 function TriggerHandler:disableFillTypeUnloading()
@@ -391,22 +430,90 @@ function TriggerHandler:isAllowedToLoadFuel()
 	end
 end 
 
-function TriggerHandler:canLoadFillType(object,fillUnitIndex,maxFillLevelPercentage)  
-	local objectFillLevelPercentage = object:getFillUnitFillLevelPercentage(fillUnitIndex)
-	courseplay:debugFormat(2,"fillPercentage: %s > maxFillLevel: %s",tostring(objectFillLevelPercentage),tostring(maxFillLevelPercentage))
-	return objectFillLevelPercentage*100 < (maxFillLevelPercentage or 99)
+TriggerHandler.CALLBACK = {}
+TriggerHandler.CALLBACK.MAX_REACHED = 0
+TriggerHandler.CALLBACK.RUN_COUNTER_NOT_REACHED = 1
+TriggerHandler.CALLBACK.SEPERATE_FILLTYPE_NOT_ALLOWED = 2
+TriggerHandler.CALLBACK.MIN_NOT_REACHED = 3
+TriggerHandler.CALLBACK.OK = 4
+TriggerHandler.CALLBACK.SKIP_LOADING = 5
+function TriggerHandler:triggerCanStartLoading(trigger,object,fillUnitIndex,triggerFillLevel,data, dataLength)
+	--is fillLevel < maxFillLevel
+	local callback = nil
+	local fillType = data.fillType
+	if self:canLoadFillType(object,fillUnitIndex,data.maxFillLevel,fillType) then 
+		--if runCounter activated and runCounter > 0
+		if self:isRunCounterValid(data.runCounter,data.fillType) then 	
+			-- is seperateFillTypeLoading not activated or seperateFillType not loaded yet
+			if self:isAllowedToLoadSeperateFillType(object,dataLength,fillType) then
+				-- is minFillLevelPercentage in trigger or infinity fillLevel trigger or autoStart at trigger
+				if self:isMinFillLevelReached(object,fillUnitIndex,triggerFillLevel,data.minFillLevel,fillType) or trigger.hasInfiniteCapacity then -- or trigger.autoStart then 
+					callback = self.CALLBACK.OK
+					if trigger.hasInfiniteCapacity then
+						self:debugSparse(object,"trigger hasInfiniteCapacity")
+					end					
+				elseif data.minFillLevel == 0 then 
+					callback = self.CALLBACK.SKIP_LOADING
+					self:debugSparse(object,"skip loading, minFillLevel = 0, %s",tostring(g_fillTypeManager:getFillTypeByIndex(fillType).title))
+				else
+					callback = self.CALLBACK.MIN_NOT_REACHED
+				end
+			else
+				callback = self.CALLBACK.SEPERATE_FILLTYPE_NOT_ALLOWED
+			end
+		else
+			callback = self.CALLBACK.RUN_COUNTER_NOT_REACHED
+			self:debugSparse(object,"skip loading, runcounter = 0, %s",tostring(g_fillTypeManager:getFillTypeByIndex(fillType).title))
+		end
+	else
+		callback = self.CALLBACK.MAX_REACHED
+	end
+	return callback
 end
 
-function TriggerHandler:isMinFillLevelReached(object,fillUnitIndex,triggerFillLevel,minFillLevelPercentage)
+function TriggerHandler:canLoadFillType(object,fillUnitIndex,maxFillLevelPercentage,fillType)  
+	local objectFillLevelPercentage = object:getFillUnitFillLevelPercentage(fillUnitIndex)*100	
+	self:debugSparse(object,"maxFillLevel:, fillPercentage: %s > maxFillLevel: %s, fillType: %s",tostring(objectFillLevelPercentage),tostring(maxFillLevelPercentage),tostring(g_fillTypeManager:getFillTypeByIndex(fillType).title))
+	return objectFillLevelPercentage < (maxFillLevelPercentage or 99)
+end
+
+function TriggerHandler:isMinFillLevelReached(object,fillUnitIndex,triggerFillLevel,minFillLevelPercentage,fillType)
 	local objectFillCapacity = object:getFillUnitCapacity(fillUnitIndex)
 	local minNeededFillLevel = minFillLevelPercentage and minFillLevelPercentage*0.01*objectFillCapacity or 0.1
+	self:debugSparse(object,"min FillLevel:, triggerFillLevel: %s, objectFillCapacity: %s, minNeededFillLevel: %s, fillType: %s",tostring(triggerFillLevel),tostring(objectFillCapacity),tostring(minNeededFillLevel),tostring(g_fillTypeManager:getFillTypeByIndex(fillType).title))
 	return triggerFillLevel and triggerFillLevel > minNeededFillLevel or triggerFillLevel == nil
 end
 
-function TriggerHandler:isRunCounterValid(runCounter) 
+function TriggerHandler:isRunCounterValid(runCounter,fillType) 
 	return runCounter and runCounter>0 or runCounter == nil
 end
 
+function TriggerHandler:isAllowedToLoadSeperateFillType(object,dataLength,fillTypeIndex)
+	local seperateFillTypeLoading = self.driver:getSeperateFillTypeLoadingSetting()
+	if seperateFillTypeLoading and seperateFillTypeLoading:isActive() and dataLength > 1 then 
+		for _,fillType in pairs(self.lastLoadedFillTypes) do 
+			if fillType == fillTypeIndex and #self.lastLoadedFillTypes < seperateFillTypeLoading:get() then 
+				self:debugSparse(object,"fillType: "..fillTypeIndex.." already loaded")
+				return false
+			end
+		end
+	else 
+		self:debugSparse(object,"isAllowedToLoadSeperateFillType false or only one fillType")
+		return true
+	end
+	self:debugSparse(object,"isAllowedToLoadSeperateFillType true")
+	return true
+end
+
+function TriggerHandler:disableUnloadingTriggerUnderFillTrigger(object)
+	local spec = object.spec_dischargeable
+	if spec and spec.currentDischargeNode and spec.currentDischargeNode.dischargeObject then 
+		if self.disabledCombiUnloadingTrigger == nil then 
+			self.disabledCombiUnloadingTrigger  = spec.currentDischargeNode.dischargeObject
+		end
+		self:debugSparse("Unloading Trigger of LoadingTrigger disabled no!")
+	end
+end
 
 -- Custom version of trigger:onActivateObject to allow activating for a non-controlled vehicle
 function TriggerHandler:activateTriggerForVehicle(trigger, vehicle)
@@ -457,6 +564,7 @@ LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActiva
 
 --LoadTrigger activate, if fillType is right and fillLevel ok 
 function TriggerHandler:onActivateObject(superFunc,vehicle)
+	--self = LoadTrigger!
 	if courseplay:isAIDriverActive(vehicle) then 
 		local triggerHandler = vehicle.cp.driver.triggerHandler
 		if not triggerHandler:isAllowedToLoadFuel() and not triggerHandler:isAllowedToLoadFillType() then 
@@ -464,6 +572,7 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 		end
 		
 		if not self.isLoading then
+			local isG_companyTrigger = false
 			local fillLevels, capacity
 			--normal fillLevels of silo
 			if self.source.getAllFillLevels then 
@@ -482,59 +591,38 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 				triggerHandler:resetLoadingState()
 				return
 			end
-			local firstFillType = nil
-			local validFillTypIndexes = {}
-			local emptyOnes = 0
-			local lastCounter
+			if fillableObject.spec_cover and fillableObject.spec_cover.isDirty then 
+				--setLoadingState(object,fillUnitIndex,fillType,trigger)
+				triggerHandler:setLoadingState()
+				triggerHandler:debugSparse(fillableObject, 'Cover is still opening!')
+				return
+			end
 			local fillTypeData,fillTypeDataSize = triggerHandler:getSiloSelectedFillTypeData()
+			local loadingCallback = {}
+			local indexCallback = 1
 			if triggerHandler:isAllowedToLoadFillType() then
 				for _,data in ipairs(fillTypeData) do
 					for fillTypeIndex, fillLevel in pairs(fillLevels) do
-						if self.fillTypes == nil or self.fillTypes[fillTypeIndex] then
-							if fillableObject:getFillUnitAllowsFillType(fillUnitIndex, fillTypeIndex) and fillTypeIndex == data.fillType then
-								if triggerHandler:canLoadFillType(fillableObject,fillUnitIndex,data.maxFillLevel) then 
-									if triggerHandler:isMinFillLevelReached(fillableObject,fillUnitIndex,fillLevel,data.minFillLevel) then 
-										if triggerHandler:isRunCounterValid(data.runCounter) then 
-											--waiting for cover to be open
-											if fillableObject.spec_cover and fillableObject.spec_cover.isDirty then 
-												triggerHandler:setLoadingState(fillableObject,fillUnitIndex,fillTypeIndex,self)
-												courseplay.debugFormat(2, 'Cover is still opening!')
-												return
-											end
-											--all okay start loading
-											self:onFillTypeSelection(fillTypeIndex)
-											g_currentMission.activatableObjects[self] = nil
-											return
-										else
-											--runCounter is zero
-											courseplay.debugFormat(2, 'runCounter = 0!')
-										end
-									else	
-										--not enough in silo
-										courseplay.debugFormat(2, 'FillType is empty or minFillLevel not reached!')
-										emptyOnes = emptyOnes +1
-									end
-								else
-									--full
-									courseplay.debugFormat(2, 'FillLevel reached!')
-									g_currentMission.activatableObjects[self] = nil
-									triggerHandler:resetLoadingState()
-									return
-								end
-							end
+						if fillableObject:getFillUnitAllowsFillType(fillUnitIndex, fillTypeIndex) and fillTypeIndex == data.fillType and data.fillType ~= nil then
+							local callback = triggerHandler:triggerCanStartLoading(self,fillableObject,fillUnitIndex,fillLevel,data,fillTypeDataSize)
+							loadingCallback[indexCallback] = {}
+							loadingCallback[indexCallback].callback = callback
+							loadingCallback[indexCallback].data = data
+							loadingCallback[indexCallback].fillLevelTrigger = fillLevel
+							indexCallback = indexCallback +1
 						end
 					end
-					lastCounter=data.runCounter
 				end
 			end
 			if triggerHandler:isAllowedToLoadFuel() and fillableObject == vehicle then 
 				for fillTypeIndex, fillLevel in pairs(fillLevels) do
 					if fillTypeIndex == FillType.DIESEL  then 
 						if fillableObject:getFillUnitAllowsFillType(fillUnitIndex, fillTypeIndex) then
-							if triggerHandler:canLoadFillType(fillableObject,fillUnitIndex) then 
-								if triggerHandler:isMinFillLevelReached(fillableObject,fillUnitIndex,fillLevel) then 
+							if triggerHandler:canLoadFillType(fillableObject,fillUnitIndex,99,fillTypeIndex) then 
+								if triggerHandler:isMinFillLevelReached(fillableObject,fillUnitIndex,fillLevel,0.1,fillTypeIndex) then 
 									self:onFillTypeSelection(fillTypeIndex)
 									g_currentMission.activatableObjects[self] = nil
+									return
 								else
 									triggerHandler:setLoadingState()
 									CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY')
@@ -542,22 +630,14 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 								end
 							else
 								courseplay.debugFormat(2, 'max FillLevel Reached')
+								triggerHandler:resetLoadingState()
 							end
 						end
 					end
 				end
 			end
-			--if all selected fillTypes are empty in the trigger and no fillLevel reached => wait for more
-			if emptyOnes == fillTypeDataSize and emptyOnes>0 then 
-				triggerHandler:setLoadingState()
-				CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY');
-				courseplay.debugFormat(2, 'Silo empty, emptyOnes: '..emptyOnes)
-				return
-			elseif lastCounter == 0 then 
-				triggerHandler:setLoadingState()
-				CpManager:setGlobalInfoText(vehicle, 'RUNCOUNTER_ERROR_FOR_TRIGGER');
-				courseplay.debugFormat(2, 'last runCounter=0 ')
-				return
+			if #loadingCallback > 0 then
+				triggerHandler:handleLoadingCallbackLoadTrigger(self,fillableObject,fillUnitIndex,loadingCallback)
 			end
 		end
 	else 
@@ -566,22 +646,79 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 end
 LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,TriggerHandler.onActivateObject)
 
+function TriggerHandler:handleLoadingCallbackLoadTrigger(trigger,object,fillUnitIndex,loadingCallback)
+	local lastCallbackData = nil
+	local lastMinCallBackData = nil
+	for indexCallback,callbackData in ipairs(loadingCallback) do 
+		local data = callbackData.data
+		local fillType = data.fillType
+		lastCallbackData = callbackData
+		--all okay start loading
+		if callbackData.callback == TriggerHandler.CALLBACK.OK then 
+			if trigger.onFillTypeSelection then 
+				trigger:onFillTypeSelection(fillType)
+				g_currentMission.activatableObjects[trigger] = nil
+			end
+			table.insert(self.lastLoadedFillTypes, fillType)
+			self:debugSparse(object, 'LoadingTrigger: start Loading, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			return 
+		--max FillLevel reached
+		elseif callbackData.callback == TriggerHandler.CALLBACK.MAX_REACHED then 
+			if trigger.onFillTypeSelection then 
+				g_currentMission.activatableObjects[trigger] = nil
+			end
+			self:resetLoadingState()
+			self:debugSparse(object, 'LoadingTrigger: max Reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			return 
+		-- min FillLevel not reached to start filling
+		elseif callbackData.callback == TriggerHandler.CALLBACK.MIN_NOT_REACHED then
+			lastMinCallBackData = callbackData
+			self:setLoadingState()
+			CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
+			self:debugSparse(object, 'LoadingTrigger: minLevel not reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			return 
+		end
+	end
+	--minLevel from last checked fillType not reached!
+--	if lastMinCallBackData and lastMinCallBackData.callback == TriggerHandler.CALLBACK.MIN_NOT_REACHED then 
+--		self:setLoadingState()
+--		CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
+--		courseplay.debugVehicle(2,object, 'FillTrigger: minLevel not reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+--		return
+--	end
+	--runCounter = 0
+	if lastCallbackData and lastCallbackData.callback ==  TriggerHandler.CALLBACK.RUN_COUNTER_NOT_REACHED then 
+		self:setLoadingState()
+		CpManager:setGlobalInfoText(self.vehicle, 'RUNCOUNTER_ERROR_FOR_TRIGGER');
+		self:debugSparse(object, 'last runCounter=0, fillType: '..g_fillTypeManager:getFillTypeByIndex(lastCallbackData.data.fillType).title)
+		return
+	elseif lastCallbackData and lastCallbackData.callback ==  TriggerHandler.CALLBACK.SKIP_LOADING then 
+		self:setLoadingState()
+		CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
+		self:debugSparse(object, 'last FillType  minLevel not reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(lastCallbackData.data.fillType).title)
+		return
+	end
+end
+
 --LoadTrigger => start/stop driver and close cover once free from trigger
 function TriggerHandler:setIsLoading(superFunc,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
-	local rootVehicle = self.validFillableObject:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) then
-		local triggerHandler = rootVehicle.cp.driver.triggerHandler
-		if not triggerHandler.validFillTypeLoading and not triggerHandler.validFuelLoading then
-			return superFunc(self,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
-		end
-		if isLoading then 
-			triggerHandler:setLoadingState(self.validFillableObject,fillUnitIndex, fillType,self)
-			courseplay.debugFormat(2, 'LoadTrigger setLoading, FillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
-		else 
-			triggerHandler:resetLoadingState()
-			courseplay.debugFormat(2, 'LoadTrigger resetLoading and close Cover')
-			SpecializationUtil.raiseEvent(self.validFillableObject, "onRemovedFillUnitTrigger",#self.validFillableObject.spec_fillUnit.fillTrigger.triggers)
-			g_currentMission:addActivatableObject(self)
+	if self.validFillableObject then 
+		local rootVehicle = self.validFillableObject:getRootVehicle()
+		if courseplay:isAIDriverActive(rootVehicle) then
+			local triggerHandler = rootVehicle.cp.driver.triggerHandler
+			if not triggerHandler.validFillTypeLoading and not triggerHandler.validFuelLoading then
+				return superFunc(self,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
+			end
+			if isLoading then 
+				triggerHandler:setLoadingState(self.validFillableObject,fillUnitIndex, fillType,self)
+				triggerHandler:debug(self.validFillableObject, 'LoadTrigger setLoading, FillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			else 
+				triggerHandler:disableUnloadingTriggerUnderFillTrigger(self.validFillableObject)
+				triggerHandler:resetLoadingState()
+				triggerHandler:debug(self.validFillableObject, 'LoadTrigger resetLoading and close Cover')
+				SpecializationUtil.raiseEvent(self.validFillableObject, "onRemovedFillUnitTrigger",#self.validFillableObject.spec_fillUnit.fillTrigger.triggers)
+				g_currentMission:addActivatableObject(self)
+			end
 		end
 	end
 	return superFunc(self,isLoading, targetObject, fillUnitIndex, fillType, noEventSend)
@@ -591,7 +728,7 @@ LoadTrigger.setIsLoading = Utils.overwrittenFunction(LoadTrigger.setIsLoading,Tr
 --close cover after tipping for trailer if not closed already
 function TriggerHandler:endTipping(superFunc,noEventSend)
 	local rootVehicle = self:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) then
+	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) then
 		if rootVehicle.cp.settings.automaticCoverHandling:is(true) and self.spec_cover then
 			self:setCoverState(0, true)
 		end
@@ -601,14 +738,9 @@ function TriggerHandler:endTipping(superFunc,noEventSend)
 end
 Trailer.endTipping = Utils.overwrittenFunction(Trailer.endTipping,TriggerHandler.endTipping)
 
-function TriggerHandler:setFillUnitIsFilling(superFunc,isFilling, noEventSend)
+function TriggerHandler:setFillUnitIsFilling(superFunc,isFilling, noEventSend,trigger)
 	local rootVehicle = self:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) then 
-		local triggerHandler = rootVehicle.cp.driver.triggerHandler
-		if not triggerHandler:isAllowedToLoadFuel() and not triggerHandler:isAllowedToLoadFillType() then
-			return superFunc(self,isFilling, noEventSend)
-		end
-		local spec = self.spec_fillUnit
+	if courseplay:isAIDriverActive(rootVehicle) and trigger then 
 		if isFilling ~= spec.fillTrigger.isFilling then
 			if noEventSend == nil or noEventSend == false then
 				if g_server ~= nil then
@@ -616,63 +748,10 @@ function TriggerHandler:setFillUnitIsFilling(superFunc,isFilling, noEventSend)
 				else
 					g_client:getServerConnection():sendEvent(SetFillUnitIsFillingEvent:new(self, isFilling))
 				end
-			end			
-			spec.fillTrigger.isFilling = isFilling
-			if isFilling then
-				spec.fillTrigger.currentTrigger = nil
-				-- find the first trigger which is activable
-				local fillTypeData,fillTypeDataSize = triggerHandler:getSiloSelectedFillTypeData()
-				if triggerHandler:isAllowedToLoadFillType() then
-					for _,data in ipairs(fillTypeData) do
-						for _, trigger in ipairs(spec.fillTrigger.triggers) do
-							if trigger:getIsActivatable(self) and (trigger ~= NetworkUtil.getObject(self.lastUnloadingTriggerID) or self:isNearFillPoint()) then
-								local fillType = trigger:getCurrentFillType()
-								local fillUnitIndex = nil
-								if fillType and fillType == data.fillType then
-									fillUnitIndex = self:getFirstValidFillUnitToFill(fillType)
-								end
-								if fillUnitIndex then
-									if triggerHandler:canLoadFillType(self,fillUnitIndex,data.maxFillLevel) then 
-							--			if triggerHandler:isMinFillLevelReached(object,fillUnitIndex,triggerFillLevel) then 
-											if triggerHandler:isRunCounterValid(data.runCounter) then 
-												triggerHandler:setLoadingState(self,fillUnitIndex,fillType)
-												spec.fillTrigger.currentTrigger = trigger
-												courseplay.debugFormat(2,"FillUnit setLoading, FillType: "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
-												break
-											else
-												courseplay.debugFormat(2, 'runCounter == 0!')
-											end
-						--				else
-											--minFillLevel not reached
-						--				end
-									else
-										courseplay.debugFormat(2, 'fillLevel reached')
-									end
-								else
-									courseplay.debugFormat(2, 'fillUnitIndex not found')
-								end
-							end
-						end
-					end
-				end
-				if spec.fillTrigger.currentTrigger == nil and triggerHandler:isAllowedToLoadFuel() and self == rootVehicle then 
-					for _, trigger in ipairs(spec.fillTrigger.triggers) do
-						if trigger:getIsActivatable(self) then
-							local dieselFillTypeFound = trigger:getCurrentFillType() == FillType.DIESEL
-							local fillUnitIndex = nil
-							if dieselFillTypeFound then 
-								fillUnitIndex = self:getFirstValidFillUnitToFill(FillType.DIESEL)
-							end
-							if fillUnitIndex and triggerHandler:canLoadFillType(self,fillUnitIndex) then 
-								spec.fillTrigger.currentTrigger = trigger
-								triggerHandler:setLoadingState(self,fillUnitIndex,fillType)
-								courseplay.debugFormat(2,"FillUnit setLoading, FillType: "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
-							end								
-						end
-					end
-				end
 			end
-			if self.isClient then
+			spec.fillTrigger.isFilling = isFilling
+			spec.fillTrigger.currentTrigger = trigger
+			 if self.isClient then
 				self:setFillSoundIsPlaying(isFilling)
 				if spec.fillTrigger.currentTrigger ~= nil then
 					spec.fillTrigger.currentTrigger:setFillSoundIsPlaying(isFilling)
@@ -680,8 +759,6 @@ function TriggerHandler:setFillUnitIsFilling(superFunc,isFilling, noEventSend)
 			end
 			SpecializationUtil.raiseEvent(self, "onFillUnitIsFillingStateChanged", isFilling)
 			if not isFilling then
-				triggerHandler:resetLoadingState()
-				courseplay.debugFormat(2,"FillUnit resetLoading")
 				self:updateFillUnitTriggers()
 			end
 		end
@@ -692,9 +769,95 @@ end
 FillUnit.setFillUnitIsFilling = Utils.overwrittenFunction(FillUnit.setFillUnitIsFilling,TriggerHandler.setFillUnitIsFilling)
 
 
+function TriggerHandler:updateFillUnitTriggers(superFunc,triggerHandler)
+	local spec = self.spec_fillUnit
+	if triggerHandler and not spec.fillTrigger.isFilling then 
+		if #spec.fillTrigger.triggers == 0 then 
+			triggerHandler:resetLoadingState()
+			return
+		end
+		local fillTypeData,fillTypeDataSize = triggerHandler:getSiloSelectedFillTypeData()
+		local loadingCallback = {}
+		local indexCallback = 1
+		for _,data in ipairs(fillTypeData) do
+			for _, trigger in ipairs(spec.fillTrigger.triggers) do
+				if trigger:getIsActivatable(self) then
+					local fillType = trigger:getCurrentFillType()
+					local fillUnitIndex = self:getFirstValidFillUnitToFill(fillType)
+					if fillType == data.fillType and fillUnitIndex then 
+						local callback = triggerHandler:triggerCanStartLoading(trigger,self,fillUnitIndex,10000,data,fillTypeDataSize)
+						loadingCallback[indexCallback] = {}
+						loadingCallback[indexCallback].callback = callback
+						loadingCallback[indexCallback].data = data
+					--	loadingCallback[indexCallback].fillLevelTrigger = fillLevel
+						loadingCallback[indexCallback].fillUnitIndex = fillUnitIndex
+						loadingCallback[indexCallback].currentTrigger = trigger
+						indexCallback = indexCallback +1				
+					end
+				end
+			end
+		end
+		triggerHandler:handleLoadingCallbackFillTrigger(trigger,self,fillUnitIndex,loadingCallback)
+	else 
+		return superFunc(self)
+	end	
+end
+FillUnit.updateFillUnitTriggers = Utils.overwrittenFunction(FillUnit.updateFillUnitTriggers,TriggerHandler.updateFillUnitTriggers)
+
+function TriggerHandler:handleLoadingCallbackFillTrigger(trigger,object,fillUnitIndex,loadingCallback)
+	local lastCallbackData = nil
+	local lastMinCallBackData = nil
+	for indexCallback,callbackData in ipairs(loadingCallback) do 
+		local data = callbackData.data
+		local fillType = data.fillType
+		lastCallbackData = callbackData
+		--all okay start loading
+		if callbackData.callback == TriggerHandler.CALLBACK.OK then 
+			self:setLoadingState(object,callbackData.fillUnitIndex,fillType)
+		--	object.spec_fillUnit.fillTrigger.currentTrigger = callbackData.currentTrigger
+			object:setFillUnitIsFilling(true,nil,trigger)
+			table.insert(self.lastLoadedFillTypes, fillType)
+			self:debugSparse(object, 'FillTrigger: start Loading, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			return 
+		--max FillLevel reached
+		elseif callbackData.callback == TriggerHandler.CALLBACK.MAX_REACHED then 
+			self:resetLoadingState()
+			self:debugSparse(object, 'FillTrigger: max Reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			return 
+		-- min FillLevel not reached to start filling
+		elseif callbackData.callback == TriggerHandler.CALLBACK.MIN_NOT_REACHED then
+			lastMinCallBackData = callbackData
+			if self.driver:notAllowedToLoadNextFillType()  then 
+				self:setLoadingState()
+				CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
+				self:debugSparse(object, 'FillTrigger: minLevel not reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+				return
+			else 
+				self:debugSparse(object, 'LoadingTrigger: minLevel not reached and skip loading, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+			end
+		end
+	end
+	--minLevel from last checked fillType not reached!
+	if lastMinCallBackData and lastMinCallBackData.callback == TriggerHandler.CALLBACK.MIN_NOT_REACHED then 
+		self:setLoadingState()
+		CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
+		courseplay.debugVehicle(2,object, 'FillTrigger: minLevel not reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+		return
+	end
+	--last possible runCounter = 0
+	if lastCallbackData and lastCallbackData.callback ==  TriggerHandler.CALLBACK.RUN_COUNTER_NOT_REACHED then 
+		self:setLoadingState()
+		CpManager:setGlobalInfoText(self.vehicle, 'RUNCOUNTER_ERROR_FOR_TRIGGER');
+		self:debugSparse(fillableObject, 'FillTrigger: last runCounter=0, fillType: '..g_fillTypeManager:getFillTypeByIndex(lastCallbackData.fillType).title)
+		return
+	end
+end
+
+
 --LoadTrigger callback used to open correct cover for loading 
 function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	--legancy code!!!
+	print("loadTriggerCallback!")
 	courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	
 	local fillableObject = g_currentMission:getNodeObject(otherId)
@@ -702,7 +865,7 @@ function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave
 	if fillableObject and fillableObject:isa(Vehicle) then 
 		rootVehicle = fillableObject:getRootVehicle()
 	end
-	if courseplay:isAIDriverActive(rootVehicle) then
+	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) then
 	--	if rootVehicle.cp.driver.triggerHandler.validFillTypeLoading then
 			TriggerHandler:handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
 	--	end
@@ -713,7 +876,7 @@ LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTrigger
 function TriggerHandler:handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
 	local triggerHandler = rootVehicle.cp.driver.triggerHandler
 	if onEnter then 
-		courseplay.debugFormat(2, 'LoadTrigger onEnter')
+		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger onEnter')
 		if fillableObject.getFillUnitIndexFromNode ~= nil then
 			local fillLevels, capacity
 			if self.source.getAllFillLevels then
@@ -727,7 +890,7 @@ function TriggerHandler:handleLoadTriggerCallback(self,triggerId, otherId, onEnt
 					if fillableObject:getFillUnitSupportsFillType(foundFillUnitIndex, fillTypeIndex) then
 						if fillableObject:getFillUnitAllowsFillType(foundFillUnitIndex, fillTypeIndex) and fillableObject.spec_cover then
 							SpecializationUtil.raiseEvent(fillableObject, "onAddedFillUnitTrigger",fillTypeIndex,foundFillUnitIndex,1)
-							courseplay.debugFormat(2, 'open Cover for loading')
+							courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: open Cover for loading')
 						end
 					end
 				end
@@ -740,30 +903,32 @@ function TriggerHandler:handleLoadTriggerCallback(self,triggerId, otherId, onEnt
 		if spec then
 			SpecializationUtil.raiseEvent(fillableObject, "onRemovedFillUnitTrigger",#spec.fillTrigger.triggers)
 		end
-		courseplay.debugFormat(2,"LoadTrigger onLeave")
+		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: onLeave, disableTriggerSpeed')
 	else
 		triggerHandler:enableTriggerSpeed(triggerId,otherId)
+		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: enableTriggerSpeed')
 	end
 end
 
 --FillTrigger callback used to set approach speed for Cp driver
 function TriggerHandler:fillTriggerCallback(superFunc, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+	print("fillTriggerCallback!")
 	local fillableObject = g_currentMission:getNodeObject(otherId)
 	local rootVehicle
 	if fillableObject and fillableObject:isa(Vehicle) then 
 		rootVehicle = fillableObject:getRootVehicle()
 	end
-	if courseplay:isAIDriverActive(rootVehicle) then
+	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) then
 		local triggerHandler = rootVehicle.cp.driver.triggerHandler
 		if not triggerHandler.validFillTypeLoading then
 			return superFunc(self,triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 		end		
 		if onEnter then
-			courseplay.debugFormat(2, 'fillTrigger onEnter')
+			courseplay.debugVehicle(2,fillableObject, 'fillTrigger onEnter')
 		end
 		if onLeave then
 			triggerHandler:disableTriggerSpeed(otherActorId)
-			courseplay.debugFormat(2, 'fillTrigger onLeave')
+			courseplay.debugVehicle(2,fillableObject, 'fillTrigger onLeave')
 		else
 			triggerHandler:enableTriggerSpeed(triggerId,otherActorId)
 		end
@@ -783,7 +948,7 @@ end
 --Pipe callback used for augerwagons to open the cover on the fillableObject
 function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	local rootVehicle = self:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) and rootVehicle.cp.driver.triggerHandler.validFillTypeUnloadingAugerWagon then 
+	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) and rootVehicle.cp.driver.triggerHandler.validFillTypeUnloadingAugerWagon then 
 		local triggerHandler = rootVehicle.cp.driver.triggerHandler
 		local object = g_currentMission:getNodeObject(otherId)
         if object ~= nil and object ~= self and object:isa(Vehicle) then
@@ -801,7 +966,7 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
                         local fillType = self:getFillUnitFillType(dischargeNode.fillUnitIndex)
 						local validFillUnitIndex = object:getFirstValidFillUnitToFill(fillType)
                         if fillType and validFillUnitIndex then 
-							courseplay.debugFormat(2,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+							courseplay.debugVehicle(2,object,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
 							SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillType,validFillUnitIndex,1)
 							objectTriggerHandler:enableTriggerSpeed(NetworkUtil.getObjectId(self),object,true)
 						end
@@ -809,16 +974,16 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 				end
 			elseif onLeave then
 				SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
-				courseplay.debugFormat(2,"unloadingTriggerCallback close Cover")
+				courseplay.debugVehicle(2,object,"unloadingTriggerCallback close Cover")
 				objectTriggerHandler:resetLoadingState()
 				objectTriggerHandler:disableTriggerSpeed(object)
 			end
 		end
 		if onLeave then
-			courseplay.debugFormat(2,"unloadingTriggerCallback onLeave")
+			courseplay.debugVehicle(2,object,"unloadingTriggerCallback onLeave")
 		end
 		if onEnter then 
-			courseplay.debugFormat(2,"unloadingTriggerCallback onEnter")
+			courseplay.debugVehicle(2,object,"unloadingTriggerCallback onEnter")
 		end
 	end
 	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
@@ -828,7 +993,7 @@ Pipe.unloadingTriggerCallback = Utils.overwrittenFunction(Pipe.unloadingTriggerC
 --stoping mode 4 driver for augerwagons
 function TriggerHandler:onDischargeStateChanged(superFunc,state)
 	local rootVehicle = self:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) then
+	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) then
 		local triggerHandler = rootVehicle.cp.driver.triggerHandler
 		local dischargeNode = self:getCurrentDischargeNode()
 		if dischargeNode and dischargeNode.dischargeObject and triggerHandler.validFillTypeUnloadingAugerWagon then 
@@ -850,3 +1015,15 @@ function TriggerHandler:onDischargeStateChanged(superFunc,state)
 	return superFunc(self,state)
 end
 Pipe.onDischargeStateChanged = Utils.overwrittenFunction(Pipe.onDischargeStateChanged,TriggerHandler.onDischargeStateChanged)
+
+--Global company....
+
+
+function TriggerHandler:onActivateObjectGlobalCompany(superFunc)
+	local rootVehicle
+	if self.validFillableObject then 
+		rootVehicle = self.validFillableObject:getRootVehicle()
+	end
+	TriggerHandler.onActivateObject(self,superFunc,rootVehicle)
+end
+

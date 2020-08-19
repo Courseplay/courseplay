@@ -149,7 +149,7 @@ function courseplay.button:render()
 				end	
 			elseif fn == 'moveShovelToPosition' and not self.isDisabled and vehicle.cp.manualShovelPositionOrder and vehicle.cp.manualShovelPositionOrder == prm then  -- forced color
 				targetColor = 'warningRed';
-			elseif not self.isDisabled and not self.isActive and not self.isHovered and self.canBeClicked and not self.isClicked then
+			elseif not self.isDisabled and not self.isActive and not self.isHovered and (self.canBeClicked or self.functionToCall == nil) and not self.isClicked then
 				targetColor = 'white';
 			elseif self.isDisabled then
 				targetColor = 'whiteDisabled';
@@ -257,13 +257,16 @@ end;
 
 function courseplay.button:handleInput(vehicle,parameter)
 	if self.settingCall then --settingButton
+		courseplay:debug(string.format("%s: handleSettingInput: %s:%s(%s)", nameNum(vehicle),tostring(self.settingCall.name), tostring(self.functionToCall), tostring(parameter)), 18);
 		self.settingCall[self.functionToCall](self.settingCall, parameter)	
 		if vehicle:getIsEntered() then
 			g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
 		end
 		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 	else
-		vehicle:setCourseplayFunc(self.functionToCall, parameter, self.onlyCallLocal or false, self.page);
+		if self.functionToCall then
+			vehicle:setCourseplayFunc(self.functionToCall, parameter, self.onlyCallLocal or false, self.page);
+		end
 	end
 end
 

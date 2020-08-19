@@ -54,10 +54,6 @@ function courseplay:start(self)
 		courseplay:setWaypointIndex(self, 1);
 	end
 
-	-- add do working players if not already added
-	if self.cp.coursePlayerNum == nil then
-		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
-	end;
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position

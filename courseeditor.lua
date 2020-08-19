@@ -158,8 +158,8 @@ function courseEditor:setEnabled(value, vehicle)
   if value then
     if not vehicle.cp.isRecording and not self:isAutoDriveCourse(vehicle) and #vehicle.Waypoints > 0 then
       self.enabled = value
-      courseplay:toggleShowVisualWaypointsAll(vehicle, true, true)
-      self:addInputHelp()
+      vehicle.cp.settings.showVisualWaypoints:set(ShowVisualWaypointsSetting.ALL)
+	  self:addInputHelp()
     end
   else
     self.enabled = value

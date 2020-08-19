@@ -13,7 +13,7 @@ function SettingsListEvent:emptyNew()
 end
 
 function SettingsListEvent:new(vehicle,parentName, name, value)
-	courseplay:debug(string.format("courseplay:SettingsListEvent:new(%s, %s)", tostring(name), tostring(value)), 5)
+	courseplay:debug(string.format("courseplay:SettingsListEvent:new(%s, %s, %s)", tostring(name),tostring(parentName), tostring(value)), 5)
 	self.vehicle = vehicle;
 	self.parentName = parentName
 	self.messageNumber = Utils.getNoNil(self.messageNumber, 0) + 1
@@ -34,14 +34,14 @@ function SettingsListEvent:readStream(streamId, connection) -- wird aufgerufen w
 	self.value = streamReadInt32(streamId)
 
 	courseplay:debug("	readStream",5)
-	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  self.name: "..tostring(self.name).."  self.value: "..tostring(self.value),5)
+	courseplay:debug("		id: "..tostring(self.vehicle).."/"..tostring(messageNumber).."  self.parentName: "..tostring(self.parentName).."  self.name: "..tostring(self.name).."  self.value: "..tostring(self.value),5)
 
 	self:run(connection);
 end
 
 function SettingsListEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	courseplay:debug("		writeStream",5)
-	courseplay:debug("			id: "..tostring(self.vehicle).."/"..tostring(self.messageNumber).."  self.name: "..tostring(self.name).."  value: "..tostring(self.value),5)
+	courseplay:debug("			id: "..tostring(self.vehicle).."/"..tostring(self.messageNumber).."  self.parentName: "..tostring(self.parentName).."  self.name: "..tostring(self.name).."  value: "..tostring(self.value),5)
 
 	if self.vehicle ~= nil then
 		streamWriteBool(streamId, true)
@@ -57,7 +57,7 @@ end
 
 function SettingsListEvent:run(connection) -- wir fuehren das empfangene event aus
 	courseplay:debug("\t\t\trun",5)
-	courseplay:debug(('\t\t\t\tid=%s, name=%s, value=%s'):format(tostring(self.vehicle), tostring(self.name), tostring(self.value)), 5);
+	courseplay:debug(('\t\t\t\tid=%s, name=%s, value=%s'):format(tostring(self.vehicle),tostring(self.parentName), tostring(self.name), tostring(self.value)), 5);
 
 	if self.vehicle then 
 		self.vehicle.cp[self.parentName][self.name]:setFromNetwork(self.value)
@@ -66,7 +66,7 @@ function SettingsListEvent:run(connection) -- wir fuehren das empfangene event a
 	end
 	if not connection:getIsServer() then
 		courseplay:debug("broadcast settings event feedback",5)
-		g_server:broadcastEvent(SettingsListEvent:new(self.vehicle, self.name, self.value), nil, connection, self.vehicle);
+		g_server:broadcastEvent(SettingsListEvent:new(self.vehicle,self.parentName, self.name, self.value), nil, connection, self.vehicle);
 	end;
 end
 
