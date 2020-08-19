@@ -22,16 +22,16 @@
     <text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Remorque demandée" />
     <text name="COURSEPLAY_START_COURSE" 						 		text="Démarrer la course" />
     <text name="COURSEPLAY_STOP_COURSE" 						 		text="Arrêter la course" />
-    <text name="COURSEPLAY_MODE_1" 							 			text="Type: Transport (Charger et livrer)" />
-    <text name="COURSEPLAY_MODE_2" 							 			text="Type: Remorque (vider et livrer)" />
-    <text name="COURSEPLAY_MODE_3" 							 			text="Type: Transbordeur" />
-    <text name="COURSEPLAY_MODE_4" 							 			text="Type: Fertiliser et semer" />
-    <text name="COURSEPLAY_MODE_5" 							 			text="Type: Aller à" />
-    <text name="COURSEPLAY_MODE_6" 							 			text="Type: Travail dans la parcelle" />
-    <text name="COURSEPLAY_MODE_7" 							 			text="Type: Batteuse va à la remorque" />
-    <text name="COURSEPLAY_MODE_8" 							 			text="Type: Transport de liquides" />
-    <text name="COURSEPLAY_MODE_9" 							 			text="Type: Charger et décharger un godet" />
-    <text name="COURSEPLAY_MODE_10" 									text="Type: Nivellement et compactage" />
+    <text name="COURSEPLAY_MODE_1" 							 			text="Transport (Charger et livrer)" />
+    <text name="COURSEPLAY_MODE_2" 							 			text="Remorque (vider et livrer)" />
+    <text name="COURSEPLAY_MODE_3" 							 			text="Transbordeur" />
+    <text name="COURSEPLAY_MODE_4" 							 			text="Fertiliser et semer" />
+    <text name="COURSEPLAY_MODE_5" 							 			text="Aller à" />
+    <text name="COURSEPLAY_MODE_6" 							 			text="Travail dans la parcelle" />
+    <text name="COURSEPLAY_MODE_7" 							 			text="Batteuse va à la remorque" />
+    <text name="COURSEPLAY_MODE_8" 							 			text="Transport de liquides" />
+    <text name="COURSEPLAY_MODE_9" 							 			text="Charger et décharger avec un godet" />
+    <text name="COURSEPLAY_MODE_10" 									text="Nivellement et compactage" />
     <text name="COURSEPLAY_CONTINUE" 						 			text="Continuer" />
     <text name="COURSEPLAY_CLEAR_COURSE" 						 		text="Réinitialiser la course" />
     <text name="COURSEPLAY_DRIVE_NOW" 						 			text="Démarrer maintenant" />
@@ -78,6 +78,7 @@
     <text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="le trigger est atteint" />
     <text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist. point de décharge:" />
     <text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
+	<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Dechargement: %d sur %d" />
     <text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Afficher les points de passage" />
     <text name="COURSEPLAY_PATHFINDING" 						 		text="Eviter les cultures" />
     <text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières" />
@@ -110,17 +111,17 @@
     <text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 					 		text="Vitesse maximale" />
     <text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="Automatique (max. %s)" />
     <text name="COURSEPLAY_NO_COURSE_LOADED" 					 		text="Pas de course chargée" />
-    <text name="COURSEPLAY_WARNING_LIGHTS" 						 		text="Gyrophare" />
-    <text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="Jamais allumé" />
-    <text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="Gyrophares (sur la route)" />
+    <text name="COURSEPLAY_WARNING_LIGHTS" 						 		text="Gyrophares" />
+    <text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="Jamais allumés" />
+    <text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="Sur la route" />
     <text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="Gyrophares &amp; feux de détresse (sur la route)" />
-    <text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="Gyrophares (toujours allumés)" />
+    <text name="COURSEPLAY_WARNING_LIGHTS_MODE_3" 						text="Toujours allumés" />
     <text name="COURSEPLAY_PAGE_TITLE_CP_CONTROL" 						text="Contrôle Courseplay" />
     <text name="COURSEPLAY_PAGE_TITLE_COMBINE_CONTROLS" 				text="Paramètres batteuse" />
     <text name="COURSEPLAY_PAGE_TITLE_MANAGE_COURSES" 					text="Gestion des courses" />
     <text name="COURSEPLAY_PAGE_TITLE_CHOOSE_FOLDER" 					text="Choisir le dossier" />
     <text name="COURSEPLAY_PAGE_TITLE_COMBI_MODE" 						text="Gestion de l'outil" />
-    <text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Gestion des batteuses" />
+    <text name="COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES" 					text="Sélection des batteuses" />
     <text name="COURSEPLAY_PAGE_TITLE_SPEEDS" 					 		text="Gestion des vitesses" />
     <text name="COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS"					text="Paramètres de conduite" />
     <text name="COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS" 				text="Paramètres généraux" />
@@ -161,7 +162,7 @@
     <text name="COURSEPLAY_WORK_WIDTH" 						 			text="Largeur de travail" />
     <text name="COURSEPLAY_WATER_WARNING" 						 		text="aimerait aller nager" />
     <text name="COURSEPLAY_OPEN_HUD_MODE" 						 		text="Ouverture du Courseplay" />
-    <text name="COURSEPLAY_DEBUG_CHANNELS" 						 		text="Chaînes de débogage" />
+    <text name="COURSEPLAY_DEBUG_CHANNELS" 						 		text="Debug channels" />
     <text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 				text="Générer une course" />
     <text name="COURSEPLAY_ADVANCED_COURSE_GENERATOR_SETTINGS" 			text="Configuration de la course" />
     <text name="COURSEPLAY_STARTING_LOCATION" 							text="Position de départ" />
@@ -396,7 +397,7 @@
     <text name="COURSEPLAY_MODE10_NOSILO"						 		text="Aucun silo détecté au point de départ" />
     <text name="COURSEPLAY_MODE10_NOBLADE"						 		text="Pas de lame attelée" />
     <text name="COURSEPLAY_MODE10_NOFRONTBLADE"							text="La lame à l'avant n'est pas compatible" />
-    <text name="COURSEPLAY_MODE10_SETTINGS"						    	text="Paramètres du silo" />
+    <text name="COURSEPLAY_MODE10_SETTINGS"						    	text="Paramètres" />
     <text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 		text="Largeur de la lame" />
     <text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 						text="Remplissage du silo" />
     <text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 						text="En traversant le silo" />
@@ -418,9 +419,9 @@
     <text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
     <text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Pas installé" />
     <text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Ne pas Utiliser" />
-    <text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Pour Déchargement/Chargement" />
-    <text name="COURSEPLAY_AUTODRIVE_PARK"								text="Pour Stationner un Véhicule" />
-    <text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Pour Déchargement/Chargement et Stationner" />
+    <text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Déchargement/Chargement" />
+    <text name="COURSEPLAY_AUTODRIVE_PARK"								text="Stationner un Véhicule" />
+    <text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Déchargement/Chargement et Stationner" />
 
     <text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
     <text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(et retour)" />
@@ -478,8 +479,10 @@
 	<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="a atteint le point de chargement." />
 	<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="a un produit incompatible avec ce trigger." />
 
-    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vider en roulant dans la 1ère fourrière" />
-    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permet à la remorque d'aller vider en roulant en passant à l'extérieur de la parcelle, lorsque la batteuse est dans son premier tour de fourrière. Par défaut, la batteuse videra à l'arrêt lorsqu'elle est dans son premier tour de fourrière." />
+    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vider en roulant dans 1ère fourrière" />
+    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permet à la remorque d'aller vider en roulant, en passant à l'extérieur de la parcelle, lorsque la batteuse est dans son premier tour de fourrière" />
+	<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"				text="dernier produit, nombre de tours à 0" />
+	  
     <!-- Replace marker, do not remove! -->
   </texts>
 </l10n>
