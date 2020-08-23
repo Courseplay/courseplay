@@ -43,11 +43,6 @@ function courseplay:onLoad(savegame)
 	-- GIANT DLC
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
 
-	-- --More Realistlitic Mod and Mass Type adjustment
-	self.cp.useProgessiveBraking = g_modIsLoaded["FS17_fillTypeMassAdjustment_realistic"] or g_modIsLoaded["FS17_moreRealisticGameplay"]
-	self.cp.mrAccelrator = nil -- Used when MR needs assitance breaking, Mode2 field driving, Turn Driving, Pathfinding Driving, Drive Driving
-	self.cp.mrHasStopped = nil -- Used in the turn manuver to stop MR on a steep grade
-
 	--turn maneuver
 	self.cp.oppositeTurnMode = false;
 	self.cp.waitForTurnTime = 0.00   --float

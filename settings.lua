@@ -830,6 +830,7 @@ function courseplay:toggleDebugChannel(self, channel, force)
 	end;
 end;
 
+--old code ???
 --Course generation
 function courseplay:switchStartingCorner(vehicle)
 	local newStartingCorner = vehicle.cp.startingCorner + 1
@@ -843,6 +844,7 @@ function courseplay:switchStartingCorner(vehicle)
 	self:setStartingCorner( vehicle, newStartingCorner )
 end
 
+--still used in CourseGeneratorScreen.lua ??
 function courseplay:setStartingCorner( vehicle, newStartingCorner )
 	vehicle.cp.startingCorner = newStartingCorner
 	vehicle.cp.hasStartingCorner = true;
@@ -870,6 +872,7 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 	end 
 end
 	
+--old code ???
 function courseplay:changeStartingDirection(vehicle)
 	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE, 5 = Vehicle location, 6 = Last vehicle location
 	-- directions: 1 = North, 2 = East, 3 = South, 4 = West, 5 = auto generated, see courseGenerator.ROW_DIRECTION*
