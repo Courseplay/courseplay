@@ -3276,7 +3276,7 @@ function SeperateFillTypeLoadingSetting:getText()
 end
 
 function SeperateFillTypeLoadingSetting:isActive()
-	if not self.vehicle.cp.driver:getSiloSelectedFillTypeSetting():isEmpty() and self.vehicle.cp.driver:is_a(GrainTransportAIDriver) then 
+	if self.vehicle.cp.driver:is_a(GrainTransportAIDriver) and not self.vehicle.cp.driver:getSiloSelectedFillTypeSetting():isEmpty() then 
 		return true
 	end
 end
