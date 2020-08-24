@@ -485,6 +485,7 @@
     <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
     <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
     <text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
+    <text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
 	
     <!-- Replace marker, do not remove! -->
   </texts>
