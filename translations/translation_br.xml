@@ -478,11 +478,11 @@
 
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Descarregar a ceifadeira na primeira faixa da cabeceira." />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Descarregar a ceifadeira na primeira faixa da cabeceira em movimento, em seguida sair do campo." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Ultimo contagem de corrida = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Carregar tipo de carga separada" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Carreta seprarada:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantidade para descarregar" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="carregar manualmente" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>
