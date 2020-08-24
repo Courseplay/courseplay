@@ -479,13 +479,13 @@
 	<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="a atteint le point de chargement." />
 	<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="a un produit incompatible avec ce trigger." />
 	
-    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vider en roulant dans la 1ère fourrière" />
-    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permet à la remorque d'aller vider en roulant en passant à l'extérieur de la parcelle, lorsque la batteuse est dans son premier tour de fourrière. Par défaut, la batteuse videra à l'arrêt lorsqu'elle est dans son premier tour de fourrière." />
-    <text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-    <text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
-    <text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vider en roulant dans 1ère fourrière" />
+    <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permet à la remorque d'aller vider en roulant, en passant à l'extérieur de la parcelle, lorsque la batteuse est dans son premier tour de fourrière" />
+    <text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="dernier produit, nombre de tours à 0" />
+    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Produit différent par benne" />
+    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Multi-bennes:" />
+	<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantité à décharger" />
+    <text name="COURSEPLAY_MANUAL_LOADING"								text="Chargement manuel" />
 	
     <!-- Replace marker, do not remove! -->
   </texts>
