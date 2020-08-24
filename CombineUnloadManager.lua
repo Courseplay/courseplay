@@ -174,12 +174,12 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			combine.cp.settings.combineWantsCourseplayer:set(false)
 			return combine
 		end
-		
+		local unloaders = self:getUnloaders(combine)
 		if combine.cp.settings.driverPriorityUseFillLevel:is(true) then
-			bestUnloader = self:getFullestUnloader(combine)
+			bestUnloader = self:getFullestUnloader(combine, unloaders)
 			self:debug('Priority fill level, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		else
-			bestUnloader = self:getClosestUnloader(combine)
+			bestUnloader = self:getClosestUnloader(combine, unloaders)
 			self:debug('Priority closest, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		end
 		if bestUnloader == unloader then
@@ -197,7 +197,7 @@ end
 function CombineUnloadManager:getChopperWithLeastUnloaders(unloader)
 	local chopperToReturn
 	local amountUnloaders = math.huge
-	for chopper,_ in pairs(unloader.cp.assignedCombines) do
+	for chopper,_ in pairs(unloader.cp.driver:getAssignedCombines()) do
 		local data = self.combines[chopper]
 		if data and data.isChopper then
 			if amountUnloaders > #data.unloaders or #data.unloaders == 0 then
@@ -212,7 +212,7 @@ end
 function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	local mostFillLevel = 0
 	local combineToReturn
-	for combine,_ in pairs(unloader.cp.assignedCombines) do
+	for combine,_ in pairs(unloader.cp.driver:getAssignedCombines()) do
 		local data = self.combines[combine]
 		-- if there is no unloader assigned or this unloader is already assigned as the first
 		if data and data.isCombine and (self:getNumUnloaders(combine) == 0 or self:getUnloaderIndex(unloader, combine) == 1) then
@@ -229,10 +229,27 @@ function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	return combineToReturn
 end
 
-function CombineUnloadManager:getClosestUnloader(combine)
+function CombineUnloadManager:getUnloaders(combine)
+	local unloaders = {}
+	if g_currentMission then
+		for _, vehicle in pairs(g_currentMission.vehicles) do
+			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineUnloadAIDriver) then
+				-- TODO: refactor and move assignedCombines into the CombineUnloadAIDriver
+				local assignedCombines = vehicle.cp.driver:getAssignedCombines()
+				if assignedCombines[combine] then
+					table.insert(unloaders, vehicle)
+				end
+			end
+		end
+	end
+	return unloaders
+end
+
+
+function CombineUnloadManager:getClosestUnloader(combine, unloaders)
 	local closestDistance = math.huge
 	local unloaderToReturn
-	for unloader,_ in pairs(combine.cp.assignedUnloaders) do
+	for _, unloader in pairs(unloaders) do
 		local distance = courseplay:distanceToObject(unloader, combine)
 		if distance < closestDistance then
 			closestDistance = distance
@@ -255,10 +272,10 @@ function CombineUnloadManager:getClosestCombine(unloader)
 	return combineToReturn
 end
 
-function CombineUnloadManager:getFullestUnloader(combine)
+function CombineUnloadManager:getFullestUnloader(combine, unloaders)
 	local highestFillLevel = - math.huge
 	local unloaderToReturn
-	for unloader,_ in pairs(combine.cp.assignedUnloaders) do
+	for _, unloader in pairs(unloaders) do
 		local fillLevelPct = unloader.cp.driver:getFillLevelPercent()
 		if highestFillLevel < fillLevelPct and not self:isAssignedToOtherCombine(unloader, combine) then
 			highestFillLevel = fillLevelPct

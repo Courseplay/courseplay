@@ -43,11 +43,6 @@ function courseplay:onLoad(savegame)
 	-- GIANT DLC
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
 
-	-- --More Realistlitic Mod and Mass Type adjustment
-	self.cp.useProgessiveBraking = g_modIsLoaded["FS17_fillTypeMassAdjustment_realistic"] or g_modIsLoaded["FS17_moreRealisticGameplay"]
-	self.cp.mrAccelrator = nil -- Used when MR needs assitance breaking, Mode2 field driving, Turn Driving, Pathfinding Driving, Drive Driving
-	self.cp.mrHasStopped = nil -- Used in the turn manuver to stop MR on a steep grade
-
 	--turn maneuver
 	self.cp.oppositeTurnMode = false;
 	self.cp.waitForTurnTime = 0.00   --float
@@ -87,9 +82,7 @@ function courseplay:onLoad(savegame)
 	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
 
-	self.cp.visualWaypointsStartEnd = true;
-	self.cp.visualWaypointsAll = false;
-	self.cp.visualWaypointsCrossing = false;
+
 	self.cp.hasHazardLights = self.spec_lights.turnLightState ~= nil and self.setTurnLightState ~= nil;
 
 
@@ -133,7 +126,6 @@ function courseplay:onLoad(savegame)
 	self.cp.canSwitchMode = false;
 	self.cp.tipperLoadMode = 0;
 	self.cp.easyFillTypeList = {};
-	self.cp.siloSelectedFillType = FillType.UNKNOWN;
 	self.cp.siloSelectedEasyFillType = 1;
 	self.cp.slippingStage = 0;
 	self.cp.isTipping = false;
@@ -198,7 +190,6 @@ function courseplay:onLoad(savegame)
 		crossing = {};
 		current = {};
 	};
-	courseplay.signs:updateWaypointSigns(self);
 
 	self.cp.numCourses = 1;
 	self.cp.numWaypoints = 0;
@@ -431,7 +422,6 @@ function courseplay:onLoad(savegame)
 	self.cp.returnToFirstPoint = false;
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
-	self.cp.ridgeMarkersAutomatic = true;
 	-- TODO: add all old course gen settings to a SettingsContainer
 	self.cp.oldCourseGeneratorSettings = {
 		startingLocation = self.cp.startingCorner,
@@ -572,11 +562,21 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(RefillUntilPctSetting, self)
 	self.cp.settings:addSetting(FollowAtFillLevelSetting,self)
 	self.cp.settings:addSetting(ForcedToStopSetting,self)
+	self.cp.settings:addSetting(SeperateFillTypeLoadingSetting,self)
+	self.cp.settings:addSetting(ReverseSpeedSetting, self)
+	self.cp.settings:addSetting(TurnSpeedSetting, self)
+	self.cp.settings:addSetting(FieldSpeedSettting,self)
+	self.cp.settings:addSetting(StreetSpeedSetting,self)
+	self.cp.settings:addSetting(BunkerSpeedSetting,self)
+	self.cp.settings:addSetting(ShowVisualWaypointsSetting,self)
+	self.cp.settings:addSetting(ShowVisualWaypointsCrossPointSetting,self)
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
 	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
 	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
+	
+	courseplay.signs:updateWaypointSigns(self);
 	
 	courseplay:setAIDriver(self, self.cp.mode)
 end;
@@ -743,7 +743,8 @@ function courseplay:onDraw()
 										
 	if self:getIsActive() and self:getIsEntered() then
 		local modifierPressed = courseplay.inputModifierIsPressed;
-		if (self.cp.canDrive or not self.cp.hud.openWithMouse) and not modifierPressed then
+		--missing hud.openWithMouse ?
+		if self.cp.canDrive and not modifierPressed then
 			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER, nil, GS_PRIO_HIGH);
 		end;
 
@@ -754,19 +755,12 @@ function courseplay:onDraw()
 				g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
 			end;
 		end;]]
-
-		if self.cp.hud.openWithMouse then
+		if modifierPressed then
 			if not self.cp.hud.show then
-				--g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_HUD_OPEN'));
-			end;
-		else
-			if modifierPressed then
-				if not self.cp.hud.show then
-					--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_HUD'], true)
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_OPEN'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
-				else
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_CLOSE'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
-				end;
+				--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_HUD'], true)
+				g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_OPEN'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
+			else
+				g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_CLOSE'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
 			end;
 		end;
 
@@ -926,8 +920,8 @@ end;
 
 function courseplay:onUpdate(dt)
 	
-	if g_server == nil and self.isPostSynced == nil and CpManager.isMultiplayer then 
-		UserConnectedEvent.sendEvent(self)
+	if g_server == nil and self.isPostSynced == nil then 
+		self.cp.driver:postSync()
 		self.isPostSynced=true
 	end
 	
@@ -998,11 +992,7 @@ function courseplay:onUpdate(dt)
 	--reset selected field num, when field doesn't exist anymone (contracts)
 	if courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum] == nil then
 		self.cp.fieldEdge.selectedField.fieldNum = 0;
-	end
-	if courseplay.fields.fieldData[self.cp.searchCombineOnField] == nil then
-		self.cp.searchCombineOnField = 0;
-	end
-	
+	end	
 	
 	-- MODE 9: move shovel to positions (manually)
 	if (self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY or self.cp.shovelPositionFromKey) and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
@@ -1251,38 +1241,7 @@ function courseplay:onReadStream(streamId, connection)
 		self.Waypoints = {}
 		local wp_count = streamDebugReadInt32(streamId)
 		for w = 1, wp_count do
-			--courseplay:debug("got waypoint", 8);
-			--print("reading "..tostring(w))
-			local cx = streamDebugReadFloat32(streamId)
-			local cz = streamDebugReadFloat32(streamId)
-			local angle = streamDebugReadFloat32(streamId)
-			local wait = streamDebugReadBool(streamId)
-			local rev = streamDebugReadBool(streamId)
-			local crossing = streamDebugReadBool(streamId)
-			local speed = streamDebugReadInt32(streamId)
-
-			local generated = streamDebugReadBool(streamId)
-			--local dir = streamDebugReadString(streamId)
-			local turnStart = streamDebugReadBool(streamId)
-			local turnEnd = streamDebugReadBool(streamId)
-			local ridgeMarker = streamDebugReadInt32(streamId)
-			local headlandHeightForTurn = streamDebugReadInt32(streamId)
-
-			local wp = {
-				cx = cx, 
-				cz = cz, 
-				angle = angle, 
-				wait = wait, 
-				rev = rev, 
-				crossing = crossing, 
-				speed = speed,
-				generated = generated,
-				turnStart = turnStart,
-				turnEnd = turnEnd,
-				ridgeMarker = ridgeMarker,
-				headlandHeightForTurn = headlandHeightForTurn
-			};
-			table.insert(self.Waypoints, wp)
+			table.insert(self.Waypoints, CourseEvent:readWaypoint(streamId))
 		end
 		self.cp.numWaypoints = #self.Waypoints
 		
@@ -1364,18 +1323,7 @@ function courseplay:onWriteStream(streamId, connection)
 		streamDebugWriteInt32(streamId, #(self.Waypoints))
 		for w = 1, #(self.Waypoints) do
 			--print("writing point "..tostring(w))
-			streamDebugWriteFloat32(streamId, self.Waypoints[w].cx)
-			streamDebugWriteFloat32(streamId, self.Waypoints[w].cz)
-			streamDebugWriteFloat32(streamId, self.Waypoints[w].angle)
-			streamDebugWriteBool(streamId, self.Waypoints[w].wait)
-			streamDebugWriteBool(streamId, self.Waypoints[w].rev)
-			streamDebugWriteBool(streamId, self.Waypoints[w].crossing)
-			streamDebugWriteInt32(streamId, self.Waypoints[w].speed)
-			streamDebugWriteBool(streamId, self.Waypoints[w].generated)
-			streamDebugWriteBool(streamId, self.Waypoints[w].turnStart)
-			streamDebugWriteBool(streamId, self.Waypoints[w].turnEnd)
-			streamDebugWriteInt32(streamId, self.Waypoints[w].ridgeMarker)
-			streamDebugWriteInt32(streamId, self.Waypoints[w].headlandHeightForTurn)
+			CourseEvent:writeWaypoint(streamId, self.Waypoints[w])
 		end
 	end
 
@@ -1415,55 +1363,19 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		local curKey = key .. '.courseplay.basics';
 		courseplay:setCpMode(self,  Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode));
 		self.cp.waitTime 		  = Utils.getNoNil(   getXMLInt(xmlFile, curKey .. '#waitTime'),		 0);
- 		self.cp.driver.runCounter  	= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#runCounter'),	 		 0);
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'),			 '');
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
 
-		local visualWaypointsStartEnd = getXMLBool(xmlFile, curKey .. '#visualWaypointsStartEnd');
-		local visualWaypointsAll = getXMLBool(xmlFile, curKey .. '#visualWaypointsAll');
-		local visualWaypointsCrossing = getXMLBool(xmlFile, curKey .. '#visualWaypointsCrossing');
-		if visualWaypointsStartEnd ~= nil then
-			courseplay:toggleShowVisualWaypointsStartEnd(self, visualWaypointsStartEnd, false);
-		end;
-		if visualWaypointsAll ~= nil then
-			courseplay:toggleShowVisualWaypointsAll(self, visualWaypointsAll, false);
-		end;
-		if visualWaypointsCrossing ~= nil then
-			courseplay:toggleShowVisualWaypointsCrossing(self, visualWaypointsCrossing, false);
-		end;
-		--courseplay.buttons:setActiveEnabled(self, 'visualWaypoints');
-		courseplay.signs:setSignsVisibility(self);
-
-		self.cp.siloSelectedFillType = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#siloSelectedFillType'), FillType.UNKNOWN);
-		if self.cp.siloSelectedFillType == nil then self.cp.siloSelectedFillType = FillType.UNKNOWN end 
-
 		--HUD
 		curKey = key .. '.courseplay.HUD';
-		self.cp.hud.openWithMouse = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#openHudWithMouse'), true);
-		self.cp.hud.showMiniHud = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showMiniHud'), true);
 		self.cp.hud.show = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showHud'), false);
 		
-		-- SPEEDS
-		curKey = key .. '.courseplay.speeds';
-	
-		-- use string so we can get both ints and proper floats without LUA's rounding errors
-		-- if float speeds (old speed system) are loaded, the default speeds are used instead
-		local reverse = floor(tonumber(getXMLString(xmlFile, curKey .. '#reverse') or '0'));
-		local turn    = floor(tonumber(getXMLString(xmlFile, curKey .. '#turn')	   or '0'));
-		local field   = floor(tonumber(getXMLString(xmlFile, curKey .. '#field')   or '0'));
-		local street  = floor(tonumber(getXMLString(xmlFile, curKey .. '#max')	   or '0'));
-		if reverse ~= 0	then self.cp.speeds.reverse	= reverse; end;
-		if turn ~= 0	then self.cp.speeds.turn	= turn;   end;
-		if field ~= 0	then self.cp.speeds.field	= field;  end;
-		if street ~= 0	then self.cp.speeds.street	= street; end;
-
 		-- MODE 2
 		curKey = key .. '.courseplay.combi';
 		self.cp.tipperOffset 		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#tipperOffset'),			 0);
 		self.cp.combineOffset 		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#combineOffset'),		 0);
 		self.cp.combineOffsetAutoMode = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#combineOffsetAutoMode'), true);
-		self.cp.searchCombineOnField  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#searchCombineOnField'),	 0);
 		
 		curKey = key .. '.courseplay.driving';
 		self.cp.turnDiameter		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 self.cp.vehicleTurnRadius * 2);
@@ -1475,7 +1387,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		curKey = key .. '.courseplay.fieldWork';
 		self.cp.oppositeTurnMode					= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#oppositeTurnMode'),		false);
 		self.cp.workWidth 							= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),				3);
-		self.cp.ridgeMarkersAutomatic				= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#ridgeMarkersAutomatic'),	true);
 		self.cp.abortWork							= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),				0);
 		self.cp.manualWorkWidth						= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),		0);
 		self.cp.lastValidTipDistance				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#lastValidTipDistance'),	0);
@@ -1560,7 +1471,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.mode10.leveling =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#leveling'), true);
 		self.cp.mode10.searchCourseplayersOnly = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#CourseplayersOnly'), true);
 		self.cp.mode10.searchRadius = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#searchRadius'), 50);
-		self.cp.speeds.bunkerSilo = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#maxSiloSpeed'), 20);
 		self.cp.mode10.shieldHeight = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#shieldHeight'), 0.3);
 		self.cp.mode10.automaticSpeed =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticSpeed'), true);
 		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticHeight'), true);
@@ -1590,7 +1500,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	newKey = newKey..'.courseplay'
 
 	
-	local runCounter = self.cp.driver and self.cp.driver.runCounter or 0
 	--CP basics
 	setXMLInt(xmlFile, newKey..".basics #aiMode", self.cp.mode)
 	if #self.cp.loadedCourses == 0 and self.cp.currentCourseId ~= 0 then
@@ -1600,29 +1509,17 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	else
 		setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
 	end
-	setXMLBool(xmlFile, newKey..".basics #visualWaypointsStartEnd", self.cp.visualWaypointsStartEnd)
-	setXMLBool(xmlFile, newKey..".basics #visualWaypointsAll", self.cp.visualWaypointsAll)
-	setXMLBool(xmlFile, newKey..".basics #visualWaypointsCrossing", self.cp.visualWaypointsCrossing)
 	setXMLInt(xmlFile, newKey..".basics #waitTime", self.cp.waitTime)
-	setXMLInt(xmlFile, newKey..".basics #siloSelectedFillType", self.cp.siloSelectedFillType or FillType.UNKNOWN)
-	setXMLInt(xmlFile, newKey..".basics #runCounter", runCounter)
 
 	--HUD
-	setXMLBool(xmlFile, newKey..".HUD #openHudWithMouse", self.cp.hud.openWithMouse)
-	setXMLBool(xmlFile, newKey..".HUD #showMiniHud", self.cp.hud.showMiniHud)
 	setXMLBool(xmlFile, newKey..".HUD #showHud", self.cp.hud.show)
 	
-	--speeds
-	setXMLInt(xmlFile, newKey..".speeds #reverse", self.cp.speeds.reverse)
-	setXMLInt(xmlFile, newKey..".speeds #turn", self.cp.speeds.turn)
-	setXMLInt(xmlFile, newKey..".speeds #field", self.cp.speeds.field)
-	setXMLInt(xmlFile, newKey..".speeds #max", self.cp.speeds.street)
+
 	
 	--combineMode
 	setXMLString(xmlFile, newKey..".combi #tipperOffset", string.format("%.1f",self.cp.tipperOffset))
 	setXMLString(xmlFile, newKey..".combi #combineOffset", string.format("%.1f",self.cp.combineOffset))
 	setXMLString(xmlFile, newKey..".combi #combineOffsetAutoMode", tostring(self.cp.combineOffsetAutoMode))
-	setXMLInt(xmlFile, newKey..".combi #searchCombineOnField", self.cp.searchCombineOnField)
 	
 	--driving settings
 	setXMLInt(xmlFile, newKey..".driving #turnDiameter", self.cp.turnDiameter)
@@ -1632,7 +1529,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	--field work settings
 	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, 0, self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
 	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
-	setXMLBool(xmlFile, newKey..".fieldWork #ridgeMarkersAutomatic", self.cp.ridgeMarkersAutomatic)
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
 	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
 	setXMLBool(xmlFile, newKey..".fieldWork #oppositeTurnMode", self.cp.oppositeTurnMode)
@@ -1648,7 +1544,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
 	setXMLBool(xmlFile, newKey..".mode10 #CourseplayersOnly", self.cp.mode10.searchCourseplayersOnly)
 	setXMLInt(xmlFile, newKey..".mode10 #searchRadius", self.cp.mode10.searchRadius)
-	setXMLInt(xmlFile, newKey..".mode10 #maxSiloSpeed", self.cp.speeds.bunkerSilo)
 	setXMLString(xmlFile, newKey..".mode10 #shieldHeight", string.format("%.1f",self.cp.mode10.shieldHeight))
 	setXMLBool(xmlFile, newKey..".mode10 #automaticSpeed", self.cp.mode10.automaticSpeed)
 	setXMLBool(xmlFile, newKey..".mode10 #automaticHeight", self.cp.mode10.automaticHeigth)
@@ -1801,6 +1696,10 @@ function courseplay:onStartCpAIDriver()
             self.spec_aiVehicle.startedFarmId = self.spec_enterable.controllerFarmId
         end
 	end
+	if self.cp.coursePlayerNum == nil then
+		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
+	end;
+	
 	--add to activeCoursePlayers
 	CpManager:addToActiveCoursePlayers(self)
 	

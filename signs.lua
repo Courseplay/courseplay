@@ -281,6 +281,8 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 	if vehicle.cp == nil or vehicle.cp.signs == nil or (#vehicle.cp.signs.current == 0 and #vehicle.cp.signs.crossing == 0) then
 		return;
 	end;
+	local showVisualWaypointsState = vehicle.cp.settings.showVisualWaypoints:get()
+	
 	local numSigns = #vehicle.cp.signs.current;
 	courseplay.debugVehicle(8, vehicle, 'Setting visibility for %d waypoints, start/end=%s all=%s, xing=%s', numSigns,
 		tostring(vehicle.cp.visualWaypointsStartEnd), tostring(vehicle.cp.visualWaypointsAll), tostring(vehicle.cp.visualWaypointsCrossing))
@@ -289,18 +291,18 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 		vis = false;
 		isStartEndPoint = k <= 2 or k >= (numSigns - 2);
 
-		if (signData.type == 'wait' or signData.type == 'unload') and (vehicle.cp.visualWaypointsStartEnd or vehicle.cp.visualWaypointsAll) then
+		if (signData.type == 'wait' or signData.type == 'unload') and showVisualWaypointsState>=ShowVisualWaypointsSetting.START_STOP then
 			vis = true;
 			local line = getChildAt(signData.sign, 0);
-			if vehicle.cp.visualWaypointsStartEnd then
+			if showVisualWaypointsState==ShowVisualWaypointsSetting.START_STOP then
 				setVisibility(line, isStartEndPoint);
 			else
 				setVisibility(line, true);
 			end;
 		else
-			if vehicle.cp.visualWaypointsAll then
+			if showVisualWaypointsState==ShowVisualWaypointsSetting.ALL then
 				vis = true;
-			elseif vehicle.cp.visualWaypointsStartEnd and isStartEndPoint then
+			elseif showVisualWaypointsState>=ShowVisualWaypointsSetting.START_STOP and isStartEndPoint then
 				vis = true;
 			end;
 		end;
@@ -315,7 +317,7 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 	end;
 
 	for _,signData in pairs(vehicle.cp.signs.crossing) do
-		local vis = vehicle.cp.visualWaypointsCrossing;
+		local vis = vehicle.cp.settings.showVisualWaypointsCrossPoint:get()
 		if forceHide or not vehicle:getIsEntered() then
 			vis = false;
 		end;

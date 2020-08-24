@@ -39,6 +39,7 @@ function OverloaderAIDriver:findPipeAndTrailer()
     local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe)
     if implementWithPipe then
         self.pipe = implementWithPipe.spec_pipe
+		self.objectWithPipe = implementWithPipe
         self:debug('Overloader found its pipe')
     else
         self:debug('Overloader has no implement with pipe')
@@ -71,7 +72,7 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
         self:hold()
         if self:isTrailerUnderPipe() then
             self:debug('Trailer is here, opening pipe')
-            if self.pipe then self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN) end
+            if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN) end
             self.unloadCourseState = self.states.WAITING_FOR_OVERLOAD_TO_START
         end
     elseif self.unloadCourseState == self.states.WAITING_FOR_OVERLOAD_TO_START then
@@ -84,7 +85,7 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
         self:setSpeed(0)
         if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OFF then
             self:debug('Overloading finished, closing pipe')
-            if self.pipe then self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED) end
+            if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED) end
             self.unloadCourseState = self.states.ENROUTE
         end
     end

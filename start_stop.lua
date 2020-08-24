@@ -31,6 +31,7 @@ function courseplay:start(self)
 	if self.cp.numWaypoints < 1 then
 		return
 	end
+	--setEngineState needed or AIDriver handling this ??
 	courseplay:setEngineState(self, true);
 	self.cp.saveFuel = false
 
@@ -54,10 +55,6 @@ function courseplay:start(self)
 		courseplay:setWaypointIndex(self, 1);
 	end
 
-	-- add do working players if not already added
-	if self.cp.coursePlayerNum == nil then
-		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
-	end;
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
@@ -364,7 +361,7 @@ function courseplay:stop(self)
         setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
         self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
     end
-	
+	--is this one still used ?? 
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
 		self.cp.saveFuel = false;
@@ -406,24 +403,6 @@ function courseplay:stop(self)
 		courseplay:enableCropDestruction(self);
 	end;
 
-	-- MR and Real Fill Type Mass mod combatiablity 
-	if self.cp.useProgessiveBraking then
-		self.cp.mrAccelrator = nil
-	end
-	
-	if self.cp.hasDriveControl then
-		local changed = false;
-		if self.cp.driveControl.hasFourWD and self.driveControl.fourWDandDifferentials.fourWheel ~= self.cp.driveControl.fourWDBackup then
-			self.driveControl.fourWDandDifferentials.fourWheel = self.cp.driveControl.fourWDBackup;
-			self.driveControl.fourWDandDifferentials.diffLockFront = false;
-			self.driveControl.fourWDandDifferentials.diffLockBack = false;
-			changed = true;
-		end;
-
-		if changed and driveControlInputEvent ~= nil then
-			driveControlInputEvent.sendEvent(self);
-		end;
-	end;
 
 	if self.cp.cruiseControlSpeedBackup then
 		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
@@ -577,43 +556,6 @@ function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 	end
 
 	return true
-end
-
-function courseplay:checkSaveFuel(vehicle,allowedToDrive)
-	if (vehicle.cp.settings.saveFuelOption:is(false)) 
-	or (vehicle.cp.mode == courseplay.MODE_COMBI and vehicle.cp.activeCombine ~= nil)
-	or (vehicle.cp.mode == courseplay.MODE_FIELDWORK and ((vehicle.courseplayers ~= nil and #vehicle.courseplayers > 0) or vehicle.cp.convoyActive))
-	or ((vehicle.cp.mode == courseplay.MODE_FIELD_SUPPLY or vehicle.cp.mode == courseplay.MODE_OVERLOADER) and vehicle.Waypoints[vehicle.cp.previousWaypointIndex].wait)
-	then
-		if vehicle.cp.saveFuel then
-			vehicle.cp.saveFuel = false
-		end
-		courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
-		return
-	end
-	
-	if allowedToDrive then
-		if courseplay:getCustomTimerExists(vehicle,'fuelSaveTimer')  then 
-			--print("reset existing timer")
-			courseplay:resetCustomTimer(vehicle,'fuelSaveTimer',true)
-		end
-		if vehicle.cp.saveFuel then
-			--print("reset saveFuel")
-			vehicle.cp.saveFuel = false
-		end	
-	else
-		-- set fuel save timer
-		if not vehicle.cp.saveFuel then
-			if courseplay:timerIsThrough(vehicle,'fuelSaveTimer',false) then
-				--print(" timer is throught and not nil")
-				--print("set saveFuel")
-				vehicle.cp.saveFuel = true
-			elseif courseplay:timerIsThrough(vehicle,'fuelSaveTimer') then
-				--print(" set timer ")
-				courseplay:setCustomTimer(vehicle,'fuelSaveTimer',30)
-			end
-		end
-	end
 end
 
 function courseplay:safeSetWaypointIndex( vehicle, newIx )

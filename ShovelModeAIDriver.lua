@@ -368,16 +368,31 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId,
 		if trailer:isa(Vehicle) then 
 			if trailer.getFillUnitSupportsToolType then
 				for fillUnitIndex,fillUnit in pairs(trailer:getFillUnits()) do
-					if trailer:getFillUnitSupportsToolType(fillUnitIndex, ToolType.DISCHARGEABLE) then
-						self:debug("Trailer found!!")
-						self:setShovelState(self.states.STATE_START_UNLOAD)
-						self.foundTrailer = true
-						return
+					local allowedToFillByShovel = trailer:getFillUnitSupportsToolType(fillUnitIndex, ToolType.DISCHARGEABLE)
+					local dischargeNode = self.shovel:getCurrentDischargeNode()		
+					local fillType = self.shovel:getDischargeFillType(dischargeNode)
+					local supportedFillType = trailer:getFillUnitSupportsFillType(fillUnitIndex,fillType)
+					if allowedToFillByShovel then 
+						self:debug("allowedToFillByShovel")
+						if supportedFillType then 
+							self:debug("supportedFillType")
+							self:debug("Trailer found!")
+							self:setShovelState(self.states.STATE_START_UNLOAD)
+							self.foundTrailer = true
+							return
+						else
+							self:debug("not  supportedFillType")
+						end
+					else
+						self:debug("not  allowedToFillByShovel")
 					end
 				end
+			else
+				self:debug("FillUnit not found!")
 			end
 			return
 		elseif trailer:isa(UnloadTrigger) then 
+			self:debug("UnloadTrigger found!")
 			self:setShovelState(self.states.STATE_START_UNLOAD)
 			return
 		end
