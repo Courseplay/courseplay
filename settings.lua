@@ -105,20 +105,12 @@ end;]]
 	return true;
 end;]]
 
---TODO: should be removed and changed directly to driveUnloadNow Setting?
+--TODO: call AIDriver directly
 function courseplay:setDriveNow(vehicle)
-	courseplay:setDriveUnloadNow(vehicle, true);
-	vehicle.cp.driver.triggerHandler:setDriveNow()
+--	courseplay:setDriveUnloadNow(vehicle, true);
+	vehicle.cp.driver:setDriveNow()
 end
 
-function courseplay:forceGoToUnloadCourse(vehicle)
-	vehicle.cp.driver:stopAndChangeToUnload()
-end
-
-
-function courseplay:toggleShowMiniHud(vehicle)
-	vehicle.cp.hud.showMiniHud = not vehicle.cp.hud.showMiniHud
-end
 
 function courseplay:toggleConvoyActive(vehicle)
 	vehicle.cp.convoyActive =  not vehicle.cp.convoyActive
@@ -398,42 +390,6 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	
 end;
 
-function courseplay:toggleShowVisualWaypointsStartEnd(vehicle, force, visibilityUpdate)
-	vehicle.cp.visualWaypointsStartEnd = Utils.getNoNil(force, not vehicle.cp.visualWaypointsStartEnd);
-
-	-- also deactivate "all" points when deactivating startEnd
-	if not vehicle.cp.visualWaypointsStartEnd then
-		courseplay:toggleShowVisualWaypointsAll(vehicle, false, false);
-	end;
-
-	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-		courseplay.signs:setSignsVisibility(vehicle);
-	end;
-end;
-
-function courseplay:toggleShowVisualWaypointsAll(vehicle, force, visibilityUpdate)
-	vehicle.cp.visualWaypointsAll = Utils.getNoNil(force, not vehicle.cp.visualWaypointsAll);
-
-	-- also activate "start/end" points when activating "all"
-	if vehicle.cp.visualWaypointsAll then
-		courseplay:toggleShowVisualWaypointsStartEnd(vehicle, true, false);
-	end;
-
-	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-		courseplay.signs:setSignsVisibility(vehicle);
-	end;
-end;
-
-function courseplay:toggleShowVisualWaypointsCrossing(vehicle, force, visibilityUpdate)
-	vehicle.cp.visualWaypointsCrossing = Utils.getNoNil(force, not vehicle.cp.visualWaypointsCrossing);
-	if visibilityUpdate == nil or visibilityUpdate then
-		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-		courseplay.signs:setSignsVisibility(vehicle);
-	end;
-end;
-	
 function courseplay:changeMode10Radius (vehicle, changeBy)
 	vehicle.cp.mode10.searchRadius = math.max(1,vehicle.cp.mode10.searchRadius + changeBy)
 end
@@ -482,29 +438,12 @@ function courseplay:toggleAlignmentWaypoint( vehicle )
 	vehicle.cp.alignment.enabled = not vehicle.cp.alignment.enabled
 end
 
+--Do we want to use this one again ?
 function courseplay:toggleSearchCombineMode(vehicle)
 	vehicle.cp.searchCombineAutomatically = not vehicle.cp.searchCombineAutomatically;
 	if not vehicle.cp.searchCombineAutomatically then
-		courseplay:setSearchCombineOnField(vehicle, nil, 0);
-	end;
-end;
-
-function courseplay:setSearchCombineOnField(vehicle, changeDir, force)
-	if courseplay.fields.numAvailableFields == 0 or not vehicle.cp.searchCombineAutomatically then
 		vehicle.cp.settings.searchCombineOnField:set(0)
-		return
-	end
-	if force and courseplay.fields.fieldData[force] then
-		vehicle.cp.settings.searchCombineOnField:set(force)
-		return
-	end
-
-	if changeDir > 0 then
-		vehicle.cp.settings.searchCombineOnField:setNext()
-	else
-		vehicle.cp.settings.searchCombineOnField:setPrevious()
-	end
-
+	end;
 end;
 
 function courseplay:selectAssignedCombine(vehicle, changeBy)
@@ -891,6 +830,7 @@ function courseplay:toggleDebugChannel(self, channel, force)
 	end;
 end;
 
+--old code ???
 --Course generation
 function courseplay:switchStartingCorner(vehicle)
 	local newStartingCorner = vehicle.cp.startingCorner + 1
@@ -904,6 +844,7 @@ function courseplay:switchStartingCorner(vehicle)
 	self:setStartingCorner( vehicle, newStartingCorner )
 end
 
+--still used in CourseGeneratorScreen.lua ??
 function courseplay:setStartingCorner( vehicle, newStartingCorner )
 	vehicle.cp.startingCorner = newStartingCorner
 	vehicle.cp.hasStartingCorner = true;
@@ -931,6 +872,7 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 	end 
 end
 	
+--old code ???
 function courseplay:changeStartingDirection(vehicle)
 	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE, 5 = Vehicle location, 6 = Last vehicle location
 	-- directions: 1 = North, 2 = East, 3 = South, 4 = West, 5 = auto generated, see courseGenerator.ROW_DIRECTION*
@@ -2466,6 +2408,14 @@ function SearchCombineOnFieldSetting:refresh()
 	self.current = math.min(current, #self.values)
 end
 
+function SearchCombineOnFieldSetting:changeByX(x)
+	if courseplay.fields.numAvailableFields == 0 or not self.vehicle.cp.searchCombineAutomatically then
+		self:set(0)
+		return
+	end
+	return FieldNumberSetting.changeByX(self,x)
+end
+
 --- SelectedCombineToUnload on field
 ---@class SelectedCombineToUnloadSetting : SettingList
 SelectedCombineToUnloadSetting = CpObject(SettingList)
@@ -2829,7 +2779,7 @@ function SiloSelectedFillTypeSetting:init(vehicle, mode)
 	self.mode = mode
 	self.MAX_RUNS = 20
 	self.MAX_PERCENT = 100
-	self.MIN_PERCENT = 1
+	self.MIN_PERCENT = 0
 	self.runCounterActive = true
 	self.MAX_FILLTYPES = 2
 	self.disallowedFillTypes = nil
@@ -2890,7 +2840,8 @@ function SiloSelectedFillTypeSetting:fillTypeDataToAdd(selectedfillType,counter,
 		data = {
 			fillType = selectedfillType,
 			text = g_fillTypeManager:getFillTypeByIndex(selectedfillType).title,
-			maxFillLevel = maxLevel or self.MAX_PERCENT
+			maxFillLevel = maxLevel or self.MAX_PERCENT,
+			minFillLevel = minLevel or self.MIN_PERCENT
 		}	
 	end
 	return data
@@ -2962,6 +2913,10 @@ function SiloSelectedFillTypeSetting:isActive()
 	return runCounterCheck
 end
 
+function SiloSelectedFillTypeSetting:isRunCounterActive()
+	return self.runCounterActive
+end
+
 function SiloSelectedFillTypeSetting:getTexts(index)
 	local data = self:getDataByIndex(index)
 	
@@ -2985,10 +2940,10 @@ function SiloSelectedFillTypeSetting:incrementRunCounter(index)
 	end
 end
 
-function SiloSelectedFillTypeSetting:decrementRunCounterByFillType(fillLevelInfo)
+function SiloSelectedFillTypeSetting:decrementRunCounterByFillType(lastFillTypes)
 	local totalData = self:getData()
 	for index,data in ipairs(totalData) do 
-		for fillType,info in pairs(fillLevelInfo) do 
+		for _,fillType in pairs(lastFillTypes) do
 			if data.fillType == fillType then
 				self:decrementRunCounter(index)		
 			end
@@ -3044,7 +2999,7 @@ function SiloSelectedFillTypeSetting:changeMinFillLevel(index)
 	local data = self:getDataByIndex(index)
 	if data and data.minFillLevel then 
 		local newDiff = data.minFillLevel+diff 
-		if newDiff >0 and newDiff <=100 then
+		if newDiff >=0 and newDiff <=100 then
 			data.minFillLevel = newDiff
 			self:sendEvent(self.NetworkTypes.CHANGE_MIN_FILLEVEL,index,diff)
 		end
@@ -3093,7 +3048,7 @@ function SiloSelectedFillTypeSetting:setMinFillLevelFromNetwork(index,value)
 	local data = self:getDataByIndex(index)
 	if data and data.minFillLevel then 
 		local diff = data.minFillLevel+value
-		if diff >= 1 and diff <=100 then 
+		if diff >= 0 and diff <=100 then 
 			data.minFillLevel = diff
 		end
 	end
@@ -3169,9 +3124,9 @@ function SiloSelectedFillTypeSetting:onWriteStream(stream)
 			streamDebugWriteInt32(stream, data.fillType)
 			if self.runCounterActive then
 				streamDebugWriteInt32(stream, data.runCounter)
-				streamDebugWriteInt32(stream, data.minFillLevel)
 			end
 			streamDebugWriteInt32(stream, data.maxFillLevel)
+			streamDebugWriteInt32(stream, data.minFillLevel)
 		end
 	end
 end
@@ -3182,12 +3137,12 @@ function SiloSelectedFillTypeSetting:onReadStream(stream)
 	if size and size>0 then
 		for key=1,size do 
 			local selectedFillType = streamDebugReadInt32(stream)
-			local counter,minLevel
+			local counter
 			if self.runCounterActive then
 				counter = streamDebugReadInt32(stream)
-				minLevel = streamDebugReadInt32(stream)
 			end
 			local maxLevel = streamDebugReadInt32(stream)
+			local minLevel = streamDebugReadInt32(stream)
 			if selectedFillType then 
 				self:addLast(self:fillTypeDataToAdd(selectedFillType,counter,maxLevel,minLevel))
 			end
@@ -3255,7 +3210,75 @@ FieldSupplyDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSet
 function FieldSupplyDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	SiloSelectedFillTypeSetting.init(self, vehicle, "FieldSupplyDriver")
 	self.runCounterActive = false
-	self.disallowedFillTypes = {FillType.DIESEL, FillType.DEF,FillType.AIR}
+	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
+end
+
+---@class SeperateFillTypeLoadingSetting : SettingList
+SeperateFillTypeLoadingSetting = CpObject(SettingList)
+SeperateFillTypeLoadingSetting.DEACTIVED = 0
+function SeperateFillTypeLoadingSetting:init(vehicle)
+	SettingList.init(self, 'seperateFillTypeLoading', 'COURSEPLAY_LOADING_SEPERATE_FILLTYPES', 'COURSEPLAY_LOADING_SEPERATE_FILLTYPES', vehicle,
+		{ 
+			SeperateFillTypeLoadingSetting.DEACTIVED,
+			2,
+			3
+		},
+		{ 	
+			'COURSEPLAY_DEACTIVATED',
+			'COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS',
+			'COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS'
+		}
+		)
+	self:set(1)
+end
+
+function SeperateFillTypeLoadingSetting:isActive()
+	return self.current>1
+end
+
+function SeperateFillTypeLoadingSetting:checkAndSetValidValue(new)
+	local diff = new<1 and #self.values or new
+	if diff > self:getSeperateFillUnits()  then 
+		return 1
+	else 
+		return SettingList.checkAndSetValidValue(self, new)
+	end
+end
+
+function SeperateFillTypeLoadingSetting:getSeperateFillUnits()
+	local TrailerInfo = {}
+	TrailerInfo.fillUnits = 0
+	self:getTrailerFillUnitCount(self.vehicle,TrailerInfo)
+	return TrailerInfo.fillUnits
+end
+
+function SeperateFillTypeLoadingSetting:getTrailerFillUnitCount(object,TrailerInfo)
+	if self:hasNeededSpec(object,Dischargeable) and self:hasNeededSpec(object,Trailer) and not self:hasNeededSpec(object,Pipe) then 
+		if object.getFillUnits then 
+			for _, fillUnit in pairs(object:getFillUnits()) do
+				TrailerInfo.fillUnits = TrailerInfo.fillUnits + 1
+			end
+		end
+	end
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:getTrailerFillUnitCount(impl.object, TrailerInfo)
+	end
+end
+
+function SeperateFillTypeLoadingSetting:hasNeededSpec(object,spec)
+	if SpecializationUtil.hasSpecialization(spec, object.specializations) then
+		return true
+	end
+end
+
+function SeperateFillTypeLoadingSetting:getText()
+	return self.current>1 and courseplay:loc(self.texts[self.current])..self:get() or SettingList.getText(self)
+end
+
+function SeperateFillTypeLoadingSetting:isActive()
+	if not self.vehicle.cp.driver:getSiloSelectedFillTypeSetting():isEmpty() and self.vehicle.cp.driver:is_a(GrainTransportAIDriver) then 
+		return true
+	end
 end
 
 ---@class ForcedToStopSetting : BooleanSetting
@@ -3331,11 +3354,12 @@ end
 function BunkerSpeedSetting:checkAndSetValidValue(new)
 	if self.vehicle.cp.mode10.leveling then
 		if new > self.MAX_SPEED_LEVELING then 
-			return 3
+			return 1
 		else 
-			return new
+			return SettingList.checkAndSetValidValue(self, new)
 		end
-	end
+	end 
+	return SettingList.checkAndSetValidValue(self, new)
 end
 
 function BunkerSpeedSetting:onChange()
@@ -3450,7 +3474,7 @@ function AssignedCombinesSetting:changeListOffset(x,noEventSend)
 		self.offsetHead = self.offsetHead-1
 	end
 	if not noEventSend then 
-		AssignedCombinesEvents:sendEvent(self.vehicle,self.NetworkTypes.CHANGE_OFFSET,index)
+		AssignedCombinesEvents:sendEvent(self.vehicle,self.NetworkTypes.CHANGE_OFFSET,x)
 	end
 	self.vehicle.cp.driver:refreshHUD()
 end
@@ -3489,6 +3513,39 @@ end
 function AssignedCombinesSetting:getData()
 	return self.table
 end
+
+---@class ShowVisualWaypointsSetting : SettingList
+ShowVisualWaypointsSetting = CpObject(SettingList)
+ShowVisualWaypointsSetting.DEACTIVED = 0
+ShowVisualWaypointsSetting.START_STOP = 1
+ShowVisualWaypointsSetting.ALL = 3
+function ShowVisualWaypointsSetting:init(vehicle)
+	SettingList.init(self, 'showVisualWaypoints', 'COURSEPLAY_WAYPOINT_MODE', 'COURSEPLAY_WAYPOINT_MODE', vehicle,
+		{ 
+			ShowVisualWaypointsSetting.DEACTIVED,
+			ShowVisualWaypointsSetting.START_STOP,
+			ShowVisualWaypointsSetting.ALL 
+		}
+		)
+	self:set(1)
+	self.syncValue = false
+end
+
+function ShowVisualWaypointsSetting:onChange()
+	courseplay.signs:setSignsVisibility(self.vehicle)
+end
+
+---@class ShowVisualWaypointsCrossPointSetting : BooleanSetting
+ShowVisualWaypointsCrossPointSetting = CpObject(BooleanSetting)
+function ShowVisualWaypointsCrossPointSetting:init(vehicle)
+	BooleanSetting.init(self, 'showVisualWaypointsCrossPoint','-', '-', vehicle) 
+	self:set(false)
+	self.syncValue = false
+end
+function ShowVisualWaypointsCrossPointSetting:onChange()
+	courseplay.signs:setSignsVisibility(self.vehicle)
+end
+
 
 --- Container for settings
 --- @class SettingsContainer

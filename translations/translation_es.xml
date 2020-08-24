@@ -478,6 +478,10 @@
 
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Descargar cosechadora en la primera cabecera." />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permitir descarga con cosechadora en movimiento sobre la primera cabecera, el remolque sale del campo." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

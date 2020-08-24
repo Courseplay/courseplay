@@ -105,6 +105,9 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
 	addConsoleCommand( 'printVehicleVariable', 'Print g_currentMission.controlledVehicle.variable', 'printVehicleVariable', self )
 	addConsoleCommand( 'printDriverVariable', 'Print g_currentMission.controlledVehicle.cp.driver.variable', 'printDriverVariable', self )
+	addConsoleCommand( 'printSettingVariable', 'Print g_currentMission.controlledVehicle.cp.settings.variable', 'printSettingVariable', self )
+	addConsoleCommand( 'printCourseGeneratorSettingVariable', 'Print g_currentMission.controlledVehicle.cp.courseGeneratorSettings.variable', 'printCourseGeneratorSettingVariable', self )
+	addConsoleCommand( 'printGlobalSettingVariable', 'Print g_currentMission.controlledVehicle.cp.globalSettings.variable', 'printGlobalSettingVariable', self )
 	addConsoleCommand( 'cpTraceOn', 'Turn on function call argument tracing', 'traceOn', self )
 	addConsoleCommand( 'cpTraceOnForAll', 'Turn on call argument tracing for all functions of the given table (lots of output)', 'traceOnForAll', self )
 	addConsoleCommand( 'cpLoadFile', 'Load a lua file', 'loadFile', self )
@@ -461,7 +464,6 @@ FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, 
 function CpManager:addToTotalCoursePlayers(vehicle)
 	local vehicleNum = (table.maxn(self.totalCoursePlayers) or 0) + 1;
 	self.totalCoursePlayers[vehicleNum] = vehicle;
-	CourseplayEvent.sendEvent(vehicle, "self.cp.coursePlayerNum", vehicleNum);
 	return vehicleNum;
 end;
 function CpManager:addToActiveCoursePlayers(vehicle)
@@ -544,6 +546,19 @@ end
 function CpManager:printDriverVariable(variableName, maxDepth)
 	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', variableName, maxDepth)
 end
+
+function CpManager:printSettingVariable(variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.settings', variableName, maxDepth)
+end
+
+function CpManager:printCourseGeneratorSettingVariable(variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.courseGeneratorSettings', variableName, maxDepth)
+end
+
+function CpManager:printGlobalSettingVariable(variableName, maxDepth)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.globalSettings', variableName, maxDepth)
+end
+
 
 function CpManager:printVariableInternal(prefix, variableName, maxDepth)
 	if not StringUtil.startsWith(variableName, ':') and not StringUtil.startsWith(variableName, '.') then
@@ -947,9 +962,10 @@ function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove,additionalStri
 	
 	
 	--print(string.format('setGlobalInfoText(vehicle, %s, %s)', tostring(refIdx), tostring(forceRemove)));
-	if forceRemove == true then
+	if forceRemove then
 		if g_server ~= nil then
-			CourseplayEvent.sendEvent(vehicle, "setMPGlobalInfoText", refIdx, false, forceRemove)
+		--	CourseplayEvent.sendEvent(vehicle, "setMPGlobalInfoText", refIdx, false, forceRemove)
+			InfoTextEvent.sendEvent(vehicle,refIdx,forceRemove)
 		end
 		if git.content[vehicle.rootNode][refIdx] then
 			git.content[vehicle.rootNode][refIdx] = nil;
@@ -969,7 +985,8 @@ function CpManager:setGlobalInfoText(vehicle, refIdx, forceRemove,additionalStri
 	--print(string.format('refIdx=%q, level=%s, text=%q, textLoc=%q', tostring(refIdx), tostring(data.level), tostring(data.text), tostring(courseplay:loc(data.text))));
 	if vehicle.cp.activeGlobalInfoTexts[refIdx] == nil or vehicle.cp.activeGlobalInfoTexts[refIdx] ~= data.level then
 		if g_server ~= nil then
-			CourseplayEvent.sendEvent(vehicle, "setMPGlobalInfoText", refIdx, false, forceRemove)
+		--	CourseplayEvent.sendEvent(vehicle, "setMPGlobalInfoText", refIdx, false, forceRemove)
+			InfoTextEvent.sendEvent(vehicle,refIdx,forceRemove)
 		end	
 		if vehicle.cp.activeGlobalInfoTexts[refIdx] == nil then
 			vehicle.cp.numActiveGlobalInfoTexts = vehicle.cp.numActiveGlobalInfoTexts + 1;

@@ -69,7 +69,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	else
 		self:clearInfoText('NO_SELECTED_FILLTYPE')
 	end
-	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 5)
+	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 10)
 	self.waitPointIx = waitPointIx
 	--this one is used to disable loading at the unloading stations,
 	--might be better to disable the triggerID for loading
@@ -119,16 +119,19 @@ function FillableFieldworkAIDriver:fillAtWaitPoint()
 		return
 	end
 	self:setSpeed(0)
-	
+	local minFillLevelIsOk = true
 	local newTotalFillLevel = 0
-	for fillType, info in pairs(fillLevelInfo) do
-		for _,data in ipairs(fillTypeData) do
+	for _,data in ipairs(fillTypeData) do 
+		for fillType, info in pairs(fillLevelInfo) do
 			if data.fillType == fillType then
 				newTotalFillLevel = newTotalFillLevel+info.fillLevel
+				if info.fillLevel/info.capacity*100 < data.minFillLevel then 
+					minFillLevelIsOk = false
+				end
 			end
 		end
 	end
-	if self:levelDidNotChange(newTotalFillLevel) and self:areFillLevelsOk(fillLevelInfo) then 
+	if self:levelDidNotChange(newTotalFillLevel) and self:areFillLevelsOk(fillLevelInfo) and minFillLevelIsOk then 
 		self:continue()
 	end
 	self:setInfoText('REACHED_REFILLING_POINT')
@@ -255,4 +258,6 @@ function FillableFieldworkAIDriver:getSiloSelectedFillTypeSetting()
 	return self.vehicle.cp.settings.siloSelectedFillTypeFillableFieldWorkDriver
 end
 
-
+function FillableFieldworkAIDriver:notAllowedToLoadNextFillType()
+	return true
+end

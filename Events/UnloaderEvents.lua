@@ -41,13 +41,17 @@ function UnloaderEvents:run(connection) -- wir fuehren das empfangene event aus
 	if self.eventType == self.TYPE_REMOVE_FROM_COMBINE then
 		g_combineUnloadManager:releaseUnloaderFromCombine(self.unloader,self.combine,true)
 		self.unloader.cp.driver.combineToUnload = nil
+		self:refreshHUD()
 	elseif self.eventType == self.TYPE_ADD_TO_COMBINE then
 		g_combineUnloadManager:addUnloaderToCombine(self.unloader,self.combine,true)
+		self:refreshHUD()
 	elseif self.eventType == self.TYPE_REGISTER_COMBINE then
 		self.combine.cp.driver:registerUnloader(self.unloader,true)
 		self.unloader.cp.driver.combineToUnload = self.combine
+		self:refreshHUD()
 	elseif self.eventType == self.TYPE_DEREGISTER_COMBINE then
 		self.combine.cp.driver:deregisterUnloader(self.unloader,true)
+		self:refreshHUD()
 	end
 	if not connection:getIsServer() then
 		g_server:broadcastEvent(UnloaderEvents:new(self.unloader, self.combine, self.eventType), nil, connection, self.combine);
@@ -84,4 +88,9 @@ function UnloaderEvents:sendDeregisterUnloaderEvent(unloader,combine)
     else
 		g_client:getServerConnection():sendEvent(UnloaderEvents:new(unloader,combine,self.TYPE_DEREGISTER_COMBINE));
 	end;
+end
+
+function UnloaderEvents:refreshHUD()
+	self.unloader.cp.driver:refreshHUD()
+	self.combine.cp.driver:refreshHUD()
 end

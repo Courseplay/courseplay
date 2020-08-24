@@ -100,18 +100,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineOffset = 0
 	self.distanceToCombine = math.huge
 	self.distanceToFront = 0
-	self.combinesListHUDOffset = 0
 	self.combineToUnloadReversing = 0
-end
-
-function CombineUnloadAIDriver:writeUpdateStream(streamId)
-	AIDriver.writeUpdateStream(self,streamId)
-	streamWriteUIntN(streamId,self.combinesListHUDOffset,6)
-end 
-
-function CombineUnloadAIDriver:readUpdateStream(streamId)
-	AIDriver.readUpdateStream(self,streamId)
-	self.combinesListHUDOffset = streamReadUIntN(streamId,6)
 end
 
 function CombineUnloadAIDriver:postSync()

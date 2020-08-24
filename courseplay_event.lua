@@ -199,7 +199,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			if course.waypoints then
 				streamDebugWriteInt32(streamId, #(course.waypoints))
 				for w = 1, #(course.waypoints) do
-					CoursePlayNetworkHelper:writeWaypoint(streamId, course.waypoints[w])
+					CourseEvent:writeWaypoint(streamId, course.waypoints[w])
 				end
 			else
 				streamDebugWriteInt32(streamId, -1)
@@ -271,7 +271,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			if wp_count >= 0 then
 				for w = 1, wp_count do
 					--courseplay:debug("got waypoint", 8);
-					table.insert(waypoints, CoursePlayNetworkHelper:readWaypoint(streamId))
+					table.insert(waypoints, CourseEvent:readWaypoint(streamId))
 				end
 			else
 				waypoints = nil
@@ -331,52 +331,3 @@ end;
 
 ---------------------------------
 
-function CoursePlayNetworkHelper:writeWaypoint(streamId, waypoint)
-	streamDebugWriteFloat32(streamId, waypoint.cx)
-	streamDebugWriteFloat32(streamId, waypoint.cz)
-	streamDebugWriteFloat32(streamId, waypoint.angle)
-	streamDebugWriteBool(streamId, waypoint.wait)
-	streamDebugWriteBool(streamId, waypoint.rev)
-	streamDebugWriteBool(streamId, waypoint.crossing)
-	streamDebugWriteInt32(streamId, waypoint.speed)
-
-	streamDebugWriteBool(streamId, waypoint.generated)
-	
-	streamDebugWriteBool(streamId, waypoint.turnStart)
-	streamDebugWriteBool(streamId, waypoint.turnEnd)
-	streamDebugWriteInt32(streamId, waypoint.ridgeMarker)
-	streamDebugWriteInt32(streamId, waypoint.headlandHeightForTurn)
-end;
-
-function CoursePlayNetworkHelper:readWaypoint(streamId)
-	local cx = streamDebugReadFloat32(streamId)
-	local cz = streamDebugReadFloat32(streamId)
-	local angle = streamDebugReadFloat32(streamId)
-	local wait = streamDebugReadBool(streamId)
-	local rev = streamDebugReadBool(streamId)
-	local crossing = streamDebugReadBool(streamId)
-	local speed = streamDebugReadInt32(streamId)
-
-	local generated = streamDebugReadBool(streamId)
-	--local dir = streamDebugReadString(streamId)
-	local turnStart = streamDebugReadBool(streamId)
-	local turnEnd = streamDebugReadBool(streamId)
-	local ridgeMarker = streamDebugReadInt32(streamId)
-	local headlandHeightForTurn = streamDebugReadInt32(streamId)
-
-	local wp = {
-		cx = cx, 
-		cz = cz, 
-		angle = angle, 
-		wait = wait, 
-		rev = rev, 
-		crossing = crossing, 
-		speed = speed,
-		generated = generated,
-		turnStart = turnStart,
-		turnEnd = turnEnd,
-		ridgeMarker = ridgeMarker,
-		headlandHeightForTurn = headlandHeightForTurn
-	};
-	return wp;
-end;

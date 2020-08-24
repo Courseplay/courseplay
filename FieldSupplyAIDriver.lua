@@ -21,6 +21,9 @@ Field Supply AI Driver to let fill tools with digestate or liquid manure on the 
 Also known as mode 8
 ]]
 
+--TODO: Have FieldSupplyAIDriver be derived from GrainTransportDriver and not FillableFieldworkAIDriver,
+--		as there is no need for FieldworkAIDriver functions 
+
 ---@class FieldSupplyAIDriver : FillableFieldworkAIDriver
 FieldSupplyAIDriver = CpObject(FillableFieldworkAIDriver)
 
